@@ -2,170 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64BF54B76F1
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:50:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 826094B75EA
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 21:48:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237628AbiBOQ5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 11:57:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48718 "EHLO
+        id S242092AbiBORCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 12:02:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240164AbiBOQ47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 11:56:59 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2077.outbound.protection.outlook.com [40.107.212.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A857D64D1;
-        Tue, 15 Feb 2022 08:56:49 -0800 (PST)
+        with ESMTP id S242090AbiBORCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 12:02:41 -0500
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10075.outbound.protection.outlook.com [40.107.1.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5247A119F7D
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 09:02:30 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jvqf5oMHL8pcbmyemUy15VAb0NV2S718+XQcAWt56IMKvaM4VW/lYVo3jU+knBm1iyXAoG9DIUy6U4z3mHJahpztY/PgQ5GVsqtyUeNb++7iLv1Os5Do/HcBVurvjyTX9geJ+f9b7HeVQM2G3jhUotT38wE3djQpOMu7F5qzSy7ONk2g+rJH9gixyErE8VXYJSmKAVUmIs1l+6O1J+YY8/3P0MIaE9J8tABnIlNRhrlbLeOFYtyhjpkBZC5kDqC7zUi6HdfZtgD2DXQofmrqotDNFpjDSGzxd0m+QUsZtS3/3O50DRglzYv9SMH9cxN+VWrL6XXeuQQqjcvOcQuMPg==
+ b=nHFL4GQqaHeuPiQMSPWwfgvDTDjZ5AfOhOUYhjbvsX1Ql9sslgXgR1VXlq1ZMImglBXh4m+O8MUrRFvIqYq6ta9MMZRBg6/jsVKWezPyw+0IFNext6tyldperULwUk4RP8SVJphspP54vJQvpBGQPLkovPLbCV8MCLrV0IYpKrE+o2ieZ0ZQz35eAxB7OPAFg6X70u1D0MxQGs4XbfmxY+0mViRY6E1f2JG9HwsU/MK9gpF6aCnIUKAvzkYOJTlGHSNcpktm94Lp67xUrs6zQK3eretLXK557WV/AQyeKmqHLe8rIkkJ8KCf6qm6MAKHvxUWNHFIeI7u8qvesTedCg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=son9GE6MNPo/omZeWV9C14oF3rNQ7vb3sPP1hI/9TbA=;
- b=Z8MFs055Kg7RFoJeO5SW8akn30iktuOjCsn47VNn3k0YHYQxpkaPNKO9k8GNOKi17ZLu3ZIhHET66nTp9CQSUp3BMo9CtzHLC6SfMmx25FJ9GndPOc3aHu1gP7ovZtDgT1TwmyEEkxpoNbE4RHKDN6BScRyVLT3oSs+6Dg/ueyseDMxKQFWa4+ad1JY3zXc59LtZeOUzl94MvWLdj811VIpzjh1Bvul0gNycsVpiCJ/+7RtCt0csxXthfIbrnOyLVVAQoQzoDSchO/jEaFMueu4lHgFXFUrhM+OQJrpR7SrY2pnxSCXFnfEyxrtAESQSg9k2cgfj7jmv+KQLRgkayw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=uaa1MvdosRr1MPQIp2Kd1COb/13oWQmxrBVS6Dd0vcU=;
+ b=PRT7ReRmlLm9WGlEuQfnXW4Onns81DSOlNaANZsqVsyNTIXF1hMzzG7VHvPyOEgV02a3Xk9sJxtsNAVCgkRIErux+/lnvXZTvhDCc00U/rgmIlTvm7wSkpIHg35BU8IHb/dy8LdI+JsGbDeuaNF626h412mOPxCOAWhoz33/bz7Z+njSM1cDcOXlxVq/3Zk4otc9Dwc/6haXXU1N3JMHUGWG2QqKxBH7nueioopnxUYHqd2Ae08pXZOSWjKEY7o7sOOM0MjC4BxehC/OYEx8hfmeYFMfJwcwBkr+XcqAaffEuWI3jzTvbkctEdb8+iw1rZL7PaySNE/NVYRhiZfUhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=son9GE6MNPo/omZeWV9C14oF3rNQ7vb3sPP1hI/9TbA=;
- b=nurn70IUDOZRn0l2zr3yo/dPd9jmowbEwXvRIfnOJwxNTSTLvC5XTxkah8YQuyIZLanb2hspBaFqFp25qmwkafln61p/qkbttuEIXE+/Hvqc5zMNdt0zyiiyi++hjvw5j1BHgsv9QLyfTOHF9TCmlN/TSv57NeOYnGtnhLhallFvmjPsjCJIJkS6oxaMKDjROBST+42KBj8l5xVqlgmrR7sKVy5S7SIlT4553+ROSl2+vVm74PfJLXGnMkP8xiIN8cd0p85oWUpjK6/k/MC6zOsWPgY6Uurztq3eUrtEAnhu9LawPeL3nL3OWNSUwk07GeI5fPE1mkKQcpVVjGUWIw==
-Received: from BN0PR03CA0004.namprd03.prod.outlook.com (2603:10b6:408:e6::9)
- by SJ0PR12MB5422.namprd12.prod.outlook.com (2603:10b6:a03:3ac::15) with
+ bh=uaa1MvdosRr1MPQIp2Kd1COb/13oWQmxrBVS6Dd0vcU=;
+ b=cScpSzjQmtsKPpXrBpLipbeDlxlECf037ky/Jd53pbZV9EgRcffZBxHPSPgMGIUzxtZJTV9yjIMmmDwsGhKPSjzUhkPu9lGc/q9j/MzJQum+mcfasikTULHu6HP6vR2Hg4s1icTkNeBN0CVv74A1Db1dLNgJSKik3o52B18G+cg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5342.eurprd04.prod.outlook.com (2603:10a6:803:46::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Tue, 15 Feb
- 2022 16:56:46 +0000
-Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e6:cafe::70) by BN0PR03CA0004.outlook.office365.com
- (2603:10b6:408:e6::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
- Transport; Tue, 15 Feb 2022 16:56:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Tue, 15 Feb 2022 16:56:43 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 15 Feb
- 2022 16:56:43 +0000
-Received: from [172.27.13.89] (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 15 Feb 2022
- 08:56:35 -0800
-Message-ID: <8a3b1ec5-f43c-03ba-f51c-5d1ba809657e@nvidia.com>
-Date:   Tue, 15 Feb 2022 18:56:31 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net v2] net: bridge: multicast: notify switchdev driver
- whenever MC processing gets disabled
-Content-Language: en-US
-To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
+ 2022 17:02:27 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Tue, 15 Feb 2022
+ 17:02:27 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Yotam Gigi <yotamg@mellanox.com>,
-        Nogah Frankel <nogahf@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-CC:     <taras.chornyi@plvision.eu>, <volodymyr.mytnyk@plvision.eu>,
-        <mickeyr@marvell.com>, <bridge@lists.linux-foundation.org>,
-        <vladimir.oltean@nxp.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220215165303.31908-1-oleksandr.mazur@plvision.eu>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20220215165303.31908-1-oleksandr.mazur@plvision.eu>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Rafael Richter <rafael.richter@gin.de>,
+        Daniel Klauer <daniel.klauer@gin.de>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: [PATCH v3 net-next 00/11] Replay and offload host VLAN entries in DSA
+Date:   Tue, 15 Feb 2022 19:02:07 +0200
+Message-Id: <20220215170218.2032432-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR0302CA0003.eurprd03.prod.outlook.com
+ (2603:10a6:800:e9::13) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 76925c7b-d4e1-446d-2e80-08d9f0a4254b
-X-MS-TrafficTypeDiagnostic: SJ0PR12MB5422:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR12MB5422914B8D7BA4F0E431015FDF349@SJ0PR12MB5422.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Office365-Filtering-Correlation-Id: 80a5cf53-c252-4bf1-fa1b-08d9f0a4f189
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5342:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5342CB5CD42D9019514E910EE0349@VI1PR04MB5342.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: o7TwWFZDRfWuYDMEqyVNL0kJoYeX4Qb0Ktm9R/nfSKGEMJj/gtKTsYusgeJXrxe+VsptBKZTBzKGVCxvYD5r74ur1p6gxVvVQxdjRqBFsMxHo5hEYNi3zEkjqBTCK6DYs0JEuewpvxZy6jKMbyaccWEskcEYK7+56PiimnxtRnhcC7Doh1Q5ZxR0dMksQvGmvfMkdLlZLd1efijpWPO+lqJp0NUyKChwlWhwe62qaIc/iKOsQvN3u84S+92JGojei5MyRaVSd4Z+CaKt3L+uxuKejtqsXRIb0/3Q1Wp+3bjckE5NUDHvx/pjUT3sw/79tQCEfxQJzxd7bAG51e9x3pSb20Uzz1ky59A6k36AA/vehjMQumwn1JJooxIYK5UpnpMd/p5T816wny62c8YOIBMTn/cj3JA9/FIf3YFBUyiMT+fNlN6vvJNocvS4kj6rfKicdYGQ84YrIZ5VQrBKGwE53hWq4zdSJKlDeOVdclbsyiEO4feVUOkmYzqSQgnBrBmjWg/33CDAddX4eux7fXhroi9f24a7N9A1qeDV21B4qsYcIw+bBMamvYR1y7ZrtAf7tCfcRzrvVGpJA8AR/L92dLs8DEehpV2Og7o24HIKLY0PMwtct8pLWLcScEWEXZRfpZWm0Ukyjtz28jzaX/nG9bH47Q5lpMxZ8lQNlKfKgAqHnDUWveiSThRbugiwkOIG4xFt2+UETb/n1gVhJT1Dg+UkPCosCTdHrFNDlPIjacYq1kDx9f879YDRpSAc
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(8676002)(426003)(70206006)(336012)(83380400001)(70586007)(2616005)(86362001)(53546011)(6666004)(31696002)(4326008)(508600001)(16526019)(26005)(82310400004)(16576012)(54906003)(110136005)(316002)(2906002)(186003)(356005)(31686004)(81166007)(40460700003)(7416002)(47076005)(5660300002)(8936002)(36756003)(36860700001)(36900700001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 16:56:43.8904
+X-Microsoft-Antispam-Message-Info: ntDxmALdoqt24BIHk3K7DWUGB8wAfTvAmnyxH8XKuKh0b5+F/qRjxW2jEivU7WiZbX55QG70OQu4ff6w4uRA3nvZ1PJbWMB5nYGAYqJcVDbnY0YO85qFHxaRqw/CpD0B5wtiFLW2S4hJY7KT52aUxRlIJBF5UYtQZI67h3NBlCa5aSYlLXfwky8X60Z+wrZ5FD4OnFTnyAk6OPdWJDrFFI8hgN39BTIqbTK3yAC9ZVYZ0kNZHLRRQ+kwBQ8hU3oEwtmFb14vJMRPjDLhjEJmcPACuFtwJfgRFxei4xghx/XsfLtbAnusGhGhxR+OpaB3YZ1SdycWwdQS97yLdxN4l+//YneXFvweUTcULlMXTJ2p/Vll56ohTep5pOWyfku39ZcQwWESBXyfuxQJj3NZdv03tRpYn4D136ewAA9+Yr0m2fHRb0+sj+1pVZeKBD6j3QUH7XJ97a3J8UlY6QlVn5oelAcxMk1T4WgQZmdSAGQbX7iGncW5cDlQyom4PPzGEw+TEYfN3ntZdGYHcLi01BDZTcttjkQc6B6TG4dqjl5HztOhLp2RgLfpLFaibR42iGhXLpp6jCCmwF8xRQ9ACf7hqP4tHjGiGSbelzL6qiPYYL6yAjjoFHZ6DcANXFzxWbwqMfdYROVEGAJG9EXuqzBhl30c6TNuue6nqiLT+iXc8O3+FwZe+BYsbRLO3VRDpxbVVTnMxiRnZe7Mrhq80epjY50HbaaBMdtFV/L4FNQpQzeN+3yl9twRXZS/FduEgDUBbq2xSD7Kq88e2FjKGEl70wgYP18UZzrIlGFJfwo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(508600001)(2616005)(316002)(26005)(6506007)(6512007)(54906003)(966005)(1076003)(38100700002)(6486002)(6916009)(52116002)(38350700002)(2906002)(66946007)(4326008)(44832011)(5660300002)(66556008)(8936002)(66476007)(7416002)(8676002)(6666004)(83380400001)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L1t8LmbgqGtimrY8RYLD0auiYF2S12t/1DhjiZxTZoZhC9jxLS/OYbc+hi1A?=
+ =?us-ascii?Q?jDnRFv33dliv68Tn814PG8PV0QzJSDN2F6840IQaR3hV7sT+EhAiEESmSrV+?=
+ =?us-ascii?Q?Zn8llBIgcbESNc3dYxCeLzl2qal8ueB5r0Gpjc03p/jPaoI5KWR0jn6qGdm0?=
+ =?us-ascii?Q?BQKdVDaZOw0Ri3WKo+SI1MXIDhjcLOtYf8iTy18YOMEvC+SXV+G7c9QLiT40?=
+ =?us-ascii?Q?2gsgHo23cP25E25kYv1kRgh/uipPum2ATe9uJZ/9OCiP3deqWa9NIk+to08i?=
+ =?us-ascii?Q?tsg6cvitJMXMY9qpnPhQciXsf33HOiGvPaA3F0zAMiM60yFr3RlOmxdIxPnq?=
+ =?us-ascii?Q?8LfIvQuSmiP7w0KrN5dAnz/194hwJ9IRBgveXaoe2pymNA4LPE41LkfuY5ps?=
+ =?us-ascii?Q?o5v0mYsYxp02D70djW1iEZS6/1cRIbhHbYL4HmV5eeEZuWFgJ6tkYUObGbyq?=
+ =?us-ascii?Q?VC4mwJEJqC9KzK2EVHgL5Zl7w9VeMYbiQMi28JOonC6OssMY+qmZR/xGrT9N?=
+ =?us-ascii?Q?8Y2V1XRED3Y+9L1C/k/Bfzdsf6fGrj7SSuJkIBXdLWgCPExKaXthXYyJwMiB?=
+ =?us-ascii?Q?MiM6j/GzdfzifZFqv/aGtWUyPUgabe1VI6tkjOHCjgE7a2Yjh8tV50xakQCV?=
+ =?us-ascii?Q?pfMgUxpHjUDa5lCyMlDBxH2a5NXCqk9ijfoEeEarXY5ThG+8VzR1j7qGnowU?=
+ =?us-ascii?Q?IVujkoZXePucOvgxevTrvfJ6bMaskh5kmHIG1Bt4FGMmMvu0ffJNfshnGBIJ?=
+ =?us-ascii?Q?t0+EemkNpjQ8UNd3BvPORQFVgYkZ4u2S3LdyOxk0+hv9fypD6y5Bm2ncIhZ2?=
+ =?us-ascii?Q?wLxW/j3c4BfOyAPEst3vfzaoUpumOZRUBUMUpGrlAyAJxL3JBRzn+DJ/flSk?=
+ =?us-ascii?Q?8AvzL5iS/JVcWvqbyWFJH7y5uHhfb8JWPZfraek0PEyC1VzpGV0rCgTJ2jv8?=
+ =?us-ascii?Q?hWGbK8cV2aGG8+kgQapi3SlR4451Y2ORoDrgCUVhba3ECUH4hBNaDFgxEiD3?=
+ =?us-ascii?Q?IgC/+tF9jC2NU2InSYW4ivZGLZrQA5vuF32XdAmqC7damjp7oA200tPxnemV?=
+ =?us-ascii?Q?/DEy9MBSN79fJecTTRWfTx1wKNfuj1FVM28E6X1VYoUeqiNkOWcoeA6f4aUh?=
+ =?us-ascii?Q?DHHAY1/m4b1gGDgVyYYUXRCZw+mM3RM8g+aPNK6/V9alMjEl1zHtId+8n2kJ?=
+ =?us-ascii?Q?JQA03IKL7JgtKL8PMSpXFHl50cddg9NorkYxjP0H+0pi+cjtwFZXIkeIOHKA?=
+ =?us-ascii?Q?ce69t70xn9PJkRJFwHekzRquaLKBd2SQXQ16yuenD3+8pl9aOoO2H4RUYtIC?=
+ =?us-ascii?Q?OgGnqWOGcxX+1NjpehActFgrdezBqlGAEbzOtwdeWh5t5abi0FzkBLWRU6w2?=
+ =?us-ascii?Q?MKU0TO5MCKDbT5Z0aDvGK3G74hO5YhBHTyWml4HnbvFKEw4CeIU45ZURDtmh?=
+ =?us-ascii?Q?d7qoUo/yott8zm3M2Q50RwCNsAUkRLnzPEZfXICVlt9AWAP0pdYYheS+G3Wj?=
+ =?us-ascii?Q?INba5I5y3E/XLuG21X7zYwV6rjk03TQF6P/0RQ4bsI+KyAfi1AwOZHausL8L?=
+ =?us-ascii?Q?BHPufvRz4zQ72d2+2V1SFzGduqqmyj8u9jAVw7NMMWFIgo3tIjd1trV1wgOp?=
+ =?us-ascii?Q?uGWK0uxaagCOEoZMbbnxFb4=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80a5cf53-c252-4bf1-fa1b-08d9f0a4f189
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 17:02:27.0102
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76925c7b-d4e1-446d-2e80-08d9f0a4254b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5422
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RBJtyXjecnV2yAMLn2qSAXwUYL0MTfyMCOGKqL+SrHo/K6VwHDsp2cyNM3hFEeVwWbaD+2W90PIyqENSej/TiQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5342
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/02/2022 18:53, Oleksandr Mazur wrote:
-> Whenever bridge driver hits the max capacity of MDBs, it disables
-> the MC processing (by setting corresponding bridge option), but never
-> notifies switchdev about such change (the notifiers are called only upon
-> explicit setting of this option, through the registered netlink interface).
-> 
-> This could lead to situation when Software MDB processing gets disabled,
-> but this event never gets offloaded to the underlying Hardware.
-> 
-> Fix this by adding a notify message in such case.
-> 
-> Fixes: 147c1e9b902c ("switchdev: bridge: Offload multicast disabled")
-> 
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> ---
-> V2:
->   - target 'net' tree;
->   - add missed 'Fixes' tag;
->   - remove mc_disabled retcode check, as well as WARN_ON in case of err;
-> ---
->  net/bridge/br_multicast.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-> index de2409889489..db4f2641d1cd 100644
-> --- a/net/bridge/br_multicast.c
-> +++ b/net/bridge/br_multicast.c
-> @@ -82,6 +82,9 @@ static void br_multicast_find_del_pg(struct net_bridge *br,
->  				     struct net_bridge_port_group *pg);
->  static void __br_multicast_stop(struct net_bridge_mcast *brmctx);
->  
-> +static int br_mc_disabled_update(struct net_device *dev, bool value,
-> +				 struct netlink_ext_ack *extack);
-> +
->  static struct net_bridge_port_group *
->  br_sg_port_find(struct net_bridge *br,
->  		struct net_bridge_port_group_sg_key *sg_p)
-> @@ -1156,6 +1159,7 @@ struct net_bridge_mdb_entry *br_multicast_new_group(struct net_bridge *br,
->  		return mp;
->  
->  	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
-> +		br_mc_disabled_update(br->dev, false, NULL);
->  		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
->  		return ERR_PTR(-E2BIG);
->  	}
+v2->v3:
+- make the bridge stop notifying switchdev for !BRENTRY VLANs
+- create precommit and commit wrappers around __vlan_add_flags().
+- special-case the BRENTRY transition from false to true, instead of
+  treating it as a change of flags and letting drivers figure out that
+  it really isn't.
+- avoid setting *changed unless we know that functions will not error
+  out later.
+- drop "old_flags" from struct switchdev_obj_port_vlan, nobody needs it
+  now, in v2 only DSA needed it to filter out BRENTRY transitions, that
+  is now solved cleaner.
+- no BRIDGE_VLAN_INFO_BRENTRY flag checks and manipulations in DSA
+  whatsoever, use the "bool changed" bit as-is after changing what it
+  means.
+- merge dsa_slave_host_vlan_{add,del}() with
+  dsa_slave_foreign_vlan_{add,del}(), since now they do the same thing,
+  because the host_vlan functions no longer need to mangle the vlan
+  BRENTRY flags and bool changed.
 
-nit: you don't have to leave empty new line between Fixes and Signed-off-by.
-Patch looks good to me.
+v1->v2:
+- prune switchdev VLAN additions with no actual change differently
+- no longer need to revert struct net_bridge_vlan changes on error from
+  switchdev
+- no longer need to first delete a changed VLAN before readding it
+- pass 'bool changed' and 'u16 old_flags' through switchdev_obj_port_vlan
+  so that DSA can do some additional post-processing with the
+  BRIDGE_VLAN_INFO_BRENTRY flag
+- support VLANs on foreign interfaces
+- fix the same -EOPNOTSUPP error in mv88e6xxx, this time on removal, due
+  to VLAN deletion getting replayed earlier than FDB deletion
 
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+The motivation behind these patches is that Rafael reported the
+following error with mv88e6xxx when the first switch port joins a
+bridge:
+
+mv88e6085 0x0000000008b96000:00: port 0 failed to add a6:ef:77:c8:5f:3d vid 1 to fdb: -95 (-EOPNOTSUPP)
+
+The FDB entry that's added is the MAC address of the bridge, in VID 1
+(the default_pvid), being replayed as part of br_add_if() -> ... ->
+nbp_switchdev_sync_objs().
+
+-EOPNOTSUPP is the mv88e6xxx driver's way of saying that VID 1 doesn't
+exist in the VTU, so it can't program the ATU with a FID, something
+which it needs.
+
+It appears to be a race, but it isn't, since we only end up installing
+VID 1 in the VTU by coincidence. DSA's approximation of programming
+VLANs on the CPU port together with the user ports breaks down with
+host FDB entries on mv88e6xxx, since that strictly requires the VTU to
+contain the VID. But the user may freely add VLANs pointing just towards
+the bridge, and FDB entries in those VLANs, and DSA will not be aware of
+them, because it only listens for VLANs on user ports.
+
+To create a solution that scales properly to cross-chip setups and
+doesn't leak entries behind, some changes in the bridge driver are
+required. I believe that these are for the better overall, but I may be
+wrong. Namely, the same refcounting procedure that DSA has in place for
+host FDB and MDB entries can be replicated for VLANs, except that it's
+garbage in, garbage out: the VLAN addition and removal notifications
+from switchdev aren't balanced. So the first 2 patches attempt to deal
+with that.
+
+This patch set has been superficially tested on a board with 3 mv88e6xxx
+switches in a daisy chain and appears to produce the primary desired
+effect - the driver no longer returns -EOPNOTSUPP when the first port
+joins a bridge, and is successful in performing local termination under
+a VLAN-aware bridge.
+As an additional side effect, it silences the annoying "p%d: already a
+member of VLAN %d\n" warning messages that the mv88e6xxx driver produces
+when coupled with systemd-networkd, and a few VLANs are configured.
+Furthermore, it advances Florian's idea from a few years back, which
+never got merged:
+https://lore.kernel.org/lkml/20180624153339.13572-1-f.fainelli@gmail.com/
+v2 has also been tested on the NXP LS1028A felix switch.
+
+Some testing:
+
+root@debian:~# bridge vlan add dev br0 vid 101 pvid self
+[  100.709220] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_add: port 9 vlan 101
+[  100.873426] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_add: port 10 vlan 101
+[  100.892314] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_add: port 9 vlan 101
+[  101.053392] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_add: port 10 vlan 101
+[  101.076994] mv88e6085 d0032004.mdio-mii:12: mv88e6xxx_port_vlan_add: port 9 vlan 101
+root@debian:~# bridge vlan add dev br0 vid 101 pvid self
+root@debian:~# bridge vlan add dev br0 vid 101 pvid self
+root@debian:~# bridge vlan
+port              vlan-id
+eth0              1 PVID Egress Untagged
+lan9              1 PVID Egress Untagged
+lan10             1 PVID Egress Untagged
+lan11             1 PVID Egress Untagged
+lan12             1 PVID Egress Untagged
+lan13             1 PVID Egress Untagged
+lan14             1 PVID Egress Untagged
+lan15             1 PVID Egress Untagged
+lan16             1 PVID Egress Untagged
+lan17             1 PVID Egress Untagged
+lan18             1 PVID Egress Untagged
+lan19             1 PVID Egress Untagged
+lan20             1 PVID Egress Untagged
+lan21             1 PVID Egress Untagged
+lan22             1 PVID Egress Untagged
+lan23             1 PVID Egress Untagged
+lan24             1 PVID Egress Untagged
+sfp               1 PVID Egress Untagged
+lan1              1 PVID Egress Untagged
+lan2              1 PVID Egress Untagged
+lan3              1 PVID Egress Untagged
+lan4              1 PVID Egress Untagged
+lan5              1 PVID Egress Untagged
+lan6              1 PVID Egress Untagged
+lan7              1 PVID Egress Untagged
+lan8              1 PVID Egress Untagged
+br0               1 Egress Untagged
+                  101 PVID
+root@debian:~# bridge vlan del dev br0 vid 101 pvid self
+[  108.340487] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_del: port 9 vlan 101
+[  108.379167] mv88e6085 d0032004.mdio-mii:11: mv88e6xxx_port_vlan_del: port 10 vlan 101
+[  108.402319] mv88e6085 d0032004.mdio-mii:12: mv88e6xxx_port_vlan_del: port 9 vlan 101
+[  108.425866] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_del: port 9 vlan 101
+[  108.452280] mv88e6085 d0032004.mdio-mii:10: mv88e6xxx_port_vlan_del: port 10 vlan 101
+root@debian:~# bridge vlan del dev br0 vid 101 pvid self
+root@debian:~# bridge vlan del dev br0 vid 101 pvid self
+root@debian:~# bridge vlan
+port              vlan-id
+eth0              1 PVID Egress Untagged
+lan9              1 PVID Egress Untagged
+lan10             1 PVID Egress Untagged
+lan11             1 PVID Egress Untagged
+lan12             1 PVID Egress Untagged
+lan13             1 PVID Egress Untagged
+lan14             1 PVID Egress Untagged
+lan15             1 PVID Egress Untagged
+lan16             1 PVID Egress Untagged
+lan17             1 PVID Egress Untagged
+lan18             1 PVID Egress Untagged
+lan19             1 PVID Egress Untagged
+lan20             1 PVID Egress Untagged
+lan21             1 PVID Egress Untagged
+lan22             1 PVID Egress Untagged
+lan23             1 PVID Egress Untagged
+lan24             1 PVID Egress Untagged
+sfp               1 PVID Egress Untagged
+lan1              1 PVID Egress Untagged
+lan2              1 PVID Egress Untagged
+lan3              1 PVID Egress Untagged
+lan4              1 PVID Egress Untagged
+lan5              1 PVID Egress Untagged
+lan6              1 PVID Egress Untagged
+lan7              1 PVID Egress Untagged
+lan8              1 PVID Egress Untagged
+br0               1 Egress Untagged
+root@debian:~# bridge vlan del dev br0 vid 101 pvid self
+
+Vladimir Oltean (11):
+  net: bridge: vlan: check early for lack of BRENTRY flag in
+    br_vlan_add_existing
+  net: bridge: vlan: don't notify to switchdev master VLANs without
+    BRENTRY flag
+  net: bridge: vlan: make __vlan_add_flags react only to PVID and
+    UNTAGGED
+  net: bridge: vlan: notify switchdev only when something changed
+  net: bridge: switchdev: differentiate new VLANs from changed ones
+  net: bridge: make nbp_switchdev_unsync_objs() follow reverse order of
+    sync()
+  net: bridge: switchdev: replay all VLAN groups
+  net: switchdev: rename switchdev_lower_dev_find to
+    switchdev_lower_dev_find_rcu
+  net: switchdev: introduce switchdev_handle_port_obj_{add,del} for
+    foreign interfaces
+  net: dsa: add explicit support for host bridge VLANs
+  net: dsa: offload bridge port VLANs on foreign interfaces
+
+ include/net/dsa.h         |  10 ++
+ include/net/switchdev.h   |  46 ++++++++++
+ net/bridge/br_private.h   |   6 +-
+ net/bridge/br_switchdev.c |  95 ++++++++++---------
+ net/bridge/br_vlan.c      | 108 +++++++++++++++-------
+ net/dsa/dsa2.c            |   8 ++
+ net/dsa/dsa_priv.h        |   7 ++
+ net/dsa/port.c            |  42 +++++++++
+ net/dsa/slave.c           | 112 +++++++++++++----------
+ net/dsa/switch.c          | 187 ++++++++++++++++++++++++++++++++++++--
+ net/switchdev/switchdev.c | 152 ++++++++++++++++++++++++++++---
+ 11 files changed, 623 insertions(+), 150 deletions(-)
+
+-- 
+2.25.1
 
