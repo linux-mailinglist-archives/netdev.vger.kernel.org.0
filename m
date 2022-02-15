@@ -2,37 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2128D4B67A4
-	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 10:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84F794B67EE
+	for <lists+netdev@lfdr.de>; Tue, 15 Feb 2022 10:43:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235908AbiBOJcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 04:32:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33890 "EHLO
+        id S236011AbiBOJml (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 04:42:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232421AbiBOJca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 04:32:30 -0500
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3973DA94E6;
-        Tue, 15 Feb 2022 01:32:20 -0800 (PST)
-Received: from localhost.localdomain.datenfreihafen.local (p200300e9d7187a6e0343b5c7bb719883.dip0.t-ipconnect.de [IPv6:2003:e9:d718:7a6e:343:b5c7:bb71:9883])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 88520C0391;
-        Tue, 15 Feb 2022 10:32:17 +0100 (CET)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154 for net 2022-02-15
-Date:   Tue, 15 Feb 2022 10:32:14 +0100
-Message-Id: <20220215093214.3709686-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229555AbiBOJmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 04:42:39 -0500
+X-Greylist: delayed 68 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Feb 2022 01:42:27 PST
+Received: from re-prd-fep-044.btinternet.com (mailomta25-re.btinternet.com [213.120.69.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F6D2C678;
+        Tue, 15 Feb 2022 01:42:27 -0800 (PST)
+Received: from re-prd-rgout-001.btmx-prd.synchronoss.net ([10.2.54.4])
+          by re-prd-fep-047.btinternet.com with ESMTP
+          id <20220215094117.GTWD23513.re-prd-fep-047.btinternet.com@re-prd-rgout-001.btmx-prd.synchronoss.net>;
+          Tue, 15 Feb 2022 09:41:17 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1644918077; 
+        bh=01Reov67Ak1ygfT60tyjXg/E5IFhGxMI7kxwA5g4ZyM=;
+        h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:MIME-Version;
+        b=onHcTnnrW4WCnKRqdkxuBRd07GbPtsX66B+GrLDMfQwWsohnkqMBz2DkaAIDBQzieWhz1toiEEuRGc7RmAHkp7Jd3TFlsSNPTS1dkdW91mvZ5+MsIgUzMElKeLyyQo1rgtB7eI/vvfQkQRjp9DEQHZNG2TfS2/y4NulukhnJHaT9FLZ+UOoT3WFuIsOTjX8Uf3OqpTEeuIW+EE4ZLYrRZ1eEC4Bb0W1nxIXVOAx7t80QUTfvvLkaLUC9HrRMVCOqldclPmbEccqvfHSCXSTRgbXOCyh3hlMZFbxjb99A6TpDGIQhX05CpdWTqBYa74nZ27GsKvaUoYybDewHHu6gjQ==
+Authentication-Results: btinternet.com;
+    auth=pass (LOGIN) smtp.auth=richard_c_haines@btinternet.com;
+    bimi=skipped
+X-SNCR-Rigid: 613A8CC314A977E6
+X-Originating-IP: [81.154.227.201]
+X-OWM-Source-IP: 81.154.227.201 (GB)
+X-OWM-Env-Sender: richard_c_haines@btinternet.com
+X-VadeSecure-score: verdict=clean score=0/300, class=clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvvddrjeeggddtiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemuceutffkvffkuffjvffgnffgvefqofdpqfgfvfenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkffuhffvffgjfhgtfggggfesthekredttderjeenucfhrhhomheptfhitghhrghrugcujfgrihhnvghsuceorhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomheqnecuggftrfgrthhtvghrnhepueeitdegtdegvdffjeetfeeffedvgedvteetffeuueekueejkeevkefgfefffedunecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpghhithhhuhgsrdgtohhmnecukfhppeekuddrudehgedrvddvjedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudelkegnpdhinhgvthepkedurdduheegrddvvdejrddvtddupdhmrghilhhfrhhomheprhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomhdpnhgspghrtghpthhtohepudefpdhrtghpthhtohepuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvthdprhgtphhtthhopehkuhgsrgeskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgt
+        thhpsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvtghurhhithihqdhmohguuhhlvgesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehluhgtihgvnhdrgihinhesghhmrghilhdrtghomhdprhgtphhtthhopehmrghrtggvlhhordhlvghithhnvghrsehgmhgrihhlrdgtohhmpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepnhhhohhrmhgrnhesthhugigurhhivhgvrhdrtghomhdprhgtphhtthhopehomhhoshhnrggtvgesrhgvughhrghtrdgtohhmpdhrtghpthhtohepphgruhhlsehprghulhdqmhhoohhrvgdrtghomhdprhgtphhtthhopehsvghlihhnuhigsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepvhihrghsvghvihgthhesghhmrghilhdrtghomh
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-SNCR-hdrdom: btinternet.com
+Received: from [192.168.1.198] (81.154.227.201) by re-prd-rgout-001.btmx-prd.synchronoss.net (5.8.716.04) (authenticated as richard_c_haines@btinternet.com)
+        id 613A8CC314A977E6; Tue, 15 Feb 2022 09:41:17 +0000
+Message-ID: <cddf0d41fdc23b594780012df367ad8bdd9dc135.camel@btinternet.com>
+Subject: Re: [PATCH net v3 0/2] security: fixups for the security hooks in
+ sctp
+From:   Richard Haines <richard_c_haines@btinternet.com>
+To:     Ondrej Mosnacek <omosnace@redhat.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, selinux@vger.kernel.org,
+        Paul Moore <paul@paul-moore.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        linux-sctp@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 15 Feb 2022 09:41:17 +0000
+In-Reply-To: <20220212175922.665442-1-omosnace@redhat.com>
+References: <20220212175922.665442-1-omosnace@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -40,32 +68,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+On Sat, 2022-02-12 at 18:59 +0100, Ondrej Mosnacek wrote:
+> This is a third round of patches to fix the SCTP-SELinux interaction
+> w.r.t. client-side peeloff. The patches are a modified version of Xin
+> Long's patches posted previously, of which only a part was merged
+> (the
+> rest was merged for a while, but was later reverted):
+> https://lore.kernel.org/selinux/cover.1635854268.git.lucien.xin@gmail.com/T/
+> 
+> In gist, these patches replace the call to
+> security_inet_conn_established() in SCTP with a new hook
+> security_sctp_assoc_established() and implement the new hook in
+> SELinux
+> so that the client-side association labels are set correctly (which
+> matters in case the association eventually gets peeled off into a
+> separate socket).
+> 
+> Note that other LSMs than SELinux don't implement the SCTP hooks nor
+> inet_conn_established, so they shouldn't be affected by any of these
+> changes.
+> 
+> These patches were tested by selinux-testsuite [1] with an additional
+> patch [2] and by lksctp-tools func_tests [3].
+> 
+> Changes since v2:
+> - patches 1 and 2 dropped as they are already in mainline (not
+> reverted)
+> - in patch 3, the return value of security_sctp_assoc_established()
+> is
+>   changed to int, the call is moved earlier in the function, and if
+> the
+>   hook returns an error value, the packet will now be discarded,
+>   aborting the association
+> - patch 4 has been changed a lot - please see the patch description
+> for
+>   details on how the hook is now implemented and why
+> 
+> [1] https://github.com/SELinuxProject/selinux-testsuite/
+> [2]
+> https://patchwork.kernel.org/project/selinux/patch/20211021144543.740762-1-omosnace@redhat.com/
+> [3] https://github.com/sctp/lksctp-tools/tree/master/src/func_tests
+> 
+> Ondrej Mosnacek (2):
+>   security: add sctp_assoc_established hook
+>   security: implement sctp_assoc_established hook in selinux
+> 
+>  Documentation/security/SCTP.rst | 22 ++++----
+>  include/linux/lsm_hook_defs.h   |  2 +
+>  include/linux/lsm_hooks.h       |  5 ++
+>  include/linux/security.h        |  8 +++
+>  net/sctp/sm_statefuns.c         |  8 +--
+>  security/security.c             |  7 +++
+>  security/selinux/hooks.c        | 90 ++++++++++++++++++++++++-------
+> --
+>  7 files changed, 103 insertions(+), 39 deletions(-)
+> 
 
-An update from ieee802154 for your *net* tree.
+Built this patchset on kernel 5.17-rc4 with no problems.
+Tested using [PATCH testsuite v3] tests/sctp: add client peeloff tests
 
-Only a single fix this time.
-Miquel Raynal fixed the lifs/sifs periods in the ca82010 to take the actual
-symbol duration time into account.
+Tested-by: Richard Haines <richard_c_haines@btinternet.com>
 
-regards
-Stefan Schmidt
 
-The following changes since commit c86d86131ab75696fc52d98571148842e067d620:
-
-  Partially revert "net/smc: Add netlink net namespace support" (2022-02-02 07:42:41 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git tags/ieee802154-for-net-2022-02-15
-
-for you to fetch changes up to bdc120a2bcd834e571ce4115aaddf71ab34495de:
-
-  net: ieee802154: ca8210: Fix lifs/sifs periods (2022-02-02 18:04:50 +0100)
-
-----------------------------------------------------------------
-Miquel Raynal (1):
-      net: ieee802154: ca8210: Fix lifs/sifs periods
-
- drivers/net/ieee802154/ca8210.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
