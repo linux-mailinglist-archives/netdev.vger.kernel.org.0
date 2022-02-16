@@ -2,132 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A045F4B8A71
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 14:39:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 174694B8A75
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 14:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234617AbiBPNjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 08:39:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41480 "EHLO
+        id S234627AbiBPNjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 08:39:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234222AbiBPNjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 08:39:14 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073172A39F3;
-        Wed, 16 Feb 2022 05:39:01 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id z1so2063757qto.3;
-        Wed, 16 Feb 2022 05:39:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=21ndo1beMI8yP0ftAH82Ak+ucIbbctFR1VliNX6f60o=;
-        b=Pm6qW+nuN1Uscn8S8rNAsFZPUQCquHw2f7nLd8iiWgi1VBSYRM2MCpojTcqJd6JGWP
-         Qn6+Mhh+yJ7QYCvD2cL85h2KQWAIDAgPdl+C/PJm7TrM1mGRrGIkcK55unvVnEXXSvCp
-         5L+l0XMcRAy+qoA9kFlvsTxMjOuHlP6V9vim/UxLN4CQQnPQtDbtyV6YogCzj9aoGue1
-         O3a798PeDhuFGsJigaZ1H89jQur/b6F2mMy8mb6e29f4zzeSj4ALIEnXeqzuX13TJzgc
-         J/MI5xXKQktWxXNgOsATslG7t/632uO8wyQ6HGRZL7EoFWNwMB7KyFUFU9+ojzqzEYUz
-         LHRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=21ndo1beMI8yP0ftAH82Ak+ucIbbctFR1VliNX6f60o=;
-        b=PSobMhaqH4dei023O+4wejUHGXPENk+WHqfVVg2b7u2t207htSo2NGvTXEr05o8HDA
-         oIgVI/stOHsC264Jra3tAuGqJh+aLCuP3M70ZNP++sgfb6lNOMbKMQtD+PZ9NUXJfJXg
-         Ha0LjjMN2cfW/Z+tz0KDd3lrbpXJ3qV1x3pM0ETUdTJYqdJw7izqnpCR6zYsAWHcXMEX
-         wtWXYT9ajWIsltov1M1uFd6hFR0rJIAhIVoJLS1LOd7yxIRJ+9n7SNdFBofT/QA21zyj
-         Ru9ddixrswFfNk+Fc0npFKxheuPhVdJxK3WJs6AFDJ2q+ObIn3Wdi67or8v9Hh39kVrQ
-         uIAg==
-X-Gm-Message-State: AOAM532Fc+7vpfpli4JorFvoWHOc1dmhIXUagXvNv8U0PHGjVUS0cwFo
-        BKW8bNPCdsMtI9iaE6Mff9GBtgPCwKwjBIdH9Go=
-X-Google-Smtp-Source: ABdhPJyFM58ntAw5nr1wH2+4e/Yx3d3h4s3txaYAHeouEPQwV8TP0rj6/pEZ9BuQyKT3p261yqWE5gmV5yn5L4GB6N0=
-X-Received: by 2002:a05:622a:d0:b0:2d5:50c1:67a6 with SMTP id
- p16-20020a05622a00d000b002d550c167a6mr1898200qtw.297.1645018740038; Wed, 16
- Feb 2022 05:39:00 -0800 (PST)
+        with ESMTP id S234008AbiBPNje (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 08:39:34 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8C02ABD13;
+        Wed, 16 Feb 2022 05:39:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=tjvtg6e6rfEBajxf7gEQ25jMTSa3cr331jVbNJooOA0=; b=fRzh+dlUNwjRlxwNg3p81SGp3B
+        iStgmRxGiJO6bKTyqJwOLl8g3KNUsuNbBJrLRQ7UilHK2F8X5sVUfqqLvgT4IA+wsrJTra5I0v0qY
+        dyZ7dqySINcTzpwqnM0bGq/bbzCr879Q3scd+JS3+0YPwLeEp9erYpO0YXsup7ValRWBOpdquQBjz
+        iFOyTAvMnuNfMkyx+WuYaKrh39IiHrhOcAKz5cLMGwOkIAMjOHDgej31lVHn85+QZtw0iya38+4ti
+        pbyviRSYF7YV5Wuln6MXHB4eQXiXuZyPeAkYP2kV5rkjGEdQPeho+Dsp3yOU3Ccq5Yqw6OonUeJHf
+        BSJUVR5g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57284)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nKKWP-0003ue-5J; Wed, 16 Feb 2022 13:39:05 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nKKWK-00006Q-7J; Wed, 16 Feb 2022 13:39:00 +0000
+Date:   Wed, 16 Feb 2022 13:39:00 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [RFC net-next 9/9] net: dsa: mv88e6xxx: MST Offloading
+Message-ID: <Ygz+dNz1YvyiFpxa@shell.armlinux.org.uk>
+References: <20220216132934.1775649-1-tobias@waldekranz.com>
+ <20220216132934.1775649-10-tobias@waldekranz.com>
 MIME-Version: 1.0
-References: <20211009221711.2315352-1-robimarko@gmail.com> <163890036783.24891.8718291787865192280.kvalo@kernel.org>
- <CAOX2RU5mqUfPRDsQNSpVPdiz6sE_68KN5Ae+2bC_t1cQzdzgTA@mail.gmail.com>
- <09a27912-9ea4-fe75-df72-41ba0fa5fd4e@gmail.com> <CAOX2RU6qaZ7NkeRe1bukgH6OxXOPvJS=z9PRp=UYAxMfzwD2oQ@mail.gmail.com>
- <EC2778B3-B957-4F3F-B299-CC18805F8381@slashdirt.org> <CAOX2RU7FOdSuo2Jgo0i=8e-4bJwq7ahvQxLzQv_zNCz2HCTBwA@mail.gmail.com>
-In-Reply-To: <CAOX2RU7FOdSuo2Jgo0i=8e-4bJwq7ahvQxLzQv_zNCz2HCTBwA@mail.gmail.com>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Wed, 16 Feb 2022 14:38:48 +0100
-Message-ID: <CAOX2RU7d9amMseczgp-PRzdOvrgBO4ZFM_+hTRSevCU85qT=kA@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: support bus and device specific API 1 BDF selection
-To:     Thibaut <hacks@slashdirt.org>
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216132934.1775649-10-tobias@waldekranz.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Silent ping,
+Hi,
 
-Does anybody have an opinion on this?
+On Wed, Feb 16, 2022 at 02:29:34PM +0100, Tobias Waldekranz wrote:
+> +static int mv88e6xxx_sid_new(struct mv88e6xxx_chip *chip, u8 *sid)
+> +{
+> +	DECLARE_BITMAP(busy, MV88E6XXX_N_SID) = { 0 };
+> +	struct mv88e6xxx_mst *mst;
+> +
+> +	set_bit(0, busy);
+> +
+> +	list_for_each_entry(mst, &chip->msts, node) {
+> +		set_bit(mst->stu.sid, busy);
+> +	}
 
-Regards,
-Robert
+Do you need these set_bit() operations to be atomic? Would __set_bit()
+produce better code?
 
-On Wed, 2 Feb 2022 at 19:49, Robert Marko <robimarko@gmail.com> wrote:
->
-> Kalle,
->
-> What is your opinion on this?
-> I would really love to see this get merged as we are having more and
-> more devices that are impacted without it.
->
-> Regards,
-> Robert
->
-> On Fri, 17 Dec 2021 at 13:25, Thibaut <hacks@slashdirt.org> wrote:
-> >
-> >
-> >
-> > > Le 17 d=C3=A9c. 2021 =C3=A0 13:06, Robert Marko <robimarko@gmail.com>=
- a =C3=A9crit :
-> > >
-> > > On Wed, 8 Dec 2021 at 15:07, Christian Lamparter <chunkeey@gmail.com>=
- wrote:
-> > >>
-> > >> Isn't the only user of this the non-upstreamable rb_hardconfig
-> > >> mikrotik platform driver?
-> >
-> > The driver could be upstreamed if desirable.
-> > Yet I think it=E2=80=99s quite orthogonal to having the possibility to =
-dynamically load a different BDF via API 1 for each available radio, which =
-before this patch couldn=E2=80=99t be done and is necessary for this partic=
-ular hardware.
-> >
-> > >> So, in your case the devices in question
-> > >> needs to setup a detour through the userspace firmware (helper+scrip=
-ts)
-> > >> to pull on the sysfs of that mikrotik platform driver? Wouldn't it
-> > >> be possible to do this more directly?
-> > >
-> > > Yes, its the sole current user as its the only vendor shipping the BD=
-F
-> > > as part of the
-> > > factory data and not like a userspace blob.
-> > >
-> > > I don't see how can it be more direct, its the same setup as when
-> > > getting pre-cal
-> > > data for most devices currently.
-> >
-> > Indeed, not sure how it could be more direct than it already is. I=E2=
-=80=99m open to suggestions though.
-> >
-> > > I am adding Thibaut who is the author of the platform driver.
-> >
-> > Best,
-> > Thibaut
+> +
+> +	*sid = find_first_zero_bit(busy, MV88E6XXX_N_SID);
+> +
+> +	return (*sid >= mv88e6xxx_max_sid(chip)) ? -ENOSPC : 0;
+
+Hmm. Let's hope that mv88e6xxx_max_sid() never returns a value larger
+than MV88E6XXX_N_SID.
+
+> +}
+> +
+...
+> +static int mv88e6xxx_sid_get(struct mv88e6xxx_chip *chip, struct net_device *br,
+> +			     u16 mstid, u8 *sid)
+> +{
+> +	struct mv88e6xxx_mst *mst;
+> +	int err;
+> +
+> +	if (!br)
+> +		return 0;
+> +
+> +	if (!mv88e6xxx_has_stu(chip))
+> +		return -EOPNOTSUPP;
+> +
+> +	list_for_each_entry(mst, &chip->msts, node) {
+> +		if (mst->br == br && mst->mstid == mstid) {
+> +			refcount_inc(&mst->refcnt);
+> +			*sid = mst->stu.sid;
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	err = mv88e6xxx_sid_new(chip, sid);
+> +	if (err)
+> +		return err;
+> +
+> +	mst = kzalloc(sizeof(*mst), GFP_KERNEL);
+> +	if (!mst)
+> +		return -ENOMEM;
+> +
+> +	INIT_LIST_HEAD(&mst->node);
+
+There is no need to initialise the node if you're then going to be
+adding it to the list.
+
+> +	refcount_set(&mst->refcnt, 1);
+> +	mst->br = br;
+> +	mst->mstid = mstid;
+> +	mst->stu.valid = true;
+> +	mst->stu.sid = *sid;
+> +	list_add_tail(&mst->node, &chip->msts);
+> +	return mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+
+I haven't checked what the locking is here - I hope it's not possible
+for two of these to run concurrently.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
