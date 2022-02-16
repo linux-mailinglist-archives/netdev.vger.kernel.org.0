@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7595C4B8EF0
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:16:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 198254B8EF8
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:18:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236955AbiBPRQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 12:16:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34970 "EHLO
+        id S236985AbiBPRST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 12:18:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234331AbiBPRQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:16:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2362AED9B;
-        Wed, 16 Feb 2022 09:16:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7957BB81DD2;
-        Wed, 16 Feb 2022 17:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2545DC340E8;
-        Wed, 16 Feb 2022 17:16:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645031770;
-        bh=H8UzL8cAWXsf7LlwEbF/oBmPBoQ/jM+fAqEB1ENwlTU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QCJxZWtmlxBfPdaYYXaEiu1ET6Zfkb3z6DZ3Mv+Xgg6BuSO9SAXboaeKo4vpQJRYL
-         u89kcDmK8UCOVLqV3Yby+J9O9jHW8U4wGTEi9Rejt0daCOsEmSKKjXYxh8S/jKXOzb
-         5bNCoFLwjInMq69o5aOeNhLlQm9lqT7AIk93GPeVhYbrJDOD51c3Bt+s9cv/JfqGEj
-         pti01SRHyuCotOcPEjp9uN4kmXxpKLsIrBRh3vpFDn/J7Wxly5m1DWcB0UlrT9tExk
-         6F8wPA/57ugsh0i8446d6SKex0V9tIOXnPuYbYxvZf14WJMvF9qip3Fu4RltTPBgl5
-         /3EEsFDbwKbdA==
-Date:   Wed, 16 Feb 2022 17:16:02 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Hou Tao <houtao1@huawei.com>, Alexei Starovoitov <ast@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Julien Thierry <jthierry@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH bpf-next v3 2/4] arm64: insn: add encoders for atomic
- operations
-Message-ID: <20220216171602.GA10877@willie-the-truck>
-References: <20220129220452.194585-1-houtao1@huawei.com>
- <20220129220452.194585-3-houtao1@huawei.com>
- <4524da71-3977-07db-bd6e-cebd1c539805@iogearbox.net>
+        with ESMTP id S236982AbiBPRSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:18:18 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B2DBECDA
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:18:06 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id i6so2652176pfc.9
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:18:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NJWCySHP56arW/R9ReEej6WlDEdQoMS3aBy27/5bsD0=;
+        b=ghzSTn4mWlKzn5Mwlz6D+kECg36+jqmABX6LtHmwha1X3u19fQCwGeK9jsq9i3XBsk
+         EBfaVIo9l4lCuc3B4H3ANoV/wws09Wg1bxVeyPWftMIjP5OHsFe1LJlru6rc/IzqvjMS
+         Tbed8K4IGKyFjetMNQPLylBNVOYtG3Erz0nxKUwr4QWLswtm7aetKvhtk2KELDuAwLOh
+         Yi5XEP0T80v1TJa6WbtHubkiVcxNLUsouD/4VqBmUUh5DVbXTl7e/hDl10xGZTNBG5Wc
+         8UnC8gl6GV5yxJ2SV9YFp/jBE3Eu6r6KpIQy2GTkjHu7dYcPO103BNjVsDbtYumWmK57
+         rZZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NJWCySHP56arW/R9ReEej6WlDEdQoMS3aBy27/5bsD0=;
+        b=TRKwcCHvpnsuvC2/AIeDL/R8oosdn+9Wc5EzE/q4Hpn7PZs5b/BaJZq0kQ10I4I1et
+         7EgZz/XrN7CHIDzvrUvx6ayBql7+9ojDCZxkehMXHfVoSU+yfzLLLAuVZISZnUAUeVZg
+         qcic/SIspdAkqps/SwQV6wYy25VOxUpC3zLfvAVNwKMoKgA2w3y87XgJUDXjTSOqFS5b
+         hbXe11PySuX4UPJVeRDIzy7h87Fcl+b9FEs9sVdrZb9g2aGd4yyj8NuahKgyNlCLDYNY
+         2wLKPNn30heZwDqvmsfm6bbujpeJWhvMA/uWIj9ObZUNWHp+/FO3kRn8bib67Wors1Zh
+         MrAA==
+X-Gm-Message-State: AOAM530LUMF+7PaUNb+99Zn1BUkL0KEPOvwHZYx17Uye9KZW6L/PfvPu
+        HAz5L+F4r8BJN4Zpl2ba75g=
+X-Google-Smtp-Source: ABdhPJzJkbUOUv8uD9T9R6IUKlR4DifXFnAYNjXmhCS85ifRzuYdQxazwkMivZqXLydzB9LtUIZucQ==
+X-Received: by 2002:a63:2d6:0:b0:342:b7e5:a7f1 with SMTP id 205-20020a6302d6000000b00342b7e5a7f1mr3057649pgc.591.1645031885944;
+        Wed, 16 Feb 2022 09:18:05 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b2d6:3f21:5f47:8e5a])
+        by smtp.gmail.com with ESMTPSA id 68sm298559pgh.2.2022.02.16.09.18.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 09:18:05 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] net: add sanity check in proto_register()
+Date:   Wed, 16 Feb 2022 09:18:01 -0800
+Message-Id: <20220216171801.3604366-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4524da71-3977-07db-bd6e-cebd1c539805@iogearbox.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 03:39:48PM +0100, Daniel Borkmann wrote:
-> On 1/29/22 11:04 PM, Hou Tao wrote:
-> > It is a preparation patch for eBPF atomic supports under arm64. eBPF
-> > needs support atomic[64]_fetch_add, atomic[64]_[fetch_]{and,or,xor} and
-> > atomic[64]_{xchg|cmpxchg}. The ordering semantics of eBPF atomics are
-> > the same with the implementations in linux kernel.
-> > 
-> > Add three helpers to support LDCLR/LDEOR/LDSET/SWP, CAS and DMB
-> > instructions. STADD/STCLR/STEOR/STSET are simply encoded as aliases for
-> > LDADD/LDCLR/LDEOR/LDSET with XZR as the destination register, so no extra
-> > helper is added. atomic_fetch_add() and other atomic ops needs support for
-> > STLXR instruction, so extend enum aarch64_insn_ldst_type to do that.
-> > 
-> > LDADD/LDEOR/LDSET/SWP and CAS instructions are only available when LSE
-> > atomics is enabled, so just return AARCH64_BREAK_FAULT directly in
-> > these newly-added helpers if CONFIG_ARM64_LSE_ATOMICS is disabled.
-> > 
-> > Signed-off-by: Hou Tao <houtao1@huawei.com>
-> 
-> Hey Mark / Ard / Will / Catalin or others, could we get an Ack on patch 1 & 2
-> at min if it looks good to you?
+From: Eric Dumazet <edumazet@google.com>
 
-I checked the instruction encodings in patches 1 and 2 and they all look
-fine to me. However, after applying those two locally I get a build failure:
+prot->memory_allocated should only be set if prot->sysctl_mem
+is also set.
 
-  | In file included from arch/arm64/net/bpf_jit_comp.c:23:
-  | arch/arm64/net/bpf_jit_comp.c: In function ‘build_insn’:
-  | arch/arm64/net/bpf_jit.h:94:2: error: implicit declaration of function ‘aarch64_insn_gen_stadd’; did you mean ‘aarch64_insn_gen_adr’? [-Werror=implicit-function-declaration]
-  |    94 |  aarch64_insn_gen_stadd(Rn, Rs, A64_SIZE(sf))
-  |       |  ^~~~~~~~~~~~~~~~~~~~~~
-  | arch/arm64/net/bpf_jit_comp.c:912:9: note: in expansion of macro ‘A64_STADD’
-  |   912 |    emit(A64_STADD(isdw, reg, src), ctx);
-  |       |         ^~~~~~~~~
-  | cc1: some warnings being treated as errors
+This is a followup of commit 25206111512d ("crypto: af_alg - get
+rid of alg_memory_allocated").
 
-Will
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/sock.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 09d31a7dc68f88af42f75f3f445818fe273b04fb..d76218ab4999922879401262ba873b62aff943a0 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3718,6 +3718,10 @@ int proto_register(struct proto *prot, int alloc_slab)
+ {
+ 	int ret = -ENOBUFS;
+ 
++	if (prot->memory_allocated && !prot->sysctl_mem) {
++		pr_err("%s: missing sysctl_mem\n", prot->name);
++		return -EINVAL;
++	}
+ 	if (alloc_slab) {
+ 		prot->slab = kmem_cache_create_usercopy(prot->name,
+ 					prot->obj_size, 0,
+-- 
+2.35.1.265.g69c8d7142f-goog
+
