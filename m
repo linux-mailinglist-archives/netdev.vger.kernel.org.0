@@ -2,240 +2,418 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0704B7C81
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 02:37:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD4E4B7C8E
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 02:37:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245385AbiBPBRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 20:17:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40976 "EHLO
+        id S245455AbiBPBYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 20:24:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245368AbiBPBRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 20:17:15 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2062.outbound.protection.outlook.com [40.107.220.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6993EF65EF;
-        Tue, 15 Feb 2022 17:17:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OmmJvZKEo88vPuHc2Y0oBBxGh/uwzr5ooaeZFlKDhn0pCvMCDNlpT1TaYidelp36yJoi0CAQUPtqCuEf0JZxEWA5sEw68jBgN4WteuM0w+1wlb7IixVzbCLjwHYRj0HEB0JywtSCo9eQbwjAXzjyf73UjB7KxhZQYB/JICnFKyM/e15qMIroNvDdP0rvL7iWnlqwwJUqc2X/dVRSU0G7nHMG6ak6Q4k2qN2qET0eCf2E5PKBjOFdJVfoKuDZo5QxKZzf4XUi6sFJLF8hUGxML96ogjjSjdiXnGmiSDHOUt8gwzTTlZTp3t3xVufkYcgT8jLx5YUTArRz2NPxw2YjGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jChVXXrRcVZr9d19WM3LA4lq5xX8LdwLi6lptGpuTyw=;
- b=gWOhOHJXahtI5j7byU01wBJGXLUz5tdLuT6oqtupo3ULfYMldWLo/Em3gvHtFTsaemWv9xDEtpz29AS3lLC1CRLRJtZ0IbAcRqLtofiMK0zDXteTl5YtJshFpTD1Feea/xpZBEGPHxiXKXqwziCneMlFXOL5Vp5+5xs/tq/vHGJ+Wy6Fqe1ucF5ET+Q84Iz66DHYl6+Omnmh0w6KhGvuBTa9KUBqwecVOnsbJ/kD8GhlBaW7vYVUaQlsqZtzauE51zBPtNF6Rr4Ydc8xq+jlob22LDbabr1iv+1vsbZ9ed2B8rPzhi/exGXLRhAeJJGhc29M/GNVvvN6E3cf5+6pIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jChVXXrRcVZr9d19WM3LA4lq5xX8LdwLi6lptGpuTyw=;
- b=AG5xxdXoqsFRhM40BTS0lwUrk7dXH2V4taA+dCtUXmv5bzLuJ5mvOTe6p9pokSqodd6wi5bQh5nDh3avymxyxYBrg+xLcmhj4jC2q15cXH1Xmur6Q0bWgqjN+qXFJ/xoel2wCHK3/m5UAqGwyPVPtbwD5I3JmF9vGn5j84Bv9PNfdPCwWq8U9Hz+KCHbw7q7+rF3efmXxMCw8HssjelN51JvWuZ17/4bHmeC12WHMVEPSNqj1a66NHGPba/c0CRxN6Z56Izy1Wk9H051qAUMmcWJeGKK1dhkvI408Zxu2UetZ7mUlbxky/UShonXiwDEt1DftEvSfJtk7GRsrePeag==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM5PR12MB1388.namprd12.prod.outlook.com (2603:10b6:3:78::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4975.15; Wed, 16 Feb 2022 01:17:02 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3%5]) with mapi id 15.20.4995.016; Wed, 16 Feb 2022
- 01:17:02 +0000
-Date:   Tue, 15 Feb 2022 21:17:00 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "leonro@nvidia.com" <leonro@nvidia.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
-        "maorg@nvidia.com" <maorg@nvidia.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "shameerali.kolothum.thodi@huawei.com" 
-        <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH V7 mlx5-next 08/15] vfio: Define device migration
- protocol v2
-Message-ID: <20220216011700.GB4160@nvidia.com>
-References: <20220207172216.206415-1-yishaih@nvidia.com>
- <20220207172216.206415-9-yishaih@nvidia.com>
- <20220208170754.01d05a1d.alex.williamson@redhat.com>
- <20220209023645.GN4160@nvidia.com>
- <BN9PR11MB5276BD03F292902A803FA0E58C349@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220215160419.GC1046125@nvidia.com>
- <20220215163231.57f0ebb6.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215163231.57f0ebb6.alex.williamson@redhat.com>
-X-ClientProxiedBy: BL1PR13CA0437.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::22) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        with ESMTP id S245444AbiBPBYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 20:24:20 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9486813CDD;
+        Tue, 15 Feb 2022 17:24:08 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id r8so578603ioc.8;
+        Tue, 15 Feb 2022 17:24:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+9LhJn76Q9nH2bIX/iWRsnqiaFBi51Iwt1vsLl/mpUo=;
+        b=UOq/6oD9sOFFgKiyBOFs9yj1aHL5qAp8nzOFJJLeG/xJngtsZKXlaktz9cAjazCFJ+
+         qc66wRH0Nm7t1D53jbhFK/AcPVfureBVAV5h5I13pKTjJMfRP2Ac40ByQtPVTdRiXIfC
+         dUFXhdN4lP3KSSSC7id9CbuPdnmEM6kOaV3sKc6RICEyMV8HEOQWHQZAFzk0bu15RnU7
+         reRYvBLeTHgDTqF659vXm47ac0k9OFGWZWS8T/UbSehyC3D5zzTfJwpySiTQEA0Q16Rr
+         cyoxOpypUTrW6cfaMh3UawLAMw3F6E21yftO6ESxeZ/o7I0n+fUJwjIteguZZ+saNV56
+         37Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+9LhJn76Q9nH2bIX/iWRsnqiaFBi51Iwt1vsLl/mpUo=;
+        b=GqhWoOsq2cr8OdJA6EO7dR2DfKWJEHsHkTMxxlT7EVets4Pl6Fzfv49/mZDvrxUs6M
+         cY9jUm4/QH/559Z0IyeI4CWO3mSDYIRWePpS4WhOlS1RDgk/J19epowpl1mnW46wxICT
+         KVfgsLMPkJhSQgrf5fAFAMAB7FHYRtbpT7vUSeaO1iPRt0TttTD6hKlmt6faRlr56oRC
+         u8XFPXVpXocQvVNfsOeP5i68wUzotDValdTDSmcTs/ix9pD/9Zxm9tC4CopTTz00Om3V
+         yP2CkYJNsv5RGSqDR3TJaqqH0x4bca3F1aTiuIUFJ9doTlXCxUapW9OSxwYTbM4wlmrU
+         r7hw==
+X-Gm-Message-State: AOAM530ZqnikKHzvo/sOvJzNnKvJgKR2EBZ66cKt1UYkHElgoXNYiezG
+        xeLxISxLhrcnJJvjVQjuIMZ+/5UH7Sc7lEpJ60Y=
+X-Google-Smtp-Source: ABdhPJwclw6bg/uoWRHMI5oeO/w6XeJBpXVmSUYpLL8Yt+oODrnJaC6r1/y/k8jPsP3uQBoNVFZJWE5wF2NYtyMfVDU=
+X-Received: by 2002:a5e:860c:0:b0:5ed:1c25:df3f with SMTP id
+ z12-20020a5e860c000000b005ed1c25df3fmr359795ioj.144.1644974647875; Tue, 15
+ Feb 2022 17:24:07 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a08a54bc-018e-49fb-ce3d-08d9f0ea0966
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1388:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1388B1299CD4401A0CD2D838C2359@DM5PR12MB1388.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0XSr0FOZWrIP/AdiEuwP2kWOAXT3SYqo+uX6dGOnICbXltBIKzDqf4hLwWFnuZ9FbIuko2dTN1GqYFeJxX4jsqx635WS0ANW4r3IQU56P2lO6lhGvuXE2CnhINT3SRGWd/m36dEsIm7huYKOjHoZdYbHy4IDDVgv5AvBUPeITf1IvcmxeMvmMlujzNN2oUO3VRXClTdVvi9AOSGwhR32UwQ0OodU1b0ket7F2EH5Ru0TYm8zWKeZqf+w0MI4k1a0Zcf1/OxdNH59ulTFDHeQp4SYalsHTPL9oDtnQD6N01Li0+37swvACfDMQobjvQ7SW9/XBjcbQCojb/ohMuzEkXLVrc+lVlgiJsWlyHEUJI6AIUUXEdZrP1bZCCeqK940lf3LIYnhAXwtSMayaIin1milLU1OhQqi02JSEqAxmIP6DLweltoCYl/RAZM06Exb2XvmxKIvihcLscMVf4Y0GRomTnmhy5R0Fc2x1B/W4+Q7v6n6StR9IerKdL1HJkwqnig8Psb2l3VHzleOTL4IxdunnDZ+s8FUmKvmoqaL3B37AUm9Xqdv+9bEbPo4WGtxBfOoOb9JZsWwMUaZ6F7ecnyxPXkQGZbmAXsfY5oAe6WqWrmV3jPD4nGcJG+x9+jGMzGiltxhF6OYZGllaeRbUz0sU1azIYBP2uBbDREIJTVn9K/Gjy7ttoyE45nVP/UP6XyXGcAN2tQTXvbcKWSbB9utO/FPTJRI8b6FsTFZ09k=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(36756003)(2616005)(316002)(4326008)(38100700002)(6486002)(66476007)(966005)(6916009)(66556008)(33656002)(26005)(1076003)(186003)(86362001)(2906002)(6512007)(8676002)(54906003)(508600001)(8936002)(6506007)(83380400001)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Jsyw9RxLOFaifwdLMrEpgS6VMt7MaHBhRBVktAQktBea52MErkuc9gHHBcu7?=
- =?us-ascii?Q?iiHnTK9qxjGg9RP8CruTHtN+sWhXQYqrOjMcFC8sAhrbDQUQC2fK7fR2QeO6?=
- =?us-ascii?Q?M8/GRBOK6JfxElmHvnz1hAsZnwe7MuvqAycz9z4HE+/Dr0HqBgfAv2tVzOny?=
- =?us-ascii?Q?K30N/c2Uo0NrstdvJO1q+AxKugN9nrv7TEUZ/jIWaZhIZCw5RsYNjhuWdKIJ?=
- =?us-ascii?Q?P799mVaHrSI2EaycygWyiueZhXseoDKDClPaI06F8BzJiI3bIkCZa74BUytM?=
- =?us-ascii?Q?IW5dbxfPLOuDoESFOniOGWruuQtNM947MPZkxub6zwS9XTZnBSjHvS6MHypD?=
- =?us-ascii?Q?NCiLOCPUOETS4G2l8yI8ajSVHJp49KQ6yBDsRgderlTClq2Ba8+NBP4kOCGH?=
- =?us-ascii?Q?S7VI4MYha3WD7DWCUOdw76HUemsdlyPLOb+fQrKyOJIMfQRTWU8buCmGeKi+?=
- =?us-ascii?Q?EGApVWFOVpmyV5USwDIwrR7Sd8pjQfo7exzF/Mgl89LWCHlQ1caalzGsuX/3?=
- =?us-ascii?Q?BgNrNKsATU3O4j1oJhAn9zAXLjH4vsrjll4rQ7yvZ0uT5Twt2LjXVr5joDws?=
- =?us-ascii?Q?yHWpN3mxCpZSe1sluWPQmWImtc3knDKV/fdMVG/UcwJSVOn4YpFdPHfWwd9U?=
- =?us-ascii?Q?69UgFkj1lZQYQ2wBLGurpZHhiNWuhEOjK8jcJcQ86R4lMND5J81+/hBywdug?=
- =?us-ascii?Q?caUndLQECcd4aP9bcBAX49OloP+3xI39AjU+gG8/k1/lHIcCkKv6lXz53XkQ?=
- =?us-ascii?Q?UrSmujxChMAmXIRuw/vL5DJAZk+3Qvru315vDVSf3emsCyGAXNgbwlaa5kOd?=
- =?us-ascii?Q?CO3Iq20m941uShvhNpVEgfDPsD8MLgYlwdQw+MYiD7jA6imHAy84sc20gH4U?=
- =?us-ascii?Q?kUkSPh0K/iv7SW7+N2samJhT/dTIVa6IACAA+FjBDbGzPKenQ6n+j3i01cxB?=
- =?us-ascii?Q?95ukSG6NJvLToXt2C65t0pCD6wep9oCbzVidPTwL7iXdi3wBIokb9x8bz8D6?=
- =?us-ascii?Q?rk4SpHTgxCEWi9unsk7vgHc/FdaT+6rdP8fyxPjQ5Y8WPH0DY/Sk6kNsDAZm?=
- =?us-ascii?Q?f7NeQUFrd79QGwoP7XFnkP7HjCVpI0GntZfMIewO4J4XC5lZcaPVosj05p22?=
- =?us-ascii?Q?rWmqaJv/Nxvzs2bUb4R7BvxibqaPoPhf1jRmpkGlsbezZworhtjyxVgWmi9h?=
- =?us-ascii?Q?uoy3wcZS/NuBH+qgHSu0meXV3VHHv1M6pZzWOxv3KfZNmg00ATuTSnIHcSIc?=
- =?us-ascii?Q?b5nCZQm1vQO726RagYIiDH/cWQJsA0rg9gSHlbgdVi3zvU5Gyque8ep9c24o?=
- =?us-ascii?Q?NisabHWVmtMlq/Kugt5/jlnp47BoGMOVW3MKG01xaJqB3s5quk6KUMg3G5EB?=
- =?us-ascii?Q?dLrFgOvTPbhZuUR7ODHMoIyXrIilYc/QPP3kxoeTI4rWHfPORy6356PXxBwv?=
- =?us-ascii?Q?6dvE1/6a7tbGOCZ7Qn8aaGRXmdrTYWM5LGzXoeaqK6qHAs7UH1x9qcPdGYOV?=
- =?us-ascii?Q?8naYVFtOLmgdBdMpX01yVvwTGzwAYsG/HzfQcl5CBpUexAv5ARzUVQBoBvRM?=
- =?us-ascii?Q?2FRJIvBuDQ0Z3Njb8rc=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a08a54bc-018e-49fb-ce3d-08d9f0ea0966
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 01:17:02.3662
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tBB2hYJTj+N/aQrD2fJ70IyejfIHE1bYZCmUCSnOvQmbWFtkHnvyb0xIbTnGoHbv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1388
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <20220209222646.348365-1-mauricio@kinvolk.io> <20220209222646.348365-5-mauricio@kinvolk.io>
+ <CAEf4BzZaVTdsQbFhStzNavHMhkv4yVm=yc2vqsgFQnZqKZfXpg@mail.gmail.com> <CAHap4zswzgkJYTxYcmvnokEwfT2=XtJ46x5sjxFc3_PJ01YQcA@mail.gmail.com>
+In-Reply-To: <CAHap4zswzgkJYTxYcmvnokEwfT2=XtJ46x5sjxFc3_PJ01YQcA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 15 Feb 2022 17:23:56 -0800
+Message-ID: <CAEf4BzYs=0BLAhNuJz=arN2VqWCc+L+nv7HqNaFV-bLYMP_1rw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 4/7] bpftool: Implement minimize_btf() and
+ relocations recording for BTFGen
+To:     =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 04:32:31PM -0700, Alex Williamson wrote:
+On Tue, Feb 15, 2022 at 2:56 PM Mauricio V=C3=A1squez Bernal
+<mauricio@kinvolk.io> wrote:
+>
+> On Fri, Feb 11, 2022 at 7:42 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Wed, Feb 9, 2022 at 2:27 PM Mauricio V=C3=A1squez <mauricio@kinvolk.=
+io> wrote:
+> > >
+> >
+> > It would be good to shorten the subject line, it's very long.
+> >
+>
+> Will do.
+>
+> > > minimize_btf() receives the path of a source and destination BTF file=
+s
+> > > and a list of BPF objects. This function records the relocations for
+> > > all objects and then generates the BTF file by calling btfgen_get_btf=
+()
+> > > (implemented in the following commit).
+> > >
+> > > btfgen_record_obj() loads the BTF and BTF.ext sections of the BPF
+> > > objects and loops through all CO-RE relocations. It uses
+> > > bpf_core_calc_relo_insn() from libbpf and passes the target spec to
+> > > btfgen_record_reloc(), that calls one of the following functions
+> > > depending on the relocation kind.
+> > >
+> > > btfgen_record_field_relo() uses the target specification to mark all =
+the
+> > > types that are involved in a field-based CO-RE relocation. In this ca=
+se
+> > > types resolved and marked recursively using btfgen_mark_type().
+> > > Only the struct and union members (and their types) involved in the
+> > > relocation are marked to optimize the size of the generated BTF file.
+> > >
+> > > btfgen_record_type_relo() marks the types involved in a type-based
+> > > CO-RE relocation. In this case no members for the struct and union
+> > > types are marked as libbpf doesn't use them while performing this kin=
+d
+> > > of relocation. Pointed types are marked as they are used by libbpf in
+> > > this case.
+> > >
+> > > btfgen_record_enumval_relo() marks the whole enum type for enum-based
+> > > relocations.
+> >
+> > It should be enough to leave only used enumerators, but I suppose it
+> > doesn't take much space to record all. We can adjust that later, if
+> > necessary.
+> >
+>
+> I think the overhead is really minimal and we can improve later on if we =
+want.
+>
+> > >
+> > > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> > > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> > > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> > > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> > > ---
+> > >  tools/bpf/bpftool/Makefile |   8 +-
+> > >  tools/bpf/bpftool/gen.c    | 452 +++++++++++++++++++++++++++++++++++=
++-
+> > >  2 files changed, 454 insertions(+), 6 deletions(-)
+> > >
+> >
+> > Looks good, few nits and concerns, but it feels like it's really close
+> > to being ready.
+> >
+> > [...]
+> >
+> > > +}
+> > > +
+> > > +struct btfgen_info {
+> > > +       struct btf *src_btf;
+> > > +       struct btf *marked_btf; // btf structure used to mark used ty=
+pes
+> >
+> > C++ comment, please use /* */
+> >
+> > > +};
+> > > +
+> > > +static size_t btfgen_hash_fn(const void *key, void *ctx)
+> > > +{
+> > > +       return (size_t)key;
+> > > +}
+> > > +
+> > > +static bool btfgen_equal_fn(const void *k1, const void *k2, void *ct=
+x)
+> > > +{
+> > > +       return k1 =3D=3D k2;
+> > > +}
+> > > +
+> > > +static void *uint_as_hash_key(int x)
+> > > +{
+> > > +       return (void *)(uintptr_t)x;
+> > > +}
+> > > +
+> > > +static void *u32_as_hash_key(__u32 x)
+> > > +{
+> > > +       return (void *)(uintptr_t)x;
+> > > +}
+> > > +
+> > > +static void btfgen_free_info(struct btfgen_info *info)
+> > > +{
+> > > +       if (!info)
+> > > +               return;
+> > > +
+> > > +       btf__free(info->src_btf);
+> > > +       btf__free(info->marked_btf);
+> > > +
+> > > +       free(info);
+> > > +}
+> > > +
+> > > +static struct btfgen_info *
+> > > +btfgen_new_info(const char *targ_btf_path)
+> > > +{
+> > > +       struct btfgen_info *info;
+> > > +       int err;
+> > > +
+> > > +       info =3D calloc(1, sizeof(*info));
+> > > +       if (!info)
+> > > +               return NULL;
+> > > +
+> > > +       info->src_btf =3D btf__parse(targ_btf_path, NULL);
+> > > +       if (!info->src_btf) {
+> > > +               p_err("failed parsing '%s' BTF file: %s", targ_btf_pa=
+th, strerror(errno));
+> > > +               err =3D -errno;
+> >
+> > save errno before p_err, it can clobber errno otherwise
+> >
+> > > +               goto err_out;
+> > > +       }
+> > > +
+> > > +       info->marked_btf =3D btf__parse(targ_btf_path, NULL);
+> > > +       if (!info->marked_btf) {
+> > > +               p_err("failed parsing '%s' BTF file: %s", targ_btf_pa=
+th, strerror(errno));
+> > > +               err =3D -errno;
+> >
+> > same, always save errno first before any non-trivial function/macro cal=
+l
+> >
+>
+> oh right, thanks!
+>
+> >
+> > > +               goto err_out;
+> > > +       }
+> > > +
+> > > +       return info;
+> > > +
+> > > +err_out:
+> > > +       btfgen_free_info(info);
+> > > +       errno =3D -err;
+> > > +       return NULL;
+> > > +}
+> > > +
+> > > +#define MARKED UINT32_MAX
+> > > +
+> > > +static void btfgen_mark_member(struct btfgen_info *info, int type_id=
+, int idx)
+> > > +{
+> > > +       const struct btf_type *t =3D btf__type_by_id(info->marked_btf=
+, type_id);
+> > > +       struct btf_member *m =3D btf_members(t) + idx;
+> > > +
+> > > +       m->name_off =3D MARKED;
+> > > +}
+> > > +
+> > > +static int
+> > > +btfgen_mark_type(struct btfgen_info *info, unsigned int id, bool fol=
+low_pointers)
+> >
+> > id is type_id or could be some other id? It's best to be consistent in
+> > naming to avoid second guessing like in this case.
+>
+> It's always type_id. Renamed it.
+>
+> >
+> > > +{
+> > > +       const struct btf_type *btf_type =3D btf__type_by_id(info->src=
+_btf, id);
+> > > +       struct btf_type *cloned_type;
+> > > +       struct btf_param *param;
+> > > +       struct btf_array *array;
+> > > +       int err, i;
+> >
+> > [...]
+> >
+> > > +       /* tells if some other type needs to be handled */
+> > > +       default:
+> > > +               p_err("unsupported kind: %s (%d)", btf_kind_str(btf_t=
+ype), id);
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int btfgen_record_field_relo(struct btfgen_info *info, struct=
+ bpf_core_spec *targ_spec)
+> > > +{
+> > > +       struct btf *btf =3D (struct btf *) info->src_btf;
+> >
+> > why the cast?
+> >
+>
+> No reason. Will remove it.
+>
+> > > +       const struct btf_type *btf_type;
+> > > +       struct btf_member *btf_member;
+> > > +       struct btf_array *array;
+> > > +       unsigned int id =3D targ_spec->root_type_id;
+> > > +       int idx, err;
+> > > +
+> > > +       /* mark root type */
+> > > +       btf_type =3D btf__type_by_id(btf, id);
+> > > +       err =3D btfgen_mark_type(info, id, false);
+> > > +       if (err)
+> > > +               return err;
+> > > +
+> > > +       /* mark types for complex types (arrays, unions, structures) =
+*/
+> > > +       for (int i =3D 1; i < targ_spec->raw_len; i++) {
+> > > +               /* skip typedefs and mods */
+> > > +               while (btf_is_mod(btf_type) || btf_is_typedef(btf_typ=
+e)) {
+> > > +                       id =3D btf_type->type;
+> > > +                       btf_type =3D btf__type_by_id(btf, id);
+> > > +               }
+> > > +
+> > > +               switch (btf_kind(btf_type)) {
+> > > +               case BTF_KIND_STRUCT:
+> > > +               case BTF_KIND_UNION:
+> > > +                       idx =3D targ_spec->raw_spec[i];
+> > > +                       btf_member =3D btf_members(btf_type) + idx;
+> > > +
+> > > +                       /* mark member */
+> > > +                       btfgen_mark_member(info, id, idx);
+> > > +
+> > > +                       /* mark member's type */
+> > > +                       id =3D btf_member->type;
+> > > +                       btf_type =3D btf__type_by_id(btf, id);
+> > > +                       err =3D btfgen_mark_type(info, id, false);
+> >
+> > why would it not follow the pointer? E.g., if I have a field defined as
+> >
+> > struct blah ***my_field;
+> >
+> > You at the very least would need either an empty struct blah or FWD
+> > for struct blah, no?
+> >
+>
+> It's an optimization we do, we don't follow the pointer here because
+> it is possible that the definition of the pointed type is not needed.
+> For instance, a relocation like:
+>
+> BPF_CORE_READ(task, nsproxy);
+>
+> will generate this:
+>
+> [1] STRUCT 'task_struct' size=3D9472 vlen=3D1
+>     'nsproxy' type_id=3D2 bits_offset=3D23040
+> [2] PTR '(anon)' type_id=3D0
+>
+> struct nsproxy is not really accessed, so we don't need it's
+> definition. On the other hand, something like
+>
+> BPF_CORE_READ(task, nsproxy, count);
+>
+> has two relocations, and nsproxy is actually accessed, so in this case
+> the generated BTF includes a nsproxy struct:
+>
+> [1] STRUCT '(anon)' size=3D4 vlen=3D0
+> [2] TYPEDEF 'atomic_t' type_id=3D1
+> [3] STRUCT 'task_struct' size=3D9472 vlen=3D1
+>     'nsproxy' type_id=3D4 bits_offset=3D23040
+> [4] PTR '(anon)' type_id=3D5
+> [5] STRUCT 'nsproxy' size=3D72 vlen=3D1
+>     'count' type_id=3D2 bits_offset=3D0
 
-> > I suppose you have to do as Alex says and try to estimate how much
-> > time the stop phase of migration will take and grant only the
-> > remaining time from the SLA to the guest to finish its PRI flushing,
-> > otherwise go back to PRE_COPY and try again later if the timer hits.
-> > 
-> > This suggests to me the right interface from the driver is some
-> > estimate of time to enter STOP_COPY and resulting required transfer
-> > size.
-> > 
-> > Still, I just don't see how SLAs can really be feasible with this kind
-> > of HW that requires guest co-operation..
-> 
-> Devil's advocate, does this discussion raise any concerns whether a
-> synchronous vs asynchronous arc transition ioctl is still the right
-> solution here?  
+Ok, so you are just replacing what would be a pointer to forward
+declaration with void *. Ok, I guess that works as well.
 
-v2 switched to the data_fd which allows almost everything important to
-be async, assuming someone wants to implement it in qemu and a driver.
-
-It allows RUNNING -> STOP_COPY to be made async because the driver can
-return SET_STATE immediately, backround the state save and indicate
-completion/progress/error via poll(readable) on the data_fd. However
-the device does still have to suspend DMA synchronously.
-
-RESUMING -> STOP can also be async. The driver will make the data_fd
-not writable before the last byte using its internal knowledge of the
-data framing. Once the driver allows the last byte to be delivered
-qemu will immediately do SET_STATE which will be low latency.
-
-The entire data transfer flow itself is now async event driven and can
-be run in parallel across devices with an epoll or iouring type
-scheme.
-
-STOP->RUNNING should be low latency for any reasonable device design.
-
-For the P2P extension the RUNNING -> RUNNING_P2P has stopped vCPUs,
-but I think a reasonable implementation must make this low latency,
-just like suspending DMA to get to STOP_COPY must be low latency.
-Making it async won't make it faster, though I would like to see it
-run in parallel for all P2P devices.
-
-The other arcs have the vCPU running, so don't matter to this.
-
-In essence, compared to v1, we already made it almost fully async.
-
-Also, at least with the mlx5 design, we can run all the commands async
-(though there is a blocker preventing this right now) however we
-cannot abort commands in progress. So as far as a SLA is concerned I
-don't think async necessarily helps much.
-
-I also think acc and several other drivers we are looking at would not
-implement, or gain any advantage from async arcs.
-
-Are there more arcs that benefit from async? PRI draining has come
-up.
-
-Keep in mind, qemu can still userspace thread SET_STATE. There has
-also been talk about a generic iouring based kernel threaded
-ioctl: https://lwn.net/Articles/844875/
-
-What I suggested to Kevin is also something to look at, userspace
-provides an event FD to SET_STATE and the event FD is triggered when
-the background action is done.
-
-So, I'm not worried about this. There are more than enough options to
-address any async requirements down the road.
-
-> and processors.  The mlx5 driver already places an upper bound on
-> migration data size internally.
-
-We did that because it seemed unreasonable to allow userspace to
-allocate unlimited kernel memory during resuming. Ideally we'd limit
-it to the device's max capability but the device doesn't know how to
-do that today.
-
-> Maybe some of these can come as DEVICE_FEATURES as we go, but for any
-> sort of cloud vendor SLA, I'm afraid we're only enabling migration of
-> devices with negligible transition latencies and negligible device
-> states
-
-Even if this is true, it is not a failure! Most of the migration
-drivers we foresee are of this class.
-
-My feeling is that more complex devices would benefit from some stuff,
-eg like estimating times, but I'd rather collect actual field data and
-understand where things lie, and what device changes are needed,
-before we design something.
-
-> with some hand waving how to determine that either of those are
-> the case without device specific knowledge in the orchestration.
-
-I don't think the orchestration necessarily needs special
-knowledge. Certainly when the cloud operator designs the VMs and sets
-the SLA parameters they need to do it with understanding of what the
-mix of devices are and what kind of migration performance they get out
-of the entire system.
-
-More than anything system migration performance is going to be
-impacted by the network for devices like mlx5 that have a non-trivial
-STOP_COPY data blob.
-
-Basically, I think it is worth thinking about, but not worth acting on
-right now.
-
-Jason
+>
+> > > +                       if (err)
+> > > +                               return err;
+> > > +                       break;
+> > > +               case BTF_KIND_ARRAY:
+> > > +                       array =3D btf_array(btf_type);
+> > > +                       id =3D array->type;
+> > > +                       btf_type =3D btf__type_by_id(btf, id);
+> > > +                       break;
+> >
+> > [...]
+> >
+> > > +err_out:
+> > > +       bpf_core_free_cands(cands);
+> > > +       errno =3D -err;
+> > > +       return NULL;
+> > > +}
+> > > +
+> > > +/* Record relocation information for a single BPF object*/
+> >
+> > nit: missing space before */
+> >
+> > > +static int btfgen_record_obj(struct btfgen_info *info, const char *o=
+bj_path)
+> > > +{
+> > > +       const struct btf_ext_info_sec *sec;
+> > > +       const struct bpf_core_relo *relo;
+> > > +       const struct btf_ext_info *seg;
+> > > +       struct hashmap_entry *entry;
+> > > +       struct hashmap *cand_cache =3D NULL;
+> > > +       struct btf_ext *btf_ext =3D NULL;
+> > > +       unsigned int relo_idx;
+> > > +       struct btf *btf =3D NULL;
+> > > +       size_t i;
+> > > +       int err;
+> > > +
+> > > +       btf =3D btf__parse(obj_path, &btf_ext);
+> > > +       if (!btf) {
+> > > +               p_err("failed to parse BPF object '%s': %s", obj_path=
+, strerror(errno));
+> > > +               return -errno;
+> > > +       }
+> >
+> > check that btf_ext is not NULL?
+> >
+>
+> Done.
+>
+>
+> > > +
+> > > +       if (btf_ext->core_relo_info.len =3D=3D 0) {
+> > > +               err =3D 0;
+> > > +               goto out;
+> > > +       }
+> > > +
+> >
+> > [...]
