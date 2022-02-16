@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9D74B9338
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 22:32:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94EB14B9350
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 22:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235590AbiBPVcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 16:32:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53206 "EHLO
+        id S235179AbiBPVla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 16:41:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiBPVcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 16:32:15 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C762CC9E
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 13:31:59 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9C7765805F0;
-        Wed, 16 Feb 2022 16:31:58 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Wed, 16 Feb 2022 16:31:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=G+VtQ43LDWL8acMBB
-        yhD101gxLEMiQ+BN0bhOkBE2t0=; b=HY8ThYL+0s/mdDoJscVUGDs7km0fe7MMd
-        qAXyx67hXZN/1Xdg94HhEK2LWnJ5NVTUzMN6q5TnYbcZke+0JRdc2xCaDxq/zesL
-        QHN0BkQmr7ry/qx/sdOU3JIevVgS171XsjMhI/DWm4gwPZjzBdmdW7soB4eh8CIt
-        mcwtnwT6gOeJjnO9sFqzTdnp5zy8yDpgcz0HGSOhc0J7ZF+n1zd1tJ0xs1QeXg+z
-        HHKKVnBPWVEFvrlN3Eo4cnOk87jZB7P1O8dqYT91jFRWxgqLNScMsLSSPvVdpJ0J
-        eKdq5eQn01WQf+C7iobtsVR4Eza2SVM1mIK9gpkAXfogIVcW1cwjA==
-X-ME-Sender: <xms:Tm0NYnS1A8lM0Kxl0PajiDl3Lr-Me8XZObT0vqtk5c7WUv771zYExA>
-    <xme:Tm0NYoyWgBLB1TAwTPIsRzobKRapHB1wONwaDIpiNvhsqoVehjwPxtwnweu413BXs
-    EnNoUxribSkjnw>
-X-ME-Received: <xmr:Tm0NYs05cpCVWwlOWI-iv_onVnWNmhikid87JoHIFcdSLoG0-HtPh97DeMLMDWoc-PM5z1UbRdSymjSbpM33xwHrKww>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeeigddugeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Tm0NYnA2cHQZtt4FuYapyDe5164fkUrfhNra2CmmwPmxxZi1mGT8Sg>
-    <xmx:Tm0NYgiSM_AoPHcKlone-ZCVLPr14Jav6CAkFvQl2zE20aWVRuqhkw>
-    <xmx:Tm0NYrr5bqvSwHSnZgsIuMmkVxSYlVlBIGW6m7kjovqneu2tJbs0FA>
-    <xmx:Tm0NYla2QiAjpwTqgBqBfPWPLdba168DBpoaFfDnloG4x6BLeNhVdg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 16 Feb 2022 16:31:57 -0500 (EST)
-Date:   Wed, 16 Feb 2022 23:31:55 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        linux-omap@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] mlxsw: spectrum: remove guards against
- !BRIDGE_VLAN_INFO_BRENTRY
-Message-ID: <Yg1tSz3SXcCyJw8U@shredder>
-References: <20220216164752.2794456-1-vladimir.oltean@nxp.com>
- <20220216164752.2794456-2-vladimir.oltean@nxp.com>
+        with ESMTP id S229635AbiBPVl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 16:41:29 -0500
+Received: from mail-yw1-x1143.google.com (mail-yw1-x1143.google.com [IPv6:2607:f8b0:4864:20::1143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1AF2A0D4B
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 13:41:17 -0800 (PST)
+Received: by mail-yw1-x1143.google.com with SMTP id 00721157ae682-2d07ae0b1c0so13214017b3.2
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 13:41:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=m0TMDQXrKCMlQ/9UmN6Gtg1Bk4E+XAeQVtlmy8Kzj+o=;
+        b=CSwFOyf7AyUEDF7t+o3B7ZcwWhCW7OysSPxe+OuYUe64ippTNAbgBoohv8WRkQ0up2
+         HU0xc6EUCqNRRVSTeCYzb9oZLpOdGg1eCvaJMCd7fcl6X5Do7t6YbkiIVIEjPKin9Ts/
+         x5fMW2XJrk3ZCBVeZe0uDKO0Sc8ANN8CUYuVz//AfkS8VYAofebQnwMmy30fC8t1Gwu6
+         jzSOlHVpf1lbYMiK0CjcfEG60PXNHzBNj7rezXkPhEAifOup+70mTNXCE6nHIxx4pO6b
+         JT1qn45Ik0hluIiXall0LBTatOB3q/iTNf8vFGepFZnvX9l4PUK0piQ1qqziOY/BLatM
+         FB2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=m0TMDQXrKCMlQ/9UmN6Gtg1Bk4E+XAeQVtlmy8Kzj+o=;
+        b=5QiTIPolCMvGhv73PE9y9NE3Fn2gWQxlPAoGNFzvo7SIUTbcPuszZchebmFv+K+7c3
+         5V9nJEOocnaIeCjt+Q4YUpfWMuJBxYK3QwhqyEjdCUm2NkL5q+TrfJmFribmjNbFdX1C
+         3SxCuCdqUW+6zDA+4/x10DZkawjcYFmPVVEFJXXG0Fn2JWKWjcuOGLF5bIfAVWinqLPo
+         eekz53HdfF6jICGkG12kDvPRlcDS5x9MR0xqNenFkmThGaqZECd8gw5ZC7RzFPW97a/0
+         qY/xucqG5o13gbNJXlsqjoX9ZQLBQQQX2ztV6eCVkh0l5tfM/uddLCG6mW9qSw5KGzEV
+         8j3w==
+X-Gm-Message-State: AOAM530pMNtDEbYhJyKJhsD58PSwt2gkCIygPAaxMiiIwyQP+h7RWhh/
+        yCYkMjDnqQX5oeR4ikaTVoom22wUdtczi2botjM=
+X-Google-Smtp-Source: ABdhPJyk3MbFBo5Q+pCCQAMxmIrQ6STz338eGJQ93JfaHr9q7pjDJ839xX0KwqsOXiiCkN4DSgYsw4bZGjiJ88IY8pA=
+X-Received: by 2002:a0d:f785:0:b0:2d0:e9ac:faa0 with SMTP id
+ h127-20020a0df785000000b002d0e9acfaa0mr4185700ywf.432.1645047676419; Wed, 16
+ Feb 2022 13:41:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216164752.2794456-2-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:7010:724f:b0:20e:3c0b:2bd0 with HTTP; Wed, 16 Feb 2022
+ 13:41:15 -0800 (PST)
+From:   Bright Gawayn <bengabrielb282@gmail.com>
+Date:   Thu, 17 Feb 2022 03:11:15 +0530
+Message-ID: <CAMMweGyRpWadKHeg29eTbVqZSt+psZ843x2dYKLJWhcd0=PRbw@mail.gmail.com>
+Subject: Supply Of Raw Material
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=3.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 06:47:48PM +0200, Vladimir Oltean wrote:
-> Since commit 3116ad0696dd ("net: bridge: vlan: don't notify to switchdev
-> master VLANs without BRENTRY flag"), the bridge no longer emits
-> switchdev notifiers for VLANs that don't have the
-> BRIDGE_VLAN_INFO_BRENTRY flag, so these checks are dead code.
-> Remove them.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Good Day
+Dear beloved.
+ I am Mr Israel Ronald, we use a certain raw material in our
+pharmaceutical firm for the manufacture of animal vaccines and many
+more.
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+My intention is to give you the contact information of the local
+manufacturer of this raw material in India and every details regarding
+how to supply the material to my company if you're interested, my
+company pays in advance for this material.
 
-Thanks
+Due to some reasons, which I will explain in my next email, I cannot
+procure this material and supply it to my company myself due to the
+fact that i am a staff in the company.
+
+Please get back to me as soon as possible for full detail if you are
+interested.
+
+Thanks and regards
+Mr Israel.
