@@ -2,61 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2284B8E97
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 17:54:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0F2F4B8EA2
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 17:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236717AbiBPQy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 11:54:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36560 "EHLO
+        id S236780AbiBPQ4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 11:56:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234159AbiBPQyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 11:54:23 -0500
-Received: from mx08-0057a101.pphosted.com (mx08-0057a101.pphosted.com [185.183.31.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D55293B72
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:54:10 -0800 (PST)
-Received: from pps.filterd (m0214196.ppops.net [127.0.0.1])
-        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 21GGbat8012803;
-        Wed, 16 Feb 2022 17:52:52 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=date : from : to :
- cc : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=12052020; bh=V9oE5p2OJXhCBN/+LkEnr8CXB9BR1rUyc0txof6+LUI=;
- b=trA7uGp8fYsX9WSsAD1QAidBzkwaopi+l4CbWNVVSskdHsleqRYgcZam5IQeT19chCGM
- saX19Lju6n6nNPaOhwsai8j7GhS/K0AyzNR1eik6FeyEvlsjh0x+IIriZEb05/m9o+92
- JjhsrOpzxY5sik3p7K8Oi58e335TtW06Yt6uSGcAmAtmj5EKqhNRO+YAocwHE4YoJjf+
- Qs07IE4QHOBOOCuP1T+xFeA5VpIETG8LFxBX8u+tFWhoRuHrUN4D5golY3diKjScs2G1
- 6MoSsFPbf80XkdUB5TrOjGP/AQmZm9jevwzF4EEVDh5yiVzq5lnvyx6aX9UVga7kPr2F rw== 
-Received: from mail.beijerelectronics.com ([195.67.87.131])
-        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3e8nk5rx06-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 16 Feb 2022 17:52:52 +0100
-Received: from westermo.com (192.168.131.30) by
- EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2375.17; Wed, 16 Feb 2022 17:52:51 +0100
-Date:   Wed, 16 Feb 2022 17:52:50 +0100
-From:   Jacques de Laval <Jacques.De.Laval@westermo.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 net-next 1/1] net: Add new protocol attribute to IP
- addresses
-Message-ID: <20220216165250.3dyyvl5gnaixcrh4@westermo.com>
-References: <20220214155906.906381-1-Jacques.De.Laval@westermo.com>
- <20220215204728.1954e7b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S236762AbiBPQ4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 11:56:46 -0500
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222471DA6C
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:56:31 -0800 (PST)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2d54183ff19so5594467b3.9
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:56:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sEjX8mqvhweVPssQ3aADUg4sgNUOBaiUpJdvZM1UYNE=;
+        b=MmdBO/3AvmjD6OfQEWzFtZWbpNSA/34GdDNHW1q668elbaJZYc+SFo57AjnPwoZPre
+         eQAp39N5LlQ9DGD75Qqle3I3jkUYAhrQ6MmByH/dm7Ev6nFwIbvs+wOeCnncyIiTENb2
+         l3k0FjBPw9rgXCIaVN369t4lehqENpt7ss3HFj3nIU1dCIcG/e+d8ZzhSOIdG3y9iloy
+         fkH2oAg2E3MoPxr39nJx13ZTzdXg/p1hG/Vw65BGOHn81v9ItiMEAYeUN2l9LIKBR/Hi
+         1NcS+mMX0bJKe/JCP6daWS8JzAfQEuX17ZyqKk50cFri0ID3xU/DL/Cuecz6xMSJ2mTK
+         Hn3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sEjX8mqvhweVPssQ3aADUg4sgNUOBaiUpJdvZM1UYNE=;
+        b=hBFbPwiBL1j1o67X1HgJ3mw+Ou8iTWLkG1aEAieLg9C2fRwsmokpATjav1B3YvBzm+
+         3e76eeTHKipYpSKiGZRgniXdrZuoTuomUMSZzkBGdeDy9TgEkjEg5qJJojxMHvwmyEV7
+         3jAiGf8LQ0EzhV+bWmISIZlmgkZ2dmhSlQp0wunv/w3JxZqu5aj5CHpJy5LEGJGn2IIU
+         FCcsV90E9dTPkcTtAMqsX4veDMlenBlYecFH21E41CYaeTVdfK3/wPlxY3PxFp67AqPu
+         NwsH/v3ybegPfIRPGK1GafpOQRyt7XrAL8OA4kjGIP90W/XKolJsXrVCZ8zngrBc+W2r
+         nWWg==
+X-Gm-Message-State: AOAM532Wa2Dry96iG9N/7W70bi+4j1rkugpDl4u9Fqon6LJwNleN0pr9
+        +rcm/+N3xKnFHYA6hUPFGiVVgx678UK1KtkhEtbBLg==
+X-Google-Smtp-Source: ABdhPJxaNNCJQXu++II+pEhb4hfv3aCcqH6TivF5eQUKW/mkJhVxJAn7xmzhf5aL1uO66wrImJ9m1NqNdRfvCjozGDY=
+X-Received: by 2002:a81:75c6:0:b0:2d0:cbf8:e7b3 with SMTP id
+ q189-20020a8175c6000000b002d0cbf8e7b3mr3167890ywc.255.1645030589922; Wed, 16
+ Feb 2022 08:56:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220215204728.1954e7b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Originating-IP: [192.168.131.30]
-X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
- EX01GLOBAL.beijerelectronics.com (10.101.10.25)
-X-Proofpoint-GUID: lDquo7OG-eIoE_k-RxJ4-maoI7Efvk3Z
-X-Proofpoint-ORIG-GUID: lDquo7OG-eIoE_k-RxJ4-maoI7Efvk3Z
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220216050320.3222-1-kerneljasonxing@gmail.com>
+ <CANn89i+6Hc7q-a=zh_jcTn9_GM5xP6fzv2RcHY+tneqzE3UnHw@mail.gmail.com> <CAL+tcoBnSDjHk_Xhd_ohQjpMu-Ns2Du4mWhUybrK6+VPXHoETQ@mail.gmail.com>
+In-Reply-To: <CAL+tcoBnSDjHk_Xhd_ohQjpMu-Ns2Du4mWhUybrK6+VPXHoETQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 16 Feb 2022 08:56:18 -0800
+Message-ID: <CANn89iJTrH1sgstrEw17OUwC8jLBS9_uk_oUd5Hj0-FypTvvPw@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] net: introduce SO_RCVBUFAUTO to let the
+ rcv_buf tune automatically
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Wei Wang <weiwan@google.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>, Florian Westphal <fw@strlen.de>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jason Xing <xingwanli@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,20 +83,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 08:47:28PM -0800, Jakub Kicinski wrote:
-> On Mon, 14 Feb 2022 16:59:06 +0100 Jacques de Laval wrote:
-> > @@ -4626,6 +4631,7 @@ static const struct nla_policy ifa_ipv6_policy[IFA_MAX+1] = {
-> >  	[IFA_FLAGS]		= { .len = sizeof(u32) },
-> >  	[IFA_RT_PRIORITY]	= { .len = sizeof(u32) },
-> >  	[IFA_TARGET_NETNSID]	= { .type = NLA_S32 },
-> > +	[IFA_PROTO]             = { .len = sizeof(u8) },
-> >  };
-> 
-> Is there a reason this is not using type = NLA_U8?
-> 
+On Tue, Feb 15, 2022 at 10:58 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
+> Just now, I found out that the latest kernel has merged a similar
+> patch (commit 04190bf89) about three months ago.
 
-Thanks for spotting this Jakub. I use type = NLA_U8 for ifa_ipv4_policy
-and it should be the same here. Will fix in v4.
+There you go :)
 
-Thanks,
-Jacques
+>
+> Is it still necessary to add another separate option to clear the
+> SOCK_RCVBUF_LOCK explicitly?
+
+What do you mean, SO_BUF_LOCK is all that is needed.
