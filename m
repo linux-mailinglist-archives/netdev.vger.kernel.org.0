@@ -2,87 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 322824B8C0D
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 16:06:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B37074B8C1D
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 16:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbiBPPGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 10:06:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34264 "EHLO
+        id S235395AbiBPPLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 10:11:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235357AbiBPPGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 10:06:42 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B45E269
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 07:06:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=s6+jGcqWo+LJLm1bijnzo6vuRFoNFh4J4cCMIVqHDi4=; b=o8ADY8puRchzDzpMB6nKb9dy/9
-        Lt/LRg0o5DCyRv4qSdXymlfT8sy4Q58cAp4oMPyry8AlW7HyTEWPqdHjhCSv8kkUtl4l4Aii6T45g
-        4CY4mcyIbxXNR3YUa2+rq2jk/0cqho6UVZ1WlH7icsKE2EMnRhPgEsTZFwgJb+sAlaohxjwGhC2C+
-        yGkEs1hQHSWq98K+9AHbw0IbGbxI/thWcIlPr8RQlTwfIZhnl7x6oAXCNgw0HeTBZ2apN80PaxTxx
-        lwGZbPvE6MECUajBFiBFI/FPdiQoeyv0b1361t42rTcTVCZgoNRbIUYuswbTlBTMCXJDN3pd4g7EA
-        XU7490ZA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46604 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1nKLsx-0003zW-7u; Wed, 16 Feb 2022 15:06:27 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nKLsw-009NN7-L9; Wed, 16 Feb 2022 15:06:26 +0000
-In-Reply-To: <Yg0SYHh1YNWsPB1D@shell.armlinux.org.uk>
-References: <Yg0SYHh1YNWsPB1D@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 6/6] net: dsa: qca8k: mark as non-legacy
+        with ESMTP id S233894AbiBPPLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 10:11:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92CA2A64E2
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 07:10:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7864BB81F1E
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 15:10:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D40C6C004E1;
+        Wed, 16 Feb 2022 15:10:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645024250;
+        bh=lGgyAm5EpK0xvS+9RYFxVTzRzcYr0VwToVU6nAfWtqE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=M0Fw9lUb1Il2Q2UcpG17SUxwwdiJuEm2ia0oxNZm8nVx1tU+EWNDeCpQp+br0oR8a
+         lwAAckJX1jmLbNeYSSUumOv3EULktAEIXFoqF2gY2m6cUuafdZjJHngVXbJouAQZ+S
+         btCLMGsmuav1GjzEBBLDk3hUHup33IoWE70FxQ+Nu750kDlf7bA7O88lDMAWcll6kX
+         cO21AzhAXgbM18/upISy3QhFSh03PXrEEKL+9+NLmACNuR5+ZPAYJnLBt9JkWl1pmF
+         1Jv6xzf2A6DD1MHEfbjddcIY5v1omaHMwpQ4TRzE1oAmdnV2LPBNuDIYj966HozNqX
+         Xo4ya7u5C7C1w==
+Message-ID: <a4791b77-fe00-85a2-5259-e79e8be511c5@kernel.org>
+Date:   Wed, 16 Feb 2022 08:10:49 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nKLsw-009NN7-L9@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 16 Feb 2022 15:06:26 +0000
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH net-next] net: rtnetlink: rtnl_stats_get(): Emit an extack
+ for unset filter_mask
+Content-Language: en-US
+To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>
+References: <01feb1f4bbd22a19f6629503c4f366aed6424567.1645020876.git.petrm@nvidia.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <01feb1f4bbd22a19f6629503c4f366aed6424567.1645020876.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The qca8k driver does not make use of the speed, duplex, pause or
-advertisement in its phylink_mac_config() implementation, so it can be
-marked as a non-legacy driver.
+On 2/16/22 7:31 AM, Petr Machata wrote:
+> Both get and dump handlers for RTM_GETSTATS require that a filter_mask, a
+> mask of which attributes should be emitted in the netlink response, is
+> unset. rtnl_stats_dump() does include an extack in the bounce,
+> rtnl_stats_get() however does not. Fix the omission.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/core/rtnetlink.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/qca8k.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index e6c6ecdec9bb..798eb5c72b1d 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1814,6 +1814,8 @@ static void qca8k_phylink_get_caps(struct dsa_switch *ds, int port,
- 
- 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
- 		MAC_10 | MAC_100 | MAC_1000FD;
-+
-+	config->legacy_pre_march2020 = false;
- }
- 
- static void
--- 
-2.30.2
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
