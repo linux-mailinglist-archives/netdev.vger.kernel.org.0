@@ -2,117 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D55A04B8B8D
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 15:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CE04B8BB9
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 15:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235085AbiBPOgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 09:36:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40934 "EHLO
+        id S235154AbiBPOoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 09:44:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234052AbiBPOgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 09:36:39 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045001C904;
-        Wed, 16 Feb 2022 06:36:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645022186; x=1676558186;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=XsD6zFAgvHDR4DIwMCXse6I94/Rx7zSk8Y2P++rWtak=;
-  b=GA+kTl3j9Yrm8LAEscI9GvIBSKqRBIg66uVfBNOyT/pZdfALMRcDS9vz
-   qLvD8o93oajpjeSWZD6deakEJhpXk2JOhndWQvyIXIpSfkfi3dhrU43Tx
-   chzwWikhc8a/0JQcFWwm0Q0ryB0bvc6Z245GA4ygNeugZl0z8NTDTOgec
-   u6wNMROEe/EZEPcylCzTDHz3S5rM/9SN5eCDYFPQCIJDahLsEnX/CU3IE
-   WCYvlJoXlzUBf410iDMtv+FKFkzAC4CsWq936t7BGW/ZqCsb8qPMOlpyx
-   8dzkFfSg9NeEv7aM/AeF33X87Z1/EnFIcuWVL6SAZzOYgnurXKePjj7G8
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="249445136"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="249445136"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 06:36:25 -0800
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="529488930"
-Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.33])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 06:36:19 -0800
-Date:   Wed, 16 Feb 2022 16:36:16 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v4 08/13] net: wwan: t7xx: Add data path
- interface
-In-Reply-To: <05b6a2dd-f485-ce4a-d508-e90f9304d016@linux.intel.com>
-Message-ID: <92a244ef-eaf8-6e27-aa9-77e8f941b86@linux.intel.com>
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-9-ricardo.martinez@linux.intel.com> <ca592f64-c581-56a8-8d90-5341ebd8932d@linux.intel.com> <05b6a2dd-f485-ce4a-d508-e90f9304d016@linux.intel.com>
+        with ESMTP id S232255AbiBPOob (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 09:44:31 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2137.outbound.protection.outlook.com [40.107.20.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF62F6E7A3;
+        Wed, 16 Feb 2022 06:44:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d7nir+KeJEoaqGw1+IvFeRBHOHdJVnUOAtAyuHQfy09HAxv+z9RYN5a65ATOAAvRTgVysafhrG8IZpmuLJ680Oxvb7OdpCEXega8IuQzGqLFnLqtFsS/RwviDbuolQ2vJuA3IKRLyptU9b9KFaqth1kcG+9B0iiL2dnq5M4eq4n40kFb6WU2vEjU4b7v04tevxrO17PeK0R0MHl6VBycSzZ4euI8BK4GaQ/mYAKUM/V6B4rN5XHHrL+5WKuAcj83gEGTrDKdN+LZnDdBohRbyxdkA1UyXSa+i2UfbdqVukfRmcRl4UI1JQAFQw5UNX0MT8D5xVoPQfJSy4xwl1KEwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sd7u3KWTIEgWtCJPz/jS4t742HdUcM44Gt5/ATBgeLM=;
+ b=fz5mExt4BrSYGR+mXGKUbcylp0KgE31MUB7j439bcnZtcCzwNgHDBILrQNr5ow+39Pf3TFD086jCEIVGpRp+aHuZ9TdNE7o+NTylWeqzDsOKjctdCC8LmQw/19CdqVEslEQRiRxtkRVj/X5S799M2+QWAUsC2wcRj3Q7iXm9/28gq6BJbMe616xaRpKeeUiIwVc1Fjox9Oq/t95cIITWGo3+JZtCn6W9LV19RoCWmU6BZJWoz5fRZxTKcuuToLyWNBghI2noCMNK1L66L2+K0bymhw8GY2GCKl6J82hVJNH8OE58+VNVn1qUCruyG+3wS11etdxTqqS5zciG5nCYpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sd7u3KWTIEgWtCJPz/jS4t742HdUcM44Gt5/ATBgeLM=;
+ b=rQGSQXW4p85qg+HKKDEmAsjWBbxn/U1B7KukfNcQWBI5X8L7iFgOVtJL3PprsaKT7TLOnb0bRJjDKOJnBJA5+cV+5sPK1WxxV6mcmuhFRBIFXjbDJ6hLDUbmnRFT2mbVqWUo0rNA+mUTVEhgYKc5yH5e9/QvnPRsFX4GcZszo9w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
+ by VI1P190MB0496.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:3a::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Wed, 16 Feb
+ 2022 14:44:17 +0000
+Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ ([fe80::f16c:7fde:c692:f911]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ ([fe80::f16c:7fde:c692:f911%5]) with mapi id 15.20.4975.019; Wed, 16 Feb 2022
+ 14:44:16 +0000
+From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: prestera: flower: fix destroy tmpl in chain
+Date:   Wed, 16 Feb 2022 16:43:44 +0200
+Message-Id: <1645022624-2010-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: FR3P281CA0023.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1c::7) To VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:800:123::23)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1525069745-1645022185=:9418"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c327926c-a238-4abf-f9d8-08d9f15ace4a
+X-MS-TrafficTypeDiagnostic: VI1P190MB0496:EE_
+X-Microsoft-Antispam-PRVS: <VI1P190MB0496C53A60C56F3633DE7D448F359@VI1P190MB0496.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:298;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GC5mgrtzFsbV7HJCHYwmsNYiK1pMZzOfBhWOsyg5wsk86oLQpwWy7KpTNM1OXhpBpMVsHuWNA4ZwJhJqsIkomwpoxK11n1F6Ntg3r+Y8a6InwNnTOvgPQnRfrnUrG/4AQknSm00agLPJmiGhU0EoysVILmyur9QoVIHoFI2T6fFkZqK9ylQiwStz3z4LEuRd0NQsjXFplnQUKMM2cJYHZwY2dHdg5JpI5MoE6wlUgSEzLw1nNbLWhLfa4pzV0fsZ39416iY0pJabcGLY4gQgOxFLBah+wMW+LLivVGw6BLhr91GEJh5ujwcj34CJZmxJz+M4u6hHV1wF684n+14xRsAppe28UrCy1QBgf7wSsXus9PZAN25WRpnFP0ianXqqZMBVGltAjbcDB5ZUsLug1YyVFMFWbEFtjHuwT11rrLdgvJuNwrkgO9WRacykI9+mN2+QsPeTxDsFEL9L3EsIbrybZDX3N97Y8fHyiC6W9wicElN1NDWwli8+iF1dTD5DTfHw8Jkh9rZFXFCr2WB6YP4w1581iQTftgakOR1j9v+txm4LeJRcnuIkFqOu7Qp7fKi3PUkOIuz/zmKHRyfa52rrrIGyTLb/XveuyKSYoCSq85XJJPq98jQd19i8yeIiDJmdNCBrx2Xxv+pcPlMS+ANNBxFIH5mC5u25WwhEHkWeB0BseC7w9cqjGMwWqiPP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(396003)(39830400003)(136003)(376002)(346002)(44832011)(86362001)(36756003)(54906003)(66946007)(66476007)(2616005)(8676002)(66556008)(8936002)(6486002)(4326008)(508600001)(186003)(2906002)(26005)(5660300002)(38100700002)(38350700002)(6506007)(6666004)(6512007)(316002)(83380400001)(6916009)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6+oJ9qUyPyRledV1Z0/Dwy5Y8UufxRBHIFAFMRLmvgu5fTmlFJrFI+OqkWUY?=
+ =?us-ascii?Q?Gi3s/V+8zMT9FDbrPJVdOo2tBykP/1bdjVkeyl3iUlCcHjEoc/eRedQEXnn9?=
+ =?us-ascii?Q?GO23rl02lPwBWwwc8y8ix/WUG7bzJPpq7OnNSCP1zgEOxlO0TM/g2elpeZU7?=
+ =?us-ascii?Q?dH6JH9QNPsiE5+xsjqmTV7F4In4IymGNYAWdY6PIRNNpBXr3gWCNezQSk6SB?=
+ =?us-ascii?Q?zJ5rn8mm/p205ovdG3rz0o7oy7UI5xKnTbxe/YgeukfNlgiiDR+jMJKz7xb6?=
+ =?us-ascii?Q?J+7CcazWlRGwdCUS/VmK/aJYZywkmGOy+SrEX0yvhCQiA97NY2o49C716nBG?=
+ =?us-ascii?Q?uBfiXG+nPrF/1tvbClTCKfdAE5JJ9psONCfiPsuPbWFXe0bModADJ3QVflsd?=
+ =?us-ascii?Q?yyZb0+MZBKALeSIUAvbdPCNisVhYpx6jVebp/3HUYXDvXCP1TgfPXcIDGb+a?=
+ =?us-ascii?Q?J9lBmmBmE8ecmuNk45K09urG+QZuLq6+NvN1WAjJCq1wR7OS2Du7p4w+nKcs?=
+ =?us-ascii?Q?ArMKah6xuGjW4jipEZiIBmKjB106qj75TPQ/X0PVu3dCmnPojISFZVoBOVZf?=
+ =?us-ascii?Q?qwCUG40XZZ+RgOUQ1+try2XGtHp9IfWVua04n9MgQEVnQ6qC3ahvv3iOBnF3?=
+ =?us-ascii?Q?nIqMhAjX8ryMCZW1FsOfGHA48UP2ac7bmZ+mFEvsPj9USdTuLQj+CDEjCw9A?=
+ =?us-ascii?Q?6vWeuRFCcm6xUBlIUTe/PXxCPPTR+jxXFnw1ZeqpbeNk89k52Q10Xfl/sM4n?=
+ =?us-ascii?Q?WC18dC9qAADAl7N3qq+ZOURt+r4q2YXyEqYB+gZRtX6cwxuHvXt03fp0/HJ6?=
+ =?us-ascii?Q?UYG8xO1VGbLlwK0LvDwe+cKbiKgGw7xlKLBrUhcjk00aTjhaSPxQpzycugGX?=
+ =?us-ascii?Q?MJy0uyUHVrW88n4qdGdruxYVTtjnMCJHXKpvmkstJQu1fk04M6vYiAKVOgSQ?=
+ =?us-ascii?Q?qQSLjfF2G9kX06Ybo9hGww0NZ+cOiEY5jBc09PW8c7lhSQDLz9hXwNyQWsjr?=
+ =?us-ascii?Q?JncqnTUrglXj0aypINyoY8t5CDEKooSTgN8LNa1r/K8oRazUHOeNIa0d4cQ0?=
+ =?us-ascii?Q?cbgU4scNHeSQ/z3EtabCA5kXD7RLlrUivS1kjS8guKym4XO7lCt/Te17nZiT?=
+ =?us-ascii?Q?t1dxrHEu1ZljVltC6LTK0JA3n4j7hsyPunrXpLY3rX5zDML1wJ1NPKnhx4i/?=
+ =?us-ascii?Q?qN0H3WTRWlmII+QLsIFSMIGOAW0sVlplQl+WcBX+oDqZMVwIa9Yfdf2UatnW?=
+ =?us-ascii?Q?Nq+YQfUXrPSqS1pkKGVoK62BeCt0iiW0G1J1utrtnD21ROglU6ubT7IswemF?=
+ =?us-ascii?Q?GQChUE1+PPZjzZA4oveJcJeQd26BZ0W06cgkz1h7SIXScMkQBbTi8rnnUGJy?=
+ =?us-ascii?Q?qbgoM+QB3hmHyiFNkG4FrxwfHjhtOGlMWRUvGWx+7U2TGl17SyVi5MUE1Ngb?=
+ =?us-ascii?Q?xMRmslqZ/OBDFWcKWpAZCOEVJxcasvEA42yQHQOq4+CIZ2/YzeQXa4BySdV0?=
+ =?us-ascii?Q?NI7+F7g1vdKXa+HpwcHAPObgrUEeE7rSv2rpes4Lz1D/sYDJA+Z7dS++BrJ3?=
+ =?us-ascii?Q?Y4JqJbd2olBwYTfdX5bOZZea35/UmIWeGny03oBwTeWyiQoVQoZEqoWXsyYZ?=
+ =?us-ascii?Q?pV/lbGbMckbjMZDHu/sFOSvWkzMpQphN/h8rpciIo2OXENFAhAccWK5+nH0m?=
+ =?us-ascii?Q?eWxXmQ=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: c327926c-a238-4abf-f9d8-08d9f15ace4a
+X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 14:44:16.5492
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: orcVCPC+xhJUZ4AHTp+MRBS2ILy2rY+pY9FyAV7QVaTT79fKTNSoXe/Rghkw6l646dVDovQsNyyb/Eb8grvEew27kr3TZBSeTAFOn0DN9tc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0496
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Volodymyr Mytnyk <vmytnyk@marvell.com>
 
---8323329-1525069745-1645022185=:9418
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Fix flower destroy template callback to release template
+only for specific tc chain instead of all chain tempaltes.
 
-On Tue, 15 Feb 2022, Martinez, Ricardo wrote:
-> On 2/8/2022 12:19 AM, Ilpo Järvinen wrote:
-> > On Thu, 13 Jan 2022, Ricardo Martinez wrote:
-> > 
-> > > +/* SKB control buffer indexed values */
-> > > +#define TX_CB_NETIF_IDX		0
-> > > +#define TX_CB_QTYPE		1
-> > > +#define TX_CB_DRB_CNT		2
-> > The normal way of storing a struct to skb->cb area is:
-> > 
-> > struct t7xx_skb_cb {
-> > 	u8	netif_idx;
-> > 	u8	qtype;
-> > 	u8	drb_cnt;
-> > };
-> > 
-> > #define T7XX_SKB_CB(__skb)	((struct t7xx_skb_cb *)&((__skb)->cb[0]))
-> > 
-> > However, there's only a single txqt/qtype (TXQ_TYPE_DEFAULT) in the
-> > patchset? And it seems to me that drb_cnt is a value that could be always
-> > derived using t7xx_get_drb_cnt_per_skb() from the skb rather than
-> > stored?
-> 
-> The next iteration will contain t7xx_tx_skb_cb and t7xx_rx_skb_cb structures.
+The issue was intruduced by previous commit that introduced
+multi-chain support.
 
-Ah, I didn't even notice the other one. Why differentiate them? There's 
-enough space in cb area and netif_idx is in both anyway. (union inside 
-struct could be used if short on space and tx/rx differ but it is not 
-needed here now.)
+Fixes: fa5d824ce5dd ("net: prestera: acl: add multi-chain support offload")
 
-> Also, q_number is going to be used instead of qtype.
-> 
-> Only one queue is used but I think we can keep this code generic as it is
-> straight forward (not like the drb_lack case), any thoughts?
+Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
+---
+ .../ethernet/marvell/prestera/prestera_flower.c    | 24 ++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
 
-I don't mind if you find it useful.
-
-
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
+index 580fb986496a..9587707e3148 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
+@@ -12,6 +12,14 @@ struct prestera_flower_template {
+ 	u32 chain_index;
+ };
+ 
++static void
++prestera_flower_template_free(struct prestera_flower_template *template)
++{
++	prestera_acl_ruleset_put(template->ruleset);
++	list_del(&template->list);
++	kfree(template);
++}
++
+ void prestera_flower_template_cleanup(struct prestera_flow_block *block)
+ {
+ 	struct prestera_flower_template *template;
+@@ -20,9 +28,7 @@ void prestera_flower_template_cleanup(struct prestera_flow_block *block)
+ 	/* put the reference to all rulesets kept in tmpl create */
+ 	list_for_each_safe(pos, n, &block->template_list) {
+ 		template = list_entry(pos, typeof(*template), list);
+-		prestera_acl_ruleset_put(template->ruleset);
+-		list_del(&template->list);
+-		kfree(template);
++		prestera_flower_template_free(template);
+ 	}
+ }
+ 
+@@ -423,7 +429,17 @@ int prestera_flower_tmplt_create(struct prestera_flow_block *block,
+ void prestera_flower_tmplt_destroy(struct prestera_flow_block *block,
+ 				   struct flow_cls_offload *f)
+ {
+-	prestera_flower_template_cleanup(block);
++	struct prestera_flower_template *template;
++	struct list_head *pos, *n;
++
++	list_for_each_safe(pos, n, &block->template_list) {
++		template = list_entry(pos, typeof(*template), list);
++		if (template->chain_index == f->common.chain_index) {
++			/* put the reference to the ruleset kept in create */
++			prestera_flower_template_free(template);
++			return;
++		}
++	}
+ }
+ 
+ int prestera_flower_stats(struct prestera_flow_block *block,
 -- 
- i.
+2.7.4
 
---8323329-1525069745-1645022185=:9418--
