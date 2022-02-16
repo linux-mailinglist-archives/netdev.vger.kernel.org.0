@@ -2,122 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD3604B89F8
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 14:30:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EB984B8A19
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 14:31:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbiBPNaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 08:30:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42278 "EHLO
+        id S234398AbiBPNbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 08:31:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232210AbiBPNaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 08:30:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1501617F9;
-        Wed, 16 Feb 2022 05:29:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 959C761704;
-        Wed, 16 Feb 2022 13:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3678C004E1;
-        Wed, 16 Feb 2022 13:29:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645018194;
-        bh=WtsL6bmJF0TP/UdYn2xyujuyFM2kSwSxAXWzphx1wLE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VlaoJ9LAFgWpoRgQfLqn4pZ47rY5S/1Jvomp2LEQcRxvhBLvjTLbJzJg8HhW06NEd
-         QfVYN7vvJbNjByMBJ3s7lKj/rnNR5XBVOGEtY703AWcpSnEWw+t6TMdAI6e8NsFY0M
-         xwmjm+u8boy/ld7dW5rEuQh1aL4Md0ZUJ/BG0BBgcKBJNAHp9dxtMg1K29JYPB+MWL
-         j7T0GV3DvM4xJyvdl81Ef4EBRFlGYUXt5JWKjSC9G12Bhjsi0k0ixdgNXA3FUn+goc
-         Pqn9OhNK8JiL4ysVHydYs9siuhG6YovEBZGbpN8PE6nlG7m0gS+Hz0UmUYcdQMRQG/
-         NXhDfGUXbW8ow==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nKKNT-008L49-Ui; Wed, 16 Feb 2022 13:29:52 +0000
-Date:   Wed, 16 Feb 2022 13:29:51 +0000
-Message-ID: <877d9v3po0.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234499AbiBPNav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 08:30:51 -0500
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652CC1867E0;
+        Wed, 16 Feb 2022 05:30:34 -0800 (PST)
+Received: by mail-qk1-x735.google.com with SMTP id g24so1656898qkl.3;
+        Wed, 16 Feb 2022 05:30:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rwvR7OO2WFCl0yXCxyqfDg2TPoyrx1rZW4Bqi6QfvMo=;
+        b=lP7LACSS/u6XbbHnx/k17PyESQC5bUbK9a27sF8RV7Wk8ozFIfszNXLjZtM348hGAZ
+         tb+148zvVF3xqMTjNLZWdyZeWADhoy4yduNXz/v1bzO0q5xj2/Vd1DHLRUKM4nLsW7Fb
+         DH71gu+A97+Tf89h8RR3Ilt3Ou4NBvAiCvU828E9Jx0cl/EkuY2GzJGczTwVKeajMqVS
+         vtGUkSBkF3qtBD0HaaANRSGtqcV2O0znhOKsNR6lledny9pCs9PZp/sij/rmHSupqKPC
+         bzay3KK+7XLRmgXkgqXi6rDK9P7pe4Es0Iuakhd30dv12MH9Hp0ri5SK8Ql03DpT2qLF
+         Wayg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rwvR7OO2WFCl0yXCxyqfDg2TPoyrx1rZW4Bqi6QfvMo=;
+        b=CwL/mjbk1dZEPtU1vx7BZdxITpL4f7BG+n1fvBz01Df6/WmDLemNfpZ2vpEoKXOI6+
+         mwWO7u9P3Vfnr90h3D84kFCjbRWQfT3mvQ/IUYq1mIeAFJA2qDiHDOfHmPRBr1GBkfqm
+         zrpnQRJeeAVlNcIOVv693b336/8UqmydaGjuBeYmpGOufuY9yxxuBxbkbqFo6Wz6PzPh
+         uqdWDv1FhxiQerIVp+S3uvWJit8qPrK/rduEulBmEh7widwyT2MVThc2l+XR9VS+GbVa
+         fPeBMlm2Ga2QS/ox0wNPMTaeIOzQOqJUdEkyNuQAo9sVmLProzRnmYXq2qjEKFnG4Zdc
+         FFRQ==
+X-Gm-Message-State: AOAM531VOXPVoDxZgFTEhPthw6UTDXSepPYCLenz5ZvtBOmWDOytGAR9
+        SzKP51jFbvREnWegek9qs7r/HIOsirV2iNblMos=
+X-Google-Smtp-Source: ABdhPJxrjmimwu0WwbgOQi/xAg0/b551w2Srv1rRx3mX08Q8rRI/us75tmQPZI0Osr0W5HvFtgbdqTce217+bXBUiyM=
+X-Received: by 2002:ae9:ef09:0:b0:506:aadb:1f1b with SMTP id
+ d9-20020ae9ef09000000b00506aadb1f1bmr1195802qkg.609.1645018233522; Wed, 16
+ Feb 2022 05:30:33 -0800 (PST)
+MIME-Version: 1.0
+References: <20220216081041.70831-1-thomas.liu@ucloud.cn>
+In-Reply-To: <20220216081041.70831-1-thomas.liu@ucloud.cn>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 16 Feb 2022 08:29:57 -0500
+Message-ID: <CAF=yD-JH3uKC20eRcNGkrYHnz0Csgg_NvnGNw4k-ECz9vLpKbg@mail.gmail.com>
+Subject: Re: [PATCH net v2] gso: do not skip outer ip header in case of ipip
+ and net_failover
+To:     Tao Liu <thomas.liu@ucloud.cn>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        John Garry <john.garry@huawei.com>, kernel-team@android.com
-Subject: Re: [PATCH 0/2] net: mvpp2: Survive CPU hotplug events
-In-Reply-To: <CAPv3WKf4RFeTDCsW+cY-Rp=2rZt1HuZSVQcmcB3oKQKNbvBtDA@mail.gmail.com>
-References: <20220216090845.1278114-1-maz@kernel.org>
-        <CAPv3WKf4RFeTDCsW+cY-Rp=2rZt1HuZSVQcmcB3oKQKNbvBtDA@mail.gmail.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: mw@semihalf.com, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, gregkh@linuxfoundation.org, linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org, tglx@linutronix.de, john.garry@huawei.com, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Feb 2022 13:19:30 +0000,
-Marcin Wojtas <mw@semihalf.com> wrote:
->=20
-> Hi Marc,
->=20
-> =C5=9Br., 16 lut 2022 o 10:08 Marc Zyngier <maz@kernel.org> napisa=C5=82(=
-a):
-> >
-> > I recently realised that playing with CPU hotplug on a system equiped
-> > with a set of MVPP2 devices (Marvell 8040) was fraught with danger and
-> > would result in a rapid lockup or panic.
-> >
-> > As it turns out, the per-CPU nature of the MVPP2 interrupts are
-> > getting in the way. A good solution for this seems to rely on the
-> > kernel's managed interrupt approach, where the core kernel will not
-> > move interrupts around as the CPUs for down, but will simply disable
-> > the corresponding interrupt.
-> >
-> > Converting the driver to this requires a bit of refactoring in the IRQ
-> > subsystem to expose the required primitive, as well as a bit of
-> > surgery in the driver itself.
-> >
-> > Note that although the system now survives such event, the driver
-> > seems to assume that all queues are always active and doesn't inform
-> > the device that a CPU has gone away. Someout who actually understand
-> > this driver should have a look at it.
-> >
-> > Patches on top of 5.17-rc3, lightly tested on a McBin.
-> >
->=20
-> Thank you for the patches. Can you, please, share the commands you
-> used? I'd like to test it more.
+On Wed, Feb 16, 2022 at 3:23 AM Tao Liu <thomas.liu@ucloud.cn> wrote:
+>
+> We encounter a tcp drop issue in our cloud environment. Packet GROed in
+> host forwards to a VM virtio_net nic with net_failover enabled. VM acts
+> as a IPVS LB with ipip encapsulation. The full path like:
+> host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+>  -> ipip encap -> net_failover tx -> virtio_net tx
+>
+> When net_failover transmits a ipip pkt (gso_type = 0x0103), there is no gso
+> did because it supports TSO and GSO_IPXIP4. But network_header points to
+> inner ip header.
+>
+> Call Trace:
+>  tcp4_gso_segment        ------> return NULL
+>  inet_gso_segment        ------> inner iph, network_header points to
+>  ipip_gso_segment
+>  inet_gso_segment        ------> outer iph
+>  skb_mac_gso_segment
+>
+> Afterwards virtio_net transmits the pkt, only inner ip header is modified.
+> And the outer one just keeps unchanged. The pkt will be dropped in remote
+> host. So we need to reset network header in this case.
+>
+> Call Trace:
+>  inet_gso_segment        ------> inner iph, outer iph is skipped
+>  skb_mac_gso_segment
+>  __skb_gso_segment
+>  validate_xmit_skb
+>  validate_xmit_skb_list
+>  sch_direct_xmit
+>  __qdisc_run
+>  __dev_queue_xmit        ------> virtio_net
+>  dev_hard_start_xmit
+>  __dev_queue_xmit        ------> net_failover
+>  ip_finish_output2
+>  ip_output
+>  iptunnel_xmit
+>  ip_tunnel_xmit
+>  ipip_tunnel_xmit        ------> ipip
+>  dev_hard_start_xmit
+>  __dev_queue_xmit
+>  ip_finish_output2
+>  ip_output
+>  ip_forward
+>  ip_rcv
+>  __netif_receive_skb_one_core
+>  netif_receive_skb_internal
+>  napi_gro_receive
+>  receive_buf
+>  virtnet_poll
+>  net_rx_action
 
-Offline CPU3:
-# echo 0 > /sys/devices/system/cpu/cpu3/online
+I think the message could be rewritten to point out that the issue is
+specific with the rare combination of SKB_GSO_DODGY and a tunnel
+device that adds an SKB_GSO_ tunnel option.
 
-Online CPU3:
-# echo 1 > /sys/devices/system/cpu/cpu3/online
+> This patch also includes ipv6_gso_segment(), considering SIT, etc.
+>
+> Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+> Fixes: cfc80d9a1163 ("net: Introduce net_failover driver")
 
-Put that in a loop, using different CPUs.
+This is not a net_failover issue.
 
-On my HW, turning off CPU0 leads to odd behaviours (I wouldn't be
-surprised if the firmware was broken in that respect, and also the
-fact that the device keeps trying to send stuff to that CPU...).
+I'm not sure whether the issue existed at the time tunnel support was
+added, or introduced later. It's reasonable to assume that it was
+always there, but it might be worth a quick code inspection.
 
-	M.
+> Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+> ---
+>  net/ipv4/af_inet.c     | 5 ++++-
+>  net/ipv6/ip6_offload.c | 2 ++
+>  2 files changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index 9c465ba..72fde28 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
+>         }
+>
+>         ops = rcu_dereference(inet_offloads[proto]);
+> -       if (likely(ops && ops->callbacks.gso_segment))
+> +       if (likely(ops && ops->callbacks.gso_segment)) {
+>                 segs = ops->callbacks.gso_segment(skb, features);
+> +               if (!segs)
+> +                       skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+> +       }
+>
+>         if (IS_ERR_OR_NULL(segs))
+>                 goto out;
 
---=20
-Without deviation from the norm, progress is not possible.
+It's unfortunate that we have to add a branch in the common path. But
+I also don't immediately see a cleaner option.
