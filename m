@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F454B7EFD
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 04:58:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FECE4B7EF9
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 04:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245334AbiBPDzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 22:55:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50472 "EHLO
+        id S245377AbiBPDzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 22:55:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237587AbiBPDz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 22:55:29 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AA5F68C1;
-        Tue, 15 Feb 2022 19:55:18 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id n19-20020a17090ade9300b001b9892a7bf9so5270416pjv.5;
-        Tue, 15 Feb 2022 19:55:18 -0800 (PST)
+        with ESMTP id S245303AbiBPDzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 22:55:36 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3F9F9FBB;
+        Tue, 15 Feb 2022 19:55:25 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id w1so1010558plb.6;
+        Tue, 15 Feb 2022 19:55:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FopBqDGN1xvSfvHr1/isUkSeSoRhL/jVtgtKDPYdFpU=;
-        b=CYVNGMa8rDwkhf7bAgvaLIinbioqCYjgemaj4yyS0OXyzdWILVe4owz3oI0pLlckSY
-         mEb1MJdZGFDRV4prg82yBQw5+f16MhiEC6oSiehKrLemdaQ5LTuCwQfZ8ZcUPXmLER7u
-         0s0f+llVp/lJRwCNX3wembmUEroNGoKjTl5UEJ5OEC5ktsgNOslNiZ3+N0jC+F08agE5
-         Eu9Y4AsmnufaRWUQkkPwuosBZBGaqQxbMAIKpOKU5Le2ON+3i6BSqjreQgiy/4N+MAga
-         dVYyK0KgfdMfr85a8eKp+x8GNZ497kHo3FUUmqDPPxW39XS1HIhMZ1uZKf48pjcVuZZq
-         Wq5Q==
+        bh=uARmFS+nDgVE7FjyHb31xPiMhFDOkZcIRfsfMlKqLac=;
+        b=W96QghDLRJIgptWu4fLEMODL2iUGYfI4s3l4lvFDiXDSrEvA/mlAm/2CSJMMiH6eAF
+         G/ndqkuVU1lBgmS1KauITrngRxBTOO7ZmOiUGlC0AAs36nPJ3Rlc/PcdFzb5WAfJfBGG
+         ZwcKGVDsohurDx68zH7ejZB+gwyHf6HwciBC0vjZZlpUqu5XlnrP8UejqAjw52kgRuAu
+         15GbVrQuJyFRE7rrBVdutCwo/ZhBkEndnfx5ed+pWaZ22uOr1DVun/i+yR36PlAk2iVz
+         PMcVT40lTwY24SdHCKQrqcMB8w963C/wATNlhrsOEJaXntewnE7p3nN580sXkA8GV/6V
+         Dayg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FopBqDGN1xvSfvHr1/isUkSeSoRhL/jVtgtKDPYdFpU=;
-        b=tcBZ4hbSIRCPa586Sz4uWIlLMdDnTR4pB2DTuC38IJIewsEqtxD7zsWDoBBsWaYHl3
-         RApzmhC66/ZYwCZ219MXqKcE9RVmW/KydsRLqdCSLYF7Pvsm5rVpjF/VOJLxMBh/dbHF
-         5wQzG2Jhj83HOv/vFFaM4xt5KIKHapJxw3LYl+lztajjp6T5a4WK2ZTQRorE1gch6byv
-         crHpzJ5JojrnOQ5LMO0QwI3Po00vulwZ4izMGJT4O1BBKrWD7TFMftbliCBYS+OdCP+C
-         8t10aTMzuaPVvyKN3ANKkScDfRuqsLAg8nom2QysOquM3wCC6tNL1ZqUkCl2h4elGi6C
-         FxxA==
-X-Gm-Message-State: AOAM531J26jKD499oQC7KXMVRDe9ISnCK7u20DCkvN+awXdGPZn5ZlA7
-        kFVCF7tK5h7QAFooGQ2SZBY=
-X-Google-Smtp-Source: ABdhPJxVxw7qFEjG4EejSaTzDq5m9WoyT3km2NahQju/FMrU285HmaSfJJXLJW3r3hIpZO7mhUwU0w==
-X-Received: by 2002:a17:90a:7e16:b0:1b8:2c11:73da with SMTP id i22-20020a17090a7e1600b001b82c1173damr752883pjl.156.1644983717901;
-        Tue, 15 Feb 2022 19:55:17 -0800 (PST)
+        bh=uARmFS+nDgVE7FjyHb31xPiMhFDOkZcIRfsfMlKqLac=;
+        b=jXCggllJXsb8S9U8oTKmgadObZR+yfRpewaU0FHk1lCl+QlETQpvlkM7RLuz9JaS7m
+         JlVwri7QGr8NMxsmjm5sIljsVJrydoUH3P7+8CVLeIUvyTvOHHdxRQIw3uqLwD5q6c8b
+         WKJ71wwytw1mPsfUX0qoMyl/qp9pdI72cNHLJ1vUhtYClDKOwvfpPZqp4fNT52mUYiXQ
+         nlZ7CXu5eipKrSku0IBbMlIkFlhxS9X7zf3MmLghFp4c6m25+4N5pXGMe4hfvVsX/qRz
+         fl3gqghDaxE1ZoyS6RvBP4zLyJBrIGQQgGrkGqt8A8FeFGg4ofp+qmNidF4Alzr6SkU9
+         IYVQ==
+X-Gm-Message-State: AOAM5315XyLwR+A0kx03oZTsTB9q530gsH+8yE/9nbU710pvZzuw+B60
+        ad6Kiu/YJO5oPZWcvR3vA8s=
+X-Google-Smtp-Source: ABdhPJzzXzNKb20ALtRnB5E0498QAT9AuCFhOJIFPSwXlB2hv+ZJhavO+aqLDae0QQncv5sQGsJQ3Q==
+X-Received: by 2002:a17:90a:6943:b0:1b9:e285:e4a3 with SMTP id j3-20020a17090a694300b001b9e285e4a3mr731452pjm.153.1644983724948;
+        Tue, 15 Feb 2022 19:55:24 -0800 (PST)
 Received: from localhost.localdomain ([203.205.141.110])
-        by smtp.gmail.com with ESMTPSA id nn16sm19099668pjb.2.2022.02.15.19.55.11
+        by smtp.gmail.com with ESMTPSA id nn16sm19099668pjb.2.2022.02.15.19.55.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 19:55:17 -0800 (PST)
+        Tue, 15 Feb 2022 19:55:24 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -61,9 +61,9 @@ Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
         vvs@virtuozzo.com, cong.wang@bytedance.com,
         luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-Subject: [PATCH net-next 3/9] net: tcp: use kfree_skb_reason() for tcp_v6_rcv()
-Date:   Wed, 16 Feb 2022 11:54:20 +0800
-Message-Id: <20220216035426.2233808-4-imagedong@tencent.com>
+Subject: [PATCH net-next 4/9] net: tcp: add skb drop reasons to tcp_v{4,6}_inbound_md5_hash()
+Date:   Wed, 16 Feb 2022 11:54:21 +0800
+Message-Id: <20220216035426.2233808-5-imagedong@tencent.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220216035426.2233808-1-imagedong@tencent.com>
 References: <20220216035426.2233808-1-imagedong@tencent.com>
@@ -81,111 +81,183 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() used in tcp_v6_rcv() with kfree_skb_reason().
+Pass the address of drop reason to tcp_v4_inbound_md5_hash() and
+tcp_v6_inbound_md5_hash() to store the reasons for skb drops when this
+function fails. Therefore, the drop reason can be passed to
+kfree_skb_reason() when the skb needs to be freed.
+
+Following drop reasons are added:
+
+SKB_DROP_REASON_TCP_MD5NOTFOUND
+SKB_DROP_REASON_TCP_MD5UNEXPECTED
+SKB_DROP_REASON_TCP_MD5FAILURE
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- net/ipv6/tcp_ipv6.c | 25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+ include/linux/skbuff.h     |  7 +++++++
+ include/trace/events/skb.h |  4 ++++
+ net/ipv4/tcp_ipv4.c        | 13 +++++++++----
+ net/ipv6/tcp_ipv6.c        | 11 ++++++++---
+ 4 files changed, 28 insertions(+), 7 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index a5adbf6b51e8..aea46b38cffa 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -346,6 +346,13 @@ enum skb_drop_reason {
+ 					 * udp packet drop out of
+ 					 * udp_memory_allocated.
+ 					 */
++	SKB_DROP_REASON_TCP_MD5NOTFOUND,	/* No MD5 hash and one
++						 * expected
++						 */
++	SKB_DROP_REASON_TCP_MD5UNEXPECTED,	/* MD5 hash and we're not
++						 * expecting one
++						 */
++	SKB_DROP_REASON_TCP_MD5FAILURE,	/* MD5 hash and its wrong */
+ 	SKB_DROP_REASON_MAX,
+ };
+ 
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index cfcfd26399f7..46c06b0be850 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -27,6 +27,10 @@
+ 	EM(SKB_DROP_REASON_IP_NOPROTO, IP_NOPROTO)		\
+ 	EM(SKB_DROP_REASON_SOCKET_RCVBUFF, SOCKET_RCVBUFF)	\
+ 	EM(SKB_DROP_REASON_PROTO_MEM, PROTO_MEM)		\
++	EM(SKB_DROP_REASON_TCP_MD5NOTFOUND, TCP_MD5NOTFOUND)	\
++	EM(SKB_DROP_REASON_TCP_MD5UNEXPECTED,			\
++	   TCP_MD5UNEXPECTED)					\
++	EM(SKB_DROP_REASON_TCP_MD5FAILURE, TCP_MD5FAILURE)	\
+ 	EMe(SKB_DROP_REASON_MAX, MAX)
+ 
+ #undef EM
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index a93921fb498f..3e7ab605dddc 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1412,7 +1412,8 @@ EXPORT_SYMBOL(tcp_v4_md5_hash_skb);
+ /* Called with rcu_read_lock() */
+ static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
+ 				    const struct sk_buff *skb,
+-				    int dif, int sdif)
++				    int dif, int sdif,
++				    enum skb_drop_reason *reason)
+ {
+ #ifdef CONFIG_TCP_MD5SIG
+ 	/*
+@@ -1445,11 +1446,13 @@ static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
+ 		return false;
+ 
+ 	if (hash_expected && !hash_location) {
++		*reason = SKB_DROP_REASON_TCP_MD5NOTFOUND;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
+ 		return true;
+ 	}
+ 
+ 	if (!hash_expected && hash_location) {
++		*reason = SKB_DROP_REASON_TCP_MD5UNEXPECTED;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5UNEXPECTED);
+ 		return true;
+ 	}
+@@ -1462,6 +1465,7 @@ static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
+ 				      NULL, skb);
+ 
+ 	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
++		*reason = SKB_DROP_REASON_TCP_MD5FAILURE;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+ 		net_info_ratelimited("MD5 Hash failed for (%pI4, %d)->(%pI4, %d)%s L3 index %d\n",
+ 				     &iph->saddr, ntohs(th->source),
+@@ -1971,13 +1975,13 @@ static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
+ int tcp_v4_rcv(struct sk_buff *skb)
+ {
+ 	struct net *net = dev_net(skb->dev);
++	enum skb_drop_reason drop_reason;
+ 	int sdif = inet_sdif(skb);
+ 	int dif = inet_iif(skb);
+ 	const struct iphdr *iph;
+ 	const struct tcphdr *th;
+ 	bool refcounted;
+ 	struct sock *sk;
+-	int drop_reason;
+ 	int ret;
+ 
+ 	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+@@ -2025,7 +2029,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		struct sock *nsk;
+ 
+ 		sk = req->rsk_listener;
+-		if (unlikely(tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))) {
++		if (unlikely(tcp_v4_inbound_md5_hash(sk, skb, dif, sdif,
++						     &drop_reason))) {
+ 			sk_drops_add(sk, skb);
+ 			reqsk_put(req);
+ 			goto discard_it;
+@@ -2099,7 +2104,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		goto discard_and_relse;
+ 	}
+ 
+-	if (tcp_v4_inbound_md5_hash(sk, skb, dif, sdif))
++	if (tcp_v4_inbound_md5_hash(sk, skb, dif, sdif, &drop_reason))
+ 		goto discard_and_relse;
+ 
+ 	nf_reset_ct(skb);
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 0c648bf07f39..402ffbacc371 100644
+index 402ffbacc371..dfefbc1eac5d 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -1627,6 +1627,7 @@ static void tcp_v6_fill_cb(struct sk_buff *skb, const struct ipv6hdr *hdr,
+@@ -775,7 +775,8 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
  
- INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ static bool tcp_v6_inbound_md5_hash(const struct sock *sk,
+ 				    const struct sk_buff *skb,
+-				    int dif, int sdif)
++				    int dif, int sdif,
++				    enum skb_drop_reason *reason)
  {
-+	enum skb_drop_reason drop_reason;
- 	int sdif = inet6_sdif(skb);
- 	int dif = inet6_iif(skb);
- 	const struct tcphdr *th;
-@@ -1636,6 +1637,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	int ret;
- 	struct net *net = dev_net(skb->dev);
+ #ifdef CONFIG_TCP_MD5SIG
+ 	const __u8 *hash_location = NULL;
+@@ -798,11 +799,13 @@ static bool tcp_v6_inbound_md5_hash(const struct sock *sk,
+ 		return false;
  
-+	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	if (skb->pkt_type != PACKET_HOST)
- 		goto discard_it;
+ 	if (hash_expected && !hash_location) {
++		*reason = SKB_DROP_REASON_TCP_MD5NOTFOUND;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
+ 		return true;
+ 	}
  
-@@ -1649,8 +1651,10 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 	if (!hash_expected && hash_location) {
++		*reason = SKB_DROP_REASON_TCP_MD5UNEXPECTED;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5UNEXPECTED);
+ 		return true;
+ 	}
+@@ -813,6 +816,7 @@ static bool tcp_v6_inbound_md5_hash(const struct sock *sk,
+ 				      NULL, skb);
  
- 	th = (const struct tcphdr *)skb->data;
+ 	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
++		*reason = SKB_DROP_REASON_TCP_MD5FAILURE;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+ 		net_info_ratelimited("MD5 Hash %s for [%pI6c]:%u->[%pI6c]:%u L3 index %d\n",
+ 				     genhash ? "failed" : "mismatch",
+@@ -1681,7 +1685,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		struct sock *nsk;
  
--	if (unlikely(th->doff < sizeof(struct tcphdr)/4))
-+	if (unlikely(th->doff < sizeof(struct tcphdr) / 4)) {
-+		drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 		goto bad_packet;
-+	}
- 	if (!pskb_may_pull(skb, th->doff*4))
- 		goto discard_it;
- 
-@@ -1706,6 +1710,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 			hdr = ipv6_hdr(skb);
- 			tcp_v6_fill_cb(skb, hdr, th);
- 			nsk = tcp_check_req(sk, skb, req, false, &req_stolen);
-+		} else {
-+			drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
- 		}
- 		if (!nsk) {
+ 		sk = req->rsk_listener;
+-		if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif)) {
++		if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif,
++					    &drop_reason)) {
+ 			sk_drops_add(sk, skb);
  			reqsk_put(req);
-@@ -1741,14 +1747,18 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 		}
+ 			goto discard_it;
+@@ -1752,7 +1757,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		goto discard_and_relse;
  	}
  
--	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
-+	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb)) {
-+		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
- 		goto discard_and_relse;
-+	}
- 
- 	if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif))
+-	if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif))
++	if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif, &drop_reason))
  		goto discard_and_relse;
  
--	if (tcp_filter(sk, skb))
-+	if (tcp_filter(sk, skb)) {
-+		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
- 		goto discard_and_relse;
-+	}
- 	th = (const struct tcphdr *)skb->data;
- 	hdr = ipv6_hdr(skb);
- 	tcp_v6_fill_cb(skb, hdr, th);
-@@ -1779,13 +1789,17 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	return ret ? -1 : 0;
- 
- no_tcp_socket:
--	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
-+	drop_reason = SKB_DROP_REASON_NO_SOCKET;
-+	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
-+		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
- 		goto discard_it;
-+	}
- 
- 	tcp_v6_fill_cb(skb, hdr, th);
- 
- 	if (tcp_checksum_complete(skb)) {
- csum_error:
-+		drop_reason = SKB_DROP_REASON_TCP_CSUM;
- 		trace_tcp_bad_csum(skb);
- 		__TCP_INC_STATS(net, TCP_MIB_CSUMERRORS);
- bad_packet:
-@@ -1795,7 +1809,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	}
- 
- discard_it:
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, drop_reason);
- 	return 0;
- 
- discard_and_relse:
-@@ -1806,6 +1820,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 
- do_time_wait:
- 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
-+		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
- 		inet_twsk_put(inet_twsk(sk));
- 		goto discard_it;
- 	}
+ 	if (tcp_filter(sk, skb)) {
 -- 
 2.34.1
 
