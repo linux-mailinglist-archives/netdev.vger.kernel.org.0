@@ -2,55 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 446554B9181
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A3184B918B
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:42:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237264AbiBPTmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 14:42:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45746 "EHLO
+        id S238217AbiBPTmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 14:42:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238195AbiBPTmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:42:12 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C7BCB905;
-        Wed, 16 Feb 2022 11:41:59 -0800 (PST)
+        with ESMTP id S238219AbiBPTmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:42:35 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20800119430;
+        Wed, 16 Feb 2022 11:42:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C7AD5CE288B;
-        Wed, 16 Feb 2022 19:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0176C004E1;
-        Wed, 16 Feb 2022 19:41:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7B57ACE288B;
+        Wed, 16 Feb 2022 19:42:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 378C6C004E1;
+        Wed, 16 Feb 2022 19:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645040516;
-        bh=nz/9I2zddTR157wwb50ivThq1Ru0izLuRo74wIxlESo=;
+        s=k20201202; t=1645040536;
+        bh=KKLApG7P3ypXXyd/K5DQGOQFYrfkFH7qZ/Cc03GkFUQ=;
         h=Date:From:To:Cc:Subject:From;
-        b=mp7yb1cpNCbOeL04bAt4W8vgPFJitBZZu2Ud1rEHtt74JKahuz/JA4PcKPc+weDxn
-         13Rlqh5Gi3hHg+fTyUQSqwV5FLZ2j5xntv9VUoqFw0tlIQ9OOl5815MaTV7UQhDXMI
-         o38y1AmaDyFaVOvPTFPd0TGDclHB2pp8cdRlp0KVDPOjPGfLHJOn75A1AcLFnA8lOd
-         DeD+UrfLS2OsYjpyhF4VZvXQt7sUOKid8HhI5ka7PuAoZ6utwJ8/2LfevwXf6wPFZQ
-         BHlwcBkwPDrRU0/uQW7oifp6nvCi0T31w0SVH/4H2FrB24pIQs90rN1OmWlMVTfxWR
-         lH9ntx3kf6rbw==
-Date:   Wed, 16 Feb 2022 13:49:35 -0600
+        b=GSkIcvtQ1RiRnrOgSHaEqjADs9BDE1MYkBg1YzNxEkb3jkI36mHm3QFXOEPAUhW76
+         t9WMYkL3bmw/EYcvfg7/Hx8/cLDtydj+rHVW2XUNCKF55IUc687o79pQyp5s3V7CAW
+         eGVLYFXdmh7xg2tuHV+COr1ii9Ob4UzQXi03Dwv75CMwcvUEiBoP0dMOuRt+Y5Oj+t
+         HHsGI+isXAYhJ9LZwwKTJLmy3/XXDHQYTcpzbOLAfKjd2LCuDGTCJS4KTYsc07lK/C
+         pkp5VEIAxJnDkXR7+nNgSAGcZFT7P3OUh5+iheiBcf2IXrmrPBppWgKZwmc9gT3+Km
+         RBh/MvafSO6LA==
+Date:   Wed, 16 Feb 2022 13:49:55 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+To:     Christian Lamparter <chunkeey@googlemail.com>,
         Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH][next] brcmfmac: Replace zero-length arrays with
+Subject: [PATCH][next] carl9170: Replace zero-length arrays with
  flexible-array members
-Message-ID: <20220216194935.GA904103@embeddedor>
+Message-ID: <20220216194955.GA904126@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
@@ -77,36 +70,36 @@ no longer be used[2].
 Link: https://github.com/KSPP/linux/issues/78
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h | 2 +-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/xtlv.h       | 2 +-
+ drivers/net/wireless/ath/carl9170/fwdesc.h | 2 +-
+ drivers/net/wireless/ath/carl9170/wlan.h   | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
-index e69d1e56996f..c87b829adb0d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
-@@ -1068,7 +1068,7 @@ struct brcmf_mkeep_alive_pkt_le {
- 	__le32  period_msec;
- 	__le16  len_bytes;
- 	u8   keep_alive_id;
--	u8   data[0];
-+	u8   data[];
+diff --git a/drivers/net/wireless/ath/carl9170/fwdesc.h b/drivers/net/wireless/ath/carl9170/fwdesc.h
+index 503b21abbba5..10acb6ad30d0 100644
+--- a/drivers/net/wireless/ath/carl9170/fwdesc.h
++++ b/drivers/net/wireless/ath/carl9170/fwdesc.h
+@@ -149,7 +149,7 @@ struct carl9170fw_fix_entry {
+ 
+ struct carl9170fw_fix_desc {
+ 	struct carl9170fw_desc_head head;
+-	struct carl9170fw_fix_entry data[0];
++	struct carl9170fw_fix_entry data[];
  } __packed;
+ #define CARL9170FW_FIX_DESC_SIZE			\
+ 	(sizeof(struct carl9170fw_fix_desc))
+diff --git a/drivers/net/wireless/ath/carl9170/wlan.h b/drivers/net/wireless/ath/carl9170/wlan.h
+index bb73553fd7c2..0a4e42e806b9 100644
+--- a/drivers/net/wireless/ath/carl9170/wlan.h
++++ b/drivers/net/wireless/ath/carl9170/wlan.h
+@@ -327,7 +327,7 @@ struct _carl9170_tx_superdesc {
+ struct _carl9170_tx_superframe {
+ 	struct _carl9170_tx_superdesc s;
+ 	struct _ar9170_tx_hwdesc f;
+-	u8 frame_data[0];
++	u8 frame_data[];
+ } __packed __aligned(4);
  
- #endif /* FWIL_TYPES_H_ */
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/xtlv.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/xtlv.h
-index e1930ce1b642..b2c7ae8966a1 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/xtlv.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/xtlv.h
-@@ -15,7 +15,7 @@
- struct brcmf_xtlv {
- 	u16 id;
- 	u16 len;
--	u8 data[0];
-+	u8 data[];
- };
- 
- enum brcmf_xtlv_option {
+ #define	CARL9170_TX_SUPERDESC_LEN		24
 -- 
 2.27.0
 
