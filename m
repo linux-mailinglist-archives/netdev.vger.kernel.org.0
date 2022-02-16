@@ -2,121 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E934B940E
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 23:52:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 932DE4B9455
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 00:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237698AbiBPWwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 17:52:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45542 "EHLO
+        id S236924AbiBPXJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 18:09:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237651AbiBPWwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 17:52:13 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF401EAC6;
-        Wed, 16 Feb 2022 14:51:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645051918; x=1676587918;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=V7ZqWbyYqyuczw0xodihuLxrHIcrC6vrsTOE4s2Gfs4=;
-  b=DFwmOntrBRiNwVpAO/wjlOwEg8JX0JzDf3rdJ/2P75b0CT4echzMT8Sz
-   hKtsK6zOMG5vo4hscqvWNFX9A3EjmbEqR4WsBfbHhtzpE8jhKGMlpgphm
-   s0kzfjT3EXC9E0j6bG64cJELkB/6WCBnuFI619M6xHUG7mGagIYYAjs/B
-   J7FOUD8ZuJ86BF62E7xvdkRGknWWaw30FLb+lveEm6Pxc1cVddJtcaU7S
-   A9NgWsG98jlnhN2PoBiFtorrkp1rI0MfsoXT4UkhuvPnF3Vbq4tG/dehZ
-   pe0DqUPLEI3Q7xKzYagaGKVbmrGHPR13f1Cx3QPq0w4e2JZnshJ/2jkHW
-   A==;
-IronPort-SDR: e955Di8nOuIcxBszk9/hrdrDZX6jWu3/SGpc47PPQihQa38yD/XFv/YNDTO8zxIt5WUrjpYEpy
- ePwTrgytnVdretnjhtT1IOt9oqWTGVMjRCBUz5fBsFzNOWyfnz67TlWoZO2H8MgkRE0MZAVWuu
- 1rxCGOSLeInr6JKm8bs/1PC1sgfJGHEyikOnMw5KwMIgCpzpNNxr2nnJFypl6gQU+YwdqpgJ9N
- 3o+n/McOaVEax/MShx1dX+ni58+CWljK9pfs93k1XpK9IocGjWlXJfe2TK0OjbgcjK204FtbHv
- Gf0OXGOrzAcX/a2GiOALjSbV
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="153345042"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Feb 2022 15:51:56 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 16 Feb 2022 15:51:56 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 16 Feb 2022 15:51:56 -0700
-Date:   Wed, 16 Feb 2022 23:54:34 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        <UNGLinuxDriver@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        <linux-omap@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/5] net: lan966x: remove guards against
- !BRIDGE_VLAN_INFO_BRENTRY
-Message-ID: <20220216225434.zxljgfuvjmamooi7@soft-dev3-1.localhost>
-References: <20220216164752.2794456-1-vladimir.oltean@nxp.com>
- <20220216164752.2794456-3-vladimir.oltean@nxp.com>
+        with ESMTP id S236398AbiBPXJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 18:09:10 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC218E0AC;
+        Wed, 16 Feb 2022 15:08:55 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id w7so1652449ioj.5;
+        Wed, 16 Feb 2022 15:08:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DQGdwhzxuaQQGT+cGokIeD5v2jSvIV5/tTpED2lEYT8=;
+        b=VrzW9xMaz+iTf8AL+xTD+S27kWbc8aWiEtZDp/mtHeqIxLskwHh2PrT7kGo+tZicLe
+         xI+NJBJpIQzSBtMxfv0gYm/zTI4Pxgo7gjIk1MYeMGMUuf6SIN9d6jolUyQmoAar3ZUf
+         s5W4bolp3St3JAURsaCtE0+mSZD8sNO9Dae1H4k+0uozd+jfXUxScS7vzVAsbj0EI6Wo
+         JcBfVehAeZ+hskjnNnlSTASROb6d3LZX28ZOZkqvWPRhiOiBdJMzJKz0Jip5pfypbUsP
+         YWKmIHK4whuFF+A7Ujw7jHTHdsN7vLVuonz0cesWkV7rzRv9GstjQim7JnXwC2qQ8tfn
+         tkBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DQGdwhzxuaQQGT+cGokIeD5v2jSvIV5/tTpED2lEYT8=;
+        b=I/nrL/n4VdEsVGLE6weVD5K4HdRU28F7rAjla7v4fsWGVeTjtQqqp/LiMO8b5LyPQ5
+         XVg+hdwGgWLxLEyoYV0Arr0npu1uPJJwMSP4rp8GqR8LHy4TLkbSoqXnNeHKI0rLsynj
+         wkau1dyLxXGTwcUlO1yS2N4dKZChHpYS7y2ZfPrynrVIC6B/RJM4qcurbHiPBdhmCCg4
+         NaHqJ5kd70+ykL3umhC4tKsX7veEaFvnUbML18SUma9srvrqQUW4uSGNPt87R7y5nFxf
+         zQQxepnKAkTb6X8sUmxxSm+NNc2LckcGyn9JSR8EyiDYlMdNlutDnYHvZmMlslsvrhwp
+         CE5A==
+X-Gm-Message-State: AOAM5306yYrN2BFPHs9BeD7O/BkRyUIWdew31dgM1Jx/V84veUgH5KSS
+        qlBuLrYIYKdlk+dMcBxZIBEGmOJSa8MtPL8l3CmayECtx8mGsg==
+X-Google-Smtp-Source: ABdhPJwEIuoYnzm7Z8ea6zcujmmC/+dFVlDsv5IiW0c/Y///Zf+yoYJmQU64bva0nG0Aj68NEOBdyBLRoUAvZCYvH3Q=
+X-Received: by 2002:a05:6638:382:b0:30e:3e2e:3227 with SMTP id
+ y2-20020a056638038200b0030e3e2e3227mr107859jap.234.1645052935157; Wed, 16 Feb
+ 2022 15:08:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220216164752.2794456-3-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220216092102.125448-1-jolsa@kernel.org>
+In-Reply-To: <20220216092102.125448-1-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Feb 2022 15:08:44 -0800
+Message-ID: <CAEf4Bza0B1jpZ7ZR4ZBPuDf1J0+t_S2bP2ySH26Ea6sNWbiBoQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpftool: Fix pretty print dump for maps without
+ BTF loaded
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/16/2022 18:47, Vladimir Oltean wrote:
-> 
-> Since commit 3116ad0696dd ("net: bridge: vlan: don't notify to switchdev
-> master VLANs without BRENTRY flag"), the bridge no longer emits
-> switchdev notifiers for VLANs that don't have the
-> BRIDGE_VLAN_INFO_BRENTRY flag, so these checks are dead code.
-> Remove them.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-
+On Wed, Feb 16, 2022 at 1:21 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> The commit e5043894b21f ("bpftool: Use libbpf_get_error() to check error")
+> fails to dump map without BTF loaded in pretty mode (-p option).
+>
+> Fixing this by making sure get_map_kv_btf won't fail in case there's
+> no BTF available for the map.
+>
+> Cc: Yinjun Zhang <yinjun.zhang@corigine.com>
+> Fixes: e5043894b21f ("bpftool: Use libbpf_get_error() to check error")
+> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  .../ethernet/microchip/lan966x/lan966x_switchdev.c   | 12 ------------
->  1 file changed, 12 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-> index 9fce865287e7..85099a51d4c7 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-> @@ -463,18 +463,6 @@ static int lan966x_handle_port_vlan_add(struct lan966x_port *port,
->         const struct switchdev_obj_port_vlan *v = SWITCHDEV_OBJ_PORT_VLAN(obj);
->         struct lan966x *lan966x = port->lan966x;
-> 
-> -       /* When adding a port to a vlan, we get a callback for the port but
-> -        * also for the bridge. When get the callback for the bridge just bail
-> -        * out. Then when the bridge is added to the vlan, then we get a
-> -        * callback here but in this case the flags has set:
-> -        * BRIDGE_VLAN_INFO_BRENTRY. In this case it means that the CPU
-> -        * port is added to the vlan, so the broadcast frames and unicast frames
-> -        * with dmac of the bridge should be foward to CPU.
-> -        */
-> -       if (netif_is_bridge_master(obj->orig_dev) &&
-> -           !(v->flags & BRIDGE_VLAN_INFO_BRENTRY))
-> -               return 0;
+>  tools/bpf/bpftool/map.c | 29 +++++++++++++----------------
+>  1 file changed, 13 insertions(+), 16 deletions(-)
+>
+> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+> index 7a341a472ea4..8562add7417d 100644
+> --- a/tools/bpf/bpftool/map.c
+> +++ b/tools/bpf/bpftool/map.c
+> @@ -805,29 +805,28 @@ static int maps_have_btf(int *fds, int nb_fds)
+>
+>  static struct btf *btf_vmlinux;
+>
+> -static struct btf *get_map_kv_btf(const struct bpf_map_info *info)
+> +static int get_map_kv_btf(const struct bpf_map_info *info, struct btf **btf)
+>  {
+> -       struct btf *btf = NULL;
+> +       int err = 0;
+>
+>         if (info->btf_vmlinux_value_type_id) {
+>                 if (!btf_vmlinux) {
+>                         btf_vmlinux = libbpf_find_kernel_btf();
+> -                       if (libbpf_get_error(btf_vmlinux))
+> +                       err = libbpf_get_error(btf_vmlinux);
+> +                       if (err) {
+>                                 p_err("failed to get kernel btf");
+> +                               return err;
+> +                       }
+>                 }
+> -               return btf_vmlinux;
+> +               *btf = btf_vmlinux;
+>         } else if (info->btf_value_type_id) {
+> -               int err;
 > -
->         if (!netif_is_bridge_master(obj->orig_dev))
->                 lan966x_vlan_port_add_vlan(port, v->vid,
->                                            v->flags & BRIDGE_VLAN_INFO_PVID,
-> --
-> 2.25.1
-> 
+> -               btf = btf__load_from_kernel_by_id(info->btf_id);
+> -               err = libbpf_get_error(btf);
+> -               if (err) {
+> +               *btf = btf__load_from_kernel_by_id(info->btf_id);
+> +               err = libbpf_get_error(*btf);
+> +               if (err)
+>                         p_err("failed to get btf");
+> -                       btf = ERR_PTR(err);
+> -               }
+>         }
 
--- 
-/Horatiu
+get_map_kv_btf is supposed to set btf to NULL, otherwise you can get a
+crash in the caller
+
+I've added
+
+else {
+    *btf = NULL;
+}
+
+and force-pushed
+
+
+>
+> -       return btf;
+> +       return err;
+>  }
+>
+>  static void free_map_kv_btf(struct btf *btf)
+> @@ -862,8 +861,7 @@ map_dump(int fd, struct bpf_map_info *info, json_writer_t *wtr,
+>         prev_key = NULL;
+>
+>         if (wtr) {
+> -               btf = get_map_kv_btf(info);
+> -               err = libbpf_get_error(btf);
+> +               err = get_map_kv_btf(info, &btf);
+>                 if (err) {
+>                         goto exit_free;
+>                 }
+> @@ -1054,8 +1052,7 @@ static void print_key_value(struct bpf_map_info *info, void *key,
+>         json_writer_t *btf_wtr;
+>         struct btf *btf;
+>
+> -       btf = get_map_kv_btf(info);
+> -       if (libbpf_get_error(btf))
+> +       if (get_map_kv_btf(info, &btf))
+>                 return;
+>
+>         if (json_output) {
+> --
+> 2.35.1
+>
