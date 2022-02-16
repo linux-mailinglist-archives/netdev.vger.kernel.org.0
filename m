@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C40A4B8CBC
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 16:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 306064B8CC5
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 16:45:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235608AbiBPPnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 10:43:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50568 "EHLO
+        id S234704AbiBPPpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 10:45:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235604AbiBPPnS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 10:43:18 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA1E16FDC5
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 07:43:05 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id b13so4686237edn.0
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 07:43:05 -0800 (PST)
+        with ESMTP id S234034AbiBPPpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 10:45:33 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398E129C120
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 07:45:21 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id x5so4565064edd.11
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 07:45:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=pbcWZh3DyezC7QLlYPScEwVAhZAtfRfEQpP4p6aHgh8=;
-        b=J4FEf7GuVdc69+UNYfnpFznxbko5upzWwb361wfPN7yS2kdSFUbzWC1RRvz/8kX3Gg
-         294KVQAvN1KiN5xG67tNloe4Z1k9vEDHtEBOyEVFYPAqaisTVPH7W3rEnnp/2TLnY6Zt
-         814ag6HMLdFX7VOVDIx3CTLd/xPCZCkoOzfc9VleC9hi/F4EsjbujvXZwF7ybA6Rfl5d
-         iJ7B0FURlM6FXarhs/c8L8W1E1zup7hvQ0yGiptjawfN0ACj82OVOkWUa9gIaH580k4M
-         0KiXDqFFKTxU9D9FRl72hqrdIPMFv3qjPKh4oKhBgO2xeTdip5XNx3EZQ0UcamCZOOTk
-         BsYg==
+        bh=NCJ1gg6xUqcIKO+Iy3gjvKwJyu2pifvFc9uwUl/mE7g=;
+        b=RnOgZTDsaU+6dE/IwDFxBqQ4PE6BCEXzV++1VRO2eJny/6/hsnKSWHnYDqRnd/XcKO
+         3Y2GKmY3Pwxex1CNVz20BHTbJDzzDXdlYX52WdlAYU67EhqTCmVsOrYdYY9sp0XXoXDx
+         qE/fkT6DGHPFpE7kaCEYBSzEbaFHUUH4K9Q8N0253GGWFVHFHFzr9h1lmP5CQQB0l8ZU
+         HXWcs+dIWKKiBLqgA0y+63mOqKJpI5i8Zkeqjl/8M27MRCqutUrKSHU/+4m2u6Uj0Tm0
+         pUO9OvRPCzFX7a6QxaQNE4M0R4fQBtmattI96t9LUMS4pQipK/z+b5p6cEWUg5rKr0yp
+         lVjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=pbcWZh3DyezC7QLlYPScEwVAhZAtfRfEQpP4p6aHgh8=;
-        b=17CjrnVD00v/OyntwTe/883EJnbiJImemfPQsiKhStngu40x3cahI+ZzsJMhJqIiLg
-         H6TNd8Hr4aKj3irheqgFcQ9YGPBcHgUeT6jQ+1MckPObCNdTy9MPuyiUcYpRqnTQGDlx
-         0S+ydJPCyVF2aofIjy4qoJzBwEf5URmyTVwEaaZ5Zc8aEWy/I2/JlEShacCOUXoa+7XK
-         N2xIhPGG0W8qlmSOmKa5USESfUTFsh/lTrtu1ZpHwtYvFB3yvxS8U7jxZ3B7CmbNXY3P
-         OxRI6hLP6DfwkWELCPy7Yg9jM6Z+wSYbXniiC1eE0OSBNDRX1XOp2X4naYQV7HYsUqw2
-         oE5Q==
-X-Gm-Message-State: AOAM532OqIn8PcR1j7okPYeSvZCat+UV+UWVo8/xVgBl66bbEzYvCVXn
-        fiYBlfZuN6buB2nAAh+LF/c=
-X-Google-Smtp-Source: ABdhPJzT6PSXo6jPwqDRnIsLok3XM1t9UAHKCwyM/7d6cJQ9oTI5y9uszbyd7DPBLkZr/8f+1G0WbA==
-X-Received: by 2002:a50:c313:0:b0:410:ef83:3605 with SMTP id a19-20020a50c313000000b00410ef833605mr3648953edb.414.1645026184497;
-        Wed, 16 Feb 2022 07:43:04 -0800 (PST)
+        bh=NCJ1gg6xUqcIKO+Iy3gjvKwJyu2pifvFc9uwUl/mE7g=;
+        b=I9zcSrpfIXOAodKfeF4iJbxGJSInBwy34+25dvbOoNVqtCsg/vgXJinMXPDrV1xlrv
+         vIvxRi2KeXacnypYyZagePdhbAEC74tQmtsGdZc4ra0Sq0qUap+VIm7aLgmF1c0tvP65
+         bPNMV2C33sdMRElAamoyhwFDsheOu8G3OqSpfcV0JzwbT1N257VYfUoEweZIqwAGthYB
+         Yt+x8rc05X85IKK5Zi8MsSi7OrojDQUHasfF5IUPXmwOUfFF2dxCUe+oDblEYHwhylOy
+         hnMsLli2VEcKwCgQtdjkz8/X3vBKYmfKPcoA5WLPoKE5p51odfth1pCuNFOtnPe9J/ZA
+         Fsxg==
+X-Gm-Message-State: AOAM532wFSGop5kmmNK1tsY7s28C0f/BwDiPpT6lZKE6k1D/Sf+jt81I
+        Vlxol86Z3PdXbhvmwF3bOOI=
+X-Google-Smtp-Source: ABdhPJxXDa1sbBttGASJ9RrAe6CRB5xoWQ1Tcs7H4H8XHeKVsD6SDD1p19IAniGUfuUY2giC8A71YA==
+X-Received: by 2002:a05:6402:d6e:b0:410:8169:46de with SMTP id ec46-20020a0564020d6e00b00410816946demr3626529edb.328.1645026319796;
+        Wed, 16 Feb 2022 07:45:19 -0800 (PST)
 Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id 25sm42359ejh.5.2022.02.16.07.43.03
+        by smtp.gmail.com with ESMTPSA id m25sm44936ejl.38.2022.02.16.07.45.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 07:43:03 -0800 (PST)
-Date:   Wed, 16 Feb 2022 17:43:02 +0200
+        Wed, 16 Feb 2022 07:45:19 -0800 (PST)
+Date:   Wed, 16 Feb 2022 17:45:18 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -55,15 +55,14 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next 1/6] net: dsa: add support for phylink
- mac_select_pcs()
-Message-ID: <20220216154302.7g7kjbhfchuwzeef@skbuf>
+Subject: Re: [PATCH net-next 5/6] net: dsa: qca8k: move pcs configuration
+Message-ID: <20220216154518.piewevdckvxhzkbe@skbuf>
 References: <Yg0SYHh1YNWsPB1D@shell.armlinux.org.uk>
- <E1nKLsX-009NMX-2e@rmk-PC.armlinux.org.uk>
+ <E1nKLsr-009NN1-HQ@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1nKLsX-009NMX-2e@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1nKLsr-009NN1-HQ@rmk-PC.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -74,36 +73,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 03:06:01PM +0000, Russell King (Oracle) wrote:
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index bd78192e0e47..1138d40f7897 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -1011,6 +1011,20 @@ static void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
->  	}
+On Wed, Feb 16, 2022 at 03:06:21PM +0000, Russell King (Oracle) wrote:
+> @@ -1981,6 +1917,89 @@ static int qca8k_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+>  			    const unsigned long *advertising,
+>  			    bool permit_pause_to_mac)
+>  {
+> +	struct qca8k_priv *priv = pcs_to_qca8k_pcs(pcs)->priv;
+> +	int cpu_port_index, ret, port;
+> +	u32 reg, val;
+> +
+> +	port = pcs_to_qca8k_pcs(pcs)->port;
+> +	switch (port) {
+> +	case 0:
+> +		reg = QCA8K_REG_PORT0_PAD_CTRL;
+> +		cpu_port_index = QCA8K_CPU_PORT0;
+> +		break;
+> +
+> +	case 6:
+> +		reg = QCA8K_REG_PORT6_PAD_CTRL;
+> +		cpu_port_index = QCA8K_CPU_PORT6;
+> +		break;
+> +
+> +	default:
+> +		WARN_ON(1);
+> +	}
+> +
+> +	/* Enable/disable SerDes auto-negotiation as necessary */
+> +	ret = qca8k_read(priv, QCA8K_REG_PWS, &val);
+> +	if (ret)
+> +		return ret;
+> +	if (phylink_autoneg_inband(mode))
+> +		val &= ~QCA8K_PWS_SERDES_AEN_DIS;
+> +	else
+> +		val |= QCA8K_PWS_SERDES_AEN_DIS;
+> +	qca8k_write(priv, QCA8K_REG_PWS, val);
+> +
+> +	/* Configure the SGMII parameters */
+> +	ret = qca8k_read(priv, QCA8K_REG_SGMII_CTRL, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	val |= QCA8K_SGMII_EN_SD;
+> +
+> +	if (priv->ports_config.sgmii_enable_pll)
+> +		val |= QCA8K_SGMII_EN_PLL | QCA8K_SGMII_EN_RX |
+> +		       QCA8K_SGMII_EN_TX;
+> +
+> +	if (dsa_is_cpu_port(priv->ds, port)) {
+> +		/* CPU port, we're talking to the CPU MAC, be a PHY */
+> +		val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
+> +		val |= QCA8K_SGMII_MODE_CTRL_PHY;
+> +	} else if (interface == PHY_INTERFACE_MODE_SGMII) {
+> +		val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
+> +		val |= QCA8K_SGMII_MODE_CTRL_MAC;
+> +	} else if (interface == PHY_INTERFACE_MODE_1000BASEX) {
+> +		val &= ~QCA8K_SGMII_MODE_CTRL_MASK;
+> +		val |= QCA8K_SGMII_MODE_CTRL_BASEX;
+> +	}
+> +
+> +	qca8k_write(priv, QCA8K_REG_SGMII_CTRL, val);
+> +
+> +	/* From original code is reported port instability as SGMII also
+> +	 * require delay set. Apply advised values here or take them from DT.
+> +	 */
+> +	if (interface == PHY_INTERFACE_MODE_SGMII)
+> +		qca8k_mac_config_setup_internal_delay(priv, cpu_port_index, reg);
+> +	/* For qca8327/qca8328/qca8334/qca8338 sgmii is unique and
+> +	 * falling edge is set writing in the PORT0 PAD reg
+> +	 */
+> +	if (priv->switch_id == QCA8K_ID_QCA8327 ||
+> +	    priv->switch_id == QCA8K_ID_QCA8337)
+> +		reg = QCA8K_REG_PORT0_PAD_CTRL;
+> +
+> +	val = 0;
+> +
+> +	/* SGMII Clock phase configuration */
+> +	if (priv->ports_config.sgmii_rx_clk_falling_edge)
+> +		val |= QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE;
+> +
+> +	if (priv->ports_config.sgmii_tx_clk_falling_edge)
+> +		val |= QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE;
+> +
+> +	if (val)
+> +		ret = qca8k_rmw(priv, reg,
+> +				QCA8K_PORT0_PAD_SGMII_RXCLK_FALLING_EDGE |
+> +				QCA8K_PORT0_PAD_SGMII_TXCLK_FALLING_EDGE,
+> +				val);
+> +
+> +
+
+Would be nice to avoid two consecutive empty lines at the end.
+
+>  	return 0;
 >  }
 >  
-> +static struct phylink_pcs *dsa_port_phylink_mac_select_pcs(
-> +					struct phylink_config *config,
-> +					phy_interface_t interface)
+> -- 
+> 2.30.2
+> 
 
-Would be nice to align the arguments to the open parenthesis if possible:
-
-static struct phylink_pcs *
-dsa_port_phylink_mac_select_pcs(struct phylink_config *config,
-				phy_interface_t interface)
-
-Same 3 lines consumed in both cases, but it's more in line to what was
-done for other functions - dsa_slave_fdb_dump, dsa_slave_vlan_check_for_8021q_uppers,
-dsa_find_designated_bridge_port_by_vid, etc.
-
-> +{
-> +	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
-> +	struct dsa_switch *ds = dp->ds;
-> +	struct phylink_pcs *pcs = NULL;
-> +
-> +	if (ds->ops->phylink_mac_select_pcs)
-> +		pcs = ds->ops->phylink_mac_select_pcs(ds, dp->index, interface);
-> +
-> +	return pcs;
-> +}
