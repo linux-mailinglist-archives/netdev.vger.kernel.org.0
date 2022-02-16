@@ -2,59 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C364B9127
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C4C4B913D
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbiBPT1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 14:27:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57688 "EHLO
+        id S233755AbiBPTeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 14:34:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiBPT1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:27:19 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9CD1A615F;
-        Wed, 16 Feb 2022 11:27:03 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1nKPx2-0007to-JQ; Wed, 16 Feb 2022 20:26:56 +0100
-Date:   Wed, 16 Feb 2022 20:26:56 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, kevmitch@arista.com
-Subject: Re: [PATCH net-next 01/14] netfilter: conntrack: mark UDP zero
- checksum as CHECKSUM_UNNECESSARY
-Message-ID: <20220216192656.GB20500@breakpoint.cc>
-References: <20220209133616.165104-1-pablo@netfilter.org>
- <20220209133616.165104-2-pablo@netfilter.org>
- <7eed8111-42d7-63e1-d289-346a596fc933@nvidia.com>
- <20220216152842.GA20500@breakpoint.cc>
- <Yg0gmE8y4mweUNj1@salvia>
- <3abe91c7-6558-4f1d-5e6b-e74e71c6c23b@nvidia.com>
+        with ESMTP id S233179AbiBPTeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:34:04 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED021F3F36;
+        Wed, 16 Feb 2022 11:33:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645040031; x=1676576031;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DW89b/8Ko6h9eKTgdnQPZJ3jVF9aivPC3/A21YT219Q=;
+  b=Cm4FOG49PO/rXklUsdp99syK6HEgMkc6SbiQfA9sDOZZKH+Nkz9OG2Y3
+   L+AOUX1EgnKeLk0C4uiF+QOMEtxU6XxccqxqlKWX9JAiVwJkp4wJZAOkS
+   bzZkmzH62iNfuqTX8fqD7Mh/GymYnyntJGJ656TB/Q/+CfjmApZEXIsyS
+   Iv4+B15daXryzHvagYBZPmY9bDB0ibSBa8/NXliPeSeBfVwrQ2cQMUSfL
+   yQOYVsza1OWnzIZzEV4csQK9amxlKkgzTdvPXf84zwy1kFyCqOorMB6cO
+   KJgCW3j0Vz2XZhngZsyZLhU+EgeiJJk421DyfGy68wpzKBWViz0TacmYE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="238112447"
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="238112447"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:33:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="503175362"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 16 Feb 2022 11:33:48 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKQ3f-000B3q-E1; Wed, 16 Feb 2022 19:33:47 +0000
+Date:   Thu, 17 Feb 2022 03:33:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Juergen Borleis <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: lan9303: add VLAN IDs to master device
+Message-ID: <202202170354.djrMhJqt-lkp@intel.com>
+References: <20220216151111.6376-1-mans@mansr.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3abe91c7-6558-4f1d-5e6b-e74e71c6c23b@nvidia.com>
+In-Reply-To: <20220216151111.6376-1-mans@mansr.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gal Pressman <gal@nvidia.com> wrote:
-> >> Probably better to revert and patch nf_reject instead to
-> >> handle 0 udp csum?
-> > Agreed.
-> 
-> Thanks, should I submit a revert?
+Hi Mans,
 
-No need, its backed out now in nf-next.
+Thank you for the patch! Yet something to improve:
 
-Kevin, feel free to send a v2 that patches reject csum
-to fix the issue you were seeing.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc4 next-20220216]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Mans-Rullgard/net-dsa-lan9303-add-VLAN-IDs-to-master-device/20220216-231201
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git c5d9ae265b105d9a67575fb67bd4650a6fc08e25
+config: openrisc-randconfig-r004-20220216 (https://download.01.org/0day-ci/archive/20220217/202202170354.djrMhJqt-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/960beb0e82f5d219a4f7e8bdcc49fb548a82a69d
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Mans-Rullgard/net-dsa-lan9303-add-VLAN-IDs-to-master-device/20220216-231201
+        git checkout 960beb0e82f5d219a4f7e8bdcc49fb548a82a69d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/net/dsa/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/dsa/lan9303-core.c: In function 'lan9303_port_enable':
+>> drivers/net/dsa/lan9303-core.c:1095:9: error: implicit declaration of function 'vlan_vid_add' [-Werror=implicit-function-declaration]
+    1095 |         vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
+         |         ^~~~~~~~~~~~
+   drivers/net/dsa/lan9303-core.c: In function 'lan9303_port_disable':
+>> drivers/net/dsa/lan9303-core.c:1111:9: error: implicit declaration of function 'vlan_vid_del' [-Werror=implicit-function-declaration]
+    1111 |         vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
+         |         ^~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/vlan_vid_add +1095 drivers/net/dsa/lan9303-core.c
+
+  1082	
+  1083	static int lan9303_port_enable(struct dsa_switch *ds, int port,
+  1084				       struct phy_device *phy)
+  1085	{
+  1086		struct lan9303 *chip = ds->priv;
+  1087		struct dsa_port *cpu_dp;
+  1088	
+  1089		if (!dsa_is_user_port(ds, port))
+  1090			return 0;
+  1091	
+  1092		dsa_switch_for_each_cpu_port(cpu_dp, ds)
+  1093			break;
+  1094	
+> 1095		vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
+  1096	
+  1097		return lan9303_enable_processing_port(chip, port);
+  1098	}
+  1099	
+  1100	static void lan9303_port_disable(struct dsa_switch *ds, int port)
+  1101	{
+  1102		struct lan9303 *chip = ds->priv;
+  1103		struct dsa_port *cpu_dp;
+  1104	
+  1105		if (!dsa_is_user_port(ds, port))
+  1106			return;
+  1107	
+  1108		dsa_switch_for_each_cpu_port(cpu_dp, ds)
+  1109			break;
+  1110	
+> 1111		vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
+  1112	
+  1113		lan9303_disable_processing_port(chip, port);
+  1114		lan9303_phy_write(ds, chip->phy_addr_base + port, MII_BMCR, BMCR_PDOWN);
+  1115	}
+  1116	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
