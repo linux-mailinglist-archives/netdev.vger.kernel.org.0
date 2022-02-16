@@ -2,113 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81CE04B8BB9
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 15:44:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A63EA4B8BD7
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 15:55:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235154AbiBPOoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 09:44:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55250 "EHLO
+        id S235227AbiBPOzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 09:55:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232255AbiBPOob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 09:44:31 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2137.outbound.protection.outlook.com [40.107.20.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF62F6E7A3;
-        Wed, 16 Feb 2022 06:44:18 -0800 (PST)
+        with ESMTP id S235220AbiBPOzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 09:55:45 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80082.outbound.protection.outlook.com [40.107.8.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31041F6B88
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 06:55:28 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d7nir+KeJEoaqGw1+IvFeRBHOHdJVnUOAtAyuHQfy09HAxv+z9RYN5a65ATOAAvRTgVysafhrG8IZpmuLJ680Oxvb7OdpCEXega8IuQzGqLFnLqtFsS/RwviDbuolQ2vJuA3IKRLyptU9b9KFaqth1kcG+9B0iiL2dnq5M4eq4n40kFb6WU2vEjU4b7v04tevxrO17PeK0R0MHl6VBycSzZ4euI8BK4GaQ/mYAKUM/V6B4rN5XHHrL+5WKuAcj83gEGTrDKdN+LZnDdBohRbyxdkA1UyXSa+i2UfbdqVukfRmcRl4UI1JQAFQw5UNX0MT8D5xVoPQfJSy4xwl1KEwA==
+ b=INhxoThn5mlUWDexiWBawdnyT7/Gm1yI+UsWLO4qknGUPVIp2GQOCTH5qDJORwbkGqKqYtFRq7DZNCadU5uV24gGqm5v2hXnOA8fc2cWoGYnf5lPrFO8C08VlFJlg10bnSIFEsl39mM3631ldQoKBjsol0BohykWUNadPSovc6zy5BZtYfbyyd8oEr2x0KzryvlUpN6y1o0JawpYqW64xyme9YjkWFlS981FuoXygxMc8RReypXOzQpEEGhc79ByLAHFx1ZL8DeZYZj9hVlPTZGiI9E/Y0tSEO/TdP2jT91VsRLdduA/uXnxbRJk+ZINPh34ftVYZuuMSzQcgg2kZw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sd7u3KWTIEgWtCJPz/jS4t742HdUcM44Gt5/ATBgeLM=;
- b=fz5mExt4BrSYGR+mXGKUbcylp0KgE31MUB7j439bcnZtcCzwNgHDBILrQNr5ow+39Pf3TFD086jCEIVGpRp+aHuZ9TdNE7o+NTylWeqzDsOKjctdCC8LmQw/19CdqVEslEQRiRxtkRVj/X5S799M2+QWAUsC2wcRj3Q7iXm9/28gq6BJbMe616xaRpKeeUiIwVc1Fjox9Oq/t95cIITWGo3+JZtCn6W9LV19RoCWmU6BZJWoz5fRZxTKcuuToLyWNBghI2noCMNK1L66L2+K0bymhw8GY2GCKl6J82hVJNH8OE58+VNVn1qUCruyG+3wS11etdxTqqS5zciG5nCYpg==
+ bh=OKoh16fpd1PaMVoVGCto870GKiGT01AbOkjA44ti8Hk=;
+ b=IrJ7yhGpqRZzD5FRtk4QAUbPKOqfDa94tSaqOaShJJihp42BWMg0RjSTRhsf2aIJkC70KsL/JPjvvWsiMZ8L2SME43qGqAguTIESrFmWe4N93+m6Pb/OBYPdCqasT/QfWB8gO2QAs2dT5VaBLgR6bP96lJiju4wYHcJEG4DEClufogBWAPYffcUwL6kn1qE+y/V8gjqe5VVFh1SbtO9I/fChlMLIT31L4dvT+//CNFafxnmuUIN1GOaxywVvZDb8obhF4VNZHmx07ItRjnEzHAs0aQK1ORincjER+Pe1nBus93em7FIzkOnVGA/pX1vrCPgxJ+s043KLWElyU01imQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sd7u3KWTIEgWtCJPz/jS4t742HdUcM44Gt5/ATBgeLM=;
- b=rQGSQXW4p85qg+HKKDEmAsjWBbxn/U1B7KukfNcQWBI5X8L7iFgOVtJL3PprsaKT7TLOnb0bRJjDKOJnBJA5+cV+5sPK1WxxV6mcmuhFRBIFXjbDJ6hLDUbmnRFT2mbVqWUo0rNA+mUTVEhgYKc5yH5e9/QvnPRsFX4GcZszo9w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
- by VI1P190MB0496.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:3a::25) with
+ bh=OKoh16fpd1PaMVoVGCto870GKiGT01AbOkjA44ti8Hk=;
+ b=pA4lEuG69QcKmKW4NmnY/EL6yGsJU8/92kfESjnymL/W6IFyGrGC2rTGPzcsAYgjCKxsGbN7Y3YVn7hYJXDk83NrtdqPiJBcwVZ/rjw/k+CZJubsls9RXeDx1aig/Wo6E5rkT5U9qrX+g7XbjboxyMOA0otP53D7338xUTqTW/4=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB6215.eurprd04.prod.outlook.com (2603:10a6:20b:b6::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Wed, 16 Feb
- 2022 14:44:17 +0000
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::f16c:7fde:c692:f911]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::f16c:7fde:c692:f911%5]) with mapi id 15.20.4975.019; Wed, 16 Feb 2022
- 14:44:16 +0000
-From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: prestera: flower: fix destroy tmpl in chain
-Date:   Wed, 16 Feb 2022 16:43:44 +0200
-Message-Id: <1645022624-2010-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: FR3P281CA0023.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1c::7) To VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:800:123::23)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Wed, 16 Feb
+ 2022 14:55:26 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Wed, 16 Feb 2022
+ 14:55:26 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.B. Lu" <yangbo.lu@nxp.com>, Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next 00/11] Support PTP over UDP with the ocelot-8021q
+ DSA tagging protocol
+Thread-Topic: [PATCH net-next 00/11] Support PTP over UDP with the
+ ocelot-8021q DSA tagging protocol
+Thread-Index: AQHYI0IJq3zzg92xLUKeKWd01UxvJayWQ/GA
+Date:   Wed, 16 Feb 2022 14:55:25 +0000
+Message-ID: <20220216145525.tekpe2xhuzmz7lyb@skbuf>
+References: <20220216143014.2603461-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220216143014.2603461-1-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e3674240-f31a-4da2-fcca-08d9f15c5db1
+x-ms-traffictypediagnostic: AM6PR04MB6215:EE_
+x-microsoft-antispam-prvs: <AM6PR04MB621546049B3D337E29DBD257E0359@AM6PR04MB6215.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Tz96qlvjb1AZBUNywbuNQRD8fDQ7jQBKojd2eHWW+UcIQyHnCHtAIUjz23d18caWSTwu5SEfBUcopOW0UdXzlHmHpHHxmSS+HbIDEvmJUA6tNl4qCpHROAA8nh0xqxqHM9tpk/KuPE+LQzkgnBotYiMWYQtTC3QTrQ9Og2TMXCaonn8DPQGR01zhsuGtMdpAkoerPHVZLn0BrSuvOobnzr6NBQdTZRMjexnfw2KZUFvg0USWbOGSiVYgDYVSUfoYYeVaxGpv3I3B8vmRaJRka2RL2lghdq7n3jtTn8Wka5ugXorroxWt6qZvpw0SuEPkqgSUSs1NYEFNxLzYlpVsBCEQ2CcYCJV5mnVBYO0EFAt0aNOH8CwOKgWmJ2i+kyFIyzZhrv2a2lWJRVy848EVkCMaCT6XEAApuqUMasf3vUme78b9FI79mDDKUf3B6Z/Jo/ucdwcbWclaSnebahY9BUewtHbqz7RfyQ9vYNne+s/o/taXDsHxVpT2ilLkHIeJUY2eFJjv0CLqTG3o6PTS/8ZZafVWNpOYHPkMHf1AgwP3cC54HecWDpOv+qBiP0s9jE7sxSYjSDD/gi/X3H+9z8LDsMSG9hZFzh4rKfaL9IORWRpDBrI98HnMdOifvkUBgBsM++9w96DqYSsa3aVK1Mcs8WZD6ZzBazWAV7FlqGKt34J199EH38PkE6wbVy5eeXCcX9VnygurMICMY3+nfg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6486002)(38070700005)(71200400001)(122000001)(38100700002)(508600001)(2906002)(7416002)(4744005)(5660300002)(8936002)(44832011)(83380400001)(91956017)(316002)(33716001)(54906003)(6916009)(186003)(66946007)(26005)(6512007)(9686003)(6506007)(86362001)(76116006)(66476007)(66556008)(66446008)(8676002)(4326008)(64756008)(1076003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?cq7vFEsxDtlGLmZo16L3TuF3LBnnkSbzqs8ua8QykGMBpgO/88PHDiJ+v0V2?=
+ =?us-ascii?Q?aFnKnF1XPussINOEbqJXYpNwQMl3oqr8Q3kjUjaQartfizidzy4cRvtweiyP?=
+ =?us-ascii?Q?jyETO/9cuy5EDUD8mEuirJAWHU6VJR+FP2Vk6o2XwOCoCBz5IHy305ABt3c9?=
+ =?us-ascii?Q?vq2gQYCR2mu6zuDftvivEVxJBv6RRUrve4rfnAx6g4e+8xkr1tu3EGFBTvT/?=
+ =?us-ascii?Q?nwDIUvlwtvv106LKy7SlReomCkGScxCgm5IGdCPjkgUvvIipi/UrBughqsqb?=
+ =?us-ascii?Q?9tLkcW5HXMgD2fyspVJpBiR+n0vjZZkPkvkl2b+XVFOmjVDT/fyovfgrQT+r?=
+ =?us-ascii?Q?tA6wXMReL0fpJMrINI4Abvo2Xi/GUJmI2lRqqzG0Q0t6nu3+Y61g5US6HwYX?=
+ =?us-ascii?Q?wxAycLSYhcER5GDAy1GunIv8V2hT5n2OcgwIJCwnEanYtAqWyCy19RUQAe28?=
+ =?us-ascii?Q?I1FjSb16lKGy6tILpf3JMissK5b4wi0BXP8sU2bo2pKMM6+sC+A17/9C+Fg4?=
+ =?us-ascii?Q?6+EbjiaDcAISkUsr01X4B940aEZu3kdfCoHmYllDxD6TSifUbupBe7HrOgb4?=
+ =?us-ascii?Q?pVFQfMmBq4NhbELeORIhP5nZp9257ZF68Wgmngw7KRUBTJ+qX7gEUPQGx/ZZ?=
+ =?us-ascii?Q?H1uRiJAFAxJcou0XOr6t0hFD8eaxwSK7Oppk7FvETAgjZRw00lEfIu18bdjd?=
+ =?us-ascii?Q?30iostBF7u7KBovcx+4ZDmMRng1pGOxMgIu7lDYFQEWEk7+md89V/goe4XMb?=
+ =?us-ascii?Q?JDHfY5ubYyT/QWG3HWu/Q+20i/HDKxeHeIvwUG+0WHj2TPu26NqhDEk4DYpn?=
+ =?us-ascii?Q?hx8swscxRnvd6LD9PqJ8B1zHkJh3lR2OpnCnswPJ2jym0qs352r6tK6/9hZg?=
+ =?us-ascii?Q?R8NYIjS36xiZzNY60Ld5owM6AGdrlPYiU+cQfoDhQlX3gXtVBYK2mcIQo4jQ?=
+ =?us-ascii?Q?h8Ivign2KIRzXJGpv2F7vUMq6t3mJ3L3D6ci1PYaPyqLtZUcdOUt8jEEhdLL?=
+ =?us-ascii?Q?2pPcbumv/fB2JIrxiQLQ6O4iBNLGhVEzoRGodT8S6jdNrEAXw1BhtqUmR/qN?=
+ =?us-ascii?Q?LPvZ1Rl/oKYpnqNNlAZpprS3E98rbVzP7hcIDE4IdhGhdqfa8vCQJELeViz7?=
+ =?us-ascii?Q?mRwdgKQXC9t7VfmLw7xb2dsBp//8Xou93qVOldk0lJ6QAGTA/fGrA0K3eS3u?=
+ =?us-ascii?Q?UC7mPtOFhlhoxcuXfaWzQNTwr53K60cCWURB6MidGLX8munt3FvtRTxYHxcu?=
+ =?us-ascii?Q?b0qPevJyixQr4idV7j8vzVRaymKw5VDE5jaHshsLTb4vfhGjKPRlot1yWpn5?=
+ =?us-ascii?Q?PvUleFw324bA1sNX+f22KrD8GqUyKkRLdayqWLaG1aho87sfYuZtu/gzROvE?=
+ =?us-ascii?Q?D8QA09HQm5e4/XeqABp04yKKwrzJzfUeU3y+ezQM+PqYIvgjo0W6UUxfm2Hr?=
+ =?us-ascii?Q?nCA17nt+WSYAuOCQFTx9qbdYV2DiJhb038tVmyZApiw/dsctz9kycXkDGPy1?=
+ =?us-ascii?Q?gbdrdILY7oR7B5xnS40lbn/PPslhbjALtnwO88WjLV6uPr+8Li+7sKoxstzB?=
+ =?us-ascii?Q?t6cjKvIcX2rbInZUm5ggjM/7+eMvn+p0GkUPpneTiHbCqIXNS88Z32fR9w+4?=
+ =?us-ascii?Q?tTEvMW/VVI5Zt8eOaL6NsEk=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <ACA4F92A9A951D4EB36080C569866368@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c327926c-a238-4abf-f9d8-08d9f15ace4a
-X-MS-TrafficTypeDiagnostic: VI1P190MB0496:EE_
-X-Microsoft-Antispam-PRVS: <VI1P190MB0496C53A60C56F3633DE7D448F359@VI1P190MB0496.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:298;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GC5mgrtzFsbV7HJCHYwmsNYiK1pMZzOfBhWOsyg5wsk86oLQpwWy7KpTNM1OXhpBpMVsHuWNA4ZwJhJqsIkomwpoxK11n1F6Ntg3r+Y8a6InwNnTOvgPQnRfrnUrG/4AQknSm00agLPJmiGhU0EoysVILmyur9QoVIHoFI2T6fFkZqK9ylQiwStz3z4LEuRd0NQsjXFplnQUKMM2cJYHZwY2dHdg5JpI5MoE6wlUgSEzLw1nNbLWhLfa4pzV0fsZ39416iY0pJabcGLY4gQgOxFLBah+wMW+LLivVGw6BLhr91GEJh5ujwcj34CJZmxJz+M4u6hHV1wF684n+14xRsAppe28UrCy1QBgf7wSsXus9PZAN25WRpnFP0ianXqqZMBVGltAjbcDB5ZUsLug1YyVFMFWbEFtjHuwT11rrLdgvJuNwrkgO9WRacykI9+mN2+QsPeTxDsFEL9L3EsIbrybZDX3N97Y8fHyiC6W9wicElN1NDWwli8+iF1dTD5DTfHw8Jkh9rZFXFCr2WB6YP4w1581iQTftgakOR1j9v+txm4LeJRcnuIkFqOu7Qp7fKi3PUkOIuz/zmKHRyfa52rrrIGyTLb/XveuyKSYoCSq85XJJPq98jQd19i8yeIiDJmdNCBrx2Xxv+pcPlMS+ANNBxFIH5mC5u25WwhEHkWeB0BseC7w9cqjGMwWqiPP
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(396003)(39830400003)(136003)(376002)(346002)(44832011)(86362001)(36756003)(54906003)(66946007)(66476007)(2616005)(8676002)(66556008)(8936002)(6486002)(4326008)(508600001)(186003)(2906002)(26005)(5660300002)(38100700002)(38350700002)(6506007)(6666004)(6512007)(316002)(83380400001)(6916009)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6+oJ9qUyPyRledV1Z0/Dwy5Y8UufxRBHIFAFMRLmvgu5fTmlFJrFI+OqkWUY?=
- =?us-ascii?Q?Gi3s/V+8zMT9FDbrPJVdOo2tBykP/1bdjVkeyl3iUlCcHjEoc/eRedQEXnn9?=
- =?us-ascii?Q?GO23rl02lPwBWwwc8y8ix/WUG7bzJPpq7OnNSCP1zgEOxlO0TM/g2elpeZU7?=
- =?us-ascii?Q?dH6JH9QNPsiE5+xsjqmTV7F4In4IymGNYAWdY6PIRNNpBXr3gWCNezQSk6SB?=
- =?us-ascii?Q?zJ5rn8mm/p205ovdG3rz0o7oy7UI5xKnTbxe/YgeukfNlgiiDR+jMJKz7xb6?=
- =?us-ascii?Q?J+7CcazWlRGwdCUS/VmK/aJYZywkmGOy+SrEX0yvhCQiA97NY2o49C716nBG?=
- =?us-ascii?Q?uBfiXG+nPrF/1tvbClTCKfdAE5JJ9psONCfiPsuPbWFXe0bModADJ3QVflsd?=
- =?us-ascii?Q?yyZb0+MZBKALeSIUAvbdPCNisVhYpx6jVebp/3HUYXDvXCP1TgfPXcIDGb+a?=
- =?us-ascii?Q?J9lBmmBmE8ecmuNk45K09urG+QZuLq6+NvN1WAjJCq1wR7OS2Du7p4w+nKcs?=
- =?us-ascii?Q?ArMKah6xuGjW4jipEZiIBmKjB106qj75TPQ/X0PVu3dCmnPojISFZVoBOVZf?=
- =?us-ascii?Q?qwCUG40XZZ+RgOUQ1+try2XGtHp9IfWVua04n9MgQEVnQ6qC3ahvv3iOBnF3?=
- =?us-ascii?Q?nIqMhAjX8ryMCZW1FsOfGHA48UP2ac7bmZ+mFEvsPj9USdTuLQj+CDEjCw9A?=
- =?us-ascii?Q?6vWeuRFCcm6xUBlIUTe/PXxCPPTR+jxXFnw1ZeqpbeNk89k52Q10Xfl/sM4n?=
- =?us-ascii?Q?WC18dC9qAADAl7N3qq+ZOURt+r4q2YXyEqYB+gZRtX6cwxuHvXt03fp0/HJ6?=
- =?us-ascii?Q?UYG8xO1VGbLlwK0LvDwe+cKbiKgGw7xlKLBrUhcjk00aTjhaSPxQpzycugGX?=
- =?us-ascii?Q?MJy0uyUHVrW88n4qdGdruxYVTtjnMCJHXKpvmkstJQu1fk04M6vYiAKVOgSQ?=
- =?us-ascii?Q?qQSLjfF2G9kX06Ybo9hGww0NZ+cOiEY5jBc09PW8c7lhSQDLz9hXwNyQWsjr?=
- =?us-ascii?Q?JncqnTUrglXj0aypINyoY8t5CDEKooSTgN8LNa1r/K8oRazUHOeNIa0d4cQ0?=
- =?us-ascii?Q?cbgU4scNHeSQ/z3EtabCA5kXD7RLlrUivS1kjS8guKym4XO7lCt/Te17nZiT?=
- =?us-ascii?Q?t1dxrHEu1ZljVltC6LTK0JA3n4j7hsyPunrXpLY3rX5zDML1wJ1NPKnhx4i/?=
- =?us-ascii?Q?qN0H3WTRWlmII+QLsIFSMIGOAW0sVlplQl+WcBX+oDqZMVwIa9Yfdf2UatnW?=
- =?us-ascii?Q?Nq+YQfUXrPSqS1pkKGVoK62BeCt0iiW0G1J1utrtnD21ROglU6ubT7IswemF?=
- =?us-ascii?Q?GQChUE1+PPZjzZA4oveJcJeQd26BZ0W06cgkz1h7SIXScMkQBbTi8rnnUGJy?=
- =?us-ascii?Q?qbgoM+QB3hmHyiFNkG4FrxwfHjhtOGlMWRUvGWx+7U2TGl17SyVi5MUE1Ngb?=
- =?us-ascii?Q?xMRmslqZ/OBDFWcKWpAZCOEVJxcasvEA42yQHQOq4+CIZ2/YzeQXa4BySdV0?=
- =?us-ascii?Q?NI7+F7g1vdKXa+HpwcHAPObgrUEeE7rSv2rpes4Lz1D/sYDJA+Z7dS++BrJ3?=
- =?us-ascii?Q?Y4JqJbd2olBwYTfdX5bOZZea35/UmIWeGny03oBwTeWyiQoVQoZEqoWXsyYZ?=
- =?us-ascii?Q?pV/lbGbMckbjMZDHu/sFOSvWkzMpQphN/h8rpciIo2OXENFAhAccWK5+nH0m?=
- =?us-ascii?Q?eWxXmQ=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: c327926c-a238-4abf-f9d8-08d9f15ace4a
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 14:44:16.5492
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3674240-f31a-4da2-fcca-08d9f15c5db1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2022 14:55:25.9304
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: orcVCPC+xhJUZ4AHTp+MRBS2ILy2rY+pY9FyAV7QVaTT79fKTNSoXe/Rghkw6l646dVDovQsNyyb/Eb8grvEew27kr3TZBSeTAFOn0DN9tc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0496
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xPjahhmRPKRUGkF4wj62wYOTjeio+mXvENJyxgJK4Q4b4YslaMWqocLW+AMEc6OYXQHKjPxdsL5c3zIZt5cWdQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6215
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -119,70 +128,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+On Wed, Feb 16, 2022 at 04:30:03PM +0200, Vladimir Oltean wrote:
+> There is further consolidation of traps to be done. The cookies used by
+> MRP traps overlap with the cookies used for tag_8021q PTP traps, so
+> those features could not be used at the same time.
 
-Fix flower destroy template callback to release template
-only for specific tc chain instead of all chain tempaltes.
+Huh. I always wondered what would happen if I
 
-The issue was intruduced by previous commit that introduced
-multi-chain support.
+(1) run the "git send-email" command
+(2) do some last-minute changes on the cover letter
+(3) confirm the "git send-email" command
 
-Fixes: fa5d824ce5dd ("net: prestera: acl: add multi-chain support offload")
+The answer is that it doesn't pick them up :)
 
-Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
----
- .../ethernet/marvell/prestera/prestera_flower.c    | 24 ++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+The last paragraph was supposed to read:
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-index 580fb986496a..9587707e3148 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-@@ -12,6 +12,14 @@ struct prestera_flower_template {
- 	u32 chain_index;
- };
- 
-+static void
-+prestera_flower_template_free(struct prestera_flower_template *template)
-+{
-+	prestera_acl_ruleset_put(template->ruleset);
-+	list_del(&template->list);
-+	kfree(template);
-+}
-+
- void prestera_flower_template_cleanup(struct prestera_flow_block *block)
- {
- 	struct prestera_flower_template *template;
-@@ -20,9 +28,7 @@ void prestera_flower_template_cleanup(struct prestera_flow_block *block)
- 	/* put the reference to all rulesets kept in tmpl create */
- 	list_for_each_safe(pos, n, &block->template_list) {
- 		template = list_entry(pos, typeof(*template), list);
--		prestera_acl_ruleset_put(template->ruleset);
--		list_del(&template->list);
--		kfree(template);
-+		prestera_flower_template_free(template);
- 	}
- }
- 
-@@ -423,7 +429,17 @@ int prestera_flower_tmplt_create(struct prestera_flow_block *block,
- void prestera_flower_tmplt_destroy(struct prestera_flow_block *block,
- 				   struct flow_cls_offload *f)
- {
--	prestera_flower_template_cleanup(block);
-+	struct prestera_flower_template *template;
-+	struct list_head *pos, *n;
-+
-+	list_for_each_safe(pos, n, &block->template_list) {
-+		template = list_entry(pos, typeof(*template), list);
-+		if (template->chain_index == f->common.chain_index) {
-+			/* put the reference to the ruleset kept in create */
-+			prestera_flower_template_free(template);
-+			return;
-+		}
-+	}
- }
- 
- int prestera_flower_stats(struct prestera_flow_block *block,
--- 
-2.7.4
+The work done here has nothing to do with PTP though, and is just a
+consolidation of the traps installed by this driver. The cookies used by
+MRP traps overlap with the cookies used for tag_8021q PTP traps, so
+those features could not be used at the same time - another limitation
+that is being lifted.
 
+Anyway...=
