@@ -2,139 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C79904B7F81
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 05:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4B64B7F91
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 05:40:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344279AbiBPEeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 23:34:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45906 "EHLO
+        id S244238AbiBPEkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 23:40:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232657AbiBPEeQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 23:34:16 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDADB7C6E;
-        Tue, 15 Feb 2022 20:34:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=VTnUeYEN/ux3yU4giIFFK259vlfxLfwy7+DV+rNURNo=; b=AtozEhme1vnLMD/TWoB8IIDEFL
-        R6tadFetshclOhJLIVIpFqRhbxTDXTJ7BTLSDyENrf3HD4HTn3QmRnwcG/GLW315O4+X16t92795G
-        1OG6FnVToqynAjjvbbL0s2Vd8FjQ1SoK5ytLW1gqJHR4a2yOkHWiLo0g2amMEcjQ8zFlexF8qy1Zc
-        1Wsu1Fg8sk/TE9Qj3FVSmcCEDwcyx6AISbAblirEKVuEiCAE20Ea2SlUXMkPrNlY8bnxmQ/aT9U9c
-        lDbPwsVz2aXuu6UfBEQINHQFCcgXgFcEu68UHFLIRDHlSdpV/iMzBZjNJNWi8p25ZzYT38Imx3vLm
-        FWHf4KFA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nKC0b-00EQi5-HP; Wed, 16 Feb 2022 04:33:41 +0000
-Date:   Wed, 16 Feb 2022 04:33:41 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Byungchul Park <byungchul.park@lge.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        torvalds@linux-foundation.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jlayton@kernel.org, dan.j.williams@intel.com,
-        hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: Re: Report in unix_stream_read_generic()
-Message-ID: <Ygx+pRo1+b1RBLJg@casper.infradead.org>
-References: <1644984767-26886-1-git-send-email-byungchul.park@lge.com>
- <1644985024-28757-1-git-send-email-byungchul.park@lge.com>
+        with ESMTP id S240265AbiBPEkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 23:40:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB2BF1EBB;
+        Tue, 15 Feb 2022 20:40:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF934CE24B2;
+        Wed, 16 Feb 2022 04:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC81AC004E1;
+        Wed, 16 Feb 2022 04:39:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644986397;
+        bh=TRr0KbHGQ6VSMXeClTJJpeHHqHgnwq8p1DX2o2QIs4g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QcvuhjqbAglbz0SNpwprhw39RnVThqGeht23o2gi2Vx67yX25E82uUW2Ypqb3MqrE
+         EuQaMoyhIGLOfZRjOF3E5K+YXILn2M4P9lxAMBh1JR73ymlX6FIGqT0eIWDcas6Qv8
+         XFYBegm7ew/nywWU534yPd8iK47jBrRzOu71uXoEK7Qf0w7rLP1PPHHqQ+ySdSxWu/
+         VojONYFcTonO4eRTxwJCo7Wuzyhwz5ciJ7FOljtl4Or6rpxmWJU0Mso6WQc19mzz4t
+         lhvrIKwagr8ktHBksEUXFm7PW3UTnGimzcp7PmFR914/RQYsosIdhPQ+O2pDtT9ghs
+         QAEtQpfGVxLpw==
+Date:   Tue, 15 Feb 2022 20:39:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-hams@vger.kernel.org, ajk@comnets.uni-bremen.de,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers: hamradio: 6pack: fix UAF bug caused by
+ mod_timer()
+Message-ID: <20220215203955.7d7a3eed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220216023549.50223-1-duoming@zju.edu.cn>
+References: <20220216023549.50223-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644985024-28757-1-git-send-email-byungchul.park@lge.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 01:17:03PM +0900, Byungchul Park wrote:
-> [    7.013330] ===================================================
-> [    7.013331] DEPT: Circular dependency has been detected.
-> [    7.013332] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W        
-> [    7.013333] ---------------------------------------------------
-> [    7.013334] summary
-> [    7.013334] ---------------------------------------------------
-> [    7.013335] *** DEADLOCK ***
-> [    7.013335] 
-> [    7.013335] context A
-> [    7.013336]     [S] (unknown)(&(&ei->socket.wq.wait)->dmap:0)
-> [    7.013337]     [W] __mutex_lock_common(&u->iolock:0)
-> [    7.013338]     [E] event(&(&ei->socket.wq.wait)->dmap:0)
-> [    7.013340] 
-> [    7.013340] context B
-> [    7.013341]     [S] __raw_spin_lock(&u->lock:0)
-> [    7.013342]     [W] wait(&(&ei->socket.wq.wait)->dmap:0)
-> [    7.013343]     [E] spin_unlock(&u->lock:0)
+On Wed, 16 Feb 2022 10:35:49 +0800 Duoming Zhou wrote:
+> Although del_timer_sync() in sixpack_close() waits for the timer handler
+> to finish its execution and then releases the timer, the mod_timer()
+> in sp_xmit_on_air() could be called by userspace syscall such as
+> ax25_sendmsg(), ax25_connect() and ax25_ioctl() and wakes up the timer
+> again. If the timer uses sp_xmit_on_air() to write data on pty work queue
+> that already released by unregister_netdev(), the UAF bug will happen.
 
-This seems unlikely to be real.  We're surely not actually waiting
-while holding a spinlock; existing debug checks would catch it.
+Do you mean sp->xbuff access? It's released right before the netdev
+itself is freed. Checking dev->something is also a UAF.
 
-> [    7.013407] ---------------------------------------------------
-> [    7.013407] context B's detail
-> [    7.013408] ---------------------------------------------------
-> [    7.013408] context B
-> [    7.013409]     [S] __raw_spin_lock(&u->lock:0)
-> [    7.013410]     [W] wait(&(&ei->socket.wq.wait)->dmap:0)
-> [    7.013411]     [E] spin_unlock(&u->lock:0)
-> [    7.013412] 
-> [    7.013412] [S] __raw_spin_lock(&u->lock:0):
-> [    7.013413] [<ffffffff81aa451f>] unix_stream_read_generic+0x6bf/0xb60
-> [    7.013416] stacktrace:
-> [    7.013416]       _raw_spin_lock+0x6e/0x90
-> [    7.013418]       unix_stream_read_generic+0x6bf/0xb60
+> One of the possible race conditions is shown below:
+> 
+>       (USE)                     |      (FREE)
+> ax25_sendmsg()                  |
+>   ax25_queue_xmit()             |
+>     ...                         |
+>     sp_encaps()                 |  sixpack_close()
+>       sp_xmit_on_air()          |    del_timer_sync(&sp->tx_t)
+>         mod_timer(&sp->tx_t,..) |    ...
+>         (wait a while)          |    unregister_netdev(sp->dev)) //FREE
 
-It would be helpful if you'd run this through scripts/decode_stacktrace.sh
-so we could see line numbers instead of hex offsets (which arene't much
-use without the binary kernel).
+Please clarify what is getting freed. 
 
-> [    7.013420]       unix_stream_recvmsg+0x40/0x50
-> [    7.013422]       sock_read_iter+0x85/0xd0
-> [    7.013424]       new_sync_read+0x162/0x180
-> [    7.013426]       vfs_read+0xf3/0x190
-> [    7.013428]       ksys_read+0xa6/0xc0
-> [    7.013429]       do_syscall_64+0x3a/0x90
-> [    7.013431]       entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [    7.013433] 
-> [    7.013434] [W] wait(&(&ei->socket.wq.wait)->dmap:0):
-> [    7.013434] [<ffffffff810bb017>] prepare_to_wait+0x47/0xd0
+>       sp_xmit_on_air()          |    ...
+>         pty_write()             |
+>           queue_work_on() //USE |
+> 
+> The corresponding fail log is shown below:
+> ===============================================================
+> BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
+> Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
+> ...
+> Call Trace:
+>   ...
+>   queue_work_on+0x3f/0x50
+>   pty_write+0xcd/0xe0pty_write+0xcd/0xe0
+>   sp_xmit_on_air+0xb2/0x1f0
+>   call_timer_fn+0x28/0x150
+>   __run_timers.part.0+0x3c2/0x470
+>   run_timer_softirq+0x3b/0x80
+>   __do_softirq+0xf1/0x380
+>   ...
+> 
+> This patch add condition check in sp_xmit_on_air(). If the
+> registration status of net_device is not equal to NETREG_REGISTERED,
+> the sp_xmit_on_air() will not write data to pty work queue and
+> return instead.
 
-... this may be the source of confusion.  Just because we prepare to
-wait doesn't mean we end up actually waiting.  For example, look at
-unix_wait_for_peer():
+I don't think this works as mentioned above. The question is why the tx
+queue is not stopped.
 
-        prepare_to_wait_exclusive(&u->peer_wait, &wait, TASK_INTERRUPTIBLE);
-
-        sched = !sock_flag(other, SOCK_DEAD) &&
-                !(other->sk_shutdown & RCV_SHUTDOWN) &&
-                unix_recvq_full(other);
-
-        unix_state_unlock(other);
-
-        if (sched)
-                timeo = schedule_timeout(timeo);
-
-        finish_wait(&u->peer_wait, &wait);
-
-We *prepare* to wait, *then* drop the lock, then actually schedule.
+> diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+> index b1fc153125d..7ee25e06915 100644
+> --- a/drivers/net/hamradio/6pack.c
+> +++ b/drivers/net/hamradio/6pack.c
+> @@ -141,7 +141,8 @@ static void sp_xmit_on_air(struct timer_list *t)
+>  	struct sixpack *sp = from_timer(sp, t, tx_t);
+>  	int actual, when = sp->slottime;
+>  	static unsigned char random;
+> -
+> +	if (sp->dev->reg_state !=  NETREG_REGISTERED)
+> +		return;
+>  	random = random * 17 + 41;
+>  
+>  	if (((sp->status1 & SIXP_DCD_MASK) == 0) && (random < sp->persistence)) {
 
