@@ -2,73 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D504B91DF
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F33CA4B9226
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 21:16:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238411AbiBPT4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 14:56:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37070 "EHLO
+        id S230176AbiBPUQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 15:16:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238394AbiBPTzd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:55:33 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4232B102C;
-        Wed, 16 Feb 2022 11:55:20 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id y17so5771693edd.10;
-        Wed, 16 Feb 2022 11:55:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PD6yzCgOYpWVSwenJgOD3M2UZqs8pw6XfrocvAB3tzQ=;
-        b=LW13VbLkwTWAZedb390gkobGLU9vJgjeSnIV+ZGYVYe26PJNMm7yXL4LjCeRv2Lg5X
-         W1OVyibLduGH1TDCldY5uIkkMCuAFmSwwAGrATLjBGM0rkV4dNZCciBzlAs9FXJuKDzt
-         a42VB6GOtSAAKARxnXVWWoLUa8+9hyJ4JFq68f8CkQZi+HBNlOAEIHfuZ6a7AUBVDUaq
-         P+HFnmIABQejUZFNDj7/CgtECH8x/GOXxItG8tdmFPjy7F0qmfaoeiUOX331JgeRwjXN
-         9lp+7kiN29bFKciIhvtQ/UevMttvbRBSn3bk7zRUeEeoe89Oxzae9a0UaHgJyO+rKtUo
-         wEcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PD6yzCgOYpWVSwenJgOD3M2UZqs8pw6XfrocvAB3tzQ=;
-        b=4l7J42oZuI0yXP5FH8ZntNV5iREuq7ayVIzTaBD+hCupHrFo4UVg9r2CJENYc9KvJJ
-         XZb0V5bkeDvy/ikuytaLr3w6CqujXdRAiDJcxIjPQZAqxVc+Aw6T5ZAd4ePbptJKc2CK
-         a5DZqXRTtE8Y3w7vIEd+Ocim3x/sabMZiBlOh3QhRaX5lWN5IZ4EubAJu0pr91ST/HSB
-         vjq+erp64WHwN5W9zfcWfAgpKL5RH599lcY1mLTjFDaaooM9ZhX47WovhVtQQAEnAilS
-         /VOK/ianY/kfgRDZWZFO7XRyHOg4OJn7e5wA0FJ67MI6Agv8NFvwHUlxleHdGIZdePP3
-         D4Vg==
-X-Gm-Message-State: AOAM531+/OBec82zg1ImbkDIislYfBQYyo5VqlSMiK51V87l1uxHV0un
-        7qFvqTgcz+zQZcWQT6vrLr4=
-X-Google-Smtp-Source: ABdhPJwzX9rXztPm8dfsc3nzWcIwAAE+AuY4iJwnmgmrnaoHyGFSukZqgjH8Mhp/D9pIU+CXifMmyA==
-X-Received: by 2002:a05:6402:b62:b0:3e2:a75f:b949 with SMTP id cb2-20020a0564020b6200b003e2a75fb949mr4770157edb.62.1645041319061;
-        Wed, 16 Feb 2022 11:55:19 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id z5sm284783eja.20.2022.02.16.11.55.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 11:55:18 -0800 (PST)
-Date:   Wed, 16 Feb 2022 21:55:17 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230146AbiBPUQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 15:16:42 -0500
+Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9685C60D0
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 12:16:25 -0800 (PST)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id KQiqnsZojEuQ2KQirnMe4b; Wed, 16 Feb 2022 21:16:23 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Wed, 16 Feb 2022 21:16:23 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Juergen Borleis <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: lan9303: add VLAN IDs to master device
-Message-ID: <20220216195517.o6dk64gwoe4sizl6@skbuf>
-References: <20220216151111.6376-1-mans@mansr.com>
- <202202170327.RiXqUeGc-lkp@intel.com>
+        Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] net: ll_temac: Use GFP_KERNEL instead of GFP_ATOMIC when possible
+Date:   Wed, 16 Feb 2022 21:16:16 +0100
+Message-Id: <694abd65418b2b3974106a82d758e3474c65ae8f.1645042560.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202202170327.RiXqUeGc-lkp@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,19 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 03:33:39AM +0800, kernel test robot wrote:
-> >> drivers/net/dsa/lan9303-core.c:1095:2: error: implicit declaration of function 'vlan_vid_add' [-Werror,-Wimplicit-function-declaration]
->            vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
->            ^
-> >> drivers/net/dsa/lan9303-core.c:1111:2: error: implicit declaration of function 'vlan_vid_del' [-Werror,-Wimplicit-function-declaration]
->            vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
->            ^
+XTE_MAX_JUMBO_FRAME_SIZE is over 9000 bytes and the default value for
+'rx_bd_num' is RX_BD_NUM_DEFAULT	(i.e. 1024)
 
-#include <linux/if_vlan.h>
+So this loop allocates more than 9 Mo of memory.
 
-drivers/net/dsa/Kconfig:
+Previous memory allocations in this function already use GFP_KERNEL, so
+use __netdev_alloc_skb_ip_align() and an explicit GFP_KERNEL instead of a
+implicit GFP_ATOMIC.
 
-config NET_DSA_SMSC_LAN9303
-	depends on VLAN_8021Q || VLAN_8021Q=n
+This gives more opportunities of successful allocation.
 
-and maybe you can access using dp->cpu_dp in the next revision.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index b900ab5aef2a..0547a3fde561 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -361,8 +361,9 @@ static int temac_dma_bd_init(struct net_device *ndev)
+ 		lp->rx_bd_v[i].next = cpu_to_be32(lp->rx_bd_p
+ 			+ sizeof(*lp->rx_bd_v) * ((i + 1) % lp->rx_bd_num));
+ 
+-		skb = netdev_alloc_skb_ip_align(ndev,
+-						XTE_MAX_JUMBO_FRAME_SIZE);
++		skb = __netdev_alloc_skb_ip_align(ndev,
++						  XTE_MAX_JUMBO_FRAME_SIZE,
++						  GFP_KERNEL);
+ 		if (!skb)
+ 			goto out;
+ 
+-- 
+2.32.0
+
