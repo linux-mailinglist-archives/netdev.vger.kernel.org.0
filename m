@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 850974B82A3
+	by mail.lfdr.de (Postfix) with ESMTP id 3973D4B82A2
 	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 09:12:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbiBPIJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 03:09:25 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47800 "EHLO
+        id S231434AbiBPIJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 03:09:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231434AbiBPIJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 03:09:24 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5173245675
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:09:10 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id q11-20020a17090a304b00b001b94d25eaecso1679816pjl.4
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:09:10 -0800 (PST)
+        with ESMTP id S231431AbiBPIJb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 03:09:31 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DD724466A
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:09:15 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id x4so1426966plb.4
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:09:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EMz5mP6s5hFk3iBp46LnmcdfuTfdMSI2m6f0Bue2wMs=;
-        b=a+nZGJ526O0NVrAkzSmMZ/EE4XVrt2RajTV0pxQOYodDCaZuYsa02jkYHp6Vb1UfBH
-         H7GaTZU6B20G8dQiKpQgcHvned7Sym/IM0/IDVo5agq427XSwGsqkKOu7AKiakv3d+V9
-         nJ6uObz6oqfps2x0RlIAzedPT2wjgpgDvt0OOsieQyXZksjCJI5l8bxQ0dFzmTCn2+4s
-         jQ4ChiN4gzxiRuNSLIEu09d1YSkY6LnyHNBDO8I5KXLtKWLzotMEpiWs+PVudhJO6+L+
-         6n69PCXzMuH2KLfmEZvIA0cxwRZs85pnPCINmMlzq/nplTDQQUMGGnfir1tlaqpWn3fc
-         0taw==
+        bh=D1u9wSuvQNo+KcKCVmOem/HdE9mNaPTo/yK5XGQ7ntw=;
+        b=BzA/9AS2Noho3AnO3fubeizcJLQlXOMgQxcpnz8617xMyZ5NS/ZMeB3Gv8LKMiGuOY
+         6yf9wpqE1jvcvnMLSNxWWFelGFW5mH0VJNz85XaVBJUxMPM7m0DxeQwKFhPGW+t56ZjC
+         Ekc+eLeLXinPEEz4jQi2oHfgo7QhAy44MQDozyWQnTC5th6SJumue55yr2LUyHT936E2
+         ab27Pvbemj/ajz4XnQgZtRl5X4fms/2qYAaKgtI2h/7hgh8lPcrw/ESl7poh4mcUwH67
+         2dVeGneZfdAXED8Rqy3gLUYkx6eXXn4ooDyIsM8HVdhURmmMoUVmTCmjbufCZK8lMcnd
+         N0Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EMz5mP6s5hFk3iBp46LnmcdfuTfdMSI2m6f0Bue2wMs=;
-        b=Wrhtuda/tOYxzd3NA1+I02bJ0/jECh8IGhztduvnXgMNYBVhNndM3FPBcLjwHdnz7d
-         iGah+3LxSF9iYAZFoItlWKLlFnx8ZwKMtf4kdtHlRMx4CMdOCBk9NqQ/uUPVTSv5pYrN
-         eT2YMNvlYZdxo+WYj2W+HTOpfVDl3UWgrV+sd0I9mjjgXMkfTBZ+FA5bYliE1HQ9g/ch
-         cxaWAsvkugqamnY9J8FI4Sg6FScH/m3pJUBBahWCqBFqG0lcfKFlp7GNS+iq1qQx7nlQ
-         /5WFe3NrgoBHTEO4O4w0/DZvlIpFM3ZeS922tSLYkHrNnO74M0tmZbfcgjIdOHmjRf9F
-         WVIg==
-X-Gm-Message-State: AOAM532z6CFJlAz+mtdX0+S1gDPJCMs2elAZMU+MDd2/DzkPTTyoItF5
-        T8xSI1tGgrYJQeM1bYxd64rfqUua66s=
-X-Google-Smtp-Source: ABdhPJygUPd9x250R2HY5+KRGNdUsEBvEnMYphBH+ErWQYNFXOIn4Eadm2l3y8IFVHIckY8kXGSkQQ==
-X-Received: by 2002:a17:90a:a087:b0:1b9:157f:4cc1 with SMTP id r7-20020a17090aa08700b001b9157f4cc1mr409899pjp.117.1644998949735;
-        Wed, 16 Feb 2022 00:09:09 -0800 (PST)
+        bh=D1u9wSuvQNo+KcKCVmOem/HdE9mNaPTo/yK5XGQ7ntw=;
+        b=eV6fi7+7TnkS4cZEswydnbUA1qVJa7g31IHotHBg+4JZeWfal6+loCh+Lp0yw3CSb1
+         Dls783ETLZrK3QGVlQsc0aljtrSEr1bRjokbEVQeADuBp7widUpOYluom5xvrkzbetVo
+         RQPoprVvFpiCn4YLk4ekH5tbkRaWh4oewCew+RtMhOHZyGHqj6aE3jBEQCkrrwpcZm4Q
+         dwQ8hU1TDS8arXe8wTw22D2TtYcA3pfjSOcV/lMNdLmvqbouWPc7QECy0Qp7OZjcXBoF
+         gq7LvcnUGM9KGaw2I6HtlW6a++03OzwgiFzGHLPkr+Xw99A0jK5PFIPPeyRH4kvQRBBx
+         KSWg==
+X-Gm-Message-State: AOAM531oOrU4uaKifiQLENSKVm7+zfpn1hK+mOeHBQpadDrxNlv7b0Q+
+        Cc7LNEvAQYqmmyuGehTyGbAmfzxlxt8=
+X-Google-Smtp-Source: ABdhPJwcJRtuPHc7iqf6nYM/74ZuAvYdfNiCA5twshcA0wwt1Y233AtcICQqE1obT+qNWDiCqxmDxw==
+X-Received: by 2002:a17:902:f785:b0:14d:d2b6:b7c with SMTP id q5-20020a170902f78500b0014dd2b60b7cmr1452157pln.68.1644998954909;
+        Wed, 16 Feb 2022 00:09:14 -0800 (PST)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s15sm4635662pgn.30.2022.02.16.00.09.05
+        by smtp.gmail.com with ESMTPSA id s15sm4635662pgn.30.2022.02.16.00.09.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 00:09:09 -0800 (PST)
+        Wed, 16 Feb 2022 00:09:14 -0800 (PST)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -58,9 +58,9 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Jonathan Toppins <jtoppins@redhat.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net-next 4/5] bonding: add new parameter ns_targets
-Date:   Wed, 16 Feb 2022 16:08:37 +0800
-Message-Id: <20220216080838.158054-5-liuhangbin@gmail.com>
+Subject: [PATCH net-next 5/5] bonding: add new option ns_ip6_target
+Date:   Wed, 16 Feb 2022 16:08:38 +0800
+Message-Id: <20220216080838.158054-6-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220216080838.158054-1-liuhangbin@gmail.com>
 References: <20220216080838.158054-1-liuhangbin@gmail.com>
@@ -76,391 +76,421 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new bonding parameter ns_targets to store IPv6 address.
-Add required bond_ns_send/rcv functions first before adding
-IPv6 address option setting.
+This patch add a new bonding option ns_ip6_target, which correspond
+to the arp_ip_target. With this we set IPv6 targets and send IPv6 NS
+request to determine the health of the link.
 
-Add two functions bond_send/rcv_validate so we can send/recv
-ARP and NS at the same time.
+For other related options like the validation, we still use
+arp_validate, and will change to ns_validate later.
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- drivers/net/bonding/bond_main.c    | 237 ++++++++++++++++++++++++++---
- drivers/net/bonding/bond_options.c |   2 +-
- include/net/bonding.h              |  19 ++-
- 3 files changed, 237 insertions(+), 21 deletions(-)
+ Documentation/networking/bonding.rst |  11 +++
+ drivers/net/bonding/bond_netlink.c   |  59 ++++++++++++
+ drivers/net/bonding/bond_options.c   | 138 +++++++++++++++++++++++++++
+ drivers/net/bonding/bond_sysfs.c     |  26 +++++
+ include/net/bond_options.h           |   4 +
+ include/net/bonding.h                |   7 ++
+ include/uapi/linux/if_link.h         |   1 +
+ tools/include/uapi/linux/if_link.h   |   1 +
+ 8 files changed, 247 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 00621c523276..a395b8dc2673 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -88,6 +88,7 @@
- #if IS_ENABLED(CONFIG_TLS_DEVICE)
- #include <net/tls.h>
- #endif
-+#include <net/ip6_route.h>
+diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+index ab98373535ea..525e6842dd33 100644
+--- a/Documentation/networking/bonding.rst
++++ b/Documentation/networking/bonding.rst
+@@ -313,6 +313,17 @@ arp_ip_target
+ 	maximum number of targets that can be specified is 16.  The
+ 	default value is no IP addresses.
  
- #include "bonding_priv.h"
++ns_ip6_target
++
++	Specifies the IPv6 addresses to use as IPv6 monitoring peers when
++	arp_interval is > 0.  These are the targets of the NS request
++	sent to determine the health of the link to the targets.
++	Specify these values in ffff:ffff::ffff:ffff format.  Multiple IPv6
++	addresses must be separated by a comma.  At least one IPv6
++	address must be given for NS/NA monitoring to function.  The
++	maximum number of targets that can be specified is 16.  The
++	default value is no IPv6 addresses.
++
+ arp_validate
  
-@@ -2976,30 +2977,17 @@ static void bond_validate_arp(struct bonding *bond, struct slave *slave, __be32
- 	slave->target_last_arp_rx[i] = jiffies;
- }
- 
--int bond_arp_rcv(const struct sk_buff *skb, struct bonding *bond,
--		 struct slave *slave)
-+static int bond_arp_rcv(const struct sk_buff *skb, struct bonding *bond,
-+			struct slave *slave)
- {
- 	struct arphdr *arp = (struct arphdr *)skb->data;
- 	struct slave *curr_active_slave, *curr_arp_slave;
- 	unsigned char *arp_ptr;
- 	__be32 sip, tip;
--	int is_arp = skb->protocol == __cpu_to_be16(ETH_P_ARP);
- 	unsigned int alen;
- 
--	if (!slave_do_arp_validate(bond, slave)) {
--		if ((slave_do_arp_validate_only(bond) && is_arp) ||
--		    !slave_do_arp_validate_only(bond))
--			slave->last_rx = jiffies;
--		return RX_HANDLER_ANOTHER;
--	} else if (!is_arp) {
--		return RX_HANDLER_ANOTHER;
--	}
--
- 	alen = arp_hdr_len(bond->dev);
- 
--	slave_dbg(bond->dev, slave->dev, "%s: skb->dev %s\n",
--		   __func__, skb->dev->name);
--
- 	if (alen > skb_headlen(skb)) {
- 		arp = kmalloc(alen, GFP_ATOMIC);
- 		if (!arp)
-@@ -3070,6 +3058,216 @@ int bond_arp_rcv(const struct sk_buff *skb, struct bonding *bond,
- 	return RX_HANDLER_ANOTHER;
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+static void bond_ns_send(struct slave *slave, const struct in6_addr *daddr,
-+			 const struct in6_addr *saddr, struct bond_vlan_tag *tags)
-+{
-+	struct net_device *bond_dev = slave->bond->dev;
-+	struct net_device *slave_dev = slave->dev;
-+	struct in6_addr mcaddr;
-+	struct sk_buff *skb;
-+
-+	slave_dbg(bond_dev, slave_dev, "NS on slave: dst %pI6c src %pI6c\n",
-+		  daddr, saddr);
-+
-+	skb = ndisc_ns_create(slave_dev, daddr, saddr, 0);
-+	if (!skb) {
-+		net_err_ratelimited("NS packet allocation failed\n");
-+		return;
-+	}
-+
-+	addrconf_addr_solict_mult(daddr, &mcaddr);
-+	if (bond_handle_vlan(slave, tags, skb))
-+		ndisc_send_skb(skb, &mcaddr, saddr);
-+}
-+
-+static void bond_ns_send_all(struct bonding *bond, struct slave *slave)
-+{
-+	struct in6_addr *targets = bond->params.ns_targets;
-+	struct bond_vlan_tag *tags;
-+	struct dst_entry *dst;
-+	struct in6_addr saddr;
-+	struct flowi6 fl6;
-+	int i;
-+
-+	for (i = 0; i < BOND_MAX_NS_TARGETS && !ipv6_addr_any(&targets[i]); i++) {
-+		slave_dbg(bond->dev, slave->dev, "%s: target %pI6c\n",
-+			  __func__, &targets[i]);
-+		tags = NULL;
-+
-+		/* Find out through which dev should the packet go */
-+		memset(&fl6, 0, sizeof(struct flowi6));
-+		fl6.daddr = targets[i];
-+		fl6.flowi6_oif = bond->dev->ifindex;
-+
-+		dst = ip6_route_output(dev_net(bond->dev), NULL, &fl6);
-+		if (dst->error) {
-+			dst_release(dst);
-+			/* there's no route to target - try to send arp
-+			 * probe to generate any traffic (arp_validate=0)
-+			 */
-+			if (bond->params.arp_validate)
-+				pr_warn_once("%s: no route to ns_ip6_target %pI6c and arp_validate is set\n",
-+					     bond->dev->name,
-+					     &targets[i]);
-+			bond_ns_send(slave, &targets[i], &in6addr_any, tags);
-+			continue;
-+		}
-+
-+		/* bond device itself */
-+		if (dst->dev == bond->dev)
-+			goto found;
-+
-+		rcu_read_lock();
-+		tags = bond_verify_device_path(bond->dev, dst->dev, 0);
-+		rcu_read_unlock();
-+
-+		if (!IS_ERR_OR_NULL(tags))
-+			goto found;
-+
-+		/* Not our device - skip */
-+		slave_dbg(bond->dev, slave->dev, "no path to ns_ip6_target %pI6c via dst->dev %s\n",
-+			  &targets[i], dst->dev ? dst->dev->name : "NULL");
-+
-+		dst_release(dst);
-+		continue;
-+
-+found:
-+		if (!ipv6_dev_get_saddr(dev_net(dst->dev), dst->dev, &targets[i], 0, &saddr))
-+			bond_ns_send(slave, &targets[i], &saddr, tags);
-+		dst_release(dst);
-+		kfree(tags);
-+	}
-+}
-+
-+static int bond_confirm_addr6(struct net_device *dev,
-+			      struct netdev_nested_priv *priv)
-+{
-+	struct in6_addr *addr = (struct in6_addr *)priv->data;
-+
-+	return ipv6_chk_addr(dev_net(dev), addr, dev, 0);
-+}
-+
-+static bool bond_has_this_ip6(struct bonding *bond, struct in6_addr *addr)
-+{
-+	struct netdev_nested_priv priv = {
-+		.data = addr,
-+	};
-+	int ret = false;
-+
-+	if (bond_confirm_addr6(bond->dev, &priv))
-+		return true;
-+
-+	rcu_read_lock();
-+	if (netdev_walk_all_upper_dev_rcu(bond->dev, bond_confirm_addr6, &priv))
-+		ret = true;
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
-+static void bond_validate_ns(struct bonding *bond, struct slave *slave,
-+			     struct in6_addr *saddr, struct in6_addr *daddr)
-+{
-+	int i;
-+
-+	if (ipv6_addr_any(saddr) || !bond_has_this_ip6(bond, daddr)) {
-+		slave_dbg(bond->dev, slave->dev, "%s: sip %pI6c tip %pI6c not found\n",
-+			  __func__, saddr, daddr);
-+		return;
-+	}
-+
-+	i = bond_get_targets_ip6(bond->params.ns_targets, saddr);
-+	if (i == -1) {
-+		slave_dbg(bond->dev, slave->dev, "%s: sip %pI6c not found in targets\n",
-+			  __func__, saddr);
-+		return;
-+	}
-+	slave->last_rx = jiffies;
-+	slave->target_last_arp_rx[i] = jiffies;
-+}
-+
-+static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
-+		       struct slave *slave)
-+{
-+	struct slave *curr_active_slave, *curr_arp_slave;
-+	struct icmp6hdr *hdr = icmp6_hdr(skb);
-+	struct in6_addr *saddr, *daddr;
-+
-+	if (skb->pkt_type == PACKET_OTHERHOST ||
-+	    skb->pkt_type == PACKET_LOOPBACK ||
-+	    hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT)
-+		goto out;
-+
-+	saddr = &ipv6_hdr(skb)->saddr;
-+	daddr = &ipv6_hdr(skb)->daddr;
-+
-+	slave_dbg(bond->dev, slave->dev, "%s: %s/%d av %d sv %d sip %pI6c tip %pI6c\n",
-+		  __func__, slave->dev->name, bond_slave_state(slave),
-+		  bond->params.arp_validate, slave_do_arp_validate(bond, slave),
-+		  saddr, daddr);
-+
-+	curr_active_slave = rcu_dereference(bond->curr_active_slave);
-+	curr_arp_slave = rcu_dereference(bond->current_arp_slave);
-+
-+	/* We 'trust' the received ARP enough to validate it if:
-+	 * see bond_arp_rcv().
-+	 */
-+	if (bond_is_active_slave(slave))
-+		bond_validate_ns(bond, slave, saddr, daddr);
-+	else if (curr_active_slave &&
-+		 time_after(slave_last_rx(bond, curr_active_slave),
-+			    curr_active_slave->last_link_up))
-+		bond_validate_ns(bond, slave, saddr, daddr);
-+	else if (curr_arp_slave &&
-+		 bond_time_in_interval(bond,
-+				       dev_trans_start(curr_arp_slave->dev), 1))
-+		bond_validate_ns(bond, slave, saddr, daddr);
-+
-+out:
-+	return RX_HANDLER_ANOTHER;
-+}
-+#endif
-+
-+int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond,
-+		      struct slave *slave)
-+{
-+#if IS_ENABLED(CONFIG_IPV6)
-+	bool is_ipv6 = skb->protocol == __cpu_to_be16(ETH_P_IPV6);
-+#endif
-+	bool is_arp = skb->protocol == __cpu_to_be16(ETH_P_ARP);
-+
-+	slave_dbg(bond->dev, slave->dev, "%s: skb->dev %s\n",
-+		  __func__, skb->dev->name);
-+
-+	/* Use arp validate logic for both ARP and NS */
-+	if (!slave_do_arp_validate(bond, slave)) {
-+		if ((slave_do_arp_validate_only(bond) && is_arp) ||
-+#if IS_ENABLED(CONFIG_IPV6)
-+		    (slave_do_arp_validate_only(bond) && is_ipv6) ||
-+#endif
-+		    !slave_do_arp_validate_only(bond))
-+			slave->last_rx = jiffies;
-+		return RX_HANDLER_ANOTHER;
-+	} else if (is_arp) {
-+		return bond_arp_rcv(skb, bond, slave);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	} else if (is_ipv6) {
-+		return bond_na_rcv(skb, bond, slave);
-+#endif
-+	} else {
-+		return RX_HANDLER_ANOTHER;
-+	}
-+}
-+
-+static void bond_send_validate(struct bonding *bond, struct slave *slave)
-+{
-+	bond_arp_send_all(bond, slave);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	bond_ns_send_all(bond, slave);
-+#endif
-+}
-+
- /* function to verify if we're in the arp_interval timeslice, returns true if
-  * (last_act - arp_interval) <= jiffies <= (last_act + mod * arp_interval +
-  * arp_interval/2) . the arp_interval/2 is needed for really fast networks.
-@@ -3165,7 +3363,7 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 		 * to be unstable during low/no traffic periods
- 		 */
- 		if (bond_slave_is_up(slave))
--			bond_arp_send_all(bond, slave);
-+			bond_send_validate(bond, slave);
- 	}
- 
- 	rcu_read_unlock();
-@@ -3379,7 +3577,7 @@ static bool bond_ab_arp_probe(struct bonding *bond)
- 			    curr_active_slave->dev->name);
- 
- 	if (curr_active_slave) {
--		bond_arp_send_all(bond, curr_active_slave);
-+		bond_send_validate(bond, curr_active_slave);
- 		return should_notify_rtnl;
- 	}
- 
-@@ -3431,7 +3629,7 @@ static bool bond_ab_arp_probe(struct bonding *bond)
- 	bond_set_slave_link_state(new_slave, BOND_LINK_BACK,
- 				  BOND_SLAVE_NOTIFY_LATER);
- 	bond_set_slave_active_flags(new_slave, BOND_SLAVE_NOTIFY_LATER);
--	bond_arp_send_all(bond, new_slave);
-+	bond_send_validate(bond, new_slave);
- 	new_slave->last_link_up = jiffies;
- 	rcu_assign_pointer(bond->current_arp_slave, new_slave);
- 
-@@ -3967,7 +4165,7 @@ static int bond_open(struct net_device *bond_dev)
- 
- 	if (bond->params.arp_interval) {  /* arp interval, in milliseconds. */
- 		queue_delayed_work(bond->wq, &bond->arp_work, 0);
--		bond->recv_probe = bond_arp_rcv;
-+		bond->recv_probe = bond_rcv_validate;
- 	}
- 
- 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
-@@ -5948,6 +6146,7 @@ static int bond_check_params(struct bond_params *params)
- 		strscpy_pad(params->primary, primary, sizeof(params->primary));
- 
- 	memcpy(params->arp_targets, arp_target, sizeof(arp_target));
-+	memset(params->ns_targets, 0, sizeof(struct in6_addr) * BOND_MAX_NS_TARGETS);
- 
- 	return 0;
- }
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index 2e8484a91a0e..ab575135b626 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -1052,7 +1052,7 @@ static int bond_option_arp_interval_set(struct bonding *bond,
- 			cancel_delayed_work_sync(&bond->arp_work);
- 		} else {
- 			/* arp_validate can be set only in active-backup mode */
--			bond->recv_probe = bond_arp_rcv;
-+			bond->recv_probe = bond_rcv_validate;
- 			cancel_delayed_work_sync(&bond->mii_work);
- 			queue_delayed_work(bond->wq, &bond->arp_work, 0);
- 		}
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index 7dead855a72d..f3b986f6b6e4 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -29,8 +29,11 @@
- #include <net/bond_3ad.h>
- #include <net/bond_alb.h>
- #include <net/bond_options.h>
+ 	Specifies whether or not ARP probes and replies should be
+diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
+index 1007bf6d385d..f427fa1737c7 100644
+--- a/drivers/net/bonding/bond_netlink.c
++++ b/drivers/net/bonding/bond_netlink.c
+@@ -14,6 +14,7 @@
+ #include <net/netlink.h>
+ #include <net/rtnetlink.h>
+ #include <net/bonding.h>
 +#include <net/ipv6.h>
-+#include <net/addrconf.h>
  
- #define BOND_MAX_ARP_TARGETS	16
-+#define BOND_MAX_NS_TARGETS	BOND_MAX_ARP_TARGETS
- 
- #define BOND_DEFAULT_MIIMON	100
- 
-@@ -146,6 +149,7 @@ struct bond_params {
- 	struct reciprocal_value reciprocal_packets_per_slave;
- 	u16 ad_actor_sys_prio;
- 	u16 ad_user_port_key;
-+	struct in6_addr ns_targets[BOND_MAX_NS_TARGETS];
- 
- 	/* 2 bytes of padding : see ether_addr_equal_64bits() */
- 	u8 ad_actor_system[ETH_ALEN + 2];
-@@ -628,7 +632,7 @@ struct bond_net {
- 	struct class_attribute	class_attr_bonding_masters;
+ static size_t bond_get_slave_size(const struct net_device *bond_dev,
+ 				  const struct net_device *slave_dev)
+@@ -111,6 +112,7 @@ static const struct nla_policy bond_policy[IFLA_BOND_MAX + 1] = {
+ 	[IFLA_BOND_TLB_DYNAMIC_LB]	= { .type = NLA_U8 },
+ 	[IFLA_BOND_PEER_NOTIF_DELAY]    = { .type = NLA_U32 },
+ 	[IFLA_BOND_MISSED_MAX]		= { .type = NLA_U8 },
++	[IFLA_BOND_NS_IP6_TARGET]	= { .type = NLA_NESTED },
  };
  
--int bond_arp_rcv(const struct sk_buff *skb, struct bonding *bond, struct slave *slave);
-+int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond, struct slave *slave);
- netdev_tx_t bond_dev_queue_xmit(struct bonding *bond, struct sk_buff *skb, struct net_device *slave_dev);
- int bond_create(struct net *net, const char *name);
- int bond_create_sysfs(struct bond_net *net);
-@@ -735,6 +739,19 @@ static inline int bond_get_targets_ip(__be32 *targets, __be32 ip)
- 	return -1;
+ static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1] = {
+@@ -272,6 +274,40 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 		if (err)
+ 			return err;
+ 	}
++#if IS_ENABLED(CONFIG_IPV6)
++	if (data[IFLA_BOND_NS_IP6_TARGET]) {
++		struct nlattr *attr;
++		int i = 0, rem;
++
++		bond_option_ns_ip6_targets_clear(bond);
++		nla_for_each_nested(attr, data[IFLA_BOND_NS_IP6_TARGET], rem) {
++			struct in6_addr addr6;
++
++			if (nla_len(attr) < sizeof(addr6)) {
++				NL_SET_ERR_MSG(extack, "Invalid IPv6 address");
++				return -EINVAL;
++			}
++
++			addr6 = nla_get_in6_addr(attr);
++
++			if (ipv6_addr_type(&addr6) & IPV6_ADDR_LINKLOCAL) {
++				NL_SET_ERR_MSG(extack, "Invalid IPv6 addr6");
++				return -EINVAL;
++			}
++
++			bond_opt_initextra(&newval, &addr6, sizeof(addr6));
++			err = __bond_opt_set(bond, BOND_OPT_NS_TARGETS,
++					     &newval);
++			if (err)
++				break;
++			i++;
++		}
++		if (i == 0 && bond->params.arp_interval)
++			netdev_warn(bond->dev, "Removing last ns target with arp_interval on\n");
++		if (err)
++			return err;
++	}
++#endif
+ 	if (data[IFLA_BOND_ARP_VALIDATE]) {
+ 		int arp_validate = nla_get_u32(data[IFLA_BOND_ARP_VALIDATE]);
+ 
+@@ -526,6 +562,9 @@ static size_t bond_get_size(const struct net_device *bond_dev)
+ 		nla_total_size(sizeof(u8)) + /* IFLA_BOND_TLB_DYNAMIC_LB */
+ 		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_PEER_NOTIF_DELAY */
+ 		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_MISSED_MAX */
++						/* IFLA_BOND_NS_IP6_TARGET */
++		nla_total_size(sizeof(struct nlattr)) +
++		nla_total_size(sizeof(struct in6_addr)) * BOND_MAX_NS_TARGETS +
+ 		0;
  }
  
-+static inline int bond_get_targets_ip6(struct in6_addr *targets, struct in6_addr *ip)
+@@ -603,6 +642,26 @@ static int bond_fill_info(struct sk_buff *skb,
+ 			bond->params.arp_all_targets))
+ 		goto nla_put_failure;
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++	targets = nla_nest_start(skb, IFLA_BOND_NS_IP6_TARGET);
++	if (!targets)
++		goto nla_put_failure;
++
++	targets_added = 0;
++	for (i = 0; i < BOND_MAX_NS_TARGETS; i++) {
++		if (!ipv6_addr_any(&bond->params.ns_targets[i])) {
++			if (nla_put_in6_addr(skb, i, &bond->params.ns_targets[i]))
++				goto nla_put_failure;
++			targets_added = 1;
++		}
++	}
++
++	if (targets_added)
++		nla_nest_end(skb, targets);
++	else
++		nla_nest_cancel(skb, targets);
++#endif
++
+ 	primary = rtnl_dereference(bond->primary_slave);
+ 	if (primary &&
+ 	    nla_put_u32(skb, IFLA_BOND_PRIMARY, primary->dev->ifindex))
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index ab575135b626..366ed0e2a2c6 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -34,6 +34,14 @@ static int bond_option_arp_ip_target_add(struct bonding *bond, __be32 target);
+ static int bond_option_arp_ip_target_rem(struct bonding *bond, __be32 target);
+ static int bond_option_arp_ip_targets_set(struct bonding *bond,
+ 					  const struct bond_opt_value *newval);
++#if IS_ENABLED(CONFIG_IPV6)
++static int bond_option_ns_ip6_target_add(struct bonding *bond,
++					 struct in6_addr *target);
++static int bond_option_ns_ip6_target_rem(struct bonding *bond,
++					 struct in6_addr *target);
++static int bond_option_ns_ip6_targets_set(struct bonding *bond,
++					  const struct bond_opt_value *newval);
++#endif
+ static int bond_option_arp_validate_set(struct bonding *bond,
+ 					const struct bond_opt_value *newval);
+ static int bond_option_arp_all_targets_set(struct bonding *bond,
+@@ -295,6 +303,15 @@ static const struct bond_option bond_opts[BOND_OPT_LAST] = {
+ 		.flags = BOND_OPTFLAG_RAWVAL,
+ 		.set = bond_option_arp_ip_targets_set
+ 	},
++#if IS_ENABLED(CONFIG_IPV6)
++	[BOND_OPT_NS_TARGETS] = {
++		.id = BOND_OPT_NS_TARGETS,
++		.name = "ns_ip6_target",
++		.desc = "NS targets in ffff:ffff::ffff:ffff form",
++		.flags = BOND_OPTFLAG_RAWVAL,
++		.set = bond_option_ns_ip6_targets_set
++	},
++#endif
+ 	[BOND_OPT_DOWNDELAY] = {
+ 		.id = BOND_OPT_DOWNDELAY,
+ 		.name = "downdelay",
+@@ -1184,6 +1201,127 @@ static int bond_option_arp_ip_targets_set(struct bonding *bond,
+ 	return ret;
+ }
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++static void _bond_options_ns_ip6_target_set(struct bonding *bond, int slot,
++					    struct in6_addr *target,
++					    unsigned long last_rx)
 +{
++	struct in6_addr *targets = bond->params.ns_targets;
++	struct list_head *iter;
++	struct slave *slave;
++
++	if (slot >= 0 && slot < BOND_MAX_NS_TARGETS) {
++		bond_for_each_slave(bond, slave, iter)
++			slave->target_last_arp_rx[slot] = last_rx;
++		targets[slot] = *target;
++	}
++}
++
++void bond_option_ns_ip6_targets_clear(struct bonding *bond)
++{
++	struct in6_addr addr_any = in6addr_any;
 +	int i;
 +
 +	for (i = 0; i < BOND_MAX_NS_TARGETS; i++)
-+		if (ipv6_addr_equal(&targets[i], ip))
-+			return i;
-+		else if (ipv6_addr_any(&targets[i]))
-+			break;
-+
-+	return -1;
++		_bond_options_ns_ip6_target_set(bond, i, &addr_any, 0);
 +}
 +
- /* exported from bond_main.c */
- extern unsigned int bond_net_id;
++static int bond_option_ns_ip6_target_add(struct bonding *bond, struct in6_addr *target)
++{
++	struct in6_addr *targets = bond->params.ns_targets;
++	struct in6_addr addr_any = in6addr_any;
++	int index;
++
++	if (!bond_is_ip6_target_ok(target)) {
++		netdev_err(bond->dev, "invalid NS target %pI6c specified for addition\n",
++			   target);
++		return -EINVAL;
++	}
++
++	if (bond_get_targets_ip6(targets, target) != -1) { /* dup */
++		netdev_err(bond->dev, "NS target %pI6c is already present\n",
++			   target);
++		return -EINVAL;
++	}
++
++	index = bond_get_targets_ip6(targets, &addr_any); /* first free slot */
++	if (index == -1) {
++		netdev_err(bond->dev, "NS target table is full!\n");
++		return -EINVAL;
++	}
++
++	netdev_dbg(bond->dev, "Adding NS target %pI6c\n", target);
++
++	_bond_options_ns_ip6_target_set(bond, index, target, jiffies);
++
++	return 0;
++}
++
++static int bond_option_ns_ip6_target_rem(struct bonding *bond, struct in6_addr *target)
++{
++	struct in6_addr *targets = bond->params.ns_targets;
++	unsigned long *targets_rx;
++	struct list_head *iter;
++	struct slave *slave;
++	int index, i;
++
++	if (!bond_is_ip6_target_ok(target)) {
++		netdev_err(bond->dev, "invalid NS target %pI6c specified for removal\n",
++			   target);
++		return -EINVAL;
++	}
++
++	index = bond_get_targets_ip6(targets, target);
++	if (index == -1) {
++		netdev_err(bond->dev, "unable to remove nonexistent NS target %pI6c\n",
++			   target);
++		return -EINVAL;
++	}
++
++	if (index == 0 && ipv6_addr_any(&targets[1]) && bond->params.arp_interval)
++		netdev_warn(bond->dev, "Removing last NS target with arp_interval on\n");
++
++	netdev_dbg(bond->dev, "Removing NS target %pI6c\n", target);
++
++	bond_for_each_slave(bond, slave, iter) {
++		targets_rx = slave->target_last_arp_rx;
++		for (i = index; (i < BOND_MAX_NS_TARGETS-1) && !ipv6_addr_any(&targets[i+1]); i++)
++			targets_rx[i] = targets_rx[i+1];
++		targets_rx[i] = 0;
++	}
++	for (i = index; (i < BOND_MAX_NS_TARGETS-1) && !ipv6_addr_any(&targets[i+1]); i++)
++		targets[i] = targets[i+1];
++	memset(&targets[i], 0, sizeof(struct in6_addr));
++
++	return 0;
++}
++
++static int bond_option_ns_ip6_targets_set(struct bonding *bond,
++					  const struct bond_opt_value *newval)
++{
++	struct in6_addr target;
++	int ret = -EPERM;
++
++	if (newval->string) {
++		if (!in6_pton(newval->string+1, -1, (u8 *)&target.s6_addr, -1, NULL)) {
++			netdev_err(bond->dev, "invalid NS target %pI6c specified\n",
++				   &target);
++			return ret;
++		}
++		if (newval->string[0] == '+')
++			ret = bond_option_ns_ip6_target_add(bond, &target);
++		else if (newval->string[0] == '-')
++			ret = bond_option_ns_ip6_target_rem(bond, &target);
++		else
++			netdev_err(bond->dev, "no command found in ns_ip6_targets file - use +<addr> or -<addr>\n");
++	} else {
++		ret = bond_option_ns_ip6_target_add(bond, (struct in6_addr *)newval->extra);
++	}
++
++	return ret;
++}
++#endif
++
+ static int bond_option_arp_validate_set(struct bonding *bond,
+ 					const struct bond_opt_value *newval)
+ {
+diff --git a/drivers/net/bonding/bond_sysfs.c b/drivers/net/bonding/bond_sysfs.c
+index 9b5a5df23d21..e243b02024a5 100644
+--- a/drivers/net/bonding/bond_sysfs.c
++++ b/drivers/net/bonding/bond_sysfs.c
+@@ -25,6 +25,7 @@
+ #include <linux/nsproxy.h>
+ 
+ #include <net/bonding.h>
++#include <net/ipv6.h>
+ 
+ #define to_bond(cd)	((struct bonding *)(netdev_priv(to_net_dev(cd))))
+ 
+@@ -315,6 +316,28 @@ static ssize_t bonding_show_missed_max(struct device *d,
+ static DEVICE_ATTR(arp_missed_max, 0644,
+ 		   bonding_show_missed_max, bonding_sysfs_store_option);
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++static ssize_t bonding_show_ns_targets(struct device *d,
++				       struct device_attribute *attr,
++				       char *buf)
++{
++	struct bonding *bond = to_bond(d);
++	int i, res = 0;
++
++	for (i = 0; i < BOND_MAX_NS_TARGETS; i++) {
++		if (!ipv6_addr_any(&bond->params.ns_targets[i]))
++			res += sprintf(buf + res, "%pI6c ",
++				       &bond->params.ns_targets[i]);
++	}
++	if (res)
++		buf[res-1] = '\n'; /* eat the leftover space */
++
++	return res;
++}
++static DEVICE_ATTR(ns_ip6_target, 0644,
++		   bonding_show_ns_targets, bonding_sysfs_store_option);
++#endif
++
+ /* Show the up and down delays. */
+ static ssize_t bonding_show_downdelay(struct device *d,
+ 				      struct device_attribute *attr,
+@@ -761,6 +784,9 @@ static struct attribute *per_bond_attrs[] = {
+ 	&dev_attr_arp_all_targets.attr,
+ 	&dev_attr_arp_interval.attr,
+ 	&dev_attr_arp_ip_target.attr,
++#if IS_ENABLED(CONFIG_IPV6)
++	&dev_attr_ns_ip6_target.attr,
++#endif
+ 	&dev_attr_downdelay.attr,
+ 	&dev_attr_updelay.attr,
+ 	&dev_attr_peer_notif_delay.attr,
+diff --git a/include/net/bond_options.h b/include/net/bond_options.h
+index 286b29c6c451..61b49063791c 100644
+--- a/include/net/bond_options.h
++++ b/include/net/bond_options.h
+@@ -66,6 +66,7 @@ enum {
+ 	BOND_OPT_PEER_NOTIF_DELAY,
+ 	BOND_OPT_LACP_ACTIVE,
+ 	BOND_OPT_MISSED_MAX,
++	BOND_OPT_NS_TARGETS,
+ 	BOND_OPT_LAST
+ };
+ 
+@@ -140,5 +141,8 @@ static inline void __bond_opt_init(struct bond_opt_value *optval,
+ 	__bond_opt_init(optval, NULL, ULLONG_MAX, extra, extra_len)
+ 
+ void bond_option_arp_ip_targets_clear(struct bonding *bond);
++#if IS_ENABLED(CONFIG_IPV6)
++void bond_option_ns_ip6_targets_clear(struct bonding *bond);
++#endif
+ 
+ #endif /* _NET_BOND_OPTIONS_H */
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index f3b986f6b6e4..d0dfe727e0b1 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -503,6 +503,13 @@ static inline int bond_is_ip_target_ok(__be32 addr)
+ 	return !ipv4_is_lbcast(addr) && !ipv4_is_zeronet(addr);
+ }
+ 
++static inline int bond_is_ip6_target_ok(struct in6_addr *addr)
++{
++	return !ipv6_addr_any(addr) &&
++	       !ipv6_addr_loopback(addr) &&
++	       !ipv6_addr_is_multicast(addr);
++}
++
+ /* Get the oldest arp which we've received on this slave for bond's
+  * arp_targets.
+  */
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 6218f93f5c1a..e1ba2d51b717 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -860,6 +860,7 @@ enum {
+ 	IFLA_BOND_PEER_NOTIF_DELAY,
+ 	IFLA_BOND_AD_LACP_ACTIVE,
+ 	IFLA_BOND_MISSED_MAX,
++	IFLA_BOND_NS_IP6_TARGET,
+ 	__IFLA_BOND_MAX,
+ };
+ 
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index 6218f93f5c1a..e1ba2d51b717 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -860,6 +860,7 @@ enum {
+ 	IFLA_BOND_PEER_NOTIF_DELAY,
+ 	IFLA_BOND_AD_LACP_ACTIVE,
+ 	IFLA_BOND_MISSED_MAX,
++	IFLA_BOND_NS_IP6_TARGET,
+ 	__IFLA_BOND_MAX,
+ };
  
 -- 
 2.31.1
