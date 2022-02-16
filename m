@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3076B4B9357
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 22:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3046B4B9359
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 22:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235364AbiBPVoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 16:44:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43304 "EHLO
+        id S235539AbiBPVpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 16:45:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231354AbiBPVob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 16:44:31 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0B719FAEB;
-        Wed, 16 Feb 2022 13:44:18 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id h5so1422268ioj.3;
-        Wed, 16 Feb 2022 13:44:18 -0800 (PST)
+        with ESMTP id S235531AbiBPVpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 16:45:00 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77110216179;
+        Wed, 16 Feb 2022 13:44:47 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id r64-20020a17090a43c600b001b8854e682eso3665432pjg.0;
+        Wed, 16 Feb 2022 13:44:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RYNWyjsrJKUeGFVWAqHRDg1L8mbtW6CitmbokQnb4c4=;
-        b=jzkcBdXiayCpqR1fD7fXSpPw4r6Dx8Mhmq6CkXr4jwujehq8fGGpoWUKV8NBlMEAaA
-         0jz5nAdy5wJCsIYRT7GnLlJsyCPLVs93ojILFLrCnDOwi+P1E4Acf9TuzGLQ7dz8mTnl
-         gBRMRNVXeJoDCSyN1nrVLKQEN60HXEsTRXg8MQWifV5Bl3BLXDqdZtWBgDfhU0NsuIPL
-         QLCvAkewJB1KO62a3f9YKyptSAVEEM9oIAIY+ylaHA+HOaQO1eUdeWGhdh4Km/UfzAfy
-         apkFB05gnvuusz4B8twRxpHjadwBjjv0qlbjF/cOXgzm9BCH+UOiwvuAOvdQGw0ldgAy
-         FaVQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=dgevcK5R5m/mKgU/mUZovQ8cDU/HLiXrSNnllT0PFZ4=;
+        b=fI6BiBaB/KFR8JIrwfTJR9IpZIIkqHBKqnlj36NGUYWjFwh11k/Lr+FT9nLPhS+Ap0
+         KFG8eFE3XIj0cxXPZ842euCnRnXFQc6Gors5iv3WL1NDiywM2a6PzFH3tVlSMwNoSdAD
+         YU7pvKzwpaANZr1WrPp8pkGr9KY1EJ4f2dgId7t8xs3be5/fp7jK2NmZWbAxjKGMfy6y
+         tqSJFXso75yGROqBI9YcLSee1bIyg1uq15hzMIoijCG3ADg3QveWR/VLvUfQNtDdlp52
+         22dTJ1zOCVCxPdPyeHhD5KnmL8t/Q+fp75ioHCaxxH+1ggTLYRCkvoVcSeQ4Gz4x6gsq
+         PgKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RYNWyjsrJKUeGFVWAqHRDg1L8mbtW6CitmbokQnb4c4=;
-        b=3UZkn1yyqy+jDxV+X7CL1b/FwN1pBRf++wmX1TKeaOMeR2s3lORiIv3sh0cfjfpGS9
-         CvgOi8TuUDGcYiIO7atFH0S8jH+pHZva4kFrWkQ7n/f+RKpHq+Z1xivsB+Uu59njn78a
-         MDH7FsJpyebmcBBSQXEONt1J3H42D+WYkV6hjOgyJFoRrx+UL/HaUYpI2X85/GY8XUco
-         WWtjvyxKAxRUDyyLXJyAYBrBrFJbAcno3ge91KJlcu7MTgNIg5Hr4aWiSbe0EJPifJL1
-         N4YBZBaB4QmdV3F4MIn+PadHcOkja9sXqOx2T1MEd2/KDJWbiZSVM4qyxDhowqwE5hSv
-         2WpQ==
-X-Gm-Message-State: AOAM533Y+BaVTstcNiu1CvpsB0SEnn4GKUILghfOz36DjSqwm5vf/QuO
-        nG9ieQ6PzYuFGhATwcWd2vrrgWCN1udu1JQyQlY=
-X-Google-Smtp-Source: ABdhPJxSWSDwAW7t7uEQ+tskmXGNqOJa7/JLTu86AFxLRnQ1Rw8XA+MPMRHr6kDz/edSffA65x32hySYMCSJ3UYa0e0=
-X-Received: by 2002:a05:6638:1035:b0:306:e5bd:36da with SMTP id
- n21-20020a056638103500b00306e5bd36damr3097022jan.145.1645047858028; Wed, 16
- Feb 2022 13:44:18 -0800 (PST)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dgevcK5R5m/mKgU/mUZovQ8cDU/HLiXrSNnllT0PFZ4=;
+        b=SjWtPmT5jsvHDMufdkWWaWyOvx47iEhMQoJBP8H0SdvkP2MmLfvVCK8pX/JbzHeXC0
+         PNVN2RO6GQlsdtiQygA5Njy2Hx+vfQJkcs6CWsMozEavICy57fo9ZLTbusjj5r1SRScJ
+         LwK9QVg7aXOpCkA3OGe1FTXMBWdANQwwL43weG1hyn40CcaPn3nWkNVKnqfi9Zcs0Wb3
+         /qh+9+m3tGCIQB3lOuBRdrGwOt2iHd0IeCb9ShA618Iu43mJYJzpnrucHuM1Z3qb8ytB
+         QsfjVxoBrgOqAUrAkXjZSP+oxfcCyR+URpt8t3DUpLWVvrPL4rMioVoRwuuBCoh/3mH0
+         IirA==
+X-Gm-Message-State: AOAM5326CfRVtnpGWBvoD+zWwbWBVrWjPdbRZCQlPhRj78t5eG+AQQvW
+        jNqWm1DpmxjSHd6cVzLeCT4wQeLfHyg=
+X-Google-Smtp-Source: ABdhPJwjSqZG6jHNYjFZLHiYiyyR189FywSx/+qPJ60bxqqfQpHg8qI9iYmP0cC4MwLg4KJplox7dQ==
+X-Received: by 2002:a17:902:7043:b0:14f:47:a455 with SMTP id h3-20020a170902704300b0014f0047a455mr4322627plt.44.1645047886611;
+        Wed, 16 Feb 2022 13:44:46 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id s37sm49276554pfg.144.2022.02.16.13.44.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 13:44:45 -0800 (PST)
+Subject: Re: [PATCH v2] net: dsa: lan9303: add VLAN IDs to master device
+To:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Juergen Borleis <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220216204818.28746-1-mans@mansr.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b29ad7bc-c454-06c2-7f9e-23007339e4b2@gmail.com>
+Date:   Wed, 16 Feb 2022 13:44:43 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220209184333.654927-1-jakub@cloudflare.com> <20220209184333.654927-3-jakub@cloudflare.com>
-In-Reply-To: <20220209184333.654927-3-jakub@cloudflare.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Feb 2022 13:44:07 -0800
-Message-ID: <CAEf4BzaRNLw9_EnaMo5e46CdEkzbJiVU3j9oxnsemBKjNFf3wQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Cover 4-byte load from
- remote_port in bpf_sk_lookup
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220216204818.28746-1-mans@mansr.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,64 +77,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 10:43 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> Extend the context access tests for sk_lookup prog to cover the surprising
-> case of a 4-byte load from the remote_port field, where the expected value
-> is actually shifted by 16 bits.
->
-> Acked-by: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
->  tools/include/uapi/linux/bpf.h                     | 3 ++-
->  tools/testing/selftests/bpf/progs/test_sk_lookup.c | 6 ++++++
->  2 files changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index a7f0ddedac1f..afe3d0d7f5f2 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -6453,7 +6453,8 @@ struct bpf_sk_lookup {
->         __u32 protocol;         /* IP protocol (IPPROTO_TCP, IPPROTO_UDP) */
->         __u32 remote_ip4;       /* Network byte order */
->         __u32 remote_ip6[4];    /* Network byte order */
-> -       __u32 remote_port;      /* Network byte order */
-> +       __be16 remote_port;     /* Network byte order */
-> +       __u16 :16;              /* Zero padding */
->         __u32 local_ip4;        /* Network byte order */
->         __u32 local_ip6[4];     /* Network byte order */
->         __u32 local_port;       /* Host byte order */
-> diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> index 83b0aaa52ef7..bf5b7caefdd0 100644
-> --- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> +++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> @@ -392,6 +392,7 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
->  {
->         struct bpf_sock *sk;
->         int err, family;
-> +       __u32 val_u32;
->         bool v4;
->
->         v4 = (ctx->family == AF_INET);
-> @@ -418,6 +419,11 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
->         if (LSW(ctx->remote_port, 0) != SRC_PORT)
->                 return SK_DROP;
->
-> +       /* Load from remote_port field with zero padding (backward compatibility) */
-> +       val_u32 = *(__u32 *)&ctx->remote_port;
-> +       if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
-> +               return SK_DROP;
-> +
+On 2/16/22 12:48 PM, Mans Rullgard wrote:
+> If the master device does VLAN filtering, the IDs used by the switch
+> must be added for any frames to be received.  Do this in the
+> port_enable() function, and remove them in port_disable().
+> 
+> Signed-off-by: Mans Rullgard <mans@mansr.com>
 
-Jakub, can you please double check that your patch set doesn't break
-big-endian architectures? I've noticed that our s390x test runner is
-now failing in the sk_lookup selftest. See [0]. Also CC'ing Ilya.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-  [0] https://github.com/libbpf/libbpf/runs/5220996832?check_suite_focus=true
+Should this have :
 
->         /* Narrow loads from local_port field. Expect DST_PORT. */
->         if (LSB(ctx->local_port, 0) != ((DST_PORT >> 0) & 0xff) ||
->             LSB(ctx->local_port, 1) != ((DST_PORT >> 8) & 0xff) ||
-> --
-> 2.31.1
->
+Fixes: a1292595e006 ("net: dsa: add new DSA switch driver for the
+SMSC-LAN9303")
+-- 
+Florian
