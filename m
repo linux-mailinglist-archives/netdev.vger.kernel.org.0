@@ -2,41 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 284114B82A5
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 09:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 088084B82D8
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 09:23:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbiBPILH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 03:11:07 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57888 "EHLO
+        id S229812AbiBPIX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 03:23:29 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbiBPILG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 03:11:06 -0500
-Received: from mail-m2458.qiye.163.com (mail-m2458.qiye.163.com [220.194.24.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B784D60DB4;
-        Wed, 16 Feb 2022 00:10:50 -0800 (PST)
-Received: from localhost.localdomain (unknown [117.48.120.186])
-        by mail-m2458.qiye.163.com (Hmail) with ESMTPA id 4EE69740148;
-        Wed, 16 Feb 2022 16:10:48 +0800 (CST)
-From:   Tao Liu <thomas.liu@ucloud.cn>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, edumazet@google.com, sridhar.samudrala@intel.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tao Liu <thomas.liu@ucloud.cn>
-Subject: [PATCH net v2] gso: do not skip outer ip header in case of ipip and net_failover
-Date:   Wed, 16 Feb 2022 16:10:41 +0800
-Message-Id: <20220216081041.70831-1-thomas.liu@ucloud.cn>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        with ESMTP id S229513AbiBPIX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 03:23:28 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D574F21F5E5
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:23:16 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id o2so2428503lfd.1
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:23:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=74J8wAf0ALd/kHQXPvDl1yBeM0Zj4VbU36uu5RGweYo=;
+        b=a3lsNWiNNW1ZMb/a/o0P2LTpDmj0IkDuqcYkDTv7AXwJsWQnjmIByAV/XEMJHq0LEP
+         3qilbCYB8xD6HwXOEu6J/3zdV12UxQI+8Cx0dytnF4jykyQP2C7dDgrwbqTBiDKepCUy
+         rejvK2JaJc64boEl3/6wCLV/p0bBC1aTkSrZbfIpwpwEV/R+OzDS9/xgVx/5dkCQAn4U
+         X78aoxTmVfm7V/X5g1yPcyOCh77DgmUMrpTUETDvXScPxzkztcf9HfZdA1E58uvJPaEE
+         UwohJSE3pBb4FMsJjqzJmGzrsbXCopayqZN3YF3v2czBeY6Emf64LGhyk5mjhHAk+2le
+         kKCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=74J8wAf0ALd/kHQXPvDl1yBeM0Zj4VbU36uu5RGweYo=;
+        b=GZgC/g0kKDM1voJImwRIyoQN2zWy8UqO+XmtcsmTIekjncIsafXDRGcSqTmOdog18/
+         XFAiTj6rkm8/ozOM3N6Cp1X0uTt79RKKgRpLflH/mXV1p/bDSgRvuRa67K7co17DwLMP
+         IFmxIr7J7ZPcQzeTHgRfKLekazfNj1BhIV/XwzcPIjMwnjPNbZftIVJqPvDwyUFr7AXl
+         Bc8vgu2dtrbxOHloGpr/AnIscbjOEkbJKVNt7WUZAtcGlf2yVQyP+vqrP/fMfjXHpcDM
+         bqDKSxvHWR3y/iCquzD9Pj1sZszAZRtjcSDUdd1Cb1GKDMcRkg1I6ryShEGbVkVDpWso
+         h2ng==
+X-Gm-Message-State: AOAM531riU1kwE2evPHrb+99ZIV5Lq18BZcAxu8xyLlKbqmFBdlNI38h
+        T62eANrTRtIz822pjY/EIPrdpIr+GLFP+ih6mvo=
+X-Google-Smtp-Source: ABdhPJybyg7hL8NDkL2p1MJJXxtZ5HdrMFxYztvnwZ7eLOYSZ2dzqp1/4/4v0yN4Kj0vtWBSj1EPbRFj1lo4k1EmFEM=
+X-Received: by 2002:a05:6512:12c5:b0:443:5fe5:2d4a with SMTP id
+ p5-20020a05651212c500b004435fe52d4amr1281607lfg.45.1644999795249; Wed, 16 Feb
+ 2022 00:23:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUlCN1dZLVlBSVdZDwkaFQgSH1lBWUNLQxpWHU1PQx9ISkhMSE
-        xPVRkRExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MAg6Kjo*MTI2Nwg2NTgJMi1K
-        Sw8aC1FVSlVKTU9PQkJCS09DTEtOVTMWGhIXVQ8TFBYaCFUXEg47DhgXFA4fVRgVRVlXWRILWUFZ
-        SkpMVU9DVUpJS1VKQ01ZV1kIAVlBT0tLSzcG
-X-HM-Tid: 0a7f01957d358c17kuqt4ee69740148
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Sender: salifous747@gmail.com
+Received: by 2002:a2e:a54c:0:0:0:0:0 with HTTP; Wed, 16 Feb 2022 00:23:14
+ -0800 (PST)
+From:   "Mrs. Lia Ahil Ahil " <mrsliaahila@gmail.com>
+Date:   Wed, 16 Feb 2022 08:23:14 +0000
+X-Google-Sender-Auth: D7cj8DJ_EiNbeeOoi-DxcegTXZA
+Message-ID: <CAO=NqA4z+YTutFng-kQzVkUUZK53vjnOfHJ+OXH+Va032+P8Mg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -44,96 +67,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We encounter a tcp drop issue in our cloud environment. Packet GROed in
-host forwards to a VM virtio_net nic with net_failover enabled. VM acts
-as a IPVS LB with ipip encapsulation. The full path like:
-host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
- -> ipip encap -> net_failover tx -> virtio_net tx
-
-When net_failover transmits a ipip pkt (gso_type = 0x0103), there is no gso
-did because it supports TSO and GSO_IPXIP4. But network_header points to
-inner ip header.
-
-Call Trace:
- tcp4_gso_segment        ------> return NULL
- inet_gso_segment        ------> inner iph, network_header points to
- ipip_gso_segment
- inet_gso_segment        ------> outer iph
- skb_mac_gso_segment
-
-Afterwards virtio_net transmits the pkt, only inner ip header is modified.
-And the outer one just keeps unchanged. The pkt will be dropped in remote
-host. So we need to reset network header in this case.
-
-Call Trace:
- inet_gso_segment        ------> inner iph, outer iph is skipped
- skb_mac_gso_segment
- __skb_gso_segment
- validate_xmit_skb
- validate_xmit_skb_list
- sch_direct_xmit
- __qdisc_run
- __dev_queue_xmit        ------> virtio_net
- dev_hard_start_xmit
- __dev_queue_xmit        ------> net_failover
- ip_finish_output2
- ip_output
- iptunnel_xmit
- ip_tunnel_xmit
- ipip_tunnel_xmit        ------> ipip
- dev_hard_start_xmit
- __dev_queue_xmit
- ip_finish_output2
- ip_output
- ip_forward
- ip_rcv
- __netif_receive_skb_one_core
- netif_receive_skb_internal
- napi_gro_receive
- receive_buf
- virtnet_poll
- net_rx_action
-
-This patch also includes ipv6_gso_segment(), considering SIT, etc.
-
-Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
-Fixes: cfc80d9a1163 ("net: Introduce net_failover driver")
-Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
----
- net/ipv4/af_inet.c     | 5 ++++-
- net/ipv6/ip6_offload.c | 2 ++
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 9c465ba..72fde28 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
- 	}
- 
- 	ops = rcu_dereference(inet_offloads[proto]);
--	if (likely(ops && ops->callbacks.gso_segment))
-+	if (likely(ops && ops->callbacks.gso_segment)) {
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
-+	}
- 
- 	if (IS_ERR_OR_NULL(segs))
- 		goto out;
-diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-index b29e9ba..5f577e2 100644
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
- 	if (likely(ops && ops->callbacks.gso_segment)) {
- 		skb_reset_transport_header(skb);
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
- 	}
- 
- 	if (IS_ERR_OR_NULL(segs))
--- 
-1.8.3.1
-
+4Liq4Lin4Lix4Liq4LiU4Li1IOC4p+C4seC4meC4meC4teC5ieC4hOC4uOC4k+C5gOC4m+C5h+C4
+meC4reC4ouC5iOC4suC4h+C5hOC4o+C4muC5ieC4suC4hw0K4LiE4Li44LiT4LmE4LiU4LmJ4Lij
+4Lix4Lia4Lit4Li14LmA4Lih4Lil4LiX4Li14LmI4LiJ4Lix4LiZ4Liq4LmI4LiH4LiW4Li24LiH
+4LiE4Li44LiT4LmA4Lih4Li34LmI4Lit4Liq4Lit4LiH4Liq4Liy4Lih4Lin4Lix4LiZ4LiB4LmI
+4Lit4LiZ4Lir4Lij4Li34Lit4LmE4Lih4LmIDQrguYLguJvguKPguJTguIHguKXguLHguJrguKHg
+uLLguKvguLLguInguLHguJnguYDguJ7guLfguYjguK3guILguK3guILguYnguK3guKHguLnguKXg
+uYDguJ7guLTguYjguKHguYDguJXguLTguKENCg==
