@@ -2,90 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67CE34B8ECD
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C16B4B8ED0
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236886AbiBPRFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 12:05:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35280 "EHLO
+        id S236859AbiBPRFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 12:05:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234217AbiBPRFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:05:15 -0500
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F632A5983
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:05:03 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2d62593ad9bso5842917b3.8
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:05:02 -0800 (PST)
+        with ESMTP id S236900AbiBPRFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:05:23 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0912A5994
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:05:09 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id u16so4359602ljk.2
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:05:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=fastly.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2juVayWDeDNiMOSl5byAk4ZO9Dz6MyJWtuklD1EzHsc=;
-        b=Me2QFmo170zKETlbtKN8PcGm3z91iWxBm8JFCZl0dLPpr6c2h9bTwnU4y756hvisXL
-         5skvfAhbQ2/kJsqmTfAtDcdB2tYVqSahp9S0T1oiUckh4F3vEepLix+KRHxWdi0DNzVj
-         HZMXcz4rL+rZujczwWkcbsXz76D1YlZkdz72pxcoMXGmQDrdom3WJgEgrU9Nr/mWLL/t
-         o9rHyGG8/Nl40QSN7F+QKxdDpTZdqHqs5LfMY1oZQEfP0oBFZIbX8e1cRux3TIC0SDx7
-         iwkZ4dOMenFdBk2po2X52T8QtHb7spTFl/9korrlnMv80YKkorD3O3NDiiQOqGosBOZI
-         NQCQ==
+        bh=mfnf9bWIhe2XcAFjwjhHiCq1OsTMzFtSwUJH69iJZ7Y=;
+        b=WJNEVQSaYzGTJdpgqeYX1xX30jORLCsyKmwsYnpUbS//J2LqIWaoC6sZ9sqLiLHDhQ
+         GhyRGm/KNFOZV/L+8hVmF+uf63FjNJNYRFRb18GGS9CX0aKiBQXnKZQCd/pxuSAnkPr0
+         GQosSJ8GyL5YgxQSatgQzDNQhOoCKgN6fkXDE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2juVayWDeDNiMOSl5byAk4ZO9Dz6MyJWtuklD1EzHsc=;
-        b=Z7QnLeOEs7ze/6Wm/EeKuPgza9NJhABQMf0nC/BYjsqfp4DOWw7WIk9XLv7ZRsKy6F
-         VVBaLm58xCWL70OI0wa6NlxrRGY3oXfWfrUXSdvdFDN0/ey7WFWzo+tOg8IOKF7PPSlq
-         MwGxvJSmkpk75L71g4YtkXb8X3ueze8YgJn+hKwbmhlgAL6Oq0eCL6IDJ7gyXybVF4Sg
-         pr+qsblkUppS6o15NeCmrz5pS2AhyIyyZR/SS/+ezEfoHxFjxcBkYRz5fa9d2krMA56I
-         chrKTbGw60ia976HwrEol1Ckt5nqLQVudLK7tNeSd350jCtLPhWYn44GT6glBmhIkQoY
-         K7Ug==
-X-Gm-Message-State: AOAM5321Tu4qP2HczwH+bvo4Ik/FWzAjdlgtP+FdKRAwL4T0MlIMFnuh
-        lNizaIZAnbK9di3M12craFPA2nHxw2YbYtOD+PMmsg==
-X-Google-Smtp-Source: ABdhPJzPZKpp/lmdiJbf1hd+uHL0HzVvyEzxKNLXdYq/W8oDUygcnnrBqzIk0QsOwf5SNcKoOsImPBIsfNXO10j6SmM=
-X-Received: by 2002:a81:993:0:b0:2d6:15f5:b392 with SMTP id
- 141-20020a810993000000b002d615f5b392mr3246691ywj.489.1645031101716; Wed, 16
- Feb 2022 09:05:01 -0800 (PST)
+        bh=mfnf9bWIhe2XcAFjwjhHiCq1OsTMzFtSwUJH69iJZ7Y=;
+        b=RUB8+bkufHItnqhu5xu+8waDY8Ae7rYEWoOhHQxFYtlLcmc6B0DLP5Chpe1jCAYSJM
+         Wt+OK7FeBQwgoeFTTCQy1mRhwvEqaEJIkWITQshuatylENnYPUwgcQwF+Og4yYHBKQJo
+         X0aJN3V4h7bcbdBaCt/e3DFFOO4B4SqaLeNVLyTWnlFFz8/ZX78zaRXMlJw3p0kIpXgY
+         x72kYJ5YPis4bz8P4XaAtYVMY/fq6M9gdPAArEYPHgT1qeH+syaQ1lyA1Ij3ZFm++sI+
+         O4YWloepGWexqTTATFwBdBtnolR+CHYv/41y4fb6gYJNjCesMrxQlRZsB0y8wUI9nPWP
+         ckKQ==
+X-Gm-Message-State: AOAM5331YIkSbzBYXkrdz/9X4EH0tcM1TW0ayTUrN5hkb/Mcug+wFgld
+        fX4/CZa+Sl9do2gwULUT0kE45mcy1O5kfRY0KfrErq2167UtnQ==
+X-Google-Smtp-Source: ABdhPJwZ8/8q8zayc3C56yJ8RYbgNy2eOzlrIA6cH5osuvpPyh4iEFW3NYLWWnkHpQdfFQZEnrG1ek0n6fR1mdbR6Ts=
+X-Received: by 2002:a2e:a795:0:b0:244:2a13:925 with SMTP id
+ c21-20020a2ea795000000b002442a130925mr2782298ljf.255.1645031108124; Wed, 16
+ Feb 2022 09:05:08 -0800 (PST)
 MIME-Version: 1.0
-References: <20220216035426.2233808-1-imagedong@tencent.com>
-In-Reply-To: <20220216035426.2233808-1-imagedong@tencent.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 16 Feb 2022 09:04:50 -0800
-Message-ID: <CANn89i+gBxse3zf2gSvm5AU3D_2MSztGArKQxF4B2rTpWNUSwA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/9] net: add skb drop reasons to TCP packet receive
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        flyingpeng@tencent.com
+References: <1644868949-24506-1-git-send-email-jdamato@fastly.com>
+ <1644868949-24506-2-git-send-email-jdamato@fastly.com> <ed575c4e-774a-2118-f6bf-c8725d2739e8@redhat.com>
+In-Reply-To: <ed575c4e-774a-2118-f6bf-c8725d2739e8@redhat.com>
+From:   Joe Damato <jdamato@fastly.com>
+Date:   Wed, 16 Feb 2022 09:04:56 -0800
+Message-ID: <CALALjgzUQUuEVkNXous0kOcHHqiSrTem+n9MjQh6q-8+Azi-sg@mail.gmail.com>
+Subject: Re: [net-next v5 1/2] page_pool: Add page_pool stat counters
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
+        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,54 +64,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 7:54 PM <menglong8.dong@gmail.com> wrote:
+On Tue, Feb 15, 2022 at 7:41 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
 >
-> From: Menglong Dong <imagedong@tencent.com>
 >
-> In this series patches, reasons for skb drops are added to TCP layer, and
-> both TCPv4 and TCPv6 are considered.
+> On 14/02/2022 21.02, Joe Damato wrote:
+> > Add per-cpu per-pool statistics counters for the allocation path of a page
+> > pool.
+> >
+> > This code is disabled by default and a kernel config option is provided for
+> > users who wish to enable them.
+> >
+> > The statistics added are:
+> >       - fast: successful fast path allocations
+> >       - slow: slow path order-0 allocations
+> >       - slow_high_order: slow path high order allocations
+> >       - empty: ptr ring is empty, so a slow path allocation was forced.
+> >       - refill: an allocation which triggered a refill of the cache
+> >       - waive: pages obtained from the ptr ring that cannot be added to
+> >         the cache due to a NUMA mismatch.
+> >
+> > Signed-off-by: Joe Damato <jdamato@fastly.com>
+> > ---
+> >   include/net/page_pool.h | 18 ++++++++++++++++++
+> >   net/Kconfig             | 13 +++++++++++++
+> >   net/core/page_pool.c    | 37 +++++++++++++++++++++++++++++++++----
+> >   3 files changed, 64 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > index 97c3c19..d827ab1 100644
+> > --- a/include/net/page_pool.h
+> > +++ b/include/net/page_pool.h
+> > @@ -135,7 +135,25 @@ struct page_pool {
+> >       refcount_t user_cnt;
+> >
+> >       u64 destroy_cnt;
+> > +#ifdef CONFIG_PAGE_POOL_STATS
+> > +     struct page_pool_stats __percpu *stats;
+> > +#endif
+> > +};
 >
-> in this series patches, the process of packet ingress in TCP layer is
-> considered, as skb drops hardly happens in the egress path.
->
-> However, it's a little complex for TCP state processing, as I find that
-> it's hard to report skb drop reasons to where it is freed. For example,
-> when skb is dropped in tcp_rcv_state_process(), the reason can be caused
-> by the call of tcp_v4_conn_request(), and it's hard to return a drop
-> reason from tcp_v4_conn_request(). So I just skip such case for this
-> moment.
->
+> You still have to consider cache-line locality, as I have pointed out
+> before.
 
-I think you should add at least in this cover letter, or better in a
-document that can be amended,
-how this can be used on a typical TCP session.
-For someone who is having issues with TCP flows, what would they need to do.
-Think of something that we (kernel dev) could copy paste to future
-email replies.
-It might be mostly clear for some of us reviewing patches at this
-moment, but in one year we will all forget about the details.
+You are right, I forgot to include that in this revision. Sorry about
+that and thanks for the review and response.
 
+> This placement is wrong!
+>
+> Output from pahole:
+>
+>   /* --- cacheline 23 boundary (1472 bytes) --- */
+>   atomic_t                   pages_state_release_cnt; /*  1472     4 */
+>   refcount_t                 user_cnt;             /*  1476     4 */
+>   u64                        destroy_cnt;          /*  1480     8 */
+>
+> Your *stats pointer end-up on a cache-line that "remote" CPUs will write
+> into (pages_state_release_cnt).
+> This is why we see a slowdown to the 'bench_page_pool_cross_cpu' test.
 
->
-> Menglong Dong (9):
->   net: tcp: introduce tcp_drop_reason()
->   net: tcp: add skb drop reasons to tcp_v4_rcv()
->   net: tcp: use kfree_skb_reason() for tcp_v6_rcv()
->   net: tcp: add skb drop reasons to tcp_v{4,6}_inbound_md5_hash()
->   net: tcp: add skb drop reasons to tcp_add_backlog()
->   net: tcp: use kfree_skb_reason() for tcp_v{4,6}_do_rcv()
->   net: tcp: use tcp_drop_reason() for tcp_rcv_established()
->   net: tcp: use tcp_drop_reason() for tcp_data_queue()
->   net: tcp: use tcp_drop_reason() for tcp_data_queue_ofo()
->
->  include/linux/skbuff.h     | 28 +++++++++++++++++++++++++
->  include/net/tcp.h          |  3 ++-
->  include/trace/events/skb.h | 10 +++++++++
->  net/ipv4/tcp_input.c       | 42 +++++++++++++++++++++++++++++---------
->  net/ipv4/tcp_ipv4.c        | 36 ++++++++++++++++++++++++--------
->  net/ipv6/tcp_ipv6.c        | 42 +++++++++++++++++++++++++++++---------
->  6 files changed, 131 insertions(+), 30 deletions(-)
->
-> --
-> 2.34.1
->
+If I give *stats its own cache-line by adding
+____cacheline_aligned_in_smp (but leaving the placement at the end of
+the page_pool struct), pahole reports:
+
+/* --- cacheline 24 boundary (1536 bytes) --- */
+atomic_t                   pages_state_release_cnt; /*  1536     4 */
+refcount_t                 user_cnt;             /*  1540     4 */
+u64                        destroy_cnt;          /*  1544     8 */
+
+/* XXX 48 bytes hole, try to pack */
+
+/* --- cacheline 25 boundary (1600 bytes) --- */
+struct page_pool_stats *   stats;                /*  1600     8 */
+
+Re-running bench_page_pool_cross_cpu loops=20000000 returning_cpus=4
+still shows a fairly large variation in cycles (measurement period
+time of 34.128419339 sec) from run to run; roughly a delta of 287
+cycles in the runs I just performed back to back.
+
+The best measurements after making the cache-line change described
+above are faster than compiling the kernel with stats disabled. The
+worst measurements, however, are very close to the data I submit in
+the cover letter for this revision.
+
+As far as I can tell xdp_mem_id is not written to particularly often -
+only when RX rings are configured in the driver - so I also tried
+moving *stats above xdp_mem_id so that they share a cache-line and
+reduce the size of the hole between xdp_mem_id and pp_alloc_cache.
+
+pahole reports:
+
+/* --- cacheline 3 boundary (192 bytes) --- */
+struct page_pool_stats *   stats;                /*   192     8 */
+u32                        xdp_mem_id;           /*   200     4 */
+
+Results of bench_page_pool_cross_cpu loops=20000000 returning_cpus=4
+are the same as above -- the best measurements are faster than stats
+disabled, the worst are very close to what I mentioned in the cover
+letter for this v5.
+
+I am happy to submit a v6 with *stats placed in either location; on
+its own cache-line at the expense of a larger page_pool struct, or
+placed near xdp_mem_id to consume some of the hole between xdp_mem_id
+and pp_alloc_cache.
+
+Do you have a preference on giving the stats pointer its own
+cache-line vs sharing a line with xdp_mem_id?
+
+In either case: the benchmarks don't seem to show a consistent
+significant improvement on my test hardware. Is there another
+benchmark or a different set of arguments you think I should use when
+running this test?
+
+My apologies if I am missing something obvious here.
+
+Thanks,
+Joe
