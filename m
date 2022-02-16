@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A784B7D5D
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C1F64B7D54
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343560AbiBPCL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:11:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51528 "EHLO
+        id S1343552AbiBPCMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:12:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242956AbiBPCLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:11:52 -0500
+        with ESMTP id S241716AbiBPCLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:11:54 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19489FDD
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C27413F66
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644977501; x=1676513501;
+  t=1644977502; x=1676513502;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kYzMznrxDGLwKZFu0MSKfsyMG7hTzjLWAU+77WHCCUk=;
-  b=FvWTR0dwaxuFUhzGlK/QPWYxMmgkX0iCxP3cyJDAVVxeRHPOag+jqpEV
-   osc1ot+aMWXhFP+awI96/5MKe75tLwkWQejI2NlirUVLAfCAVWiLWcnbl
-   cQGxjcsCKkKD30glOOxsQiJDD2jS77vY5+bpH4SD5TxfmgDiMwLIdOuhk
-   Edo0BdeMZjXzGv6lHrfB+IJm5zvPPkRjspQ39Vep/tMxYYDX7aZSrKWRB
-   a/Vlge+JUE/2Yqo0JKhwhS1MyqTI9TYyF8cWeawIccLsc9MOZVUdYg5Qx
-   MyFu9UCYO13A0e89hskb+2lkpW1ew6jVbCrRbWL7QOAmCWrTsCnfuyKwi
+  bh=9coNeKhRTejFQymmRpYR46T6Esk/19HCpyspAWEHY5w=;
+  b=QH5Y5/47GhyOQewE48dabXQSWVMay/Gc4RHhDT3ygcdvdbYgiSl92VVD
+   vyYZznKk7URcrmv9grFhBEMG1dtbA9hud4RQ1H0/qbkeVLD1Oq9+vj+CK
+   4TEJtBA5wrl9kSyRemel3+6gzha4elMdEck1HtgbDrFnGwjP7JeqTsFmQ
+   K0O3lu2tViGGW1wPPZYpuAo9mSs8+XSjbiYdmVdIaURfe7163Sd7PhFcX
+   TgrCFIueBhvOMNF8ApDItzJE81uQcttvoeh5rPMlRzE7GFSrrWjjJ/cbL
+   om+Br+4M7JNJXOICTaGmC9/vAx69RwkEVWZm0CJ4G6FbtkN4CCkFBFB8U
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909076"
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909079"
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="237909076"
+   d="scan'208";a="237909079"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="571088821"
+   d="scan'208";a="571088823"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.9.181])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -42,9 +42,9 @@ Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 4/8] mptcp: drop unneeded type casts for hmac
-Date:   Tue, 15 Feb 2022 18:11:26 -0800
-Message-Id: <20220216021130.171786-5-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 5/8] mptcp: drop port parameter of mptcp_pm_add_addr_signal
+Date:   Tue, 15 Feb 2022 18:11:27 -0800
+Message-Id: <20220216021130.171786-6-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
 References: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
@@ -62,45 +62,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliang.tang@suse.com>
 
-Drop the unneeded type casts to 'unsigned long long' for printing out the
-hmac values in add_addr_hmac_valid() and subflow_thmac_valid().
+Drop the port parameter of mptcp_pm_add_addr_signal() and reflect it to
+avoid passing too many parameters.
 
 Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/options.c | 3 +--
- net/mptcp/subflow.c | 4 +---
- 2 files changed, 2 insertions(+), 5 deletions(-)
+ net/mptcp/options.c  | 5 ++---
+ net/mptcp/pm.c       | 7 ++++---
+ net/mptcp/protocol.h | 2 +-
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index a10536d7c84b..5a14420b77c8 100644
+index 5a14420b77c8..ac10a04ccd7c 100644
 --- a/net/mptcp/options.c
 +++ b/net/mptcp/options.c
-@@ -1085,8 +1085,7 @@ static bool add_addr_hmac_valid(struct mptcp_sock *msk,
- 				      &mp_opt->addr);
+@@ -652,7 +652,6 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
+ 	bool drop_other_suboptions = false;
+ 	unsigned int opt_size = *size;
+ 	bool echo;
+-	bool port;
+ 	int len;
  
- 	pr_debug("msk=%p, ahmac=%llu, mp_opt->ahmac=%llu\n",
--		 msk, (unsigned long long)hmac,
--		 (unsigned long long)mp_opt->ahmac);
-+		 msk, hmac, mp_opt->ahmac);
+ 	/* add addr will strip the existing options, be sure to avoid breaking
+@@ -661,12 +660,12 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
+ 	if (!mptcp_pm_should_add_signal(msk) ||
+ 	    (opts->suboptions & (OPTION_MPTCP_MPJ_ACK | OPTION_MPTCP_MPC_ACK)) ||
+ 	    !mptcp_pm_add_addr_signal(msk, skb, opt_size, remaining, &opts->addr,
+-		    &echo, &port, &drop_other_suboptions))
++		    &echo, &drop_other_suboptions))
+ 		return false;
  
- 	return hmac == mp_opt->ahmac;
- }
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 0d6a4109add1..8cf85684c88f 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -344,9 +344,7 @@ static bool subflow_thmac_valid(struct mptcp_subflow_context *subflow)
+ 	if (drop_other_suboptions)
+ 		remaining += opt_size;
+-	len = mptcp_add_addr_len(opts->addr.family, echo, port);
++	len = mptcp_add_addr_len(opts->addr.family, echo, !!opts->addr.port);
+ 	if (remaining < len)
+ 		return false;
  
- 	thmac = get_unaligned_be64(hmac);
- 	pr_debug("subflow=%p, token=%u, thmac=%llu, subflow->thmac=%llu\n",
--		 subflow, subflow->token,
--		 (unsigned long long)thmac,
--		 (unsigned long long)subflow->thmac);
-+		 subflow, subflow->token, thmac, subflow->thmac);
+diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
+index 696b2c4613a7..ef6e4adeb0e5 100644
+--- a/net/mptcp/pm.c
++++ b/net/mptcp/pm.c
+@@ -278,11 +278,12 @@ void mptcp_pm_mp_fail_received(struct sock *sk, u64 fail_seq)
+ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, struct sk_buff *skb,
+ 			      unsigned int opt_size, unsigned int remaining,
+ 			      struct mptcp_addr_info *addr, bool *echo,
+-			      bool *port, bool *drop_other_suboptions)
++			      bool *drop_other_suboptions)
+ {
+ 	int ret = false;
+ 	u8 add_addr;
+ 	u8 family;
++	bool port;
  
- 	return thmac == subflow->thmac;
- }
+ 	spin_lock_bh(&msk->pm.lock);
+ 
+@@ -300,10 +301,10 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, struct sk_buff *skb,
+ 	}
+ 
+ 	*echo = mptcp_pm_should_add_signal_echo(msk);
+-	*port = !!(*echo ? msk->pm.remote.port : msk->pm.local.port);
++	port = !!(*echo ? msk->pm.remote.port : msk->pm.local.port);
+ 
+ 	family = *echo ? msk->pm.remote.family : msk->pm.local.family;
+-	if (remaining < mptcp_add_addr_len(family, *echo, *port))
++	if (remaining < mptcp_add_addr_len(family, *echo, port))
+ 		goto out_unlock;
+ 
+ 	if (*echo) {
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index a23694ad69e7..e381054910d0 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -818,7 +818,7 @@ static inline int mptcp_rm_addr_len(const struct mptcp_rm_list *rm_list)
+ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, struct sk_buff *skb,
+ 			      unsigned int opt_size, unsigned int remaining,
+ 			      struct mptcp_addr_info *addr, bool *echo,
+-			      bool *port, bool *drop_other_suboptions);
++			      bool *drop_other_suboptions);
+ bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
+ 			     struct mptcp_rm_list *rm_list);
+ int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc);
 -- 
 2.35.1
 
