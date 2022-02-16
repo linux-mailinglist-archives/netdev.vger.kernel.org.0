@@ -2,111 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DFF84B8258
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 08:55:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7314B823F
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 08:52:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbiBPHx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 02:53:29 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34960 "EHLO
+        id S231287AbiBPHu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 02:50:27 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbiBPHx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 02:53:28 -0500
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9220988B1B;
-        Tue, 15 Feb 2022 23:53:11 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R901e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4cQ30u_1644997965;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4cQ30u_1644997965)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Feb 2022 15:52:46 +0800
-Message-ID: <1644997568.827981-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v5 20/22] virtio_net: set the default max ring num
-Date:   Wed, 16 Feb 2022 15:46:08 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        with ESMTP id S231191AbiBPHuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 02:50:24 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463661D686F
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 23:49:59 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nKF46-00035w-Ue; Wed, 16 Feb 2022 08:49:30 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nKF45-00FBar-0P; Wed, 16 Feb 2022 08:49:29 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
- <20220214081416.117695-21-xuanzhuo@linux.alibaba.com>
- <CACGkMEvZvhSb0veCynEHN3EfFu_FwbCAb8w1b0Oi3LDc=ffNaw@mail.gmail.com>
-In-Reply-To: <CACGkMEvZvhSb0veCynEHN3EfFu_FwbCAb8w1b0Oi3LDc=ffNaw@mail.gmail.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Scott Branden <sbranden@broadcom.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tony Lindgren <tony@atomide.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH v5 0/8] document dt-schema and fix node names for some USB Ethernet controllers
+Date:   Wed, 16 Feb 2022 08:49:18 +0100
+Message-Id: <20220216074927.3619425-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Feb 2022 12:14:31 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Mon, Feb 14, 2022 at 4:14 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> >
-> > Sets the default maximum ring num based on virtio_set_max_ring_num().
-> >
-> > The default maximum ring num is 1024.
->
-> Having a default value is pretty useful, I see 32K is used by default for IFCVF.
->
-> Rethink this, how about having a different default value based on the speed?
->
-> Without SPEED_DUPLEX, we use 1024. Otherwise
->
-> 10g 4096
-> 40g 8192
+changes v5:
+- move compatible string changes to a separate patch
+- add note about possible regressions
 
-We can define different default values of tx and rx by the way. This way I can
-just use it in the new interface of find_vqs().
+changes v4:
+- reword commit logs.
+- add note about compatible fix
 
-without SPEED_DUPLEX:  tx 512 rx 1024
+Oleksij Rempel (9):
+  dt-bindings: net: add schema for ASIX USB Ethernet controllers
+  dt-bindings: net: add schema for Microchip/SMSC LAN95xx USB Ethernet
+    controllers
+  dt-bindings: usb: ci-hdrc-usb2: fix node node for ethernet controller
+  ARM: dts: bcm283x: fix ethernet node name
+  ARM: dts: exynos: fix ethernet node name for different odroid boards
+  ARM: dts: exynos: fix compatible strings for Ethernet USB devices
+  ARM: dts: omap3/4/5: fix ethernet node name for different OMAP boards
+  ARM: dts: tegra20/30: fix ethernet node name for different tegra
+    boards
+  arm64: dts: imx8mm-kontron: fix ethernet node name
 
-Thanks.
+ .../devicetree/bindings/net/asix,ax88178.yaml | 68 ++++++++++++++++
+ .../bindings/net/microchip,lan95xx.yaml       | 80 +++++++++++++++++++
+ .../devicetree/bindings/usb/ci-hdrc-usb2.txt  |  2 +-
+ arch/arm/boot/dts/bcm283x-rpi-smsc9512.dtsi   |  2 +-
+ arch/arm/boot/dts/bcm283x-rpi-smsc9514.dtsi   |  2 +-
+ arch/arm/boot/dts/exynos4412-odroidu3.dts     |  4 +-
+ arch/arm/boot/dts/exynos4412-odroidx.dts      |  8 +-
+ arch/arm/boot/dts/exynos5410-odroidxu.dts     |  4 +-
+ .../boot/dts/exynos5422-odroidxu3-lite.dts    |  6 +-
+ arch/arm/boot/dts/exynos5422-odroidxu3.dts    |  6 +-
+ arch/arm/boot/dts/omap3-beagle-xm.dts         |  2 +-
+ arch/arm/boot/dts/omap4-panda-common.dtsi     |  2 +-
+ arch/arm/boot/dts/omap5-igep0050.dts          |  2 +-
+ arch/arm/boot/dts/omap5-uevm.dts              |  2 +-
+ arch/arm/boot/dts/tegra20-colibri.dtsi        |  2 +-
+ arch/arm/boot/dts/tegra30-colibri.dtsi        |  2 +-
+ arch/arm/boot/dts/tegra30-ouya.dts            |  2 +-
+ .../dts/freescale/imx8mm-kontron-n801x-s.dts  |  2 +-
+ 18 files changed, 173 insertions(+), 25 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/asix,ax88178.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
 
+-- 
+2.30.2
 
->
-> etc.
->
-> (The number are just copied from the 10g/40g default parameter from
-> other vendors)
->
-> Thanks
->
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  drivers/net/virtio_net.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index a4ffd7cdf623..77e61fe0b2ce 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -35,6 +35,8 @@ module_param(napi_tx, bool, 0644);
-> >  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
-> >  #define GOOD_COPY_LEN  128
-> >
-> > +#define VIRTNET_DEFAULT_MAX_RING_NUM 1024
-> > +
-> >  #define VIRTNET_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
-> >
-> >  /* Amount of XDP headroom to prepend to packets for use by xdp_adjust_head */
-> > @@ -3045,6 +3047,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
-> >                         ctx[rxq2vq(i)] = true;
-> >         }
-> >
-> > +       virtio_set_max_ring_num(vi->vdev, VIRTNET_DEFAULT_MAX_RING_NUM);
-> > +
-> >         ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
-> >                                   names, ctx, NULL);
-> >         if (ret)
-> > --
-> > 2.31.0
-> >
->
