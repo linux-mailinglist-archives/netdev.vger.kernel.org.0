@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5C74B7D6E
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A784B7D5D
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236614AbiBPCLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:11:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51500 "EHLO
+        id S1343560AbiBPCL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:11:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343548AbiBPCLw (ORCPT
+        with ESMTP id S242956AbiBPCLw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:11:52 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F102B22503
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19489FDD
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644977501; x=1676513501;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MA9QxId7X9d5GQsDAfk2riHjF8ntAdWskyCHH8+Bcyc=;
-  b=kHTDeOdvNGVXxLwAE9hdrk5u/EFSUqCizM/LVhFrC0AE1kEFJiIHBSOf
-   zl1qm5AX/7QowXBMwpEwKMtLn4Nz0Qy4Pmc7CFA7bhILrE7JC8XJFzFlw
-   bnDtJONiXsuM87DWPiuG1xkqkSx8gVPP43y/V8wV8plNodsN7c3h3Q05S
-   pAO7zWiSHQb6CBUyAADu1TswRqZw7GgVs3QZY4P/GRv4586OH8uSbNgkA
-   pHdtsjXMG4YHfxvurR4G8uQ/5phCkXwZNP0S07IZrJmOCwj/juLWoy+Ti
-   X1VxoVkKHfU/r+Eao2pTPyY2uqJ7bqOEy8iG0vRHMSTXacMgIr3z4fSs3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909074"
+  bh=kYzMznrxDGLwKZFu0MSKfsyMG7hTzjLWAU+77WHCCUk=;
+  b=FvWTR0dwaxuFUhzGlK/QPWYxMmgkX0iCxP3cyJDAVVxeRHPOag+jqpEV
+   osc1ot+aMWXhFP+awI96/5MKe75tLwkWQejI2NlirUVLAfCAVWiLWcnbl
+   cQGxjcsCKkKD30glOOxsQiJDD2jS77vY5+bpH4SD5TxfmgDiMwLIdOuhk
+   Edo0BdeMZjXzGv6lHrfB+IJm5zvPPkRjspQ39Vep/tMxYYDX7aZSrKWRB
+   a/Vlge+JUE/2Yqo0JKhwhS1MyqTI9TYyF8cWeawIccLsc9MOZVUdYg5Qx
+   MyFu9UCYO13A0e89hskb+2lkpW1ew6jVbCrRbWL7QOAmCWrTsCnfuyKwi
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909076"
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="237909074"
+   d="scan'208";a="237909076"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="571088819"
+   d="scan'208";a="571088821"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.9.181])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:36 -0800
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 3/8] mptcp: drop unused sk in mptcp_get_options
-Date:   Tue, 15 Feb 2022 18:11:25 -0800
-Message-Id: <20220216021130.171786-4-mathew.j.martineau@linux.intel.com>
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 4/8] mptcp: drop unneeded type casts for hmac
+Date:   Tue, 15 Feb 2022 18:11:26 -0800
+Message-Id: <20220216021130.171786-5-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
 References: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
@@ -61,104 +62,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliang.tang@suse.com>
 
-The parameter 'sk' became useless since the code using it was dropped
-from mptcp_get_options() in the commit 8d548ea1dd15 ("mptcp: do not set
-unconditionally csum_reqd on incoming opt"). Let's drop it.
+Drop the unneeded type casts to 'unsigned long long' for printing out the
+hmac values in add_addr_hmac_valid() and subflow_thmac_valid().
 
 Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/options.c  |  5 ++---
- net/mptcp/protocol.h |  3 +--
- net/mptcp/subflow.c  | 10 +++++-----
- 3 files changed, 8 insertions(+), 10 deletions(-)
+ net/mptcp/options.c | 3 +--
+ net/mptcp/subflow.c | 4 +---
+ 2 files changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 3e82ac24d548..a10536d7c84b 100644
+index a10536d7c84b..5a14420b77c8 100644
 --- a/net/mptcp/options.c
 +++ b/net/mptcp/options.c
-@@ -355,8 +355,7 @@ static void mptcp_parse_option(const struct sk_buff *skb,
- 	}
+@@ -1085,8 +1085,7 @@ static bool add_addr_hmac_valid(struct mptcp_sock *msk,
+ 				      &mp_opt->addr);
+ 
+ 	pr_debug("msk=%p, ahmac=%llu, mp_opt->ahmac=%llu\n",
+-		 msk, (unsigned long long)hmac,
+-		 (unsigned long long)mp_opt->ahmac);
++		 msk, hmac, mp_opt->ahmac);
+ 
+ 	return hmac == mp_opt->ahmac;
  }
- 
--void mptcp_get_options(const struct sock *sk,
--		       const struct sk_buff *skb,
-+void mptcp_get_options(const struct sk_buff *skb,
- 		       struct mptcp_options_received *mp_opt)
- {
- 	const struct tcphdr *th = tcp_hdr(skb);
-@@ -1114,7 +1113,7 @@ bool mptcp_incoming_options(struct sock *sk, struct sk_buff *skb)
- 		return true;
- 	}
- 
--	mptcp_get_options(sk, skb, &mp_opt);
-+	mptcp_get_options(skb, &mp_opt);
- 
- 	/* The subflow can be in close state only if check_fully_established()
- 	 * just sent a reset. If so, tell the caller to ignore the current packet.
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 85317ce38e3f..a23694ad69e7 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -643,8 +643,7 @@ int __init mptcp_proto_v6_init(void);
- struct sock *mptcp_sk_clone(const struct sock *sk,
- 			    const struct mptcp_options_received *mp_opt,
- 			    struct request_sock *req);
--void mptcp_get_options(const struct sock *sk,
--		       const struct sk_buff *skb,
-+void mptcp_get_options(const struct sk_buff *skb,
- 		       struct mptcp_options_received *mp_opt);
- 
- void mptcp_finish_connect(struct sock *sk);
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index bea47a1180dc..0d6a4109add1 100644
+index 0d6a4109add1..8cf85684c88f 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -153,7 +153,7 @@ static int subflow_check_req(struct request_sock *req,
- 		return -EINVAL;
- #endif
+@@ -344,9 +344,7 @@ static bool subflow_thmac_valid(struct mptcp_subflow_context *subflow)
  
--	mptcp_get_options(sk_listener, skb, &mp_opt);
-+	mptcp_get_options(skb, &mp_opt);
+ 	thmac = get_unaligned_be64(hmac);
+ 	pr_debug("subflow=%p, token=%u, thmac=%llu, subflow->thmac=%llu\n",
+-		 subflow, subflow->token,
+-		 (unsigned long long)thmac,
+-		 (unsigned long long)subflow->thmac);
++		 subflow, subflow->token, thmac, subflow->thmac);
  
- 	opt_mp_capable = !!(mp_opt.suboptions & OPTIONS_MPTCP_MPC);
- 	opt_mp_join = !!(mp_opt.suboptions & OPTIONS_MPTCP_MPJ);
-@@ -250,7 +250,7 @@ int mptcp_subflow_init_cookie_req(struct request_sock *req,
- 	int err;
- 
- 	subflow_init_req(req, sk_listener);
--	mptcp_get_options(sk_listener, skb, &mp_opt);
-+	mptcp_get_options(skb, &mp_opt);
- 
- 	opt_mp_capable = !!(mp_opt.suboptions & OPTIONS_MPTCP_MPC);
- 	opt_mp_join = !!(mp_opt.suboptions & OPTIONS_MPTCP_MPJ);
-@@ -410,7 +410,7 @@ static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
- 	subflow->ssn_offset = TCP_SKB_CB(skb)->seq;
- 	pr_debug("subflow=%p synack seq=%x", subflow, subflow->ssn_offset);
- 
--	mptcp_get_options(sk, skb, &mp_opt);
-+	mptcp_get_options(skb, &mp_opt);
- 	if (subflow->request_mptcp) {
- 		if (!(mp_opt.suboptions & OPTIONS_MPTCP_MPC)) {
- 			MPTCP_INC_STATS(sock_net(sk),
-@@ -663,7 +663,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 		 * reordered MPC will cause fallback, but we don't have other
- 		 * options.
- 		 */
--		mptcp_get_options(sk, skb, &mp_opt);
-+		mptcp_get_options(skb, &mp_opt);
- 		if (!(mp_opt.suboptions & OPTIONS_MPTCP_MPC)) {
- 			fallback = true;
- 			goto create_child;
-@@ -673,7 +673,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 		if (!new_msk)
- 			fallback = true;
- 	} else if (subflow_req->mp_join) {
--		mptcp_get_options(sk, skb, &mp_opt);
-+		mptcp_get_options(skb, &mp_opt);
- 		if (!(mp_opt.suboptions & OPTIONS_MPTCP_MPJ) ||
- 		    !subflow_hmac_valid(req, &mp_opt) ||
- 		    !mptcp_can_accept_new_subflow(subflow_req->msk)) {
+ 	return thmac == subflow->thmac;
+ }
 -- 
 2.35.1
 
