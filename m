@@ -2,153 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EFC4B869E
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 12:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EAEE4B86BA
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 12:33:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbiBPL17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 06:27:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51976 "EHLO
+        id S231773AbiBPLd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 06:33:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbiBPL15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 06:27:57 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6DEBCA9
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 03:27:45 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dOALOYXijTRGjlKeFUyj6jHYaDF5SURmAF3FXWDyC9KnuvaKa00/tnuQcKemtLZzKWlz229wP0SbYa8zmwc1Lzd2T9l0/Mrh2pY523jQFwPVI8wv/XtDiDnERU8p+cYNEh/JryjamCcUZ8UbxUGfQNz5UqHPbTG/nMVBk1oaU7xupH8sxp2d2wUiU6VKmBe3iYSAkm2DsSJeQBGedZn3+Me0WWOq2DufusJA4TWSSJEQex64jtxU9No73F25fO+GGGjjRHw0rhSeKraQcabZWvFp14GYdoVNg8y1nSeo8qkmZJ9XR3vb7JFYw3A7x/4V5T774QTFqKzg4V06Y2gGiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Am7R8kTHu8/HAIkVznF3sRp9XAqjhGUm1acr1M7Wl+4=;
- b=f97VnWVZqYxA9WuKmbCYeaCaEFekJh/6EB4V4UrhsTIJJRzyntR7I3cJk64P1slomt/6TM2zCgirmi3C1yDpXQOn2KflM1XmuFWG96LWl1104z05kukt8DR8SY4XqdFC0dnMfBUG7KEqnpGPySEtLS4PNLBbXfeAS7urA/jlFO8p4ett2LOjYpTXKtymBlpBp/+ADDUQC8WOV2KAGMLU14oRzIYCVLrNzNcfOY4Z4jyWpAMhf13szPC5llcsaU/jOOJDAC2wbmqEaVyIe/8Ej12BTQgu7yLuqmEQtXqh2733ju7UN+8Nr5T0skwzWPKVIEwGds5Mg13NpA7+TMClEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Am7R8kTHu8/HAIkVznF3sRp9XAqjhGUm1acr1M7Wl+4=;
- b=NTcsX9PD3md0ResG8B9d8e03EoSnHyh4OpfwD3G6uH6ZhBvZMcQY4PJpzlU1sMTvqUpHKKR1XbqlJmh5rNxB8OqqOmHrohATiNkdHa6pa0boOOFNGSTc1MNi9jjO0ZJYxrwISBg4jajNdB/vLe8jD2eWL/8q0LttyvyKPDcYeVl/osxxIuEEcRU4iPEdrrDxCgs1buIDVhQI5BUBKsN/Jq3EiXdMULjoarDPQULDbwpIEk8luur0aXac9NdG4O/edrdlwwtaULpXcw8QXqiPKy79Upz8sc4sAgmDH3mxUfh5gS3JppIyPDY/nV98JIsfAy8wsAvSen7nvEN4VpTOcQ==
-Received: from DM3PR12CA0116.namprd12.prod.outlook.com (2603:10b6:0:51::12) by
- BN6PR12MB1697.namprd12.prod.outlook.com (2603:10b6:404:105::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.17; Wed, 16 Feb
- 2022 11:27:44 +0000
-Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:0:51:cafe::17) by DM3PR12CA0116.outlook.office365.com
- (2603:10b6:0:51::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.15 via Frontend
- Transport; Wed, 16 Feb 2022 11:27:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Wed, 16 Feb 2022 11:27:44 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 16 Feb
- 2022 11:27:43 +0000
-Received: from [172.27.13.137] (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Wed, 16 Feb 2022
- 03:27:37 -0800
-Message-ID: <36f19500-63d8-861f-9624-c3874cea460f@nvidia.com>
-Date:   Wed, 16 Feb 2022 13:27:34 +0200
+        with ESMTP id S229479AbiBPLdz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 06:33:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C92322B24;
+        Wed, 16 Feb 2022 03:33:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9614B81E99;
+        Wed, 16 Feb 2022 11:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C708C004E1;
+        Wed, 16 Feb 2022 11:33:39 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DIxpza7y"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645011217;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=esDVBJG6N16MKK8NeeRA41EIO93bGk1xkxH0HcIomqg=;
+        b=DIxpza7yGjQIWPpdUlT5lC+osTM+1SniCEQYp/cJFXcrkiAEWSj0hSZrw4/T3AbPfk3IEx
+        jXU8w7ZpbfuwKJuXYG24c+dqbZFZtn3Kqtj/aNQlTgKoJF4fCOvw8qYq7OWfvVwVcAcXuO
+        KAAAfcN+y03Bi5G4x+xQXOfzXdxCDnQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3cd753ef (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 16 Feb 2022 11:33:37 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     miaoqing@codeaurora.org, Rui Salvaterra <rsalvaterra@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v3] ath9k: use hw_random API instead of directly dumping into random.c
+Date:   Wed, 16 Feb 2022 12:33:23 +0100
+Message-Id: <20220216113323.53332-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
+References: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 net-next 05/11] net: bridge: switchdev: differentiate
- new VLANs from changed ones
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, <netdev@vger.kernel.org>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Rafael Richter <rafael.richter@gin.de>,
-        Daniel Klauer <daniel.klauer@gin.de>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-References: <20220215170218.2032432-1-vladimir.oltean@nxp.com>
- <20220215170218.2032432-6-vladimir.oltean@nxp.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-In-Reply-To: <20220215170218.2032432-6-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ffede229-d7bb-40e2-c10e-08d9f13f59db
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1697:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB1697D7714789EE8E9A053D66DF359@BN6PR12MB1697.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uhiPE7xccjbcbb1sRlhnY0U9eqQd139yuszSSIKJ7Z26h/WqO7Hf40ugAiCc4Pmr1aRaltyftgrERaiP848eLxiJJTK4OdxZMbziiLTrBoUmfvfE4EtgQuUg5rzfs69uZP4/Oocwq9NMih+uxBiivD1tCOL411sSJ9jqee/B4r+X6dtQE89Ar0BP0vL6v+qCVliixIbi4aV0IIlAFFRfd/u4Uhe2Yujr27RtFYeGChSIM+MFwRC456l0zLanOa9x6ymwtB713z+3eoVLEynHjVQF5rUVXBkk3TO9npnG0DxclScdlphNK8XxlSqHisvWrAAGoo3FFNhmkMq5W++WHKfBz8ihpNM+L4xz7IfMINI524BDuZ4lKQr4xmieq3H/NRjsw5faDK9kCvyHpukNEWlqgZc0zcqCtfhDIoyhAIDAjZEFn57giCCAr8nd62xjNwWB0Z4qnJSBBMwOR93okWnP88JW5pa95f37LSnMDjnT7p1LPe/QwId9yfpEZ5ES32YHOZvTn03J3prBJKdilngJP2nlgIpQOXTxdP7FYj2Ph1cATrnXiyzBpADFlNNz+zbcoiXOqMCC0JrTODxxttnyMSGvoZAGUgFQVEy5HS3SHwVq9m1JcxoI0lkWC9QhH+R5UBv7SBU7C66cBj4+M/Q4Gm2dIywi7XJdlR1+xriY/6N9d6BHG8QxJUBd0shTJNQ4rU3jN4WHyKBd0tOGNOOuBx6eCMcLPhIQbUD0mqRvADGjuEpuYvZqr+Sa7zkT
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(82310400004)(2906002)(83380400001)(5660300002)(426003)(508600001)(7416002)(356005)(26005)(81166007)(316002)(16576012)(186003)(16526019)(70586007)(336012)(40460700003)(8676002)(4326008)(47076005)(53546011)(70206006)(31686004)(54906003)(31696002)(36860700001)(6666004)(36756003)(8936002)(110136005)(86362001)(2616005)(36900700001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 11:27:44.1193
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ffede229-d7bb-40e2-c10e-08d9f13f59db
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1697
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/02/2022 19:02, Vladimir Oltean wrote:
-> br_switchdev_port_vlan_add() currently emits a SWITCHDEV_PORT_OBJ_ADD
-> event with a SWITCHDEV_OBJ_ID_PORT_VLAN for 2 distinct cases:
-> 
-> - a struct net_bridge_vlan got created
-> - an existing struct net_bridge_vlan was modified
-> 
-> This makes it impossible for switchdev drivers to properly balance
-> PORT_OBJ_ADD with PORT_OBJ_DEL events, so if we want to allow that to
-> happen, we must provide a way for drivers to distinguish between a
-> VLAN with changed flags and a new one.
-> 
-> Annotate struct switchdev_obj_port_vlan with a "bool changed" that
-> distinguishes the 2 cases above.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> v2->v3:
-> - drop "old_flags" from struct switchdev_obj_port_vlan, nobody needs it
->   now, in v2 only DSA needed it to filter out BRENTRY transitions, that
->   is now solved cleaner.
-> v1->v2:
-> - patch is new, logically replaces the need for "net: bridge: vlan:
->   notify a switchdev deletion when modifying flags of existing VLAN"
-> 
->  include/net/switchdev.h   |  7 +++++++
->  net/bridge/br_private.h   |  6 +++---
->  net/bridge/br_switchdev.c |  3 ++-
->  net/bridge/br_vlan.c      | 10 +++++-----
->  4 files changed, 17 insertions(+), 9 deletions(-)
-> 
+Hardware random number generators are supposed to use the hw_random
+framework. This commit turns ath9k's kthread-based design into a proper
+hw_random driver.
 
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: Rui Salvaterra <rsalvaterra@gmail.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+Changes v2->v3:
+- Use msleep_interruptable like other hwrng drivers.
+- Give up after 110 tries.
+- Return -EIO after giving up like other hwrng drivers.
+- Use for loop for style nits.
+- Append serial number for driver in case of multiple cards.
+
+Changes v1->v2:
+- Count in words rather than bytes.
+
+ drivers/net/wireless/ath/ath9k/ath9k.h |  3 +-
+ drivers/net/wireless/ath/ath9k/rng.c   | 72 +++++++++++---------------
+ 2 files changed, 33 insertions(+), 42 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireless/ath/ath9k/ath9k.h
+index ef6f5ea06c1f..3ccf8cfc6b63 100644
+--- a/drivers/net/wireless/ath/ath9k/ath9k.h
++++ b/drivers/net/wireless/ath/ath9k/ath9k.h
+@@ -1071,8 +1071,9 @@ struct ath_softc {
+ #endif
+ 
+ #ifdef CONFIG_ATH9K_HWRNG
++	struct hwrng rng_ops;
+ 	u32 rng_last;
+-	struct task_struct *rng_task;
++	char rng_name[sizeof("ath9k_65535")];
+ #endif
+ };
+ 
+diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/ath/ath9k/rng.c
+index f9d3d6eedd3c..cb5414265a9b 100644
+--- a/drivers/net/wireless/ath/ath9k/rng.c
++++ b/drivers/net/wireless/ath/ath9k/rng.c
+@@ -21,11 +21,6 @@
+ #include "hw.h"
+ #include "ar9003_phy.h"
+ 
+-#define ATH9K_RNG_BUF_SIZE	320
+-#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
+-
+-static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
+-
+ static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_size)
+ {
+ 	int i, j;
+@@ -71,61 +66,56 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
+ 	return delay;
+ }
+ 
+-static int ath9k_rng_kthread(void *data)
++static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+ {
+-	int bytes_read;
+-	struct ath_softc *sc = data;
+-	u32 *rng_buf;
+-	u32 delay, fail_stats = 0;
+-
+-	rng_buf = kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
+-	if (!rng_buf)
+-		goto out;
+-
+-	while (!kthread_should_stop()) {
+-		bytes_read = ath9k_rng_data_read(sc, rng_buf,
+-						 ATH9K_RNG_BUF_SIZE);
+-		if (unlikely(!bytes_read)) {
+-			delay = ath9k_rng_delay_get(++fail_stats);
+-			wait_event_interruptible_timeout(rng_queue,
+-							 kthread_should_stop(),
+-							 msecs_to_jiffies(delay));
+-			continue;
++	struct ath_softc *sc = container_of(rng, struct ath_softc, rng_ops);
++	u32 fail_stats = 0, word;
++	int bytes_read = 0;
++
++	for (;;) {
++		if (max & ~3UL)
++			bytes_read = ath9k_rng_data_read(sc, buf, max >> 2);
++		if ((max & 3UL) && ath9k_rng_data_read(sc, &word, 1)) {
++			memcpy(buf + bytes_read, &word, max & 3UL);
++			bytes_read += max & 3UL;
++			memzero_explicit(&word, sizeof(word));
+ 		}
++		if (!wait || !max || likely(bytes_read) || fail_stats > 110)
++			break;
+ 
+-		fail_stats = 0;
+-
+-		/* sleep until entropy bits under write_wakeup_threshold */
+-		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
+-					   ATH9K_RNG_ENTROPY(bytes_read));
++		msleep_interruptible(ath9k_rng_delay_get(++fail_stats));
+ 	}
+ 
+-	kfree(rng_buf);
+-out:
+-	sc->rng_task = NULL;
+-
+-	return 0;
++	if (wait && !bytes_read && max)
++		bytes_read = -EIO;
++	return bytes_read;
+ }
+ 
+ void ath9k_rng_start(struct ath_softc *sc)
+ {
++	static atomic_t serial = ATOMIC_INIT(0);
+ 	struct ath_hw *ah = sc->sc_ah;
+ 
+-	if (sc->rng_task)
++	if (sc->rng_ops.read)
+ 		return;
+ 
+ 	if (!AR_SREV_9300_20_OR_LATER(ah))
+ 		return;
+ 
+-	sc->rng_task = kthread_run(ath9k_rng_kthread, sc, "ath9k-hwrng");
+-	if (IS_ERR(sc->rng_task))
+-		sc->rng_task = NULL;
++	snprintf(sc->rng_name, sizeof(sc->rng_name), "ath9k_%u",
++		 (atomic_inc_return(&serial) - 1) & U16_MAX);
++	sc->rng_ops.name = sc->rng_name;
++	sc->rng_ops.read = ath9k_rng_read;
++	sc->rng_ops.quality = 320;
++
++	if (devm_hwrng_register(sc->dev, &sc->rng_ops))
++		sc->rng_ops.read = NULL;
+ }
+ 
+ void ath9k_rng_stop(struct ath_softc *sc)
+ {
+-	if (sc->rng_task) {
+-		kthread_stop(sc->rng_task);
+-		sc->rng_task = NULL;
++	if (sc->rng_ops.read) {
++		devm_hwrng_unregister(sc->dev, &sc->rng_ops);
++		sc->rng_ops.read = NULL;
+ 	}
+ }
+-- 
+2.35.0
 
