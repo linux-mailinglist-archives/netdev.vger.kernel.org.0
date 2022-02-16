@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C345A4B917B
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:41:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CC524B9176
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:41:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238161AbiBPTlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 14:41:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42764 "EHLO
+        id S238162AbiBPTlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 14:41:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237789AbiBPTlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:41:13 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637A82B04AB;
-        Wed, 16 Feb 2022 11:41:00 -0800 (PST)
+        with ESMTP id S237789AbiBPTle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:41:34 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D165D2B048B;
+        Wed, 16 Feb 2022 11:41:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C8755CE288B;
-        Wed, 16 Feb 2022 19:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5529CC340E8;
-        Wed, 16 Feb 2022 19:40:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1647DCE2897;
+        Wed, 16 Feb 2022 19:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAAECC004E1;
+        Wed, 16 Feb 2022 19:41:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645040457;
-        bh=wETB63wkrW29pVFYDN5iqpi8/oDhPHZmrk8FQPS0BWs=;
+        s=k20201202; t=1645040477;
+        bh=YLTs1rxYD+NDyL44mfSduov49e8DI5HZxAayg3QvMQE=;
         h=Date:From:To:Cc:Subject:From;
-        b=ote3JCvMRwxXqsDm/YtHXL8w+ORYSsLHwssTRh5GDO5OWiRL4g51gYlhF78pQ41jR
-         x7bq0RKH0ewLko5LxIkFuqTTwhcxohgkp8brgRhB4hWcC6GkezNR+mTdu9ArqCay8r
-         NMPMwxQbWotYhGG8GWO9kJpc252HrW+BUqo6X75WYi4kwQFrilmU5N6M9Qr3gBAR9F
-         hph5DKQfDKtuR3WFpBxeiv5Fi5N8XO6CNwOigFTSwC2GXxxfbJXt+rEnwopX0MV0kt
-         lHkujyIrYA3C1566mrjxd1o7t0i1qgPqJL8zD/b77sgOdzJhPzP6bEf1PSBD2lmfCm
-         UWRlckcB7+GLA==
-Date:   Wed, 16 Feb 2022 13:48:36 -0600
+        b=BfmlLU7WP1j9u4nkIoK+Cz8eLt0BN3rZ1mB/S8Pn2li/IRyue6qYNLm+rRFuZgfo0
+         LkUP02ymVqyLKEyHU682FtgKb3qzDEZ5yT6VGOpytmbmwPTEeZDbWZ+/WeVUBpvdQU
+         xz3CvsqrF2CT8bN27wdWF5/5HSfoGIHCEFDfZheUqQY/2DFgYFPl/jODhAA8nGlsAB
+         NqiFwGSO+bJMy6+KXD4G4sFx1c8nfzC9HGPMrGRvE4t0SzJVt1dlgZaEOiA1iAokMf
+         Z4Jmfuny+mPk3ymzZEOEpc/WHIW8HCznVwPAmFUuTV7XGQtQcuApIHqlpPast1slnf
+         1vTlM7Mivxgxg==
+Date:   Wed, 16 Feb 2022 13:48:57 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
 To:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         linux-hardening@vger.kernel.org
-Subject: [PATCH][next] ath11k: Replace zero-length arrays with flexible-array
+Subject: [PATCH][next] ath6kl: Replace zero-length arrays with flexible-array
  members
-Message-ID: <20220216194836.GA904035@embeddedor>
+Message-ID: <20220216194857.GA904059@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
@@ -69,129 +69,125 @@ no longer be used[2].
 Link: https://github.com/KSPP/linux/issues/78
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/ce.h       |  2 +-
- drivers/net/wireless/ath/ath11k/core.h     |  2 +-
- drivers/net/wireless/ath/ath11k/dp.h       | 10 +++++-----
- drivers/net/wireless/ath/ath11k/rx_desc.h  |  6 +++---
- drivers/net/wireless/ath/ath11k/spectral.c |  2 +-
- 5 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/net/wireless/ath/ath6kl/wmi.h | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ce.h b/drivers/net/wireless/ath/ath11k/ce.h
-index 8255b6cfab0c..9644ff909502 100644
---- a/drivers/net/wireless/ath/ath11k/ce.h
-+++ b/drivers/net/wireless/ath/ath11k/ce.h
-@@ -145,7 +145,7 @@ struct ath11k_ce_ring {
- 	u32 hal_ring_id;
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+index 784940ba4c90..8535784af513 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.h
++++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+@@ -1637,7 +1637,7 @@ struct bss_bias {
  
- 	/* keep last */
--	struct sk_buff *skb[0];
-+	struct sk_buff *skb[];
- };
+ struct bss_bias_info {
+ 	u8 num_bss;
+-	struct bss_bias bss_bias[0];
++	struct bss_bias bss_bias[];
+ } __packed;
  
- struct ath11k_ce_pipe {
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 9e88ccca5ca7..e5cc007b6feb 100644
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -806,7 +806,7 @@ struct ath11k_base {
- 	} id;
+ struct low_rssi_scan_params {
+@@ -1720,7 +1720,7 @@ struct wmi_neighbor_info {
  
- 	/* must be last */
--	u8 drv_priv[0] __aligned(sizeof(void *));
-+	u8 drv_priv[] __aligned(sizeof(void *));
- };
+ struct wmi_neighbor_report_event {
+ 	u8 num_neighbors;
+-	struct wmi_neighbor_info neighbor[0];
++	struct wmi_neighbor_info neighbor[];
+ } __packed;
  
- struct ath11k_fw_stats_pdev {
-diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
-index 409d6cc5a1d5..b644e4675818 100644
---- a/drivers/net/wireless/ath/ath11k/dp.h
-+++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -1170,12 +1170,12 @@ struct ath11k_htt_ppdu_stats_msg {
- 	u32 ppdu_id;
- 	u32 timestamp;
- 	u32 rsvd;
+ /* TKIP MIC Error Event */
+@@ -2051,7 +2051,7 @@ struct wmi_get_keepalive_cmd {
+ struct wmi_set_appie_cmd {
+ 	u8 mgmt_frm_type; /* enum wmi_mgmt_frame_type */
+ 	u8 ie_len;
+-	u8 ie_info[0];
++	u8 ie_info[];
+ } __packed;
+ 
+ struct wmi_set_ie_cmd {
+@@ -2059,7 +2059,7 @@ struct wmi_set_ie_cmd {
+ 	u8 ie_field;	/* enum wmi_ie_field_type */
+ 	u8 ie_len;
+ 	u8 reserved;
+-	u8 ie_info[0];
++	u8 ie_info[];
+ } __packed;
+ 
+ /* Notify the WSC registration status to the target */
+@@ -2127,7 +2127,7 @@ struct wmi_add_wow_pattern_cmd {
+ 	u8 filter_list_id;
+ 	u8 filter_size;
+ 	u8 filter_offset;
+-	u8 filter[0];
++	u8 filter[];
+ } __packed;
+ 
+ struct wmi_del_wow_pattern_cmd {
+@@ -2360,7 +2360,7 @@ struct wmi_send_action_cmd {
+ 	__le32 freq;
+ 	__le32 wait;
+ 	__le16 len;
 -	u8 data[0];
 +	u8 data[];
  } __packed;
  
- struct htt_tlv {
- 	u32 header;
--	u8 value[0];
-+	u8 value[];
- } __packed;
- 
- #define HTT_TLV_TAG			GENMASK(11, 0)
-@@ -1362,7 +1362,7 @@ struct htt_ppdu_stats_usr_cmn_array {
- 	 * tx_ppdu_stats_info is variable length, with length =
- 	 *     number_of_ppdu_stats * sizeof (struct htt_tx_ppdu_stats_info)
- 	 */
--	struct htt_tx_ppdu_stats_info tx_ppdu_info[0];
-+	struct htt_tx_ppdu_stats_info tx_ppdu_info[];
- } __packed;
- 
- struct htt_ppdu_user_stats {
-@@ -1424,7 +1424,7 @@ struct htt_ppdu_stats_info {
-  */
- struct htt_pktlog_msg {
- 	u32 hdr;
--	u8 payload[0];
-+	u8 payload[];
- };
- 
- /**
-@@ -1645,7 +1645,7 @@ struct ath11k_htt_extd_stats_msg {
- 	u32 info0;
- 	u64 cookie;
- 	u32 info1;
+ struct wmi_send_mgmt_cmd {
+@@ -2369,7 +2369,7 @@ struct wmi_send_mgmt_cmd {
+ 	__le32 wait;
+ 	__le32 no_cck;
+ 	__le16 len;
 -	u8 data[0];
 +	u8 data[];
  } __packed;
  
- #define	HTT_MAC_ADDR_L32_0	GENMASK(7, 0)
-diff --git a/drivers/net/wireless/ath/ath11k/rx_desc.h b/drivers/net/wireless/ath/ath11k/rx_desc.h
-index 79c50804d7dc..26ecc1bcd9d5 100644
---- a/drivers/net/wireless/ath/ath11k/rx_desc.h
-+++ b/drivers/net/wireless/ath/ath11k/rx_desc.h
-@@ -1445,7 +1445,7 @@ struct hal_rx_desc_ipq8074 {
- 	__le32 hdr_status_tag;
- 	__le32 phy_ppdu_id;
- 	u8 hdr_status[HAL_RX_DESC_HDR_STATUS_LEN];
--	u8 msdu_payload[0];
-+	u8 msdu_payload[];
+ struct wmi_tx_status_event {
+@@ -2389,7 +2389,7 @@ struct wmi_set_appie_extended_cmd {
+ 	u8 role_id;
+ 	u8 mgmt_frm_type;
+ 	u8 ie_len;
+-	u8 ie_info[0];
++	u8 ie_info[];
  } __packed;
  
- struct hal_rx_desc_qcn9074 {
-@@ -1464,7 +1464,7 @@ struct hal_rx_desc_qcn9074 {
- 	__le32 hdr_status_tag;
- 	__le32 phy_ppdu_id;
- 	u8 hdr_status[HAL_RX_DESC_HDR_STATUS_LEN];
--	u8 msdu_payload[0];
-+	u8 msdu_payload[];
+ struct wmi_remain_on_chnl_event {
+@@ -2406,18 +2406,18 @@ struct wmi_cancel_remain_on_chnl_event {
+ struct wmi_rx_action_event {
+ 	__le32 freq;
+ 	__le16 len;
+-	u8 data[0];
++	u8 data[];
  } __packed;
  
- struct hal_rx_desc_wcn6855 {
-@@ -1483,7 +1483,7 @@ struct hal_rx_desc_wcn6855 {
- 	__le32 hdr_status_tag;
- 	__le32 phy_ppdu_id;
- 	u8 hdr_status[HAL_RX_DESC_HDR_STATUS_LEN];
--	u8 msdu_payload[0];
-+	u8 msdu_payload[];
+ struct wmi_p2p_capabilities_event {
+ 	__le16 len;
+-	u8 data[0];
++	u8 data[];
  } __packed;
  
- struct hal_rx_desc {
-diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
-index 4100cc1449a2..2b18871d5f7c 100644
---- a/drivers/net/wireless/ath/ath11k/spectral.c
-+++ b/drivers/net/wireless/ath/ath11k/spectral.c
-@@ -107,7 +107,7 @@ struct spectral_search_fft_report {
- 	__le32 info1;
- 	__le32 info2;
- 	__le32 reserve0;
--	u8 bins[0];
-+	u8 bins[];
+ struct wmi_p2p_rx_probe_req_event {
+ 	__le32 freq;
+ 	__le16 len;
+-	u8 data[0];
++	u8 data[];
  } __packed;
  
- struct ath11k_spectral_search_report {
+ #define P2P_FLAG_CAPABILITIES_REQ   (0x00000001)
+@@ -2431,7 +2431,7 @@ struct wmi_get_p2p_info {
+ struct wmi_p2p_info_event {
+ 	__le32 info_req_flags;
+ 	__le16 len;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ struct wmi_p2p_capabilities {
+@@ -2450,7 +2450,7 @@ struct wmi_p2p_probe_response_cmd {
+ 	__le32 freq;
+ 	u8 destination_addr[ETH_ALEN];
+ 	__le16 len;
+-	u8 data[0];
++	u8 data[];
+ } __packed;
+ 
+ /* Extended WMI (WMIX)
 -- 
 2.27.0
 
