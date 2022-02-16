@@ -2,122 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 981C34B7CC9
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 02:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8DDF4B7CD2
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 02:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245550AbiBPBi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 20:38:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42184 "EHLO
+        id S245565AbiBPBpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 20:45:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245536AbiBPBiZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 20:38:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E313220D3;
-        Tue, 15 Feb 2022 17:38:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEEE6B81D90;
-        Wed, 16 Feb 2022 01:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADFFC340ED;
-        Wed, 16 Feb 2022 01:38:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644975491;
-        bh=An6Gzjiy9PJBIQlLMy16uDVBiMvq2VU/Zw/2B3HW4RI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=L8IHSnLxGXZTjON5iHPGIfxBlgRg4w88B26WdpWwClqWCPfzbiToTPhtaJXdBL+aI
-         4mDpieEpNDEHlTSZgQ3ycCOtxeStuZQ+ij7llEwle9MvOHJjPpsJTHBxDb5MOOoZLt
-         W5B4HrkjGqoql3fOoCtbIVz8xd27TH9bH1BzLpjZiaylOAvY9RQmJSg/Vls8vWO34u
-         Pxy8nGE86MfPMRQPWAHyAT5NuP3JhgV7sC3ZOtVxagrrt6DoetfV1XCsG5r+JhNMyF
-         2EBZtgQ4byhIj4nBI/m7GLKySdzbmSseZjs7EzHlOkGGNsSuLmdp5qXliP0b0dRtrT
-         XY5LDXeIDYPVw==
-Received: by mail-yb1-f181.google.com with SMTP id l125so1548946ybl.4;
-        Tue, 15 Feb 2022 17:38:11 -0800 (PST)
-X-Gm-Message-State: AOAM530ikHDzjaYWOYAUahnxyaNU0ELppBiwmrR+1/y++zItPXLWhEXK
-        hbqHxv+f8AFDVspO6tmLQ3cpHrTWeHK/z3tzGFE=
-X-Google-Smtp-Source: ABdhPJwG4XmD8gNIiQK5EY13nrv4sMK9GL27p7BaAX4IKT6t4ZKiqxEt+3aODNJP7jQrV6YWkHHpsXG5srKjVv7cme8=
-X-Received: by 2002:a0d:ebc3:0:b0:2d6:34f5:7d67 with SMTP id
- u186-20020a0debc3000000b002d634f57d67mr491346ywe.73.1644975490580; Tue, 15
- Feb 2022 17:38:10 -0800 (PST)
+        with ESMTP id S244340AbiBPBpX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 20:45:23 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E6DF9FB4;
+        Tue, 15 Feb 2022 17:45:11 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4akc2F_1644975908;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V4akc2F_1644975908)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 16 Feb 2022 09:45:09 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, josright123@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] net: Fix an ignored error return from dm9051_get_regs()
+Date:   Wed, 16 Feb 2022 09:45:07 +0800
+Message-Id: <20220216014507.109117-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-References: <00000000000073b3e805d7fed17e@google.com> <462fa505-25a8-fd3f-cc36-5860c6539664@iogearbox.net>
- <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
-In-Reply-To: <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 15 Feb 2022 17:37:59 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5JhG07TYKKHRbNVtepOLjZ2ekibePyyqCwuzhH0YoP7Q@mail.gmail.com>
-Message-ID: <CAPhsuW5JhG07TYKKHRbNVtepOLjZ2ekibePyyqCwuzhH0YoP7Q@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:41 PM Song Liu <song@kernel.org> wrote:
->
-> On Mon, Feb 14, 2022 at 3:52 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >
-> > Song, ptal.
-> >
-> > On 2/14/22 7:45 PM, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-> > > git tree:       bpf-next
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=10baced8700000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
+The return from the call to dm9051_get_regs() is int, it can be
+a negative error code, however this is being assigned to an unsigned
+int variable 'ret', so making 'ret' an int.
 
-How do I run the exact same syzkaller? I am doing something like
+Eliminate the following coccicheck warning:
+./drivers/net/ethernet/davicom/dm9051.c:527:5-8: WARNING: Unsigned
+expression compared with zero: ret < 0
 
-./bin/syz-manager -config qemu.cfg
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/net/ethernet/davicom/dm9051.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-with the cfg file like:
+diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/davicom/dm9051.c
+index d2513c97f83e..8984363624eb 100644
+--- a/drivers/net/ethernet/davicom/dm9051.c
++++ b/drivers/net/ethernet/davicom/dm9051.c
+@@ -519,7 +519,7 @@ static int dm9051_map_init(struct spi_device *spi, struct board_info *db)
+ static int dm9051_map_chipid(struct board_info *db)
+ {
+ 	struct device *dev = &db->spidev->dev;
+-	unsigned int ret;
++	int ret;
+ 	unsigned short wid;
+ 	u8 buff[6];
+ 
+-- 
+2.20.1.7.g153144c
 
-{
-        "target": "linux/amd64",
-        "http": ":56741",
-        "workdir": "workdir",
-        "kernel_obj": "linux",
-        "image": "./pkg/mgrconfig/testdata/stretch.img",
-        "syzkaller": ".",
-        "disable_syscalls": ["keyctl", "add_key", "request_key"],
-        "suppressions": ["some known bug"],
-        "procs": 8,
-        "type": "qemu",
-        "vm": {
-                "count": 16,
-                "cpu": 2,
-                "mem": 2048,
-                "kernel": "linux/arch/x86/boot/bzImage"
-        }
-}
-
-Is this correct? I am using stretch.img from syzkaller site, and the
-.config from
-the link above.
-
-Thanks,
-Song
