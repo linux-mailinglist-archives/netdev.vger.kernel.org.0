@@ -2,211 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9567A4B7B8D
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 01:03:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0AC4B7BA3
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 01:12:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244952AbiBPADD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 19:03:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47596 "EHLO
+        id S236734AbiBPAM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 19:12:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238224AbiBPADC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 19:03:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C1527FEF;
-        Tue, 15 Feb 2022 16:02:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B1D5B81D24;
-        Wed, 16 Feb 2022 00:02:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7AFFC340EB;
-        Wed, 16 Feb 2022 00:02:43 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="f35zvtzb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644969762;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jSS481wVl8zqyIdlIbBq60q/zzn2ipkf0jzq2ad4dkI=;
-        b=f35zvtzbFMMcFnKlOxThurkk8WtIjJj8M9KO6s/sXB1OU+6P/JiSHXPVOF/zaU6zSPMFaL
-        0EDJg3xwhcQUwnv5ideAxirX7uCJy/+AYDDHLeVVantYs6jOb7B2XrmoAN2vKyq+Y/7JGz
-        m90G+iu5MwRUIzCb5DuzNkW2JSQZOrs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 64f85552 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 16 Feb 2022 00:02:41 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     miaoqing@codeaurora.org, rsalvaterra@gmail.com,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH v2] ath9k: use hw_random API instead of directly dumping into random.c
-Date:   Wed, 16 Feb 2022 01:02:30 +0100
-Message-Id: <20220216000230.22625-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
-References: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S241502AbiBPAMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 19:12:55 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7486DBD16
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:12:44 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id a19-20020a25ca13000000b0061db44646b3so857596ybg.2
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:12:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Vrfhs9fM/f5flzQ6fo6JMQiAz44yb98YDndfmXgWlR0=;
+        b=F6GeSpndj4rny/JoZpU0oayhIhxV7CcfrseOarmjurGggnwv6E3JxHe86eRa8m2Q0J
+         8+L7j4NSN9YPBmEIudy+flzMruU0DNixNQxjqBN6hAx/74UmyAUxtPMM985xDRuT1il1
+         VY002I0tobGPJuIiu3rl16y8YSw9vaZG/ICRPbf9v/xyPIHIN9j3F8SVQUB+kNK8LAD8
+         TR+zEko7GUuSbMSnnstmms1HVDgXMbzxYhe+sAjZLzq1t0298rOHTiUnQ43HF5oi2GcX
+         mQw41019OoduuIZHg5qXNsVZ9t49GT8jjbNhUurdueB1Z8LTReP911mKn8OCraS0Xms8
+         DlxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Vrfhs9fM/f5flzQ6fo6JMQiAz44yb98YDndfmXgWlR0=;
+        b=ntlIv+PIbY+JOXVnOOolDvnGHcK89mNGq1FN5jd9fTHwsFUzea7DGgMe0kRe6GXgVP
+         GZYKJ/NR8YfFuVsXtOrWAkp3fYiRabLmeIFaeajn/FOYCQUhRDUo4a+8Ysh0tOvgEt2U
+         Qu5865BTlAjzrDbm+DJTujD4JA/w/Mxz64MdvqriYHAF3ksLnUdTVkIwlXWRqtJ4q5yp
+         aIKGrPMw1s4L21Xp4Ph7Z4uejvXDSSaIEXyTHgWSZ80EazbLGJx4M4ZP6LalHiqY/iyX
+         bfIAHwZSPMmehq8s5/20fnnW0xU7ASiWKAghc5Q1A6dT4BF4hu5sMvfviekfXVGI2ZB8
+         g9aQ==
+X-Gm-Message-State: AOAM531sNb8yolkQjkCxXSCwdP4eOrceEUpnbuDKMePChsAPKP1RPhLl
+        +Qo7Esq3q42G/KfCO2+ttyTVykrOrU7AwfvaSlNDGY5NFn1kk9DqLUltc9DEq0m14v1pS5qoYFR
+        0ZcxKuWzc2uLqBHqXHzR6i2dHckvrEzI6BgkQZLWNdNKMRgvNGbN+vg==
+X-Google-Smtp-Source: ABdhPJxkAWK3iyQxNpcDsl9XyL8owAbBsZcW97WYNcfT5UT17vc2FqaNQTndSk2wOqPX3fkcNXqZs9Y=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:754a:e17d:48a0:d1db])
+ (user=sdf job=sendgmr) by 2002:a81:7141:0:b0:2d3:d549:23f8 with SMTP id
+ m62-20020a817141000000b002d3d54923f8mr257069ywc.87.1644970363999; Tue, 15 Feb
+ 2022 16:12:43 -0800 (PST)
+Date:   Tue, 15 Feb 2022 16:12:37 -0800
+Message-Id: <20220216001241.2239703-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [RFC bpf-next 0/4] bpf: cgroup_sock lsm flavor
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>, kafai@fb.com,
+        kpsingh@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hardware random number generators are supposed to use the hw_random
-framework. This commit turns ath9k's kthread-based design into a proper
-hw_random driver.
+This is an RFC proposal for a recent discussion about default socket
+policy [0]. The series implements new lsm flavor for attaching
+lsm-like programs to existing lsm hooks that operate on 'struct socket'
+The actual requirement is that the first argument is of type 'struct
+socket'. Later on we can add support 'struct sock' based hooks without
+any user-visible changes.
 
-This compiles, but I have no hardware or other ability to determine
-whether it works. I'll leave further development up to the ath9k
-and hw_random maintainers.
+For demonstration purposes only two hooks are included (can be extended
+to more later). Also, for demonstration purposes, writes to sock->sk_priority
+are exposed to lsm hooks (can cover more bpf_sock fields later).
 
-Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-v2 operates on whole words when possible.
+The intended workflow is:
 
- drivers/net/wireless/ath/ath9k/ath9k.h |  2 +-
- drivers/net/wireless/ath/ath9k/rng.c   | 72 +++++++++++---------------
- 2 files changed, 30 insertions(+), 44 deletions(-)
+The users load lsm_cgroup_sock tracepoint into the system. This installs
+generic fmod_ret trampoline that runs __cgroup_bpf_run_lsm_sock.
 
-diff --git a/drivers/net/wireless/ath/ath9k/ath9k.h b/drivers/net/wireless/ath/ath9k/ath9k.h
-index ef6f5ea06c1f..142f472903dc 100644
---- a/drivers/net/wireless/ath/ath9k/ath9k.h
-+++ b/drivers/net/wireless/ath/ath9k/ath9k.h
-@@ -1072,7 +1072,7 @@ struct ath_softc {
- 
- #ifdef CONFIG_ATH9K_HWRNG
- 	u32 rng_last;
--	struct task_struct *rng_task;
-+	struct hwrng rng_ops;
- #endif
- };
- 
-diff --git a/drivers/net/wireless/ath/ath9k/rng.c b/drivers/net/wireless/ath/ath9k/rng.c
-index aae2bd3cac69..a0a58f8e08d3 100644
---- a/drivers/net/wireless/ath/ath9k/rng.c
-+++ b/drivers/net/wireless/ath/ath9k/rng.c
-@@ -22,11 +22,6 @@
- #include "hw.h"
- #include "ar9003_phy.h"
- 
--#define ATH9K_RNG_BUF_SIZE	320
--#define ATH9K_RNG_ENTROPY(x)	(((x) * 8 * 10) >> 5) /* quality: 10/32 */
--
--static DECLARE_WAIT_QUEUE_HEAD(rng_queue);
--
- static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_size)
- {
- 	int i, j;
-@@ -72,61 +67,52 @@ static u32 ath9k_rng_delay_get(u32 fail_stats)
- 	return delay;
- }
- 
--static int ath9k_rng_kthread(void *data)
-+static int ath9k_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
- {
--	int bytes_read;
--	struct ath_softc *sc = data;
--	u32 *rng_buf;
--	u32 delay, fail_stats = 0;
--
--	rng_buf = kmalloc_array(ATH9K_RNG_BUF_SIZE, sizeof(u32), GFP_KERNEL);
--	if (!rng_buf)
--		goto out;
--
--	while (!kthread_should_stop()) {
--		bytes_read = ath9k_rng_data_read(sc, rng_buf,
--						 ATH9K_RNG_BUF_SIZE);
--		if (unlikely(!bytes_read)) {
--			delay = ath9k_rng_delay_get(++fail_stats);
--			wait_event_interruptible_timeout(rng_queue,
--							 kthread_should_stop(),
--							 msecs_to_jiffies(delay));
--			continue;
--		}
--
--		fail_stats = 0;
--
--		/* sleep until entropy bits under write_wakeup_threshold */
--		add_hwgenerator_randomness((void *)rng_buf, bytes_read,
--					   ATH9K_RNG_ENTROPY(bytes_read));
-+	struct ath_softc *sc = container_of(rng, struct ath_softc, rng_ops);
-+	int bytes_read = 0;
-+	u32 fail_stats = 0, word;
-+
-+retry:
-+	if (max & ~3UL)
-+		bytes_read = ath9k_rng_data_read(sc, buf, max >> 2);
-+	if ((max & 3UL) && ath9k_rng_data_read(sc, &word, 1)) {
-+		memcpy(buf + bytes_read, &word, max & 3);
-+		bytes_read += max & 3;
-+		memzero_explicit(&word, sizeof(word));
-+	}
-+	if (max && unlikely(!bytes_read) && wait) {
-+		msleep(ath9k_rng_delay_get(++fail_stats));
-+		goto retry;
- 	}
- 
--	kfree(rng_buf);
--out:
--	sc->rng_task = NULL;
--
--	return 0;
-+	return bytes_read;
- }
- 
- void ath9k_rng_start(struct ath_softc *sc)
- {
- 	struct ath_hw *ah = sc->sc_ah;
-+	int ret;
- 
--	if (sc->rng_task)
-+	if (sc->rng_ops.read)
- 		return;
- 
- 	if (!AR_SREV_9300_20_OR_LATER(ah))
- 		return;
- 
--	sc->rng_task = kthread_run(ath9k_rng_kthread, sc, "ath9k-hwrng");
--	if (IS_ERR(sc->rng_task))
--		sc->rng_task = NULL;
-+	sc->rng_ops.name = "ath9k";
-+	sc->rng_ops.read = ath9k_rng_read;
-+	sc->rng_ops.quality = 320;
-+
-+	ret = devm_hwrng_register(sc->dev, &sc->rng_ops);
-+	if (ret)
-+		sc->rng_ops.read = NULL;
- }
- 
- void ath9k_rng_stop(struct ath_softc *sc)
- {
--	if (sc->rng_task) {
--		kthread_stop(sc->rng_task);
--		sc->rng_task = NULL;
-+	if (sc->rng_ops.read) {
-+		devm_hwrng_unregister(sc->dev, &sc->rng_ops);
-+		sc->rng_ops.read = NULL;
- 	}
- }
+After that, bpf_prog_attach should be called to activate this program
+for the particular cgroup. This interface uses exiting cgroup_bpf
+functionality and should support all existing inheritance flags.
+
+I'd like to get a generic feedback whether I'm going into the right
+direction or not. The thing I'm not sure about is the way I'm
+abusing jit generation (maybe fmod_ret should be automagically
+installed instead?).
+
+For non-socket specific hooks, we can add a similar BPF_LSM_CGROUP
+attach point that looks at current->cgroup instead of socket->cgroup.
+
+[0] https://lore.kernel.org/bpf/YgPz8akQ4+qBz7nf@google.com/
+
+Cc: ast@kernel.org
+Cc: daniel@iogearbox.net
+Cc: kafai@fb.com
+Cc: kpsingh@kernel.org
+
+Stanislav Fomichev (4):
+  bpf: cgroup_sock lsm flavor
+  bpf: allow writing to sock->sk_priority from lsm progtype
+  libbpf: add lsm_cgoup_sock type
+  selftest: lsm_cgroup_sock sample usage
+
+ arch/x86/net/bpf_jit_comp.c                   | 27 +++++--
+ include/linux/bpf-cgroup-defs.h               |  4 +
+ include/linux/bpf.h                           |  2 +
+ include/uapi/linux/bpf.h                      |  1 +
+ kernel/bpf/bpf_lsm.c                          | 49 +++++++++++
+ kernel/bpf/btf.c                              | 10 +++
+ kernel/bpf/cgroup.c                           | 43 +++++++++-
+ kernel/bpf/syscall.c                          |  6 +-
+ kernel/bpf/trampoline.c                       |  1 +
+ kernel/bpf/verifier.c                         |  4 +-
+ tools/include/uapi/linux/bpf.h                |  1 +
+ tools/lib/bpf/libbpf.c                        |  2 +
+ .../bpf/prog_tests/lsm_cgroup_sock.c          | 81 +++++++++++++++++++
+ .../selftests/bpf/progs/lsm_cgroup_sock.c     | 55 +++++++++++++
+ 14 files changed, 273 insertions(+), 13 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup_sock.c
+ create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup_sock.c
+
 -- 
-2.35.0
+2.35.1.265.g69c8d7142f-goog
 
