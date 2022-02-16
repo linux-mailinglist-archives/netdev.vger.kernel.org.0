@@ -2,233 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC794B7BAA
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 01:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E15C04B7BAE
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 01:17:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244974AbiBPANL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 19:13:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52462 "EHLO
+        id S237470AbiBPARw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 19:17:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244562AbiBPANF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 19:13:05 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55067DD460
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:12:54 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id g205-20020a2552d6000000b0061e1843b8edso733551ybb.18
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:12:54 -0800 (PST)
+        with ESMTP id S229745AbiBPARv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 19:17:51 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB1E5F85
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:17:38 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id g24so370450qkl.3
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:17:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=REY3pk0BoGNZKX6Lo+KrxmNqWG6NMmzP12YExN8vbiI=;
-        b=GlEp4DxMa9Jx4nnFsTCvxILiewnVvUIge+4OoL4D9K9oizrqqmavIizzhq5ImBwBbx
-         7nBkKArl6x63laZVyQG/YZgfCdvpd8C3a19tTK+1tcMcVsVHeFc+Sjkx5XQWCU41O5dn
-         VtVrDjZ00+KjHaRDd92944AEBrqzEpPwqqWpuiQnlWQ1M7KKpCqD5nHk+kgRSzdTTzMb
-         6QxZ5rV0Jv+z8ftunIYwp7Wk/nlAJRBRvIs3duhu0L95oW6d/AQW5i6QfAS9KNIbupbF
-         nixXCpcVFFrZQMZpt5+dV9MUpfXTyD9Or885dOhbavq72NUda/RaBm9u4E4C9r6hiCmn
-         ObZw==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LXXohFohWtk3A40QmzsojwJHplBXzapPwHo59ri0+C8=;
+        b=Z91IRJHLsFjXyclo6WPTjseLkgCj13SH8YjddghQ9UmNgqavyk66+TIQ3eoQBSOUMg
+         f0jIhCJsLqyha/zR77amepywMX4AhHEql3o59XVII3DB5sVaphImXdfJuMQZGlaTZEFg
+         yLS6/SCDyvXDx/YEwWuQJWqxLx5Xayk2sl4rHY/jL0B3LwSc15YG/tq7o7kRUxLBa7m6
+         v/17DOxsczLCWaxduGkXLM2evam6nR1Yd6COy8rocpBeJ+fyt5mjZ+Y8QLXpukplsttG
+         XsSMUUk2yMOLFsstzPgoY/OfMwmjMpFEcM/Rv5uNSZYiyTlwbUW00zcK8MalpAef1lwF
+         y/Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=REY3pk0BoGNZKX6Lo+KrxmNqWG6NMmzP12YExN8vbiI=;
-        b=X9hqAn0Gbz7mGVjkAkEqr1Syls8rPWWGftrge4qh0L3tdGbU3e8NNtONKXGXQJKs+E
-         PUoofiJayAD77YicvWIZ5Adzska6MmPgRcDP0NNaYB0y1p9++XZUEUGs2A/vDGS4gNea
-         JYSA+Vn9bw9Xl34+ThnQKdhzHiFSPJf1qwpHcwzHGgEgClftawt+2J0Y15qRuS1TfpLh
-         AVv8d5mIWiMDj2yODpz9v9gCLauzIAVab6yaWQbU+Z4NkAZwAGg5c9c4KiFhMigx8D1v
-         wUFL29KiG4vOhEf1rFbs966olfXgQwutnx2Sp3IlNvcORzVe0p7T0oksY35A3kZZoYHv
-         9dwQ==
-X-Gm-Message-State: AOAM530JeM1RZX+bJ8X0kgkhsF6D7BYAUlfnV5y1dGZdougEFOw2PRkZ
-        gVgJpEvYVINqb8l8+cn/e27RlvFbP8kXTUy/F85FB2sgj9iVyrGOwf8+P3FNwIliZY92b1h2+DI
-        XhxHoZGyPPJpjEbdUT8gxu4RzgaZIShtqL6TQmCVGrFtjDaQQP1NHXw==
-X-Google-Smtp-Source: ABdhPJwuVNflF50dIGT2Y+Umaraw2zGd5e8whT4mYPi0KnAc5SppEKwzXDa1jA9L4wysvWVyGjJKwe0=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:754a:e17d:48a0:d1db])
- (user=sdf job=sendgmr) by 2002:a25:5f08:0:b0:622:1e92:39ca with SMTP id
- t8-20020a255f08000000b006221e9239camr69826ybb.715.1644970373462; Tue, 15 Feb
- 2022 16:12:53 -0800 (PST)
-Date:   Tue, 15 Feb 2022 16:12:41 -0800
-In-Reply-To: <20220216001241.2239703-1-sdf@google.com>
-Message-Id: <20220216001241.2239703-5-sdf@google.com>
-Mime-Version: 1.0
-References: <20220216001241.2239703-1-sdf@google.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [RFC bpf-next 4/4] selftest: lsm_cgroup_sock sample usage
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LXXohFohWtk3A40QmzsojwJHplBXzapPwHo59ri0+C8=;
+        b=8RH77e8jcpoIxHkpqJeX3VMq8tZg0osX1rzEOgie+OyTEwQOQT/9LVfM2jaiSjYSP6
+         C94FKhYQzHzwSYPW4+9cg1laKKt4ebWJhbCzGUK+gfv/z3YXZh2Jyv3zgpqAtqczL0is
+         kdo1E9z93TrLohut0XtW8cSFyXi8SbtNXlDsjVWOf9CJBuiwYMASUvejCcw3X/CwW2oy
+         YFEu1NLlI7N4XpKqZz3U99TvmwNrE3JDzKd0twkzY1ZewkKwZyvmhAz6YPGIEYqqV59m
+         IzwAvQwaj7YZNCi8nUbEpUPv/Qtl9JI1Ufti/BQWRhV+y4m/K0AaKYIwnl5h71YDd2mC
+         w3Ag==
+X-Gm-Message-State: AOAM5326ZF4Nn+IkO9B4lzLaWcPBvUEx3mG432s00ahKfzoZ3m6trxy2
+        0B9Y1QZv1GMEQVps4E91godnrw==
+X-Google-Smtp-Source: ABdhPJwUM33plWNAJT/onKaxKVSQKDxE1WeWXv32uyQEzWiwlv0iNtOgWQRlCKvl6mUHt3yfhfN8Gg==
+X-Received: by 2002:a05:620a:2293:b0:600:2b7b:2a19 with SMTP id o19-20020a05620a229300b006002b7b2a19mr198355qkh.408.1644970657886;
+        Tue, 15 Feb 2022 16:17:37 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
+        by smtp.googlemail.com with ESMTPSA id u17sm17295840qkj.44.2022.02.15.16.17.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Feb 2022 16:17:37 -0800 (PST)
+Message-ID: <4e556aff-0295-52d1-0274-a0381b585fbb@mojatatu.com>
+Date:   Tue, 15 Feb 2022 19:17:36 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+Content-Language: en-US
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
+ <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
+ <0b486c4e-0af5-d142-44e5-ed81aa0b98c2@mojatatu.com>
+ <CAMDZJNVB4FDgv+xrTw2cZisEy2VNn1Dv9RodEhEAsd5H6qwkRA@mail.gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <CAMDZJNVB4FDgv+xrTw2cZisEy2VNn1Dv9RodEhEAsd5H6qwkRA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement two things I'd like to get from this:
+On 2022-02-14 20:40, Tonghao Zhang wrote:
+> On Tue, Feb 15, 2022 at 8:22 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>
+>> On 2022-01-26 09:32, xiangxia.m.yue@gmail.com wrote:
+>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>>>
 
-1. apply default sk_priority policy
-2. permit TX-only AF_PACKET socket
+>
+>> So while i dont agree that ebpf is the solution for reasons i mentioned
+>> earlier - after looking at the details think iam confused by this change
+>> and maybe i didnt fully understand the use case.
+>>
+>> What is the driver that would work  with this?
+>> You said earlier packets are coming out of some pods and then heading to
+>> the wire and you are looking to balance and isolate between bulk and
+>> latency  sensitive traffic - how are any of these metadatum useful for
+>> that? skb->priority seems more natural for that.
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- .../bpf/prog_tests/lsm_cgroup_sock.c          | 81 +++++++++++++++++++
- .../selftests/bpf/progs/lsm_cgroup_sock.c     | 55 +++++++++++++
- 2 files changed, 136 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup_sock.c
- create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup_sock.c
+Quote from your other email:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/lsm_cgroup_sock.c b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup_sock.c
-new file mode 100644
-index 000000000000..4afc40282b15
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup_sock.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <test_progs.h>
-+
-+#include "lsm_cgroup_sock.skel.h"
-+
-+void test_lsm_cgroup_sock(void)
-+{
-+	int post_create_prog_fd = -1, bind_prog_fd = -1;
-+	struct lsm_cgroup_sock *skel = NULL;
-+	int cgroup_fd, err, fd, prio;
-+	socklen_t socklen;
-+
-+
-+	cgroup_fd = test__join_cgroup("/sock_policy");
-+	if (!ASSERT_GE(cgroup_fd, 0, "join_cgroup"))
-+		goto close_skel;
-+
-+	skel = lsm_cgroup_sock__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "open_and_load"))
-+		goto close_cgroup;
-+
-+	err = lsm_cgroup_sock__attach(skel);
-+	if (!ASSERT_OK(err, "attach"))
-+		goto close_cgroup;
-+
-+	post_create_prog_fd = bpf_program__fd(skel->progs.socket_post_create);
-+	bind_prog_fd = bpf_program__fd(skel->progs.socket_bind);
-+
-+	err = bpf_prog_attach(post_create_prog_fd, cgroup_fd, BPF_LSM_CGROUP_SOCK, 0);
-+	if (!ASSERT_OK(err, "attach post_create_prog_fd"))
-+		goto close_cgroup;
-+
-+	err = bpf_prog_attach(bind_prog_fd, cgroup_fd, BPF_LSM_CGROUP_SOCK, 0);
-+	if (!ASSERT_OK(err, "attach bind_prog_fd"))
-+		goto detach_cgroup;
-+
-+	/* AF_INET6 gets default policy (sk_priority).
-+	 */
-+
-+	fd = socket(AF_INET6, SOCK_STREAM, 0);
-+	if (!ASSERT_GE(fd, 0, "socket(SOCK_STREAM)"))
-+		goto detach_cgroup;
-+
-+	prio = 0;
-+	socklen = sizeof(prio);
-+	ASSERT_GE(getsockopt(fd, SOL_SOCKET, SO_PRIORITY, &prio, &socklen), 0, "getsockopt");
-+	ASSERT_EQ(prio, 123, "sk_priority");
-+
-+	close(fd);
-+
-+	/* TX-only AF_PACKET is allowed.
-+	 */
-+
-+	ASSERT_LT(socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)), 0, "socket(AF_PACKET, ..., ETH_P_ALL)");
-+
-+	fd = socket(AF_PACKET, SOCK_RAW, 0);
-+	ASSERT_GE(fd, 0, "socket(AF_PACKET, ..., 0)");
-+
-+	/* TX-only AF_PACKET can not be rebound.
-+	 */
-+
-+	struct sockaddr_ll sa = {
-+		.sll_family = AF_PACKET,
-+		.sll_protocol = htons(ETH_P_ALL),
-+	};
-+	ASSERT_LT(bind(fd, (struct sockaddr *)&sa, sizeof(sa)), 0, "bind(ETH_P_ALL)");
-+
-+	close(fd);
-+
-+detach_cgroup:
-+	bpf_prog_detach2(post_create_prog_fd, cgroup_fd, BPF_LSM_CGROUP_SOCK);
-+	bpf_prog_detach2(bind_prog_fd, cgroup_fd, BPF_LSM_CGROUP_SOCK);
-+
-+close_cgroup:
-+	close(cgroup_fd);
-+close_skel:
-+	lsm_cgroup_sock__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/lsm_cgroup_sock.c b/tools/testing/selftests/bpf/progs/lsm_cgroup_sock.c
-new file mode 100644
-index 000000000000..7fe3da5a8dc7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/lsm_cgroup_sock.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+#ifndef AF_PACKET
-+#define AF_PACKET 17
-+#endif
-+
-+#ifndef EPERM
-+#define EPERM 1
-+#endif
-+
-+SEC("lsm_cgroup_sock/socket_post_create")
-+int BPF_PROG(socket_post_create, struct socket *sock, int family,
-+	     int type, int protocol, int kern)
-+{
-+	struct sock *sk;
-+
-+	/* Reject non-tx-only AF_PACKET.
-+	 */
-+	if (family == AF_PACKET && protocol != 0)
-+		return 0; /* EPERM */
-+
-+	sk = sock->sk;
-+	if (!sk)
-+		return 1;
-+
-+	/* The rest of the sockets get default policy.
-+	 */
-+	sk->sk_priority = 123;
-+	return 1;
-+}
-+
-+SEC("lsm_cgroup_sock/socket_bind")
-+int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
-+	     int addrlen)
-+{
-+	struct sockaddr_ll sa = {};
-+
-+	if (sock->sk->__sk_common.skc_family != AF_PACKET)
-+		return 1;
-+
-+	if (sock->sk->sk_kern_sock)
-+		return 1;
-+
-+	bpf_probe_read_kernel(&sa, sizeof(sa), address);
-+	if (sa.sll_protocol)
-+		return 0; /* EPERM */
-+
-+	return 1;
-+}
--- 
-2.35.1.265.g69c8d7142f-goog
+ > In our production env, we use the ixgbe, i40e and mlx nic which
+ > support multi tx queue.
 
+Please bear with me.
+The part i was wondering about is how these drivers would use queue
+mapping to select their hardware queues.
+Maybe you meant the software queue (in the qdiscs?) - But even then
+how does queue mapping map select which queue is to be used.
+
+> Hi
+> I try to explain. there are two tx-queue range, e.g. A(Q0-Qn), B(Qn+1-Qm).
+> A is used for latency sensitive traffic. B is used for bulk sensitive
+> traffic. A may be shared by Pods/Containers which key is
+> high throughput. B may be shared by Pods/Containers which key is low
+> latency. So we can do the balance in range A for latency sensitive
+> traffic.
+
+So far makes sense. I am not sure if you get better performance but
+thats unrelated to this discussion. Just trying to understand your
+setup  first in order to understand the use case. IIUC:
+You have packets coming out of the pods and hitting the host stack
+where you are applying these rules on egress qdisc of one of these
+ixgbe, i40e and mlx nics, correct?
+And that egress qdisc then ends up selecting a queue based on queue
+mapping?
+
+Can you paste a more complete example of a sample setup on some egress
+port including what the classifier would be looking at?
+Your diagram was unclear how the load balancing was going to be
+achieved using the qdiscs (or was it the hardware?).
+
+> So we can use the skb->hash or CPUID or classid to classify the
+> packets in range A or B. The balance policies are used for different
+> use case.
+> For skb->hash, the packets from Pods/Containers will share the range.
+> Should to know that one Pod/Container may use the multi TCP/UDP flows.
+> That flows share the tx queue range.
+> For CPUID, while Pod/Container use the multi flows, pod pinned on one
+> CPU will use one tx-queue in range A or B.
+> For CLASSID, the Pod may contain the multi containters.
+> 
+> skb->priority may be used by applications. we can't require
+> application developer to change them.
+
+It can also be set by skbedit.
+Note also: Other than user specifying via setsockopt and skbedit,
+DSCP/TOS/COS are all translated into skb->priority. Most of those
+L3/L2 fields are intended to map to either bulk or latency sensitive
+traffic.
+More importantly:
+ From s/w level - most if not _all_ classful qdiscs look at skb->priority
+to decide where to enqueue.
+ From h/w level - skb->priority is typically mapped to qos hardware level
+(example 802.1q).
+Infact skb->priority could be translated by qdisc layer into
+classid if you set the 32 bit value to be the major:minor number for
+a specific configured classid.
+
+cheers,
+jamal
