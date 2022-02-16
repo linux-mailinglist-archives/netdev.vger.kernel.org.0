@@ -2,106 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0354B85EE
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7274B8613
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbiBPKgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 05:36:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34056 "EHLO
+        id S230191AbiBPKnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 05:43:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiBPKgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:36:16 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70852B9A3C
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 02:36:03 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id bu29so3084515lfb.0
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 02:36:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DPYWkKQW0nFWmY1xKFD4WRaxOqq/BeFHyxszPN5EPVU=;
-        b=sUG7rjTRD6NrI48dGWwKOWJyGgjS5g2H1DjFZUQiMmRJj/ir9Wv7S+f3pcYhwB3G21
-         jgW2ghTrDeTyWExposS8pU9olgt0OSFSsKqTWvFBrZtYeR1hzrMRB/QHZbRFsmF8Z2S0
-         H/h0PiEEIFA7GmMAI2JMN3sa/fyLmEXYE57MT9xMELnMPIGAArOM53KTMVRbp5J3baMB
-         isLqyWoSSBY1G4sXiIcXWs7lxW91pyd5h21jcWCoFLVEL0Fbk7le1PLdPy5uxaXftMdu
-         5wLQBv6dJWYyW7H1/lavO2wyNL8O5n34jBSkfOXmCyy+T54Vr7Az+AHoRojt+05MRAOP
-         vMsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DPYWkKQW0nFWmY1xKFD4WRaxOqq/BeFHyxszPN5EPVU=;
-        b=JmHyIVSIB2xj2Fhwok1ThuP/O1GYntKljw5bJAvg/34OJHSJ9G2onqphKGBTgi5naw
-         dgeZR+lPO8/5MPgKkfgtXUaTbObLDRSHSGDGFX5DiTGIzRjWgXl5KGQtGiPvPLy5NLyT
-         4J3pasmKWin/fw7myAL9gjRwYcowws/uSR9vrMnSHNwnre3B2ds+ox29RobR4HBLeqp5
-         mQ/4OhGiumjnDkyx00dOuc5+OYiz6+hfI+oG4UIklWZdtdtkFvQ0FtrJciUUBM73JcQQ
-         U+A4laiOUGyqxH6xkpDliqvYu+AuSas/rzaFkmkiBnTC8nzr11HESggImzfAxADZaq7v
-         dH4g==
-X-Gm-Message-State: AOAM533rWBVimIe2gShZ5QG6vkUwGoaXIcS2ZVtMyxcN5wpVF7Dm+4Kn
-        doFYsKC9gbjQRsjO6PmolhvoerGJkjetZQDZVQl7HQ==
-X-Google-Smtp-Source: ABdhPJz9lTvKXYqNUYEUwJcowusuOCgV3hil3k2PW920Mo0Cq3dd/tLhknO2IA4VJElhIgGQWuFNWTFzEa2t3lXDQAk=
-X-Received: by 2002:a05:6512:388d:b0:443:6066:2c8d with SMTP id
- n13-20020a056512388d00b0044360662c8dmr1552732lft.184.1645007762118; Wed, 16
- Feb 2022 02:36:02 -0800 (PST)
+        with ESMTP id S229455AbiBPKng (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:43:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7177326835F;
+        Wed, 16 Feb 2022 02:43:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 204F1B81E74;
+        Wed, 16 Feb 2022 10:43:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BEEEC004E1;
+        Wed, 16 Feb 2022 10:43:21 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LN+U314q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645008198;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FLVrjfhT3W8aNO8W4YUK8UwxqHmr1OB3Xs9XyYu/LAw=;
+        b=LN+U314qz5ae0xe+2oW32YGWXiptKFKcPzAFi//V42h1bKx4w3Od+Qez3w4SHdbajhEqg7
+        fA7pD6+VRD3CLJ1QoFxpQMIONiUORBqmEbZIIllpkqbQGU48FJSVea36EGYCk4QXxqEdbR
+        GBtBGG+qjJP5+m3myWISxpoIHMpXJIs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9bc629c6 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 16 Feb 2022 10:43:17 +0000 (UTC)
+Received: by mail-yb1-f173.google.com with SMTP id v63so4661542ybv.10;
+        Wed, 16 Feb 2022 02:43:16 -0800 (PST)
+X-Gm-Message-State: AOAM530v+4nRHutthXlLu56kXv2kKOek5/ZWfQl28GDX84GSd8bU4Bd8
+        PLmZ+U7/cb0NzoRZr1zj+vgRURyVPpX1mkwN3vw=
+X-Google-Smtp-Source: ABdhPJxiaSHJ3i2RRcIsj07+mvucZb540gljBceIzpbXww7fLhg+Lg6D8LmDRmq5NyIV/ooc3fooNxW+9sq/0Bf+KkU=
+X-Received: by 2002:a81:7d04:0:b0:2d0:d0e2:126f with SMTP id
+ y4-20020a817d04000000b002d0d0e2126fmr1714487ywc.485.1645008195447; Wed, 16
+ Feb 2022 02:43:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20220216093112.92469-1-Jerome.Pouiller@silabs.com>
-In-Reply-To: <20220216093112.92469-1-Jerome.Pouiller@silabs.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 16 Feb 2022 11:35:25 +0100
-Message-ID: <CAPDyKFreMJigpAgE95EgkStNrE+r+_k9iRuTXsFk6t9d66e0TQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] staging: wfx: apply SDIO suggestions
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-mmc@vger.kernel.org,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+References: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
+ <20220216000230.22625-1-Jason@zx2c4.com> <5c23585b-7865-54fb-3835-12e58a7aee46@gmail.com>
+In-Reply-To: <5c23585b-7865-54fb-3835-12e58a7aee46@gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 16 Feb 2022 11:43:04 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
+Message-ID: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
+Subject: Re: [PATCH v2] ath9k: use hw_random API instead of directly dumping
+ into random.c
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     miaoqing@codeaurora.org, Rui Salvaterra <rsalvaterra@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Feb 2022 at 10:31, Jerome Pouiller
-<Jerome.Pouiller@silabs.com> wrote:
->
-> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
->
-> Hi Ulf, Greg,
->
-> The second patch of this series touch to the staging tree and to the MMC
-> framework. I don't know what is the rule for these cases, but I think it
-> makes more sense to carry this patch with the staging tree.
+Hi Florian,
 
-I don't believe the changes to the mmc core will cause any merge
-conflict, so feel free to funnel this through whatever tree makes best
-sense.
+On Wed, Feb 16, 2022 at 4:13 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> You will have to give this instance an unique name because there can be
+> multiple ath9k adapters registered in a given system (like Wi-Fi
+> routers), and one of the first thing hwrng_register() does is ensure
+> that there is not an existing rng with the same name.
+>
+> Maybe using a combination of ath9k + dev_name() ought to be unique enough?
 
-For the series:
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Good point. Will do. dev_name() probably won't cut it because of
+namespaces, but I can always just attach a counter. Will do that for
+v3.
 
-Kind regards
-Uffe
-
->
->
-> J=C3=A9r=C3=B4me Pouiller (2):
->   staging: wfx: WF200 has no official SDIO IDs
->   staging: wfx: apply the necessary SDIO quirks for the Silabs WF200
->
->  drivers/mmc/core/quirks.h      | 5 +++++
->  drivers/staging/wfx/bus_sdio.c | 8 ++------
->  2 files changed, 7 insertions(+), 6 deletions(-)
->
-> --
-> 2.34.1
->
+Jason
