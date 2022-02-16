@@ -2,103 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE0D4B7D3E
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41F324B7D2B
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245756AbiBPCBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:01:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47626 "EHLO
+        id S1343514AbiBPCAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:00:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245757AbiBPCA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:00:58 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97490FBA42;
-        Tue, 15 Feb 2022 18:00:47 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id q17so1372811edd.4;
-        Tue, 15 Feb 2022 18:00:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sconlSkVQr84rv45aJ7gGXdI67TbSdkvanV4Zo/rcjc=;
-        b=hLZszkoPv+HNK6bt+me14aeW2OrbCDmi6YgRFKks65sbnzrkpb91K6m5v47kmrVn1+
-         BCm+PpfO8XPVgQu2vGltQ6ptoytIAOjRZ27ZkQXHNtV4rjhuXFoHptYxZk7BwoO54NCm
-         6k4CA9cdCN2svdGlYES5pL/awM5kmlvGLYpiM1CJ2hW9yk8M3udRN2p4jo9xhZoDAMQ2
-         mNcKyRFxfoYkGA2xYIICvx8Lhbs2HgWDFhgR4/bpaVITfcONhl9+h+g9woXRqcIIxNVs
-         dN/VO4ZP0LVuuVlZJfGFFAoJJvBmb548eJ4cuC6dj7ZhwoBaAHPzjEE6xSf/IAjkyFSg
-         E3Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sconlSkVQr84rv45aJ7gGXdI67TbSdkvanV4Zo/rcjc=;
-        b=Kbl+P/A2whR/gueRExCWNrooLbLGjCzlYx5Lfv5ifik+Fxfz2JZZiOzG1AjPvEVeeS
-         4jF6zzpJ4zyFjZ3Zmpn9gCyV1jbKXAwEhDtx42D6RlJMV2l7hx3USyffJ1mKX2QaFo/Y
-         oHxCo9yrt1BbzORQsKDoArvSbpjeLYf9f//tQ9otMjBvr+jU7cp5WvVtuVt4i2L2qtiT
-         tBkTUAkuPEpgLWntokHr2DtLCFW2Bt0OCtWjBkP1HNB+SuQhXagzV5PrYQFGb0OXf0Qt
-         93+7P36PACoByXCQV7Pk/cO4Nsb2p9vR+tS9DC6iTWKf5tzNFvhYygco7bpREwhGpiDG
-         vNbQ==
-X-Gm-Message-State: AOAM532LbVAc+Aawj83qrfvlcSBd7luIVMI94x5KP2+Bn4pbEnUoheB7
-        11hfZoxh4MoixaTHx0SahkFstlbkHLP5z0NUq3E=
-X-Google-Smtp-Source: ABdhPJwyUho5csN/Qney7PVE0iId1O0lOc2NtN7/RpdmKciiVquz11cDbaMpq6sMoo0cOYsdD+kNlv6zhxD//ya0Fck=
-X-Received: by 2002:aa7:d7c8:0:b0:3f9:3b65:f2b3 with SMTP id
- e8-20020aa7d7c8000000b003f93b65f2b3mr603272eds.389.1644976846121; Tue, 15 Feb
- 2022 18:00:46 -0800 (PST)
+        with ESMTP id S245756AbiBPCAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:00:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B92A4FABEF
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:00:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644976828;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=YFBtBqy7GxzxoGYDw6JmYt8CAfh5GaKQFTvqKPCLmo8=;
+        b=Y8yYTO8TCdSXWydZw7tpEy5jtZ7wBdQLY+5rQ6qhpmB1a15Ov2vUtDyzzjXa+Lsq0yM3XR
+        BFXLDe0RTCr1ZCDcmlB8fdyXW6yvn6gvE/SxQMp6eRoYpj+MdrubPSejLkSaYwNg5lwmRF
+        mk57e5MlOlEMv6YvPLM/KZtIu7JNYRo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-156-rRvwecICMWez96ENeLkQfQ-1; Tue, 15 Feb 2022 21:00:25 -0500
+X-MC-Unique: rRvwecICMWez96ENeLkQfQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D9B338030D2;
+        Wed, 16 Feb 2022 02:00:23 +0000 (UTC)
+Received: from fenrir.redhat.com (unknown [10.22.12.80])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 261BD6AB8B;
+        Wed, 16 Feb 2022 02:00:09 +0000 (UTC)
+From:   jmaloy@redhat.com
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     kuba@kernel.org, tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
+        xinl@redhat.com, ying.xue@windriver.com,
+        parthasarathy.bhuvaragan@gmail.com
+Subject: [v2,net] tipc: fix wrong notification node addresses
+Date:   Tue, 15 Feb 2022 21:00:09 -0500
+Message-Id: <20220216020009.3404578-1-jmaloy@redhat.com>
 MIME-Version: 1.0
-References: <20220215112812.2093852-1-imagedong@tencent.com>
- <20220215080452.2898495a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <71823500-3947-0b9a-d53f-5406feb244ac@kernel.org>
-In-Reply-To: <71823500-3947-0b9a-d53f-5406feb244ac@kernel.org>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 16 Feb 2022 09:55:34 +0800
-Message-ID: <CADxym3baA1j6soeS9frXd4Qi=7pG83jgdjJm5jj8MQ4oT16Lag@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/19] net: add skb drop reasons for TCP, IP, dev
- and neigh
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>, ilias.apalodimas@linaro.org,
-        Alexander Lobakin <alobakin@pm.me>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        atenart@kernel.org, bigeasy@linutronix.de,
-        Paolo Abeni <pabeni@redhat.com>, linyunsheng@huawei.com,
-        arnd@arndb.de, yajun.deng@linux.dev,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Willem de Bruijn <willemb@google.com>, vvs@virtuozzo.com,
-        Cong Wang <cong.wang@bytedance.com>, luiz.von.dentz@intel.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        flyingpeng@tencent.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 12:09 AM David Ahern <dsahern@kernel.org> wrote:
->
-> On 2/15/22 9:04 AM, Jakub Kicinski wrote:
-> > There's no reason to send 19 patches at a time. Please try to send
-> > smaller series, that's are easier to review, under 10 patches
-> > preferably, certainly under 15.
->
-> +1. It takes time to review code paths and make sure the changes are
-> correct.
->
-> Send the first 9 as set; those target the TCP stack and then wait for
-> them to be merged before sending more.
+From: Jon Maloy <jmaloy@redhat.com>
 
-Ok, I'll make the amount of patches at a proper level, thanks!
+The previous bug fix had an unfortunate side effect that broke
+distribution of binding table entries between nodes. The updated
+tipc_sock_addr struct is also used further down in the same
+function, and there the old value is still the correct one.
+
+We fix this now.
+
+Fixes: 032062f363b4 ("tipc: fix wrong publisher node address in link publications")
+
+Signed-off-by: Jon Maloy <jmaloy@redhat.com>
+
+---
+v2: Copied n->addr to stack variable before leaving lock context, and
+    using this in the notifications.
+---
+ net/tipc/node.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index fd95df338da7..6ef95ce565bd 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -403,7 +403,7 @@ static void tipc_node_write_unlock(struct tipc_node *n)
+ 	u32 flags = n->action_flags;
+ 	struct list_head *publ_list;
+ 	struct tipc_uaddr ua;
+-	u32 bearer_id;
++	u32 bearer_id, node;
+ 
+ 	if (likely(!flags)) {
+ 		write_unlock_bh(&n->lock);
+@@ -414,6 +414,7 @@ static void tipc_node_write_unlock(struct tipc_node *n)
+ 		   TIPC_LINK_STATE, n->addr, n->addr);
+ 	sk.ref = n->link_id;
+ 	sk.node = tipc_own_addr(net);
++	node = n->addr;
+ 	bearer_id = n->link_id & 0xffff;
+ 	publ_list = &n->publ_list;
+ 
+@@ -423,17 +424,17 @@ static void tipc_node_write_unlock(struct tipc_node *n)
+ 	write_unlock_bh(&n->lock);
+ 
+ 	if (flags & TIPC_NOTIFY_NODE_DOWN)
+-		tipc_publ_notify(net, publ_list, sk.node, n->capabilities);
++		tipc_publ_notify(net, publ_list, node, n->capabilities);
+ 
+ 	if (flags & TIPC_NOTIFY_NODE_UP)
+-		tipc_named_node_up(net, sk.node, n->capabilities);
++		tipc_named_node_up(net, node, n->capabilities);
+ 
+ 	if (flags & TIPC_NOTIFY_LINK_UP) {
+-		tipc_mon_peer_up(net, sk.node, bearer_id);
++		tipc_mon_peer_up(net, node, bearer_id);
+ 		tipc_nametbl_publish(net, &ua, &sk, sk.ref);
+ 	}
+ 	if (flags & TIPC_NOTIFY_LINK_DOWN) {
+-		tipc_mon_peer_down(net, sk.node, bearer_id);
++		tipc_mon_peer_down(net, node, bearer_id);
+ 		tipc_nametbl_withdraw(net, &ua, &sk, sk.ref);
+ 	}
+ }
+-- 
+2.31.1
+
