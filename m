@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE71D4B926F
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 21:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54DBF4B927A
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 21:36:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231667AbiBPUee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 15:34:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53830 "EHLO
+        id S231783AbiBPUeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 15:34:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231483AbiBPUeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 15:34:31 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A9E2A39C9
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 12:34:18 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id y5so3114579pfe.4
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 12:34:18 -0800 (PST)
+        with ESMTP id S231748AbiBPUep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 15:34:45 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2014526BDF6
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 12:34:32 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id z17so2879538plb.9
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 12:34:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=dUD1O3o1ifOwlrT9wCiI69FVgZyS7G64yh4bIznkTt8=;
-        b=cToYCa4Q9YzpuQ8hWjqhI9GAV7hdMX5zFfA045ME9Esgzb7iXXOnP66rLDTpXnUrsH
-         ZXAOBQjk3+lTbLD8wwG/XQjRIHof/WW7ZnfXUIQbSGmHV1myOfuF1iJY07seXS5BUgSt
-         UWRna5Sk/M3/2NaZ6zLnXSYBj4DI3P+O7+ly0=
+        bh=lM3wWhDpKhtMoYgQLKWR7U8Z6MzzZFEnmP4Z5wjzN+8=;
+        b=lSRFGSANbEVrOokV4rWf6cpxepU41iwsUUTXoSNcl2ejVHK5f3qVLMrkCqiUNeL7fC
+         ph9ue3IvWkoIU0dtUp1mjNvMcUUYIu76J3wkAg1kURrPRP0UfYvqGRFtT/0b0gK3Wfc/
+         7vueckZkR33wj5J2jPADjtx7SJWKqJh/4jmgc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=dUD1O3o1ifOwlrT9wCiI69FVgZyS7G64yh4bIznkTt8=;
-        b=lEHuyGb8QQmkCfoAeSgUI+kbQWUiRtHaMPz729J9H8QHi8EaDyRn+pxlqFT0POyvRl
-         Knq07GWyWME38pbe/BehUXqOeuyE8NXe3Ogaaax4eqe8qFZKOIgsBLLb8dQwW7BbPBgB
-         DV2t9pQNPGPJr2TENGAhasRjKbNhPt0u4hK873feMv/RDuJjfdcGmOMgDwWrbf/1wZDr
-         uZln59wRP1WtQEIooK8u+4NDPrW+2Ff7Xrr8kc/j3602MdwdOiCGNX3vwaHpTSOfkbb5
-         wLngtzM/6k5x6a+6OvXw9BDR2hyHpP9MaWJy1gG8f3ZiECLt0oEXAbdr5xTORjdsWgIv
-         tx6g==
-X-Gm-Message-State: AOAM531GoW7CitwPbLoSfTrpF7fz6ru5aWtpKAPf6UgEwVC15VXqhFcK
-        27F1MRcvfnsrgfASz9gF6CjKdw==
-X-Google-Smtp-Source: ABdhPJxQlIx/zpkn6DzwhHmBHxoQ/aVVFwDrNfFlAwdVpmL8Xx2laM6IKnYH6S9ktvf3oiVfYtmAgA==
-X-Received: by 2002:aa7:8d08:0:b0:4e1:5fb5:b15 with SMTP id j8-20020aa78d08000000b004e15fb50b15mr4799283pfe.70.1645043657895;
-        Wed, 16 Feb 2022 12:34:17 -0800 (PST)
+        bh=lM3wWhDpKhtMoYgQLKWR7U8Z6MzzZFEnmP4Z5wjzN+8=;
+        b=O8X6dpzZuZpbNxgSNJ5679v8SGPuTi1o/4TJk1rDcnJiWH0WCpXU9ldQqBMttegKaV
+         xzPCWMRgWlVCaAgPOIIEO6tMNhFQtMW/dFT8XrGOI1r5aBhfFFqmTamsXd0QWNZxUuYR
+         1K+omTt+DVUquO0ALU1aT6Y8ztstCqNzmhaMvFeCsoFkXU/yShkNEglglGSTX5LCmmiP
+         1cbppPjpMynDEsNUA+DKxukT6cXE24sh9Tel4Xvq/jMmxsjg7WZrHBnG1gnqM8mKQegh
+         lzADXyJZS/yU68EL2c6CW6VFZVw4oQ9T386zEAdwt62iAN2qvCHNbVTOAJ0+4qgnxPq1
+         r6bA==
+X-Gm-Message-State: AOAM533gZIUDDXVBqB1Ot/Owjv13yEm3RhFG6iZWJMaxHvInEvUgRFiz
+        HEf8CXHKG6zHC01NfzTpkx4bKQ==
+X-Google-Smtp-Source: ABdhPJxmluPD0ktYlysj8vNbzpWnhJoArECRiPqpwQ+ZHzWuD6DCMhi9X2HkGTk1xwUIt7vrE8Ms6A==
+X-Received: by 2002:a17:90a:9b16:b0:1b9:fda3:2a8 with SMTP id f22-20020a17090a9b1600b001b9fda302a8mr3754878pjp.198.1645043671691;
+        Wed, 16 Feb 2022 12:34:31 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t2sm44157008pfj.211.2022.02.16.12.34.17
+        by smtp.gmail.com with ESMTPSA id x1sm5796970pga.40.2022.02.16.12.34.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 12:34:17 -0800 (PST)
-Date:   Wed, 16 Feb 2022 12:34:17 -0800
+        Wed, 16 Feb 2022 12:34:31 -0800 (PST)
+Date:   Wed, 16 Feb 2022 12:34:30 -0800
 From:   Kees Cook <keescook@chromium.org>
 To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] ath11k: Replace zero-length arrays with
+Subject: Re: [PATCH][next] ath6kl: Replace zero-length arrays with
  flexible-array members
-Message-ID: <202202161234.7DBAE56797@keescook>
-References: <20220216194836.GA904035@embeddedor>
+Message-ID: <202202161234.035ED44@keescook>
+References: <20220216194857.GA904059@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220216194836.GA904035@embeddedor>
+In-Reply-To: <20220216194857.GA904059@embeddedor>
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -72,7 +72,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 01:48:36PM -0600, Gustavo A. R. Silva wrote:
+On Wed, Feb 16, 2022 at 01:48:57PM -0600, Gustavo A. R. Silva wrote:
 > There is a regular need in the kernel to provide a way to declare
 > having a dynamically sized set of trailing elements in a structure.
 > Kernel code should always use “flexible array members”[1] for these
