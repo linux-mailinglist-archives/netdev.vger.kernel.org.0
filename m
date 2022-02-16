@@ -2,101 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5A44B7BD9
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 01:23:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C07A4B7BFC
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 01:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239381AbiBPAVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 19:21:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34026 "EHLO
+        id S245140AbiBPAgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 19:36:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232793AbiBPAVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 19:21:50 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACCBDFE6;
-        Tue, 15 Feb 2022 16:21:39 -0800 (PST)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nK84P-000Gip-Fp; Wed, 16 Feb 2022 01:21:21 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nK84P-000CPf-1a; Wed, 16 Feb 2022 01:21:21 +0100
-Subject: Re: [PATCH bpf-next v3 2/4] arm64: insn: add encoders for atomic
- operations
-To:     Will Deacon <will@kernel.org>
-Cc:     Hou Tao <houtao1@huawei.com>, Alexei Starovoitov <ast@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Julien Thierry <jthierry@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220129220452.194585-1-houtao1@huawei.com>
- <20220129220452.194585-3-houtao1@huawei.com>
- <4524da71-3977-07db-bd6e-cebd1c539805@iogearbox.net>
- <20220215174213.GB8706@willie-the-truck>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <dbf95c48-fccf-653f-cb8d-05a0637c4b38@iogearbox.net>
-Date:   Wed, 16 Feb 2022 01:21:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S242156AbiBPAf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 19:35:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C2F27B33
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 16:35:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2F8C616A6
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A9A8C340EB;
+        Wed, 16 Feb 2022 00:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644971747;
+        bh=3H6V2xmg5Wyun0Mib/YWU6Gz017vV/Ayea3Jum5uqQQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YjrLn8h1oL3F7JAXKNjSRpgH3EQjB3dhY07zF9Vxw5sgVqrthc6T/6Tjw5GkbSXiC
+         C4/NyApy7wqBklq7aGxLxJQbNBAFTXsV8m4X4XR/Jp+YSj4PUQdDOIuP3aD/8Yocwm
+         Bap42JhzkuIyn2yTWpMGUTtouMgYA/5OeCfXCODNBBgmyz1jjc4CjMule/GmcaviP3
+         mSkuThP890n/b+6SLm7sKnORZRJkEicv5Dqs3DT7sTCdc4tZ52meP/BMT30JYV/HG9
+         c7qhNfT1K/gHcza1VwqN8WhgEA7uKMX8QaGIK1Vo0J9+sUkoUnDITjtnz+CDw5mB+M
+         H0LzgciuRO5MA==
+Date:   Tue, 15 Feb 2022 16:35:45 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [Bug 215610] New: eth0 not working after upgrade from 5.16.8 to
+ 5.16.9
+Message-ID: <20220215163545.0a421b9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220215152233.2c15de26@hermes.local>
+References: <20220215152233.2c15de26@hermes.local>
 MIME-Version: 1.0
-In-Reply-To: <20220215174213.GB8706@willie-the-truck>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26454/Tue Feb 15 10:32:17 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Will,
-
-On 2/15/22 6:42 PM, Will Deacon wrote:
-> On Fri, Feb 11, 2022 at 03:39:48PM +0100, Daniel Borkmann wrote:
->> On 1/29/22 11:04 PM, Hou Tao wrote:
->>> It is a preparation patch for eBPF atomic supports under arm64. eBPF
->>> needs support atomic[64]_fetch_add, atomic[64]_[fetch_]{and,or,xor} and
->>> atomic[64]_{xchg|cmpxchg}. The ordering semantics of eBPF atomics are
->>> the same with the implementations in linux kernel.
->>>
->>> Add three helpers to support LDCLR/LDEOR/LDSET/SWP, CAS and DMB
->>> instructions. STADD/STCLR/STEOR/STSET are simply encoded as aliases for
->>> LDADD/LDCLR/LDEOR/LDSET with XZR as the destination register, so no extra
->>> helper is added. atomic_fetch_add() and other atomic ops needs support for
->>> STLXR instruction, so extend enum aarch64_insn_ldst_type to do that.
->>>
->>> LDADD/LDEOR/LDSET/SWP and CAS instructions are only available when LSE
->>> atomics is enabled, so just return AARCH64_BREAK_FAULT directly in
->>> these newly-added helpers if CONFIG_ARM64_LSE_ATOMICS is disabled.
->>>
->>> Signed-off-by: Hou Tao <houtao1@huawei.com>
->>
->> Hey Mark / Ard / Will / Catalin or others, could we get an Ack on patch 1 & 2
->> at min if it looks good to you?
+On Tue, 15 Feb 2022 15:22:33 -0800 Stephen Hemminger wrote:
+> Begin forwarded message:
 > 
-> Sorry for the delay, for some reason this series has all ended up in my
-> spam! I'll take a look this week. If it looks good, do you mind if I queue
-> those two patches in arm64 on a stable branch for you to pull as well? We've
-> got a few other (non-BPF) changes pending to the instruction decoder, and
-> I'd like to avoid conflicts if we can.
+> Date: Tue, 15 Feb 2022 16:24:06 +0000
+> From: bugzilla-daemon@kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 215610] New: eth0 not working after upgrade from 5.16.8 to 5.16.9
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=215610
+> 
+>             Bug ID: 215610
+>            Summary: eth0 not working after upgrade from 5.16.8 to 5.16.9
+>            Product: Networking
+>            Version: 2.5
+>     Kernel Version: 5.16.9
+>           Hardware: All
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: normal
+>           Priority: P1
+>          Component: Other
+>           Assignee: stephen@networkplumber.org
+>           Reporter: joerg.sigle@jsigle.com
+>         Regression: No
+> 
+> After rebooting with kernel 5.16.9, the eth0 connection did not work any more.
+> 
+> The interface is shown in ifconfig, but ping or other services don't reach any
+> machines in the LAN or in the internet.
+> 
+> I've not done much research but went back to 5.16.8 which works well again.
+> 
+> In 5.16.8, lspci shows:
+> 
+> 00:19.0 Ethernet controller: Intel Corporation Ethernet Connection I217-LM (rev
+> 04)
+>         Subsystem: Lenovo Ethernet Connection I217-LM
+>         Flags: bus master, fast devsel, latency 0, IRQ 33
+>         Memory at b4a00000 (32-bit, non-prefetchable) [size=128K]
+>         Memory at b4a3e000 (32-bit, non-prefetchable) [size=4K]
+>         I/O ports at 5080 [size=32]
+>         Capabilities: [c8] Power Management version 2
+>         Capabilities: [d0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>         Capabilities: [e0] PCI Advanced Features
+>         Kernel driver in use: e1000e
 
-Yes, that should be totally fine.
+There's nothing in there:
 
-Thanks,
-Daniel
+$ git log v5.16.8..v5.16.9 -- drivers/net/ethernet/intel/
+$ git log v5.16.8..v5.16.9 -- net/
+commit 59ff7514f8c56f166aadca49bcecfa028e0ad50f
+Author: Jon Maloy <jmaloy@redhat.com>
+Date:   Sat Feb 5 14:11:18 2022 -0500
+
+    tipc: improve size validations for received domain records
+    
+    commit 9aa422ad326634b76309e8ff342c246800621216 upstream.
+    
+    The function tipc_mon_rcv() allows a node to receive and process
+    domain_record structs from peer nodes to track their views of the
+    network topology.
+    
+    This patch verifies that the number of members in a received domain
+    record does not exceed the limit defined by MAX_MON_DOMAIN, something
+    that may otherwise lead to a stack overflow.
+    
+    tipc_mon_rcv() is called from the function tipc_link_proto_rcv(), where
+    we are reading a 32 bit message data length field into a uint16.  To
+    avert any risk of bit overflow, we add an extra sanity check for this in
+    that function.  We cannot see that happen with the current code, but
+    future designers being unaware of this risk, may introduce it by
+    allowing delivery of very large (> 64k) sk buffers from the bearer
+    layer.  This potential problem was identified by Eric Dumazet.
+    
+    This fixes CVE-2022-0435
+    
+    Reported-by: Samuel Page <samuel.page@appgate.com>
+    Reported-by: Eric Dumazet <edumazet@google.com>
+    Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
+    Signed-off-by: Jon Maloy <jmaloy@redhat.com>
+    Reviewed-by: Xin Long <lucien.xin@gmail.com>
+    Reviewed-by: Samuel Page <samuel.page@appgate.com>
+    Reviewed-by: Eric Dumazet <edumazet@google.com>
+    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
