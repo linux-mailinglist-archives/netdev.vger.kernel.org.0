@@ -2,178 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4854C4B8FBB
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:54:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCD84B8FBD
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:55:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237371AbiBPRy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 12:54:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54534 "EHLO
+        id S237348AbiBPR4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 12:56:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237369AbiBPRy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:54:27 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C2325BD64
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:54:15 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso7181092pjg.0
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:54:15 -0800 (PST)
+        with ESMTP id S233780AbiBPRz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:55:59 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296E22722CB
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:55:47 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id m17so5194746edc.13
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:55:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8SHJLuV4zLjy32ezYei5WUPkDFEPwVswbW0SFXhjfXM=;
-        b=njMOQfOTlSSBBXsxT5VQZqeksEgGHOITuxq0K0pb9wi8W5Av6hp3Hrz9XipX92up1W
-         LX8wMYxbR1xRc2e1/TU8KkSnhckGs8avGXSeHxwmqlZkisIyKnsdMyrULIGLkF+Z9JWc
-         EN06ATsfDjPB63WrY4hzlyfqbvxUVjC1wJiAlydcyHyuih7MnUTXkaG2TB3Nl3tP1JEG
-         R5oBxHWy2/RkQDQU5rgymIYMpA14S64AKtwxUxlZSd1L0EoC7mFoaUQ1NGZjMIsJ04Rh
-         nN1d+rFhhYfSCzNoCSbrfMV6arzeQnzixZ3AEXYS5AVWkRHmB8P9CtxARuxYw+QkZO5B
-         JKLw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Q6x6BbVdOoNpH8f4C7slAOI9NyIVPr5g2ngaZoYHCck=;
+        b=qpJQyf+NTf54U94NBdzsALv5fQNVZb8UwI/dyQeFc0jvEC1jnxrICZBcKmac0ar/by
+         svUO9GPBjI3B+S1FStlqbq47zCylMGetp71jS+Tg2tsGGDurMf6NN4fA0ccagH1sijMA
+         C0GqUoGhMqyy2aeJNQ/AAD1cFEw7aAQbQKotyJ+l0BA/twroWf21c/n1UkkCZJot5yCQ
+         2rD//EjQnKzmmZGTwdEDLcHJBcFDhe7Vm3CFG8yR2o++l0W32DZiUEq/dcMhscDoGSFc
+         46deBecQzhj7GsDE8SEQYEX+sErYDJYO3A1Zj5QqFrchgDn4cK0pojMdzEZNLiPA/sp4
+         te4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8SHJLuV4zLjy32ezYei5WUPkDFEPwVswbW0SFXhjfXM=;
-        b=zYcgtgE/n5EdU7FLgjPwZYDehURrQ9K/XsMMChsiAgejR8oP2GvrLBUDedKkWXnQMT
-         2y6u1UpI4a/xatRaUEnV2zXy+yyfK2Uw5kTYrz5F+FUbxZ/O2xglz65uLjpWXqDk6KsD
-         doG33SCvi1cnZdnJR51ANO4k8uFkz8wlEiEC1NDnYAiAPvIlUCtYueEwvGEbk5FK5ZUg
-         wrecNKenOHdKwscKAbdVzR89RLhMks97ythuSY1vRO4lt06DWQ8FKdng/b5XYL37bIGu
-         3rJZbtEDhuZKge9STm+lrluLgSF0giQQ8YfmfxDc5m38BVal2vESVL5AvJ+XBzlmtKa1
-         uSNg==
-X-Gm-Message-State: AOAM533Od1aSUTH07gcwEFV6+30cb0SLIjzyuMLXU6P+RNK4ohVF84mN
-        x4Hzx6HZG8mSLaS8cSKPMZ0=
-X-Google-Smtp-Source: ABdhPJyvrsjihWBANEaHDxdjtPZue6a1e+v+iM+w+dSuGqUfu9JE1Xsc2mZXvayGWh8c3NjxE3z4pA==
-X-Received: by 2002:a17:90a:fe07:b0:1b7:bb99:c848 with SMTP id ck7-20020a17090afe0700b001b7bb99c848mr3138774pjb.98.1645034054802;
-        Wed, 16 Feb 2022 09:54:14 -0800 (PST)
-Received: from mhl-ubstemp.lan ([115.187.43.205])
-        by smtp.gmail.com with ESMTPSA id 13sm43585601pfm.161.2022.02.16.09.54.10
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Q6x6BbVdOoNpH8f4C7slAOI9NyIVPr5g2ngaZoYHCck=;
+        b=jOkNKHK8EpGXDU1nT/ED2tfhfxRR/eKalQYuzRnUgGFvO11mtM07U+AFg5rNCaL9VM
+         ykCM9UfbgiQHIxH73vMyFW1JlQ6Bn0M6XpSMTXCjKppag+SzsL+W9LJg+0MNNgUkPbur
+         3vpxgqWz9n1oXhcXlftS+G50sXKcKYdwo4T5qPMOThFpLLfzSB8ZbuW9Wd/pA/aEHYp/
+         8DbaU0RHCPT3ZgI65iDjWfp5F08KuDfPmVz2HnIwve0OrzY7LiQrwmX5R6PfquHSwi2v
+         PQ4FbySX42IYP27yOVCceNzUJi9lkZlUAjCrD2vk0ELvMNsj8UI62d+UbLTyFjHBWLny
+         jKmA==
+X-Gm-Message-State: AOAM533pptOK3aUsi/j/6lzMJyRSP/IhpwW9X6pczi/zHyE6l2ZcVlHt
+        WqDY6aCdWpligU+A044P5sg=
+X-Google-Smtp-Source: ABdhPJziXb5aqOGpTng34mJZJrrLPPBOPcgv9Ic54Ag25+ZSFzMia5vg2+OuZi9H93xhyS2PvJlxww==
+X-Received: by 2002:a50:9991:0:b0:410:a3e5:5066 with SMTP id m17-20020a509991000000b00410a3e55066mr4329811edb.49.1645034145613;
+        Wed, 16 Feb 2022 09:55:45 -0800 (PST)
+Received: from skbuf ([188.27.184.105])
+        by smtp.gmail.com with ESMTPSA id g2sm2118120edb.12.2022.02.16.09.55.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 09:54:14 -0800 (PST)
-From:   Mobashshera Rasool <mobash.rasool.linux@gmail.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org
-Cc:     Mobashshera Rasool <mobash.rasool.linux@gmail.com>,
-        equinox@opensourcerouting.org, razor@blackwall.org,
-        sharpd@cumulusnetworks.com, mrasool@vmware.com,
-        mobash.rasool@gmail.com, saritap@vmware.com, abnr@vmware.com,
-        nsaigomathi@vmware.com
-Subject: [PATCH] net: ip6mr: add support for passing full packet on wrong mif
-Date:   Wed, 16 Feb 2022 17:53:51 +0000
-Message-Id: <20220216175351.2217-1-mobash.rasool.linux@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 16 Feb 2022 09:55:44 -0800 (PST)
+Date:   Wed, 16 Feb 2022 19:55:43 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Egil Hjelmeland <privat@egil-hjelmeland.no>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Juergen Borleis <jbe@pengutronix.de>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        lorenzo@kernel.org
+Subject: Re: DSA using cpsw and lan9303
+Message-ID: <20220216175543.l6smw26vl4qencau@skbuf>
+References: <yw1x8rud4cux.fsf@mansr.com>
+ <d19abc0a-4685-514d-387b-ac75503ee07a@gmail.com>
+ <20220215205418.a25ro255qbv5hpjk@skbuf>
+ <yw1xa6er2bno.fsf@mansr.com>
+ <20220216141543.dnrnuvei4zck6xts@skbuf>
+ <yw1x5ype3n6r.fsf@mansr.com>
+ <20220216142634.uyhcq7ptjamao6rl@skbuf>
+ <20220216170027.yrkj5r4zberrx3qb@skbuf>
+ <yw1xy22a1z63.fsf@mansr.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+In-Reply-To: <yw1xy22a1z63.fsf@mansr.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for MRT6MSG_WRMIFWHOLE which is used to pass
-full packet and real vif id when the incoming interface is wrong.
-While the RP and FHR are setting up state we need to be sending the
-registers encapsulated with all the data inside otherwise we lose it.
-The RP then decapsulates it and forwards it to the interested parties.
-Currently with WRONGMIF we can only be sending empty register packets
-and will lose that data.
-This behaviour can be enabled by using MRT_PIM with
-val == MRT6MSG_WRMIFWHOLE. This doesn't prevent MRT6MSG_WRONGMIF from
-happening, it happens in addition to it, also it is controlled by the same
-throttling parameters as WRONGMIF (i.e. 1 packet per 3 seconds currently).
-Both messages are generated to keep backwards compatibily and avoid
-breaking someone who was enabling MRT_PIM with val == 4, since any
-positive val is accepted and treated the same.
+On Wed, Feb 16, 2022 at 05:47:32PM +0000, Måns Rullgård wrote:
+> The LAN9303 has (R)MII for port 0 and internal PHYs for ports 1/2, so
+> there's really only one sensible way to connect it, even though the
+> switch core has identical functionality for all ports.
 
-Signed-off-by: Mobashshera Rasool <mobash.rasool.linux@gmail.com>
----
- include/uapi/linux/mroute6.h |  1 +
- net/ipv6/ip6mr.c             | 18 ++++++++++++++----
- 2 files changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/include/uapi/linux/mroute6.h b/include/uapi/linux/mroute6.h
-index a1fd6173e2db..1d90c21a6251 100644
---- a/include/uapi/linux/mroute6.h
-+++ b/include/uapi/linux/mroute6.h
-@@ -134,6 +134,7 @@ struct mrt6msg {
- #define MRT6MSG_NOCACHE		1
- #define MRT6MSG_WRONGMIF	2
- #define MRT6MSG_WHOLEPKT	3		/* used for use level encap */
-+#define MRT6MSG_WRMIFWHOLE	4		/* For PIM Register and assert processing */
- 	__u8		im6_mbz;		/* must be zero		   */
- 	__u8		im6_msgtype;		/* what type of message    */
- 	__u16		im6_mif;		/* mif rec'd on		   */
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 0ebaaec3faf9..a9775c830194 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -1040,7 +1040,7 @@ static int ip6mr_cache_report(struct mr_table *mrt, struct sk_buff *pkt,
- 	int ret;
- 
- #ifdef CONFIG_IPV6_PIMSM_V2
--	if (assert == MRT6MSG_WHOLEPKT)
-+	if (assert == MRT6MSG_WHOLEPKT || assert == MRT6MSG_WRMIFWHOLE)
- 		skb = skb_realloc_headroom(pkt, -skb_network_offset(pkt)
- 						+sizeof(*msg));
- 	else
-@@ -1056,7 +1056,7 @@ static int ip6mr_cache_report(struct mr_table *mrt, struct sk_buff *pkt,
- 	skb->ip_summed = CHECKSUM_UNNECESSARY;
- 
- #ifdef CONFIG_IPV6_PIMSM_V2
--	if (assert == MRT6MSG_WHOLEPKT) {
-+	if (assert == MRT6MSG_WHOLEPKT || assert == MRT6MSG_WRMIFWHOLE) {
- 		/* Ugly, but we have no choice with this interface.
- 		   Duplicate old header, fix length etc.
- 		   And all this only to mangle msg->im6_msgtype and
-@@ -1068,8 +1068,11 @@ static int ip6mr_cache_report(struct mr_table *mrt, struct sk_buff *pkt,
- 		skb_reset_transport_header(skb);
- 		msg = (struct mrt6msg *)skb_transport_header(skb);
- 		msg->im6_mbz = 0;
--		msg->im6_msgtype = MRT6MSG_WHOLEPKT;
--		msg->im6_mif = mrt->mroute_reg_vif_num;
-+		msg->im6_msgtype = assert;
-+		if (assert == MRT6MSG_WRMIFWHOLE)
-+			msg->im6_mif = mifi;
-+		else
-+			msg->im6_mif = mrt->mroute_reg_vif_num;
- 		msg->im6_pad = 0;
- 		msg->im6_src = ipv6_hdr(pkt)->saddr;
- 		msg->im6_dst = ipv6_hdr(pkt)->daddr;
-@@ -1650,6 +1653,7 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 	mifi_t mifi;
- 	struct net *net = sock_net(sk);
- 	struct mr_table *mrt;
-+	bool do_wrmifwhole;
- 
- 	if (sk->sk_type != SOCK_RAW ||
- 	    inet_sk(sk)->inet_num != IPPROTO_ICMPV6)
-@@ -1763,12 +1767,15 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 			return -EINVAL;
- 		if (copy_from_sockptr(&v, optval, sizeof(v)))
- 			return -EFAULT;
-+
-+		do_wrmifwhole = (v == MRT6MSG_WRMIFWHOLE);
- 		v = !!v;
- 		rtnl_lock();
- 		ret = 0;
- 		if (v != mrt->mroute_do_pim) {
- 			mrt->mroute_do_pim = v;
- 			mrt->mroute_do_assert = v;
-+			mrt->mroute_do_wrvifwhole = do_wrmifwhole;
- 		}
- 		rtnl_unlock();
- 		return ret;
-@@ -2144,6 +2151,9 @@ static void ip6_mr_forward(struct net *net, struct mr_table *mrt,
- 			       MFC_ASSERT_THRESH)) {
- 			c->_c.mfc_un.res.last_assert = jiffies;
- 			ip6mr_cache_report(mrt, skb, true_vifi, MRT6MSG_WRONGMIF);
-+			if (mrt->mroute_do_wrvifwhole)
-+				ip6mr_cache_report(mrt, skb, true_vifi,
-+						   MRT6MSG_WRMIFWHOLE);
- 		}
- 		goto dont_forward;
- 	}
--- 
-2.25.1
-
+As strange as it may seem to you, people are connecting other switches
+to a Beaglebone Black and using one of the internal PHY ports as a CPU
+port. That driver did not need any modification for that particular
+aspect (the port number), even though that use case was not directly planned:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210814025003.2449143-11-colin.foster@in-advantage.com/#24380929
