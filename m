@@ -2,58 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08CBE4B8DA4
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 17:16:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9954B8DF4
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 17:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236223AbiBPQQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 11:16:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38808 "EHLO
+        id S236419AbiBPQ1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 11:27:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236148AbiBPQQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 11:16:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613C62AE061;
-        Wed, 16 Feb 2022 08:16:03 -0800 (PST)
+        with ESMTP id S235564AbiBPQ1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 11:27:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFB0F390F;
+        Wed, 16 Feb 2022 08:27:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13834B81F72;
-        Wed, 16 Feb 2022 16:16:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87362C004E1;
-        Wed, 16 Feb 2022 16:15:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABD0D61B45;
+        Wed, 16 Feb 2022 16:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A395C340F5;
+        Wed, 16 Feb 2022 16:27:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645028160;
-        bh=qPGOjCsk5qP8/ldMi4Gopws8pyTxuZAyGGhgDyKcdTA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mOJR/di1IvuM5MFS5yHENjDpbf9iMYOj5t/e9JW9HqjG+HBzQy0WrpdZYZ94FOsbB
-         0Jm1S8YlVUYV4fliWBisJ2/JCbqcnIsi8xnn8ytlY+rZ3RNrthnVjsQhoFtiWQFkSZ
-         c4LclVZWwpF+Adng/coN+I1rU68CUdKHT9xwmEOFr4D8J271AFc3+7inf9SGPAFwdX
-         M6R1iyKLXOOMX0/ur75u9Q3q3VmiA8YxVk9aXVXIiczTdtWebqncsuBcAnxeE2jODM
-         JYYnhVGGL3MgPkgbJ4cqwy6XHPezvS7ry0nGGtABWALFBFbOuApLqpWErmiWm2ztMl
-         BrYGYbJbjLShg==
-Date:   Wed, 16 Feb 2022 17:15:46 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Zev Weiss <zev@bewilderbeest.net>
-Subject: Re: [PATCH net-next v5 2/2] mctp i2c: MCTP I2C binding driver
-Message-ID: <Yg0jMkt56EhrBybc@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>
-References: <20220210063651.798007-1-matt@codeconstruct.com.au>
- <20220210063651.798007-3-matt@codeconstruct.com.au>
+        s=k20201202; t=1645028858;
+        bh=pEh4L2k9OlwykfyE6yHq4tYTDVuGpXE+S5QkPvGsxIs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rbZyAd4+1IEETsA4jI6CFCdcT8cTsrnfIpBJNmmfUe4lOqhPmHwxQRQvmbDtNclax
+         MUG6ajiG3mW1V5Jy89g/fq4G3kuFK02Xxe6VzDXqLUDThSvQCppALbIbYwnDXOjl4X
+         FB0USW5gWc9mKCy+UXU/fvJqsHjtobcMWv73kclp8T3gDsPS+hdlaKb83EmGpFgBRk
+         QNDUfI0O9InKp34jd9amFfR/JLp7RLL+0GiQXG7Cvxx+7DEz1HvYPM2UseW5Buw64L
+         UROwzAjKNWHhwSgF6qSF/pNBrs0MqEqHVnSegshYdr9F7AC5RR73p3Qf8uJnBOQSuM
+         NyyVM77QOo+YA==
+Received: by mail-yb1-f172.google.com with SMTP id bt13so7255310ybb.2;
+        Wed, 16 Feb 2022 08:27:38 -0800 (PST)
+X-Gm-Message-State: AOAM530Ct4Vr81ZwU25UcbO+ZzrmP5LtL03A4RKqP3ZxPyuxhp3OcEhB
+        TJqsEk3/r/kilGPGriTw+cNudwXjrAAo91tkfWQ=
+X-Google-Smtp-Source: ABdhPJzPEvVtn4jSjWY+6ICZuPl2oIeDxMoH3I4SgYfUWi+aAoX3Feze+8QoPVzVUrCoGgyIbsND6ZEHfRTy4Xab0l0=
+X-Received: by 2002:a25:bb8c:0:b0:623:b475:d5f7 with SMTP id
+ y12-20020a25bb8c000000b00623b475d5f7mr2893894ybg.654.1645028857166; Wed, 16
+ Feb 2022 08:27:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="aqq7uLdNiV09xLK0"
-Content-Disposition: inline
-In-Reply-To: <20220210063651.798007-3-matt@codeconstruct.com.au>
+References: <00000000000073b3e805d7fed17e@google.com> <462fa505-25a8-fd3f-cc36-5860c6539664@iogearbox.net>
+ <CAPhsuW6rPx3JqpPdQVdZN-YtZp1SbuW1j+SVNs48UVEYv68s1A@mail.gmail.com>
+ <CAPhsuW5JhG07TYKKHRbNVtepOLjZ2ekibePyyqCwuzhH0YoP7Q@mail.gmail.com> <CANp29Y64wUeARFUn8Z0fjk7duxaZ3bJM2uGuVug_0ZmhGG_UTA@mail.gmail.com>
+In-Reply-To: <CANp29Y64wUeARFUn8Z0fjk7duxaZ3bJM2uGuVug_0ZmhGG_UTA@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 16 Feb 2022 08:27:26 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW6YOv_xjvknt_FPGwDhuCuG5s=7Xt1t-xL2+F6UKsJf-w@mail.gmail.com>
+Message-ID: <CAPhsuW6YOv_xjvknt_FPGwDhuCuG5s=7Xt1t-xL2+F6UKsJf-w@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
+To:     Aleksandr Nogikh <nogikh@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,96 +75,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Aleksandr,
 
---aqq7uLdNiV09xLK0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for your kind reply!
 
-Hi Matt, all,
+On Wed, Feb 16, 2022 at 1:38 AM Aleksandr Nogikh <nogikh@google.com> wrote:
+>
+> Hi Song,
+>
+> Is syzkaller not doing something you expect it to do with this config?
 
-On Thu, Feb 10, 2022 at 02:36:51PM +0800, Matt Johnston wrote:
-> Provides MCTP network transport over an I2C bus, as specified in
-> DMTF DSP0237. All messages between nodes are sent as SMBus Block Writes.
->=20
-> Each I2C bus to be used for MCTP is flagged in devicetree by a
-> 'mctp-controller' property on the bus node. Each flagged bus gets a
-> mctpi2cX net device created based on the bus number. A
-> 'mctp-i2c-controller' I2C client needs to be added under the adapter. In
-> an I2C mux situation the mctp-i2c-controller node must be attached only
-> to the root I2C bus. The I2C client will handle incoming I2C slave block
-> write data for subordinate busses as well as its own bus.
->=20
-> In configurations without devicetree a driver instance can be attached
-> to a bus using the I2C slave new_device mechanism.
->=20
-> The MCTP core will hold/release the MCTP I2C device while responses
-> are pending (a 6 second timeout or once a socket is closed, response
-> received etc). While held the MCTP I2C driver will lock the I2C bus so
-> that the correct I2C mux remains selected while responses are received.
->=20
-> (Ideally we would just lock the mux to keep the current bus selected for
-> the response rather than a full I2C bus lock, but that isn't exposed in
-> the I2C mux API)
->=20
-> Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-> Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+I fixed sshkey in the config, and added a suppression for hsr_node_get_first.
+However, I haven't got a repro overnight.
 
-So, I did a high level review regardings the I2C stuff. I did not check
-locking, device lifetime, etc. My biggest general remark is the mixture
-of multi-comment styles, like C++ style or no empty "/*" at the
-beginning as per Kernel coding style. Some functions have nice
-explanations in the header but not proper kdoc formatting. And also on
-the nitbit side, I don't think '__func__' helps here on the error
-messages. But that's me, I'll leave it to the netdev maintainers.
+>
+> On Wed, Feb 16, 2022 at 2:38 AM Song Liu <song@kernel.org> wrote:
+> >
+> > On Mon, Feb 14, 2022 at 10:41 PM Song Liu <song@kernel.org> wrote:
+> > >
+> > > On Mon, Feb 14, 2022 at 3:52 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > > >
+> > > > Song, ptal.
+> > > >
+> > > > On 2/14/22 7:45 PM, syzbot wrote:
+> > > > > Hello,
+> > > > >
+> > > > > syzbot found the following issue on:
+> > > > >
+> > > > > HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
+> > > > > git tree:       bpf-next
+> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=10baced8700000
+> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
+> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
+> >
+> > How do I run the exact same syzkaller? I am doing something like
+> >
+> > ./bin/syz-manager -config qemu.cfg
+> >
+> > with the cfg file like:
+> >
+> > {
+> >         "target": "linux/amd64",
+> >         "http": ":56741",
+> >         "workdir": "workdir",
+> >         "kernel_obj": "linux",
+> >         "image": "./pkg/mgrconfig/testdata/stretch.img",
+>
+> This image location looks suspicious - we store some dummy data for
+> tests in that folder.
+> Instances now run on buildroot-based images, generated with
+> https://github.com/google/syzkaller/blob/master/tools/create-buildroot-image.sh
 
-Now for the I2C part. It looks good. I have only one remark:
+Thanks for the information. I will give it a try.
 
-> +static const struct i2c_device_id mctp_i2c_id[] =3D {
-> +	{ "mctp-i2c", 0 },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mctp_i2c_id);
+>
+> >         "syzkaller": ".",
+> >         "disable_syscalls": ["keyctl", "add_key", "request_key"],
+>
+> For our bpf instances, instead of disable_syscalls we use enable_syscalls:
+>
+> "enable_syscalls": [
+> "bpf", "mkdir", "mount$bpf", "unlink", "close",
+> "perf_event_open*", "ioctl$PERF*", "getpid", "gettid",
+> "socketpair", "sendmsg", "recvmsg", "setsockopt$sock_attach_bpf",
+> "socket$kcm", "ioctl$sock_kcm*", "syz_clone",
+> "mkdirat$cgroup*", "openat$cgroup*", "write$cgroup*",
+> "openat$tun", "write$tun", "ioctl$TUN*", "ioctl$SIOCSIFHWADDR",
+> "openat$ppp", "syz_open_procfs$namespace"
+> ]
 
-=2E..
+I will try with the same list. Thanks!
 
-> +static struct i2c_driver mctp_i2c_driver =3D {
-> +	.driver =3D {
-> +		.name =3D "mctp-i2c",
-> +		.of_match_table =3D mctp_i2c_of_match,
-> +	},
-> +	.probe_new =3D mctp_i2c_probe,
-> +	.remove =3D mctp_i2c_remove,
-> +	.id_table =3D mctp_i2c_id,
-> +};
+Song
 
-I'd suggest to add 'slave' to the 'mctp-i2c' string somewhere to make it
-easily visible that this driver does not manage a remote device but
-processes requests to its own address.
-
-Thanks for the work!
-
-   Wolfram
-
-
---aqq7uLdNiV09xLK0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmINIzEACgkQFA3kzBSg
-KbY2hg//Y4x99TwK6piUWmXG9SqGoMRZVgAgtOr2p5Itm23ASqIhQZRlV8CLwFZ+
-YCJUG7WYRqi7hgU4iaW4wSW2sHnovCcvPACJtqg5H17teJ6bwzVkHglvOKOvnn70
-fMQsGxR8boR1BZS/YZbIZ1VJULx/tJzCFubhC7TfTvIpS2SriP5vh6X/uc4nG43c
-T5OLRKlgzwgvQYuCVi0J4aXpUuZmlKf8MYf8rAkukAkPxnry86m4f7tdlxlNXhC+
-PSVGihmgoNAxga7esmnT+ymHEV9qyUj1F2ByVtph20/XsxzBrPtrUbL98ACI35fC
-GYpbRIdlFT3gnJsCxxOyYI8+Z8Xg5MUWUfCD6Xql2nz23bAiCrkVgGxjA1Sh59BO
-GMqmz5GBzFN/t7e8RUvCKh1zvRm4W9MQZ/zqqJRMHVjKpxUHacSABaDWH+3Vbpav
-K1AyGCVWQglG2wRruWQpBgHMmk36samEcXNLzSmIXvHq1e+b4OKPGyeqCWDLNtk5
-8uDOOMgZrBlc1XJOJxFgan+ZQnU4DMMPfVJfUzDbdcGn6W8MRHBYIvSO8u6VDUq7
-wzdMFX2lAoOqKexkoiwqZ8FLR+Lu8xrpfpcu4H1+F6r/G65Fchr/+gROsuZ9ELcN
-8UzrnG2KTeWnxJm8tWrmJ6LNzsXHfKgNboYefXJSqMpIdTzb6Co=
-=YZkx
------END PGP SIGNATURE-----
-
---aqq7uLdNiV09xLK0--
+>
+> >         "suppressions": ["some known bug"],
+> >         "procs": 8,
+>
+> We usually run with "procs": 6, but it's not that important.
+>
+> >         "type": "qemu",
+> >         "vm": {
+> >                 "count": 16,
+> >                 "cpu": 2,
+> >                 "mem": 2048,
+> >                 "kernel": "linux/arch/x86/boot/bzImage"
+> >         }
+> > }
+>
+> Otherwise I don't see any really significant differences.
+>
+> --
+> Best Regards
+> Aleksandr
+>
+> >
+> > Is this correct? I am using stretch.img from syzkaller site, and the
+> > .config from
+> > the link above.
+> >
+> > Thanks,
+> > Song
+> >
