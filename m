@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85AAE4B7F38
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 05:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA924B7F39
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 05:15:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343546AbiBPEPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 23:15:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44804 "EHLO
+        id S1343572AbiBPEPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 23:15:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245724AbiBPEPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 23:15:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C757C75E64
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 20:14:50 -0800 (PST)
+        with ESMTP id S237223AbiBPEPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 23:15:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1322FCB7A
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 20:14:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644984889;
+        s=mimecast20190719; t=1644984893;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=DC/9cJ1rnmLdF2qNbTho1YXwyhPBz3aGkzgrZwTS3o8=;
-        b=LtT+3sDk4/Oj+gzceW/n74VtyYRCdI4G35xjbbbou7W8C2gKa6lJ34gsft3nH32nauIQOX
-        V9sfpHWqF9y3w39annhV0R+7lAn5tFwCcSlVrgr6FWvvJGQ+xA+Ox9WSmskzm5Q+YSdLAo
-        FBhuTruNEkC+uXv59m24HCXgVc0JwzU=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=M8MTfL3kzhS2e/wtfvfkaRaYdGxaNdzWBHJ20dictyk=;
+        b=Z4sBmeh7VPNXdbHyaUh5Tuta/AKvrSIksloiEfS1uhFA5iBYM55HpwwEmSrnjqsgs6bFeO
+        8ZqHLko+E9S9sPoGHF/JhJwH17A9KEIRNVHE/48TmVhhc22UyGM3UcOBVc6ToILjGeKBDi
+        aZhTnJgkHDcN1gErHUslnzapDpCtgfQ=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-4avb9S-QN8mFTqcmIZtJpA-1; Tue, 15 Feb 2022 23:14:48 -0500
-X-MC-Unique: 4avb9S-QN8mFTqcmIZtJpA-1
-Received: by mail-lj1-f198.google.com with SMTP id n9-20020a2e82c9000000b002435af2e8b9so438838ljh.20
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 20:14:48 -0800 (PST)
+ us-mta-374-Lky3dN-zP6yS_fGxjnIawQ-1; Tue, 15 Feb 2022 23:14:51 -0500
+X-MC-Unique: Lky3dN-zP6yS_fGxjnIawQ-1
+Received: by mail-lj1-f200.google.com with SMTP id m7-20020a2ea587000000b00244e2faf769so464198ljp.6
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 20:14:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DC/9cJ1rnmLdF2qNbTho1YXwyhPBz3aGkzgrZwTS3o8=;
-        b=ml3II+oM/QFp9PhHkVX3gRONOu1MOkjDtsZraFgmj4GBbvvMofGwphoxDKYk11tMXu
-         PBUulA30ETYSJIzZ+/G78+Z2Atfoq92DWc4jFfgufEmBgD4N0sm39Z99RrPFbPL6RoIY
-         xvvzKnKWBpoEe4kQ15e3k0gQQ8SgZvd0RNgHm6TliEEeC9YmPgHxgCPhH0xfRIjPgunJ
-         d2qJ+P0qepaIbEl5cif/UbTFfT4W/LbLzc5+QQ5VP+6XMVHSmef7+106C39DsDN7/7gq
-         kzHGpnO4eQPDKUWZWsZ7OR5kDwNKK2XnvBglOCQXlxOBAqhAW/Mx43bAKoYLX+Cf5r8X
-         1jUg==
-X-Gm-Message-State: AOAM533LCMp9otKpACUQJqrgFWrcquXH7wGh0ZloMohenL+NXFXa4VNb
-        4lEPBblgD19qrV7syu0imNfCA5HbBvInXldCyOPm5bzWx/Os26h5nUfUgh2rzVqk+qIS/zYjcSa
-        z5KImf5oojLGcykVSf5TITrqWWTYqhmfI
-X-Received: by 2002:a2e:b748:0:b0:245:fcd6:c4a3 with SMTP id k8-20020a2eb748000000b00245fcd6c4a3mr697743ljo.362.1644984887133;
-        Tue, 15 Feb 2022 20:14:47 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwgeUs3QA39CjiR99ZEeCfiGPEBhNSb5QEYePt31lVdV4ggOPIjPfM5qmPh3/hI8KyMESfuk+OJIcQQZtdXga4=
-X-Received: by 2002:a2e:b748:0:b0:245:fcd6:c4a3 with SMTP id
- k8-20020a2eb748000000b00245fcd6c4a3mr697738ljo.362.1644984886923; Tue, 15 Feb
- 2022 20:14:46 -0800 (PST)
+        bh=M8MTfL3kzhS2e/wtfvfkaRaYdGxaNdzWBHJ20dictyk=;
+        b=F2O1kbGJHDXq6AMpHM/paB3BZkh6E82nQowTCkkICsg/jhWoYlUx5T8UfY4FWxiuo+
+         LFdlISztpFM6208jNYrkTZ9FYUnM39xDb2w/0pQit2iqW79ydGoemPMGFWFGqK6w8dJV
+         UDa1lr1/ZrOJyzr+5irGRIarYm4wTzFnvtce9Hs8wVTj/LWeNEoR9pj5xQ9TiWTejsim
+         QBoRPL33am45bH1MZWaRWlJ/yewtyL7AntwKBsRJPn7MZwgKUl4zBizVRK5dk15SMctI
+         z/tkb2JuGFc/klp/dEw/gYle0cimHoMS2dkzJMX1apfVTrZfq1nogVmE5qtcj+cfSuxQ
+         U9HA==
+X-Gm-Message-State: AOAM533DTxgFB42iav7OrKGH1Gawo8fuWzeIHEmDScrzl/jSV/TupX75
+        T6Mvb1vfxM79CUNooqihSjGf/HC/s0EkF/z8gB4rgYxDnmIjM6ETNW/sSrNesmMYjIqW9Vbpiax
+        y0Qp9LXMNwVv4L2OBD1fK41pHRKf0iLt/
+X-Received: by 2002:a2e:bd03:0:b0:244:d446:27dc with SMTP id n3-20020a2ebd03000000b00244d44627dcmr653234ljq.307.1644984890107;
+        Tue, 15 Feb 2022 20:14:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxIwQDLTLmesj7I7mqh58WPdKsiWqCpL4QKOR+Hkpz63Lh50HmsX1HyFv+emKZYY3EDS4Va/5Qfoi2ktDcaOC4=
+X-Received: by 2002:a2e:bd03:0:b0:244:d446:27dc with SMTP id
+ n3-20020a2ebd03000000b00244d44627dcmr653217ljq.307.1644984889914; Tue, 15 Feb
+ 2022 20:14:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com> <20220214081416.117695-9-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20220214081416.117695-9-xuanzhuo@linux.alibaba.com>
+References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com> <20220214081416.117695-23-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20220214081416.117695-23-xuanzhuo@linux.alibaba.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 16 Feb 2022 12:14:36 +0800
-Message-ID: <CACGkMEttDpjYZcsT7Eh0Nm50R27nTBOLDFwBaSKsJ+OL1x26vg@mail.gmail.com>
-Subject: Re: [PATCH v5 08/22] virtio_ring: queue_reset: add vring_release_virtqueue()
+Date:   Wed, 16 Feb 2022 12:14:39 +0800
+Message-ID: <CACGkMEsQB0XCZb39QVsv9VM0qJpc__jucgUCGV9LU5kPTze6Hg@mail.gmail.com>
+Subject: Re: [PATCH v5 22/22] virtio_net: support set_ringparam
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     virtualization <virtualization@lists.linux-foundation.org>,
         netdev <netdev@vger.kernel.org>,
@@ -70,7 +70,7 @@ Cc:     virtualization <virtualization@lists.linux-foundation.org>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,113 +78,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 4:14 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+On Mon, Feb 14, 2022 at 4:15 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
-> Added vring_release_virtqueue() to release the ring of the vq.
+> Support set_ringparam based on virtio queue reset.
 >
-> In this process, vq is removed from the vdev->vqs queue. And the memory
-> of the ring is released
+> The rx,tx_pending required to be passed must be power of 2.
 >
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > ---
->  drivers/virtio/virtio_ring.c | 18 +++++++++++++++++-
->  include/linux/virtio.h       | 12 ++++++++++++
->  2 files changed, 29 insertions(+), 1 deletion(-)
+>  drivers/net/virtio_net.c | 50 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 50 insertions(+)
 >
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index c5dd17c7dd4a..b37753bdbbc4 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -1730,6 +1730,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
->         vq->vq.vdev = vdev;
->         vq->vq.num_free = num;
->         vq->vq.index = index;
-> +       vq->vq.reset = VIRTQUEUE_RESET_STAGE_NONE;
-
-So we don't have a similar check for detach_unused_buf(), I guess it
-should be sufficient to document the API requirement. Otherwise we
-probably need some barriers/ordering which are not worthwhile just for
-figuring out bad API usage.
-
->         vq->we_own_ring = true;
->         vq->notify = notify;
->         vq->weak_barriers = weak_barriers;
-> @@ -2218,6 +2219,7 @@ static int __vring_init_virtqueue(struct virtqueue *_vq,
->         vq->vq.vdev = vdev;
->         vq->vq.num_free = vring.num;
->         vq->vq.index = index;
-> +       vq->vq.reset = VIRTQUEUE_RESET_STAGE_NONE;
->         vq->we_own_ring = false;
->         vq->notify = notify;
->         vq->weak_barriers = weak_barriers;
-> @@ -2397,11 +2399,25 @@ void vring_del_virtqueue(struct virtqueue *_vq)
->  {
->         struct vring_virtqueue *vq = to_vvq(_vq);
->
-> -       __vring_del_virtqueue(vq);
-> +       if (_vq->reset != VIRTQUEUE_RESET_STAGE_RELEASE)
-> +               __vring_del_virtqueue(vq);
->         kfree(vq);
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index f9bb760c6dbd..bf460ea87354 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -2308,6 +2308,55 @@ static void virtnet_get_ringparam(struct net_device *dev,
+>         ring->tx_pending = virtqueue_get_vring_size(vi->sq[0].vq);
 >  }
->  EXPORT_SYMBOL_GPL(vring_del_virtqueue);
 >
-> +void vring_release_virtqueue(struct virtqueue *_vq)
+> +static int virtnet_set_ringparam(struct net_device *dev,
+> +                                struct ethtool_ringparam *ring,
+> +                                struct kernel_ethtool_ringparam *kernel_ring,
+> +                                struct netlink_ext_ack *extack)
 > +{
-
-If we agree on that we need a allocation routine, we probably need to
-rename this as vring_free_virtqueue()
-
-Thanks
-
-> +       struct vring_virtqueue *vq = to_vvq(_vq);
+> +       struct virtnet_info *vi = netdev_priv(dev);
+> +       u32 rx_pending, tx_pending;
+> +       int i, err;
 > +
-> +       if (_vq->reset != VIRTQUEUE_RESET_STAGE_DEVICE)
-> +               return;
+> +       if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+> +               return -EINVAL;
 > +
-> +       __vring_del_virtqueue(vq);
+> +       rx_pending = virtqueue_get_vring_size(vi->rq[0].vq);
+> +       tx_pending = virtqueue_get_vring_size(vi->sq[0].vq);
 > +
-> +       _vq->reset = VIRTQUEUE_RESET_STAGE_RELEASE;
+> +       if (ring->rx_pending == rx_pending &&
+> +           ring->tx_pending == tx_pending)
+> +               return 0;
+> +
+> +       if (ring->rx_pending > virtqueue_get_vring_max_size(vi->rq[0].vq))
+> +               return -EINVAL;
+> +
+> +       if (ring->tx_pending > virtqueue_get_vring_max_size(vi->sq[0].vq))
+> +               return -EINVAL;
+> +
+> +       if (!is_power_of_2(ring->rx_pending))
+> +               return -EINVAL;
+> +
+> +       if (!is_power_of_2(ring->tx_pending))
+> +               return -EINVAL;
+
+We'd better leave those checks to the virtio core where it knows
+packed virtqueue doesn't have this limitation.
+
+> +
+> +       for (i = 0; i < vi->max_queue_pairs; i++) {
+> +               if (ring->tx_pending != tx_pending) {
+> +                       virtio_set_max_ring_num(vi->vdev, ring->tx_pending);
+
+The name is kind of confusing, I guess it should not be the maximum
+ring. And this needs to be done after the reset, and it would be even
+better to disallow such change when virtqueue is not resetted.
+
+> +                       err = virtnet_tx_vq_reset(vi, i);
+> +                       if (err)
+> +                               return err;
+> +               }
+> +
+> +               if (ring->rx_pending != rx_pending) {
+> +                       virtio_set_max_ring_num(vi->vdev, ring->rx_pending);
+> +                       err = virtnet_rx_vq_reset(vi, i);
+> +                       if (err)
+> +                               return err;
+> +               }
+> +       }
+> +
+> +       return 0;
 > +}
-> +EXPORT_SYMBOL_GPL(vring_release_virtqueue);
-> +
->  /* Manipulates transport-specific feature bits. */
->  void vring_transport_features(struct virtio_device *vdev)
->  {
-> diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> index 72292a62cd90..cdb2a551257c 100644
-> --- a/include/linux/virtio.h
-> +++ b/include/linux/virtio.h
-> @@ -10,6 +10,12 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/gfp.h>
 >
-> +enum virtqueue_reset_stage {
-> +       VIRTQUEUE_RESET_STAGE_NONE,
-> +       VIRTQUEUE_RESET_STAGE_DEVICE,
-> +       VIRTQUEUE_RESET_STAGE_RELEASE,
-> +};
-> +
->  /**
->   * virtqueue - a queue to register buffers for sending or receiving.
->   * @list: the chain of virtqueues for this device
-> @@ -32,6 +38,7 @@ struct virtqueue {
->         unsigned int index;
->         unsigned int num_free;
->         void *priv;
-> +       enum virtqueue_reset_stage reset;
->  };
->
->  int virtqueue_add_outbuf(struct virtqueue *vq,
-> @@ -196,4 +203,9 @@ void unregister_virtio_driver(struct virtio_driver *drv);
->  #define module_virtio_driver(__virtio_driver) \
->         module_driver(__virtio_driver, register_virtio_driver, \
->                         unregister_virtio_driver)
-> +/*
-> + * Resets a virtqueue. Just frees the ring, not free vq.
-> + * This function must be called after reset_vq().
-> + */
-> +void vring_release_virtqueue(struct virtqueue *vq);
->  #endif /* _LINUX_VIRTIO_H */
+>  static void virtnet_get_drvinfo(struct net_device *dev,
+>                                 struct ethtool_drvinfo *info)
+> @@ -2541,6 +2590,7 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+>         .get_drvinfo = virtnet_get_drvinfo,
+>         .get_link = ethtool_op_get_link,
+>         .get_ringparam = virtnet_get_ringparam,
+> +       .set_ringparam = virtnet_set_ringparam,
+>         .get_strings = virtnet_get_strings,
+>         .get_sset_count = virtnet_get_sset_count,
+>         .get_ethtool_stats = virtnet_get_ethtool_stats,
 > --
 > 2.31.0
 >
