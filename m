@@ -2,140 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D543E4B7FFD
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 06:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D54FF4B8059
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 06:49:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344568AbiBPFVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 00:21:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47368 "EHLO
+        id S1344626AbiBPFig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 00:38:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233336AbiBPFVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 00:21:06 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B12FA22E
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 21:20:55 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id q20so1092660qtw.8
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 21:20:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FmcZ/fRePWq5s4y+7VM/SA3noeiad2xEykIaRju6z1M=;
-        b=OPP3u+oDpJ91uB9Nnj3K80Q8UZn4RVDO094tcSsVBd9OEMyZ1yWkO0OmCalkoccgEH
-         FaGUCyFfO6F4P+DIS6s3yceeTWC6tZm95asXMyq7lNn3FiRha0SZOpOIDv0XFZfREldr
-         kAUX/jlBN8dys2YYKqC4SbNNtIN/Grq2C3p/SJLfskWVuJp7DqPQTwOuBqWXOYN7UOF0
-         BHIMwupkqqKq4qzC+SjFDo/M9BeEXJsy0E5XJ0dPV4u1E3a2ZTiKqfkQiQAzQ5LbP6Kn
-         duyaNarl1NC9nqZ3E19dozvIXd9dv5iGrme0VubwoBuEZVzkYXZZeX8v2r0ikhdSElXK
-         UPTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FmcZ/fRePWq5s4y+7VM/SA3noeiad2xEykIaRju6z1M=;
-        b=V07KV4LYNrSjE29h/gS2cl6WnpXXvSKpctU5XRYEDPkZcQCrx3SRpBKbvqGWpypSM7
-         skhgJuFIg18R8Q6yg95loajw7vlMVWSjUH0dal7ZaptTI4eWPf+yPU5KtEd7LlMs0NiZ
-         DtUk3Nesxn4NR3LkvHA9Kr5BwaCs7ne0vZKotIbzUjURWEs8ZycOuMS+pNDJR2P4OyB+
-         MzDod8ssJRXCumj89dQ1/7+oL1hwunnKXSs+MiJGKokBu28XD8W6eBLhwqEtP9NCl3Bv
-         mm/olYzRzMsfiwS0aDGTGCOJ+IaplTmtmbT5QBD6bqCHRPXgdfSwy2kOaN6zi9+hrHhE
-         dHrw==
-X-Gm-Message-State: AOAM532G1teE1BSnX+vJaynYb+vpg/+lss7+o7SM5YB3vEMgo5K7Jmsi
-        bbcQtfxvKPNzAuNvt0oFr8uF4MTIScczKg==
-X-Google-Smtp-Source: ABdhPJwFV2S/DRyYJVR8KboVSq4Z2vvmOSzj+HfbVTpw3ZyvNpZA2wVsn2FWQM1sCNgcitBtxN9c0w==
-X-Received: by 2002:a05:622a:60c:b0:2cf:a84f:eb47 with SMTP id z12-20020a05622a060c00b002cfa84feb47mr901897qta.419.1644988854325;
-        Tue, 15 Feb 2022 21:20:54 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bk23sm18239988qkb.3.2022.02.15.21.20.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 21:20:53 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Vasiliy Kulikov <segoon@openwall.com>
-Subject: [PATCH net] ping: fix the dif and sdif check in ping_lookup
-Date:   Wed, 16 Feb 2022 00:20:52 -0500
-Message-Id: <ea03066bc7256ab86df8d3501f3440819305be57.1644988852.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S230002AbiBPFif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 00:38:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9A7B8236;
+        Tue, 15 Feb 2022 21:38:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F829619FC;
+        Wed, 16 Feb 2022 05:38:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5EEC340E8;
+        Wed, 16 Feb 2022 05:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644989902;
+        bh=P7No01mWTKTK8n7XDrHDJxfmk9w1GcNv6CSOAUyAhM8=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=cJ7R+z9PZat/2UJpKAXS/9gITtDX2by/uEFgAoBc8g/SB1OnjJ1uNI1qHGadq8LRX
+         N0u/xHxg1x+aG2v+u2LtlSFP+FMEidRMdgjtPYcOwjDMKr6xOz9aKxBqc/eJZsc2HS
+         b1nYfY/JZhz1+TZMTJczVQVvjTSEysQiwXlnqVRmQbR6qNwC29RKXYq0FBGi+M369I
+         q8nkO6ZfQahcclabOmzoWFL9upUirIkNjhpmNZQWQ83nlsL6P2Qs77oWpBOK4IcWtR
+         Cjx0UNmbZcBwasm1dsIBd8Kxhwm9WDuOVURK9kq0I7jFrsbm3UGRFrvhHZOx36NaNR
+         7TSEzEZfU/ouQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     miaoqing@codeaurora.org, rsalvaterra@gmail.com,
+        Toke =?utf-8?Q?H?= =?utf-8?Q?=C3=B8iland-J=C3=B8rgensen?= 
+        <toke@toke.dk>, "Sepehrdad\, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH v2] ath9k: use hw_random API instead of directly dumping into random.c
+References: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
+        <20220216000230.22625-1-Jason@zx2c4.com>
+Date:   Wed, 16 Feb 2022 07:38:17 +0200
+In-Reply-To: <20220216000230.22625-1-Jason@zx2c4.com> (Jason A. Donenfeld's
+        message of "Wed, 16 Feb 2022 01:02:30 +0100")
+Message-ID: <87mtir9xrq.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When 'ping' changes to use PING socket instead of RAW socket by:
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-   # sysctl -w net.ipv4.ping_group_range="0 100"
+> Hardware random number generators are supposed to use the hw_random
+> framework. This commit turns ath9k's kthread-based design into a proper
+> hw_random driver.
+>
+> This compiles, but I have no hardware or other ability to determine
+> whether it works. I'll leave further development up to the ath9k
+> and hw_random maintainers.
+>
+> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-There is another regression caused when matching sk_bound_dev_if
-and dif, RAW socket is using inet_iif() while PING socket lookup
-is using skb->dev->ifindex, the cmd below fails due to this:
+[...]
 
-  # ip link add dummy0 type dummy
-  # ip link set dummy0 up
-  # ip addr add 192.168.111.1/24 dev dummy0
-  # ping -I dummy0 192.168.111.1 -c1
+> +retry:
+> +	if (max & ~3UL)
+> +		bytes_read =3D ath9k_rng_data_read(sc, buf, max >> 2);
+> +	if ((max & 3UL) && ath9k_rng_data_read(sc, &word, 1)) {
+> +		memcpy(buf + bytes_read, &word, max & 3);
+> +		bytes_read +=3D max & 3;
+> +		memzero_explicit(&word, sizeof(word));
+> +	}
+> +	if (max && unlikely(!bytes_read) && wait) {
+> +		msleep(ath9k_rng_delay_get(++fail_stats));
+> +		goto retry;
+>  	}
 
-The issue was also reported on:
+Wouldn't a while loop be cleaner? With a some kind limit for the number
+of loops, to avoid a neverending loop.
 
-  https://github.com/iputils/iputils/issues/104
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-But fixed in iputils in a wrong way by not binding to device when
-destination IP is on device, and it will cause some of kselftests
-to fail, as Jianlin noticed.
-
-This patch is to use inet(6)_iif and inet(6)_sdif to get dif and
-sdif for PING socket, and keep consistent with RAW socket.
-
-Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv4/ping.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index bcf7bc71cb56..3a5994b50571 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -172,16 +172,23 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
- 	struct sock *sk = NULL;
- 	struct inet_sock *isk;
- 	struct hlist_nulls_node *hnode;
--	int dif = skb->dev->ifindex;
-+	int dif, sdif;
- 
- 	if (skb->protocol == htons(ETH_P_IP)) {
-+		dif = inet_iif(skb);
-+		sdif = inet_sdif(skb);
- 		pr_debug("try to find: num = %d, daddr = %pI4, dif = %d\n",
- 			 (int)ident, &ip_hdr(skb)->daddr, dif);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
-+		dif = inet6_iif(skb);
-+		sdif = inet6_sdif(skb);
- 		pr_debug("try to find: num = %d, daddr = %pI6c, dif = %d\n",
- 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
- #endif
-+	} else {
-+		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
-+		return NULL;
- 	}
- 
- 	read_lock_bh(&ping_table.lock);
-@@ -221,7 +228,7 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
- 		}
- 
- 		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
--		    sk->sk_bound_dev_if != inet_sdif(skb))
-+		    sk->sk_bound_dev_if != sdif)
- 			continue;
- 
- 		sock_hold(sk);
--- 
-2.31.1
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
