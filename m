@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C4C4B913D
+	by mail.lfdr.de (Postfix) with ESMTP id 4B4E44B913C
 	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 20:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233755AbiBPTeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 14:34:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50906 "EHLO
+        id S233326AbiBPTeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 14:34:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233179AbiBPTeE (ORCPT
+        with ESMTP id S233203AbiBPTeE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 14:34:04 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED021F3F36;
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BEC1F464D;
         Wed, 16 Feb 2022 11:33:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645040031; x=1676576031;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=DW89b/8Ko6h9eKTgdnQPZJ3jVF9aivPC3/A21YT219Q=;
-  b=Cm4FOG49PO/rXklUsdp99syK6HEgMkc6SbiQfA9sDOZZKH+Nkz9OG2Y3
-   L+AOUX1EgnKeLk0C4uiF+QOMEtxU6XxccqxqlKWX9JAiVwJkp4wJZAOkS
-   bzZkmzH62iNfuqTX8fqD7Mh/GymYnyntJGJ656TB/Q/+CfjmApZEXIsyS
-   Iv4+B15daXryzHvagYBZPmY9bDB0ibSBa8/NXliPeSeBfVwrQ2cQMUSfL
-   yQOYVsza1OWnzIZzEV4csQK9amxlKkgzTdvPXf84zwy1kFyCqOorMB6cO
-   KJgCW3j0Vz2XZhngZsyZLhU+EgeiJJk421DyfGy68wpzKBWViz0TacmYE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="238112447"
+  bh=vdbKgdDHdZFkbCvwB5I4kA5Ddz4ZRh56woj0KUxGhj0=;
+  b=hkXPVTUKloqexR8PQHV1/f1mO/4wOO5Xo3HAKCzSQp6t/o1Zd+LpV2/9
+   o07Kx42cWei93bgqOxLgrCS8MkaqzZ7T8MgwTM8dMKtwIMunpO6/JfMaA
+   qs5YsGcgZ/beviocAlX6P/3TBkyDNtQLZscyOvwiCp3m3iM2jskj3wOg7
+   cNOeyprbSe1VQItqEfIwvFo92EM4AlSD2ILMf4v7DVhoXnuwK9sSX0urd
+   kWXwhj1ZCWI6e6pBRbf+uKM/vqBs2JbHpXBv59q+Nizhhh8VbFZJPvJgu
+   WwXjxtt9rANwLlWDTtH4eBxkm14KifdK+bw920L+BRyafObBqqFK4dcQC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="230669732"
 X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="238112447"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:33:51 -0800
+   d="scan'208";a="230669732"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2022 11:33:51 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
-   d="scan'208";a="503175362"
+   d="scan'208";a="571437048"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 16 Feb 2022 11:33:48 -0800
+  by orsmga001.jf.intel.com with ESMTP; 16 Feb 2022 11:33:48 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nKQ3f-000B3q-E1; Wed, 16 Feb 2022 19:33:47 +0000
-Date:   Thu, 17 Feb 2022 03:33:36 +0800
+        id 1nKQ3f-000B3n-D4; Wed, 16 Feb 2022 19:33:47 +0000
+Date:   Thu, 17 Feb 2022 03:33:39 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -50,9 +50,10 @@ To:     Mans Rullgard <mans@mansr.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Juergen Borleis <kernel@pengutronix.de>,
         linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org
 Subject: Re: [PATCH] net: dsa: lan9303: add VLAN IDs to master device
-Message-ID: <202202170354.djrMhJqt-lkp@intel.com>
+Message-ID: <202202170327.RiXqUeGc-lkp@intel.com>
 References: <20220216151111.6376-1-mans@mansr.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -61,8 +62,8 @@ In-Reply-To: <20220216151111.6376-1-mans@mansr.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -81,8 +82,8 @@ https://git-scm.com/docs/git-format-patch]
 
 url:    https://github.com/0day-ci/linux/commits/Mans-Rullgard/net-dsa-lan9303-add-VLAN-IDs-to-master-device/20220216-231201
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git c5d9ae265b105d9a67575fb67bd4650a6fc08e25
-config: openrisc-randconfig-r004-20220216 (https://download.01.org/0day-ci/archive/20220217/202202170354.djrMhJqt-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.2.0
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220217/202202170327.RiXqUeGc-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0e628a783b935c70c80815db6c061ec84f884af5)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -92,22 +93,20 @@ reproduce (this is a W=1 build):
         git checkout 960beb0e82f5d219a4f7e8bdcc49fb548a82a69d
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/net/dsa/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   drivers/net/dsa/lan9303-core.c: In function 'lan9303_port_enable':
->> drivers/net/dsa/lan9303-core.c:1095:9: error: implicit declaration of function 'vlan_vid_add' [-Werror=implicit-function-declaration]
-    1095 |         vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
-         |         ^~~~~~~~~~~~
-   drivers/net/dsa/lan9303-core.c: In function 'lan9303_port_disable':
->> drivers/net/dsa/lan9303-core.c:1111:9: error: implicit declaration of function 'vlan_vid_del' [-Werror=implicit-function-declaration]
-    1111 |         vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
-         |         ^~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+>> drivers/net/dsa/lan9303-core.c:1095:2: error: implicit declaration of function 'vlan_vid_add' [-Werror,-Wimplicit-function-declaration]
+           vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), port);
+           ^
+>> drivers/net/dsa/lan9303-core.c:1111:2: error: implicit declaration of function 'vlan_vid_del' [-Werror,-Wimplicit-function-declaration]
+           vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), port);
+           ^
+   2 errors generated.
 
 
 vim +/vlan_vid_add +1095 drivers/net/dsa/lan9303-core.c
