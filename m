@@ -2,116 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C39B4B81CA
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 08:42:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D42344B826D
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 09:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230335AbiBPHh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 02:37:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47764 "EHLO
+        id S230347AbiBPH6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 02:58:36 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiBPHh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 02:37:57 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DD91986F6;
-        Tue, 15 Feb 2022 23:37:17 -0800 (PST)
-X-UUID: 9157c8615f1146ca9f59d6e2acc8c07d-20220216
-X-UUID: 9157c8615f1146ca9f59d6e2acc8c07d-20220216
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 956864657; Wed, 16 Feb 2022 15:36:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 16 Feb 2022 15:36:51 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Feb 2022 15:36:50 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <bpf@vger.kernel.org>,
-        <maze@google.com>, Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH v3] net: fix wrong network header length
-Date:   Wed, 16 Feb 2022 15:30:55 +0800
-Message-ID: <20220216073055.22642-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        with ESMTP id S229992AbiBPH6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 02:58:35 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2DED5DD9;
+        Tue, 15 Feb 2022 23:58:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YXSZvLdp2WpAvYAgpt65RWGqBzfUFzNyTw8axHgAK10=; b=o3pYssSMY/qnKmyqV5QbRt0DFQ
+        yb5+W59T5AHuXcl8hFjcKbcyFo8ZpPWILUCZWYzfgeRtNGYrMZ04btWArup73rBlL4neEiZJTRjPA
+        XKJ8KvPEt5Fz8U6l4/WAq1zjzAxzU+Vd5XPWtmzDw8Q2S3hhcd08aVvXaw9S/4tapcMk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nKEuC-006BMz-7p; Wed, 16 Feb 2022 08:39:16 +0100
+Date:   Wed, 16 Feb 2022 08:39:16 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+Message-ID: <YgyqJAokWhXvDPik@lunn.ch>
+References: <YelxMFOiqnfIVmyy@lunn.ch>
+ <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
+ <Yeqzhx3GbMzaIbj6@lunn.ch>
+ <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
+ <YerOIXi7afbH/3QJ@lunn.ch>
+ <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com>
+ <Yex0rZ0wRWQH/L4n@lunn.ch>
+ <CAAd53p6pfuYDor3vgm_bHFe_o7urNhv7W6=QGxVz6c=htt7wLg@mail.gmail.com>
+ <YgwMslde2OxOOp9d@lunn.ch>
+ <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,MAY_BE_FORGED,
-        SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+> > > This is an ACPI based platform and we are working on new firmware
+> > > property "use-firmware-led" to give driver a hint:
+> > > ...
+> > >     Scope (_SB.PC00.OTN0)
+> > >     {
+> > >         Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
+> > >         {
+> > >             ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device
+> > > Properties for _DSD */,
+> > >             Package (0x01)
+> > >             {
+> > >                 Package (0x02)
+> > >                 {
+> > >                     "use-firmware-led",
+> > >                     One
+> > >                 }
+> > >             }
+> > >         })
+> > >     }
+> > > ...
+> > >
+> > > Because the property is under PCI device namespace, I am not sure how
+> > > to (cleanly) bring the property from the phylink side to phydev side.
+> > > Do you have any suggestion?
+> >
+> > I'm no ACPI expert, but i think
+> > Documentation/firmware-guide/acpi/dsd/phy.rst gives you the basis:
+> >
+> >     During the MDIO bus driver initialization, PHYs on this bus are probed
+> >     using the _ADR object as shown below and are registered on the MDIO bus.
+> >
+> >       Scope(\_SB.MDI0)
+> >       {
+> >         Device(PHY1) {
+> >           Name (_ADR, 0x1)
+> >         } // end of PHY1
+> >
+> >         Device(PHY2) {
+> >           Name (_ADR, 0x2)
+> >         } // end of PHY2
+> >       }
+> >
+> > These are the PHYs on the MDIO bus. I _think_ that next to the Name,
+> > you can add additional properties, like your "use-firmware-led". This
+> > would then be very similar to DT, which is in effect what ACPI is
+> > copying. So you need to update this document with your new property,
+> > making it clear that this property only applies to boot, not
+> > suspend/resume. And fwnode_mdiobus_register_phy() can look for the
+> > property and set a flag in the phydev structure indicating that ACPI
+> > is totally responsible for LEDs at boot time.
+> 
+> The problem here is there's no MDIO bus in ACPI namespace, namely no
+> "Scope(\_SB.MDI0)" on this platform.
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
+So add it. Basically, copy what DT does. I assume there is a node for
+the Ethernet device? And is the MDIO bus driver instantiated by the
+Ethernet device? So you can add the MDIO node as a sub node of the
+Ethernet device. When you register the MDIO bus using
+acpi_mdiobus_register() pass a pointer to this MDIO sub node.
 
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes different from original,that is difference between ipv6 header and 
-ipv4 header. Just change transport_header to be the same with original.
-
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
-
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
----
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 0118f0afaa4f..f5ea977d8f24 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3865,7 +3865,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	unsigned int delta_len = 0;
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
--	int err;
-+	int len_diff, err;
- 
- 	skb_push(skb, -skb_network_offset(skb) + offset);
- 
-@@ -3905,9 +3905,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		__copy_skb_header(nskb, skb);
- 
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
--- 
-2.18.0
-
+     Andrew
