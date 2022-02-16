@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16B84B7D35
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3DA4B7D53
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343555AbiBPCME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:12:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51658 "EHLO
+        id S1343624AbiBPCMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:12:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343556AbiBPCLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:11:54 -0500
+        with ESMTP id S1343574AbiBPCMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:12:01 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA56E9FDD
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86ED625C6F
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644977502; x=1676513502;
+  t=1644977504; x=1676513504;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gjydlaEKpBxwKt2pe7JF2Jr38ug0drglZmF5L56WW7k=;
-  b=HZhKFE8VLAc3hMxOqdsY7d2Nt64lY8fiOiUw5jirf1ljqnEd6XRG/sWs
-   XOqPPT3MxqgLukARfJiyCR3eqe5pcekeRWCaj82us37n7Y6wq+B6nfzNi
-   u++3DoUnW4F044NMKMWmLy3wAvf7CsNa4nYxkUVrtz+SablpKloKSumTk
-   FtivFBk4RzchCIM8UG46Ptj9p4q4sRVxEILn8oiIEyrqzlL3MAUHOZYXr
-   uNuwi/GsXVZcWPAYijqD/vKYiS7fZ3jHMEtmF0Azx/NHAnXBJ0NmCM6DY
-   QH5Y2ppOy2jtBpFZUgfuVoGki31C9zbJsIfAV/mvxuWXM2tjjw7VmJFoS
+  bh=n2nXdu5nNJkPcDV95CNUS45peiEoulnhateBofGFB04=;
+  b=XGUu3spTfDsYxq41+ZI3mTuvm04pYudsJdY7FfCrm6oFIztFYOp5FLPL
+   7KJoTTl2rhauNzOU+7M3AQWdgaG1PSXW6+m108TXiXRSBvA8oQ++3xKsI
+   7L9b9EuqwLSQ76kEmcbdXQ7WsDRI7ATt6hCrsv8WgAhDUEUDbbZj0qBqE
+   QmUsSfbmrL29jQu0YmlzC332s+fpvfihXog/kpTwc97EsYSSt10g1PjB3
+   UaOozxgsdvxLvOqkBJEKq+qySSI9Oq1ZdVp/CMTjRnEKi5ugUcPRL2wGc
+   bcjAO3gBzJfxtT+KNut3CFxlcapjrG5gJlFEtFJatHZZmoyxR4mI0TGoP
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909083"
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909085"
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="237909083"
+   d="scan'208";a="237909085"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="571088826"
+   d="scan'208";a="571088827"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.9.181])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -42,9 +42,9 @@ Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 7/8] mptcp: mark ops structures as ro_after_init
-Date:   Tue, 15 Feb 2022 18:11:29 -0800
-Message-Id: <20220216021130.171786-8-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 8/8] mptcp: don't save tcp data_ready and write space callbacks
+Date:   Tue, 15 Feb 2022 18:11:30 -0800
+Message-Id: <20220216021130.171786-9-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
 References: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
@@ -62,72 +62,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-These structures are initialised from the init hooks, so we can't make
-them 'const'.  But no writes occur afterwards, so we can use ro_after_init.
-
-Also, remove bogus EXPORT_SYMBOL, the only access comes from ip
-stack, not from kernel modules.
+Assign the helpers directly rather than save/restore in the context
+structure.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/subflow.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ net/mptcp/protocol.h | 6 ++----
+ net/mptcp/subflow.c  | 8 ++++----
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 86910f20486a..9d0ee6cee07f 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -468,9 +468,7 @@ struct mptcp_subflow_context {
+ 	struct	sock *tcp_sock;	    /* tcp sk backpointer */
+ 	struct	sock *conn;	    /* parent mptcp_sock */
+ 	const	struct inet_connection_sock_af_ops *icsk_af_ops;
+-	void	(*tcp_data_ready)(struct sock *sk);
+ 	void	(*tcp_state_change)(struct sock *sk);
+-	void	(*tcp_write_space)(struct sock *sk);
+ 	void	(*tcp_error_report)(struct sock *sk);
+ 
+ 	struct	rcu_head rcu;
+@@ -614,9 +612,9 @@ bool mptcp_subflow_active(struct mptcp_subflow_context *subflow);
+ static inline void mptcp_subflow_tcp_fallback(struct sock *sk,
+ 					      struct mptcp_subflow_context *ctx)
+ {
+-	sk->sk_data_ready = ctx->tcp_data_ready;
++	sk->sk_data_ready = sock_def_readable;
+ 	sk->sk_state_change = ctx->tcp_state_change;
+-	sk->sk_write_space = ctx->tcp_write_space;
++	sk->sk_write_space = sk_stream_write_space;
+ 	sk->sk_error_report = ctx->tcp_error_report;
+ 
+ 	inet_csk(sk)->icsk_af_ops = ctx->icsk_af_ops;
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 8cf85684c88f..740cb4763461 100644
+index 740cb4763461..45c004f87f5a 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -482,8 +482,7 @@ static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
- }
+@@ -1654,10 +1654,12 @@ static int subflow_ulp_init(struct sock *sk)
+ 	tp->is_mptcp = 1;
+ 	ctx->icsk_af_ops = icsk->icsk_af_ops;
+ 	icsk->icsk_af_ops = subflow_default_af_ops(sk);
+-	ctx->tcp_data_ready = sk->sk_data_ready;
+ 	ctx->tcp_state_change = sk->sk_state_change;
+-	ctx->tcp_write_space = sk->sk_write_space;
+ 	ctx->tcp_error_report = sk->sk_error_report;
++
++	WARN_ON_ONCE(sk->sk_data_ready != sock_def_readable);
++	WARN_ON_ONCE(sk->sk_write_space != sk_stream_write_space);
++
+ 	sk->sk_data_ready = subflow_data_ready;
+ 	sk->sk_write_space = subflow_write_space;
+ 	sk->sk_state_change = subflow_state_change;
+@@ -1712,9 +1714,7 @@ static void subflow_ulp_clone(const struct request_sock *req,
  
- struct request_sock_ops mptcp_subflow_request_sock_ops;
--EXPORT_SYMBOL_GPL(mptcp_subflow_request_sock_ops);
--static struct tcp_request_sock_ops subflow_request_sock_ipv4_ops;
-+static struct tcp_request_sock_ops subflow_request_sock_ipv4_ops __ro_after_init;
- 
- static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
- {
-@@ -504,9 +503,9 @@ static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
- }
- 
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
--static struct tcp_request_sock_ops subflow_request_sock_ipv6_ops;
--static struct inet_connection_sock_af_ops subflow_v6_specific;
--static struct inet_connection_sock_af_ops subflow_v6m_specific;
-+static struct tcp_request_sock_ops subflow_request_sock_ipv6_ops __ro_after_init;
-+static struct inet_connection_sock_af_ops subflow_v6_specific __ro_after_init;
-+static struct inet_connection_sock_af_ops subflow_v6m_specific __ro_after_init;
- static struct proto tcpv6_prot_override;
- 
- static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
-@@ -788,7 +787,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 	return child;
- }
- 
--static struct inet_connection_sock_af_ops subflow_specific;
-+static struct inet_connection_sock_af_ops subflow_specific __ro_after_init;
- static struct proto tcp_prot_override;
- 
- enum mapping_status {
-@@ -1309,7 +1308,7 @@ static void subflow_write_space(struct sock *ssk)
- 	mptcp_write_space(sk);
- }
- 
--static struct inet_connection_sock_af_ops *
-+static const struct inet_connection_sock_af_ops *
- subflow_default_af_ops(struct sock *sk)
- {
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
-@@ -1324,7 +1323,7 @@ void mptcpv6_handle_mapped(struct sock *sk, bool mapped)
- {
- 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
- 	struct inet_connection_sock *icsk = inet_csk(sk);
--	struct inet_connection_sock_af_ops *target;
-+	const struct inet_connection_sock_af_ops *target;
- 
- 	target = mapped ? &subflow_v6m_specific : subflow_default_af_ops(sk);
- 
+ 	new_ctx->conn_finished = 1;
+ 	new_ctx->icsk_af_ops = old_ctx->icsk_af_ops;
+-	new_ctx->tcp_data_ready = old_ctx->tcp_data_ready;
+ 	new_ctx->tcp_state_change = old_ctx->tcp_state_change;
+-	new_ctx->tcp_write_space = old_ctx->tcp_write_space;
+ 	new_ctx->tcp_error_report = old_ctx->tcp_error_report;
+ 	new_ctx->rel_write_seq = 1;
+ 	new_ctx->tcp_sock = newsk;
 -- 
 2.35.1
 
