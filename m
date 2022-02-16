@@ -2,117 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3824B7DCB
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:51:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CCF4B7DB0
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343776AbiBPCgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:36:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40962 "EHLO
+        id S1343821AbiBPCnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:43:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244735AbiBPCgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:36:19 -0500
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79255F5412;
-        Tue, 15 Feb 2022 18:36:07 -0800 (PST)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app2 (Coremail) with SMTP id by_KCgAX_nAGYwxi0LrrAQ--.36391S2;
-        Wed, 16 Feb 2022 10:35:55 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
-Date:   Wed, 16 Feb 2022 10:35:49 +0800
-Message-Id: <20220216023549.50223-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgAX_nAGYwxi0LrrAQ--.36391S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kr45Zr1rJr1DtrWxCFy3Jwb_yoW8try3pr
-        Z8Jryftw4ktrW5tw4kAFs5Wrn5uFs5J3yxCrsag3sIvFnxJr1YgFyqvryUXFW2kFZ5Aa47
-        AF4rZr9xAF15C3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkF1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
-        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
-        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48J
-        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
-        IF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
-        87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwNAVZdtYEE3QAes6
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S240774AbiBPCnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:43:52 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7988FBA49;
+        Tue, 15 Feb 2022 18:43:40 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id d10so1308684eje.10;
+        Tue, 15 Feb 2022 18:43:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EDJssklYQD1n4k3ObsN0bw+9i+I4dsggbJJR//VLJ20=;
+        b=Zl1xm3D354LVEdk6A1RDC5V8EuHE+coeR6zi4f0ARUyC12YBR5vOArEE//4Cxtn5dO
+         qvndiWQPdZjG/DshCt1bSFTLc3Uaw/nW6gR5jGrwlVvJ4nt74WaIuvevEnojDkK43bZu
+         fnq2ND1g5TP0M5VqS0orFL5ClL2EHaeOu6aPBtOgTE8Oy7Rhrfj41XoFk6vyzX/TrWxS
+         wsBGMaDKnQlYQm3SViOfnND/9w1pqDBt31O+4A40ijW1hj8rjwMVDkmzAtt11XC6cuZW
+         NHEwGGp3PQefrt8IjH1Qhk6UFcphAIMTHBsbc1r8Vy1eYQK0FUA5NSfCl0h+hQZjtj1B
+         gfng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EDJssklYQD1n4k3ObsN0bw+9i+I4dsggbJJR//VLJ20=;
+        b=XWFemS6nOlz5cmPfIqG4iW4g+LOUPP2UcGeIyKLNUp9LiJT92cxk+QJbEANztztPKO
+         7aQ2I9zZ0Ez0UdSos1qfbBofFlDROcbIz5z5YCHSBhza+RY2k180+lgiiRs37D+LiFAC
+         UxpChbbCuolR/XSHg5bI/GwTxthPyDpwfn1IKcVzzLQYBJ+/G2JHdB8rd+M05XDdgy6T
+         FbWW/exqe0uGwdMRyRAe1cPU4lHYBRMvhXuEUKmJAR0fn6I+gSt/ep8i78Hh4eefLe9g
+         R0R/9J5vVYBXjfsMw8rr9gEVlmbrblvMLDb1iFEJNJgv+Wm0BZiHIHnazjH5hZyNCnxD
+         yQbg==
+X-Gm-Message-State: AOAM532ZJkUnuU4zfzZAPI7p+SPGl/+Y2NSWhdXj3g3eUzMjAIqVUnBQ
+        yRAuDDOVWAcABCrqwS1OgV0sf38iBgqr3RQVSp0=
+X-Google-Smtp-Source: ABdhPJxkhm7FKRBh+yyBJ1rNwZFW3Xhyw+ayQ2oppPG4d4kbp1nasELqUQ+uZz+N2pXbirXgW6PySSHKLyIXoVl2hko=
+X-Received: by 2002:a17:906:4cd2:b0:6c8:7a90:9c7 with SMTP id
+ q18-20020a1709064cd200b006c87a9009c7mr612436ejt.439.1644979419568; Tue, 15
+ Feb 2022 18:43:39 -0800 (PST)
+MIME-Version: 1.0
+References: <20220215112812.2093852-1-imagedong@tencent.com>
+ <20220215112812.2093852-2-imagedong@tencent.com> <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
+ <f626571a-30de-5549-a73e-aaef874d3c36@kernel.org>
+In-Reply-To: <f626571a-30de-5549-a73e-aaef874d3c36@kernel.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 16 Feb 2022 10:38:28 +0800
+Message-ID: <CADxym3ZS1Fva1CcYo3Lyj2wy2t-FRE51eZB-fESybwiBdKSWVQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/19] net: tcp: introduce tcp_drop_reason()
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        flyingpeng@tencent.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although del_timer_sync() in sixpack_close() waits for the timer handler
-to finish its execution and then releases the timer, the mod_timer()
-in sp_xmit_on_air() could be called by userspace syscall such as
-ax25_sendmsg(), ax25_connect() and ax25_ioctl() and wakes up the timer
-again. If the timer uses sp_xmit_on_air() to write data on pty work queue
-that already released by unregister_netdev(), the UAF bug will happen.
+On Wed, Feb 16, 2022 at 2:47 AM David Ahern <dsahern@kernel.org> wrote:
+>
+> On 2/15/22 10:34 AM, Eric Dumazet wrote:
+> >> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> >> index af94a6d22a9d..e3811afd1756 100644
+> >> --- a/net/ipv4/tcp_input.c
+> >> +++ b/net/ipv4/tcp_input.c
+> >> @@ -4684,10 +4684,19 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
+> >>         return res;
+> >>  }
+> >>
+> >> -static void tcp_drop(struct sock *sk, struct sk_buff *skb)
+> >> +static void tcp_drop_reason(struct sock *sk, struct sk_buff *skb,
+> >> +                           enum skb_drop_reason reason)
+> >>  {
+> >>         sk_drops_add(sk, skb);
+> >> -       __kfree_skb(skb);
+> >> +       /* why __kfree_skb() used here before, other than kfree_skb()?
+> >> +        * confusing......
+> >
+> > Do not add comments like that if you do not know the difference...
+> >
+> > __kfree_skb() is used by TCP stack because it owns skb in receive
+> > queues, and avoids touching skb->users
+> > because it must be one already.
+>
+> and it bypasses kfree_skb tracepoint which seems by design.
 
-One of the possible race conditions is shown below:
+Do you mean it shouldn't be traced here?
+According to my understanding, __kfree_skb() was used in the
+beginning as skb->users aren't touched by TCP. Later,
+tcp_drop() was introduced to record drop count to the socket.
 
-      (USE)                     |      (FREE)
-ax25_sendmsg()                  |
-  ax25_queue_xmit()             |
-    ...                         |
-    sp_encaps()                 |  sixpack_close()
-      sp_xmit_on_air()          |    del_timer_sync(&sp->tx_t)
-        mod_timer(&sp->tx_t,..) |    ...
-        (wait a while)          |    unregister_netdev(sp->dev)) //FREE
-      sp_xmit_on_air()          |    ...
-        pty_write()             |
-          queue_work_on() //USE |
+Considering the skb is indeed dropped and no other event is triggered,
+is it ok to trigger the kfree_skb tracepoint?
 
-The corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
-Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
-...
-Call Trace:
-  ...
-  queue_work_on+0x3f/0x50
-  pty_write+0xcd/0xe0pty_write+0xcd/0xe0
-  sp_xmit_on_air+0xb2/0x1f0
-  call_timer_fn+0x28/0x150
-  __run_timers.part.0+0x3c2/0x470
-  run_timer_softirq+0x3b/0x80
-  __do_softirq+0xf1/0x380
-  ...
-
-This patch add condition check in sp_xmit_on_air(). If the
-registration status of net_device is not equal to NETREG_REGISTERED,
-the sp_xmit_on_air() will not write data to pty work queue and
-return instead.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/net/hamradio/6pack.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index b1fc153125d..7ee25e06915 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -141,7 +141,8 @@ static void sp_xmit_on_air(struct timer_list *t)
- 	struct sixpack *sp = from_timer(sp, t, tx_t);
- 	int actual, when = sp->slottime;
- 	static unsigned char random;
--
-+	if (sp->dev->reg_state !=  NETREG_REGISTERED)
-+		return;
- 	random = random * 17 + 41;
- 
- 	if (((sp->status1 & SIXP_DCD_MASK) == 0) && (random < sp->persistence)) {
--- 
-2.17.1
-
+Thanks!
+Menglong Dong
