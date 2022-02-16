@@ -2,143 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB014B85E1
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:37:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C4A4B85F0
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:37:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbiBPKbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 05:31:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43232 "EHLO
+        id S229506AbiBPKdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 05:33:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiBPKbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:31:23 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2062c.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eae::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C50222DD3
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 02:31:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oYzllugaCqCQsjj7JZrg7JLdUlFpLmvZW71OqrmeCxjBqQREpXuo0Kv+fRBwh/aGVTuyl/Y3rjkz7WJytgV8nfVNIrLZmvfVr5x9PqZcD0WwMmkMWIDH8t4Ypym2gl6TY5p2XnS8sMVRpduQdmos8UZvZDGrbOBXw6dyYluXKpY0CTOXNVGZAJOGFG+3S3C0ubjBbtiiZP947qLV4kmOA6FdwNnI0jU1XxJI8/u0DdJKNAmauy73xHgtpzbxiyqag9fCH1SpxUsUF3GPOwlbj9QwHXYv3kGBbxqfk/9hy4Ih8AxmTQ+GPRi5lJTg3ZUW1BhRzdbTEBpTtfn1GsA3jA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AKmjZrJHSauMRZykIDcqDgggcqWkp0aUsdIywtYgv3Y=;
- b=f2q1NxcJF3mZqjuMs2rDxub6lmGNwmY2tDavKjGLDe2uyHRT0QkJdpR/Fb0fewJluXn8X02jTqvC59R7dNKdP6Rl5YWmECsQVwAVvcogOSEzkiIAzvu3QfRz9WDm95f9xobsPvP9tsuWyaGK1BP4P4t3vTFq39r90BVBg6het7RaFs/zc7uANsiBYgmt1cnzSoDK4cgWtzzyUS1410O7uaqplQJ7ipZ1sBVSkk9KzvJCJETP/BxSCyPKLCHAsvz1BS/03INxJNjIul+C6KsSNTqOL/J1cNu0NYYueAzP6QLu6S95RLbcz08PDi8xzys5aFLXF8Hp9sijCjDRMjBcrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AKmjZrJHSauMRZykIDcqDgggcqWkp0aUsdIywtYgv3Y=;
- b=nDmE2Bb0/D+pi9s6KnB4ocwKuWTqaVdSW4QJIOlpSZdBiUCjvdrTGjQO1jK+kGNBRTAes4MSm8ycJxyKftzj7fPnlaA1xH67cOZ1AeGVFAXbdLckSO1GBU1xcUXz73S/gZLZcohVFbyiTtkBl2kEMKBmJZi4DZPTz0sAM9JlRRa1PI1f5bevyPyjSHjXxJVRzuQ8oLyaJuBtnMzyeE7lYFZg305RjqHaftiPZE/JWFnAkDv7KVcvWeMnDw9xeSK/7GLOA27PlaK8kTS7LtNcebSf8Zp271QxOvh9C2S+l1KYO6ecHALsJIg+mTKgUjUP9TAd5pW3hn9sMh5i4koVbw==
-Received: from BN9PR03CA0616.namprd03.prod.outlook.com (2603:10b6:408:106::21)
- by DM4PR12MB5134.namprd12.prod.outlook.com (2603:10b6:5:391::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.17; Wed, 16 Feb
- 2022 10:31:08 +0000
-Received: from BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::4c) by BN9PR03CA0616.outlook.office365.com
- (2603:10b6:408:106::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.15 via Frontend
- Transport; Wed, 16 Feb 2022 10:31:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT063.mail.protection.outlook.com (10.13.177.110) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Wed, 16 Feb 2022 10:31:07 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 16 Feb
- 2022 10:31:06 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Wed, 16 Feb 2022
- 02:31:05 -0800
-Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Wed, 16 Feb
- 2022 02:31:03 -0800
-From:   Gal Pressman <gal@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next] net: gro: Fix a 'directive in macro's argument list' sparse warning
-Date:   Wed, 16 Feb 2022 12:31:00 +0200
-Message-ID: <20220216103100.9489-1-gal@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229379AbiBPKdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:33:12 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79489244668;
+        Wed, 16 Feb 2022 02:33:00 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21G7dLBt010079;
+        Wed, 16 Feb 2022 10:32:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=WKGFS2Dym4YCdvosL5tbeaRC4dqjasH3ysUb6IM9hw8=;
+ b=dOzNpovPubXxFp4YtjUQifQ84b/bgx55F51Q9y7t1kdTOUnkwaLVHujwYeH21cyHTATQ
+ BfnvKCYj3IducCg/1WXAPGOKkaFXGnbEgzdnuBSBc8UsEofbL3IziddRaUHFU6uEkYGW
+ 7vdaWiUTXWUlUv8cHIAKAWZ3ccD719S77YVpgUvdRwWqEtfIkO9fPYRurVcWAdQ3E823
+ QTHmqiiXQI1Fiy3TOn0yUP7iMy6iwblYnnXQ8vIDwv20gSrVvG+GpPEDk+hUW6cY8Bqg
+ Xpz5tsoebHAi0o0kiMJiNeWtXbgxQpQSiwZqmUk11ill38A3PcQffe+BPECmoZeVovXK pg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8thyehwg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 10:32:56 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21GABKqq003329;
+        Wed, 16 Feb 2022 10:32:56 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e8thyehvc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 10:32:55 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21GASf9O029564;
+        Wed, 16 Feb 2022 10:32:54 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06ams.nl.ibm.com with ESMTP id 3e645jy8r6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Feb 2022 10:32:54 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21GAWpLt35783114
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 16 Feb 2022 10:32:51 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8FF2852052;
+        Wed, 16 Feb 2022 10:32:51 +0000 (GMT)
+Received: from [9.145.68.35] (unknown [9.145.68.35])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 22B8652050;
+        Wed, 16 Feb 2022 10:32:51 +0000 (GMT)
+Message-ID: <6e9c637c-50b0-394c-f405-8b98deafa2ef@linux.ibm.com>
+Date:   Wed, 16 Feb 2022 11:32:52 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f7f94efc-bdba-4278-0e13-08d9f137717d
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5134:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5134E1A82574A14284EDD715C2359@DM4PR12MB5134.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:651;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hSr/FmtoGESdFUGgJoaLI8iL/OxEPVv7EyNiM3VTERAkOuI8cEhhRwMOQiVk5qj6MaBJ6sHGC9QXGh0BqXDpYDzDt25XK6tZuwy8TEhwIT2EX46t1TTYoW+ivIzu7GjYjJcpUih9owT6F5yqFMqPzsazVkjn6kxO36Floh/AdHpYPq3Vin7dN/O3/yRiPverkVhdMgUzcCKhDsbP0blivxnM4008SvQ8E7tmNrZ9blf1Sc9CAnQOKGuaBIvv1cavgad9hjf52Qr+cnWLn8beq7c5sKkGlWVHFv+le9VyxRJgmcg9ZmMqXE6Vr2HTcslCglrAooCH9itQQFg1tLBpFDs+o7BIFYM33TBPPLTYzx0Kv+HWq4/J5lcBjBR2hFIVt912v9b/GLPf+QjXsNUF9eVyCoPUgtuXihYmOc3BhhC4+MA4M2D8PFV4o9cNkfQc7aYF+43y8P9q1P6+VwiVWGvM3yq1NGRzjc+IYFqVhCiy96ml0fdLGWxgVH3y2SoMww8SMff650xbodhb/ALojYx7yZWNYMOr77e+K3aXBnv6Fj8eE1CEm2YkEYZITQLOB4jMrh8ifM7ovVhcTokyXCEw7YwFXwyj9Ni65z5HpP0C8Bw5d9WCeYDtk1bm+4wa2xNZGt3L0vCQaHbF3tOkFX1KolVsU+75739tq5GgVb4BmS5B8rP4/LQSJ7otYUe21qJJghyBY6cANgNTKTTDZg==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(36860700001)(2906002)(83380400001)(107886003)(2616005)(7696005)(508600001)(426003)(1076003)(26005)(82310400004)(47076005)(336012)(186003)(54906003)(36756003)(81166007)(4326008)(70206006)(8936002)(40460700003)(110136005)(316002)(86362001)(8676002)(70586007)(5660300002)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 10:31:07.7433
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7f94efc-bdba-4278-0e13-08d9f137717d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5134
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] net/smc: Add autocork support
+Content-Language: en-US
+To:     Dust Li <dust.li@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Qluk1lMtjxyon00lA95mheW-dXK6TNGI
+X-Proofpoint-ORIG-GUID: MaKi_P_07n-3-A8bYDYx7WqnvL95kq2v
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-16_04,2022-02-16_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ clxscore=1015 mlxscore=0 suspectscore=0 lowpriorityscore=0 mlxlogscore=999
+ impostorscore=0 spamscore=0 adultscore=0 priorityscore=1501 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202160060
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following the cited commit, sparse started complaining about:
-../include/net/gro.h:58:1: warning: directive in macro's argument list
-../include/net/gro.h:59:1: warning: directive in macro's argument list
+On 16/02/2022 04:49, Dust Li wrote:
+> This patch adds autocork support for SMC which could improve
+> throughput for small message by x2 ~ x4.
+> 
+> The main idea is borrowed from TCP autocork with some RDMA
+> specific modification:
 
-Fix that by moving the defines out of the struct_group() macro.
+Sounds like a valuable improvement, thank you!
 
-Fixes: de5a1f3ce4c8 ("net: gro: minor optimization for dev_gro_receive()")
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Gal Pressman <gal@nvidia.com>
----
- include/net/gro.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> ---
+>  net/smc/smc.h     |   2 +
+>  net/smc/smc_cdc.c |  11 +++--
+>  net/smc/smc_tx.c  | 118 ++++++++++++++++++++++++++++++++++++++++------
+>  3 files changed, 114 insertions(+), 17 deletions(-)
+> 
+> diff --git a/net/smc/smc.h b/net/smc/smc.h
+> index a096d8af21a0..bc7df235281c 100644
+> --- a/net/smc/smc.h
+> +++ b/net/smc/smc.h
+> @@ -192,6 +192,8 @@ struct smc_connection {
+>  						 * - dec on polled tx cqe
+>  						 */
+>  	wait_queue_head_t	cdc_pend_tx_wq; /* wakeup on no cdc_pend_tx_wr*/
+> +	atomic_t		tx_pushing;     /* nr_threads trying tx push */
+> +
 
-diff --git a/include/net/gro.h b/include/net/gro.h
-index a765fedda5c4..146e2af8dd7d 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -35,6 +35,8 @@ struct napi_gro_cb {
- 	/* jiffies when first packet was created/queued */
- 	unsigned long age;
- 
-+#define NAPI_GRO_FREE		  1
-+#define NAPI_GRO_FREE_STOLEN_HEAD 2
- 	/* portion of the cb set to zero at every gro iteration */
- 	struct_group(zeroed,
- 
-@@ -55,8 +57,6 @@ struct napi_gro_cb {
- 
- 		/* Free the skb? */
- 		u8	free:2;
--#define NAPI_GRO_FREE		  1
--#define NAPI_GRO_FREE_STOLEN_HEAD 2
- 
- 		/* Used in foo-over-udp, set in udp[46]_gro_receive */
- 		u8	is_ipv6:1;
--- 
-2.25.1
+Is this extra empty line needed?
+
+>  	struct delayed_work	tx_work;	/* retry of smc_cdc_msg_send */
+>  	u32			tx_off;		/* base offset in peer rmb */
+>  
+> diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+> index 9d5a97168969..2b37bec90824 100644
+> --- a/net/smc/smc_cdc.c
+> +++ b/net/smc/smc_cdc.c
+> @@ -48,9 +48,14 @@ static void smc_cdc_tx_handler(struct smc_wr_tx_pend_priv *pnd_snd,
+>  		conn->tx_cdc_seq_fin = cdcpend->ctrl_seq;
+>  	}
+>  
+> -	if (atomic_dec_and_test(&conn->cdc_pend_tx_wr) &&
+> -	    unlikely(wq_has_sleeper(&conn->cdc_pend_tx_wq)))
+> -		wake_up(&conn->cdc_pend_tx_wq);
+> +	if (atomic_dec_and_test(&conn->cdc_pend_tx_wr)) {
+> +		/* If this is the last pending WR complete, we must push to
+> +		 * prevent hang when autocork enabled.
+> +		 */
+> +		smc_tx_sndbuf_nonempty(conn);
+> +		if (unlikely(wq_has_sleeper(&conn->cdc_pend_tx_wq)))
+> +			wake_up(&conn->cdc_pend_tx_wq);
+> +	}
+>  	WARN_ON(atomic_read(&conn->cdc_pend_tx_wr) < 0);
+>  
+>  	smc_tx_sndbuf_nonfull(smc);
+> diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+> index 5df3940d4543..bc737ac79805 100644
+> --- a/net/smc/smc_tx.c
+> +++ b/net/smc/smc_tx.c
+> @@ -31,6 +31,7 @@
+>  #include "smc_tracepoint.h"
+>  
+>  #define SMC_TX_WORK_DELAY	0
+> +#define SMC_DEFAULT_AUTOCORK_SIZE	(64 * 1024)
+>  
+>  /***************************** sndbuf producer *******************************/
+>  
+> @@ -127,10 +128,52 @@ static int smc_tx_wait(struct smc_sock *smc, int flags)
+>  static bool smc_tx_is_corked(struct smc_sock *smc)
+>  {
+>  	struct tcp_sock *tp = tcp_sk(smc->clcsock->sk);
+> -
+>  	return (tp->nonagle & TCP_NAGLE_CORK) ? true : false;
+>  }
+>  
+> +/* If we have pending CDC messages, do not send:
+> + * Because CQE of this CDC message will happen shortly, it gives
+> + * a chance to coalesce future sendmsg() payload in to one RDMA Write,
+> + * without need for a timer, and with no latency trade off.
+> + * Algorithm here:
+> + *  1. First message should never cork
+> + *  2. If we have pending CDC messages, wait for the first
+> + *     message's completion
+> + *  3. Don't cork to much data in a single RDMA Write to prevent burst,
+> + *     total corked message should not exceed min(64k, sendbuf/2)
+> + */
+> +static bool smc_should_autocork(struct smc_sock *smc, struct msghdr *msg,
+> +				int size_goal)
+> +{
+> +	struct smc_connection *conn = &smc->conn;
+> +
+> +	if (atomic_read(&conn->cdc_pend_tx_wr) == 0 ||
+> +	    smc_tx_prepared_sends(conn) > min(size_goal,
+> +					      conn->sndbuf_desc->len >> 1))
+> +		return false;
+> +	return true;
+> +}
+> +
+> +static bool smc_tx_should_cork(struct smc_sock *smc, struct msghdr *msg)
+> +{
+> +	struct smc_connection *conn = &smc->conn;
+> +
+> +	if (smc_should_autocork(smc, msg, SMC_DEFAULT_AUTOCORK_SIZE))
+> +		return true;
+> +
+> +	if ((msg->msg_flags & MSG_MORE ||
+> +	     smc_tx_is_corked(smc) ||
+> +	     msg->msg_flags & MSG_SENDPAGE_NOTLAST) &&
+> +	    (atomic_read(&conn->sndbuf_space)))
+> +		/* for a corked socket defer the RDMA writes if
+> +		 * sndbuf_space is still available. The applications
+> +		 * should known how/when to uncork it.
+> +		 */
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+>  /* sndbuf producer: main API called by socket layer.
+>   * called under sock lock.
+>   */
+> @@ -177,6 +220,13 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+>  		if (msg->msg_flags & MSG_OOB)
+>  			conn->local_tx_ctrl.prod_flags.urg_data_pending = 1;
+>  
+> +		/* If our send queue is full but peer have RMBE space,
+> +		 * we should send them out before wait
+> +		 */
+> +		if (!atomic_read(&conn->sndbuf_space) &&
+> +		    atomic_read(&conn->peer_rmbe_space) > 0)
+> +			smc_tx_sndbuf_nonempty(conn);
+> +
+>  		if (!atomic_read(&conn->sndbuf_space) || conn->urg_tx_pend) {
+>  			if (send_done)
+>  				return send_done;
+> @@ -235,15 +285,12 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+>  		 */
+>  		if ((msg->msg_flags & MSG_OOB) && !send_remaining)
+>  			conn->urg_tx_pend = true;
+> -		if ((msg->msg_flags & MSG_MORE || smc_tx_is_corked(smc) ||
+> -		     msg->msg_flags & MSG_SENDPAGE_NOTLAST) &&
+> -		    (atomic_read(&conn->sndbuf_space)))
+> -			/* for a corked socket defer the RDMA writes if
+> -			 * sndbuf_space is still available. The applications
+> -			 * should known how/when to uncork it.
+> -			 */
+> -			continue;
+> -		smc_tx_sndbuf_nonempty(conn);
+> +
+> +		/* If we need to cork, do nothing and wait for the next
+> +		 * sendmsg() call or push on tx completion
+> +		 */
+> +		if (!smc_tx_should_cork(smc, msg))
+> +			smc_tx_sndbuf_nonempty(conn);
+>  
+>  		trace_smc_tx_sendmsg(smc, copylen);
+>  	} /* while (msg_data_left(msg)) */
+> @@ -590,13 +637,26 @@ static int smcd_tx_sndbuf_nonempty(struct smc_connection *conn)
+>  	return rc;
+>  }
+>  
+> -int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+> +static int __smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+>  {
+> -	int rc;
+> +	int rc = 0;
+> +	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+
+Reverse Christmas tree style please.
 
