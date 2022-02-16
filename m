@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 587D84B9013
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 19:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 613974B9011
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 19:20:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236925AbiBPSVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 13:21:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46682 "EHLO
+        id S236854AbiBPSU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 13:20:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236606AbiBPSVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 13:21:02 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96941C65D4;
-        Wed, 16 Feb 2022 10:20:49 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id o10so476471ilh.0;
-        Wed, 16 Feb 2022 10:20:49 -0800 (PST)
+        with ESMTP id S235354AbiBPSUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 13:20:55 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36E71C559E
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 10:20:42 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id g1so2826171pfv.1
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 10:20:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bFuiGzhJTE4YwjynEmN3K3dMaFsaqOvKs9OdZhzpfFw=;
-        b=FCBRlTesYDONAGKfQ/T5rssSBNLqig4HB4Di2QYhTsiyzv4Cb2ZZjXwB+Bx8j8YJkJ
-         FnARa3o8EEXN2Mddk5691HdeNi2tOURDdfO0BTgsZghm4i4lddK0oDZq7aEk+EimRkkI
-         XhGLQS2tkg29cuQ7aJKAD1AQgGeC4iZ40Lt3nEed6xKgTXTiyvrv4P8Cci9V5RD9jcem
-         I4jNMTjdFsGiBvZu5ryQmIXrM70aZZhrCYY5sT4sO3CzkNjklmzVtmwcE9ztGYfOOJ/y
-         gM1DG9Sbpi1LHJ4ER9QU/gnZzkpzlxMo4V/8Ttme96lX4qAW9aim09A4JUR8TPDMyH5m
-         9fSw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HJPpBWHN9ruCt5P5owCQXX6H2P2rYhAdBKOvFjoOJnA=;
+        b=cWTis0IYx+SmEZAh9cnuhIk0AujPthDlWC5z8YsLyj7LIjoxuOmjAr8xNw7lW+kZ7g
+         W32iPzmHSVEE9VxXlDgDoOzifMnLOnLhJ/Uha8nsPeLq9PVAOGdRgJ9i3Tzq1VSyDnX9
+         g6XW+psZLIchujHo6qS1ujHPD6FHpDiwKMpzBA6Ost6YnzyGxYNtKwHEL+1cS/mp1eCy
+         X+jchYqodCA/ujoj1/kmNDuGxdrLVB+z5TatSWlLmkBnf/h/hqdY7fA4rHHswOShGVSk
+         Eo19Bjqu0Y6JAK7IqbsdCjkVUTRMDQx4EawnWGusMS8P3sfNfO4Fqo0Go+yywDaKZoKk
+         bdFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bFuiGzhJTE4YwjynEmN3K3dMaFsaqOvKs9OdZhzpfFw=;
-        b=bMzYMm6vl+Hph9hcW9y63QtCUuhin9Kcfuc+CMJbHHEFe8CjWV5u19c70f2S+IyW9W
-         uBmwKAuZ6ezksnFDIryznyEMnDZE/b/OTQKnJ20gDPtyJjlIdUrtc7qE6RJ/MuyDwdA1
-         40tqpoWEF4SSEFAefORT8Zgol3J4LYIV5sJBUkLgrAbiCm7TYFv2F9hmilZbwZS5ddyu
-         d8vKqXij4PNYfwKFX7j88htBEDDohRsfIBeAGqpF/XoJA7GU9sz+M1f77ptO2HvIg0VZ
-         QcKYiE2M8rWgRXPt7xbhBjrlz4Om4LdHiaRZHzrdhkHy2XeFCZtZoh6CrgiTMdkEejlG
-         VibA==
-X-Gm-Message-State: AOAM530eviakb/iEkS/CkSHGoIBSc503lQ3zH7tvHeako5jkhQohpiX8
-        19k1ZF2upNAnVC31/scQKq4mC+IRGyX1CuH2E1g=
-X-Google-Smtp-Source: ABdhPJxPJvk4A3g1QT3VBe9eqeEExQYFt97tuypsGjCb+Batd1KAiMB3/pQY7uwtLFhlnpPxNofFWv5P6kuFvM/oj/o=
-X-Received: by 2002:a92:d208:0:b0:2c1:1a3c:7b01 with SMTP id
- y8-20020a92d208000000b002c11a3c7b01mr2563665ily.71.1645035649148; Wed, 16 Feb
- 2022 10:20:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20220215225856.671072-1-mauricio@kinvolk.io> <20220215225856.671072-6-mauricio@kinvolk.io>
-In-Reply-To: <20220215225856.671072-6-mauricio@kinvolk.io>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HJPpBWHN9ruCt5P5owCQXX6H2P2rYhAdBKOvFjoOJnA=;
+        b=DswSM9H2WgvPVEncQA1e9LLkeVUF7LG8sJaBW5ETQ1XGD2uSnebch3OMc0yWnqjxsO
+         L1ei4qV2vc6A7jHsyCYfTVpeUIc929ux+MifaVo3HqzXi2CDWUm0agSmXTKCJLx9LFy5
+         yHGpt2R7CvK8hBakrXN+n9sPOcCHsQUIqnwJTzDq1jMwXtkm5llMORVN2dLyL5IVQvSB
+         5SQDroe387pZ40izvTWxzsUbm0I+3oudIAd5RM+2v7ERaVpFXLIFyMHxhhlB3ecFayhs
+         RBdc9rG2ZfefcZraIUDfKjJChCSZJYg79SSG2u8m4MZvrkMPsvWT5k/Kqitm9zleA4Mg
+         A2vg==
+X-Gm-Message-State: AOAM532db5Uim+aBKZjsEMxuuAN2TaAehcYRPUK6vx+ZQVGbeoyH+F1H
+        aTt7LiN5jn2YtQTuHt0RWG4=
+X-Google-Smtp-Source: ABdhPJydTEvMnNzvL9gJL9+usckfZLE5JFO8ELJelEdY5swXuJw2l6mrWAQemFeKpJVJl20tjRSxpQ==
+X-Received: by 2002:a63:2a95:0:b0:372:c588:dbb5 with SMTP id q143-20020a632a95000000b00372c588dbb5mr3298789pgq.605.1645035642266;
+        Wed, 16 Feb 2022 10:20:42 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b2d6:3f21:5f47:8e5a])
+        by smtp.gmail.com with ESMTPSA id s9sm8933684pjk.1.2022.02.16.10.20.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 10:20:41 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net-next] ipv6/addrconf: ensure addrconf_verify_rtnl() has completed
 Date:   Wed, 16 Feb 2022 10:20:37 -0800
-Message-ID: <CAEf4BzakR4cbe7aT09y5tnGebrixj8RnZsg13G+VLqpgQoWa7Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 5/7] bpftool: Implement btfgen_get_btf()
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Message-Id: <20220216182037.3742-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,69 +70,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 2:59 PM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
- wrote:
->
-> The last part of the BTFGen algorithm is to create a new BTF object with
-> all the types that were recorded in the previous steps.
->
-> This function performs two different steps:
-> 1. Add the types to the new BTF object by using btf__add_type(). Some
-> special logic around struct and unions is implemented to only add the
-> members that are really used in the field-based relocations. The type
-> ID on the new and old BTF objects is stored on a map.
-> 2. Fix all the type IDs on the new BTF object by using the IDs saved in
-> the previous step.
->
-> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> ---
->  tools/bpf/bpftool/gen.c | 100 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 99 insertions(+), 1 deletion(-)
->
+From: Eric Dumazet <edumazet@google.com>
 
-[...]
+Before freeing the hash table in addrconf_exit_net(),
+we need to make sure the work queue has completed,
+or risk NULL dereference or UAF.
 
-> +                       cloned_m =3D btf_members(cloned_type);
-> +                       m =3D btf_members(type);
-> +                       vlen =3D btf_vlen(cloned_type);
-> +                       for (idx_src =3D 0; idx_src < vlen; idx_src++, cl=
-oned_m++, m++) {
-> +                               /* add only members that are marked as us=
-ed */
-> +                               if (cloned_m->name_off !=3D MARKED)
-> +                                       continue;
-> +
-> +                               name =3D btf__str_by_offset(info->src_btf=
-, m->name_off);
-> +                               err =3D btf__add_field(btf_new, name, m->=
-type,
-> +                                                    BTF_MEMBER_BIT_OFFSE=
-T(m->offset),
-> +                                                    BTF_MEMBER_BITFIELD_=
-SIZE(m->offset));
+Thus, use cancel_delayed_work_sync() to enforce this.
+We do not hold RTNL in addrconf_exit_net(), making this safe.
 
-BTF_MEMBER_BIT_OFFSET() and BTF_MEMBER_BIT_OFFSET() shouldn't be used
-unconditionally, only if kflag is set. It's better to use
-btf_member_bit_offset() and btf_member_bitfield_size() helpers here,
-they handle this transparently.
+Fixes: 8805d13ff1b2 ("ipv6/addrconf: use one delayed work per netns")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/ipv6/addrconf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +                               if (err < 0)
-> +                                       goto err_out;
-> +                       }
-> +               } else {
-> +                       err =3D btf__add_type(btf_new, info->src_btf, typ=
-e);
-> +                       if (err < 0)
-> +                               goto err_out;
-> +                       new_id =3D err;
-> +               }
-> +
-> +               /* add ID mapping */
-> +               ids[i] =3D new_id;
-> +       }
-> +
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 57fbd6f03ff8d118e50d8aa6ea0ab938a1bb3cbc..44e164706340959b85f8f2d5d562caf8e37aea67 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -7187,7 +7187,7 @@ static void __net_exit addrconf_exit_net(struct net *net)
+ 	kfree(net->ipv6.devconf_all);
+ 	net->ipv6.devconf_all = NULL;
+ 
+-	cancel_delayed_work(&net->ipv6.addr_chk_work);
++	cancel_delayed_work_sync(&net->ipv6.addr_chk_work);
+ 	/*
+ 	 *	Check hash table, then free it.
+ 	 */
+-- 
+2.35.1.265.g69c8d7142f-goog
 
-[...]
