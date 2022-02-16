@@ -2,293 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EDF24B8332
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 09:45:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E068F4B834F
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 09:49:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbiBPIpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 03:45:04 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47978 "EHLO
+        id S231714AbiBPItI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 03:49:08 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiBPIpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 03:45:03 -0500
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C8D171293;
-        Wed, 16 Feb 2022 00:44:50 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4cGnPS_1645001087;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4cGnPS_1645001087)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Feb 2022 16:44:47 +0800
-Message-ID: <1645000956.0320733-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v5 17/22] virtio_net: support rx/tx queue reset
-Date:   Wed, 16 Feb 2022 16:42:36 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
- <20220214081416.117695-18-xuanzhuo@linux.alibaba.com>
- <CACGkMEszV_sUt+7gpLJ=6S1Spa0RmY=Ck0_duEkGf6xKOPG+oQ@mail.gmail.com>
- <1644998173.7222953-3-xuanzhuo@linux.alibaba.com>
- <20220216033322-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220216033322-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231727AbiBPItD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 03:49:03 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45D3C2A8D10
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 00:48:51 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-34-IdaZJxN6M-y3QY1MjOo6oA-1; Wed, 16 Feb 2022 08:48:47 +0000
+X-MC-Unique: IdaZJxN6M-y3QY1MjOo6oA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Wed, 16 Feb 2022 08:48:46 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Wed, 16 Feb 2022 08:48:46 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Yonghong Song' <yhs@fb.com>, Shung-Hsi Yu <shung-hsi.yu@suse.com>
+CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Connor O'Brien <connoro@google.com>,
+        =?utf-8?B?TWljaGFsIFN1Y2jDoW5law==?= <msuchanek@suse.de>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: RE: BTF compatibility issue across builds
+Thread-Topic: BTF compatibility issue across builds
+Thread-Index: AQHYIpQ9o1wIZcx0Hk+HXDOO4VHmbayV3j7w
+Date:   Wed, 16 Feb 2022 08:48:46 +0000
+Message-ID: <634a6042dc76479bb12d6084ffe36f62@AcuMS.aculab.com>
+References: <YfK18x/XrYL4Vw8o@syu-laptop>
+ <8d17226b-730f-5426-b1cc-99fe43483ed1@fb.com>
+ <20220210100153.GA90679@kunlun.suse.cz>
+ <bb445e64-de50-e287-1acc-abfec4568775@fb.com>
+ <CAADnVQJ+OVPnBz8z3vNu8gKXX42jCUqfuvhWAyCQDu8N_yqqwQ@mail.gmail.com>
+ <992ae1d2-0b26-3417-9c6b-132c8fcca0ad@fb.com>
+ <YgdIWvNsc0254yiv@syu-laptop.lan>
+ <8a520fa1-9a61-c21d-f2c4-d5ba8d1b9c19@fb.com> <YgwBN8WeJvZ597/j@syu-laptop>
+ <0867c12a-9aa3-418d-9102-3103cb784e99@fb.com>
+In-Reply-To: <0867c12a-9aa3-418d-9102-3103cb784e99@fb.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Feb 2022 03:35:01 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Wed, Feb 16, 2022 at 03:56:13PM +0800, Xuan Zhuo wrote:
-> > On Wed, 16 Feb 2022 12:14:11 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > > On Mon, Feb 14, 2022 at 4:14 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > > >
-> > > > This patch implements the reset function of the rx, tx queues.
-> > > >
-> > > > Based on this function, it is possible to modify the ring num of the
-> > > > queue. And quickly recycle the buffer in the queue.
-> > > >
-> > > > In the process of the queue disable, in theory, as long as virtio
-> > > > supports queue reset, there will be no exceptions.
-> > > >
-> > > > However, in the process of the queue enable, there may be exceptions due to
-> > > > memory allocation.  In this case, vq is not available, but we still have
-> > > > to execute napi_enable(). Because napi_disable is similar to a lock,
-> > > > napi_enable must be called after calling napi_disable.
-> > > >
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > ---
-> > > >  drivers/net/virtio_net.c | 123 +++++++++++++++++++++++++++++++++++++++
-> > > >  1 file changed, 123 insertions(+)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index 9a1445236e23..a4ffd7cdf623 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -251,6 +251,11 @@ struct padded_vnet_hdr {
-> > > >         char padding[4];
-> > > >  };
-> > > >
-> > > > +static void virtnet_sq_free_unused_bufs(struct virtnet_info *vi,
-> > > > +                                       struct send_queue *sq);
-> > > > +static void virtnet_rq_free_unused_bufs(struct virtnet_info *vi,
-> > > > +                                       struct receive_queue *rq);
-> > > > +
-> > > >  static bool is_xdp_frame(void *ptr)
-> > > >  {
-> > > >         return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-> > > > @@ -1369,6 +1374,9 @@ static void virtnet_napi_enable(struct virtqueue *vq, struct napi_struct *napi)
-> > > >  {
-> > > >         napi_enable(napi);
-> > > >
-> > > > +       if (vq->reset)
-> > > > +               return;
-> > > > +
-> > > >         /* If all buffers were filled by other side before we napi_enabled, we
-> > > >          * won't get another interrupt, so process any outstanding packets now.
-> > > >          * Call local_bh_enable after to trigger softIRQ processing.
-> > > > @@ -1413,6 +1421,10 @@ static void refill_work(struct work_struct *work)
-> > > >                 struct receive_queue *rq = &vi->rq[i];
-> > > >
-> > > >                 napi_disable(&rq->napi);
-> > > > +               if (rq->vq->reset) {
-> > > > +                       virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > +                       continue;
-> > > > +               }
-> > > >                 still_empty = !try_fill_recv(vi, rq, GFP_KERNEL);
-> > > >                 virtnet_napi_enable(rq->vq, &rq->napi);
-> > > >
-> > > > @@ -1523,6 +1535,9 @@ static void virtnet_poll_cleantx(struct receive_queue *rq)
-> > > >         if (!sq->napi.weight || is_xdp_raw_buffer_queue(vi, index))
-> > > >                 return;
-> > > >
-> > > > +       if (sq->vq->reset)
-> > > > +               return;
-> > > > +
-> > > >         if (__netif_tx_trylock(txq)) {
-> > > >                 do {
-> > > >                         virtqueue_disable_cb(sq->vq);
-> > > > @@ -1769,6 +1784,114 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
-> > > >         return NETDEV_TX_OK;
-> > > >  }
-> > > >
-> > > > +static int virtnet_rx_vq_disable(struct virtnet_info *vi,
-> > > > +                                struct receive_queue *rq)
-> > > > +{
-> > > > +       int err;
-> > > > +
-> > > > +       napi_disable(&rq->napi);
-> > > > +
-> > > > +       err = virtio_reset_vq(rq->vq);
-> > > > +       if (err)
-> > > > +               goto err;
-> > > > +
-> > > > +       virtnet_rq_free_unused_bufs(vi, rq);
-> > > > +
-> > > > +       vring_release_virtqueue(rq->vq);
-> > > > +
-> > > > +       return 0;
-> > > > +
-> > > > +err:
-> > > > +       virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > +       return err;
-> > > > +}
-> > > > +
-> > > > +static int virtnet_tx_vq_disable(struct virtnet_info *vi,
-> > > > +                                struct send_queue *sq)
-> > > > +{
-> > > > +       struct netdev_queue *txq;
-> > > > +       int err, qindex;
-> > > > +
-> > > > +       qindex = sq - vi->sq;
-> > > > +
-> > > > +       txq = netdev_get_tx_queue(vi->dev, qindex);
-> > > > +       __netif_tx_lock_bh(txq);
-> > > > +
-> > > > +       netif_stop_subqueue(vi->dev, qindex);
-> > > > +       virtnet_napi_tx_disable(&sq->napi);
-> > > > +
-> > > > +       err = virtio_reset_vq(sq->vq);
-> > > > +       if (err) {
-> > > > +               virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > > +               netif_start_subqueue(vi->dev, qindex);
-> > > > +
-> > > > +               __netif_tx_unlock_bh(txq);
-> > > > +               return err;
-> > > > +       }
-> > > > +       __netif_tx_unlock_bh(txq);
-> > > > +
-> > > > +       virtnet_sq_free_unused_bufs(vi, sq);
-> > > > +
-> > > > +       vring_release_virtqueue(sq->vq);
-> > > > +
-> > > > +       return 0;
-> > > > +}
-> > > > +
-> > > > +static int virtnet_tx_vq_enable(struct virtnet_info *vi, struct send_queue *sq)
-> > > > +{
-> > > > +       int err;
-> > > > +
-> > > > +       err = virtio_enable_resetq(sq->vq);
-> > > > +       if (!err)
-> > > > +               netif_start_subqueue(vi->dev, sq - vi->sq);
-> > > > +
-> > > > +       virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > > +
-> > > > +       return err;
-> > > > +}
-> > > > +
-> > > > +static int virtnet_rx_vq_enable(struct virtnet_info *vi,
-> > > > +                               struct receive_queue *rq)
-> > > > +{
-> > > > +       int err;
-> > >
-> > > So the API should be design in a consistent way.
-> > >
-> > > In rx_vq_disable() we do:
-> > >
-> > > reset()
-> > > detach_unused_bufs()
-> > > vring_release_virtqueue()
-> > >
-> > > here it's better to exactly the reverse
-> > >
-> > > vring_attach_virtqueue() // this is the helper I guess in patch 5,
-> > > reverse of the vring_release_virtqueue()
-> > > try_refill_recv() // reverse of the detach_unused_bufs()
-> > > enable_reset() // reverse of the reset
-> >
-> > Such an api is ok
-> >
-> > 1. reset()
-> > 2. detach_unused_bufs()
-> > 3. vring_release_virtqueue()
-> >    ---------------
-> > 4. vring_attach_virtqueue()
-> > 5. try_refill_recv()
-> > 6. enable_reset()
-> >
-> >
-> > But if, we just want to recycle the buffer without modifying the ring num. As
-> > you mentioned before, in the case where the ring num is not modified, we don't
-> > have to reallocate, but can use the original vring.
-> >
-> > 1. reset()
-> > 2. detach_unused_bufs()
-> >    ---------------
-> > 3. vring_reset_virtqueue() // just reset, no reallocate
-> > 4. try_refill_recv()
-> > 5. enable_reset()
-> >
-> > Thanks.
->
-> Further, can we queue the buffers instead of detach_unused_bufs
-> and just requeue them instead of try_refill_recv?
+RnJvbTogWW9uZ2hvbmcgU29uZw0KPiBTZW50OiAxNSBGZWJydWFyeSAyMDIyIDE3OjQ3DQouLi4N
+Cj4gPiBMZXQgbWUgdHJ5IHRha2UgYSBqYWIgYXQgaXQuIFNheSBoZXJlJ3MgYSBoeXBvdGhldGlj
+YWwgQlRGIGZvciBhIGtlcm5lbA0KPiA+IG1vZHVsZSB3aGljaCBvbmx5IHR5cGUgaW5mb3JtYXRp
+b24gZm9yIGBzdHJ1Y3Qgc29tZXRoaW5nICpgOg0KPiA+DQo+ID4gICAgWzVdIFBUUiAnKGFub24p
+JyB0eXBlX2lkPTQNCj4gPg0KPiA+IFdoaWNoIGlzIGJ1aWx0IHVwb24gdGhlIGZvbGxvdyBiYXNl
+IEJURjoNCj4gPg0KPiA+ICAgIFsxXSBJTlQgJ3Vuc2lnbmVkIGNoYXInIHNpemU9MSBiaXRzX29m
+ZnNldD0wIG5yX2JpdHM9OCBlbmNvZGluZz0obm9uZSkNCj4gPiAgICBbMl0gUFRSICcoYW5vbikn
+IHR5cGVfaWQ9Mw0KPiA+ICAgIFszXSBTVFJVQ1QgJ2xpc3RfaGVhZCcgc2l6ZT0xNiB2bGVuPTIN
+Cj4gPiAgICAgICAgICAnbmV4dCcgdHlwZV9pZD0yIGJpdHNfb2Zmc2V0PTANCj4gPiAgICAgICAg
+ICAncHJldicgdHlwZV9pZD0yIGJpdHNfb2Zmc2V0PTY0DQo+ID4gICAgWzRdIFNUUlVDVCAnc29t
+ZXRoaW5nJyBzaXplPTIgdmxlbj0yDQo+ID4gICAgICAgICAgJ2xvY2tlZCcgdHlwZV9pZD0xIGJp
+dHNfb2Zmc2V0PTANCj4gPiAgICAgICAgICAncGVuZGluZycgdHlwZV9pZD0xIGJpdHNfb2Zmc2V0
+PTgNCj4gPg0KPiA+IER1ZSB0byB0aGUgc2l0dWF0aW9uIG1lbnRpb25lZCBpbiB0aGUgYmVnaW5u
+aW5nIG9mIHRoZSB0aHJlYWQsIHRoZSAqcnVudGltZSoNCj4gPiBrZXJuZWwgaGF2ZSBhIGRpZmZl
+cmVudCBiYXNlIEJURiwgaW4gdGhpcyBjYXNlIHR5cGUgSURzIGFyZSBvZmZzZXQgYnkgMSBkdWUN
+Cj4gPiB0byBhbiBhZGRpdGlvbmFsIHR5cGVkZWYgZW50cnk6DQo+ID4NCj4gPiAgICBbMV0gVFlQ
+RURFRiAndTgnIHR5cGVfaWQ9MQ0KPiA+ICAgIFsyXSBJTlQgJ3Vuc2lnbmVkIGNoYXInIHNpemU9
+MSBiaXRzX29mZnNldD0wIG5yX2JpdHM9OCBlbmNvZGluZz0obm9uZSkNCj4gPiAgICBbM10gUFRS
+ICcoYW5vbiknIHR5cGVfaWQ9Mw0KPiA+ICAgIFs0XSBTVFJVQ1QgJ2xpc3RfaGVhZCcgc2l6ZT0x
+NiB2bGVuPTINCj4gPiAgICAgICAgICAnbmV4dCcgdHlwZV9pZD0yIGJpdHNfb2Zmc2V0PTANCj4g
+PiAgICAgICAgICAncHJldicgdHlwZV9pZD0yIGJpdHNfb2Zmc2V0PTY0DQo+ID4gICAgWzVdIFNU
+UlVDVCAnc29tZXRoaW5nJyBzaXplPTIgdmxlbj0yDQo+ID4gICAgICAgICAgJ2xvY2tlZCcgdHlw
+ZV9pZD0xIGJpdHNfb2Zmc2V0PTANCj4gPiAgICAgICAgICAncGVuZGluZycgdHlwZV9pZD0xIGJp
+dHNfb2Zmc2V0PTgNCj4gPg0KPiA+IFRoZW4gd2hlbiBsb2FkaW5nIHRoZSBCVEYgb24ga2VybmVs
+IG1vZHVsZSBvbiB0aGUgcnVudGltZSwgdGhlIGtlcm5lbCB3aWxsDQo+ID4gbWlzdGFrZW5seSBp
+bnRlcnByZXRzICJQVFIgJyhhbm9uKScgdHlwZV9pZD00IiBhcyBgc3RydWN0IGxpc3RfaGVhZCAq
+YA0KPiA+IHJhdGhlciB0aGFuIGBzdHJ1Y3Qgc29tZXRoaW5nICpgLg0KPiA+DQo+ID4gRG9lcyB0
+aGlzIHNob3VsZCBwb3NzaWJsZT8gKGF0IGxlYXN0IHRoZW9yZXRpY2FsbHkpDQo+IA0KPiBUaGFu
+a3MgZm9yIGV4cGxhbmF0aW9uLiBZZXMsIGZyb20gQlRGIHR5cGUgcmVzb2x1dGlvbiBwb2ludCBv
+ZiB2aWV3LA0KPiB5ZXMgaXQgaXMgcG9zc2libGUuDQoNClRoaXMgbG9va3Mgc28gbXVjaCBsaWtl
+IHRoZSBvbGQgJ3NoYXJlZCBsaWJyYXJ5IGZ1bmN0aW9uIG51bWJlcicNCm9yZGluYWxzIGZyb20g
+cHJlLVNZU1YgYW5kIGVhcmx5IHdpbmRvd3Mgc2hhcmVkIGxpYnJhcmllcy4NClRoZXJlIGlzIGEg
+Z29vZCByZWFzb24gd2h5IGl0IGlzbid0IGRvbmUgdGhhdCB3YXkgYW55IG1vcmUuDQoNCkhhcyBz
+b21lb25lIHJlLWludmVudGVkIHRoZSBzcXVhcmUgd2hlZWw/Pw0KDQoJRGF2aWQNCg0KLQ0KUmVn
+aXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRv
+biBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-I think this is a good note, for support set_ringparam, this will be more
-friendly.
-
-I think I can implement this after the support for AF_XDP is done.
-
-Thanks.
-
->
-> > >
-> > > So did for the tx (no need for refill in that case).
-> > >
-> > > > +
-> > > > +       err = virtio_enable_resetq(rq->vq);
-> > > > +
-> > > > +       virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > +
-> > > > +       return err;
-> > > > +}
-> > > > +
-> > > > +static int virtnet_rx_vq_reset(struct virtnet_info *vi, int i)
-> > > > +{
-> > > > +       int err;
-> > > > +
-> > > > +       err = virtnet_rx_vq_disable(vi, vi->rq + i);
-> > > > +       if (err)
-> > > > +               return err;
-> > > > +
-> > > > +       err = virtnet_rx_vq_enable(vi, vi->rq + i);
-> > > > +       if (err)
-> > > > +               netdev_err(vi->dev,
-> > > > +                          "enable rx reset vq fail: rx queue index: %d err: %d\n", i, err);
-> > > > +       return err;
-> > > > +}
-> > > > +
-> > > > +static int virtnet_tx_vq_reset(struct virtnet_info *vi, int i)
-> > > > +{
-> > > > +       int err;
-> > > > +
-> > > > +       err = virtnet_tx_vq_disable(vi, vi->sq + i);
-> > > > +       if (err)
-> > > > +               return err;
-> > > > +
-> > > > +       err = virtnet_tx_vq_enable(vi, vi->sq + i);
-> > > > +       if (err)
-> > > > +               netdev_err(vi->dev,
-> > > > +                          "enable tx reset vq fail: tx queue index: %d err: %d\n", i, err);
-> > > > +       return err;
-> > > > +}
-> > > > +
-> > > >  /*
-> > > >   * Send command via the control virtqueue and check status.  Commands
-> > > >   * supported by the hypervisor, as indicated by feature bits, should
-> > > > --
-> > > > 2.31.0
-> > > >
-> > >
->
