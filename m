@@ -2,92 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C7274B8613
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 950874B8640
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:56:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbiBPKnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 05:43:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36312 "EHLO
+        id S230518AbiBPK4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 05:56:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiBPKng (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:43:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7177326835F;
-        Wed, 16 Feb 2022 02:43:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 204F1B81E74;
-        Wed, 16 Feb 2022 10:43:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BEEEC004E1;
-        Wed, 16 Feb 2022 10:43:21 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LN+U314q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645008198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FLVrjfhT3W8aNO8W4YUK8UwxqHmr1OB3Xs9XyYu/LAw=;
-        b=LN+U314qz5ae0xe+2oW32YGWXiptKFKcPzAFi//V42h1bKx4w3Od+Qez3w4SHdbajhEqg7
-        fA7pD6+VRD3CLJ1QoFxpQMIONiUORBqmEbZIIllpkqbQGU48FJSVea36EGYCk4QXxqEdbR
-        GBtBGG+qjJP5+m3myWISxpoIHMpXJIs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9bc629c6 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 16 Feb 2022 10:43:17 +0000 (UTC)
-Received: by mail-yb1-f173.google.com with SMTP id v63so4661542ybv.10;
-        Wed, 16 Feb 2022 02:43:16 -0800 (PST)
-X-Gm-Message-State: AOAM530v+4nRHutthXlLu56kXv2kKOek5/ZWfQl28GDX84GSd8bU4Bd8
-        PLmZ+U7/cb0NzoRZr1zj+vgRURyVPpX1mkwN3vw=
-X-Google-Smtp-Source: ABdhPJxiaSHJ3i2RRcIsj07+mvucZb540gljBceIzpbXww7fLhg+Lg6D8LmDRmq5NyIV/ooc3fooNxW+9sq/0Bf+KkU=
-X-Received: by 2002:a81:7d04:0:b0:2d0:d0e2:126f with SMTP id
- y4-20020a817d04000000b002d0d0e2126fmr1714487ywc.485.1645008195447; Wed, 16
- Feb 2022 02:43:15 -0800 (PST)
+        with ESMTP id S229729AbiBPK4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:56:06 -0500
+X-Greylist: delayed 379 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 02:55:54 PST
+Received: from out203-205-221-190.mail.qq.com (out203-205-221-190.mail.qq.com [203.205.221.190])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A2427B4BA;
+        Wed, 16 Feb 2022 02:55:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1645008952;
+        bh=44irEAu7HYsUU1LrOfpuftcIOp/Z1agD6pE0pOXaBuE=;
+        h=From:To:Cc:Subject:Date;
+        b=vcUzR1Ten3yc6IgpOFoHjFatb84ZfI5cE02Bx0UafpXwEG266qJVXN2OzL6CgsJOl
+         IcSmt2ivRO6giAjgljEZMjJJdDp076fthx2rpArlmdmqfXzi/jbFvvQoYqX4nyZzsp
+         jsp+CzMsxOH9IBLp2Cji8cvxf+C3LjhXh8Dt+WBs=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
+        id C10A88E3; Wed, 16 Feb 2022 18:48:16 +0800
+X-QQ-mid: xmsmtpt1645008496tfc9na2j0
+Message-ID: <tencent_A528B1FF77813031ABE6C6738453F084570A@qq.com>
+X-QQ-XMAILINFO: OUyBsK7uGFiXPLpZ43m0FLL7hKXWW5AYRr9ZwLPs81v+g9agswISwcWxa45TWO
+         BFGtzf8p/+bjwM5NYyyYIX/IVSy2bVNbtoz/x9D42X7+5wplwvS8h3fnZ5kWOwgFdjQM818oqR8M
+         CrbSigYd5RuIu8kJbePf/G7K4ZJttmDsmGG2qHw0dLFvX/mYPDDumiYolVil4+NcXJ5wDzHVUdGJ
+         gLkButoxAvqNlmco25JsPIFXoWfXAbFlx0iO2W6xWoXnWu/Y4cJLnJWKCOdtqHJ1wu8x8t7s6ULn
+         n551Ox88dydVYVBpnA6c7JdTGPc45YNJDhR4TsMo0ldorlhePXMXfa+97HBonX2ADPkzKuzQiTnw
+         xdnLPupSQUfWxaMZYzmbMvesSGhbU22JCDj8sZ9cfIBGIgt3ifwFJuRlOLj/92HsbUVx9/ZfwCN8
+         vF5Ko9cznd0JQNxClXGkvRDGOm6beo5VKKMBVvkvdlZMsguSuqYP0J+hxqz524ne03QFKmYHkxLT
+         N4fJCaygs1oXYHk/2+S1i9colcbJf+O1OOEo/MemPrmY05tguA7rgF4+EFjs5CrfWYcqvy6q9JSD
+         tvwyy16Cta9iGo+AZeuuvKX2SxdcYRx5CCfw+NkHiUfFimoTdikb2EN/iBh1IIIfclUpBor1rqWm
+         yJJE4LmvF1NNBdjkVmh4RC1csu0Ibk+IbKrTPkfXIzgtvr7yn8jBSIfQM3W3U9o1hLzg16j1EhzJ
+         NOihgGfK4nYSZv0rx8Xag3eCjzXfw6z+TKgytpc0DDfsHR8IOw+cXPjheXhbQV1h+id1/et4t5kj
+         kbfC8ldQPMn7n9XfTTF9Dr3uZV+vn8k41Q22QIZ5mDSxq/dsIryLfvjCyTr4OlRq9YjzM3pPVAje
+         vQudgLkXNmwZABcb2MEcw=
+From:   xkernel.wang@foxmail.com
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] net: ll_temac: check the return value of devm_kmalloc()
+Date:   Wed, 16 Feb 2022 18:46:42 +0800
+X-OQ-MSGID: <20220216104642.285-1-xkernel.wang@foxmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 MIME-Version: 1.0
-References: <CAHmME9pZaYW-p=zU4v96TjeSijm-g03cNpvUJcNvhOqh5v+Lwg@mail.gmail.com>
- <20220216000230.22625-1-Jason@zx2c4.com> <5c23585b-7865-54fb-3835-12e58a7aee46@gmail.com>
-In-Reply-To: <5c23585b-7865-54fb-3835-12e58a7aee46@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 16 Feb 2022 11:43:04 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
-Message-ID: <CAHmME9rkDXbeNbe1uehoVONioy=pa8oBtJEW22Afbp=86A9SUQ@mail.gmail.com>
-Subject: Re: [PATCH v2] ath9k: use hw_random API instead of directly dumping
- into random.c
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     miaoqing@codeaurora.org, Rui Salvaterra <rsalvaterra@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RDNS_DYNAMIC,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-On Wed, Feb 16, 2022 at 4:13 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> You will have to give this instance an unique name because there can be
-> multiple ath9k adapters registered in a given system (like Wi-Fi
-> routers), and one of the first thing hwrng_register() does is ensure
-> that there is not an existing rng with the same name.
->
-> Maybe using a combination of ath9k + dev_name() ought to be unique enough?
+devm_kmalloc() returns a pointer to allocated memory on success, NULL
+on failure. While lp->indirect_lock is allocated by devm_kmalloc()
+without proper check. It is better to check the value of it to
+prevent potential wrong memory access.
 
-Good point. Will do. dev_name() probably won't cut it because of
-namespaces, but I can always just attach a counter. Will do that for
-v3.
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Jason
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 463094c..7c5dd39 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -1427,6 +1427,11 @@ static int temac_probe(struct platform_device *pdev)
+ 		lp->indirect_lock = devm_kmalloc(&pdev->dev,
+ 						 sizeof(*lp->indirect_lock),
+ 						 GFP_KERNEL);
++		if (!lp->indirect_lock) {
++			dev_err(&pdev->dev,
++				"indirect register lock allocation failed\n");
++			return -ENOMEM;
++		}
+ 		spin_lock_init(lp->indirect_lock);
+ 	}
+ 
+-- 
