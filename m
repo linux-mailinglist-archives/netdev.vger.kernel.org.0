@@ -2,135 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A93784B8B6F
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 15:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C934B8B70
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 15:32:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235035AbiBPOc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 09:32:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56754 "EHLO
+        id S235041AbiBPOci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 09:32:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235032AbiBPOc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 09:32:26 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2069.outbound.protection.outlook.com [40.107.223.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555AA6B083
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 06:32:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZjflzgFr1q3nX+7l71W/Bwe7SD7KrM2/Ai1hZoR91G987qsnC8lEOY9/KmEmDrwehxJbMX6lN5yvps6CX1wN6cTQiZrNybQpVe5boI5qD/3hkqYYPrGLMGsdNUGF3uz92un9yCSxxuzUwR/u0SJR9u3qm0ZCfNcn81zIl9ShhBvhx3tYYlJccjCBituKnYcpyBYWjVUNtoRv4lYfDXp6gSE8BvagZ5Si4+J1qyUA12wvvzDx5NYVW162B65L3mcRRi4eR57y08EK0h/KkfxKEPYLabQsHv/AyEGMSxK4Zm4hHH3lzZk7nnNwg43kOj/SKnPGd7+HjKAi7X8ZadaUpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S5ofqi851zRUmANxiFl9draHRQZu0rK1Su+h8G8Ph2U=;
- b=SgVIFM/N5KCWlqe7gINFNYkB5CJKELoNux5UCJdrWKitrmfroWQ4ko3JZPYsP7UAPyvBCM4lUCk/QyYcwmj+lQcVUZr9thZOVoy+BOUysB+lqIHlQIwiOMOYIqTrTQlnwKyA9Uig/9yTybAUkaBg3Xk2GzOoaLJipVtFejubui5vmmT9hfUBfCPFPDMdd4FFn98mBSETveupdsH6dBb1/G9xVTzWtj+CUTqyE3xLbeQY9wTPw7/yyUuVQB6XCeVcRg2ol1kLFLQundlhabyWvZV7y7Go33YOlCDxf1KpCff3I3Mj0u875CAXaaeTyC4ocvSxDWp+UkjCz8FidVv3cA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S5ofqi851zRUmANxiFl9draHRQZu0rK1Su+h8G8Ph2U=;
- b=tAPAErbgDl2HX217OfUBxjmKK04akwEu8GxLo38Kdm9JsHNH8rtQqwK2BFNBPKG0OOL6KcOxvYPpovpGdJuzjgUO5ju2ALHVfJMC8rnUXo0+KTr8MO7OeC52gDcXCTTjUp6Zi1cN7rV4SbhLeBpYzsEujT7JqlNF3eBwyX2eDJGe/WAZrPBFME0UcBqynsmEOhlcauAqwCxA9yfM4xk4+DmTTbPnOHB4mkjvgJ5f1yaFtIqfhEt9qBo16rLM5/IkYQKU2lEr1w9hDz5XPf+I/5Cbi4bdXJboYqNJcL5lPR7qOCt2T9viqoWEej8qXKeT3Qop9Q8y1mXwlMN5nYGerw==
-Received: from DM3PR11CA0013.namprd11.prod.outlook.com (2603:10b6:0:54::23) by
- CH2PR12MB5018.namprd12.prod.outlook.com (2603:10b6:610:6e::24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.16; Wed, 16 Feb 2022 14:32:10 +0000
-Received: from DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:0:54:cafe::5b) by DM3PR11CA0013.outlook.office365.com
- (2603:10b6:0:54::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16 via Frontend
- Transport; Wed, 16 Feb 2022 14:32:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT003.mail.protection.outlook.com (10.13.173.162) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Wed, 16 Feb 2022 14:32:09 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 16 Feb
- 2022 14:32:08 +0000
-Received: from yaviefel.vdiclient.nvidia.com (10.126.230.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Wed, 16 Feb 2022 06:32:05 -0800
-From:   Petr Machata <petrm@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Petr Machata <petrm@nvidia.com>,
-        "Ido Schimmel" <idosch@nvidia.com>
-Subject: [PATCH net-next] net: rtnetlink: rtnl_stats_get(): Emit an extack for unset filter_mask
-Date:   Wed, 16 Feb 2022 15:31:36 +0100
-Message-ID: <01feb1f4bbd22a19f6629503c4f366aed6424567.1645020876.git.petrm@nvidia.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S235032AbiBPOch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 09:32:37 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B6B9E57A
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 06:32:24 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id m185so2426691iof.10
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 06:32:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NE7EY8xDj/IqqOA16SqMQVmbg8CT9KQUqq/vPjFlZhI=;
+        b=I/j6kvCD8Y0jU5HzdduK6zPqGJBLpG2zrXvbLUcD3UZxNBcIQId25DctMd8SoQ42Vm
+         o2otTRInzpGJc+V+B8dHDfk28fmn5DzuUTXtp6oy7v5DmIwhxYQ1HavOOu3fp6N6NP4e
+         quS8iebcC0vkB1q4pAvovLeLidzDnLB3bldNY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NE7EY8xDj/IqqOA16SqMQVmbg8CT9KQUqq/vPjFlZhI=;
+        b=pibOemxEr49nNXukBe1YrdsFC0b1j3+kEhD0PFrTgxTE7gP0lDKlIkRfP/VyImQZzS
+         RUchrCJ75FLvyQLiOZfKjho0jNtZZihdKnx3fxF9yo+1IlIg7FlxeLABCZs2Qu16sIyd
+         b845/UaYv/PTMYi2qyk5tWLfFLBOkUWptoGjX5Zb4PG6IvEFCPfJx0fNM+zkhAChHq2n
+         KsZD+XWldxPUyJgQt7QhMcWGWudVCdtg6/w7WQtIAye2GA4afn5moOmmU3OLNWPfX2Hn
+         NNo+MXDp4e2UBeELB6I46WNjd8I0vDaCN8QhsXS17NjcOYtbPoVrQ+jbSirTrFb0ZAu9
+         EzjA==
+X-Gm-Message-State: AOAM533vaf41nw6z4ZZlffldhF7xWfzXApmkiuVoq5q4oRtvtlJB+dtV
+        qPE1c366te+VzKRdk23ZgsNJ7g==
+X-Google-Smtp-Source: ABdhPJxwl2buTtN73WTffUyIG4lljbaAylrEept42cxMmXsmI3BXhYgn0ZWT3qL5pWwvaSpqxNoxIg==
+X-Received: by 2002:a02:7742:0:b0:311:626c:d554 with SMTP id g63-20020a027742000000b00311626cd554mr1853496jac.134.1645021943659;
+        Wed, 16 Feb 2022 06:32:23 -0800 (PST)
+Received: from localhost ([2605:a601:ac0f:820:35a8:1556:a044:f8bb])
+        by smtp.gmail.com with ESMTPSA id q9sm8926475ilo.56.2022.02.16.06.32.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Feb 2022 06:32:23 -0800 (PST)
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] vsock: remove vsock from connected table when connect is interrupted by a signal
+Date:   Wed, 16 Feb 2022 08:32:22 -0600
+Message-Id: <20220216143222.1614690-1-sforshee@digitalocean.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 738d0d38-4d70-4a1d-199f-08d9f1591d83
-X-MS-TrafficTypeDiagnostic: CH2PR12MB5018:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB50181A69A3A29370DC2BF9C5D6359@CH2PR12MB5018.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aRkQtWiJ9UpCnN6jwW8IpE2mQ4tNKQUd+bneK/j5S/E83XlPwPCXMX/Z+IU+xOtXGCV/fuFLx7Yjc3QlzaLoN701Ld3GIJhhsT5vUebDCHSH9UfEBKOPa0XcfZBnqbVFS0v8SRvztBxAGpAV088oTi83NtyojCoWnzzKKytfNry1T2HZdRtaMQborgwXQpzUtfqyaULwXX7HJNNx7WB9e3g7zyIuFb0Me/qHdbN1r5ybavKZLIWnNBg2pt4lCSyp/NtONpaT84xmqNML5RWHBfVDqxAYWadbHa7a6dT7T9WGJviB7kF0LrmuWlVmy7P4/5yE2L3RrKnH5OU+mraf9nDWGP/w9G5AIKbgQLOiD+MZkr0WpNr+JLaEy+cHXEqbP76bQmRVrXJEsKo7KqNTE8QYxGfwLMfKFi7afkCtT7wpnt6V86qT5MQCE/bH0bCDODSZcWBxMkX3CRj/CgPwx7zOWAub3kPAUUBqFncqeoeIUQBgd7/033whflf7qZedlRrEj+P1Q20+ojWeXSjPxwA68CuB8HYnCD32/upOYhrnCXbdId7GKZZOapzfr/TAK84CxflOfU7wPab0g3QUOZsyV1zM7/LpgNfzqhr0NRlJYwkUxz1LTCucz4PP+CO8CavS9eI1gj+L7F8tQghwf1viyjDHK+W1u/XoPvEQNKt4aJsX6/9WlVKQB14FU99IimBL0j0PulYcc0LzK4/z9Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(70586007)(70206006)(4326008)(8676002)(2906002)(4744005)(54906003)(5660300002)(8936002)(36756003)(508600001)(16526019)(7696005)(6666004)(336012)(186003)(26005)(426003)(107886003)(2616005)(81166007)(82310400004)(36860700001)(356005)(83380400001)(47076005)(86362001)(316002)(6916009)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 14:32:09.7900
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 738d0d38-4d70-4a1d-199f-08d9f1591d83
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB5018
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both get and dump handlers for RTM_GETSTATS require that a filter_mask, a
-mask of which attributes should be emitted in the netlink response, is
-unset. rtnl_stats_dump() does include an extack in the bounce,
-rtnl_stats_get() however does not. Fix the omission.
+vsock_connect() expects that the socket could already be in the
+TCP_ESTABLISHED state when the connecting task wakes up with a signal
+pending. If this happens the socket will be in the connected table, and
+it is not removed when the socket state is reset. In this situation it's
+common for the process to retry connect(), and if the connection is
+successful the socket will be added to the connected table a second
+time, corrupting the list.
 
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Prevent this by calling vsock_remove_connected() if a signal is received
+while waiting for a connection. This is harmless if the socket is not in
+the connected table, and if it is in the table then removing it will
+prevent list corruption from a double add.
+
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
 ---
- net/core/rtnetlink.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/vmw_vsock/af_vsock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index a6fad3df42a8..9aa7d8e0d90d 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -5405,8 +5405,10 @@ static int rtnl_stats_get(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return -ENODEV;
- 
- 	filter_mask = ifsm->filter_mask;
--	if (!filter_mask)
-+	if (!filter_mask) {
-+		NL_SET_ERR_MSG(extack, "Filter mask must be set for stats get");
- 		return -EINVAL;
-+	}
- 
- 	nskb = nlmsg_new(if_nlmsg_stats_size(dev, filter_mask), GFP_KERNEL);
- 	if (!nskb)
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 3235261f138d..38baeb189d4e 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1401,6 +1401,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+ 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
++			vsock_remove_connected(vsk);
+ 			goto out_wait;
+ 		} else if (timeout == 0) {
+ 			err = -ETIMEDOUT;
 -- 
-2.31.1
+2.32.0
 
