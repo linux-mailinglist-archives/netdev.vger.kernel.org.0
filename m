@@ -2,120 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B32E94B8FB0
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E44E4B8FB2
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237136AbiBPRvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 12:51:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42608 "EHLO
+        id S237174AbiBPRwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 12:52:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiBPRvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:51:02 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1E22B0B1F;
-        Wed, 16 Feb 2022 09:50:50 -0800 (PST)
-Date:   Wed, 16 Feb 2022 18:50:46 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645033847;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=YPEdXaJgjEi/SM/CGN0s0Wpl04buNzspNJbXpHNAuTU=;
-        b=GhyB0Kl93o06tMrnWyGexxtTY3haCpMzApH8Mvauz+QyBOP/7cgsNmBTKSC4dNB5aEoP3Q
-        5bcQucjACMZAVO1PRTzYCW70KHvusNYfNVUZMVNZeVZBv6dASkhpKJXzWqR+Z3A4KwVdWd
-        f6kS3X4tPsSE5MqqFRpQAqxepR2+7/FCw6NHNqqDctqYw2FQCa28/TAuT/m38gLOYzZFGD
-        MVhvpDOiPleRj0Nnkk+W3ZkZiw+zbFo0S5l367PBSGQYq9nebYOpWkH7tXSSdyPgFF6i6N
-        XJhCuQOCyJXqn4JP519uwWAb7CCV/crlQHd6UmU+gfljnW2Yn/CtIDdCnsKJGA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645033847;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=YPEdXaJgjEi/SM/CGN0s0Wpl04buNzspNJbXpHNAuTU=;
-        b=tr6SY6YlZUWYA//WWe6kGV1QcdkD2AMf8qeMCbNgKrP+4fcGvrVmal8OJeXo2g9+x9x8+Q
-        qiUKUS988bNLfKDQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        with ESMTP id S232449AbiBPRwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:52:42 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93127EEA7E
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:52:29 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id u5so2580866ple.3
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:52:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dAudc4FDt1ctUyfjFY0Z5v9inbg9AJkDcJN3i0TREJo=;
+        b=cxgjiTfu6SChwvZC5tV+rDB7PQBaIa8gw86sOz4LFUz+M/bnz8A4nYv9kNtmtbGT+3
+         Xo+252YmSd5bvnLDLNKZU29kh4uyUHzsQRle5Cyl+bQM9WzwfkwPTKjcOigBZA8wc17G
+         Kj4r1rGBIu6uyBXjNWbIJEoS/XXqp3JFlVcjy3FQIA/96baCQQMMAxvlQRiaghplsjLJ
+         eXHB/zp6ioWFYN+jkn6+mUwjG9fWxJLah5jFoQMptEkoJt61fKq83EtscExDoJvhCxfL
+         Ple3KLreaIh7CxTj9qIPX//Loggzr5+lL0vynuAF6KH/sjSjtNvChGv9U/diFwekt9X4
+         0/1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dAudc4FDt1ctUyfjFY0Z5v9inbg9AJkDcJN3i0TREJo=;
+        b=NVALd/S11ciMnCAdIzF3Cs7a5k9EXbqQxLVt3QCm3KW2aRaUKexDZXcqwEab8ZLCYh
+         MhodFpD69XOSPnH/W0gm8jIT3EnBv4TdAqcz7OqbUGHJED91/o+MmpXSQm7w0OP2SemS
+         EVv92OqwYeU2h2nl4kHIw+2F5Yw38UgoDShU1631dro2TfA6zmxAA4JOQQkcmtEuFLsk
+         x1rX8e4z9ol2oI4gNxk24K/nFNc1D+lAyhyVnbYCY+px7n1qDFpyZ/wx/5UhsSH3CwGH
+         NN6XNur2QoVPTVL5qP3DEslOSwLWyKJPo4/r7h5sN2Wrp6V6W6Qz0Zd3da8VZPrbhTt+
+         0knA==
+X-Gm-Message-State: AOAM532vzdw4LidXJ0mccwbZsHRWE5+p8VnzmlBH2e2L+DNOd85nruz5
+        sZmwyZZPwI/9vY+9NSS6XyP8qI4mbcA=
+X-Google-Smtp-Source: ABdhPJwDKQ8f/b5TADIanYvdcqCCkhMCvJH4JsI8ELDR/IICMDWl1yBD/QCmFO3p8qxTfuzhvohPHg==
+X-Received: by 2002:a17:90a:b304:b0:1b8:b322:aa4d with SMTP id d4-20020a17090ab30400b001b8b322aa4dmr3092734pjr.12.1645033948743;
+        Wed, 16 Feb 2022 09:52:28 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m20sm45730043pfk.215.2022.02.16.09.52.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Feb 2022 09:52:28 -0800 (PST)
+Subject: Re: [PATCH RFC net-next 1/5] net: dsa: b53: clean up if() condition
+ to be more readable
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH net-next] net: Correct wrong BH disable in hard-interrupt.
-Message-ID: <Yg05duINKBqvnxUc@linutronix.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <YfvrIf/FDddglaKE@shell.armlinux.org.uk>
+ <E1nFdPI-006Wh0-HW@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <7eed88b8-d0d1-c1b7-322f-a7b82544077c@gmail.com>
+Date:   Wed, 16 Feb 2022 09:52:26 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <E1nFdPI-006Wh0-HW@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I missed the obvious case where netif_ix() is invoked from hard-IRQ
-context.
+On 2/3/22 6:48 AM, Russell King (Oracle) wrote:
+> I've stared at this if() statement for a while trying to work out if
+> it really does correspond with the comment above, and it does seem to.
+> However, let's make it more readable and phrase it in the same way as
+> the comment.
+> 
+> Also add a FIXME into the comment - we appear to deny Gigabit modes for
+> 802.3z interface modes, but 802.3z interface modes only operate at
+> gigabit and above.
+> 
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Disabling bottom halves is only needed in process context. This ensures
-that the code remains on the current CPU and that the soft-interrupts
-are processed at local_bh_enable() time.
-In hard- and soft-interrupt context this is already the case and the
-soft-interrupts will be processed once the context is left (at irq-exit
-time).
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Disable bottom halves if neither hard-interrupts nor soft-interrupts are
-disabled. Update the kernel-doc, mention that interrupts must be enabled
-if invoked from process context.
-
-Fixes: baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any context.")
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-Marek, does this work for you?
-
- net/core/dev.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 909fb38159108..87729491460fc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4860,7 +4860,9 @@ EXPORT_SYMBOL(__netif_rx);
-  *	congestion control or by the protocol layers.
-  *	The network buffer is passed via the backlog NAPI device. Modern NIC
-  *	driver should use NAPI and GRO.
-- *	This function can used from any context.
-+ *	This function can used from interrupt and from process context. The
-+ *	caller from process context must not disable interrupts before invoking
-+ *	this function.
-  *
-  *	return values:
-  *	NET_RX_SUCCESS	(no congestion)
-@@ -4870,12 +4872,15 @@ EXPORT_SYMBOL(__netif_rx);
- int netif_rx(struct sk_buff *skb)
- {
- 	int ret;
-+	bool need_bh_off = !(hardirq_count() | softirq_count());
- 
--	local_bh_disable();
-+	if (need_bh_off)
-+		local_bh_disable();
- 	trace_netif_rx_entry(skb);
- 	ret = netif_rx_internal(skb);
- 	trace_netif_rx_exit(ret);
--	local_bh_enable();
-+	if (need_bh_off)
-+		local_bh_enable();
- 	return ret;
- }
- EXPORT_SYMBOL(netif_rx);
+Did I mention that I always struggled and still do with double negations
+and not just while programming?
 -- 
-2.34.1
-
+Florian
