@@ -2,92 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 950874B8640
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:56:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDB064B863C
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 11:55:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbiBPK4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 05:56:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59784 "EHLO
+        id S230510AbiBPKzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 05:55:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiBPK4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:56:06 -0500
-X-Greylist: delayed 379 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Feb 2022 02:55:54 PST
-Received: from out203-205-221-190.mail.qq.com (out203-205-221-190.mail.qq.com [203.205.221.190])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A2427B4BA;
-        Wed, 16 Feb 2022 02:55:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1645008952;
-        bh=44irEAu7HYsUU1LrOfpuftcIOp/Z1agD6pE0pOXaBuE=;
-        h=From:To:Cc:Subject:Date;
-        b=vcUzR1Ten3yc6IgpOFoHjFatb84ZfI5cE02Bx0UafpXwEG266qJVXN2OzL6CgsJOl
-         IcSmt2ivRO6giAjgljEZMjJJdDp076fthx2rpArlmdmqfXzi/jbFvvQoYqX4nyZzsp
-         jsp+CzMsxOH9IBLp2Cji8cvxf+C3LjhXh8Dt+WBs=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
-        id C10A88E3; Wed, 16 Feb 2022 18:48:16 +0800
-X-QQ-mid: xmsmtpt1645008496tfc9na2j0
-Message-ID: <tencent_A528B1FF77813031ABE6C6738453F084570A@qq.com>
-X-QQ-XMAILINFO: OUyBsK7uGFiXPLpZ43m0FLL7hKXWW5AYRr9ZwLPs81v+g9agswISwcWxa45TWO
-         BFGtzf8p/+bjwM5NYyyYIX/IVSy2bVNbtoz/x9D42X7+5wplwvS8h3fnZ5kWOwgFdjQM818oqR8M
-         CrbSigYd5RuIu8kJbePf/G7K4ZJttmDsmGG2qHw0dLFvX/mYPDDumiYolVil4+NcXJ5wDzHVUdGJ
-         gLkButoxAvqNlmco25JsPIFXoWfXAbFlx0iO2W6xWoXnWu/Y4cJLnJWKCOdtqHJ1wu8x8t7s6ULn
-         n551Ox88dydVYVBpnA6c7JdTGPc45YNJDhR4TsMo0ldorlhePXMXfa+97HBonX2ADPkzKuzQiTnw
-         xdnLPupSQUfWxaMZYzmbMvesSGhbU22JCDj8sZ9cfIBGIgt3ifwFJuRlOLj/92HsbUVx9/ZfwCN8
-         vF5Ko9cznd0JQNxClXGkvRDGOm6beo5VKKMBVvkvdlZMsguSuqYP0J+hxqz524ne03QFKmYHkxLT
-         N4fJCaygs1oXYHk/2+S1i9colcbJf+O1OOEo/MemPrmY05tguA7rgF4+EFjs5CrfWYcqvy6q9JSD
-         tvwyy16Cta9iGo+AZeuuvKX2SxdcYRx5CCfw+NkHiUfFimoTdikb2EN/iBh1IIIfclUpBor1rqWm
-         yJJE4LmvF1NNBdjkVmh4RC1csu0Ibk+IbKrTPkfXIzgtvr7yn8jBSIfQM3W3U9o1hLzg16j1EhzJ
-         NOihgGfK4nYSZv0rx8Xag3eCjzXfw6z+TKgytpc0DDfsHR8IOw+cXPjheXhbQV1h+id1/et4t5kj
-         kbfC8ldQPMn7n9XfTTF9Dr3uZV+vn8k41Q22QIZ5mDSxq/dsIryLfvjCyTr4OlRq9YjzM3pPVAje
-         vQudgLkXNmwZABcb2MEcw=
-From:   xkernel.wang@foxmail.com
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     michal.simek@xilinx.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] net: ll_temac: check the return value of devm_kmalloc()
-Date:   Wed, 16 Feb 2022 18:46:42 +0800
-X-OQ-MSGID: <20220216104642.285-1-xkernel.wang@foxmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        with ESMTP id S229729AbiBPKzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 05:55:54 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F7F2A39DF;
+        Wed, 16 Feb 2022 02:55:41 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4d6LsK_1645008938;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V4d6LsK_1645008938)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 16 Feb 2022 18:55:39 +0800
+Date:   Wed, 16 Feb 2022 18:55:38 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH] net/smc: Add autocork support
+Message-ID: <20220216105538.GA54562@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+ <6e9c637c-50b0-394c-f405-8b98deafa2ef@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RDNS_DYNAMIC,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6e9c637c-50b0-394c-f405-8b98deafa2ef@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Wed, Feb 16, 2022 at 11:32:52AM +0100, Karsten Graul wrote:
+>On 16/02/2022 04:49, Dust Li wrote:
+>> This patch adds autocork support for SMC which could improve
+>> throughput for small message by x2 ~ x4.
+>> 
+>> The main idea is borrowed from TCP autocork with some RDMA
+>> specific modification:
+>
+>Sounds like a valuable improvement, thank you!
+>
+>> ---
+>>  net/smc/smc.h     |   2 +
+>>  net/smc/smc_cdc.c |  11 +++--
+>>  net/smc/smc_tx.c  | 118 ++++++++++++++++++++++++++++++++++++++++------
+>>  3 files changed, 114 insertions(+), 17 deletions(-)
+>> 
+>> diff --git a/net/smc/smc.h b/net/smc/smc.h
+>> index a096d8af21a0..bc7df235281c 100644
+>> --- a/net/smc/smc.h
+>> +++ b/net/smc/smc.h
+>> @@ -192,6 +192,8 @@ struct smc_connection {
+>>  						 * - dec on polled tx cqe
+>>  						 */
+>>  	wait_queue_head_t	cdc_pend_tx_wq; /* wakeup on no cdc_pend_tx_wr*/
+>> +	atomic_t		tx_pushing;     /* nr_threads trying tx push */
+>> +
+>
+>Is this extra empty line needed?
 
-devm_kmalloc() returns a pointer to allocated memory on success, NULL
-on failure. While lp->indirect_lock is allocated by devm_kmalloc()
-without proper check. It is better to check the value of it to
-prevent potential wrong memory access.
+Will remove this empty line in the next version.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- drivers/net/ethernet/xilinx/ll_temac_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+>
+>>  	struct delayed_work	tx_work;	/* retry of smc_cdc_msg_send */
+>>  	u32			tx_off;		/* base offset in peer rmb */
+>>  
+>> diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+>> index 9d5a97168969..2b37bec90824 100644
+>> --- a/net/smc/smc_cdc.c
+>> +++ b/net/smc/smc_cdc.c
+>> @@ -48,9 +48,14 @@ static void smc_cdc_tx_handler(struct smc_wr_tx_pend_priv *pnd_snd,
+>>  		conn->tx_cdc_seq_fin = cdcpend->ctrl_seq;
+>>  	}
+>>  
+>> -	if (atomic_dec_and_test(&conn->cdc_pend_tx_wr) &&
+>> -	    unlikely(wq_has_sleeper(&conn->cdc_pend_tx_wq)))
+>> -		wake_up(&conn->cdc_pend_tx_wq);
+>> +	if (atomic_dec_and_test(&conn->cdc_pend_tx_wr)) {
+>> +		/* If this is the last pending WR complete, we must push to
+>> +		 * prevent hang when autocork enabled.
+>> +		 */
+>> +		smc_tx_sndbuf_nonempty(conn);
+>> +		if (unlikely(wq_has_sleeper(&conn->cdc_pend_tx_wq)))
+>> +			wake_up(&conn->cdc_pend_tx_wq);
+>> +	}
+>>  	WARN_ON(atomic_read(&conn->cdc_pend_tx_wr) < 0);
+>>  
+>>  	smc_tx_sndbuf_nonfull(smc);
+>> diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+>> index 5df3940d4543..bc737ac79805 100644
+>> --- a/net/smc/smc_tx.c
+>> +++ b/net/smc/smc_tx.c
+>> @@ -31,6 +31,7 @@
+>>  #include "smc_tracepoint.h"
+>>  
+>>  #define SMC_TX_WORK_DELAY	0
+>> +#define SMC_DEFAULT_AUTOCORK_SIZE	(64 * 1024)
+>>  
+>>  /***************************** sndbuf producer *******************************/
+>>  
+>> @@ -127,10 +128,52 @@ static int smc_tx_wait(struct smc_sock *smc, int flags)
+>>  static bool smc_tx_is_corked(struct smc_sock *smc)
+>>  {
+>>  	struct tcp_sock *tp = tcp_sk(smc->clcsock->sk);
+>> -
+>>  	return (tp->nonagle & TCP_NAGLE_CORK) ? true : false;
+>>  }
+>>  
+>> +/* If we have pending CDC messages, do not send:
+>> + * Because CQE of this CDC message will happen shortly, it gives
+>> + * a chance to coalesce future sendmsg() payload in to one RDMA Write,
+>> + * without need for a timer, and with no latency trade off.
+>> + * Algorithm here:
+>> + *  1. First message should never cork
+>> + *  2. If we have pending CDC messages, wait for the first
+>> + *     message's completion
+>> + *  3. Don't cork to much data in a single RDMA Write to prevent burst,
+>> + *     total corked message should not exceed min(64k, sendbuf/2)
+>> + */
+>> +static bool smc_should_autocork(struct smc_sock *smc, struct msghdr *msg,
+>> +				int size_goal)
+>> +{
+>> +	struct smc_connection *conn = &smc->conn;
+>> +
+>> +	if (atomic_read(&conn->cdc_pend_tx_wr) == 0 ||
+>> +	    smc_tx_prepared_sends(conn) > min(size_goal,
+>> +					      conn->sndbuf_desc->len >> 1))
+>> +		return false;
+>> +	return true;
+>> +}
+>> +
+>> +static bool smc_tx_should_cork(struct smc_sock *smc, struct msghdr *msg)
+>> +{
+>> +	struct smc_connection *conn = &smc->conn;
+>> +
+>> +	if (smc_should_autocork(smc, msg, SMC_DEFAULT_AUTOCORK_SIZE))
+>> +		return true;
+>> +
+>> +	if ((msg->msg_flags & MSG_MORE ||
+>> +	     smc_tx_is_corked(smc) ||
+>> +	     msg->msg_flags & MSG_SENDPAGE_NOTLAST) &&
+>> +	    (atomic_read(&conn->sndbuf_space)))
+>> +		/* for a corked socket defer the RDMA writes if
+>> +		 * sndbuf_space is still available. The applications
+>> +		 * should known how/when to uncork it.
+>> +		 */
+>> +		return true;
+>> +
+>> +	return false;
+>> +}
+>> +
+>>  /* sndbuf producer: main API called by socket layer.
+>>   * called under sock lock.
+>>   */
+>> @@ -177,6 +220,13 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+>>  		if (msg->msg_flags & MSG_OOB)
+>>  			conn->local_tx_ctrl.prod_flags.urg_data_pending = 1;
+>>  
+>> +		/* If our send queue is full but peer have RMBE space,
+>> +		 * we should send them out before wait
+>> +		 */
+>> +		if (!atomic_read(&conn->sndbuf_space) &&
+>> +		    atomic_read(&conn->peer_rmbe_space) > 0)
+>> +			smc_tx_sndbuf_nonempty(conn);
+>> +
+>>  		if (!atomic_read(&conn->sndbuf_space) || conn->urg_tx_pend) {
+>>  			if (send_done)
+>>  				return send_done;
+>> @@ -235,15 +285,12 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+>>  		 */
+>>  		if ((msg->msg_flags & MSG_OOB) && !send_remaining)
+>>  			conn->urg_tx_pend = true;
+>> -		if ((msg->msg_flags & MSG_MORE || smc_tx_is_corked(smc) ||
+>> -		     msg->msg_flags & MSG_SENDPAGE_NOTLAST) &&
+>> -		    (atomic_read(&conn->sndbuf_space)))
+>> -			/* for a corked socket defer the RDMA writes if
+>> -			 * sndbuf_space is still available. The applications
+>> -			 * should known how/when to uncork it.
+>> -			 */
+>> -			continue;
+>> -		smc_tx_sndbuf_nonempty(conn);
+>> +
+>> +		/* If we need to cork, do nothing and wait for the next
+>> +		 * sendmsg() call or push on tx completion
+>> +		 */
+>> +		if (!smc_tx_should_cork(smc, msg))
+>> +			smc_tx_sndbuf_nonempty(conn);
+>>  
+>>  		trace_smc_tx_sendmsg(smc, copylen);
+>>  	} /* while (msg_data_left(msg)) */
+>> @@ -590,13 +637,26 @@ static int smcd_tx_sndbuf_nonempty(struct smc_connection *conn)
+>>  	return rc;
+>>  }
+>>  
+>> -int smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+>> +static int __smc_tx_sndbuf_nonempty(struct smc_connection *conn)
+>>  {
+>> -	int rc;
+>> +	int rc = 0;
+>> +	struct smc_sock *smc = container_of(conn, struct smc_sock, conn);
+>
+>Reverse Christmas tree style please.
 
-diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
-index 463094c..7c5dd39 100644
---- a/drivers/net/ethernet/xilinx/ll_temac_main.c
-+++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
-@@ -1427,6 +1427,11 @@ static int temac_probe(struct platform_device *pdev)
- 		lp->indirect_lock = devm_kmalloc(&pdev->dev,
- 						 sizeof(*lp->indirect_lock),
- 						 GFP_KERNEL);
-+		if (!lp->indirect_lock) {
-+			dev_err(&pdev->dev,
-+				"indirect register lock allocation failed\n");
-+			return -ENOMEM;
-+		}
- 		spin_lock_init(lp->indirect_lock);
- 	}
- 
--- 
+Sure, will do.
+
+Thank you !
+
