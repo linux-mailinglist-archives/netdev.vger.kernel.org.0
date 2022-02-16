@@ -2,182 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2DB04B899E
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 14:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F0004B89AC
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 14:21:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233886AbiBPNVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 08:21:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35448 "EHLO
+        id S234281AbiBPNVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 08:21:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbiBPNTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 08:19:32 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BD5C29B9C2;
-        Wed, 16 Feb 2022 05:18:45 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87532106F;
-        Wed, 16 Feb 2022 05:18:45 -0800 (PST)
-Received: from [10.1.31.148] (e127744.cambridge.arm.com [10.1.31.148])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 017123F66F;
-        Wed, 16 Feb 2022 05:18:41 -0800 (PST)
-Subject: Re: [PATCH] perf test: update arm64 perf_event_attr tests for
- --call-graph
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, irogers@google.com
-References: <20220125104435.2737-1-german.gomez@arm.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <622a42bd-69da-0df4-bbf3-7d21de77c73b@arm.com>
-Date:   Wed, 16 Feb 2022 13:17:56 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S234618AbiBPNVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 08:21:12 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04C22AE071
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 05:19:45 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id u16so3300623ljk.2
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 05:19:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LmcqWXwseeG4I4bS/aEDRBMabNjMhuU+WWEWJ2QVP0A=;
+        b=ZKF01vsC92N6eCOjhBPsAWtAZrJ2+kiOfO1gXjHOH2Ud6qWy/xyX1OTnnvoRGaIwbP
+         5n9+MOk4PuipHjTueQ6wblFJ7cr9DYnfRB7Es3RhOPNWzroAoT+w0M0ea8XP/bRvHeJg
+         XX/xgFRS3/Ug6VnlsVKbpczbKHnaSo2spijefK0lldXkNMN4Ujsw0IL/BTKq07CiN4fp
+         ceQ4MUf3VjH1KIZ87BWGsYxp8SBqEkbEVc0ZjYjJiHezLvFbyVPmaI76doac6fvirQjd
+         jh9PDq42+MR90ozXBIP8ajeTx5uWQKohaF8G+HPze6qab35QaWxpb5/bYp9vEgx+iWNS
+         CFJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LmcqWXwseeG4I4bS/aEDRBMabNjMhuU+WWEWJ2QVP0A=;
+        b=IxYzlOWSitK3vu4izjXqck6pQPp57z0F6EVUPSPw+xLCJea71nqJo8QuBZB4gc8jea
+         NQui+0G0S/njke6V+q6plFOWBUvKzD2OYoa2sx+noLSpM+NbnB5GIOBvTbLh46Z/tZ4E
+         isSCeQJ7BTU0+6Zz6VX2Syne0B/uTuTYrGfuBx5bEXnujSqs42bszI2HL9La365WB7CT
+         NBODONjDdOzhFqF2xuIn8uNgamThKTcYf88ExlugdrfyoyY2EbaRvIQZev/ppEoHm1l4
+         4an4t8VV+ZKG+DxkXBioQt17RTtJToavQHYbyYQsr1SEJ+JmdognZel0yiQ7pAhZUdKt
+         KGLQ==
+X-Gm-Message-State: AOAM532L+7svZhUPqPDRbQ/pODfprCbWSQt27aZAQY3WkY5wIHAseSOz
+        bjp+bql2owF4dszQErD2w3oSo7J1ZpyxBcqfCfCh7w==
+X-Google-Smtp-Source: ABdhPJxijRjk2lC5l4XjkBcyRT5s/WpbO7OJ6wpNxbl47IfggP5IdHDdkzo4ug2pd8POaIvsmFBXc+LYvngmKOmQJ+E=
+X-Received: by 2002:a05:651c:549:b0:245:6f1:8584 with SMTP id
+ q9-20020a05651c054900b0024506f18584mr2068100ljp.474.1645017584253; Wed, 16
+ Feb 2022 05:19:44 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220125104435.2737-1-german.gomez@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220216090845.1278114-1-maz@kernel.org>
+In-Reply-To: <20220216090845.1278114-1-maz@kernel.org>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 16 Feb 2022 14:19:30 +0100
+Message-ID: <CAPv3WKf4RFeTDCsW+cY-Rp=2rZt1HuZSVQcmcB3oKQKNbvBtDA@mail.gmail.com>
+Subject: Re: [PATCH 0/2] net: mvpp2: Survive CPU hotplug events
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Garry <john.garry@huawei.com>, kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Marc,
 
-Friendly ping on this perf-test fix for arm64
-
-I will include some quick test notes:
-Before:
-
-$ ./perf test 17 -v
-17: Setup struct perf_event_attr
-[...]
-running './tests/attr/test-record-graph-default'
-expected sample_type=295, got 4391
-expected sample_regs_user=0, got 1073741824
-FAILED './tests/attr/test-record-graph-default' - match failure
-test child finished with -1
----- end ----
-
-After:
-
-[...]
-running './tests/attr/test-record-graph-default-aarch64'
-test limitation 'aarch64'
-running './tests/attr/test-record-graph-fp-aarch64'
-test limitation 'aarch64'
-running './tests/attr/test-record-graph-default'
-test limitation '!aarch64'
-excluded architecture list ['aarch64']
-skipped [aarch64] './tests/attr/test-record-graph-default'
-running './tests/attr/test-record-graph-fp'
-test limitation '!aarch64'
-excluded architecture list ['aarch64']
-skipped [aarch64] './tests/attr/test-record-graph-fp'
-[...]
-
-Thanks,
-German
-
-On 25/01/2022 10:44, German Gomez wrote:
-> The struct perf_event_attr is initialised differently in Arm64 when
-> recording in call-graph fp mode, so update the relevant tests, and add
-> two extra arm64-only tests.
+=C5=9Br., 16 lut 2022 o 10:08 Marc Zyngier <maz@kernel.org> napisa=C5=82(a)=
+:
 >
-> Fixes: 7248e308a575 ("perf tools: Record ARM64 LR register automatically")
-> Signed-off-by: German Gomez <german.gomez@arm.com>
-> ---
->  tools/perf/tests/attr/README                            | 2 ++
->  tools/perf/tests/attr/test-record-graph-default         | 2 ++
->  tools/perf/tests/attr/test-record-graph-default-aarch64 | 9 +++++++++
->  tools/perf/tests/attr/test-record-graph-fp              | 2 ++
->  tools/perf/tests/attr/test-record-graph-fp-aarch64      | 9 +++++++++
->  5 files changed, 24 insertions(+)
->  create mode 100644 tools/perf/tests/attr/test-record-graph-default-aarch64
->  create mode 100644 tools/perf/tests/attr/test-record-graph-fp-aarch64
+> I recently realised that playing with CPU hotplug on a system equiped
+> with a set of MVPP2 devices (Marvell 8040) was fraught with danger and
+> would result in a rapid lockup or panic.
 >
-> diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
-> index a36f49fb4dbe..1116fc6bf2ac 100644
-> --- a/tools/perf/tests/attr/README
-> +++ b/tools/perf/tests/attr/README
-> @@ -45,8 +45,10 @@ Following tests are defined (with perf commands):
->    perf record -d kill                           (test-record-data)
->    perf record -F 100 kill                       (test-record-freq)
->    perf record -g kill                           (test-record-graph-default)
-> +  perf record -g kill                           (test-record-graph-default-aarch64)
->    perf record --call-graph dwarf kill		(test-record-graph-dwarf)
->    perf record --call-graph fp kill              (test-record-graph-fp)
-> +  perf record --call-graph fp kill              (test-record-graph-fp-aarch64)
->    perf record --group -e cycles,instructions kill (test-record-group)
->    perf record -e '{cycles,instructions}' kill   (test-record-group1)
->    perf record -e '{cycles/period=1/,instructions/period=2/}:S' kill (test-record-group2)
-> diff --git a/tools/perf/tests/attr/test-record-graph-default b/tools/perf/tests/attr/test-record-graph-default
-> index 5d8234d50845..f0a18b4ea4f5 100644
-> --- a/tools/perf/tests/attr/test-record-graph-default
-> +++ b/tools/perf/tests/attr/test-record-graph-default
-> @@ -2,6 +2,8 @@
->  command = record
->  args    = --no-bpf-event -g kill >/dev/null 2>&1
->  ret     = 1
-> +# arm64 enables registers in the default mode (fp)
-> +arch    = !aarch64
->  
->  [event:base-record]
->  sample_type=295
-> diff --git a/tools/perf/tests/attr/test-record-graph-default-aarch64 b/tools/perf/tests/attr/test-record-graph-default-aarch64
-> new file mode 100644
-> index 000000000000..e98d62efb6f7
-> --- /dev/null
-> +++ b/tools/perf/tests/attr/test-record-graph-default-aarch64
-> @@ -0,0 +1,9 @@
-> +[config]
-> +command = record
-> +args    = --no-bpf-event -g kill >/dev/null 2>&1
-> +ret     = 1
-> +arch    = aarch64
-> +
-> +[event:base-record]
-> +sample_type=4391
-> +sample_regs_user=1073741824
-> diff --git a/tools/perf/tests/attr/test-record-graph-fp b/tools/perf/tests/attr/test-record-graph-fp
-> index 5630521c0b0f..a6e60e839205 100644
-> --- a/tools/perf/tests/attr/test-record-graph-fp
-> +++ b/tools/perf/tests/attr/test-record-graph-fp
-> @@ -2,6 +2,8 @@
->  command = record
->  args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
->  ret     = 1
-> +# arm64 enables registers in fp mode
-> +arch    = !aarch64
->  
->  [event:base-record]
->  sample_type=295
-> diff --git a/tools/perf/tests/attr/test-record-graph-fp-aarch64 b/tools/perf/tests/attr/test-record-graph-fp-aarch64
-> new file mode 100644
-> index 000000000000..cbeea9971285
-> --- /dev/null
-> +++ b/tools/perf/tests/attr/test-record-graph-fp-aarch64
-> @@ -0,0 +1,9 @@
-> +[config]
-> +command = record
-> +args    = --no-bpf-event --call-graph fp kill >/dev/null 2>&1
-> +ret     = 1
-> +arch    = aarch64
-> +
-> +[event:base-record]
-> +sample_type=4391
-> +sample_regs_user=1073741824
+> As it turns out, the per-CPU nature of the MVPP2 interrupts are
+> getting in the way. A good solution for this seems to rely on the
+> kernel's managed interrupt approach, where the core kernel will not
+> move interrupts around as the CPUs for down, but will simply disable
+> the corresponding interrupt.
+>
+> Converting the driver to this requires a bit of refactoring in the IRQ
+> subsystem to expose the required primitive, as well as a bit of
+> surgery in the driver itself.
+>
+> Note that although the system now survives such event, the driver
+> seems to assume that all queues are always active and doesn't inform
+> the device that a CPU has gone away. Someout who actually understand
+> this driver should have a look at it.
+>
+> Patches on top of 5.17-rc3, lightly tested on a McBin.
+>
+
+Thank you for the patches. Can you, please, share the commands you
+used? I'd like to test it more.
+
+Best regards,
+Marcin
+
+> Marc Zyngier (2):
+>   genirq: Extract irq_set_affinity_masks() from
+>     devm_platform_get_irqs_affinity()
+>   net: mvpp2: Convert to managed interrupts to fix CPU HP issues
+>
+>  drivers/base/platform.c                       | 20 +-----
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  1 -
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 67 ++++++++++---------
+>  include/linux/interrupt.h                     |  8 +++
+>  kernel/irq/affinity.c                         | 27 ++++++++
+>  5 files changed, 72 insertions(+), 51 deletions(-)
+>
+> --
+> 2.30.2
+>
