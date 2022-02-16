@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F32654B8D2F
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 17:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3320E4B8D30
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 17:03:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiBPQDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 11:03:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49536 "EHLO
+        id S235947AbiBPQD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 11:03:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235911AbiBPQDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 11:03:46 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05DA2A8D0C
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:03:33 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id g7so4706294edb.5
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:03:33 -0800 (PST)
+        with ESMTP id S235920AbiBPQDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 11:03:48 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB232A8D14
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:03:35 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id x5so4661076edd.11
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 08:03:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CgwwwRe7DVOH/1dsBc3Z4xB3KrKc56bjTH+52806yM0=;
-        b=LzzwC1b1yXUAENqm/50FckyEAdxE50WQO+Rb56jagPFwh/PDFNvGbXlLS48qdcS8hK
-         mOquVl6ZrQlSHIrIaREZr1hdqmcrZ1DhXZQXMt1pgVyPH1VcKYguZ/SRmTCEtvkJAP3b
-         5c83Q4v143IVlfHw+7EWjcUUPT6Uv17e/+F7Q=
+        bh=151KIZ20IIFNSQmdYRUVjHa4bOA5A5/XYS9O5JQklAI=;
+        b=lh3mDuwouCECAY9+enH6p3rPY0ru9wMKGNyO9MqYiWkYyUbQ9w1kGH+czehn+i5fyi
+         nMUpg2Cl+SpQ4itc4p9VCE3jt5w1fz3F83kS37Rzej4zVEDAPEGDcxplSVqP06mpY3gX
+         y6ptlLagUW86rybf2y0knm/Kz8YhnQdbqIvzs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CgwwwRe7DVOH/1dsBc3Z4xB3KrKc56bjTH+52806yM0=;
-        b=4kS173ZSEwenExrJhP/+zPv3aRg6ccQOdz+SllbIECsaYF0zgBd65yYqzWAxMTZz3Z
-         2kAs3bCmzokeQj2iUiu2dMP/B11aoD3HF7REiIAZPES8zvhWC+sTiFa/Z1ThUeuzL5zP
-         eDqHQL1KgS5yWcnqmdOhO6drh/9BIQu0gbm+ReYVxVRtJSjpSD1EjB+PjHUBNUvDY53W
-         mx8h2VNX23LVtxFm+ixSolcTjZn4gpC0FxmXFqh6D3VtYObbRVWh91CdwOn3hWtSxozM
-         aTRvxF5KNCZhMBuH0IzwD3xSoWIiUY5z3xVXsHNjCXyO4b4onwuW/6t3nOBoGLGgClfL
-         VbZg==
-X-Gm-Message-State: AOAM531w5gUsHHrM1toyWitnoYKFS1nkIzE186O4Tav6ZgnrxE9IMBLD
-        mHpZ3DbGqToV/nCo2nkrhPBdCw==
-X-Google-Smtp-Source: ABdhPJw4owliV0xvwuYMJxIJK2lCHFwl8dDLixoAHNVsFeXtWmFRFqobpt+tY85Zr09HRdRILOcCSw==
-X-Received: by 2002:aa7:c983:0:b0:410:d314:6451 with SMTP id c3-20020aa7c983000000b00410d3146451mr3679668edt.56.1645027412302;
-        Wed, 16 Feb 2022 08:03:32 -0800 (PST)
+        bh=151KIZ20IIFNSQmdYRUVjHa4bOA5A5/XYS9O5JQklAI=;
+        b=p2ojMiHTxxI1b7meiPm9w01++5rzMciBnG6NSBUtRvwts28iXNFqz1jTsAwkc8DIji
+         w888kNaLe11TFiS6Z9ts1EL/O5QxiXXJdsCSMLcm+ogB6b+bDR+kRLCCXj9Lwlyf4SEU
+         NOsL5KXhkN+uYnPPeEE5ewo3ivfSKUBxkA1xUNP9u/9XxQ9PR3mgq44x3vc1mt8rRCBT
+         h8GAfvhu77AGdwwQ8ZVMwxA7ZcgqoPlgsQcPjCucQfA8G30KoAWvB/CqBgbxIfO6PjRU
+         ie/PdgxU+fyNuPkSPLTHInF1mqpl2F2EgcSHGfAlLfiPnx3XHedP/QX6RSpgkcmAtVWM
+         7SpQ==
+X-Gm-Message-State: AOAM533zoHkwyV48iAj9eQHRyP/75FfGnfSXTZiaP7fMrFJuBe2YY3we
+        h0H6Jziw1SwLExYg0CUTwnUIZA==
+X-Google-Smtp-Source: ABdhPJyEaJ8Ox8sISNJO00yJxKPFNXb76QhHKp48G3ttPeQQuAQlcpLs2UxuAMz7MbXgKfHBoFQdfw==
+X-Received: by 2002:a05:6402:190:b0:407:27da:4def with SMTP id r16-20020a056402019000b0040727da4defmr3756454edv.345.1645027414469;
+        Wed, 16 Feb 2022 08:03:34 -0800 (PST)
 Received: from capella.. ([193.89.194.60])
-        by smtp.gmail.com with ESMTPSA id j19sm48365ejm.111.2022.02.16.08.03.30
+        by smtp.gmail.com with ESMTPSA id j19sm48365ejm.111.2022.02.16.08.03.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 08:03:31 -0800 (PST)
+        Wed, 16 Feb 2022 08:03:33 -0800 (PST)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -57,9 +57,9 @@ Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
         =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         Michael Rasmussen <mir@bang-olufsen.dk>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/2] net: dsa: realtek: allow subdrivers to externally lock regmap
-Date:   Wed, 16 Feb 2022 17:04:59 +0100
-Message-Id: <20220216160500.2341255-2-alvin@pqrs.dk>
+Subject: [PATCH net-next 2/2] net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
+Date:   Wed, 16 Feb 2022 17:05:00 +0100
+Message-Id: <20220216160500.2341255-3-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220216160500.2341255-1-alvin@pqrs.dk>
 References: <20220216160500.2341255-1-alvin@pqrs.dk>
@@ -77,231 +77,230 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Currently there is no way for Realtek DSA subdrivers to serialize
-consecutive regmap accesses. In preparation for a bugfix relating to
-indirect PHY register access - which involves a series of regmap
-reads and writes - add a facility for subdrivers to serialize their
-regmap access.
+Realtek switches in the rtl8365mb family can access the PHY registers of
+the internal PHYs via the switch registers. This method is called
+indirect access. At a high level, the indirect PHY register access
+method involves reading and writing some special switch registers in a
+particular sequence. This works for both SMI and MDIO connected
+switches.
 
-Specifically, a mutex is added to the driver private data structure and
-the standard regmap is initialized with custom lock/unlock ops which use
-this mutex. Then, a "nolock" variant of the regmap is added, which is
-functionally equivalent to the existing regmap except that regmap
-locking is disabled. Functions that wish to serialize a sequence of
-regmap accesses may then lock the newly introduced driver-owned mutex
-before using the nolock regmap.
+Currently the rtl8365mb driver does not take any care to serialize the
+aforementioned access to the switch registers. In particular, it is
+permitted for other driver code to access other switch registers while
+the indirect PHY register access is ongoing. Locking is only done at the
+regmap level. This, however, is a bug: concurrent register access, even
+to unrelated switch registers, risks corrupting the PHY register value
+read back via the indirect access method described above.
 
-Doing things this way means that subdriver code that doesn't care about
-serialized register access - i.e. the vast majority of code - needn't
-worry about synchronizing register access with an external lock: it can
-just continue to use the original regmap.
+Arınç reported that the switch sometimes returns nonsense data when
+reading the PHY registers. In particular, a value of 0 causes the
+kernel's PHY subsystem to think that the link is down, but since most
+reads return correct data, the link then flip-flops between up and down
+over a period of time.
 
-Another advantage of this design is that, while regmaps with locking
-disabled do not expose a debugfs interface for obvious reasons, there
-still exists the original regmap which does expose this interface. This
-interface remains safe to use even combined with driver codepaths that
-use the nolock regmap, because said codepaths will use the same mutex
-to synchronize access.
+The aforementioned bug can be readily observed by:
 
-With respect to disadvantages, it can be argued that having
-near-duplicate regmaps is confusing. However, the naming is rather
-explicit, and examples will abound.
+ 1. Enabling ftrace events for regmap and mdio
+ 2. Polling BSMR PHY register for a connected port;
+    it should always read the same (e.g. 0x79ed)
+ 3. Wait for step 2 to give a different value
 
-Finally, while we are at it, rename realtek_smi_mdio_regmap_config to
-realtek_smi_regmap_config. This makes it consistent with the naming
-realtek_mdio_regmap_config in realtek-mdio.c.
+Example command for step 2:
 
+    while true; do phytool read swp2/2/0x01; done
+
+On my i.MX8MM, the above steps will yield a bogus value for the BSMR PHY
+register within a matter of seconds. The interleaved register access it
+then evident in the trace log:
+
+ kworker/3:4-70      [003] .......  1927.139849: regmap_reg_write: ethernet-switch reg=1004 val=bd
+     phytool-16816   [002] .......  1927.139979: regmap_reg_read: ethernet-switch reg=1f01 val=0
+ kworker/3:4-70      [003] .......  1927.140381: regmap_reg_read: ethernet-switch reg=1005 val=0
+     phytool-16816   [002] .......  1927.140468: regmap_reg_read: ethernet-switch reg=1d15 val=a69
+ kworker/3:4-70      [003] .......  1927.140864: regmap_reg_read: ethernet-switch reg=1003 val=0
+     phytool-16816   [002] .......  1927.140955: regmap_reg_write: ethernet-switch reg=1f02 val=2041
+ kworker/3:4-70      [003] .......  1927.141390: regmap_reg_read: ethernet-switch reg=1002 val=0
+     phytool-16816   [002] .......  1927.141479: regmap_reg_write: ethernet-switch reg=1f00 val=1
+ kworker/3:4-70      [003] .......  1927.142311: regmap_reg_write: ethernet-switch reg=1004 val=be
+     phytool-16816   [002] .......  1927.142410: regmap_reg_read: ethernet-switch reg=1f01 val=0
+ kworker/3:4-70      [003] .......  1927.142534: regmap_reg_read: ethernet-switch reg=1005 val=0
+     phytool-16816   [002] .......  1927.142618: regmap_reg_read: ethernet-switch reg=1f04 val=0
+     phytool-16816   [002] .......  1927.142641: mdio_access: SMI-0 read  phy:0x02 reg:0x01 val:0x0000 <- ?!
+ kworker/3:4-70      [003] .......  1927.143037: regmap_reg_read: ethernet-switch reg=1001 val=0
+ kworker/3:4-70      [003] .......  1927.143133: regmap_reg_read: ethernet-switch reg=1000 val=2d89
+ kworker/3:4-70      [003] .......  1927.143213: regmap_reg_write: ethernet-switch reg=1004 val=be
+ kworker/3:4-70      [003] .......  1927.143291: regmap_reg_read: ethernet-switch reg=1005 val=0
+ kworker/3:4-70      [003] .......  1927.143368: regmap_reg_read: ethernet-switch reg=1003 val=0
+ kworker/3:4-70      [003] .......  1927.143443: regmap_reg_read: ethernet-switch reg=1002 val=6
+
+The kworker here is polling MIB counters for stats, as evidenced by the
+register 0x1004 that we are writing to (RTL8365MB_MIB_ADDRESS_REG). This
+polling is performed every 3 seconds, but is just one example of such
+unsynchronized access.
+
+Further investigation reveals the underlying problem: if we read from an
+arbitrary register A and this read coincides with the indirect access
+method in rtl8365mb_phy_ocp_read, then the final read from
+RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG will always return the value in
+register A. The value read back can be readily poisoned by repeatedly
+reading back the value of another register A via debugfs in a busy loop
+via the dd utility or similar.
+
+This issue appears to be unique to the indirect PHY register access
+pattern. In particular, it does not seem to impact similar sequential
+register operations such MIB counter access.
+
+To fix this problem, one must guard against exactly the scenario seen in
+the above trace. In particular, other parts of the driver using the
+regmap API must not be permitted to access the switch registers until
+the PHY register access is complete. Fix this by using the newly
+introduced "nolock" regmap in all PHY-related functions, and by aquiring
+the regmap mutex at the top level of the PHY register access callbacks.
+Although no issue has been observed with PHY register _writes_, this
+change also serializes the indirect access method there. This is done
+purely as a matter of convenience.
+
+Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC")
+Link: https://lore.kernel.org/netdev/CAJq09z5FCgG-+jVT7uxh1a-0CiiFsoKoHYsAWJtiKwv7LXKofQ@mail.gmail.com/
+Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reported-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 ---
- drivers/net/dsa/realtek/realtek-mdio.c | 46 ++++++++++++++++++++++--
- drivers/net/dsa/realtek/realtek-smi.c  | 48 ++++++++++++++++++++++++--
- drivers/net/dsa/realtek/realtek.h      |  2 ++
- 3 files changed, 91 insertions(+), 5 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 54 ++++++++++++++++++-----------
+ 1 file changed, 33 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
-index 0308be95d00a..31e1f100e48e 100644
---- a/drivers/net/dsa/realtek/realtek-mdio.c
-+++ b/drivers/net/dsa/realtek/realtek-mdio.c
-@@ -98,6 +98,20 @@ static int realtek_mdio_read(void *ctx, u32 reg, u32 *val)
- 	return ret;
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 2ed592147c20..c39d6b744597 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -590,7 +590,7 @@ static int rtl8365mb_phy_poll_busy(struct realtek_priv *priv)
+ {
+ 	u32 val;
+ 
+-	return regmap_read_poll_timeout(priv->map,
++	return regmap_read_poll_timeout(priv->map_nolock,
+ 					RTL8365MB_INDIRECT_ACCESS_STATUS_REG,
+ 					val, !val, 10, 100);
  }
- 
-+static void realtek_mdio_lock(void *ctx)
-+{
-+	struct realtek_priv *priv = ctx;
-+
-+	mutex_lock(&priv->map_lock);
-+}
-+
-+static void realtek_mdio_unlock(void *ctx)
-+{
-+	struct realtek_priv *priv = ctx;
-+
-+	mutex_unlock(&priv->map_lock);
-+}
-+
- static const struct regmap_config realtek_mdio_regmap_config = {
- 	.reg_bits = 10, /* A4..A0 R4..R0 */
- 	.val_bits = 16,
-@@ -108,6 +122,21 @@ static const struct regmap_config realtek_mdio_regmap_config = {
- 	.reg_read = realtek_mdio_read,
- 	.reg_write = realtek_mdio_write,
- 	.cache_type = REGCACHE_NONE,
-+	.lock = realtek_mdio_lock,
-+	.unlock = realtek_mdio_unlock,
-+};
-+
-+static const struct regmap_config realtek_mdio_nolock_regmap_config = {
-+	.reg_bits = 10, /* A4..A0 R4..R0 */
-+	.val_bits = 16,
-+	.reg_stride = 1,
-+	/* PHY regs are at 0x8000 */
-+	.max_register = 0xffff,
-+	.reg_format_endian = REGMAP_ENDIAN_BIG,
-+	.reg_read = realtek_mdio_read,
-+	.reg_write = realtek_mdio_write,
-+	.cache_type = REGCACHE_NONE,
-+	.disable_locking = true,
- };
- 
- static int realtek_mdio_probe(struct mdio_device *mdiodev)
-@@ -115,8 +144,9 @@ static int realtek_mdio_probe(struct mdio_device *mdiodev)
- 	struct realtek_priv *priv;
- 	struct device *dev = &mdiodev->dev;
- 	const struct realtek_variant *var;
--	int ret;
-+	struct regmap_config rc;
- 	struct device_node *np;
-+	int ret;
- 
- 	var = of_device_get_match_data(dev);
- 	if (!var)
-@@ -126,13 +156,25 @@ static int realtek_mdio_probe(struct mdio_device *mdiodev)
- 	if (!priv)
- 		return -ENOMEM;
- 
--	priv->map = devm_regmap_init(dev, NULL, priv, &realtek_mdio_regmap_config);
-+	mutex_init(&priv->map_lock);
-+
-+	rc = realtek_mdio_regmap_config;
-+	rc.lock_arg = priv;
-+	priv->map = devm_regmap_init(dev, NULL, priv, &rc);
- 	if (IS_ERR(priv->map)) {
- 		ret = PTR_ERR(priv->map);
- 		dev_err(dev, "regmap init failed: %d\n", ret);
+@@ -604,7 +604,7 @@ static int rtl8365mb_phy_ocp_prepare(struct realtek_priv *priv, int phy,
+ 	/* Set OCP prefix */
+ 	val = FIELD_GET(RTL8365MB_PHY_OCP_ADDR_PREFIX_MASK, ocp_addr);
+ 	ret = regmap_update_bits(
+-		priv->map, RTL8365MB_GPHY_OCP_MSB_0_REG,
++		priv->map_nolock, RTL8365MB_GPHY_OCP_MSB_0_REG,
+ 		RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK,
+ 		FIELD_PREP(RTL8365MB_GPHY_OCP_MSB_0_CFG_CPU_OCPADR_MASK, val));
+ 	if (ret)
+@@ -617,8 +617,8 @@ static int rtl8365mb_phy_ocp_prepare(struct realtek_priv *priv, int phy,
+ 			  ocp_addr >> 1);
+ 	val |= FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_ADDRESS_OCPADR_9_6_MASK,
+ 			  ocp_addr >> 6);
+-	ret = regmap_write(priv->map, RTL8365MB_INDIRECT_ACCESS_ADDRESS_REG,
+-			   val);
++	ret = regmap_write(priv->map_nolock,
++			   RTL8365MB_INDIRECT_ACCESS_ADDRESS_REG, val);
+ 	if (ret)
  		return ret;
- 	}
  
-+	rc = realtek_mdio_nolock_regmap_config;
-+	priv->map_nolock = devm_regmap_init(dev, NULL, priv, &rc);
-+	if (IS_ERR(priv->map_nolock)) {
-+		ret = PTR_ERR(priv->map_nolock);
-+		dev_err(dev, "regmap init failed: %d\n", ret);
-+		return ret;
-+	}
-+
- 	priv->mdio_addr = mdiodev->addr;
- 	priv->bus = mdiodev->bus;
- 	priv->dev = &mdiodev->dev;
-diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
-index 8806b74bd7a8..2243d3da55b2 100644
---- a/drivers/net/dsa/realtek/realtek-smi.c
-+++ b/drivers/net/dsa/realtek/realtek-smi.c
-@@ -311,7 +311,21 @@ static int realtek_smi_read(void *ctx, u32 reg, u32 *val)
- 	return realtek_smi_read_reg(priv, reg, val);
- }
- 
--static const struct regmap_config realtek_smi_mdio_regmap_config = {
-+static void realtek_smi_lock(void *ctx)
-+{
-+	struct realtek_priv *priv = ctx;
-+
-+	mutex_lock(&priv->map_lock);
-+}
-+
-+static void realtek_smi_unlock(void *ctx)
-+{
-+	struct realtek_priv *priv = ctx;
-+
-+	mutex_unlock(&priv->map_lock);
-+}
-+
-+static const struct regmap_config realtek_smi_regmap_config = {
- 	.reg_bits = 10, /* A4..A0 R4..R0 */
- 	.val_bits = 16,
- 	.reg_stride = 1,
-@@ -321,6 +335,21 @@ static const struct regmap_config realtek_smi_mdio_regmap_config = {
- 	.reg_read = realtek_smi_read,
- 	.reg_write = realtek_smi_write,
- 	.cache_type = REGCACHE_NONE,
-+	.lock = realtek_smi_lock,
-+	.unlock = realtek_smi_unlock,
-+};
-+
-+static const struct regmap_config realtek_smi_nolock_regmap_config = {
-+	.reg_bits = 10, /* A4..A0 R4..R0 */
-+	.val_bits = 16,
-+	.reg_stride = 1,
-+	/* PHY regs are at 0x8000 */
-+	.max_register = 0xffff,
-+	.reg_format_endian = REGMAP_ENDIAN_BIG,
-+	.reg_read = realtek_smi_read,
-+	.reg_write = realtek_smi_write,
-+	.cache_type = REGCACHE_NONE,
-+	.disable_locking = true,
- };
- 
- static int realtek_smi_mdio_read(struct mii_bus *bus, int addr, int regnum)
-@@ -385,6 +414,7 @@ static int realtek_smi_probe(struct platform_device *pdev)
- 	const struct realtek_variant *var;
- 	struct device *dev = &pdev->dev;
- 	struct realtek_priv *priv;
-+	struct regmap_config rc;
- 	struct device_node *np;
+@@ -631,36 +631,42 @@ static int rtl8365mb_phy_ocp_read(struct realtek_priv *priv, int phy,
+ 	u32 val;
  	int ret;
  
-@@ -395,14 +425,26 @@ static int realtek_smi_probe(struct platform_device *pdev)
- 	if (!priv)
- 		return -ENOMEM;
- 	priv->chip_data = (void *)priv + sizeof(*priv);
--	priv->map = devm_regmap_init(dev, NULL, priv,
--				     &realtek_smi_mdio_regmap_config);
++	mutex_lock(&priv->map_lock);
 +
-+	mutex_init(&priv->map_lock);
-+
-+	rc = realtek_smi_regmap_config;
-+	rc.lock_arg = priv;
-+	priv->map = devm_regmap_init(dev, NULL, priv, &rc);
- 	if (IS_ERR(priv->map)) {
- 		ret = PTR_ERR(priv->map);
- 		dev_err(dev, "regmap init failed: %d\n", ret);
- 		return ret;
- 	}
+ 	ret = rtl8365mb_phy_poll_busy(priv);
+ 	if (ret)
+-		return ret;
++		goto out;
  
-+	rc = realtek_smi_nolock_regmap_config;
-+	priv->map_nolock = devm_regmap_init(dev, NULL, priv, &rc);
-+	if (IS_ERR(priv->map_nolock)) {
-+		ret = PTR_ERR(priv->map_nolock);
-+		dev_err(dev, "regmap init failed: %d\n", ret);
-+		return ret;
-+	}
+ 	ret = rtl8365mb_phy_ocp_prepare(priv, phy, ocp_addr);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	/* Execute read operation */
+ 	val = FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_MASK,
+ 			 RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_VALUE) |
+ 	      FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_RW_MASK,
+ 			 RTL8365MB_INDIRECT_ACCESS_CTRL_RW_READ);
+-	ret = regmap_write(priv->map, RTL8365MB_INDIRECT_ACCESS_CTRL_REG, val);
++	ret = regmap_write(priv->map_nolock, RTL8365MB_INDIRECT_ACCESS_CTRL_REG,
++			   val);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	ret = rtl8365mb_phy_poll_busy(priv);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	/* Get PHY register data */
+-	ret = regmap_read(priv->map, RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG,
+-			  &val);
++	ret = regmap_read(priv->map_nolock,
++			  RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG, &val);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	*data = val & 0xFFFF;
+ 
+-	return 0;
++out:
++	mutex_unlock(&priv->map_lock);
 +
- 	/* Link forward and backward */
- 	priv->dev = dev;
- 	priv->clk_delay = var->clk_delay;
-diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/realtek.h
-index e7d3e1bcf8b8..4fa7c6ba874a 100644
---- a/drivers/net/dsa/realtek/realtek.h
-+++ b/drivers/net/dsa/realtek/realtek.h
-@@ -52,6 +52,8 @@ struct realtek_priv {
- 	struct gpio_desc	*mdc;
- 	struct gpio_desc	*mdio;
- 	struct regmap		*map;
-+	struct regmap		*map_nolock;
-+	struct mutex		map_lock;
- 	struct mii_bus		*slave_mii_bus;
- 	struct mii_bus		*bus;
- 	int			mdio_addr;
++	return ret;
+ }
+ 
+ static int rtl8365mb_phy_ocp_write(struct realtek_priv *priv, int phy,
+@@ -669,32 +675,38 @@ static int rtl8365mb_phy_ocp_write(struct realtek_priv *priv, int phy,
+ 	u32 val;
+ 	int ret;
+ 
++	mutex_lock(&priv->map_lock);
++
+ 	ret = rtl8365mb_phy_poll_busy(priv);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	ret = rtl8365mb_phy_ocp_prepare(priv, phy, ocp_addr);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	/* Set PHY register data */
+-	ret = regmap_write(priv->map, RTL8365MB_INDIRECT_ACCESS_WRITE_DATA_REG,
+-			   data);
++	ret = regmap_write(priv->map_nolock,
++			   RTL8365MB_INDIRECT_ACCESS_WRITE_DATA_REG, data);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	/* Execute write operation */
+ 	val = FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_MASK,
+ 			 RTL8365MB_INDIRECT_ACCESS_CTRL_CMD_VALUE) |
+ 	      FIELD_PREP(RTL8365MB_INDIRECT_ACCESS_CTRL_RW_MASK,
+ 			 RTL8365MB_INDIRECT_ACCESS_CTRL_RW_WRITE);
+-	ret = regmap_write(priv->map, RTL8365MB_INDIRECT_ACCESS_CTRL_REG, val);
++	ret = regmap_write(priv->map_nolock, RTL8365MB_INDIRECT_ACCESS_CTRL_REG,
++			   val);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	ret = rtl8365mb_phy_poll_busy(priv);
+ 	if (ret)
+-		return ret;
++		goto out;
++
++out:
++	mutex_unlock(&priv->map_lock);
+ 
+ 	return 0;
+ }
 -- 
 2.35.0
 
