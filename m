@@ -2,148 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B234B8EB8
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67CE34B8ECD
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 18:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236883AbiBPRAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 12:00:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53532 "EHLO
+        id S236886AbiBPRFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 12:05:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236850AbiBPRAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:00:43 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74992A521C
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:00:30 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id d10so657651eje.10
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:00:30 -0800 (PST)
+        with ESMTP id S234217AbiBPRFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 12:05:15 -0500
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F632A5983
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:05:03 -0800 (PST)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2d62593ad9bso5842917b3.8
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 09:05:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=f8xIakNzQVWTZ40zvyrJZpSWzZUHN6Ie5TpTC2Pm/Y8=;
-        b=evz3g+F9FsbpSvl8yjHO1fClJms4SNJa1xT28hv1/0ioP3Cpw/2m2pvxKlhEL1RUvq
-         uomOvjP87+HKnjHwdRzpo4jk+cd0hwr1ngnH4f8lcZSLkeHU4cjQif2x7Qv1hu1jWaAE
-         T1BFHsAbcKY8aOxRdZjOZZ/5h9eJwZseUj1avZJ/Dc6YEEA6A5vEo+j4/+k4yi4hfiim
-         Mn3/8Dg2ysw7SAMsskly9Te+61bSUON2OBrjQ6IV6ETLADIAC7WbCXiRUIMtXhyguVVT
-         1PwNK0yTCPdSNjprWluwSctM8zk4836qxfWSRJEb2A8F6n/98aDXMPhoo4NYkKUyivKz
-         /J7w==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2juVayWDeDNiMOSl5byAk4ZO9Dz6MyJWtuklD1EzHsc=;
+        b=Me2QFmo170zKETlbtKN8PcGm3z91iWxBm8JFCZl0dLPpr6c2h9bTwnU4y756hvisXL
+         5skvfAhbQ2/kJsqmTfAtDcdB2tYVqSahp9S0T1oiUckh4F3vEepLix+KRHxWdi0DNzVj
+         HZMXcz4rL+rZujczwWkcbsXz76D1YlZkdz72pxcoMXGmQDrdom3WJgEgrU9Nr/mWLL/t
+         o9rHyGG8/Nl40QSN7F+QKxdDpTZdqHqs5LfMY1oZQEfP0oBFZIbX8e1cRux3TIC0SDx7
+         iwkZ4dOMenFdBk2po2X52T8QtHb7spTFl/9korrlnMv80YKkorD3O3NDiiQOqGosBOZI
+         NQCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=f8xIakNzQVWTZ40zvyrJZpSWzZUHN6Ie5TpTC2Pm/Y8=;
-        b=mAL/8DgnX2DF6IUHGQ6BQ0WmWbjR6J0lQs4IoqfViFL36EDeTs9re/DhLF++RQK7jY
-         hnlSlc5vZYCROWNSYpnPeUsW3lsTZh3sDAj50eif/XIoLqYJR7EFGtxe8qCcyfCehVOf
-         PpLLpCss3x2dsA3hIrXfR4xuA1HHeF8Na3dVGSZGfco09o95TmOzCu9pPcf7MUXKEjEA
-         DQTKRopnrt8XcApgxc9urwwh6ODqTEVCRHRvCy2wV/+uKRbB7fwSxnyUGB2VhK3XC+g3
-         WnTcUzNH0iJxOu97lZSacHnvz7Y54VK2sSzEey4bd9PdTtYzLhphcm9crz+dg/5iwAMc
-         qXeA==
-X-Gm-Message-State: AOAM530+1c3T0AlKDr/w4S7ZsLFt7uwJmolP53u0Fzqd8juZBrHqnBvu
-        3nob2y54dbczlyTnf8do1Rk=
-X-Google-Smtp-Source: ABdhPJxO8PjDIXV9wNBhDYKKUAtNYYZhBTrFUYSpzagWpQa7BJEWQaMYZODOdlruR4JXrjUUxnFKvg==
-X-Received: by 2002:a17:906:d8ae:b0:6b7:98d6:6139 with SMTP id qc14-20020a170906d8ae00b006b798d66139mr3002478ejb.498.1645030829331;
-        Wed, 16 Feb 2022 09:00:29 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id z8sm106894ejc.151.2022.02.16.09.00.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 09:00:28 -0800 (PST)
-Date:   Wed, 16 Feb 2022 19:00:27 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Egil Hjelmeland <privat@egil-hjelmeland.no>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Juergen Borleis <jbe@pengutronix.de>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        lorenzo@kernel.org
-Subject: Re: DSA using cpsw and lan9303
-Message-ID: <20220216170027.yrkj5r4zberrx3qb@skbuf>
-References: <yw1x8rud4cux.fsf@mansr.com>
- <d19abc0a-4685-514d-387b-ac75503ee07a@gmail.com>
- <20220215205418.a25ro255qbv5hpjk@skbuf>
- <yw1xa6er2bno.fsf@mansr.com>
- <20220216141543.dnrnuvei4zck6xts@skbuf>
- <yw1x5ype3n6r.fsf@mansr.com>
- <20220216142634.uyhcq7ptjamao6rl@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2juVayWDeDNiMOSl5byAk4ZO9Dz6MyJWtuklD1EzHsc=;
+        b=Z7QnLeOEs7ze/6Wm/EeKuPgza9NJhABQMf0nC/BYjsqfp4DOWw7WIk9XLv7ZRsKy6F
+         VVBaLm58xCWL70OI0wa6NlxrRGY3oXfWfrUXSdvdFDN0/ey7WFWzo+tOg8IOKF7PPSlq
+         MwGxvJSmkpk75L71g4YtkXb8X3ueze8YgJn+hKwbmhlgAL6Oq0eCL6IDJ7gyXybVF4Sg
+         pr+qsblkUppS6o15NeCmrz5pS2AhyIyyZR/SS/+ezEfoHxFjxcBkYRz5fa9d2krMA56I
+         chrKTbGw60ia976HwrEol1Ckt5nqLQVudLK7tNeSd350jCtLPhWYn44GT6glBmhIkQoY
+         K7Ug==
+X-Gm-Message-State: AOAM5321Tu4qP2HczwH+bvo4Ik/FWzAjdlgtP+FdKRAwL4T0MlIMFnuh
+        lNizaIZAnbK9di3M12craFPA2nHxw2YbYtOD+PMmsg==
+X-Google-Smtp-Source: ABdhPJzPZKpp/lmdiJbf1hd+uHL0HzVvyEzxKNLXdYq/W8oDUygcnnrBqzIk0QsOwf5SNcKoOsImPBIsfNXO10j6SmM=
+X-Received: by 2002:a81:993:0:b0:2d6:15f5:b392 with SMTP id
+ 141-20020a810993000000b002d615f5b392mr3246691ywj.489.1645031101716; Wed, 16
+ Feb 2022 09:05:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220216142634.uyhcq7ptjamao6rl@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220216035426.2233808-1-imagedong@tencent.com>
+In-Reply-To: <20220216035426.2233808-1-imagedong@tencent.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 16 Feb 2022 09:04:50 -0800
+Message-ID: <CANn89i+gBxse3zf2gSvm5AU3D_2MSztGArKQxF4B2rTpWNUSwA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/9] net: add skb drop reasons to TCP packet receive
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        flyingpeng@tencent.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 04:26:34PM +0200, Vladimir Oltean wrote:
-> On Wed, Feb 16, 2022 at 02:23:24PM +0000, Måns Rullgård wrote:
-> > Vladimir Oltean <olteanv@gmail.com> writes:
-> > 
-> > > On Wed, Feb 16, 2022 at 01:17:47PM +0000, Måns Rullgård wrote:
-> > >> > Some complaints about accessing the CPU port as dsa_to_port(chip->ds, 0),
-> > >> > but it's not the first place in this driver where that is done.
-> > >> 
-> > >> What would be the proper way to do it?
-> > >
-> > > Generally speaking:
-> > >
-> > > 	struct dsa_port *cpu_dp;
-> > >
-> > > 	dsa_switch_for_each_cpu_port(cpu_dp, ds)
-> > > 		break;
-> > >
-> > > 	// use cpu_dp
-> > >
-> > > If your code runs after dsa_tree_setup_default_cpu(), which contains the
-> > > "DSA: tree %d has no CPU port\n" check, you don't even need to check
-> > > whether cpu_dp was found or not - it surely was. Everything that runs
-> > > after dsa_register_switch() has completed successfully - for example the
-> > > DSA ->setup() method - qualifies here.
-> > 
-> > In this particular driver, the setup function contains this:
-> > 
-> > 	/* Make sure that port 0 is the cpu port */
-> > 	if (!dsa_is_cpu_port(ds, 0)) {
-> > 		dev_err(chip->dev, "port 0 is not the CPU port\n");
-> > 		return -EINVAL;
-> > 	}
-> > 
-> > I take this to mean that port 0 is guaranteed to be the cpu port.  Of
-> > course, it can't hurt to be thorough just in case that check is ever
-> > removed.
-> 
-> Yes, I saw that, and I said that there are other places in the driver
-> that assume port 0 is the CPU port. Although I don't know why that is,
-> if the switch can only operate like that, etc. I just pointed out how it
-> would be preferable to get a hold of the CPU port in a regular DSA
-> driver without any special constraints.
+On Tue, Feb 15, 2022 at 7:54 PM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> In this series patches, reasons for skb drops are added to TCP layer, and
+> both TCPv4 and TCPv6 are considered.
+>
+> in this series patches, the process of packet ingress in TCP layer is
+> considered, as skb drops hardly happens in the egress path.
+>
+> However, it's a little complex for TCP state processing, as I find that
+> it's hard to report skb drop reasons to where it is freed. For example,
+> when skb is dropped in tcp_rcv_state_process(), the reason can be caused
+> by the call of tcp_v4_conn_request(), and it's hard to return a drop
+> reason from tcp_v4_conn_request(). So I just skip such case for this
+> moment.
+>
 
-Ah, silly me, I should have paid more attention on where you're actually
-inserting the code. You could have done:
+I think you should add at least in this cover letter, or better in a
+document that can be amended,
+how this can be used on a typical TCP session.
+For someone who is having issues with TCP flows, what would they need to do.
+Think of something that we (kernel dev) could copy paste to future
+email replies.
+It might be mostly clear for some of us reviewing patches at this
+moment, but in one year we will all forget about the details.
 
-static int lan9303_port_enable(struct dsa_switch *ds, int port,
-			       struct phy_device *phy)
-{
-	struct dsa_port *dp = dsa_to_port(ds, port);
-	struct lan9303 *chip = ds->priv;
 
-	if (!dsa_port_is_user(dp))
-		return 0;
-
-	vlan_vid_add(dp->cpu_dp->master, htons(ETH_P_8021Q), port);
-
-	return lan9303_enable_processing_port(chip, port);
-}
-
-the advantage being that if this driver ever supports the remapping of
-the CPU port, or multiple CPU ports, this logic wouldn't need to be
-changed, as it also conveys the user-to-CPU port affinity.
-
-Anyway, doesn't really matter, and you certainly don't need to resend
-for this. Sorry again for not paying too much attention.
+>
+> Menglong Dong (9):
+>   net: tcp: introduce tcp_drop_reason()
+>   net: tcp: add skb drop reasons to tcp_v4_rcv()
+>   net: tcp: use kfree_skb_reason() for tcp_v6_rcv()
+>   net: tcp: add skb drop reasons to tcp_v{4,6}_inbound_md5_hash()
+>   net: tcp: add skb drop reasons to tcp_add_backlog()
+>   net: tcp: use kfree_skb_reason() for tcp_v{4,6}_do_rcv()
+>   net: tcp: use tcp_drop_reason() for tcp_rcv_established()
+>   net: tcp: use tcp_drop_reason() for tcp_data_queue()
+>   net: tcp: use tcp_drop_reason() for tcp_data_queue_ofo()
+>
+>  include/linux/skbuff.h     | 28 +++++++++++++++++++++++++
+>  include/net/tcp.h          |  3 ++-
+>  include/trace/events/skb.h | 10 +++++++++
+>  net/ipv4/tcp_input.c       | 42 +++++++++++++++++++++++++++++---------
+>  net/ipv4/tcp_ipv4.c        | 36 ++++++++++++++++++++++++--------
+>  net/ipv6/tcp_ipv6.c        | 42 +++++++++++++++++++++++++++++---------
+>  6 files changed, 131 insertions(+), 30 deletions(-)
+>
+> --
+> 2.34.1
+>
