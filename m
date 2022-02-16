@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D11174B7D33
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A31174B7D38
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343550AbiBPCLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:11:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51420 "EHLO
+        id S1343558AbiBPCLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:11:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243539AbiBPCLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:11:51 -0500
+        with ESMTP id S232081AbiBPCLw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:11:52 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185C61EC5B
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6462183B
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644977500; x=1676513500;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pqnRaIFh1sSDvPWAjRsmzpIOXJT8CkRc4jB7kaQCavQ=;
-  b=IbaE57vtRmYp56bHZ2frfvWO/kkFKugnxsy34pZCQfwtYlE0arnkZiCA
-   eEJI6IqZasq0nJRdKEdpMXDUWQkHx0dWPUT0JUChEdfXG8BtxIEzs7yIQ
-   4Qy55W15FHUMCeVvkX7v8V7sWU1SFtaWf5PSZ42BR68RrWy9DLQPzNZ0f
-   YgA7zvNg76RPhMZa8OOqH8kxvwsA0h+9AOgtqKCGj5dT98GTEhnKDjNf0
-   pzukDvBrJEjWhxk6uo7yhombieKI0Kl/65bZ9vOpt6yqq+ns7usVB1z2A
-   UIvb4NZeeGHGdxmRQWr5GWPzKIGa6CURJFHePaHMJbaRBBfPgIcYzZaKs
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909068"
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=VAHQXvGMLjW0BhKz1BGe0ArSmPku8NRPTQCN9f9zBLs=;
+  b=B1u71MOC3yCcml/LRDhLnchlaKOeRxYITewYt4vLfDuuI+gPIq8qtOGS
+   Z3zDkXoT3gNdwyTKOk1FhWb/GyTCElXkE1pIEZ+mUEOBs3Bb1x9VkBZBg
+   hgmN1dLHbhTcB9Aenko43vO6dc37v3pVlto7QZ6PtNMT2V8mDY/RqpOHa
+   ABkzh1tZWNGZYwyVHEUGvcYdhj3djaRc4CgyRHSnE/yjEipJZXvmpKs0x
+   nO3x4hFlh7lie3oLhEJsPSxJXAkrUDyp3rltA9pnirhl3M4JfrOrEMWSx
+   1IHiFNAeXO2j2aRDTilrE/fVLRUTY4Vojq6i7QbzVElQDlWDnRrXJ5kad
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909070"
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="237909068"
+   d="scan'208";a="237909070"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:36 -0800
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="571088814"
+   d="scan'208";a="571088816"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.9.181])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:36 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/8] mptcp: SO_SNDTIMEO and misc. cleanup
-Date:   Tue, 15 Feb 2022 18:11:22 -0800
-Message-Id: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
+Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/8] mptcp: add SNDTIMEO setsockopt support
+Date:   Tue, 15 Feb 2022 18:11:23 -0800
+Message-Id: <20220216021130.171786-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
+References: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,48 +60,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch 1 adds support for the SO_SNDTIMEO socket option on MPTCP sockets.
+From: Geliang Tang <geliang.tang@suse.com>
 
-The remaining patches are various small cleanups:
+Add setsockopt support for SO_SNDTIMEO_OLD and SO_SNDTIMEO_NEW to fix this
+error reported by the mptcp bpf selftest:
 
-Patch 2 removes an obsolete declaration.
+ (network_helpers.c:64: errno: Operation not supported) Failed to set SO_SNDTIMEO
+ test_mptcp:FAIL:115
 
-Patches 3 and 5 remove unnecessary function parameters.
+ All error logs:
 
-Patch 4 removes an extra cast.
+ (network_helpers.c:64: errno: Operation not supported) Failed to set SO_SNDTIMEO
+ test_mptcp:FAIL:115
+ Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
 
-Patches 6 and 7 add some const and ro_after_init modifiers.
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/sockopt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Patch 8 removes extra storage of TCP helpers.
-
-
-Florian Westphal (2):
-  mptcp: mark ops structures as ro_after_init
-  mptcp: don't save tcp data_ready and write space callbacks
-
-Geliang Tang (4):
-  mptcp: add SNDTIMEO setsockopt support
-  mptcp: drop unused sk in mptcp_get_options
-  mptcp: drop unneeded type casts for hmac
-  mptcp: drop port parameter of mptcp_pm_add_addr_signal
-
-Matthieu Baerts (1):
-  mptcp: mptcp_parse_option is no longer exported
-
-Paolo Abeni (1):
-  mptcp: constify a bunch of of helpers
-
- include/net/mptcp.h    |  6 ------
- net/mptcp/options.c    | 13 +++++--------
- net/mptcp/pm.c         | 11 ++++++-----
- net/mptcp/pm_netlink.c | 42 +++++++++++++++++++++---------------------
- net/mptcp/protocol.h   | 29 +++++++++++++----------------
- net/mptcp/sockopt.c    |  2 ++
- net/mptcp/subflow.c    | 37 +++++++++++++++++--------------------
- 7 files changed, 64 insertions(+), 76 deletions(-)
-
-
-base-commit: 2c955856da4faec3a36df1e85b3ba3dfe230d6fd
+diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
+index dacf3cee0027..f949d22f52bd 100644
+--- a/net/mptcp/sockopt.c
++++ b/net/mptcp/sockopt.c
+@@ -343,6 +343,8 @@ static int mptcp_setsockopt_sol_socket(struct mptcp_sock *msk, int optname,
+ 	case SO_RCVLOWAT:
+ 	case SO_RCVTIMEO_OLD:
+ 	case SO_RCVTIMEO_NEW:
++	case SO_SNDTIMEO_OLD:
++	case SO_SNDTIMEO_NEW:
+ 	case SO_BUSY_POLL:
+ 	case SO_PREFER_BUSY_POLL:
+ 	case SO_BUSY_POLL_BUDGET:
 -- 
 2.35.1
 
