@@ -2,192 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B15FB4B7DC9
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:51:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B064B7DCF
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:51:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343766AbiBPCbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:31:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37904 "EHLO
+        id S1343791AbiBPChG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:37:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343758AbiBPCbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:31:07 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E683F543C
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:30:56 -0800 (PST)
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com [209.85.161.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8D76B3F339
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 02:30:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644978654;
-        bh=DRpDpqQiuMMldgIWegtfvVNJCD2dQ9IK5RuKdfq/h34=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=H5UEtIe0dUWEaKkkWc5pW4VBsWHl7h8tYbDW99AZMBnRj9vCD2qr5zO/9T0TPTWCD
-         bmiDMmeJj8zMQQhkEXpSTudmu6aq52fne369rNH7rgU02A0lmjEfhEI93Wd2PFUr/p
-         NJfCwWayNhX9mE4evApH+X0vzN1IBlLFXrF0r2ctEmyx+XiQzhH2XVFbTj6hBMFEUX
-         SMi/19p5Ad5AlXwx8tx982SqCp/m8Bs1p4PabsJm/smxFMXZMduj5fhSlRfh78yDXT
-         Cg4CeEVLa1LVJKoWbMRp0ChCwaucwh7dDYJE8VLQg0W6ut3NSMeH1pU3IkkaBMudyO
-         QM8yumAkeguxg==
-Received: by mail-oo1-f70.google.com with SMTP id h13-20020a4aa74d000000b002e99030d358so518017oom.6
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:30:54 -0800 (PST)
+        with ESMTP id S1343787AbiBPChF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:37:05 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACA1FD9;
+        Tue, 15 Feb 2022 18:36:54 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id z13so1407812edc.12;
+        Tue, 15 Feb 2022 18:36:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oi37CwrmvQWu7kYLVP5Qk+0R9r5dukdFd1VytzpZS/k=;
+        b=EDSUeOStPRdTC6e5aVvR3crbzquCKKUUHq9bE/JBhRpM91KRMVWhwlS6PoIvLjB72y
+         QjSm3yKx8nywjkWrNcWqj9gA0rKDsD7PvCAMt9/3EY3WaGEjnuUE6EtSOYytso/LsFpi
+         LJMd1vbP7zV1D9gVnO2RiV3+saydmHnS9GrLpeHG8Xf9PRe0uhybuU1kiw47zGVrnvwH
+         N6E9dc1kAfpjsrKo/gdpDQlTGNVqXjJaN3eBnawmKfP+8eqWtIp1U4yGdAoGoEwSgCkv
+         6YzJis1GlGFGRgomPQXLEGd1zkUsno+wS88vhegX55R3P0g/d3uYQfZeUgPaEjG7z3IX
+         Mokg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DRpDpqQiuMMldgIWegtfvVNJCD2dQ9IK5RuKdfq/h34=;
-        b=BPVqxZayi1uIu2IKx8RCe4pGsR1EDu9Qf7PPKLOcLJ61pj31bSnCx+rdT7gjbo9lMf
-         fSVecpS5FtQZrdNg6d20Bh9+8P6v1oLkdEPAgPZcNLYAthLaTM+Ge3SRQmWu7zCoRs8B
-         Zcg+2+sHXjbnIoq4yrXeqI1vtLb3XDRsWu5O34hr3Y6MvBz0b4zAAAeKZgjCTmZDi0uu
-         Haxx9FyMTd2CVPNIm2636+bsdK5B3GUxmeRKtsG0L6Lb269W6KslvikJCKAa4/MU0H88
-         60wBGmocBxP16rsG6HBhAtB2snvkm/XlxzBZf2Z4aC8h9GwqRmKmfItNZtfsOcUPhoR0
-         m/uw==
-X-Gm-Message-State: AOAM5328jY+xx3XTNCCdNBbUtUjzixVvbH3BBcH3Nb6QW8mLTuJ+Y9Qb
-        I4/rkqH/72EexOSZxGzWPuGBAal50GliJFPxB7VyIMObFNJ7BX29MUYSurD862khZrZWGN0yQGl
-        lyH/moxtn7iXLK4N7Y+B/Vqwe42/Xr+6+3qojDj+ZSzMuSqUmxg==
-X-Received: by 2002:a05:6808:2110:b0:2d4:4137:b4fc with SMTP id r16-20020a056808211000b002d44137b4fcmr1437207oiw.111.1644978653243;
-        Tue, 15 Feb 2022 18:30:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxKcxvfa5TGSRV5o84na68B8EZ+r4ouH5y0ksyeGSQjbiQCwHBY/Dz9pUtQROobZB9JcDQDjlETALEg+JopC1o=
-X-Received: by 2002:a05:6808:2110:b0:2d4:4137:b4fc with SMTP id
- r16-20020a056808211000b002d44137b4fcmr1437198oiw.111.1644978652934; Tue, 15
- Feb 2022 18:30:52 -0800 (PST)
+        bh=oi37CwrmvQWu7kYLVP5Qk+0R9r5dukdFd1VytzpZS/k=;
+        b=bZefY+01iFnC7vR1NU9rBpMYYkBtYgMIrh/s8Fkkc61G4xIM4ToFlGIc37YCdVPbXh
+         x0HFFgXLFiLe2dghNudTCLN2E8xUVgxm2pbXTGHqDE2P48/6tP7kH4u5tSD0E7ZwSCwh
+         A+rLoGNWDgj71NiKCpfDpgfF3DCO9wEUqcuogsQLfFnDtXIOXqc+1n6+tKx9stujuY4Y
+         qL0IOD14NWHhgXHUH9X6NwH1WGdF31348/jkSBGlGXv8uhjlbPNZYAKjqsK5rUwUKdXc
+         NNWSoQfdte8n9u/079SwHSI40nTYouV60nSGavTYBktQBlCNEr5b9ts9QP6OH3ETeRa+
+         rk/g==
+X-Gm-Message-State: AOAM530RIeBbgbtB71ZuIe0l8IMD3YYxmkqxCPguCfrw5L+n9UBhBxAm
+        eRsIyj0h76hNHFdt8qP473jdgTY5qItyejX+Bq8=
+X-Google-Smtp-Source: ABdhPJyRK0CgWIKxOqLj+s3vIq/pIS4hN2pbnh5k1INrJtCXtsRgDOlnXAu9rp/1GcUUmkkbrGKn22Iv06SB4NDAns4=
+X-Received: by 2002:a05:6402:2801:b0:410:a592:a5d0 with SMTP id
+ h1-20020a056402280100b00410a592a5d0mr713990ede.253.1644979012622; Tue, 15 Feb
+ 2022 18:36:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <YelxMFOiqnfIVmyy@lunn.ch> <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
- <Yeqzhx3GbMzaIbj6@lunn.ch> <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
- <YerOIXi7afbH/3QJ@lunn.ch> <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com>
- <Yex0rZ0wRWQH/L4n@lunn.ch> <CAAd53p6pfuYDor3vgm_bHFe_o7urNhv7W6=QGxVz6c=htt7wLg@mail.gmail.com>
- <YgwMslde2OxOOp9d@lunn.ch>
-In-Reply-To: <YgwMslde2OxOOp9d@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Wed, 16 Feb 2022 10:30:41 +0800
-Message-ID: <CAAd53p4QXHe7XTv5ntsdnC1Z9EpDfXQECKHDEsRA++SEQSdbYQ@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220215112812.2093852-1-imagedong@tencent.com>
+ <20220215112812.2093852-2-imagedong@tencent.com> <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
+In-Reply-To: <CANn89iLWOBy=X1CpY+gvukhQ-bb7hDWd5y+m46K7o5XR0Pbt_A@mail.gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 16 Feb 2022 10:31:41 +0800
+Message-ID: <CADxym3Y+ova1uEouJHy0EmaouK0gWwjE7AAUDzr1+K1D2qGWBg@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/19] net: tcp: introduce tcp_drop_reason()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        flyingpeng@tencent.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 4:27 AM Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, Feb 16, 2022 at 1:34 AM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On Mon, Feb 14, 2022 at 01:40:43PM +0800, Kai-Heng Feng wrote:
-> > On Sun, Jan 23, 2022 at 5:18 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > > One more idea:
-> > > > The hw reset default for register 16 is 0x101e. If the current value
-> > > > is different when entering config_init then we could preserve it
-> > > > because intentionally a specific value has been set.
-> > > > Only if we find the hw reset default we'd set the values according
-> > > > to the current code.
-> > >
-> > > We can split the problem into two.
-> > >
-> > > 1) I think saving LED configuration over suspend/resume is not an
-> > > issue. It is probably something we will be needed if we ever get PHY
-> > > LED configuration via sys/class/leds.
-> > >
-> > > 2) Knowing something else has configured the LEDs and the Linux driver
-> > > should not touch it. In general, Linux tries not to trust the
-> > > bootloader, because experience has shown bad things can happen when
-> > > you do. We cannot tell if the LED configuration is different to
-> > > defaults because something has deliberately set it, or it is just
-> > > messed up, maybe from the previous boot/kexec, maybe by the
-> > > bootloader. Even this Dell system BIOS gets it wrong, it configures
-> > > the LED on power on, but not resume !?!?!. And what about reboot?
+> On Tue, Feb 15, 2022 at 3:30 AM <menglong8.dong@gmail.com> wrote:
 > >
-> > The LED will be reconfigured correctly after each reboot.
-> > The platform firmware folks doesn't want to restore the value on
-> > resume because the Windows driver already does that. They are afraid
-> > it may cause regression if firmware does the same thing.
->
-> How can it cause regressions? Why would the Windows driver decide that
-> if the PHY already has the correct configuration is should mess it all
-> up? Have you looked at the sources and check what it does?
-
-Unfortunately I don't and won't have access to the driver source for Windows.
-
->
-> Anyway, we said that we need to save and restore the LED configuration
-> over suspend/resume because at some point in the maybe distant future,
-> we are going to support user configuration of the LEDs via
-> /sys/class/leds. So you can add the needed support to the PHY driver.
-
-OK.
-
->
-> > This is an ACPI based platform and we are working on new firmware
-> > property "use-firmware-led" to give driver a hint:
-> > ...
-> >     Scope (_SB.PC00.OTN0)
-> >     {
-> >         Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
-> >         {
-> >             ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device
-> > Properties for _DSD */,
-> >             Package (0x01)
-> >             {
-> >                 Package (0x02)
-> >                 {
-> >                     "use-firmware-led",
-> >                     One
-> >                 }
-> >             }
-> >         })
-> >     }
-> > ...
+> > From: Menglong Dong <imagedong@tencent.com>
 > >
-> > Because the property is under PCI device namespace, I am not sure how
-> > to (cleanly) bring the property from the phylink side to phydev side.
-> > Do you have any suggestion?
+> > For TCP protocol, tcp_drop() is used to free the skb when it needs
+> > to be dropped. To make use of kfree_skb_reason() and collect drop
+> > reasons, introduce the function tcp_drop_reason().
+> >
+> > tcp_drop_reason() will finally call kfree_skb_reason() and pass the
+> > drop reason to 'kfree_skb' tracepoint.
+> >
+> > PS: __kfree_skb() was used in tcp_drop(), I'm not sure if it's ok
+> > to replace it with kfree_skb_reason().
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> >  net/ipv4/tcp_input.c | 13 +++++++++++--
+> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> > index af94a6d22a9d..e3811afd1756 100644
+> > --- a/net/ipv4/tcp_input.c
+> > +++ b/net/ipv4/tcp_input.c
+> > @@ -4684,10 +4684,19 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
+> >         return res;
+> >  }
+> >
+> > -static void tcp_drop(struct sock *sk, struct sk_buff *skb)
+> > +static void tcp_drop_reason(struct sock *sk, struct sk_buff *skb,
+> > +                           enum skb_drop_reason reason)
+> >  {
+> >         sk_drops_add(sk, skb);
+> > -       __kfree_skb(skb);
+> > +       /* why __kfree_skb() used here before, other than kfree_skb()?
+> > +        * confusing......
 >
-> I'm no ACPI expert, but i think
-> Documentation/firmware-guide/acpi/dsd/phy.rst gives you the basis:
+> Do not add comments like that if you do not know the difference...
 >
->     During the MDIO bus driver initialization, PHYs on this bus are probed
->     using the _ADR object as shown below and are registered on the MDIO bus.
+> __kfree_skb() is used by TCP stack because it owns skb in receive
+> queues, and avoids touching skb->users
+> because it must be one already.
 >
->       Scope(\_SB.MDI0)
->       {
->         Device(PHY1) {
->           Name (_ADR, 0x1)
->         } // end of PHY1
+> (We made sure not using skb_get() in TCP)
 >
->         Device(PHY2) {
->           Name (_ADR, 0x2)
->         } // end of PHY2
->       }
->
-> These are the PHYs on the MDIO bus. I _think_ that next to the Name,
-> you can add additional properties, like your "use-firmware-led". This
-> would then be very similar to DT, which is in effect what ACPI is
-> copying. So you need to update this document with your new property,
-> making it clear that this property only applies to boot, not
-> suspend/resume. And fwnode_mdiobus_register_phy() can look for the
-> property and set a flag in the phydev structure indicating that ACPI
-> is totally responsible for LEDs at boot time.
+> It seems fine to use kfree_skb() in tcp_drop(), it is hardly fast
+> path, and the added cost is pure noise.
 
-The problem here is there's no MDIO bus in ACPI namespace, namely no
-"Scope(\_SB.MDI0)" on this platform.
+I understand why __kfree_skb() was used now, and it seems
+this commit is ok (with the comments removed of course). I'll
+keep it still.
 
-Since the phydev doesn't have a fwnode, the new property needs to be
-passed from phylink to phydev, and right now I can't find a clean way
-to do it.
-
-Kai-Heng
-
->
->         Andrew
+Thanks!
+Menglong Dong
