@@ -2,73 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B74F24B7EF1
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 04:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A3B4B7F1E
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 05:13:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245622AbiBPD4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 22:56:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51410 "EHLO
+        id S245639AbiBPEMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 23:12:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245598AbiBPD4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 22:56:18 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF41100755;
-        Tue, 15 Feb 2022 19:56:00 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id c10so1075504pfv.8;
-        Tue, 15 Feb 2022 19:56:00 -0800 (PST)
+        with ESMTP id S238867AbiBPEMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 23:12:32 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1899769CF2
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 20:12:21 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id x193so1284117oix.0
+        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 20:12:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZjE2za8E6rbwX5jEVaF9Cp+T5JL4P0j5o1dlD0LxMeg=;
-        b=Cg+Cbe4EpSorYD3QMbtbyA5bvY5hKIEjZ5VaFTUETucTnBj939nbRgCHC0bvcl+VnG
-         clt124pEC81A2FUP3bl4GY8gwSd2OEeMrL6TPCVCZIryyLKZExLeL0Y2GE+fsmn34c3Y
-         fNsgMH+2lAV3ouV6R9Z8URryC21fpD+vokBpVfQTdXJspqsEH9GulhS+sHqAsqk6T6TU
-         na9u0fPQywZEVHhwIebVXYonbf66e2wyNIHnScRWru/gsfLWAGq2Y3T0O1JjrIlSjQ9d
-         HEROXOOjhxae/J+5LGep+Zlf5vIPrtIW50txM+ItUsrpBLtUIwxSOCv0M9MvsP34hbPl
-         fFSA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UvRpLTGct0NdbaUVtSyyHlO52TBHSPzEujlABlyt2B8=;
+        b=Oo2O2m1wHKZWKstBTtkX6hzSuGredBFajyZPIXu1F2XoyGvudRLpzyPKA5CHs3tsgJ
+         sCPbsD2lYyddGkWaCQ/TaHLxg2glCvCEjpci8P3VvGAF97lx2RanWjoTD1LYYueDGZCf
+         anXpsba0q5F3K5U06uNlFdERZM6CRrhw+zNpS/ewWC2Xf4EpDcCUYpE9iGpfWkqv2Msq
+         Vlh0+Qa7meKK+Sju7XhQwgmpjuz+ezvmiEWbmLUSpYfxnm2qtXXhAoq8hJnyKzhl1/BT
+         HGXLwzHxoD0R9ZgicdS8WV7ifoMKDcJozrXuyfDw0j7bV4p5zR9dCMNiqGkLx57uBb7Z
+         MKrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZjE2za8E6rbwX5jEVaF9Cp+T5JL4P0j5o1dlD0LxMeg=;
-        b=wBvXeBvULFRHb+qSjGPzooPhZifCHoIdqN/ZZFS/oxRhttK7bxuVGgaZQnQV3aXANL
-         bkJPlI21L3YosQxbr4cCOI6oGduNCH6VXHakLwx9JapZN+CyiUwG5Hi9P7T3oGYH5aKp
-         THDiR8Zaukf881ebkPGpFPBadMpn1rTRZfxgQmd2+ouJzwv4YJcmprwJl8mphs1n3fpE
-         mfHhCHvprjGh1IVjGVsPf7RSY5HZsZ9pZjOQJJUymu2zQErimNWhsmm8GZAnmUU9LNBE
-         0bbl8JsfyEfIcH6o/Jtswp0DCe1a5zF7L6h2RAEAWWENO19mqdPXQYIkNsLgb21EK/IA
-         TVmg==
-X-Gm-Message-State: AOAM532KRW76uhiaRoy1dWXVkMZBboaRfNYLT+nIba6RdQ/Snvb5CWTJ
-        ce1bGFLQGjetrsQOq8WMTuE=
-X-Google-Smtp-Source: ABdhPJzdAVEDWvBUtRoWX8Ol5FNdxdQRWpFxv1xoWcExFOcyHL8l1GJItbEqfdyR78j5Xs0u0+tVQQ==
-X-Received: by 2002:a63:1651:0:b0:342:b566:57c4 with SMTP id 17-20020a631651000000b00342b56657c4mr712433pgw.258.1644983760278;
-        Tue, 15 Feb 2022 19:56:00 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.110])
-        by smtp.gmail.com with ESMTPSA id nn16sm19099668pjb.2.2022.02.15.19.55.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 19:55:59 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org
-Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
-        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        imagedong@tencent.com, talalahmad@google.com,
-        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
-        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
-        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
-        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com,
-        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-Subject: [PATCH net-next 9/9] net: tcp: use tcp_drop_reason() for tcp_data_queue_ofo()
-Date:   Wed, 16 Feb 2022 11:54:26 +0800
-Message-Id: <20220216035426.2233808-10-imagedong@tencent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220216035426.2233808-1-imagedong@tencent.com>
-References: <20220216035426.2233808-1-imagedong@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UvRpLTGct0NdbaUVtSyyHlO52TBHSPzEujlABlyt2B8=;
+        b=Y9BY5FTXB9ybj3gYnhsJ5ggSjy62+oDSoVfMlqqIEl60yJOC1qla3O4w9wRBJwL8Pm
+         eeqW7DoSWnhBCGcpfb0HrKN5Wd/CjTNQ6XaxmWxmpnFON+vBLSZ1dpF0sb7Z+WJd7IAy
+         vKFXX20UK5IXD4hksPk6xPaJf6HR4K8IBbJJ4GabPCZNdC6C0U4YSSyABGStP84m9zk2
+         SQQv6beuihkGDngFV7HRV0E08beGEv+CgfzmC9ppL6mlJz3bIjILyAlXphSUDrRpqKiT
+         wmTfxZWeCSVH4i9KS8wV44MLk4crU1P42hmSWWImv82H6y1+OQ7bq1JgN0obIjH67gyZ
+         /nRg==
+X-Gm-Message-State: AOAM533+3pAKoLjUhC3ZtxbmOjqrO0dmMHfXaZlBsnN3dLKDh/9GWFhH
+        5IV9AGRkXKd4KurozcjtqlEc4oooctU/XxMu3yo=
+X-Google-Smtp-Source: ABdhPJwUOsYaH8ZGtBg9pywEKVKif0S6KphFEoJJjn/t00MAUUI7AapHEwSb+v3d9+QGcuCc/08yI4H0AlK7/RtQMn0=
+X-Received: by 2002:aca:5b8a:0:b0:2ce:6ee7:2d0c with SMTP id
+ p132-20020aca5b8a000000b002ce6ee72d0cmr3070322oib.314.1644984740411; Tue, 15
+ Feb 2022 20:12:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220215225310.3679266-1-kuba@kernel.org>
+In-Reply-To: <20220215225310.3679266-1-kuba@kernel.org>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 16 Feb 2022 12:12:09 +0800
+Message-ID: <CADvbK_f8SWMxdrGSFo7=9BQMNrbB3nXqGhGv4LKa6v0keiTdsQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: transition netdev reg state earlier in run_todo
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem <davem@davemloft.net>, network dev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,88 +65,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
-
-Replace tcp_drop() used in tcp_data_queue_ofo with tcp_drop_reason().
-Following drop reasons are introduced:
-
-SKB_DROP_REASON_TCP_OFOMERGE
-
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/linux/skbuff.h     |  3 +++
- include/trace/events/skb.h |  1 +
- net/ipv4/tcp_input.c       | 10 ++++++----
- 3 files changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 62a0d7d78f6f..73ed01d87e43 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -371,6 +371,9 @@ enum skb_drop_reason {
- 					 * the right edges of receive
- 					 * window
- 					 */
-+	SKB_DROP_REASON_TCP_OFOMERGE,	/* the data of skb is already in
-+					 * the ofo queue.
-+					 */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index cc1c8f7eaf72..2ab7193313aa 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -36,6 +36,7 @@
- 	EM(SKB_DROP_REASON_TCP_ZEROWINDOW, TCP_ZEROWINDOW)	\
- 	EM(SKB_DROP_REASON_TCP_OLD_DATA, TCP_OLD_DATA)		\
- 	EM(SKB_DROP_REASON_TCP_OVERWINDOW, TCP_OVERWINDOW)	\
-+	EM(SKB_DROP_REASON_TCP_OFOMERGE, TCP_OFOMERGE)		\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 0a4ca818d580..1fc422af11f8 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -4779,7 +4779,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 	if (unlikely(tcp_try_rmem_schedule(sk, skb, skb->truesize))) {
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFODROP);
- 		sk->sk_data_ready(sk);
--		tcp_drop(sk, skb);
-+		tcp_drop_reason(sk, skb, SKB_DROP_REASON_PROTO_MEM);
- 		return;
- 	}
- 
-@@ -4842,7 +4842,8 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 				/* All the bits are present. Drop. */
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb);
-+				tcp_drop_reason(sk, skb,
-+						SKB_DROP_REASON_TCP_OFOMERGE);
- 				skb = NULL;
- 				tcp_dsack_set(sk, seq, end_seq);
- 				goto add_sack;
-@@ -4861,7 +4862,8 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 						 TCP_SKB_CB(skb1)->end_seq);
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPOFOMERGE);
--				tcp_drop(sk, skb1);
-+				tcp_drop_reason(sk, skb1,
-+						SKB_DROP_REASON_TCP_OFOMERGE);
- 				goto merge_right;
- 			}
- 		} else if (tcp_ooo_try_coalesce(sk, skb1,
-@@ -4889,7 +4891,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		tcp_dsack_extend(sk, TCP_SKB_CB(skb1)->seq,
- 				 TCP_SKB_CB(skb1)->end_seq);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPOFOMERGE);
--		tcp_drop(sk, skb1);
-+		tcp_drop_reason(sk, skb1, SKB_DROP_REASON_TCP_OFOMERGE);
- 	}
- 	/* If there is no skb after us, we are the last_skb ! */
- 	if (!skb1)
--- 
-2.34.1
-
+On Wed, Feb 16, 2022 at 6:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> In prep for unregistering netdevs out of order move the netdev
+> state validation and change outside of the loop.
+>
+> While at it modernize this code and use WARN() instead of
+> pr_err() + dump_stack().
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/core/dev.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 909fb3815910..2749776e2dd2 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9906,6 +9906,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+>   */
+>  void netdev_run_todo(void)
+>  {
+> +       struct net_device *dev, *tmp;
+>         struct list_head list;
+>  #ifdef CONFIG_LOCKDEP
+>         struct list_head unlink_list;
+> @@ -9926,24 +9927,23 @@ void netdev_run_todo(void)
+>
+>         __rtnl_unlock();
+>
+> -
+>         /* Wait for rcu callbacks to finish before next phase */
+>         if (!list_empty(&list))
+>                 rcu_barrier();
+>
+> -       while (!list_empty(&list)) {
+> -               struct net_device *dev
+> -                       = list_first_entry(&list, struct net_device, todo_list);
+> -               list_del(&dev->todo_list);
+> -
+> +       list_for_each_entry_safe(dev, tmp, &list, todo_list) {
+>                 if (unlikely(dev->reg_state != NETREG_UNREGISTERING)) {
+> -                       pr_err("network todo '%s' but state %d\n",
+> -                              dev->name, dev->reg_state);
+> -                       dump_stack();
+> +                       netdev_WARN(dev, "run_todo but not unregistering\n");
+> +                       list_del(&dev->todo_list);
+>                         continue;
+>                 }
+>
+>                 dev->reg_state = NETREG_UNREGISTERED;
+> +       }
+> +
+> +       while (!list_empty(&list)) {
+> +               dev = list_first_entry(&list, struct net_device, todo_list);
+> +               list_del(&dev->todo_list);
+>
+>                 netdev_wait_allrefs(dev);
+>
+> --
+> 2.34.1
+>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
