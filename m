@@ -2,114 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 166E74B93F6
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 23:44:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22E934B940E
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 23:52:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237270AbiBPWoi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Feb 2022 17:44:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49394 "EHLO
+        id S237698AbiBPWwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 17:52:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237471AbiBPWoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 17:44:37 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0294E28ADAD
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 14:44:23 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-19-9coR4DLVNQeYdzpxCI8mZQ-1; Wed, 16 Feb 2022 22:44:20 +0000
-X-MC-Unique: 9coR4DLVNQeYdzpxCI8mZQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Wed, 16 Feb 2022 22:44:20 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Wed, 16 Feb 2022 22:44:19 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Guillaume Nault' <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [RFC iproute2] tos: interpret ToS in natural numeral system
-Thread-Topic: [RFC iproute2] tos: interpret ToS in natural numeral system
-Thread-Index: AQHYI4PoKjWHbtmmC0aOBpeA6eR/AayWxL7g
-Date:   Wed, 16 Feb 2022 22:44:19 +0000
-Message-ID: <0b4b5a8f8e9e48248bee3208d8f13286@AcuMS.aculab.com>
-References: <20220216194205.3780848-1-kuba@kernel.org>
- <20220216222352.GA3432@pc-4.home>
-In-Reply-To: <20220216222352.GA3432@pc-4.home>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S237651AbiBPWwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 17:52:13 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF401EAC6;
+        Wed, 16 Feb 2022 14:51:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645051918; x=1676587918;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=V7ZqWbyYqyuczw0xodihuLxrHIcrC6vrsTOE4s2Gfs4=;
+  b=DFwmOntrBRiNwVpAO/wjlOwEg8JX0JzDf3rdJ/2P75b0CT4echzMT8Sz
+   hKtsK6zOMG5vo4hscqvWNFX9A3EjmbEqR4WsBfbHhtzpE8jhKGMlpgphm
+   s0kzfjT3EXC9E0j6bG64cJELkB/6WCBnuFI619M6xHUG7mGagIYYAjs/B
+   J7FOUD8ZuJ86BF62E7xvdkRGknWWaw30FLb+lveEm6Pxc1cVddJtcaU7S
+   A9NgWsG98jlnhN2PoBiFtorrkp1rI0MfsoXT4UkhuvPnF3Vbq4tG/dehZ
+   pe0DqUPLEI3Q7xKzYagaGKVbmrGHPR13f1Cx3QPq0w4e2JZnshJ/2jkHW
+   A==;
+IronPort-SDR: e955Di8nOuIcxBszk9/hrdrDZX6jWu3/SGpc47PPQihQa38yD/XFv/YNDTO8zxIt5WUrjpYEpy
+ ePwTrgytnVdretnjhtT1IOt9oqWTGVMjRCBUz5fBsFzNOWyfnz67TlWoZO2H8MgkRE0MZAVWuu
+ 1rxCGOSLeInr6JKm8bs/1PC1sgfJGHEyikOnMw5KwMIgCpzpNNxr2nnJFypl6gQU+YwdqpgJ9N
+ 3o+n/McOaVEax/MShx1dX+ni58+CWljK9pfs93k1XpK9IocGjWlXJfe2TK0OjbgcjK204FtbHv
+ Gf0OXGOrzAcX/a2GiOALjSbV
+X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; 
+   d="scan'208";a="153345042"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Feb 2022 15:51:56 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 16 Feb 2022 15:51:56 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 16 Feb 2022 15:51:56 -0700
+Date:   Wed, 16 Feb 2022 23:54:34 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        <UNGLinuxDriver@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        <linux-omap@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/5] net: lan966x: remove guards against
+ !BRIDGE_VLAN_INFO_BRENTRY
+Message-ID: <20220216225434.zxljgfuvjmamooi7@soft-dev3-1.localhost>
+References: <20220216164752.2794456-1-vladimir.oltean@nxp.com>
+ <20220216164752.2794456-3-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220216164752.2794456-3-vladimir.oltean@nxp.com>
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guillaume Nault
-> Sent: 16 February 2022 22:24
+The 02/16/2022 18:47, Vladimir Oltean wrote:
 > 
-> On Wed, Feb 16, 2022 at 11:42:05AM -0800, Jakub Kicinski wrote:
-> > Silently forcing a base numeral system is very painful for users.
-> > ip currently interprets tos 10 as 0x10. Imagine user's bash script
-> > does:
-> >
-> >   .. tos $((TOS * 2)) ..
-> >
-> > or any numerical operation on the ToS.
-> >
-> > This patch breaks existing scripts if they expect 10 to be 0x10.
+> Since commit 3116ad0696dd ("net: bridge: vlan: don't notify to switchdev
+> master VLANs without BRENTRY flag"), the bridge no longer emits
+> switchdev notifiers for VLANs that don't have the
+> BRIDGE_VLAN_INFO_BRENTRY flag, so these checks are dead code.
+> Remove them.
 > 
-> I agree that we shouldn't have forced base 16 in the first place.
-> But after so many years I find it a bit dangerous to change that.
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Aren't the TOS values made up of several multi-bit fields and
-very likely to be documented in hex?
-I'm not sure $((TOS * 2)) (or even + 2) makes any sense at all.
+Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-What it more horrid that that base 0 treats numbers that start
-with a 0 as octal - has anyone really used octal since the 1970s
-(except for file permissions).
-
-I have written command line parsers that treat 0tnnn as decimal
-while defaulting to hex.
-That does make it easier to use shell arithmetic for field (like
-addresses) that you would never normally specify in decimal.
-
+> ---
+>  .../ethernet/microchip/lan966x/lan966x_switchdev.c   | 12 ------------
+>  1 file changed, 12 deletions(-)
 > 
-> What about just printing a warning when the value isn't prefixed with
-> '0x'? Something like (completely untested):
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+> index 9fce865287e7..85099a51d4c7 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+> @@ -463,18 +463,6 @@ static int lan966x_handle_port_vlan_add(struct lan966x_port *port,
+>         const struct switchdev_obj_port_vlan *v = SWITCHDEV_OBJ_PORT_VLAN(obj);
+>         struct lan966x *lan966x = port->lan966x;
 > 
-> @@ -535,6 +535,12 @@ int rtnl_dsfield_a2n(__u32 *id, const char *arg)
->  	if (!end || end == arg || *end || res > 255)
->  		return -1;
->  	*id = res;
-> +
-> +	if (strncmp("0x", arg, 2))
-> +		fprintf(stderr,
-> +			"Warning: dsfield and tos parameters are interpreted as hexadecimal values\n"
-> +			"Use 'dsfield 0x%02x' to avoid this message\n", res);
+> -       /* When adding a port to a vlan, we get a callback for the port but
+> -        * also for the bridge. When get the callback for the bridge just bail
+> -        * out. Then when the bridge is added to the vlan, then we get a
+> -        * callback here but in this case the flags has set:
+> -        * BRIDGE_VLAN_INFO_BRENTRY. In this case it means that the CPU
+> -        * port is added to the vlan, so the broadcast frames and unicast frames
+> -        * with dmac of the bridge should be foward to CPU.
+> -        */
+> -       if (netif_is_bridge_master(obj->orig_dev) &&
+> -           !(v->flags & BRIDGE_VLAN_INFO_BRENTRY))
+> -               return 0;
+> -
+>         if (!netif_is_bridge_master(obj->orig_dev))
+>                 lan966x_vlan_port_add_vlan(port, v->vid,
+>                                            v->flags & BRIDGE_VLAN_INFO_PVID,
+> --
+> 2.25.1
+> 
 
-Ugg.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-- 
+/Horatiu
