@@ -2,131 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3DA4B7D53
-	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EF224B7D42
+	for <lists+netdev@lfdr.de>; Wed, 16 Feb 2022 03:21:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343624AbiBPCMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Feb 2022 21:12:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52148 "EHLO
+        id S1343633AbiBPCSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Feb 2022 21:18:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343574AbiBPCMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:12:01 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86ED625C6F
-        for <netdev@vger.kernel.org>; Tue, 15 Feb 2022 18:11:44 -0800 (PST)
+        with ESMTP id S232677AbiBPCSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Feb 2022 21:18:05 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0250CC0848;
+        Tue, 15 Feb 2022 18:17:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644977504; x=1676513504;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=n2nXdu5nNJkPcDV95CNUS45peiEoulnhateBofGFB04=;
-  b=XGUu3spTfDsYxq41+ZI3mTuvm04pYudsJdY7FfCrm6oFIztFYOp5FLPL
-   7KJoTTl2rhauNzOU+7M3AQWdgaG1PSXW6+m108TXiXRSBvA8oQ++3xKsI
-   7L9b9EuqwLSQ76kEmcbdXQ7WsDRI7ATt6hCrsv8WgAhDUEUDbbZj0qBqE
-   QmUsSfbmrL29jQu0YmlzC332s+fpvfihXog/kpTwc97EsYSSt10g1PjB3
-   UaOozxgsdvxLvOqkBJEKq+qySSI9Oq1ZdVp/CMTjRnEKi5ugUcPRL2wGc
-   bcjAO3gBzJfxtT+KNut3CFxlcapjrG5gJlFEtFJatHZZmoyxR4mI0TGoP
+  t=1644977874; x=1676513874;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=btqFkqzI2RBR1zMFFYo/YiodCLmLaxd3w5P6EnHJaGA=;
+  b=W+4EruDUig1ipYL7/FRhxibyu1J8rVQ4VYrmCJud/49gV1WOtJkudb+D
+   lWFe2hOOvk6qxaDudrK0MppwsILuxkF7Qp8FGIt+kJoYfngN15PYJSf3C
+   4WyNIzo/N4MlCAidPCTDnqUHond/1RnuiHrGNY5hNaMi21jBaQlxFbbS+
+   nUtN/6N+S0q3kUa1dqDdwOqgL3XqaS0MZ0PuxRknLbvA04uVTVwZyg+Mk
+   W2W3C4B5j+SSOjM0vGi9GIZzuRDKCfy2VpkpHtR6dTUr9GXYI4k8W8Yfg
+   zNGu8OvBIETJM4u78c83JtaUtCxEFXz8heRM5fC3zA0jDbw2MKtEHcpCI
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="237909085"
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="249336855"
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="237909085"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
+   d="scan'208";a="249336855"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:17:54 -0800
 X-IronPort-AV: E=Sophos;i="5.88,371,1635231600"; 
-   d="scan'208";a="571088827"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.9.181])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:11:37 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 8/8] mptcp: don't save tcp data_ready and write space callbacks
-Date:   Tue, 15 Feb 2022 18:11:30 -0800
-Message-Id: <20220216021130.171786-9-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
-References: <20220216021130.171786-1-mathew.j.martineau@linux.intel.com>
+   d="scan'208";a="704083159"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.241.199]) ([10.212.241.199])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2022 18:17:53 -0800
+Message-ID: <05b6a2dd-f485-ce4a-d508-e90f9304d016@linux.intel.com>
+Date:   Tue, 15 Feb 2022 18:17:53 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net-next v4 08/13] net: wwan: t7xx: Add data path
+ interface
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com
+References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
+ <20220114010627.21104-9-ricardo.martinez@linux.intel.com>
+ <ca592f64-c581-56a8-8d90-5341ebd8932d@linux.intel.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <ca592f64-c581-56a8-8d90-5341ebd8932d@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
 
-Assign the helpers directly rather than save/restore in the context
-structure.
+On 2/8/2022 12:19 AM, Ilpo Järvinen wrote:
+> On Thu, 13 Jan 2022, Ricardo Martinez wrote:
+>
+>> From: Haijun Liu <haijun.liu@mediatek.com>
+>>
+>> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
+>> for initialization, ISR, control and event handling of TX/RX flows.
+...
+>
+>> +	spin_lock_irqsave(&txq->tx_lock, flags);
+>> +	cur_idx = txq->drb_wr_idx;
+>> +	drb_wr_idx_backup = cur_idx;
+>> +
+>> +	txq->drb_wr_idx += send_cnt;
+>> +	if (txq->drb_wr_idx >= txq->drb_size_cnt)
+>> +		txq->drb_wr_idx -= txq->drb_size_cnt;
+>> +
+>> +	t7xx_setup_msg_drb(dpmaif_ctrl, txq->index, cur_idx, skb->len, 0, skb->cb[TX_CB_NETIF_IDX]);
+>> +	t7xx_record_drb_skb(dpmaif_ctrl, txq->index, cur_idx, skb, 1, 0, 0, 0, 0);
+>> +	spin_unlock_irqrestore(&txq->tx_lock, flags);
+>> +
+>> +	cur_idx = t7xx_ring_buf_get_next_wr_idx(txq->drb_size_cnt, cur_idx);
+>> +
+>> +	for (wr_cnt = 0; wr_cnt < payload_cnt; wr_cnt++) {
+>> +		if (!wr_cnt) {
+>> +			data_len = skb_headlen(skb);
+>> +			data_addr = skb->data;
+>> +			is_frag = false;
+>> +		} else {
+>> +			skb_frag_t *frag = info->frags + wr_cnt - 1;
+>> +
+>> +			data_len = skb_frag_size(frag);
+>> +			data_addr = skb_frag_address(frag);
+>> +			is_frag = true;
+>> +		}
+>> +
+>> +		if (wr_cnt == payload_cnt - 1)
+>> +			is_last_one = true;
+>> +
+>> +		/* TX mapping */
+>> +		bus_addr = dma_map_single(dpmaif_ctrl->dev, data_addr, data_len, DMA_TO_DEVICE);
+>> +		if (dma_mapping_error(dpmaif_ctrl->dev, bus_addr)) {
+>> +			dev_err(dpmaif_ctrl->dev, "DMA mapping fail\n");
+>> +			atomic_set(&txq->tx_processing, 0);
+>> +
+>> +			spin_lock_irqsave(&txq->tx_lock, flags);
+>> +			txq->drb_wr_idx = drb_wr_idx_backup;
+>> +			spin_unlock_irqrestore(&txq->tx_lock, flags);
+> Hmm, can txq's drb_wr_idx get updated (or cleared) by something else
+> in between these critical sections?
+drb_wr_idx cannot be modified inbetween, but it can be used to calculate 
+the number of DRBs available, which shouldn't be a problem.
+The function is reserving the DRBs at the beginning, in the rare case of 
+error it will release them.
+...
+> +		txq_id = t7xx_select_tx_queue(dpmaif_ctrl);
+> +		if (txq_id >= 0) {
+> t7xx_select_tx_queue used to do que_started check (in v2) but it
+> doesn't anymore so this if is always true these days. I'm left to
+> wonder though if it was ok to drop that que_started check?
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/protocol.h | 6 ++----
- net/mptcp/subflow.c  | 8 ++++----
- 2 files changed, 6 insertions(+), 8 deletions(-)
+The que_started check wasn't supposed to be dropped, I'll add it back.
 
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 86910f20486a..9d0ee6cee07f 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -468,9 +468,7 @@ struct mptcp_subflow_context {
- 	struct	sock *tcp_sock;	    /* tcp sk backpointer */
- 	struct	sock *conn;	    /* parent mptcp_sock */
- 	const	struct inet_connection_sock_af_ops *icsk_af_ops;
--	void	(*tcp_data_ready)(struct sock *sk);
- 	void	(*tcp_state_change)(struct sock *sk);
--	void	(*tcp_write_space)(struct sock *sk);
- 	void	(*tcp_error_report)(struct sock *sk);
- 
- 	struct	rcu_head rcu;
-@@ -614,9 +612,9 @@ bool mptcp_subflow_active(struct mptcp_subflow_context *subflow);
- static inline void mptcp_subflow_tcp_fallback(struct sock *sk,
- 					      struct mptcp_subflow_context *ctx)
- {
--	sk->sk_data_ready = ctx->tcp_data_ready;
-+	sk->sk_data_ready = sock_def_readable;
- 	sk->sk_state_change = ctx->tcp_state_change;
--	sk->sk_write_space = ctx->tcp_write_space;
-+	sk->sk_write_space = sk_stream_write_space;
- 	sk->sk_error_report = ctx->tcp_error_report;
- 
- 	inet_csk(sk)->icsk_af_ops = ctx->icsk_af_ops;
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 740cb4763461..45c004f87f5a 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1654,10 +1654,12 @@ static int subflow_ulp_init(struct sock *sk)
- 	tp->is_mptcp = 1;
- 	ctx->icsk_af_ops = icsk->icsk_af_ops;
- 	icsk->icsk_af_ops = subflow_default_af_ops(sk);
--	ctx->tcp_data_ready = sk->sk_data_ready;
- 	ctx->tcp_state_change = sk->sk_state_change;
--	ctx->tcp_write_space = sk->sk_write_space;
- 	ctx->tcp_error_report = sk->sk_error_report;
-+
-+	WARN_ON_ONCE(sk->sk_data_ready != sock_def_readable);
-+	WARN_ON_ONCE(sk->sk_write_space != sk_stream_write_space);
-+
- 	sk->sk_data_ready = subflow_data_ready;
- 	sk->sk_write_space = subflow_write_space;
- 	sk->sk_state_change = subflow_state_change;
-@@ -1712,9 +1714,7 @@ static void subflow_ulp_clone(const struct request_sock *req,
- 
- 	new_ctx->conn_finished = 1;
- 	new_ctx->icsk_af_ops = old_ctx->icsk_af_ops;
--	new_ctx->tcp_data_ready = old_ctx->tcp_data_ready;
- 	new_ctx->tcp_state_change = old_ctx->tcp_state_change;
--	new_ctx->tcp_write_space = old_ctx->tcp_write_space;
- 	new_ctx->tcp_error_report = old_ctx->tcp_error_report;
- 	new_ctx->rel_write_seq = 1;
- 	new_ctx->tcp_sock = newsk;
--- 
-2.35.1
+...
+
+>> +/* SKB control buffer indexed values */
+>> +#define TX_CB_NETIF_IDX		0
+>> +#define TX_CB_QTYPE		1
+>> +#define TX_CB_DRB_CNT		2
+> The normal way of storing a struct to skb->cb area is:
+>
+> struct t7xx_skb_cb {
+> 	u8	netif_idx;
+> 	u8	qtype;
+> 	u8	drb_cnt;
+> };
+>
+> #define T7XX_SKB_CB(__skb)	((struct t7xx_skb_cb *)&((__skb)->cb[0]))
+>
+> However, there's only a single txqt/qtype (TXQ_TYPE_DEFAULT) in the
+> patchset? And it seems to me that drb_cnt is a value that could be always
+> derived using t7xx_get_drb_cnt_per_skb() from the skb rather than
+> stored?
+
+The next iteration will contain t7xx_tx_skb_cb and t7xx_rx_skb_cb 
+structures.
+
+Also, q_number is going to be used instead of qtype.
+
+Only one queue is used but I think we can keep this code generic as it 
+is straight forward (not like the drb_lack case), any thoughts?
+
+>> +#define DRB_PD_DATA_LEN		((u32)GENMASK(31, 16))
+> Drop the cast?
+
+The cast was added to avoid a compiler warning about truncated bits.
+
+I'll move it to the place where it is required:
+
+drb->header &= cpu_to_le32(~(u32)DRB_PD_DATA_LEN);
+
+...
 
