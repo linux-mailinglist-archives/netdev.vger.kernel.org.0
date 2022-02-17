@@ -2,57 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C954BA2A0
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 15:11:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F23EE4BA2AB
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 15:14:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241754AbiBQOKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 09:10:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42890 "EHLO
+        id S241763AbiBQONc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 09:13:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbiBQOK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 09:10:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACBB2B164A
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:10:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF1D661D62
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 14:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5233AC340F1;
-        Thu, 17 Feb 2022 14:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645107012;
-        bh=RoKRMH4PL74XtucUBCfghyFfOuVsAkNMrUQS6yBGKMU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DctC25WqAqPdyJDazIeaTJDkKUs/ifEtEzOlRuVphxd3Y20m2j6UEDu7oufi1kZBP
-         Ylx9pVN3TY2aRCzEKGVMRXRqmrbpezmLg4jeccDz4X5Ynini47+NacA6iwNRP7cMuh
-         h5ACDXr2z17Rbh6wqHsOZqQ9CoyGVU5h9PiMBNPY12AXveR/WCn4d/W7/IiXPdO3Xq
-         LwBDp2dLa3IJFZNGSl2yivEf3ub3xG4iDCEaCz/E6+PbNj3yjRiWRJFPphkq+7F43Y
-         6SragIG0JDpk6njNe/1Xu5FSwJYIIakrbUz2rOcoQ5FlSU3AQDdvCSUkq5g4MmiUXz
-         98amAsctwzalw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 39F96E7BB07;
-        Thu, 17 Feb 2022 14:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S241253AbiBQON3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 09:13:29 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A563D2B102C
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:13:14 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id v25so4264242oiv.2
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:13:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=digitalocean.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qb7ol7cP6dS+SYaBDXsRKb9z2B7mLjMfAohF1xVujD4=;
+        b=LgFgBcySCIooM2tx8Y8RMWnEm10vFNWo9fDRqTf/WARg6vTADtA2R5LEfC6kL4iQMB
+         CbkHqBWLhgmjjf6rSgj9GnfA7x6Jv4UoWaGWithXmYhxWyHG2UY3P9Vgj6iHUIGleeQj
+         CktVPS0RyvKt2nbZNh4aGsEVo7gdeAyLprB6w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Qb7ol7cP6dS+SYaBDXsRKb9z2B7mLjMfAohF1xVujD4=;
+        b=BlTrWqND1qzWt6rNdqyU1r5VLHmQJZdjAN4Ivz838JmwvVPJOWcD18SsnkVEHKk8br
+         fcWVWcGjqSTTv/qwLiAju9kmlsYRyRUtY33OypfnTWG+PpiyukQdp3YD8mXApebzjcTK
+         Gx1SZOXRG8hp+azUT+45OE/faAQkb5LhsT0h3eefLzrA+wbQ6D7UV4OD7EucFwCnUxHF
+         lm1z0iBSmpzhDnShK6BA6yuvhXFtb72AnQTllUizcC935MS+CGWYk9WrPp8c7Cu465TZ
+         1PvLO4JPQOse/hjiaMEQj6O1ySeLO6+Ez19LVDUphSFjWYm7M0sfUPaJs7dWXyxWsXHt
+         H7KQ==
+X-Gm-Message-State: AOAM532gi1vt8nVFaxiObIkQmPYzYxdwLUHMWW1sA2i7jh8h/DKdH2DK
+        +bWTTM2EaJbfbItNwgULhUR9PA==
+X-Google-Smtp-Source: ABdhPJyIjKB54xE5ZECSy5ei0Bc0imaBkjmgNgu7HW6oAwPwzRsHz/vweze7HAiuuftsYPi6KLmgFg==
+X-Received: by 2002:a05:6808:301e:b0:2ce:6a75:b880 with SMTP id ay30-20020a056808301e00b002ce6a75b880mr1142025oib.327.1645107193753;
+        Thu, 17 Feb 2022 06:13:13 -0800 (PST)
+Received: from localhost ([2605:a601:ac0f:820:e6fb:7a78:2789:5566])
+        by smtp.gmail.com with ESMTPSA id p22sm20481925oae.33.2022.02.17.06.13.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 06:13:13 -0800 (PST)
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] vsock: remove vsock from connected table when connect is interrupted by a signal
+Date:   Thu, 17 Feb 2022 08:13:12 -0600
+Message-Id: <20220217141312.2297547-1-sforshee@digitalocean.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/11] Support PTP over UDP with the ocelot-8021q DSA
- tagging protocol
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164510701223.18867.7803262646113080201.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Feb 2022 14:10:12 +0000
-References: <20220216143014.2603461-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220216143014.2603461-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, michael@walle.cc
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,51 +66,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+vsock_connect() expects that the socket could already be in the
+TCP_ESTABLISHED state when the connecting task wakes up with a signal
+pending. If this happens the socket will be in the connected table, and
+it is not removed when the socket state is reset. In this situation it's
+common for the process to retry connect(), and if the connection is
+successful the socket will be added to the connected table a second
+time, corrupting the list.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Prevent this by calling vsock_remove_connected() if a signal is received
+while waiting for a connection. This is harmless if the socket is not in
+the connected table, and if it is in the table then removing it will
+prevent list corruption from a double add.
 
-On Wed, 16 Feb 2022 16:30:03 +0200 you wrote:
-> The alternative tag_8021q-based tagger for Ocelot switches, added here:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20210129010009.3959398-1-olteanv@gmail.com/
-> 
-> gained support for PTP over L2 here:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20210213223801.1334216-1-olteanv@gmail.com/
-> 
-> mostly as a minimum viable requirement. That PTP support was mostly
-> self-contained code that installed some rules to replicate PTP packets
-> on the CPU queue, in felix_setup_mmio_filtering().
-> 
-> [...]
+Note for backporting: this patch requires d5afa82c977e ("vsock: correct
+removal of socket from the list"), which is in all current stable trees
+except 4.9.y.
 
-Here is the summary with links:
-  - [net-next,01/11] net: mscc: ocelot: use a consistent cookie for MRP traps
-    https://git.kernel.org/netdev/net-next/c/e3c02b7c655c
-  - [net-next,02/11] net: mscc: ocelot: consolidate cookie allocation for private VCAP rules
-    https://git.kernel.org/netdev/net-next/c/c518afec2883
-  - [net-next,03/11] net: mscc: ocelot: delete OCELOT_MRP_CPUQ
-    https://git.kernel.org/netdev/net-next/c/36fac35b2907
-  - [net-next,04/11] net: mscc: ocelot: use a single VCAP filter for all MRP traps
-    https://git.kernel.org/netdev/net-next/c/b9bace6e534d
-  - [net-next,05/11] net: mscc: ocelot: avoid overlap in VCAP IS2 between PTP and MRP traps
-    https://git.kernel.org/netdev/net-next/c/85ea0daabe5a
-  - [net-next,06/11] net: dsa: felix: use DSA port iteration helpers
-    https://git.kernel.org/netdev/net-next/c/2960bb14ea27
-  - [net-next,07/11] net: mscc: ocelot: keep traps in a list
-    https://git.kernel.org/netdev/net-next/c/e42bd4ed09aa
-  - [net-next,08/11] net: mscc: ocelot: annotate which traps need PTP timestamping
-    https://git.kernel.org/netdev/net-next/c/9d75b8818537
-  - [net-next,09/11] net: dsa: felix: remove dead code in felix_setup_mmio_filtering()
-    https://git.kernel.org/netdev/net-next/c/d78637a8a061
-  - [net-next,10/11] net: dsa: felix: update destinations of existing traps with ocelot-8021q
-    https://git.kernel.org/netdev/net-next/c/993480043655
-  - [net-next,11/11] net: dsa: tag_ocelot_8021q: calculate TX checksum in software for deferred packets
-    https://git.kernel.org/netdev/net-next/c/29940ce32a2d
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+---
+v2: Add Fixes tag and backporting notes.
+---
+ net/vmw_vsock/af_vsock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-You are awesome, thank you!
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 3235261f138d..38baeb189d4e 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1401,6 +1401,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+ 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
++			vsock_remove_connected(vsk);
+ 			goto out_wait;
+ 		} else if (timeout == 0) {
+ 			err = -ETIMEDOUT;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.32.0
 
