@@ -2,80 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 457064B9771
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 05:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B7E4B977D
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 05:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbiBQEHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 23:07:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46262 "EHLO
+        id S233618AbiBQEPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 23:15:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233438AbiBQEHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 23:07:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B2A1C55BE;
-        Wed, 16 Feb 2022 20:07:39 -0800 (PST)
+        with ESMTP id S233612AbiBQEPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 23:15:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD9123BF21;
+        Wed, 16 Feb 2022 20:15:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D8761CDD;
-        Thu, 17 Feb 2022 04:07:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31EE6C340E9;
-        Thu, 17 Feb 2022 04:07:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B4D3B81133;
+        Thu, 17 Feb 2022 04:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7628C340E9;
+        Thu, 17 Feb 2022 04:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645070858;
-        bh=fjwJWdGcrJSh0sn00v3pJAb/p+s41R0CKDbnX5GLN60=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=nODLIADC+4RLaWWzC6VtH1zpkqXVh7/G/gNPgosBuD2l6IxwxlhTEj+XgmrJknumo
-         QhaEtJ4g4vD0AzYXmY1CSNWxk1AcxLVG6j2UB+eJank2hkio2Y92DqCo/yGOFrrchi
-         Y93p4XbwGdbro9wq+PoIiTtzPc5kQCoyPzU1Qaj+2jjQMSlnOovk/cAke/orOJ9b1j
-         KI90LBklm3ZADt26SvfKKFMiW+oGLUG+AMHt7d72bAIzkmCE3KfJfvbWSKkFgiEuah
-         2ZJIYM2EMnoBs4nj/otcpYm/m1bIEfpV++43h/qf6a1XjhCZFK7v6I9632XjvvUHuE
-         27dIsinZlwcRA==
-Message-ID: <244fae2e-bd5b-a46a-20ea-b294d45763ff@kernel.org>
-Date:   Wed, 16 Feb 2022 21:07:34 -0700
+        s=k20201202; t=1645071301;
+        bh=YRRLpw0VKlcqtm9MnJNQWnaNd7iJ03Cx31KvjzoR9Z4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pamwRqLxudVb4gak4TrKQxoID4pOFctV7GraLEY0TbnuLdcaupVd5/9BvQqYSoCvS
+         GS1GnktWxFONFJUfZH90R6DwgQIMVjnFjbrb6G94j/QoG3cJsSFUC1oQwNbrcsLDQF
+         t53SkrM53tcxveN8Aeyh0PjKNgU9OO4tbKPq0h03hCxz+RKBUTK2WapEhoT7gkXEEY
+         uW+KAH0QDohW99PonSbAOgCOcMfpf1A2GFYVLri9nvaoBwJHxOUTa1eeCW1ILiBBlu
+         wn+FtYmXBvCAk/W6h3xC0Yq4kIh+CwhjyfRMo9Zq15z9SGt86g4TYB/tKviBUGYAhN
+         XlCqfUN1s5mLQ==
+Date:   Wed, 16 Feb 2022 20:14:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Seth Forshee <sforshee@digitalocean.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vsock: remove vsock from connected table when connect
+ is interrupted by a signal
+Message-ID: <20220216201459.5a5b58e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220216161122.eacdfgljg2c6yeby@sgarzare-redhat>
+References: <20220216143222.1614690-1-sforshee@digitalocean.com>
+        <20220216161122.eacdfgljg2c6yeby@sgarzare-redhat>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next 3/9] net: tcp: use kfree_skb_reason() for
- tcp_v6_rcv()
-Content-Language: en-US
-To:     menglong8.dong@gmail.com, kuba@kernel.org
-Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
-        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        imagedong@tencent.com, talalahmad@google.com,
-        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
-        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
-        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
-        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com,
-        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-References: <20220216035426.2233808-1-imagedong@tencent.com>
- <20220216035426.2233808-4-imagedong@tencent.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220216035426.2233808-4-imagedong@tencent.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/15/22 8:54 PM, menglong8.dong@gmail.com wrote:
-> @@ -1779,13 +1789,17 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
->  	return ret ? -1 : 0;
->  
->  no_tcp_socket:
-> -	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
-> +	drop_reason = SKB_DROP_REASON_NO_SOCKET;
-> +	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
-> +		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+On Wed, 16 Feb 2022 17:11:22 +0100 Stefano Garzarella wrote:
+> On Wed, Feb 16, 2022 at 08:32:22AM -0600, Seth Forshee wrote:
+> >vsock_connect() expects that the socket could already be in the
+> >TCP_ESTABLISHED state when the connecting task wakes up with a signal
+> >pending. If this happens the socket will be in the connected table, and
+> >it is not removed when the socket state is reset. In this situation it's
+> >common for the process to retry connect(), and if the connection is
+> >successful the socket will be added to the connected table a second
+> >time, corrupting the list.
+> >
+> >Prevent this by calling vsock_remove_connected() if a signal is received
+> >while waiting for a connection. This is harmless if the socket is not in
+> >the connected table, and if it is in the table then removing it will
+> >prevent list corruption from a double add.
+> >
+> >Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+> >---
+> > net/vmw_vsock/af_vsock.c | 1 +
+> > 1 file changed, 1 insertion(+)
+> >
+> >diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+> >index 3235261f138d..38baeb189d4e 100644
+> >--- a/net/vmw_vsock/af_vsock.c
+> >+++ b/net/vmw_vsock/af_vsock.c
+> >@@ -1401,6 +1401,7 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+> > 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+> > 			sock->state = SS_UNCONNECTED;
+> > 			vsock_transport_cancel_pkt(vsk);
+> >+			vsock_remove_connected(vsk);
+> > 			goto out_wait;
+> > 		} else if (timeout == 0) {
+> > 			err = -ETIMEDOUT;
+> 
+> Thanks for this fix! The patch LGTM:
+> 
+> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> 
+> 
+> @Dave, @Jakub, since we need this also in stable branches, I was going 
+> to suggest adding a Fixes tag, but I'm a little confused: the issue 
+> seems to have always been there, so from commit d021c344051a ("VSOCK: 
+> Introduce VM Sockets"), but to use vsock_remove_connected() as we are 
+> using in this patch, we really need commit d5afa82c977e ("vsock: correct 
+> removal of socket from the list").
+> 
+> Commit d5afa82c977e was introduces in v5.3 and it was backported in 
+> v4.19 and v4.14, but not in v4.9.
+> So if we want to backport this patch also for v4.9, I think we need 
+> commit d5afa82c977e as well.
 
-same here. First failure takes precedence.
-
+The fixes tag sounds good. Dunno what's the best way to handle this
+case. We can add a mention of the dependency to the patch description.
+Personally I'd keep things simple, add the Fixes tag and keep an eye
+on the backports, if 4.9 doesn't get it - email Greg and explain.
