@@ -2,78 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B886F4B958A
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 02:36:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F06844B958D
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 02:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiBQBhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 20:37:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33776 "EHLO
+        id S230452AbiBQBif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 20:38:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiBQBhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 20:37:04 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9298712E74B
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 17:36:51 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id x24so4348239oie.9
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 17:36:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Tq4RXYpfO2aLSB8k+hi7rM4F94Nmon+w5MsB+fGDnoY=;
-        b=anyOhrwlqC5RNcOrrX7dtX5ns7A12S2bNws/JuNMHcKpMuQXt8DnImjlP+bk1AlvAN
-         /1oJ5UatvRbzytw4Y4Qf3W15x273fJbBSQBVJ3t5eocuF4rARy34WrDNTNIMmr3ZiKMK
-         uN9I6vOhbsHju4U+JZGW1d1t5tX7x9yiot2LPQz4kVWJydGHhwyZKtoCbRzGxrjsUmpe
-         TtIiRBScQR2lSs/oxJn6kGv4Tkeus7MlctfHLkkRgp4IZowruFP8mMl5y/p2q+i64DjY
-         PPcqeE/AcOZC2FLU4i0odSAnOSJ+1k9+89Ov6u4hDwyuYasEzKJ03GPX8UwS/wAMXZIR
-         C6WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Tq4RXYpfO2aLSB8k+hi7rM4F94Nmon+w5MsB+fGDnoY=;
-        b=ZnIXpILFiv7cUCGfp3ea4bk1h/dCE/cSSPFJ3ytpt8qG5nCxanA+q5/MuiFV7nRpyp
-         kIUckM8aDkTE9ig8ck9ERwvMzpr0ZmsAUC0KzpjuHLUM2o597O69ZeUHlRPiuwGV2X9L
-         4BDDL+nKhgBW4OQ/YvgxqR14SZ5MVNA46DjLoXcQwaFFscNjv7Hk5P6flwka9n71WFhV
-         tzaqOR4iHyUTd3DxuPSRQVTwOexXfTPOu47JAKiX2Q4scIbBymSI8ummHtAqUlcXkRA8
-         EyyP50i6fgdOOE5KCfknms7nJNHe3EGU2GoSSbwreuLHDR72fAirBs4ix0sW3m8tXU7o
-         pt/w==
-X-Gm-Message-State: AOAM531zmxQREXY1s/XQ+koiJC4kgWqMmQoYWZay+ZAtMZDTlrMj1XJj
-        2Pv0bCXC8ox2zAM3naGk/WY=
-X-Google-Smtp-Source: ABdhPJyR1DWq8wALVUHlzGO6nXksW8izzJzn8u6XB0+w4W96YY3GbIdG922EWqBMwme2y1g/OOTLGA==
-X-Received: by 2002:a05:6808:f0a:b0:2ce:2765:1112 with SMTP id m10-20020a0568080f0a00b002ce27651112mr1904835oiw.137.1645061810984;
-        Wed, 16 Feb 2022 17:36:50 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:7844:9da9:9581:42ec? ([2601:282:800:dc80:7844:9da9:9581:42ec])
-        by smtp.googlemail.com with ESMTPSA id l22sm15976630otj.44.2022.02.16.17.36.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Feb 2022 17:36:50 -0800 (PST)
-Message-ID: <cc2e5a64-b53e-b501-4a08-92e087d52dda@gmail.com>
-Date:   Wed, 16 Feb 2022 18:36:49 -0700
+        with ESMTP id S229569AbiBQBie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 20:38:34 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28251FFF53;
+        Wed, 16 Feb 2022 17:38:19 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R341e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guoheyi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4fb5iR_1645061895;
+Received: from 30.225.140.32(mailfrom:guoheyi@linux.alibaba.com fp:SMTPD_---0V4fb5iR_1645061895)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 17 Feb 2022 09:38:16 +0800
+Message-ID: <641b3e71-211d-bb48-52c3-e34eef28e508@linux.alibaba.com>
+Date:   Thu, 17 Feb 2022 09:38:15 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next 5/5] bonding: add new option ns_ip6_target
+Subject: Re: [Issue report] drivers/ftgmac100: DHCP occasionally fails during
+ boot up or link down/up
 Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jonathan Toppins <jtoppins@redhat.com>
-References: <20220216080838.158054-1-liuhangbin@gmail.com>
- <20220216080838.158054-6-liuhangbin@gmail.com>
- <c13d92e2-3ac5-58cb-2b21-ebe03e640983@gmail.com> <Yg2kGkGKRTVXObYh@Laptop-X1>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <Yg2kGkGKRTVXObYh@Laptop-X1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        Joel Stanley <joel@jms.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Dylan Hung <dylan_hung@aspeedtech.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <0e456c4d-aa22-4e7f-9b2c-3059fe840cb9@linux.alibaba.com>
+ <YgwSAjGN2eWUpamo@lunn.ch>
+From:   Heyi Guo <guoheyi@linux.alibaba.com>
+In-Reply-To: <YgwSAjGN2eWUpamo@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,12 +49,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/16/22 6:25 PM, Hangbin Liu wrote:
- > For Bonding I think yes. Bonding has disallowed to config via
-module_param.
-> But there are still users using sysfs for bonding configuration.
-> 
-> Jay, Veaceslav, please correct me if you think we can stop using sysfs.
-> 
+Thanks for your advice; I'll take try :)
 
-new features, new API only?
+Heyi
+
+
+在 2022/2/16 上午4:50, Andrew Lunn 写道:
+> On Tue, Feb 15, 2022 at 02:38:51PM +0800, Heyi Guo wrote:
+>> Hi,
+>>
+>> We are using Aspeed 2600 and found DHCP occasionally fails during boot up or
+>> link down/up. The DHCP client is systemd 247.6 networkd. Our network device
+>> is 2600 MAC4 connected to a RGMII PHY module.
+>>
+>> Current investigation shows the first DHCP discovery packet sent by
+>> systemd-networkd might be corrupted, and sysmtemd-networkd will continue to
+>> send DHCP discovery packets with the same XID, but no other packets, as
+>> there is no IP obtained at the moment. However the server side will not
+>> respond with this serial of DHCP requests, until it receives some other
+>> packets. This situation can be recovered by another link down/up, or a "ping
+>> -I eth0 xxx.xxx.xxx.xxx" command to insert some other TX packets.
+>>
+>> Navigating the driver code ftgmac.c, I've some question about the work flow
+>> from link down to link up. I think the flow is as below:
+>>
+>> 1. ftgmac100_open() will enable net interface with ftgmac100_init_all(), and
+>> then call phy_start()
+>>
+>> 2. When PHY is link up, it will call netif_carrier_on() and then adjust_link
+>> interface, which is ftgmac100_adjust_link() for ftgmac100
+> The order there is questionable. Maybe it should first call the adjust
+> link callback, and then the netif_carrier_on(). However...
+>
+>> 3. In ftgmac100_adjust_link(), it will schedule the reset work
+>> (ftgmac100_reset_task)
+>>
+>> 4. ftgmac100_reset_task() will then reset the MAC
+> Because of this delayed reset, changing the order will not help this
+> driver.
+>
+>> I found networkd will start to send DHCP request immediately after
+>> netif_carrier_on() called in step 2, but step 4 will reset the MAC, which
+>> may potentially corrupt the sending packet.
+> What is not clear to my is why it is scheduling the work rather than
+> just doing it. At least for adjust_link, it is in a context it can
+> sleep. ftgmac100_set_ringparam() should also be able to
+> sleep. ftgmac100_interrupt() cannot sleep, so it does need to schedule
+> work.
+>
+> I would suggest you refactor ftgmac100_reset_task() into a function
+> that actually does the reset, and a wrapper which takes a
+> work_struct. adjust_link can then directly do the reset, which
+> probably solves your problem.
+
+> 	 Andrew
