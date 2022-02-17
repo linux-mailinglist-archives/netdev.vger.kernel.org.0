@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16B74B94CA
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 01:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4064B94D5
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 01:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiBQADo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 19:03:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33094 "EHLO
+        id S238652AbiBQAJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 19:09:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiBQADn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 19:03:43 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332DE45AE7;
-        Wed, 16 Feb 2022 16:03:25 -0800 (PST)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nKUGY-0003xS-CD; Thu, 17 Feb 2022 01:03:22 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nKUGY-000D9W-2D; Thu, 17 Feb 2022 01:03:22 +0100
-Subject: Re: [PATCH v4 net-next 5/8] bpf: Keep the (rcv) timestamp behavior
- for the existing tc-bpf@ingress
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        with ESMTP id S229820AbiBQAJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 19:09:26 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CD12A0D5F;
+        Wed, 16 Feb 2022 16:09:13 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JzZtm4lBLz4xv2;
+        Thu, 17 Feb 2022 11:09:04 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1645056548;
+        bh=aFgbb19PdfuiQgsKTnloIe4Cdxn6pysbLZDibuzMHSQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pp6xMnlyDZY36465Orog80PIf7TuqocrVFR14PteUke4iMgbzX7ySdUUhPNz5yt0/
+         VauOI8zSocCm6lAPQrMoJTBW7hAIMDfS4OeduJvP78q08gGNTP5MgTl5xjmqSKhTt+
+         QASYCA8dVOGuvtIJ/lcyDgyMO9iEP8B551/RVrANoYsB1WN6WU+OSBH4vrYpcmha4o
+         nfEFQQa211Fu/5tBzo2UAkWzu6fmihFr3oNjYX/AD22OrrGhVku9HP6Epj10QbErVN
+         KI+mI32awzoX1TO3+Zg0V8Gs2MEqqCzOq2Sdzr9zmrj239Y9cNbFIcHNrndrr9OWiC
+         xrUhLEm8vh3Tw==
+Date:   Thu, 17 Feb 2022 11:09:03 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kalle Valo <kvalo@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wireless <linux-wireless@vger.kernel.org>,
         David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
-        Willem de Bruijn <willemb@google.com>
-References: <20220211071232.885225-1-kafai@fb.com>
- <20220211071303.890169-1-kafai@fb.com>
- <f0d76498-0bb1-36a6-0c8c-b334f6fb13c2@iogearbox.net>
- <20220216055142.n445wwtqmqewc57a@kafai-mbp.dhcp.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b181acbe-caf8-502d-4b7b-7d96b9fc5d55@iogearbox.net>
-Date:   Thu, 17 Feb 2022 01:03:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Networking <netdev@vger.kernel.org>
+Cc:     Ilan Peer <ilan.peer@intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the wireless-next tree with the net
+ tree
+Message-ID: <20220217110903.7f58acae@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220216055142.n445wwtqmqewc57a@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26455/Wed Feb 16 10:22:44 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/yb=10YBNOeYNc=p1b9zxDvj";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,112 +57,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/16/22 6:51 AM, Martin KaFai Lau wrote:
-> On Wed, Feb 16, 2022 at 12:30:53AM +0100, Daniel Borkmann wrote:
->> On 2/11/22 8:13 AM, Martin KaFai Lau wrote:
->>> The current tc-bpf@ingress reads and writes the __sk_buff->tstamp
->>> as a (rcv) timestamp.  This patch is to backward compatible with the
->>> (rcv) timestamp expectation when the skb->tstamp has a mono delivery_time.
->>>
->>> If needed, the patch first saves the mono delivery_time.  Depending on
->>> the static key "netstamp_needed_key", it then resets the skb->tstamp to
->>> either 0 or ktime_get_real() before running the tc-bpf@ingress.  After
->>> the tc-bpf prog returns, if the (rcv) timestamp in skb->tstamp has not
->>> been changed, it will restore the earlier saved mono delivery_time.
->>>
->>> The current logic to run tc-bpf@ingress is refactored to a new
->>> bpf_prog_run_at_ingress() function and shared between cls_bpf and act_bpf.
->>> The above new delivery_time save/restore logic is also done together in
->>> this function.
->>>
->>> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
->>> ---
->>>    include/linux/filter.h | 28 ++++++++++++++++++++++++++++
->>>    net/sched/act_bpf.c    |  5 +----
->>>    net/sched/cls_bpf.c    |  6 +-----
->>>    3 files changed, 30 insertions(+), 9 deletions(-)
->>>
->>> diff --git a/include/linux/filter.h b/include/linux/filter.h
->>> index d23e999dc032..e43e1701a80e 100644
->>> --- a/include/linux/filter.h
->>> +++ b/include/linux/filter.h
->>> @@ -699,6 +699,34 @@ static inline void bpf_compute_data_pointers(struct sk_buff *skb)
->>>    	cb->data_end  = skb->data + skb_headlen(skb);
->>>    }
->>> +static __always_inline u32 bpf_prog_run_at_ingress(const struct bpf_prog *prog,
->>> +						   struct sk_buff *skb)
->>> +{
->>> +	ktime_t tstamp, saved_mono_dtime = 0;
->>> +	int filter_res;
->>> +
->>> +	if (unlikely(skb->mono_delivery_time)) {
->>> +		saved_mono_dtime = skb->tstamp;
->>> +		skb->mono_delivery_time = 0;
->>> +		if (static_branch_unlikely(&netstamp_needed_key))
->>> +			skb->tstamp = tstamp = ktime_get_real();
->>> +		else
->>> +			skb->tstamp = tstamp = 0;
->>> +	}
->>> +
->>> +	/* It is safe to push/pull even if skb_shared() */
->>> +	__skb_push(skb, skb->mac_len);
->>> +	bpf_compute_data_pointers(skb);
->>> +	filter_res = bpf_prog_run(prog, skb);
->>> +	__skb_pull(skb, skb->mac_len);
->>> +
->>> +	/* __sk_buff->tstamp was not changed, restore the delivery_time */
->>> +	if (unlikely(saved_mono_dtime) && skb_tstamp(skb) == tstamp)
->>> +		skb_set_delivery_time(skb, saved_mono_dtime, true);
->>
->> So above detour is for skb->tstamp backwards compatibility so users will see real time.
->> I don't see why we special case {cls,act}_bpf-only, given this will also be the case
->> for other subsystems (e.g. netfilter) when they read access plain skb->tstamp and get
->> the egress one instead of ktime_get_real() upon deferred skb_clear_delivery_time().
->>
->> If we would generally ignore it, then the above bpf_prog_run_at_ingress() save/restore
->> detour is not needed (so patch 5/6 should be dropped). (Meaning, if we need to special
->> case {cls,act}_bpf only, we could also have gone for simpler bpf-only solution..)
-> The limitation here is there is only one skb->tstamp field.  I don't see
-> a bpf-only solution or not will make a difference here.
+--Sig_/yb=10YBNOeYNc=p1b9zxDvj
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-A BPF-only solution would probably just treat the skb->tstamp as (semi-)opaque,
-meaning, there're no further bits on clock type needed in skb, but given the
-environment is controlled by an orchestrator it can decide which tstamps to
-retain or which to reset (e.g. by looking at skb->sk). (The other approach is
-exposing info on clock base as done here to some degree for mono/real.)
+Hi all,
 
-> Regarding the netfilter (good point!), I only see it is used in nfnetlink_log.c
-> and nfnetlink_queue.c.  Like the tapping cases (earlier than the bpf run-point)
-> and in general other ingress cases, it cannot assume the rcv timestamp is
-> always there, so they can be changed like af_packet in patch 3
-> which is a straight forward change.  I can make the change in v5.
-> 
-> Going back to the cls_bpf at ingress.  If the concern is on code cleanliness,
-> how about removing this dance for now while the current rcv tstamp usage is
-> unclear at ingress.  Meaning keep the delivery_time (if any) in skb->tstamp.
-> This dance could be brought in later when there was breakage and legit usecase
-> reported.  The new bpf prog will have to use the __sk_buff->delivery_time_type
-> regardless if it wants to use skb->tstamp as the delivery_time, so they won't
-> assume delivery_time is always in skb->tstamp and it will be fine even this
-> dance would be brought back in later.
+Today's linux-next merge of the wireless-next tree got a conflict in:
 
-Yes, imho, this is still better than the bpf_prog_run_at_ingress() workaround.
-Ideally, we know when we call helpers like ktime_get_ns() that the clock will
-be mono. We could track that on verifier side in the register type, and when we
-end up writing to skb->tstamp, we could implicitly also set the clock base bits
-in skb for the ctx rewrite telling that it's of type 'mono'. Same for reading,
-we could add __sk_buff->tstamp_type which program can access (imo tstamp_type
-is more generic than a __sk_buff->delivery_time_type). If someone needs
-ktime_get_clocktai_ns() for sch_etf in future, it could be similar tracking
-mechanism. Also setting skb->tstamp to 0 ...
+  net/mac80211/mlme.c
 
-> Regarding patch 6, it is unrelated.  It needs to clear the
-> mono_delivery_time bit if the bpf writes 0 to the skb->tstamp.
+between commit:
 
-... doesn't need to be done as code after bpf_prog_run(), but should be brought
-closer to when we write to the ctx where verifier generates the relevant insns.
-Imo, that's better than having this outside in bpf_prog_run() which is then
-checked no matter what program was doing or even accessing tstamp.
+  a72c01a94f1d ("mac80211: mlme: check for null after calling kmemdup")
 
-Thanks,
-Daniel
+from the net tree and commit:
+
+  820acc810fb6 ("mac80211: Add EHT capabilities to association/probe reques=
+t")
+
+from the wireless-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/mac80211/mlme.c
+index 20b57ddf149c,197cad4a2768..000000000000
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@@ -671,7 -692,49 +692,49 @@@ static void ieee80211_add_he_ie(struct=20
+  	ieee80211_ie_build_he_6ghz_cap(sdata, skb);
+  }
+ =20
++ static void ieee80211_add_eht_ie(struct ieee80211_sub_if_data *sdata,
++ 				 struct sk_buff *skb,
++ 				 struct ieee80211_supported_band *sband)
++ {
++ 	u8 *pos;
++ 	const struct ieee80211_sta_he_cap *he_cap;
++ 	const struct ieee80211_sta_eht_cap *eht_cap;
++ 	struct ieee80211_chanctx_conf *chanctx_conf;
++ 	u8 eht_cap_size;
++ 	bool reg_cap =3D false;
++=20
++ 	rcu_read_lock();
++ 	chanctx_conf =3D rcu_dereference(sdata->vif.chanctx_conf);
++ 	if (!WARN_ON_ONCE(!chanctx_conf))
++ 		reg_cap =3D cfg80211_chandef_usable(sdata->wdev.wiphy,
++ 						  &chanctx_conf->def,
++ 						  IEEE80211_CHAN_NO_HE |
++ 						  IEEE80211_CHAN_NO_EHT);
++ 	rcu_read_unlock();
++=20
++ 	he_cap =3D ieee80211_get_he_iftype_cap(sband,
++ 					     ieee80211_vif_type_p2p(&sdata->vif));
++ 	eht_cap =3D ieee80211_get_eht_iftype_cap(sband,
++ 					       ieee80211_vif_type_p2p(&sdata->vif));
++=20
++ 	/*
++ 	 * EHT capabilities element is only added if the HE capabilities element
++ 	 * was added so assume that 'he_cap' is valid and don't check it.
++ 	 */
++ 	if (WARN_ON(!he_cap || !eht_cap || !reg_cap))
++ 		return;
++=20
++ 	eht_cap_size =3D
++ 		2 + 1 + sizeof(eht_cap->eht_cap_elem) +
++ 		ieee80211_eht_mcs_nss_size(&he_cap->he_cap_elem,
++ 					   &eht_cap->eht_cap_elem) +
++ 		ieee80211_eht_ppe_size(eht_cap->eht_ppe_thres[0],
++ 				       eht_cap->eht_cap_elem.phy_cap_info);
++ 	pos =3D skb_put(skb, eht_cap_size);
++ 	ieee80211_ie_build_eht_cap(pos, he_cap, eht_cap, pos + eht_cap_size);
++ }
++=20
+ -static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+ +static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+  {
+  	struct ieee80211_local *local =3D sdata->local;
+  	struct ieee80211_if_managed *ifmgd =3D &sdata->u.mgd;
+
+--Sig_/yb=10YBNOeYNc=p1b9zxDvj
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmINkh8ACgkQAVBC80lX
+0GziJQf/Swhed+4iBAPtpfrDVee66dAad92nU7K3ONqUxgGmBcRsYgYcpUTXy7jk
+TimVhEG6hPEe0oC7FTSj38+crUYvJJ8sHq0ZPbZu9IPlXChIrdKr4JdNVq5rgy6V
+KmHWfbz5rzApxlmsq7ogVyuIahqnDXxshJIAuINVfzl1yrnjqz5eTzrKU65WtNAC
+U+4YTk+Wtb6uuLSkFJlrhxWx8uefi5lWT73ZO2ow7ittPjUBFNTCy7wDM5/jbCzq
+8IR1oVQKZih3fAkUSIuZVqGOzlci6HPF/+ivwjjtHFIug1ie7XY0y9T9TVPIiVVH
+ZH/7sOlE6xdX0jPNGwaOo8ggF+kICw==
+=DM8N
+-----END PGP SIGNATURE-----
+
+--Sig_/yb=10YBNOeYNc=p1b9zxDvj--
