@@ -2,115 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DB54BA59A
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F17F4BA5B1
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:24:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243013AbiBQQUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 11:20:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59760 "EHLO
+        id S239320AbiBQQYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 11:24:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242999AbiBQQUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:20:06 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FBD273741
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:19:51 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id d23so156442lfv.13
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:19:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version:content-transfer-encoding;
-        bh=VJeuuIPHYU1/tEQqOIQyI/rF94+EQB46FuLZOmOG+/I=;
-        b=ac4HgF6lbEslHg/xVgSTFRHKyfK/BYICGnm6R2TNcs5JyVvO5UkXYYdvy4BTXZHf9k
-         U/HApR4mZBwcZTX5XU1lIdqgeGbLXbJngh66k0/xFjhW2jjVmtaxx6b2hzpJSKmUqJj4
-         KzgVbbx6fqanwTCTIJgeKWLTJN6K4MxrvlauI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version:content-transfer-encoding;
-        bh=VJeuuIPHYU1/tEQqOIQyI/rF94+EQB46FuLZOmOG+/I=;
-        b=sC5vJosiG9LGti6U+OrO3iu53kO2fegYa9490DEYeAqxZaZH7jzt5+8VP6Nn8/Ot4u
-         bs/g7u3cGcAc4E704M1Ke8ivdD37ChahxjZHHCblIYBBVtZnikD7Lr76dlS3jot2e4rI
-         TLvca0Fe93+JMx0lBVprVYk8fiyC0GABHgoDzEzdhDfUWiOEJmKvHv2ejrF80VLBzjbm
-         6+M2b76+hjiB8jHmIdwqxiCFkXNdPak/yMyGw3vXUeN0HyPdhfYyzt0A0ZX76LMhJc5x
-         MhUTl1PSZEya4Hz6TVfGxKsT/CxRE0nlEvRfze6xVPaQkdMGfrB5Qp22es/ieV38X6xu
-         tzdw==
-X-Gm-Message-State: AOAM531Cj7MsT4mhLJ28uIwfxAIOj36kf3DjTsmPStfswQJ14hutwtlO
-        zwbl45EyvOLOfaKVUmM1cU5Icw==
-X-Google-Smtp-Source: ABdhPJxDpy91vLYS9JgyBILOe7LAINlJPvBmeN8USpS7jdxgLeY8e4I2AmXQNZwF/RoKaMdYX6yfeg==
-X-Received: by 2002:a05:6512:31c:b0:441:a0f6:e091 with SMTP id t28-20020a056512031c00b00441a0f6e091mr2555356lfp.238.1645114790162;
-        Thu, 17 Feb 2022 08:19:50 -0800 (PST)
-Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id w8sm7888lfr.242.2022.02.17.08.19.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 08:19:49 -0800 (PST)
-References: <20220209184333.654927-1-jakub@cloudflare.com>
- <20220209184333.654927-3-jakub@cloudflare.com>
- <CAEf4BzaRNLw9_EnaMo5e46CdEkzbJiVU3j9oxnsemBKjNFf3wQ@mail.gmail.com>
- <e0999e46e5332ca79bdfe4d9b9d7f17e4366a340.camel@linux.ibm.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Cover 4-byte load from
- remote_port in bpf_sk_lookup
-Date:   Thu, 17 Feb 2022 17:11:13 +0100
-In-reply-to: <e0999e46e5332ca79bdfe4d9b9d7f17e4366a340.camel@linux.ibm.com>
-Message-ID: <87fsohea8q.fsf@cloudflare.com>
+        with ESMTP id S230150AbiBQQYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:24:54 -0500
+X-Greylist: delayed 162 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 08:24:39 PST
+Received: from condef-02.nifty.com (condef-02.nifty.com [202.248.20.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBEC23C869
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:24:39 -0800 (PST)
+Received: from conssluserg-03.nifty.com ([10.126.8.82])by condef-02.nifty.com with ESMTP id 21HGIPTQ027374;
+        Fri, 18 Feb 2022 01:18:25 +0900
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 21HGI8NA031377;
+        Fri, 18 Feb 2022 01:18:08 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 21HGI8NA031377
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1645114688;
+        bh=Evn3QxAJ3AK623czP1KMQcw+4ELyfCxTkHQ5Lw0/E5s=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jySjE2TzRv0gSlv7h6ZRl9dlkxrzl7OH8OqFVMQ4aN60wdW1UG3P99QU/SIDcnPYj
+         /ICUgKlYytLyV0isp2pXf90jmA3ySgld25u06yDQQS+Yk5/3okj8fm9mmSmxvY1J6u
+         bj0I2BA32pRAiVLkeAZm7lb1gSoZYX5KxiTQTbW8Hip72bUJ3GkChhf2zPUrg6hNID
+         2/KGdWCSlXJqiJQOIzRRnzdJJlJV+E3vVnCNhhyEFS78EbmPx8fBKVM+Lwl6xnWemu
+         fYS4UB2JYIQ/Xillu+F2HkX7Mqn6ih8gWlrlzV3dvosCGinGQbvF7+1Tn9ww00rsa6
+         uwJz8gADf32CA==
+X-Nifty-SrcIP: [209.85.210.180]
+Received: by mail-pf1-f180.google.com with SMTP id z16so98666pfh.3;
+        Thu, 17 Feb 2022 08:18:08 -0800 (PST)
+X-Gm-Message-State: AOAM533Tdgg+QppF39AS1md67zTSOUvkjcao/o+s9VdAjM0OW/jJvNfk
+        7ykohGGYkxj3wVdSq1f/Bnx1aE+sEdDIaxasgGg=
+X-Google-Smtp-Source: ABdhPJxG74jrNQGUDFWqFZtiqdH5h/m+m6m6q6zil5UZDbpeBqPqUekmytPGczpLxC7Oa4jn7eJzRi7FeZ65GrbyJEc=
+X-Received: by 2002:a65:5341:0:b0:363:da77:99df with SMTP id
+ w1-20020a655341000000b00363da7799dfmr2959567pgr.126.1645114687528; Thu, 17
+ Feb 2022 08:18:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
+ <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com> <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
+ <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu> <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
+In-Reply-To: <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 18 Feb 2022 01:17:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com>
+Message-ID: <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 03:18 PM +01, Ilya Leoshkevich wrote:
-> On Wed, 2022-02-16 at 13:44 -0800, Andrii Nakryiko wrote:
->> On Wed, Feb 9, 2022 at 10:43 AM Jakub Sitnicki <jakub@cloudflare.com>
->> wrote:
-
-[...]
-
->> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Load from remote_port field w=
-ith zero padding (backward
->> > compatibility) */
->> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 val_u32 =3D *(__u32 *)&ctx->remo=
-te_port;
->> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (val_u32 !=3D bpf_htonl(bpf_n=
-tohs(SRC_PORT) << 16))
->> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 return SK_DROP;
->> > +
->>=20
->> Jakub, can you please double check that your patch set doesn't break
->> big-endian architectures? I've noticed that our s390x test runner is
->> now failing in the sk_lookup selftest. See [0]. Also CC'ing Ilya.
+On Fri, Feb 18, 2022 at 12:15 AM David Laight <David.Laight@aculab.com> wro=
+te:
 >
-> I agree that this looks like an endianness issue. The new check seems
-> to make little sense on big-endian to me, so I would just #ifdef it
-> out.
+> From: Christophe Leroy
+> > Sent: 17 February 2022 14:55
+> >
+> > Le 17/02/2022 =C3=A0 15:50, Christophe Leroy a =C3=A9crit :
+> > > Adding Ingo, Andrew and Nick as they were involved in the subjet,
+> > >
+> > > Le 17/02/2022 =C3=A0 14:36, David Laight a =C3=A9crit :
+> > >> From: Christophe Leroy
+> > >>> Sent: 17 February 2022 12:19
+> > >>>
+> > >>> All functions defined as static inline in net/checksum.h are
+> > >>> meant to be inlined for performance reason.
+> > >>>
+> > >>> But since commit ac7c3e4ff401 ("compiler: enable
+> > >>> CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
+> > >>> uninline functions when it wants.
+> > >>>
+> > >>> Fair enough in the general case, but for tiny performance critical
+> > >>> checksum helpers that's counter-productive.
+> > >>
+> > >> There isn't a real justification for allowing the compiler
+> > >> to 'not inline' functions in that commit.
+> > >
+> > > Do you mean that the two following commits should be reverted:
+> > >
+> > > - 889b3c1245de ("compiler: remove CONFIG_OPTIMIZE_INLINING entirely")
+> > > - 4c4e276f6491 ("net: Force inlining of checksum functions in
+> > > net/checksum.h")
+> >
+> > Of course not the above one (copy/paste error), but:
+> > - ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly")
+>
+> That's the one I looked at.
 
-We have a very similar check for a load from context in
-progs/test_sock_fields.c, which is not causing problems:
 
-static __noinline bool sk_dst_port__load_word(struct bpf_sock *sk)
-{
-	__u32 *word =3D (__u32 *)&sk->dst_port;
-	return word[0] =3D=3D bpf_htonl(0xcafe0000);
-}
 
-So I think I just messed something up here. Will dig into it.
+No.  Not that one.
 
-[...]
+The commit you presumably want to revert is:
+
+a771f2b82aa2 ("[PATCH] Add a section about inlining to
+Documentation/CodingStyle")
+
+This is now referred to as "__always_inline disease", though.
+
+
+
+
+CONFIG_OPTIMIZE_INLINING has 14 years of history for x86.
+See commit 60a3cdd06394 ("x86: add optimized inlining").
+We always give gcc freedom to not inline functions marked as inline.
+
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
