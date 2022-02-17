@@ -2,315 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 337AD4B9FF2
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 13:19:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A1364BA025
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 13:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240342AbiBQMTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 07:19:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46634 "EHLO
+        id S240481AbiBQMau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 07:30:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbiBQMTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 07:19:40 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE06A2A82DB;
-        Thu, 17 Feb 2022 04:19:25 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jzv5S3MH0z9sS8;
-        Thu, 17 Feb 2022 13:19:24 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id xBzLmjhg3TyM; Thu, 17 Feb 2022 13:19:24 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jzv5S2R32z9sRv;
-        Thu, 17 Feb 2022 13:19:24 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 445198B77C;
-        Thu, 17 Feb 2022 13:19:24 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id rNFXPKHIWOLA; Thu, 17 Feb 2022 13:19:24 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 087DE8B763;
-        Thu, 17 Feb 2022 13:19:23 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HCJEXX405815
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 13:19:14 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HCJDt2405814;
-        Thu, 17 Feb 2022 13:19:13 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org,
-        Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
-Date:   Thu, 17 Feb 2022 13:19:07 +0100
-Message-Id: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S240468AbiBQMaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 07:30:46 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2065.outbound.protection.outlook.com [40.107.223.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057702AE285
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 04:30:32 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H8wYK5wEfelsIV2HR2ZYacxgJtUlc4h8sYcVcfLjQBLVmqQRQFj9LDHSJMGlSwFQWPjKtlWQ6aN4j5a1H2F42maJETNf/a7gJwlIGf21jk/tu3p2lkfb8PVM/rh4XjmGlGhTz9AXU1ix7xRsHBMgw5sNpkVHtZEv/ezpI37p0nBahp1qE23XkGitQUhj+ZE/QKx5wT/CiJ8y7z4WPfzsLfWnkADdCG8Xh2WV+3bnQOkYWE38UYA1pUSyRinJOWLrhgg/LLh3tA6eXhti+WPBbVD+5FhjPypQ6YEaggPghCopIv1u+zH1OHYReJQtXyRHXVznWJ3BGjHHzAwcd8hiPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vMOj9A4AazOyZtrg06lsA3nYDSDe05G7N1Nv9S6H3bM=;
+ b=g+k1Vd6EagtSql6fe2QDURMb3G7l9J7hbGbVV8gjEE8rpuv4mjOs+EAq0dQ8UHnf3w29cIZnwNuIn46PKENAGazu3eoCeIBC1tUlWbNeGiWUhNby3umEuPdkHLj2/A5EfjKcsmHKYgeQysHtABhsbXg65clVlFHOmbobUhmZB3MZZQKPxgdNbSxRtAm0yw1E77NONvTeS9fs43A6ooq56mftgIL6Trme97pra9BRZMjxal/2xUTnw52/ZoRwbfNhrHTx/ruEMdmga61idwg59seLqbDxaj2JKA0jVlBCNMr53w34Xt9TkTRNICd0YfaKQauyuxv5LTLl/stAyHdBOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vMOj9A4AazOyZtrg06lsA3nYDSDe05G7N1Nv9S6H3bM=;
+ b=tzOA0yFYpzVUfpO2MhnxWz+jDKcBSVSMvPeYmFjvzR5LX2VI768wO8BJweW5MUmcjtmW2CGGCIk3RmdwJFuLECBwvyySAgrfG6lbhRlm87JH9fIl/BiFDHxOdNFYcBHHKdeWk6TfZefn9ww8jFOCSBapnefyQjBrK9cMLpTfjVyFhDYVl8maW6+zXSa4H5+kwXECS0q6Q3c7LPMoLgqzggkz2UyfVsIU85lU3ZbveO6fughLCAfoKlEUV2tWMIjrIUzWDaBTpJW0A8Ney2I8v3DVVniKzQYoGjNtpmCraxpA4o671x7xlTRnln2XjYOy0q9t1inZyG3DeGUiXdmN+w==
+Received: from DM6PR01CA0011.prod.exchangelabs.com (2603:10b6:5:296::16) by
+ DM4PR12MB5843.namprd12.prod.outlook.com (2603:10b6:8:66::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4975.15; Thu, 17 Feb 2022 12:30:30 +0000
+Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:296:cafe::88) by DM6PR01CA0011.outlook.office365.com
+ (2603:10b6:5:296::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16 via Frontend
+ Transport; Thu, 17 Feb 2022 12:30:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4995.15 via Frontend Transport; Thu, 17 Feb 2022 12:30:30 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 17 Feb
+ 2022 12:30:30 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 17 Feb 2022
+ 04:30:29 -0800
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Thu, 17 Feb
+ 2022 04:30:27 -0800
+From:   Eli Cohen <elic@nvidia.com>
+To:     <stephen@networkplumber.org>, <netdev@vger.kernel.org>
+CC:     <jasowang@redhat.com>, <lulu@redhat.com>, <si-wei.liu@oracle.com>,
+        "Eli Cohen" <elic@nvidia.com>
+Subject: [PATCH v2 0/4] vdpa tool enhancements
+Date:   Thu, 17 Feb 2022 14:30:20 +0200
+Message-ID: <20220217123024.33201-1-elic@nvidia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645100346; l=8199; s=20211009; h=from:subject:message-id; bh=v6MTJe/nEEUeoiXp6PfSr9gz+VNgRLmJ7rahEeCQNs8=; b=2zarvVpKFu+fjJa3ALxyIoRqQkLIOLjVcYlHZkTz1CGAEgqTtzd//2JkGlluTGBvKqb35E7HUWmU nhjlJSdyCJpmB9+yo3JcN/RGCVZ60de0b6ozXl9dYlRWtDiTfCvi
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 58357f45-9fef-4481-a761-08d9f2114935
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5843:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB584309DC9AAAF5AADE60C805AB369@DM4PR12MB5843.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6jJoK6eRYCQh65gzIWZbuIINz6ZAPV6+uYSNTd3RLaZMuFIWxhkMZ+7yUoh7bSmhK1kahWl29jEzApz6TsDBjb8LGrbyJLgG48oqjzJ5bXrEjMF20FzktxuIBC0nJ8Q+by+D/qeowCljdE8ncxDL8Mx06MvDfU4N2PBFtGFQBakhhhEdyx45OZgf0OtL8YeK4YQX04lBe+cpGRVXVCtjCc4DgAJs3R8MrOhc3Ym6wDkM+7sr9bMm8hBB9U95gpPekSkmQJWT8soCcoJ92jetlU8g/QvGsbfQVKL7lRhioIclADk2LuIJz6WcDGh7FBcwH3LwAIBqCl6GTCLOTxxjh+Iyy3Pz0KqH8Jr8UU/n4RalxuXej6bqzl5Z3y934ZACQxpY/eeDqJtmPZhpgLuo/9Rzh/xJOu4qeHvnAB7dgIL6aL1mXqHPQTU9MvZ5eYwqdzrg1soUImHp5tFY7ANzFWnd3JUHenP9JpOMJSgN4y29Ttcr5HA9+L6NDXjtqC378ksetcBvUmkr7sth3prBYk2aFqTJ/vHeRUwxRX2eQL2DvV1dY9HGa0X/fGj9CmRjsD6rO7+gR4qfjT5Aq2u+MpmIqVDbRGMMoH5dK98y9R1haYQVrF1EQWq3ePQ7ER74tvKDKJaKVu2NbICCR5n+U74Yq/gkWkn+JVZMaNg8TeWFpa2EiJ47LEHMUnNcMeu3K8YXwDd9n52wEYG41MU07A==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(86362001)(4744005)(83380400001)(2906002)(107886003)(7696005)(82310400004)(26005)(1076003)(186003)(2616005)(6666004)(336012)(40460700003)(426003)(5660300002)(47076005)(70206006)(356005)(54906003)(36860700001)(110136005)(316002)(81166007)(70586007)(8676002)(36756003)(8936002)(4326008)(508600001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 12:30:30.4848
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58357f45-9fef-4481-a761-08d9f2114935
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5843
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All functions defined as static inline in net/checksum.h are
-meant to be inlined for performance reason.
+The following four patch series enhances vdpa to show negotiated
+features for a vdpa device, max features for a management device and
+allows to configure max number of virtqueue pairs.
 
-But since commit ac7c3e4ff401 ("compiler: enable
-CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
-uninline functions when it wants.
+v1->v2:
+1. Re-arrange print functions to better reuse code.
+2. Fix printing management dev features instead of negotiated features
+3. Update help string with max_vqp option
 
-Fair enough in the general case, but for tiny performance critical
-checksum helpers that's counter-productive.
+Eli Cohen (4):
+  vdpa: Remove unsupported command line option
+  vdpa: Allow for printing negotiated features of a device
+  vdpa: Support for configuring max VQ pairs for a device
+  vdpa: Support reading device features
 
-The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
-Those helpers being 'static inline' in header files you suddenly find
-them duplicated many times in the resulting vmlinux.
+ vdpa/include/uapi/linux/vdpa.h |   4 +
+ vdpa/vdpa.c                    | 151 +++++++++++++++++++++++++++++++--
+ 2 files changed, 148 insertions(+), 7 deletions(-)
 
-Here is a typical exemple when building powerpc pmac32_defconfig
-with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
-
-	c04a23cc <csum_sub>:
-	c04a23cc:	7c 84 20 f8 	not     r4,r4
-	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
-	c04a23d4:	7c 63 01 94 	addze   r3,r3
-	c04a23d8:	4e 80 00 20 	blr
-		...
-	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
-		...
-	c04a754c <csum_sub>:
-	c04a754c:	7c 84 20 f8 	not     r4,r4
-	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
-	c04a7554:	7c 63 01 94 	addze   r3,r3
-	c04a7558:	4e 80 00 20 	blr
-		...
-	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
-		...
-	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
-		...
-	c04e3b08 <csum_sub>:
-	c04e3b08:	7c 84 20 f8 	not     r4,r4
-	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
-	c04e3b10:	7c 63 01 94 	addze   r3,r3
-	c04e3b14:	4e 80 00 20 	blr
-		...
-	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
-		...
-	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
-		...
-	c0512d34 <csum_sub>:
-	c0512d34:	7c 84 20 f8 	not     r4,r4
-	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
-	c0512d3c:	7c 63 01 94 	addze   r3,r3
-	c0512d40:	4e 80 00 20 	blr
-		...
-	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
-		...
-	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
-		...
-
-Restore the expected behaviour by using __always_inline for all
-functions defined in net/checksum.h
-
-vmlinux size is even reduced by 256 bytes with this patch:
-
-	   text	   data	    bss	    dec	    hex	filename
-	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
-	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
-
-Fixes: ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly")
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v3: Added fixes tag and handled checkpatch warning about length of lines.
-
-v2: Rebased on net tree
----
- include/net/checksum.h | 45 +++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 22 deletions(-)
-
-diff --git a/include/net/checksum.h b/include/net/checksum.h
-index 5218041e5c8f..712b554a23be 100644
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -22,7 +22,7 @@
- #include <asm/checksum.h>
- 
- #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
--static inline
-+static __always_inline
- __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- 				      int len)
- {
-@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- #endif
- 
- #ifndef HAVE_CSUM_COPY_USER
--static __inline__ __wsum csum_and_copy_to_user
-+static __always_inline __wsum csum_and_copy_to_user
- (const void *src, void __user *dst, int len)
- {
- 	__wsum sum = csum_partial(src, len, ~0U);
-@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_to_user
- #endif
- 
- #ifndef _HAVE_ARCH_CSUM_AND_COPY
--static inline __wsum
-+static __always_inline __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
- {
- 	memcpy(dst, src, len);
-@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
- #endif
- 
- #ifndef HAVE_ARCH_CSUM_ADD
--static inline __wsum csum_add(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
- {
- 	u32 res = (__force u32)csum;
- 	res += (__force u32)addend;
-@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
- }
- #endif
- 
--static inline __wsum csum_sub(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
- {
- 	return csum_add(csum, ~addend);
- }
- 
--static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
- {
- 	u16 res = (__force u16)csum;
- 
-@@ -75,12 +75,12 @@ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
- 	return (__force __sum16)(res + (res < (__force u16)addend));
- }
- 
--static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
- {
- 	return csum16_add(csum, ~addend);
- }
- 
--static inline __wsum csum_shift(__wsum sum, int offset)
-+static __always_inline __wsum csum_shift(__wsum sum, int offset)
- {
- 	/* rotate sum to align it with a 16b boundary */
- 	if (offset & 1)
-@@ -88,42 +88,43 @@ static inline __wsum csum_shift(__wsum sum, int offset)
- 	return sum;
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_add(csum, csum_shift(csum2, offset));
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
- {
- 	return csum_block_add(csum, csum2, offset);
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_sub(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_block_add(csum, ~csum2, offset);
- }
- 
--static inline __wsum csum_unfold(__sum16 n)
-+static __always_inline __wsum csum_unfold(__sum16 n)
- {
- 	return (__force __wsum)n;
- }
- 
--static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
-+static __always_inline
-+__wsum csum_partial_ext(const void *buff, int len, __wsum sum)
- {
- 	return csum_partial(buff, len, sum);
- }
- 
- #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
- 
--static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
-+static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
- {
- 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
- }
- 
--static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-+static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
- {
- 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
- 
-@@ -136,7 +137,7 @@ static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-  *  m : old value of a 16bit field
-  *  m' : new value of a 16bit field
-  */
--static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
-+static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
- {
- 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
- }
-@@ -150,15 +151,15 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
- void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
- 				     __wsum diff, bool pseudohdr);
- 
--static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
--					    __be16 from, __be16 to,
--					    bool pseudohdr)
-+static __always_inline
-+void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
-+			      __be16 from, __be16 to, bool pseudohdr)
- {
- 	inet_proto_csum_replace4(sum, skb, (__force __be32)from,
- 				 (__force __be32)to, pseudohdr);
- }
- 
--static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
-+static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
- 				    int start, int offset)
- {
- 	__sum16 *psum = (__sum16 *)(ptr + offset);
-@@ -175,12 +176,12 @@ static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
- 	return delta;
- }
- 
--static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
-+static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
- {
- 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
- }
- 
--static inline __wsum wsum_negate(__wsum val)
-+static __always_inline __wsum wsum_negate(__wsum val)
- {
- 	return (__force __wsum)-((__force u32)val);
- }
 -- 
-2.34.1
+2.35.1
 
