@@ -2,107 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DF014BA0F5
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 14:22:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6004BA150
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 14:34:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237724AbiBQNWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 08:22:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46546 "EHLO
+        id S240939AbiBQNcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 08:32:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiBQNWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 08:22:21 -0500
-Received: from out199-12.us.a.mail.aliyun.com (out199-12.us.a.mail.aliyun.com [47.90.199.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE5B11C24;
-        Thu, 17 Feb 2022 05:22:05 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4kW.U-_1645104120;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V4kW.U-_1645104120)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 17 Feb 2022 21:22:01 +0800
-Date:   Thu, 17 Feb 2022 21:22:00 +0800
-From:   "dust.li" <dust.li@linux.alibaba.com>
-To:     Stefan Raspl <raspl@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH] net/smc: Add autocork support
-Message-ID: <20220217132200.GA5443@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
- <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
- <20220216152721.GB39286@linux.alibaba.com>
- <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+        with ESMTP id S240936AbiBQNcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 08:32:36 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F281D4213;
+        Thu, 17 Feb 2022 05:32:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=z1q+PPoygA80lRFmhMSW1T+Gpqj/0Q4oQCOQD+/QCAU=; b=eBIPu7ab4R1QeKCzhqgGZ4ej2u
+        h6iTruoEzP+w8PDWKwK4B3mmk+YQ/I0Ca56oKB5SYYV37uxAlPc5Ots068mt2dqUcjSAv9mXO55Hf
+        2Nf9rVdQoVIRNZj7y0OsuAILrfheAwEDCq7HXR2EIlA4FXqkxWK9bRTP0DlH/ggKle/Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nKgtH-006MoH-1V; Thu, 17 Feb 2022 14:32:11 +0100
+Date:   Thu, 17 Feb 2022 14:32:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] net: dsa: realtek: fix PHY register read
+ corruption
+Message-ID: <Yg5OW03cPFTMhcmw@lunn.ch>
+References: <20220216160500.2341255-1-alvin@pqrs.dk>
+ <CAJq09z6Mr7QFSyqWuM1jjm9Dis4Pa2A4yi=NJv1w4FM0WoyqtA@mail.gmail.com>
+ <87k0dusmar.fsf@bang-olufsen.dk>
+ <Yg1MfpK5PwiAbGfU@lunn.ch>
+ <878ruasjd8.fsf@bang-olufsen.dk>
+ <Yg47o5619InYrs9x@lunn.ch>
+ <877d9tr66o.fsf@bang-olufsen.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <877d9tr66o.fsf@bang-olufsen.dk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 10:37:28AM +0100, Stefan Raspl wrote:
->On 2/16/22 16:27, dust.li wrote:
->> On Wed, Feb 16, 2022 at 02:58:32PM +0100, Stefan Raspl wrote:
->> > On 2/16/22 04:49, Dust Li wrote:
->> > > diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
->> > > index 5df3940d4543..bc737ac79805 100644
->> > > --- a/net/smc/smc_tx.c
->> > > +++ b/net/smc/smc_tx.c
->> > > @@ -31,6 +31,7 @@
->> > >    #include "smc_tracepoint.h"
->> > >    #define SMC_TX_WORK_DELAY	0
->> > > +#define SMC_DEFAULT_AUTOCORK_SIZE	(64 * 1024)
->> > 
->> > Probably a matter of taste, but why not use hex here?
->> 
->> Yeah, I have no option on this, I will change it in the next version.
->> But I think it should have no real difference since the compiler
->> should do the calculation.
->
->Agreed - this is just to make it a tiny bit easier to digest.
->
->
->> > Are there any fixed plans to make SMC_DEFAULT_AUTOCORK dynamic...? 'cause
->> > otherwise we could simply eliminate this parameter, and use the define within
->> > smc_should_autocork() instead.
->> 
->> Yes! Actually I'd like it to be dynamic variable too...
->> 
->> I didn't do it because I also want to add a control switch for the autocork
->> feature just like TCP. In that case I need to add 2 variables here.
->> But I found adding dynamic variables using netlink would introduce a lot of
->> redundant code and may even bring ABI compatibility issues in the future, as
->> I mentioned here:
->> https://lore.kernel.org/netdev/20220216114618.GA39286@linux.alibaba.com/T/#mecfcd3f8c816d07dbe35e4748d17008331c89523
->> 
->> I'm not sure that's the right way to do it. In this case, I prefer using
->> sysctl which I think would be easier, but I would like to listen to your advice.
->
->Extending the Netlink interface should be possible without breaking the API -
->we'd be adding further variables, not modifying or removing existing ones.
->Conceptually, Netlink is the way to go for any userspace interaction with
->SMC, which includes anything config-related.
+> If you have the patience to answer a few more questions:
+> 
+> 1. You mentioned in an earlier mail that the mdio_lock is used mostly by
+> PHY drivers to synchronize their access to the MDIO bus, for a single
+> read or write. You also mentioned that for switches which have a more
+> involved access pattern (for instance to access switch management
+> registers), a higher lock is required. In realtek-mdio this is the case:
+> we do a couple of reads and writes over the MDIO bus to access the
+> switch registers. Moreover, the mdio_lock is held for the duration of
+> these MDIO bus reads/writes. Do you mean to say that one should rather
+> take a higher-level lock and only lock/unlock the mdio_lock on a
+> per-read or per-write basis? Put another way, should this:
+> 
+> static int realtek_mdio_read(void *ctx, u32 reg, u32 *val)
+> {
+> 	/* ... */
+>         
+> 	mutex_lock(&bus->mdio_lock);
+> 
+> 	bus->write(bus, priv->mdio_addr, ...);
+
+It would be better to use __mdiobus_write()
+
+> 	bus->write(bus, priv->mdio_addr, ...);
+> 	bus->write(bus, priv->mdio_addr, ...);
+> 	bus->read(bus, priv->mdio_addr, ...);
+
+__mdiobus_read()
+
+> 	/* ... */
+> 
+> 	mutex_unlock(&bus->mdio_lock);
+> 
+> 	return ret;
+> }
+
+You can do this.
 
 
->Now we understand that cloud workloads are a bit different, and the desire to
->be able to modify the environment of a container while leaving the container
->image unmodified is understandable. But then again, enabling the base image
->would be the cloud way to address this. The question to us is: How do other
->parts of the kernel address this?
+> rather look like this?:
+> 
+> static int realtek_mdio_read(void *ctx, u32 reg, u32 *val)
+> {
+> 	/* ... */
+>         
+> 	mutex_lock(&my_realtek_driver_lock); /* synchronize concurrent realtek_mdio_{read,write} */
+> 
+> 	mdiobus_write(bus, priv->mdio_addr, ...); /* mdio_lock locked/unlocked here */
+> 	mdiobus_write(bus, priv->mdio_addr, ...); /* ditto */
+> 	mdiobus_write(bus, priv->mdio_addr, ...); /* ditto */
+> 	mdiobus_read(bus, priv->mdio_addr, ...);  /* ditto */
+> 
+> 	/* ... */
+> 
+> 	mutex_unlock(&my_realtek_driver_lock);
+> 
+> 	return ret;
+> }
 
-I'm not familiar with K8S, but from one of my colleague who has worked
-in that area tells me for resources like CPU/MEM and configurations
-like sysctl, can be set using K8S configuration:
-https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/
+This would also work. The advantage of this is when you have multiple
+switches on one MDIO bus, you can allow parallel operations on those
+switches. Also, if there are PHYs on the MDIO bus as well as the
+switch, the PHYs can be accessed as well. If you are only doing 3
+writes and read, it probably does not matter. If you are going to do a
+lot of accesses, maybe read all the MIB values, allowing access to the
+PHYs at the same time would be nice.
 
-I don't know. Maybe because most of the current kernel configurations
-are configured through sysfs that for those container orchestration
-systems have supported it ?
+> 2. Is the nested locking only relevant for DSA switches which offer
+> another MDIO bus? Or should all switch drivers do this, on the basis
+> that, feasibly, one could connect my Realtek switch to the MDIO bus of a
+> mv88e6xxx switch? In that case, and assuming the latter form of
+> raeltek_mdio_read above, should one use the mdiobus_{read,write}_nested
+> functions instead?
 
-Thanks
+I would suggest you start with plain mdiobus_{read,write}. Using the
+_nested could potentially hide a deadlock. If somebody does build
+hardware with this sort of chaining, we can change to the _nested
+calls.
+
+	Andrew
