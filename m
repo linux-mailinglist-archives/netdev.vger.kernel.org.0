@@ -2,100 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E7C4B999A
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1E14B99C8
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:21:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235970AbiBQHIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 02:08:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59734 "EHLO
+        id S236154AbiBQHV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 02:21:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235949AbiBQHIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:08:00 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5EF28ADA2;
-        Wed, 16 Feb 2022 23:07:41 -0800 (PST)
-X-UUID: a549484970ab4c659dbf3a1fca61e35b-20220217
-X-UUID: a549484970ab4c659dbf3a1fca61e35b-20220217
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1352216927; Thu, 17 Feb 2022 15:07:34 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 17 Feb 2022 15:07:33 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 15:07:32 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229477AbiBQHV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:21:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D03445AE8
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645082501;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MK/w5CaqVN2WaOvoDgze1gKvnvxbRCEDpuTeg5VSM88=;
+        b=C04arsOX0E9aF5ztCZOaR8fKXJNp2cEUt9GUJG86++LEP17Ljrge1GxiJKvtjFmdob4O1+
+        BoeFtUZLB7e7hmwXLWHWWEcjsFSSs+8/zElZvrU5z2vNG7HjSq98CHMxE+YqkdJGjTwTej
+        LwylsQsjV46DtzbU1HwikzrOavcUPGA=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-486-0GsJnJmBMG-CMDEHiNhJ2Q-1; Thu, 17 Feb 2022 02:21:38 -0500
+X-MC-Unique: 0GsJnJmBMG-CMDEHiNhJ2Q-1
+Received: by mail-lf1-f69.google.com with SMTP id f37-20020a0565123b2500b004433d9bb4feso1535948lfv.22
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:21:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MK/w5CaqVN2WaOvoDgze1gKvnvxbRCEDpuTeg5VSM88=;
+        b=hxeIGme8+iVH1zIlkxfBuDV5RxKDULAVmaEYiYR63EEghD+MZCG34uMdJ7TxH3skz1
+         VUR4t7pS00H7LbHHJhM92eY9nxe/B0XTqU51VcwJest/n0yEYT/H0e5sFEoRZI2wuxEV
+         hSptqxsULXbfpjkBGpibx25VCuqHblA/BT2lidqPXD5v4Y7UvP+4wX6OKEP2PwCLBFU1
+         78CSni1nCiGI4RAyWl2zFLqgUMlpUeSxB0KMS2qpMwF7WWzmRbZFayAnj2qyG36EPjAe
+         8vc+ZujTkCoZmU/FUrN5/721udGkXh3bidjAga4TzSLtjNctzqf0msKJfYbZKSr+D/h6
+         w7vw==
+X-Gm-Message-State: AOAM5330Y3B9JYrJVRJZwWB4qGwslrJ1482X2L5w7FHTywNUkhkOnQ98
+        EAXJPvqOugEhPqYeoiYXxpbxjR2qE0lasmUapmd52Z7woyKT/SHcjy4sF16iS5QqOw6ZAyzfNjx
+        ugsNyhpyi6aR9Bl6tb6/dBiGBOENJxwj1
+X-Received: by 2002:ac2:5dc9:0:b0:443:5db1:244c with SMTP id x9-20020ac25dc9000000b004435db1244cmr1234540lfq.84.1645082497393;
+        Wed, 16 Feb 2022 23:21:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxbfpKRrqedpKyeZauCLg5Kmr+HPSiEonm1qoPRESgaCwlyrbWvcenrKeaJ0wCQuxOVhIznhGs2jYN71FJfjD0=
+X-Received: by 2002:ac2:5dc9:0:b0:443:5db1:244c with SMTP id
+ x9-20020ac25dc9000000b004435db1244cmr1234535lfq.84.1645082497203; Wed, 16 Feb
+ 2022 23:21:37 -0800 (PST)
+MIME-Version: 1.0
+References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
+ <20220214081416.117695-21-xuanzhuo@linux.alibaba.com> <CACGkMEvZvhSb0veCynEHN3EfFu_FwbCAb8w1b0Oi3LDc=ffNaw@mail.gmail.com>
+ <1644997568.827981-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1644997568.827981-1-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 17 Feb 2022 15:21:26 +0800
+Message-ID: <CACGkMEt_AEw2Jh9VzkGQ2A8f8Y0nuuFxr193_vnkFpc=JyD2Sg@mail.gmail.com>
+Subject: Re: [PATCH v5 20/22] virtio_net: set the default max ring num
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-CC:     Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH v3] net: fix wrong network header length
-Date:   Thu, 17 Feb 2022 15:01:39 +0800
-Message-ID: <20220217070139.30028-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <CAADnVQK78PN8N6c6u_O2BAxdyXwH_HVYMV_x3oGgyfT50a6ymg@mail.gmail.com>
-References: <CAADnVQK78PN8N6c6u_O2BAxdyXwH_HVYMV_x3oGgyfT50a6ymg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
-        SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-02-16 at 19:05 -0800, Alexei Starovoitov wrote:
-> On Tue, Feb 15, 2022 at 11:37 PM Lina Wang <lina.wang@mediatek.com>
-> wrote:
-> > 
-> > When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is
-> > enable,
-> > several skbs are gathered in skb_shinfo(skb)->frag_list. The first
-> > skb's
-> > ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-> > network_header\transport_header\mac_header have been updated as
-> > ipv4 acts,
-> > but other skbs in frag_list didnot update anything, just ipv6
-> > packets.
-> 
-> Please add a test that demonstrates the issue and verifies the fix.
+On Wed, Feb 16, 2022 at 3:52 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> On Wed, 16 Feb 2022 12:14:31 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > On Mon, Feb 14, 2022 at 4:14 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> > >
+> > > Sets the default maximum ring num based on virtio_set_max_ring_num().
+> > >
+> > > The default maximum ring num is 1024.
+> >
+> > Having a default value is pretty useful, I see 32K is used by default for IFCVF.
+> >
+> > Rethink this, how about having a different default value based on the speed?
+> >
+> > Without SPEED_DUPLEX, we use 1024. Otherwise
+> >
+> > 10g 4096
+> > 40g 8192
+>
+> We can define different default values of tx and rx by the way. This way I can
+> just use it in the new interface of find_vqs().
+>
+> without SPEED_DUPLEX:  tx 512 rx 1024
+>
 
-I used iperf udp test to verify the patch, server peer enabled -d to debug
-received packets.
+Any reason that TX is smaller than RX?
 
-192.0.0.4 is clatd interface ip, corresponding ipv6 addr is 
-2000:1:1:1:afca:1b1f:1a9:b367, server peer ip is 1.1.1.1,
-whose ipv6 is 2004:1:1:1::101:101.
+Thanks
 
-Without the patch, when udp length 2840 packets received, iperf shows:
-pcount 1 packet_count 0
-pcount 27898727 packet_count 1
-pcount 3 packet_count 27898727
+> Thanks.
+>
+>
+> >
+> > etc.
+> >
+> > (The number are just copied from the 10g/40g default parameter from
+> > other vendors)
+> >
+> > Thanks
+> >
+> > >
+> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > ---
+> > >  drivers/net/virtio_net.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index a4ffd7cdf623..77e61fe0b2ce 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -35,6 +35,8 @@ module_param(napi_tx, bool, 0644);
+> > >  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+> > >  #define GOOD_COPY_LEN  128
+> > >
+> > > +#define VIRTNET_DEFAULT_MAX_RING_NUM 1024
+> > > +
+> > >  #define VIRTNET_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
+> > >
+> > >  /* Amount of XDP headroom to prepend to packets for use by xdp_adjust_head */
+> > > @@ -3045,6 +3047,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > >                         ctx[rxq2vq(i)] = true;
+> > >         }
+> > >
+> > > +       virtio_set_max_ring_num(vi->vdev, VIRTNET_DEFAULT_MAX_RING_NUM);
+> > > +
+> > >         ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
+> > >                                   names, ctx, NULL);
+> > >         if (ret)
+> > > --
+> > > 2.31.0
+> > >
+> >
+>
 
-pcount should be 2, but is 27898727(0x1a9b367) , which is 20 bytes put 
-forward. 
-
-12:08:02.680299	Unicast to us 2004:1:1:1::101:101   2000:1:1:1:afca:1b1f:1a9:b367 UDP 51196 → 5201 Len=2840
-0000   20 00 00 01 00 01 00 01 af ca 1b 1f 01 a9 b3 67   ipv6 dst address
-0000   c7 fc 14 51 0b 20 c7 ab                           udp header
-0000   00 00 00 ab 00 0e f3 49 00 00 00 01 08 06 69 d2   00000001 is pcount
-12:08:02.682084	Unicast to us	1.1.1.1	                 192.0.0.4 	 	  UDP 51196 → 5201 Len=2840
-
-After applied the patch, there is no OOO, pcount acted in order.
-
-Thanks!
