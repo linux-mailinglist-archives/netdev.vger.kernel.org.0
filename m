@@ -2,179 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 193304BA2C0
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 15:19:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8CC4BA2D5
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 15:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239416AbiBQOSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 09:18:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33344 "EHLO
+        id S241844AbiBQOV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 09:21:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233678AbiBQOSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 09:18:53 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C3F2AA3AE;
-        Thu, 17 Feb 2022 06:18:38 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21HEC9CH027125;
-        Thu, 17 Feb 2022 14:18:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=NvjzEBomC5fbZjfcTUQ5sCHHunjhz1rWtfSasDV8I+Q=;
- b=m+i3NeNupx/APTrSCtdsMBEnEdZ108LfgYsSotVjh4QufhjyhY73PzFZgMEluZ2ukxJ1
- +4kUcMGtoeDugzspMZelyFiQvVhYC0hfXrm+6SWDtyzmlUdCn42vWQ8v2VDUvY4DJ2KD
- LgMVgnWiefZGNaW/0jJME4mLvnm1znRbkz/3ZaoRK4o/rQxxwl+iVfK0EqL8c/A7CWIe
- j15NONSzXpbdbHX7Mcb1xRFUg/2PydGnMOhsPLlQDkL3MQi9KqZ8HLRjp9hit/d99dfY
- 037fyWVCmz+89KWCcsmYAAeOK1+tnt6trm3gXzOqsRGSUkSv+YKRdj/qLHW6fUUmeq9D 4Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e9mg2vebx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:18:23 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21HEEhMw000943;
-        Thu, 17 Feb 2022 14:18:22 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e9mg2veb5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:18:22 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21HEDctx029529;
-        Thu, 17 Feb 2022 14:18:20 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06fra.de.ibm.com with ESMTP id 3e645k90qm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:18:20 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21HEIIu635258698
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Feb 2022 14:18:18 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2B421A405B;
-        Thu, 17 Feb 2022 14:18:18 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 72591A4054;
-        Thu, 17 Feb 2022 14:18:17 +0000 (GMT)
-Received: from [9.171.78.41] (unknown [9.171.78.41])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 17 Feb 2022 14:18:17 +0000 (GMT)
-Message-ID: <e0999e46e5332ca79bdfe4d9b9d7f17e4366a340.camel@linux.ibm.com>
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Cover 4-byte load from
- remote_port in bpf_sk_lookup
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Yonghong Song <yhs@fb.com>
-Date:   Thu, 17 Feb 2022 15:18:17 +0100
-In-Reply-To: <CAEf4BzaRNLw9_EnaMo5e46CdEkzbJiVU3j9oxnsemBKjNFf3wQ@mail.gmail.com>
-References: <20220209184333.654927-1-jakub@cloudflare.com>
-         <20220209184333.654927-3-jakub@cloudflare.com>
-         <CAEf4BzaRNLw9_EnaMo5e46CdEkzbJiVU3j9oxnsemBKjNFf3wQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HSuw5ap9S9hRpO3IK3xS40mI5vSD92mo
-X-Proofpoint-ORIG-GUID: dzq2Cyl4fbqlVPCcvfM4J9PxxuG1uAxG
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S232440AbiBQOV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 09:21:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E941294132
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645107702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yXN5F+ooe6b2t/Xr4kJDkxE+1pWxiPGo1/gBjMgkN0A=;
+        b=cgl7ncJLsL8NAsjFiWT9cOQs7KyhiW9buwtuPFG9YiBqN12+Y5VN0HiM7WgLQ/M0VI3Bcp
+        Z0D0wxIpAChB3i/uOfySE0KdQcyE8K1YGenpM+jXWJh50F5y3c4YjvKTbU1KuKbtN6DDxS
+        WMM8n1zC9wZNbRVOFCh/lmsjm3gJ4ys=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-330-TmcYEJZ9Pm217uqNLybcTw-1; Thu, 17 Feb 2022 09:21:41 -0500
+X-MC-Unique: TmcYEJZ9Pm217uqNLybcTw-1
+Received: by mail-qk1-f197.google.com with SMTP id 199-20020a3703d0000000b005f17c5b0356so964217qkd.16
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:21:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yXN5F+ooe6b2t/Xr4kJDkxE+1pWxiPGo1/gBjMgkN0A=;
+        b=loyAoOT9PnbR/IAuvbpYP9pHO7HJK8ECfgnJxMijzRhgAr5YRr63Tz3fpcRbufsHp4
+         aviviWFNJIENUgV5nqV9V51Bk4+KlgIjI5sHj7d13iWJ64VMNC8pmAI+J/Q65qIzRrFu
+         57OHpSw2cnTX+ifucEWiZ9AEl7Opl+uRmWqPViifwI8c28NG6zU1WaFAewvOrUeLKMR7
+         sNFnS1AyQe5mxstVKaLQSx/TWtHDCG2/YDCQjiRqZr+hBl/FaLs0VVSErjrZ5sX4QF1f
+         obGCA+jAGV4gNExZ/C5xHr3FJv/LaD8IDU4DkzoahVjTqxQ0stSoCWmeNZljteEWovqu
+         5VIw==
+X-Gm-Message-State: AOAM531Kwg7WKHIz59YbxVtnNMVxibL9f9UzUPnbvmB/GHd9vWv1eOK5
+        wSy2l8fvU05tKZxk/aP0GL/BJCXhThDx+Cl4BspxoakK3LcShUuXC4e79/zAN3tR+uIGVVi35r0
+        trNZc9DSsOu1QadvN
+X-Received: by 2002:a05:622a:54e:b0:2d1:83db:25e1 with SMTP id m14-20020a05622a054e00b002d183db25e1mr2569992qtx.110.1645107700141;
+        Thu, 17 Feb 2022 06:21:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzL/RZk+0fFAsnd+v9xbm711adt4oAWd6BHxYDJ8cJelbBU7jzOrgS5JVFbOFGT7lSgyZpXpQ==
+X-Received: by 2002:a05:622a:54e:b0:2d1:83db:25e1 with SMTP id m14-20020a05622a054e00b002d183db25e1mr2569980qtx.110.1645107699978;
+        Thu, 17 Feb 2022 06:21:39 -0800 (PST)
+Received: from [192.168.98.18] ([107.15.110.69])
+        by smtp.gmail.com with ESMTPSA id z23sm3700957qtn.40.2022.02.17.06.21.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 06:21:39 -0800 (PST)
+Message-ID: <244dccd3-9c9d-0433-c341-ae17ee741a4e@redhat.com>
+Date:   Thu, 17 Feb 2022 09:21:38 -0500
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-17_05,2022-02-17_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- lowpriorityscore=0 clxscore=1011 impostorscore=0 mlxlogscore=999
- mlxscore=0 bulkscore=0 phishscore=0 priorityscore=1501 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202170064
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 5/5] bonding: add new option ns_ip6_target
+Content-Language: en-US
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <20220216080838.158054-1-liuhangbin@gmail.com>
+ <20220216080838.158054-6-liuhangbin@gmail.com>
+ <c13d92e2-3ac5-58cb-2b21-ebe03e640983@gmail.com> <Yg2kGkGKRTVXObYh@Laptop-X1>
+ <cc2e5a64-b53e-b501-4a08-92e087d52dda@gmail.com> <8863.1645071997@famine>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <8863.1645071997@famine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-02-16 at 13:44 -0800, Andrii Nakryiko wrote:
-> On Wed, Feb 9, 2022 at 10:43 AM Jakub Sitnicki <jakub@cloudflare.com>
-> wrote:
-> > 
-> > Extend the context access tests for sk_lookup prog to cover the
-> > surprising
-> > case of a 4-byte load from the remote_port field, where the
-> > expected value
-> > is actually shifted by 16 bits.
-> > 
-> > Acked-by: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> > ---
-> >  tools/include/uapi/linux/bpf.h                     | 3 ++-
-> >  tools/testing/selftests/bpf/progs/test_sk_lookup.c | 6 ++++++
-> >  2 files changed, 8 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/include/uapi/linux/bpf.h
-> > b/tools/include/uapi/linux/bpf.h
-> > index a7f0ddedac1f..afe3d0d7f5f2 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -6453,7 +6453,8 @@ struct bpf_sk_lookup {
-> >         __u32 protocol;         /* IP protocol (IPPROTO_TCP,
-> > IPPROTO_UDP) */
-> >         __u32 remote_ip4;       /* Network byte order */
-> >         __u32 remote_ip6[4];    /* Network byte order */
-> > -       __u32 remote_port;      /* Network byte order */
-> > +       __be16 remote_port;     /* Network byte order */
-> > +       __u16 :16;              /* Zero padding */
-> >         __u32 local_ip4;        /* Network byte order */
-> >         __u32 local_ip6[4];     /* Network byte order */
-> >         __u32 local_port;       /* Host byte order */
-> > diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > index 83b0aaa52ef7..bf5b7caefdd0 100644
-> > --- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > +++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > @@ -392,6 +392,7 @@ int ctx_narrow_access(struct bpf_sk_lookup
-> > *ctx)
-> >  {
-> >         struct bpf_sock *sk;
-> >         int err, family;
-> > +       __u32 val_u32;
-> >         bool v4;
-> > 
-> >         v4 = (ctx->family == AF_INET);
-> > @@ -418,6 +419,11 @@ int ctx_narrow_access(struct bpf_sk_lookup
-> > *ctx)
-> >         if (LSW(ctx->remote_port, 0) != SRC_PORT)
-> >                 return SK_DROP;
-> > 
-> > +       /* Load from remote_port field with zero padding (backward
-> > compatibility) */
-> > +       val_u32 = *(__u32 *)&ctx->remote_port;
-> > +       if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
-> > +               return SK_DROP;
-> > +
+On 2/16/22 23:26, Jay Vosburgh wrote:
+> David Ahern <dsahern@gmail.com> wrote:
 > 
-> Jakub, can you please double check that your patch set doesn't break
-> big-endian architectures? I've noticed that our s390x test runner is
-> now failing in the sk_lookup selftest. See [0]. Also CC'ing Ilya.
+>> On 2/16/22 6:25 PM, Hangbin Liu wrote:
+>>> For Bonding I think yes. Bonding has disallowed to config via
+>> module_param.
+>>> But there are still users using sysfs for bonding configuration.
+>>>
+>>> Jay, Veaceslav, please correct me if you think we can stop using sysfs.
+>>>
+>>
+>> new features, new API only?
+> 
+> 	I'm in agreement with this.  I see no reason not to encourage
+> standardization on iproute / netlink.
+> 
 
-I agree that this looks like an endianness issue. The new check seems
-to make little sense on big-endian to me, so I would just #ifdef it
-out.
+It was generally customary to include the iproute2 updates with the 
+series as well. That way they all got merged at the same time. I do not 
+see the needed iproute2 changes, is this still done?
+Seems like it would be a requirement now if no other configuration 
+method is supported.
 
-> 
->   [0]
-> https://github.com/libbpf/libbpf/runs/5220996832?check_suite_focus=true
-> 
-> >         /* Narrow loads from local_port field. Expect DST_PORT. */
-> >         if (LSB(ctx->local_port, 0) != ((DST_PORT >> 0) & 0xff) ||
-> >             LSB(ctx->local_port, 1) != ((DST_PORT >> 8) & 0xff) ||
-> > --
-> > 2.31.1
-> > 
+-Jon
 
