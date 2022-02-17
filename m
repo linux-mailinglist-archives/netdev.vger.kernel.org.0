@@ -2,194 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE0B64BA59D
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31434BA64A
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:42:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242971AbiBQQVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 11:21:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36132 "EHLO
+        id S243351AbiBQQkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 11:40:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231750AbiBQQVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:21:54 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E4E160411
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:21:39 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d6b40fc9bdso8168247b3.13
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:21:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=X1zv51X/EMgT10tLJYpOZUeca3ANCiP8pFvnZzQE4y4=;
-        b=g5dRo9CI3+lG2ap+EK7k8u1cqcIXDr8+Uz4XIRVopWxmKEkwktoQIVV79+/2CbN0Le
-         3tx9+mGtq/gMEWBsPclodQFwS0mXhI5wK59vkno6RM6lTJhdLrGNmI+59Ou5ngRxlUOZ
-         gcQNAT4iR9usQFQisVjsUWaim8aibOlFR74Fc4Pp7fsP/mG0/MCCNfjPLpfms6j+RU5z
-         dINd9P9snyqPdSJTx1snOqYz6oKn3zUdCkunwexIBFqk5AHxi/OD2MuEtuie31gnYy4L
-         zd3EGaHn9NDleqF1fBXg85WpXej4xVK89E2png7wLeGr14rD1ncHiq3sVwAnsmKkM5mm
-         CASQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=X1zv51X/EMgT10tLJYpOZUeca3ANCiP8pFvnZzQE4y4=;
-        b=HSstQ3lbujqyOg++JACy/AAvBMDZvqOKwAJ3rtV9LDQvLVSTj0Q5i3HwdKoXEHJRfw
-         czytch12IxKiugE6U0ZJ09FN+9eu2nx3QGXWiy+3YczkN4HLEs8Pk3bfW4jf/NkM9RPN
-         W3NsjITKop8XWFfCvCN/RyzxDDZI6dBrfp5nfp8VbGg7enMzBf7UKPRW7yFEkMN4uYme
-         heC1/1Z4Fp8ho5aljdMRoV6ly1ChFcXlcqUWFHi4yzulbMavTSat2lZMZV0ASIDPsWsc
-         TjZBQxEky2l+eatF/OFeQ16PhBrhwItBdBFIZSQMTEiZYfJluDaSOhllHOMTKEl7MTB+
-         OUfg==
-X-Gm-Message-State: AOAM53303FIFyn7YjYQXUchyfswcHAIVOVIriJqiuziDWQCa2sJOCW1O
-        dszeQHCK6zcIez58hhFQ64bArhw=
-X-Google-Smtp-Source: ABdhPJzVKUg1MESOupT6eR4wt24r6afwj0Dr+lIhTzoktqiI/X7BdX+JOuKHT/4EqKlQnctiS4M4Lx8=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:2e4c:d90d:2d44:5aaf])
- (user=sdf job=sendgmr) by 2002:a5b:cc8:0:b0:622:e87:2087 with SMTP id
- e8-20020a5b0cc8000000b006220e872087mr3041448ybr.106.1645114898557; Thu, 17
- Feb 2022 08:21:38 -0800 (PST)
-Date:   Thu, 17 Feb 2022 08:21:36 -0800
-In-Reply-To: <20220217023849.jn5pcwz23rj2772x@ast-mbp.dhcp.thefacebook.com>
-Message-Id: <Yg52EAB3ncoj22iK@google.com>
-Mime-Version: 1.0
-References: <20220216001241.2239703-1-sdf@google.com> <20220216001241.2239703-2-sdf@google.com>
- <20220217023849.jn5pcwz23rj2772x@ast-mbp.dhcp.thefacebook.com>
-Subject: Re: [RFC bpf-next 1/4] bpf: cgroup_sock lsm flavor
-From:   sdf@google.com
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S243374AbiBQQkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:40:31 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A8C2B2FFE;
+        Thu, 17 Feb 2022 08:40:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=CiWUvZ5366lvIGhETsSSEgnHPIlanXaVnZLtS1TTtsI=; b=QsoogWw/JVCdBKfTtTDfPkNwuS
+        hwTOkgQ0FzqnYrFza/hSa2oOK6BUHsw8hJShqzZ6POFid6nIrZIGyMEqRpSmrVYxLgrOagTmOWvDs
+        Iw+o/gznG5u+fEHDG/2ZiEFcO9tPT1rcoGWG1hUn51Pt0ytcskrKkzYir76AHEJc5kXGpa8KPjF75
+        rf6rco1DHi0m+gL+7CWEj+T2U5XsW6xa3PGmehMMpAXnHOj4t02oYVlAu2r9LAKYJtStWOLI/hN9U
+        rj7+kekdZ9ahS+Rjb6tOrutggtlAPJlbr9M5CJvWr2WufB9EdhP0dcEuyN6P4dF2ZOXZ7FhkTegkC
+        QzMZ9g3g==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nKjoq-00Fm3P-Az; Thu, 17 Feb 2022 16:39:48 +0000
+Message-ID: <a9c40409-a72d-276c-777f-c7b1863e4537@infradead.org>
+Date:   Thu, 17 Feb 2022 08:39:41 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2] net: ethernet: xilinx: cleanup comments
+Content-Language: en-US
+To:     trix@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com,
+        esben@geanix.com, arnd@arndb.de, huangguangbin2@huawei.com,
+        chenhao288@hisilicon.com, moyufeng@huawei.com, michael@walle.cc,
+        yuehaibing@huawei.com, prabhakar.mahadev-lad.rj@bp.renesas.com
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220217160518.3255003-1-trix@redhat.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220217160518.3255003-1-trix@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/16, Alexei Starovoitov wrote:
-> On Tue, Feb 15, 2022 at 04:12:38PM -0800, Stanislav Fomichev wrote:
-> >  {
-> > @@ -1767,14 +1769,23 @@ static int invoke_bpf_prog(const struct  
-> btf_func_model *m, u8 **pprog,
-> >
-> >  	/* arg1: lea rdi, [rbp - stack_size] */
-> >  	EMIT4(0x48, 0x8D, 0x7D, -stack_size);
-> > -	/* arg2: progs[i]->insnsi for interpreter */
-> > -	if (!p->jited)
-> > -		emit_mov_imm64(&prog, BPF_REG_2,
-> > -			       (long) p->insnsi >> 32,
-> > -			       (u32) (long) p->insnsi);
-> > -	/* call JITed bpf program or interpreter */
-> > -	if (emit_call(&prog, p->bpf_func, prog))
-> > -		return -EINVAL;
-> > +
-> > +	if (p->expected_attach_type == BPF_LSM_CGROUP_SOCK) {
-> > +		/* arg2: progs[i] */
-> > +		emit_mov_imm64(&prog, BPF_REG_2, (long) p >> 32, (u32) (long) p);
-> > +		if (emit_call(&prog, __cgroup_bpf_run_lsm_sock, prog))
-> > +			return -EINVAL;
-> > +	} else {
-> > +		/* arg2: progs[i]->insnsi for interpreter */
-> > +		if (!p->jited)
-> > +			emit_mov_imm64(&prog, BPF_REG_2,
-> > +				       (long) p->insnsi >> 32,
-> > +				       (u32) (long) p->insnsi);
-> > +
-> > +		/* call JITed bpf program or interpreter */
-> > +		if (emit_call(&prog, p->bpf_func, prog))
-> > +			return -EINVAL;
 
-> Overall I think it's a workable solution.
-> As far as mechanism I think it would be better
-> to allocate single dummy bpf_prog and use normal fmod_ret
-> registration mechanism instead of hacking arch trampoline bits.
-> Set dummy_bpf_prog->bpf_func = __cgroup_bpf_run_lsm_sock;
-> and keep as dummy_bpf_prog->jited = false;
->  From p->insnsi pointer in arg2 it's easy to go back to struct bpf_prog.
-> Such dummy prog might even be statically defined like dummy_bpf_prog.
-> Or allocated dynamically once.
-> It can be added as fmod_ret to multiple trampolines.
-> Just gut the func_model check.
 
-Oooh, that's much cleaner, thanks!
+On 2/17/22 08:05, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> Remove the second 'the'.
+> Replacements:
+> endiannes to endianness
+> areconnected to are connected
+> Mamagement to Management
+> undoccumented to undocumented
+> Xilink to Xilinx
+> strucutre to structure
+> 
+> Change kernel-doc comment style to c style for
+> /* Management ...
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> Reviewed-by: Michal Simek <michal.simek@xilinx.com>
 
-> As far as api the attach should probably be to a cgroup+lsm_hook pair.
-> link_create.target_fd will be cgroup_fd.
-> At prog load time attach_btf_id should probably be one
-> of existing bpf_lsm_* hooks.
-> Feels wrong to duplicate the whole set into lsm_cgroup_sock set.
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-lsm_cgroup_sock is there to further limit which particular lsm
-hooks BPF_LSM_CGROUP_SOCK can use. I guess I can maybe look at
-BTF's first argument to verify that it's 'struct socket'? Let
-me try to see whether it's a good alternative..
+thanks.
 
-> It's fine to have prog->expected_attach_type == BPF_LSM_CGROUP_SOCK
-> to disambiguate. Will we probably only have two:
-> BPF_LSM_CGROUP_SOCK and BPF_LSM_CGROUP_TASK ?
+> ---
+> v2: Change the /** to /* 
+>     Add Michal's Reviewed-by: tag
+> 
+>  drivers/net/ethernet/xilinx/Kconfig               | 2 +-
+>  drivers/net/ethernet/xilinx/ll_temac.h            | 4 ++--
+>  drivers/net/ethernet/xilinx/ll_temac_main.c       | 2 +-
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 2 +-
+>  drivers/net/ethernet/xilinx/xilinx_emaclite.c     | 2 +-
+>  5 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/xilinx/Kconfig b/drivers/net/ethernet/xilinx/Kconfig
+> index 911b5ef9e680..0014729b8865 100644
+> --- a/drivers/net/ethernet/xilinx/Kconfig
+> +++ b/drivers/net/ethernet/xilinx/Kconfig
+> @@ -1,6 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  #
+> -# Xilink device configuration
+> +# Xilinx device configuration
+>  #
+>  
+>  config NET_VENDOR_XILINX
+> diff --git a/drivers/net/ethernet/xilinx/ll_temac.h b/drivers/net/ethernet/xilinx/ll_temac.h
+> index 4a73127e10a6..c6395c406418 100644
+> --- a/drivers/net/ethernet/xilinx/ll_temac.h
+> +++ b/drivers/net/ethernet/xilinx/ll_temac.h
+> @@ -271,7 +271,7 @@ This option defaults to enabled (set) */
+>  
+>  #define XTE_TIE_OFFSET			0x000003A4 /* Interrupt enable */
+>  
+> -/**  MII Mamagement Control register (MGTCR) */
+> +/* MII Management Control register (MGTCR) */
+>  #define XTE_MGTDR_OFFSET		0x000003B0 /* MII data */
+>  #define XTE_MIIMAI_OFFSET		0x000003B4 /* MII control */
+>  
+> @@ -283,7 +283,7 @@ This option defaults to enabled (set) */
+>  
+>  #define STS_CTRL_APP0_ERR         (1 << 31)
+>  #define STS_CTRL_APP0_IRQONEND    (1 << 30)
+> -/* undoccumented */
+> +/* undocumented */
+>  #define STS_CTRL_APP0_STOPONEND   (1 << 29)
+>  #define STS_CTRL_APP0_CMPLT       (1 << 28)
+>  #define STS_CTRL_APP0_SOP         (1 << 27)
+> diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+> index b900ab5aef2a..7171b5cdec26 100644
+> --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
+> +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+> @@ -1008,7 +1008,7 @@ static void ll_temac_recv(struct net_device *ndev)
+>  		    (skb->len > 64)) {
+>  
+>  			/* Convert from device endianness (be32) to cpu
+> -			 * endiannes, and if necessary swap the bytes
+> +			 * endianness, and if necessary swap the bytes
+>  			 * (back) for proper IP checksum byte order
+>  			 * (be16).
+>  			 */
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> index de0a6372ae0e..6eeaab77fbe0 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> @@ -537,7 +537,7 @@ static int __axienet_device_reset(struct axienet_local *lp)
+>   * This function is called to reset and initialize the Axi Ethernet core. This
+>   * is typically called during initialization. It does a reset of the Axi DMA
+>   * Rx/Tx channels and initializes the Axi DMA BDs. Since Axi DMA reset lines
+> - * areconnected to Axi Ethernet reset lines, this in turn resets the Axi
+> + * are connected to Axi Ethernet reset lines, this in turn resets the Axi
+>   * Ethernet core. No separate hardware reset is done for the Axi Ethernet
+>   * core.
+>   * Returns 0 on success or a negative error number otherwise.
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> index 519599480b15..f65a638b7239 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> @@ -498,7 +498,7 @@ static void xemaclite_update_address(struct net_local *drvdata,
+>   * @dev:	Pointer to the network device instance
+>   * @address:	Void pointer to the sockaddr structure
+>   *
+> - * This function copies the HW address from the sockaddr strucutre to the
+> + * This function copies the HW address from the sockaddr structure to the
+>   * net_device structure and updates the address in HW.
+>   *
+>   * Return:	Error if the net device is busy or 0 if the addr is set
 
-I hope so. Unless objects other than socket and task can have cgroup
-association.
-
-> > +int __cgroup_bpf_run_lsm_sock(u64 *regs, const struct bpf_prog *prog)
-> > +{
-> > +	struct socket *sock = (void *)regs[BPF_REG_0];
-> > +	struct cgroup *cgrp;
-> > +	struct sock *sk;
-> > +
-> > +	sk = sock->sk;
-> > +	if (!sk)
-> > +		return 0;
-> > +
-> > +	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> > +
-> > +	return  
-> BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
-> > +				     regs, bpf_prog_run, 0);
-> > +}
-
-> Would it be fast enough?
-> We went through a bunch of optimization for normal cgroup and ended with:
->          if (cgroup_bpf_enabled(CGROUP_INET_INGRESS) &&
->              cgroup_bpf_sock_enabled(sk, CGROUP_INET_INGRESS))
-> Here the trampoline code plus call into __cgroup_bpf_run_lsm_sock
-> will be there for all cgroups.
-> Since cgroup specific check will be inside BPF_PROG_RUN_ARRAY_CG.
-> I suspect it's ok, since the link_create will be for few specific lsm  
-> hooks
-> which are typically not in the fast path.
-> Unlike traditional cgroup hook like ingress that is hot.
-
-Right, cgroup_bpf_enabled() is not needed because lsm is by definition
-off/unattached by default. Seems like we can add cgroup_bpf_sock_enabled()  
-to
-__cgroup_bpf_run_lsm_sock.
-
-> For BPF_LSM_CGROUP_TASK it will take cgroup from current instead of sock,  
-> right?
-
-Right. Seems like the only difference is where we get the cgroup pointer
-from: current vs sock->cgroup. Although, I'm a bit unsure whether to
-allow hooks that are clearly sock-cgroup-based to use
-BPF_LSM_CGROUP_TASK. For example, should we allow
-BPF_LSM_CGROUP_TASK to attach to that socket_post_create? I'd prohibit that  
-at
-least initially to avoid some subtle 'why sometimes my
-programs trigger on the wrong cgroup' types of issues.
-
-> Args access should magically work. 'regs' above should be fine for
-> all lsm hooks.
-
-> The typical prog:
-> +SEC("lsm_cgroup_sock/socket_post_create")
-> +int BPF_PROG(socket_post_create, struct socket *sock, int family,
-> +            int type, int protocol, int kern)
-> looks good too.
-> Feel natural.
-> I guess they can be sleepable too?
-
-Haven't gone into the sleepable world, but I don't see any reason why
-there couldn't be a sleepable variation.
-
-Thank you for a review!
+-- 
+~Randy
