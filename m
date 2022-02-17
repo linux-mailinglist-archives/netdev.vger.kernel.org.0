@@ -2,77 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 318A54B9BE9
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 10:22:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E10284B9C2E
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 10:38:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238596AbiBQJWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 04:22:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60622 "EHLO
+        id S238754AbiBQJi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 04:38:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238413AbiBQJWc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 04:22:32 -0500
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0706409;
-        Thu, 17 Feb 2022 01:22:16 -0800 (PST)
-Received: from [192.168.12.102] (unknown [159.196.94.94])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 41BA82039E;
-        Thu, 17 Feb 2022 17:22:14 +0800 (AWST)
-Message-ID: <5c2673ed11ad764764998e1244a59f0c8c1cb2da.camel@codeconstruct.com.au>
-Subject: Re: [PATCH net-next v5 2/2] mctp i2c: MCTP I2C binding driver
-From:   Matt Johnston <matt@codeconstruct.com.au>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S238736AbiBQJiZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 04:38:25 -0500
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDEC81E1485;
+        Thu, 17 Feb 2022 01:38:09 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V4iqipY_1645090685;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V4iqipY_1645090685)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 17 Feb 2022 17:38:06 +0800
+Message-ID: <1645090228.2917905-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v5 20/22] virtio_net: set the default max ring num
+Date:   Thu, 17 Feb 2022 17:30:28 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Zev Weiss <zev@bewilderbeest.net>
-Date:   Thu, 17 Feb 2022 17:22:13 +0800
-In-Reply-To: <Yg4N1SYeCdSPDR+V@ninjato>
-References: <20220210063651.798007-1-matt@codeconstruct.com.au>
-         <20220210063651.798007-3-matt@codeconstruct.com.au>
-         <Yg0jMkt56EhrBybc@ninjato>
-         <eaee265147f14982c89d400f80e4482a029cdf98.camel@codeconstruct.com.au>
-         <Yg4N1SYeCdSPDR+V@ninjato>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4-1ubuntu2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+References: <20220214081416.117695-1-xuanzhuo@linux.alibaba.com>
+ <20220214081416.117695-21-xuanzhuo@linux.alibaba.com>
+ <CACGkMEvZvhSb0veCynEHN3EfFu_FwbCAb8w1b0Oi3LDc=ffNaw@mail.gmail.com>
+ <1644997568.827981-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEt_AEw2Jh9VzkGQ2A8f8Y0nuuFxr193_vnkFpc=JyD2Sg@mail.gmail.com>
+In-Reply-To: <CACGkMEt_AEw2Jh9VzkGQ2A8f8Y0nuuFxr193_vnkFpc=JyD2Sg@mail.gmail.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-02-17 at 09:58 +0100, Wolfram Sang wrote:
-> > I think 'slave' might be a bit unclear - the driver's acting as an I2C master
-> > too.
-> 
-> Right. Yet, AFAIU only when sending responses to other nodes, or? It
-> does not drive this one remote device with address 0xNN but acts itself
-> as device 0xMM.
+On Thu, 17 Feb 2022 15:21:26 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Wed, Feb 16, 2022 at 3:52 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > On Wed, 16 Feb 2022 12:14:31 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> > > On Mon, Feb 14, 2022 at 4:14 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> > > >
+> > > > Sets the default maximum ring num based on virtio_set_max_ring_num().
+> > > >
+> > > > The default maximum ring num is 1024.
+> > >
+> > > Having a default value is pretty useful, I see 32K is used by default for IFCVF.
+> > >
+> > > Rethink this, how about having a different default value based on the speed?
+> > >
+> > > Without SPEED_DUPLEX, we use 1024. Otherwise
+> > >
+> > > 10g 4096
+> > > 40g 8192
+> >
+> > We can define different default values of tx and rx by the way. This way I can
+> > just use it in the new interface of find_vqs().
+> >
+> > without SPEED_DUPLEX:  tx 512 rx 1024
+> >
+>
+> Any reason that TX is smaller than RX?
+>
 
-The Linux mctp-i2c endpoint (0xMM) can send MCTP messages to any I2C node
-(0xNN), as a block write master->slave. The MCTP I2C transport is
-bidirectional - either side can send the first message, all messages are
-block writes. (Hopefully I've understood your question)
+I've seen some NIC drivers with default tx smaller than rx.
 
-Most higher level protocols on top of MCTP are request/response style, though
-it isn't inherent. The mctp-i2c driver is mostly stateless, but it in order
-to deal with i2c muxes the MCTP stack has a concept of "flows" so that it
-will keep a bus locked for replies after sending out a request (with timeout)
-- that matches how higher level protocols expect to work.
+One problem I have now is that inside virtnet_probe, init_vqs is before getting
+speed/duplex. I'm not sure, can the logic to get speed/duplex be put before
+init_vqs? Is there any risk?
 
-> Oh, and one other question I have meanwhile: do you really need
-> "mctp_current_mux" as a device attribute or is it mere debug and could
-> go away when upstream?
+Can you help me?
 
-Yes, it's really only useful for debugging since it could be outdated by the
-time it is read. I'll remove it, we could add something more robust if people
-had a need.
+Thanks.
 
-Cheers,
-Matt
-
+> Thanks
+>
+> > Thanks.
+> >
+> >
+> > >
+> > > etc.
+> > >
+> > > (The number are just copied from the 10g/40g default parameter from
+> > > other vendors)
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > ---
+> > > >  drivers/net/virtio_net.c | 4 ++++
+> > > >  1 file changed, 4 insertions(+)
+> > > >
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index a4ffd7cdf623..77e61fe0b2ce 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -35,6 +35,8 @@ module_param(napi_tx, bool, 0644);
+> > > >  #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+> > > >  #define GOOD_COPY_LEN  128
+> > > >
+> > > > +#define VIRTNET_DEFAULT_MAX_RING_NUM 1024
+> > > > +
+> > > >  #define VIRTNET_RX_PAD (NET_IP_ALIGN + NET_SKB_PAD)
+> > > >
+> > > >  /* Amount of XDP headroom to prepend to packets for use by xdp_adjust_head */
+> > > > @@ -3045,6 +3047,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > >                         ctx[rxq2vq(i)] = true;
+> > > >         }
+> > > >
+> > > > +       virtio_set_max_ring_num(vi->vdev, VIRTNET_DEFAULT_MAX_RING_NUM);
+> > > > +
+> > > >         ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
+> > > >                                   names, ctx, NULL);
+> > > >         if (ret)
+> > > > --
+> > > > 2.31.0
+> > > >
+> > >
+> >
+>
