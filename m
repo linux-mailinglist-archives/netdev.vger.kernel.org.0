@@ -2,206 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D444B98BD
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 07:07:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 633104B994E
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 07:35:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbiBQGHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 01:07:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39916 "EHLO
+        id S235482AbiBQGfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 01:35:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiBQGHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 01:07:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A601F26F0
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 22:06:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645078013;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ESdxth7tNrd453Iq06KhDm/ZhPhGbHQPQPRlQYMFL9w=;
-        b=ZQDtQ2FfDri7Imkw4zm3/nkdspFw2p07xZ7sDMevAIqqLXhYILE4ELWkob/oPzkcx4EBPx
-        3Zku25UAFvrArXJ/eCsGAcUUfU2B8PMTVscZD/Miw23grP0gJjRT910iCnYYEbh3dVxBos
-        S3F9k8VQJX46pZGyq+A4TEhKZEWY+jI=
-Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com
- [209.85.128.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-hBj-dnJKMI6CO8hOpcHPTw-1; Thu, 17 Feb 2022 01:06:51 -0500
-X-MC-Unique: hBj-dnJKMI6CO8hOpcHPTw-1
-Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-2d61f6c1877so4111057b3.15
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 22:06:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ESdxth7tNrd453Iq06KhDm/ZhPhGbHQPQPRlQYMFL9w=;
-        b=zeC95j51OkI1a6LMR52itFOdvoDEJ9fo7uLD7ACw8ooxVdEzjOdCIH0rZHJ8VzoLuY
-         PVyPHrVmjuv3zUOkrDkHbIqacBszzyxJKV3qaaopllp5HKvrgNTak4Kurmgj/MabDSCs
-         F7wAosyBN1F7oT773GsOZA9YvLZnKekc3EU/jbD2KxRbaLBcd8UbYJxenhietwJL+q2a
-         FhfPiFf6MCdtcOdE3M3AqbsOYKcCpnyKx9HUHnN2178oueb0L2WI+4yI2p3f23c4ozjS
-         jlFhCMUI/efKDLmd8vFESwb8qvBLNBmGf0DEJbVyKcoapN2DoKB7mFAK4yQlWArPPiH7
-         /nKA==
-X-Gm-Message-State: AOAM533V0iR3EH2A4uDcDF40qGqYmcOOnW9mdTI6Pj4xks5BdwTXWku1
-        89jSSdI22DNJd8iDOX721lTRYDXHm/tBDXQvPy3eHpV40mKaWdAYCsfQ6zuV7t2vtl+sPTCOxvT
-        P200rHF2CbzkRB3Q/QHvOnDQzRcH93Ygy
-X-Received: by 2002:a25:3187:0:b0:61e:5f5:4cb9 with SMTP id x129-20020a253187000000b0061e05f54cb9mr1211626ybx.544.1645078011096;
-        Wed, 16 Feb 2022 22:06:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz47hKloiTQaZ66ZLbgNvK4Rz7cNg9uk6v48ujwkPVqtw8cj7HH8KYBlve6VqxUTfFEJSvbn2qgpU5LKX+x8JI=
-X-Received: by 2002:a25:3187:0:b0:61e:5f5:4cb9 with SMTP id
- x129-20020a253187000000b0061e05f54cb9mr1211602ybx.544.1645078010838; Wed, 16
- Feb 2022 22:06:50 -0800 (PST)
+        with ESMTP id S234157AbiBQGfu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 01:35:50 -0500
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54F32A520E
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 22:35:33 -0800 (PST)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220217063531euoutp0247e88f609b4f63e360fa258006027393~Uf0zGri8N1547815478euoutp028
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:35:31 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220217063531euoutp0247e88f609b4f63e360fa258006027393~Uf0zGri8N1547815478euoutp028
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1645079731;
+        bh=ipigtSfsdAFXwgz+IWoVQ6UbZqrjrxN9zsqe1ZCW+7Y=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=jiclKU0ISMlELwlbTYZpCVXhNQeYt0dR8R49fSqYF3dfZ7vS+mWbJa47E7cNW20no
+         8iq8gDu2Oo1lyTidhmh/QBIjyPgFh2905m2xqqwRnuajwGUlA77AahEQXRtXs5F2Co
+         u2jGzdJVf89sGNyi4XD82/5eyCp4ri8Z3aIC+QcQ=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220217063531eucas1p18202ba68c1afd44b1fa5d794b8cded4e~Uf0ytV6mV2722727227eucas1p1K;
+        Thu, 17 Feb 2022 06:35:31 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id A7.4C.09887.3BCED026; Thu, 17
+        Feb 2022 06:35:31 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220217063530eucas1p21b749650bd4fd25a77b144f00039d1c9~Uf0yUhdiZ2710527105eucas1p2l;
+        Thu, 17 Feb 2022 06:35:30 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220217063530eusmtrp2db2c8d8469dce7a199c83341a914e613~Uf0yTq4aW2347823478eusmtrp2M;
+        Thu, 17 Feb 2022 06:35:30 +0000 (GMT)
+X-AuditID: cbfec7f4-471ff7000000269f-a6-620decb30559
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 95.18.09522.2BCED026; Thu, 17
+        Feb 2022 06:35:30 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220217063529eusmtip2509e915705d4a3f7c44776937700239e~Uf0xiOml63108531085eusmtip2B;
+        Thu, 17 Feb 2022 06:35:29 +0000 (GMT)
+Message-ID: <ce67e9c9-966e-3a08-e571-b7f1dacb3814@samsung.com>
+Date:   Thu, 17 Feb 2022 07:35:29 +0100
 MIME-Version: 1.0
-References: <20220207125537.174619-1-elic@nvidia.com> <20220207125537.174619-3-elic@nvidia.com>
- <CACGkMEvF7opCo35QLz4p3u7=T1+H-p=isFm4+yh4uNzKiAxr1A@mail.gmail.com>
- <20220210083050.GA224722@mtl-vdi-166.wap.labs.mlnx> <CACGkMEtBq_q_NQZgs4LobSRkA-4eOafBPLXZJ7ny9f8XJygSzw@mail.gmail.com>
- <20220210092718.GA226512@mtl-vdi-166.wap.labs.mlnx> <185b96bb-68bd-9aef-b473-1f312194b42b@redhat.com>
- <20220216071553.GB2109@mtl-vdi-166.wap.labs.mlnx>
-In-Reply-To: <20220216071553.GB2109@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 17 Feb 2022 14:06:39 +0800
-Message-ID: <CACGkMEvNoG89M0m_=Z9E-d2U0tPJ2_-eiEEj3s_FGYOKTbkH0w@mail.gmail.com>
-Subject: Re: [PATCH 2/3] virtio: Define bit numbers for device independent features
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     "Hemminger, Stephen" <stephen@networkplumber.org>,
-        netdev <netdev@vger.kernel.org>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        Gautam Dawar <gdawar@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH net-next] net: Correct wrong BH disable in
+ hard-interrupt.
+Content-Language: en-US
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rg?= =?UTF-8?Q?ensen?= 
+        <toke@toke.dk>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
+        <toke@redhat.com>
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <Yg05duINKBqvnxUc@linutronix.de>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrDKsWRmVeSWpSXmKPExsWy7djP87qb3/AmGRzYwmrx5edtdotpFycx
+        W3w+cpzNYvHCb8wWc863sFg8PfaI3WJP+3Zmi6YdK5gsLmzrY7U4tkDMYvOmqcwWlw4/YrHY
+        +n4FuwOvx5aVN5k8ds66y+6xYFOpR9eNS8wem1Z1snm8O3eO3eP9vqtsHlsOXWTz+LxJLoAz
+        issmJTUnsyy1SN8ugSuj5epm9oL9QhVXl95gb2B8ydfFyMkhIWAi8WvqT/YuRi4OIYEVjBJP
+        55xjhnC+MEosOPoFyvnMKLHs62FGmJbLF6ZDJZYzSjz7epcRwvnIKDG7q4kFpIpXwE6i4fh9
+        JhCbRUBVov/RPkaIuKDEyZlPgGo4OEQFkiQWbXMHCQsLBEgcmjmJDcRmFhCXuPVkPliriICp
+        ROPFQywg85kFOlkkLtw7wAqSYBMwlOh628UGModTQFdiww4ViF55ie1v5zBDHLqcU+Lw9hqQ
+        EgkBF4k5a1kgwsISr45vYYewZST+7wRZxQVkNzNKPDy3lh3C6WGUuNw0A+pja4k7536B7WIW
+        0JRYv0sfIuwo8Wd1MzPEfD6JG28FIU7gk5i0bTpUmFeio00IolpNYtbxdXBrD164xDyBUWkW
+        UpjMQvL8LCTPzELYu4CRZRWjeGppcW56arFRXmq5XnFibnFpXrpecn7uJkZggjv97/iXHYzL
+        X33UO8TIxMF4iFGCg1lJhPfDQd4kId6UxMqq1KL8+KLSnNTiQ4zSHCxK4rzJmRsShQTSE0tS
+        s1NTC1KLYLJMHJxSDUwZcU35rrqn/gTNdNM41CnUWFl57eOBf3U9PfN/mETmtat+KeqeoNGj
+        VqY7ySDj9Dnd3l8RHuLz9/9OrpO/Yrd5zdR/lt/fShbO+NDQsLB/SXGobuzC/X/TjiwoaVl+
+        I4z1/4I95R90UhSEt23z8T51Mr2q/rVNaERvwI6aHWZl+rEJHpcU1y7YKMjxf+UlV9m7ry4v
+        3se/hNeVpeTkYdPNojsfeEmX5Uk+j+pXOKJ9o77teVqH6bdlQpMN4sXPOoZeSfm+3THq5cMl
+        Yd4TL4WEP1ac9OdL4XOPPw+q4oRyLmdfrywvNrc5Yvck2e7WycrOzFOvwqe+ei/F9E7FLbgy
+        d4tIdtPLY292n/Px/a7EUpyRaKjFXFScCAAz9Ge53wMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrIIsWRmVeSWpSXmKPExsVy+t/xe7qb3vAmGSy+p2Lx5edtdotpFycx
+        W3w+cpzNYvHCb8wWc863sFg8PfaI3WJP+3Zmi6YdK5gsLmzrY7U4tkDMYvOmqcwWlw4/YrHY
+        +n4FuwOvx5aVN5k8ds66y+6xYFOpR9eNS8wem1Z1snm8O3eO3eP9vqtsHlsOXWTz+LxJLoAz
+        Ss+mKL+0JFUhI7+4xFYp2tDCSM/Q0kLPyMRSz9DYPNbKyFRJ384mJTUnsyy1SN8uQS+j5epm
+        9oL9QhVXl95gb2B8ydfFyMkhIWAicfnCdOYuRi4OIYGljBITz0xjhkjISJyc1sAKYQtL/LnW
+        xQZR9J5RYtaNe+wgCV4BO4mG4/eZQGwWAVWJ/kf7GCHighInZz5hAbFFBZIk1k2fDzZUWMBP
+        4tvzM2A1zALiEreezAfrFREwlWi8eIgFZAGzQC+LRPOtdSwQ2xoYJU7c6AXrZhMwlOh6C3IG
+        BwengK7Ehh0qEIPMJLq2dkENlZfY/nYO8wRGoVlI7piFZN8sJC2zkLQsYGRZxSiSWlqcm55b
+        bKhXnJhbXJqXrpecn7uJERjX24793LyDcd6rj3qHGJk4GA8xSnAwK4nwfjjImyTEm5JYWZVa
+        lB9fVJqTWnyI0RQYGBOZpUST84GJJa8k3tDMwNTQxMzSwNTSzFhJnNezoCNRSCA9sSQ1OzW1
+        ILUIpo+Jg1OqgUkwTFftgdXHt3s2XjGf4bPl/bKmLbsdXglt9c03038mEpQ2d7Nm9rQr3c/3
+        F797WhGw3UGvaCpf7JNNdxOlXY5MtDS9vrbzQbjgN+/jZov0fObfvPhwbazUDhnXH/Gm03+9
+        dV37nk0kzqjsWbm77Gvzc6I7jTm1QhSdZcq4tLhv1sxzE/TU/80275vD8/BZr97E81R3P74p
+        VnBZXOeA1NHbpyoYw8s/bzr4tHXZ+b96IVam8Y++yMotubz51sxpMg93qLpkZOguS3m89EqQ
+        uPkXV8P1mt4OOwL3HDzlarSp7I1VZ0WXdu4y3w+zJzH/UF8Yv8fnQdLEr5Z7FDXflzjJZIdn
+        LDu2YmfqTIuNMtJKLMUZiYZazEXFiQDXbND8dAMAAA==
+X-CMS-MailID: 20220217063530eucas1p21b749650bd4fd25a77b144f00039d1c9
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220216175054eucas1p2d8aef6c75806dcdab18b37a4e317dd08
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220216175054eucas1p2d8aef6c75806dcdab18b37a4e317dd08
+References: <CGME20220216175054eucas1p2d8aef6c75806dcdab18b37a4e317dd08@eucas1p2.samsung.com>
+        <Yg05duINKBqvnxUc@linutronix.de>
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 3:16 PM Eli Cohen <elic@nvidia.com> wrote:
->
-> On Mon, Feb 14, 2022 at 02:06:54PM +0800, Jason Wang wrote:
-> >
-> > =E5=9C=A8 2022/2/10 =E4=B8=8B=E5=8D=885:27, Eli Cohen =E5=86=99=E9=81=
-=93:
-> > > On Thu, Feb 10, 2022 at 04:35:28PM +0800, Jason Wang wrote:
-> > > > On Thu, Feb 10, 2022 at 4:31 PM Eli Cohen <elic@nvidia.com> wrote:
-> > > > > On Thu, Feb 10, 2022 at 03:54:57PM +0800, Jason Wang wrote:
-> > > > > > On Mon, Feb 7, 2022 at 8:56 PM Eli Cohen <elic@nvidia.com> wrot=
-e:
-> > > > > > > Define bit fields for device independent feature bits. We nee=
-d them in a
-> > > > > > > follow up patch.
-> > > > > > >
-> > > > > > > Also, define macros for start and end of these feature bits.
-> > > > > > >
-> > > > > > > Reviewed-by: Jianbo Liu <jianbol@nvidia.com>
-> > > > > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > > > > > > ---
-> > > > > > >   include/uapi/linux/virtio_config.h | 16 ++++++++--------
-> > > > > > >   1 file changed, 8 insertions(+), 8 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/include/uapi/linux/virtio_config.h b/include/uap=
-i/linux/virtio_config.h
-> > > > > > > index 3bf6c8bf8477..6d92cc31a8d3 100644
-> > > > > > > --- a/include/uapi/linux/virtio_config.h
-> > > > > > > +++ b/include/uapi/linux/virtio_config.h
-> > > > > > > @@ -45,14 +45,14 @@
-> > > > > > >   /* We've given up on this device. */
-> > > > > > >   #define VIRTIO_CONFIG_S_FAILED         0x80
-> > > > > > >
-> > > > > > > -/*
-> > > > > > > - * Virtio feature bits VIRTIO_TRANSPORT_F_START through
-> > > > > > > - * VIRTIO_TRANSPORT_F_END are reserved for the transport
-> > > > > > > - * being used (e.g. virtio_ring, virtio_pci etc.), the
-> > > > > > > - * rest are per-device feature bits.
-> > > > > > > - */
-> > > > > > > -#define VIRTIO_TRANSPORT_F_START       28
-> > > > > > > -#define VIRTIO_TRANSPORT_F_END         38
-> > > > > > > +/* Device independent features per virtio spec 1.1 range fro=
-m 28 to 38 */
-> > > > > > > +#define VIRTIO_DEV_INDEPENDENT_F_START 28
-> > > > > > > +#define VIRTIO_DEV_INDEPENDENT_F_END   38
-> > > > > > Haven't gone through patch 3 but I think it's probably better n=
-ot
-> > > > > > touch uapi stuff. Or we can define those macros in other place?
-> > > > > >
-> > > > > I can put it in vdpa.c
-> > > > >
-> > > > > > > +
-> > > > > > > +#define VIRTIO_F_RING_INDIRECT_DESC 28
-> > > > > > > +#define VIRTIO_F_RING_EVENT_IDX 29
-> > > > > > > +#define VIRTIO_F_IN_ORDER 35
-> > > > > > > +#define VIRTIO_F_NOTIFICATION_DATA 38
-> > > > > > This part belongs to the virtio_ring.h any reason not pull that=
- file
-> > > > > > instead of squashing those into virtio_config.h?
-> > > > > >
-> > > > > Not sure what you mean here. I can't find virtio_ring.h in my tre=
-e.
-> > > > I meant just copy the virtio_ring.h in the linux tree. It seems cle=
-aner.
-> > > I will still miss VIRTIO_F_ORDER_PLATFORM and VIRTIO_F_NOTIFICATION_D=
-ATA
-> > > which are only defined in drivers/net/ethernet/sfc/mcdi_pcol.h for bl=
-ock
-> > > devices only.
-> > >
-> > > What would you suggest to do with them? Maybe define them in vdpa.c?
-> >
-> >
-> > I meant maybe we need a full synchronization from the current Linux uap=
-i
-> > headers for virtio_config.h and and add virtio_ring.h here.
-> >
->
-> virtio_config.h is updatd already and virtio_ring.h does not add any
-> flag definition that we're missing.
->
-> The flags I was missing are
-> +#define VIRTIO_F_IN_ORDER 35
-> +#define VIRTIO_F_NOTIFICATION_DATA 38
+Hi Andrzej,
 
-Right, so Gautam posted a path for _F_IN_ORDER [1].
-
-We probably need another patch for NOTIFICATION_DATA.
-
-
+On 16.02.2022 18:50, Sebastian Andrzej Siewior wrote:
+> I missed the obvious case where netif_ix() is invoked from hard-IRQ
+> context.
 >
-> and both of these do not appear in the linux headers. They appear as
-> block specific flags:
+> Disabling bottom halves is only needed in process context. This ensures
+> that the code remains on the current CPU and that the soft-interrupts
+> are processed at local_bh_enable() time.
+> In hard- and soft-interrupt context this is already the case and the
+> soft-interrupts will be processed once the context is left (at irq-exit
+> time).
 >
-> drivers/net/ethernet/sfc/mcdi_pcol.h:21471:#define VIRTIO_BLK_CONFIG_VIRT=
-IO_F_IN_ORDER_LBN 35
-> drivers/net/ethernet/sfc/mcdi_pcol.h:21480:#define VIRTIO_BLK_CONFIG_VIRT=
-IO_F_NOTIFICATION_DATA_LBN 38
+> Disable bottom halves if neither hard-interrupts nor soft-interrupts are
+> disabled. Update the kernel-doc, mention that interrupts must be enabled
+> if invoked from process context.
 >
-> So I just defined these two in vdpa.c (in patch v1).
+> Fixes: baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any context.")
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> Marek, does this work for you?
 
-Fine, but we need to remove them if we get update from linux kernel uapi he=
-aders
+Yes, this fixed the issue. Thanks!
 
-[1] https://lkml.org/lkml/2022/2/15/43
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Thanks
-
+>   net/core/dev.c | 11 ++++++++---
+>   1 file changed, 8 insertions(+), 3 deletions(-)
 >
-> > Thanks
-> >
-> >
-> > >
-> > > > Thanks
-> > > >
-> > > > > > Thanks
-> > > > > >
-> > > > > > >   #ifndef VIRTIO_CONFIG_NO_LEGACY
-> > > > > > >   /* Do we get callbacks when the ring is completely used, ev=
-en if we've
-> > > > > > > --
-> > > > > > > 2.34.1
-> > > > > > >
-> >
->
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 909fb38159108..87729491460fc 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4860,7 +4860,9 @@ EXPORT_SYMBOL(__netif_rx);
+>    *	congestion control or by the protocol layers.
+>    *	The network buffer is passed via the backlog NAPI device. Modern NIC
+>    *	driver should use NAPI and GRO.
+> - *	This function can used from any context.
+> + *	This function can used from interrupt and from process context. The
+> + *	caller from process context must not disable interrupts before invoking
+> + *	this function.
+>    *
+>    *	return values:
+>    *	NET_RX_SUCCESS	(no congestion)
+> @@ -4870,12 +4872,15 @@ EXPORT_SYMBOL(__netif_rx);
+>   int netif_rx(struct sk_buff *skb)
+>   {
+>   	int ret;
+> +	bool need_bh_off = !(hardirq_count() | softirq_count());
+>   
+> -	local_bh_disable();
+> +	if (need_bh_off)
+> +		local_bh_disable();
+>   	trace_netif_rx_entry(skb);
+>   	ret = netif_rx_internal(skb);
+>   	trace_netif_rx_exit(ret);
+> -	local_bh_enable();
+> +	if (need_bh_off)
+> +		local_bh_enable();
+>   	return ret;
+>   }
+>   EXPORT_SYMBOL(netif_rx);
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
