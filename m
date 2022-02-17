@@ -2,70 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9931A4B94C5
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 00:59:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A16B74B94CA
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 01:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiBPX7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 18:59:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51670 "EHLO
+        id S238551AbiBQADo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 19:03:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiBPX7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 18:59:47 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCED141E00;
-        Wed, 16 Feb 2022 15:59:33 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id m3so681717eda.10;
-        Wed, 16 Feb 2022 15:59:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ew3Xa6gAkKuI3fbgTzfugwZyLwcI+iWPyFMlpPcJqSU=;
-        b=lzLlxHdlUXuCNjAZXfB7KIiUyR2VTKiPDBb2e3w1ic5GAMa6RADuUnSP235pHdBE0S
-         Y6pXgEkpSSXGh0Dkv6ZE1kH8yj86StQ67CgwCsBEOJeRSGKM/gmV/8lssmfONoQscBBm
-         WIrmEO6Gp5zFC+SXIPw7oj8xPKAro+stJenE2hYACXdsQyOWwORnFtpoiPN5nGaUHUtc
-         O8E4RBYmNk9gD/9B5IVPqdDlQ3c8NCl9jmnK6oNffNzBHyGs1y+HkWIKlvN0qdoz/AeS
-         XqfIX54VIXdHZeExVT5ryY+Hi9+/SXuIET46jMer/Ly5kfp0bVeQns0y6MsUFeJMfNl9
-         KfYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ew3Xa6gAkKuI3fbgTzfugwZyLwcI+iWPyFMlpPcJqSU=;
-        b=X7rq7YYoEWIcrUsIZ+bLPAF2je7Fn8lY47JdlnJxQQI90N5gTP4/30E1ZXNuNM7qaY
-         OacuCNKHR5KSm2qMFpt2kY4u6KLHdSeSEVXridqJhWPxNZclcT9AvzbiIsyMapm6vnbv
-         YAyhzRdQPt3tsE9iCraMh+255CxTOY4PKv1usy5CeCwLrvjN5XaDNFzIjsiuIkNFw/cC
-         Ml/PMGV9uMl+JOt0sd/juqbDzgjcfBv5npVi36EaOslx24cgPaY7N3Ap/XrbXqZEblwg
-         V4MUMzwHExdBnHrtUtU23Rp+H+YwWZiWenwDsQJq70B1XGa2KOPoawUY2fzlPAfhMVrr
-         pZcA==
-X-Gm-Message-State: AOAM5329Dg4hD2n/Ya0AcWqEaL47vd/oz/G3Vvi7T2WrojJN2hrU8JVy
-        EcSfrHCDs0przem7A6giBpQ=
-X-Google-Smtp-Source: ABdhPJzxhRAKn6gfWozQLlVghwYgV9gcYOil6MNq6epB4uIe7Pt8jH6Viqbhd7wo8j6FCloc0Das2Q==
-X-Received: by 2002:a05:6402:27c7:b0:412:80f9:18af with SMTP id c7-20020a05640227c700b0041280f918afmr181405ede.127.1645055971842;
-        Wed, 16 Feb 2022 15:59:31 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id h8sm2453908edk.14.2022.02.16.15.59.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 15:59:31 -0800 (PST)
-Date:   Thu, 17 Feb 2022 01:59:30 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Mans Rullgard <mans@mansr.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Juergen Borleis <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: lan9303: add VLAN IDs to master device
-Message-ID: <20220216235930.q2l3lr7p7pf5hozo@skbuf>
-References: <20220216204818.28746-1-mans@mansr.com>
+        with ESMTP id S229820AbiBQADn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 19:03:43 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332DE45AE7;
+        Wed, 16 Feb 2022 16:03:25 -0800 (PST)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nKUGY-0003xS-CD; Thu, 17 Feb 2022 01:03:22 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nKUGY-000D9W-2D; Thu, 17 Feb 2022 01:03:22 +0100
+Subject: Re: [PATCH v4 net-next 5/8] bpf: Keep the (rcv) timestamp behavior
+ for the existing tc-bpf@ingress
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Willem de Bruijn <willemb@google.com>
+References: <20220211071232.885225-1-kafai@fb.com>
+ <20220211071303.890169-1-kafai@fb.com>
+ <f0d76498-0bb1-36a6-0c8c-b334f6fb13c2@iogearbox.net>
+ <20220216055142.n445wwtqmqewc57a@kafai-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b181acbe-caf8-502d-4b7b-7d96b9fc5d55@iogearbox.net>
+Date:   Thu, 17 Feb 2022 01:03:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216204818.28746-1-mans@mansr.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+In-Reply-To: <20220216055142.n445wwtqmqewc57a@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26455/Wed Feb 16 10:22:44 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,12 +59,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 08:48:18PM +0000, Mans Rullgard wrote:
-> If the master device does VLAN filtering, the IDs used by the switch
-> must be added for any frames to be received.  Do this in the
-> port_enable() function, and remove them in port_disable().
-> 
-> Signed-off-by: Mans Rullgard <mans@mansr.com>
-> ---
+On 2/16/22 6:51 AM, Martin KaFai Lau wrote:
+> On Wed, Feb 16, 2022 at 12:30:53AM +0100, Daniel Borkmann wrote:
+>> On 2/11/22 8:13 AM, Martin KaFai Lau wrote:
+>>> The current tc-bpf@ingress reads and writes the __sk_buff->tstamp
+>>> as a (rcv) timestamp.  This patch is to backward compatible with the
+>>> (rcv) timestamp expectation when the skb->tstamp has a mono delivery_time.
+>>>
+>>> If needed, the patch first saves the mono delivery_time.  Depending on
+>>> the static key "netstamp_needed_key", it then resets the skb->tstamp to
+>>> either 0 or ktime_get_real() before running the tc-bpf@ingress.  After
+>>> the tc-bpf prog returns, if the (rcv) timestamp in skb->tstamp has not
+>>> been changed, it will restore the earlier saved mono delivery_time.
+>>>
+>>> The current logic to run tc-bpf@ingress is refactored to a new
+>>> bpf_prog_run_at_ingress() function and shared between cls_bpf and act_bpf.
+>>> The above new delivery_time save/restore logic is also done together in
+>>> this function.
+>>>
+>>> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+>>> ---
+>>>    include/linux/filter.h | 28 ++++++++++++++++++++++++++++
+>>>    net/sched/act_bpf.c    |  5 +----
+>>>    net/sched/cls_bpf.c    |  6 +-----
+>>>    3 files changed, 30 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/include/linux/filter.h b/include/linux/filter.h
+>>> index d23e999dc032..e43e1701a80e 100644
+>>> --- a/include/linux/filter.h
+>>> +++ b/include/linux/filter.h
+>>> @@ -699,6 +699,34 @@ static inline void bpf_compute_data_pointers(struct sk_buff *skb)
+>>>    	cb->data_end  = skb->data + skb_headlen(skb);
+>>>    }
+>>> +static __always_inline u32 bpf_prog_run_at_ingress(const struct bpf_prog *prog,
+>>> +						   struct sk_buff *skb)
+>>> +{
+>>> +	ktime_t tstamp, saved_mono_dtime = 0;
+>>> +	int filter_res;
+>>> +
+>>> +	if (unlikely(skb->mono_delivery_time)) {
+>>> +		saved_mono_dtime = skb->tstamp;
+>>> +		skb->mono_delivery_time = 0;
+>>> +		if (static_branch_unlikely(&netstamp_needed_key))
+>>> +			skb->tstamp = tstamp = ktime_get_real();
+>>> +		else
+>>> +			skb->tstamp = tstamp = 0;
+>>> +	}
+>>> +
+>>> +	/* It is safe to push/pull even if skb_shared() */
+>>> +	__skb_push(skb, skb->mac_len);
+>>> +	bpf_compute_data_pointers(skb);
+>>> +	filter_res = bpf_prog_run(prog, skb);
+>>> +	__skb_pull(skb, skb->mac_len);
+>>> +
+>>> +	/* __sk_buff->tstamp was not changed, restore the delivery_time */
+>>> +	if (unlikely(saved_mono_dtime) && skb_tstamp(skb) == tstamp)
+>>> +		skb_set_delivery_time(skb, saved_mono_dtime, true);
+>>
+>> So above detour is for skb->tstamp backwards compatibility so users will see real time.
+>> I don't see why we special case {cls,act}_bpf-only, given this will also be the case
+>> for other subsystems (e.g. netfilter) when they read access plain skb->tstamp and get
+>> the egress one instead of ktime_get_real() upon deferred skb_clear_delivery_time().
+>>
+>> If we would generally ignore it, then the above bpf_prog_run_at_ingress() save/restore
+>> detour is not needed (so patch 5/6 should be dropped). (Meaning, if we need to special
+>> case {cls,act}_bpf only, we could also have gone for simpler bpf-only solution..)
+> The limitation here is there is only one skb->tstamp field.  I don't see
+> a bpf-only solution or not will make a difference here.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+A BPF-only solution would probably just treat the skb->tstamp as (semi-)opaque,
+meaning, there're no further bits on clock type needed in skb, but given the
+environment is controlled by an orchestrator it can decide which tstamps to
+retain or which to reset (e.g. by looking at skb->sk). (The other approach is
+exposing info on clock base as done here to some degree for mono/real.)
+
+> Regarding the netfilter (good point!), I only see it is used in nfnetlink_log.c
+> and nfnetlink_queue.c.  Like the tapping cases (earlier than the bpf run-point)
+> and in general other ingress cases, it cannot assume the rcv timestamp is
+> always there, so they can be changed like af_packet in patch 3
+> which is a straight forward change.  I can make the change in v5.
+> 
+> Going back to the cls_bpf at ingress.  If the concern is on code cleanliness,
+> how about removing this dance for now while the current rcv tstamp usage is
+> unclear at ingress.  Meaning keep the delivery_time (if any) in skb->tstamp.
+> This dance could be brought in later when there was breakage and legit usecase
+> reported.  The new bpf prog will have to use the __sk_buff->delivery_time_type
+> regardless if it wants to use skb->tstamp as the delivery_time, so they won't
+> assume delivery_time is always in skb->tstamp and it will be fine even this
+> dance would be brought back in later.
+
+Yes, imho, this is still better than the bpf_prog_run_at_ingress() workaround.
+Ideally, we know when we call helpers like ktime_get_ns() that the clock will
+be mono. We could track that on verifier side in the register type, and when we
+end up writing to skb->tstamp, we could implicitly also set the clock base bits
+in skb for the ctx rewrite telling that it's of type 'mono'. Same for reading,
+we could add __sk_buff->tstamp_type which program can access (imo tstamp_type
+is more generic than a __sk_buff->delivery_time_type). If someone needs
+ktime_get_clocktai_ns() for sch_etf in future, it could be similar tracking
+mechanism. Also setting skb->tstamp to 0 ...
+
+> Regarding patch 6, it is unrelated.  It needs to clear the
+> mono_delivery_time bit if the bpf writes 0 to the skb->tstamp.
+
+... doesn't need to be done as code after bpf_prog_run(), but should be brought
+closer to when we write to the ctx where verifier generates the relevant insns.
+Imo, that's better than having this outside in bpf_prog_run() which is then
+checked no matter what program was doing or even accessing tstamp.
+
+Thanks,
+Daniel
