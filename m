@@ -2,141 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1754BA210
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 14:56:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B93E4BA21B
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 14:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241487AbiBQNzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 08:55:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42576 "EHLO
+        id S241495AbiBQN6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 08:58:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241413AbiBQNzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 08:55:46 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC408273753;
-        Thu, 17 Feb 2022 05:55:31 -0800 (PST)
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 0B4806019B;
-        Thu, 17 Feb 2022 14:54:49 +0100 (CET)
-Date:   Thu, 17 Feb 2022 14:55:27 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
-        Jamal Hadi Salim <jhs@mojatatu.com>, davem@davemloft.net,
-        Jiri Pirko <jiri@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>, coreteam@netfilter.org
-Subject: Re: [PATCH net 1/1] net/sched: act_ct: Fix flow table lookup failure
- with no originating ifindex
-Message-ID: <Yg5Tz5ucVAI3zOTs@salvia>
-References: <20220217093424.23601-1-paulb@nvidia.com>
+        with ESMTP id S235260AbiBQN6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 08:58:11 -0500
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1B82790B5;
+        Thu, 17 Feb 2022 05:57:54 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 865C0580304;
+        Thu, 17 Feb 2022 08:57:52 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 17 Feb 2022 08:57:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ewexVFaFRMWe+RzWS
+        r4kmNRQq7+UUt8s/r9ORkquS7A=; b=mWy9vRgL4CcQbAfN2PiozK+s6kRnRIFzn
+        kMqlzD7/kp5oSpykKPxXRmYuqMPS2YZ+IpmJ+42jkocZVRSZJAn79QQkXJmBsUf6
+        MkUbrscUZsjdS9z+Z6udOnpNiMhe67ta3lgL1XpymBFF+m1SBOsGb3IyK7gUuq9/
+        QIBdNj4S9SFmXBiO3ZMaxi1iXWkpYFmxKJzeS/8RIYHfMD7gVCul/3021HsTndl4
+        TlA5MAx78oczzKgjqd9MNzxPhgf5hGGkrOcwc1v9tNOvY8fX+8UHYVAQep6+tdrp
+        97LqPyhjRwFWjTbm8cCbz4LQax0+2JTW8Lx9KYbiPlaIlmW+OcHOw==
+X-ME-Sender: <xms:X1QOYoavoSBxV5dVcuG5EZ5hGGFYv4qeX7udtY46OWOaMhYzGNZRnw>
+    <xme:X1QOYjY8CHRVMYJ1Jygte7TS7wNCc8JTbtvWNm_m47QC-gV2O6TUX6-pwm-gyxxJb
+    MbB6MgDEoFkVYk>
+X-ME-Received: <xmr:X1QOYi9_whrNVeDXBk9prknD2zWXfeNzohfc-9k7nPUiuRM4tQwBI5FHUsYdjGlcb7TTfAlBlf9OwdUvO0skfYIznRs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeekgdehjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:X1QOYirNS2mcn3VDft-AZY6gdcGd5tdovr5tFUk-mgzYzfBFiG2RFQ>
+    <xmx:X1QOYjrblbq3EYP-uMQT4Tsvh4Urd0FiJrSnrC8TE97cxFoitvgCBA>
+    <xmx:X1QOYgQQI_u03vVe8Y1h-ZyNJRPUh_QL9hIT_cvkLuaarZ7HElJO-A>
+    <xmx:YFQOYmWJfM1psDmUjPC2ibQd_Lqs7T6TnmnqrVVR6OdNDns_NGfFKA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 17 Feb 2022 08:57:50 -0500 (EST)
+Date:   Thu, 17 Feb 2022 15:57:47 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
+        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        simon.horman@corigine.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        baowen.zheng@corigine.com, louis.peens@netronome.com,
+        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
+Subject: Re: [PATCH net-next v2 2/2] flow_offload: reject offload for all
+ drivers with invalid police parameters
+Message-ID: <Yg5UW4WzL2NX4st5@shredder>
+References: <20220217082803.3881-1-jianbol@nvidia.com>
+ <20220217082803.3881-3-jianbol@nvidia.com>
+ <20220217124935.p7pbgv2cfmhpshxv@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220217093424.23601-1-paulb@nvidia.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220217124935.p7pbgv2cfmhpshxv@skbuf>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 11:34:24AM +0200, Paul Blakey wrote:
-> After cited commit optimizted hw insertion, flow table entries are
-> populated with ifindex information which was intended to only be used
-> for HW offload. This tuple ifindex is hashed in the flow table key, so
-> it must be filled for lookup to be successful. But tuple ifindex is only
-> relevant for the netfilter flowtables (nft), so it's not filled in
-> act_ct flow table lookup, resulting in lookup failure, and no SW
-> offload and no offload teardown for TCP connection FIN/RST packets.
-> 
-> To fix this, allow flow tables that don't hash the ifindex.
-> Netfilter flow tables will keep using ifindex for a more specific
-> offload, while act_ct will not.
+On Thu, Feb 17, 2022 at 02:49:35PM +0200, Vladimir Oltean wrote:
+> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Using iif == zero should be enough to specify not set?
+Thanks for testing
 
-> Fixes: 9795ded7f924 ("net/sched: act_ct: Fill offloading tupledx")
-> Signed-off-by: Paul Blakey <paulb@nvidia.com>
-> ---
->  include/net/netfilter/nf_flow_table.h | 8 ++++----
->  net/netfilter/nf_flow_table_core.c    | 6 ++++++
->  net/sched/act_ct.c                    | 3 ++-
->  3 files changed, 12 insertions(+), 5 deletions(-)
 > 
-> diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-> index a3647fadf1cc..9b474414a936 100644
-> --- a/include/net/netfilter/nf_flow_table.h
-> +++ b/include/net/netfilter/nf_flow_table.h
-> @@ -64,8 +64,9 @@ struct nf_flowtable_type {
->  };
->  
->  enum nf_flowtable_flags {
-> -	NF_FLOWTABLE_HW_OFFLOAD		= 0x1,	/* NFT_FLOWTABLE_HW_OFFLOAD */
-> -	NF_FLOWTABLE_COUNTER		= 0x2,	/* NFT_FLOWTABLE_COUNTER */
-> +	NF_FLOWTABLE_HW_OFFLOAD			= 0x1,	/* NFT_FLOWTABLE_HW_OFFLOAD */
-> +	NF_FLOWTABLE_COUNTER			= 0x2,	/* NFT_FLOWTABLE_COUNTER */
-> +	NF_FLOWTABLE_NO_IFINDEX_FILTERING	= 0x4,	/* Only used by act_ct */
->  };
->  
->  struct nf_flowtable {
-> @@ -114,8 +115,6 @@ struct flow_offload_tuple {
->  		__be16			dst_port;
->  	};
->  
-> -	int				iifidx;
-> -
->  	u8				l3proto;
->  	u8				l4proto;
->  	struct {
-> @@ -126,6 +125,7 @@ struct flow_offload_tuple {
->  	/* All members above are keys for lookups, see flow_offload_hash(). */
->  	struct { }			__hash;
->  
-> +	int				iifidx;
->  	u8				dir:2,
->  					xmit_type:2,
->  					encap_num:2,
-> diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-> index b90eca7a2f22..f0cb2c7075c0 100644
-> --- a/net/netfilter/nf_flow_table_core.c
-> +++ b/net/netfilter/nf_flow_table_core.c
-> @@ -254,9 +254,15 @@ static u32 flow_offload_hash_obj(const void *data, u32 len, u32 seed)
->  static int flow_offload_hash_cmp(struct rhashtable_compare_arg *arg,
->  					const void *ptr)
->  {
-> +	const struct nf_flowtable *flow_table = container_of(arg->ht, struct nf_flowtable,
-> +							     rhashtable);
->  	const struct flow_offload_tuple *tuple = arg->key;
->  	const struct flow_offload_tuple_rhash *x = ptr;
->  
-> +	if (!(flow_table->flags & NF_FLOWTABLE_NO_IFINDEX_FILTERING) &&
-> +	    x->tuple.iifidx != tuple->iifidx)
-> +		return 1;
-> +
->  	if (memcmp(&x->tuple, tuple, offsetof(struct flow_offload_tuple, __hash)))
->  		return 1;
->  
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index f99247fc6468..22cd32ec9889 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -305,7 +305,8 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
->  
->  	ct_ft->nf_ft.type = &flowtable_ct;
->  	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD |
-> -			      NF_FLOWTABLE_COUNTER;
-> +			      NF_FLOWTABLE_COUNTER |
-> +			      NF_FLOWTABLE_NO_IFINDEX_FILTERING;
->  	err = nf_flow_table_init(&ct_ft->nf_ft);
->  	if (err)
->  		goto err_init;
-> -- 
-> 2.30.1
-> 
+> But could we cut down on line length a little? Example for sja1105
+> (messages were also shortened):
+
+No problem
+
+[...]
+
+> Also, if you create a "validate" function for every driver, you'll
+> remove code duplication for those drivers that support both matchall and
+> flower policers.
+
+Will do
