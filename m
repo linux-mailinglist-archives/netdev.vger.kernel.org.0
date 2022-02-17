@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38E5A4BA56D
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:09:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50D574BA56F
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:10:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241269AbiBQQJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 11:09:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52608 "EHLO
+        id S242968AbiBQQJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 11:09:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiBQQJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:09:39 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AE3187458;
-        Thu, 17 Feb 2022 08:09:24 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id p15so8410918ejc.7;
-        Thu, 17 Feb 2022 08:09:24 -0800 (PST)
+        with ESMTP id S242774AbiBQQJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:09:40 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16A0184E47;
+        Thu, 17 Feb 2022 08:09:25 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id hw13so8391657ejc.9;
+        Thu, 17 Feb 2022 08:09:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W6cqxl/ALNXLXDztiVLAO/QpWZwa8vitYwFUjYdClJU=;
-        b=Hbu1lkEXwbpzvl9171+9N/HTuhPnpZI7TN3IpHeBNZsEhhCm/aidYSQqNN8cfx1fPD
-         Cuocu4zsTZJYnSrRcyEeIVKrzLjE0HLv+JKoue/PW1tfCJt0kkvK7E7Cna8MeK6QYZ7m
-         mBG/QRHWL3WHYmh3YedqarS01z30Tx3TY6fe3GzGl221jMweHoZzy554ImF1KQ+ckfpP
-         FnYT91VSi4lGPbtzXV7fpRYljlpJFkInHFFM9Q2Snb/LMdHUNvKvquSqaWwFofHNmr4M
-         JDDrFNsF7tD/iLv1zt5pbAqvqnVeqcH1JxOJt+LRbcgRucduO8fXjYCU8TzZyKD9pYP1
-         K7LA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ys6GvyIzdvZ2LM1dv7bCYtsjMt7DVaFxpDK/D/m+fNU=;
+        b=YDO2Cbqp2Xy7UnC16BUrgaQPd5JEadXK7LanbBRM5YeIKheT3amK7MoTd4JmC38IKB
+         z4rcD4YqFOifcMVee9ahjOLLL1eQOVledHublXzvHQ8XNFh46ZBesQGSNWjc38muCiWp
+         J1KUfC5yzWchQO4uPxrcgQzBaFlbI5Cx9sc2jQjSzBd+b4uRE2MJdXwnCzUO4vpsJub5
+         cSAya6YewswZpgAqpW2yQqqg6hkj/Nf2x2hQ9IB1QAuyGwRU8MT5EVeC2rKNFJKwMNPs
+         ZVBYpsk4SCYjroN7ax4cR20GELreh9yom4/fRE0Ls2lSkr9U3bDIqnw8YNMuhfvEIZqZ
+         VP9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W6cqxl/ALNXLXDztiVLAO/QpWZwa8vitYwFUjYdClJU=;
-        b=LnwZ6kUL7DqHRI2/vs7v9J795REgJNGLMKVMIYv5FKB4EUADQ8cZXQ7rzAWre7xv/V
-         ykIL+9oDs2VUaDw0+ELSGH/xBas6olY9/C4D5Wmn4JKLPvZFSw686JkbY3nNpyE78xKX
-         8gaoQbv9kJnpt3fkWp+sPM8t//UexjtecgPtpjfLxMyd/0TUgBbpAoYLrCQrZPveEcC1
-         oSqft8zwXl9Nqsz6mgjRDlI2j9T6ctmKF5SlpAQzcxCv/NWK8uKMKXLZbH1llsT8GLn1
-         gUn0GT2FgIqV6CDvh61sm7Haa1ENYFkq847TDZln85BNqj5Wgah0BZ66U00TTnHwgvq7
-         8DiQ==
-X-Gm-Message-State: AOAM531ltGtI0EL0/wLJIK9sDZOk7MQFbRIc5vf3HirBhgYyJ9oCkapc
-        rY673i56OYro3vu8KWqhiZpvsfTDPFaawp1j
-X-Google-Smtp-Source: ABdhPJyBg9At4wkqSN22UCtVzUZWrJpalj/CPnarf0JykUkauxFwTqebb8N57hljQBXhxJgYfuyX+A==
-X-Received: by 2002:a17:906:cc8d:b0:6c9:6df1:7c55 with SMTP id oq13-20020a170906cc8d00b006c96df17c55mr2864041ejb.317.1645114162838;
-        Thu, 17 Feb 2022 08:09:22 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Ys6GvyIzdvZ2LM1dv7bCYtsjMt7DVaFxpDK/D/m+fNU=;
+        b=pCsKuq3F4isqdw1TYihzmHSp3YbA07PVd2xbe+mGgBHb0GEEtkWGqrbKZjpavfYBaE
+         175PxoSwljH0VFvnZRGKP0KAk3mv6xh0wbJ9MLYJxh0YALDvrrQrfzZAh76W0BOrVYVp
+         OB8aG6/nOndsXfmAj0u8p94YWmCxZxOJmQtSP3upO+UEuppKpDv/GqWCsdtkzZ6SwWH9
+         4npTskoNMo9bzyJf7OYAsWGDSvR+3L2BuPfiz+WHuKQAHFupS2uIzCO5A2iaIWCiVsUr
+         GIYGU1EWof90frgAzkXmEEa4/aVUhP4H6voxgoyZmtbTOU9IKLlkWSm/0Gb2CQJcD1Af
+         g+BQ==
+X-Gm-Message-State: AOAM531Q216dk9/gp+sSf1aGzH5rY8ryncSvcnBYrpt+ggftlotYHg8n
+        IvcnkJTQ+aiB//bMQzqx5Co=
+X-Google-Smtp-Source: ABdhPJwhJqSZriQ8pKdVyIFUxb22KfdZARIqPdmMVBQLpozLElaV3GDU7fVmun2Jej0brrbH76hIOg==
+X-Received: by 2002:a17:906:d0ce:b0:6cf:37f0:2718 with SMTP id bq14-20020a170906d0ce00b006cf37f02718mr2947116ejb.224.1645114164144;
+        Thu, 17 Feb 2022 08:09:24 -0800 (PST)
 Received: from hw-dev-vm01.evs.tv ([212.222.125.68])
-        by smtp.gmail.com with ESMTPSA id x14sm3568194edd.63.2022.02.17.08.09.22
+        by smtp.gmail.com with ESMTPSA id x14sm3568194edd.63.2022.02.17.08.09.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 08:09:22 -0800 (PST)
+        Thu, 17 Feb 2022 08:09:23 -0800 (PST)
 From:   Fred Lefranc <hardware.evs@gmail.com>
 Cc:     Fred Lefranc <hardware.evs@gmail.com>,
         Madalin Bucur <madalin.bucur@nxp.com>,
@@ -54,10 +54,12 @@ Cc:     Fred Lefranc <hardware.evs@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] net/fsl: fman: Allow fm_max_frame_sz & rx_extra_headroom config from devicetree.
-Date:   Thu, 17 Feb 2022 17:05:26 +0100
-Message-Id: <20220217160528.2662513-1-hardware.evs@gmail.com>
+Subject: [PATCH 2/2] net/fsl: fman dt binding: add fsl,max-frm-sz & fsl,rx-extra-headroom properties.
+Date:   Thu, 17 Feb 2022 17:05:27 +0100
+Message-Id: <20220217160528.2662513-2-hardware.evs@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220217160528.2662513-1-hardware.evs@gmail.com>
+References: <20220217160528.2662513-1-hardware.evs@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -71,53 +73,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow modification of two additional Frame Manager parameters :
-- FM Max Frame Size : Can be changed to a value other than 1522
-  (ie support Jumbo Frames)
-- RX Extra Headroom
+Describes two additional parameters that could be optionally added
+in devicetree.
 
 Signed-off-by: Fred Lefranc <hardware.evs@gmail.com>
 ---
- drivers/net/ethernet/freescale/fman/fman.c | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ .../devicetree/bindings/net/fsl-fman.txt      | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
-index 8f0db61cb1f6..bf4240eacf42 100644
---- a/drivers/net/ethernet/freescale/fman/fman.c
-+++ b/drivers/net/ethernet/freescale/fman/fman.c
-@@ -2862,6 +2862,32 @@ static struct fman *read_dts_node(struct platform_device *of_dev)
- 		of_property_read_bool(fm_node, "fsl,erratum-a050385");
- #endif
+diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
+index 020337f3c05f..bcd0cf8ca9e9 100644
+--- a/Documentation/devicetree/bindings/net/fsl-fman.txt
++++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
+@@ -117,6 +117,26 @@ PROPERTIES
+ 		erratum A050385 which indicates that DMA transactions that are
+ 		split can result in a FMan lock.
  
-+	/* Get Max Frame Size */
-+	err = of_property_read_u32(fm_node, "fsl,max-frm-sz", &val);
-+	if (!err) {
-+		if (val > FSL_FM_MAX_POSSIBLE_FRAME_SIZE)
-+			fsl_fm_max_frm = FSL_FM_MAX_POSSIBLE_FRAME_SIZE;
-+		else if (val < FSL_FM_MIN_POSSIBLE_FRAME_SIZE)
-+			fsl_fm_max_frm = FSL_FM_MIN_POSSIBLE_FRAME_SIZE;
-+		else
-+			fsl_fm_max_frm = (int)val;
-+	}
-+	dev_dbg(&of_dev->dev, "Configured Max Frame Size: %d\n",
-+		fsl_fm_max_frm);
++- fsl,max-frm-sz
++		Usage: optional
++		Value type: <u32>
++		Definition: Max frame size, across all interfaces.
++ 		Must be large enough to accommodate the network MTU, but small enough
++ 		to avoid wasting skb memory.
++		1522 by default.
 +
-+	/* Get RX Extra Headroom Value */
-+	err = of_property_read_u32(fm_node, "fsl,rx-extra-headroom", &val);
-+	if (!err) {
-+		if (val > FSL_FM_RX_EXTRA_HEADROOM_MAX)
-+			fsl_fm_rx_extra_headroom = FSL_FM_RX_EXTRA_HEADROOM_MAX;
-+		else if (val < FSL_FM_RX_EXTRA_HEADROOM_MIN)
-+			fsl_fm_rx_extra_headroom = FSL_FM_RX_EXTRA_HEADROOM_MIN;
-+		else
-+			fsl_fm_rx_extra_headroom = (int)val;
-+	}
-+	dev_dbg(&of_dev->dev, "Configured RX Extra Headroom: %d\n",
-+		fsl_fm_rx_extra_headroom);
++- fsl,rx-extra-headroom
++		Usage: optional
++		Value type: <u32>
++		Definition: Extra headroom for Rx buffers.
++ 		FMan is instructed to allocate, on the Rx path, this amount of
++		space at the beginning of a data buffer, beside the DPA private
++		data area and the IC fields.
++		Does not impact Tx buffer layout.
++		64 by default, it's needed on
++		particular forwarding scenarios that add extra headers to the
++		forwarded frame.
 +
- 	return fman;
+ =============================================================================
+ FMan MURAM Node
  
- fman_node_put:
 -- 
 2.25.1
 
