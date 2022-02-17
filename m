@@ -2,116 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4999B4BA719
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 18:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCC24BA727
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 18:30:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243708AbiBQR2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 12:28:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54902 "EHLO
+        id S243731AbiBQRaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 12:30:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233104AbiBQR2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 12:28:35 -0500
-X-Greylist: delayed 4194 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 09:28:20 PST
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63B1255798;
-        Thu, 17 Feb 2022 09:28:19 -0800 (PST)
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 21HHRuww006618;
-        Fri, 18 Feb 2022 02:27:57 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 21HHRuww006618
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1645118877;
-        bh=l1TyzWfQ0jAdhokclSQdnzp8UboMTXXAhan3iI6BUk4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hvNZ4ikLbPjFV/y7ChTE5b8OQBL4g8ZAbtTOwQUZywEnlNF2G/aTi0H1hOhjyGN1C
-         NHEvmztYFCF9Dc6V+hJ5X/wHyELb7nkaACM0wtDbd1+6U7R7+rDFLUXLtZq0w84U3W
-         BVfybmzISX6N+vJbJd360lhJt+4BjRbSdwMcbxAFVXLN1dvr/KzBnHTTvkMEwi2rGw
-         1F0F3DqlPQseUBPJmjskaAJFRh4BWjbcpSq8s9JNDIlKwAPaNXW3e3v/K/zuxd+7Vj
-         l04cKXOH+QyAL/gsJtSNW0MqjhMRjyrIRZpPCWh9tKNIq0WeSu5TcRpw/ib8raCV+x
-         uk3hly0CQ39pQ==
-X-Nifty-SrcIP: [209.85.215.171]
-Received: by mail-pg1-f171.google.com with SMTP id q132so5607076pgq.7;
-        Thu, 17 Feb 2022 09:27:57 -0800 (PST)
-X-Gm-Message-State: AOAM531kh4fpiuOKOs30sCiauRibhY7cr78lCmaAEcXo9f7aMZXkKJir
-        g3WL8JHK2Mg4ZvUu6o6py3dA384kSBA95+sR4ik=
-X-Google-Smtp-Source: ABdhPJxBWdwy+sIqV6zpRtht5DZ0OmlC41IapWVAe36IX2cFMRgSnZS9d19h+BtDYudfRbxf5PEvVUO6wlOp73L12Wo=
-X-Received: by 2002:a05:6a00:a01:b0:4cc:61e5:c548 with SMTP id
- p1-20020a056a000a0100b004cc61e5c548mr4081108pfh.68.1645118876247; Thu, 17 Feb
- 2022 09:27:56 -0800 (PST)
+        with ESMTP id S232550AbiBQRaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 12:30:21 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54ECD272D8F;
+        Thu, 17 Feb 2022 09:30:06 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id y11so251228pfa.6;
+        Thu, 17 Feb 2022 09:30:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=S0mP+gQItL0EexL5aPknfQRXrpjtE7gE4U7C9cJtgV0=;
+        b=Kz/FLUFB0NDlTmKj99fKKrcnTQeB/fx9Uqw/jTCu6dHipjcBAFoLfekUWSdzw4Hlui
+         CIfb35ZI/EwZc2w1inhb02y4CQmXICjByqCDQ2BPY44irZEmjAnMtl3PWbfi8VQoVeYW
+         NNLg6pvOxgWyAJbwxhYDOXyVikHxZj++z4AslfVm9w/r1swFlA72K1beNxhQd9MxeUNr
+         qWTks3mHfsqk3XVu625gH7iVX2+ueUNpqoR1jinzv9zi69TqHYBbrfdNz8EMwaF8wl/v
+         3xupzVGdpvX0kikiXxrfSgYXS5obqL3a9/UCQF33LpHpSfZ7Ev78EK2brmSlLMVF6mz6
+         ZOww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=S0mP+gQItL0EexL5aPknfQRXrpjtE7gE4U7C9cJtgV0=;
+        b=fayBswHwBkUvy+Ywk9aRXWjUYyq7veoLKX4xn6vIJ72gin5bkdLumm0HOMrovzG0R+
+         qCr9Lkqk/Py6VzoylKX9+uS9AYr+9Y024cZ49DxSTqW47ga8EdaFdC1FR/JhUMifMzok
+         2Huk5tb3ruOjS8REWvSo/wxX3BZlHBSi/7HQ8zYWNaGi8qS9ymxHgJtJWoIvnhyKzozJ
+         GNZxHkUx0mX28YiDG9ILfcEIsKOsCA8p7lIypg7s7tjw0UkF5gd/eLdvqLbrn0bzqrpi
+         tPnN73oyrhRElV3Xzz6ov27LZ9viGzyyH5JwozP8BT3CfvftomlBvTHryZeRK+5MBza+
+         QvQQ==
+X-Gm-Message-State: AOAM533TA2fklPpHkv8SlpBiEeZf8F0wj/y8V8x1wnvqNFwAaJb0bKqM
+        8qT7bDbFGZB/tE1IDTu0utsyfRVTNsZ8sr1LWP4=
+X-Google-Smtp-Source: ABdhPJyN1tP+rIxNtkLNTBcv8VhNYwdGPrE+6Ix9rpxGp0PA6bghC6wpL1IbAlkx+BCS5PTp2fOUYtendkuCPisvovw=
+X-Received: by 2002:a63:f711:0:b0:373:585d:2fd4 with SMTP id
+ x17-20020a63f711000000b00373585d2fd4mr3184332pgh.287.1645119005789; Thu, 17
+ Feb 2022 09:30:05 -0800 (PST)
 MIME-Version: 1.0
-References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
- <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com> <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
- <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu> <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
- <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com> <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com>
-In-Reply-To: <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 18 Feb 2022 02:27:16 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com>
-Message-ID: <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+References: <20220217145003.78982-1-cgzones@googlemail.com>
+In-Reply-To: <20220217145003.78982-1-cgzones@googlemail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 17 Feb 2022 09:29:54 -0800
+Message-ID: <CAADnVQJKkrWosMo3S1Ua15_on0S5FWYqUgETi6gqccVOibvEAg@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] capability: use new capable_or functionality
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Serge Hallyn <serge@hallyn.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Du Cheng <ducheng2@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Rolf Eike Beer <eb@emlix.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Colin Cross <ccross@google.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Xiaofeng Cao <cxfcosmos@gmail.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alistair Delva <adelva@google.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-media@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_SOFTFAIL,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 1:49 AM David Laight <David.Laight@aculab.com> wrote:
+On Thu, Feb 17, 2022 at 6:50 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
 >
-> From: Masahiro Yamada
-> > Sent: 17 February 2022 16:17
-> ...
-> > No.  Not that one.
-> >
-> > The commit you presumably want to revert is:
-> >
-> > a771f2b82aa2 ("[PATCH] Add a section about inlining to
-> > Documentation/CodingStyle")
-> >
-> > This is now referred to as "__always_inline disease", though.
+> Use the new added capable_or macro in appropriate cases, where a task
+> is required to have any of two capabilities.
 >
-> That description is largely fine.
+> Reorder CAP_SYS_ADMIN last.
 >
-> Inappropriate 'inline' ought to be removed.
-> Then 'inline' means - 'really do inline this'.
+> TODO: split into subsystem patches.
 
+Yes. Please.
 
-You cannot change "static inline" to "static"
-in header files.
+The bpf side picked the existing order because we were aware
+of that selinux issue.
+Looks like there is no good order that works for all.
+So the new helper makes a lot of sense.
 
-If  "static inline" meant __always_inline,
-there would be no way to negate it.
-That's why we need both inline and __always_inline.
-
-
-
-
-> Anyone remember massive 100+ line #defines being
-> used to get code inlined 'to make it faster'.
-> Sometimes being expanded several times in succession.
-> May have helped a 68020, but likely to be a loss on
-> modern cpu with large I-cache and slow memory.
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-
-
---
-Best Regards
-Masahiro Yamada
+> Fixes: 94c4b4fd25e6 ("block: Check ADMIN before NICE for IOPRIO_CLASS_RT"=
+)
