@@ -2,199 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA664B9A1E
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:51:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A88074B9A2D
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236682AbiBQHuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 02:50:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52362 "EHLO
+        id S236700AbiBQHxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 02:53:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236664AbiBQHuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:50:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26F162A39DC
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:50:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645084237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w+SWlmqdTXW/vwpa/W1PTCZvRCAVwOXfVJtRO06yo4I=;
-        b=i2rL9DXKEnjnfpAazslJZkk1JT1YdIDASkVxmRvhTUKZt5dYgkDNB/Bu9FZroYw9pSU15+
-        R8aK81n2+S+dYOK1lhyacuaZBrvGohz4vwpA5oyVGAXzNDsCJbb+/mOSSeoZINCq5aZgrI
-        hEJcJZAwVj0Qzh1dwmMJEaMiOAnqtNc=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-443-94Xec6SdPCWHTEsjLv7wVQ-1; Thu, 17 Feb 2022 02:50:36 -0500
-X-MC-Unique: 94Xec6SdPCWHTEsjLv7wVQ-1
-Received: by mail-wr1-f72.google.com with SMTP id j8-20020adfc688000000b001e3322ced69so1937492wrg.13
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:50:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=w+SWlmqdTXW/vwpa/W1PTCZvRCAVwOXfVJtRO06yo4I=;
-        b=matXY9zIre8q+cL2Hdhfsgi/QFleJZgrF5gHfXIFV6omvFFTT/rx2cE14eWtCu2AfJ
-         BKJ1+Jkt6i0WG9xeg6yZqPTfFlcbRagXmfE7BXdhevM848Hlt0MAvdXygMaEA0jypSn9
-         Mnm0vfjtByoEW235nv1NXqAk8uBfLx/sArB6WHLvunIVgcMXTgS9Tmq0EdVlgJsshfr/
-         UtatzbDNcVKR/m2IUMZoqXCih8a3aluRzEl+PVqlk/yxnEmWZoQZrA8zkxwUVRQGtfEP
-         yYosCzaN/DDYTzJWqlPSV5RhpW6wfES7N+Zam2XYI46i9dQjm4s4FGwEOM79CfZo8N4b
-         1TkQ==
-X-Gm-Message-State: AOAM531BCYL6sfoTWy8zFy/MXJpYw8yDmbud/GXFsL4h1wSMB+gt566A
-        Os4sejfgVdL5as3UauqW7VWmgqtDDSRd1i6ChOxSuEMZcP4xNIVXYtcxTm+jD5DAd/Z+swXMZ8H
-        1S1QdWymScN/kMzUI
-X-Received: by 2002:adf:9f42:0:b0:1e7:e751:9656 with SMTP id f2-20020adf9f42000000b001e7e7519656mr1268885wrg.590.1645084233485;
-        Wed, 16 Feb 2022 23:50:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw57VwM/1catFUUkrmi2KhjRFil7J/w4QZrPWIsW6CqSvS4FYyAAEPbPH6XyQzZ/Q25yrD01w==
-X-Received: by 2002:adf:9f42:0:b0:1e7:e751:9656 with SMTP id f2-20020adf9f42000000b001e7e7519656mr1268862wrg.590.1645084233179;
-        Wed, 16 Feb 2022 23:50:33 -0800 (PST)
-Received: from redhat.com ([2.55.139.83])
-        by smtp.gmail.com with ESMTPSA id g12sm469088wmq.28.2022.02.16.23.50.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 23:50:32 -0800 (PST)
-Date:   Thu, 17 Feb 2022 02:50:29 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     syzbot <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com>,
-        kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: Re: [syzbot] WARNING in vhost_dev_cleanup (2)
-Message-ID: <20220217024359-mutt-send-email-mst@kernel.org>
-References: <0000000000006f656005d82d24e2@google.com>
- <CACGkMEsyWBBmx3g613tr97nidHd3-avMyO=WRxS8RpcEk7j2=A@mail.gmail.com>
- <20220217023550-mutt-send-email-mst@kernel.org>
- <CACGkMEtuL_4eRYYWd4aQj6rG=cJDQjjr86DWpid3o_N-6xvTWQ@mail.gmail.com>
+        with ESMTP id S231381AbiBQHxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:53:38 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2124.outbound.protection.outlook.com [40.107.20.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BD6178386;
+        Wed, 16 Feb 2022 23:53:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OnprSMfp2uJSPvcrEftPlfnNDkKu3qKJEM1DLeNn+FD71CGo5cRv/Ybf64OPdvD1iqPY0L7k816zQri61ftE8a9y9kWVdDloi6jLkG+/+bshnNntTOp4GXy6eNPzFgfPTQ3v8tfh/Jcf0s8JZ9hIf7pjui3IY1OVUT4qi47Y4DMuwkpjRIaWK5JDgOV5uYCrcNiPTBd3rIOFuEsj4x8QU1m9asp1hMaXAHw1RK7X/HQOa13NWd2IyhLrBVh0wws4/cvbrVvCwQ/mVYNhaVM1aspqgqW69mC784yzOm37Zmuqy2486Z6t3xHNtJn9j+SIY/IsBytJbHW35b3jVWBSUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=utDnPf9IUDGzB9IrLKj4oQ7ko2QgGqohipRM1mhtsqQ=;
+ b=P44CFm7GEcahxSEEoghsZQh2EnYlPp11l30xPsYg8bmrrlpsKkWCVmwmaMSLS1rTbuK+J4mM1UXSVhoyC7v3gV+z/YsHE2OUlFj8ue1dt1mPAEbneLPAFgyFNhc6UCugiAUyEScVDhwRtre4RZb1xV21NaR0JHWwGyOYFStFzB4a7+VvzXc6UHQqGP5GM3spgkDrGpYyyhjK+RAIXaQ3bgTcI5umiGVrvKB95OHYDEbT6BoM/7e2OneDjfv3c7GQTZdJk4ZY4p9eT/v3ukxs7+KZ8Ia3CnqAaWcq5FRTWa5u3mgFOWNy4xEfEXtQ2cFGujBVY+YQLcE2VFHi89zKKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=utDnPf9IUDGzB9IrLKj4oQ7ko2QgGqohipRM1mhtsqQ=;
+ b=DNBfBcI0EMVykmLX+blwZ1sR2Ll24Jv25n3cgpvObub8aQmsTeLfWUOIsQRnyxf1r6cWeoYvrR7MAyPsX9QXoQre2ynN4sem6SMEtJ83Pgl7dcvq0RntmQBMq62y+73szGmG5P/vghWMSSROOBzPzwUOjqGbPh26DBGH9QFcJnY=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by AM5PR03MB2882.eurprd03.prod.outlook.com (2603:10a6:206:18::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Thu, 17 Feb
+ 2022 07:53:21 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::6123:22f6:a2a7:5c1e]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::6123:22f6:a2a7:5c1e%5]) with mapi id 15.20.4995.016; Thu, 17 Feb 2022
+ 07:53:21 +0000
+From:   =?windows-1254?Q?Alvin_=8Aipraga?= <ALSI@bang-olufsen.dk>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC:     =?windows-1254?Q?Alvin_=8Aipraga?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        =?windows-1254?Q?Ar=FDn=E7_=DCNAL?= <arinc.unal@arinc9.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/2] net: dsa: realtek: fix PHY register read
+ corruption
+Thread-Topic: [PATCH net-next 0/2] net: dsa: realtek: fix PHY register read
+ corruption
+Thread-Index: AQHYI06+Oi3bmZ4n+EmyFAzgV7y6pg==
+Date:   Thu, 17 Feb 2022 07:53:21 +0000
+Message-ID: <87zgmqq68e.fsf@bang-olufsen.dk>
+References: <20220216160500.2341255-1-alvin@pqrs.dk>
+        <CAJq09z6Mr7QFSyqWuM1jjm9Dis4Pa2A4yi=NJv1w4FM0WoyqtA@mail.gmail.com>
+        <87k0dusmar.fsf@bang-olufsen.dk>
+        <CAJq09z70QyuyNtQVBW+jWOZ-CgY3uvyTo95JkMvCFNvOs2S1dw@mail.gmail.com>
+In-Reply-To: <CAJq09z70QyuyNtQVBW+jWOZ-CgY3uvyTo95JkMvCFNvOs2S1dw@mail.gmail.com>       (Luiz
+ Angelo Daros de Luca's message of "Thu, 17 Feb 2022 01:28:48   -0300")
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 846739f7-a7ac-4150-4b53-08d9f1ea917f
+x-ms-traffictypediagnostic: AM5PR03MB2882:EE_
+x-microsoft-antispam-prvs: <AM5PR03MB2882742DEEA00DF6A2D1A80383369@AM5PR03MB2882.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XQxPOdG+et3wXIgL6EX7096t7bRjCymLI+YD0BLyXyj9VfnYisyNAgv41Y6ZwnjwYl+F1qp63CBPHe6rQs/ZZvdvsRbFeOPNyPJGVyv2v2kdXBLX0F4ju9W+TMfK6QGtIR5RbZFe42O+FQtxtZGs1nEIbfWnPGzSUhixB8YNVkjoETJtH5N2u+GzDrYoCdHHnSYAfmi5kgSs2hanp6kngUllJpW51J68G53FSemJe8th+FYQrqyJreE1ikS0lKUfJOn0q6gSIu+tacqaC83k1ndH4loBbs7kx2mlZCyRnu0kS8RnUiFXuPlX3ai37BgeBs7qQIfAm5yHTyRPpnaY/o7H3RCszTXlP7rwbrKzkfwPDLpyF2X3Gsv6t1nR/FzvFTLJhiQ8f12eDPsPEwsWpgE49PKM7lyGI9r+2UCDMGS3rW39wtzI1lAQGUV70+H6QK4u2paLuHUKZwLoOj4O0NTgft5vCvhl4a7IVYJnaxuaBr6eQ510MPQFPsJyEFrbGVY40g5Pe0Et9p3MmWo7icZbKeq4uXqAdN2YYYgn6iq5ZuGB4hugMNutCwMQzXsDfUzBORp1GbakvfeYH2EKT+KWv6z9KCw922Pq/JQlU6aKAgY6Y/0q/Tx0oLUchVZzJNGhF8w1ELMsKysUSM760v/f+Cp1uatY4gKSxKGZgnJvNPd7uiMpCRoyz7gECxFGH3THpGj5exU7rNyLsJgQ8g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(6512007)(6506007)(6916009)(2616005)(26005)(186003)(36756003)(38070700005)(86362001)(38100700002)(316002)(2906002)(71200400001)(91956017)(122000001)(66476007)(8676002)(66556008)(64756008)(66446008)(54906003)(66946007)(4326008)(76116006)(7416002)(8936002)(8976002)(5660300002)(6486002)(508600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?windows-1254?Q?vAhEJwbfmuMqjX38j655vnMUqEOrTQ4uertpYGa56PDOg3/0we1U5zGZ?=
+ =?windows-1254?Q?rjy3w6dJ8BvUnvKcIdfq/EFr5K/hOflFmeOMbSfdpzkqKCtxz3YdU9Ys?=
+ =?windows-1254?Q?amwq2kkaESn0lX4xIVVBwleXCbVMQQO4RL+e1czgRu0vl7zaaQJc1Luw?=
+ =?windows-1254?Q?NERJE17eHKELYTpWZM68xOdkrG5QAdOXK3bz4SMiJrVWflntz2LX0QKP?=
+ =?windows-1254?Q?54MTVyRszV6MD5uzyS6n68QV1cc1jutpjlZqardQzkoDsZ9soL6aqVm1?=
+ =?windows-1254?Q?Y9Ko1aeFYLwyMr+uylODOZuAzjmMtLCdniYxvAE//WmdGF/oR3R9wopt?=
+ =?windows-1254?Q?BpQG6n5xrBc5iH1zkiUZjrX99PC1F9qwNrUia7VVVcRjGu0c7wmspBNJ?=
+ =?windows-1254?Q?Vtif43BaHA9tYQmjJPLAKR8ohq0BemeoJcndkczQ5Ukc3qv26VYHeotj?=
+ =?windows-1254?Q?H0GUcA1uJIB6hP37SymmKmDQSKSKGMWH6taRc3/HbA9Zt3G3rg3UCVVW?=
+ =?windows-1254?Q?b+F39TmSJ1imSLDi7x/8i98JKRd5MVpUex1ArBpaWXz+tNkqB0gmrptn?=
+ =?windows-1254?Q?xA1nnDmndLXTJRsuEcybyTBmkjPtWt532M5r0MgCLjo+Sy/aGiO5iId/?=
+ =?windows-1254?Q?zhmvaiRvg8xx5du/EqQ8oTFEpBZ2hFcRefDQjMHyuyjU4bydoPgQSriN?=
+ =?windows-1254?Q?nsS2uUzKAS/y/vUvI10E4GFW9uEU79W5NLIL0KjO1mDmoeRf5a+fW93z?=
+ =?windows-1254?Q?P3ACd5qf7mlA1qSvyoNJl932wffskWiFqkLxR8ra4o1oIMJnLADzQBog?=
+ =?windows-1254?Q?m7Dvd1WN/UyswyvWhDMOqTFpQT5j+0kdJ4ec+KS9WBqdmVZiUP/MDJJC?=
+ =?windows-1254?Q?pHCySPqgmpeDr8bCcawqsYpf0Kjx3R+24GfPg5uh06t0kI7XJV7p4GR1?=
+ =?windows-1254?Q?Z93/kpJXxITDHeBqK7dh+9toh5qSjoPvn9ggFMvNauQ31gQenkB/IrTy?=
+ =?windows-1254?Q?ua2ANmlviAEjCncAYmEj3UwA/Z9Zm3cAGR9YvhScTr8l4lyxWbUpbmW4?=
+ =?windows-1254?Q?WgToG3KvP6fT395PXQa16HiREjC2FAVlVVnosARN6+o50KPTf8X0tNWv?=
+ =?windows-1254?Q?pxSVFF7qoOqUe/QxtkwAT/oyyVbHqugrPJKYu9dF+A/bDHTENpqJLDpL?=
+ =?windows-1254?Q?LlE6+tjQLAWFITkqSbRidJlTtM/Fp+riiI1sUYsTV5eOUUuurRS0HUM4?=
+ =?windows-1254?Q?u2zMEKU8clcPQbgFpNeecnD+FxkE9YKZN4Qs7zPfMlyi/YsNThZZlK9B?=
+ =?windows-1254?Q?M5JHuPnltcc143D/1wYoGgvZOUHmYVoo6eftgnwCY/Zw+IuVw7/eBTfF?=
+ =?windows-1254?Q?fg6hGi4IFMh/5iO/sfpxiiz5yFUKSKpQ1sYzYFKwZQfr1K3FktvUK09I?=
+ =?windows-1254?Q?bTD1NAHQhZ8qBEhsHvg04LcTJHenG6Fbq9lboKZkcGazgGM7NWUbCkf4?=
+ =?windows-1254?Q?/3R1T3xO/9GFq3rOH5Beqo7X0UiDfpA6Du/VG5X+LpWsxqYd7+rzijFS?=
+ =?windows-1254?Q?TyKgdxTJ3XKlqO2vH4tYNTYxln4eIucWq60tclaBs/Rky/u7YmyHKcaM?=
+ =?windows-1254?Q?xAlvKNW1Gs4For8vpFfWMbI6DWnCQUY5X8OJ9zPKn5aStDS7j67aLWKs?=
+ =?windows-1254?Q?7ItCPwR9lRh0iEKkRz3lGJx9zPvwOh0M2nWblH7/5icvgGvDPmaDlZZ7?=
+ =?windows-1254?Q?AFuGjXUj4GnUXt7deOg=3D?=
+Content-Type: text/plain; charset="windows-1254"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEtuL_4eRYYWd4aQj6rG=cJDQjjr86DWpid3o_N-6xvTWQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 846739f7-a7ac-4150-4b53-08d9f1ea917f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2022 07:53:21.4378
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QAgVxELBpOmb7VKFE/MyUoT0/n6F8Cx8I/hlCUiQ3gY44cRn396K7Y+TJ3BPqmWOszEFWEI3nnHEpTPiz75s2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR03MB2882
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 03:39:48PM +0800, Jason Wang wrote:
-> On Thu, Feb 17, 2022 at 3:36 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Thu, Feb 17, 2022 at 03:34:13PM +0800, Jason Wang wrote:
-> > > On Thu, Feb 17, 2022 at 10:01 AM syzbot
-> > > <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com> wrote:
-> > > >
-> > > > Hello,
-> > > >
-> > > > syzbot found the following issue on:
-> > > >
-> > > > HEAD commit:    c5d9ae265b10 Merge tag 'for-linus' of git://git.kernel.org..
-> > > > git tree:       upstream
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=132e687c700000
-> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
-> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=1e3ea63db39f2b4440e0
-> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > >
-> > > > Unfortunately, I don't have any reproducer for this issue yet.
-> > > >
-> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
-> > > >
-> > > > WARNING: CPU: 1 PID: 10828 at drivers/vhost/vhost.c:715 vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
-> > > > Modules linked in:
-> > > > CPU: 0 PID: 10828 Comm: syz-executor.0 Not tainted 5.17.0-rc4-syzkaller-00051-gc5d9ae265b10 #0
-> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > > > RIP: 0010:vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
-> > >
-> > > Probably a hint that we are missing a flush.
-> > >
-> > > Looking at vhost_vsock_stop() that is called by vhost_vsock_dev_release():
-> > >
-> > > static int vhost_vsock_stop(struct vhost_vsock *vsock)
-> > > {
-> > > size_t i;
-> > >         int ret;
-> > >
-> > >         mutex_lock(&vsock->dev.mutex);
-> > >
-> > >         ret = vhost_dev_check_owner(&vsock->dev);
-> > >         if (ret)
-> > >                 goto err;
-> > >
-> > > Where it could fail so the device is not actually stopped.
-> > >
-> > > I wonder if this is something related.
-> > >
-> > > Thanks
-> >
-> >
-> > But then if that is not the owner then no work should be running, right?
-> 
-> Could it be a buggy user space that passes the fd to another process
-> and changes the owner just before the mutex_lock() above?
-> 
-> Thanks
+Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
 
-Maybe, but can you be a bit more explicit? what is the set of
-conditions you see that can lead to this?
+>> > I still feel like we are trying to go around a regmap limitation
+>> > instead of fixing it there. If we control regmap lock (we can define a
+>> > custom lock/unlock) and create new regmap_{read,write}_nolock
+>> > variants, we'll just need to lock the regmap, do whatever you need,
+>> > and unlock it.
+>>
+>> Can you show me what those regmap_{read,write}_nolock variants would
+>> look like in your example? And what about the other regmap_ APIs we use,
+>> like regmap_read_poll_timeout, regmap_update_bits, etc. - do you propose
+>> to reimplement all of these?
+>
+> The option of having two regmaps is a nice way to have "_nolock"
+> variants for free. It is much cleaner than any solutions I imagined!
+> Ayway, I don't believe the regmap API expects to have an evil
+> non-locked clone. It looks like it is being abused.
+>
+> What regmap API misses is a way to create a "transaction". Mdio, for
+> example, expects the user to lock the bus before doing a series of
+> accesses while regmap api assumes a single atomic access is enough.
+> However, Realtek indirect register access shows that it is not enough.
+> We could reimplement a mutex for every case where two calls might
+> share the same register (or indirectly affect others like we saw with
+> Realtek) but I believe a shared solution would be better, even if it
+> costs a couple more wrap functions.
+>
+> It would be even nicer if we have a regmap "manual lock" mode that
+> will expose the lock/unlock functions but it will never call them by
+> itself. It would work if it could check if the caller is actually the
+> same thread/context that locked it. However I doubt there is a clean
+> solution in a kernel code that can check if the lock was acquired by
+> the same context that is calling the read.
 
+I went through all of this while preparing the patch, so your arguments
+are familiar to me ;-)
 
-> >
-> >
-> > >
-> > > > Code: c7 85 90 01 00 00 00 00 00 00 e8 53 6e a2 fa 48 89 ef 48 83 c4 20 5b 5d 41 5c 41 5d 41 5e 41 5f e9 7d d6 ff ff e8 38 6e a2 fa <0f> 0b e9 46 ff ff ff 48 8b 7c 24 10 e8 87 00 ea fa e9 75 f7 ff ff
-> > > > RSP: 0018:ffffc9000fe6fa18 EFLAGS: 00010293
-> > > > RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-> > > > RDX: ffff888021b63a00 RSI: ffffffff86d66fe8 RDI: ffff88801cc200b0
-> > > > RBP: ffff88801cc20000 R08: 0000000000000001 R09: 0000000000000001
-> > > > R10: ffffffff817f1e08 R11: 0000000000000000 R12: ffff88801cc200d0
-> > > > R13: ffff88801cc20120 R14: ffff88801cc200d0 R15: 0000000000000002
-> > > > FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > CR2: 0000001b2de25000 CR3: 000000004c9cd000 CR4: 00000000003506f0
-> > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > Call Trace:
-> > > >  <TASK>
-> > > >  vhost_vsock_dev_release+0x36e/0x4b0 drivers/vhost/vsock.c:771
-> > > >  __fput+0x286/0x9f0 fs/file_table.c:313
-> > > >  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
-> > > >  exit_task_work include/linux/task_work.h:32 [inline]
-> > > >  do_exit+0xb29/0x2a30 kernel/exit.c:806
-> > > >  do_group_exit+0xd2/0x2f0 kernel/exit.c:935
-> > > >  get_signal+0x45a/0x2490 kernel/signal.c:2863
-> > > >  arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
-> > > >  handle_signal_work kernel/entry/common.c:148 [inline]
-> > > >  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
-> > > >  exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
-> > > >  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
-> > > >  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
-> > > >  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
-> > > >  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > > > RIP: 0033:0x7f4027a46481
-> > > > Code: Unable to access opcode bytes at RIP 0x7f4027a46457.
-> > > > RSP: 002b:00007f402808ba68 EFLAGS: 00000206 ORIG_RAX: 0000000000000038
-> > > > RAX: fffffffffffffffc RBX: 00007f402622e700 RCX: 00007f4027a46481
-> > > > RDX: 00007f402622e9d0 RSI: 00007f402622e2f0 RDI: 00000000003d0f00
-> > > > RBP: 00007f402808bcb0 R08: 00007f402622e700 R09: 00007f402622e700
-> > > > R10: 00007f402622e9d0 R11: 0000000000000206 R12: 00007f402808bb1e
-> > > > R13: 00007f402808bb1f R14: 00007f402622e300 R15: 0000000000022000
-> > > >  </TASK>
-> > > >
-> > > >
-> > > > ---
-> > > > This report is generated by a bot. It may contain errors.
-> > > > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > > > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> > > >
-> > > > syzbot will keep track of this issue. See:
-> > > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > > >
-> >
+What I sent was the cleanest solution I could eventually think of. I
+don't think it is foul play, but I agree it is a bit funny to have this
+kind of "shadow regmap". However, the interface is quite safe, and as I
+implied in the commit message, quite foolproof as well.
 
+Basically, rather than reimplementing every regmap API that I want to
+use while manually taking the lock, I just use another regmap with
+locking disabled. It boils down to exactly the same thing.
+
+>
+>
+>> > BTW, I believe that, for realtek-mdio, a regmap custom lock mechanism
+>> > could simply use mdio lock while realtek-smi already has priv->lock.
+>>
+>> Hmm OK. Actually I'm a bit confused about the mdio_lock: can you explain
+>> what it's guarding against, for someone unfamiliar with MDIO? Currently
+>> realtek-mdio's regmap has an additional lock around it (disable_locking
+>> is 0), so with these patches applied the number of locks remains the
+>> same.
+>
+> Today we already have to redundants locks (mdio and regmap). Your
+> patch is just replacing the regmap lock.
+
+Is that so? Andrew seems to imply that you shouldn't be using the
+mdio_lock like this, but only for per-register access, and then
+implement your own higher level lock:
+
+> For PHYs this is sufficient. For switches, sometimes you need
+> additional protection. The granularity of an access might not be a
+> single register read or a write. It could be you need to read or write
+> a few registers in an atomic way. If that is the case, you need a lock
+> at a higher level.
+
+It seems to me like you should have used mdiobus_{read,write} or even
+mdiobus_{read,write}_nested? Although the state of the art in other DSA
+drivers seems like a mixed bag, so I don't know.
+
+Since I do not have an MDIO switch in front of me to test with, and
+since the existing MDIO code looks a little suspect, again I would
+prefer to stick in my lane and just fix the problem without
+refactoring.
+
+>
+> regmap_read is something like this:
+>
+> regmap_read
+>     lock regmap
+>     realtek_mdio_read()
+>         lock mdio
+>         ...
+>         unlock mdio
+>    unlock regmap
+>
+> If you are implementing a custom lock, simply use mdio lock directly.
+>
+> And the map_nolock you created does not mean "access without locks"
+> but "you must lock it yourself before using anything here". If that
+> lock is actually mdio_lock, it would be ok to remove the lock inside
+> realtek_mdio_{read,write}. You just need a reference to those
+> lock/unlock functions in realtek_priv.
+>
+>> priv->lock is a spinlock which is inappropriate here. I'm not really
+>> sure what the point of it is, besides to handle unlocked calls to the
+>> _noack function. It might be removable altogether but I would prefer not
+>> to touch it for this series.
+>
+> If spinlock is inappropriate, it can be easily converted to a mutex.
+> Everything else from realtek-mdio might apply.
+
+Well, this is a bugfix series, not a refactoring. I am not adding more
+locks than were here before. If I start touching old code (this spinlock
+predates my engagement with this driver), I will have to answer to that
+in the commit message too. If we want to do this, let's do it after the
+bugfix has been reviewed and merged. It will be easier to justify as
+well.
+
+Kind regards,
+Alvin
+
+>
+>> Kind regards,
+>> Alvin=
