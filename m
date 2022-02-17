@@ -2,156 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5B94B9E77
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 12:18:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE984B9E96
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 12:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239671AbiBQLSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 06:18:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58434 "EHLO
+        id S239757AbiBQLau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 06:30:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234011AbiBQLSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 06:18:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 078E1125596
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 03:18:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645096695;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rluMdUX42Bz6AnNz4rNBAMY3uivA4hbkOP/qxqIto1I=;
-        b=JMc/pX6ESEl+8bRahrUz7hMLa2Qw0iVytobBJ2OA5Cgop5Ji5UhRHRRUMfDIIYwGEMwCYH
-        LrFhrqiDbaxBJZjzGApi4RbsoqNBpPG4dGRPZlF9wsIff/wm7ljSmIyCOCw8NN548rv3A1
-        5MTFu00yq0tKgBDC1vNBc0ZjOveKRps=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-512-j-eCUzACPviXjpJ7DpzliA-1; Thu, 17 Feb 2022 06:18:14 -0500
-X-MC-Unique: j-eCUzACPviXjpJ7DpzliA-1
-Received: by mail-wr1-f71.google.com with SMTP id v17-20020adf8b51000000b001e336bf3be7so2177609wra.1
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 03:18:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rluMdUX42Bz6AnNz4rNBAMY3uivA4hbkOP/qxqIto1I=;
-        b=6fdgrRJhByEnw6pDsGsSbjv4PqxoG3xukAtz9Pxdf+cbOCT0Fmapy3n3oUhG2AHMrq
-         mAh59LthHKZWEvzJIv9kOsXDGw8upRZ7sayowC/8Y2IwiuCyzQAqW71BFsG6/aCCCDzg
-         CzqsygVml5e0o/C2cNC/NSewPpE97RWu8Ww9/dR3yNZ7Mbfyvt/1xRyltrA68clxxGGt
-         VG6u3YHEoPusMr+1EQcPUotlnPd4i7jJAPLZyv8dcPYw2q2nZxtXGp7rjShhNsT+pzqC
-         k0iYKPF6G1zT40wXNWMUyydcFs18K4xX8bTEVjMaGOIfi6XTXnULCRxWz6cUCLdK4PLL
-         5iVA==
-X-Gm-Message-State: AOAM532Z4I8sqf8yRsFY57P0msUHAAxi7x6sFgfNK4/WT1d+H6a6VOa0
-        FCQxn/Ok6rPDhpox8QkVkON7R5vlU+0FpUHkKr908dJQezmOe86GzQ0sMFc974zq5u93xr0tBv/
-        vMEfWbd4wbHrM/rgk
-X-Received: by 2002:a5d:6d85:0:b0:1e2:f9f9:ab97 with SMTP id l5-20020a5d6d85000000b001e2f9f9ab97mr1876429wrs.469.1645096692793;
-        Thu, 17 Feb 2022 03:18:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzg4Fuag+kZ16DSH9MN8SQ1oKWHrLC6hiWspAJXu/pLoNH68nFkZtjFc4nGqy1iX+uafMSjQA==
-X-Received: by 2002:a5d:6d85:0:b0:1e2:f9f9:ab97 with SMTP id l5-20020a5d6d85000000b001e2f9f9ab97mr1876415wrs.469.1645096692540;
-        Thu, 17 Feb 2022 03:18:12 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id p16sm1064696wmq.18.2022.02.17.03.18.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 03:18:10 -0800 (PST)
-Date:   Thu, 17 Feb 2022 12:18:08 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [RFC iproute2] tos: interpret ToS in natural numeral system
-Message-ID: <20220217111808.GA9766@pc-4.home>
-References: <20220216194205.3780848-1-kuba@kernel.org>
- <20220216222352.GA3432@pc-4.home>
- <0b4b5a8f8e9e48248bee3208d8f13286@AcuMS.aculab.com>
+        with ESMTP id S239805AbiBQLao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 06:30:44 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C64826A2D2;
+        Thu, 17 Feb 2022 03:30:26 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jzt0x2QyZz9sS8;
+        Thu, 17 Feb 2022 12:30:25 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id XUnYJCICrvgh; Thu, 17 Feb 2022 12:30:25 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jzt0x1Ty7z9sQv;
+        Thu, 17 Feb 2022 12:30:25 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 25F258B77C;
+        Thu, 17 Feb 2022 12:30:25 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 4HxbiZsXw0US; Thu, 17 Feb 2022 12:30:25 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id DC7C08B763;
+        Thu, 17 Feb 2022 12:30:24 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HBUEOe399195
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 17 Feb 2022 12:30:14 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HBUC30399194;
+        Thu, 17 Feb 2022 12:30:12 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: [PATCH net v2] net: Force inlining of checksum functions in net/checksum.h
+Date:   Thu, 17 Feb 2022 12:30:10 +0100
+Message-Id: <6e2d915b5fc8a7edc3557bcde2fa06d82edcf974.1645097288.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0b4b5a8f8e9e48248bee3208d8f13286@AcuMS.aculab.com>
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645097408; l=8024; s=20211009; h=from:subject:message-id; bh=HcE97JbRKL/kvh1JeDkyVDbNMuB70rD3eT2NwCu2/Kw=; b=bEJ9jjTQGGBmJg6n/t9KzGdpavvqwn2W6x8Ax6i92YSI6+mSoN/O9CyiChojjrkhC8uYVkUPQpLe oEd8FwurBZ4lur5Rq/y0y8f3YDxEUEJU3q3V6oeacFQxHd0j/6Ru
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:44:19PM +0000, David Laight wrote:
-> From: Guillaume Nault
-> > Sent: 16 February 2022 22:24
-> > 
-> > On Wed, Feb 16, 2022 at 11:42:05AM -0800, Jakub Kicinski wrote:
-> > > Silently forcing a base numeral system is very painful for users.
-> > > ip currently interprets tos 10 as 0x10. Imagine user's bash script
-> > > does:
-> > >
-> > >   .. tos $((TOS * 2)) ..
-> > >
-> > > or any numerical operation on the ToS.
-> > >
-> > > This patch breaks existing scripts if they expect 10 to be 0x10.
-> > 
-> > I agree that we shouldn't have forced base 16 in the first place.
-> > But after so many years I find it a bit dangerous to change that.
-> 
-> Aren't the TOS values made up of several multi-bit fields and
-> very likely to be documented in hex?
+All functions defined as static inline in net/checksum.h are
+meant to be inlined for performance reason.
 
-In theory, they are. But as far as the kernel is concerned, they're
-just plain integers with no significance (apart from some constraints
-preventing the use of some values). Users are free to choose their own
-values.
+But since commit ac7c3e4ff401 ("compiler: enable
+CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
+uninline functions when it wants.
 
-> I'm not sure $((TOS * 2)) (or even + 2) makes any sense at all.
-> 
-> What it more horrid that that base 0 treats numbers that start
-> with a 0 as octal - has anyone really used octal since the 1970s
-> (except for file permissions).
+Fair enough in the general case, but for tiny performance critical
+checksum helpers that's counter-productive.
 
-Right, but that'd be consistent with the rest of iproute2, so users
-should be aware of this trap at this point (or most likely, they never
-prefix their values with 0). Anyway, I think we agreed that it's now
-too late to modify the base.
+The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
+Those helpers being 'static inline' in header files you suddenly find
+them duplicated many times in the resulting vmlinux.
 
-> I have written command line parsers that treat 0tnnn as decimal
-> while defaulting to hex.
-> That does make it easier to use shell arithmetic for field (like
-> addresses) that you would never normally specify in decimal.
-> 
-> > 
-> > What about just printing a warning when the value isn't prefixed with
-> > '0x'? Something like (completely untested):
-> > 
-> > @@ -535,6 +535,12 @@ int rtnl_dsfield_a2n(__u32 *id, const char *arg)
-> >  	if (!end || end == arg || *end || res > 255)
-> >  		return -1;
-> >  	*id = res;
-> > +
-> > +	if (strncmp("0x", arg, 2))
-> > +		fprintf(stderr,
-> > +			"Warning: dsfield and tos parameters are interpreted as hexadecimal values\n"
-> > +			"Use 'dsfield 0x%02x' to avoid this message\n", res);
-> 
-> Ugg.
+Here is a typical exemple when building powerpc pmac32_defconfig
+with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
 
-Not nice, I agree. But what else can we do without breaking backward
-compatibility?
-This is similar to the warning we have when creating a new vxlan device
-without specifying the destination port:
+	c04a23cc <csum_sub>:
+	c04a23cc:	7c 84 20 f8 	not     r4,r4
+	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
+	c04a23d4:	7c 63 01 94 	addze   r3,r3
+	c04a23d8:	4e 80 00 20 	blr
+		...
+	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
+		...
+	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
+		...
+	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
+		...
+	c04a754c <csum_sub>:
+	c04a754c:	7c 84 20 f8 	not     r4,r4
+	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
+	c04a7554:	7c 63 01 94 	addze   r3,r3
+	c04a7558:	4e 80 00 20 	blr
+		...
+	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
+		...
+	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
+		...
+	c04e3b08 <csum_sub>:
+	c04e3b08:	7c 84 20 f8 	not     r4,r4
+	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
+	c04e3b10:	7c 63 01 94 	addze   r3,r3
+	c04e3b14:	4e 80 00 20 	blr
+		...
+	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
+		...
+	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
+		...
+	c0512d34 <csum_sub>:
+	c0512d34:	7c 84 20 f8 	not     r4,r4
+	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
+	c0512d3c:	7c 63 01 94 	addze   r3,r3
+	c0512d40:	4e 80 00 20 	blr
+		...
+	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
+		...
+	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
+		...
 
-  # ip link add type vxlan vni 200 remote 2001:db8::1
-  vxlan: destination port not specified
-  Will use Linux kernel default (non-standard value)
-  Use 'dstport 4789' to get the IANA assigned value
-  Use 'dstport 0' to get default and quiet this message
+Restore the expected behaviour by using __always_inline for all
+functions defined in net/checksum.h
 
-> 	David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
+vmlinux size is even reduced by 256 bytes with this patch:
+
+	   text	   data	    bss	    dec	    hex	filename
+	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
+	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
+
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v2: Rebased on net tree
+
+ include/net/checksum.h | 40 ++++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/include/net/checksum.h b/include/net/checksum.h
+index 5218041e5c8f..1e2e011c51f6 100644
+--- a/include/net/checksum.h
++++ b/include/net/checksum.h
+@@ -22,7 +22,7 @@
+ #include <asm/checksum.h>
+ 
+ #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
+-static inline
++static __always_inline
+ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
+ 				      int len)
+ {
+@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
+ #endif
+ 
+ #ifndef HAVE_CSUM_COPY_USER
+-static __inline__ __wsum csum_and_copy_to_user
++static __always_inline __wsum csum_and_copy_to_user
+ (const void *src, void __user *dst, int len)
+ {
+ 	__wsum sum = csum_partial(src, len, ~0U);
+@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_to_user
+ #endif
+ 
+ #ifndef _HAVE_ARCH_CSUM_AND_COPY
+-static inline __wsum
++static __always_inline __wsum
+ csum_partial_copy_nocheck(const void *src, void *dst, int len)
+ {
+ 	memcpy(dst, src, len);
+@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
+ #endif
+ 
+ #ifndef HAVE_ARCH_CSUM_ADD
+-static inline __wsum csum_add(__wsum csum, __wsum addend)
++static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
+ {
+ 	u32 res = (__force u32)csum;
+ 	res += (__force u32)addend;
+@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
+ }
+ #endif
+ 
+-static inline __wsum csum_sub(__wsum csum, __wsum addend)
++static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
+ {
+ 	return csum_add(csum, ~addend);
+ }
+ 
+-static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
++static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+ {
+ 	u16 res = (__force u16)csum;
+ 
+@@ -75,12 +75,12 @@ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+ 	return (__force __sum16)(res + (res < (__force u16)addend));
+ }
+ 
+-static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
++static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
+ {
+ 	return csum16_add(csum, ~addend);
+ }
+ 
+-static inline __wsum csum_shift(__wsum sum, int offset)
++static __always_inline __wsum csum_shift(__wsum sum, int offset)
+ {
+ 	/* rotate sum to align it with a 16b boundary */
+ 	if (offset & 1)
+@@ -88,42 +88,42 @@ static inline __wsum csum_shift(__wsum sum, int offset)
+ 	return sum;
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_add(__wsum csum, __wsum csum2, int offset)
+ {
+ 	return csum_add(csum, csum_shift(csum2, offset));
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
+ {
+ 	return csum_block_add(csum, csum2, offset);
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_sub(__wsum csum, __wsum csum2, int offset)
+ {
+ 	return csum_block_add(csum, ~csum2, offset);
+ }
+ 
+-static inline __wsum csum_unfold(__sum16 n)
++static __always_inline __wsum csum_unfold(__sum16 n)
+ {
+ 	return (__force __wsum)n;
+ }
+ 
+-static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
++static __always_inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
+ {
+ 	return csum_partial(buff, len, sum);
+ }
+ 
+ #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
+ 
+-static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
++static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
+ {
+ 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
+ }
+ 
+-static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
++static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
+ {
+ 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
+ 
+@@ -136,7 +136,7 @@ static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
+  *  m : old value of a 16bit field
+  *  m' : new value of a 16bit field
+  */
+-static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
++static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
+ {
+ 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
+ }
+@@ -150,7 +150,7 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
+ void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
+ 				     __wsum diff, bool pseudohdr);
+ 
+-static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
++static __always_inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
+ 					    __be16 from, __be16 to,
+ 					    bool pseudohdr)
+ {
+@@ -158,7 +158,7 @@ static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
+ 				 (__force __be32)to, pseudohdr);
+ }
+ 
+-static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
++static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
+ 				    int start, int offset)
+ {
+ 	__sum16 *psum = (__sum16 *)(ptr + offset);
+@@ -175,12 +175,12 @@ static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
+ 	return delta;
+ }
+ 
+-static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
++static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
+ {
+ 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
+ }
+ 
+-static inline __wsum wsum_negate(__wsum val)
++static __always_inline __wsum wsum_negate(__wsum val)
+ {
+ 	return (__force __wsum)-((__force u32)val);
+ }
+-- 
+2.34.1
 
