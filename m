@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E394B9A42
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:57:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5C64B9A3E
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236898AbiBQH5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 02:57:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41702 "EHLO
+        id S236896AbiBQH5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 02:57:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236817AbiBQH5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:57:05 -0500
+        with ESMTP id S236737AbiBQH51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:57:27 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29EFDE85
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C4EDECD
         for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:56:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3F13B82166
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 07:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC5DBC340EB;
-        Thu, 17 Feb 2022 07:56:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FBD0B8215C
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 07:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A8FC340F1;
+        Thu, 17 Feb 2022 07:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645084600;
-        bh=Y4L74Xl79fYcrqinpK7zOuqOs045KmvFapTqRBk7G/k=;
+        bh=gfJfeFapxqghdT7utMr6+UQ48xVazHja/BVlPRoQ+wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KF+eJGhUpTmzASdDOmf8x6yWyXRCI+pv6tSHLBCafHltjowMMJohrZ5rkfbv9AYUq
-         JT4Tzg3AXgBGixe03RpAGtUfE1vQNLcMKmkfR+UyACbzZ+J2wWwz4Di/zLA0yzpXGG
-         mBXGgpQsGi5C2FgBe/THwmd8f6bJc+eugMVRjgerigm44c/Z8agAngJAsRQiJCKu5B
-         W7cFB71TAe/h1KmMpoBGTzyiO14AdReHo1BJ97QQgQhJ6Kz+KVPxeomRaYZjJEdazj
-         JgVq/C+ZGCbpWdarRX7i0L7NPuZ9iGjGvoDcCxaDe/vialUJYGHXZXQOEOPfW8efIa
-         WGUkJ72TRNJnA==
+        b=is5G8LUUwVpHKIEM6E1ljdtnq6VnL4EoMs+tpRC5H0vibjXEglkzKifGU4kzY4x9z
+         RHSrROe8RqJQp2W0WeNThEvgBQDq2jTubc2+7qsN4A25wFXWXEJJSau7ZMuEnR2K+5
+         nnIF1Sna5BeENmrpftpeBQU/bc2OH6nkrE83tPPMWWySyJrZO5ba3XmWINJbx4m4L/
+         miJL4OaLIppAL+61tmPTcRZuolZODDOSAYS1irq7D80tN6IZWj+jNIsTk8DkuhmrCi
+         rmDdLp7R1Na8e4yhQMNFYLlPIFLmbfT5udbg9jbOkPnNzNZH5f+7GTjQBytUlBrb5s
+         08B7m+mfVXnbA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 11/15] net/mlx5e: Create new flow attr for multi table actions
-Date:   Wed, 16 Feb 2022 23:56:28 -0800
-Message-Id: <20220217075632.831542-12-saeed@kernel.org>
+Subject: [net-next 12/15] net/mlx5e: Use multi table support for CT and sample actions
+Date:   Wed, 16 Feb 2022 23:56:29 -0800
+Message-Id: <20220217075632.831542-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220217075632.831542-1-saeed@kernel.org>
 References: <20220217075632.831542-1-saeed@kernel.org>
@@ -56,842 +56,481 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-Some TC actions use post actions for their implementation.
-For example CT and sample actions.
-
-Create a new flow attr after each multi table action and
-create a post action rule for it.
-
-First flow attr being offloaded normally and linked to the next
-attr (post action rule) with setting an id on reg_c.
-Post action rules match the id on reg_c and continue to the next one.
-
-The flow counter is allocated on the last rule.
+CT and sample actions use post actions for their implementation.
+Flag those actions as multi table actions so the post act infrastructure
+will handle the post actions allocation.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en/tc/act/act.c        |  73 ++++
- .../mellanox/mlx5/core/en/tc/act/act.h        |  24 ++
- .../mellanox/mlx5/core/en/tc/post_act.c       |   6 -
- .../mellanox/mlx5/core/en/tc/sample.c         |   3 +
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |   3 +
- .../ethernet/mellanox/mlx5/core/en/tc_priv.h  |   7 +
- .../mellanox/mlx5/core/en/tc_tun_encap.c      |  48 ++-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 383 +++++++++++++++---
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |   3 +-
- 9 files changed, 483 insertions(+), 67 deletions(-)
+ .../mellanox/mlx5/core/en/tc/act/ct.c         | 12 +++
+ .../mellanox/mlx5/core/en/tc/act/sample.c     | 21 ++++++
+ .../mellanox/mlx5/core/en/tc/act/sample.h     | 14 ++++
+ .../mellanox/mlx5/core/en/tc/post_act.c       |  3 +-
+ .../mellanox/mlx5/core/en/tc/sample.c         | 74 +++++--------------
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 50 ++++---------
+ 6 files changed, 80 insertions(+), 94 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-index e600924e30ea..cb8f7593a00c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.c
-@@ -2,6 +2,7 @@
- // Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- 
- #include "act.h"
-+#include "en/tc/post_act.h"
- #include "en/tc_priv.h"
- #include "mlx5_core.h"
- 
-@@ -101,3 +102,75 @@ mlx5e_tc_act_init_parse_state(struct mlx5e_tc_act_parse_state *parse_state,
- 	parse_state->num_actions = flow_action->num_entries;
- 	parse_state->extack = extack;
- }
-+
-+void
-+mlx5e_tc_act_reorder_flow_actions(struct flow_action *flow_action,
-+				  struct mlx5e_tc_flow_action *flow_action_reorder)
-+{
-+	struct flow_action_entry *act;
-+	int i, j = 0;
-+
-+	flow_action_for_each(i, act, flow_action) {
-+		/* Add CT action to be first. */
-+		if (act->id == FLOW_ACTION_CT)
-+			flow_action_reorder->entries[j++] = act;
-+	}
-+
-+	flow_action_for_each(i, act, flow_action) {
-+		if (act->id == FLOW_ACTION_CT)
-+			continue;
-+		flow_action_reorder->entries[j++] = act;
-+	}
-+}
-+
-+int
-+mlx5e_tc_act_post_parse(struct mlx5e_tc_act_parse_state *parse_state,
-+			struct flow_action *flow_action,
-+			struct mlx5_flow_attr *attr,
-+			enum mlx5_flow_namespace_type ns_type)
-+{
-+	struct flow_action_entry *act;
-+	struct mlx5e_tc_act *tc_act;
-+	struct mlx5e_priv *priv;
-+	int err = 0, i;
-+
-+	priv = parse_state->flow->priv;
-+
-+	flow_action_for_each(i, act, flow_action) {
-+		tc_act = mlx5e_tc_act_get(act->id, ns_type);
-+		if (!tc_act || !tc_act->post_parse ||
-+		    !tc_act->can_offload(parse_state, act, i, attr))
-+			continue;
-+
-+		err = tc_act->post_parse(parse_state, priv, attr);
-+		if (err)
-+			goto out;
-+	}
-+
-+out:
-+	return err;
-+}
-+
-+int
-+mlx5e_tc_act_set_next_post_act(struct mlx5e_tc_flow *flow,
-+			       struct mlx5_flow_attr *attr,
-+			       struct mlx5_flow_attr *next_attr)
-+{
-+	struct mlx5_core_dev *mdev = flow->priv->mdev;
-+	struct mlx5e_tc_mod_hdr_acts *mod_acts;
-+	int err;
-+
-+	mod_acts = &attr->parse_attr->mod_hdr_acts;
-+
-+	/* Set handle on current post act rule to next post act rule. */
-+	err = mlx5e_tc_post_act_set_handle(mdev, next_attr->post_act_handle, mod_acts);
-+	if (err) {
-+		mlx5_core_warn(mdev, "Failed setting post action handle");
-+		return err;
-+	}
-+
-+	attr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
-+			MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-index fc7c06688b51..519fa1056d9f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-@@ -42,6 +42,15 @@ struct mlx5e_tc_act {
- 	int (*post_parse)(struct mlx5e_tc_act_parse_state *parse_state,
- 			  struct mlx5e_priv *priv,
- 			  struct mlx5_flow_attr *attr);
-+
-+	bool (*is_multi_table_act)(struct mlx5e_priv *priv,
-+				   const struct flow_action_entry *act,
-+				   struct mlx5_flow_attr *attr);
-+};
-+
-+struct mlx5e_tc_flow_action {
-+	unsigned int num_entries;
-+	struct flow_action_entry **entries;
- };
- 
- extern struct mlx5e_tc_act mlx5e_tc_act_drop;
-@@ -74,4 +83,19 @@ mlx5e_tc_act_init_parse_state(struct mlx5e_tc_act_parse_state *parse_state,
- 			      struct flow_action *flow_action,
- 			      struct netlink_ext_ack *extack);
- 
-+void
-+mlx5e_tc_act_reorder_flow_actions(struct flow_action *flow_action,
-+				  struct mlx5e_tc_flow_action *flow_action_reorder);
-+
-+int
-+mlx5e_tc_act_post_parse(struct mlx5e_tc_act_parse_state *parse_state,
-+			struct flow_action *flow_action,
-+			struct mlx5_flow_attr *attr,
-+			enum mlx5_flow_namespace_type ns_type);
-+
-+int
-+mlx5e_tc_act_set_next_post_act(struct mlx5e_tc_flow *flow,
-+			       struct mlx5_flow_attr *attr,
-+			       struct mlx5_flow_attr *next_attr);
-+
- #endif /* __MLX5_EN_TC_ACT_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-index ce7ba1951e25..27854ac844a0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
-@@ -140,15 +140,9 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *at
- 		goto err_xarray;
- 
- 	handle->attr = post_attr;
--	err = mlx5e_tc_post_act_offload(post_act, handle);
--	if (err)
--		goto err_rule;
--
- 
- 	return handle;
- 
--err_rule:
--	xa_erase(&post_act->ids, handle->id);
- err_xarray:
- 	kfree(post_attr);
- 	kfree(handle);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-index 32230e677029..90b86c4aaf51 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-@@ -533,6 +533,9 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 			err = PTR_ERR(post_act_handle);
- 			goto err_post_act;
- 		}
-+		err = mlx5e_tc_post_act_offload(tc_psample->post_act, post_act_handle);
-+		if (err)
-+			goto err_post_rule;
- 		sample_flow->post_act_handle = post_act_handle;
- 	} else {
- 		err = add_post_rule(esw, sample_flow, spec, attr, &default_tbl_id);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 0f4d3b9dd979..228ebb19fcab 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1823,6 +1823,9 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
- 		ct_dbg("Failed to allocate post action handle");
- 		goto err_post_act_handle;
- 	}
-+	err = mlx5e_tc_post_act_offload(ct_priv->post_act, handle);
-+	if (err)
-+		goto err_alloc_pre;
- 	ct_flow->post_act_handle = handle;
- 
- 	/* Base flow attributes of both rules on original rule attribute */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
-index 9ffba584b982..f76624699a8d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
-@@ -109,6 +109,7 @@ struct mlx5e_tc_flow {
- 	struct completion init_done;
- 	struct completion del_hw_done;
- 	struct mlx5_flow_attr *attr;
-+	struct list_head attrs;
- };
- 
- struct mlx5_flow_handle *
-@@ -129,6 +130,12 @@ mlx5e_tc_offload_fdb_rules(struct mlx5_eswitch *esw,
- 			   struct mlx5_flow_spec *spec,
- 			   struct mlx5_flow_attr *attr);
- 
-+struct mlx5_flow_attr *
-+mlx5e_tc_get_encap_attr(struct mlx5e_tc_flow *flow);
-+
-+void mlx5e_tc_unoffload_flow_post_acts(struct mlx5e_tc_flow *flow);
-+int mlx5e_tc_offload_flow_post_acts(struct mlx5e_tc_flow *flow);
-+
- bool mlx5e_is_eswitch_flow(struct mlx5e_tc_flow *flow);
- bool mlx5e_is_ft_flow(struct mlx5e_tc_flow *flow);
- bool mlx5e_is_offloaded_flow(struct mlx5e_tc_flow *flow);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index 1f8d339ff0c3..171bc6b36aa4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -173,19 +173,29 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
- 	list_for_each_entry(flow, flow_list, tmp_list) {
- 		if (!mlx5e_is_offloaded_flow(flow) || !flow_flag_test(flow, SLOW))
- 			continue;
--		attr = flow->attr;
--		esw_attr = attr->esw_attr;
--		spec = &attr->parse_attr->spec;
- 
-+		spec = &flow->attr->parse_attr->spec;
-+
-+		attr = mlx5e_tc_get_encap_attr(flow);
-+		esw_attr = attr->esw_attr;
- 		esw_attr->dests[flow->tmp_entry_index].pkt_reformat = e->pkt_reformat;
- 		esw_attr->dests[flow->tmp_entry_index].flags |= MLX5_ESW_DEST_ENCAP_VALID;
- 
- 		/* Do not offload flows with unresolved neighbors */
- 		if (!mlx5e_tc_flow_all_encaps_valid(esw_attr))
- 			continue;
-+
-+		err = mlx5e_tc_offload_flow_post_acts(flow);
-+		if (err) {
-+			mlx5_core_warn(priv->mdev, "Failed to update flow post acts, %d\n",
-+				       err);
-+			continue;
-+		}
-+
- 		/* update from slow path rule to encap rule */
--		rule = mlx5e_tc_offload_fdb_rules(esw, flow, spec, attr);
-+		rule = mlx5e_tc_offload_fdb_rules(esw, flow, spec, flow->attr);
- 		if (IS_ERR(rule)) {
-+			mlx5e_tc_unoffload_flow_post_acts(flow);
- 			err = PTR_ERR(rule);
- 			mlx5_core_warn(priv->mdev, "Failed to update cached encapsulation flow, %d\n",
- 				       err);
-@@ -214,12 +224,13 @@ void mlx5e_tc_encap_flows_del(struct mlx5e_priv *priv,
- 	list_for_each_entry(flow, flow_list, tmp_list) {
- 		if (!mlx5e_is_offloaded_flow(flow) || flow_flag_test(flow, SLOW))
- 			continue;
--		attr = flow->attr;
--		esw_attr = attr->esw_attr;
--		spec = &attr->parse_attr->spec;
-+		spec = &flow->attr->parse_attr->spec;
- 
- 		/* update from encap rule to slow path rule */
- 		rule = mlx5e_tc_offload_to_slow_path(esw, flow, spec);
-+
-+		attr = mlx5e_tc_get_encap_attr(flow);
-+		esw_attr = attr->esw_attr;
- 		/* mark the flow's encap dest as non-valid */
- 		esw_attr->dests[flow->tmp_entry_index].flags &= ~MLX5_ESW_DEST_ENCAP_VALID;
- 
-@@ -230,7 +241,8 @@ void mlx5e_tc_encap_flows_del(struct mlx5e_priv *priv,
- 			continue;
- 		}
- 
--		mlx5e_tc_unoffload_fdb_rules(esw, flow, attr);
-+		mlx5e_tc_unoffload_fdb_rules(esw, flow, flow->attr);
-+		mlx5e_tc_unoffload_flow_post_acts(flow);
- 		flow->rule[0] = rule;
- 		/* was unset when fast path rule removed */
- 		flow_flag_set(flow, OFFLOADED);
-@@ -495,6 +507,9 @@ void mlx5e_detach_encap(struct mlx5e_priv *priv,
- 	struct mlx5e_encap_entry *e = flow->encaps[out_index].e;
- 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
- 
-+	if (!mlx5e_is_eswitch_flow(flow))
-+		return;
-+
- 	if (attr->esw_attr->dests[out_index].flags &
- 	    MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE)
- 		mlx5e_detach_encap_route(priv, flow, out_index);
-@@ -1360,17 +1375,19 @@ static void mlx5e_reoffload_encap(struct mlx5e_priv *priv,
- 
- 	list_for_each_entry(flow, encap_flows, tmp_list) {
- 		struct mlx5e_tc_flow_parse_attr *parse_attr;
--		struct mlx5_flow_attr *attr = flow->attr;
- 		struct mlx5_esw_flow_attr *esw_attr;
- 		struct mlx5_flow_handle *rule;
-+		struct mlx5_flow_attr *attr;
- 		struct mlx5_flow_spec *spec;
- 
- 		if (flow_flag_test(flow, FAILED))
- 			continue;
- 
-+		spec = &flow->attr->parse_attr->spec;
-+
-+		attr = mlx5e_tc_get_encap_attr(flow);
- 		esw_attr = attr->esw_attr;
- 		parse_attr = attr->parse_attr;
--		spec = &parse_attr->spec;
- 
- 		err = mlx5e_update_vf_tunnel(esw, esw_attr, &parse_attr->mod_hdr_acts,
- 					     e->out_dev, e->route_dev_ifindex,
-@@ -1392,9 +1409,18 @@ static void mlx5e_reoffload_encap(struct mlx5e_priv *priv,
- 			esw_attr->dests[flow->tmp_entry_index].flags |= MLX5_ESW_DEST_ENCAP_VALID;
- 			if (!mlx5e_tc_flow_all_encaps_valid(esw_attr))
- 				goto offload_to_slow_path;
-+
-+			err = mlx5e_tc_offload_flow_post_acts(flow);
-+			if (err) {
-+				mlx5_core_warn(priv->mdev, "Failed to update flow post acts, %d\n",
-+					       err);
-+				goto offload_to_slow_path;
-+			}
-+
- 			/* update from slow path rule to encap rule */
--			rule = mlx5e_tc_offload_fdb_rules(esw, flow, spec, attr);
-+			rule = mlx5e_tc_offload_fdb_rules(esw, flow, spec, flow->attr);
- 			if (IS_ERR(rule)) {
-+				mlx5e_tc_unoffload_flow_post_acts(flow);
- 				err = PTR_ERR(rule);
- 				mlx5_core_warn(priv->mdev, "Failed to update cached encapsulation flow, %d\n",
- 					       err);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index a709b2e9f3f2..b9d6a2e8b240 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -115,6 +115,7 @@ struct mlx5e_tc_attr_to_reg_mapping mlx5e_tc_attr_to_reg_mappings[] = {
- static struct lock_class_key tc_ht_lock_key;
- 
- static void mlx5e_put_flow_tunnel_id(struct mlx5e_tc_flow *flow);
-+static void free_flow_post_acts(struct mlx5e_tc_flow *flow);
- 
- void
- mlx5e_tc_match_to_reg_match(struct mlx5_flow_spec *spec,
-@@ -273,6 +274,23 @@ get_sample_priv(struct mlx5e_priv *priv)
- 	return NULL;
- }
- 
-+static struct mlx5e_post_act *
-+get_post_action(struct mlx5e_priv *priv)
-+{
-+	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-+	struct mlx5_rep_uplink_priv *uplink_priv;
-+	struct mlx5e_rep_priv *uplink_rpriv;
-+
-+	if (is_mdev_switchdev_mode(priv->mdev)) {
-+		uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
-+		uplink_priv = &uplink_rpriv->uplink_priv;
-+
-+		return uplink_priv->post_act;
-+	}
-+
-+	return priv->fs.tc.post_act;
-+}
-+
- struct mlx5_flow_handle *
- mlx5_tc_rule_insert(struct mlx5e_priv *priv,
- 		    struct mlx5_flow_spec *spec,
-@@ -1193,6 +1211,8 @@ static void mlx5e_tc_del_nic_flow(struct mlx5e_priv *priv,
- 	if (flow_flag_test(flow, HAIRPIN))
- 		mlx5e_hairpin_flow_del(priv, flow);
- 
-+	free_flow_post_acts(flow);
-+
- 	kvfree(attr->parse_attr);
- 	kfree(flow->attr);
- }
-@@ -1425,6 +1445,9 @@ set_encap_dests(struct mlx5e_priv *priv,
- 	int out_index;
- 	int err = 0;
- 
-+	if (!mlx5e_is_eswitch_flow(flow))
-+		return 0;
-+
- 	parse_attr = attr->parse_attr;
- 	esw_attr = attr->esw_attr;
- 	*vf_tun = false;
-@@ -1480,6 +1503,9 @@ clean_encap_dests(struct mlx5e_priv *priv,
- 	struct mlx5_esw_flow_attr *esw_attr;
- 	int out_index;
- 
-+	if (!mlx5e_is_eswitch_flow(flow))
-+		return;
-+
- 	esw_attr = attr->esw_attr;
- 	*vf_tun = false;
- 
-@@ -1627,7 +1653,7 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 	 * (1) there's no error
- 	 * (2) there's an encap action and we don't have valid neigh
- 	 */
--	if (!encap_valid)
-+	if (!encap_valid || flow_flag_test(flow, SLOW))
- 		flow->rule[0] = mlx5e_tc_offload_to_slow_path(esw, flow, &parse_attr->spec);
- 	else
- 		flow->rule[0] = mlx5e_tc_offload_fdb_rules(esw, flow, &parse_attr->spec, attr);
-@@ -1712,6 +1738,8 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
- 	if (flow_flag_test(flow, L3_TO_L2_DECAP))
- 		mlx5e_detach_decap(priv, flow);
- 
-+	free_flow_post_acts(flow);
-+
- 	kvfree(attr->esw_attr->rx_tun_attr);
- 	kvfree(attr->parse_attr);
- 	kfree(flow->attr);
-@@ -1719,7 +1747,10 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
- 
- struct mlx5_fc *mlx5e_tc_get_counter(struct mlx5e_tc_flow *flow)
- {
--	return flow->attr->counter;
-+	struct mlx5_flow_attr *attr;
-+
-+	attr = list_first_entry(&flow->attrs, struct mlx5_flow_attr, list);
-+	return attr->counter;
- }
- 
- /* Iterate over tmp_list of flows attached to flow_list head. */
-@@ -3316,52 +3347,6 @@ bool mlx5e_same_hw_devs(struct mlx5e_priv *priv, struct mlx5e_priv *peer_priv)
- 	return (fsystem_guid == psystem_guid);
- }
- 
--static int
--parse_tc_actions(struct mlx5e_tc_act_parse_state *parse_state,
--		 struct flow_action *flow_action)
--{
--	struct netlink_ext_ack *extack = parse_state->extack;
--	struct mlx5e_tc_flow *flow = parse_state->flow;
--	struct mlx5_flow_attr *attr = flow->attr;
--	enum mlx5_flow_namespace_type ns_type;
--	struct mlx5e_priv *priv = flow->priv;
--	const struct flow_action_entry *act;
--	struct mlx5e_tc_act *tc_act;
--	int err, i;
--
--	ns_type = mlx5e_get_flow_namespace(flow);
--
--	flow_action_for_each(i, act, flow_action) {
--		tc_act = mlx5e_tc_act_get(act->id, ns_type);
--		if (!tc_act) {
--			NL_SET_ERR_MSG_MOD(extack, "Not implemented offload action");
--			return -EOPNOTSUPP;
--		}
--
--		if (!tc_act->can_offload(parse_state, act, i, attr))
--			return -EOPNOTSUPP;
--
--		err = tc_act->parse_action(parse_state, act, priv, attr);
--		if (err)
--			return err;
--
--		parse_state->actions |= attr->action;
--	}
--
--	flow_action_for_each(i, act, flow_action) {
--		tc_act = mlx5e_tc_act_get(act->id, ns_type);
--		if (!tc_act || !tc_act->post_parse ||
--		    !tc_act->can_offload(parse_state, act, i, attr))
--			continue;
--
--		err = tc_act->post_parse(parse_state, priv, attr);
--		if (err)
--			return err;
--	}
--
--	return 0;
--}
--
- static int
- actions_prepare_mod_hdr_actions(struct mlx5e_priv *priv,
- 				struct mlx5e_tc_flow *flow,
-@@ -3400,6 +3385,300 @@ actions_prepare_mod_hdr_actions(struct mlx5e_priv *priv,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+index 9fb1a9a8bc02..1492d3e49c59 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+@@ -56,8 +56,20 @@ tc_act_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,
  	return 0;
  }
  
-+static struct mlx5_flow_attr*
-+mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
-+				   enum mlx5_flow_namespace_type ns_type)
++static bool
++tc_act_is_multi_table_act_ct(struct mlx5e_priv *priv,
++			     const struct flow_action_entry *act,
++			     struct mlx5_flow_attr *attr)
 +{
-+	struct mlx5e_tc_flow_parse_attr *parse_attr;
-+	u32 attr_sz = ns_to_attr_sz(ns_type);
-+	struct mlx5_flow_attr *attr2;
++	if (act->ct.action & TCA_CT_ACT_CLEAR)
++		return false;
 +
-+	attr2 = mlx5_alloc_flow_attr(ns_type);
-+	parse_attr = kvzalloc(sizeof(*parse_attr), GFP_KERNEL);
-+	if (!attr2 || !parse_attr) {
-+		kvfree(parse_attr);
-+		kfree(attr2);
-+		return attr2;
-+	}
-+
-+	memcpy(attr2, attr, attr_sz);
-+	INIT_LIST_HEAD(&attr2->list);
-+	parse_attr->filter_dev = attr->parse_attr->filter_dev;
-+	attr2->action = 0;
-+	attr2->flags = 0;
-+	attr2->parse_attr = parse_attr;
-+	return attr2;
++	return true;
 +}
 +
-+static struct mlx5_core_dev *
-+get_flow_counter_dev(struct mlx5e_tc_flow *flow)
-+{
-+	return mlx5e_is_eswitch_flow(flow) ? flow->attr->esw_attr->counter_dev : flow->priv->mdev;
-+}
-+
-+struct mlx5_flow_attr *
-+mlx5e_tc_get_encap_attr(struct mlx5e_tc_flow *flow)
-+{
-+	struct mlx5_esw_flow_attr *esw_attr;
-+	struct mlx5_flow_attr *attr;
-+	int i;
-+
-+	list_for_each_entry(attr, &flow->attrs, list) {
-+		esw_attr = attr->esw_attr;
-+		for (i = 0; i < MLX5_MAX_FLOW_FWD_VPORTS; i++) {
-+			if (esw_attr->dests[i].flags & MLX5_ESW_DEST_ENCAP)
-+				return attr;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+void
-+mlx5e_tc_unoffload_flow_post_acts(struct mlx5e_tc_flow *flow)
-+{
-+	struct mlx5e_post_act *post_act = get_post_action(flow->priv);
-+	struct mlx5_flow_attr *attr;
-+
-+	list_for_each_entry(attr, &flow->attrs, list) {
-+		if (list_is_last(&attr->list, &flow->attrs))
-+			break;
-+
-+		mlx5e_tc_post_act_unoffload(post_act, attr->post_act_handle);
-+	}
-+}
-+
-+static void
-+free_flow_post_acts(struct mlx5e_tc_flow *flow)
-+{
-+	struct mlx5_core_dev *counter_dev = get_flow_counter_dev(flow);
-+	struct mlx5e_post_act *post_act = get_post_action(flow->priv);
-+	struct mlx5_flow_attr *attr, *tmp;
-+	bool vf_tun;
-+
-+	list_for_each_entry_safe(attr, tmp, &flow->attrs, list) {
-+		if (list_is_last(&attr->list, &flow->attrs))
-+			break;
-+
-+		if (attr->post_act_handle)
-+			mlx5e_tc_post_act_del(post_act, attr->post_act_handle);
-+
-+		clean_encap_dests(flow->priv, flow, attr, &vf_tun);
-+
-+		if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT)
-+			mlx5_fc_destroy(counter_dev, attr->counter);
-+
-+		if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
-+			mlx5e_mod_hdr_dealloc(&attr->parse_attr->mod_hdr_acts);
-+			if (attr->modify_hdr)
-+				mlx5_modify_header_dealloc(flow->priv->mdev, attr->modify_hdr);
-+		}
-+
-+		list_del(&attr->list);
-+		kvfree(attr->parse_attr);
-+		kfree(attr);
-+	}
-+}
-+
-+int
-+mlx5e_tc_offload_flow_post_acts(struct mlx5e_tc_flow *flow)
-+{
-+	struct mlx5e_post_act *post_act = get_post_action(flow->priv);
-+	struct mlx5_flow_attr *attr;
-+	int err = 0;
-+
-+	list_for_each_entry(attr, &flow->attrs, list) {
-+		if (list_is_last(&attr->list, &flow->attrs))
-+			break;
-+
-+		err = mlx5e_tc_post_act_offload(post_act, attr->post_act_handle);
-+		if (err)
-+			break;
-+	}
-+
-+	return err;
-+}
-+
-+/* TC filter rule HW translation:
-+ *
-+ * +---------------------+
-+ * + ft prio (tc chain)  +
-+ * + original match      +
-+ * +---------------------+
-+ *           |
-+ *           | if multi table action
-+ *           |
-+ *           v
-+ * +---------------------+
-+ * + post act ft         |<----.
-+ * + match fte id        |     | split on multi table action
-+ * + do actions          |-----'
-+ * +---------------------+
-+ *           |
-+ *           |
-+ *           v
-+ * Do rest of the actions after last multi table action.
-+ */
-+static int
-+alloc_flow_post_acts(struct mlx5e_tc_flow *flow, struct netlink_ext_ack *extack)
-+{
-+	struct mlx5e_post_act *post_act = get_post_action(flow->priv);
-+	struct mlx5_flow_attr *attr, *next_attr = NULL;
-+	struct mlx5e_post_act_handle *handle;
-+	bool vf_tun, encap_valid = true;
-+	int err;
-+
-+	/* This is going in reverse order as needed.
-+	 * The first entry is the last attribute.
-+	 */
-+	list_for_each_entry(attr, &flow->attrs, list) {
-+		if (!next_attr) {
-+			/* Set counter action on last post act rule. */
-+			attr->action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+		} else {
-+			attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_COUNT;
-+			err = mlx5e_tc_act_set_next_post_act(flow, attr, next_attr);
-+			if (err)
-+				goto out_free;
-+		}
-+
-+		/* Don't add post_act rule for first attr (last in the list).
-+		 * It's being handled by the caller.
-+		 */
-+		if (list_is_last(&attr->list, &flow->attrs))
-+			break;
-+
-+		err = set_encap_dests(flow->priv, flow, attr, extack, &encap_valid, &vf_tun);
-+		if (err)
-+			goto out_free;
-+
-+		if (!encap_valid)
-+			flow_flag_set(flow, SLOW);
-+
-+		err = actions_prepare_mod_hdr_actions(flow->priv, flow, attr, extack);
-+		if (err)
-+			goto out_free;
-+
-+		if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
-+			err = mlx5e_tc_add_flow_mod_hdr(flow->priv, flow, attr);
-+			if (err)
-+				goto out_free;
-+		}
-+
-+		if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT) {
-+			err = alloc_flow_attr_counter(get_flow_counter_dev(flow), attr);
-+			if (err)
-+				goto out_free;
-+		}
-+
-+		handle = mlx5e_tc_post_act_add(post_act, attr);
-+		if (IS_ERR(handle)) {
-+			err = PTR_ERR(handle);
-+			goto out_free;
-+		}
-+
-+		attr->post_act_handle = handle;
-+		next_attr = attr;
-+	}
-+
-+	if (flow_flag_test(flow, SLOW))
-+		goto out;
-+
-+	err = mlx5e_tc_offload_flow_post_acts(flow);
-+	if (err)
-+		goto out_free;
-+
-+out:
-+	return 0;
-+
-+out_free:
-+	free_flow_post_acts(flow);
-+	return err;
-+}
-+
-+static int
-+parse_tc_actions(struct mlx5e_tc_act_parse_state *parse_state,
-+		 struct flow_action *flow_action)
-+{
-+	struct netlink_ext_ack *extack = parse_state->extack;
-+	struct mlx5e_tc_flow_action flow_action_reorder;
-+	struct mlx5e_tc_flow *flow = parse_state->flow;
-+	struct mlx5_flow_attr *attr = flow->attr;
-+	enum mlx5_flow_namespace_type ns_type;
-+	struct mlx5e_priv *priv = flow->priv;
-+	struct flow_action_entry *act, **_act;
-+	struct mlx5e_tc_act *tc_act;
-+	int err, i;
-+
-+	flow_action_reorder.num_entries = flow_action->num_entries;
-+	flow_action_reorder.entries = kcalloc(flow_action->num_entries,
-+					      sizeof(flow_action), GFP_KERNEL);
-+	if (!flow_action_reorder.entries)
-+		return -ENOMEM;
-+
-+	mlx5e_tc_act_reorder_flow_actions(flow_action, &flow_action_reorder);
-+
-+	ns_type = mlx5e_get_flow_namespace(flow);
-+	list_add(&attr->list, &flow->attrs);
-+
-+	flow_action_for_each(i, _act, &flow_action_reorder) {
-+		act = *_act;
-+		tc_act = mlx5e_tc_act_get(act->id, ns_type);
-+		if (!tc_act) {
-+			NL_SET_ERR_MSG_MOD(extack, "Not implemented offload action");
-+			err = -EOPNOTSUPP;
-+			goto out_free;
-+		}
-+
-+		if (!tc_act->can_offload(parse_state, act, i, attr)) {
-+			err = -EOPNOTSUPP;
-+			goto out_free;
-+		}
-+
-+		err = tc_act->parse_action(parse_state, act, priv, attr);
-+		if (err)
-+			goto out_free;
-+
-+		parse_state->actions |= attr->action;
-+
-+		/* Split attr for multi table act if not the last act. */
-+		if (tc_act->is_multi_table_act &&
-+		    tc_act->is_multi_table_act(priv, act, attr) &&
-+		    i < flow_action_reorder.num_entries - 1) {
-+			err = mlx5e_tc_act_post_parse(parse_state, flow_action, attr, ns_type);
-+			if (err)
-+				goto out_free;
-+
-+			attr = mlx5e_clone_flow_attr_for_post_act(flow->attr, ns_type);
-+			if (!attr) {
-+				err = -ENOMEM;
-+				goto out_free;
-+			}
-+
-+			list_add(&attr->list, &flow->attrs);
-+		}
-+	}
-+
-+	kfree(flow_action_reorder.entries);
-+
-+	err = mlx5e_tc_act_post_parse(parse_state, flow_action, attr, ns_type);
-+	if (err)
-+		goto out_free_post_acts;
-+
-+	err = alloc_flow_post_acts(flow, extack);
-+	if (err)
-+		goto out_free_post_acts;
-+
-+	return 0;
-+
-+out_free:
-+	kfree(flow_action_reorder.entries);
-+out_free_post_acts:
-+	free_flow_post_acts(flow);
-+
-+	return err;
-+}
-+
- static int
- flow_action_supported(struct flow_action *flow_action,
- 		      struct netlink_ext_ack *extack)
-@@ -3652,7 +3931,12 @@ mlx5_alloc_flow_attr(enum mlx5_flow_namespace_type type)
- 				sizeof(struct mlx5_nic_flow_attr);
- 	struct mlx5_flow_attr *attr;
+ struct mlx5e_tc_act mlx5e_tc_act_ct = {
+ 	.can_offload = tc_act_can_offload_ct,
+ 	.parse_action = tc_act_parse_ct,
++	.is_multi_table_act = tc_act_is_multi_table_act_ct,
+ };
  
--	return kzalloc(sizeof(*attr) + ex_attr_size, GFP_KERNEL);
-+	attr = kzalloc(sizeof(*attr) + ex_attr_size, GFP_KERNEL);
-+	if (!attr)
-+		return attr;
-+
-+	INIT_LIST_HEAD(&attr->list);
-+	return attr;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
+index 539fea13ce9f..f39538e3d027 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
+@@ -4,6 +4,7 @@
+ #include <net/psample.h>
+ #include "act.h"
+ #include "en/tc_priv.h"
++#include "en/tc/act/sample.h"
+ 
+ static bool
+ tc_act_can_offload_sample(struct mlx5e_tc_act_parse_state *parse_state,
+@@ -42,7 +43,27 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
+ 	return 0;
  }
  
- static int
-@@ -3686,6 +3970,7 @@ mlx5e_alloc_flow(struct mlx5e_priv *priv, int attr_size,
- 		INIT_LIST_HEAD(&flow->encaps[out_index].list);
- 	INIT_LIST_HEAD(&flow->hairpin);
- 	INIT_LIST_HEAD(&flow->l3_to_l2_reformat);
-+	INIT_LIST_HEAD(&flow->attrs);
- 	refcount_set(&flow->refcnt, 1);
- 	init_completion(&flow->init_done);
- 	init_completion(&flow->del_hw_done);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 533c897bd517..a80b00946f1b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -53,7 +53,6 @@
- 			    ESW_FLOW_ATTR_SZ :\
- 			    NIC_FLOW_ATTR_SZ)
++bool
++mlx5e_tc_act_sample_is_multi_table(struct mlx5_core_dev *mdev,
++				   struct mlx5_flow_attr *attr)
++{
++	if (MLX5_CAP_GEN(mdev, reg_c_preserve) ||
++	    attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP)
++		return true;
++
++	return false;
++}
++
++static bool
++tc_act_is_multi_table_act_sample(struct mlx5e_priv *priv,
++				 const struct flow_action_entry *act,
++				 struct mlx5_flow_attr *attr)
++{
++	return mlx5e_tc_act_sample_is_multi_table(priv->mdev, attr);
++}
++
+ struct mlx5e_tc_act mlx5e_tc_act_sample = {
+ 	.can_offload = tc_act_can_offload_sample,
+ 	.parse_action = tc_act_parse_sample,
++	.is_multi_table_act = tc_act_is_multi_table_act_sample,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.h
+new file mode 100644
+index 000000000000..3efb3a15c5d2
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
++
++#ifndef __MLX5_EN_TC_ACT_SAMPLE_H__
++#define __MLX5_EN_TC_ACT_SAMPLE_H__
++
++#include <net/flow_offload.h>
++#include "en/tc_priv.h"
++
++bool
++mlx5e_tc_act_sample_is_multi_table(struct mlx5_core_dev *mdev,
++				   struct mlx5_flow_attr *attr);
++
++#endif /* __MLX5_EN_TC_ACT_SAMPLE_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+index 27854ac844a0..32abc91adf23 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+@@ -126,8 +126,7 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *at
+ 	post_attr->ft = post_act->ft;
+ 	post_attr->inner_match_level = MLX5_MATCH_NONE;
+ 	post_attr->outer_match_level = MLX5_MATCH_NONE;
+-	post_attr->action &= ~(MLX5_FLOW_CONTEXT_ACTION_DECAP);
+-	post_attr->flags &= ~MLX5_ATTR_FLAG_SAMPLE;
++	post_attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_DECAP;
  
+ 	handle->ns_type = post_act->ns_type;
+ 	/* Splits were handled before post action */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
+index 90b86c4aaf51..fd4504518578 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
+@@ -5,6 +5,7 @@
+ #include <net/psample.h>
+ #include "en/mapping.h"
+ #include "en/tc/post_act.h"
++#include "en/tc/act/sample.h"
+ #include "en/mod_hdr.h"
+ #include "sample.h"
+ #include "eswitch.h"
+@@ -46,14 +47,12 @@ struct mlx5e_sample_flow {
+ 	struct mlx5_flow_handle *pre_rule;
+ 	struct mlx5_flow_attr *post_attr;
+ 	struct mlx5_flow_handle *post_rule;
+-	struct mlx5e_post_act_handle *post_act_handle;
+ };
+ 
+ struct mlx5e_sample_restore {
+ 	struct hlist_node hlist;
+ 	struct mlx5_modify_hdr *modify_hdr;
+ 	struct mlx5_flow_handle *rule;
+-	struct mlx5e_post_act_handle *post_act_handle;
+ 	u32 obj_id;
+ 	int count;
+ };
+@@ -231,69 +230,46 @@ sampler_put(struct mlx5e_tc_psample *tc_psample, struct mlx5e_sampler *sampler)
+  */
+ static struct mlx5_modify_hdr *
+ sample_modify_hdr_get(struct mlx5_core_dev *mdev, u32 obj_id,
+-		      struct mlx5e_post_act_handle *handle)
++		      struct mlx5e_tc_mod_hdr_acts *mod_acts)
+ {
+-	struct mlx5e_tc_mod_hdr_acts mod_acts = {};
+ 	struct mlx5_modify_hdr *modify_hdr;
+ 	int err;
+ 
+-	err = mlx5e_tc_match_to_reg_set(mdev, &mod_acts, MLX5_FLOW_NAMESPACE_FDB,
++	err = mlx5e_tc_match_to_reg_set(mdev, mod_acts, MLX5_FLOW_NAMESPACE_FDB,
+ 					CHAIN_TO_REG, obj_id);
+ 	if (err)
+ 		goto err_set_regc0;
+ 
+-	if (handle) {
+-		err = mlx5e_tc_post_act_set_handle(mdev, handle, &mod_acts);
+-		if (err)
+-			goto err_post_act;
+-	}
 -
- int mlx5e_tc_num_filters(struct mlx5e_priv *priv, unsigned long flags);
+ 	modify_hdr = mlx5_modify_header_alloc(mdev, MLX5_FLOW_NAMESPACE_FDB,
+-					      mod_acts.num_actions,
+-					      mod_acts.actions);
++					      mod_acts->num_actions,
++					      mod_acts->actions);
+ 	if (IS_ERR(modify_hdr)) {
+ 		err = PTR_ERR(modify_hdr);
+ 		goto err_modify_hdr;
+ 	}
  
- struct mlx5e_tc_update_priv {
-@@ -84,6 +83,8 @@ struct mlx5_flow_attr {
- 	u8 tun_ip_version;
- 	int tunnel_id; /* mapped tunnel id */
- 	u32 flags;
-+	struct list_head list;
-+	struct mlx5e_post_act_handle *post_act_handle;
- 	union {
- 		struct mlx5_esw_flow_attr esw_attr[0];
- 		struct mlx5_nic_flow_attr nic_attr[0];
+-	mlx5e_mod_hdr_dealloc(&mod_acts);
++	mlx5e_mod_hdr_dealloc(mod_acts);
+ 	return modify_hdr;
+ 
+ err_modify_hdr:
+-err_post_act:
+-	mlx5e_mod_hdr_dealloc(&mod_acts);
++	mlx5e_mod_hdr_dealloc(mod_acts);
+ err_set_regc0:
+ 	return ERR_PTR(err);
+ }
+ 
+-static u32
+-restore_hash(u32 obj_id, struct mlx5e_post_act_handle *post_act_handle)
+-{
+-	return jhash_2words(obj_id, hash32_ptr(post_act_handle), 0);
+-}
+-
+-static bool
+-restore_equal(struct mlx5e_sample_restore *restore, u32 obj_id,
+-	      struct mlx5e_post_act_handle *post_act_handle)
+-{
+-	return restore->obj_id == obj_id && restore->post_act_handle == post_act_handle;
+-}
+-
+ static struct mlx5e_sample_restore *
+ sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id,
+-		   struct mlx5e_post_act_handle *post_act_handle)
++		   struct mlx5e_tc_mod_hdr_acts *mod_acts)
+ {
+ 	struct mlx5_eswitch *esw = tc_psample->esw;
+ 	struct mlx5_core_dev *mdev = esw->dev;
+ 	struct mlx5e_sample_restore *restore;
+ 	struct mlx5_modify_hdr *modify_hdr;
+-	u32 hash_key;
+ 	int err;
+ 
+ 	mutex_lock(&tc_psample->restore_lock);
+-	hash_key = restore_hash(obj_id, post_act_handle);
+-	hash_for_each_possible(tc_psample->restore_hashtbl, restore, hlist, hash_key)
+-		if (restore_equal(restore, obj_id, post_act_handle))
++	hash_for_each_possible(tc_psample->restore_hashtbl, restore, hlist, obj_id)
++		if (restore->obj_id == obj_id)
+ 			goto add_ref;
+ 
+ 	restore = kzalloc(sizeof(*restore), GFP_KERNEL);
+@@ -302,9 +278,8 @@ sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id,
+ 		goto err_alloc;
+ 	}
+ 	restore->obj_id = obj_id;
+-	restore->post_act_handle = post_act_handle;
+ 
+-	modify_hdr = sample_modify_hdr_get(mdev, obj_id, post_act_handle);
++	modify_hdr = sample_modify_hdr_get(mdev, obj_id, mod_acts);
+ 	if (IS_ERR(modify_hdr)) {
+ 		err = PTR_ERR(modify_hdr);
+ 		goto err_modify_hdr;
+@@ -317,7 +292,7 @@ sample_restore_get(struct mlx5e_tc_psample *tc_psample, u32 obj_id,
+ 		goto err_restore;
+ 	}
+ 
+-	hash_add(tc_psample->restore_hashtbl, &restore->hlist, hash_key);
++	hash_add(tc_psample->restore_hashtbl, &restore->hlist, obj_id);
+ add_ref:
+ 	restore->count++;
+ 	mutex_unlock(&tc_psample->restore_lock);
+@@ -494,10 +469,10 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 			struct mlx5_flow_spec *spec,
+ 			struct mlx5_flow_attr *attr)
+ {
+-	struct mlx5e_post_act_handle *post_act_handle = NULL;
+ 	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
+ 	struct mlx5_esw_flow_attr *pre_esw_attr;
+ 	struct mlx5_mapped_obj restore_obj = {};
++	struct mlx5e_tc_mod_hdr_acts *mod_acts;
+ 	struct mlx5e_sample_flow *sample_flow;
+ 	struct mlx5e_sample_attr *sample_attr;
+ 	struct mlx5_flow_attr *pre_attr;
+@@ -522,21 +497,11 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 	 * original flow table.
+ 	 */
+ 	esw = tc_psample->esw;
+-	if (MLX5_CAP_GEN(esw->dev, reg_c_preserve) ||
+-	    attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP) {
++	if (mlx5e_tc_act_sample_is_multi_table(esw->dev, attr)) {
+ 		struct mlx5_flow_table *ft;
+ 
+ 		ft = mlx5e_tc_post_act_get_ft(tc_psample->post_act);
+ 		default_tbl_id = ft->id;
+-		post_act_handle = mlx5e_tc_post_act_add(tc_psample->post_act, attr);
+-		if (IS_ERR(post_act_handle)) {
+-			err = PTR_ERR(post_act_handle);
+-			goto err_post_act;
+-		}
+-		err = mlx5e_tc_post_act_offload(tc_psample->post_act, post_act_handle);
+-		if (err)
+-			goto err_post_rule;
+-		sample_flow->post_act_handle = post_act_handle;
+ 	} else {
+ 		err = add_post_rule(esw, sample_flow, spec, attr, &default_tbl_id);
+ 		if (err)
+@@ -563,7 +528,8 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 	sample_attr->restore_obj_id = obj_id;
+ 
+ 	/* Create sample restore context. */
+-	sample_flow->restore = sample_restore_get(tc_psample, obj_id, post_act_handle);
++	mod_acts = &attr->parse_attr->mod_hdr_acts;
++	sample_flow->restore = sample_restore_get(tc_psample, obj_id, mod_acts);
+ 	if (IS_ERR(sample_flow->restore)) {
+ 		err = PTR_ERR(sample_flow->restore);
+ 		goto err_sample_restore;
+@@ -589,6 +555,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 	pre_attr->outer_match_level = attr->outer_match_level;
+ 	pre_attr->chain = attr->chain;
+ 	pre_attr->prio = attr->prio;
++	pre_attr->ft = attr->ft;
+ 	pre_attr->sample_attr = *sample_attr;
+ 	pre_esw_attr = pre_attr->esw_attr;
+ 	pre_esw_attr->in_mdev = esw_attr->in_mdev;
+@@ -614,9 +581,6 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 	if (sample_flow->post_rule)
+ 		del_post_rule(esw, sample_flow, attr);
+ err_post_rule:
+-	if (post_act_handle)
+-		mlx5e_tc_post_act_del(tc_psample->post_act, post_act_handle);
+-err_post_act:
+ 	kfree(sample_flow);
+ 	return ERR_PTR(err);
+ }
+@@ -642,9 +606,7 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
+ 	sample_restore_put(tc_psample, sample_flow->restore);
+ 	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr.restore_obj_id);
+ 	sampler_put(tc_psample, sample_flow->sampler);
+-	if (sample_flow->post_act_handle)
+-		mlx5e_tc_post_act_del(tc_psample->post_act, sample_flow->post_act_handle);
+-	else
++	if (sample_flow->post_rule)
+ 		del_post_rule(esw, sample_flow, attr);
+ 
+ 	kfree(sample_flow->pre_attr);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index 228ebb19fcab..875e77af0ae6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -18,6 +18,7 @@
+ 
+ #include "lib/fs_chains.h"
+ #include "en/tc_ct.h"
++#include "en/tc_priv.h"
+ #include "en/mod_hdr.h"
+ #include "en/mapping.h"
+ #include "en/tc/post_act.h"
+@@ -68,7 +69,6 @@ struct mlx5_tc_ct_priv {
+ struct mlx5_ct_flow {
+ 	struct mlx5_flow_attr *pre_ct_attr;
+ 	struct mlx5_flow_handle *pre_ct_rule;
+-	struct mlx5e_post_act_handle *post_act_handle;
+ 	struct mlx5_ct_ft *ft;
+ 	u32 chain_mapping;
+ };
+@@ -1756,7 +1756,7 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
+ /* We translate the tc filter with CT action to the following HW model:
+  *
+  * +---------------------+
+- * + ft prio (tc chain) +
++ * + ft prio (tc chain)  +
+  * + original match      +
+  * +---------------------+
+  *      | set chain miss mapping
+@@ -1766,7 +1766,7 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
+  *      v
+  * +---------------------+
+  * + pre_ct/pre_ct_nat   +  if matches     +-------------------------+
+- * + zone+nat match      +---------------->+ post_act (see below) +
++ * + zone+nat match      +---------------->+ post_act (see below)    +
+  * +---------------------+  set zone       +-------------------------+
+  *      | set zone
+  *      v
+@@ -1781,7 +1781,7 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
+  *      | do nat (if needed)
+  *      v
+  * +--------------+
+- * + post_act  + original filter actions
++ * + post_act     + original filter actions
+  * + fte_id match +------------------------>
+  * +--------------+
+  */
+@@ -1792,9 +1792,8 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ {
+ 	bool nat = attr->ct_attr.ct_action & TCA_CT_ACT_NAT;
+ 	struct mlx5e_priv *priv = netdev_priv(ct_priv->netdev);
+-	struct mlx5e_tc_mod_hdr_acts pre_mod_acts = {};
++	struct mlx5e_tc_mod_hdr_acts *pre_mod_acts;
+ 	u32 attr_sz = ns_to_attr_sz(ct_priv->ns_type);
+-	struct mlx5e_post_act_handle *handle;
+ 	struct mlx5_flow_attr *pre_ct_attr;
+ 	struct mlx5_modify_hdr *mod_hdr;
+ 	struct mlx5_ct_flow *ct_flow;
+@@ -1817,17 +1816,6 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 	}
+ 	ct_flow->ft = ft;
+ 
+-	handle = mlx5e_tc_post_act_add(ct_priv->post_act, attr);
+-	if (IS_ERR(handle)) {
+-		err = PTR_ERR(handle);
+-		ct_dbg("Failed to allocate post action handle");
+-		goto err_post_act_handle;
+-	}
+-	err = mlx5e_tc_post_act_offload(ct_priv->post_act, handle);
+-	if (err)
+-		goto err_alloc_pre;
+-	ct_flow->post_act_handle = handle;
+-
+ 	/* Base flow attributes of both rules on original rule attribute */
+ 	ct_flow->pre_ct_attr = mlx5_alloc_flow_attr(ct_priv->ns_type);
+ 	if (!ct_flow->pre_ct_attr) {
+@@ -1837,6 +1825,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 
+ 	pre_ct_attr = ct_flow->pre_ct_attr;
+ 	memcpy(pre_ct_attr, attr, attr_sz);
++	pre_mod_acts = &pre_ct_attr->parse_attr->mod_hdr_acts;
+ 
+ 	/* Modify the original rule's action to fwd and modify, leave decap */
+ 	pre_ct_attr->action = attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP;
+@@ -1855,25 +1844,19 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 	}
+ 	ct_flow->chain_mapping = chain_mapping;
+ 
+-	err = mlx5e_tc_match_to_reg_set(priv->mdev, &pre_mod_acts, ct_priv->ns_type,
++	err = mlx5e_tc_match_to_reg_set(priv->mdev, pre_mod_acts, ct_priv->ns_type,
+ 					CHAIN_TO_REG, chain_mapping);
+ 	if (err) {
+ 		ct_dbg("Failed to set chain register mapping");
+ 		goto err_mapping;
+ 	}
+ 
+-	err = mlx5e_tc_post_act_set_handle(priv->mdev, handle, &pre_mod_acts);
+-	if (err) {
+-		ct_dbg("Failed to set post action handle");
+-		goto err_mapping;
+-	}
+-
+ 	/* If original flow is decap, we do it before going into ct table
+ 	 * so add a rewrite for the tunnel match_id.
+ 	 */
+ 	if ((pre_ct_attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP) &&
+ 	    attr->chain == 0) {
+-		err = mlx5e_tc_match_to_reg_set(priv->mdev, &pre_mod_acts,
++		err = mlx5e_tc_match_to_reg_set(priv->mdev, pre_mod_acts,
+ 						ct_priv->ns_type,
+ 						TUNNEL_TO_REG,
+ 						attr->tunnel_id);
+@@ -1884,8 +1867,8 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 	}
+ 
+ 	mod_hdr = mlx5_modify_header_alloc(priv->mdev, ct_priv->ns_type,
+-					   pre_mod_acts.num_actions,
+-					   pre_mod_acts.actions);
++					   pre_mod_acts->num_actions,
++					   pre_mod_acts->actions);
+ 	if (IS_ERR(mod_hdr)) {
+ 		err = PTR_ERR(mod_hdr);
+ 		ct_dbg("Failed to create pre ct mod hdr");
+@@ -1905,20 +1888,18 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
+ 	}
+ 
+ 	attr->ct_attr.ct_flow = ct_flow;
+-	mlx5e_mod_hdr_dealloc(&pre_mod_acts);
++	mlx5e_mod_hdr_dealloc(pre_mod_acts);
+ 
+ 	return ct_flow->pre_ct_rule;
+ 
+ err_insert_orig:
+ 	mlx5_modify_header_dealloc(priv->mdev, pre_ct_attr->modify_hdr);
+ err_mapping:
+-	mlx5e_mod_hdr_dealloc(&pre_mod_acts);
++	mlx5e_mod_hdr_dealloc(pre_mod_acts);
+ 	mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
+ err_get_chain:
+ 	kfree(ct_flow->pre_ct_attr);
+ err_alloc_pre:
+-	mlx5e_tc_post_act_del(ct_priv->post_act, handle);
+-err_post_act_handle:
+ 	mlx5_tc_ct_del_ft_cb(ct_priv, ft);
+ err_ft:
+ 	kfree(ct_flow);
+@@ -1955,11 +1936,8 @@ __mlx5_tc_ct_delete_flow(struct mlx5_tc_ct_priv *ct_priv,
+ 	mlx5_tc_rule_delete(priv, ct_flow->pre_ct_rule, pre_ct_attr);
+ 	mlx5_modify_header_dealloc(priv->mdev, pre_ct_attr->modify_hdr);
+ 
+-	if (ct_flow->post_act_handle) {
+-		mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
+-		mlx5e_tc_post_act_del(ct_priv->post_act, ct_flow->post_act_handle);
+-		mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
+-	}
++	mlx5_chains_put_chain_mapping(ct_priv->chains, ct_flow->chain_mapping);
++	mlx5_tc_ct_del_ft_cb(ct_priv, ct_flow->ft);
+ 
+ 	kfree(ct_flow->pre_ct_attr);
+ 	kfree(ct_flow);
 -- 
 2.34.1
 
