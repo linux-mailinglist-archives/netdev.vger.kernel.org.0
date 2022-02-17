@@ -2,149 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC654B9C24
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 10:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE9C4B9C75
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 10:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238740AbiBQJhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 04:37:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38944 "EHLO
+        id S238835AbiBQJso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 04:48:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238736AbiBQJhy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 04:37:54 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 709961A0C0B;
-        Thu, 17 Feb 2022 01:37:39 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21H97L89003737;
-        Thu, 17 Feb 2022 09:37:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=zBrzxf8AhGHTrwIr3gzDwVxDc8WTumfDo5TxLvlETn8=;
- b=J1Yyl5uXFl8LKKELFTNKw94fN2JMccVX5uQVNE598R0F/nN1GLAxnYeZsMqEEw3njyEa
- V3FQCd9U+mOIcxNi33YCWaEXkh0XkqRhBvHDnNY4CzbiT4MHMxNm47z3+KJ1CYlSTQHw
- eg4qJbAFK1O1whVM0MfyPxHw4eFfa9srk3R7tC8exf3tEs3/QcoA6hiE8V8ieaEPcICF
- aEeUa7NCMrRr2VMiW5K7SFpMZLka0bmmf572a87pbB4wcvScZ9cFVmQdUPHHFuU7UgnG
- +nDvwBgptlnEaHVSJfMRo7bm2TFrY2I64Si5gvhg7EIAMOO12BiGgSY4LJHTWiacVL2K zg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e9gh7urr2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 09:37:34 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21H9YtqW006228;
-        Thu, 17 Feb 2022 09:37:33 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e9gh7urqf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 09:37:33 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21H9YpOV001790;
-        Thu, 17 Feb 2022 09:37:32 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e645k8crj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 09:37:31 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21H9bTUt25559460
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Feb 2022 09:37:29 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 85EC44C058;
-        Thu, 17 Feb 2022 09:37:29 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1DB534C064;
-        Thu, 17 Feb 2022 09:37:29 +0000 (GMT)
-Received: from [9.171.73.63] (unknown [9.171.73.63])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 17 Feb 2022 09:37:29 +0000 (GMT)
-Message-ID: <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
-Date:   Thu, 17 Feb 2022 10:37:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net/smc: Add autocork support
-Content-Language: en-US
-To:     dust.li@linux.alibaba.com, Karsten Graul <kgraul@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
- <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
- <20220216152721.GB39286@linux.alibaba.com>
-From:   Stefan Raspl <raspl@linux.ibm.com>
-In-Reply-To: <20220216152721.GB39286@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5BrP4_B9PSRNLXoaypCf-thWgmPgedmn
-X-Proofpoint-ORIG-GUID: DIOp5fnKFz-lKh64r_6_ylAp37ca-QGO
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S238003AbiBQJsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 04:48:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A36A917AA7
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 01:48:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645091308;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xxe0ytJzju6g3/HrW8yGRlI4FlDzlNM0zVQgVVP7siY=;
+        b=SSjaqnOGtQgIpq23m6U7e+ztk+zYaB5KIOo8HDOybLH9ji9Uwg/ZLb9/ps+KmDcDsE+KTX
+        frZbb8ndgTw9z3bPnPdK4GM/t5ruVVM4hSCPEXo8ZBeqK+jqz1HSzgUsSKV3ie9Da3v+gw
+        WtiB1LblXDWElYU6Peq/RQjCwJBiMVI=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-R8QsqJuDNUyuEx8qFr8J6w-1; Thu, 17 Feb 2022 04:48:27 -0500
+X-MC-Unique: R8QsqJuDNUyuEx8qFr8J6w-1
+Received: by mail-qv1-f72.google.com with SMTP id t5-20020a056214118500b0042c272ede45so4679897qvv.13
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 01:48:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Xxe0ytJzju6g3/HrW8yGRlI4FlDzlNM0zVQgVVP7siY=;
+        b=6sE1LB5/z+OcrApkA9wfeDcmKIYccQbE6n7B17THoc46/2tbrzX5l9xoN3GfDO2Whf
+         D2iPwrKSzpXF3sgPmVYWIh7OfjNzAkfteFzI+MTQhJs4RsezGnIfrRr9U1MTefmoPsIz
+         nxGITuhsCnJ4zMy2k7XEneq1oN7bkInymaZz10CQFOYflHfKdT02CPpTy0EqLWiR8lFO
+         oZaGpM5ksWmrT+gYUs1ro66a5v3i3D3Tui5hPm5F5Lp9Um7gZJVKn4Bv9q/kFD7ysDAv
+         MzW3zfH5tyqt8LwAywQCRpib/cVb3mu9CPpm1j3tzCG9qZZbqls2anPb0kiMfMbkQLkt
+         gNQg==
+X-Gm-Message-State: AOAM530jd4gDCKrQ79Ao3VmlAnVcxYsTTBlqiiP/7iIRZdmMETFeq8x2
+        IZARVPMZvl41MmgBeaQkvpvXWocFPAGRbmh0uJEi0Llp0olI/eRRFgxZrXxtp5inTdGmOXXuJlo
+        WuN1trHo7iq6WmBhh
+X-Received: by 2002:ac8:57cc:0:b0:2cf:51a9:df93 with SMTP id w12-20020ac857cc000000b002cf51a9df93mr1616157qta.166.1645091307079;
+        Thu, 17 Feb 2022 01:48:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxJx9ng4NIvyX79q9z7uy2yyP8m7uhEbaPwsePA5VEK9FDTJGfyzyq+NNAAp3Ge6dJX82YMmw==
+X-Received: by 2002:ac8:57cc:0:b0:2cf:51a9:df93 with SMTP id w12-20020ac857cc000000b002cf51a9df93mr1616146qta.166.1645091306827;
+        Thu, 17 Feb 2022 01:48:26 -0800 (PST)
+Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id k4sm22499788qta.6.2022.02.17.01.48.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Feb 2022 01:48:26 -0800 (PST)
+Date:   Thu, 17 Feb 2022 10:48:18 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        syzbot <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com>,
+        kvm <kvm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [syzbot] WARNING in vhost_dev_cleanup (2)
+Message-ID: <CAGxU2F7CjNu5Wxg3k1hQF8A8uRt-wKLjMW6TMjb+UVCF+MHZbw@mail.gmail.com>
+References: <0000000000006f656005d82d24e2@google.com>
+ <CACGkMEsyWBBmx3g613tr97nidHd3-avMyO=WRxS8RpcEk7j2=A@mail.gmail.com>
+ <20220217023550-mutt-send-email-mst@kernel.org>
+ <CACGkMEtuL_4eRYYWd4aQj6rG=cJDQjjr86DWpid3o_N-6xvTWQ@mail.gmail.com>
+ <20220217024359-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-17_03,2022-02-16_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 clxscore=1015 lowpriorityscore=0 adultscore=0
- spamscore=0 mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0
- impostorscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202170042
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217024359-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/16/22 16:27, dust.li wrote:
-> On Wed, Feb 16, 2022 at 02:58:32PM +0100, Stefan Raspl wrote:
->> On 2/16/22 04:49, Dust Li wrote:
->>> diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
->>> index 5df3940d4543..bc737ac79805 100644
->>> --- a/net/smc/smc_tx.c
->>> +++ b/net/smc/smc_tx.c
->>> @@ -31,6 +31,7 @@
->>>    #include "smc_tracepoint.h"
->>>    #define SMC_TX_WORK_DELAY	0
->>> +#define SMC_DEFAULT_AUTOCORK_SIZE	(64 * 1024)
->>
->> Probably a matter of taste, but why not use hex here?
-> 
-> Yeah, I have no option on this, I will change it in the next version.
-> But I think it should have no real difference since the compiler
-> should do the calculation.
 
-Agreed - this is just to make it a tiny bit easier to digest.
+On Thu, Feb 17, 2022 at 8:50 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Thu, Feb 17, 2022 at 03:39:48PM +0800, Jason Wang wrote:
+> > On Thu, Feb 17, 2022 at 3:36 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > >
+> > > On Thu, Feb 17, 2022 at 03:34:13PM +0800, Jason Wang wrote:
+> > > > On Thu, Feb 17, 2022 at 10:01 AM syzbot
+> > > > <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com> wrote:
+> > > > >
+> > > > > Hello,
+> > > > >
+> > > > > syzbot found the following issue on:
+> > > > >
+> > > > > HEAD commit:    c5d9ae265b10 Merge tag 'for-linus' of git://git.kernel.org..
+> > > > > git tree:       upstream
+> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=132e687c700000
+> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=1e3ea63db39f2b4440e0
+> > > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > > >
+> > > > > Unfortunately, I don't have any reproducer for this issue yet.
+> > > > >
+> > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+> > > > >
+> > > > > WARNING: CPU: 1 PID: 10828 at drivers/vhost/vhost.c:715 vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
+> > > > > Modules linked in:
+> > > > > CPU: 0 PID: 10828 Comm: syz-executor.0 Not tainted 5.17.0-rc4-syzkaller-00051-gc5d9ae265b10 #0
+> > > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > > > RIP: 0010:vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
+> > > >
+> > > > Probably a hint that we are missing a flush.
+> > > >
+> > > > Looking at vhost_vsock_stop() that is called by vhost_vsock_dev_release():
+> > > >
+> > > > static int vhost_vsock_stop(struct vhost_vsock *vsock)
+> > > > {
+> > > > size_t i;
+> > > >         int ret;
+> > > >
+> > > >         mutex_lock(&vsock->dev.mutex);
+> > > >
+> > > >         ret = vhost_dev_check_owner(&vsock->dev);
+> > > >         if (ret)
+> > > >                 goto err;
+> > > >
+> > > > Where it could fail so the device is not actually stopped.
+> > > >
+> > > > I wonder if this is something related.
+> > > >
+> > > > Thanks
+> > >
+> > >
+> > > But then if that is not the owner then no work should be running, right?
+> >
+> > Could it be a buggy user space that passes the fd to another process
+> > and changes the owner just before the mutex_lock() above?
+> >
+> > Thanks
+>
+> Maybe, but can you be a bit more explicit? what is the set of
+> conditions you see that can lead to this?
 
+I think the issue could be in the vhost_vsock_stop() as Jason mentioned, 
+but not related to fd passing, but related to the do_exit() function.
 
->> Are there any fixed plans to make SMC_DEFAULT_AUTOCORK dynamic...? 'cause
->> otherwise we could simply eliminate this parameter, and use the define within
->> smc_should_autocork() instead.
-> 
-> Yes! Actually I'd like it to be dynamic variable too...
-> 
-> I didn't do it because I also want to add a control switch for the autocork
-> feature just like TCP. In that case I need to add 2 variables here.
-> But I found adding dynamic variables using netlink would introduce a lot of
-> redundant code and may even bring ABI compatibility issues in the future, as
-> I mentioned here:
-> https://lore.kernel.org/netdev/20220216114618.GA39286@linux.alibaba.com/T/#mecfcd3f8c816d07dbe35e4748d17008331c89523
-> 
-> I'm not sure that's the right way to do it. In this case, I prefer using
-> sysctl which I think would be easier, but I would like to listen to your advice.
+Looking the stack trace, we are in exit_task_work(), that is called 
+after exit_mm(), so the vhost_dev_check_owner() can fail because 
+current->mm should be NULL at that point.
 
-Extending the Netlink interface should be possible without breaking the API - 
-we'd be adding further variables, not modifying or removing existing ones.
-Conceptually, Netlink is the way to go for any userspace interaction with SMC, 
-which includes anything config-related.
-Now we understand that cloud workloads are a bit different, and the desire to be 
-able to modify the environment of a container while leaving the container image 
-unmodified is understandable. But then again, enabling the base image would be 
-the cloud way to address this. The question to us is: How do other parts of the 
-kernel address this?
+It seems the fput work is queued by fput_many() in a worker queue, and 
+in some cases (maybe a lot of files opened?) the work is still queued 
+when we enter in do_exit().
 
-Ciao,
-Stefan
+That said, I don't know if we can simply remove that check in 
+vhost_vsock_stop(), or check if current->mm is NULL, to understand if 
+the process is exiting.
 
+Stefano
 
