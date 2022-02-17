@@ -2,176 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26EE14B9A05
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:47:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA664B9A1E
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 08:51:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235247AbiBQHrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 02:47:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40432 "EHLO
+        id S236682AbiBQHuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 02:50:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234942AbiBQHrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:47:17 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE21A24BF6
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:47:02 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id u5so3995918ple.3
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:47:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8SHJLuV4zLjy32ezYei5WUPkDFEPwVswbW0SFXhjfXM=;
-        b=jCE9lMaGtc0i0nhWVa+nlW4IPKKYTdeBxCmc90tH8B9jtnEvupKxa3iiuEUPHNbpcL
-         kSpD41f0D73WUUUxcNwHKMOlXxWSWrqd8MN2MdLSUJta8h/Bie5XN0YjOGL8B4D86uN2
-         IE4IjBWnXd13ZWP97Orpvr6g+GFtZuY4mBvte2OWHN9UmsDiuifw4EXUE7nCbl63v9rR
-         zlspIXXDUyVQNewYnXJz4mLhBEpGmOPN6unlMAKht1lk1xXudkRhdcYBkeOO4yaFUSKO
-         JFIIrVFQCo7MZ2BF4t702GpIj6klbRQsL7g1vZW1S8zhEBZUO/JppR8BQN3UHG3ee++w
-         YLlQ==
+        with ESMTP id S236664AbiBQHuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 02:50:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26F162A39DC
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:50:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645084237;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=w+SWlmqdTXW/vwpa/W1PTCZvRCAVwOXfVJtRO06yo4I=;
+        b=i2rL9DXKEnjnfpAazslJZkk1JT1YdIDASkVxmRvhTUKZt5dYgkDNB/Bu9FZroYw9pSU15+
+        R8aK81n2+S+dYOK1lhyacuaZBrvGohz4vwpA5oyVGAXzNDsCJbb+/mOSSeoZINCq5aZgrI
+        hEJcJZAwVj0Qzh1dwmMJEaMiOAnqtNc=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-443-94Xec6SdPCWHTEsjLv7wVQ-1; Thu, 17 Feb 2022 02:50:36 -0500
+X-MC-Unique: 94Xec6SdPCWHTEsjLv7wVQ-1
+Received: by mail-wr1-f72.google.com with SMTP id j8-20020adfc688000000b001e3322ced69so1937492wrg.13
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 23:50:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8SHJLuV4zLjy32ezYei5WUPkDFEPwVswbW0SFXhjfXM=;
-        b=dEqLlDvFwiBlIrkUJ3KaWHabebTjE+rSc9KkZZraFeFJAPwpsgk4aAHwTWEPNGvFsh
-         P7zvVdkxFSf4/Hd3Ih0y4eiRNj/fe9gs7wr7e3Ml+oEfyJXnz8lIOkBnFJQb6bkmrJQU
-         /DAgl6bCrIvtApvgV73FZHrPROrgAT8oAz8M0Yk586uY84f/XtLi5xH4uXfa5UUM3qfB
-         OtlkdwK//AaB0KeZpIrjXKENPXaiyuGOc5J9fRk5hL8V0jLEKt/lXXx2LWaFDmEcUbJz
-         AxYzSBM6NDe5q57CGznd5LkFNj0tRdJisf4iLwvqisvWb6dpxOsHvMVZTLEIabIpaCqM
-         bsbw==
-X-Gm-Message-State: AOAM533Qgg3nOMVmCEWP5JKRIvwnQA3iDxJcVzOmSg8st3whd8zToR8g
-        j41zXIoU72RgkJRX45378MU=
-X-Google-Smtp-Source: ABdhPJztmuDk6uFYZ/KXMHd3RkB6HYI7/EAUVDJVNXB+080qOeJ0/4Dk6IYYjYsASWGAdsoSVkSP8A==
-X-Received: by 2002:a17:90a:5794:b0:1b9:8932:d475 with SMTP id g20-20020a17090a579400b001b98932d475mr1836973pji.24.1645084022335;
-        Wed, 16 Feb 2022 23:47:02 -0800 (PST)
-Received: from mhl-ubstemp.MHLLAN ([115.187.43.205])
-        by smtp.gmail.com with ESMTPSA id rm8sm757393pjb.5.2022.02.16.23.46.58
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w+SWlmqdTXW/vwpa/W1PTCZvRCAVwOXfVJtRO06yo4I=;
+        b=matXY9zIre8q+cL2Hdhfsgi/QFleJZgrF5gHfXIFV6omvFFTT/rx2cE14eWtCu2AfJ
+         BKJ1+Jkt6i0WG9xeg6yZqPTfFlcbRagXmfE7BXdhevM848Hlt0MAvdXygMaEA0jypSn9
+         Mnm0vfjtByoEW235nv1NXqAk8uBfLx/sArB6WHLvunIVgcMXTgS9Tmq0EdVlgJsshfr/
+         UtatzbDNcVKR/m2IUMZoqXCih8a3aluRzEl+PVqlk/yxnEmWZoQZrA8zkxwUVRQGtfEP
+         yYosCzaN/DDYTzJWqlPSV5RhpW6wfES7N+Zam2XYI46i9dQjm4s4FGwEOM79CfZo8N4b
+         1TkQ==
+X-Gm-Message-State: AOAM531BCYL6sfoTWy8zFy/MXJpYw8yDmbud/GXFsL4h1wSMB+gt566A
+        Os4sejfgVdL5as3UauqW7VWmgqtDDSRd1i6ChOxSuEMZcP4xNIVXYtcxTm+jD5DAd/Z+swXMZ8H
+        1S1QdWymScN/kMzUI
+X-Received: by 2002:adf:9f42:0:b0:1e7:e751:9656 with SMTP id f2-20020adf9f42000000b001e7e7519656mr1268885wrg.590.1645084233485;
+        Wed, 16 Feb 2022 23:50:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw57VwM/1catFUUkrmi2KhjRFil7J/w4QZrPWIsW6CqSvS4FYyAAEPbPH6XyQzZ/Q25yrD01w==
+X-Received: by 2002:adf:9f42:0:b0:1e7:e751:9656 with SMTP id f2-20020adf9f42000000b001e7e7519656mr1268862wrg.590.1645084233179;
+        Wed, 16 Feb 2022 23:50:33 -0800 (PST)
+Received: from redhat.com ([2.55.139.83])
+        by smtp.gmail.com with ESMTPSA id g12sm469088wmq.28.2022.02.16.23.50.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Feb 2022 23:47:01 -0800 (PST)
-From:   Mobashshera Rasool <mobash.rasool.linux@gmail.com>
-To:     davem@davemloft.net, oshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        equinox@opensourcerouting.org, razor@blackwall.org,
-        sharpd@cumulusnetworks.com, mrasool@vmware.com
-Cc:     Mobashshera Rasool <mobash.rasool.linux@gmail.com>
-Subject: [PATCH] net: ip6mr: add support for passing full packet on wrong mif
-Date:   Thu, 17 Feb 2022 07:46:40 +0000
-Message-Id: <20220217074640.4472-1-mobash.rasool.linux@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 16 Feb 2022 23:50:32 -0800 (PST)
+Date:   Thu, 17 Feb 2022 02:50:29 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     syzbot <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com>,
+        kvm <kvm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: Re: [syzbot] WARNING in vhost_dev_cleanup (2)
+Message-ID: <20220217024359-mutt-send-email-mst@kernel.org>
+References: <0000000000006f656005d82d24e2@google.com>
+ <CACGkMEsyWBBmx3g613tr97nidHd3-avMyO=WRxS8RpcEk7j2=A@mail.gmail.com>
+ <20220217023550-mutt-send-email-mst@kernel.org>
+ <CACGkMEtuL_4eRYYWd4aQj6rG=cJDQjjr86DWpid3o_N-6xvTWQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEtuL_4eRYYWd4aQj6rG=cJDQjjr86DWpid3o_N-6xvTWQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for MRT6MSG_WRMIFWHOLE which is used to pass
-full packet and real vif id when the incoming interface is wrong.
-While the RP and FHR are setting up state we need to be sending the
-registers encapsulated with all the data inside otherwise we lose it.
-The RP then decapsulates it and forwards it to the interested parties.
-Currently with WRONGMIF we can only be sending empty register packets
-and will lose that data.
-This behaviour can be enabled by using MRT_PIM with
-val == MRT6MSG_WRMIFWHOLE. This doesn't prevent MRT6MSG_WRONGMIF from
-happening, it happens in addition to it, also it is controlled by the same
-throttling parameters as WRONGMIF (i.e. 1 packet per 3 seconds currently).
-Both messages are generated to keep backwards compatibily and avoid
-breaking someone who was enabling MRT_PIM with val == 4, since any
-positive val is accepted and treated the same.
+On Thu, Feb 17, 2022 at 03:39:48PM +0800, Jason Wang wrote:
+> On Thu, Feb 17, 2022 at 3:36 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Thu, Feb 17, 2022 at 03:34:13PM +0800, Jason Wang wrote:
+> > > On Thu, Feb 17, 2022 at 10:01 AM syzbot
+> > > <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following issue on:
+> > > >
+> > > > HEAD commit:    c5d9ae265b10 Merge tag 'for-linus' of git://git.kernel.org..
+> > > > git tree:       upstream
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=132e687c700000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=1e3ea63db39f2b4440e0
+> > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > >
+> > > > Unfortunately, I don't have any reproducer for this issue yet.
+> > > >
+> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+> > > >
+> > > > WARNING: CPU: 1 PID: 10828 at drivers/vhost/vhost.c:715 vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
+> > > > Modules linked in:
+> > > > CPU: 0 PID: 10828 Comm: syz-executor.0 Not tainted 5.17.0-rc4-syzkaller-00051-gc5d9ae265b10 #0
+> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > > RIP: 0010:vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
+> > >
+> > > Probably a hint that we are missing a flush.
+> > >
+> > > Looking at vhost_vsock_stop() that is called by vhost_vsock_dev_release():
+> > >
+> > > static int vhost_vsock_stop(struct vhost_vsock *vsock)
+> > > {
+> > > size_t i;
+> > >         int ret;
+> > >
+> > >         mutex_lock(&vsock->dev.mutex);
+> > >
+> > >         ret = vhost_dev_check_owner(&vsock->dev);
+> > >         if (ret)
+> > >                 goto err;
+> > >
+> > > Where it could fail so the device is not actually stopped.
+> > >
+> > > I wonder if this is something related.
+> > >
+> > > Thanks
+> >
+> >
+> > But then if that is not the owner then no work should be running, right?
+> 
+> Could it be a buggy user space that passes the fd to another process
+> and changes the owner just before the mutex_lock() above?
+> 
+> Thanks
 
-Signed-off-by: Mobashshera Rasool <mobash.rasool.linux@gmail.com>
----
- include/uapi/linux/mroute6.h |  1 +
- net/ipv6/ip6mr.c             | 18 ++++++++++++++----
- 2 files changed, 15 insertions(+), 4 deletions(-)
+Maybe, but can you be a bit more explicit? what is the set of
+conditions you see that can lead to this?
 
-diff --git a/include/uapi/linux/mroute6.h b/include/uapi/linux/mroute6.h
-index a1fd6173e2db..1d90c21a6251 100644
---- a/include/uapi/linux/mroute6.h
-+++ b/include/uapi/linux/mroute6.h
-@@ -134,6 +134,7 @@ struct mrt6msg {
- #define MRT6MSG_NOCACHE		1
- #define MRT6MSG_WRONGMIF	2
- #define MRT6MSG_WHOLEPKT	3		/* used for use level encap */
-+#define MRT6MSG_WRMIFWHOLE	4		/* For PIM Register and assert processing */
- 	__u8		im6_mbz;		/* must be zero		   */
- 	__u8		im6_msgtype;		/* what type of message    */
- 	__u16		im6_mif;		/* mif rec'd on		   */
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 0ebaaec3faf9..a9775c830194 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -1040,7 +1040,7 @@ static int ip6mr_cache_report(struct mr_table *mrt, struct sk_buff *pkt,
- 	int ret;
- 
- #ifdef CONFIG_IPV6_PIMSM_V2
--	if (assert == MRT6MSG_WHOLEPKT)
-+	if (assert == MRT6MSG_WHOLEPKT || assert == MRT6MSG_WRMIFWHOLE)
- 		skb = skb_realloc_headroom(pkt, -skb_network_offset(pkt)
- 						+sizeof(*msg));
- 	else
-@@ -1056,7 +1056,7 @@ static int ip6mr_cache_report(struct mr_table *mrt, struct sk_buff *pkt,
- 	skb->ip_summed = CHECKSUM_UNNECESSARY;
- 
- #ifdef CONFIG_IPV6_PIMSM_V2
--	if (assert == MRT6MSG_WHOLEPKT) {
-+	if (assert == MRT6MSG_WHOLEPKT || assert == MRT6MSG_WRMIFWHOLE) {
- 		/* Ugly, but we have no choice with this interface.
- 		   Duplicate old header, fix length etc.
- 		   And all this only to mangle msg->im6_msgtype and
-@@ -1068,8 +1068,11 @@ static int ip6mr_cache_report(struct mr_table *mrt, struct sk_buff *pkt,
- 		skb_reset_transport_header(skb);
- 		msg = (struct mrt6msg *)skb_transport_header(skb);
- 		msg->im6_mbz = 0;
--		msg->im6_msgtype = MRT6MSG_WHOLEPKT;
--		msg->im6_mif = mrt->mroute_reg_vif_num;
-+		msg->im6_msgtype = assert;
-+		if (assert == MRT6MSG_WRMIFWHOLE)
-+			msg->im6_mif = mifi;
-+		else
-+			msg->im6_mif = mrt->mroute_reg_vif_num;
- 		msg->im6_pad = 0;
- 		msg->im6_src = ipv6_hdr(pkt)->saddr;
- 		msg->im6_dst = ipv6_hdr(pkt)->daddr;
-@@ -1650,6 +1653,7 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 	mifi_t mifi;
- 	struct net *net = sock_net(sk);
- 	struct mr_table *mrt;
-+	bool do_wrmifwhole;
- 
- 	if (sk->sk_type != SOCK_RAW ||
- 	    inet_sk(sk)->inet_num != IPPROTO_ICMPV6)
-@@ -1763,12 +1767,15 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 			return -EINVAL;
- 		if (copy_from_sockptr(&v, optval, sizeof(v)))
- 			return -EFAULT;
-+
-+		do_wrmifwhole = (v == MRT6MSG_WRMIFWHOLE);
- 		v = !!v;
- 		rtnl_lock();
- 		ret = 0;
- 		if (v != mrt->mroute_do_pim) {
- 			mrt->mroute_do_pim = v;
- 			mrt->mroute_do_assert = v;
-+			mrt->mroute_do_wrvifwhole = do_wrmifwhole;
- 		}
- 		rtnl_unlock();
- 		return ret;
-@@ -2144,6 +2151,9 @@ static void ip6_mr_forward(struct net *net, struct mr_table *mrt,
- 			       MFC_ASSERT_THRESH)) {
- 			c->_c.mfc_un.res.last_assert = jiffies;
- 			ip6mr_cache_report(mrt, skb, true_vifi, MRT6MSG_WRONGMIF);
-+			if (mrt->mroute_do_wrvifwhole)
-+				ip6mr_cache_report(mrt, skb, true_vifi,
-+						   MRT6MSG_WRMIFWHOLE);
- 		}
- 		goto dont_forward;
- 	}
--- 
-2.25.1
+
+> >
+> >
+> > >
+> > > > Code: c7 85 90 01 00 00 00 00 00 00 e8 53 6e a2 fa 48 89 ef 48 83 c4 20 5b 5d 41 5c 41 5d 41 5e 41 5f e9 7d d6 ff ff e8 38 6e a2 fa <0f> 0b e9 46 ff ff ff 48 8b 7c 24 10 e8 87 00 ea fa e9 75 f7 ff ff
+> > > > RSP: 0018:ffffc9000fe6fa18 EFLAGS: 00010293
+> > > > RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
+> > > > RDX: ffff888021b63a00 RSI: ffffffff86d66fe8 RDI: ffff88801cc200b0
+> > > > RBP: ffff88801cc20000 R08: 0000000000000001 R09: 0000000000000001
+> > > > R10: ffffffff817f1e08 R11: 0000000000000000 R12: ffff88801cc200d0
+> > > > R13: ffff88801cc20120 R14: ffff88801cc200d0 R15: 0000000000000002
+> > > > FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > CR2: 0000001b2de25000 CR3: 000000004c9cd000 CR4: 00000000003506f0
+> > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > > Call Trace:
+> > > >  <TASK>
+> > > >  vhost_vsock_dev_release+0x36e/0x4b0 drivers/vhost/vsock.c:771
+> > > >  __fput+0x286/0x9f0 fs/file_table.c:313
+> > > >  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+> > > >  exit_task_work include/linux/task_work.h:32 [inline]
+> > > >  do_exit+0xb29/0x2a30 kernel/exit.c:806
+> > > >  do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+> > > >  get_signal+0x45a/0x2490 kernel/signal.c:2863
+> > > >  arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
+> > > >  handle_signal_work kernel/entry/common.c:148 [inline]
+> > > >  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+> > > >  exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
+> > > >  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+> > > >  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+> > > >  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+> > > >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > > RIP: 0033:0x7f4027a46481
+> > > > Code: Unable to access opcode bytes at RIP 0x7f4027a46457.
+> > > > RSP: 002b:00007f402808ba68 EFLAGS: 00000206 ORIG_RAX: 0000000000000038
+> > > > RAX: fffffffffffffffc RBX: 00007f402622e700 RCX: 00007f4027a46481
+> > > > RDX: 00007f402622e9d0 RSI: 00007f402622e2f0 RDI: 00000000003d0f00
+> > > > RBP: 00007f402808bcb0 R08: 00007f402622e700 R09: 00007f402622e700
+> > > > R10: 00007f402622e9d0 R11: 0000000000000206 R12: 00007f402808bb1e
+> > > > R13: 00007f402808bb1f R14: 00007f402622e300 R15: 0000000000022000
+> > > >  </TASK>
+> > > >
+> > > >
+> > > > ---
+> > > > This report is generated by a bot. It may contain errors.
+> > > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > > >
+> > > > syzbot will keep track of this issue. See:
+> > > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > >
+> >
 
