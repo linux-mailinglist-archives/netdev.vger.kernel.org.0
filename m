@@ -2,98 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 247814BA15D
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 14:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FCC74BA1C8
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 14:46:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240625AbiBQNg0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 17 Feb 2022 08:36:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43880 "EHLO
+        id S241234AbiBQNmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 08:42:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236145AbiBQNgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 08:36:25 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D31D2AEDB0
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 05:36:10 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-180-DvoA-mOvMgWZ2EaaUyzgIQ-1; Thu, 17 Feb 2022 13:36:07 +0000
-X-MC-Unique: DvoA-mOvMgWZ2EaaUyzgIQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Thu, 17 Feb 2022 13:36:06 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Thu, 17 Feb 2022 13:36:06 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Masahiro Yamada" <yamada.masahiro@socionext.com>
-Subject: RE: [PATCH net v3] net: Force inlining of checksum functions in
- net/checksum.h
-Thread-Topic: [PATCH net v3] net: Force inlining of checksum functions in
- net/checksum.h
-Thread-Index: AQHYI/ioJk+yETn/QkyN152xjKaZ96yXvR4w
-Date:   Thu, 17 Feb 2022 13:36:06 +0000
-Message-ID: <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com>
-References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
-In-Reply-To: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S241231AbiBQNmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 08:42:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D763271D
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 05:41:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645105304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ReDjgTa0AKl3IhETSr6eHHzRQ7oTYlVeTlr0c09qyCU=;
+        b=C51xbD7NZyBoQByKZNy0d604ZKP2izVrxoN9MAdURCE+OSoDzlRZs+E7wP+TEfnLHg/S1T
+        U2BQnRI+HZnKG1fDAY7Jug/TzxHZ4pDPd+4COuWiThVTFrssox4M9MXF/GpbToqrLJVSke
+        4aiWmwnBWXun9WX4uqR3YncskDj6I9E=
+Received: from mail-yb1-f199.google.com (mail-yb1-f199.google.com
+ [209.85.219.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-620-WFC3RJF8PmCZtxcWVEZMPg-1; Thu, 17 Feb 2022 08:41:43 -0500
+X-MC-Unique: WFC3RJF8PmCZtxcWVEZMPg-1
+Received: by mail-yb1-f199.google.com with SMTP id b18-20020a25fa12000000b0062412a8200eso3649240ybe.22
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 05:41:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ReDjgTa0AKl3IhETSr6eHHzRQ7oTYlVeTlr0c09qyCU=;
+        b=O5RH0Cf3/xnjCPVmWZr05RLgpxRdDHoUJUrsoxJp6P6y1PXOzSPIr4lt8bJjjgdhEr
+         5ke9qrSEuNjQJLnmTsOixnWYDS6VZEAixOwVslpJ+NvlUL/XEfjLTD+Z9AYI2JDYQ+3Z
+         3KyWtynqnqIrhQz6RtEiV/vJjbKtkbBiqJU97XYgoaH8imz2l+swJda+X+CMCcmh0T0o
+         o3z35TbyUx5GJAhZkcH4Y3tkQODCI22vuEz2zkU3JSN3BSjaBfL/+ZbK6tE41c1ESFa8
+         uthAG/dFc0jePJppY85LTxsrsmwsTYZqk5C+ePMnu6eQvvgoR0Vqocuvj76iEsx/Meel
+         FhAw==
+X-Gm-Message-State: AOAM531ACDlfAxTl6M1dgydUEY8IUfq56aLH/iabMax3Fczac50uJleU
+        8DVcDl/LbivNQ3doof/DrfuqayDD2Viv7z096Qx5zdDjZTrVIee3QFOCwsnbhDjAHLqYtamn2rr
+        0rUvGAaiXH3VRdRuYe7QH+HingwYIx2Hd
+X-Received: by 2002:a25:be8a:0:b0:608:67d7:22fe with SMTP id i10-20020a25be8a000000b0060867d722femr2386872ybk.336.1645105302511;
+        Thu, 17 Feb 2022 05:41:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw/qTEHSLL3YCSmamzaOjBp+lXc80kYPlLLNqWjTzAirdIVkDe9EOxzg4C+QusYWruYzN7ip+2HvKyuPdKRbC0=
+X-Received: by 2002:a25:be8a:0:b0:608:67d7:22fe with SMTP id
+ i10-20020a25be8a000000b0060867d722femr2386846ybk.336.1645105302231; Thu, 17
+ Feb 2022 05:41:42 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220212175922.665442-1-omosnace@redhat.com> <20220212175922.665442-3-omosnace@redhat.com>
+ <CAHC9VhT90617FoqQJBCrDQ8gceVVA6a1h74h6T4ZOwNk6RVB3g@mail.gmail.com>
+ <20220214165436.1f6a9987@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFSqH7zC-4Ti_mzK4ZrpCVtNVCxD8h729MezG2avJLGJ2JrMTg@mail.gmail.com>
+ <CADvbK_e+TUuWhBQz1NPPS2aE59tzPKXPfUogrZ526hvm6OvY9Q@mail.gmail.com> <CAHC9VhSHxk0MUR1krpmbot6iG-vqH48sRgKOnJQ0LsFTs6Jvqg@mail.gmail.com>
+In-Reply-To: <CAHC9VhSHxk0MUR1krpmbot6iG-vqH48sRgKOnJQ0LsFTs6Jvqg@mail.gmail.com>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Thu, 17 Feb 2022 14:41:30 +0100
+Message-ID: <CAFqZXNtPZkozkzpOeW31pOn1r+xcWg6MDt7p8onTMoaUZVqzEw@mail.gmail.com>
+Subject: Re: [PATCH net v3 2/2] security: implement sctp_assoc_established
+ hook in selinux
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        SElinux list <selinux@vger.kernel.org>,
+        Richard Haines <richard_c_haines@btinternet.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "open list:SCTP PROTOCOL" <linux-sctp@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Prashanth Prahlad <pprahlad@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe Leroy
-> Sent: 17 February 2022 12:19
-> 
-> All functions defined as static inline in net/checksum.h are
-> meant to be inlined for performance reason.
-> 
-> But since commit ac7c3e4ff401 ("compiler: enable
-> CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
-> uninline functions when it wants.
-> 
-> Fair enough in the general case, but for tiny performance critical
-> checksum helpers that's counter-productive.
+On Tue, Feb 15, 2022 at 9:03 PM Paul Moore <paul@paul-moore.com> wrote:
+> On Mon, Feb 14, 2022 at 11:13 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > Looks okay to me.
+> >
+> > The difference from the old one is that: with
+> > selinux_sctp_process_new_assoc() called in
+> > selinux_sctp_assoc_established(), the client sksec->peer_sid is using
+> > the first asoc's peer_secid, instead of the latest asoc's peer_secid.
+> > And not sure if it will cause any problems when doing the extra check
+> > sksec->peer_sid != asoc->peer_secid for the latest asoc and *returns
+> > err*. But I don't know about selinux, I guess there must be a reason
+> > from selinux side.
+>
+> Generally speaking we don't want to change any SELinux socket labels
+> once it has been created.  While the peer_sid is a bit different,
+> changing it after userspace has access to the socket could be
+> problematic.  In the case where the peer_sid differs between the two
+> we have a permission check which allows policy to control this
+> behavior which seems like the best option at this point.
 
-There isn't a real justification for allowing the compiler
-to 'not inline' functions in that commit.
+I think that maybe Xin was referring to the fact that on error return
+from the hook the return code information is lost and the assoc is
+just silently dropped (but I may have misunderstood). In case of a
+denial (avc_has_perm() returning -EACCESS) this isn't much of a
+problem, because the denial is logged in the audit log, so there is a
+way to figure out why opening the association failed. In case of other
+errors we could indeed do better and either log an SELINUX_ERR audit
+event or at least pr_err() into the console, but there are likely
+several other existing cases like this, so it would be best to do this
+cleanup independently in another patch (if anyone feels up to the
+task...).
 
-It rather seems backwards.
-The kernel sources don't really have anything marked 'inline'
-that shouldn't always be inlined.
-If there are any such functions they are few and far between.
-
-I've had enough trouble (elsewhere) getting gcc to inline
-static functions that are only called once.
-I ended up using 'always_inline'.
-(That is 4k of embedded object code that will be too slow
-if it ever spills a register to stack.)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+--
+Ondrej Mosnacek
+Software Engineer, Linux Security - SELinux kernel
+Red Hat, Inc.
 
