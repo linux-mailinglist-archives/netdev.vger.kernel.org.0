@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 847E64BAB46
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 21:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 423604BABA4
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 22:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241245AbiBQUu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 15:50:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52736 "EHLO
+        id S243187AbiBQVU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 16:20:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbiBQUu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 15:50:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB226164D03;
-        Thu, 17 Feb 2022 12:50:12 -0800 (PST)
+        with ESMTP id S232714AbiBQVU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 16:20:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8C37EB1A;
+        Thu, 17 Feb 2022 13:20:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FDDDB82515;
-        Thu, 17 Feb 2022 20:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 14350C340EB;
-        Thu, 17 Feb 2022 20:50:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0312961291;
+        Thu, 17 Feb 2022 21:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5C55DC340EC;
+        Thu, 17 Feb 2022 21:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645131010;
-        bh=vLb4Bz9FuAaLFrxkwRH0wae562i2IPgCN2e4LFcegQc=;
+        s=k20201202; t=1645132810;
+        bh=nZ+3TebAMYMdj61hGyNk99YadmpW+71AZUeLkXRmyPI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iUuTr3HwsfJHh6aOkc8uNhsTk69WIVGZRsmVT++FORGPRCjntr+qSGv9NGGMcFG3t
-         7SQrc7UpHllDnDI5i/zHAxhMzPlSO+evLPm+656flLDVOIWEyrDMAFCYNMhQUZHflp
-         0RcljJNGo0QSXzOUtLnh6e2KLK15GooCbKUlM862NK/FvLSetayHpFYJuA3UO4p/Gj
-         WS+wEOcuH4d+OEEzF+sNI0QQu8wZIcBXFpmVFv7Ce+6R1uvBGVnlxynLiasWMwNNDy
-         niP1xCVWV65VUr06swwUdCnbdDRyjX5Kfiv0FEv0/31TyGiUELJ6AmOet2XKx136rw
-         +zif1h5SJu97g==
+        b=YTmJH5/mIH34P7qJLeON81pClJiYsBFkxm+FM/HKa3OtHQQVkLxIJycfArMmO7xk/
+         owXNxdE5jO/bnzcce8ILJYZcqJPeFKAc99UV9NW+DkklUEMMZWixSJbzORmiEp/UXy
+         eSCnwSLXibXbdfAa5V+eSgeCNZtZe8G5h+x+kLMMmrsd4PaGKUE+DltDr+7xX1nosS
+         CyaFewv94jK044K2rEivicmhrmvmxqitloKbuu7WVqKYb5zbwRkkdw3d02195io17Q
+         V8Kdcx+DSwfGV429eYpJRKL1AeeJkV+y+GBg4ZUnguFsfVlr4cGo3pMdE1sda2fA2+
+         wg0tiT4kk+WxQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E90F6E7BB08;
-        Thu, 17 Feb 2022 20:50:09 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 41346E7BB08;
+        Thu, 17 Feb 2022 21:20:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] net: marvell: prestera: add basic routes
- offloading
+Subject: Re: [PATCH bpf-next] bpf: bpf_prog_pack: set proper size before freeing
+ ro_header
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164513100994.9820.5764759394869157729.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Feb 2022 20:50:09 +0000
-References: <20220216010557.11483-1-yevhen.orlov@plvision.eu>
-In-Reply-To: <20220216010557.11483-1-yevhen.orlov@plvision.eu>
-To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
-Cc:     netdev@vger.kernel.org, volodymyr.mytnyk@plvision.eu,
-        taras.chornyi@plvision.eu, mickeyr@marvell.com,
-        serhiy.pshyk@plvision.eu, tchornyi@marvell.com,
-        oleksandr.mazur@plvision.eu, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <164513281025.23518.1271858389443633598.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Feb 2022 21:20:10 +0000
+References: <20220217183001.1876034-1-song@kernel.org>
+In-Reply-To: <20220217183001.1876034-1-song@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com,
+        syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com,
+        syzbot+ecb1e7e51c52f68f7481@syzkaller.appspotmail.com,
+        syzbot+87f65c75f4a72db05445@syzkaller.appspotmail.com
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,33 +62,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This patch was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-On Wed, 16 Feb 2022 03:05:54 +0200 you wrote:
-> Add support for blackhole and local routes for Marvell Prestera driver.
-> Subscribe on fib notifications and handle add/del.
-> 
-> Add features:
->  - Support route adding.
->    e.g.: "ip route add blackhole 7.7.1.1/24"
->    e.g.: "ip route add local 9.9.9.9 dev sw1p30"
->  - Support "rt_trap", "rt_offload", "rt_offload_failed" flags
->  - Handle case, when route in "local" table overlaps route in "main" table
->    example:
-> 	ip ro add blackhole 7.7.7.7
-> 	ip ro add local 7.7.7.7 dev sw1p30
-> 	# blackhole route will be deoffloaded. rt_offload flag disappeared
+On Thu, 17 Feb 2022 10:30:01 -0800 you wrote:
+> bpf_prog_pack_free() uses header->size to decide whether the header
+> should be freed with module_memfree() or the bpf_prog_pack logic.
+> However, in kvmalloc() failure path of bpf_jit_binary_pack_alloc(),
+> header->size is not set yet. As a result, bpf_prog_pack_free() may treat
+> a slice of a pack as a standalone kvmalloc'd header and call
+> module_memfree() on the whole pack. This in turn causes use-after-free by
+> other users of the pack.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] net: marvell: prestera: Add router LPM ABI
-    https://git.kernel.org/netdev/net-next/c/19787b93f814
-  - [net-next,2/3] net: marvell: prestera: add hardware router objects accounting for lpm
-    https://git.kernel.org/netdev/net-next/c/16de3db1208a
-  - [net-next,3/3] net: marvell: prestera: handle fib notifications
-    https://git.kernel.org/netdev/net-next/c/4394fbcb78cf
+  - [bpf-next] bpf: bpf_prog_pack: set proper size before freeing ro_header
+    https://git.kernel.org/bpf/bpf-next/c/d24d2a2b0a81
 
 You are awesome, thank you!
 -- 
