@@ -2,112 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1C74B962F
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 03:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C86714B9634
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 04:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiBQC6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 21:58:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54310 "EHLO
+        id S232141AbiBQDAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 22:00:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiBQC6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 21:58:06 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955F0C4E36
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 18:57:52 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id o2so7440787lfd.1
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 18:57:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PRXzl4MrenAXFcJTPHd0cfLMk6vHd+SMBNj1p9vvORo=;
-        b=UXiXYe0csgNHz5JzZK9/SQAmZHnBmqw8se4iY04CaKD4OcOe4YxyTbqUnHKSgXFGJB
-         zHw4zKxDa495bLd8b1PM8wU3COP2tHIek0YFzUewCPdse44G6tIVC32q5mccn769q2tE
-         XOUng1cGckbHtk3If74XDKg/GRVJ5eLqI/r7Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PRXzl4MrenAXFcJTPHd0cfLMk6vHd+SMBNj1p9vvORo=;
-        b=jrCYyYpsPKxvPLBXSGe9UuTGv9P+C2ObT/zskwQjiT7guNNVZZeoQVBMEUwUQO5GUa
-         2qLS62rTZOFMHzT8K/ma94l+RjkYiejl5utkaQJ5lugyvHO9E7Dmi3jISQi3dUwkPXd0
-         ew/ptnUlL0SdM/IOOT2zcFER2+2s51p4y9I2lNSYIxsYVwSoR15AK0fJrkxs0BVLjxSk
-         CTSMjU6L5qYhGmTi2lLwxxQ6dwPVhABK6RyM1ipxN1fF/yc15wCWur9VX9hohhHqL2t1
-         g9hKwHiqpzGBRf1ODrpkynTWzXZmL25aYrS4NYtAJbj0yGXrEP2woKrJrI6UznLR2Qpk
-         zF6A==
-X-Gm-Message-State: AOAM530YyDGhyiVYL5ap16jruGkwvnWscmYI+Q8ggZdsAGxaQX9VdUR7
-        yATt35+SL9q8MHzR8XbkdVzJsUc1GDbsq6pT+u374jnHWgo=
-X-Google-Smtp-Source: ABdhPJyUNQHsgQ43Sw7rxWIp2ClrFx7XdZ0BCYLt5PCBHmTf0ALmlO0Lx/WddvwL5cbIVByZ9VOURWErT21YRTnEiT4=
-X-Received: by 2002:a19:f011:0:b0:443:9d63:df20 with SMTP id
- p17-20020a19f011000000b004439d63df20mr685562lfc.69.1645066669848; Wed, 16 Feb
- 2022 18:57:49 -0800 (PST)
+        with ESMTP id S232102AbiBQDAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 22:00:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2CD1FFF46;
+        Wed, 16 Feb 2022 18:59:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37E4161D00;
+        Thu, 17 Feb 2022 02:59:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21AF0C004E1;
+        Thu, 17 Feb 2022 02:59:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645066792;
+        bh=Cc8p4juRyZDLDiYHYoHlaCKkmOjUBJrr6ymTfTTrnJw=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=oTA2x1m/1tJy/0RO1pN30NJa2BJkYMh2+KKMBKb1RwI/36S8e7LFjr4cNM021ZjLH
+         rrHPNICPqWSAYYOTpTZx0MN3UuCUGdqTVOnYlO2LxFqkOTRQjRtlJo5jKoL1vdyhuz
+         EdJpo9K/NzhCRDGu96UxhRlCUDYofEMAeXkFI10rCODhdq1mb/y+HsydVx9J8xod5N
+         lISmjXwtlOqdPHYFGZHJl/flAwwv26jxJX1NsM1eLJRwa4fWq98mH7tgia0DdM1TRy
+         +bUzGU61/pEWnf95B0p4saetWhWzaAG4JPlTsEdOUQ8A3ICnTpU7hSm/vpss90L4iT
+         oWCBf8lCv7wuw==
+Message-ID: <bcc98227-b99f-5b2f-1745-922c13fe6089@kernel.org>
+Date:   Wed, 16 Feb 2022 19:59:50 -0700
 MIME-Version: 1.0
-References: <20220110015636.245666-1-dmichail@fungible.com>
- <20220110015636.245666-4-dmichail@fungible.com> <20220112144550.17c38ccd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220112144550.17c38ccd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Wed, 16 Feb 2022 18:57:36 -0800
-Message-ID: <CAOkoqZ=jF=oK+_s_QTr8eL+6Dw6r7710mGpgqLjgWbAruS_Ucg@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 3/8] net/funeth: probing and netdev ops
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: This counter "ip6InNoRoutes" does not follow the RFC4293
+ specification implementation
+Content-Language: en-US
+To:     "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <SJ0PR11MB51207CBDB5145A89B8A0A15393359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51202FA2365341740048A64593359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB51209200786235187572EE0D93359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+ <SJ0PR11MB5120426D474963E08936DD2493359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <SJ0PR11MB5120426D474963E08936DD2493359@SJ0PR11MB5120.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 2:45 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sun,  9 Jan 2022 17:56:31 -0800 Dimitris Michailidis wrote:
-> > +static void fun_update_link_state(const struct fun_ethdev *ed,
-> > +                               const struct fun_admin_port_notif *notif)
-> > +{
-> > +     unsigned int port_idx = be16_to_cpu(notif->id);
-> > +     struct net_device *netdev;
-> > +     struct funeth_priv *fp;
-> > +
-> > +     if (port_idx >= ed->num_ports)
-> > +             return;
-> > +
-> > +     netdev = ed->netdevs[port_idx];
-> > +     fp = netdev_priv(netdev);
-> > +
-> > +     write_seqcount_begin(&fp->link_seq);
-> > +     fp->link_speed = be32_to_cpu(notif->speed) * 10;  /* 10 Mbps->Mbps */
-> > +     fp->active_fc = notif->flow_ctrl;
-> > +     fp->active_fec = notif->fec;
-> > +     fp->xcvr_type = notif->xcvr_type;
-> > +     fp->link_down_reason = notif->link_down_reason;
-> > +     fp->lp_advertising = be64_to_cpu(notif->lp_advertising);
-> > +
-> > +     if ((notif->link_state | notif->missed_events) & FUN_PORT_FLAG_MAC_DOWN)
-> > +             netif_carrier_off(netdev);
-> > +     if (notif->link_state & FUN_PORT_FLAG_MAC_UP)
-> > +             netif_carrier_on(netdev);
-> > +
-> > +     write_seqcount_end(&fp->link_seq);
-> > +     fun_report_link(netdev);
-> > +}
-> > +
-> > +/* handler for async events delivered through the admin CQ */
-> > +static void fun_event_cb(struct fun_dev *fdev, void *entry)
-> > +{
-> > +     u8 op = ((struct fun_admin_rsp_common *)entry)->op;
-> > +
-> > +     if (op == FUN_ADMIN_OP_PORT) {
-> > +             const struct fun_admin_port_notif *rsp = entry;
-> > +
-> > +             if (rsp->subop == FUN_ADMIN_SUBOP_NOTIFY) {
-> > +                     fun_update_link_state(to_fun_ethdev(fdev), rsp);
->
-> Is there locking between service task and admin queue events?
+On 2/16/22 3:36 AM, Xiao, Jiguang wrote:
+> Hello,
+> 
+> I found a counter in the kernel(5.10.49) that did not follow the RFC4293
+> specification. The test steps are as follows:
+> 
+>  
+> 
+> Topology:
+> 
+>   |VM 1| ------ |linux| ------ |VM 2|
+> 
+>  
+> 
+> Steps:
+> 
+> 1. Verify that “VM1” is reachable from “VM 2” and vice versa using ping6
+> command.
+> 
+> 2. On “linux” node, in proper fib, remove default route to NW address
+> which “VM 2” resides in. This way, the packet won’t be forwarded by
+> “linux” due to no route pointing to destination address of “VM 2”.
+> 
+> 3. Collect the corresponding SNMP counters from “linux” node.
+> 
+> 4. Verify that there is no connectivity from “VM 1” to “VM 2” using
+> ping6 command.
+> 
+> 5. Check the counters again.
+> 
+>  
+> 
+> The test results:
+> 
+> The counter “ip6InNoRoutes” in “/proc/net/dev_snmp6/” has not increased
+> accordingly. In my test environment, it was always zero.
+> 
+>  
+> 
+> My question is :
+> 
+> Within RFC4293, “ipSystemStatsInNoRoutes” is defined as follows:
+> 
+>   “The number of input IP datagrams discarded because no route could be
+> found to transmit them to their destination.”
+> 
+> Does this version of the kernel comply with the RFC4293 specification?
+> 
+>  
 
-There isn't any lock between them. They coordinate through atomic
-bitops and the synchronization work_structs provide.
+I see that counter incrementing. Look at the fib6 tracepoints and see
+what the lookups are returning:
+
+perf record -e fib6:* -a
+<run test>
+Ctrl-C
+perf script
