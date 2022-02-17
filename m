@@ -2,69 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9ABB4BA3C3
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 15:56:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FBBF4BA3CB
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 15:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241053AbiBQOzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 09:55:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34694 "EHLO
+        id S242241AbiBQO4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 09:56:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242212AbiBQOzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 09:55:00 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795E62B2C6D
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:54:45 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id g39so10458698lfv.10
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 06:54:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=11Msxpj6saXhCjkH+nNzBnzST2VwOlijviYdJ5EL8xY=;
-        b=h5HMBr2qhvXOVt5Rfn/vHXtiCQDuOpsxkvtFXY0SaiScqWYvwpMJt7Ts5GoC0oM9lu
-         oZj3IfLiiIcHvrxc3JwV25jjQsMvXlueV81dkAF15o0UJ2Wc1KHJgUiBV6+YYsPTH98G
-         8nWuYP3W8FBS6N4SeEuBzBAYUDcjwdH/gP8aX0MTiZXvEu4z93liPMgb34C5FYDQctPi
-         G5G0CrnohL2XTBUHXFu9UhV0YmK4fiIERHclNELjygJMVr+BGfUBjhvEtptQCK+yxtkm
-         aeY1WFNrw8P8mIxnuUxVsLdP4wnwmi1KwCEPf/m/0deGHDK0O/gNRAMxVaGIpLfuPW6C
-         jOmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=11Msxpj6saXhCjkH+nNzBnzST2VwOlijviYdJ5EL8xY=;
-        b=5sVqiAmXauOB6WU0cKPvxHOsZhqCRZU4WbTdAGSoln/p/k2qKCQAY0BmkIJNJCXpuG
-         uc5Tzf1VHf+HULvikXT0v653F+OugVIRnwOKHDrn5rajTwl4AQu0Kjh63T/WRYfEY6bp
-         r4up70Bvt/4YysVv45Yhk3jp451I8ZzwU6rfhKH9QMPeohOaoWZxh6QNrKFi/v7YGUbM
-         2PBUIKUjDnV4hcgNHSuZjdEknxQnOZURNL3vSZC/zzk72L76zeQ+PVsSw1r4zvntUN/M
-         m5E9cSpgflrVJa8NIb4nSP3IWuRbMMgjA3yIQE8UmEz3c8pu0ruuwsHW/q2NoiYGeXeD
-         1AJw==
-X-Gm-Message-State: AOAM531zTJWKt9z6qHveKKHW20D3WhN6FpGq/YZZewDcjgF6NWoRa9lq
-        vf5d5SnkWS96gCDUf82LpeIGgNaBcQBqk+wcaUG9Pegdm3Jb2Q==
-X-Google-Smtp-Source: ABdhPJxr6FXLaH1va6dG7alhD1yu9EwTbfNIoN/IWCmHeyc0IwCpkdkpbk1bdcrCPBR912vFQwi6slrPY3X5Othxofw=
-X-Received: by 2002:a19:9144:0:b0:43b:86a4:1497 with SMTP id
- y4-20020a199144000000b0043b86a41497mr2301608lfj.254.1645109683832; Thu, 17
- Feb 2022 06:54:43 -0800 (PST)
+        with ESMTP id S242272AbiBQOzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 09:55:40 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9912B2C7B;
+        Thu, 17 Feb 2022 06:55:24 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4JzyYQ5rB1z9sSZ;
+        Thu, 17 Feb 2022 15:55:22 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TsOvGGPTaGjN; Thu, 17 Feb 2022 15:55:22 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4JzyYP59kZz9sSW;
+        Thu, 17 Feb 2022 15:55:21 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A04598B77C;
+        Thu, 17 Feb 2022 15:55:21 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id jCpsHyiEQc1l; Thu, 17 Feb 2022 15:55:21 +0100 (CET)
+Received: from [192.168.6.239] (unknown [192.168.6.239])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 158D78B763;
+        Thu, 17 Feb 2022 15:55:21 +0100 (CET)
+Message-ID: <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu>
+Date:   Thu, 17 Feb 2022 15:55:21 +0100
 MIME-Version: 1.0
-References: <20220216093112.92469-1-Jerome.Pouiller@silabs.com>
- <20220216093112.92469-3-Jerome.Pouiller@silabs.com> <878ru924qr.fsf@kernel.org>
-In-Reply-To: <878ru924qr.fsf@kernel.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Feb 2022 15:54:05 +0100
-Message-ID: <CAPDyKFqm3tGa+dtAGPn803rLnfY=tdcoX5DySnG-spFFqM=CrA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] staging: wfx: apply the necessary SDIO quirks for the
- Silabs WF200
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-mmc@vger.kernel.org,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in
+ net/checksum.h
+Content-Language: fr-FR
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
+ <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com>
+ <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
+In-Reply-To: <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -73,26 +68,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Feb 2022 at 10:59, Kalle Valo <kvalo@kernel.org> wrote:
->
-> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
->
-> > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
-> >
-> > Until now, the SDIO quirks are applied directly from the driver.
-> > However, it is better to apply the quirks before driver probing. So,
-> > this patch relocate the quirks in the MMC framework.
->
-> It would be good to know how this is better, what's the concrete
-> advantage?
 
-The mmc core has a quirk interface for all types of cards
-(eMMC/SD/SDIO), which thus keeps these things from sprinkling to
-drivers. In some cases, the quirk needs to be applied already during
-card initialization, which is earlier than when probing an SDIO func
-driver or the MMC block device driver.
 
-Perhaps it's a good idea to explain a bit about this in the commit message.
+Le 17/02/2022 à 15:50, Christophe Leroy a écrit :
+> Adding Ingo, Andrew and Nick as they were involved in the subjet,
+> 
+> Le 17/02/2022 à 14:36, David Laight a écrit :
+>> From: Christophe Leroy
+>>> Sent: 17 February 2022 12:19
+>>>
+>>> All functions defined as static inline in net/checksum.h are
+>>> meant to be inlined for performance reason.
+>>>
+>>> But since commit ac7c3e4ff401 ("compiler: enable
+>>> CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
+>>> uninline functions when it wants.
+>>>
+>>> Fair enough in the general case, but for tiny performance critical
+>>> checksum helpers that's counter-productive.
+>>
+>> There isn't a real justification for allowing the compiler
+>> to 'not inline' functions in that commit.
+> 
+> Do you mean that the two following commits should be reverted:
+> 
+> - 889b3c1245de ("compiler: remove CONFIG_OPTIMIZE_INLINING entirely")
+> - 4c4e276f6491 ("net: Force inlining of checksum functions in 
+> net/checksum.h")
 
-Kind regards
-Uffe
+Of course not the above one (copy/paste error), but:
+- ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly")
+
+
+> 
+>>
+>> It rather seems backwards.
+>> The kernel sources don't really have anything marked 'inline'
+>> that shouldn't always be inlined.
+>> If there are any such functions they are few and far between.
+>>
+>> I've had enough trouble (elsewhere) getting gcc to inline
+>> static functions that are only called once.
+>> I ended up using 'always_inline'.
+>> (That is 4k of embedded object code that will be too slow
+>> if it ever spills a register to stack.)
+>>
+> 
+> I agree with you that that change is a nightmare with many small 
+> functions that we really want inlined, and when we force inlining we 
+> most of the time get a smaller binary.
+> 
+> And it becomes even more problematic when we start adding 
+> instrumentation like stack protector.
+> 
+> According to the original commits however this was supposed to provide 
+> real benefit:
+> 
+> - 60a3cdd06394 ("x86: add optimized inlining")
+> - 9012d011660e ("compiler: allow all arches to enable 
+> CONFIG_OPTIMIZE_INLINING")
+> 
+> But when I build ppc64le_defconfig + CONFIG_CC_OPTIMISE_FOR_SIZE I get:
+>      112 times  queued_spin_unlock()
+>      122 times  mmiowb_spin_unlock()
+>      151 times  cpu_online()
+>      225 times  __raw_spin_unlock()
+> 
+> 
+> So I was wondering, would we have a way to force inlining of functions 
+> marked inline in header files while leaving GCC handling the ones in C 
+> files the way it wants ?
+> 
+> Christophe
