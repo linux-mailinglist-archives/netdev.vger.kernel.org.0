@@ -2,197 +2,402 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A1D4BA02E
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 13:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC1384BA04C
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 13:41:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240445AbiBQMbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 07:31:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38790 "EHLO
+        id S240499AbiBQMln convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 17 Feb 2022 07:41:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240466AbiBQMbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 07:31:03 -0500
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2043.outbound.protection.outlook.com [40.107.101.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69F02AE285
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 04:30:42 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lkMGHhbNNgWtqbT/ik6tLXcgnP/VlXInSfHTZ2V9BSxebOcRtwkS+CykRx9dsN2/813J/J7UkeI+O/KHaFqqCpRcjPTYaFsCnnsXFfr9lnTSrQKVd4bAGPJbeSHKz+EVVcn14RE72U6OoNGiygBgsK9NC5qDiqkM8Pft9U8tqI0hutaSKjHOsoCNRXUuVi0UCDRLIlYqi/1XsvTdrEo077yE3MCSvI6fwyCjvFedEcUvhinYbi6XWQXRxEWHB23wSd36cTr0C1R3FRd4YWSDOQZZ/zX3oz38cwQ0SP1bC0FhBeNdYk1MHf+MU6a/vMy0YU6m2ze3J66biTiIOPbSPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iN4Ek6wjJtFoCabV8LWa89JIOALbln+927Jyd3Ub49M=;
- b=M2EYasUroQGn0fxnjpAWXL6ZVNrHzaz0cPJJ4PE9+bN2YLwoaTVa+cpaKWnmb+2I1z/a5yJweJb89Beh6g2INXMxNtHtbIY7AYv9BRxE9h+nscSBUiATtJbOTM2e97RKAjBSTV9UzMdIy/vHHZVPM75nOX9t/gaGL5jD8sCLD2qhiiTVrtRysk48FSGLfBjfmunGEtBYHreCnDeCFhW0oLhMElbnkH8a5vWw6NVIDUTRcM9kon/OK+z9PsKtEuo3YtRpb18+UMFLVTMu4ahFo8Z6lb5T5Ur+/lzd1n2kCvN6GxHmQ9tjw5GtpHxb6oA9LyCAXZ/DyTlkm1FJ4fT4CQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iN4Ek6wjJtFoCabV8LWa89JIOALbln+927Jyd3Ub49M=;
- b=GROAq+rX+X36HUCtpXbhgRG0KakIrp6a59KjtyYNdSuY+hca7dPsgj4SQMZIaJLetIH7FRJZNvxG6EO5BpZXOtEtowE/8YGf+vjcgC7hHkfYN5l4Z5X7TbNRk0MQal/iBX7jIdVihIa33w6VqCg7Cdr980KEtD6W4N83N510L1HjtG2DXpIesRmsxpR4hENvt4n8NZeANh8qRwX6x3/FSU4zvV51s3jLsBPNM64CCv0iMGajD0hF6asOWww9sriX6QhC3EaWeRl811Zlgr66AtAdTd5JwiG8rlsXSoJ5FI9ciPTEUcG36h0kIyCezdpXabL7vrAfK7ivRhSTHcLsJg==
-Received: from MWHPR22CA0062.namprd22.prod.outlook.com (2603:10b6:300:12a::24)
- by MWHPR1201MB0047.namprd12.prod.outlook.com (2603:10b6:301:54::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Thu, 17 Feb
- 2022 12:30:40 +0000
-Received: from CO1NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:12a:cafe::40) by MWHPR22CA0062.outlook.office365.com
- (2603:10b6:300:12a::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.19 via Frontend
- Transport; Thu, 17 Feb 2022 12:30:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT035.mail.protection.outlook.com (10.13.175.36) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Thu, 17 Feb 2022 12:30:40 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 17 Feb
- 2022 12:30:39 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 17 Feb 2022
- 04:30:38 -0800
-Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Thu, 17 Feb
- 2022 04:30:37 -0800
-From:   Eli Cohen <elic@nvidia.com>
-To:     <stephen@networkplumber.org>, <netdev@vger.kernel.org>
-CC:     <jasowang@redhat.com>, <lulu@redhat.com>, <si-wei.liu@oracle.com>,
-        "Eli Cohen" <elic@nvidia.com>
-Subject: [PATCH v2 4/4] vdpa: Support reading device features
-Date:   Thu, 17 Feb 2022 14:30:24 +0200
-Message-ID: <20220217123024.33201-5-elic@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220217123024.33201-1-elic@nvidia.com>
-References: <20220217123024.33201-1-elic@nvidia.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a7c5dcc1-d62d-461f-97cc-08d9f2114f28
-X-MS-TrafficTypeDiagnostic: MWHPR1201MB0047:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR1201MB0047B9A7E9598CBCCF02E583AB369@MWHPR1201MB0047.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: b2DsKLMYkHJin32TmqrNj8Kj9WWxc1AZ5XjrDCG5Kt01qUoUXyVswAqoIz0gMd4dyBDet95hqKQ9Li2j6tt21U7aOW4EQtSyT1qtgeJbSy6aO9WHxTZhaDJeqOqW4Cu9LtWvaDe4BcgpmbfgN1KHFVQtXx9DEFprWfvWnOoKobUQdbWgAsAkbO3vwmdNEwGbr1TNHhm+kAsYaDxLx1CiTvVqhRqNApDrqtktuKBs9nYh3NXu8vp6Ojmrdq6E+fJK89A/q/6p7sMbDJ2qT3PKbUeTESXhfofgpv+G8zWGk5N9FXLLFOCBC8Z4EfEBNrnioTP0NYWaclTAfMklPxm1BNBXq1OvhbGmCcVkn2Xs/ztH0Mdu0/tkdsZYvPx2bKRwDUjo1RF61VPqU6xKKkUDFsw6KTxZ63jKaGvmzBJU2PbMvzjIFddd2uKvH+1XwUAse2u0+7hZykrXDftvVcMm/2wpgNPQDoR+llpkO+rEwG0kXtvY2XGVZzBhKwvqlcnS22A8IC1FAha8enVjt4HDrBP2pH67hNcBQZrja1uampbz3KIvr4aIiK/r9SDosBNYPxDR53366ykwQmuYb5qyO/FbWbNBrUk4jVwvzXseOTtvTD2Eo7cctBA2bfj89eGXeErk63my+TtxQ41LPhYLM6cGKTWuv0eZX0bqBvzdMwWV3n325bxkrYZvie9vRLvrYnRLhH/KTfpTahs0pkogRQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(8936002)(70206006)(2906002)(86362001)(316002)(5660300002)(508600001)(186003)(26005)(2616005)(7696005)(6666004)(1076003)(426003)(336012)(107886003)(47076005)(356005)(81166007)(83380400001)(40460700003)(4326008)(8676002)(110136005)(54906003)(82310400004)(36860700001)(36756003)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2022 12:30:40.4968
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7c5dcc1-d62d-461f-97cc-08d9f2114f28
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0047
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S235260AbiBQMlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 07:41:42 -0500
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 498B9F1;
+        Thu, 17 Feb 2022 04:41:24 -0800 (PST)
+Received: from smtpclient.apple (p4fefcd07.dip0.t-ipconnect.de [79.239.205.7])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 4825DCECDE;
+        Thu, 17 Feb 2022 13:41:23 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH v4 1/3] Bluetooth: aosp: surface AOSP quality report
+ through mgmt
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220215213519.v4.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+Date:   Thu, 17 Feb 2022 13:41:22 +0100
+Cc:     BlueZ <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Joseph Hwang <josephsih@google.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <9F696602-8BAC-479E-998D-118DDAE54445@holtmann.org>
+References: <20220215213519.v4.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+To:     Joseph Hwang <josephsih@chromium.org>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When showing the available management devices, check if
-VDPA_ATTR_DEV_SUPPORTED_FEATURES feature is available and print the
-supported features for a management device.
+Hi Joseph,
 
-Examples:
-$ vdpa mgmtdev show
-auxiliary/mlx5_core.sf.1:
-  supported_classes net
-  max_supported_vqs 257
-  dev_features CSUM GUEST_CSUM MTU HOST_TSO4 HOST_TSO6 STATUS CTRL_VQ MQ \
-               CTRL_MAC_ADDR VERSION_1 ACCESS_PLATFORM
+> When receiving a HCI vendor event, the kernel checks if it is an
+> AOSP bluetooth quality report. If yes, the event is sent to bluez
+> user space through the mgmt socket.
+> 
+> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+> ---
+> 
+> (no changes since v3)
+> 
+> Changes in v3:
+> - Rebase to resolve the code conflict.
+> - Move aosp_quality_report_evt() from hci_event.c to aosp.c.
+> - A new patch (3/3) is added to enable the quality report feature.
+> 
+> Changes in v2:
+> - Scrap the two structures defined in aosp.c and use constants for
+>  size check.
+> - Do a basic size check about the quality report event. Do not pull
+>  data from the event in which the kernel has no interest.
+> - Define vendor event prefixes with which vendor events of distinct
+>  vendor specifications can be clearly differentiated.
+> - Use mgmt helpers to add the header and data to a mgmt skb.
 
-$ vdpa -jp mgmtdev show
-{
-    "mgmtdev": {
-        "auxiliary/mlx5_core.sf.1": {
-            "supported_classes": [ "net" ],
-            "max_supported_vqs": 257,
-            "dev_features": [
-"CSUM","GUEST_CSUM","MTU","HOST_TSO4","HOST_TSO6","STATUS","CTRL_VQ","MQ",\
-"CTRL_MAC_ADDR","VERSION_1","ACCESS_PLATFORM" ]
-        }
-    }
-}
+this unsolicited vendor event business is giving me a headache. I assume it would be a lot simpler, but it doesn’t look like this. I need to spent some rounds of thinking to give you good advice. Unfortunately since we also want to support Intel vendor specific pieces, this is getting super complicated.
 
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- vdpa/include/uapi/linux/vdpa.h |  1 +
- vdpa/vdpa.c                    | 14 +++++++++++++-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+> include/net/bluetooth/hci_core.h |  5 ++
+> include/net/bluetooth/mgmt.h     |  7 +++
+> net/bluetooth/aosp.c             | 27 ++++++++++
+> net/bluetooth/aosp.h             | 13 +++++
+> net/bluetooth/hci_event.c        | 84 +++++++++++++++++++++++++++++++-
+> net/bluetooth/mgmt.c             | 20 ++++++++
+> net/bluetooth/msft.c             | 14 ++++++
+> net/bluetooth/msft.h             | 12 +++++
+> 8 files changed, 181 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index f5caff1ddb29..ea83619ac4de 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -1864,6 +1864,8 @@ int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
+> int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
+> void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
+> 				  bdaddr_t *bdaddr, u8 addr_type);
+> +int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 data_len,
+> +			u8 quality_spec);
+> 
+> u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
+> 		      u16 to_multiplier);
+> @@ -1882,4 +1884,7 @@ void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
+> 
+> #define TRANSPORT_TYPE_MAX	0x04
+> 
+> +#define QUALITY_SPEC_AOSP_BQR		0x0
+> +#define QUALITY_SPEC_INTEL_TELEMETRY	0x1
+> +
+> #endif /* __HCI_CORE_H */
+> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+> index 3d26e6a3478b..83b602636262 100644
+> --- a/include/net/bluetooth/mgmt.h
+> +++ b/include/net/bluetooth/mgmt.h
+> @@ -1120,3 +1120,10 @@ struct mgmt_ev_adv_monitor_device_lost {
+> 	__le16 monitor_handle;
+> 	struct mgmt_addr_info addr;
+> } __packed;
+> +
+> +#define MGMT_EV_QUALITY_REPORT			0x0031
+> +struct mgmt_ev_quality_report {
+> +	__u8	quality_spec;
+> +	__u32	data_len;
+> +	__u8	data[];
+> +} __packed;
+> diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+> index 432ae3aac9e3..4a336433180d 100644
+> --- a/net/bluetooth/aosp.c
+> +++ b/net/bluetooth/aosp.c
+> @@ -199,3 +199,30 @@ int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+> 	else
+> 		return disable_quality_report(hdev);
+> }
+> +
+> +#define BLUETOOTH_QUALITY_REPORT_EV		0x58
+> +
+> +/* The following LEN = 1-byte Sub-event code + 48-byte Sub-event Parameters */
+> +#define BLUETOOTH_QUALITY_REPORT_LEN		49
+> +
+> +bool aosp_check_quality_report_len(struct sk_buff *skb)
+> +{
+> +	/* skb->len is allowed to be larger than BLUETOOTH_QUALITY_REPORT_LEN
+> +	 * to accommodate an additional Vendor Specific Parameter (vsp) field.
+> +	 */
+> +	if (skb->len < BLUETOOTH_QUALITY_REPORT_LEN) {
+> +		BT_ERR("AOSP evt data len %d too short (%u expected)",
+> +		       skb->len, BLUETOOTH_QUALITY_REPORT_LEN);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+> +void aosp_quality_report_evt(struct hci_dev *hdev,  void *data,
+> +			     struct sk_buff *skb)
+> +{
+> +	if (aosp_has_quality_report(hdev) && aosp_check_quality_report_len(skb))
+> +		mgmt_quality_report(hdev, skb->data, skb->len,
+> +				    QUALITY_SPEC_AOSP_BQR);
+> +}
+> diff --git a/net/bluetooth/aosp.h b/net/bluetooth/aosp.h
+> index 2fd8886d51b2..b21751e012de 100644
+> --- a/net/bluetooth/aosp.h
+> +++ b/net/bluetooth/aosp.h
+> @@ -10,6 +10,9 @@ void aosp_do_close(struct hci_dev *hdev);
+> 
+> bool aosp_has_quality_report(struct hci_dev *hdev);
+> int aosp_set_quality_report(struct hci_dev *hdev, bool enable);
+> +bool aosp_check_quality_report_len(struct sk_buff *skb);
+> +void aosp_quality_report_evt(struct hci_dev *hdev,  void *data,
+> +			     struct sk_buff *skb);
+> 
+> #else
+> 
+> @@ -26,4 +29,14 @@ static inline int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+> 	return -EOPNOTSUPP;
+> }
+> 
+> +static inline bool aosp_check_quality_report_len(struct sk_buff *skb)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline void aosp_quality_report_evt(struct hci_dev *hdev,  void *data,
+> +					   struct sk_buff *skb)
+> +{
+> +}
+> +
+> #endif
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 63b925921c87..6468ea0f71bd 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -37,6 +37,7 @@
+> #include "smp.h"
+> #include "msft.h"
+> #include "eir.h"
+> +#include "aosp.h"
+> 
+> #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
+> 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
+> @@ -4241,6 +4242,87 @@ static void hci_num_comp_blocks_evt(struct hci_dev *hdev, void *data,
+> 	queue_work(hdev->workqueue, &hdev->tx_work);
+> }
+> 
+> +/* Define the fixed vendor event prefixes below.
+> + * Note: AOSP HCI Requirements use 0x54 and up as sub-event codes without
+> + *       actually defining a vendor prefix. Refer to
+> + *       https://source.android.com/devices/bluetooth/hci_requirements
+> + *       Hence, the other vendor event prefixes should not use the same
+> + *       space to avoid collision.
+> + */
+> +static unsigned char AOSP_BQR_PREFIX[] = { 0x58 };
+> +
+> +/* Some vendor prefixes are fixed values and lengths. */
+> +#define FIXED_EVT_PREFIX(_prefix, _vendor_func)				\
+> +{									\
+> +	.prefix = _prefix,						\
+> +	.prefix_len = sizeof(_prefix),					\
+> +	.vendor_func = _vendor_func,					\
+> +	.get_prefix = NULL,						\
+> +	.get_prefix_len = NULL,						\
+> +}
+> +
+> +/* Some vendor prefixes are only available at run time. The
+> + * values and lengths are variable.
+> + */
+> +#define DYNAMIC_EVT_PREFIX(_prefix_func, _prefix_len_func, _vendor_func)\
+> +{									\
+> +	.prefix = NULL,							\
+> +	.prefix_len = 0,						\
+> +	.vendor_func = _vendor_func,					\
+> +	.get_prefix = _prefix_func,					\
+> +	.get_prefix_len = _prefix_len_func,				\
+> +}
+> +
+> +/* Every distinct vendor specification must have a well-defined vendor
+> + * event prefix to determine if a vendor event meets the specification.
+> + * If an event prefix is fixed, it should be delcared with FIXED_EVT_PREFIX.
+> + * Otherwise, DYNAMIC_EVT_PREFIX should be used for variable prefixes.
+> + */
+> +struct vendor_event_prefix {
+> +	__u8 *prefix;
+> +	__u8 prefix_len;
+> +	void (*vendor_func)(struct hci_dev *hdev, void *data,
+> +			    struct sk_buff *skb);
+> +	__u8 *(*get_prefix)(struct hci_dev *hdev);
+> +	__u8 (*get_prefix_len)(struct hci_dev *hdev);
+> +} evt_prefixes[] = {
+> +	FIXED_EVT_PREFIX(AOSP_BQR_PREFIX, aosp_quality_report_evt),
+> +	DYNAMIC_EVT_PREFIX(get_msft_evt_prefix, get_msft_evt_prefix_len,
+> +			   msft_vendor_evt),
+> +
+> +	/* end with a null entry */
+> +	{},
+> +};
+> +
+> +static void hci_vendor_evt(struct hci_dev *hdev, void *data,
+> +			   struct sk_buff *skb)
+> +{
+> +	int i;
+> +	__u8 *prefix;
+> +	__u8 prefix_len;
+> +
+> +	for (i = 0; evt_prefixes[i].vendor_func; i++) {
+> +		if (evt_prefixes[i].get_prefix)
+> +			prefix = evt_prefixes[i].get_prefix(hdev);
+> +		else
+> +			prefix = evt_prefixes[i].prefix;
+> +
+> +		if (evt_prefixes[i].get_prefix_len)
+> +			prefix_len = evt_prefixes[i].get_prefix_len(hdev);
+> +		else
+> +			prefix_len = evt_prefixes[i].prefix_len;
+> +
+> +		if (!prefix || prefix_len == 0)
+> +			continue;
+> +
+> +		/* Compare the raw prefix data directly. */
+> +		if (!memcmp(prefix, skb->data, prefix_len)) {
+> +			evt_prefixes[i].vendor_func(hdev, data, skb);
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> static void hci_mode_change_evt(struct hci_dev *hdev, void *data,
+> 				struct sk_buff *skb)
+> {
+> @@ -6844,7 +6926,7 @@ static const struct hci_ev {
+> 	HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
+> 	       sizeof(struct hci_ev_num_comp_blocks)),
+> 	/* [0xff = HCI_EV_VENDOR] */
+> -	HCI_EV_VL(HCI_EV_VENDOR, msft_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
+> +	HCI_EV_VL(HCI_EV_VENDOR, hci_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
+> };
 
-diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
-index a3ebf4d4d9b8..96ccbf305d14 100644
---- a/vdpa/include/uapi/linux/vdpa.h
-+++ b/vdpa/include/uapi/linux/vdpa.h
-@@ -42,6 +42,7 @@ enum vdpa_attr {
- 
- 	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
- 	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
-+	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
- 
- 	/* new attributes must be added above here */
- 	VDPA_ATTR_MAX,
-diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-index 78736b1422b6..bdc366880ab9 100644
---- a/vdpa/vdpa.c
-+++ b/vdpa/vdpa.c
-@@ -84,6 +84,7 @@ static const enum mnl_attr_data_type vdpa_policy[VDPA_ATTR_MAX + 1] = {
- 	[VDPA_ATTR_DEV_MAX_VQ_SIZE] = MNL_TYPE_U16,
- 	[VDPA_ATTR_DEV_NEGOTIATED_FEATURES] = MNL_TYPE_U64,
- 	[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS] = MNL_TYPE_U32,
-+	[VDPA_ATTR_DEV_SUPPORTED_FEATURES] = MNL_TYPE_U64,
- };
- 
- static int attr_cb(const struct nlattr *attr, void *data)
-@@ -494,13 +495,14 @@ static void print_features(struct vdpa *vdpa, uint64_t features, bool mgmtdevf,
- static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
- 				struct nlattr **tb)
- {
-+	uint64_t classes = 0;
- 	const char *class;
- 	unsigned int i;
- 
- 	pr_out_handle_start(vdpa, tb);
- 
- 	if (tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]) {
--		uint64_t classes = mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]);
-+		classes = mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]);
- 		pr_out_array_start(vdpa, "supported_classes");
- 
- 		for (i = 1; i < 64; i++) {
-@@ -522,6 +524,16 @@ static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
- 		print_uint(PRINT_ANY, "max_supported_vqs", "  max_supported_vqs %d", num_vqs);
- 	}
- 
-+	if (tb[VDPA_ATTR_DEV_SUPPORTED_FEATURES]) {
-+		uint64_t features;
-+
-+		features  = mnl_attr_get_u64(tb[VDPA_ATTR_DEV_SUPPORTED_FEATURES]);
-+		if (classes & BIT(VIRTIO_ID_NET))
-+			print_features(vdpa, features, true, VIRTIO_ID_NET);
-+		else
-+			print_features(vdpa, features, true, 0);
-+	}
-+
- 	pr_out_handle_end(vdpa);
- }
- 
--- 
-2.35.1
+I was thinking along the lines like this:
+
+	HCI_EV_VND(evt_prefix, evt_prefix_len, callback),
+
+So that we in the end can do things like this:
+
+	HCI_EV_VL({ 0x58 }, 1, aosp_quality_report_evt),
+
+
+> 
+> static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index 914e2f2d3586..5e48576041fb 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -4389,6 +4389,26 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
+> 			       MGMT_STATUS_NOT_SUPPORTED);
+> }
+> 
+> +int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 data_len,
+> +			u8 quality_spec)
+> +{
+> +	struct mgmt_ev_quality_report *ev;
+> +	struct sk_buff *skb;
+> +
+> +	skb = mgmt_alloc_skb(hdev, MGMT_EV_QUALITY_REPORT,
+> +			     sizeof(*ev) + data_len);
+> +	if (!skb)
+> +		return -ENOMEM;
+> +
+> +	ev = skb_put(skb, sizeof(*ev));
+> +	ev->quality_spec = quality_spec;
+> +	ev->data_len = data_len;
+> +	skb_put_data(skb, data, data_len);
+> +
+> +	return mgmt_event_skb(skb, NULL);
+> +}
+> +EXPORT_SYMBOL(mgmt_quality_report);
+> +
+
+I know what you want to do, but I can not let you call mgmt_ function from a driver. We need to make this cleaner and abstract so that the driver has a proper path to report it to hci_core and that decides then to send the report or not.
+
+> static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
+> 			    u16 data_len)
+> {
+> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+> index 9a3d77d3ca86..3edf64baf479 100644
+> --- a/net/bluetooth/msft.c
+> +++ b/net/bluetooth/msft.c
+> @@ -731,6 +731,20 @@ static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> 				 handle_data->mgmt_handle);
+> }
+> 
+> +__u8 *get_msft_evt_prefix(struct hci_dev *hdev)
+> +{
+> +	struct msft_data *msft = hdev->msft_data;
+> +
+> +	return msft->evt_prefix;
+> +}
+> +
+> +__u8 get_msft_evt_prefix_len(struct hci_dev *hdev)
+> +{
+> +	struct msft_data *msft = hdev->msft_data;
+> +
+> +	return msft->evt_prefix_len;
+> +}
+> +
+
+So I wonder if this should be moved directly into hci_dev under CONFIG_BT_MSFTEXT check. Luiz also needs to have a look at this. This is unfortunately getting a bit nasty now. We need to find a clean solution, otherwise the next vendor thing is blowing up in our face.
+
+> void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
+> {
+> 	struct msft_data *msft = hdev->msft_data;
+> diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
+> index afcaf7d3b1cb..a354ebf61fed 100644
+> --- a/net/bluetooth/msft.h
+> +++ b/net/bluetooth/msft.h
+> @@ -27,6 +27,8 @@ int msft_set_filter_enable(struct hci_dev *hdev, bool enable);
+> int msft_suspend_sync(struct hci_dev *hdev);
+> int msft_resume_sync(struct hci_dev *hdev);
+> bool msft_curve_validity(struct hci_dev *hdev);
+> +__u8 *get_msft_evt_prefix(struct hci_dev *hdev);
+> +__u8 get_msft_evt_prefix_len(struct hci_dev *hdev);
+> 
+> #else
+> 
+> @@ -77,4 +79,14 @@ static inline bool msft_curve_validity(struct hci_dev *hdev)
+> 	return false;
+> }
+> 
+> +static inline __u8 *get_msft_evt_prefix(struct hci_dev *hdev)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline __u8 get_msft_evt_prefix_len(struct hci_dev *hdev)
+> +{
+> +	return 0;
+> +}
+> +
+> #endif
+
+Regards
+
+Marcel
 
