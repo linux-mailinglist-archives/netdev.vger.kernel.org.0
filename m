@@ -2,117 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A0C4B965F
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 04:10:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C3B4B96A3
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 04:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232387AbiBQDKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 22:10:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39484 "EHLO
+        id S231846AbiBQDZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 22:25:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232385AbiBQDKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 22:10:44 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D46823D5D9
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 19:10:30 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id c15so6220961ljf.11
-        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 19:10:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m0euhP8nubaU6WBXyhjYDPi52gtd6i6I50apBmkPNuk=;
-        b=I+DpLfictbDyFOxxHHFVngjwYy8otVGBtvIPNhJFklsZo2y/4N9mUmjnd4Ha8yVZA7
-         K7HmLwlb5JRp9pe23p4tJFap8m154tVHt60GoRqPtlWryd9YcbUbLN3byAk3BI8pnUdb
-         vj5qgPbDEMTVhU9eGxal3PUjohVMJw4c7DKA4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m0euhP8nubaU6WBXyhjYDPi52gtd6i6I50apBmkPNuk=;
-        b=Xofpk4ydVZaFX1JftohHbqq2VmMgNCjl7A/oqncv2LJjzwwbYUE2aKLbYlOpW3LXVg
-         nKybGcNopNTm4ddsvxCU1raOZoOi3GCBZS/dm6DMaRZXfyCh++Z6UqefdJCeSEZ1MgII
-         zo8RsAtFXFkBGV6YeZpOo1EBkHRhe4axffn0uzRZiYaE6RMq2XzxvfttwXHd7OswGunk
-         B2tTNmz+Lpf1rTREJajyONQd4vpkvVCuua5Z5Dv2ICp7I3bXKqexbdp3yaD2URzcTmsk
-         VlljwVZFH2Iy8SD1ZQPmEBP899Ffoc22hdm0urVdgtqtVXE04GmDA6hxMIWQODNAxCOL
-         PAow==
-X-Gm-Message-State: AOAM533r8SgX7YpY1vP3E5V5C5wujOsEQk3z0VZ1qiiE+RF8KuQWRMkd
-        9HMrbSHejxKAk6NCYrCcwS0+Gn+K6dm8osB+aoL/iQ==
-X-Google-Smtp-Source: ABdhPJytVXZWGTBfCwjROZZpTSgyEDBdB5d2xLfgWvVctlIFC2T9VSIX+eu3aXjYpr/H6F7CkbmAKlXragO9X0JObu0=
-X-Received: by 2002:a2e:90cb:0:b0:22e:5363:95f0 with SMTP id
- o11-20020a2e90cb000000b0022e536395f0mr763966ljg.210.1645067428501; Wed, 16
- Feb 2022 19:10:28 -0800 (PST)
+        with ESMTP id S232964AbiBQDZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 22:25:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6846528A115
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 19:25:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CFD6B811E1
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 03:25:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C185C340E9;
+        Thu, 17 Feb 2022 03:25:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645068335;
+        bh=yLXBCbSaaIGpaERgjZsn+vWdZNJbzwDE1I2+ugzntNw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NabIJRKVb4ciwO+C8IkWgURm6fJAxbu3kPu59vI0c20unbL9J6YQ4gDUDbz23gUWu
+         35xUIQOBU9z/qU2lRf6lwgDrsEOcncECc0aijbN/PXO0AK2K1m/ONuZlFNyEF6If0j
+         XBSfxtXdBflP7/2txHSOGHZNMrz3lCgYte81z86760Xb5MWtPp1ldXS4a1sfoX2mGV
+         +DmyPTlAXrXj8d3BoRvqkurDIJYDK1I8PDrEev/4gxJRcj5tA2kCTNHdn/9DocA4KS
+         4r7dYASawOGcG9VkFnGzPVEzJUgqW7DFbOSnlcy134NGL0l+O0XFV2B2rIUOv8frZN
+         rmdtRMOAKIK/A==
+Message-ID: <8a3802ca-38a2-4baa-3e7e-8ab016eb98d5@kernel.org>
+Date:   Wed, 16 Feb 2022 20:25:33 -0700
 MIME-Version: 1.0
-References: <20220110015636.245666-1-dmichail@fungible.com>
- <20220110015636.245666-8-dmichail@fungible.com> <20220112143532.3aab21e4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220112144013.1060a854@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220112144013.1060a854@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Wed, 16 Feb 2022 19:10:15 -0800
-Message-ID: <CAOkoqZ=Zx-N=jRgK-ZATgm5WY6K+Ky0-HedurmEo+JDkOqAL_g@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 7/8] net/funeth: add kTLS TX control part
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH net-next] ipv6/addrconf: ensure addrconf_verify_rtnl() has
+ completed
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+References: <20220216182037.3742-1-eric.dumazet@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220216182037.3742-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 2:40 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 12 Jan 2022 14:35:32 -0800 Jakub Kicinski wrote:
-> > > +   if (crypto_info->version == TLS_1_2_VERSION)
-> > > +           req.version = FUN_KTLS_TLSV2;
-> > > +   else if (crypto_info->version == TLS_1_3_VERSION)
-> > > +           req.version = FUN_KTLS_TLSV3;
->
-> I don't think offload of TLS 1.3 is supported by the kernel.
->
-> > > +   else
-> > > +           return -EOPNOTSUPP;
-> > > +
-> > > +   switch (crypto_info->cipher_type) {
-> > > +   case TLS_CIPHER_AES_GCM_128: {
-> > > +           struct tls12_crypto_info_aes_gcm_128 *c = (void *)crypto_info;
-> > > +
-> > > +           req.cipher = FUN_KTLS_CIPHER_AES_GCM_128;
-> > > +           memcpy(req.key, c->key, sizeof(c->key));
-> > > +           memcpy(req.iv, c->iv, sizeof(c->iv));
-> > > +           memcpy(req.salt, c->salt, sizeof(c->salt));
-> > > +           memcpy(req.record_seq, c->rec_seq, sizeof(c->rec_seq));
-> > > +           break;
-> > > +   }
->
-> Neither are all the algos below. Please remove dead code.
+On 2/16/22 11:20 AM, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Before freeing the hash table in addrconf_exit_net(),
+> we need to make sure the work queue has completed,
+> or risk NULL dereference or UAF.
+> 
+> Thus, use cancel_delayed_work_sync() to enforce this.
+> We do not hold RTNL in addrconf_exit_net(), making this safe.
+> 
+> Fixes: 8805d13ff1b2 ("ipv6/addrconf: use one delayed work per netns")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> ---
+>  net/ipv6/addrconf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-I've removed the TLS 1.3 pieces and the non-offloaded 1.2 algos.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
->
-> > > +   case TLS_CIPHER_AES_GCM_256: {
-> > > +           struct tls12_crypto_info_aes_gcm_256 *c = (void *)crypto_info;
-> > > +
-> > > +           req.cipher = FUN_KTLS_CIPHER_AES_GCM_256;
-> > > +           memcpy(req.key, c->key, sizeof(c->key));
-> > > +           memcpy(req.iv, c->iv, sizeof(c->iv));
-> > > +           memcpy(req.salt, c->salt, sizeof(c->salt));
-> > > +           memcpy(req.record_seq, c->rec_seq, sizeof(c->rec_seq));
-> > > +           break;
-> > > +   }
-> > > +
-> > > +   case TLS_CIPHER_CHACHA20_POLY1305: {
-> > > +           struct tls12_crypto_info_chacha20_poly1305 *c;
-> > > +
-> > > +           c = (void *)crypto_info;
-> > > +           req.cipher = FUN_KTLS_CIPHER_CHACHA20_POLY1305;
-> > > +           memcpy(req.key, c->key, sizeof(c->key));
-> > > +           memcpy(req.iv, c->iv, sizeof(c->iv));
-> > > +           memcpy(req.salt, c->salt, sizeof(c->salt));
-> > > +           memcpy(req.record_seq, c->rec_seq, sizeof(c->rec_seq));
-> > > +           break;
-> > > +   }
