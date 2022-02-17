@@ -2,81 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FDBA4BA714
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 18:26:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A1C4BA70A
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 18:25:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243675AbiBQRYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 12:24:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39544 "EHLO
+        id S243679AbiBQRZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 12:25:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236689AbiBQRYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 12:24:02 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E902B1677
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 09:23:48 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id p19so14475367ybc.6
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 09:23:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rn1UhOGd2jyYt1jyUwHR/RpMNYObYlqIMiFuVL6W8QY=;
-        b=bs3y8mR28JingYLfV44XsP5rfYWXhdR3zI962dHfCXaUsbPS1a7CFrdcWJYonXjfMx
-         MaYvIsVKfp7grQqrb6k5kStf5YjTj4ExSIiba7UetDeVQSpp2OabuDPOrovLo6Yq3hHV
-         avkWf243yOY7SpvCiRottd3AeTPA8rRNDHv7EhObG9RBeMAvG1DunDn2Oqhrjk6v7EAM
-         inf2nqOqT+11E/ATvN80MrvhUadq5bJZp++oDmGzbUCcOt7YN75sshNC908EjOSkpGFz
-         U/5Vp7Tw+tkEoiI9oQzai/v0nFLtoLhHwt8/EXbc2+tiVjkVIm7HD9exN7qQYlAH+4lP
-         9pyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rn1UhOGd2jyYt1jyUwHR/RpMNYObYlqIMiFuVL6W8QY=;
-        b=ZGulSIaLuLX+WMt2eu7gIc6jpHSCvjwosvZo56+qYWxW5dfJ2HiAtec2mN6p0x7SZ3
-         lZp/aoySKpt3/A5LPEAKYThtPkxeXqNS8wz6JtfQ69mue/yp58qYnNwgfLe6OIi8Bdhs
-         yvz8vD7CFYG6ksdOWiLY2VFU+9PjshLbMh8E+VIReLYzN97hbDPL9XAhz+9X1SEF0hL4
-         z6m6yPp+3gA9LJV+WWO0wfFLy6ge4MvRKwxHUUbTjdkn86Xi1GJPpRJxqxXfhSYFg5q9
-         Tz6U7l/upxbfOf80mvSebwaTGK7POp8Nl/i3h20Hj+q/m95U8ZVe6PLO9qy8g4Zqidt4
-         VWxg==
-X-Gm-Message-State: AOAM532TUef/XjCDIIEF7ojBisn89LwpzW68KqFHbmsPJVau7tvGVQTm
-        Bv9IaIC9NsCzVOwL4hlohxH5FzIzawPpx4qjvJv8uA==
-X-Google-Smtp-Source: ABdhPJyBP5hZ0CceAaNWeKl3/EKtmgd5ZWCIerzxgl0dIvxqbmbhrCZz5vcKYXM4naXnV84zQMkdkVHSsGvzQvdhxgc=
-X-Received: by 2002:a25:d614:0:b0:61d:bb22:8759 with SMTP id
- n20-20020a25d614000000b0061dbb228759mr3546658ybg.231.1645118627191; Thu, 17
- Feb 2022 09:23:47 -0800 (PST)
+        with ESMTP id S236689AbiBQRZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 12:25:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23E32B04A8;
+        Thu, 17 Feb 2022 09:24:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56B18B82383;
+        Thu, 17 Feb 2022 17:24:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA6EC340E8;
+        Thu, 17 Feb 2022 17:24:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645118684;
+        bh=c7Q3U62Pgt9dUa8A3vbK3+gTpGkYI+kFP7qjwdTB5A0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SQeMyth+HB39KiTJEFABJI32AiWg8jgVWY9dPDuL11J4mYZcYvAnM+vaBRpxXQGLg
+         z/Z1jglAPo6SRk2YHiUb2B9x/V1DnQ+CF89vu9RzKjnE9JIQC3loCa+ls8kUM3iyXJ
+         aN5bAtFkUmwt/ptIT6EG0259yQ4c5m+e8DQpkcQ93Sj26q7aQVjxAAN671Gpky6MAs
+         rSB7WpOKcPqdvKec9Of6pAza0MLajXhFECfL1HmXTWxhVxzwmxLrqTzYduC0p8gHdT
+         4FrT18i0B5waFzeAz2WNRLOjpRD7GdHEjdmQMiLTWApX0/RqKWGZuv7loVui85FUos
+         e0AqXIwVfbUbA==
+Date:   Thu, 17 Feb 2022 09:24:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: Re: [PATCH net-next v1] net: Use csum_replace_... and csum_sub()
+ helpers instead of opencoding
+Message-ID: <20220217092442.4948b48c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <fe60030b6f674d9bf41f56426a4b0a8a9db0d20f.1645112415.git.christophe.leroy@csgroup.eu>
+References: <fe60030b6f674d9bf41f56426a4b0a8a9db0d20f.1645112415.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-References: <20220217170502.641160-1-eric.dumazet@gmail.com> <CANpmjNMR_3Z9BfB9hYzHvjqwJV4AetHAm+ZPAOPFJhZin=jD_A@mail.gmail.com>
-In-Reply-To: <CANpmjNMR_3Z9BfB9hYzHvjqwJV4AetHAm+ZPAOPFJhZin=jD_A@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 17 Feb 2022 09:23:36 -0800
-Message-ID: <CANn89iLnwGDq7qn1cheYk-=ed9UT__eYc3Gbze8s_tYyb=KOkw@mail.gmail.com>
-Subject: Re: [PATCH net] net-timestamp: convert sk->sk_tskey to atomic_t
-To:     Marco Elver <elver@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 9:18 AM Marco Elver <elver@google.com> wrote:
->
->
->
-> We also have atomic_fetch_inc() in case it'd make this simpler.
+On Thu, 17 Feb 2022 16:43:55 +0100 Christophe Leroy wrote:
+>  static inline void nft_csum_replace(__sum16 *sum, __wsum fsum, __wsum tsum)
+>  {
+> -	*sum = csum_fold(csum_add(csum_sub(~csum_unfold(*sum), fsum), tsum));
+> +	csum_replace4(sum, fsum, tsum);
 
-This was not the case back in 2014, I did not want to add more work
-for stable teams.
+Sparse says:
 
-Thanks !
+net/netfilter/nft_payload.c:560:28: warning: incorrect type in argument 2 (different base types)
+net/netfilter/nft_payload.c:560:28:    expected restricted __be32 [usertype] from
+net/netfilter/nft_payload.c:560:28:    got restricted __wsum [usertype] fsum
