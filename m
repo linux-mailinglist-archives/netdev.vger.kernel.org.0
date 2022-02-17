@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4EF4B960E
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 03:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FE374B9624
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 03:57:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231913AbiBQCsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 21:48:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54638 "EHLO
+        id S232017AbiBQC5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 21:57:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbiBQCsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 21:48:07 -0500
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 774CA1FFC8E;
-        Wed, 16 Feb 2022 18:47:52 -0800 (PST)
-Received: by ajax-webmail-mail-app2 (Coremail) ; Thu, 17 Feb 2022 10:47:44
- +0800 (GMT+08:00)
-X-Originating-IP: [10.192.171.246]
-Date:   Thu, 17 Feb 2022 10:47:44 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     linux-hams@vger.kernel.org, ajk@comnets.uni-bremen.de,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] drivers: hamradio: 6pack: fix UAF bug caused by
- mod_timer()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220215203955.7d7a3eed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220216023549.50223-1-duoming@zju.edu.cn>
- <20220215203955.7d7a3eed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S232011AbiBQC5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 21:57:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24631B12F3
+        for <netdev@vger.kernel.org>; Wed, 16 Feb 2022 18:57:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDEADB820DC
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 02:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B9B9C340EC;
+        Thu, 17 Feb 2022 02:57:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645066635;
+        bh=oh+PIZflHIoCZbcbf9h9btVgpowJRPyxlGYbpdWYrTA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vJbDN6iQA13EVsDkDkrSrUawA1wyb9v2R3Xb73Y1qd7aD2f2oV8msbpR/KuXYbrjQ
+         Ct1J8aC8vcoyQouPFF5s2KPCpVlbG1SWlB6NrqaxbfCAUqc3pwkGoFsThtXfdjMZpM
+         SnVEZipz95dwVetkpRR2dCKeaYFyLBekH54d463R/aBdVH+Qjd1h0zOaCYg3sxsB3d
+         ZK/Y+QFcwcjTIY4ODeUfrN6yh15cBiMk6Bj/34F4s28eXvZT+gIamAYrWe80PWiaX4
+         pquXmW+g3mSL0NrLRVE6bYc/LvbFFrSgZbN6F7QwasKf+Xn+LxS+l4y7m4ElexYkxt
+         WdFFypoc1PMnQ==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, parav@nvidia.com, jiri@nvidia.com,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH iproute2-next 0/4] devlink: Remove custom string conversions
+Date:   Wed, 16 Feb 2022 19:57:07 -0700
+Message-Id: <20220217025711.9369-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Message-ID: <cbb5412.b171f.17f05941412.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: by_KCgDHzyNQtw1imZHyAQ--.39720W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEEAVZdtYMQOwACsS
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWUCw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciB5b3VyIHRpbWUgYW5kIHBvaW50aW5nIG91
-dCBwcm9ibGVtcyBpbiBteSBwYXRjaC4KSSBoYXZlIHNlbnQgdGhlIG1vZGlmaWVkIHBhdGNoIGFn
-YWluIGp1c3Qgbm93LgoKV2UgdXNlIHB0eSB0byBzaW11bGF0ZSA2cGFjayBkZXZpY2UsIHRoZSBy
-ZWxlYXNlZCByZXNvdXJjZSBpcyB0dHlfc3RydWN0LT50dHlfcG9ydAppbiB0dHkgbGF5ZXIuIAoK
-VGhlIGZyZWUgdHJhY2UgaXMgc2hvd24gYXMgYmVsb3c6CnR0eV9yZWxlYXNlKCktPnR0eV9yZWxl
-YXNlX3N0cnVjdCgpLT5yZWxlYXNlX3R0eSgpLT50dHlfa3JlZl9wdXQoKS0+CnF1ZXVlX3JlbGVh
-c2Vfb25lX3R0eSgpLT5yZWxlYXNlX29uZV90dHkoKS0+cHR5X2NsZWFudXAoKS0+dHR5X3BvcnRf
-cHV0KHR0eS0+cG9ydCk7CgpUaGUgdXNlIHRyYWNlIGlzIHNob3duIGFzIGJlbG93OgpzcF94bWl0
-X29uX2FpcigpLT5wdHlfd3JpdGUoKS0+dHR5X2ZsaXBfYnVmZmVyX3B1c2goKS0+dHR5X3NjaGVk
-dWxlX2ZsaXAocG9ydCk7CgoKQmVzdCB3aXNoZXMsCkR1b21pbmcgWmhvdQoK
+Remove strtouint${N}_t variants in favor of the library functions get_u${N}
+
+David Ahern (4):
+  devlink: Remove strtouint64_t in favor of get_u64
+  devlink: Remove strtouint32_t in favor of get_u32
+  devlink: Remove strtouint16_t in favor of get_u16
+  devlink: Remove strtouint8_t in favor of get_u8
+
+ devlink/devlink.c | 92 ++++++++++-------------------------------------
+ 1 file changed, 18 insertions(+), 74 deletions(-)
+
+-- 
+2.24.3 (Apple Git-128)
+
