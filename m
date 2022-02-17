@@ -2,305 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9684B9CBE
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 11:10:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E45BF4B9CDD
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 11:14:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238995AbiBQKLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 05:11:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48130 "EHLO
+        id S239088AbiBQKOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 05:14:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238992AbiBQKKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 05:10:55 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723382AAB0A;
-        Thu, 17 Feb 2022 02:10:39 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4JzrDt2Pclz9sT6;
-        Thu, 17 Feb 2022 11:10:38 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id praua7vPF23R; Thu, 17 Feb 2022 11:10:38 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4JzrDc04DCz9sT7;
-        Thu, 17 Feb 2022 11:10:24 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id EA7DB8B77A;
-        Thu, 17 Feb 2022 11:10:23 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id QPhJSFFg6W1H; Thu, 17 Feb 2022 11:10:23 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.225])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id ADC428B763;
-        Thu, 17 Feb 2022 11:10:23 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21HAAEIp395970
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 11:10:14 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21HAACu3395969;
-        Thu, 17 Feb 2022 11:10:12 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+        with ESMTP id S239091AbiBQKOJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 05:14:09 -0500
+Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120048.outbound.protection.outlook.com [40.107.12.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5E8184639;
+        Thu, 17 Feb 2022 02:13:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BpYEMHF3QQFSdwuo+WX/Q8a1xFUO/O9eetvDk5xQDfE272plQCpQgUl0HSXMwca9tEM1Axay5tRkDQlb56UtqCNb4FEa8Qkt/obgkBfcsdvG09sktcQRQpoz7B9RbGfiGPO2FwHcYlPp436pCTcgG86fpk/RQDPfzpTaFtXt2gCbz/BsqV7EgkfV9bt+0Rytc6V8W8fPV4zGjzFQKm/Eho89dj6E/PDL9/TxiqtI+g+4qN6endEXoVDAvwkrmfEqVcu8w1HiCUtQEKfiREwFbjsOwx45j2ydSVO8EYMoIU8+E8pyopdtbNTevAxIxCTFUvJ9X/udhpBAT6DZu7OT0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MGVLAUJWolAZZASfxuU0YoM+81Np9Ik47+QF7ySt44o=;
+ b=n53fZvFPI1hGJkMUxXQABoqDhSliAOUG/X7hw8KZCIRiNWe+arJLBK+HAAmYfwUMh4C2iaX2DAyNnZ61vixDtSwNEoEGpfcDHMigc/G5Lb+kvWtk+J79FsmwDcJficJ/BNTLWU+GhlQ74Vv0aHukYIih6etz83xe81WIGTdGInMJkHkXZ9xPWBuqxautELV8JaKiKgAuT6aMAZLvWYZ/H3VIPWScislMPmoGbuAWkUaf6fU3rSw/z5v+ufnP6SxDP3RYlFFJrJX8S9WuO5zrlzICQV4vpYhIN7FpT5C3DyOOkShan+Wm5dzOqlOrX+vGSYzQ7xIXUIrKlVtgJK91Ew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB3714.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:28::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Thu, 17 Feb
+ 2022 10:13:50 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::8142:2e6f:219b:646d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::8142:2e6f:219b:646d%4]) with mapi id 15.20.4995.017; Thu, 17 Feb 2022
+ 10:13:50 +0000
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org,
-        Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH] net: Force inlining of checksum functions in net/checksum.h
-Date:   Thu, 17 Feb 2022 11:10:05 +0100
-Message-Id: <8a1278500231505b5eaf8b207802ebc5bae1717b.1645092478.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/2] powerpc/32: Implement csum_sub
+Thread-Topic: [PATCH 2/2] powerpc/32: Implement csum_sub
+Thread-Index: AQHYHzGjv1qRDwuwQkORsm7TGArxrKyQzZQAgAbCJgA=
+Date:   Thu, 17 Feb 2022 10:13:50 +0000
+Message-ID: <7dcc4db6-d5c8-c521-1d74-46871a332b55@csgroup.eu>
+References: <0c8eaab8f0685d2a70d125cf876238c70afd4fb6.1644574987.git.christophe.leroy@csgroup.eu>
+ <c2a3f87d97f0903fdef3bbcb84661f75619301bf.1644574987.git.christophe.leroy@csgroup.eu>
+ <a87eb9e5bb6d483f8352ccb4b7374286@AcuMS.aculab.com>
+In-Reply-To: <a87eb9e5bb6d483f8352ccb4b7374286@AcuMS.aculab.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a6d9668a-69e9-4dac-7754-08d9f1fe3180
+x-ms-traffictypediagnostic: MR1P264MB3714:EE_
+x-microsoft-antispam-prvs: <MR1P264MB3714B9F55ABEF2903F8B3407ED369@MR1P264MB3714.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tzvzxY8VwERFlRCfGM7p2yakgYwZLB5sAp3s9PiLVxnhxIaZs0y5j6igFOjyc/lPN6yfHeSa1wH7Ii9Kt/3MWtBT6IvzhF22ofYNO63TauCbcoJVbuMJaEUGWdrFQi5h0NiWDjIzrmF1PQ31+yS4xggvriCyQrvTHzssa5RR2u44jwsrsmCw7PNATVrz4d9O9FTpIB7EUsgtpiPDzcjtfNdgsErk2ah4CpvyXXuVse+BdeA6/zXLqKJjpyW9sTYLGaj3Psn4xw6Yp7mpSmh7b7bT7IWHYrnDPcKK7HjYDt7TiP7fggOd3GTFHRIRNUepPyFRnpV9y1khz7a3bV0FXXK130pySimZuUxPIE2IzQ+RBpPTjbbP+DvFoZaLkXpv3NNDnbTCzFnC3+D6kl5RdhKQYw/8mhLgBziDNdUIomQcHZZlZSUymakF4L7M4xmo3J/XttGi5H1u1w7nFw6Crn7zYl0VSkHkQ7tWI3b6+ZC9G4ILhBmrR/SIkrnXLz6lMnSShq6eF0dfTzkGQYTzNO4PnVIbhJTB0wIU6Mkeilqkg2sc9ACdUKgGpxPQha0iQOgi7lbuYzFzsGKc7T+kI06G7jv2CSnkEWn/NF5lvYX8flMGgKsQmSgtl7cn2/njsjn8YOrI0FU3TGOOl0pscOesZVOXbup7xtSX7tFO7KOP5jdtOqq4Uj7BMTmEi1Tb0qv7sS0ohNoPyRJVQr/Rqdd40YLhpJZwjgZE0rQcHKsUxT/z/oXRZvAJD+BWxJG5CJOBbGuQ/Lvl374oC1fOAQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(26005)(31696002)(86362001)(8936002)(66574015)(316002)(508600001)(54906003)(31686004)(6486002)(36756003)(110136005)(2906002)(8676002)(4326008)(91956017)(122000001)(6512007)(44832011)(5660300002)(38100700002)(2616005)(38070700005)(76116006)(6506007)(66946007)(66446008)(66476007)(66556008)(64756008)(71200400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?N3k2bXQ4YVNhUWZLbExjYTI1RjZmTTh5TWNYcmNISmZpbldOVlZPd1hoc3Rl?=
+ =?utf-8?B?bTFjTFNDdDloZmVIUzZKSzlCMHV5enNCUmFpQ1l4R3RsUFd6RVpmNmowUFVj?=
+ =?utf-8?B?ekJGVVRvUExibFl1NUI4SDlKZTkxc21xUHltVURuNXBkblBNeE9mejUzbHVk?=
+ =?utf-8?B?ODdCYjVDcklnZXRwWjBMM0ZOaFB3d0tjdk9PVVRjMjdlYThDWmQ3V00yNU0z?=
+ =?utf-8?B?NlNuZUhBUWlIUEN4cWw3NVplMkZUcnhxQlNYSG1PRmxvTFdycHBRb3VMa2cz?=
+ =?utf-8?B?cW9IRmdjdzY3bi81N1p0VFpqWXZFQkdEektoallOU1E3S0Z1RzFLUTE2cmVy?=
+ =?utf-8?B?aEc4YzV4Z0QvUnV2VEQ0RGN5ZlQycWk0dVY2ZTdscHlKcDVQOENNZ2pjN2xD?=
+ =?utf-8?B?OCtpNXAvZDV2SXlyNVhnOVR5UXhhWmdJMUx2eXZTQm9LQm1jc2hnRStvQm1S?=
+ =?utf-8?B?ODY2b29zRkFBdnhDRUFWMEZCMDluWXBBeWhWMTJjNjVaSldQNlE0ZlJRc0xI?=
+ =?utf-8?B?bU1ybmxYSU5RVXFPcTN5SWhINWRoT0w1OE5uYnFabkUvdUZBajZsYmpVT3RO?=
+ =?utf-8?B?VmFudjZNcjB1b0hGYUFvbjFNN3hDbC83K1NDOStuVy9LT2Z6d1pMV2pKUGpQ?=
+ =?utf-8?B?aFBYQm9OYlgxdm5hYk9NT2FwbHJ2V1V6U3pFMFhmdG9oM01USGhyeUZvcWhh?=
+ =?utf-8?B?WVdJSWx3S3ltVUZLNUMrUzVmcTlwcUxEdW8zaURWMStKd1NsekF0VDZEZ3JV?=
+ =?utf-8?B?UDJYVFJTL00xUXRQNGZET3lVVDU0RnE4VHg1Uk16amZJbnJQNFZEc0twRVVV?=
+ =?utf-8?B?dTFUMnZSaGpTSW9PZllFS0N5VVdXZWVMU2RzWkVEdGVCcUdCWkR0KzRsSjQ5?=
+ =?utf-8?B?NEZMLzBqR0pjOTNwdU9QYjJxakhVblFhdGpVeEVadkkvalJhZG5Jelg5elF0?=
+ =?utf-8?B?d0dtWnJwMDg3U0luNWZ4TzN5cEh6RXdKZzd1ejQ5Nkp0Qnp0M2p0SXFBZjQx?=
+ =?utf-8?B?TGUwR0FBRGtjZHZSTXhDTUR4V2ZETW9WTDYvdzB0UUFOZ1BVYW8rVVZRcWh5?=
+ =?utf-8?B?bTF3R29TWUtGRFJFK0gwUTV6TTl1cjdNVURKOWVwU1RYWXV5MFFNV0xqSGg0?=
+ =?utf-8?B?T3pyZDM0RHZwKzhIMTJmaFdYVllSTEVvTnduWkdtOUw5d3ZWa0xwVTBzekQ0?=
+ =?utf-8?B?YVRYbFBJNFZQK1ZCT3hBdCtHaG5GR1B6dlR3Y1FvNm1iUXJTWUFzempBc1g2?=
+ =?utf-8?B?S1VoMVBMMkZZWXY4S1VKb1oxaC9LdEhzSHBSVXNGWFFXZk8vZUJSZ0lHUlhO?=
+ =?utf-8?B?K1FNck1PL0MxS0FBQndleCtrRlBJeGpiT1JxRENHbzNvTFM0ZlRXK3pMaE02?=
+ =?utf-8?B?azhLZmdvMjFDSCtvM0Q3a0FuMTVjQWJ0RjNrd0k0RlBZanFHRG5YOEQwbGFo?=
+ =?utf-8?B?TDNnTjltQ1QrejhHTndINDQxSGxXL3N5Tkh1YnVlS3lrUG9qeTZIMldTRDlT?=
+ =?utf-8?B?K0ViYTZ1Slc5UDRNeFg0eTFySjNoVm5MMnEzZDk2dEQwQ1M2ZXZEMU43eUFI?=
+ =?utf-8?B?SitkQXh4bGVOTU1CeS9DeGg1cUQrNUlMdVkxMG1kTE8yWUQ1UFB3NGQ1eVl6?=
+ =?utf-8?B?c09ZK1dOdk9LMjRuR0dNN3FtUkJqUDRZZGlNOW9wUG1IU3p0SWdWeVlDazVS?=
+ =?utf-8?B?MGtjbTgyRmhxSXJlTEV1cnFnUlA2bWdEVFNRWitaRkNmbnpYRVVvdVRVYjFN?=
+ =?utf-8?B?eTZvR0t0UGpYT3ZYcDl2SElJNG0zdzJvcDZrQXVYNXBlTVJTalVnZDhsai8z?=
+ =?utf-8?B?WTVxR1dGNjR5QTZlQU5CbURTazZXTHN3WjFGR28zUHo5RGdYN1IvUGNXL0tM?=
+ =?utf-8?B?Zk9VWkxSL09yM1FwMjdXK05jOUcvVFNjWkxMVlYrUkJodyt4TVN1KzV6emYw?=
+ =?utf-8?B?U0tmb1ptd2VjWTUvaG9aZEd6Yk1zcWplS1ZXOXk0U2kxLzAxNm1rWkJPNnRs?=
+ =?utf-8?B?QnlYZXhYUzJkSmQ2dkt2WkxNaVF6bDBxaXNyTG01SG5kaDJMVWx4VmxYN2lS?=
+ =?utf-8?B?aXliRFV2dFg4eCtaditOM2QyblhKdGl0a3RROHhVK0FNSzRNQTNta09VTHcy?=
+ =?utf-8?B?QVYyMDJyVHB3WFpGV0NpWDJFMVZRMW5idDNiNEdpMjBFWndFdU9XSnowbUg5?=
+ =?utf-8?B?WTFQRktSOEN3L0lNUm1RRVpWakhoZWZqdlNuN2cwMXhIU1MrM1Zha1BXVUQz?=
+ =?utf-8?Q?6ZBUPmMuo9r89+Sy4+MtLPXDRtDL5ppbkjc2decA6g=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E789F3F9AF5CE44197DF8A0DA5720632@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645092604; l=7956; s=20211009; h=from:subject:message-id; bh=bPgs7KPwwbliZibxb/OK7E+BJYoJBOKMtwFreQoMAiQ=; b=ytxfObuW/eVbODboIgrI7UVjcxSetXta+cHKPTrRt1+pxi1qn6uA+yeSf3uzmzo+W83AGaoTEggj JgyuXJheCH9HYm/CsHuqtXhQz8Qufg0JPdWf3VZjMLfJ1ctLN4u/
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6d9668a-69e9-4dac-7754-08d9f1fe3180
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2022 10:13:50.3500
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fPE/TxwbSWykCH4dUIub+/omYdpk8xu5j5fECe3oc4BDZFvUPsX5X+z+yIHfvQuxqIYUUMwkFL3i+3zuxKarBnidTG1DPIc8n9CU0krJ1Zk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB3714
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All functions defined as static inline in net/checksum.h are
-meant to be inlined for performance reason.
-
-But since commit ac7c3e4ff401 ("compiler: enable
-CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
-uninline functions when it wants.
-
-Fair enough in the general case, but for tiny performance critical
-checksum helpers that's counter-productive.
-
-The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
-Those helpers being 'static inline' in header files you suddenly find
-them duplicated many times in the resulting vmlinux.
-
-Here is a typical exemple when building powerpc pmac32_defconfig
-with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
-
-	c04a23cc <csum_sub>:
-	c04a23cc:	7c 84 20 f8 	not     r4,r4
-	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
-	c04a23d4:	7c 63 01 94 	addze   r3,r3
-	c04a23d8:	4e 80 00 20 	blr
-		...
-	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
-		...
-	c04a754c <csum_sub>:
-	c04a754c:	7c 84 20 f8 	not     r4,r4
-	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
-	c04a7554:	7c 63 01 94 	addze   r3,r3
-	c04a7558:	4e 80 00 20 	blr
-		...
-	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
-		...
-	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
-		...
-	c04e3b08 <csum_sub>:
-	c04e3b08:	7c 84 20 f8 	not     r4,r4
-	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
-	c04e3b10:	7c 63 01 94 	addze   r3,r3
-	c04e3b14:	4e 80 00 20 	blr
-		...
-	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
-		...
-	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
-		...
-	c0512d34 <csum_sub>:
-	c0512d34:	7c 84 20 f8 	not     r4,r4
-	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
-	c0512d3c:	7c 63 01 94 	addze   r3,r3
-	c0512d40:	4e 80 00 20 	blr
-		...
-	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
-		...
-	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
-		...
-
-Restore the expected behaviour by using __always_inline for all
-functions defined in net/checksum.h
-
-vmlinux size is even reduced by 256 bytes with this patch:
-
-	   text	   data	    bss	    dec	    hex	filename
-	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
-	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
-
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- include/net/checksum.h | 40 ++++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
-
-diff --git a/include/net/checksum.h b/include/net/checksum.h
-index 9badcd5532ef..2ad8ef6b0ce2 100644
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -22,7 +22,7 @@
- #include <asm/checksum.h>
- 
- #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
--static inline
-+static __always_inline
- __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- 				      int len)
- {
-@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- #endif
- 
- #ifndef HAVE_CSUM_COPY_USER
--static __inline__ __wsum csum_and_copy_to_user
-+static __always_inline __wsum csum_and_copy_to_user
- (const void *src, void __user *dst, int len)
- {
- 	__wsum sum = csum_partial(src, len, ~0U);
-@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_to_user
- #endif
- 
- #ifndef _HAVE_ARCH_CSUM_AND_COPY
--static inline __wsum
-+static __always_inline __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
- {
- 	memcpy(dst, src, len);
-@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
- #endif
- 
- #ifndef HAVE_ARCH_CSUM_ADD
--static inline __wsum csum_add(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
- {
- 	u32 res = (__force u32)csum;
- 	res += (__force u32)addend;
-@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
- }
- #endif
- 
--static inline __wsum csum_sub(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
- {
- 	return csum_add(csum, ~addend);
- }
- 
--static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
- {
- 	u16 res = (__force u16)csum;
- 
-@@ -75,53 +75,53 @@ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
- 	return (__force __sum16)(res + (res < (__force u16)addend));
- }
- 
--static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
- {
- 	return csum16_add(csum, ~addend);
- }
- 
--static inline __wsum csum_shift(__wsum sum, int offset)
-+static __always_inline __wsum csum_shift(__wsum sum, int offset)
- {
- 	/* rotate sum to align it with a 16b boundary */
- 	return (__force __wsum)rol32((__force u32)sum, (offset & 1) << 3);
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_add(csum, csum_shift(csum2, offset));
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
- {
- 	return csum_block_add(csum, csum2, offset);
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_sub(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_block_add(csum, ~csum2, offset);
- }
- 
--static inline __wsum csum_unfold(__sum16 n)
-+static __always_inline __wsum csum_unfold(__sum16 n)
- {
- 	return (__force __wsum)n;
- }
- 
--static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
-+static __always_inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
- {
- 	return csum_partial(buff, len, sum);
- }
- 
- #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
- 
--static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
-+static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
- {
- 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
- }
- 
--static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-+static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
- {
- 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
- 
-@@ -134,7 +134,7 @@ static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-  *  m : old value of a 16bit field
-  *  m' : new value of a 16bit field
-  */
--static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
-+static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
- {
- 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
- }
-@@ -148,7 +148,7 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
- void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
- 				     __wsum diff, bool pseudohdr);
- 
--static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
-+static __always_inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
- 					    __be16 from, __be16 to,
- 					    bool pseudohdr)
- {
-@@ -156,7 +156,7 @@ static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
- 				 (__force __be32)to, pseudohdr);
- }
- 
--static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
-+static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
- 				    int start, int offset)
- {
- 	__sum16 *psum = (__sum16 *)(ptr + offset);
-@@ -173,12 +173,12 @@ static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
- 	return delta;
- }
- 
--static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
-+static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
- {
- 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
- }
- 
--static inline __wsum wsum_negate(__wsum val)
-+static __always_inline __wsum wsum_negate(__wsum val)
- {
- 	return (__force __wsum)-((__force u32)val);
- }
--- 
-2.34.1
-
+DQoNCkxlIDEzLzAyLzIwMjIgw6AgMDQ6MDEsIERhdmlkIExhaWdodCBhIMOpY3JpdMKgOg0KPiBG
+cm9tOiBDaHJpc3RvcGhlIExlcm95DQo+PiBTZW50OiAxMSBGZWJydWFyeSAyMDIyIDEwOjI1DQo+
+Pg0KPj4gV2hlbiBidWlsZGluZyBrZXJuZWwgd2l0aCBDT05GSUdfQ0NfT1BUSU1JU0VfRk9SX1NJ
+WkUsIHNldmVyYWwNCj4+IGNvcGllcyBvZiBjc3VtX3N1YigpIGFyZSBnZW5lcmF0ZWQsIHdpdGgg
+dGhlIGZvbGxvd2luZyBjb2RlOg0KPj4NCj4+IAkwMDAwMDE3MCA8Y3N1bV9zdWI+Og0KPj4gCSAg
+ICAgMTcwOgk3YyA4NCAyMCBmOCAJbm90ICAgICByNCxyNA0KPj4gCSAgICAgMTc0Ogk3YyA2MyAy
+MCAxNCAJYWRkYyAgICByMyxyMyxyNA0KPj4gCSAgICAgMTc4Ogk3YyA2MyAwMSA5NCAJYWRkemUg
+ICByMyxyMw0KPj4gCSAgICAgMTdjOgk0ZSA4MCAwMCAyMCAJYmxyDQo+Pg0KPj4gTGV0J3MgZGVm
+aW5lIGEgUFBDMzIgdmVyc2lvbiB3aXRoIHN1YmMvYWRkbWUsIGFuZCBmb3IgaXQncyBpbmxpbmlu
+Zy4NCj4+DQo+PiBJdCB3aWxsIHJldHVybiAwIGluc3RlYWQgb2YgMHhmZmZmZmZmZiB3aGVuIHN1
+YnRyYWN0aW5nIDB4ODAwMDAwMDAgdG8gaXRzZWxmLA0KPj4gdGhpcyBpcyBub3QgYW4gaXNzdWUg
+YXMgMCBhbmQgfjAgYXJlIGVxdWl2YWxlbnQsIHJlZmVyIHRvIFJGQyAxNjI0Lg0KPiANCj4gVGhl
+eSBhcmUgbm90IGFsd2F5cyBlcXVpdmFsZW50Lg0KPiBJbiBwYXJ0aWN1bGFyIGluIHRoZSBVRFAg
+Y2hlY2tzdW0gZmllbGQgb25lIG9mIHRoZW0gaXMgKDA/KSAnY2hlY2tzdW0gbm90IGNhbGN1bGF0
+ZWQnLg0KPiANCj4gSSB0aGluayBhbGwgdGhlIExpbnV4IGZ1bmN0aW9ucyBoYXZlIHRvIHJldHVy
+biBhIG5vbi16ZXJvIHZhbHVlIChmb3Igbm9uLXplcm8gaW5wdXQpLg0KPiANCj4gSWYgdGhlIGNz
+dW0gaXMgZ29pbmcgdG8gYmUgY29udmVydGVkIHRvIDE2IGJpdCwgaW52ZXJ0ZWQsIGFuZCBwdXQg
+aW50byBhIHBhY2tldA0KPiB0aGUgY29kZSB1c3VhbGx5IGhhcyB0byBoYXZlIGEgY2hlY2sgdGhh
+dCBjaGFuZ2VzIDAgdG8gMHhmZmZmLg0KPiBIb3dldmVyIGlmIHRoZSBjc3VtIGZ1bmN0aW9ucyBn
+dWFyYW50ZWUgbmV2ZXIgdG8gcmV0dXJuIHplcm8gdGhleSBjYW4gZmVlZA0KPiBhbiBleHRyYSAx
+IGludG8gdGhlIGZpcnN0IGNzdW1fcGFydGlhbCgpIHRoZW4ganVzdCBpbnZlcnQgYW5kIGFkZCAx
+IGF0IHRoZSBlbmQuDQo+IEJlY2F1c2UgKH5jc3VtX3BhcnRpb24oYnVmZmVyLCAxKSArIDEpIGlz
+IHRoZSBzYW1lIGFzIH5jc3VtX3BhcnRpYWwoYnVmZmVyLCAwKQ0KPiBleGNlcHQgd2hlbiB0aGUg
+YnVmZmVyJ3MgY3N1bSBpcyAweGZmZmZmZmZmLg0KPiANCj4gSSBkaWQgZG8gc29tZSBleHBlcmlt
+ZW50cyBhbmQgdGhlIDY0Yml0IHZhbHVlIGNhbiBiZSByZWR1Y2VkIGRpcmVjdGx5IHRvDQo+IDE2
+Yml0cyB1c2luZyAnJSAweGZmZmYnLg0KPiBUaGlzIGlzIGRpZmZlcmVudCBiZWNhdXNlIGl0IHJl
+dHVybnMgMCBub3QgMHhmZmZmLg0KPiBIb3dldmVyIGdjYyAncmFuZG9tbHknIHBpY2tzIGJldHdl
+ZW4gdGhlIGZhc3QgJ211bHRpcGx5IGJ5IHJlY2lwcm9jYWwnDQo+IGFuZCBzbG93IGRpdmlkZSBp
+bnN0cnVjdGlvbiBwYXRocy4NCj4gVGhlIGZvcm1lciBpcyAocHJvYmFibHkpIGZhc3RlciB0aGFu
+IHJlZHVjaW5nIHVzaW5nIHNoaWZ0cyBhbmQgYWRjLg0KPiBUaGUgbGF0dGVyIGRlZmluaXRlbHkg
+c2xvd2VyLg0KPiANCg0KT2ssIEkgc3VibWl0dGVkIGEgcGF0Y2ggdG8gZm9yY2UgaW5saW5pbmcg
+b2YgYWxsIGNoZWNrc3VtIGhlbHBlcnMgaW4gDQpuZXQvY2hlY2tzdW0uaCBpbnN0ZWFkLg0KDQpD
+aHJpc3RvcGhl
