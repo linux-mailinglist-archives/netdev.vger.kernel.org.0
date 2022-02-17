@@ -2,232 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB5D4BAD73
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 00:52:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 206514BAD6B
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 00:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiBQXtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 18:49:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40746 "EHLO
+        id S229705AbiBQXvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 18:51:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiBQXtf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 18:49:35 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2891746655
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 15:49:04 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so6938107pjm.2
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 15:49:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uGnzrz7GxC5VvjNkR6JmY+NSRiz9O2WQo/Mc3kUc/Ow=;
-        b=KppTlSRetHw7BaeQA1DKOS4qYqdYcPnsB5Tp+jV6YnGC8TpjaC3BYHHk6koR8ig92k
-         gA2JbVaFlJtn8edKqp473NLKVjRMdiciIgTLFlUEWh+TDlhsLZ9EgOzyTSlQQcLt8LSK
-         Q6jcrvltW7Snpq9nXAIUTMXLlP/3Xa21dXbVMfAZpSgvOnpbm8FpSIuw3Out/GGs6qx6
-         sAz0N2sLnAe/ctEPrWF+mLp7dyvo7uHEDHyPAeeB2us1mAkHDdwAXb+hS2cvGjWpHt9q
-         pX0OAAA3EjfcBWvyGknsVT5wk8sTGvvxR7N0SU0AdISUdzLa3RIkiwzf96Jvqq0WSgo9
-         VGNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uGnzrz7GxC5VvjNkR6JmY+NSRiz9O2WQo/Mc3kUc/Ow=;
-        b=RIn18j0Ky0OXjYi9hR1tQlJXJ0mwtVgD6xtNeN1zMOX0Gqrj+62rnqDmLR8XOyq/uE
-         5Fc3LATU2h5ju+d17CPEEZLAcEhnIjFnRRKxGirhGCtGsrR2qzAyiOERBmtVSYmLBNlR
-         bQ8auUrXofKXvHoRrwhdXHmYLB0W9Nr4Y+wBWHctoolGxKq8dWcZJEkvMP95QFAdI/PC
-         4OXCnQNVvYSG/SL/MkmCn1SW6SNVvhlfioN+aaAYHvuMOSQgBb3UQ7BnZ5WJyy/QGNtS
-         QeT7jqrqt+fbv8w74ZZqZTwnEOZsCZO8S03ZS9gfvHTza1jOktINY1JarjF9uIJZ+DfG
-         B+5A==
-X-Gm-Message-State: AOAM530gIdC/DFs2UNPetdL2Z+SYz+x0AtgICMRLJ8A6qvQKRm0QcoKa
-        TnThevGEGZL0iCV/hX2829E=
-X-Google-Smtp-Source: ABdhPJwYJBJA9pjxwCHAfGmKnivrB7y2zhzTDywA/xEyq822dSczevHMbht1AArgNAfhqWIi10PuaA==
-X-Received: by 2002:a17:90b:450b:b0:1b9:256c:6c7 with SMTP id iu11-20020a17090b450b00b001b9256c06c7mr5470553pjb.33.1645141724944;
-        Thu, 17 Feb 2022 15:48:44 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5c60:79a8:8f41:618f])
-        by smtp.gmail.com with ESMTPSA id ot12sm2960225pjb.22.2022.02.17.15.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:48:44 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net-next] ipv6: annotate some data-races around sk->sk_prot
-Date:   Thu, 17 Feb 2022 15:48:41 -0800
-Message-Id: <20220217234841.1222299-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+        with ESMTP id S229614AbiBQXvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 18:51:09 -0500
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8ECEB434BD
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 15:50:50 -0800 (PST)
+Received: from unknown (HELO lgeamrelo01.lge.com) (156.147.1.125)
+        by 156.147.23.52 with ESMTP; 18 Feb 2022 08:50:49 +0900
+X-Original-SENDERIP: 156.147.1.125
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
+        by 156.147.1.125 with ESMTP; 18 Feb 2022 08:50:49 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+Date:   Fri, 18 Feb 2022 08:50:42 +0900
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        torvalds@linux-foundation.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
+        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
+        chris@chris-wilson.co.uk, duyuyang@gmail.com,
+        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
+        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jlayton@kernel.org, dan.j.williams@intel.com,
+        hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com
+Subject: Re: Report in unix_stream_read_generic()
+Message-ID: <20220217235042.GA20620@X58A-UD3R>
+References: <1644984767-26886-1-git-send-email-byungchul.park@lge.com>
+ <1644985024-28757-1-git-send-email-byungchul.park@lge.com>
+ <Ygx+pRo1+b1RBLJg@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ygx+pRo1+b1RBLJg@casper.infradead.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed, Feb 16, 2022 at 04:33:41AM +0000, Matthew Wilcox wrote:
+> On Wed, Feb 16, 2022 at 01:17:03PM +0900, Byungchul Park wrote:
+> > [    7.013330] ===================================================
+> > [    7.013331] DEPT: Circular dependency has been detected.
+> > [    7.013332] 5.17.0-rc1-00014-gcf3441bb2012 #2 Tainted: G        W        
+> > [    7.013333] ---------------------------------------------------
+> > [    7.013334] summary
+> > [    7.013334] ---------------------------------------------------
+> > [    7.013335] *** DEADLOCK ***
+> > [    7.013335] 
+> > [    7.013335] context A
+> > [    7.013336]     [S] (unknown)(&(&ei->socket.wq.wait)->dmap:0)
+> > [    7.013337]     [W] __mutex_lock_common(&u->iolock:0)
+> > [    7.013338]     [E] event(&(&ei->socket.wq.wait)->dmap:0)
+> > [    7.013340] 
+> > [    7.013340] context B
+> > [    7.013341]     [S] __raw_spin_lock(&u->lock:0)
+> > [    7.013342]     [W] wait(&(&ei->socket.wq.wait)->dmap:0)
+> > [    7.013343]     [E] spin_unlock(&u->lock:0)
+> 
+> This seems unlikely to be real.  We're surely not actually waiting
+> while holding a spinlock; existing debug checks would catch it.
+> 
+> > [    7.013407] ---------------------------------------------------
+> > [    7.013407] context B's detail
+> > [    7.013408] ---------------------------------------------------
+> > [    7.013408] context B
+> > [    7.013409]     [S] __raw_spin_lock(&u->lock:0)
+> > [    7.013410]     [W] wait(&(&ei->socket.wq.wait)->dmap:0)
+> > [    7.013411]     [E] spin_unlock(&u->lock:0)
+> > [    7.013412] 
+> > [    7.013412] [S] __raw_spin_lock(&u->lock:0):
+> > [    7.013413] [<ffffffff81aa451f>] unix_stream_read_generic+0x6bf/0xb60
+> > [    7.013416] stacktrace:
+> > [    7.013416]       _raw_spin_lock+0x6e/0x90
+> > [    7.013418]       unix_stream_read_generic+0x6bf/0xb60
+> 
+> It would be helpful if you'd run this through scripts/decode_stacktrace.sh
 
-IPv6 has this hack changing sk->sk_prot when an IPv6 socket
-is 'converted' to an IPv4 one with IPV6_ADDRFORM option.
+(Sorry for late reply, which was because of my email client issue.)
 
-This operation is only performed for TCP and UDP, knowing
-their 'struct proto' for the two network families are populated
-in the same way, and can not disappear while a reader
-might use and dereference sk->sk_prot.
+It was big help. Thank you very much.
 
-If we think about it all reads of sk->sk_prot while
-either socket lock or RTNL is not acquired should be using READ_ONCE().
+> so we could see line numbers instead of hex offsets (which arene't much
+> use without the binary kernel).
+> 
+> > [    7.013420]       unix_stream_recvmsg+0x40/0x50
+> > [    7.013422]       sock_read_iter+0x85/0xd0
+> > [    7.013424]       new_sync_read+0x162/0x180
+> > [    7.013426]       vfs_read+0xf3/0x190
+> > [    7.013428]       ksys_read+0xa6/0xc0
+> > [    7.013429]       do_syscall_64+0x3a/0x90
+> > [    7.013431]       entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > [    7.013433] 
+> > [    7.013434] [W] wait(&(&ei->socket.wq.wait)->dmap:0):
+> > [    7.013434] [<ffffffff810bb017>] prepare_to_wait+0x47/0xd0
+> 
+> ... this may be the source of confusion.  Just because we prepare to
+> wait doesn't mean we end up actually waiting.  For example, look at
+> unix_wait_for_peer():
+> 
+>         prepare_to_wait_exclusive(&u->peer_wait, &wait, TASK_INTERRUPTIBLE);
+> 
+>         sched = !sock_flag(other, SOCK_DEAD) &&
+>                 !(other->sk_shutdown & RCV_SHUTDOWN) &&
+>                 unix_recvq_full(other);
+> 
+>         unix_state_unlock(other);
+> 
+>         if (sched)
+>                 timeo = schedule_timeout(timeo);
+> 
+>         finish_wait(&u->peer_wait, &wait);
+> 
+> We *prepare* to wait, *then* drop the lock, then actually schedule.
 
-Also note that other layers like MPTCP, XFRM, CHELSIO_TLS also
-write over sk->sk_prot.
+Big help, too. I checked some samples for the usage, but where it's
+almost "prepare == wait" :-(. Thanks a lot!
 
-BUG: KCSAN: data-race in inet6_recvmsg / ipv6_setsockopt
-
-write to 0xffff8881386f7aa8 of 8 bytes by task 26932 on cpu 0:
- do_ipv6_setsockopt net/ipv6/ipv6_sockglue.c:492 [inline]
- ipv6_setsockopt+0x3758/0x3910 net/ipv6/ipv6_sockglue.c:1019
- udpv6_setsockopt+0x85/0x90 net/ipv6/udp.c:1649
- sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3489
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff8881386f7aa8 of 8 bytes by task 26911 on cpu 1:
- inet6_recvmsg+0x7a/0x210 net/ipv6/af_inet6.c:659
- ____sys_recvmsg+0x16c/0x320
- ___sys_recvmsg net/socket.c:2674 [inline]
- do_recvmmsg+0x3f5/0xae0 net/socket.c:2768
- __sys_recvmmsg net/socket.c:2847 [inline]
- __do_sys_recvmmsg net/socket.c:2870 [inline]
- __se_sys_recvmmsg net/socket.c:2863 [inline]
- __x64_sys_recvmmsg+0xde/0x160 net/socket.c:2863
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0xffffffff85e0e980 -> 0xffffffff85e01580
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 26911 Comm: syz-executor.3 Not tainted 5.17.0-rc2-syzkaller-00316-g0457e5153e0e-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv6/af_inet6.c      | 24 ++++++++++++++++++------
- net/ipv6/ipv6_sockglue.c |  6 ++++--
- 2 files changed, 22 insertions(+), 8 deletions(-)
-
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 8fe7900f1949911b32326fb166ae20912a59c215..7d7b7523d126539d8e5c84e4603ec16889a15498 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -441,11 +441,14 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- {
- 	struct sock *sk = sock->sk;
- 	u32 flags = BIND_WITH_LOCK;
-+	const struct proto *prot;
- 	int err = 0;
- 
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
- 	/* If the socket has its own bind function then use it. */
--	if (sk->sk_prot->bind)
--		return sk->sk_prot->bind(sk, uaddr, addr_len);
-+	if (prot->bind)
-+		return prot->bind(sk, uaddr, addr_len);
- 
- 	if (addr_len < SIN6_LEN_RFC2133)
- 		return -EINVAL;
-@@ -555,6 +558,7 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	void __user *argp = (void __user *)arg;
- 	struct sock *sk = sock->sk;
- 	struct net *net = sock_net(sk);
-+	const struct proto *prot;
- 
- 	switch (cmd) {
- 	case SIOCADDRT:
-@@ -572,9 +576,11 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	case SIOCSIFDSTADDR:
- 		return addrconf_set_dstaddr(net, argp);
- 	default:
--		if (!sk->sk_prot->ioctl)
-+		/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+		prot = READ_ONCE(sk->sk_prot);
-+		if (!prot->ioctl)
- 			return -ENOIOCTLCMD;
--		return sk->sk_prot->ioctl(sk, cmd, arg);
-+		return prot->ioctl(sk, cmd, arg);
- 	}
- 	/*NOTREACHED*/
- 	return 0;
-@@ -636,11 +642,14 @@ INDIRECT_CALLABLE_DECLARE(int udpv6_sendmsg(struct sock *, struct msghdr *,
- int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 
- 	if (unlikely(inet_send_prepare(sk)))
- 		return -EAGAIN;
- 
--	return INDIRECT_CALL_2(sk->sk_prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	return INDIRECT_CALL_2(prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
- 			       sk, msg, size);
- }
- 
-@@ -650,13 +659,16 @@ int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		  int flags)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 	int addr_len = 0;
- 	int err;
- 
- 	if (likely(!(flags & MSG_ERRQUEUE)))
- 		sock_rps_record_flow(sk);
- 
--	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	err = INDIRECT_CALL_2(prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
- 			      sk, msg, size, flags & MSG_DONTWAIT,
- 			      flags & ~MSG_DONTWAIT, &addr_len);
- 	if (err >= 0)
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index a733803a710cf1f94ec05466adf388ab0fb346e6..222f6bf220ba0d08bdde1464a1d383f819b3fe34 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -475,7 +475,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, &tcp_prot, 1);
- 
--				sk->sk_prot = &tcp_prot;
-+				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				WRITE_ONCE(sk->sk_prot, &tcp_prot);
- 				icsk->icsk_af_ops = &ipv4_specific;
- 				sk->sk_socket->ops = &inet_stream_ops;
- 				sk->sk_family = PF_INET;
-@@ -489,7 +490,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, prot, 1);
- 
--				sk->sk_prot = prot;
-+				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				WRITE_ONCE(sk->sk_prot, prot);
- 				sk->sk_socket->ops = &inet_dgram_ops;
- 				sk->sk_family = PF_INET;
- 			}
--- 
-2.35.1.265.g69c8d7142f-goog
-
+Thanks,
+Byungchul
