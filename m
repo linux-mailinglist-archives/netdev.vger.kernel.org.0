@@ -2,89 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9DAF4BA663
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38DDB4BA668
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 17:50:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243208AbiBQQuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 11:50:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42604 "EHLO
+        id S243428AbiBQQu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 11:50:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239915AbiBQQuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:50:08 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60DE117A8E
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:49:53 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-105-or7gv4dQNTyuquFpTqc4SQ-1; Thu, 17 Feb 2022 16:49:50 +0000
-X-MC-Unique: or7gv4dQNTyuquFpTqc4SQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Thu, 17 Feb 2022 16:49:49 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Thu, 17 Feb 2022 16:49:49 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Masahiro Yamada' <masahiroy@kernel.org>
-CC:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v3] net: Force inlining of checksum functions in
- net/checksum.h
-Thread-Topic: [PATCH net v3] net: Force inlining of checksum functions in
- net/checksum.h
-Thread-Index: AQHYI/ioJk+yETn/QkyN152xjKaZ96yXvR4wgAAXuo+AAALtMIAAE/+AgAAGkIA=
-Date:   Thu, 17 Feb 2022 16:49:49 +0000
-Message-ID: <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com>
-References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
- <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com>
- <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
- <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu>
- <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
- <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com>
-In-Reply-To: <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S243184AbiBQQu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 11:50:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B8BD994E
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 08:50:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BED006172E
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 16:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 27206C340E9;
+        Thu, 17 Feb 2022 16:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645116610;
+        bh=grj+xejRb3IKt7uLrJ/rwSlGtKBWgQG/afbv3l4dhqw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=b89HSmbO8yvk9peWHvBk+MovG8qk6WnwJwmbOHW47RYMaNCHwDWb/4/eGVYSzGAT2
+         XC2XOSqsWWf3LdqhJZQrAGK1s4IGBPkxOItwrnwhh33zPkcHcp271Fs0rEQHtjRN2h
+         4iwz1mdfyHCq2/msPkzPDjVEy3V0f7pGNLMkuQ6h5kJzXex/NsKl2ctZeTL6xJcDf/
+         uhDVsb35dvv+TEsh5kuRA2ooC3NuCyoQIyxZb+Qx41d/gkJsH0jMYpi3yUE4U6Spuk
+         tAKl9VM88oGy0j3L2+DdkNCedV5Gs0UwMQK787LnZDjWZx0wog4ymuWSt6n3J3joxo
+         TW9grfLvA6unQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0EB7DE7BB08;
+        Thu, 17 Feb 2022 16:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] ipv6/addrconf: ensure addrconf_verify_rtnl() has
+ completed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164511661005.9378.5051264826164600253.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Feb 2022 16:50:10 +0000
+References: <20220216182037.3742-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220216182037.3742-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        dsahern@kernel.org, edumazet@google.com, syzkaller@googlegroups.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogTWFzYWhpcm8gWWFtYWRhDQo+IFNlbnQ6IDE3IEZlYnJ1YXJ5IDIwMjIgMTY6MTcNCi4u
-Lg0KPiBOby4gIE5vdCB0aGF0IG9uZS4NCj4gDQo+IFRoZSBjb21taXQgeW91IHByZXN1bWFibHkg
-d2FudCB0byByZXZlcnQgaXM6DQo+IA0KPiBhNzcxZjJiODJhYTIgKCJbUEFUQ0hdIEFkZCBhIHNl
-Y3Rpb24gYWJvdXQgaW5saW5pbmcgdG8NCj4gRG9jdW1lbnRhdGlvbi9Db2RpbmdTdHlsZSIpDQo+
-IA0KPiBUaGlzIGlzIG5vdyByZWZlcnJlZCB0byBhcyAiX19hbHdheXNfaW5saW5lIGRpc2Vhc2Ui
-LCB0aG91Z2guDQoNClRoYXQgZGVzY3JpcHRpb24gaXMgbGFyZ2VseSBmaW5lLg0KDQpJbmFwcHJv
-cHJpYXRlICdpbmxpbmUnIG91Z2h0IHRvIGJlIHJlbW92ZWQuDQpUaGVuICdpbmxpbmUnIG1lYW5z
-IC0gJ3JlYWxseSBkbyBpbmxpbmUgdGhpcycuDQoNCkFueW9uZSByZW1lbWJlciBtYXNzaXZlIDEw
-MCsgbGluZSAjZGVmaW5lcyBiZWluZw0KdXNlZCB0byBnZXQgY29kZSBpbmxpbmVkICd0byBtYWtl
-IGl0IGZhc3RlcicuDQpTb21ldGltZXMgYmVpbmcgZXhwYW5kZWQgc2V2ZXJhbCB0aW1lcyBpbiBz
-dWNjZXNzaW9uLg0KTWF5IGhhdmUgaGVscGVkIGEgNjgwMjAsIGJ1dCBsaWtlbHkgdG8gYmUgYSBs
-b3NzIG9uDQptb2Rlcm4gY3B1IHdpdGggbGFyZ2UgSS1jYWNoZSBhbmQgc2xvdyBtZW1vcnkuDQoN
-CglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwg
-TW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzog
-MTM5NzM4NiAoV2FsZXMpDQo=
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 16 Feb 2022 10:20:37 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Before freeing the hash table in addrconf_exit_net(),
+> we need to make sure the work queue has completed,
+> or risk NULL dereference or UAF.
+> 
+> Thus, use cancel_delayed_work_sync() to enforce this.
+> We do not hold RTNL in addrconf_exit_net(), making this safe.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] ipv6/addrconf: ensure addrconf_verify_rtnl() has completed
+    https://git.kernel.org/netdev/net-next/c/be6b41c15dc0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
