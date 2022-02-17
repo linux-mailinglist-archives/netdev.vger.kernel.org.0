@@ -2,287 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE4C4B9E74
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 12:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5B94B9E77
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 12:18:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238753AbiBQLR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 06:17:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52596 "EHLO
+        id S239671AbiBQLSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 06:18:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiBQLR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 06:17:27 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07F6E6852;
-        Thu, 17 Feb 2022 03:17:12 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id t21so8989962edd.3;
-        Thu, 17 Feb 2022 03:17:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=iAwAjreqNN5/7jHoMpNX4jUGyuVnstEZXc1OH4l/j5c=;
-        b=lhfiVoPGt3+tB4No4NSpDLJVtciSQlPV5dhT6LQwEVEkTbfoBfpWpipBM68JyTi6t9
-         UGwunu7m7G8CG4rD1mShcJckdIK+j5JT7wYesflHzswfLiueGHrkB5LDf18Y01lV56/Y
-         GwNFhcSD2BCQoMKkTB3wJA/Vpz+h3hawYljGyHstx1bHle8qH7hEq6sSFKI4bJxcU3Oj
-         +2eQKenpeRZMpk7CgVIKSGO8qHSyQOaxdky2U8yTw6Fp05Y8k5BYMrM1MiSiyKZxhmww
-         wXX6YvTL49y5U7+SMzn3mLu0O3W+UtEP2ckobvRMOvOvG9goMKwFaRqrHrsKWYgXxsGL
-         WkVQ==
+        with ESMTP id S234011AbiBQLSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 06:18:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 078E1125596
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 03:18:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645096695;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rluMdUX42Bz6AnNz4rNBAMY3uivA4hbkOP/qxqIto1I=;
+        b=JMc/pX6ESEl+8bRahrUz7hMLa2Qw0iVytobBJ2OA5Cgop5Ji5UhRHRRUMfDIIYwGEMwCYH
+        LrFhrqiDbaxBJZjzGApi4RbsoqNBpPG4dGRPZlF9wsIff/wm7ljSmIyCOCw8NN548rv3A1
+        5MTFu00yq0tKgBDC1vNBc0ZjOveKRps=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-512-j-eCUzACPviXjpJ7DpzliA-1; Thu, 17 Feb 2022 06:18:14 -0500
+X-MC-Unique: j-eCUzACPviXjpJ7DpzliA-1
+Received: by mail-wr1-f71.google.com with SMTP id v17-20020adf8b51000000b001e336bf3be7so2177609wra.1
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 03:18:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=iAwAjreqNN5/7jHoMpNX4jUGyuVnstEZXc1OH4l/j5c=;
-        b=ZyU4H/C7kPnwxxdyqYluO+KePwfUKeuUQJtxbB3/TnjIQd2F4h2KQO6Byvm/XTKGUG
-         B+bRAJ1aSlQCZMLC1Q+w/9j5CMbXJAVeQPUpFZS3z+rYYMfI5JtbcgxWi3/pZdRDTjID
-         HbvYXqo9WM9oybM+sSU05VFBb0+m6PQMxf2wcFH3NztqiRXPz2llpTdktjYxqm3g3yE/
-         qrcGyZMiAmPCoFiy2U8sO8lukqptYS5blre0KmtcO7QNHB4o4GiwV0c9/NRYc1GCkGkc
-         w5QB+RtH33uaNFAHZKISQal3KA9ZqoqWqjiCOtTbOn+Q2wEP/D5GPzAwyuL5w/zY/Rj3
-         6YTQ==
-X-Gm-Message-State: AOAM533IYNFyuN/ZH3U1AXCgStr68HNxddwxRay3da7GxSfWxVxTHrTM
-        KzFeJKjO7sb7S1IoJu+i2xk=
-X-Google-Smtp-Source: ABdhPJz2scZzsYUbLdn8Zpj6keBiRjktQyQ00Bi93ld531lh2q8vzox/EPcsGbmiw98xj8i70Bz6jw==
-X-Received: by 2002:a05:6402:51ca:b0:410:a0d1:c6e9 with SMTP id r10-20020a05640251ca00b00410a0d1c6e9mr2078396edd.200.1645096631004;
-        Thu, 17 Feb 2022 03:17:11 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id h21sm2966464edt.26.2022.02.17.03.17.09
+         :mime-version:content-disposition:in-reply-to;
+        bh=rluMdUX42Bz6AnNz4rNBAMY3uivA4hbkOP/qxqIto1I=;
+        b=6fdgrRJhByEnw6pDsGsSbjv4PqxoG3xukAtz9Pxdf+cbOCT0Fmapy3n3oUhG2AHMrq
+         mAh59LthHKZWEvzJIv9kOsXDGw8upRZ7sayowC/8Y2IwiuCyzQAqW71BFsG6/aCCCDzg
+         CzqsygVml5e0o/C2cNC/NSewPpE97RWu8Ww9/dR3yNZ7Mbfyvt/1xRyltrA68clxxGGt
+         VG6u3YHEoPusMr+1EQcPUotlnPd4i7jJAPLZyv8dcPYw2q2nZxtXGp7rjShhNsT+pzqC
+         k0iYKPF6G1zT40wXNWMUyydcFs18K4xX8bTEVjMaGOIfi6XTXnULCRxWz6cUCLdK4PLL
+         5iVA==
+X-Gm-Message-State: AOAM532Z4I8sqf8yRsFY57P0msUHAAxi7x6sFgfNK4/WT1d+H6a6VOa0
+        FCQxn/Ok6rPDhpox8QkVkON7R5vlU+0FpUHkKr908dJQezmOe86GzQ0sMFc974zq5u93xr0tBv/
+        vMEfWbd4wbHrM/rgk
+X-Received: by 2002:a5d:6d85:0:b0:1e2:f9f9:ab97 with SMTP id l5-20020a5d6d85000000b001e2f9f9ab97mr1876429wrs.469.1645096692793;
+        Thu, 17 Feb 2022 03:18:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzg4Fuag+kZ16DSH9MN8SQ1oKWHrLC6hiWspAJXu/pLoNH68nFkZtjFc4nGqy1iX+uafMSjQA==
+X-Received: by 2002:a5d:6d85:0:b0:1e2:f9f9:ab97 with SMTP id l5-20020a5d6d85000000b001e2f9f9ab97mr1876415wrs.469.1645096692540;
+        Thu, 17 Feb 2022 03:18:12 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id p16sm1064696wmq.18.2022.02.17.03.18.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 03:17:10 -0800 (PST)
-Date:   Thu, 17 Feb 2022 13:17:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Michael Rasmussen <MIR@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/2] net: dsa: realtek: rtl8365mb: serialize
- indirect PHY register access
-Message-ID: <20220217111709.x5g6alnhz3njo4t2@skbuf>
-References: <20220216160500.2341255-1-alvin@pqrs.dk>
- <20220216160500.2341255-3-alvin@pqrs.dk>
- <20220216233906.5dh67olhgfz7ji6o@skbuf>
- <874k4yrlcj.fsf@bang-olufsen.dk>
+        Thu, 17 Feb 2022 03:18:10 -0800 (PST)
+Date:   Thu, 17 Feb 2022 12:18:08 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [RFC iproute2] tos: interpret ToS in natural numeral system
+Message-ID: <20220217111808.GA9766@pc-4.home>
+References: <20220216194205.3780848-1-kuba@kernel.org>
+ <20220216222352.GA3432@pc-4.home>
+ <0b4b5a8f8e9e48248bee3208d8f13286@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <874k4yrlcj.fsf@bang-olufsen.dk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <0b4b5a8f8e9e48248bee3208d8f13286@AcuMS.aculab.com>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 07:41:32AM +0000, Alvin Šipraga wrote:
-> Vladimir Oltean <olteanv@gmail.com> writes:
+On Wed, Feb 16, 2022 at 10:44:19PM +0000, David Laight wrote:
+> From: Guillaume Nault
+> > Sent: 16 February 2022 22:24
+> > 
+> > On Wed, Feb 16, 2022 at 11:42:05AM -0800, Jakub Kicinski wrote:
+> > > Silently forcing a base numeral system is very painful for users.
+> > > ip currently interprets tos 10 as 0x10. Imagine user's bash script
+> > > does:
+> > >
+> > >   .. tos $((TOS * 2)) ..
+> > >
+> > > or any numerical operation on the ToS.
+> > >
+> > > This patch breaks existing scripts if they expect 10 to be 0x10.
+> > 
+> > I agree that we shouldn't have forced base 16 in the first place.
+> > But after so many years I find it a bit dangerous to change that.
 > 
-> > On Wed, Feb 16, 2022 at 05:05:00PM +0100, Alvin Šipraga wrote:
-> >> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> >> 
-> >> Realtek switches in the rtl8365mb family can access the PHY registers of
-> >> the internal PHYs via the switch registers. This method is called
-> >> indirect access. At a high level, the indirect PHY register access
-> >> method involves reading and writing some special switch registers in a
-> >> particular sequence. This works for both SMI and MDIO connected
-> >> switches.
-> >> 
-> >> Currently the rtl8365mb driver does not take any care to serialize the
-> >> aforementioned access to the switch registers. In particular, it is
-> >> permitted for other driver code to access other switch registers while
-> >> the indirect PHY register access is ongoing. Locking is only done at the
-> >> regmap level. This, however, is a bug: concurrent register access, even
-> >> to unrelated switch registers, risks corrupting the PHY register value
-> >> read back via the indirect access method described above.
-> >> 
-> >> Arınç reported that the switch sometimes returns nonsense data when
-> >> reading the PHY registers. In particular, a value of 0 causes the
-> >> kernel's PHY subsystem to think that the link is down, but since most
-> >> reads return correct data, the link then flip-flops between up and down
-> >> over a period of time.
-> >> 
-> >> The aforementioned bug can be readily observed by:
-> >> 
-> >>  1. Enabling ftrace events for regmap and mdio
-> >>  2. Polling BSMR PHY register for a connected port;
-> >>     it should always read the same (e.g. 0x79ed)
-> >>  3. Wait for step 2 to give a different value
-> >> 
-> >> Example command for step 2:
-> >> 
-> >>     while true; do phytool read swp2/2/0x01; done
-> >> 
-> >> On my i.MX8MM, the above steps will yield a bogus value for the BSMR PHY
-> >> register within a matter of seconds. The interleaved register access it
-> >> then evident in the trace log:
-> >> 
-> >>  kworker/3:4-70      [003] .......  1927.139849: regmap_reg_write: ethernet-switch reg=1004 val=bd
-> >>      phytool-16816   [002] .......  1927.139979: regmap_reg_read: ethernet-switch reg=1f01 val=0
-> >>  kworker/3:4-70      [003] .......  1927.140381: regmap_reg_read: ethernet-switch reg=1005 val=0
-> >>      phytool-16816   [002] .......  1927.140468: regmap_reg_read: ethernet-switch reg=1d15 val=a69
-> >>  kworker/3:4-70      [003] .......  1927.140864: regmap_reg_read: ethernet-switch reg=1003 val=0
-> >>      phytool-16816   [002] .......  1927.140955: regmap_reg_write: ethernet-switch reg=1f02 val=2041
-> >>  kworker/3:4-70      [003] .......  1927.141390: regmap_reg_read: ethernet-switch reg=1002 val=0
-> >>      phytool-16816   [002] .......  1927.141479: regmap_reg_write: ethernet-switch reg=1f00 val=1
-> >>  kworker/3:4-70      [003] .......  1927.142311: regmap_reg_write: ethernet-switch reg=1004 val=be
-> >>      phytool-16816   [002] .......  1927.142410: regmap_reg_read: ethernet-switch reg=1f01 val=0
-> >>  kworker/3:4-70      [003] .......  1927.142534: regmap_reg_read: ethernet-switch reg=1005 val=0
-> >>      phytool-16816   [002] .......  1927.142618: regmap_reg_read: ethernet-switch reg=1f04 val=0
-> >>      phytool-16816   [002] .......  1927.142641: mdio_access: SMI-0 read  phy:0x02 reg:0x01 val:0x0000 <- ?!
-> >>  kworker/3:4-70      [003] .......  1927.143037: regmap_reg_read: ethernet-switch reg=1001 val=0
-> >>  kworker/3:4-70      [003] .......  1927.143133: regmap_reg_read: ethernet-switch reg=1000 val=2d89
-> >>  kworker/3:4-70      [003] .......  1927.143213: regmap_reg_write: ethernet-switch reg=1004 val=be
-> >>  kworker/3:4-70      [003] .......  1927.143291: regmap_reg_read: ethernet-switch reg=1005 val=0
-> >>  kworker/3:4-70      [003] .......  1927.143368: regmap_reg_read: ethernet-switch reg=1003 val=0
-> >>  kworker/3:4-70      [003] .......  1927.143443: regmap_reg_read: ethernet-switch reg=1002 val=6
-> >> 
-> >> The kworker here is polling MIB counters for stats, as evidenced by the
-> >> register 0x1004 that we are writing to (RTL8365MB_MIB_ADDRESS_REG). This
-> >> polling is performed every 3 seconds, but is just one example of such
-> >> unsynchronized access.
-> >> 
-> >> Further investigation reveals the underlying problem: if we read from an
-> >> arbitrary register A and this read coincides with the indirect access
-> >> method in rtl8365mb_phy_ocp_read, then the final read from
-> >> RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG will always return the value in
-> >> register A. The value read back can be readily poisoned by repeatedly
-> >> reading back the value of another register A via debugfs in a busy loop
-> >> via the dd utility or similar.
-> >> 
-> >> This issue appears to be unique to the indirect PHY register access
-> >> pattern. In particular, it does not seem to impact similar sequential
-> >> register operations such MIB counter access.
-> >> 
-> >> To fix this problem, one must guard against exactly the scenario seen in
-> >> the above trace. In particular, other parts of the driver using the
-> >> regmap API must not be permitted to access the switch registers until
-> >> the PHY register access is complete. Fix this by using the newly
-> >> introduced "nolock" regmap in all PHY-related functions, and by aquiring
-> >> the regmap mutex at the top level of the PHY register access callbacks.
-> >> Although no issue has been observed with PHY register _writes_, this
-> >> change also serializes the indirect access method there. This is done
-> >> purely as a matter of convenience.
-> >> 
-> >> Fixes: 4af2950c50c8 ("net: dsa: realtek-smi: add rtl8365mb subdriver for RTL8365MB-VC")
-> >> Link: https://lore.kernel.org/netdev/CAJq09z5FCgG-+jVT7uxh1a-0CiiFsoKoHYsAWJtiKwv7LXKofQ@mail.gmail.com/
-> >> Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> >> Reported-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> >> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> >> ---
-> >
-> > This implementation where the indirect PHY access blocks out every other
-> > register read and write is only justified if you can prove that you can
-> > stuff just about any unrelated register read or write before
-> > RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG, and this, in and of itself,
-> > will poison what gets read back from RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG.
-> 
-> I (at least treied to) state that clearly here:
-> 
-> >> Further investigation reveals the underlying problem: if we read from an
-> >> arbitrary register A and this read coincides with the indirect access
-> >> method in rtl8365mb_phy_ocp_read, then the final read from
-> >> RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG will always return the value in
-> >> register A. The value read back can be readily poisoned by repeatedly
-> >> reading back the value of another register A via debugfs in a busy loop
-> >> via the dd utility or similar.
-> 
-> That is, I used regmap debugfs to spam reads of switch registers like,
-> for example, this one:
-> 
-> #define RTL8365MB_CFG0_MAX_LEN_REG	0x088C
-> 
-> ... which controls the MTU of the switch. This is something we set up
-> just once to be 0x600 and then it is never touched again. Now in the
-> above example, let A = 0x088C. Spamming the read of A phytool command
-> described above, I would expect to read a value 0x79c9 out of my BSMR
-> PHY register with phytool. But in cases where the read of switch
-> register A coincides with the indirect access procedure, I end up
-> reading back 0x600 from the PHY register. This is specifically because
-> the read of A (=0x600) then poisons the value in
-> RTL8365MB_INDIRECT_ACCESS_READ_DATA_REG (should be 0x79c9, but is
-> 0x600).
+> Aren't the TOS values made up of several multi-bit fields and
+> very likely to be documented in hex?
 
-Yes, well, that was a bit handwavy, you didn't mention any other
-specific register, you just stated a rule which appeared to be inferred
-from little evidence.
+In theory, they are. But as far as the kernel is concerned, they're
+just plain integers with no significance (apart from some constraints
+preventing the use of some values). Users are free to choose their own
+values.
 
-> > rtl8365mb_mib_counter_read() doesn't seem like a particularly good
-> > example to prove this, since it appears to be an indirect access
-> > procedure as well. Single register reads or writes would be ideal, like
-> > RTL8365MB_CPU_CTRL_REG, artificially inserted into strategic places.
-> > Ideally you wouldn't even have a DSA or MDIO or PHY driver running.
+> I'm not sure $((TOS * 2)) (or even + 2) makes any sense at all.
 > 
-> I hope it is clear from my above explanation that I did show this, if
-> you agree that RTL8365MB_CFG0_MAX_LEN_REG is just as arbitrary as
-> RTL8365MB_CPU_CTRL_REG.
-> 
-> What I meant to say here:
-> 
-> >> This issue appears to be unique to the indirect PHY register access
-> >> pattern. In particular, it does not seem to impact similar sequential
-> >> register operations such MIB counter access.
-> 
-> ... about MIB counter access (which is also indirect as you point out),
-> is that it does _not_ suffer from the above problem. The way I checked
-> this was with ethtool -S, while again spamming regmap_read of an
-> unrelated switch register like CPU_CTRL or CFG0_MAX_LEN. In this case
-> the counter values always seem sane, and I can't detect the poisoned
-> value getting read back (like 0x600 in the above example).
-> 
-> > Just a simple kernel module with access to the regmap, and try to read
-> > something known, like the PHY ID of one of the internal PHYs, via an
-> > open-coded function. Then add extra regmap accesses and see what
-> > corrupts the indirect PHY access procedure.
-> 
-> The switch is generally idle and I did my testing with the periodic MIB
-> counter disabled, so I think what you describe is not far off from what
-> I did. The only difference is that the switch was already configured and
-> switching packets. I used ftrace events to verify the phenomenon.
-> 
-> If you are still not persuaded, just write me back here, and I will go
-> ahead and implement such a test module. But it seems like you
-> misunderstood my initial commit message, so perhaps I just need to
-> rephrase it?
+> What it more horrid that that base 0 treats numbers that start
+> with a 0 as octal - has anyone really used octal since the 1970s
+> (except for file permissions).
 
-If the problem you've identified is correct, then this simple test
-module would yield the exact same result, yet would eliminate beyond any
-doubt the timing and other circumstantial factors, and you could also
-do better testing of the PHY write sequence, and MIB counter reads.
-And if simply inserting a stray register access in the middle of the PHY
-read procedure doesn't produce the same result, this would be new
-information. It shouldn't even be too hard to do.
+Right, but that'd be consistent with the rest of iproute2, so users
+should be aware of this trap at this point (or most likely, they never
+prefix their values with 0). Anyway, I think we agreed that it's now
+too late to modify the base.
 
-> > Are Realtek aware of this and do they confirm the issue? Sounds like
-> > erratum material to me, and a pretty severe one, at that. Alternatively,
-> > we may simply not be understanding the hardware architecture, like for
-> > example the fact that MIB indirect access and PHY indirect access may
-> > share some common bus and must be sequential w.r.t. each other.
+> I have written command line parsers that treat 0tnnn as decimal
+> while defaulting to hex.
+> That does make it easier to use shell arithmetic for field (like
+> addresses) that you would never normally specify in decimal.
 > 
-> The thing is that Realtek's vendor driver takes a common lock around
-> every public API call. One of those APIs is "read phy register" and
-> there it will take a lock around the whole procedure. At the same time
-> it will also take the same lock for something like "read switch MTU" or
-> "read CPU tag position", etc. So I don't believe their driver will
-> suffer from this issue.
+> > 
+> > What about just printing a warning when the value isn't prefixed with
+> > '0x'? Something like (completely untested):
+> > 
+> > @@ -535,6 +535,12 @@ int rtnl_dsfield_a2n(__u32 *id, const char *arg)
+> >  	if (!end || end == arg || *end || res > 255)
+> >  		return -1;
+> >  	*id = res;
+> > +
+> > +	if (strncmp("0x", arg, 2))
+> > +		fprintf(stderr,
+> > +			"Warning: dsfield and tos parameters are interpreted as hexadecimal values\n"
+> > +			"Use 'dsfield 0x%02x' to avoid this message\n", res);
 > 
-> In any case it was on my list to write them a mail about this, so let's
-> see what they say.
-> 
-> Kind regards,
-> Alvin
+> Ugg.
 
-I have little to no problem with the workaround you've implemented, it's
-just that extraordinary claims require extraordinary proof. Having a
-standalone kernel module that can deterministically and not statistically
-reproduce the bug would go a long way.
+Not nice, I agree. But what else can we do without breaking backward
+compatibility?
+This is similar to the warning we have when creating a new vxlan device
+without specifying the destination port:
+
+  # ip link add type vxlan vni 200 remote 2001:db8::1
+  vxlan: destination port not specified
+  Will use Linux kernel default (non-standard value)
+  Use 'dstport 4789' to get the IANA assigned value
+  Use 'dstport 0' to get default and quiet this message
+
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+
