@@ -2,101 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8EE4B95D5
-	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 03:16:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3F6F4B95DF
+	for <lists+netdev@lfdr.de>; Thu, 17 Feb 2022 03:25:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbiBQCQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Feb 2022 21:16:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39786 "EHLO
+        id S231561AbiBQCZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Feb 2022 21:25:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiBQCQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 21:16:24 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357C229410A;
-        Wed, 16 Feb 2022 18:16:11 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id i5so4469944oih.1;
-        Wed, 16 Feb 2022 18:16:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OqSul6ANW/QbWM5nJmKFQS7sLKmAgK3oE6LVLATJcUM=;
-        b=WBQqF/wMYngujPO86PUQoJDnYbW1Kza0Afi0kWbcC4O0xeaoiR1JLAlhYLxg0U+aeQ
-         KllsxJZh6Lgfge7TFv/qJLh9On+WBvApc9b4D+lJqa3ZX9ifgfm5thq/1uzpy6IuZ8JJ
-         +QiwUx9BS3uoNtW5HHZDddoT1cwuXMFscN4ceVgNAodPsOmdLNV9IZHFtHyrK8tca0uN
-         3vfjdzcpTC0q3UPHBs5RU8ts0DFVXpCm902JQft+eJBk5xrGUEVhFZhIbxmt+FBcKNC2
-         8tfxiWwNHAS8qK8+dH4wxodiKg7/AYMd53RPxg+inPEe6kRTNsxoGUZS25omY4Cn++Xv
-         9SuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OqSul6ANW/QbWM5nJmKFQS7sLKmAgK3oE6LVLATJcUM=;
-        b=622I5myiYVuwOqlpajblyzPlIYdY2ohRRSa0BxaVpz/9yW57PRO/x/yoBNn/HpYhkh
-         VLp+rmMInI0rC31CubOGjE37GRykVhzFdMpTpOqdt0H2hX+L0vxp1TL2ceC8uYoj8YCq
-         XcLqcuZXV0AGyygxr9Tq1Y31Ax/ch+1XViaAyhngFBJU0U7nLT4utYXUDhCCDykRyzq0
-         tgieDSwbkaFCgNCHoPu+8AZZSZrcSaY0QfGcib9LTh44tHz4oGVR6Gxhs6ORboRGAj4s
-         AfdBqOVNT9FUjrbzoy+jksj5ocjcg9QyV0Ybd6+fYr5gE/FlA4fHLGxyiNvaoQzpNpbz
-         byAg==
-X-Gm-Message-State: AOAM530XBHVISi3W51B56zvIrUcw9eOh/e0uoG4oiU/JRS2hWJFLWRgX
-        WwvDlJxCk1WGz98jbzr2+zZ2xLSPcd6kJZmx2FU=
-X-Google-Smtp-Source: ABdhPJzaclshwR5cQLstIxZ+jLltu47WD/h0Kg9Bcy075XYW5dO9RoFPJYY+ZUKRXE7u1rvnBgs2iud51CDLXZSO/AE=
-X-Received: by 2002:aca:1812:0:b0:2d4:426d:c9e0 with SMTP id
- h18-20020aca1812000000b002d4426dc9e0mr1835063oih.129.1645064170519; Wed, 16
- Feb 2022 18:16:10 -0800 (PST)
+        with ESMTP id S229901AbiBQCZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Feb 2022 21:25:51 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D423929B9C1;
+        Wed, 16 Feb 2022 18:25:36 -0800 (PST)
+Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JzdqC6nzKzZfdP;
+        Thu, 17 Feb 2022 10:21:11 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Feb 2022 10:25:34 +0800
+Received: from [127.0.0.1] (10.67.101.149) by kwepemm600017.china.huawei.com
+ (7.193.23.234) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Feb
+ 2022 10:25:34 +0800
+Subject: Re: [PATCH net-next] net: hns3: Remove unused inline function
+ hclge_is_reset_pending()
+To:     YueHaibing <yuehaibing@huawei.com>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <davem@davemloft.net>, <kuba@kernel.org>
+References: <20220216113507.22368-1-yuehaibing@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From:   "wangjie (L)" <wangjie125@huawei.com>
+Message-ID: <171c12cc-5b05-a567-59cf-66e211aba941@huawei.com>
+Date:   Thu, 17 Feb 2022 10:25:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-References: <20220216050320.3222-1-kerneljasonxing@gmail.com>
- <CANn89i+6Hc7q-a=zh_jcTn9_GM5xP6fzv2RcHY+tneqzE3UnHw@mail.gmail.com>
- <CAL+tcoBnSDjHk_Xhd_ohQjpMu-Ns2Du4mWhUybrK6+VPXHoETQ@mail.gmail.com> <CANn89iJTrH1sgstrEw17OUwC8jLBS9_uk_oUd5Hj0-FypTvvPw@mail.gmail.com>
-In-Reply-To: <CANn89iJTrH1sgstrEw17OUwC8jLBS9_uk_oUd5Hj0-FypTvvPw@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Thu, 17 Feb 2022 10:15:30 +0800
-Message-ID: <CAL+tcoCOX8A4gFDr5_QdLJ0PgwdBAbECtu4yh+RVTTJSp7yQyA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net: introduce SO_RCVBUFAUTO to let the
- rcv_buf tune automatically
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Wei Wang <weiwan@google.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>, Florian Westphal <fw@strlen.de>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jason Xing <xingwanli@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220216113507.22368-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.101.149]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 12:56 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Feb 15, 2022 at 10:58 PM Jason Xing <kerneljasonxing@gmail.com> wrote:
-> > Just now, I found out that the latest kernel has merged a similar
-> > patch (commit 04190bf89) about three months ago.
->
-> There you go :)
->
-> >
-> > Is it still necessary to add another separate option to clear the
-> > SOCK_RCVBUF_LOCK explicitly?
->
-> What do you mean, SO_BUF_LOCK is all that is needed.
+Reviewed-by: Jie Wang <wangjie125@huawei.com>
 
-Yeah, I think SO_BUF_LOCK is enough and we don't have to add a new
-option like SOCK_RCVBUF_LOCK as we've talked about before. Thanks,
-Eric.
+On 2022/2/16 19:35, YueHaibing wrote:
+> This is unused since commit 8e2288cad6cb ("net: hns3: refactor PF
+> cmdq init and uninit APIs with new common APIs").
+>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h | 5 -----
+>  1 file changed, 5 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> index adfb26e79262..3c5e76eaf90b 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> @@ -1060,11 +1060,6 @@ static inline int hclge_get_queue_id(struct hnae3_queue *queue)
+>  	return tqp->index;
+>  }
+>
+> -static inline bool hclge_is_reset_pending(struct hclge_dev *hdev)
+> -{
+> -	return !!hdev->reset_pending;
+> -}
+> -
+>  int hclge_inform_reset_assert_to_vf(struct hclge_vport *vport);
+>  int hclge_cfg_mac_speed_dup(struct hclge_dev *hdev, int speed, u8 duplex);
+>  int hclge_set_vlan_filter(struct hnae3_handle *handle, __be16 proto,
+>
+
