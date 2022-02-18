@@ -2,104 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A90914BC26A
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 23:01:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 521124BC289
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 23:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240066AbiBRWBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 17:01:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53434 "EHLO
+        id S240112AbiBRWUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 17:20:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239006AbiBRWBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 17:01:33 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45257E08F
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 14:01:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645221675; x=1676757675;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=yoj2cJ+h3eeZ10PdWp2Vuwnyy8wgTnEnKiC0cVg/P/k=;
-  b=jTmsLLzdNBNlriiYq5E9q6jLd8zEdtSK8dkz6fY26Nn6E+NUsl/x1ye6
-   2EEFB+c3lVAY2hI+nzIZSHTA7bci/7G/W2+t3jtjt6GcbQdfgnc9y6eaD
-   +PfpC+lh+h1KG8bZ0hskcl8zAqIjIfzoAhYlNveDDq44ZGgiaKiNaQBOc
-   kBNDynkg0dD5KVJBGpGDp4ZEDKTvVSO5U4XQLVLauSKe3NLEbFdNFo7/p
-   JjGBcPbI+TP+Miw09Ocd7jJpyy5Ho2MjBIxbb7Qa0x65LSAcq2SHe8r9u
-   SRUwspBn7xIdWuzYjkkLwMk78Z1PpOtwulOGCSnBduoTTO9ymWDpWKOcA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10262"; a="311977555"
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="311977555"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 14:00:54 -0800
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="489799830"
-Received: from yungjihy-mobl1.amr.corp.intel.com ([10.209.64.253])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 14:00:54 -0800
-Date:   Fri, 18 Feb 2022 14:00:54 -0800 (PST)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        geliang.tang@suse.com, mptcp@lists.linux.dev
-Subject: Re: [PATCH net 6/7] selftests: mptcp: more robust signal race test
-In-Reply-To: <20220218213544.70285-7-mathew.j.martineau@linux.intel.com>
-Message-ID: <b536d171-11c-407b-4236-39fb592b571a@linux.intel.com>
-References: <20220218213544.70285-1-mathew.j.martineau@linux.intel.com> <20220218213544.70285-7-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S240110AbiBRWUh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 17:20:37 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E69F1B6BD4;
+        Fri, 18 Feb 2022 14:20:20 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id w37so2630321pga.7;
+        Fri, 18 Feb 2022 14:20:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=spKeknQ9pe+LaczsQGMgqzOrOzdIo9JsxnZq6u+F2ec=;
+        b=L9Fv5ju1Wux73eHYSQheruU0VK34UnKCcL698tNEUV4d1mjQSe0z7iEfwjBDOgcIxl
+         h70PkScsrdK+ffrZ5V9W6CY+akredDx5gHwo6O4hAa4Sg/WMtAN4+xu/XYevdCVyFJDR
+         p9Kxu8VfX3PVq8KgDUVfanzVWRSxLymuBBF5Pzb3EOVU2eJ96YJTNWef+tsgmCtzh6DX
+         hsQ1aHVIwpiZ94h+sRFySJLD9e/ZlkY9iiVxMQ6Ry01krc2eRR3xF2i2iGBGCD+ERU5+
+         boFzY6hjau2fFMzZmjLlxGwr5r5Qvoa8gQiFBnBEpMWSmbj1yAevUBf08+Fp13n280tn
+         KFZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=spKeknQ9pe+LaczsQGMgqzOrOzdIo9JsxnZq6u+F2ec=;
+        b=3265sHlUc/3USwRiBIsyMVYLOyk4Y2QNycMjD+VZc2K+4+xKBKm/65s6XJVWkz3NGK
+         y+5z5m2TonD8btf6IVBLP7sZoqsdXECU55tEQs7HlTA3beL4tm3NtY3HOc1C7xStbGRu
+         dRgVQizhCzzTum+989Ds0rA1W91Ijn7sYIq1xBbySdjtR6svjo6LwMTDNr9uliJgDgjU
+         QOh4qv1rWK/2e+2KVPnKs3xnm5MO1+LfxK2ZG9QadRqQeHwN622GQxitkVZGVkwyqjCV
+         vMKlhxr/NI7fasWs9cIC3mmBnpwCu1JTc5DzrGP0XiSbD8Dse4wMkxyIzmKZagHTRu5w
+         wg4g==
+X-Gm-Message-State: AOAM533trDBlntgUNV4GI5t+0dEx8HYm2G6Q6v7Ex46KVL+aMIOO0uaJ
+        EjkznTy92/bzPcStaxtNFBE=
+X-Google-Smtp-Source: ABdhPJy318HejoB3GaLgZqXptJghFMAXyAzC/+W4/M1wtvDfj6wFyzhu+evE2knVZwCmH/hO/UM2lA==
+X-Received: by 2002:aa7:8819:0:b0:4e7:8ca4:6820 with SMTP id c25-20020aa78819000000b004e78ca46820mr6224030pfo.14.1645222819955;
+        Fri, 18 Feb 2022 14:20:19 -0800 (PST)
+Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
+        by smtp.gmail.com with ESMTPSA id q21sm4116146pfu.188.2022.02.18.14.20.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 14:20:19 -0800 (PST)
+Date:   Sat, 19 Feb 2022 03:50:17 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexander Egorenkov <Alexander.Egorenkov@ibm.com>
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        brouer@redhat.com, daniel@iogearbox.net, fw@strlen.de,
+        john.fastabend@gmail.com, kafai@fb.com, maximmi@nvidia.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, songliubraving@fb.com, toke@redhat.com,
+        yhs@fb.com, Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: Re: [PATCH bpf-next v8 00/10] Introduce unstable CT lookup helpers
+Message-ID: <20220218222017.czshdolesamkqv4j@apollo.legion>
+References: <20220114163953.1455836-1-memxor@gmail.com>
+ <87y228q66f.fsf@oc8242746057.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87y228q66f.fsf@oc8242746057.ibm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Feb 2022, Mat Martineau wrote:
-
-> From: Paolo Abeni <pabeni@redhat.com>
+On Sat, Feb 19, 2022 at 01:49:04AM IST, Alexander Egorenkov wrote:
 >
-> The in kernel MPTCP PM implementation can process a single
-> incoming add address option at any given time. In the
-> mentioned test the server can surpass such limit. Let the
-> setup cope with that allowing a faster add_addr retransmission.
+> Hi,
+>
+> we are having a problem loading nf_conntrack on linux-next:
+>
+> # modprobe nf_conntrack
+> modprobe: ERROR: could not insert 'nf_conntrack': Unknown symbol in module, or unknown parameter (see dmesg)
+> modprobe: ERROR: Error running install command '/sbin/modprobe --ignore-install nf_conntrack  && /sbin/sysctl --quiet --pattern 'net[.]netfilter[.]nf_conntrack.*' --system' for module nf_conntrack: retcode 1
+> modprobe: ERROR: could not insert 'nf_conntrack': Invalid argument
+>
+> # dmesg
+> [ 3728.188969] missing module BTF, cannot register kfuncs
+> [ 3748.208674] missing module BTF, cannot register kfuncs
+> [ 3748.567123] missing module BTF, cannot register kfuncs
+> [ 3873.597276] missing module BTF, cannot register kfuncs
+> [ 3874.017125] missing module BTF, cannot register kfuncs
+> [ 3882.637097] missing module BTF, cannot register kfuncs
+> [ 3883.507213] missing module BTF, cannot register kfuncs
+> [ 3883.876878] missing module BTF, cannot register kfuncs
+>
+> # zgrep BTF /proc/config.gz
+> CONFIG_DEBUG_INFO_BTF=y
+> CONFIG_PAHOLE_HAS_SPLIT_BTF=y
+> CONFIG_DEBUG_INFO_BTF_MODULES=y
+>
+> It seems that nf_conntrack.ko is missing a .BTF section
+> which is present in debuginfo within
+> /usr/lib/debug/lib/modules/*/kernel/net/netfilter/nf_conntrack.ko.debug instead.
+>
+> Am i correct in assuming that this is not supported (yet) ?
+>
+> We use pahole 1.22 and build linux-next on Fedora 35 as a set of custom
+> packages. Architecture is s390x.
 >
 
-Jakub / David -
++Cc Ilya
 
-A heads-up, this patch will give a trivial merge conflict in the hunk 
-below when merging net/master to net-next/master. It's only due to changes 
-in the preceeding context (those "ip netns exec" lines), so conflict 
-resolution will be obvious.
+Thanks for the report, Alex.
 
+My assumption was that if DEBUG_INFO_BTF options was enabled, and BTF was not
+present, it is a problem, but it seems it can happen even when the options are
+enabled.
 
-> diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-> index 10b3bd805ac6..0d6a71e7bb59 100755
-> --- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-> +++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+I guess if .BTF section isn't supported/emitted on s390x, we have to relax the
+error and print a warning and ignore it, but I am not sure. Ilya would probably
+know the current status.
 
-...
+We have already relaxed it once in (bpf-next):
 
-> @@ -1158,7 +1164,10 @@ signal_address_tests()
-> 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags signal
-> 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags signal
-> 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags signal
-> -	run_tests $ns1 $ns2 10.0.1.1
-> +
-> +	# the peer could possibly miss some addr notification, allow retransmission
-> +	ip netns exec $ns1 sysctl -q net.mptcp.add_addr_timeout=1
-> +	run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow
-> 	chk_join_nr "signal addresses race test" 3 3 3
->
-> 	# the server will not signal the address terminating
-> -- 
-> 2.35.1
->
+c446fdacb10d ("bpf: fix register_btf_kfunc_id_set for !CONFIG_DEBUG_INFO_BTF")
+
+If this doesn't work on s390x, we should probably just print a warning when
+CONFIG_DEBUG_INFO_BTF is enabled and btf == NULL, and return 0.
+
+> Thanks
+> Regards
+> Alex
 >
 
 --
-Mat Martineau
-Intel
+Kartikeya
