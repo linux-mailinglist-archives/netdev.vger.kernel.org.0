@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FA74BBC80
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 16:52:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD994BBC8D
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 16:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237250AbiBRPw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 10:52:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43354 "EHLO
+        id S237259AbiBRPxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 10:53:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234411AbiBRPw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 10:52:58 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493B4C8FB3;
-        Fri, 18 Feb 2022 07:52:40 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id o6so4941631ljp.3;
-        Fri, 18 Feb 2022 07:52:40 -0800 (PST)
+        with ESMTP id S234411AbiBRPxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 10:53:08 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508F3254A40;
+        Fri, 18 Feb 2022 07:52:51 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id e17so4941906ljk.5;
+        Fri, 18 Feb 2022 07:52:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=NOXnbT0tpVRz48yVyNiEYVuR08OrOB6ChAddX+U2Dyg=;
-        b=Q7wn7Cojhp72LZWcdYZkPvTN8okK2pY51HB7JK3PTmbgpA3QEIHAGJ45oLn0iPAOF4
-         fywkUlO8uruuKZKVhGX7wOLR3QEvXI6BtHNwd+1dAMlPPMeCMvyhhnFOW6nGctAHtGQl
-         bJsLhvd94Qy0MG7Ig3AOFpZsdNkh7RkMbRy3Q3L5G0rS8UUrObcpEzImtveVM7AREszh
-         QaIgPxJXxqVKwhYed4Lq3+p6JkKvtFSjK+tplUZhlSwQZD8N1gS3IhOo1XmaGg6hJ//p
-         irUVkMfieS5I8LPWywcKPc6LYMTeOIHa8HG3y6T976yKTnOR1/LEKLhgPdeAoZrip+/q
-         hHXg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=Rcw7NVVt+xRbTVt1okgnvV9SIVxrg6UkjeCztqi7ITU=;
+        b=KswQTuqsXHsf71yw2us6jf45qIUFVvmq5HJ70pvj+MnUib22LlFiRJpb9QzRlcm0uM
+         v/dweD4d/yJM3pPeovi7nbuXwzEpMETVAi4YoAsWKdAKLiS1cjpAAaoyMbCEWfsBX6mJ
+         fIp8AVm49GQQav/mFdJUKUZtMf3hI9Jt+wrKb9cXySLciQdT9gKKQh1ZbnZDiC8u7X+0
+         kTjopeRSndk4qxKHWxRAhrSY7SR6V6awvqIEXUD/gFxnJeKwytOqzRPJeXFJtAtXZdAI
+         jCuJf5hXXV2WV0cUG+QoXNFQZRb1t2lzDXP9mBKpBhlzM6OVDVH0pEYs4gCLWP7qnUeI
+         /RUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=NOXnbT0tpVRz48yVyNiEYVuR08OrOB6ChAddX+U2Dyg=;
-        b=P68UO07sUBzB6Xopr99yWRN5RdbhWLhDgVPtDy9mVNlWwfY4GtikJhLiHYi/Xs1bK1
-         WtspHjySk9H6Mzrzt+z9FhyZpnIy8+ZzohtHTeIMBURuSuPOnig15gALk1LYXwNBI2K+
-         XYJAqom5ADqwV9XIRCa60RjmW1k6dE3Dw8MR9pjTjMPnCbETAnUYsZvOcNAG1lYg4a5v
-         znUJ0N/RGjipFhIxHDSSWO8hD2jKgsOJl5CIYCTSqyQ9ls1eK2QUjHvlUabvIw4EtnAO
-         BU4xXaCZRQOFmuRv2mIt9YmiXKoMN2Igs6E6lIEulNNaAojf2PSZxhKdL+C4XIVtK0tN
-         7hBA==
-X-Gm-Message-State: AOAM530ji4yXPfOVCzVHSKZ8FKv5capfkULYX+JwlnpPAn2wTrk1PF+q
-        PfDZ2Mm5ktFGea7AEW69INa6fm3gIF7NmeQmEwM=
-X-Google-Smtp-Source: ABdhPJxhn5cm48yKfZ9eYbWm1cULCmycRvaHWekI3UFoL9S1NcAVCK9NzKmPskiuv94wweFQPHV+JA==
-X-Received: by 2002:a2e:9693:0:b0:239:3f32:671f with SMTP id q19-20020a2e9693000000b002393f32671fmr6234463lji.42.1645199558533;
-        Fri, 18 Feb 2022 07:52:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=Rcw7NVVt+xRbTVt1okgnvV9SIVxrg6UkjeCztqi7ITU=;
+        b=0kltfcWqXKVvkEhMwPfIQDMuLnH4iYyJLNP98kvL0O7YcGeVHZNK9mnM23jm8E4B+a
+         k/oIFOWqmxdWRYC+m/ZgLHVKwPz328NWkGoPjRUl8BiipKoK2uTCWxdQVLnJZ+O9EgH+
+         A7Zodwzwngj0sVheo6+8jAAbwnFEJ7eRyDEzEaoU8gNKHg1NjjikYg4fZVrLsTGPUgn5
+         Ry7yYWPM8943AxoHiXd8BzfkLTXn8HyQr7sFq/CxZsgYRGmjc+vwU9pfZNdkDFzk1wBw
+         EP/P1J4JIbSFKKAAc1W8YWVrdeQ1t5XiN0QH4XBTn2b0lI9qCxvCzJj98NifqmKHcok3
+         RAVQ==
+X-Gm-Message-State: AOAM533Q7sxSiA00qKLt2QbcE7ygY/Upzi1CNMsY/1pSbIw3s2k8Q0nw
+        ZW9CDvciPwxwKAks7bjfqK4=
+X-Google-Smtp-Source: ABdhPJxryYPsXz9kvcRMAoXstAX3zms+hQSPwRHTw0l1sNmRhX0nUzolDBUK/pzrGY+R5tNY352NGw==
+X-Received: by 2002:a05:651c:90b:b0:244:c4a4:d5d8 with SMTP id e11-20020a05651c090b00b00244c4a4d5d8mr5928922ljq.97.1645199569692;
+        Fri, 18 Feb 2022 07:52:49 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id v11sm295453lfr.3.2022.02.18.07.52.36
+        by smtp.gmail.com with ESMTPSA id v11sm295453lfr.3.2022.02.18.07.52.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 07:52:37 -0800 (PST)
+        Fri, 18 Feb 2022 07:52:49 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
@@ -68,10 +68,12 @@ Cc:     netdev@vger.kernel.org,
         Baowen Zheng <baowen.zheng@corigine.com>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next v3 0/5] Add support for locked bridge ports (for 802.1X)
-Date:   Fri, 18 Feb 2022 16:51:43 +0100
-Message-Id: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
+Subject: [PATCH net-next v3 1/5] net: bridge: Add support for bridge port in locked mode
+Date:   Fri, 18 Feb 2022 16:51:44 +0100
+Message-Id: <20220218155148.2329797-2-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
+References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
@@ -85,93 +87,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series starts by adding support for SA filtering to the bridge,
-which is then allowed to be offloaded to switchdev devices. Furthermore
-an offloading implementation is supplied for the mv88e6xxx driver.
+In a 802.1X scenario, clients connected to a bridge port shall not
+be allowed to have traffic forwarded until fully authenticated.
+A static fdb entry of the clients MAC address for the bridge port
+unlocks the client and allows bidirectional communication.
 
-Public Local Area Networks are often deployed such that there is a
-risk of unauthorized or unattended clients getting access to the LAN.
-To prevent such access we introduce SA filtering, such that ports
-designated as secure ports are set in locked mode, so that only
-authorized source MAC addresses are given access by adding them to
-the bridges forwarding database. Incoming packets with source MAC
-addresses that are not in the forwarding database of the bridge are
-discarded. It is then the task of user space daemons to populate the
-bridge's forwarding database with static entries of authorized entities.
+This scenario is facilitated with setting the bridge port in locked
+mode, which is also supported by various switchcore chipsets.
 
-The most common approach is to use the IEEE 802.1X protocol to take
-care of the authorization of allowed users to gain access by opening
-for the source address of the authorized host.
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+---
+ include/linux/if_bridge.h    |  1 +
+ include/uapi/linux/if_link.h |  1 +
+ net/bridge/br_input.c        | 10 +++++++++-
+ net/bridge/br_netlink.c      |  6 +++++-
+ 4 files changed, 16 insertions(+), 2 deletions(-)
 
-With the current use of the bridge parameter in hostapd, there is
-a limitation in using this for IEEE 802.1X port authentication. It
-depends on hostapd attaching the port on which it has a successful
-authentication to the bridge, but that only allows for a single
-authentication per port. This patch set allows for the use of
-IEEE 802.1X port authentication in a more general network context with
-multiple 802.1X aware hosts behind a single port as depicted, which is
-a commonly used commercial use-case, as it is only the number of
-available entries in the forwarding database that limits the number of
-authenticated clients.
-
-      +--------------------------------+
-      |                                |
-      |      Bridge/Authenticator      |
-      |                                |
-      +-------------+------------------+
-       802.1X port  |
-                    |
-                    |
-             +------+-------+
-             |              |
-             |  Hub/Switch  |
-             |              |
-             +-+----------+-+
-               |          |
-            +--+--+    +--+--+
-            |     |    |     |
-    Hosts   |  a  |    |  b  |   . . .
-            |     |    |     |
-            +-----+    +-----+
-
-The 802.1X standard involves three different components, a Supplicant
-(Host), an Authenticator (Network Access Point) and an Authentication
-Server which is typically a Radius server. This patch set thus enables
-the bridge module together with an authenticator application to serve
-as an Authenticator on designated ports.
-
-
-For the bridge to become an IEEE 802.1X Authenticator, a solution using
-hostapd with the bridge driver can be found at
-https://github.com/westermo/hostapd/tree/bridge_driver .
-
-
-The relevant components work transparently in relation to if it is the
-bridge module or the offloaded switchcore case that is in use.
-
-
-Hans Schultz (5):
-  net: bridge: Add support for bridge port in locked mode
-  net: bridge: Add support for offloading of locked port flag
-  net: dsa: Add support for offloaded locked port flag
-  net: dsa: mv88e6xxx: Add support for bridge port locked mode
-  selftests: forwarding: tests of locked port feature
-
- drivers/net/dsa/mv88e6xxx/chip.c              |   9 +-
- drivers/net/dsa/mv88e6xxx/port.c              |  33 ++++
- drivers/net/dsa/mv88e6xxx/port.h              |   9 +-
- include/linux/if_bridge.h                     |   1 +
- include/uapi/linux/if_link.h                  |   1 +
- net/bridge/br_input.c                         |  10 +-
- net/bridge/br_netlink.c                       |   6 +-
- net/bridge/br_switchdev.c                     |   2 +-
- net/dsa/port.c                                |   4 +-
- .../testing/selftests/net/forwarding/Makefile |   1 +
- .../net/forwarding/bridge_locked_port.sh      | 174 ++++++++++++++++++
- tools/testing/selftests/net/forwarding/lib.sh |  16 ++
- 12 files changed, 259 insertions(+), 7 deletions(-)
- create mode 100755 tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index 509e18c7e740..3aae023a9353 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -58,6 +58,7 @@ struct br_ip_list {
+ #define BR_MRP_LOST_CONT	BIT(18)
+ #define BR_MRP_LOST_IN_CONT	BIT(19)
+ #define BR_TX_FWD_OFFLOAD	BIT(20)
++#define BR_PORT_LOCKED		BIT(21)
+ 
+ #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+ 
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 6218f93f5c1a..a45cc0a1f415 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -537,6 +537,7 @@ enum {
+ 	IFLA_BRPORT_MRP_IN_OPEN,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
++	IFLA_BRPORT_LOCKED,
+ 	__IFLA_BRPORT_MAX
+ };
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index b50382f957c1..e99f635ff727 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -81,6 +81,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 	if (!p || p->state == BR_STATE_DISABLED)
+ 		goto drop;
+ 
++	br = p->br;
+ 	brmctx = &p->br->multicast_ctx;
+ 	pmctx = &p->multicast_ctx;
+ 	state = p->state;
+@@ -88,10 +89,17 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 				&state, &vlan))
+ 		goto out;
+ 
++	if (p->flags & BR_PORT_LOCKED) {
++		struct net_bridge_fdb_entry *fdb_src =
++			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
++		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
++		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
++			goto drop;
++	}
++
+ 	nbp_switchdev_frame_mark(p, skb);
+ 
+ 	/* insert into forwarding database after filtering to avoid spoofing */
+-	br = p->br;
+ 	if (p->flags & BR_LEARNING)
+ 		br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, 0);
+ 
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 2ff83d84230d..7d4432ca9a20 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -184,6 +184,7 @@ static inline size_t br_port_info_size(void)
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_VLAN_TUNNEL */
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
++		+ nla_total_size(1)	/* IFLA_BRPORT_LOCKED */
+ 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_ROOT_ID */
+ 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_BRIDGE_ID */
+ 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
+@@ -269,7 +270,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+ 							  BR_MRP_LOST_CONT)) ||
+ 	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
+ 		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
+-	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)))
++	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)) ||
++	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)))
+ 		return -EMSGSIZE;
+ 
+ 	timerval = br_timer_value(&p->message_age_timer);
+@@ -827,6 +829,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+ 	[IFLA_BRPORT_GROUP_FWD_MASK] = { .type = NLA_U16 },
+ 	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
++	[IFLA_BRPORT_LOCKED] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
+ 	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
+ };
+@@ -893,6 +896,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
+ 	br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
+ 	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
+ 	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
++	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
+ 
+ 	changed_mask = old_flags ^ p->flags;
+ 
 -- 
 2.30.2
 
