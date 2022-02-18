@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FA74BB0CB
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 05:36:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 036C74BB0D0
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 05:40:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiBREgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 23:36:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52008 "EHLO
+        id S229911AbiBREkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 23:40:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiBREgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 23:36:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D44D119859;
-        Thu, 17 Feb 2022 20:36:07 -0800 (PST)
+        with ESMTP id S229893AbiBREkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 23:40:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EC9251E70
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 20:39:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D682661E26;
-        Fri, 18 Feb 2022 04:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7555C340E9;
-        Fri, 18 Feb 2022 04:36:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C068B82499
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 04:39:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28EBC340E9;
+        Fri, 18 Feb 2022 04:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645158966;
-        bh=+l51Or4meOwBjDYBCyGfvqc9xDIc92UbsEMYwevC4GU=;
+        s=k20201202; t=1645159190;
+        bh=3ENLfIxlWOCUKfzQXf7s9f6vSwbc6pM/GeB6iggU4OQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bhzOeCh+qbxrFrS19HvOwc/3b5/uRJOVdjviXbed4BOboHQCLykNMNnIm11/UEp4g
-         JfsuFeZueOuuzgsZNacwAn/W1Gstm7Y76s3i1EL35oXAvOVDCN7YWGfzD9aGnwFOCF
-         DG423bQqmu99o5m0uZAQ1ZSQ93J/O5Z6LAtamCBaDYHWlWfY6vb3vekbBtvY6/jzWM
-         1F6AsTOW3+nKFc50Ca8WJ8Ev09pRSR0CBdLaqt71RXftx/snsyVLKDxcq5KBBumKPo
-         nvtk6CjyGzGgNiQem+gpeVaXFSq/rXZMjM3xCiz6mizVn6rCUXwVJipEioOiGsm/o+
-         A0TKo2ruBhcSg==
-Date:   Thu, 17 Feb 2022 20:36:04 -0800
+        b=uipD/YuGsZW1YX1N44KJaiCB6gqIXyoSa2rAX6HPIt7uJTxv+PzDTXmT//2L9p4Y9
+         7zrpcW0mJXwpQRGO1buYSG+r1nIcmG351FJVYmYBpZIv2mEcjfzJQwP4eMw6jUoe5P
+         AlvARDKZ/pCvTu24RUqVQBqU6cHoYqvS5/LcyvjOZqwSR3TQx5V4hxIKt6EFT1SJj0
+         xaMVFpWwMEQEQQN6+iy/qnBWp8RrLislNx9w/icCWITNDrFl1Ceea0yw2A2w3qHr/J
+         PTRj55/0kNX+WMJufo1ZnjZaDBtbvKsyh8OiOWgkohZjwlW8AmJiqTz1jOpIcl+odr
+         FWIbQ/+LtWSQA==
+Date:   Thu, 17 Feb 2022 20:39:48 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>, <kernel@axis.com>,
-        Lars Persson <larper@axis.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: stmmac: Enable NAPI before interrupts go live
-Message-ID: <20220217203604.39e318d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220217145527.2696444-1-vincent.whitchurch@axis.com>
-References: <20220217145527.2696444-1-vincent.whitchurch@axis.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH net-next 2/6] nfp: add support to offload tc action to
+ hardware
+Message-ID: <20220217203948.7eb7835e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220217105652.14451-3-simon.horman@corigine.com>
+References: <20220217105652.14451-1-simon.horman@corigine.com>
+        <20220217105652.14451-3-simon.horman@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,31 +57,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Feb 2022 15:55:26 +0100 Vincent Whitchurch wrote:
-> From: Lars Persson <larper@axis.com>
-> 
-> The stmmac_open function has a race window between enabling the RX
-> path and its interrupt to the point where napi_enabled is called.
-> 
-> A chatty network with plenty of broadcast/multicast traffic has the
-> potential to completely fill the RX ring before the interrupt handler
-> is installed. In this scenario the single interrupt taken will find
-> napi disabled and the RX ring will not be processed. No further RX
-> interrupt will be delivered because the ring is full.
-> 
-> The RX stall could eventually clear because the TX path will trigger a
-> DMA interrupt once the tx_coal_frames threshold is reached and then
-> NAPI becomes scheduled.
+On Thu, 17 Feb 2022 11:56:48 +0100 Simon Horman wrote:
+> +	if (add)
+> +		return 0;
+> +	else
+> +		return -EOPNOTSUPP;
 
-LGTM, although now the ndo_open and ndo_stop paths are not symmetrical.
-Is there no way to mask the IRQs so that they don't fire immediately?
-More common flow (IMO) would be:
- - request irq
- - mask irq
- - populate rings
- - start dma
- - enable napi
- - unmask irq
-Other than the difference in flow between open/stop there may also be
-some unpleasantness around restarting tx queues twice with the patch
-as is.
+	return add ? 0 : -EOPNOTSUPP;
+
+or at least remove the else, everything after if () return; is in an
+'else' branch.
