@@ -2,92 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E360D4BBCED
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:01:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A804BBCF8
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:04:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235174AbiBRQBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 11:01:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41202 "EHLO
+        id S237193AbiBRQE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 11:04:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237471AbiBRQBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:01:45 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871662B3AD0
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:01:03 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id s21so4981420ljp.2
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:01:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mtlO3+OvSWDhalC2Wi4R2Owet8q94JSa7OLiGXBMUYc=;
-        b=hzMTWaO7be/dewtuGAkiFFrcw4yXcSwlOzngLwbuyl2vMb2rcQHquzykaKAk2W6UUI
-         0aGWfeD1KZzOYLUSS8rOfmjx7EtawWp3AaMfedzvbK4x1Uo+YjVC6tJH39zAfCqiH1gl
-         PjQVv0YdJ1nhIoh0dbbWIxjufN1BFUFCw8fdFlZfc3Mro/Ai42d3a6yzPYhRb86Tl+RP
-         tajVs5Ryk11O7+5QRaSZ6/+qZ6xavd3Kml8Uvw2TJ5p97X3+tUJyDOiPURSoOUpbh7+S
-         DNJQ0K8plLu3gSvnn4ZcNbliI8slu8ue2PQ9rUX7M+4uR4vcw8FWvFrubtiLqAA96oPk
-         6/wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mtlO3+OvSWDhalC2Wi4R2Owet8q94JSa7OLiGXBMUYc=;
-        b=bDWfbyELDmrZ7HND1G2/QM5QUsxfzQTzojwKn0hDIDAU0rhDjl3fCfYgRI8wpwAAXi
-         RpuJT72nX/eqpDaUnMBT9DyItAkrmMgSqW4VoXVl9Trp+dyehlCw/zIXVgU5ajg5cXDn
-         ONlpLYtSiYTUSscBcUzCOb9zyWyIMK9B20bloJupngRVhhvy/Kq1WLy8xsm+Ml6JvpAg
-         5WbpiUKGBGKULpU2nHOGCvlqA5Z/EaLrtnh936uTEtwj3qsdFObmBxXmBKrCYWIw07Q0
-         VW3KoOLNDDWTMwr2BoYHVtemidKUs2LQkIL8phOAR3F8mS4gnPECm3bF/snjRj7MXH9i
-         1yPg==
-X-Gm-Message-State: AOAM532dMCy0EwQ9663t+VxsgXSy1ShpMaMZ2KGTzQmwhvEOocod1hzn
-        VAOKfFfVaaW7l7VRd88nAVUxV5b86tWA8l6UBYXnMwNx4sU=
-X-Google-Smtp-Source: ABdhPJzrZdWkAnZuCK1oN2mlHt+AnH4B9m5KssuJy7HjAYaeT7MrcZnfNpZWxwq52JeHqvztGUtpJB4viP/VNCqDJ2k=
-X-Received: by 2002:a05:651c:178c:b0:245:fd2c:2d2b with SMTP id
- bn12-20020a05651c178c00b00245fd2c2d2bmr6115202ljb.486.1645200061792; Fri, 18
- Feb 2022 08:01:01 -0800 (PST)
+        with ESMTP id S233019AbiBRQE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:04:27 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AEC48E79;
+        Fri, 18 Feb 2022 08:04:10 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IFEhGX004475;
+        Fri, 18 Feb 2022 16:04:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=2hopbCZ97CZ85OH0VfOjc6KE5jAmjXLJh7JqAcZEIVY=;
+ b=qA9whTFrbaoQMeaHvGPsukqTXs9KiXka7zfpIDHX9SXmOV5pYRhBPR6XRx8xeNwvJVGY
+ UGfKmu+P9osY5osK6rsBBF1wAPZUYMyGj5BZZ7/yeBufEuyYGELoLkDmpOi0baZS7vhH
+ tPVZ/Wc3AbAeUQ2h6SFjUJTZ1jtTgFFqbQS+66HZBckAU6b2xREATO9eFbWH5uNuetjP
+ Ie6k05CbxUH8PwuXSqw35FWB8puNopeUOizZurpsOkUIPdLDAjV24V6HZygQ21c/+X7n
+ w8unYFo0ha8WNksPGEFmqfdVSo5DC7VbYKG5hdhD+wN30Q8EUXTTZMe3Tv4h1afT/Djq +w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eadx297xk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 16:04:01 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21IFmSJs002721;
+        Fri, 18 Feb 2022 16:04:00 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eadx297vw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 16:04:00 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IG0Ngx007995;
+        Fri, 18 Feb 2022 16:03:58 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3e64harhu1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Feb 2022 16:03:57 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IG3s3X40894806
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 16:03:54 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2EA1E52057;
+        Fri, 18 Feb 2022 16:03:54 +0000 (GMT)
+Received: from [9.145.55.33] (unknown [9.145.55.33])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9FD9952059;
+        Fri, 18 Feb 2022 16:03:53 +0000 (GMT)
+Message-ID: <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
+Date:   Fri, 18 Feb 2022 17:03:56 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] net/smc: Add autocork support
+Content-Language: en-US
+To:     dust.li@linux.alibaba.com,
+        Hendrik Brueckner <brueckner@linux.ibm.com>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+ <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
+ <20220216152721.GB39286@linux.alibaba.com>
+ <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+ <20220217132200.GA5443@linux.alibaba.com> <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
+ <20220218073327.GB5443@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220218073327.GB5443@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: bnu36bG5hHeXDqt1iP_AokCYWbKlfLKJ
+X-Proofpoint-GUID: __R3UhUD0lSkIz8DWgbRFNL_g0kMgLq8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220214231852.3331430-1-jeremy.linton@arm.com>
- <CAPv3WKczaLS8zKwTyEXTCD=YEVF5KcDGTr0uqM-7=MKahMQJYA@mail.gmail.com>
- <33a8e31c-c271-2e3a-36cf-caea5a7527dc@arm.com> <CAPv3WKftMRJ0KRXu5+t_Y8MYDd4u0C74QZfsjUjwo7bvonN89w@mail.gmail.com>
- <20220217155755.41e0df1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220217155755.41e0df1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Fri, 18 Feb 2022 17:00:49 +0100
-Message-ID: <CAPv3WKfjQEy08QNrPgrxPfvAk0z+_qr2GYMDS7MCzagH5WYGOw@mail.gmail.com>
-Subject: Re: [BUG/PATCH v3] net: mvpp2: always set port pcs ops
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        netdev <netdev@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-18_06,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 impostorscore=0
+ spamscore=0 adultscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
+ clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202180104
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 18/02/2022 08:33, dust.li wrote:
+> On Thu, Feb 17, 2022 at 07:15:54PM +0100, Hendrik Brueckner wrote:
+>> On Thu, Feb 17, 2022 at 09:22:00PM +0800, dust.li wrote:
+>>> On Thu, Feb 17, 2022 at 10:37:28AM +0100, Stefan Raspl wrote:
+>>>> On 2/16/22 16:27, dust.li wrote:
+>>>>> On Wed, Feb 16, 2022 at 02:58:32PM +0100, Stefan Raspl wrote:
+>>>>>> On 2/16/22 04:49, Dust Li wrote:
+>>>>>>
+>>>
+>>>> Now we understand that cloud workloads are a bit different, and the desire to
+>>>> be able to modify the environment of a container while leaving the container
+>>>> image unmodified is understandable. But then again, enabling the base image
+>>>> would be the cloud way to address this. The question to us is: How do other
+>>>> parts of the kernel address this?
+>>>
+>>> I'm not familiar with K8S, but from one of my colleague who has worked
+>>> in that area tells me for resources like CPU/MEM and configurations
+>>> like sysctl, can be set using K8S configuration:
+>>> https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/
+>>
+>> For K8s, this involves container engines like cri-o, containerd, podman,
+>> and others towards the runtimes like runc.  To ensure they operate together,
+>> specifications by the Open Container Initiative (OCI) at
+>> https://opencontainers.org/release-notices/overview/
+>>
+>> For container/pod deployments, there is especially the Container Runtime
+>> Interface (CRI) that defines the interface, e.g., of K8s to cri-o etc.
+>>
+>> CRI includes support for (namespaced) sysctl's:
+>> https://github.com/opencontainers/runtime-spec/releases/tag/v1.0.2
+>>
+>> In essence, the CRI spec would allow users to specify/control a specific
+>> runtime for the container in a declarative way w/o modifying the (base)
+>> container images.
+> 
+> Thanks a lot for your kind explanation !
+> 
+> After a quick look at the OCI spec, I saw the support for file based
+> configuration (Including sysfs/procfs etc.). And unfortunately, no
+> netlink support.
+> 
+> 
+> Hi Karsten & Stefan:
+> Back to the patch itself, do you think I need to add the control switch
+> now ? Or just leave the switch and fix other issues first ?
 
-pt., 18 lut 2022 o 00:57 Jakub Kicinski <kuba@kernel.org> napisa=C5=82(a):
->
-> On Tue, 15 Feb 2022 17:44:53 +0100 Marcin Wojtas wrote:
-> > > I don't have access to the machine at the moment (maybe in a couple d=
-ays
-> > > again) but it was running a build from late 2019 IIRC. So, definitely
-> > > not a bleeding edge version for sure.
-> > >
-> >
-> > 2019 is enough indicator that most likely there is no MDIO description
-> > in ACPI. Let me test the patch, thanks.
->
-> Any luck with the testing? I wonder if we should keep the patch in or
-> drop it for now and ask for repost once tested..
+Hi, looks like we need more time to evaluate possibilities, so if you have 
+additional topics on your desk move on and delay this one.
+Right now for me it looks like there is no way to use netlink for container runtime
+configuration, which is a pity.
+We continue our discussions about this in the team, and also here on the list.
 
-I'll update today, sorry for the delay.
+Thank you!
 
-Marcin
+
