@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D0604BB44D
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 09:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4D2F4BB44B
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 09:34:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbiBRId4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 03:33:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38748 "EHLO
+        id S232627AbiBRId7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 03:33:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232608AbiBRId2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 03:33:28 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8292AE26;
-        Fri, 18 Feb 2022 00:33:09 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id s16so7216995pgs.13;
-        Fri, 18 Feb 2022 00:33:09 -0800 (PST)
+        with ESMTP id S232629AbiBRIdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 03:33:32 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B94725C4C;
+        Fri, 18 Feb 2022 00:33:16 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id w1so6621635plb.6;
+        Fri, 18 Feb 2022 00:33:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vhN6bGLbUWbV7gm+QxrfCTvNwDyT7gtYG2Niy8n6URM=;
-        b=cJiqm4iS05FYDROdQbLPJvRPiOP9H4Treic7Ab6z/vSFOtEJK8fYYWvMesJMJXRsmA
-         L0yu02jst1wMdzij7bwQKba+G/UbfPuQzrepNTOwVVve1W0kvW5vQhQAsZlxUwK6aTTo
-         INqyKfjbR/ZldXsdVL35wZ2v8Jrjmpq0nWI6fEIZTlYrF3RvlnQ3RE+m4CyUcgbe9Obr
-         lI9ESnbJxyKI4jrL5bKqSqebkXr/+DQLbRCJN+KNkOWjNSUyko+BnXHImnrBSHBn4sx1
-         tEQqxah71ktCHyqANwgE5gzQjkvK9s7UAzX/rLO9SKGUoDMDDp3Kw42d0STyUJR8PhFi
-         xbug==
+        bh=CnPw+SLQUtzseS65MwNzRbWbFNodU4McbKZ2wtyrVIA=;
+        b=ZVQAnISRPMaxHWHqHDM4q8heSVYwKVjtUiYaMRPa3kXCrNgXaTYcZ427kTw42ThFtx
+         +5uVXt0TG1/fF4d0Khy2HryMB9awd/uf/jBKjGyjaDfDMbgJf1po9BvPwx5SXDcAkfpg
+         q9qJO4JKWry/IdWM+LztyXFQPJOJu7VehvjHKygIGBDNDySccgXlFb1PZwr/8maJu4Kf
+         Lg2frmOs17BNVT2A0qlfhXJet04VpjfGjcpuLe0g+REYdmOstvDN5oT8BZh69iBh6AFI
+         XKYkAj/zTJdBQL0vvm+/W740m9z7G1Sl1vWVbnHR+aG4GfGZrMGcCAGkY799Qo3FtbcS
+         mBJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vhN6bGLbUWbV7gm+QxrfCTvNwDyT7gtYG2Niy8n6URM=;
-        b=lLO/ip5F1e3V3t0S+bSfY9M9nnHSUiQZ/VjRg3SYje2TjyODUeXwbODlodacSQRpG8
-         oXSMC27vHpmJr4ilWFHZbE6EcZLiiWtSLNiW6T7B7c9YFGLY00XzGngekubu2q7CILI0
-         kFwNH8iKNSiD5u4KHML8Tfk9Aunef8m2BmK1Uto0FgOnG3WeoTJQDwCWvBizrr+1ck17
-         znAbVi6BtPWnD3gx4VQrUgnhB4xmngGyrpZzDIxQXTb/wL4EBn9WlCuhtDiqozf6NqrV
-         YXy+KMWW7Q/xgRXHf3E6O3b5INi7alFtQy071UF8+uoWOOMyb1EqMZzSxEvEzJ0ovaTF
-         3nAA==
-X-Gm-Message-State: AOAM530KFGwwpYkPmzC3uqdAM3mZLZqvNooElAyDnoEqbW3is60gY6Ci
-        Qic/t1776iTZHZpSCt4Cwdg=
-X-Google-Smtp-Source: ABdhPJwvpy9+oteNIVS+TPB9BK2QKLCnNcvdZbNLxvEmkiJUxEr7JfT6dmwe49yvvmB3EcMO9pC9kg==
-X-Received: by 2002:a63:1421:0:b0:372:d575:7842 with SMTP id u33-20020a631421000000b00372d5757842mr5475718pgl.182.1645173189124;
-        Fri, 18 Feb 2022 00:33:09 -0800 (PST)
+        bh=CnPw+SLQUtzseS65MwNzRbWbFNodU4McbKZ2wtyrVIA=;
+        b=avcUg7alD8Xc9c0XB5THLDAHxTLjwW16ew2csYzMxpbHpmFzBAZLD3Ugfa5J7m1gWX
+         gh+gtMsl8p/+N27n1l1Nh67M1/HikuJcUuRRJv5yGKkUAZuPIv8r1DQ8DtLynd1ay7zX
+         NfyIsL8uU2sF8HW4qqUfEipQpBxwd7LLl7cxyNGPkthXgSMN0YwzMviuRjoECCKf6EZ6
+         S73yJx6KzzVoiVEUsgQOJiPwvGwdNulX7P1FBfol0Jx5GjMk7XFOBY+xjYRzYEsyoHqU
+         JydtsL2BZnKA13a1Vwi6EWbmIO83TGvzd43kYt1wxMBlXDEYMt/4c5Hmm4kcIrOUC//1
+         r91A==
+X-Gm-Message-State: AOAM530BmsRcncVHR3pq10GSd7Ha1RrH9zDpH4T3av9VS26OPLKMVLw7
+        LCjVSfJP24mvGgiF63d08C8=
+X-Google-Smtp-Source: ABdhPJwtxNzioT31sVOH9mI9E13/KfSlI9QYc+gnmYgma6B/KvxpI0mRZWOEqw4F/nym0eQBFIFU5Q==
+X-Received: by 2002:a17:90b:146:b0:1b9:e01c:16f3 with SMTP id em6-20020a17090b014600b001b9e01c16f3mr7118213pjb.18.1645173196014;
+        Fri, 18 Feb 2022 00:33:16 -0800 (PST)
 Received: from localhost.localdomain ([203.205.141.113])
-        by smtp.gmail.com with ESMTPSA id m23sm1963530pff.201.2022.02.18.00.33.02
+        by smtp.gmail.com with ESMTPSA id m23sm1963530pff.201.2022.02.18.00.33.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 00:33:08 -0800 (PST)
+        Fri, 18 Feb 2022 00:33:15 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -61,9 +61,9 @@ Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
         vvs@virtuozzo.com, cong.wang@bytedance.com,
         luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-Subject: [PATCH net-next v2 7/9] net: tcp: use tcp_drop_reason() for tcp_rcv_established()
-Date:   Fri, 18 Feb 2022 16:31:31 +0800
-Message-Id: <20220218083133.18031-8-imagedong@tencent.com>
+Subject: [PATCH net-next v2 8/9] net: tcp: use tcp_drop_reason() for tcp_data_queue()
+Date:   Fri, 18 Feb 2022 16:31:32 +0800
+Message-Id: <20220218083133.18031-9-imagedong@tencent.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218083133.18031-1-imagedong@tencent.com>
 References: <20220218083133.18031-1-imagedong@tencent.com>
@@ -81,89 +81,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace tcp_drop() used in tcp_rcv_established() with tcp_drop_reason().
-Following drop reasons are added:
+Replace tcp_drop() used in tcp_data_queue() with tcp_drop_reason().
+Following drop reasons are introduced:
 
-SKB_DROP_REASON_TCP_FLAGS
+SKB_DROP_REASON_TCP_ZEROWINDOW
+SKB_DROP_REASON_TCP_OLD_DATA
+SKB_DROP_REASON_TCP_OVERWINDOW
+
+SKB_DROP_REASON_TCP_OLD_DATA is used for the case that end_seq of skb
+less than the left edges of receive window. (Maybe there is a better
+name?)
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h     | 1 +
- include/trace/events/skb.h | 1 +
- net/ipv4/tcp_input.c       | 9 +++++++--
- 3 files changed, 9 insertions(+), 2 deletions(-)
+ include/linux/skbuff.h     | 13 +++++++++++++
+ include/trace/events/skb.h |  3 +++
+ net/ipv4/tcp_input.c       | 13 +++++++++++--
+ 3 files changed, 27 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f7f33c79945b..671db9f49efe 100644
+index 671db9f49efe..554ef2c848ee 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -362,6 +362,7 @@ enum skb_drop_reason {
- 					 * backlog (see
+@@ -363,6 +363,19 @@ enum skb_drop_reason {
  					 * LINUX_MIB_TCPBACKLOGDROP)
  					 */
-+	SKB_DROP_REASON_TCP_FLAGS,	/* TCP flags invalid */
+ 	SKB_DROP_REASON_TCP_FLAGS,	/* TCP flags invalid */
++	SKB_DROP_REASON_TCP_ZEROWINDOW,	/* TCP receive window size is zero,
++					 * see LINUX_MIB_TCPZEROWINDOWDROP
++					 */
++	SKB_DROP_REASON_TCP_OLD_DATA,	/* the TCP data reveived is already
++					 * received before (spurious retrans
++					 * may happened), see
++					 * LINUX_MIB_DELAYEDACKLOST
++					 */
++	SKB_DROP_REASON_TCP_OVERWINDOW,	/* the TCP data is out of window,
++					 * the seq of the first byte exceed
++					 * the right edges of receive
++					 * window
++					 */
  	SKB_DROP_REASON_MAX,
  };
  
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index bfccd77e9071..d332e7313a61 100644
+index d332e7313a61..cc1c8f7eaf72 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -32,6 +32,7 @@
- 	   TCP_MD5UNEXPECTED)					\
+@@ -33,6 +33,9 @@
  	EM(SKB_DROP_REASON_TCP_MD5FAILURE, TCP_MD5FAILURE)	\
  	EM(SKB_DROP_REASON_SOCKET_BACKLOG, SOCKET_BACKLOG)	\
-+	EM(SKB_DROP_REASON_TCP_FLAGS, TCP_FLAGS)		\
+ 	EM(SKB_DROP_REASON_TCP_FLAGS, TCP_FLAGS)		\
++	EM(SKB_DROP_REASON_TCP_ZEROWINDOW, TCP_ZEROWINDOW)	\
++	EM(SKB_DROP_REASON_TCP_OLD_DATA, TCP_OLD_DATA)		\
++	EM(SKB_DROP_REASON_TCP_OVERWINDOW, TCP_OVERWINDOW)	\
  	EMe(SKB_DROP_REASON_MAX, MAX)
  
  #undef EM
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 0a2740add404..16ee1127e25d 100644
+index 16ee1127e25d..0a4ca818d580 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -5787,6 +5787,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
-  */
- void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+@@ -4988,6 +4988,7 @@ void tcp_data_ready(struct sock *sk)
+ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
  {
-+	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	const struct tcphdr *th = (const struct tcphdr *)skb->data;
  	struct tcp_sock *tp = tcp_sk(sk);
- 	unsigned int len = skb->len;
-@@ -5875,6 +5876,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 				tp->rcv_rtt_last_tsecr = tp->rx_opt.rcv_tsecr;
- 				return;
- 			} else { /* Header too small */
-+				reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 				TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
- 				goto discard;
- 			}
-@@ -5930,8 +5932,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	if (len < (th->doff << 2) || tcp_checksum_complete(skb))
- 		goto csum_error;
++	enum skb_drop_reason reason;
+ 	bool fragstolen;
+ 	int eaten;
  
--	if (!th->ack && !th->rst && !th->syn)
-+	if (!th->ack && !th->rst && !th->syn) {
-+		reason = SKB_DROP_REASON_TCP_FLAGS;
- 		goto discard;
+@@ -5006,6 +5007,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 	skb_dst_drop(skb);
+ 	__skb_pull(skb, tcp_hdr(skb)->doff * 4);
+ 
++	reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	tp->rx_opt.dsack = 0;
+ 
+ 	/*  Queue data for delivery to the user.
+@@ -5014,6 +5016,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 	 */
+ 	if (TCP_SKB_CB(skb)->seq == tp->rcv_nxt) {
+ 		if (tcp_receive_window(tp) == 0) {
++			reason = SKB_DROP_REASON_TCP_ZEROWINDOW;
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPZEROWINDOWDROP);
+ 			goto out_of_window;
+ 		}
+@@ -5023,6 +5026,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 		if (skb_queue_len(&sk->sk_receive_queue) == 0)
+ 			sk_forced_mem_schedule(sk, skb->truesize);
+ 		else if (tcp_try_rmem_schedule(sk, skb, skb->truesize)) {
++			reason = SKB_DROP_REASON_PROTO_MEM;
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRCVQDROP);
+ 			sk->sk_data_ready(sk);
+ 			goto drop;
+@@ -5059,6 +5063,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 	if (!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt)) {
+ 		tcp_rcv_spurious_retrans(sk, skb);
+ 		/* A retransmit, 2nd most common case.  Force an immediate ack. */
++		reason = SKB_DROP_REASON_TCP_OLD_DATA;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_DELAYEDACKLOST);
+ 		tcp_dsack_set(sk, TCP_SKB_CB(skb)->seq, TCP_SKB_CB(skb)->end_seq);
+ 
+@@ -5066,13 +5071,16 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 		tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
+ 		inet_csk_schedule_ack(sk);
+ drop:
+-		tcp_drop(sk, skb);
++		tcp_drop_reason(sk, skb, reason);
+ 		return;
+ 	}
+ 
+ 	/* Out of window. F.e. zero window probe. */
+-	if (!before(TCP_SKB_CB(skb)->seq, tp->rcv_nxt + tcp_receive_window(tp)))
++	if (!before(TCP_SKB_CB(skb)->seq,
++		    tp->rcv_nxt + tcp_receive_window(tp))) {
++		reason = SKB_DROP_REASON_TCP_OVERWINDOW;
+ 		goto out_of_window;
 +	}
  
- 	/*
- 	 *	Standard slow path.
-@@ -5957,12 +5961,13 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
- 	return;
- 
- csum_error:
-+	reason = SKB_DROP_REASON_TCP_CSUM;
- 	trace_tcp_bad_csum(skb);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_CSUMERRORS);
- 	TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
- 
- discard:
--	tcp_drop(sk, skb);
-+	tcp_drop_reason(sk, skb, reason);
- }
- EXPORT_SYMBOL(tcp_rcv_established);
- 
+ 	if (before(TCP_SKB_CB(skb)->seq, tp->rcv_nxt)) {
+ 		/* Partial packet, seq < rcv_next < end_seq */
+@@ -5082,6 +5090,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+ 		 * remembering D-SACK for its head made in previous line.
+ 		 */
+ 		if (!tcp_receive_window(tp)) {
++			reason = SKB_DROP_REASON_TCP_ZEROWINDOW;
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPZEROWINDOWDROP);
+ 			goto out_of_window;
+ 		}
 -- 
 2.34.1
 
