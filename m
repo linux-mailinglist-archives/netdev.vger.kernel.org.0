@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B81074BB0E9
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 05:51:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E934BB0ED
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 05:52:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiBREwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 23:52:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45522 "EHLO
+        id S230010AbiBREwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 23:52:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiBREvy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 23:51:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B0E17C106;
-        Thu, 17 Feb 2022 20:51:28 -0800 (PST)
+        with ESMTP id S230038AbiBREwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 23:52:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC39013FAB;
+        Thu, 17 Feb 2022 20:52:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA71461E26;
-        Fri, 18 Feb 2022 04:51:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F31ACC340E9;
-        Fri, 18 Feb 2022 04:51:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82AD5B82499;
+        Fri, 18 Feb 2022 04:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36B7C340E9;
+        Fri, 18 Feb 2022 04:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645159887;
-        bh=z9kkrvc2NL5Tbv39j6C/dwiZlTKTgsn2J4KabKbaxaM=;
+        s=k20201202; t=1645159923;
+        bh=uVJfEu+xW11wsO1oXDxEUy1ONTXTBEQ/j80dZ6m2VGM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mQhLDUn7BMecoLlljM5/8LRUQylO7fGKoFu+B/AoyUZW9vlz2Itz+UzbX2RZAHa7p
-         +XQkKoHce4tKp3bdyenhLoSCOJI7lduCSGFEm1G7CA6BZjR5Y5kiM6+AbRNjj/aEP9
-         CW2TrEFxM5ONokSWr39ZWED9l1AQNLdGQ59GU2SdxCvwkf0Lgl+zHq6Hea5TFhNTt0
-         LVb8qYHAn0OuD4Ovx18djQhj8F4YE8WMzE9THb2eVx4pJMLvRHgFpbGcLTsaYHovey
-         mHzi0f+JmqEzlw4f27ORYlMfd826mJruOpwQaEvKXLGnE7ptAjqRkN/Ozmk0PodkMi
-         qnTJRcE+/5H9g==
-Date:   Thu, 17 Feb 2022 20:51:25 -0800
+        b=ateDoHk2L90L0ImxhAfpFwST64FplrE+8OFDL57JFyTYPmS6C5RNZqjHNONH7efIE
+         FKwHD0TmzKJd5cQgCXYsM6gg9DVk1k5Fk7A/BEr9JtjtHy3U7661PLg192gqs9fe40
+         KzyL98R8tej6QN3yAR55F1XrZ/ythnF3NaBVQegOfecd4Et+OeYkKY4WYZc9G8ulR1
+         RUMIfhB7K9k76VjNvWcnJDm0fxGrlFRbkG1flVydn2i09ahJ0tzlrOvThYKvl7RxJW
+         8I7Ltc5mTL1Lqx+Nvdfj5mFfIv3q2woMftNKSnQJT3C8coJP8kpKYeH29EeCDLHOL9
+         /Odiiu3/xkSkw==
+Date:   Thu, 17 Feb 2022 20:52:01 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
 Cc:     netdev@vger.kernel.org, Taras Chornyi <taras.chornyi@plvision.eu>,
@@ -43,7 +43,7 @@ Cc:     netdev@vger.kernel.org, Taras Chornyi <taras.chornyi@plvision.eu>,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH net-next] net: prestera: flower: fix destroy tmpl in
  chain
-Message-ID: <20220217205125.7c63432e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <20220217205201.3909b634@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 In-Reply-To: <1645022624-2010-1-git-send-email-volodymyr.mytnyk@plvision.eu>
 References: <1645022624-2010-1-git-send-email-volodymyr.mytnyk@plvision.eu>
 MIME-Version: 1.0
@@ -60,14 +60,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, 16 Feb 2022 16:43:44 +0200 Volodymyr Mytnyk wrote:
-> +	list_for_each_safe(pos, n, &block->template_list) {
-> +		template = list_entry(pos, typeof(*template), list);
+> Fixes: fa5d824ce5dd ("net: prestera: acl: add multi-chain support offload")
+> 
+> Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
 
-nit: list_for_each_entry_safe()
-
-> +		if (template->chain_index == f->common.chain_index) {
-> +			/* put the reference to the ruleset kept in create */
-> +			prestera_flower_template_free(template);
-> +			return;
-> +		}
-> +	}
+Ah, and please don't put empty lines between tags.
