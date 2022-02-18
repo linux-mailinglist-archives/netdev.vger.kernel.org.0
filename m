@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C49B4BAFF8
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 04:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A450E4BAFF2
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 04:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiBRDDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 22:03:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38638 "EHLO
+        id S231803AbiBRDDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 22:03:42 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbiBRDDg (ORCPT
+        with ESMTP id S231796AbiBRDDg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 22:03:36 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E95959A53
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 19:03:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9237F59A61
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 19:03:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645153400; x=1676689400;
+  t=1645153401; x=1676689401;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=U1szUR6pqUI2yP1NLV6igd+jmVjkx9CEqyJEDcke89k=;
-  b=bLQ2AoyWpkOB+QvxLoq+DvYhutUvWSMjBGM808WfruoOQQaYVFl3WQN9
-   ow+oLYuELv26uM0SN+QshLCnd8JuOzHgLv9SWcSOMQ+zkEwRyftOnZays
-   gEIlW4cXQdGPygvMI3KU2MBdG3FGaJqA3aQsU0NtWe5liA6N5o0Oy5eZT
-   LgY9ik5glRjWgffp3uR3JDptJaWyxo90PfUN7u3ZXQp+dE0xGoVmu8DFn
-   cfqCrEOamDs4YH83LXC8z6xMk3zUdmkC5edGfiNIjZ6Aar725AUHa8LAp
-   Vk/SXZSoBZTt233U+7mqcafRfASesZvzjQXl+cXnZvqrnVhOErxQsPl5Z
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="250794596"
+  bh=A4UCyKVS+ECivE7dWa84k+oB0wXq0H5Wl3tdPlE5ETM=;
+  b=Hpf265KoG3jg1fRRmsZUjt23RB6QAKW5XiaFv25uvcFbVSZtH3QnHuxy
+   7pwfMAXZB5S1Cr/brWKAZB+j1NQStId0bTi2/0/tXTWqSY+9G1fpvABnZ
+   lJAbrx2lVPc/j/bVsJP615b32GYqUYbC6bTY0vxBPegiBkhTbXxxBFA4W
+   5DM2Anjh6lWZbfuSAarhlT+kfZOqad3tsZOHMg7Z4cZiBb+O+f0XLZ0Uk
+   MGYBAEH6Is/VhQKzmrEerqCBw+0II/m0e0FdMUGDBhW84CnWMJBknLiUW
+   tsAnjXUHHkGVcr7Awt9v4Q9OKSzQNjqIuZoiHMQGO2zEkGKV7FN/Ft/Cw
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="250794598"
 X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="250794596"
+   d="scan'208";a="250794598"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 19:03:19 -0800
 X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="635431917"
+   d="scan'208";a="635431937"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.101.109])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 19:03:18 -0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 19:03:19 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
         davem@davemloft.net, kuba@kernel.org, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 4/7] selftests: mptcp: join: remove unused vars
-Date:   Thu, 17 Feb 2022 19:03:08 -0800
-Message-Id: <20220218030311.367536-5-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 5/7] selftests: mptcp: join: create tmp files only if needed
+Date:   Thu, 17 Feb 2022 19:03:09 -0800
+Message-Id: <20220218030311.367536-6-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220218030311.367536-1-mathew.j.martineau@linux.intel.com>
 References: <20220218030311.367536-1-mathew.j.martineau@linux.intel.com>
@@ -61,47 +61,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Shellcheck found that these variables were set but never used.
+These tmp files will only be created when a test will be launched.
 
-Note that rndh is no longer prefixed with '0-' but it doesn't change
-anything.
+This avoid 'dd' output when '-h' is used for example.
+
+While at it, also avoid creating netns that will be removed when
+starting the first test.
 
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 37 ++++++++++++-------
+ 1 file changed, 24 insertions(+), 13 deletions(-)
 
 diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 1a881a21e7ef..c6379093f38a 100755
+index c6379093f38a..63340bb76920 100755
 --- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
 +++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -42,7 +42,7 @@ init()
+@@ -17,6 +17,7 @@ capture=0
+ checksum=0
+ ip_mptcp=0
+ do_all_tests=1
++init=0
+ 
+ TEST_COUNT=0
+ 
+@@ -38,7 +39,7 @@ CBPF_MPTCP_SUBOPTION_ADD_ADDR="14,
+ 			       6 0 0 65535,
+ 			       6 0 0 0"
+ 
+-init()
++init_partial()
  {
  	capout=$(mktemp)
  
--	rndh=$(printf %x $sec)-$(mktemp -u XXXXXX)
-+	rndh=$(mktemp -u XXXXXX)
- 
- 	ns1="ns1-$rndh"
- 	ns2="ns2-$rndh"
-@@ -665,8 +665,6 @@ run_tests()
- 	addr_nr_ns2="${6:-0}"
- 	speed="${7:-fast}"
- 	sflags="${8:-""}"
--	lret=0
--	oldin=""
- 
- 	# create the input file for the failure test when
- 	# the first failure test run
-@@ -694,7 +692,6 @@ run_tests()
- 
- 	do_transfer ${listener_ns} ${connector_ns} MPTCP MPTCP ${connect_addr} \
- 		${test_linkfail} ${addr_nr_ns1} ${addr_nr_ns2} ${speed} ${sflags}
--	lret=$?
+@@ -98,6 +99,21 @@ cleanup_partial()
+ 	done
  }
  
- dump_stats()
++init() {
++	init=1
++
++	sin=$(mktemp)
++	sout=$(mktemp)
++	cin=$(mktemp)
++	cinsent=$(mktemp)
++	cout=$(mktemp)
++
++	trap cleanup EXIT
++
++	make_file "$cin" "client" 1
++	make_file "$sin" "server" 1
++}
++
+ cleanup()
+ {
+ 	rm -f "$cin" "$cout" "$sinfail"
+@@ -107,8 +123,13 @@ cleanup()
+ 
+ reset()
+ {
+-	cleanup_partial
+-	init
++	if [ "${init}" != "1" ]; then
++		init
++	else
++		cleanup_partial
++	fi
++
++	init_partial
+ }
+ 
+ reset_with_cookies()
+@@ -2106,16 +2127,6 @@ usage()
+ 	exit ${ret}
+ }
+ 
+-sin=$(mktemp)
+-sout=$(mktemp)
+-cin=$(mktemp)
+-cinsent=$(mktemp)
+-cout=$(mktemp)
+-init
+-make_file "$cin" "client" 1
+-make_file "$sin" "server" 1
+-trap cleanup EXIT
+-
+ for arg in "$@"; do
+ 	# check for "capture/checksum" args before launching tests
+ 	if [[ "${arg}" =~ ^"-"[0-9a-zA-Z]*"c"[0-9a-zA-Z]*$ ]]; then
 -- 
 2.35.1
 
