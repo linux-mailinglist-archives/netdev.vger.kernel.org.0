@@ -2,145 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E20A4BBEDC
+	by mail.lfdr.de (Postfix) with ESMTP id ABC654BBEDE
 	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 18:59:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234595AbiBRR7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 12:59:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38642 "EHLO
+        id S238877AbiBRR70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 12:59:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238877AbiBRR7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 12:59:17 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F7910A2
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 09:59:00 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id z4so8484754pgh.12
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 09:59:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bx6RiUgET9DPFe/GsmAXrJ7N4qhEJSAPK1731DhGyqg=;
-        b=Y4rNz0QLktG2HLZNnfNFPW0D69GDlb7fFLMJHbS1WtNavixJI2pvygfsi7N3jdAQR/
-         YEJNQR2bkf6TzVxFwnLmLMK/QrhzCVej7s6SyY9IiGp7CxtqKZ9jerzITUtMO2W6xLGh
-         6YwGZ+YhnHIp3pJLK36JeowN8LP/+p2O09q6w+h+d4P1pG0UC8nz+43KbBmxj/3WCMu0
-         kYYUFyZrGNzyR+37eZQUYR2X5y1cNo1CvWKrNhEHzv+6J07A+bCAj9fEM8k6BHG2qNSt
-         WMWaZaTE4FScYSpWOU3hirdybuFEumIKGF/PP9hVG065kbrVFhdd7n3faTaTRdCb3GQQ
-         ZjZg==
+        with ESMTP id S238886AbiBRR7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 12:59:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A757625CC
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 09:59:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645207146;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p5oI/8dNH/4MFIeI5cLeBF2jrxGnWI8Y2my0AXgZ3EQ=;
+        b=CHh1kjBhE3tKk5bgo/Eh7FzWBPHv9ppj0jk7+weXFYzzIC15fXVeP1gKPLwiMO2WsJiHBe
+        asouIB2LLPymy9w/7rwiU+/vGjtdNq10GwvlyvFJZZNdc6LgGkFSYtJUMURevmy8auw758
+        IFX0zrLKFzwkg4xCc8FGME/Mfoa+SYY=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-460-INUSqEV_M_uragWZ-qRAyQ-1; Fri, 18 Feb 2022 12:59:05 -0500
+X-MC-Unique: INUSqEV_M_uragWZ-qRAyQ-1
+Received: by mail-ed1-f71.google.com with SMTP id m11-20020a056402430b00b00410678d119eso5914169edc.21
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 09:59:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bx6RiUgET9DPFe/GsmAXrJ7N4qhEJSAPK1731DhGyqg=;
-        b=rQTeBL2SZckfGD9DURsyyXe/Xs7In/WIyrJ2diTowITSQ1LHGAy2JLmvmjuPvshZdN
-         VF7ODrACiO3NJkRm7AkK1dRDf5qoRPH/giU7Yxt1QR3UIk1XBLyN56LYnjFDmeQltaXH
-         aX11kQN4aiYwmoVok3u2FZcPbKKYW2sGf7r3D9urtAlT06akWPQxbDEeOAwnrvyeftel
-         QKAAU0zSEiRa9mJn7TykNFX5ozyz0WzIHT5chn+JV1HTYTTXw3RXZOfjOGHnT7WYXHSL
-         LdtAmlhCeDU+1JxEOZpvIeEhTYlw52qhtOAUPKOl3X+vQsQr0bKcRh7DrzZxlej2k31g
-         AkaQ==
-X-Gm-Message-State: AOAM533c02yGCQQN5AgdPLsoxM5wxkyj2a4/+tFG4BiT9rNrnYlf6oDu
-        rVKxmSdY4A8/y0cM7autjAY=
-X-Google-Smtp-Source: ABdhPJwtuA3bS6QAsb4fs5LmK0nbVaaOFXYY9+/uAUn4veSf3wHpHZf8P2yfIdDWsE78HSvsIhWQLw==
-X-Received: by 2002:a65:41c3:0:b0:363:5711:e234 with SMTP id b3-20020a6541c3000000b003635711e234mr7178078pgq.386.1645207140369;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=p5oI/8dNH/4MFIeI5cLeBF2jrxGnWI8Y2my0AXgZ3EQ=;
+        b=yf2XdoYglh14bkUnxBz6JypAL+d1ENqYnlKxWF0HvIYIVnRDLqUUNkVHk0VLOy7WM9
+         a/nd9tZxgMCr4D/JZlmKP5Z2dMAab1+RcqrlNAlZj3mFOLyOG/7lYi0FnUBXpEtib7rO
+         ITe8E7Z1/87AvedopBixhkNshUIw58C36BX5HKE/KDKARIgdFOaeJ9oacG/wtHR30GxD
+         3vpyh4oe9I4xRQ2w/r992yENcezf4S+suv9nasq05Uk5/bJWddLkVP5Pi2sRQzu7PaGp
+         iosPHKur042NfcJTH9YQB4LCecQxTGbJ3mTSmMJPStaT+y4NaC8miWEV+ewl/yVw9dtM
+         l/rw==
+X-Gm-Message-State: AOAM532UldkXYnYwbeUA/CIacP+eAU9V2pSvg+FDZMvcOC4hxOUrmU5U
+        3WcoGVpFebSabtsCLWX4lJf0+LzIeceOzBEvwBTUEUM3dCb1inkkMwNnl+vHX8Rt4Ikop7t2PcO
+        B75DG52M8B4KfEqSB
+X-Received: by 2002:a17:906:aed4:b0:6ba:6d27:ac7 with SMTP id me20-20020a170906aed400b006ba6d270ac7mr7489001ejb.33.1645207142549;
+        Fri, 18 Feb 2022 09:59:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJww0cTfqnVBcid2KvnkIgltIfa8ngQGHX5cBQYZf339vsSNYU9Rk2ynmAwWH2iPxeiWIbVYBw==
+X-Received: by 2002:a17:906:aed4:b0:6ba:6d27:ac7 with SMTP id me20-20020a170906aed400b006ba6d270ac7mr7488872ejb.33.1645207140118;
         Fri, 18 Feb 2022 09:59:00 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5c60:79a8:8f41:618f])
-        by smtp.gmail.com with ESMTPSA id c9sm3718370pfv.70.2022.02.18.09.58.59
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id h7sm5077174ede.66.2022.02.18.09.58.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 18 Feb 2022 09:58:59 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next] net: get rid of rtnl_lock_unregistering()
-Date:   Fri, 18 Feb 2022 09:58:56 -0800
-Message-Id: <20220218175856.2836878-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id EF7B5130248; Fri, 18 Feb 2022 18:58:58 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v8 0/5] Add support for transmitting packets
+ using XDP in bpf_prog_run()
+In-Reply-To: <20220218175029.330224-1-toke@redhat.com>
+References: <20220218175029.330224-1-toke@redhat.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 18 Feb 2022 18:58:58 +0100
+Message-ID: <87zgmo12fx.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
 
-After recent patches, and in particular commits
- faab39f63c1f ("net: allow out-of-order netdev unregistration") and
- e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev")
-we no longer need the barrier implemented in rtnl_lock_unregistering().
+> A sample traffic generator, which was included in previous versions of
+> the series, but now moved to xdp-tools
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/core/dev.c | 42 ------------------------------------------
- 1 file changed, 42 deletions(-)
+This is still a bit rough around the edges, but for those interested, it
+currently resides here:
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index acd884910e12a040841e1e0525e0d4bc5e3ee799..a1190291c48e6cdb7fd20916793f72e2aac668cc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10884,36 +10884,6 @@ static void __net_exit default_device_exit_net(struct net *net)
- 	}
- }
- 
--static void __net_exit rtnl_lock_unregistering(struct list_head *net_list)
--{
--	/* Return (with the rtnl_lock held) when there are no network
--	 * devices unregistering in any network namespace in net_list.
--	 */
--	DEFINE_WAIT_FUNC(wait, woken_wake_function);
--	bool unregistering;
--	struct net *net;
--
--	ASSERT_RTNL();
--	add_wait_queue(&netdev_unregistering_wq, &wait);
--	for (;;) {
--		unregistering = false;
--
--		list_for_each_entry(net, net_list, exit_list) {
--			if (atomic_read(&net->dev_unreg_count) > 0) {
--				unregistering = true;
--				break;
--			}
--		}
--		if (!unregistering)
--			break;
--		__rtnl_unlock();
--
--		wait_woken(&wait, TASK_UNINTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
--		rtnl_lock();
--	}
--	remove_wait_queue(&netdev_unregistering_wq, &wait);
--}
--
- static void __net_exit default_device_exit_batch(struct list_head *net_list)
- {
- 	/* At exit all network devices most be removed from a network
-@@ -10930,18 +10900,6 @@ static void __net_exit default_device_exit_batch(struct list_head *net_list)
- 		default_device_exit_net(net);
- 		cond_resched();
- 	}
--	/* To prevent network device cleanup code from dereferencing
--	 * loopback devices or network devices that have been freed
--	 * wait here for all pending unregistrations to complete,
--	 * before unregistring the loopback device and allowing the
--	 * network namespace be freed.
--	 *
--	 * The netdev todo list containing all network devices
--	 * unregistrations that happen in default_device_exit_batch
--	 * will run in the rtnl_unlock() at the end of
--	 * default_device_exit_batch.
--	 */
--	rtnl_lock_unregistering(net_list);
- 
- 	list_for_each_entry(net, net_list, exit_list) {
- 		for_each_netdev_reverse(net, dev) {
--- 
-2.35.1.473.g83b2b277ed-goog
+https://github.com/xdp-project/xdp-tools/pull/169
+
+-Toke
 
