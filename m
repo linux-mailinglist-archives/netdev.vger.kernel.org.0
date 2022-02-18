@@ -2,66 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6794BAE00
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 01:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B654BAE20
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 01:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiBRAFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 19:05:31 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47618 "EHLO
+        id S229959AbiBRAGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 19:06:14 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbiBRAF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 19:05:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F264161B;
-        Thu, 17 Feb 2022 16:05:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7897B61A55;
-        Fri, 18 Feb 2022 00:05:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A5EC340E8;
-        Fri, 18 Feb 2022 00:05:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645142708;
-        bh=/E0vQpyQrzLPQg8mdsH5R57H9ioPtrWTrdq/i8BUvVA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A8KBW0fFTFK0Qd2vGoc8H91Xk4kLW/hBFFbI9t895SQ+fV7j0gvFYuGmVEdrMVl7O
-         12I0YeBrKmH0JZ2M6IXrTgpSyk+53tzlxqW2ZzhpF9OFPQG1Dwd68ukHFWpl1S7Akc
-         LZrn4J4deQe0hPYa8pOJbT5yaLPXreAlGgEc+SvMMEus3FPQQHID/QiJyySdEi263i
-         4LtmCWBevZo4YvJbulOT8l+lxNg4hwpN6s4qw4as4PLLUGLzRU83xo9UlIfca3jtbR
-         M35UAaJprYEQkjgq8AY9uiMSrEtB3EeBLSqyhoJ7edXFc4D52N1eTUONKSAZ0Zzlnx
-         AeHDEV/wpBJ2g==
-Date:   Thu, 17 Feb 2022 16:05:07 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rakesh Babu Saladi <rsaladi2@marvell.com>
-Cc:     <sgoutham@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Harman Kalra <hkalra@marvell.com>
-Subject: Re: [net-next PATCH 1/3] octeontx2-af: Sending tsc value to the
- userspace
-Message-ID: <20220217160507.05ae03fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220217180450.21721-2-rsaladi2@marvell.com>
-References: <20220217180450.21721-1-rsaladi2@marvell.com>
-        <20220217180450.21721-2-rsaladi2@marvell.com>
+        with ESMTP id S230031AbiBRAFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 19:05:41 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B3FB24F29;
+        Thu, 17 Feb 2022 16:05:14 -0800 (PST)
+Received: from netfilter.org (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id F2C8960028;
+        Fri, 18 Feb 2022 01:04:30 +0100 (CET)
+Date:   Fri, 18 Feb 2022 01:05:11 +0100
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
+        netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        davem@davemloft.net, Jiri Pirko <jiri@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Ariel Levkovich <lariel@nvidia.com>, coreteam@netfilter.org
+Subject: Re: [PATCH net 1/1] net/sched: act_ct: Fix flow table lookup failure
+ with no originating ifindex
+Message-ID: <Yg7itx2dt4rIa24W@salvia>
+References: <20220217093424.23601-1-paulb@nvidia.com>
+ <Yg5Tz5ucVAI3zOTs@salvia>
+ <20220217232708.yhigtv2ssrlfsexs@t14s.localdomain>
+ <Yg7gWIrIlGDDiVer@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yg7gWIrIlGDDiVer@salvia>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Feb 2022 23:34:48 +0530 Rakesh Babu Saladi wrote:
-> +#if defined(CONFIG_ARM64)
-> +	return is_pmu ? read_sysreg(pmccntr_el0) : read_sysreg(cntvct_el0);
-> +#else
-> +	return 0;
-> +#endif
+On Fri, Feb 18, 2022 at 12:55:07AM +0100, Pablo Neira Ayuso wrote:
+> On Thu, Feb 17, 2022 at 08:27:08PM -0300, Marcelo Ricardo Leitner wrote:
+> > On Thu, Feb 17, 2022 at 02:55:27PM +0100, Pablo Neira Ayuso wrote:
+> > > On Thu, Feb 17, 2022 at 11:34:24AM +0200, Paul Blakey wrote:
+> > > > After cited commit optimizted hw insertion, flow table entries are
+> > > > populated with ifindex information which was intended to only be used
+> > > > for HW offload. This tuple ifindex is hashed in the flow table key, so
+> > > > it must be filled for lookup to be successful. But tuple ifindex is only
+> > > > relevant for the netfilter flowtables (nft), so it's not filled in
+> > > > act_ct flow table lookup, resulting in lookup failure, and no SW
+> > > > offload and no offload teardown for TCP connection FIN/RST packets.
+> > > > 
+> > > > To fix this, allow flow tables that don't hash the ifindex.
+> > > > Netfilter flow tables will keep using ifindex for a more specific
+> > > > offload, while act_ct will not.
+> > > 
+> > > Using iif == zero should be enough to specify not set?
+> > 
+> > You mean, when searching, if search input iif == zero, to simply not
+> > check it? That seems dangerous somehow.
+> 
+> dev_new_index() does not allocate ifindex as zero.
+> 
+> Anyway, @Paul: could you add a tc_ifidx field instead in the union
+> right after __hash instead to fix 9795ded7f924?
 
-And this bit probably calls for a CC to linux-arm
+I mean this incomplete patch below:
+
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index a3647fadf1cc..d4fa4f716f68 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -142,6 +142,7 @@ struct flow_offload_tuple {
+                        u8              h_source[ETH_ALEN];
+                        u8              h_dest[ETH_ALEN];
+                } out;
++               u32                     tc_ifidx;
+        };
+ };
+
+You will need to update nf_flow_rule_match() to set key->meta.ingress_ifindex to
+use tc_ifidx if it is set to non-zero value.
