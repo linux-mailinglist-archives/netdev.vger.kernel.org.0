@@ -2,118 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B97EC4BB073
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 04:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 607174BB081
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 05:07:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiBRD7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Feb 2022 22:59:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58882 "EHLO
+        id S229676AbiBREHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Feb 2022 23:07:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiBRD7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 22:59:10 -0500
+        with ESMTP id S229457AbiBREHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Feb 2022 23:07:53 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4C4FD08;
-        Thu, 17 Feb 2022 19:58:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07A66CA7A;
+        Thu, 17 Feb 2022 20:07:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17913B82555;
-        Fri, 18 Feb 2022 03:58:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D5FCC340E9;
-        Fri, 18 Feb 2022 03:58:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82DA1B82555;
+        Fri, 18 Feb 2022 04:07:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7893EC340E9;
+        Fri, 18 Feb 2022 04:07:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645156732;
-        bh=+7Hj7oyxrzQUnw7hd9+0M8yasZ77tgOV/E6/yQXbfmk=;
+        s=k20201202; t=1645157254;
+        bh=cYuuDOJYlJ0GA8aOQN1fPD9uNOqWl6U/+6PySPtBn0o=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s+fBTWBf3qpXV+6haVc5lJRA8IeZKKJCDxPDj1MRzrFLwzMpV8Lhn/r72LpYKBGNj
-         TUvWbY2CivWrR/U+aF13ng/f3XvQDi1WLTO7t0URG39A7mISq2dWKrVWQS1nUph8WU
-         fN7ADlbGO3TfdzY9tp+/6Y0mJvYZxUFdyjB1IyG4+xODruBJEM/E6N6yMgxv1JU6qn
-         69hbKgTW25IRM2ggDm8i10oKbafLMyo/ItK6PR9omnJ/B/JcNTq/I64QLnnALyE/ra
-         WwRA5qmj+mdbYRPiD/s9spbHkng7vcW5FUDREXtvLaMZIKZ3M1DNVmPGwXUhz/+s5q
-         MkWcDIaerJuBA==
-Date:   Thu, 17 Feb 2022 19:58:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        patchwork-bot+netdevbpf@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        b=SoYk0T1zpZbx6ZtuRLZScyIA9v0u6JZ+kMkNOJpecXA18uq+UFY6HecKmegKW/+GE
+         4YH5+D2IEZVrljZMeBuwLzKhpRvWg+QcTVZeiA315E4i5ZdHDBcKT8G5hVGrwgpRlU
+         FoE+YZku6KHYLbHU1hb88nbt/k5mqmSoqhOe7NAP5TTxbjSj5mmndNIyL+aXxOD5NZ
+         aR/y70og5+rONPRaIZ9guGtMBUXS29YABJM4a1BTDbJVP2iFCBivl8MGaZ/s6caYEj
+         wHMF41q0jPQ7CnzNOyFiFQYNKnaTEDpOsHzDqS1Y/XR4x7rp7uMYH8kiWjRhf0rO8R
+         ILn6MNUyeuFyg==
+Date:   Fri, 18 Feb 2022 13:07:27 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: confused pw-bot. Re: pull-request: bpf-next 2022-02-17
-Message-ID: <20220217195850.05b6e939@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAADnVQLK-Y+eTBrqTjKoSE2FHf2U0yDWJ1PXG1=_MAb9WnkFYg@mail.gmail.com>
-References: <20220217232027.29831-1-daniel@iogearbox.net>
-        <164514875640.23246.1698080683417187339.git-patchwork-notify@kernel.org>
-        <20220217174650.5bcea25a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAADnVQLK-Y+eTBrqTjKoSE2FHf2U0yDWJ1PXG1=_MAb9WnkFYg@mail.gmail.com>
-MIME-Version: 1.0
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+Message-Id: <20220218130727.51db96861c3e1c79b45daafb@kernel.org>
+In-Reply-To: <CAEf4BzYxcSCae=sF3EKNUtLDCZhkhHkd88CEBt4bffzN_AZrDw@mail.gmail.com>
+References: <Yfq+PJljylbwJ3Bf@krava>
+        <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
+        <YfvvfLlM1FOTgvDm@krava>
+        <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+        <CAADnVQJYY0Xm6M9O02E5rOkdQPX39NOOS4tM2jpwRLQvP-qDBg@mail.gmail.com>
+        <20220204110704.7c6eaf43ff9c8f5fe9bf3179@kernel.org>
+        <CAADnVQJfq_10H0V+u0w0rzyZ9uy7vq=T-3BMDANjEN8A3-prsQ@mail.gmail.com>
+        <20220203211954.67c20cd3@gandalf.local.home>
+        <CAADnVQKjNJjZDs+ZV7vcusEkKuDq+sWhSD3M5GtvNeZMx3Fcmg@mail.gmail.com>
+        <20220204125942.a4bda408f536c2e3248955e1@kernel.org>
+        <Yguo4v7c+3A0oW/h@krava>
+        <CAEf4BzYO_B51TPgUnDXUPUsK55RSczwcnhuLz9DMbfO5JCj=Cw@mail.gmail.com>
+        <20220217230357.67d09baa261346a985b029b6@kernel.org>
+        <CAEf4BzYxcSCae=sF3EKNUtLDCZhkhHkd88CEBt4bffzN_AZrDw@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Feb 2022 18:20:07 -0800 Alexei Starovoitov wrote:
-> On Thu, Feb 17, 2022 at 5:46 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, 17 Feb 2022 14:01:30 -0800
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+
+
+> > > Is there any chance to support this fast multi-attach for uprobe? If
+> > > yes, we might want to reuse the same link for both (so should we name
+> > > it more generically?
 > >
-> > On Fri, 18 Feb 2022 01:45:56 +0000 patchwork-bot+netdevbpf@kernel.org
-> > wrote:  
-> > > Hello:
-> > >
-> > > This pull request was applied to bpf/bpf.git (master)  
+> > There is no interface to do that but also there is no limitation to
+> > expand uprobes. For the kprobes, there are some limitations for the
+> > function entry because it needs to share the space with ftrace. So
+> > I introduced fprobe for easier to use.
 > >
-> > :/ gave me a scare. No, it's not pushed, yet, still building.  
-
-Pushed now.
-
-> Wow. pw-bot gots things completely wrong :)
+> > > on the other hand BPF program type for uprobe is
+> > > BPF_PROG_TYPE_KPROBE anyway, so keeping it as "kprobe" also would be
+> > > consistent with what we have today).
+> >
+> > Hmm, I'm not sure why BPF made such design choice... (Uprobe needs
+> > the target program.)
+> >
 > 
-> It replied to Daniel's bpf-next PR with:
-> "
-> This pull request was applied to bpf/bpf.git (master)
-> by Jakub Kicinski <kuba@kernel.org>:
+> We've been talking about sleepable uprobe programs, so we might need
+> to add uprobe-specific program type, probably. But historically, from
+> BPF point of view there was no difference between kprobe and uprobe
+> programs (in terms of how they are run and what's available to them).
+> From BPF point of view, it was just attaching BPF program to a
+> perf_event.
+
+Got it, so that will reuse the uprobe_events in ftrace. But I think
+the uprobe requires a "path" to the attached binary, how is it
+specified?
+
+> > > But yeah, the main question is whether there is something preventing
+> > > us from supporting multi-attach uprobe as well? It would be really
+> > > great for USDT use case.
+> >
+> > Ah, for the USDT, it will be useful. But since now we will have "user-event"
+> > which is faster than uprobes, we may be better to consider to use it.
 > 
-> Here is the summary with links:
->   - pull-request: bpf-next 2022-02-17
->     https://git.kernel.org/bpf/bpf/c/7a2fb9128515
-> "
-> that link points to my bpf PR that Jakub landed 8 hours earlier
-> into net tree.
-> 
-> I ffwded bpf tree half an hour ago.
-> I guess that's what confused the bot.
-> 
-> Konstanin, please take a look.
+> Any pointers? I'm not sure what "user-event" refers to.
 
-Presumably PRs should be quite trivial thing to handle since:
+Here is the user-events series, which allows user program to define
+raw dynamic events and it can write raw event data directly from
+user space.
 
-  for you to fetch changes up to d24d2a2b0a81dd5e9bb99aeb4559ec9734e1416f:
-                                 ^^^^^^^^^^^^
-                                 this
-ends up:
+https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
 
-commit a3fc4b1d09d99cdb6a7dbba5a753db15a10b2e9c
-Merge: 2aed49da6c08 d24d2a2b0a81 <= here
-                    ^^^^^^^^^^^^
-Author: Jakub Kicinski <kuba@kernel.org>
-Date:   Thu Feb 17 17:23:51 2022
+Thank you,
 
-    Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
-    
-    Daniel Borkmann says:
-    
-    ====================
-    bpf-next 2022-02-17
-
-
-I'm curious if there's something I'm missing, or it's simply a matter 
-of the unrelenting finiteness of a working day :)
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
