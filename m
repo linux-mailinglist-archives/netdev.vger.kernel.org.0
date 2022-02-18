@@ -2,105 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB5E4BC11A
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 21:22:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 180254BC11B
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 21:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239253AbiBRUWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 15:22:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51612 "EHLO
+        id S239265AbiBRUWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 15:22:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238139AbiBRUWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 15:22:42 -0500
+        with ESMTP id S239261AbiBRUWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 15:22:43 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70084.outbound.protection.outlook.com [40.107.7.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D892C4AE18
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 12:22:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEBF4AE37
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 12:22:26 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jdaNjtEP03koMegLwEsBOOZFU5iMBkWkWup/L0F4HS40wc9J6G8rd1oiqNK9Hhh5EVw/A4cu1DzHHCKYdVQh6FvF6MwFd22b9FLWNpec9GC/gFI0NUE4oOdwueapykZ0HyOyKZ2sghA+ZTgRJkEollw5z3zdGrUD0hC5jUlQh2uhrMG5uTheLjXucXPF5kH1ztSRBiKaCYHagaRzIz+sMryH7CUINiGsr5m2lhjM5ryMce6oyTHsFmTmFso2DLCM8nefy6rvBaIVBy0wh9A8tP/+C3ocYai+AzrvZM5k7wiuxdmAy2k9oGykkDDY3ERVIzVGgi9ORRIRfFToyVgaJg==
+ b=HOT8Lf1Dsq7nkRoQjXU41Q+Cu1gh1cukBpf5Lp8oSV/+H2OCLuuGBCJU92r8ASnByB3uDqGGznD0Z0tSaZgBizDMN8W9rc4wv1vTYTi+NK3j25mZQojglKu6CaBDA+XlvvljdcOOgX/t3zeW8+OQ+KdpOU3V8/AMVVZ1xZliQgP4xtvqcnSkHj1IYCWoqyWkd95s3S1Z/b77ONXSWDTH0HnqDeH43hBg66Y504Jz8uUbezxu+8z+0sb0HzxWzMCZge81AzXLVRFFzrcYSGIqlL0sKTBFypd93aXILtcCPw9T8McFvir/DCboM0erW8UbJZ4+JXyRzQ1HI87gF+uF5w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XuL6lQmxL/q92P47YWUHrhu3gx0GG56j7VJdGU3luS8=;
- b=R8dpw4g9MqOE349Ob/ozMgaCY92QdD7k/5uhbLHYIaWjY2u07BO/bf/p1Ungxfbz+KUJYU0pij9YSzqwTCH+r5BgQsgMk2XNR8r7K+2IqOt+frH+VbaiQAK8W9wg9BjT1MXGHIIIf9ZNgN8hxbETpA9Nrc83H886X8AO/zC47YgyaQW5fA6+Pcj1q1JzBhvpVQ8oa2/LPekA0FeD77C3uc1OXZ/RU7ez1qIHAOWaSYoRViUSMNNt6zlBKIda8Ogq/1IQQm9bidmXFFsVTHlSDWAWMTNGF/kicGPXdIMJ95T+DlQSHPAKaiiR6LvolZ8CXN1TZ3ZZWig+dwqb7SeZfA==
+ bh=U8gwebwWnaf4zcyTs05JmJNzE7PDeAk3ahdomKkX7tE=;
+ b=VFA2V0w78Z8fVj9H6A3tXLuR7UyZqzbnxACNs82JfJlZtcITm7FvTVneRPkRlrYib9YLOJLHdW84tEBVj5x1UC2r8Qb8Qozx09Poez3kT94QOJjFakyNgo3ZMPEclb5/ey//VZ5mYjIsoU2IXJ83aF194Mf4dM9V+7EdhXleF3qTzZdFUWLa5QU78qOZggHZRs/l9tir1iDIL353z/YYtG4Pwmb4o2OJD3bTV/CEOav1Q3T8cF7pGnK31IWxmmMqv2Dcuqv37CvGgiwMK+8p+YqW2w69065i65N5seCT1mAZl1RD8t40+CK+wAmYmhONGw3fZZu7Uk+Zad57yci09w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XuL6lQmxL/q92P47YWUHrhu3gx0GG56j7VJdGU3luS8=;
- b=Aww3sAe6JLv5CdGuhS+vN9wMNl48imhJVXLMo/D1UGHZ4wLwQOzBY85zb0JxQBHTcvq0bTZmoPUEi61d1RL410DyFZVimfwzXIh0JpcjARVAXVW0e76CdSOmaYhT/f+LBVrTyAhfTrCE+8wmGKWyMw7k4YhnBfqFnqU/Nchoc2A=
+ bh=U8gwebwWnaf4zcyTs05JmJNzE7PDeAk3ahdomKkX7tE=;
+ b=nejBLVDOGM6SXDnwxc+nth1iMSjrrs8NvEIZEIHnoZFN2APkiCRPG9OxDbZGO2ZC2a8r5nQLKZq7uPqE1OtGyNCOqbriJAJIYXnCRlvtvhUjZ4ClFRDPrE09JxptnAHjacAgk2sqOrIq8QPF4m+8jkxCLXzOeoKdeIHGYx62nUU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5903.eurprd04.prod.outlook.com (2603:10a6:803:e0::10)
  by DB7PR04MB4378.eurprd04.prod.outlook.com (2603:10a6:5:30::33) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.15; Fri, 18 Feb
- 2022 20:22:21 +0000
+ 2022 20:22:22 +0000
 Received: from VI1PR04MB5903.eurprd04.prod.outlook.com
  ([fe80::18c5:5edc:a2c2:4e45]) by VI1PR04MB5903.eurprd04.prod.outlook.com
  ([fe80::18c5:5edc:a2c2:4e45%6]) with mapi id 15.20.4995.022; Fri, 18 Feb 2022
- 20:22:20 +0000
+ 20:22:21 +0000
 From:   Radu Bulie <radu-andrei.bulie@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com, yangbo.lu@nxp.com,
         richardcochran@gmail.com, Radu Bulie <radu-andrei.bulie@nxp.com>
-Subject: [PATCH net-next v3 0/2] Provide direct access to 1588 one step register
-Date:   Fri, 18 Feb 2022 22:21:59 +0200
-Message-Id: <20220218202201.11111-1-radu-andrei.bulie@nxp.com>
+Subject: [PATCH net-next v3 1/2] dpaa2-eth: Update dpni_get_single_step_cfg command
+Date:   Fri, 18 Feb 2022 22:22:00 +0200
+Message-Id: <20220218202201.11111-2-radu-andrei.bulie@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220218202201.11111-1-radu-andrei.bulie@nxp.com>
+References: <20220218202201.11111-1-radu-andrei.bulie@nxp.com>
 Content-Type: text/plain
 X-ClientProxiedBy: AM0PR02CA0159.eurprd02.prod.outlook.com
  (2603:10a6:20b:28d::26) To VI1PR04MB5903.eurprd04.prod.outlook.com
  (2603:10a6:803:e0::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73c12a18-9618-4d6f-2439-08d9f31c5d6e
+X-MS-Office365-Filtering-Correlation-Id: c73cc969-8ce3-4eb4-2f0e-08d9f31c5dfd
 X-MS-TrafficTypeDiagnostic: DB7PR04MB4378:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB43783E44A152D11B2D44C32FB0379@DB7PR04MB4378.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <DB7PR04MB437842CF20883B8D00CAE84EB0379@DB7PR04MB4378.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4IVwyveBgn+nmk/uLr6dfrXtcAVJ8zSCWI58kFtbQ7TIgQVxYgkgtzx96czAMhL4aZhWF/PhnrlLYWfIj0kWf8pFhczNRp1z73JA0/fA8DLsYTTB0aVps2RLSmY5/lBIRHLEtYR6p6pwg5AZBvu+pXAkig4ogh8w0q1sQFYndSKes8ycHuI6alzFAdgCU+EysDtntz+yDcOuNTyQtax7SL63TXtS5H/+SaEnOp9QtsiHOvT7HYAEN0HjIZbH1Nf9as/5LyPATuFFNDUWibqJaQDQEtYWkosP7Tw7o6EDty/TOOrmx3Vv8GVe6spmDzsWyAzM9RZxho6BNYi+AJHkT1Eb8s+61wwcDVW4qahS/qesKBIeVzli5Uv0D38w20luyzdGViZ89thfiSDkKThvlmMu4ShD1Ni+YMlcgGF3lwDQ8JqmEJhGhnKNMTFP2yJNnIzjUQf7bpLt+wLKeSUnbgtf9FgoXYzoB4JAndUDcgvWyR3EZ8RW3Ce4RTGF/10vUQlYqJXJ4Jik7nYTcUCCvQstI381FuMO3ND9DFsQ4e6fQkWM66GwITXm/W4EpkrB0j5l+xFEH6qjSwGb717A1CXoDhb+XKvH0t2rHI/Hj+PuAvOkriZubYkNnlYiquvUmSzMM+eOTNwfMxUHjNXsYMVlsev0EqeP3G2k75Ai82cHJJIQ93WK7fHLq0RdNofZCev/Z6hPZ95uurYpyPdM/g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5903.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(8676002)(508600001)(66946007)(186003)(6506007)(66476007)(5660300002)(4326008)(2906002)(86362001)(66556008)(36756003)(1076003)(316002)(2616005)(26005)(83380400001)(6486002)(38100700002)(52116002)(6666004)(8936002)(38350700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 4n7+EG1spx1gjSOvcMa3qdBuDVODLFbfCtPpG1DV0FL6XRjAh0//gVJeW+2vLJf+bqL1sRe6XmkaYE2BuiblxNQesqC+vypXnpe6gYeqO5RPQEV1nn6QCqAwtULkWZYRHA5N3EmxRzRs6J9/prdCK45SEFU5+2odRyFDBD++wfCuMYDlB9qL8y4kcU7Z3NIvSdVzvGXRuX+le8zKIv9gLbEJ588vxXc7pU9mdzPVf9HzWsm2eDN6aSunjjtzKF2vMDI+UhCSCrM5au2rfyv0wvGvnCC3mzvRMgoH349OaZLPPQpWOyE24IgazNWvNTDthDqyGfuTfCPoGFi++GO9xuIVWnNb1Xk8l33DcOcLKdwzBathc6YX8ClBtPLwHv109vbdd5cAUqvtx2DXSEYTQ9UfkQjjj2IG8IAeUuOLZfpvad/JdIfBS1g4ASGVGkKEZZ+TNQaZ5rNPv9U+WuBJID809RR17RH0r9xc3y9PSX+h3hXk6Yas0ZPZCY/mrpRVQgWZfNHqamcLberDZRvgDvb2SJ+XYk+l9UFZ83MF76Qcn5jQ6Dde6PRSITkgXprMm1DaKnbAjz5Q4mPk8GRg5ioZ9pjKWMpatA0m5bRf4bbUbDLgF/ARU5F2uHCRj5Fd+pDiLRQhgTg4wBuGaYmhlFWlJ/mdRhsWsVQlitMmY1rwJGfC9PniQBoUMj9e63AU5jQitv3nimCLgNssnvhcyw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5903.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(8676002)(508600001)(66946007)(186003)(6506007)(66476007)(5660300002)(4326008)(2906002)(86362001)(66556008)(36756003)(1076003)(316002)(2616005)(26005)(83380400001)(6486002)(38100700002)(15650500001)(52116002)(6666004)(8936002)(38350700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bRo6NWp8v9nMneuBwcEG42HTJwrVT0V3wrb8C8UFDu4BVOJYEeEh3WOqfcva?=
- =?us-ascii?Q?mznIqPIm+LB9MA2owfZkmUNU3tRDsssVPh3bk0217b+ErEVb0NXsA6WwaZeL?=
- =?us-ascii?Q?IJIyvGRBxFibi5IHa9WMomNhA9gk317vXulC3r4s5qW26RjX81Ry73Om+e8g?=
- =?us-ascii?Q?6GXthyAjjo9vBDJzy97I8oZkdy+KLqOh6oZMqRoyDGcdXQ4QbHCWM4sjOObI?=
- =?us-ascii?Q?U08YcWKcIu9VljHc86Poc18cTeXqpzwW5SG2urMvheohSQohO1NwSz+pP1g7?=
- =?us-ascii?Q?8pmODFkYKtzD/btXZcDz0mi4ZOClzTct1vjAo59Hlmnpca2Ix7KRVE/1WeAF?=
- =?us-ascii?Q?Q8oOz/2tzyEJVzH/0jJAAvDQN7J4vgQYvu9wqMykllBua65tpLimgL6pLRmp?=
- =?us-ascii?Q?9QG/zNaN4hcmUEw7SZBmMTJCjg/wFbr9hRHika96ofpoTl1yQFnWAoA0OMMN?=
- =?us-ascii?Q?+bqpwEGElSUh0QlRKh8C1yppYTx8F3/28IlLJNnsJ5QmIzb6mBwWC3+H6ZyN?=
- =?us-ascii?Q?HV9Ct/nMBDw+acuNx6qAbezlk4Jt+rH+t0WB+MMHOFhZ6CY0OIQYcDPErO0a?=
- =?us-ascii?Q?5CtyN+NLpXHxdh503Cs1vom1LxuR1yiRotHM9qGdL3WlY0V1QsdVXZGJCQeC?=
- =?us-ascii?Q?Kzt2AtllMZqElif07hvqxyz5ha31yyQ8NZjo1f8uFzMmdH0iotfi/t1VtvsF?=
- =?us-ascii?Q?V9DZVcZKp+yQ6Nxu1ivd1yi4yvnsyzvBz5YCpiiHpM3LIIAo0l4BnJoZcat4?=
- =?us-ascii?Q?TMy5wAbjg7rqW95tYCgHBH1CU3Dr5Bd0RVX7e2W9v1d5Vdww8zOUcS2m0lwc?=
- =?us-ascii?Q?bD0usi4kMy68JKu+NNf28zFZ63mZTs5ZbuB9DHVfi2mYgscBqasDKjOawfXG?=
- =?us-ascii?Q?xdDOO4PD6W3z3mqM9fD0hOQYG9hgNPFwLjX8mj+Xs3KJaJ+cZMck+IiHCSUo?=
- =?us-ascii?Q?uS9DMNoAt00C8W5pQm3OPNcptn6MNrEyx8SHftGLVpMQLuXqjEcQylxmgs1k?=
- =?us-ascii?Q?VFGiLzdc9NyBi/DDcIp2bXyHUjLCdlXbGCYItq19cEKOF5/Gdk1/E2CWTLLJ?=
- =?us-ascii?Q?jt8Z0/JOtGzaQMKVhIUJfjDvl7nhThuGTqfWg3QTM3OwYjlW8LPFB9fpY5mM?=
- =?us-ascii?Q?8lGCH4Cr62LH29TUz3X6XCbZl32tnqHswv7mYAKA0onZa6zrkhdhhe+DiRDJ?=
- =?us-ascii?Q?hqe2tgzpzmY3JAV7r+ANgjZ4AxKqJnAOgNm+6OAk8WQnz6Ku15843A8kmOtv?=
- =?us-ascii?Q?bOIfsf4IWZgWn2J+DRTqYM28YxfwoPUUATB46irG2GwkXZg0eLUSUbazweSm?=
- =?us-ascii?Q?kQnFiqF3o/GXklX+XmQye2V/7QG3oMkUWQvBerqNiviJ+p35xUHEtdf8IQx3?=
- =?us-ascii?Q?IQJU2SXlTBIXTLCF6qAGXWpFWxVmHag156DAxKU0hGmn/uAtNlou3DC7TdK6?=
- =?us-ascii?Q?zfTvvQILPTdGlll84APgh7kG8s9y0g/VaU8ntaNl0Qyni4FJFHDedhxWn0NS?=
- =?us-ascii?Q?b16BDUJDTUourrupaM6qLdQIgXgyCqbB1Luz7uu7U8myCsFcTdV7yKtdOWvM?=
- =?us-ascii?Q?QV10pE97aJlHiPYdhYISKNPmdvRLQoAlCxDbstfEnFXyst3WruqwKCCQv8pa?=
- =?us-ascii?Q?Ol39Z7Nrb+Anyxs84E65kRTBcza00gR7NiPud8m3YU+fS7Na9zfrgwAmjrbc?=
- =?us-ascii?Q?an79Vw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?deNldV04MJ/pp5/8VN9Y0MTSGuCX8kq0q6KY90M8H4Q9jfqvf98IjouWGWW9?=
+ =?us-ascii?Q?+DNxaHr+A0SpzMKVjsdXo6BI2ZHyNMhc0BE5DHLe7/a6MWFVyTkqkV//iQ5S?=
+ =?us-ascii?Q?O5DySzUvVPGRXLmsDcfmshI2dq9/BBQiDo/EnlF0Wx/mrcwI0sbHwqDEB5ZP?=
+ =?us-ascii?Q?dKHm1JRh1tXDyEgXFJokby3Z9pGdYxRY//TMceko1p2El+UM+WLy3gdFrKnJ?=
+ =?us-ascii?Q?2zwN9C4D5wlt3CVevdWCZRLr+8t1qzJHzANucd9t23sjODXIg0HprqK1ezvZ?=
+ =?us-ascii?Q?5mUjqO0FulMCAymxYpFocuwWMp3+Xa/XxUbFPEnGIYx5hk8apjKndyISTAHo?=
+ =?us-ascii?Q?SD6IKe5oVVSv5wIhPUVLMwTQWB9yrTVlrGdbMrkXUwS3XWra2PbdkITFjwWQ?=
+ =?us-ascii?Q?AACpLwUCeTN6fEI1o76D5JNJ9vRKZzisFKi9sgtFZYHp33F7mPL+Egs8FnA1?=
+ =?us-ascii?Q?lT+qNLDFaPItT9vSdp6KfDiOc+Gq65MdNKuPZopprW8uoyhfwh7v4c+D05Y5?=
+ =?us-ascii?Q?g1edESdRG2RfUJHKRMvJgZ341spY3KRFLJnU6dG8sffCDvz7PlYkaNhNeo5a?=
+ =?us-ascii?Q?BhMS5J0osxlYFoBsO9QtH7Cw8dR/vBqiemkDvD5u6G+v4gvYWz5N8SMkHsqJ?=
+ =?us-ascii?Q?GvgEyJgS4QhM0S+GDeBVDJEJ5GxXsQZlLvZM8voVvIr1I7SYtzioZ1hVBDZ9?=
+ =?us-ascii?Q?RKQweO/NMkrFzRVMnHK5RBlCCaCuTvmSw/sbVydIXXBkRqcWaewwlNhC03o9?=
+ =?us-ascii?Q?a4U+DSy3ETlh/A/1/jAToB6GVZUhwm6bLK+NeiqtW+0U1qIo1XJfgiK2iakv?=
+ =?us-ascii?Q?afB5mvi1rfAoEO4a7JyFmSIt0eFMwwKDettGSyHflwdDgYLFuGuK0Js2Owck?=
+ =?us-ascii?Q?MRBMHs6BFJw76bKb5uJ6TmN5y8evByI4reNoC0Gv6gjdnZ7So5y5p+ZRKP/f?=
+ =?us-ascii?Q?5HZguW5gvNYS6Z1dFvX/4B3kGrQ9b2ye97O0Yh4j0lwjtxxJ1mUYxUfgspjV?=
+ =?us-ascii?Q?h6GEEeQfn37tYnqTx/3Td2qNc/UUUibxnC2Lq0dez30F2fNAw+Wn8nNg5Jhl?=
+ =?us-ascii?Q?w3B7B3PCw4rSQvECFXnfCfDub0xadnRhw+A9Wyf0SKwQ+wYT4a51y281FxK0?=
+ =?us-ascii?Q?OANB/G8fbqcUUjIV+wO0m7c7l6X2707BEos1RwBdfbFs9GY4dq8HRIfXWrkd?=
+ =?us-ascii?Q?ITtQr/dhFcqh0wceB8uvG1Ow20pMCtQwGnRZu1pQscwUABPyW+MVYhtt3d6H?=
+ =?us-ascii?Q?NeLo8KSF81ofeLOmRqCb4FjSttnqoqo7d0+NOOqGh7wvyXR47acw3mnQQM18?=
+ =?us-ascii?Q?v34q9abo0ZBO2xst9QlUuwhiZn4r5Yfzb6N8jp0C49G+IzOLsY/htO3MTfk+?=
+ =?us-ascii?Q?Uo7PVpyflsLJr1QcEO8Gg2y87qcjyZlFxrtyLJWEBKIZqwud4+sO0sqBoIp4?=
+ =?us-ascii?Q?7FV8VBQUJXi6OEJR27OixSYS8ZLqYozeqbAjU/lPZ0Zay+2VIYW5U6MH+kKA?=
+ =?us-ascii?Q?3cNBfzIUMkcEOLjW+u3WE64e1YejsdjikfTv128gilDQm7r4wNv+cwqUVxFX?=
+ =?us-ascii?Q?fFKB9njMYFN1lbnjLVZ+4m/t4AMzhZZ7ekAlEz+A9nFb7eitvOYjp4DgjCKl?=
+ =?us-ascii?Q?KsP0GLjIOHO24IYREAldMBxlUAfYByYbaEYbuKOmrYV1zOTGhO2BrgH9VmUB?=
+ =?us-ascii?Q?I/F4Eg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73c12a18-9618-4d6f-2439-08d9f31c5d6e
+X-MS-Exchange-CrossTenant-Network-Message-Id: c73cc969-8ce3-4eb4-2f0e-08d9f31c5dfd
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5903.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 20:22:20.3643
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 20:22:21.2705
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5SmPFEPaUplwL5vtrW7QXW33a5WBm4s80nlZ+o9SwmOsAEpm3wO0yyzqSk7rN+okS5EsOTL2jOAgqLYykLXgxthxeyW96DsTG4sv4UDCoZQ=
+X-MS-Exchange-CrossTenant-UserPrincipalName: +zijAYPdYrkcYnMU7k/YSzCOxUqe6BKj2k2ryf+UEOGiiG3NWzbUhC9Lgkjy1OmhNg12qkQ8c9B6d1kIj2qh1oguRMeqjcx48f/ixlu5Gq4=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4378
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -112,73 +114,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DPAA2 MAC supports 1588 one step timestamping.
-If this option is enabled then for each transmitted PTP event packet,
-the 1588 SINGLE_STEP register is accessed to modify the following fields:
+dpni_get_single_step_cfg is an MC firmware command used for
+retrieving the contents of SINGLE_STEP 1588 register available
+in a DPMAC.
 
--offset of the correction field inside the PTP packet
--UDP checksum update bit,  in case the PTP event packet has
- UDP encapsulation
+This patch adds a new version of this command that returns as an extra
+argument the physical base address of the aforementioned register.
+The address will be used to directly modify the contents of the
+SINGLE_STEP register instead of invoking the MC command
+dpni_set_single_step_cgf. The former approach introduced huge delays on
+the TX datapath when one step PTP events were transmitted. This led to low
+throughput and high latencies observed in the PTP correction field.
 
-These values can change any time, because there may be multiple
-PTP clients connected, that receive various 1588 frame types:
-- L2 only frame
-- UDP / Ipv4
-- UDP / Ipv6
-- other
-
-The current implementation uses dpni_set_single_step_cfg to update the
-SINLGE_STEP register.
-Using an MC command  on the Tx datapath for each transmitted 1588 message
-introduces high delays, leading to low throughput and consequently to a
-small number of supported PTP clients. Besides these, the nanosecond
-correction field from the PTP packet will contain the high delay from the
-driver which together with the originTimestamp will render timestamp
-values that are unacceptable in a GM clock implementation.
-
-This patch series replaces the dpni_set_single_step_cfg function call from
-the Tx datapath for 1588 messages (when one step timestamping is enabled) 
-with a callback that either implements direct access to the SINGLE_STEP
-register, eliminating the overhead caused by the MC command that will need
-to be dispatched by the MC firmware through the MC command portal
-interface or falls back to the dpni_set_single_step_cfg in case the MC
-version does not have support for returning the single step register
-base address.
-
-In other words all the delay introduced by dpni_set_single_step_cfg
-function will be eliminated (if MC version has support for returning the
-base address of the single step register), improving the egress driver
-performance for PTP packets when single step timestamping is enabled.
-
-The first patch adds a new attribute that contains the base address of
-the SINGLE_STEP register. It will be used to directly update the register
-on the Tx datapath.
-
-The second patch updates the driver such that the SINGLE_STEP
-register is either accessed directly if MC version >= 10.32 or is
-accessed through dpni_set_single_step_cfg command when 1588 messages
-are transmitted.
-
+Signed-off-by: Radu Bulie <radu-andrei.bulie@nxp.com>
+---
 Changes in v2:
- - move global function pointer into the driver's private structure in 2/2
- - move repetitive code outside the body of the callback functions  in 2/2
- - update function dpaa2_ptp_onestep_reg_update_method  and remove goto 
-   statement from non error path in 2/2	
-
+ - none
 Changes in v3:
- - remove static storage class specifier from within the structure in 2/2
+ - none
+
+ drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h | 6 +++++-
+ drivers/net/ethernet/freescale/dpaa2/dpni.c     | 2 ++
+ drivers/net/ethernet/freescale/dpaa2/dpni.h     | 6 ++++++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
+index 9f80bdfeedec..828f538097af 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
+@@ -98,7 +98,7 @@
+ #define DPNI_CMDID_GET_LINK_CFG				DPNI_CMD(0x278)
  
-Radu Bulie (2):
-  dpaa2-eth: Update dpni_get_single_step_cfg command
-  dpaa2-eth: Provide direct access to 1588 one step register
-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 96 +++++++++++++++++--
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 12 ++-
- .../net/ethernet/freescale/dpaa2/dpni-cmd.h   |  6 +-
- drivers/net/ethernet/freescale/dpaa2/dpni.c   |  2 +
- drivers/net/ethernet/freescale/dpaa2/dpni.h   |  6 ++
- 5 files changed, 110 insertions(+), 12 deletions(-)
-
+ #define DPNI_CMDID_SET_SINGLE_STEP_CFG			DPNI_CMD(0x279)
+-#define DPNI_CMDID_GET_SINGLE_STEP_CFG			DPNI_CMD(0x27a)
++#define DPNI_CMDID_GET_SINGLE_STEP_CFG			DPNI_CMD_V2(0x27a)
+ 
+ /* Macros for accessing command fields smaller than 1byte */
+ #define DPNI_MASK(field)	\
+@@ -658,12 +658,16 @@ struct dpni_cmd_single_step_cfg {
+ 	__le16 flags;
+ 	__le16 offset;
+ 	__le32 peer_delay;
++	__le32 ptp_onestep_reg_base;
++	__le32 pad0;
+ };
+ 
+ struct dpni_rsp_single_step_cfg {
+ 	__le16 flags;
+ 	__le16 offset;
+ 	__le32 peer_delay;
++	__le32 ptp_onestep_reg_base;
++	__le32 pad0;
+ };
+ 
+ struct dpni_cmd_enable_vlan_filter {
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.c b/drivers/net/ethernet/freescale/dpaa2/dpni.c
+index d6afada99fb6..6c3b36f20fb8 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni.c
+@@ -2136,6 +2136,8 @@ int dpni_get_single_step_cfg(struct fsl_mc_io *mc_io,
+ 	ptp_cfg->ch_update = dpni_get_field(le16_to_cpu(rsp_params->flags),
+ 					    PTP_CH_UPDATE) ? 1 : 0;
+ 	ptp_cfg->peer_delay = le32_to_cpu(rsp_params->peer_delay);
++	ptp_cfg->ptp_onestep_reg_base =
++				  le32_to_cpu(rsp_params->ptp_onestep_reg_base);
+ 
+ 	return err;
+ }
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+index 7de0562bbf59..6fffd519aa00 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+@@ -1074,12 +1074,18 @@ int dpni_set_tx_shaping(struct fsl_mc_io *mc_io,
+  * @peer_delay:	For peer-to-peer transparent clocks add this value to the
+  *		correction field in addition to the transient time update.
+  *		The value expresses nanoseconds.
++ * @ptp_onestep_reg_base: 1588 SINGLE_STEP register base address. This address
++ *			  is used to update directly the register contents.
++ *			  User has to create an address mapping for it.
++ *
++ *
+  */
+ struct dpni_single_step_cfg {
+ 	u8	en;
+ 	u8	ch_update;
+ 	u16	offset;
+ 	u32	peer_delay;
++	u32	ptp_onestep_reg_base;
+ };
+ 
+ int dpni_set_single_step_cfg(struct fsl_mc_io *mc_io,
 -- 
 2.17.1
 
