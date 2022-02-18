@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09CFD4BB772
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 12:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB044BB778
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 12:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234250AbiBRLAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 06:00:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53004 "EHLO
+        id S234274AbiBRLBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 06:01:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234244AbiBRLA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 06:00:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011A01EB420;
-        Fri, 18 Feb 2022 03:00:11 -0800 (PST)
+        with ESMTP id S232812AbiBRLBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 06:01:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C571EB420;
+        Fri, 18 Feb 2022 03:00:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91B6B61E80;
-        Fri, 18 Feb 2022 11:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EDB11C340EB;
-        Fri, 18 Feb 2022 11:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645182010;
-        bh=KwglRraOwOZOyLVRrYY428yqdeqobp9eallBt0vf47w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ifQQtPSY4h9ByFo7m6Lj86wzl27AaVnW50/hj4q6IbZZyWHhdn5Jpo3cOlrYj+vc/
-         9yCWB0LunTBgmZZj2hdX9cT7OQQ/VfMYF62XramxmF78eb3pTVWcIgil9vZlRv7hww
-         T6CTMacI2yrhfbmj8F+AMEe9DDIgtXnVPMWQn2CtSiC4KstBfHQ7ZNXtSyOOVYMPPX
-         Xv+YsTGl1fSGoZiOYTRIRw0c/lXuwxlcWuQnzSvtPTyYADPBVrPbc0DZ9SwQm1rL+t
-         XWu5b9UqGuojhVMerU/PbxjoOwqyoA0O9TrLaY5ivEVq6dN3cUHdAVL5dI3Vs7ADxh
-         C6p2I6GkPpIUg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6F33E7BB07;
-        Fri, 18 Feb 2022 11:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 550A9B825C6;
+        Fri, 18 Feb 2022 11:00:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B68CC340E9;
+        Fri, 18 Feb 2022 11:00:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645182057;
+        bh=xDNIszGdyu9JUBGF0Ipy4PA25oS8dSDLtoFOXkvLIKo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xhs5U3EmTHMl0nWTi0yo5A9OtOEMx+CXjLeSXvOKPnazzvK2X0inACaa/m64YpgUk
+         u+vVm+IomqjAgDPdsac93LXVY76GMGTrnK4LSylb0dOkLFJlN++Jgb7zxCyODkLwCB
+         XH6wFRfMUdSm/dVW2R1k+STgi42X00YftHzB9N0A=
+Date:   Fri, 18 Feb 2022 12:00:54 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        Riccardo Ferrazzo <rferrazzo@came.com>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] staging: wfx: fix scan with WFM200 and WW regulation
+Message-ID: <Yg98Zjikg0ncQv8b@kroah.com>
+References: <20220218105358.283769-1-Jerome.Pouiller@silabs.com>
+ <2535719.D4RZWD7AcY@pc-42>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V3] drivers: hamradio: 6pack: fix UAF bug caused by
- mod_timer()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164518200987.19952.16423799122287139298.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Feb 2022 11:00:09 +0000
-References: <20220217014303.102986-1-duoming@zju.edu.cn>
-In-Reply-To: <20220217014303.102986-1-duoming@zju.edu.cn>
-To:     =?utf-8?b?5ZGo5aSa5piOIDxkdW9taW5nQHpqdS5lZHUuY24+?=@ci.codeaurora.org
-Cc:     linux-hams@vger.kernel.org, kuba@kernel.org,
-        ajk@comnets.uni-bremen.de, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linma@zju.edu.cn
+In-Reply-To: <2535719.D4RZWD7AcY@pc-42>
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,31 +55,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu, 17 Feb 2022 09:43:03 +0800 you wrote:
-> When a 6pack device is detaching, the sixpack_close() will act to cleanup
-> necessary resources. Although del_timer_sync() in sixpack_close()
-> won't return if there is an active timer, one could use mod_timer() in
-> sp_xmit_on_air() to wake up timer again by calling userspace syscall such
-> as ax25_sendmsg(), ax25_connect() and ax25_ioctl().
+On Fri, Feb 18, 2022 at 11:57:47AM +0100, Jérôme Pouiller wrote:
+> On Friday 18 February 2022 11:53:58 CET Jerome Pouiller wrote:
+> > From: Riccardo Ferrazzo <rferrazzo@came.com>
+> > 
+> > Some variants of the WF200 disallow active scan on channel 12 and 13.
+> > For these parts, the channels 12 and 13 are marked IEEE80211_CHAN_NO_IR.
+> > 
+> > However, the beacon hint procedure was removing the flag
+> > IEEE80211_CHAN_NO_IR from channels where a BSS is discovered. This was
+> > making subsequent scans to fail because the driver was trying active
+> > scans on prohibited channels.
+> > 
+> > Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
 > 
-> This unexpected waked handler, sp_xmit_on_air(), realizes nothing about
-> the undergoing cleanup and may still call pty_write() to use driver layer
-> resources that have already been released.
+> I forgot to mention I have reviewed on this patch:
 > 
-> [...]
+> Reviewed-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
 
-Here is the summary with links:
-  - [V3] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
-    https://git.kernel.org/netdev/net/c/efe4186e6a1b
+Reviwed-by is implied with signed-off-by.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+But what happened to the signed-off-by from the author of this change?
 
+thanks,
 
+greg k-h
