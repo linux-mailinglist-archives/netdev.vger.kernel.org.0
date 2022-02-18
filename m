@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D8B4BB4D3
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 10:02:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A7514BB590
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 10:28:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232999AbiBRJB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 04:01:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55434 "EHLO
+        id S233366AbiBRJ23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 04:28:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232993AbiBRJBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 04:01:54 -0500
-X-Greylist: delayed 65747 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Feb 2022 01:01:35 PST
-Received: from mail-4323.proton.ch (mail-4323.proton.ch [185.70.43.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41B950E0A
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 01:01:35 -0800 (PST)
-Date:   Fri, 18 Feb 2022 09:01:30 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=casan.se;
-        s=protonmail; t=1645174892;
-        bh=CnbsTehi8nazSv20dhwSQWYGp8iAxKP40Cn8QqJLrxA=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=i9Vso3HCvMGtdaUnmCyCgc9LXW83JL47IQ/Lv46wbGNPUMovXSyrcmqo0Tr91Dj+5
-         qtmQlcPWWYdYv3KLF+WIyzVWiujGv9N29Txa2LsiuyOxIVl3YqaJDAi5ZLWJjlXTae
-         1Yfg+vHWMg3FHrMk7DKVS/pIbQstGc/0VHLclNY2FWqQo/LDYvNYGLOf1qX4wh0U5G
-         qnGK8QPTPlV7OsloKrnr8bRfspHlL1SsSvBr6Oh4fZ+pVHwa8l7v7K1aOP/UE/tLE5
-         v7nSuTv6jFiJQQtCBr/mAMNF5yraOlcH0Nsb/OVcB0uBleLWl0PpNWLA0wzDT/a2Wn
-         3cNTxwjaa7Sjw==
-To:     Jakub Kicinski <kuba@kernel.org>
-From:   Casper Andersson <casper@casan.se>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Reply-To: Casper Andersson <casper@casan.se>
-Subject: Re: [PATCH net-next] net: sparx5: Support offloading of bridge port flooding flags
-Message-ID: <20220218090127.vutf5qomnobcof4z@wse-c0155>
-In-Reply-To: <20220217201830.51419e5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220217144534.sqntzdjltzvxslqo@wse-c0155> <20220217201830.51419e5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S233364AbiBRJ21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 04:28:27 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB33C9A39
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 01:28:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=3yN3Lb63PBBx1XnDNBVt6J8RKbv23CammN/V+OEYSCI=; b=y9PwkHNl5YWHYMrYuz0vpzJHrd
+        hN6ktdbztxv5EoXQDx6/o9jJvTeCW9ja5e4IitVpOEyPcXEaTeq0YfnB/FpG/2dG9GtpES1WHkbtu
+        Hq52DPuZUs7l1/KfER27N7h+PAYOHG2DaJT58pfI+rRegZVVJ+1MlmVqgarRRN9/gQSo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nKzYd-006TWw-Ha; Fri, 18 Feb 2022 10:28:07 +0100
+Date:   Fri, 18 Feb 2022 10:28:07 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Subject: Re: [PATCH net-next v2] net: dsa: OF-ware slave_mii_bus
+Message-ID: <Yg9mpxc9Var4xJLq@lunn.ch>
+References: <20220218062147.7672-1-luizluca@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218062147.7672-1-luizluca@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/02/17 08:18, Jakub Kicinski wrote:
-> On Thu, 17 Feb 2022 14:45:38 +0000 Casper Andersson wrote:
->
-> Can others see this patch? My email client apparently does not have
-> enough PGP support enabled. I'm worried I'm not the only one. That said
-> lore and patchwork seem to have gotten it just fine:
->
-> https://lore.kernel.org/all/20220217144534.sqntzdjltzvxslqo@wse-c0155/
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220217144534.sqntz=
-djltzvxslqo@wse-c0155/
+On Fri, Feb 18, 2022 at 03:21:47AM -0300, Luiz Angelo Daros de Luca wrote:
+> If found, register the DSA internally allocated slave_mii_bus with an OF
+> "mdio" child object. It can save some drivers from creating their
+> custom internal MDIO bus.
 
-I apologize. This seems to be Protonmail's doing. When I look at the
-web interface for Protonmail I can see that you are the only recipient
-it says PGP encrypted for. This is probably because Protonmail will
-automatically encrypt when both ends use Protonmail. Though I do not see
-this indication on your reply. I tried switching to PGP/Inline instead
-of PGP/MIME for this message. I hope this works.  Otherwise, I can
-resubmit this patch using another email address. I did not find a way
-to disable the automatic encryption. Or if you have any other
-suggestions to get around this.
+> @@ -924,7 +926,10 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+>  
+>  		dsa_slave_mii_bus_init(ds);
+>  
+> -		err = mdiobus_register(ds->slave_mii_bus);
+> +		dn = of_get_child_by_name(ds->dev->of_node, "mdio");
+> +
+> +		err = of_mdiobus_register(ds->slave_mii_bus, dn);
+> +		of_node_put(dn);
 
+This makes sense, but please update the binding document to include this:
+
+Documentation/devicetree/bindings/net/dsa/dsa.yaml
+
+	Andrew
