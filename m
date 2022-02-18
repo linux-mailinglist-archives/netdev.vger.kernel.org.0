@@ -2,127 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70EE24BB5D0
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 10:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9F44BB5FA
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 10:56:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232876AbiBRJl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 04:41:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41924 "EHLO
+        id S233202AbiBRJ4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 04:56:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232288AbiBRJlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 04:41:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7665DE58;
-        Fri, 18 Feb 2022 01:41:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB87061C3A;
-        Fri, 18 Feb 2022 09:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E266BC340E9;
-        Fri, 18 Feb 2022 09:41:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645177266;
-        bh=KxJ9Vxs4B0Pl8mRx/4SGNFO7BcYqKJXVD30lpUKtT0M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FDbHUxv4wZxlp3O9mVRvthU68Qx65VP8LyPo7MGFl4OriV3xp62rinvrKL9ScmCjc
-         SKu1SUJZiPX2lNi8GVfFddB6z0MNbUsstd6ljYiDzV6duUuvadaXPGZNOGg8JVzUma
-         5tbPCnzegvp+rj5lLwxUNqYg9VWt5R+EoiXbBpJ9xezLTawbbu5GK1XQrjKYpE9Sii
-         oqcZt+JczztCVLB5M3q8BzALSO/EVPThM0FnD0mGqS33mS9CSjj8ig2wWxcCqwzIFA
-         lPLPDbsu6DdkC8wKFGb3lCKj6MJrOy8FgrpYOCli20gZ5S4eIxxfQrWw1VSPaxkkZP
-         C/Dai34AuWZdw==
-Date:   Fri, 18 Feb 2022 10:41:01 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Zev Weiss <zev@bewilderbeest.net>
-Subject: Re: [PATCH net-next v6 2/2] mctp i2c: MCTP I2C binding driver
-Message-ID: <Yg9prTWlC5eTY5J5@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>
-References: <20220218055106.1944485-1-matt@codeconstruct.com.au>
- <20220218055106.1944485-3-matt@codeconstruct.com.au>
+        with ESMTP id S232816AbiBRJ4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 04:56:43 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406956366;
+        Fri, 18 Feb 2022 01:56:25 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id y5so1938388pfe.4;
+        Fri, 18 Feb 2022 01:56:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ASeypXRihACV7GAUh7uwe5dr074v2W03J+WqWirP0qg=;
+        b=TtP3a8fvx71ymXORVwJz5VvdiIKXHlGEQaF1fswtgYez7GykxxafxT3tThvW7rQBp+
+         RVN8oyZkTf9vfw9yU66OSr/z9IDubO5v8CNmpjTR/xQnb2WFc4RZ5BINkPobC4KKEJbL
+         Cf6WP98bXTcyftgUJi+vlq2oq7tRQiEtgpTlQwSCpOqOX9pC5u/txW2pI/JSjlSIKk2c
+         KUxnc+tUTVdrqlIDZ8QqQDn/c9nj5qQezMUNRaI8U4fTcRUvOJ8TTjOMZX+GyGV2U5xw
+         B2Dit8xdCj0GCtm5FIyiwVHKcZGuFQ5xs4GXJfyaFov2Mpz9LWYZ5C8qH/T7usppNHin
+         wK/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ASeypXRihACV7GAUh7uwe5dr074v2W03J+WqWirP0qg=;
+        b=L2xv6K+rfW5dtljJVMeKilFVKvCUiD933+wvqZec/GX4FOcOiVdnEDoFL6Ez9i4+cc
+         L56sP4961uCVAURx0duY6BzSMWb6bq3oiZziLzG9riFEv+OsHu8pn/XsjiiZR0Df8xo3
+         p9liCZsIjVAYtomesGvBdKpze5iHesEk/E/l+Ozux/+OYd6UiPBM+z5a/Zy7ky0nfsA7
+         8mKHZczSeGMTIVezwqpf01xBtqNvO2/OAFSVGMA+YatnMlPcTchT3RP/P/RpVuPStw1T
+         c875HzNhd+YBuzMBUtLCZNpYp75BEnYchZgnr4/S+15m+sWuhxDYCde3xIaQIsOpjoPt
+         JTkQ==
+X-Gm-Message-State: AOAM533mtpoX5/GBZNqrWRaGXtigTJpgc2czwl3VfL45PoCsWYrwfcVb
+        +DICy4OqRTt380Yn4JYqOrQ=
+X-Google-Smtp-Source: ABdhPJyGYravoPWA+7V/e14rAqNKZ++soM1WSQ15O73L+fXP8rw+tjDEDqtcxEoZ1394l+dE+depvQ==
+X-Received: by 2002:a63:6985:0:b0:341:b238:7cb1 with SMTP id e127-20020a636985000000b00341b2387cb1mr5696159pgc.621.1645178184747;
+        Fri, 18 Feb 2022 01:56:24 -0800 (PST)
+Received: from vultr.guest ([149.248.7.47])
+        by smtp.gmail.com with ESMTPSA id t22sm2750430pfg.92.2022.02.18.01.56.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 01:56:24 -0800 (PST)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH RFC 0/3] bpf: show attached name for progs without btf name
+Date:   Fri, 18 Feb 2022 09:56:09 +0000
+Message-Id: <20220218095612.52082-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="OiUcSEdALkkZmsV+"
-Content-Disposition: inline
-In-Reply-To: <20220218055106.1944485-3-matt@codeconstruct.com.au>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+With progs.debug we can get the attached name of the bpf prog which is
+attached to a kernel function. But we can't get bpf progs which are
+attached to others, like a cgroup, sockmap and etc. This patchset means
+to extend the attached name to other types.
 
---OiUcSEdALkkZmsV+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The member attach_func_name in struct bpf_prog_aux is renamed to
+attach_name in patch #1, to avoid possible confusion. Then in patch #2
+and #3 I extend the attached name to bpf progs which are attached to a
+cgroup or a sockmap. If this solution is acceptable, I will extend it to
+other attach types in the next step.
 
-On Fri, Feb 18, 2022 at 01:51:06PM +0800, Matt Johnston wrote:
-> Provides MCTP network transport over an I2C bus, as specified in
-> DMTF DSP0237. All messages between nodes are sent as SMBus Block Writes.
->=20
-> Each I2C bus to be used for MCTP is flagged in devicetree by a
-> 'mctp-controller' property on the bus node. Each flagged bus gets a
-> mctpi2cX net device created based on the bus number. A
-> 'mctp-i2c-controller' I2C client needs to be added under the adapter. In
-> an I2C mux situation the mctp-i2c-controller node must be attached only
-> to the root I2C bus. The I2C client will handle incoming I2C slave block
-> write data for subordinate busses as well as its own bus.
->=20
-> In configurations without devicetree a driver instance can be attached
-> to a bus using the I2C slave new_device mechanism.
->=20
-> The MCTP core will hold/release the MCTP I2C device while responses
-> are pending (a 6 second timeout or once a socket is closed, response
-> received etc). While held the MCTP I2C driver will lock the I2C bus so
-> that the correct I2C mux remains selected while responses are received.
->=20
-> (Ideally we would just lock the mux to keep the current bus selected for
-> the response rather than a full I2C bus lock, but that isn't exposed in
-> the I2C mux API)
->=20
-> Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-> Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+Yafang Shao (3):
+  bpf: rename attach_func_name to attach_name
+  bpf: set attached cgroup name in attach_name
+  bpf: set attached sockmap id in attach_name
 
-Thanks for the update:
+ include/linux/bpf.h                           |   3 +-
+ kernel/bpf/bpf_iter.c                         |   2 +-
+ kernel/bpf/bpf_lsm.c                          |   2 +-
+ kernel/bpf/btf.c                              |   2 +-
+ kernel/bpf/cgroup.c                           |   8 +
+ kernel/bpf/preload/iterators/iterators.bpf.c  |   4 +-
+ kernel/bpf/preload/iterators/iterators.skel.h | 488 +++++++++---------
+ kernel/bpf/syscall.c                          |   2 +-
+ kernel/bpf/verifier.c                         |   4 +-
+ net/core/sock_map.c                           |   8 +-
+ 10 files changed, 276 insertions(+), 247 deletions(-)
 
-Reviewed-by: Wolfram Sang <wsa@kernel.org> # I2C transport parts
+-- 
+2.17.1
 
-Note: Your mails miss a To: Header which causes hickups with some
-tooling. Please add one.
-
-
---OiUcSEdALkkZmsV+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIPaakACgkQFA3kzBSg
-KbaVzg/9FfBGrnGaGKrhqRGzkihwzHVRj0iV5OfnAvEZJZxmr8wzoYB1ek08CjYm
-u+hAeafTnKQOEn48EbqvH3uq7vpxEIVIu/7KcXKYxLuDDvPeGVxXGBUPs/uWdglH
-CZuI729o5bp3HN4gFJFkZqT72/Yr4Be/VwSBOUi0FeEKzSrHa6rhRsraZcQKHVWy
-o5siQUNO/wpK8z0fukt/4/vU4JQDkn2ZwrXcf3boGZheELwUwEvKgocr5cAglluq
-8WVsrj/6KjDI29Sipr5SZlce479A8+/cUZY4xkKcDARUwN8UMV099JIvwwZ9WEtx
-oC44WNraLXgQWhxk705CbmgLZhagDARIOzyTHefLC7i9zlNc6hzrD1kb2MBHb0wK
-dnMWkOLViQTn/wLrc7e1VGlsed+qFlP648aRLtKUftkgt8Ez0UIhl9hCCpFCOtsg
-ZZd/Yqd1tsB7SYX8/rYqAGTaxgTxMyMICfjuTD3ODHL1+2/x6StFDzZTe8DWyOId
-jDQT1ZXKwCM95ddvdNa4xkQRtpQ0V2P6LddfDeYwbE3ag16K83iTH73GOGvv8Skp
-Dd/QYnCMXhC6hX1M4IioyREcjU+UHL132GRP24MtZJ+H8ca+RlElTwOwDspLP+/w
-mclnPrzXvvq+OfHKI8loLGfbW5fUSLCWT/z7oyvnK8a42pNVVuw=
-=PkbI
------END PGP SIGNATURE-----
-
---OiUcSEdALkkZmsV+--
