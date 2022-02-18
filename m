@@ -2,129 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AED9F4BBD7B
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:29:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF754BBD87
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:31:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237854AbiBRQ3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 11:29:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37454 "EHLO
+        id S237991AbiBRQbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 11:31:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235204AbiBRQ3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:29:40 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED87A527C5
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:29:23 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id ki18-20020a17090ae91200b001b8be87e9abso8310985pjb.1
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:29:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+S2A0TOvwCJqKZEf2n99ER8D0GRma+qu1vDI6jWof+k=;
-        b=17FGGI/YNQ0KAFTAypdxgCTm9RsrQp5K+/cVxDpHxnSkxeVsiaSt9Ac07mjSXc13ZK
-         h5Ktl0Ae9ERA3vumep+jO9/6crSymL4N2TdTM5DBCyniUTz322SOFXsEU2aB7M3NSZQp
-         z5hdVjRJWawRVRC0hpmiGDUjVPj0CD4yz5GQBg6hUP2yFvgjq4iPANEEQRU+8mSBTiHQ
-         A74gL4IMVRFT6lyj4iCaPqObqquNtP7bwR2C5I2kljvhaKHQ9gMBTIUNlISvXQcvzFwd
-         VQmKQo8+Hfr3ClRpm9RFA9lJXxMQ8O/AZd5D3rPCYmee6i9hEsWNVIuVLJwzf83SOXO7
-         fY4A==
+        with ESMTP id S237939AbiBRQbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:31:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 171442ABD1D
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:30:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645201855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MlHUFHX+ZHcQFW+lyQMNcMO6c5EeDKK8SX4zE6inQZ8=;
+        b=MS/QhgMLOo80EzVlFzryXt/Fhwtzx41Q//jk7cryhZaChcbvqhFiWiWZlYhWHhw6TSnYIi
+        ameiv4QzcZ1BCmG3qdL5j5CrMXfwiXscWmBxmKoa+dfFGXoSKXIyP2ficeH1gKNSdrferb
+        1hj5oBYTB/z2W8Cpe/Ik+/hjUJ4Nk0s=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-RKuAM2nfNpClb5mSz1-WPA-1; Fri, 18 Feb 2022 11:30:53 -0500
+X-MC-Unique: RKuAM2nfNpClb5mSz1-WPA-1
+Received: by mail-qk1-f198.google.com with SMTP id t17-20020a05620a035100b0060df15e2977so3869557qkm.21
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:30:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+S2A0TOvwCJqKZEf2n99ER8D0GRma+qu1vDI6jWof+k=;
-        b=te2su1UMQHlrf5npKOiXMSCKUPRueQbj7zbjWEAJYmqNOHT5zw4/UxFsGwCEXfZ7I9
-         50rOUPUdXNK/4FgDiNzClKj2VMhjY5BcJgQiNAarQNTLJVCfUVKXQfiRWQ03tnPKs+vT
-         dHjWtKi0iOET7efbznK6aK5MS0axiMSdDwkUfbPjXJbFr6DiYSRF0Wb3TsGjo9fcqdcW
-         UMOPXf3pP72wNmGR24WZi4z0U1e3zmjH9gz042X/SD+giJ31HlFcPsET03+yZ4lAK3Bg
-         R619KzXD/dYfXgOD5ci0nJyQy6ndlItCtohUU5AG7m/QsALObU/E//qLPhScb04jYv5X
-         CEjw==
-X-Gm-Message-State: AOAM532Xgd+EK1D1SdyIQ5lZ0mpyPrE69BtU8CIEIgct7t+VntKOAScO
-        YFDKScTAm4pUoOiGxGYIT0braA==
-X-Google-Smtp-Source: ABdhPJwExeAIiHnGtSDYvzLTn9a79LfvNamR7Qrx/rmjXi3TsyKaPlksaqY9nzNuXqJXPRkk8OfIyw==
-X-Received: by 2002:a17:90a:bb0d:b0:1b8:a958:543d with SMTP id u13-20020a17090abb0d00b001b8a958543dmr9142994pjr.51.1645201763446;
-        Fri, 18 Feb 2022 08:29:23 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id f16sm3920555pfa.147.2022.02.18.08.29.22
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MlHUFHX+ZHcQFW+lyQMNcMO6c5EeDKK8SX4zE6inQZ8=;
+        b=Oe9BBhwy7/87lDeAI3JuMQC1eJkG8vIHP6YFZfA7lRmAJH2unDC3q/HdhdnenXcNsu
+         UnmqVsa84Xiz/4/cZvJ3KorhpO4AUs5GJLepw9UodzBUV9N0NFwlYDVyZMzrZpVuWUF7
+         D/ELJh5ccQvwDKIybyHpOAItg7419WuBrWrhBKJt/9Q/NRSYxnOmd4KYTjnc9ANCLEz7
+         +mCXU3aNXSKxsmtMY2q9C0mH+NGXIs6h09ChXVA/7B0M8iErV3pPZp9i6CTmrFjEtU0g
+         Bc4G3uY1dmNVT/CNlj8tHHiEriCWUcMlhR/Oz13ZP8UKU/+VlgJE+a2mhsphdMHoGHsF
+         mXJA==
+X-Gm-Message-State: AOAM533T+iOl0D+GzyCCt7GJOuth//FeJHCTIM312OrZvmxoQ7HqONaQ
+        WRdJwMgiGiH5gg/4LZ9qTjb/xUYs+2HCbdrZjavUmYMJKwE14Eps/mWFd+oVk4+p6LiKkf9TRQa
+        WC0Its+2ndKYtdTBO
+X-Received: by 2002:a05:6214:2269:b0:42c:37d8:a1aa with SMTP id gs9-20020a056214226900b0042c37d8a1aamr6473772qvb.92.1645201853408;
+        Fri, 18 Feb 2022 08:30:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx4vFhU7HKS9yRqHe0sY1K1K2BAfoqEYhz5pP7+ki2kTzk8Y/F1C67XvLcFUXAjFfYcBr/Uhw==
+X-Received: by 2002:a05:6214:2269:b0:42c:37d8:a1aa with SMTP id gs9-20020a056214226900b0042c37d8a1aamr6473751qvb.92.1645201853164;
+        Fri, 18 Feb 2022 08:30:53 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id c2sm18024043qkp.0.2022.02.18.08.30.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 08:29:23 -0800 (PST)
-Date:   Fri, 18 Feb 2022 08:29:20 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in
- net/checksum.h
-Message-ID: <20220218082920.06d6b80f@hermes.local>
-In-Reply-To: <20220218121237.GQ614@gate.crashing.org>
-References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
-        <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com>
-        <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
-        <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu>
-        <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
-        <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com>
-        <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com>
-        <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com>
-        <20220217180735.GM614@gate.crashing.org>
-        <CAK7LNAQ3tdOEYP7LjSX5+vhy=eUf0q-YiktQriH-rcr1n2Q3aA@mail.gmail.com>
-        <20220218121237.GQ614@gate.crashing.org>
+        Fri, 18 Feb 2022 08:30:52 -0800 (PST)
+From:   trix@redhat.com
+To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, cjhuang@codeaurora.org,
+        briannorris@chromium.org, kuabhs@chromium.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] nl80211: check return of nla_parse_nested
+Date:   Fri, 18 Feb 2022 08:30:45 -0800
+Message-Id: <20220218163045.3370662-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Feb 2022 06:12:37 -0600
-Segher Boessenkool <segher@kernel.crashing.org> wrote:
+From: Tom Rix <trix@redhat.com>
 
-> On Fri, Feb 18, 2022 at 10:35:48AM +0900, Masahiro Yamada wrote:
-> > On Fri, Feb 18, 2022 at 3:10 AM Segher Boessenkool
-> > <segher@kernel.crashing.org> wrote:  
-> > > On Fri, Feb 18, 2022 at 02:27:16AM +0900, Masahiro Yamada wrote:  
-> > > > On Fri, Feb 18, 2022 at 1:49 AM David Laight <David.Laight@aculab.com> wrote:  
-> > > > > That description is largely fine.
-> > > > >
-> > > > > Inappropriate 'inline' ought to be removed.
-> > > > > Then 'inline' means - 'really do inline this'.  
-> > > >
-> > > > You cannot change "static inline" to "static"
-> > > > in header files.  
-> > >
-> > > Why not?  Those two have identical semantics!  
-> > 
-> > e.g.)
-> > 
-> > 
-> > [1] Open  include/linux/device.h with your favorite editor,
-> >      then edit
-> > 
-> > static inline void *devm_kcalloc(struct device *dev,
-> > 
-> >     to
-> > 
-> > static void *devm_kcalloc(struct device *dev,
-> > 
-> > 
-> > [2] Build the kernel  
-> 
-> You get some "defined but not used" warnings that are shushed for
-> inlines.  Do you see something else?
-> 
-> The semantics are the same.  Warnings are just warnings.  It builds
-> fine.
+Clang static analysis reports this representative problem
+nl80211.c:15426:6: warning: Branch condition evaluates
+  to a garbage value
+  if (!tb[NL80211_SAR_ATTR_TYPE] ||
+       ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Kernel code should build with zero warnings, the compiler is telling you
-something.
+tb is set when nla_parse_nested() is successful.
+So check.
+
+Fixes: 6bdb68cef7bf ("nl80211: add common API to configure SAR power limitations")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/wireless/nl80211.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 7543c73a3f1d..c1532c8eb657 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -15419,9 +15419,11 @@ static int nl80211_set_sar_specs(struct sk_buff *skb, struct genl_info *info)
+ 	if (!info->attrs[NL80211_ATTR_SAR_SPEC])
+ 		return -EINVAL;
+ 
+-	nla_parse_nested(tb, NL80211_SAR_ATTR_MAX,
+-			 info->attrs[NL80211_ATTR_SAR_SPEC],
+-			 NULL, NULL);
++	err = nla_parse_nested(tb, NL80211_SAR_ATTR_MAX,
++			       info->attrs[NL80211_ATTR_SAR_SPEC],
++			       NULL, NULL);
++	if (err)
++		return err;
+ 
+ 	if (!tb[NL80211_SAR_ATTR_TYPE] || !tb[NL80211_SAR_ATTR_SPECS])
+ 		return -EINVAL;
+@@ -15444,8 +15446,10 @@ static int nl80211_set_sar_specs(struct sk_buff *skb, struct genl_info *info)
+ 	sar_spec->type = type;
+ 	specs = 0;
+ 	nla_for_each_nested(spec_list, tb[NL80211_SAR_ATTR_SPECS], rem) {
+-		nla_parse_nested(spec, NL80211_SAR_ATTR_SPECS_MAX,
+-				 spec_list, NULL, NULL);
++		err = nla_parse_nested(spec, NL80211_SAR_ATTR_SPECS_MAX,
++				       spec_list, NULL, NULL);
++		if (err)
++			goto error;
+ 
+ 		switch (type) {
+ 		case NL80211_SAR_TYPE_POWER:
+-- 
+2.26.3
+
