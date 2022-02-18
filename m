@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8F14BBDA3
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:39:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD8F4BBDC8
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:48:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237976AbiBRQjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 11:39:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48160 "EHLO
+        id S238067AbiBRQtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 11:49:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiBRQjY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:39:24 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF9D1662F7;
-        Fri, 18 Feb 2022 08:39:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645202345; x=1676738345;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QxnUeu0qfzfRrvCh1uPZCHmA8hmtolG6mYblm9b+4cc=;
-  b=1tCmWGKMgKcaRHB8K4IZ8P2T2e2Ooj+GpGJ3RUz2gDZ2mDcruuuJhipO
-   3ASbJ0f8UPgZxf6+5Vot+8ZTL7eF0DMBo7zSp9Wp7nozBftvI2TL4mRkU
-   q2mqq2s/ocPRZCrBCdXmSXcV8DPira8R7ZlP1HB6E0reqgljrvc6QWwZ9
-   ATruaCm8MF40jQH1PUpwuyUu3Q3FK9uip/DdYiJ5L3Pl7sjuX/uG+JtJY
-   YsxYeTudk9LDHUljUVAwlIE4S7qQV2hANr4V1AqxAGBTDN/62T0RON6VF
-   KknhObNJqoNeYPcjUPxII2PuVX8yRXTUqGDZFU3EqaWlvOF8tHOX+5ND/
-   w==;
-X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="146528317"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2022 09:39:03 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Feb 2022 09:39:03 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Feb 2022 09:38:57 -0700
-Message-ID: <4b3a954cde4e9d1b6a94991964eb21e80278a8ab.camel@microchip.com>
-Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>, <andrew@lunn.ch>,
-        <netdev@vger.kernel.org>, <olteanv@gmail.com>, <robh+dt@kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>
-Date:   Fri, 18 Feb 2022 22:08:55 +0530
-In-Reply-To: <d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com>
-References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
-         <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
-         <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
-         <ebf1b233da821e2cd3586f403a1cdc2509671cde.camel@microchip.com>
-         <d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S234380AbiBRQtB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:49:01 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADE09B5A;
+        Fri, 18 Feb 2022 08:48:44 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21IGiLDR024462;
+        Fri, 18 Feb 2022 10:44:21 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21IGiLRA024461;
+        Fri, 18 Feb 2022 10:44:21 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Fri, 18 Feb 2022 10:44:20 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        David Laight <David.Laight@aculab.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
+Message-ID: <20220218164420.GR614@gate.crashing.org>
+References: <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu> <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu> <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com> <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com> <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com> <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com> <20220217180735.GM614@gate.crashing.org> <CAK7LNAQ3tdOEYP7LjSX5+vhy=eUf0q-YiktQriH-rcr1n2Q3aA@mail.gmail.com> <20220218121237.GQ614@gate.crashing.org> <20220218082920.06d6b80f@hermes.local>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218082920.06d6b80f@hermes.local>
+User-Agent: Mutt/1.4.2.3i
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-02-11 at 19:56 -0800, Florian Fainelli wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> On 2/9/2022 3:58 AM, Prasanna Vengateshan wrote:
-> > On Mon, 2022-02-07 at 18:53 -0800, Florian Fainelli wrote:
+On Fri, Feb 18, 2022 at 08:29:20AM -0800, Stephen Hemminger wrote:
+> On Fri, 18 Feb 2022 06:12:37 -0600
+> Segher Boessenkool <segher@kernel.crashing.org> wrote:
+> > On Fri, Feb 18, 2022 at 10:35:48AM +0900, Masahiro Yamada wrote:
+> > > On Fri, Feb 18, 2022 at 3:10 AM Segher Boessenkool
+> > > <segher@kernel.crashing.org> wrote:  
+> > > > On Fri, Feb 18, 2022 at 02:27:16AM +0900, Masahiro Yamada wrote:  
+> > > > > On Fri, Feb 18, 2022 at 1:49 AM David Laight <David.Laight@aculab.com> wrote:  
+> > > > > > That description is largely fine.
+> > > > > >
+> > > > > > Inappropriate 'inline' ought to be removed.
+> > > > > > Then 'inline' means - 'really do inline this'.  
+> > > > >
+> > > > > You cannot change "static inline" to "static"
+> > > > > in header files.  
+> > > >
+> > > > Why not?  Those two have identical semantics!  
 > > > 
-> > > > +                rx-internal-delay-ps:
-> > > > +                  $ref: "#/$defs/internal-delay-ps"
-> > > > +                tx-internal-delay-ps:
-> > > > +                  $ref: "#/$defs/internal-delay-ps"
+> > > e.g.)
 > > > 
-> > > Likewise, this should actually be changed in ethernet-controller.yaml
+> > > 
+> > > [1] Open  include/linux/device.h with your favorite editor,
+> > >      then edit
+> > > 
+> > > static inline void *devm_kcalloc(struct device *dev,
+> > > 
+> > >     to
+> > > 
+> > > static void *devm_kcalloc(struct device *dev,
+> > > 
+> > > 
+> > > [2] Build the kernel  
 > > 
-> > There is *-internal-delay-ps property defined for mac in ethernet-
-> > controller.yaml. Should that be changed like above?
+> > You get some "defined but not used" warnings that are shushed for
+> > inlines.  Do you see something else?
+> > 
+> > The semantics are the same.  Warnings are just warnings.  It builds
+> > fine.
 > 
-> It seems to me that these properties override whatever 'phy-mode'
-> property is defined, but in premise you are right that this is largely
-> applicable to RGMII only. I seem to recall that the QCA8K driver had
-> some sort of similar delay being applied even in SGMII mode but I am not
-> sure if we got to the bottom of this.
-> 
-> Please make sure that this does not create regressions for other DTS in
-> the tree before going with that change in ethernet-controller.yaml.
+> Kernel code should build with zero warnings, the compiler is telling you
+> something.
 
-Okay, Can these be submitted as a seperate patch?
+The second part is of course true.  The first part less so, and is in
+fact not true at all from some points of view:
+$ ./build --kernel x86_64
+Building x86_64... (target x86_64-linux)
+    kernel: configure [00:06] build [02:12]  1949 warnings  OK
+(This is with a development version of GCC.)
 
-Prasanna V
+There are simple ways to shut up specific warnings for specific code.
+That is useful, certainly.  And so is having a warning-free build.  It
+is obvious that we do survive without either of that though!
 
+And none of this detracts from the point that the semantics of "static"
+and "static inline" are identical.
+
+
+Segher
