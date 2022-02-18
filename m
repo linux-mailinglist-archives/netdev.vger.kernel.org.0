@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 187FE4BB170
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 06:29:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A014BB17F
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 06:37:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiBRF3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 00:29:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34498 "EHLO
+        id S230383AbiBRFhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 00:37:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiBRF3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 00:29:34 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960DAB5601
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 21:29:18 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id d17so1526209pfl.0
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 21:29:18 -0800 (PST)
+        with ESMTP id S230375AbiBRFhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 00:37:42 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C352E1162B2
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 21:37:24 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id v22so809142ljh.7
+        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 21:37:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QxdKSkQeQfaslFifzHrR/4awnpHMN67f/MujkWPtrbU=;
-        b=OmDpyU0UdRNr/T03q9wV7iwYi2L3n5bkNlaGF1578RBN2XW4pTrPrlwVVeynPyPm+1
-         WikclSTZBXct8HzK3kLegtls5T2MY8YAeaWTDZmqoOR9s7D5jPkDisq04kS5DFJCKgdQ
-         xRWI10ApbmRwZk5APX8GI9fRlvksKHVgWNR2fHUU0tDUNkHu/7JICtq4EBSZD5IpA81K
-         wdJVYdT4js3WbRRrt45cclRGI974MBR4E8pysGsRPz945HkNifddZV0inO/zpC9tLg35
-         wuhlXExMYMYvGNTzEcFPEF9XpYnBzajAsguNWeIO6TWqbL8gP2FyYkqiQkpBK1209lJx
-         SjLA==
+        bh=PogQDqQWtuXLFALQMWLRiDm3xg80eD4oeLLmrMMy540=;
+        b=nAiXK4bilPuf7Uavegp3S4W5n+isvO/A5Qt+vwI44QFoZUlzX7Fcwz6sK88zHlIvr3
+         bheKdNej6dD7Ooij2rq+VN+RVPxk+CTYTRGmTsVxXDJwhVvworM0/iT2terUHZ6EVBkW
+         ujtO8g8HiGJjeqckwDw4r0p35rCFZu6VtmdUQ915SWVi8XTUVAlNhMK432hnZK0HOZlD
+         ufTL5UJ/JYCPCfCTouLeZyjLdQZgMiPyu5sfNaY8gdrUuXGqvQyrNRZSLHjiJJPGm6dw
+         7lkEzOQj35P3yTvW0pyOXzGjhPfhfgbqWBWCpXaGQpz5tR7ipYq1QuABCS2mQ4i4uY8k
+         8KEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QxdKSkQeQfaslFifzHrR/4awnpHMN67f/MujkWPtrbU=;
-        b=TPL/VAQsTxnbfdos1F+GP+C6xUZ9At4BNJSLLMJVm+nvljE4nPrDRYdf/s82AHn22a
-         mhFkz6Pp/eWeQw2k1sxdzANc10bcdO6STgnIlgTCbmZSSTCEatReuof3VlCr1waNd2Ce
-         wsVW44OunH9vs/WwhsQ4bujqkIvJK4OKgzwnkFbpYHhH5TeE6haRH/fUG8NtVgVKSMAE
-         JuUMCJRohGp71jvMXtb8ZwludlokXx2odyWKAwUGuZEBIqkyLoYUZvje78Kdpta6uaqL
-         CsTq+NpNcXvPm20gYsu+j1a3s9LJBH+mqBuWBfHzXUHnoxvmzRwEUWiuGiWnAX6pmUCf
-         Zxaw==
-X-Gm-Message-State: AOAM533FFCRG4oEHUiDkIAD1IccMz3LA5x/CpuMZ7YXrdChBeJwnL0/r
-        8ml6z1CmGZ+XIn2GP9k1a+dHTWfpjzu39AGNpHBfIdctIbEkyA==
-X-Google-Smtp-Source: ABdhPJz5sJlWz9F5JYYJQ7YXOeG2glVDBBNmSzD8Rf/4fNspPOSbjNiuO/XVGhj5SVNMqM8WewClOL+g9zdAX2nVCWc=
-X-Received: by 2002:a63:334d:0:b0:340:75a1:be06 with SMTP id
- z74-20020a63334d000000b0034075a1be06mr5125724pgz.118.1645162158048; Thu, 17
- Feb 2022 21:29:18 -0800 (PST)
+        bh=PogQDqQWtuXLFALQMWLRiDm3xg80eD4oeLLmrMMy540=;
+        b=wEkNfY1JzJfLkth05Qs1IQGzs+c+Up/KUmMcuWgcK47Hjx0Er743oTYKYHQUlspVc5
+         QKxTdAYlM6sJg6kqeN+4xJUcMXfn69wDZWHUWac+qUqBeVEtgOk7rLeoFlWJG6efIoWy
+         eFXBeNchAZ1yBGmiHYKX+MfdjOHDx1HbLSsZcBoICNqkd2a9eqX4m3sNIOpeNR+eqgQA
+         bJEpggP7u/DguEthv5qOvRUsmJhp3RykY36XrAV5asd+QCZ/W8MkvDd8IvhHd0w7Mnzs
+         UtCkm+1bInrsce8yZCHTudPAop8Zamj9QFdKxDEcOHmxcMjzjPhQ6urrLu3Vp/+7oSjJ
+         oi6A==
+X-Gm-Message-State: AOAM531yzRANWOUjOaoIthNpuCqtxwdyABjeKYlBT+VfvA1tZ6pp36DG
+        CuhO7h+zLi2OddZ3bjOEc+CtucpFXBScEP76v1v8lXX8KBecpw==
+X-Google-Smtp-Source: ABdhPJzH/6jmgqX8ZIaglx1htRU/L3uOJpDNXe1psH63I+wGZEbSp/Iqe1zADOL5jlGUjrvENUulxxvEt10zW0mfu0c=
+X-Received: by 2002:a2e:9847:0:b0:245:5aa9:91ad with SMTP id
+ e7-20020a2e9847000000b002455aa991admr4572884ljj.59.1645162642658; Thu, 17 Feb
+ 2022 21:37:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20220209211312.7242-1-luizluca@gmail.com> <20220209211312.7242-2-luizluca@gmail.com>
- <20220209215158.qdjg7ko4epylwuv7@skbuf>
-In-Reply-To: <20220209215158.qdjg7ko4epylwuv7@skbuf>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Fri, 18 Feb 2022 02:29:06 -0300
-Message-ID: <CAJq09z5KEFUjpKuyPu0AL6pDessi8+1cjV454AgGoMyCYVw+ng@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: tag_rtl8_4: add rtl8_4t tailing variant
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+References: <1645109346-27600-1-git-send-email-sbhatta@marvell.com> <20220217090110.48bcad89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220217090110.48bcad89@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Fri, 18 Feb 2022 11:07:11 +0530
+Message-ID: <CALHRZuqP15pP8Mgi=Q2BfMZuaG04uPYPKwCGAE1cJtJP0SVPYg@mail.gmail.com>
+Subject: Re: [net-next PATCH 0/2] Add ethtool support for completion event size
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        hariprasad <hkelam@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -72,96 +68,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Re: title. Tail or trailing?
+Hi Jakub,
 
-I guess I'll stick with trailing. It looks like the most used term.
-
+On Thu, Feb 17, 2022 at 10:31 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Wed, Feb 09, 2022 at 06:13:11PM -0300, Luiz Angelo Daros de Luca wrote:
-> > +static inline void rtl8_4_write_tag(struct sk_buff *skb, struct net_device *dev,
-> > +                                 char *tag)
-> >  {
-> >       struct dsa_port *dp = dsa_slave_to_port(dev);
-> > -     __be16 *tag;
-> > -
-> > -     skb_push(skb, RTL8_4_TAG_LEN);
-> > -
-> > -     dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
-> > -     tag = dsa_etype_header_pos_tx(skb);
-> > +     __be16 *tag16 = (__be16 *)tag;
+> On Thu, 17 Feb 2022 20:19:04 +0530 Subbaraya Sundeep wrote:
+> > After a packet is sent or received by NIC then NIC posts
+> > a completion event which consists of transmission status
+> > (like send success or error) and received status(like
+> > pointers to packet fragments). These completion events may
+> > also use a ring similar to rx and tx rings. This patchset
+> > introduces ce-size ethtool parameter to modify the size
+> > of the completion event if NIC hardware has that capability.
+> > A bigger completion event can have more receive buffer pointers
+> > inturn NIC can transfer a bigger frame from wire as long as
+> > hardware(MAC) receive frame size limit is not exceeded.
+> >
+> > Patch 1 adds support setting/getting ce-size via
+> > ethtool -G and ethtool -g.
+> >
+> > Patch 2 includes octeontx2 driver changes to use
+> > completion event size set from ethtool -G.
 >
-> Can the tail tag be aligned to an odd offset? In that case, should you
-> access byte by byte, maybe? I'm not sure how arches handle this.
-
-I see. I'm not sure my big endian MIPS device is able to test it
-properly. I tried a wide range of payload sizes without any issue. But
-I believe we need to play safe here.
-
-Andrew Lunn, you suggested using get_unaligned_be16(). However, as
-using get_unaligned_be16() I will already save the tag (or at least
-part of it) in the stack, could it be a memcpy from stack to the
-buffer (and the opposite while reading the tag)? It will be less
-intervention than rewriting the code to deal with each byte at a time.
-I'm not sure if I need to or can help the compiler optimize it. In my
-MIPS, it seems it did a good job, replacing the memcpy with four
-swl/swr instructions (used to write unaligned 32-bit values).
-
-> >
-> >       /* Set Realtek EtherType */
-> > -     tag[0] = htons(ETH_P_REALTEK);
-> > +     tag16[0] = htons(ETH_P_REALTEK);
-> >
-> >       /* Set Protocol; zero REASON */
-> > -     tag[1] = htons(FIELD_PREP(RTL8_4_PROTOCOL, RTL8_4_PROTOCOL_RTL8365MB));
-> > +     tag16[1] = htons(FIELD_PREP(RTL8_4_PROTOCOL, RTL8_4_PROTOCOL_RTL8365MB));
-> >
-> >       /* Zero FID_EN, FID, PRI_EN, PRI, KEEP; set LEARN_DIS */
-> > -     tag[2] = htons(FIELD_PREP(RTL8_4_LEARN_DIS, 1));
-> > +     tag16[2] = htons(FIELD_PREP(RTL8_4_LEARN_DIS, 1));
-> >
-> >       /* Zero ALLOW; set RX (CPU->switch) forwarding port mask */
-> > -     tag[3] = htons(FIELD_PREP(RTL8_4_RX, BIT(dp->index)));
-> > +     tag16[3] = htons(FIELD_PREP(RTL8_4_RX, BIT(dp->index)));
-> > +}
-> > +
-> > +static struct sk_buff *rtl8_4_tag_xmit(struct sk_buff *skb,
-> > +                                    struct net_device *dev)
-> > +{
-> > +     skb_push(skb, RTL8_4_TAG_LEN);
-> > +
-> > +     dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
-> > +
-> > +     rtl8_4_write_tag(skb, dev, dsa_etype_header_pos_tx(skb));
-> >
-> >       return skb;
-> >  }
-> >
-> > -static struct sk_buff *rtl8_4_tag_rcv(struct sk_buff *skb,
-> > -                                   struct net_device *dev)
-> > +static struct sk_buff *rtl8_4t_tag_xmit(struct sk_buff *skb,
-> > +                                     struct net_device *dev)
-> > +{
+> Please add an explanation to ethtool-netlink.rst so people can
+> understand what the semantics are.
 >
-> Why don't you want to add:
+Sure
+
+> I think we may want to rename CE -> CQE, we used cqe for IRQ config.
 >
->         if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
->                 return NULL;
->
-> and then you'll make this tagging protocol useful in production too.
+I used CE because not to be confused with CQE mode in coalesce. I will
+change to CQE
 
-It works like a charm! Thanks! And now I have a pretty good use for
-this new tag: force checksum in software. Whenever the cpu ethernet
-driver cannot correctly deal with the checksum offloading, switch to
-rtl8_4t and be happy. It will work either adding 'dsa-tag-protocol =
-"rtl8_4t";' to the CPU port in the device-tree file or even changing
-the tag at runtime.
+> Does changing the CQE size also change the size of the completion ring?
+> Or does it only control aggregation / writeback size?
 
-Now checksum will only break if you stack two trailing tags and the
-first one added does not calculate the checksum and the second one is
-"rtl8_4t". When "rtl8_4t" does calculate the checksum, it will include
-the other tag in the sum. But it might even be considered a bug in the
-first tagger.
+In our case we change the completion ring size too.
 
-Regards,
-
-Luiz
+Thanks,
+Sundeep
