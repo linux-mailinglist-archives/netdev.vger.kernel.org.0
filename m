@@ -2,88 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 432214BB336
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 08:29:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A05684BB370
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 08:33:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231895AbiBRH3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 02:29:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56496 "EHLO
+        id S231358AbiBRHdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 02:33:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231938AbiBRH3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 02:29:23 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B44267240
-        for <netdev@vger.kernel.org>; Thu, 17 Feb 2022 23:29:06 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nKxhJ-0006e3-2p; Fri, 18 Feb 2022 08:28:57 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nKxhC-00053L-9p; Fri, 18 Feb 2022 08:28:50 +0100
-Date:   Fri, 18 Feb 2022 08:28:50 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     alexandru.tachici@analog.com
-Cc:     andrew@lunn.ch, davem@davemloft.net, devicetree@vger.kernel.org,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, robh+dt@kernel.org
-Subject: Re: [PATCH v4 4/7] net: phy: Add 10BASE-T1L support in phy-c45
-Message-ID: <20220218072850.GA12479@pengutronix.de>
-References: <20220207092753.GC23727@pengutronix.de>
- <20220209151220.15154-1-alexandru.tachici@analog.com>
+        with ESMTP id S231867AbiBRHds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 02:33:48 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8D329410F;
+        Thu, 17 Feb 2022 23:33:31 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V4oR9e._1645169608;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V4oR9e._1645169608)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 18 Feb 2022 15:33:28 +0800
+Date:   Fri, 18 Feb 2022 15:33:27 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Hendrik Brueckner <brueckner@linux.ibm.com>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH] net/smc: Add autocork support
+Message-ID: <20220218073327.GB5443@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+ <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
+ <20220216152721.GB39286@linux.alibaba.com>
+ <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+ <20220217132200.GA5443@linux.alibaba.com>
+ <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209151220.15154-1-alexandru.tachici@analog.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:24:08 up 69 days, 16:09, 69 users,  load average: 0.16, 0.17,
- 0.17
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 05:12:20PM +0200, alexandru.tachici@analog.com wrote:
-> > On Sat, Dec 11, 2021 at 10:07:49PM +0100, Andrew Lunn wrote:
-> > > > +		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-> > > > +		if (ret < 0)
-> > > > +			return ret;
-> > > > +
-> > > > +		if (ret & MDIO_PMA_EXTABLE_BT1)
-> > > 
-> > > 
-> > > This pattern of reading the MDIO_PMA_EXTABLE register and then looking
-> > > for bit MDIO_PMA_EXTABLE_BT1 happens a lot. It is not something which
-> > > is expected to change is it? So i wounder if it should be read once
-> > > and stored away?
-> > 
-> > What is the state of this patches? Will you be able to make requested
-> > changes and send new version?
-> 
-> I will come back with a V5 where I will add the requested changes.
+On Thu, Feb 17, 2022 at 07:15:54PM +0100, Hendrik Brueckner wrote:
+>On Thu, Feb 17, 2022 at 09:22:00PM +0800, dust.li wrote:
+>> On Thu, Feb 17, 2022 at 10:37:28AM +0100, Stefan Raspl wrote:
+>> >On 2/16/22 16:27, dust.li wrote:
+>> >> On Wed, Feb 16, 2022 at 02:58:32PM +0100, Stefan Raspl wrote:
+>> >> > On 2/16/22 04:49, Dust Li wrote:
+>> >> >
+>> 
+>> >Now we understand that cloud workloads are a bit different, and the desire to
+>> >be able to modify the environment of a container while leaving the container
+>> >image unmodified is understandable. But then again, enabling the base image
+>> >would be the cloud way to address this. The question to us is: How do other
+>> >parts of the kernel address this?
+>> 
+>> I'm not familiar with K8S, but from one of my colleague who has worked
+>> in that area tells me for resources like CPU/MEM and configurations
+>> like sysctl, can be set using K8S configuration:
+>> https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/
+>
+>For K8s, this involves container engines like cri-o, containerd, podman,
+>and others towards the runtimes like runc.  To ensure they operate together,
+>specifications by the Open Container Initiative (OCI) at
+>https://opencontainers.org/release-notices/overview/
+>
+>For container/pod deployments, there is especially the Container Runtime
+>Interface (CRI) that defines the interface, e.g., of K8s to cri-o etc.
+>
+>CRI includes support for (namespaced) sysctl's:
+>https://github.com/opencontainers/runtime-spec/releases/tag/v1.0.2
+>
+>In essence, the CRI spec would allow users to specify/control a specific
+>runtime for the container in a declarative way w/o modifying the (base)
+>container images.
 
-I tested your patches with TI dp83td510. With some minor quirks on TI
-side it seems to work fine. So you can have my:
+Thanks a lot for your kind explanation !
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+After a quick look at the OCI spec, I saw the support for file based
+configuration (Including sysfs/procfs etc.). And unfortunately, no
+netlink support.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+Hi Karsten & Stefan:
+Back to the patch itself, do you think I need to add the control switch
+now ? Or just leave the switch and fix other issues first ?
+
+Thanks
