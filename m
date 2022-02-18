@@ -2,103 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A674BC17B
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 22:01:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78ACB4BC180
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 22:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235888AbiBRVBj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Feb 2022 16:01:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51058 "EHLO
+        id S233324AbiBRVDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 16:03:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233324AbiBRVBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 16:01:38 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9FD028B609
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 13:01:20 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-23--g5gUCALPh2mW1qf-CLnLg-1; Fri, 18 Feb 2022 21:01:17 +0000
-X-MC-Unique: -g5gUCALPh2mW1qf-CLnLg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Fri, 18 Feb 2022 21:01:15 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Fri, 18 Feb 2022 21:01:15 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Tom Lendacky' <thomas.lendacky@amd.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Shyam-sundar S-k <Shyam-sundar.S-k@amd.com>,
-        Anthony Pighin <anthony.pighin@nokia.com>,
-        "Rasmus Villemoes" <linux@rasmusvillemoes.dk>
-Subject: RE: [PATCH net] net: amd-xgbe: Replace kasprintf() with snprintf()
- for debugfs name
-Thread-Topic: [PATCH net] net: amd-xgbe: Replace kasprintf() with snprintf()
- for debugfs name
-Thread-Index: AQHYJQLU3flOGAqTeEGTAeXiGfwRf6yZyMfA
-Date:   Fri, 18 Feb 2022 21:01:15 +0000
-Message-ID: <5cf6cfc8f5bc4808b37e21fcfa7cafc7@AcuMS.aculab.com>
-References: <b21d35da33357b20ece39c7892f57084b94c017a.1645214686.git.thomas.lendacky@amd.com>
-In-Reply-To: <b21d35da33357b20ece39c7892f57084b94c017a.1645214686.git.thomas.lendacky@amd.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S239599AbiBRVDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 16:03:10 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0E428B610
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 13:02:51 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id c23so4317085ioi.4
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 13:02:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TIOIhGACo4yRcpICfvsrQ9RUZoszNIPIS4XTNvXi2Qw=;
+        b=MZB986Q5OSMTg2q6+FUc1U94/pExFm35n39q13oWTNYdQROdXMFcoR99fsh8mRRgjF
+         NPE7EENmDHROij227U77hwGmuLHZIZn+6OnB3gCcog4VeC1F3yAJrZC+lUeX3GlZGpMo
+         SZPkWb9QoKj+nf3PyOEkJMnyHVAGE3Vr0NL3M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TIOIhGACo4yRcpICfvsrQ9RUZoszNIPIS4XTNvXi2Qw=;
+        b=bwskLy1ebndSTltYPFQoQh/TqS5JS/V8J/eH3e6QP0Ap5ogEu3LbDqohPfUUjFSoiD
+         v8mTX49h2GcLxkrzS+Fu7gB3g0xk9tfiKKPZyuC0Yfa+DCeLjxRby55WZq5/S06OYAxO
+         ksYuuh7fii2ANWhZYe1QijZcbqdKeyGXp6rufOaCca/WwajnMMmy4ytKHJ9So6jq5KUR
+         dFgY4V5rQxFoGFI9mDO3/keZmG0CuULXVKP86Dt35SiLYe0tPX6SfKj6AUQpCgY5hzki
+         +Pdx+mWKmZt7oilHWcVKZyKQ7JyTASLD3X1bTEV0WZJ9KQwiYrOo9WGNhD039FFCk4fq
+         iMoA==
+X-Gm-Message-State: AOAM532gJ5tMOslv7jTE5E3zLxFU25BfU2n44FPyUEbvLT4gsof0bWZr
+        FBYAqP/Y18PHLtLh371jyiA8MA==
+X-Google-Smtp-Source: ABdhPJyo3ZOGYVP9/XlaofaMHbR2s2snoXoa1AN7h3bGWaqLBI5qvvTPK0qLjHDTttG5v3huKWsaCw==
+X-Received: by 2002:a02:a411:0:b0:314:b51c:3b74 with SMTP id c17-20020a02a411000000b00314b51c3b74mr2485006jal.69.1645218170847;
+        Fri, 18 Feb 2022 13:02:50 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id l1sm4536557iln.29.2022.02.18.13.02.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 13:02:50 -0800 (PST)
+Subject: Re: [PATCH net-next v3 5/5] selftests: forwarding: tests of locked
+ port feature
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
+ <20220218155148.2329797-6-schultz.hans+netdev@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <0afb9bb6-e8fd-71ce-7626-1d8bf90dd1e4@linuxfoundation.org>
+Date:   Fri, 18 Feb 2022 14:02:49 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+In-Reply-To: <20220218155148.2329797-6-schultz.hans+netdev@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Lendacky
-> Sent: 18 February 2022 20:05
+On 2/18/22 8:51 AM, Hans Schultz wrote:
+> These tests check that the basic locked port feature works, so that no 'host'
+> can communicate (ping) through a locked port unless the MAC address of the
+> 'host' interface is in the forwarding database of the bridge.
 > 
-> It was reported that using kasprintf() produced a kernel warning as the
-> network interface name was being changed by udev rules at the same time
-> that the debugfs entry for the device was being created.
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
+>   .../testing/selftests/net/forwarding/Makefile |   1 +
+>   .../net/forwarding/bridge_locked_port.sh      | 174 ++++++++++++++++++
+>   tools/testing/selftests/net/forwarding/lib.sh |  16 ++
+>   3 files changed, 191 insertions(+)
+>   create mode 100755 tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+> 
+> diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+> index 72ee644d47bf..8fa97ae9af9e 100644
+> --- a/tools/testing/selftests/net/forwarding/Makefile
+> +++ b/tools/testing/selftests/net/forwarding/Makefile
+> @@ -1,6 +1,7 @@
+>   # SPDX-License-Identifier: GPL-2.0+ OR MIT
+>   
+>   TEST_PROGS = bridge_igmp.sh \
+> +	bridge_locked_port.sh \
+>   	bridge_port_isolation.sh \
+>   	bridge_sticky_fdb.sh \
+>   	bridge_vlan_aware.sh \
 
-What was the error?
-I'm guessing the length changed and that made kvasprintf() unhappy??
+Looks good to me. Looks like TEST_PROGS # is getting close to 60.
+Cool.
 
-...
-> -	buf = kasprintf(GFP_KERNEL, "amd-xgbe-%s", pdata->netdev->name);
-> -	if (!buf)
-> +	ret = snprintf(buf, sizeof(buf), "%s%s", XGBE_DIR_PREFIX,
-> +		       pdata->netdev->name);
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-You can do:
-	snprintf(buf, sizeof buf, XGBE_DIR_PREFIX "%s", pdata->netdev->name)
-
-> +	if (ret >= sizeof(buf))
->  		return;
-
-Unlike kasnprintf() where kmalloc() can fail, the simple snprintf()
-can't really overrun unless pdata->netdev->name isn't '\0' terminated.
-Even if it being changed while you look at it that shouldn't happen.
-
-
-Don't you need to synchronise this anyway?
-
-If the debugfs create and rename can happen at the same time then
-the rename can be requested before the create and you get the wrong
-name.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+thanks,
+-- Shuah
