@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 180254BC11B
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 21:22:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E5E4BC11C
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 21:22:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239265AbiBRUWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 15:22:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51718 "EHLO
+        id S239305AbiBRUWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 15:22:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239261AbiBRUWn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 15:22:43 -0500
+        with ESMTP id S239261AbiBRUWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 15:22:45 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70084.outbound.protection.outlook.com [40.107.7.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEBF4AE37
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 12:22:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14A74AE18
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 12:22:27 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HOT8Lf1Dsq7nkRoQjXU41Q+Cu1gh1cukBpf5Lp8oSV/+H2OCLuuGBCJU92r8ASnByB3uDqGGznD0Z0tSaZgBizDMN8W9rc4wv1vTYTi+NK3j25mZQojglKu6CaBDA+XlvvljdcOOgX/t3zeW8+OQ+KdpOU3V8/AMVVZ1xZliQgP4xtvqcnSkHj1IYCWoqyWkd95s3S1Z/b77ONXSWDTH0HnqDeH43hBg66Y504Jz8uUbezxu+8z+0sb0HzxWzMCZge81AzXLVRFFzrcYSGIqlL0sKTBFypd93aXILtcCPw9T8McFvir/DCboM0erW8UbJZ4+JXyRzQ1HI87gF+uF5w==
+ b=K0gg+80pyT2Zs8ZbI1TFTLJF2x/JM5vM/XLUmTOriTlYRi/0OoBYp2lAXuO6VSg9YvmaGlkaWoxm5gxO2cJZEGrVJvjc4/Fk/9koiND1hFAxvj8b8E2WzbgnR8CmY9waB/XN0mkt/s3dZpV1e3YzTyMHBMeFt1fCdfpmRtY7xFFwKu29/w65itN5vwfM+8rhtI0E00FStadMGjlEAbQu9HWA9tjzUhYr8YfDq6Z885a67d5rabJqRhDvcCi7E+LPsx/jqVIUJjso+XbsvkEcJJSiMlDCu/KS6OoxWo4yW2gm8yVbm+nJTxeJK5rEmvETJoY3kJ9OZTO0Z9iWi4kILw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U8gwebwWnaf4zcyTs05JmJNzE7PDeAk3ahdomKkX7tE=;
- b=VFA2V0w78Z8fVj9H6A3tXLuR7UyZqzbnxACNs82JfJlZtcITm7FvTVneRPkRlrYib9YLOJLHdW84tEBVj5x1UC2r8Qb8Qozx09Poez3kT94QOJjFakyNgo3ZMPEclb5/ey//VZ5mYjIsoU2IXJ83aF194Mf4dM9V+7EdhXleF3qTzZdFUWLa5QU78qOZggHZRs/l9tir1iDIL353z/YYtG4Pwmb4o2OJD3bTV/CEOav1Q3T8cF7pGnK31IWxmmMqv2Dcuqv37CvGgiwMK+8p+YqW2w69065i65N5seCT1mAZl1RD8t40+CK+wAmYmhONGw3fZZu7Uk+Zad57yci09w==
+ bh=1vCouO/T3wVhnRJUbiUhb74btS5bn2Ibtg56f8dOlm4=;
+ b=cS+p2uagjEaTbqOUoccjt6W1Qxk62R0fehAdSgHjldWHH+Ho27ZmpWR07dBglKhfQ/aI7J3eaDFxrHCpZexqFcOmkwMp7wAWlITYvqRf3o/i+/4XrgnJ8X5YsmVqzuGVmP9WlRqFNqiBoBRT9PllS/LUEDxVW44HEQDD+nX99r+PhSghuLhsdTU9fZfbK0LTzUNWiqY6YJiwDbziKJqlltyuB4q68q4sMLg3euJJjAE5qpFYZxmjO+WyBq4Pi/gIj8Gp2Gecv5U2enMcRpMb6Os6asCBJHFCg+p11+HN1NpCAeAVKS0NFINQKn/cUH7rSwaIaXKU5kE1fHTWfBuuag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U8gwebwWnaf4zcyTs05JmJNzE7PDeAk3ahdomKkX7tE=;
- b=nejBLVDOGM6SXDnwxc+nth1iMSjrrs8NvEIZEIHnoZFN2APkiCRPG9OxDbZGO2ZC2a8r5nQLKZq7uPqE1OtGyNCOqbriJAJIYXnCRlvtvhUjZ4ClFRDPrE09JxptnAHjacAgk2sqOrIq8QPF4m+8jkxCLXzOeoKdeIHGYx62nUU=
+ bh=1vCouO/T3wVhnRJUbiUhb74btS5bn2Ibtg56f8dOlm4=;
+ b=VQsBofeYtTELcVuf7jQ2npwlAH1jzUMw2rB2ZnkPrY1tVavdWcXnNeuoLBrytPl8wrujW+/mq81eHktb3Ent0HkkAd2kfHDDrI71PQ0O3IJEIAOszJKkEJaB7y9iv8K/ej1yUAH5Y5RdGjqdfiqB64PfKpxpb4X52EQ7V/wSmJA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5903.eurprd04.prod.outlook.com (2603:10a6:803:e0::10)
@@ -37,14 +37,14 @@ Received: from VI1PR04MB5903.eurprd04.prod.outlook.com (2603:10a6:803:e0::10)
 Received: from VI1PR04MB5903.eurprd04.prod.outlook.com
  ([fe80::18c5:5edc:a2c2:4e45]) by VI1PR04MB5903.eurprd04.prod.outlook.com
  ([fe80::18c5:5edc:a2c2:4e45%6]) with mapi id 15.20.4995.022; Fri, 18 Feb 2022
- 20:22:21 +0000
+ 20:22:22 +0000
 From:   Radu Bulie <radu-andrei.bulie@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, ioana.ciornei@nxp.com, yangbo.lu@nxp.com,
         richardcochran@gmail.com, Radu Bulie <radu-andrei.bulie@nxp.com>
-Subject: [PATCH net-next v3 1/2] dpaa2-eth: Update dpni_get_single_step_cfg command
-Date:   Fri, 18 Feb 2022 22:22:00 +0200
-Message-Id: <20220218202201.11111-2-radu-andrei.bulie@nxp.com>
+Subject: [PATCH net-next v3 2/2] dpaa2-eth: Update SINGLE_STEP register access
+Date:   Fri, 18 Feb 2022 22:22:01 +0200
+Message-Id: <20220218202201.11111-3-radu-andrei.bulie@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220218202201.11111-1-radu-andrei.bulie@nxp.com>
 References: <20220218202201.11111-1-radu-andrei.bulie@nxp.com>
@@ -54,55 +54,55 @@ X-ClientProxiedBy: AM0PR02CA0159.eurprd02.prod.outlook.com
  (2603:10a6:803:e0::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c73cc969-8ce3-4eb4-2f0e-08d9f31c5dfd
+X-MS-Office365-Filtering-Correlation-Id: 5cb54cbc-78c5-47bb-b099-08d9f31c5e82
 X-MS-TrafficTypeDiagnostic: DB7PR04MB4378:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB437842CF20883B8D00CAE84EB0379@DB7PR04MB4378.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-Microsoft-Antispam-PRVS: <DB7PR04MB4378E223DFA85BC1B6AC700EB0379@DB7PR04MB4378.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4n7+EG1spx1gjSOvcMa3qdBuDVODLFbfCtPpG1DV0FL6XRjAh0//gVJeW+2vLJf+bqL1sRe6XmkaYE2BuiblxNQesqC+vypXnpe6gYeqO5RPQEV1nn6QCqAwtULkWZYRHA5N3EmxRzRs6J9/prdCK45SEFU5+2odRyFDBD++wfCuMYDlB9qL8y4kcU7Z3NIvSdVzvGXRuX+le8zKIv9gLbEJ588vxXc7pU9mdzPVf9HzWsm2eDN6aSunjjtzKF2vMDI+UhCSCrM5au2rfyv0wvGvnCC3mzvRMgoH349OaZLPPQpWOyE24IgazNWvNTDthDqyGfuTfCPoGFi++GO9xuIVWnNb1Xk8l33DcOcLKdwzBathc6YX8ClBtPLwHv109vbdd5cAUqvtx2DXSEYTQ9UfkQjjj2IG8IAeUuOLZfpvad/JdIfBS1g4ASGVGkKEZZ+TNQaZ5rNPv9U+WuBJID809RR17RH0r9xc3y9PSX+h3hXk6Yas0ZPZCY/mrpRVQgWZfNHqamcLberDZRvgDvb2SJ+XYk+l9UFZ83MF76Qcn5jQ6Dde6PRSITkgXprMm1DaKnbAjz5Q4mPk8GRg5ioZ9pjKWMpatA0m5bRf4bbUbDLgF/ARU5F2uHCRj5Fd+pDiLRQhgTg4wBuGaYmhlFWlJ/mdRhsWsVQlitMmY1rwJGfC9PniQBoUMj9e63AU5jQitv3nimCLgNssnvhcyw==
+X-Microsoft-Antispam-Message-Info: SRuuFmle7zlG5CbRiz3pH3c9l0HTVh6t2fRqg21tfyFarpluM65VCVhDPvzFLM/5xkWN0SYVniLl+oEZIqoqGZdi5TkgsR1P5kQ3dmLBJizVoF0woVwz8TuPCH3ccvD0WAsIB+CKbMbHZ/QA6DaySzQGGdO4i2JZC4Jv9RxblURj7WKm3i1MMOU8GKjaYPJR5noP/b3G/1SRye3mTKePrulu4eZZX8Qt1e8bO7JiK/kqxSLmv9xyq/cobIzF1CnNO3gC+4/NPqCeHROtlIiGlIWdutawSFgLTdR++/AWpUdNNaeBkELwGMIsf03JZKSLKhyx1KluAmjyBDceYjGEcjbMXBYONBkGcd/7qC3epQNH36SNArINlWdcwQ6MAt4HsP6gG+tBZe0M/h7pR5LseswwMhJF2Njze8p2kUMHqPfrK0MtbRoMtMOYsymzuJkAp/OmK4FH+PTOiJoIHop4JNsVq+EnLhKaMOvjQB69btoTsVAlYirTtFI3bGnk73TZWNGNJazPBmRHJUJFMfy0jWi5mGe17PmXwjz2R+p2VYXkI0b8Lt7Kw0xxj13V0RAJg2hKlHAILyOs32cGX/cc1+VBJ/miLSuTilnR7GRX3HAzpCSdYyd5mzTuf826ZC2XJ+HKfFpy/yAWnfjcpvru0ecd0PvClt/IyudLqu2zG8WyWcnGUEGRAEKx2tfcPC0Fr0mDIGHnwX0ekSNONtBJLA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5903.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(8676002)(508600001)(66946007)(186003)(6506007)(66476007)(5660300002)(4326008)(2906002)(86362001)(66556008)(36756003)(1076003)(316002)(2616005)(26005)(83380400001)(6486002)(38100700002)(15650500001)(52116002)(6666004)(8936002)(38350700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?deNldV04MJ/pp5/8VN9Y0MTSGuCX8kq0q6KY90M8H4Q9jfqvf98IjouWGWW9?=
- =?us-ascii?Q?+DNxaHr+A0SpzMKVjsdXo6BI2ZHyNMhc0BE5DHLe7/a6MWFVyTkqkV//iQ5S?=
- =?us-ascii?Q?O5DySzUvVPGRXLmsDcfmshI2dq9/BBQiDo/EnlF0Wx/mrcwI0sbHwqDEB5ZP?=
- =?us-ascii?Q?dKHm1JRh1tXDyEgXFJokby3Z9pGdYxRY//TMceko1p2El+UM+WLy3gdFrKnJ?=
- =?us-ascii?Q?2zwN9C4D5wlt3CVevdWCZRLr+8t1qzJHzANucd9t23sjODXIg0HprqK1ezvZ?=
- =?us-ascii?Q?5mUjqO0FulMCAymxYpFocuwWMp3+Xa/XxUbFPEnGIYx5hk8apjKndyISTAHo?=
- =?us-ascii?Q?SD6IKe5oVVSv5wIhPUVLMwTQWB9yrTVlrGdbMrkXUwS3XWra2PbdkITFjwWQ?=
- =?us-ascii?Q?AACpLwUCeTN6fEI1o76D5JNJ9vRKZzisFKi9sgtFZYHp33F7mPL+Egs8FnA1?=
- =?us-ascii?Q?lT+qNLDFaPItT9vSdp6KfDiOc+Gq65MdNKuPZopprW8uoyhfwh7v4c+D05Y5?=
- =?us-ascii?Q?g1edESdRG2RfUJHKRMvJgZ341spY3KRFLJnU6dG8sffCDvz7PlYkaNhNeo5a?=
- =?us-ascii?Q?BhMS5J0osxlYFoBsO9QtH7Cw8dR/vBqiemkDvD5u6G+v4gvYWz5N8SMkHsqJ?=
- =?us-ascii?Q?GvgEyJgS4QhM0S+GDeBVDJEJ5GxXsQZlLvZM8voVvIr1I7SYtzioZ1hVBDZ9?=
- =?us-ascii?Q?RKQweO/NMkrFzRVMnHK5RBlCCaCuTvmSw/sbVydIXXBkRqcWaewwlNhC03o9?=
- =?us-ascii?Q?a4U+DSy3ETlh/A/1/jAToB6GVZUhwm6bLK+NeiqtW+0U1qIo1XJfgiK2iakv?=
- =?us-ascii?Q?afB5mvi1rfAoEO4a7JyFmSIt0eFMwwKDettGSyHflwdDgYLFuGuK0Js2Owck?=
- =?us-ascii?Q?MRBMHs6BFJw76bKb5uJ6TmN5y8evByI4reNoC0Gv6gjdnZ7So5y5p+ZRKP/f?=
- =?us-ascii?Q?5HZguW5gvNYS6Z1dFvX/4B3kGrQ9b2ye97O0Yh4j0lwjtxxJ1mUYxUfgspjV?=
- =?us-ascii?Q?h6GEEeQfn37tYnqTx/3Td2qNc/UUUibxnC2Lq0dez30F2fNAw+Wn8nNg5Jhl?=
- =?us-ascii?Q?w3B7B3PCw4rSQvECFXnfCfDub0xadnRhw+A9Wyf0SKwQ+wYT4a51y281FxK0?=
- =?us-ascii?Q?OANB/G8fbqcUUjIV+wO0m7c7l6X2707BEos1RwBdfbFs9GY4dq8HRIfXWrkd?=
- =?us-ascii?Q?ITtQr/dhFcqh0wceB8uvG1Ow20pMCtQwGnRZu1pQscwUABPyW+MVYhtt3d6H?=
- =?us-ascii?Q?NeLo8KSF81ofeLOmRqCb4FjSttnqoqo7d0+NOOqGh7wvyXR47acw3mnQQM18?=
- =?us-ascii?Q?v34q9abo0ZBO2xst9QlUuwhiZn4r5Yfzb6N8jp0C49G+IzOLsY/htO3MTfk+?=
- =?us-ascii?Q?Uo7PVpyflsLJr1QcEO8Gg2y87qcjyZlFxrtyLJWEBKIZqwud4+sO0sqBoIp4?=
- =?us-ascii?Q?7FV8VBQUJXi6OEJR27OixSYS8ZLqYozeqbAjU/lPZ0Zay+2VIYW5U6MH+kKA?=
- =?us-ascii?Q?3cNBfzIUMkcEOLjW+u3WE64e1YejsdjikfTv128gilDQm7r4wNv+cwqUVxFX?=
- =?us-ascii?Q?fFKB9njMYFN1lbnjLVZ+4m/t4AMzhZZ7ekAlEz+A9nFb7eitvOYjp4DgjCKl?=
- =?us-ascii?Q?KsP0GLjIOHO24IYREAldMBxlUAfYByYbaEYbuKOmrYV1zOTGhO2BrgH9VmUB?=
- =?us-ascii?Q?I/F4Eg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sf4hHLitOt982tI27ftdcvFJ6ztbi9ZPGSrfnZCNA1+lCiB0GsNc2fFvdn0Z?=
+ =?us-ascii?Q?OAehGKAXEJbT6U/i1NaioqreAL0gO3ZE2Wt9QC4+lZCRzBjxq4QqRKy+EEN2?=
+ =?us-ascii?Q?9jb7LOgnf4xZICQOP7wRpVkYV1gZXPDvwv5b2TBLe63symDce+BZKpNvie/n?=
+ =?us-ascii?Q?gJfygZBptsOx7Gmdq7PLJpkSLM8Ipce5cl5VSb9ZXdxs5CbxhRm2ipi5ffN7?=
+ =?us-ascii?Q?Juf6VRgA//DRbofgUGrLGS3UqmKTBtXzPwnbOH9BZ9HKlMh0vkqs/K4wAIta?=
+ =?us-ascii?Q?ipYG/pfmgn3RhBYKJel+CDLKvoQYFcFcbViS9qNk3VVMK+Y2TEnvaFqMEszU?=
+ =?us-ascii?Q?jbrSezTnkoL4MLqxBMRwVBOPuE0L7NeunAgDczI4WXppQiGw5AbCJHvSTzWS?=
+ =?us-ascii?Q?2yYO6PorceZ0kLVXDex/r9qNMWARoOSlZpa/17k9vkxNxVzSmQ3aRR0lrOJB?=
+ =?us-ascii?Q?O1JysJArrCMU3u1yST7hcbpBFkUvBEhv6SwWGCUvEAFQLKnheI8qUkL546si?=
+ =?us-ascii?Q?gV/hYuoBoTag7vHTnIZ2VqzbSZa1ZjRsj6wfzV44v+818yejS7HD1x7cHPhu?=
+ =?us-ascii?Q?YWaigBcIQ1TUrEeunHkuDzSKcvXaNLrNt2+xccqwS5erpSeKzpkkqg2TjO1r?=
+ =?us-ascii?Q?QffXR/6wNqusKxYHC4JX3XSqWLE9QozwNWL2MfWsJHWdiRMTv1HMRA5stm08?=
+ =?us-ascii?Q?qxXGXhdNkOGLCDhoZkGhLG5Y4Nb58RHSxyvueQQ87/gi54BDNH2hRzmM76XX?=
+ =?us-ascii?Q?xGKYx/4QGm80C4bTN16wlpQk/PTqC0vRWRLHfFXUGvteKBXgoIkb/HVyNjRI?=
+ =?us-ascii?Q?2WWSqFW//O9ROR5bPv9pIp0lfPDmF2iS+73l4sgARAFfgLX+rEbh4kpTJDmu?=
+ =?us-ascii?Q?FO3VuQ4rPxhKTe+Yobouq6TQRa0Gyc1zLQDw3IRa5g9EUMm06lMwA2A7a78J?=
+ =?us-ascii?Q?Q5y4bSh40Q97WOrMbepE1mGHabkY8zZKROgRC2spWi1GbrdAa1dA1lItG9Zm?=
+ =?us-ascii?Q?03Lja9qIvE1Za3J1gL6JHpB5u29gf9CjYoBiMYFjgIIOATDTru9Y5BjnF1/l?=
+ =?us-ascii?Q?Jbo8ri082aP00+R8TS9vLMyIT3i6zkZAikyWMmAE+fYndNG8AeeMQkZd1yB8?=
+ =?us-ascii?Q?pBP32mWjxSZRabycc0B+XS2q6wof2t5I8IVCfXF7QuOyx1u8v9wZjrpJ6pPY?=
+ =?us-ascii?Q?3cIXhUkLltUZZLW8EjmtzJ+So0b5Zw6BE9WHxbFPCRIiPt8GqhVdvI1eOlXR?=
+ =?us-ascii?Q?xdfyeGOTUavmZtRPFCWfRTaGvim3jUapprUgCGfUgZZNulKd8Gs+XnSkj5lJ?=
+ =?us-ascii?Q?uyB9pgTYIS66nCIU/q5EOEWpuK/AAaju2wnamVhn5hvDR/HPgyEn1vOB7leW?=
+ =?us-ascii?Q?mT2torKlYmpJs8feBhT5Z2mw5tOdPUchqdADwJ06c3qC2pAPXndKFee0w5zW?=
+ =?us-ascii?Q?mGUt1nSZ80enW3AVtWanWbcp/vr6S6rhBpbNCXT1iOxn++Fn8L602DBRMz4j?=
+ =?us-ascii?Q?fSyIsdwr0Ys4JPlUoOyTv3Ag6t5+KZIz0+1Ry2AwJuu8KmmXK8w0WA8kaHjD?=
+ =?us-ascii?Q?hCFMFkB1pOyB8scQ4n1h8EHU28nNPUSL8roCDIAczMJLlSo1VjrZ2puCqmUf?=
+ =?us-ascii?Q?/d6L+wQVkNbspaq8ccPUJD2hQhsyRY+IuykaTfuUGrJPtCSBalm5EffaRL1Q?=
+ =?us-ascii?Q?TKFPQg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c73cc969-8ce3-4eb4-2f0e-08d9f31c5dfd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cb54cbc-78c5-47bb-b099-08d9f31c5e82
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5903.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 20:22:21.2705
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 20:22:22.1455
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +zijAYPdYrkcYnMU7k/YSzCOxUqe6BKj2k2ryf+UEOGiiG3NWzbUhC9Lgkjy1OmhNg12qkQ8c9B6d1kIj2qh1oguRMeqjcx48f/ixlu5Gq4=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0b28op/d60Zto1EGLkNv/cwFRfNo7IHspFilUL0kANQhzD9u3IH/xuKsBRRBPTPYBJdvFzHfmyg3DroFSg3O1aauLo/6G5rIPvFMqAxElvo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4378
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -114,96 +114,233 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dpni_get_single_step_cfg is an MC firmware command used for
-retrieving the contents of SINGLE_STEP 1588 register available
-in a DPMAC.
+DPAA2 MAC supports 1588 one step timestamping.
+If this option is enabled then for each transmitted PTP event packet,
+the 1588 SINGLE_STEP register is accessed to modify the following fields:
 
-This patch adds a new version of this command that returns as an extra
-argument the physical base address of the aforementioned register.
-The address will be used to directly modify the contents of the
-SINGLE_STEP register instead of invoking the MC command
-dpni_set_single_step_cgf. The former approach introduced huge delays on
-the TX datapath when one step PTP events were transmitted. This led to low
-throughput and high latencies observed in the PTP correction field.
+-offset of the correction field inside the PTP packet
+-UDP checksum update bit,  in case the PTP event packet has
+ UDP encapsulation
+
+These values can change any time, because there may be multiple
+PTP clients connected, that receive various 1588 frame types:
+- L2 only frame
+- UDP / Ipv4
+- UDP / Ipv6
+- other
+
+The current implementation uses dpni_set_single_step_cfg to update the
+SINLGE_STEP register.
+Using an MC command  on the Tx datapath for each transmitted 1588 message
+introduces high delays, leading to low throughput and consequently to a
+small number of supported PTP clients. Besides these, the nanosecond
+correction field from the PTP packet will contain the high delay from the
+driver which together with the originTimestamp will render timestamp
+values that are unacceptable in a GM clock implementation.
+
+This patch updates the Tx datapath for 1588 messages when single step
+timestamp is enabled and provides direct access to SINGLE_STEP register,
+eliminating the  overhead caused by the dpni_set_single_step_cfg
+MC command. MC version >= 10.32 implements this functionality.
+If the MC version does not have support for returning the
+single step register base address, the driver will use
+dpni_set_single_step_cfg command for updates operations.
+
+All the delay introduced by dpni_set_single_step_cfg
+function will be eliminated (if MC version has support for returning the
+base address of the single step register), improving the egress driver
+performance for PTP packets when single step timestamping is enabled.
+
+Before these changes the maximum throughput for 1588 messages with
+single step hardware timestamp enabled was around 2000pps.
+After the updates the throughput increased up to 32.82 Mbps / 46631.02 pps.
 
 Signed-off-by: Radu Bulie <radu-andrei.bulie@nxp.com>
 ---
 Changes in v2:
- - none
+ - move global function pointer into the driver's private structure in 2/2
+ - move repetitive code outside the body of the callback functions  in 2/2
+ - update function dpaa2_ptp_onestep_reg_update_method  and remove goto
+   statement from non error path in 2/2
 Changes in v3:
- - none
+ - remove static storage class specifier from within the structure in 2/2
 
- drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h | 6 +++++-
- drivers/net/ethernet/freescale/dpaa2/dpni.c     | 2 ++
- drivers/net/ethernet/freescale/dpaa2/dpni.h     | 6 ++++++
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 89 +++++++++++++++++--
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 14 ++-
+ 2 files changed, 93 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-index 9f80bdfeedec..828f538097af 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
-@@ -98,7 +98,7 @@
- #define DPNI_CMDID_GET_LINK_CFG				DPNI_CMD(0x278)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index c4a48e6f1758..aab11d5da062 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -35,6 +35,75 @@ MODULE_DESCRIPTION("Freescale DPAA2 Ethernet Driver");
+ struct ptp_qoriq *dpaa2_ptp;
+ EXPORT_SYMBOL(dpaa2_ptp);
  
- #define DPNI_CMDID_SET_SINGLE_STEP_CFG			DPNI_CMD(0x279)
--#define DPNI_CMDID_GET_SINGLE_STEP_CFG			DPNI_CMD(0x27a)
-+#define DPNI_CMDID_GET_SINGLE_STEP_CFG			DPNI_CMD_V2(0x27a)
++static void dpaa2_eth_detect_features(struct dpaa2_eth_priv *priv)
++{
++	priv->features = 0;
++
++	if (dpaa2_eth_cmp_dpni_ver(priv, DPNI_PTP_ONESTEP_VER_MAJOR,
++				   DPNI_PTP_ONESTEP_VER_MINOR) >= 0)
++		priv->features |= DPAA2_ETH_FEATURE_ONESTEP_CFG_DIRECT;
++}
++
++static void dpaa2_update_ptp_onestep_indirect(struct dpaa2_eth_priv *priv,
++					      u32 offset, u8 udp)
++{
++	struct dpni_single_step_cfg cfg;
++
++	cfg.en = 1;
++	cfg.ch_update = udp;
++	cfg.offset = offset;
++	cfg.peer_delay = 0;
++
++	if (dpni_set_single_step_cfg(priv->mc_io, 0, priv->mc_token, &cfg))
++		WARN_ONCE(1, "Failed to set single step register");
++}
++
++static void dpaa2_update_ptp_onestep_direct(struct dpaa2_eth_priv *priv,
++					    u32 offset, u8 udp)
++{
++	u32 val = 0;
++
++	val = DPAA2_PTP_SINGLE_STEP_ENABLE |
++	       DPAA2_PTP_SINGLE_CORRECTION_OFF(offset);
++
++	if (udp)
++		val |= DPAA2_PTP_SINGLE_STEP_CH;
++
++	if (priv->onestep_reg_base)
++		writel(val, priv->onestep_reg_base);
++}
++
++static void dpaa2_ptp_onestep_reg_update_method(struct dpaa2_eth_priv *priv)
++{
++	struct device *dev = priv->net_dev->dev.parent;
++	struct dpni_single_step_cfg ptp_cfg;
++
++	priv->dpaa2_set_onestep_params_cb = dpaa2_update_ptp_onestep_indirect;
++
++	if (!(priv->features & DPAA2_ETH_FEATURE_ONESTEP_CFG_DIRECT))
++		return;
++
++	if (dpni_get_single_step_cfg(priv->mc_io, 0,
++				     priv->mc_token, &ptp_cfg)) {
++		dev_err(dev, "dpni_get_single_step_cfg cannot retrieve onestep reg, falling back to indirect update\n");
++		return;
++	}
++
++	if (!ptp_cfg.ptp_onestep_reg_base) {
++		dev_err(dev, "1588 onestep reg not available, falling back to indirect update\n");
++		return;
++	}
++
++	priv->onestep_reg_base = ioremap(ptp_cfg.ptp_onestep_reg_base,
++					 sizeof(u32));
++	if (!priv->onestep_reg_base) {
++		dev_err(dev, "1588 onestep reg cannot be mapped, falling back to indirect update\n");
++		return;
++	}
++
++	priv->dpaa2_set_onestep_params_cb = dpaa2_update_ptp_onestep_direct;
++}
++
+ static void *dpaa2_iova_to_virt(struct iommu_domain *domain,
+ 				dma_addr_t iova_addr)
+ {
+@@ -696,7 +765,6 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
+ 				       struct sk_buff *skb)
+ {
+ 	struct ptp_tstamp origin_timestamp;
+-	struct dpni_single_step_cfg cfg;
+ 	u8 msgtype, twostep, udp;
+ 	struct dpaa2_faead *faead;
+ 	struct dpaa2_fas *fas;
+@@ -750,14 +818,12 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
+ 			htonl(origin_timestamp.sec_lsb);
+ 		*(__be32 *)(data + offset2 + 6) = htonl(origin_timestamp.nsec);
  
- /* Macros for accessing command fields smaller than 1byte */
- #define DPNI_MASK(field)	\
-@@ -658,12 +658,16 @@ struct dpni_cmd_single_step_cfg {
- 	__le16 flags;
- 	__le16 offset;
- 	__le32 peer_delay;
-+	__le32 ptp_onestep_reg_base;
-+	__le32 pad0;
- };
+-		cfg.en = 1;
+-		cfg.ch_update = udp;
+-		cfg.offset = offset1;
+-		cfg.peer_delay = 0;
++		if (priv->ptp_correction_off == offset1)
++			return;
++
++		priv->dpaa2_set_onestep_params_cb(priv, offset1, udp);
++		priv->ptp_correction_off = offset1;
  
- struct dpni_rsp_single_step_cfg {
- 	__le16 flags;
- 	__le16 offset;
- 	__le32 peer_delay;
-+	__le32 ptp_onestep_reg_base;
-+	__le32 pad0;
- };
- 
- struct dpni_cmd_enable_vlan_filter {
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.c b/drivers/net/ethernet/freescale/dpaa2/dpni.c
-index d6afada99fb6..6c3b36f20fb8 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.c
-@@ -2136,6 +2136,8 @@ int dpni_get_single_step_cfg(struct fsl_mc_io *mc_io,
- 	ptp_cfg->ch_update = dpni_get_field(le16_to_cpu(rsp_params->flags),
- 					    PTP_CH_UPDATE) ? 1 : 0;
- 	ptp_cfg->peer_delay = le32_to_cpu(rsp_params->peer_delay);
-+	ptp_cfg->ptp_onestep_reg_base =
-+				  le32_to_cpu(rsp_params->ptp_onestep_reg_base);
- 
- 	return err;
+-		if (dpni_set_single_step_cfg(priv->mc_io, 0, priv->mc_token,
+-					     &cfg))
+-			WARN_ONCE(1, "Failed to set single step register");
+ 	}
  }
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-index 7de0562bbf59..6fffd519aa00 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-@@ -1074,12 +1074,18 @@ int dpni_set_tx_shaping(struct fsl_mc_io *mc_io,
-  * @peer_delay:	For peer-to-peer transparent clocks add this value to the
-  *		correction field in addition to the transient time update.
-  *		The value expresses nanoseconds.
-+ * @ptp_onestep_reg_base: 1588 SINGLE_STEP register base address. This address
-+ *			  is used to update directly the register contents.
-+ *			  User has to create an address mapping for it.
-+ *
-+ *
-  */
- struct dpni_single_step_cfg {
- 	u8	en;
- 	u8	ch_update;
- 	u16	offset;
- 	u32	peer_delay;
-+	u32	ptp_onestep_reg_base;
- };
  
- int dpni_set_single_step_cfg(struct fsl_mc_io *mc_io,
+@@ -2407,6 +2473,9 @@ static int dpaa2_eth_ts_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 		config.rx_filter = HWTSTAMP_FILTER_ALL;
+ 	}
+ 
++	if (priv->tx_tstamp_type == HWTSTAMP_TX_ONESTEP_SYNC)
++		dpaa2_ptp_onestep_reg_update_method(priv);
++
+ 	return copy_to_user(rq->ifr_data, &config, sizeof(config)) ?
+ 			-EFAULT : 0;
+ }
+@@ -4300,6 +4369,8 @@ static int dpaa2_eth_netdev_init(struct net_device *net_dev)
+ 		return err;
+ 	}
+ 
++	dpaa2_eth_detect_features(priv);
++
+ 	/* Capabilities listing */
+ 	supported |= IFF_LIVE_ADDR_CHANGE;
+ 
+@@ -4758,6 +4829,8 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ 	dpaa2_eth_free_dpbp(priv);
+ 	dpaa2_eth_free_dpio(priv);
+ 	dpaa2_eth_free_dpni(priv);
++	if (priv->onestep_reg_base)
++		iounmap(priv->onestep_reg_base);
+ 
+ 	fsl_mc_portal_free(priv->mc_io);
+ 
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index b79831cd1a94..447718483ef4 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -526,12 +526,15 @@ struct dpaa2_eth_priv {
+ 	u8 num_channels;
+ 	struct dpaa2_eth_channel *channel[DPAA2_ETH_MAX_DPCONS];
+ 	struct dpaa2_eth_sgt_cache __percpu *sgt_cache;
+-
++	unsigned long features;
+ 	struct dpni_attr dpni_attrs;
+ 	u16 dpni_ver_major;
+ 	u16 dpni_ver_minor;
+ 	u16 tx_data_offset;
+-
++	void __iomem *onestep_reg_base;
++	u8 ptp_correction_off;
++	void (*dpaa2_set_onestep_params_cb)(struct dpaa2_eth_priv *priv,
++					    u32 offset, u8 udp);
+ 	struct fsl_mc_device *dpbp_dev;
+ 	u16 rx_buf_size;
+ 	u16 bpid;
+@@ -673,6 +676,13 @@ enum dpaa2_eth_rx_dist {
+ #define DPAA2_ETH_DIST_L4DST		BIT(8)
+ #define DPAA2_ETH_DIST_ALL		(~0ULL)
+ 
++#define DPNI_PTP_ONESTEP_VER_MAJOR 8
++#define DPNI_PTP_ONESTEP_VER_MINOR 2
++#define DPAA2_ETH_FEATURE_ONESTEP_CFG_DIRECT BIT(0)
++#define DPAA2_PTP_SINGLE_STEP_ENABLE	BIT(31)
++#define DPAA2_PTP_SINGLE_STEP_CH	BIT(7)
++#define DPAA2_PTP_SINGLE_CORRECTION_OFF(v) ((v) << 8)
++
+ #define DPNI_PAUSE_VER_MAJOR		7
+ #define DPNI_PAUSE_VER_MINOR		13
+ #define dpaa2_eth_has_pause_support(priv)			\
 -- 
 2.17.1
 
