@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE3774BC1CD
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 22:23:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 966FA4BC21A
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 22:31:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239687AbiBRVYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 16:24:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44030 "EHLO
+        id S239957AbiBRVbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 16:31:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238263AbiBRVYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 16:24:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183EC36B52;
-        Fri, 18 Feb 2022 13:23:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7FC2B826F3;
-        Fri, 18 Feb 2022 21:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4713DC340E9;
-        Fri, 18 Feb 2022 21:23:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645219423;
-        bh=d8XDys7K7nUuahPS9gIDaGWDjUn6oOQjOqqDtWx4Q94=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=WhO3tBIUtMd1nNnGhBF0nEB1u0UA4xvCuZpYf3BA4R/NgQKnPvs7B40TO4uc3FN6v
-         yZrWiHA0xtUHBmUn6psNhOaSALaBTlULArMCrsKxFb2wRLk3jXER2I7v8vqXVo4aXK
-         t2i5Cv68mHBwAtoG69+8UoCQmp8aa6ulARDgRj6EqXo+BfVTsWkf8JZAVzlNR2OkFV
-         SV+qmCUZAhCii1RXJOezw/by0NTtuvpEXamZero+Ui1sJ+VnjGOw2+ocfxY0j+yznQ
-         xAmz2lr3ccwyds4Zm+X11VGop+EEhGDu7Ge/YOMn3WFwGzo9DPny5flNLtkiNHAjK3
-         c+LY23bjy2S3w==
-Message-ID: <ac145b7b-8c78-88dd-ded5-c780bf7e94e1@kernel.org>
-Date:   Fri, 18 Feb 2022 14:23:39 -0700
+        with ESMTP id S239945AbiBRVbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 16:31:33 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500AB178958;
+        Fri, 18 Feb 2022 13:31:16 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id c6so14872960edk.12;
+        Fri, 18 Feb 2022 13:31:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gOpAL1FPR1vBK++ssCUfqZ5qhe0h7v7ypcgYHRaBHRc=;
+        b=ZgrfO5hIj6k3fB/NvjiGwGJVqeHzU32gasUKL3vtw8WIfPrr50EdaVOnd9gnp/N0j2
+         YWS1WVywYtQFd45fzxxP9mZsMomcVx4I5pByUkcqJv85fbAXlXH6gDHahPyEveAVTyHl
+         nzCfwtGgeeJwN9a6CA03aYzroH5Ij6N6Y/Bn6Ym/m9Whc77OCLxio9Gf42DUl9L/xp+k
+         kcZn4JLsx1VibSqaWe63Bs3/abTFHBNsIzwBGkYem564HsRVvy3bCzajjRX50+9/MaJH
+         8XmQaT5RRTNB5a4014NoyjA37AxCf8G+5WO7hrKX6p16skAJgf285VQrGNxJ2qVRwgwx
+         ITqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gOpAL1FPR1vBK++ssCUfqZ5qhe0h7v7ypcgYHRaBHRc=;
+        b=gKikQBzwmr6wlq1/3LrJwE9/UZel1keLwuc3ewSDJbi4qs51skvo2N8I0V1YAaRwcy
+         8bUWwL78L5BJvdh18JeLqKq9OS727Ty/BUFKsTSyJjCskDQSsqAGLWlIY6uiQnKPwE1q
+         jZYjoM33YCvAZfJpcq/Ren5vgNcvt61eaF8mEELD0hO/Dj4PNkYGhMSAffMdl+w7CnCf
+         /1bWchmHRVbZ/iQ+zRvwbQxxqKRaNcqxW9+3UqXcOikB0JFteMSmyvkCe3yG/AY6opqM
+         JB9bhItoqmkqcFC+rzubqgEFAWcc5rfFhPk9r9pvJASpKgXjoAavfb9ylabzyTIUGQNF
+         448w==
+X-Gm-Message-State: AOAM533PkbUEzbpnOaj14lf+st/x0FeWvlTboYIi3Qo+hfsamdBstw5v
+        /jbwqZz4KSKX11ZMfrQXqJawKjPzv+twG7lbMYs=
+X-Google-Smtp-Source: ABdhPJyEXRJiunNMtAWvzGM7nptyut6nLlOjCbUvLBhqrz99Fl/NERtWo9ZK9gILLbq4bQjDvKt6qPcV3lfBb5JRZmE=
+X-Received: by 2002:a50:becc:0:b0:410:a35f:c5a7 with SMTP id
+ e12-20020a50becc000000b00410a35fc5a7mr10360733edk.170.1645219874884; Fri, 18
+ Feb 2022 13:31:14 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next v2 0/9] net: add skb drop reasons to TCP packet
- receive
-Content-Language: en-US
-To:     menglong8.dong@gmail.com, kuba@kernel.org
-Cc:     edumazet@google.com, davem@davemloft.net, rostedt@goodmis.org,
-        mingo@redhat.com, yoshfuji@linux-ipv6.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        imagedong@tencent.com, talalahmad@google.com,
-        keescook@chromium.org, ilias.apalodimas@linaro.org, alobakin@pm.me,
-        memxor@gmail.com, atenart@kernel.org, bigeasy@linutronix.de,
-        pabeni@redhat.com, linyunsheng@huawei.com, arnd@arndb.de,
-        yajun.deng@linux.dev, roopa@nvidia.com, willemb@google.com,
-        vvs@virtuozzo.com, cong.wang@bytedance.com,
-        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, flyingpeng@tencent.com
-References: <20220218083133.18031-1-imagedong@tencent.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220218083133.18031-1-imagedong@tencent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220207235714.1050160-1-jeffreyji@google.com> <20220207195139.77d860cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220207195139.77d860cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+Date:   Fri, 18 Feb 2022 13:31:03 -0800
+Message-ID: <CACB8nPmnJA7FYFZtRgF_RASOGZhCEFHcK3n0zbtT4OJ61gkrug@mail.gmail.com>
+Subject: Re: [PATCH v7 net-next] net-core: add InDropOtherhost counter
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Brian Vazquez <brianvv@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,86 +68,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/18/22 1:31 AM, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
-> 
-> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
-> we added the support of reporting the reasons of skb drops to kfree_skb
-> tracepoint. And in this series patches, reasons for skb drops are added
-> to TCP layer (both TCPv4 and TCPv6 are considered).
-> Following functions are processed:
-> 
-> tcp_v4_rcv()
-> tcp_v6_rcv()
-> tcp_v4_inbound_md5_hash()
-> tcp_v6_inbound_md5_hash()
-> tcp_add_backlog()
-> tcp_v4_do_rcv()
-> tcp_v6_do_rcv()
-> tcp_rcv_established()
-> tcp_data_queue()
-> tcp_data_queue_ofo()
-> 
-> The functions we handled are mostly for packet ingress, as skb drops
-> hardly happens in the egress path of TCP layer. However, it's a little
-> complex for TCP state processing, as I find that it's hard to report skb
-> drop reasons to where it is freed. For example, when skb is dropped in
-> tcp_rcv_state_process(), the reason can be caused by the call of
-> tcp_v4_conn_request(), and it's hard to return a drop reason from
-> tcp_v4_conn_request(). So such cases are skipped  for this moment.
-> 
-> Following new drop reasons are introduced (what they mean can be see
-> in the document for them):
-> 
-> /* SKB_DROP_REASON_TCP_MD5* corresponding to LINUX_MIB_TCPMD5* */
-> SKB_DROP_REASON_TCP_MD5NOTFOUND
-> SKB_DROP_REASON_TCP_MD5UNEXPECTED
-> SKB_DROP_REASON_TCP_MD5FAILURE
-> SKB_DROP_REASON_SOCKET_BACKLOG
-> SKB_DROP_REASON_TCP_FLAGS
-> SKB_DROP_REASON_TCP_ZEROWINDOW
-> SKB_DROP_REASON_TCP_OLD_DATA
-> SKB_DROP_REASON_TCP_OVERWINDOW
-> /* corresponding to LINUX_MIB_TCPOFOMERGE */
-> SKB_DROP_REASON_TCP_OFOMERGE
-> 
-> Here is a example to get TCP packet drop reasons from ftrace:
-> 
-> $ echo 1 > /sys/kernel/debug/tracing/events/skb/kfree_skb/enable
-> $ cat /sys/kernel/debug/tracing/trace
-> $ <idle>-0       [036] ..s1.   647.428165: kfree_skb: skbaddr=000000004d037db6 protocol=2048 location=0000000074cd1243 reason: NO_SOCKET
-> $ <idle>-0       [020] ..s2.   639.676674: kfree_skb: skbaddr=00000000bcbfa42d protocol=2048 location=00000000bfe89d35 reason: PROTO_MEM
-> 
-> From the reason 'PROTO_MEM' we can know that the skb is dropped because
-> the memory configured in net.ipv4.tcp_mem is up to the limition.
-> 
-> Changes since v1:
-> - enrich the document for this series patches in the cover letter,
->   as Eric suggested
-> - fix compile warning report by Jakub in the 6th patch
-> - let NO_SOCKET trump the XFRM failure in the 2th and 3th patches
-> 
-> Menglong Dong (9):
->   net: tcp: introduce tcp_drop_reason()
->   net: tcp: add skb drop reasons to tcp_v4_rcv()
->   net: tcp: use kfree_skb_reason() for tcp_v6_rcv()
->   net: tcp: add skb drop reasons to tcp_v{4,6}_inbound_md5_hash()
->   net: tcp: add skb drop reasons to tcp_add_backlog()
->   net: tcp: use kfree_skb_reason() for tcp_v{4,6}_do_rcv()
->   net: tcp: use tcp_drop_reason() for tcp_rcv_established()
->   net: tcp: use tcp_drop_reason() for tcp_data_queue()
->   net: tcp: use tcp_drop_reason() for tcp_data_queue_ofo()
-> 
->  include/linux/skbuff.h     | 34 ++++++++++++++++++++++++++++++
->  include/net/tcp.h          |  3 ++-
->  include/trace/events/skb.h | 10 +++++++++
->  net/ipv4/tcp_input.c       | 42 +++++++++++++++++++++++++++++---------
->  net/ipv4/tcp_ipv4.c        | 32 +++++++++++++++++++++--------
->  net/ipv6/tcp_ipv6.c        | 39 +++++++++++++++++++++++++++--------
->  6 files changed, 132 insertions(+), 28 deletions(-)
-> 
+Hi Jakub, I'll remove the MIB counters & instead add counters to
+rtnl_link_stats64 and rtnl_link_stats, does that sound right? But keep
+the sbk_free_drop_reason
 
-LGTM. for the set:
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
+On Mon, Feb 7, 2022 at 7:51 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon,  7 Feb 2022 23:57:14 +0000 Jeffrey Ji wrote:
+> > From: jeffreyji <jeffreyji@google.com>
+> >
+> > Increment InDropOtherhost counter when packet dropped due to incorrect dest
+> > MAC addr.
+> >
+> > An example when this drop can occur is when manually crafting raw
+> > packets that will be consumed by a user space application via a tap
+> > device. For testing purposes local traffic was generated using trafgen
+> > for the client and netcat to start a server
+> >
+> > example output from nstat:
+> > \~# nstat -a | grep InMac
+> > Ip6InDropOtherhost                  0                  0.0
+> > IpExtInDropOtherhost                1                  0.0
+> >
+> > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> > with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> > counter was incremented.
+>
+> As far as I can tell nobody objected to my suggestion of making this
+> a netdev counter, so please switch to working on that. Thanks.
