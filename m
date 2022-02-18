@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 784734BBC8F
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 16:54:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 223D44BBC91
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 16:54:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236853AbiBRPxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 10:53:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47114 "EHLO
+        id S236031AbiBRPxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 10:53:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237273AbiBRPxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 10:53:42 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C51A272D95;
-        Fri, 18 Feb 2022 07:53:19 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id b9so6272314lfv.7;
-        Fri, 18 Feb 2022 07:53:19 -0800 (PST)
+        with ESMTP id S237287AbiBRPxu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 10:53:50 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7160C2B31B5;
+        Fri, 18 Feb 2022 07:53:30 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id o9so4952806ljq.4;
+        Fri, 18 Feb 2022 07:53:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=pe7DtCHDCmLRwyE/qHTyP5z+rDV+SzCi98cUiAV5b/4=;
-        b=Fv7QJcyGriYpIrAjds8vlp5zMhjOy9wVM+dvvFiid3g2j0XoAXnynXE+rJyOVPmo07
-         bYt1+BjUHRsiz5qZNIfS7G2IxWkmjmV4nbAlC+ao+/NJ0urGXNlCZofWgOgMNK7HmVih
-         vKp0fceLxj+gk+xlc41FEm/lTkHk5Xn+ir07CApg2gMkD/SH3MLJYJhlZJKaRvmSiu53
-         dz84Ap35uW3CFJ1glbh1mETbpIzBbBY42JKfAENcIbe8RdIv+WtZIbBrYgXqDy53bQu+
-         DHL6zp6BhpTh9WXBs2tBFWQW5gIVRAU4vJXRDeibZTVqQS/54QHlIUmf6GsddjYHeW62
-         5kBg==
+        bh=+Mu8RvBnev8GXTejYsZPejfoz1EIMAndo1iFiCzGtfU=;
+        b=Ne7ve291QC1Ba2C/uEJ1kQrM/HEA0BtP4jUbz3fW5Zi43QXrH90M4ADD9g/D9y1sq2
+         4nDJo9rkkksFdRJVWv6+MS2HY08pNJvc9HxJfrYhVvV9PPWrroL8CWUBq6hrSm38/rRm
+         rV/i42qonsEW7yMLJAzRVLHwFn8/KWEk1RcnscyahJaWwLDDgXR9WLSVYhtPBdFyTxay
+         AXHj/yWPjSKpxqLvNaSYskfyqH6a3zBZkYGujTNkKkfkcBIiWJe07mo7RUMo8RonwzyL
+         87F7hwllYfSa5jvOSIQAL1+CIwjUDVc+JFce5Bp+Oe2LWfap7oj2nhK9djtyVILWGtOa
+         fYxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=pe7DtCHDCmLRwyE/qHTyP5z+rDV+SzCi98cUiAV5b/4=;
-        b=k8MqILv5sSRC/IgPg9HrvVShkwdT5+wd8oQFEaz3QLciZZIu0FeykFcMTAKdcm/+FI
-         KgzN4Ml7Tl59/Q+DIGDhpXyq+5tSS54adYoGserSC+VmqbAjYpcss8Fq4TntCTz+mpVY
-         xAxcFXHYMudz+8b6qsuloiFnjHgV9i8jJxrmLUDgn1YPKBD0q8kqSFw83vp3MSgaFnGx
-         GaBsHj+DIxx1t5vJa5MhFi3dNJkDD8Tp4bb5Pkq6qpaqd/ZPC+SZ8mdSZOyT8dUjjTnb
-         YN4XRhOVHbaua25LRxr6XJOWUQaH1adIC2vNRBABdvIKgMDM8add5IMl8UMf1o3Dhsoe
-         zJ1Q==
-X-Gm-Message-State: AOAM530olsRAEX10TjBot214KmxmZR6Pny8jiViS3ROAsD6Bdn4VFyyF
-        MQhYp6A6VroTN+FqIAeMoA0=
-X-Google-Smtp-Source: ABdhPJzDS4V2syfnTKcCTFbVQOsoDsQ4wpiSbJ5RpmfK6xrg+H26ZXoNOGx2NsTx1GAoVoo+95qrjA==
-X-Received: by 2002:a05:6512:214e:b0:443:1469:c8b0 with SMTP id s14-20020a056512214e00b004431469c8b0mr5893383lfr.518.1645199597543;
-        Fri, 18 Feb 2022 07:53:17 -0800 (PST)
+        bh=+Mu8RvBnev8GXTejYsZPejfoz1EIMAndo1iFiCzGtfU=;
+        b=wSaNkuxJIs4z/gP3R7vm6HkKCBHd10qiQmT2XOKpLRpNtRfa47ELq2cmRxm3+QznwV
+         Tpokdf2zJqovkW2rOoQvb7TMsWlRUc3juf3OC/iRVtm+zBedkoK/lx2twdbBfStzVS5b
+         zvH2JaM0SMv2rJaFiLDzJhKIvEVRhb9O0SPpwk7EDjLd28zkynmqUDuqiX5dA1c3SEL9
+         thzqpRagp1BeAOXkE8XQZS2v/PXcB5kLJdLyxJfIogw+3c9t6SDU/Zgjxl9nWFBq+vfp
+         TM1mr0fSoTaINFyFUgWRrK2vpitd/nGHrqzu1WOlDeCrNlNAdj2Eu7au+oI3Vskx74UU
+         vfqA==
+X-Gm-Message-State: AOAM531y0uW26vcMJwO8xiQjKrO+8UZ1V3nKTdoLEN/SwotKnhdYoft+
+        /rlODLTO5AIieS+yfPuQpLk=
+X-Google-Smtp-Source: ABdhPJxlzT3gBFdCoywzClFF8dDbeFMFzORMD607SdJ3lZizRUrVvz9NSMNSjqfnZ1Mc3OoijizKEw==
+X-Received: by 2002:a2e:90c9:0:b0:244:2f8a:7aca with SMTP id o9-20020a2e90c9000000b002442f8a7acamr6152453ljg.129.1645199608751;
+        Fri, 18 Feb 2022 07:53:28 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id v11sm295453lfr.3.2022.02.18.07.53.15
+        by smtp.gmail.com with ESMTPSA id v11sm295453lfr.3.2022.02.18.07.53.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 07:53:17 -0800 (PST)
+        Fri, 18 Feb 2022 07:53:28 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
@@ -68,9 +68,9 @@ Cc:     netdev@vger.kernel.org,
         Baowen Zheng <baowen.zheng@corigine.com>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next v3 4/5] net: dsa: mv88e6xxx: Add support for bridge port locked mode
-Date:   Fri, 18 Feb 2022 16:51:47 +0100
-Message-Id: <20220218155148.2329797-5-schultz.hans+netdev@gmail.com>
+Subject: [PATCH net-next v3 5/5] selftests: forwarding: tests of locked port feature
+Date:   Fri, 18 Feb 2022 16:51:48 +0100
+Message-Id: <20220218155148.2329797-6-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
 References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
@@ -87,118 +87,237 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Supporting bridge ports in locked mode using the drop on lock
-feature in Marvell mv88e6xxx switchcores is described in the
-'88E6096/88E6097/88E6097F Datasheet', sections 4.4.6, 4.4.7 and
-5.1.2.1 (Drop on Lock).
-
-This feature is implemented here facilitated by the locked port flag.
+These tests check that the basic locked port feature works, so that no 'host'
+can communicate (ping) through a locked port unless the MAC address of the
+'host' interface is in the forwarding database of the bridge.
 
 Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c |  9 ++++++++-
- drivers/net/dsa/mv88e6xxx/port.c | 33 ++++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/port.h |  9 ++++++++-
- 3 files changed, 49 insertions(+), 2 deletions(-)
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../net/forwarding/bridge_locked_port.sh      | 174 ++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |  16 ++
+ 3 files changed, 191 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/bridge_locked_port.sh
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 58ca684d73f7..eed3713b97ae 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5881,7 +5881,7 @@ static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 	const struct mv88e6xxx_ops *ops;
+diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+index 72ee644d47bf..8fa97ae9af9e 100644
+--- a/tools/testing/selftests/net/forwarding/Makefile
++++ b/tools/testing/selftests/net/forwarding/Makefile
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0+ OR MIT
  
- 	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--			   BR_BCAST_FLOOD))
-+			   BR_BCAST_FLOOD | BR_PORT_LOCKED))
- 		return -EINVAL;
- 
- 	ops = chip->info->ops;
-@@ -5939,6 +5939,13 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- 			goto out;
- 	}
- 
-+	if (flags.mask & BR_PORT_LOCKED) {
-+		bool locked = !!(flags.val & BR_PORT_LOCKED);
+ TEST_PROGS = bridge_igmp.sh \
++	bridge_locked_port.sh \
+ 	bridge_port_isolation.sh \
+ 	bridge_sticky_fdb.sh \
+ 	bridge_vlan_aware.sh \
+diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+new file mode 100755
+index 000000000000..d2805441b325
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+@@ -0,0 +1,174 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
-+		err = mv88e6xxx_port_set_lock(chip, port, locked);
-+		if (err)
-+			goto out;
-+	}
- out:
- 	mv88e6xxx_reg_unlock(chip);
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index ab41619a809b..46b7381899a0 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1234,6 +1234,39 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
- 	return err;
- }
- 
-+int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-+			    bool locked)
++ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
++NUM_NETIFS=4
++CHECK_TC="no"
++source lib.sh
++
++h1_create()
 +{
-+	u16 reg;
-+	int err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~MV88E6XXX_PORT_CTL0_SA_FILT_MASK;
-+	if (locked)
-+		reg |= MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
-+	if (err)
-+		return err;
-+
-+	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, &reg);
-+	if (err)
-+		return err;
-+
-+	reg &= ~MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-+	if (locked)
-+		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-+
-+	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, reg);
-+	if (err)
-+		return err;
-+
-+	return 0;
++	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
++	vrf_create "vrf-vlan-h1"
++        ip link set dev vrf-vlan-h1 up
++        vlan_create $h1 100 vrf-vlan-h1 192.0.3.1/24 2001:db8:3::1/64
 +}
 +
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 03382b66f800..3f70557f0d48 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -142,7 +142,11 @@
- /* Offset 0x04: Port Control Register */
- #define MV88E6XXX_PORT_CTL0					0x04
- #define MV88E6XXX_PORT_CTL0_USE_CORE_TAG			0x8000
--#define MV88E6XXX_PORT_CTL0_DROP_ON_LOCK			0x4000
-+#define MV88E6XXX_PORT_CTL0_SA_FILT_MASK			0xc000
-+#define MV88E6XXX_PORT_CTL0_SA_FILT_DISABLED			0x0000
-+#define MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK		0x4000
-+#define MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_UNLOCK		0x8000
-+#define MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_CPU		0xc000
- #define MV88E6XXX_PORT_CTL0_EGRESS_MODE_MASK			0x3000
- #define MV88E6XXX_PORT_CTL0_EGRESS_MODE_UNMODIFIED		0x0000
- #define MV88E6XXX_PORT_CTL0_EGRESS_MODE_UNTAGGED		0x1000
-@@ -365,6 +369,9 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid);
- int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid);
- int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid);
- 
-+int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-+			    bool locked);
++h1_destroy()
++{
++	vlan_destroy $h1 100
++	simple_if_fini $h1 192.0.2.1/24 2001:db8:1::1/64
++}
 +
- int mv88e6xxx_port_set_8021q_mode(struct mv88e6xxx_chip *chip, int port,
- 				  u16 mode);
- int mv88e6095_port_tag_remap(struct mv88e6xxx_chip *chip, int port);
++h2_create()
++{
++	simple_if_init $h2 192.0.2.2/24 2001:db8:1::2/64
++	vrf_create "vrf-vlan-h2"
++	ip link set dev vrf-vlan-h2 up
++	vlan_create $h2 100 vrf-vlan-h2 192.0.3.2/24 2001:db8:3::2/64
++}
++
++h2_destroy()
++{
++	vlan_destroy $h2 100
++	simple_if_fini $h2 192.0.2.2/24 2001:db8:1::2/64
++}
++
++switch_create()
++{
++	ip link add dev br0 type bridge vlan_filtering 1
++
++	ip link set dev $swp1 master br0
++	ip link set dev $swp2 master br0
++
++	ip link set dev br0 up
++	ip link set dev $swp1 up
++	ip link set dev $swp2 up
++
++	bridge link set dev $swp1 learning off
++}
++
++switch_destroy()
++{
++	ip link set dev $swp2 down
++	ip link set dev $swp1 down
++
++	ip link del dev br0
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	swp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	vrf_prepare
++
++	h1_create
++	h2_create
++
++	switch_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	switch_destroy
++
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
++}
++
++ifaddr()
++{
++	ip -br link show dev "$1" | awk '{ print($3); }'
++}
++
++locked_port_ipv4()
++{
++	RET=0
++
++	check_locked_port_support || return 0
++
++	ping_do $h1 192.0.2.2
++	check_err $? "Ping didn't work when it should have"
++
++	bridge link set dev $swp1 locked on
++
++	ping_do $h1 192.0.2.2
++	check_fail $? "Ping worked when it should not have"
++
++	bridge fdb add `ifaddr $h1` dev $swp1 master static
++
++	ping_do $h1 192.0.2.2
++	check_err $? "Ping didn't work when it should have"
++
++	bridge link set dev $swp1 locked off
++	bridge fdb del `ifaddr $h1` dev $swp1 master static
++	log_test "Locked port ipv4"
++}
++
++locked_port_vlan()
++{
++	RET=0
++
++	check_locked_port_support || return 0
++	check_vlan_filtering_support || return 0
++
++	bridge vlan add vid 100 dev $swp1 tagged
++	bridge vlan add vid 100 dev $swp2 tagged
++
++	ping_do $h1.100 192.0.3.2
++	check_err $? "Ping didn't work when it should have"
++
++	bridge link set dev $swp1 locked on
++	ping_do $h1.100 192.0.3.2
++	check_fail $? "Ping worked when it should not have"
++
++	bridge fdb add `ifaddr $h1` dev $swp1 vlan 100 master static
++
++	ping_do $h1.100 192.0.3.2
++	check_err $? "Ping didn't work when it should have"
++
++	bridge link set dev $swp1 locked off
++	bridge vlan del vid 100 dev $swp1
++	bridge vlan del vid 100 dev $swp2
++	bridge fdb del `ifaddr $h1` dev $swp1 vlan 100 master static
++	log_test "Locked port vlan"
++}
++
++locked_port_ipv6()
++{
++	RET=0
++	check_locked_port_support || return 0
++
++	ping6_do $h1 2001:db8:1::2
++	check_err $? "Ping6 didn't work when it should have"
++
++	bridge link set dev $swp1 locked on
++
++	ping6_do $h1 2001:db8:1::2
++	check_fail $? "Ping worked when it should not have"
++
++	bridge fdb add `ifaddr $h1` dev $swp1 master static
++	ping6_do $h1 2001:db8:1::2
++	check_err $? "Ping didn't work when it should have"
++
++	bridge link set dev $swp1 locked off
++	bridge fdb del `ifaddr $h1` dev $swp1 master static
++	log_test "Locked port ipv6"
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++exit $EXIT_STATUS
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 7da783d6f453..9ded90f17ead 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -125,6 +125,22 @@ check_ethtool_lanes_support()
+ 	fi
+ }
+ 
++check_locked_port_support()
++{
++        if ! bridge -d link show | grep -q " locked"; then
++                echo "SKIP: iproute2 too old; Locked port feature not supported."
++                return $ksft_skip
++        fi
++}
++
++check_vlan_filtering_support()
++{
++	if ! bridge -d vlan show | grep -q "state forwarding"; then
++		echo "SKIP: vlan filtering not supported."
++		return $ksft_skip
++	fi
++}
++
+ if [[ "$(id -u)" -ne 0 ]]; then
+ 	echo "SKIP: need root privileges"
+ 	exit $ksft_skip
 -- 
 2.30.2
 
