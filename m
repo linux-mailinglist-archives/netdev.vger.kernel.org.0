@@ -2,156 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A804BBCF8
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5124BBD61
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 17:21:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237193AbiBRQE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 11:04:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58988 "EHLO
+        id S236909AbiBRQVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 11:21:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233019AbiBRQE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:04:27 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AEC48E79;
-        Fri, 18 Feb 2022 08:04:10 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IFEhGX004475;
-        Fri, 18 Feb 2022 16:04:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=2hopbCZ97CZ85OH0VfOjc6KE5jAmjXLJh7JqAcZEIVY=;
- b=qA9whTFrbaoQMeaHvGPsukqTXs9KiXka7zfpIDHX9SXmOV5pYRhBPR6XRx8xeNwvJVGY
- UGfKmu+P9osY5osK6rsBBF1wAPZUYMyGj5BZZ7/yeBufEuyYGELoLkDmpOi0baZS7vhH
- tPVZ/Wc3AbAeUQ2h6SFjUJTZ1jtTgFFqbQS+66HZBckAU6b2xREATO9eFbWH5uNuetjP
- Ie6k05CbxUH8PwuXSqw35FWB8puNopeUOizZurpsOkUIPdLDAjV24V6HZygQ21c/+X7n
- w8unYFo0ha8WNksPGEFmqfdVSo5DC7VbYKG5hdhD+wN30Q8EUXTTZMe3Tv4h1afT/Djq +w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eadx297xk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 16:04:01 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21IFmSJs002721;
-        Fri, 18 Feb 2022 16:04:00 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eadx297vw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 16:04:00 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IG0Ngx007995;
-        Fri, 18 Feb 2022 16:03:58 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3e64harhu1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 16:03:57 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IG3s3X40894806
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 16:03:54 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2EA1E52057;
-        Fri, 18 Feb 2022 16:03:54 +0000 (GMT)
-Received: from [9.145.55.33] (unknown [9.145.55.33])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9FD9952059;
-        Fri, 18 Feb 2022 16:03:53 +0000 (GMT)
-Message-ID: <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
-Date:   Fri, 18 Feb 2022 17:03:56 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] net/smc: Add autocork support
-Content-Language: en-US
-To:     dust.li@linux.alibaba.com,
-        Hendrik Brueckner <brueckner@linux.ibm.com>
-Cc:     Stefan Raspl <raspl@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
- <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
- <20220216152721.GB39286@linux.alibaba.com>
- <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
- <20220217132200.GA5443@linux.alibaba.com> <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
- <20220218073327.GB5443@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220218073327.GB5443@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: bnu36bG5hHeXDqt1iP_AokCYWbKlfLKJ
-X-Proofpoint-GUID: __R3UhUD0lSkIz8DWgbRFNL_g0kMgLq8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S238425AbiBRQVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 11:21:12 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB2B2B5238
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:20:50 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id d10so16158211eje.10
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 08:20:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=poc9DUiPbdIfDlqClJVZ7+KtOVsWHbqOeRzWYbKxlLk=;
+        b=Ugm49Ow0O5W5nYIIAtidY+bP95bNW8BGPz1ImYbRQkNrjBv03BowFSvrDHmCuFXLKj
+         6uFueWRVJarL3DfMdU+Zb3/mDmBAah/Z73T0YsACqKxIKreu4iPfKQfjvm9VCs1OBkl5
+         irCjirwJPfq3/FYUjDRXro7uar/4V86smBqA+yMIKUYUdkOQ49MccFGpDTsAvRVSsEEe
+         s5oitWpORuCRNUYeTQh7X8ndVi8IyiZjym5oKRvOFFVjUZh8BniBlcm13NrhKPabqTWJ
+         oHw+GPZGWZBhI9iozmq6cId9/UHmE36Uz3dvDleheqLIsJXHaBgMYKno1zZqKcFlSwWK
+         wCNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=poc9DUiPbdIfDlqClJVZ7+KtOVsWHbqOeRzWYbKxlLk=;
+        b=BiEjh++2u/RUkq771ryKpTGGGAv78/WN1qdt8pyE3tGI9TI2X21PFDyUXxmiZ/bXLG
+         70Om67hQUOgoTbb8kkjm/RRTSUQNESeXTyvVN5iYTOGlCsupJDmwSxdhS9gUgYMYP9Ng
+         I6EsFQGq6v1E/nQb5nVlLkh8BWmq8LiDn9IumLK8k3WemQsUjYnddtbmI29D2DrrmXEK
+         zUFl0Wmh7hBdzc/hF5LvCSPe6EuFKKsWyUxPWpjzGft9VMEFVS2xVoTdG5z6Zp9Vy4rM
+         b6ILmuokWiYQgmS+khyGGPd+sUyrPe1VVNDnC5Ab2FPnErDYhXnQDA+B9S+6i90FQO33
+         oCNg==
+X-Gm-Message-State: AOAM532Ufj8yI2BHMzZn0jc7kCR+BrO/ZQjkvu+CascjQ2yvLjaG3Vqu
+        3Cs0JnfOgZBk/6qWhRuv9C5J9g==
+X-Google-Smtp-Source: ABdhPJy8PEtvWN7Fnc/dZLi103kGO4Kl8FGoiU5X/LnC1jpeAnTReDgOlI4ZeowHVxcUEYalPuE0Ww==
+X-Received: by 2002:a17:906:cc8d:b0:6c9:6df1:7c55 with SMTP id oq13-20020a170906cc8d00b006c96df17c55mr6979896ejb.317.1645201248540;
+        Fri, 18 Feb 2022 08:20:48 -0800 (PST)
+Received: from [192.168.1.8] ([149.86.66.54])
+        by smtp.gmail.com with ESMTPSA id j1sm2362126ejx.123.2022.02.18.08.20.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 08:20:47 -0800 (PST)
+Message-ID: <3bf2bd49-9f2d-a2df-5536-bc0dde70a83b@isovalent.com>
+Date:   Fri, 18 Feb 2022 16:20:46 +0000
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_06,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 suspectscore=0 priorityscore=1501 impostorscore=0
- spamscore=0 adultscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
- clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180104
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH bpf-next v7 4/7] bpftool: Implement "gen min_core_btf"
+ logic
+Content-Language: en-GB
+To:     =?UTF-8?Q?Mauricio_V=c3=a1squez?= <mauricio@kinvolk.io>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
+References: <20220215225856.671072-1-mauricio@kinvolk.io>
+ <20220215225856.671072-5-mauricio@kinvolk.io>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220215225856.671072-5-mauricio@kinvolk.io>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/02/2022 08:33, dust.li wrote:
-> On Thu, Feb 17, 2022 at 07:15:54PM +0100, Hendrik Brueckner wrote:
->> On Thu, Feb 17, 2022 at 09:22:00PM +0800, dust.li wrote:
->>> On Thu, Feb 17, 2022 at 10:37:28AM +0100, Stefan Raspl wrote:
->>>> On 2/16/22 16:27, dust.li wrote:
->>>>> On Wed, Feb 16, 2022 at 02:58:32PM +0100, Stefan Raspl wrote:
->>>>>> On 2/16/22 04:49, Dust Li wrote:
->>>>>>
->>>
->>>> Now we understand that cloud workloads are a bit different, and the desire to
->>>> be able to modify the environment of a container while leaving the container
->>>> image unmodified is understandable. But then again, enabling the base image
->>>> would be the cloud way to address this. The question to us is: How do other
->>>> parts of the kernel address this?
->>>
->>> I'm not familiar with K8S, but from one of my colleague who has worked
->>> in that area tells me for resources like CPU/MEM and configurations
->>> like sysctl, can be set using K8S configuration:
->>> https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/
->>
->> For K8s, this involves container engines like cri-o, containerd, podman,
->> and others towards the runtimes like runc.  To ensure they operate together,
->> specifications by the Open Container Initiative (OCI) at
->> https://opencontainers.org/release-notices/overview/
->>
->> For container/pod deployments, there is especially the Container Runtime
->> Interface (CRI) that defines the interface, e.g., of K8s to cri-o etc.
->>
->> CRI includes support for (namespaced) sysctl's:
->> https://github.com/opencontainers/runtime-spec/releases/tag/v1.0.2
->>
->> In essence, the CRI spec would allow users to specify/control a specific
->> runtime for the container in a declarative way w/o modifying the (base)
->> container images.
+2022-02-15 17:58 UTC-0500 ~ Mauricio Vásquez <mauricio@kinvolk.io>
+> This commit implements the logic for the gen min_core_btf command.
+> Specifically, it implements the following functions:
 > 
-> Thanks a lot for your kind explanation !
+> - minimize_btf(): receives the path of a source and destination BTF
+> files and a list of BPF objects. This function records the relocations
+> for all objects and then generates the BTF file by calling
+> btfgen_get_btf() (implemented in the following commit).
 > 
-> After a quick look at the OCI spec, I saw the support for file based
-> configuration (Including sysfs/procfs etc.). And unfortunately, no
-> netlink support.
+> - btfgen_record_obj(): loads the BTF and BTF.ext sections of the BPF
+> objects and loops through all CO-RE relocations. It uses
+> bpf_core_calc_relo_insn() from libbpf and passes the target spec to
+> btfgen_record_reloc(), that calls one of the following functions
+> depending on the relocation kind.
 > 
+> - btfgen_record_field_relo(): uses the target specification to mark all
+> the types that are involved in a field-based CO-RE relocation. In this
+> case types resolved and marked recursively using btfgen_mark_type().
+> Only the struct and union members (and their types) involved in the
+> relocation are marked to optimize the size of the generated BTF file.
 > 
-> Hi Karsten & Stefan:
-> Back to the patch itself, do you think I need to add the control switch
-> now ? Or just leave the switch and fix other issues first ?
+> - btfgen_record_type_relo(): marks the types involved in a type-based
+> CO-RE relocation. In this case no members for the struct and union types
+> are marked as libbpf doesn't use them while performing this kind of
+> relocation. Pointed types are marked as they are used by libbpf in this
+> case.
+> 
+> - btfgen_record_enumval_relo(): marks the whole enum type for enum-based
+> relocations.
+> 
+> Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
+> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> ---
+>  tools/bpf/bpftool/Makefile |   8 +-
+>  tools/bpf/bpftool/gen.c    | 455 ++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 457 insertions(+), 6 deletions(-)
+> 
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index 94b2c2f4ad43..a137db96bd56 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -34,10 +34,10 @@ LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)/include
+>  LIBBPF_BOOTSTRAP_HDRS_DIR := $(LIBBPF_BOOTSTRAP_INCLUDE)/bpf
+>  LIBBPF_BOOTSTRAP := $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
+>  
+> -# We need to copy hashmap.h and nlattr.h which is not otherwise exported by
+> -# libbpf, but still required by bpftool.
+> -LIBBPF_INTERNAL_HDRS := $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nlattr.h)
+> -LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hashmap.h)
+> +# We need to copy hashmap.h, nlattr.h, relo_core.h and libbpf_internal.h
+> +# which are not otherwise exported by libbpf, but still required by bpftool.
+> +LIBBPF_INTERNAL_HDRS := $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nlattr.h relo_core.h libbpf_internal.h)
+> +LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hashmap.h relo_core.h libbpf_internal.h)
+>  
+>  $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT) $(LIBBPF_BOOTSTRAP_OUTPUT) $(LIBBPF_HDRS_DIR) $(LIBBPF_BOOTSTRAP_HDRS_DIR):
+>  	$(QUIET_MKDIR)mkdir -p $@
+> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> index 8e066c747691..806001020841 100644
+> --- a/tools/bpf/bpftool/gen.c
+> +++ b/tools/bpf/bpftool/gen.c
+> @@ -14,6 +14,7 @@
+>  #include <unistd.h>
+>  #include <bpf/bpf.h>
+>  #include <bpf/libbpf.h>
+> +#include <bpf/libbpf_internal.h>
+>  #include <sys/types.h>
+>  #include <sys/stat.h>
+>  #include <sys/mman.h>
 
-Hi, looks like we need more time to evaluate possibilities, so if you have 
-additional topics on your desk move on and delay this one.
-Right now for me it looks like there is no way to use netlink for container runtime
-configuration, which is a pity.
-We continue our discussions about this in the team, and also here on the list.
+Mauricio, did you try this patch on a system with an old Glibc (< 2.26)
+by any chance? Haven't tried yet but I expect this might break bpftool's
+build when COMPAT_NEED_REALLOCARRAY is set, because in that case gen.c
+pulls <bpf/libbpf_internal.h>, and then <tools/libc_compat.h> (through
+main.h). And libc_compat.h defines reallocarray(), which
+libbpf_internal.h poisons with a GCC pragma.
 
-Thank you!
+At least this is what I observe when trying to add your patches to the
+kernel mirror, where reallocarray() is redefined unconditionally. I'm
+trying to figure out if we should fix this mirror-side, or kernel-side.
+(I suppose we still need this compatibility layer, Ubuntu 16.04 seems to
+use Glibc 2.23).
 
-
+Quentin
