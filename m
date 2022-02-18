@@ -2,200 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D12D64BC0A4
-	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 20:53:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2E24BC0F4
+	for <lists+netdev@lfdr.de>; Fri, 18 Feb 2022 21:05:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238299AbiBRTxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 14:53:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57202 "EHLO
+        id S236992AbiBRUFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 15:05:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238232AbiBRTxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 14:53:14 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8355C291FA5
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 11:52:34 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id p14so17286429ejf.11
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 11:52:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=17urnpLmQfmhlUpeq0QWYP/sfdh5h7q2Dcro2Fku26c=;
-        b=KpS6TdcjzPETvO27rn4SJn/BV6xdyjqRwNEmWA+7f9Tov6uvLROdJsltmwJ4pu4FY4
-         CUmW/ZNwM2BGrj70DqDx0cp0QMLRm5iyLfL3uOZyIf1YyKp+TCNgake+h6r/IFRfX9hQ
-         qUujekE7d4SqffebioWK9uU+ZNBRvJ64IygSZdOrv43v8CCnjWALZ8kamB/E7ivICktb
-         aad+Ch+xdLV+1IODdgR9bGj7e5gU+Xr7GBCm+bnmPt7zsTTPtQngQuRsKLYIi0BoZhNE
-         A9TPv2B5vMUQIYgrWLbU7pIhap1oKkaY7JC3ZhgkXCE84G8pZ9puQlOLNQOZUXJa9Wjy
-         xVkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=17urnpLmQfmhlUpeq0QWYP/sfdh5h7q2Dcro2Fku26c=;
-        b=7+YoQo3BdLNx/GCPMlEcLn8PtRI/qwJmUUwiViIj6zNMft3rhVMEwyEClUdvXmTPwd
-         frt/4//nLttQZ7cj4frHaPd/GMZmxEN621hkXYVE9aG6W/gkjOcIBmBt2Wgpv1yQufjG
-         F8MgIILUGgqAaz2OP3xh4qFzBs+ihEBIo+Wfnq1GqrhMVbX1yMcUsoW7ISbMJKvKzNGr
-         2XVgNp3AXNdyYmMQoKYifX8MPduSQ6BjPoF5kCrejspD/jz2d+8EqY90H4fOhQbGa5Vl
-         Dmctrdt52tSL0+Mh35CO4jeQUSCw5xSDFbmEb2jV06+hq+KgbmKonzANYf1v2sIk6nxu
-         Kh9A==
-X-Gm-Message-State: AOAM533qAzkOevleRw4KKu2D07qXv8EAso1KLN8axAVJ2utfqKIqulky
-        Qj027WnKx1m5Yga8ntUgP17t6yOl4Rjw0gij
-X-Google-Smtp-Source: ABdhPJwIYrZYou6Vsov+PjdoFYDqmGG597UJ7pnSn0Jy5ppWhV8ZJKLb+H5YlAhmzpXSoHF5v9UJTA==
-X-Received: by 2002:a17:907:7663:b0:6ce:fdd:762d with SMTP id kk3-20020a170907766300b006ce0fdd762dmr7914701ejc.750.1645213952901;
-        Fri, 18 Feb 2022 11:52:32 -0800 (PST)
-Received: from [192.168.1.8] ([149.86.70.182])
-        by smtp.gmail.com with ESMTPSA id s30sm2552088ejm.158.2022.02.18.11.52.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Feb 2022 11:52:32 -0800 (PST)
-Message-ID: <17156a43-7f2b-f284-46d5-d0b3886c07a2@isovalent.com>
-Date:   Fri, 18 Feb 2022 19:52:31 +0000
+        with ESMTP id S230523AbiBRUFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 15:05:23 -0500
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2046.outbound.protection.outlook.com [40.107.101.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FC62402D7
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 12:05:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iaXelGzkPo1VdON3Oj6a62EqcjDf3n2LqZTZJ7+2M8CXt9fP0fHABnNjvlt3omNP09AEk1aPR5Nu87y/KT615B9b95hqSmw45iDJCbi/Y3TguV1GorXUwKQAQC13gtzLIr0UXd/W0XtwvIyKba6FYgIzTtnKzQ+HSMMQKwjue9EJmR2sUxL9SMrbsu3e9KpYZU4pUfE6T7ZtwEthAVtq9rXKnOnq4/oPqE865JG8SLa0bcE16S8Rpqc6/iCWqV/9URW0n60ymSQ7/oCc44r0hs3VaSYX2EpPemog739sz+Pl9LvoPbEo+UWRk/lamZXXXuKl0YfSI30dR48+mGgFhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UrjaxW3zF4ThODs76QeauTDxm/NLkoto1zfRIEmjDTM=;
+ b=DUQ8g6Q2/l2atjjjM8u8SkybSbZt30tgP4rZekb/LkTF210UoopPRAh7jilrVx4cNycmL0kniBu86ZTnV9F/GB82I6vhAMSKxBhwz9rVsF4G9bAhwCG5qGymiFu1CZxKIE5dhCnGeX+wOmkc71mbWwJdekBQBKzSp6l863H/kIbU4iK5IHKUVIKvsTPqNnoLgSXtMpjhaJCEF86VOjO/4rxzSYFpME1ZSb3vXUEAxwhFFx76VdIsbvLzMzRkoEFqDK2SFo8iycemUw+E+0jr9OQhrD4tKGzdS0G4CItyyCxYb1hwArQIQXnb1kQ5AsHOIiIIyNcVkkzmDcLIaL76Mw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UrjaxW3zF4ThODs76QeauTDxm/NLkoto1zfRIEmjDTM=;
+ b=4JGmtogvczTvlQLXGj0lFDyzBE4EfmymHwXFznjyDIJDDpg6ucAUFN/R8bpyZm8aSaOad45AnpYhlKoI7YbJFI6wmf5sYPqY7nGaKO8Db2v/rZX+yBvS3jfRDDjqjoWvDqBPPsV1q9AWereH2d5LcsHygeU40Yr/M2JWFsr2rcM=
+Received: from BN0PR04CA0046.namprd04.prod.outlook.com (2603:10b6:408:e8::21)
+ by BYAPR12MB2789.namprd12.prod.outlook.com (2603:10b6:a03:72::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Fri, 18 Feb
+ 2022 20:05:01 +0000
+Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e8:cafe::c1) by BN0PR04CA0046.outlook.office365.com
+ (2603:10b6:408:e8::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.19 via Frontend
+ Transport; Fri, 18 Feb 2022 20:05:01 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4995.15 via Frontend Transport; Fri, 18 Feb 2022 20:05:01 +0000
+Received: from tlendack-t1.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 18 Feb
+ 2022 14:04:59 -0600
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+To:     <netdev@vger.kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Shyam-sundar S-k <Shyam-sundar.S-k@amd.com>,
+        Anthony Pighin <anthony.pighin@nokia.com>,
+        "Rasmus Villemoes" <linux@rasmusvillemoes.dk>
+Subject: [PATCH net] net: amd-xgbe: Replace kasprintf() with snprintf() for debugfs name
+Date:   Fri, 18 Feb 2022 14:04:46 -0600
+Message-ID: <b21d35da33357b20ece39c7892f57084b94c017a.1645214686.git.thomas.lendacky@amd.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH bpf-next v7 4/7] bpftool: Implement "gen min_core_btf"
- logic
-Content-Language: en-GB
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        =?UTF-8?Q?Mauricio_V=c3=a1squez_Bernal?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-References: <20220215225856.671072-1-mauricio@kinvolk.io>
- <20220215225856.671072-5-mauricio@kinvolk.io>
- <3bf2bd49-9f2d-a2df-5536-bc0dde70a83b@isovalent.com>
- <CAHap4zu255wb+e6_rY9SwWtu+GiedZjnSitOCWksN98jtBu=BQ@mail.gmail.com>
- <CAEf4BzaE5wj1Tf=GAMVpK-YXz-BRyvosgeabyYzswmQ8n=+Vaw@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <CAEf4BzaE5wj1Tf=GAMVpK-YXz-BRyvosgeabyYzswmQ8n=+Vaw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: be2cef23-283b-4473-a9e1-08d9f319f221
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2789:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2789057E18BB878316DBB493EC379@BYAPR12MB2789.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QFvqTkgmJohzZ0YILcOqecFB5beubltX0Rs9xTPhUIBiyE8Kg++cqxYIZioq0N3/uEQk5yM9NyykkXZ82RjlO0Cwzozm/IC5UffApOAB8P0z8mJBP+8acEHnf3rTdPQe1YRGcd1Ss4Ug1HE+XfuSbG6D2WEuWuJWl9IQvUj2yRKUy1pHvTnR2ZLMRLXR9nDlz+YHqgKjVlzkQTKVmBp9iCm6JLgYUF4JcyxCo+/rD/UYg5Q78U7phCA4YFBhkjWvBdQklmNmYldsyi43Ae7zhi5FjmzjpENWgWbS5opbJkj/Wzc6HGjC0c7thy15BWOQuSsoou5CpD+BUFTk7uB9OHFfMtzYxVlw7tPhXqHlXC2LmrAyrer5gBl9TdMcCB0Ll3AM3jzSd4UaTU3zEKZYFbXRQHmUtyg7u3PGuav/2H3ViinY/Kczh9Zn5WbvAguvMiQm4V3dIgHDWMUgAHb2HMgvbvrR07dtjpJkc/1kmOTBxLy/t3fy/u2GpvOoaECugvZIMUfeWr2VbjVGPSy11xqeVSbOGHUAxtkmwqJ2EMNxj8J4PHaJJnPjTRvd2FoKsXrycMg5C+Bji3q59zNwj9CZAjdU1AsEK94dd6bl0JIGI4FdQBtuKPGo44E9j0lAol1xr8EuFuArsHmIgumq7iK3QIPzeeYlCC2Spxu3/aan7e61tr1KJqfi4bvFLglLYVMM43OCrJBnQ86vfkT7Ww==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(86362001)(5660300002)(508600001)(54906003)(8936002)(70586007)(82310400004)(356005)(70206006)(81166007)(4326008)(8676002)(316002)(6916009)(47076005)(26005)(336012)(186003)(40460700003)(16526019)(83380400001)(426003)(2616005)(7696005)(6666004)(36756003)(2906002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 20:05:01.1035
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: be2cef23-283b-4473-a9e1-08d9f319f221
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2789
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-02-18 11:48 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> On Fri, Feb 18, 2022 at 11:44 AM Mauricio Vásquez Bernal
-> <mauricio@kinvolk.io> wrote:
->>
->> On Fri, Feb 18, 2022 at 11:20 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>>
->>> 2022-02-15 17:58 UTC-0500 ~ Mauricio Vásquez <mauricio@kinvolk.io>
->>>> This commit implements the logic for the gen min_core_btf command.
->>>> Specifically, it implements the following functions:
->>>>
->>>> - minimize_btf(): receives the path of a source and destination BTF
->>>> files and a list of BPF objects. This function records the relocations
->>>> for all objects and then generates the BTF file by calling
->>>> btfgen_get_btf() (implemented in the following commit).
->>>>
->>>> - btfgen_record_obj(): loads the BTF and BTF.ext sections of the BPF
->>>> objects and loops through all CO-RE relocations. It uses
->>>> bpf_core_calc_relo_insn() from libbpf and passes the target spec to
->>>> btfgen_record_reloc(), that calls one of the following functions
->>>> depending on the relocation kind.
->>>>
->>>> - btfgen_record_field_relo(): uses the target specification to mark all
->>>> the types that are involved in a field-based CO-RE relocation. In this
->>>> case types resolved and marked recursively using btfgen_mark_type().
->>>> Only the struct and union members (and their types) involved in the
->>>> relocation are marked to optimize the size of the generated BTF file.
->>>>
->>>> - btfgen_record_type_relo(): marks the types involved in a type-based
->>>> CO-RE relocation. In this case no members for the struct and union types
->>>> are marked as libbpf doesn't use them while performing this kind of
->>>> relocation. Pointed types are marked as they are used by libbpf in this
->>>> case.
->>>>
->>>> - btfgen_record_enumval_relo(): marks the whole enum type for enum-based
->>>> relocations.
->>>>
->>>> Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
->>>> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
->>>> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
->>>> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
->>>> ---
->>>>  tools/bpf/bpftool/Makefile |   8 +-
->>>>  tools/bpf/bpftool/gen.c    | 455 ++++++++++++++++++++++++++++++++++++-
->>>>  2 files changed, 457 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
->>>> index 94b2c2f4ad43..a137db96bd56 100644
->>>> --- a/tools/bpf/bpftool/Makefile
->>>> +++ b/tools/bpf/bpftool/Makefile
->>>> @@ -34,10 +34,10 @@ LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)/include
->>>>  LIBBPF_BOOTSTRAP_HDRS_DIR := $(LIBBPF_BOOTSTRAP_INCLUDE)/bpf
->>>>  LIBBPF_BOOTSTRAP := $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
->>>>
->>>> -# We need to copy hashmap.h and nlattr.h which is not otherwise exported by
->>>> -# libbpf, but still required by bpftool.
->>>> -LIBBPF_INTERNAL_HDRS := $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nlattr.h)
->>>> -LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hashmap.h)
->>>> +# We need to copy hashmap.h, nlattr.h, relo_core.h and libbpf_internal.h
->>>> +# which are not otherwise exported by libbpf, but still required by bpftool.
->>>> +LIBBPF_INTERNAL_HDRS := $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nlattr.h relo_core.h libbpf_internal.h)
->>>> +LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hashmap.h relo_core.h libbpf_internal.h)
->>>>
->>>>  $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT) $(LIBBPF_BOOTSTRAP_OUTPUT) $(LIBBPF_HDRS_DIR) $(LIBBPF_BOOTSTRAP_HDRS_DIR):
->>>>       $(QUIET_MKDIR)mkdir -p $@
->>>> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
->>>> index 8e066c747691..806001020841 100644
->>>> --- a/tools/bpf/bpftool/gen.c
->>>> +++ b/tools/bpf/bpftool/gen.c
->>>> @@ -14,6 +14,7 @@
->>>>  #include <unistd.h>
->>>>  #include <bpf/bpf.h>
->>>>  #include <bpf/libbpf.h>
->>>> +#include <bpf/libbpf_internal.h>
->>>>  #include <sys/types.h>
->>>>  #include <sys/stat.h>
->>>>  #include <sys/mman.h>
->>>
->>> Mauricio, did you try this patch on a system with an old Glibc (< 2.26)
->>> by any chance? Haven't tried yet but I expect this might break bpftool's
->>> build when COMPAT_NEED_REALLOCARRAY is set, because in that case gen.c
->>> pulls <bpf/libbpf_internal.h>, and then <tools/libc_compat.h> (through
->>> main.h). And libc_compat.h defines reallocarray(), which
->>> libbpf_internal.h poisons with a GCC pragma.
->>>
->>
->> I just tried on Ubuntu 16.04 with Glibc 2.23 and got the error you mentioned.
+It was reported that using kasprintf() produced a kernel warning as the
+network interface name was being changed by udev rules at the same time
+that the debugfs entry for the device was being created.
 
-Thanks a lot for testing!
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 2219 Comm: qemu-event Tainted: G           O      5.4.134 #1
+Hardware name: <redacted>
+Call Trace:
+  dump_stack+0x50/0x63
+  panic+0x102/0x2d2
+  ? kvasprintf+0xb5/0xc0
+  __warn.cold+0x20/0x20
+  ? kvasprintf+0xb5/0xc0
+  report_bug+0xcc/0x100
+  do_error_trap+0xa3/0xc0
+  ? kvasprintf+0xb5/0xc0
+  do_invalid_op+0x37/0x40
+  ? kvasprintf+0xb5/0xc0
+  invalid_op+0x28/0x30
+RIP: 0010:kvasprintf+0xb5/0xc0
+Code: 28 00 00 00 75 28 48 83 c4 20 4c 89 e8 5d 41 5c 41 5d 41 5e 41 5f c3 4c 89 f1 89 c2 89 ee 48 c7 c7 d8 1e 0c a8 e8 b0 a5 3a 00 <0f> 0b eb c8 e8 92 cc cd ff 66 90 41 55 41 89 fd 41 54 49 89 d4 55
+RSP: 0018:ffffa79f80e37c40 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: ffff9b71b633c7c0 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffffa8986566 RDI: 00000000ffffffff
+RBP: 000000000000000d R08: 0000004aafbb5f98 R09: 0000000000000046
+R10: ffffffffa8986900 R11: 00000000a8986553 R12: ffffa79f80e37c90
+R13: ffff9b71f0dcdba0 R14: ffffffffc03c0e1a R15: 000000000000000e
+  kasprintf+0x4e/0x70
+  ? timecounter_init+0x20/0x50
+  xgbe_debugfs_init+0x39/0x200 [amd_xgbe]
+  xgbe_config_netdev+0x390/0x450 [amd_xgbe]
+  xgbe_pci_probe+0x374/0x620 [amd_xgbe]
+  local_pci_probe+0x26/0x50
+  pci_device_probe+0x107/0x1a0
+  really_probe+0x147/0x3b0
+  ? driver_allows_async_probing+0x50/0x50
+  bus_for_each_drv+0x7e/0xc0
+  __device_attach+0xd6/0x130
+  bus_rescan_devices_helper+0x35/0x80
+  drivers_probe_store+0x31/0x60
+  kernfs_fop_write+0xce/0x1b0
+  vfs_write+0xb6/0x1a0
+  ksys_write+0x5f/0xe0
+  do_syscall_64+0x55/0x1c0
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7fa72e73bd7f
+Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 b9 7b f9 ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 2d 44 89 c7 48 89 44 24 08 e8 ec 7b f9 ff 48
+RSP: 002b:00007fa6de7fba10 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 000000000000000c RCX: 00007fa72e73bd7f
+RDX: 000000000000000c RSI: 00007fa72803cf60 RDI: 000000000000001c
+RBP: 00007fa72803cf60 R08: 0000000000000000 R09: 0000000000000003
+R10: 0000000000000000 R11: 0000000000000293 R12: 000000000000001c
+R13: 000000000000001c R14: 0000000000000000 R15: 00007fa72ef0a9e8
+Kernel Offset: 0x26200000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
 
->>
->>> At least this is what I observe when trying to add your patches to the
->>> kernel mirror, where reallocarray() is redefined unconditionally. I'm
->>> trying to figure out if we should fix this mirror-side, or kernel-side.
->>> (I suppose we still need this compatibility layer, Ubuntu 16.04 seems to
->>> use Glibc 2.23).
->>>
->>
->> I suppose this should be fixed kernel-side, I don't think it's a
->> particular problem with the mirror. What about only including
->> `<tools/libc_compat.h>` in the places where reallocarray() is used:
->> prog.c and xlated_dumper.c?
-> 
-> 
-> libbpf abandoned feature probing for this and just uses its own
-> libbpf_reallocarray() implementation. Simple and reliable. Detecting
-> reallocarray() is PITA and isn't worth it.
+Replace the use of kasprintf() with snprintf() using a local buffer to
+prevent this situation. It is still possible for the device name to be
+changed while the debugfs entry is being created, but that will be
+handled by xgbe_debugfs_rename() function.
 
-We can do the same for bpftool, its mirror already does it [0]. We could
-have this in bpftool's sources and use "bpftool_reallocarray()" instead
-of "reallocarray()", and get rid of this probing. Mauricio are you
-willing to take this?
+Fixes: c5aa9e3b8156 ("amd-xgbe: Initial AMD 10GbE platform driver")
+Reported-by: Anthony Pighin <anthony.pighin@nokia.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+---
 
-[0]
-https://github.com/libbpf/bpftool/blob/master/include/tools/libc_compat.h#L25
+Please queue to stable:
+- As the warning is only produced at v4.5 and above, no need to go back
+  further than that.
+- This patch will generate conflicts prior to the v5.4 stable tree that
+  should be easy to resolve. But, if not, I'll take care of it when I
+  see the emails.
+---
+ drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c | 25 ++++++++++----------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-Quentin
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c b/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c
+index b0a6c96b6ef4..a6537f24dd79 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c
+@@ -121,6 +121,8 @@
+ #include "xgbe.h"
+ #include "xgbe-common.h"
+ 
++#define XGBE_DIR_PREFIX	"amd-xgbe-"
++
+ static ssize_t xgbe_common_read(char __user *buffer, size_t count,
+ 				loff_t *ppos, unsigned int value)
+ {
+@@ -438,15 +440,17 @@ static const struct file_operations xi2c_reg_value_fops = {
+ 
+ void xgbe_debugfs_init(struct xgbe_prv_data *pdata)
+ {
+-	char *buf;
++	char buf[sizeof(XGBE_DIR_PREFIX) + sizeof(pdata->netdev->name)];
++	int ret;
+ 
+ 	/* Set defaults */
+ 	pdata->debugfs_xgmac_reg = 0;
+ 	pdata->debugfs_xpcs_mmd = 1;
+ 	pdata->debugfs_xpcs_reg = 0;
+ 
+-	buf = kasprintf(GFP_KERNEL, "amd-xgbe-%s", pdata->netdev->name);
+-	if (!buf)
++	ret = snprintf(buf, sizeof(buf), "%s%s", XGBE_DIR_PREFIX,
++		       pdata->netdev->name);
++	if (ret >= sizeof(buf))
+ 		return;
+ 
+ 	pdata->xgbe_debugfs = debugfs_create_dir(buf, NULL);
+@@ -493,8 +497,6 @@ void xgbe_debugfs_init(struct xgbe_prv_data *pdata)
+ 				    pdata->xgbe_debugfs,
+ 				    &pdata->debugfs_an_cdr_track_early);
+ 	}
+-
+-	kfree(buf);
+ }
+ 
+ void xgbe_debugfs_exit(struct xgbe_prv_data *pdata)
+@@ -505,21 +507,20 @@ void xgbe_debugfs_exit(struct xgbe_prv_data *pdata)
+ 
+ void xgbe_debugfs_rename(struct xgbe_prv_data *pdata)
+ {
+-	char *buf;
++	char buf[sizeof(XGBE_DIR_PREFIX) + sizeof(pdata->netdev->name)];
++	int ret;
+ 
+ 	if (!pdata->xgbe_debugfs)
+ 		return;
+ 
+-	buf = kasprintf(GFP_KERNEL, "amd-xgbe-%s", pdata->netdev->name);
+-	if (!buf)
++	ret = snprintf(buf, sizeof(buf), "%s%s", XGBE_DIR_PREFIX,
++		       pdata->netdev->name);
++	if (ret >= sizeof(buf))
+ 		return;
+ 
+ 	if (!strcmp(pdata->xgbe_debugfs->d_name.name, buf))
+-		goto out;
++		return;
+ 
+ 	debugfs_rename(pdata->xgbe_debugfs->d_parent, pdata->xgbe_debugfs,
+ 		       pdata->xgbe_debugfs->d_parent, buf);
+-
+-out:
+-	kfree(buf);
+ }
+-- 
+2.34.1
+
