@@ -2,125 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22BC94BC86E
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 13:53:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BCD14BC8BD
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 14:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242258AbiBSMwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 07:52:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57712 "EHLO
+        id S241855AbiBSNuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 08:50:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233494AbiBSMwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 07:52:01 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA7224587;
-        Sat, 19 Feb 2022 04:51:43 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id g1so4629171pfv.1;
-        Sat, 19 Feb 2022 04:51:43 -0800 (PST)
+        with ESMTP id S231447AbiBSNuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 08:50:39 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F2E1ADA6
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 05:50:20 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id o24so19172924wro.3
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 05:50:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=IMJgWx7dxr7dZx5sJ73qfcNpld1JI4tT0p225zF6cG0=;
-        b=dU/T2yqk+TgCmfiFg32eSwNa84h7ucHYxp5k0GjToJPUGg8v7ZihB1stJ++D67aQ3W
-         awd9XD+tPTro0CV5GOLHn0rUksImEBCRzv9NXCWW2tqzKuu1MQF7z6B6ZLcDmtBYzdWo
-         oUMVr57B7QWpLDosa6OWHGxNRc48/OoPNT0v9oG5u6cmzq9SkNzdadnRivYFHHOjb2rA
-         Jr0eyhUnHBkDjshM6OCuEk+YezSUQN8X+5oho8uBnZjDAPO38uIkHrG/gsGzswnRjegK
-         VIcV5EF5vGdYs7CopG20Pc9MYDG/GHtXQXF1tQsbPq4EltMLXC3nOHshSjY1ItkN0xrc
-         6A+A==
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=vOcw8vTX8u6yJ3UCIoAsM9Ua7JDOaic0XWawreOhs6g=;
+        b=Rhw1KBaMmO6xdD+EZlarzq3USLlZ1ZLU5DT6414wZe6im0L05XgYn+4/nu6ekB8GG6
+         lQe3VkM8iOGfi2uRrxD8EpIW6EKBYBOk1TQIOokBgV25snI+cadHl7aAg25+72+i/sHZ
+         6AJFuvuRW+qJ/VMwSNfh3kJv+yFEns6JttY9pfIkF0lPjjZzcpGRMBSeWiLQ2HKDqhJ1
+         LgSaE+b+kKctzUXr70wtZWRW8pUgYA7OyXqqhFoUuC7RO0fiHIWDyuSb1rxroG+/nCL+
+         1kVUECKmVxHxTyX6Nsteqxl/7ZFFeDnTAaWxWGHsJcb+1XbUIUi2vR7SYgxOBJXPfQm2
+         1vrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=IMJgWx7dxr7dZx5sJ73qfcNpld1JI4tT0p225zF6cG0=;
-        b=mbkfqW03MeY0t+wpbvudVW6BXzRawQcGkjWjLbA5RaJCNAL/Vl+jo6vwgNv6bdPsWl
-         E2SXUqnfcLuIN/D/g+sOi0PKGXRp4Q+Nmlqd/lRt6uYEqvLw+n0agWQCY9iuE/nmW7Dv
-         R4QZYXtBZHC4RPYypv2f4mOSak3vwFEZJYQmyz0j8D20fRiyYV5OjaLvR6ku1BZuC0FU
-         vSEkdF+vuiIWgyENUi5muOvpzLwo69J4fvzCh7IVxaXm4rmttB6jldFR6cZ12qQPkWMX
-         zC05LUCifQ7PC1AdmjNAS9TqYslYSXQZyLadAfeKjxWsk/QzbjIauIJLvi6T0o5yKvC2
-         Db9w==
-X-Gm-Message-State: AOAM532YOhXKe5DrWj64OSSzZnSS+RoTJgvDhRIpprdUtnS47s5x279s
-        KKWp9EKfSg35nbj0tGd3pPA=
-X-Google-Smtp-Source: ABdhPJwO8xMzwzBLV7r4jxRlT9diEn26HFgySlHax5JoawxF3lfofBhUPh7s2vAQrZR/TVeGrJVCPA==
-X-Received: by 2002:a05:6a00:b41:b0:4e1:3a1:50a7 with SMTP id p1-20020a056a000b4100b004e103a150a7mr12427960pfo.30.1645275102690;
-        Sat, 19 Feb 2022 04:51:42 -0800 (PST)
-Received: from [192.168.99.7] (i220-99-138-239.s42.a013.ap.plala.or.jp. [220.99.138.239])
-        by smtp.googlemail.com with ESMTPSA id v20sm2181201pju.9.2022.02.19.04.51.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Feb 2022 04:51:42 -0800 (PST)
-Message-ID: <24910a58-5d23-a97c-650f-7b53030dd40d@gmail.com>
-Date:   Sat, 19 Feb 2022 21:51:37 +0900
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=vOcw8vTX8u6yJ3UCIoAsM9Ua7JDOaic0XWawreOhs6g=;
+        b=Ly9BNd69dagHZm1/GyvAfllYO3YBN/SBLXt8ArPqkuxTPsoM6CPKot46YYK2TYrTE5
+         NqzkOMtCElSJwTPZV0/Z2yX7TTZNt3haIsOVvX/Epv1nP9nCQxy7QMfJN3TRsg0JTV2Q
+         sG3TQOTaCqxvbb/UpomuEEf9yHc4C97shocZqs0JSV4dS0be5RUXFRkOLh3hvDZGkdt2
+         GJJaZolpVjhz+9WxmagJ4uo8MDvZC+TimcKxgQnRvIc6Id94paQ0nXLjo/tKYqiosYXs
+         u7/hl0UlThelYd6hQcHrJ7kG1M2sZf9z0Sx0HQBHiQbVVWjA8XEPMu96dhQwy4sq6LvK
+         PATA==
+X-Gm-Message-State: AOAM533FKx3oew0Gou2KzT0ZOATcFgCYThMBx53q1qj7DpjFhLzWPF0e
+        GQOj+3dCUja3GXjMYvPLw9k=
+X-Google-Smtp-Source: ABdhPJxbGS478z60EJ9QAoRtwFewZ9CbC8Djk6ThgZXVX155Jm6ZTuvtNcleMQJh2x9+v2bETQ6lVg==
+X-Received: by 2002:adf:ef92:0:b0:1e3:3f68:feb7 with SMTP id d18-20020adfef92000000b001e33f68feb7mr9479203wro.443.1645278619015;
+        Sat, 19 Feb 2022 05:50:19 -0800 (PST)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id p8sm37899896wro.106.2022.02.19.05.50.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 19 Feb 2022 05:50:18 -0800 (PST)
+Date:   Sat, 19 Feb 2022 13:50:16 +0000
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
+Cc:     ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next resend 1/2] sfc: default config to 1
+ channel/core in local NUMA node only
+Message-ID: <20220219135016.qa6fv3pfnrrokw2q@gmail.com>
+Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+References: <20220128151922.1016841-1-ihuguet@redhat.com>
+ <20220216094139.15989-1-ihuguet@redhat.com>
+ <20220216094139.15989-2-ihuguet@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH net-next 1/3] netfilter: flowtable: Support GRE
-Content-Language: en-US
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        Paul Blakey <paulb@nvidia.com>
-References: <20220203115941.3107572-1-toshiaki.makita1@gmail.com>
- <20220203115941.3107572-2-toshiaki.makita1@gmail.com>
- <YgFdS0ak3LIR2waA@salvia> <9d4fd782-896d-4a44-b596-517c84d97d5a@gmail.com>
- <YgOQ6a0itcJjQJqx@salvia> <8309e037-840d-0a7d-26c1-f07fda9ba744@gmail.com>
-In-Reply-To: <8309e037-840d-0a7d-26c1-f07fda9ba744@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220216094139.15989-2-ihuguet@redhat.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ping, Pablo?
+On Wed, Feb 16, 2022 at 10:41:38AM +0100, ��igo Huguet wrote:
+> Handling channels from CPUs in different NUMA node can penalize
+> performance, so better configure only one channel per core in the same
+> NUMA node than the NIC, and not per each core in the system.
+> 
+> Fallback to all other online cores if there are not online CPUs in local
+> NUMA node.
+> 
+> Signed-off-by: ��igo Huguet <ihuguet@redhat.com>
 
-On 2022/02/12 10:54, Toshiaki Makita wrote:
-> On 2022/02/09 19:01, Pablo Neira Ayuso wrote:
->> On Tue, Feb 08, 2022 at 11:30:03PM +0900, Toshiaki Makita wrote:
->>> On 2022/02/08 2:56, Pablo Neira Ayuso wrote:
->>>> On Thu, Feb 03, 2022 at 08:59:39PM +0900, Toshiaki Makita wrote:
->> [...]
->>>>> diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
->>>>> index 889cf88..48e2f58 100644
->>>>> --- a/net/netfilter/nf_flow_table_ip.c
->>>>> +++ b/net/netfilter/nf_flow_table_ip.c
->> [...]
->>>>> @@ -202,15 +209,25 @@ static int nf_flow_tuple_ip(struct sk_buff *skb, const 
->>>>> struct net_device *dev,
->>>>>        if (!pskb_may_pull(skb, thoff + *hdrsize))
->>>>>            return -1;
->>>>> +    if (ipproto == IPPROTO_GRE) {
->>>>
->>>> No ifdef here? Maybe remove these ifdef everywhere?
->>>
->>> I wanted to avoid adding many ifdefs and I expect this to be compiled out
->>> when CONFIG_NF_CT_PROTO_GRE=n as this block is unreachable anyway. It rather
->>> may have been unintuitive though.
->>>
->>> Removing all of these ifdefs will cause inconsistent behavior between
->>> CONFIG_NF_CT_PROTO_GRE=n/y.
->>> When CONFIG_NF_CT_PROTO_GRE=n, conntrack cannot determine GRE version, thus
->>> it will track GREv1 without key infomation, and the flow will be offloaded.
->>> When CONFIG_NF_CT_PROTO_GRE=y, GREv1 will have key information and will not
->>> be offloaded.
->>> I wanted to just refuse offloading of GRE to avoid this inconsistency.
->>> Anyway this kind of inconsistency seems to happen in software conntrack, so
->>> if you'd like to remove ifdefs, I will do.
->>
->> Good point, thanks for explaining. LGTM.
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+
+> ---
+>  drivers/net/ethernet/sfc/efx_channels.c | 50 ++++++++++++++++---------
+>  1 file changed, 33 insertions(+), 17 deletions(-)
 > 
-> Let me confirm, did you agree to keep ifdefs, or delete them?
-> 
-> Toshiaki Makita
+> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+> index ead550ae2709..ec6c2f231e73 100644
+> --- a/drivers/net/ethernet/sfc/efx_channels.c
+> +++ b/drivers/net/ethernet/sfc/efx_channels.c
+> @@ -78,31 +78,48 @@ static const struct efx_channel_type efx_default_channel_type = {
+>   * INTERRUPTS
+>   *************/
+>  
+> -static unsigned int efx_wanted_parallelism(struct efx_nic *efx)
+> +static unsigned int count_online_cores(struct efx_nic *efx, bool local_node)
+>  {
+> -	cpumask_var_t thread_mask;
+> +	cpumask_var_t filter_mask;
+>  	unsigned int count;
+>  	int cpu;
+> +
+> +	if (unlikely(!zalloc_cpumask_var(&filter_mask, GFP_KERNEL))) {
+> +		netif_warn(efx, probe, efx->net_dev,
+> +			   "RSS disabled due to allocation failure\n");
+> +		return 1;
+> +	}
+> +
+> +	cpumask_copy(filter_mask, cpu_online_mask);
+> +	if (local_node) {
+> +		int numa_node = pcibus_to_node(efx->pci_dev->bus);
+> +
+> +		cpumask_and(filter_mask, filter_mask, cpumask_of_node(numa_node));
+> +	}
+> +
+> +	count = 0;
+> +	for_each_cpu(cpu, filter_mask) {
+> +		++count;
+> +		cpumask_andnot(filter_mask, filter_mask, topology_sibling_cpumask(cpu));
+> +	}
+> +
+> +	free_cpumask_var(filter_mask);
+> +
+> +	return count;
+> +}
+> +
+> +static unsigned int efx_wanted_parallelism(struct efx_nic *efx)
+> +{
+> +	unsigned int count;
+>  
+>  	if (rss_cpus) {
+>  		count = rss_cpus;
+>  	} else {
+> -		if (unlikely(!zalloc_cpumask_var(&thread_mask, GFP_KERNEL))) {
+> -			netif_warn(efx, probe, efx->net_dev,
+> -				   "RSS disabled due to allocation failure\n");
+> -			return 1;
+> -		}
+> -
+> -		count = 0;
+> -		for_each_online_cpu(cpu) {
+> -			if (!cpumask_test_cpu(cpu, thread_mask)) {
+> -				++count;
+> -				cpumask_or(thread_mask, thread_mask,
+> -					   topology_sibling_cpumask(cpu));
+> -			}
+> -		}
+> +		count = count_online_cores(efx, true);
+>  
+> -		free_cpumask_var(thread_mask);
+> +		/* If no online CPUs in local node, fallback to any online CPUs */
+> +		if (count == 0)
+> +			count = count_online_cores(efx, false);
+>  	}
+>  
+>  	if (count > EFX_MAX_RX_QUEUES) {
+> -- 
+> 2.31.1
+
+-- 
+Martin Habets <habetsm.xilinx@gmail.com>
