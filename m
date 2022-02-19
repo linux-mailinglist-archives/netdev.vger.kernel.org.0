@@ -2,130 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C95854BC8C0
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 14:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AB454BC8E9
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 15:40:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242348AbiBSNyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 08:54:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54808 "EHLO
+        id S242432AbiBSOkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 09:40:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiBSNyW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 08:54:22 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6517E40A02
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 05:54:03 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id bg21-20020a05600c3c9500b0035283e7a012so8345387wmb.0
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 05:54:03 -0800 (PST)
+        with ESMTP id S238086AbiBSOkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 09:40:15 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DBB70059
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 06:39:56 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id m14so10629533lfu.4
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 06:39:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=bk0wfs5+dLSTg4JL+5IvQNW5I3Kfgya1ULcXP2moi14=;
-        b=JclM+F6LscAPXIruC8QphG7Tsil3yombT10xPl9DXbXloGx9QDETgGB9B9YqaEvAIu
-         U84frB3/WwoW0QG3saiKe3ahspTBZVIVhha6BJ5kzIuulHbtAABvy1JeaG6Zidwa2lrP
-         NWV0od12ka57NXi6q6Nr8hAiQjfK7aLVaKe2fWlk+kzOy981rzK5Nf92FoHrpMkJ386Z
-         ZhGgMHLbzcI7JS26HU6WLRSbXP5dxzF5yepDZ7XHTZMG0bhe3aDs22HfR5NLBt2HWNku
-         bjCIrRGte/USQdhhpl8eWgbljdg8HuaL3aVqiM+TwlTb0Owpx58+mYolKonzTr3Le3nN
-         WmbQ==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version:content-transfer-encoding;
+        bh=rm17YSrotUSdRJ6BYuD2Ka29woyCrwxkkMypL8/+Zws=;
+        b=R+QKwOYklID1n9atX296D0nCwG8KM3fO7//cRNML+HEH+UsM8OG1SL5DkZq0BCAUP8
+         2M61zfE1D2iozuGtCmbcMH3zT3/V9en3m+ZgW1MNavcyBHEFx44+uTw8a8cUS8RmKuWj
+         qr5bhJ5U0e5HeEzivlsJDga0OFc08Pw2T+9yg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to:user-agent;
-        bh=bk0wfs5+dLSTg4JL+5IvQNW5I3Kfgya1ULcXP2moi14=;
-        b=5YUDMdKbU3cBel96Nxgo92UvtmF/H2NWG5tkT6/hk19dlQMca2HQqjqje6tS9d6wu0
-         6WfrIyRek011I1GASqPkCmuxhj1wKikboiHnATpuOhognDIYwBMvZ1+9gRgy7VBxWdQ3
-         lgmm1gdDn4fJMAcR9/GNoIZhun7bQ5m+LELIgqAlP8u9cwqClOcAQSP3HyKXTEFk8r+V
-         fedTIAtDfX50s6KZ0Iy0WNI13sL6fGBObxuMjfCdUqG3+R9PzHHrBZ09kmikblFqz5va
-         BbpXRukO0mfcZngyRpPBD44gmZSpMTBlsFJo0/qb/uvccaxIDn6b8T7B48BpI7x24I2D
-         fmtg==
-X-Gm-Message-State: AOAM531elaqTr6ewT16leQTtqJVLeqSMMKb2pRcG0L0hW+lKaW9sKmrt
-        uQtM+6/AF4j2hDBchhoyOeE=
-X-Google-Smtp-Source: ABdhPJyJnhZ7q4J/EZT+0Llg5QhzUGbD5L4XPgiVdR+Hb5N6IMqc8Hf1AaXv5JjDu5bpqd+xhNooTw==
-X-Received: by 2002:a7b:c201:0:b0:350:de40:c295 with SMTP id x1-20020a7bc201000000b00350de40c295mr14878712wmi.103.1645278842018;
-        Sat, 19 Feb 2022 05:54:02 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id g22sm2377978wmh.12.2022.02.19.05.54.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 19 Feb 2022 05:54:01 -0800 (PST)
-Date:   Sat, 19 Feb 2022 13:53:59 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] sfc: default config to 1 channel/core in
- local NUMA node only
-Message-ID: <20220219135359.ljmfnjo7xqn2h6ze@gmail.com>
-Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>,
-        =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20220128151922.1016841-1-ihuguet@redhat.com>
- <20220128151922.1016841-2-ihuguet@redhat.com>
- <20220128142728.0df3707e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4ouctx9+UP2BKicjk6LJSRcR2M_4yDhHmfDARcDuVj=_XAg@mail.gmail.com>
- <20220207085311.3f6d0d19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4oucCn2ixs8hCizGhvjLPOa90k3vEZEVbuY6nUF-M23B=yw@mail.gmail.com>
- <20220210082249.0e50668b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4ouepk83kxTGd6S3gVyFAjofofwQfxsmhe97vGP+twkoW1g@mail.gmail.com>
- <20220211110100.5580d1ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version:content-transfer-encoding;
+        bh=rm17YSrotUSdRJ6BYuD2Ka29woyCrwxkkMypL8/+Zws=;
+        b=bHVS0EIYHhY10OqoFHHNp5EtedH0ADktIV+o5UFRFKDMZYvJv1zBDCqj5N7KWhb2T/
+         3UA+COG0B+mrmMitupQAlbe4RE/NBaGagg54hL380gmgvREpO5CUZXFdqSaeYplaAliG
+         t4L4I3al/9dAS0R0b/5Ci1KWNQ/5A2YIR9AYxz23Jik9Jo5vcA1ey8MwW0YSKo2wUGOk
+         xPj7/rOXZKetOIks9E7RwS3qVC1NgZqC3T7k1aKaYUMoUook6avruDhTP7w4nC+ijN4+
+         ij6elxxDmn9CpcdLH/KxKChZ4uP7RQd36ISZU3KNftoEyCcNy7ba++JOZVSLQmFkXF2/
+         nXog==
+X-Gm-Message-State: AOAM530wziih0pdRPkSU/DnkuAEo6BDQvw1IsayXbi4lVAn9+lBjGPye
+        GcM5Q9YZL2C/mKfLACPQRwg7qA==
+X-Google-Smtp-Source: ABdhPJymOuYy/bNslmfXFaem6ECNBIlJebCwoNJuz6tFnhk/Bq9TuuigUhywkJVmmTV0bg2FEpbLRw==
+X-Received: by 2002:a05:6512:3e0a:b0:43c:8197:af34 with SMTP id i10-20020a0565123e0a00b0043c8197af34mr8338120lfv.141.1645281594928;
+        Sat, 19 Feb 2022 06:39:54 -0800 (PST)
+Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id r11sm666448ljk.40.2022.02.19.06.39.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Feb 2022 06:39:54 -0800 (PST)
+References: <20220209184333.654927-1-jakub@cloudflare.com>
+ <20220209184333.654927-3-jakub@cloudflare.com>
+ <CAEf4BzaRNLw9_EnaMo5e46CdEkzbJiVU3j9oxnsemBKjNFf3wQ@mail.gmail.com>
+ <e0999e46e5332ca79bdfe4d9b9d7f17e4366a340.camel@linux.ibm.com>
+ <87fsohea8q.fsf@cloudflare.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Cover 4-byte load from
+ remote_port in bpf_sk_lookup
+Date:   Sat, 19 Feb 2022 15:37:01 +0100
+In-reply-to: <87fsohea8q.fsf@cloudflare.com>
+Message-ID: <87wnhq6htx.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220211110100.5580d1ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 11:01:00AM -0800, Jakub Kicinski wrote:
-> On Fri, 11 Feb 2022 12:05:19 +0100 Íñigo Huguet wrote:
-> > Totally. My comment was intended to be more like a question to see why
-> > we should or shouldn't consider NUMA nodes in
-> > netif_get_num_default_rss_queues. But now I understand your point
-> > better.
-> > 
-> > However, would it make sense something like this for
-> > netif_get_num_default_rss_queues, or it would be a bit overkill?
-> > if the system has more than one NUMA node, allocate one queue per
-> > physical core in local NUMA node.
-> > else, allocate physical cores / 2
-> 
-> I don't have a strong opinion on the NUMA question, to be honest.
-> It gets complicated pretty quickly. If there is one NIC we may or 
-> may not want to divide - for pure packet forwarding sure, best if
-> its done on the node with the NIC, but that assumes the other node 
-> is idle or doing something else? How does it not need networking?
-> 
-> If each node has a separate NIC we should definitely divide. But
-> it's impossible to know the NIC count at the netdev level..
-> 
-> So my thinking was let's leave NUMA configurations to manual tuning.
-> If we don't do anything special for NUMA it's less likely someone will
-> tell us we did the wrong thing there :) But feel free to implement what
-> you suggested above.
-> 
-> One thing I'm not sure of is if anyone uses the early AMD chiplet CPUs 
-> in a NUMA-per-chiplet mode? IIRC they had a mode like that. And that'd
-> potentially be problematic if we wanted to divide by number of nodes.
-> Maybe not as much if just dividing by 2.
+On Thu, Feb 17, 2022 at 05:11 PM +01, Jakub Sitnicki wrote:
+> On Thu, Feb 17, 2022 at 03:18 PM +01, Ilya Leoshkevich wrote:
+>> On Wed, 2022-02-16 at 13:44 -0800, Andrii Nakryiko wrote:
+>>> On Wed, Feb 9, 2022 at 10:43 AM Jakub Sitnicki <jakub@cloudflare.com>
+>>> wrote:
+>
+> [...]
+>
+>>> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Load from remote_port field =
+with zero padding (backward
+>>> > compatibility) */
+>>> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 val_u32 =3D *(__u32 *)&ctx->rem=
+ote_port;
+>>> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (val_u32 !=3D bpf_htonl(bpf_=
+ntohs(SRC_PORT) << 16))
+>>> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 return SK_DROP;
+>>> > +
+>>>=20
+>>> Jakub, can you please double check that your patch set doesn't break
+>>> big-endian architectures? I've noticed that our s390x test runner is
+>>> now failing in the sk_lookup selftest. See [0]. Also CC'ing Ilya.
+>>
+>> I agree that this looks like an endianness issue. The new check seems
+>> to make little sense on big-endian to me, so I would just #ifdef it
+>> out.
+>
+> We have a very similar check for a load from context in
+> progs/test_sock_fields.c, which is not causing problems:
+>
+> static __noinline bool sk_dst_port__load_word(struct bpf_sock *sk)
+> {
+> 	__u32 *word =3D (__u32 *)&sk->dst_port;
+> 	return word[0] =3D=3D bpf_htonl(0xcafe0000);
+> }
+>
+> So I think I just messed something up here. Will dig into it.
 
-Since one week Xilinx is part of AMD. In time I'm sure we'll be able
-to investigate AMD specifics.
+Pretty sure the source of the problem here is undefined behaviour. Can't
+legally shift u16 by 16 bits like I did in the `bpf_ntohs(SRC_PORT) <<
+16` expression. Will fix.
 
-Martin
-
-> > Another thing: this patch series appears in patchwork with state
-> > "Changes Requested", but no changes have been requested, actually. Can
-> > the state be changed so it has more visibility to get reviews?
-> 
-> I think resend would be best.
