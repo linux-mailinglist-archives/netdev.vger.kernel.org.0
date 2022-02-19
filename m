@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7475A4BC790
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 11:05:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1CCE4BC785
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 11:05:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241864AbiBSJ5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 04:57:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54244 "EHLO
+        id S241881AbiBSKA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 05:00:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241865AbiBSJ5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 04:57:12 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1FA50E2F;
-        Sat, 19 Feb 2022 01:56:53 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id hw13so20526416ejc.9;
-        Sat, 19 Feb 2022 01:56:52 -0800 (PST)
+        with ESMTP id S231863AbiBSKA6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 05:00:58 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E16A1BFA;
+        Sat, 19 Feb 2022 02:00:38 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id hw13so20541213ejc.9;
+        Sat, 19 Feb 2022 02:00:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=Y7dI/kyXtQ5r7J/1JCw2+N0TiORB8W3a63ggFTECDo4=;
-        b=ZA9bzecfezxlqpIiccEI1K27SXLtnJUjvIEbkbGMkLbgdFc1iGqVU85mJgKlmd27Ss
-         HiozbCv7C4S2YiTIssUYYUrd0zqxKkMq6vZp4b0cc50nSW9sRoZd1xATLPxnA8jK7wLF
-         XY4FIbMD9X2B0LBasRTc3GMGMw8dHw1M9eL8AFSUBju46diRXcQtCFpV7+jUvB5E5N9i
-         1XzzVYYVTWtDWd5gJTGboaBXVKZYhalyZNB8qRLe/rMs4QA5+LG75iWuzuV+EEGww2Ua
-         pYVu/YUJK7gKO3hNz6QCVJP9y7Bybqbrbr980TjsvqkWiuKlhznug6XWMkd5seDCAUXf
-         u5Dw==
+        bh=eyoLzh3GoCjEcko6E6TRX3Q0MN5P8KHlKdLhPGSzjas=;
+        b=nnddJEcHqLBBgfgW6X8nP2hJ+jbcGZujjBROoEt9DQKra/B8N1F3VqRROEaOdXzS1G
+         TnmFhHNUyN5sK64vsVyWIaI5/IWYIRSDlRlHN9lO44vm9/RH205qjm0HVp0WDQBkojHS
+         SxK7lXv9qPuxBw0h8IcrUN22V3RAYtX9gwDEXgiSTbwCKm6Cv+emuMeHX4pjOUOxLO1r
+         SBJvros1knM0ArBLcFpYEDQBMbDEOjZyNBZZLUKg0Dh+l34NitpBj33SGW8TgzKLy4aU
+         BUdMEoxEsM4NVFdyaStDhqIhtOms7cKP4Ae+XytJsnPBGISv5erc6kLo/q/y+6+jwYSL
+         tJVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Y7dI/kyXtQ5r7J/1JCw2+N0TiORB8W3a63ggFTECDo4=;
-        b=sIscs2HmIkRdVEpgqRI2UkGhUPSoDmE/JW6M6F7SLi6sDok6OZ53STYHMCVUQPEqGD
-         Yw7j11Mun2Emsl8Hz+qsHH/lp1wsKXhffUd55FyfwZcuKT4BqQkNXDi8MbYqTkXv5vxx
-         GlFf2FNYM7fWXayyHMlPo5jNCi66aNVAv+rKFpBT1BTphtZxrIN09Y1HW465DpvGtK37
-         V5+2ZZbqnIItMzFG2GWyq4LvNLl/vXokKYtUDiA8zC9HLuO5HG5TbCHbIB+k/1bR1r5a
-         wKP2ctrUF1lLx7NF98Cc7LQuqN6A2ZRHv5ERKUCSteVnb2gDiKrGTnSbiSKpNrLHrSvP
-         pOew==
-X-Gm-Message-State: AOAM530ULlhd2D3I8QTOqqBAp2+3QhZCj0NMX2otuM7/FApZUdEYZu92
-        GFN27TvXWC7NRRk5T7Amp14=
-X-Google-Smtp-Source: ABdhPJw4Qrnkv2nVfARx+UT+8eb2/HWEusUffAfr14s7FY4OFC+GO4J8rN+JqiY75Bv0rz9G6LWSxw==
-X-Received: by 2002:a17:906:2f97:b0:6ce:3ef6:94be with SMTP id w23-20020a1709062f9700b006ce3ef694bemr9519064eji.136.1645264611500;
-        Sat, 19 Feb 2022 01:56:51 -0800 (PST)
+        bh=eyoLzh3GoCjEcko6E6TRX3Q0MN5P8KHlKdLhPGSzjas=;
+        b=ikZVPyIlASmHZ8l0LzizvdISxXwDLAR9X8p3ifNg1lWZ1QB9bSlmWF2ucgYVRlNzil
+         2mLL0frS+3j3BRiiDasziSZa3I/iVMvU7vHm1bP1d+5yze98xKlwIfI4okKhWM4Y9yNv
+         hGHpYiACfFJ+Swpsr8TxowJ8nR/J9EVe3GIueqaJsGcCZtByXsI9SlKNg8g/WN99suyf
+         5D5CvnCfAoCqO6ouU3dYEZehToU8lFX59uC4b/6eBWoJho1OTktfXiCrFH/1cVSNe05u
+         VM8iMi/dE6eRXQR7AM/mDLqFOQz62kO7+GtlD7KsDIRRMCz/98K7hb53hVaLdMi2M7V5
+         SX1Q==
+X-Gm-Message-State: AOAM531SyddbjLXZ6CCt4lCJv3jaM4D+l5KiUkWoeZv4CScBbj40UQmk
+        IKcMn/dZfnm2ZK3Ub+OZYrg=
+X-Google-Smtp-Source: ABdhPJx1V2gD2Zh/g9vSl2TlbwK/2IUdNqZeGbq6SyVxCfhg7AYOb4RmbSYhkOf48WpzRbDFW0e3YQ==
+X-Received: by 2002:a17:906:154c:b0:6ce:21d7:2826 with SMTP id c12-20020a170906154c00b006ce21d72826mr9312950ejd.9.1645264837397;
+        Sat, 19 Feb 2022 02:00:37 -0800 (PST)
 Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id t4sm6165304edd.7.2022.02.19.01.56.49
+        by smtp.gmail.com with ESMTPSA id b20sm5824839ede.23.2022.02.19.02.00.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 01:56:51 -0800 (PST)
-Date:   Sat, 19 Feb 2022 11:56:49 +0200
+        Sat, 19 Feb 2022 02:00:36 -0800 (PST)
+Date:   Sat, 19 Feb 2022 12:00:34 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Hans Schultz <schultz.hans@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
@@ -67,15 +67,15 @@ Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Baowen Zheng <baowen.zheng@corigine.com>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next v3 3/5] net: dsa: Add support for offloaded
- locked port flag
-Message-ID: <20220219095649.zaa7exduogwbpyyh@skbuf>
+Subject: Re: [PATCH net-next v3 4/5] net: dsa: mv88e6xxx: Add support for
+ bridge port locked mode
+Message-ID: <20220219100034.lh343dkmc4fbiad3@skbuf>
 References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
- <20220218155148.2329797-4-schultz.hans+netdev@gmail.com>
+ <20220218155148.2329797-5-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220218155148.2329797-4-schultz.hans+netdev@gmail.com>
+In-Reply-To: <20220218155148.2329797-5-schultz.hans+netdev@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -86,24 +86,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 04:51:46PM +0100, Hans Schultz wrote:
-> Among the switchcores that support this feature is the Marvell
-> mv88e6xxx family.
-> 
-> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> ---
+On Fri, Feb 18, 2022 at 04:51:47PM +0100, Hans Schultz wrote:
+> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+> index ab41619a809b..46b7381899a0 100644
+> --- a/drivers/net/dsa/mv88e6xxx/port.c
+> +++ b/drivers/net/dsa/mv88e6xxx/port.c
+> @@ -1234,6 +1234,39 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
+>  	return err;
+>  }
+>  
+> +int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
+> +			    bool locked)
+> +{
+> +	u16 reg;
+> +	int err;
+> +
+> +	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
+> +	if (err)
+> +		return err;
+> +
+> +	reg &= ~MV88E6XXX_PORT_CTL0_SA_FILT_MASK;
+> +	if (locked)
+> +		reg |= MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK;
+> +
+> +	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
+> +	if (err)
+> +		return err;
+> +
+> +	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, &reg);
+> +	if (err)
+> +		return err;
+> +
+> +	reg &= ~MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
+> +	if (locked)
+> +		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
+> +
+> +	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, reg);
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+	return mv88e6xxx_port_write(...);
 
-Although this doesn't "add support for offloaded locked ports", that
-passes right through with no DSA-level filtering, from
-SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS to dsa_port_bridge_flags(),
-to ds->ops->port_bridge_flags().
-
-Rather, a clearer description of what this does is:
-
-net: dsa: include BR_PORT_LOCKED in the list of synced brport flags
-
-Make sure the DSA switch driver gets notified of changes to the
-BR_PORT_LOCKED flag as well, for the case when a DSA port joins or
-leaves a LAG that is a bridge port.
+> +	if (err)
+> +		return err;
+> +
+> +	return 0;
+> +}
