@@ -2,50 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C957B4BC564
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 05:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4844BC56D
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 05:54:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241296AbiBSEuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 23:50:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45516 "EHLO
+        id S241316AbiBSEyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 23:54:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbiBSEuj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 23:50:39 -0500
+        with ESMTP id S232527AbiBSEyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 23:54:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B75650B22
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 20:50:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7C05132F;
+        Fri, 18 Feb 2022 20:54:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEDA2B82711
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 04:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6BEACC340ED;
-        Sat, 19 Feb 2022 04:50:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B47BEB82711;
+        Sat, 19 Feb 2022 04:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 503B4C004E1;
+        Sat, 19 Feb 2022 04:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645246217;
-        bh=lD4aFRCxvz9IKbx2fbaWfQ+3Ga6cjYt4LLxZE8waAzA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ho54WycE5DY2X7IGoeKrReBjh84jcFruAxB3A7QgiJMdR9uMX2S0RLM6pBQ5MAHFJ
-         CV+JLLGHr3IVu3p3PwQe8V7wQnqBGrUCmwKJtbbIsyiEdDib/Vyd9TEX/A167L3QhQ
-         xWM6pMzePCD9raqdjGlD0vJFB5eLata7DFVKbjZsd2vEZ8YSWUhovgp0Sq3IyoLmGq
-         1bzqLafXwp4MqsZPTGLlDX635UzEZF15sOLfJdLm8jnhwOqibDy2x0I8l69+hjz0JK
-         i6QifhJ4pSmCAkUswhVy7i8C9RpEX34UX9vd3qc8lE+PxZlvzRs549DQgb9zAjMNqs
-         d0pMqA7nlOr1Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50F95E7BB08;
-        Sat, 19 Feb 2022 04:50:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1645246450;
+        bh=h2795+8GYlVPXKPJ5I2QLnhGfDjELLMFhyd7g3oIiok=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C67Z4thZk4x8k2ihFzAMQ+CzkTAXiWLj6ky0jZolGsq3PSQ7iava14DtHEJK9pH8B
+         XBWY9BP7ryDDq8UGjL1UMl/3hjyB6WBIhxuMRfXKxnBtnSe3Lux6wJ70qrFBbSs0O7
+         dMHM2nTL3gxW8+4lpm+3GQEd8WNoeZtGmrB9dV+AHS3zvH6/Yw32O7JIZtLxygcZRU
+         IaWc5U9rGgZeSRBmT0sNNjVXq3Jq8m0QxOwb4M7JbMQ+PBvvI/P+6HOEqR1l91CyQp
+         sswC45Mxukh0p6GwgJMW54eRsq9L/16ViQBFP4BKw80bWblnhvD1QjDtzFgdrhh4At
+         OVHKaaTAdvtoA==
+Date:   Fri, 18 Feb 2022 20:54:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, hch@lst.de, cl@linux.com,
+        42.hyeyoo@gmail.com, penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo.kim@lge.com, vbabka@suse.cz, David.Laight@ACULAB.COM,
+        david@redhat.com, herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
+        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
+        linux-i2c@vger.kernel.org, wsa@kernel.org
+Subject: Re: [PATCH 17/22] net: marvell: prestera: Don't use GFP_DMA when
+ calling dma_pool_alloc()
+Message-ID: <20220218205408.45d1085e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220219005221.634-18-bhe@redhat.com>
+References: <20220219005221.634-1-bhe@redhat.com>
+        <20220219005221.634-18-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] MAINTAINERS: rmnet: Update email addresses
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164524621732.9384.1040209812586107451.git-patchwork-notify@kernel.org>
-Date:   Sat, 19 Feb 2022 04:50:17 +0000
-References: <1645174218-32632-1-git-send-email-quic_subashab@quicinc.com>
-In-Reply-To: <1645174218-32632-1-git-send-email-quic_subashab@quicinc.com>
-To:     Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        quic_stranche@quicinc.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,27 +63,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 18 Feb 2022 01:50:18 -0700 you wrote:
-> Switch to the quicinc.com ids.
+On Sat, 19 Feb 2022 08:52:16 +0800 Baoquan He wrote:
+> dma_pool_alloc() uses dma_alloc_coherent() to pre-allocate DMA buffer,
+> so it's redundent to specify GFP_DMA when calling.
 > 
-> Signed-off-by: Sean Tranchetti <quic_stranche@quicinc.com>
-> Signed-off-by: Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>
-> ---
->  MAINTAINERS | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Signed-off-by: Baoquan He <bhe@redhat.com>
 
-Here is the summary with links:
-  - [net] MAINTAINERS: rmnet: Update email addresses
-    https://git.kernel.org/netdev/net/c/ba88b5533728
+This and the other two netdev patches in the series are perfectly
+cleanups reasonable even outside of the larger context.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please repost those separately and make sure you CC the maintainers
+of the drivers.
