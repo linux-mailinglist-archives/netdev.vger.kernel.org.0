@@ -2,146 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 378E14BC710
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 10:19:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB294BC73C
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 10:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232787AbiBSJSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 04:18:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59890 "EHLO
+        id S241863AbiBSJrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 04:47:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231300AbiBSJSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 04:18:43 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794534969E
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 01:18:25 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id d194-20020a6bcdcb000000b0063a4e3b9da6so6109103iog.6
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 01:18:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=GpEXurb/S08muFuH03jM5Ro3DWfUqzEGOWNpjHYvW64=;
-        b=T16XZzcMB1G/qQ0yPT2YLxhBCu8cu3eu56atRRGzqJDYM+eVwKd4usAFyBaKXmuKUe
-         PUsyheQ/fXtpqDR3qBpRIY84cAGTjf9LkgXXKtekDxVBHU4zX6O9u/X/CgUgz63sszbH
-         SVoKHJBsn5hCwVeWyyl9u/pLGoSmcs9ERvNAPW9M5HBAKoDR4Zq8yYxYrBiJDK9PAVVI
-         VjSCKfYYdAsceu1yESGD7gkrde7zhbrCZbcKyGyAfOWQK+ruwQMUNC664eWiMt+KXf9U
-         0xaYFxJXuYRmKgzuZQj532pmg2SdUe8eNDimUUsP0VMBnWJSakGL/MczQ6pX4MSYGsss
-         HoYQ==
-X-Gm-Message-State: AOAM5300Ja6px9YXGKHX13LSE4jgN6RhuXBNAaFxzABiFRPN+in3W2ny
-        sd5/KsQUnagTADHzc8mn3KOlmu8ep+9npXFy+Qw9NkrxvyVm
-X-Google-Smtp-Source: ABdhPJy7o5V/bFBQz2imOBcrDumDi+pVL5Q7QH7hQubElYJ+VI+abvTgyXM7ya+foBKe3TBq5Xb+CdElFM80pygMpLGrta3hCrO/
+        with ESMTP id S229545AbiBSJrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 04:47:18 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2083.outbound.protection.outlook.com [40.107.236.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7171EED3;
+        Sat, 19 Feb 2022 01:46:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ft1LRpv4qOWneqOCzQLGvuhKc9ih6jXakU3W8zyOHZCIGqBOfV+9VxYx8TK1uqyhd/ytOT69c78DU1mza+YX+Pn2yPUAz3QvuIM+ZYdB6xm77hmBRR51H5aEyWNWMnTz1wGwqH1d9mXYL4fFxLhNrYqPzhBlfrhxdFPYvOdzrvaELvBG5TDLVIDrdROjQF7jP8tJe8OYYUyJTVYBkzAuxdYLv3EiT+ho915O5E2Ws0oEMHVob4QMOTIDft5/rIXz7CEXQ5DZy0Dcw1juMJtfL9b0BRl4zCsb5xU6mx9RG5QPE6qitfoxRA8xeoKZb+BB/WGFwVyFlCxTw/+I8wI3xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DWidAe/8A4gdk6Kl8311PrlfqqyC1xvATabjBn6pkyk=;
+ b=jNelv/T/Z338WPbhzV4kBD16Xp98BUphuglCs262EFkiyxInLkAFKJc9IF2qgu/ERIRVH2tWqX64ccG3FfJ0jw01f4/OkOfZK17C2WAKGjCPYZFGLpklqAyMYF4ZRYOktwXQvbk7tjWkMJrjrlXFK5At3gcXJSW4Z/hPlPNRYqjG1fzF7SZuZ6fvC1ztJ4fwiX7bbWcwke4Wp40wSlSnr8zPYxdRrMphA3zVo8PY38TB6+iZDiKUvJwMuCkcK3JjklQsB9gt7flJKrhDco4WNziL2jDh/KZpwHWFQ26p7F98fr8hEgnT4x4e1peHxOHuL6phjS+czDxETX1zSZ851w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=lunn.ch smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DWidAe/8A4gdk6Kl8311PrlfqqyC1xvATabjBn6pkyk=;
+ b=Ej2Ge6n2InAqQomc87fweyXLr+eFIn43jiZsyuDzU/L1myrc+vf5R+ZxgZC2SPTuGiFUSoda5ouO8paHZRZzbfg6ZOfAqrBba2RF1bFymlBhh/HbLc2vHsCJPBnteuUGVmul/4xvjxRkCXT730UrMnjhwFI8wwgpWhr51+9VjIro6wwLpnkO9levH+VHhapypNGY7aAuWXIj3u/vo4X7vvtErMMPithjtaLpw/BVeVQ0UvjHhh7/QdG2XiAMBFFR5Cfy7MSt9OuJEiAQDDhYS8UWix4p53C5L5Vif0/BPGZJIoP3QBggtzfULBw8kFAEzyylE6vX+rMhHM9fbwO78Q==
+Received: from DM6PR18CA0010.namprd18.prod.outlook.com (2603:10b6:5:15b::23)
+ by BN6PR12MB1938.namprd12.prod.outlook.com (2603:10b6:404:fe::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Sat, 19 Feb
+ 2022 09:46:57 +0000
+Received: from DM6NAM11FT045.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:15b:cafe::78) by DM6PR18CA0010.outlook.office365.com
+ (2603:10b6:5:15b::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24 via Frontend
+ Transport; Sat, 19 Feb 2022 09:46:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT045.mail.protection.outlook.com (10.13.173.123) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4995.15 via Frontend Transport; Sat, 19 Feb 2022 09:46:56 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sat, 19 Feb
+ 2022 09:46:51 +0000
+Received: from [172.27.1.59] (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Sat, 19 Feb 2022
+ 01:46:41 -0800
+Message-ID: <60f020b7-53b8-4f3c-ead2-8077aad8e5bb@nvidia.com>
+Date:   Sat, 19 Feb 2022 11:46:37 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a66:b0:2c1:888d:b9cb with SMTP id
- w6-20020a056e021a6600b002c1888db9cbmr7494872ilv.74.1645262304803; Sat, 19 Feb
- 2022 01:18:24 -0800 (PST)
-Date:   Sat, 19 Feb 2022 01:18:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003d82b405d85b7be9@google.com>
-Subject: [syzbot] general protection fault in vhost_iotlb_itree_first
-From:   syzbot <syzbot+bbb030fc51d6f3c5d067@syzkaller.appspotmail.com>
-To:     jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v3 1/5] net: bridge: Add support for bridge port
+ in locked mode
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        "Stephen Suryaputra" <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        "Ido Schimmel" <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>,
+        <linux-kselftest@vger.kernel.org>
+References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
+ <20220218155148.2329797-2-schultz.hans+netdev@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20220218155148.2329797-2-schultz.hans+netdev@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6301791a-21f0-41c3-3d7f-08d9f38cc469
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1938:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB19389D36AF7BDBBFFB5E923CDF389@BN6PR12MB1938.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VwR+2IcBfbczkGrVi3hzF3M2Fj826fmUSL6hmApXj1IqeFPqx+9lrOH/PBjfWsm1GbiCswN/qn4laqdpaG9E61J4PlM0SqY6x/pk+uLXM3SA0notpLV5ZJHURQWBZIbuV5KH0IalHrnMAZmDeIZc2U9PhoCyBE0zmcB7VvnCFLnst67CXNnxjzGj2yMeE2DxzeQTTD+hNkIB2T6g4EljhF6Es3buQ9XyvvWD99pXHc9opDvDRlOCyS4JWsK0TnhvMEkgerUDgnm6apf3wZoJbyycSUBMi/keZHQppIp8J0hAy3J2a2C3a8gz9XyTIGGr0jMIyNc2lJGFYaLt+xmRqtqjmhaPvHSJJgw8Y5POwccF5VmSML/blLKw9UKMpUBcZ8ZxyQxkX+Y9D09lt4efbomWbfWtzkh2vAxRBGd1ZPnL3kD6lkADsdHOXpbLgI0JoZNjEljRQMc/wvWjIqR25xzIB5/RidTUQ+4widpye5BFivels6ZmSepYvaUHZ5CZtv5oYG+HoaD4rsnXTnVDqsTMS7Zhj1cce5sWzj8368zUm/l+WF64MeIfQqy+TzXG8gMDQ1vOBBBYzAqDL6LD0tNxj8b9kqwr5IihLNWufiyjxiy+x3uLTHWrjuNnDmffZjB2tTeWwfEFLcoAzvPZWH+gHvvx40BrCNncf7IbPM8v8yzF1VWGtFFbcVKO5QFD7ZJhi0JvN4+jwWugFAZa9YEXoKGdAySZmnY/O0dmlRcRYRnLgrvx8FZW7BJyYn/h
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(5660300002)(4326008)(31696002)(8936002)(31686004)(7416002)(36860700001)(70586007)(16526019)(82310400004)(8676002)(2906002)(26005)(186003)(70206006)(86362001)(53546011)(36756003)(83380400001)(81166007)(508600001)(2616005)(356005)(6666004)(40460700003)(110136005)(316002)(47076005)(54906003)(336012)(16576012)(426003)(43740500002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2022 09:46:56.4744
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6301791a-21f0-41c3-3d7f-08d9f38cc469
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT045.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1938
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 18/02/2022 17:51, Hans Schultz wrote:
+> In a 802.1X scenario, clients connected to a bridge port shall not
+> be allowed to have traffic forwarded until fully authenticated.
+> A static fdb entry of the clients MAC address for the bridge port
+> unlocks the client and allows bidirectional communication.
+> 
+> This scenario is facilitated with setting the bridge port in locked
+> mode, which is also supported by various switchcore chipsets.
+> 
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
+>  include/linux/if_bridge.h    |  1 +
+>  include/uapi/linux/if_link.h |  1 +
+>  net/bridge/br_input.c        | 10 +++++++++-
+>  net/bridge/br_netlink.c      |  6 +++++-
+>  4 files changed, 16 insertions(+), 2 deletions(-)
+> 
 
-syzbot found the following issue on:
+Hi Hans,
+The patch looks good overall, I have one minor cosmetic comment below.
 
-HEAD commit:    359303076163 tty: n_tty: do not look ahead for EOL charact..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16b34b54700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=da674567f7b6043d
-dashboard link: https://syzkaller.appspot.com/bug?extid=bbb030fc51d6f3c5d067
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+> index 509e18c7e740..3aae023a9353 100644
+> --- a/include/linux/if_bridge.h
+> +++ b/include/linux/if_bridge.h
+> @@ -58,6 +58,7 @@ struct br_ip_list {
+>  #define BR_MRP_LOST_CONT	BIT(18)
+>  #define BR_MRP_LOST_IN_CONT	BIT(19)
+>  #define BR_TX_FWD_OFFLOAD	BIT(20)
+> +#define BR_PORT_LOCKED		BIT(21)
+>  
+>  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+>  
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 6218f93f5c1a..a45cc0a1f415 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -537,6 +537,7 @@ enum {
+>  	IFLA_BRPORT_MRP_IN_OPEN,
+>  	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+>  	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
+> +	IFLA_BRPORT_LOCKED,
+>  	__IFLA_BRPORT_MAX
+>  };
+>  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index b50382f957c1..e99f635ff727 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -81,6 +81,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  	if (!p || p->state == BR_STATE_DISABLED)
+>  		goto drop;
+>  
+> +	br = p->br;
+>  	brmctx = &p->br->multicast_ctx;
+>  	pmctx = &p->multicast_ctx;
+>  	state = p->state;
+> @@ -88,10 +89,17 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  				&state, &vlan))
+>  		goto out;
+>  
+> +	if (p->flags & BR_PORT_LOCKED) {
+> +		struct net_bridge_fdb_entry *fdb_src =
+> +			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Please leave an empty line between variable declaration and the code.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+bbb030fc51d6f3c5d067@syzkaller.appspotmail.com
+> +		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
+> +			goto drop;
+> +	}
+> +
 
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 17981 Comm: vhost-17980 Not tainted 5.17.0-rc4-syzkaller-00052-g359303076163 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:vhost_iotlb_itree_iter_first drivers/vhost/iotlb.c:19 [inline]
-RIP: 0010:vhost_iotlb_itree_first+0x29/0x280 drivers/vhost/iotlb.c:169
-Code: 00 41 57 41 56 41 55 49 89 d5 41 54 55 48 89 fd 53 48 89 f3 e8 e8 eb a0 fa 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 e8 01 00 00 4c 8b 65 00 4d 85 e4 0f 84 b3 01 00
-RSP: 0018:ffffc90004f57ac8 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 30303030320a0028 RCX: ffffc900103dc000
-RDX: 0000000000000000 RSI: ffffffff86d72738 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
-R10: ffffffff86d62d88 R11: 0000000000000000 R12: ffff8880260e4d68
-R13: 303030305f3a3057 R14: dffffc0000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f2d46121901 CR3: 000000001d652000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- translate_desc+0x11e/0x3e0 drivers/vhost/vhost.c:2054
- vhost_get_vq_desc+0x662/0x22c0 drivers/vhost/vhost.c:2300
- vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
- vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:vhost_iotlb_itree_iter_first drivers/vhost/iotlb.c:19 [inline]
-RIP: 0010:vhost_iotlb_itree_first+0x29/0x280 drivers/vhost/iotlb.c:169
-Code: 00 41 57 41 56 41 55 49 89 d5 41 54 55 48 89 fd 53 48 89 f3 e8 e8 eb a0 fa 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 e8 01 00 00 4c 8b 65 00 4d 85 e4 0f 84 b3 01 00
-RSP: 0018:ffffc90004f57ac8 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 30303030320a0028 RCX: ffffc900103dc000
-RDX: 0000000000000000 RSI: ffffffff86d72738 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000002
-R10: ffffffff86d62d88 R11: 0000000000000000 R12: ffff8880260e4d68
-R13: 303030305f3a3057 R14: dffffc0000000000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f2d449f6718 CR3: 000000001d652000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	00 41 57             	add    %al,0x57(%rcx)
-   3:	41 56                	push   %r14
-   5:	41 55                	push   %r13
-   7:	49 89 d5             	mov    %rdx,%r13
-   a:	41 54                	push   %r12
-   c:	55                   	push   %rbp
-   d:	48 89 fd             	mov    %rdi,%rbp
-  10:	53                   	push   %rbx
-  11:	48 89 f3             	mov    %rsi,%rbx
-  14:	e8 e8 eb a0 fa       	callq  0xfaa0ec01
-  19:	48 89 ea             	mov    %rbp,%rdx
-  1c:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  23:	fc ff df
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 e8 01 00 00    	jne    0x21c
-  34:	4c 8b 65 00          	mov    0x0(%rbp),%r12
-  38:	4d 85 e4             	test   %r12,%r12
-  3b:	0f                   	.byte 0xf
-  3c:	84                   	.byte 0x84
-  3d:	b3 01                	mov    $0x1,%bl
+With the above change you can add my Acked-by tag.
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks,
+ Nik
