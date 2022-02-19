@@ -2,185 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5784BC446
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 02:10:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FEE34BC4B6
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 03:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232167AbiBSA7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 19:59:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40354 "EHLO
+        id S241015AbiBSCKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Feb 2022 21:10:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241015AbiBSA6k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 19:58:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E455827F2BF
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 16:57:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645232255;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=VzXzJB2PJKullCIvRUJRQ/3FG4DX8V+bJRm6qvn5FmA=;
-        b=QQaLSNbH1SsuKasjrtZqJCNqN+Di0U3z2a672H27kUdCe7qDR7AwLLrp+dT+89m6mzgImM
-        0fxroyzlA0JXcDz4RKo0ZFHvM+/ngmB/ZHkOw3pB0U8W6OZ5j6ANCUtZNl3XS2VP6GjdOE
-        qauSPI/9qadgtlX87IsKNHhDZK+A4dA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-218-DtD3djaMMzmALzLGQE-47g-1; Fri, 18 Feb 2022 19:57:31 -0500
-X-MC-Unique: DtD3djaMMzmALzLGQE-47g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 943B21006AA0;
-        Sat, 19 Feb 2022 00:57:28 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-39.pek2.redhat.com [10.72.12.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E930262D4E;
-        Sat, 19 Feb 2022 00:57:18 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@lst.de,
-        cl@linux.com, 42.hyeyoo@gmail.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
-        David.Laight@ACULAB.COM, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: [PATCH 22/22] mtd: rawnand: Use dma_alloc_noncoherent() for dma buffer
-Date:   Sat, 19 Feb 2022 08:52:21 +0800
-Message-Id: <20220219005221.634-23-bhe@redhat.com>
-In-Reply-To: <20220219005221.634-1-bhe@redhat.com>
-References: <20220219005221.634-1-bhe@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S240986AbiBSCKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 21:10:38 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EC95418B;
+        Fri, 18 Feb 2022 18:10:21 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id 10so8514997plj.1;
+        Fri, 18 Feb 2022 18:10:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+aB/FGXt2XpQqCXbTpQFLvS98YQQn2+KdMWsD6bNbw8=;
+        b=G0nXxjMog2ETCRgq7C8oy9WvUASJ+8lR1+OhAWGwaLxorKCuD2ILI8WOWxsD832AAp
+         DcmEdyDz7NX/pa0Xy9IGHZzFlIoinWxe4LovIBCAMCAEJcbpdCz19oe1GBLFgYbP0HTh
+         bu0V1sx6+J03iQ7PWHeWJ5p/e58XLknvpl5uX1HvzAnjJX9U5qo5EErLJRtsXE/WAO2c
+         2IzoefVi25lxzkmP8K1bfkkgdJyV3GCLI0ofbvMOKh69yjBNY8ljB+mhf+EftgZabM39
+         LupDYYmn+QvCpCyvVxsmEFWNjHGSr8dE3dePhzHZ4pJCf5CVPO2dCzJ+29YOWx+iQK60
+         BTUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+aB/FGXt2XpQqCXbTpQFLvS98YQQn2+KdMWsD6bNbw8=;
+        b=pHuZdxWDjtqoumFwIK3A7pRhZxaTrPPOaFLFwHqRRFcDW81O1gfRNFjNjIMTuJpBW1
+         T9yJ9pW9LkixKL03IKTx0zVEjvHAPr3lxLnWJDV9qB8dM6U9rcO6B30DkMkAfR4NOKz1
+         tgecSsaxBkcx46cTd2NyoYKZfOT574vwJ80UXgDgWSNEzE6kqXOkpaGUZXzONiGnqtnj
+         JDzWOhYy3d6GVgcv0YkAjEA3PtzHxtjcwuRtWNsWWSKTIMtMJbK0nz/oTPZ4nOgjG0gC
+         tlEod5z4xFbHc7r2iX+sZoP6O6hjZXaO6+JbiqRwUlRMy4NnjShC6Kc+osB6VnaI7dQJ
+         HtVw==
+X-Gm-Message-State: AOAM53307xFNu5UvRx58Aqq8evJAX7hehGKP5omaIJf9c8upEGU2rKyn
+        9/2UjYCmc5HlxqAQGBrDLti30+xZoKLDSYIKfzDJa1Hh
+X-Google-Smtp-Source: ABdhPJwogpM9kP609BsMhPX4xux9kQv0xcsSfxr3o29faLZkP58pYyGGODASt78M4zuapI9QzCBrxCRVsbe3j8arOug=
+X-Received: by 2002:a17:902:76c5:b0:14e:e325:9513 with SMTP id
+ j5-20020a17090276c500b0014ee3259513mr9955087plt.55.1645236620285; Fri, 18 Feb
+ 2022 18:10:20 -0800 (PST)
+MIME-Version: 1.0
+References: <Yfq+PJljylbwJ3Bf@krava> <CAADnVQKeTB=UgY4Gf-46EBa8rwWTu2wvi7hEj2sdVTALGJ0JEg@mail.gmail.com>
+ <YfvvfLlM1FOTgvDm@krava> <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+ <CAADnVQJYY0Xm6M9O02E5rOkdQPX39NOOS4tM2jpwRLQvP-qDBg@mail.gmail.com>
+ <20220204110704.7c6eaf43ff9c8f5fe9bf3179@kernel.org> <CAADnVQJfq_10H0V+u0w0rzyZ9uy7vq=T-3BMDANjEN8A3-prsQ@mail.gmail.com>
+ <20220203211954.67c20cd3@gandalf.local.home> <CAADnVQKjNJjZDs+ZV7vcusEkKuDq+sWhSD3M5GtvNeZMx3Fcmg@mail.gmail.com>
+ <20220204125942.a4bda408f536c2e3248955e1@kernel.org> <Yguo4v7c+3A0oW/h@krava>
+ <CAEf4BzYO_B51TPgUnDXUPUsK55RSczwcnhuLz9DMbfO5JCj=Cw@mail.gmail.com>
+ <20220217230357.67d09baa261346a985b029b6@kernel.org> <CAEf4BzYxcSCae=sF3EKNUtLDCZhkhHkd88CEBt4bffzN_AZrDw@mail.gmail.com>
+ <20220218130727.51db96861c3e1c79b45daafb@kernel.org>
+In-Reply-To: <20220218130727.51db96861c3e1c79b45daafb@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 18 Feb 2022 18:10:08 -0800
+Message-ID: <CAADnVQ+eojJ8KMwbieJrtOf7oWPqw7VDYV9EAAWpx3UoFHZFDQ@mail.gmail.com>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <olsajiri@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Oleg Nesterov <oleg@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use dma_alloc_noncoherent() instead of directly allocating buffer
-from kmalloc with GFP_DMA. DMA API will try to allocate buffer
-depending on devices addressing limitation.
+On Thu, Feb 17, 2022 at 8:07 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> On Thu, 17 Feb 2022 14:01:30 -0800
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+>
+> > > > Is there any chance to support this fast multi-attach for uprobe? If
+> > > > yes, we might want to reuse the same link for both (so should we name
+> > > > it more generically?
+> > >
+> > > There is no interface to do that but also there is no limitation to
+> > > expand uprobes. For the kprobes, there are some limitations for the
+> > > function entry because it needs to share the space with ftrace. So
+> > > I introduced fprobe for easier to use.
+> > >
+> > > > on the other hand BPF program type for uprobe is
+> > > > BPF_PROG_TYPE_KPROBE anyway, so keeping it as "kprobe" also would be
+> > > > consistent with what we have today).
+> > >
+> > > Hmm, I'm not sure why BPF made such design choice... (Uprobe needs
+> > > the target program.)
+> > >
+> >
+> > We've been talking about sleepable uprobe programs, so we might need
+> > to add uprobe-specific program type, probably. But historically, from
+> > BPF point of view there was no difference between kprobe and uprobe
+> > programs (in terms of how they are run and what's available to them).
+> > From BPF point of view, it was just attaching BPF program to a
+> > perf_event.
+>
+> Got it, so that will reuse the uprobe_events in ftrace. But I think
+> the uprobe requires a "path" to the attached binary, how is it
+> specified?
+>
+> > > > But yeah, the main question is whether there is something preventing
+> > > > us from supporting multi-attach uprobe as well? It would be really
+> > > > great for USDT use case.
+> > >
+> > > Ah, for the USDT, it will be useful. But since now we will have "user-event"
+> > > which is faster than uprobes, we may be better to consider to use it.
+> >
+> > Any pointers? I'm not sure what "user-event" refers to.
+>
+> Here is the user-events series, which allows user program to define
+> raw dynamic events and it can write raw event data directly from
+> user space.
+>
+> https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
 
-[ 42.hyeyoo@gmail.com: Use dma_alloc_noncoherent() instead of
-  __get_free_page() and update changelog.
-
-  As it does not allocate high order buffers, allocate buffer
-  when needed and free after DMA. ]
-
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Vignesh Raghavendra <vigneshr@ti.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Cc: christian.koenig@amd.com
-Cc: linux-mtd@lists.infradead.org
-
----
- drivers/mtd/nand/raw/marvell_nand.c | 55 ++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/mtd/nand/raw/marvell_nand.c b/drivers/mtd/nand/raw/marvell_nand.c
-index 2455a581fd70..c0b64a7e50af 100644
---- a/drivers/mtd/nand/raw/marvell_nand.c
-+++ b/drivers/mtd/nand/raw/marvell_nand.c
-@@ -860,26 +860,45 @@ static int marvell_nfc_xfer_data_dma(struct marvell_nfc *nfc,
- 	struct dma_async_tx_descriptor *tx;
- 	struct scatterlist sg;
- 	dma_cookie_t cookie;
--	int ret;
-+	dma_addr_t dma_handle;
-+	int ret = 0;
- 
- 	marvell_nfc_enable_dma(nfc);
-+
-+	/*
-+	 * DMA must act on length multiple of 32 and this length may be
-+	 * bigger than the destination buffer. Use this buffer instead
-+	 * for DMA transfers and then copy the desired amount of data to
-+	 * the provided buffer.
-+	 */
-+	nfc->dma_buf = dma_alloc_noncoherent(nfc->dev, MAX_CHUNK_SIZE,
-+						&dma_handle,
-+						direction,
-+						GFP_ATOMIC);
-+	if (!nfc->dma_buf) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+
- 	/* Prepare the DMA transfer */
--	sg_init_one(&sg, nfc->dma_buf, dma_len);
--	dma_map_sg(nfc->dma_chan->device->dev, &sg, 1, direction);
--	tx = dmaengine_prep_slave_sg(nfc->dma_chan, &sg, 1,
-+	tx = dmaengine_prep_slave_single(nfc->dma_chan, dma_handle, dma_len,
- 				     direction == DMA_FROM_DEVICE ?
- 				     DMA_DEV_TO_MEM : DMA_MEM_TO_DEV,
- 				     DMA_PREP_INTERRUPT);
- 	if (!tx) {
- 		dev_err(nfc->dev, "Could not prepare DMA S/G list\n");
--		return -ENXIO;
-+		ret = -ENXIO;
-+		goto free;
- 	}
- 
- 	/* Do the task and wait for it to finish */
- 	cookie = dmaengine_submit(tx);
- 	ret = dma_submit_error(cookie);
--	if (ret)
--		return -EIO;
-+	if (ret) {
-+		ret = -EIO;
-+		goto free;
-+	}
- 
- 	dma_async_issue_pending(nfc->dma_chan);
- 	ret = marvell_nfc_wait_cmdd(nfc->selected_chip);
-@@ -889,10 +908,16 @@ static int marvell_nfc_xfer_data_dma(struct marvell_nfc *nfc,
- 		dev_err(nfc->dev, "Timeout waiting for DMA (status: %d)\n",
- 			dmaengine_tx_status(nfc->dma_chan, cookie, NULL));
- 		dmaengine_terminate_all(nfc->dma_chan);
--		return -ETIMEDOUT;
-+		ret = -ETIMEDOUT;
-+		goto free;
- 	}
- 
--	return 0;
-+free:
-+	dma_free_noncoherent(nfc->dev, MAX_CHUNK_SIZE, nfc->dma_buf,
-+			     dma_handle, direction);
-+
-+out:
-+	return ret;
- }
- 
- static int marvell_nfc_xfer_data_in_pio(struct marvell_nfc *nfc, u8 *in,
-@@ -2814,18 +2839,6 @@ static int marvell_nfc_init_dma(struct marvell_nfc *nfc)
- 		goto release_channel;
- 	}
- 
--	/*
--	 * DMA must act on length multiple of 32 and this length may be
--	 * bigger than the destination buffer. Use this buffer instead
--	 * for DMA transfers and then copy the desired amount of data to
--	 * the provided buffer.
--	 */
--	nfc->dma_buf = kmalloc(MAX_CHUNK_SIZE, GFP_KERNEL | GFP_DMA);
--	if (!nfc->dma_buf) {
--		ret = -ENOMEM;
--		goto release_channel;
--	}
--
- 	nfc->use_dma = true;
- 
- 	return 0;
--- 
-2.17.2
-
+Is this a way for user space to inject user bytes into kernel events?
+What is the use case?
