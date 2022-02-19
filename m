@@ -2,71 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 605984BCAB8
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 22:33:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D59784BCB0B
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 23:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbiBSVWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 16:22:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39588 "EHLO
+        id S239272AbiBSWrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 17:47:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbiBSVWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 16:22:47 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E163134D
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 13:22:27 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id d10so23158790eje.10
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 13:22:27 -0800 (PST)
+        with ESMTP id S237811AbiBSWrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 17:47:24 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3553810DA;
+        Sat, 19 Feb 2022 14:47:04 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id s5so7018809oic.10;
+        Sat, 19 Feb 2022 14:47:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EOogGeuI64yHvl9Z+xbxaGRk6UC+hsBNQtzEmQyz9U8=;
-        b=eQJggaX1tOfUdSh343erKj/Z4s7gdLUgXa5tf4CiQ4EY1cbYJz3uXqtylUSwSVdmtu
-         QgyUxEyJZyEyAnV1iTuPqFQOt9YHZygo1sjcwtspLxZzRb3iyOzW5PmsQYA0fW2s+LYL
-         fZS28qh9WeO8yJydJjlZ+7o3KMHRyP6aF8AFYyPgfpW1ggq0RjR7ZlOXaLCuBytNkn6d
-         /ABHwXV3uk4JKrCKchbPN6xRI0fFR+sfsJlkOx6ky4I+ASRVLYjJkbfZfxJWIKWPx25Z
-         NX2mq6jQdkN6asbS/kB8sf5+zXeewBggVhFWevj1Kb8r3lpvnu0W5nvPO0/GfZG5NotS
-         248g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8eVuoRv9oIoTPmNw9cVPdHoz2GCqKqv49eYWyY9ccgI=;
+        b=N72LaZCqZpgq0CicUvXeUQQVYC1uQuCo8YWCnec7VR2qabm/2YBKG/T+nHpOOvRkUq
+         7YrraUwTVyY3KbtcptO/djBwGSYeXAizkvW9pRp3hFdTjqGcM1cHufX1W5L/AhLX2OQo
+         edVsyBZxiIo6ldIPJ9Ix5q1c+TqaHtPKwQbYAS0wAtgm5/RD46jOZ9jDzwkbtFlPX9nD
+         Kp62JbEfPkCeY9FqWMPCY3gnXjm4jRhit3h2yL/cNyj+R9SovNc11gds4XUPe20MFYkb
+         57KZfYA33bUWLi/58TovhfTThokdSYSN298PvQ8+AWBtwwxYsCfWccz6Wc7YOQyZP7dZ
+         3e6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EOogGeuI64yHvl9Z+xbxaGRk6UC+hsBNQtzEmQyz9U8=;
-        b=YDr+U6V5q6x4y4n1XdFSH1EYjraKaS53nM6OiWoubYyYzy0GxLl0PpW6ifl0pKTwBu
-         9Eyp2L/eZzWEZhU0Sv3Fby0faBVLrj9pAvcGkJzMsJqWCLJjtM2NQZ9QcjXDXe0f6QCn
-         hc4sK3IhITYIL6MApPYSFLiVo36aKkviD01s41H18vBSVkanDsnRJ1WOPsM/oXyBnkBr
-         5w7qEe+3oA9GNCuGHd296YtPbNTQIrtfeK+sG3HZZgD6fR7X9zjOg188PySEryKX9siI
-         sNYAIXl7xg4XwIesRSyLfupEEBR6ScyduYP+J7r2tGL+ac3NQutJnPj2VFyTJ25FyOgR
-         +62g==
-X-Gm-Message-State: AOAM530ATCIxxrepqDjGFsRWPKMcGw4jqLVZsT7Msr/y0WpJ07MgzXVd
-        /aOW2l2qydKNuwlVWXaPRE8=
-X-Google-Smtp-Source: ABdhPJy1MeFUnWsGjA02SrSnIShvOgiyi9JllNC1nTgsHd17JWof14I0xZseDJqRl58Osk3DEcRtOw==
-X-Received: by 2002:a17:907:986d:b0:6d0:7e8:a0a with SMTP id ko13-20020a170907986d00b006d007e80a0amr10389194ejc.81.1645305746244;
-        Sat, 19 Feb 2022 13:22:26 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id x7sm3293457edr.12.2022.02.19.13.22.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 13:22:25 -0800 (PST)
-Date:   Sat, 19 Feb 2022 23:22:24 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next v2 1/6] net: dsa: add support for phylink
- mac_select_pcs()
-Message-ID: <20220219212223.efd2mfxmdokvaosq@skbuf>
-References: <Yg6UHt2HAw7YTiwN@shell.armlinux.org.uk>
- <E1nKlY3-009aKs-Oo@rmk-PC.armlinux.org.uk>
- <20220219211241.beyajbwmuz7fg2bt@skbuf>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8eVuoRv9oIoTPmNw9cVPdHoz2GCqKqv49eYWyY9ccgI=;
+        b=h0dXhBVfjF+KIBJ9ZfyJjfy6panzPhon6/no364hY9W/fYzxaxnA445+B5dy8tTHmH
+         Bf1tyqRfE+jG+us3wGtJ+AYHQGRc2MHWXhnR+0iSjgEbqsaBuu2lVNWPXgvugXjaI0Xi
+         9CL/8yFcEFdfwdkUVDc7wMX6t2c8yq3f3eaG/5WZErxyWHu5ih29V+5fe/mDEVkpEPdz
+         e8Fm9vR5Il6G5QCM09KBZO+fen/QWpuJQtIifTfxRmq9p8F+FSukEPXuvWMcsX1Fw4tC
+         29LO17ixYsd4DN/zkCV6651hsZVW55ACyrR+mhROR1CWYNSfepLPzpHUuk08U8k1W/xo
+         kzGg==
+X-Gm-Message-State: AOAM533eGb0LIzHhtPQqbWWtZ5yE5pn0s/eSx/r70KGkI3ZI1j2fzuEH
+        eWLNP37UhNp8d59gGAcJsSjMaBFVeBY=
+X-Google-Smtp-Source: ABdhPJzZS9kKYFIKq1AAPDGbDiW22D1JZznPWRi2Muf7VwLZT5kPQaV3VPAeXXST3bF4cu1qNtzlUA==
+X-Received: by 2002:a05:6808:168d:b0:2d3:65f0:582f with SMTP id bb13-20020a056808168d00b002d365f0582fmr7836292oib.152.1645310823571;
+        Sat, 19 Feb 2022 14:47:03 -0800 (PST)
+Received: from ?IPV6:2601:284:8200:b700:75f1:ca3:f2d4:114e? ([2601:284:8200:b700:75f1:ca3:f2d4:114e])
+        by smtp.googlemail.com with ESMTPSA id c9sm2628916otd.26.2022.02.19.14.47.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Feb 2022 14:47:03 -0800 (PST)
+Message-ID: <a76d0c63-f747-d33c-d782-0b2f696e7de9@gmail.com>
+Date:   Sat, 19 Feb 2022 15:46:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220219211241.beyajbwmuz7fg2bt@skbuf>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH v2 1/3] net: tap: track dropped skb via kfree_skb_reason()
+Content-Language: en-US
+To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
+        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
+References: <20220219191246.4749-1-dongli.zhang@oracle.com>
+ <20220219191246.4749-2-dongli.zhang@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220219191246.4749-2-dongli.zhang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,17 +77,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 11:12:41PM +0200, Vladimir Oltean wrote:
-> >  static const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
-> >  	.validate = dsa_port_phylink_validate,
-> > +	.mac_select_pcs = dsa_port_phylink_mac_select_pcs,
+On 2/19/22 12:12 PM, Dongli Zhang wrote:
+> The TAP can be used as vhost-net backend. E.g., the tap_handle_frame() is
+> the interface to forward the skb from TAP to vhost-net/virtio-net.
 > 
-> This patch breaks probing on DSA switch drivers that weren't converted
-> to supported_interfaces, due to this check in phylink_create():
+> However, there are many "goto drop" in the TAP driver. Therefore, the
+> kfree_skb_reason() is involved at each "goto drop" to help userspace
+> ftrace/ebpf to track the reason for the loss of packets.
+> 
+> The below reasons are introduced:
+> 
+> - SKB_DROP_REASON_SKB_CSUM
+> - SKB_DROP_REASON_SKB_COPY_DATA
+> - SKB_DROP_REASON_SKB_GSO_SEG
+> - SKB_DROP_REASON_DEV_HDR
+> - SKB_DROP_REASON_FULL_RING
+> 
+> Cc: Joao Martins <joao.m.martins@oracle.com>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> ---
+>  drivers/net/tap.c          | 30 ++++++++++++++++++++++--------
+>  include/linux/skbuff.h     |  9 +++++++++
+>  include/trace/events/skb.h |  5 +++++
+>  3 files changed, 36 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+> index 8e3a28ba6b28..ab3592506ef8 100644
+> --- a/drivers/net/tap.c
+> +++ b/drivers/net/tap.c
+> @@ -322,6 +322,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>  	struct tap_dev *tap;
+>  	struct tap_queue *q;
+>  	netdev_features_t features = TAP_FEATURES;
+> +	int drop_reason;
 
-And this is only the most superficial layer of breakage. Everywhere in
-phylink.c where pl->mac_ops->mac_select_pcs() is used, its presence is
-checked and non-zero return codes from it are treated as hard errors,
-even -EOPNOTSUPP, even if this particular error code is probably
-intended to behave identically as the absence of the function pointer,
-for compatibility.
+enum skb_drop_reason drop_reason;
+
+>  
+>  	tap = tap_dev_get_rcu(dev);
+>  	if (!tap)
+> @@ -343,12 +344,16 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
+>  		struct sk_buff *segs = __skb_gso_segment(skb, features, false);
+>  		struct sk_buff *next;
+>  
+> -		if (IS_ERR(segs))
+> +		if (IS_ERR(segs)) {
+> +			drop_reason = SKB_DROP_REASON_SKB_GSO_SEG;
+>  			goto drop;
+> +		}
+>  
+>  		if (!segs) {
+> -			if (ptr_ring_produce(&q->ring, skb))
+> +			if (ptr_ring_produce(&q->ring, skb)) {
+> +				drop_reason = SKB_DROP_REASON_FULL_RING;
+>  				goto drop;
+> +			}
+>  			goto wake_up;
+>  		}
+
+you missed the walk of segs and calling ptr_ring_produce.
+
+>  
