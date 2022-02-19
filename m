@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B1C4BC95C
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 17:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27F234BC956
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 17:41:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242624AbiBSQkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 11:40:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42498 "EHLO
+        id S242655AbiBSQki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 11:40:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242608AbiBSQkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 11:40:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A401D178B;
-        Sat, 19 Feb 2022 08:40:12 -0800 (PST)
+        with ESMTP id S242629AbiBSQkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 11:40:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FFF91D178B;
+        Sat, 19 Feb 2022 08:40:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4295860BA6;
-        Sat, 19 Feb 2022 16:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 90BB3C340ED;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A3B1B80BEB;
+        Sat, 19 Feb 2022 16:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 94BE0C340EF;
         Sat, 19 Feb 2022 16:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645288811;
-        bh=sU8Rz7APMKrkq9JR0hWZKKxLKQZub2GIuh95bEvOIZI=;
+        bh=X/kxOCcThSRqIZcPFK+Z3GKfVTxcm612QscjgtLtwXE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gAvsSFRHQlZmCtwFDfdGojwHL8TGO6BKyy/4ho7DmrU4MLq/9hAfssfX9jkDRwNVL
-         dtRzlF1Xqrb4ysM1kAYMyCpD675vShHcQh4ia3+64kYDuCUN2eBDbBnVXCdLJfONkv
-         jCnKOZyroGgjuvEebjYkcJyxM0NIG/icJlaqYpmCJ/b1zzlysMLqQRYgoOfCq2HkpP
-         lFG8VUmGEbo5go+NPTo9AIkqEenxEAEygiFpD07vTu/RRgdiTqA8uCJ9n+iUSYSRiN
-         dfRTT9bSGvCeJREUHLbvznGUkax18Gb4ldfWNip0kaKmfRbUC1hDa4LGdUuP3koW4G
-         +WGjVHCNR2XjA==
+        b=ilP/YOxhjz9OfWysXj4zcGzUD9Ij8CfA1pJAd/Q3bb6k+ACCWwNwBt++Yj2wo6QWz
+         4afs3I85sgAHYwSFNYrITHIJTAm+VfpD75aiCxBJKK7BC1X9TCDKo9Qj0o69uQPtKW
+         B/xePY38aV93bjM3c4Y6nx5Xz4PzmVJf7aofqnYX+k/fgmpeWuUxyo5pHsySiCtgJS
+         ynQ12BmcJ26mWuc8of7CX5K7QCJqDf+rSdtDJa0mb/W4TRfMDjWN+dz6M/oWVw9dRU
+         fnB8NSMoUDVRba9k0EYXjvvIrH0WrtXh5Y1lWhwV0RL/Oz7MIVMv2O9T1ywgXkTm7e
+         AsuVNxGJ/ZAmw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73185E7BB08;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7BCE9E7BB18;
         Sat, 19 Feb 2022 16:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: prestera: flower: fix destroy tmpl in chain
+Subject: Re: [PATCH net-next v6 0/2] MCTP I2C driver
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164528881146.6364.519355923426975783.git-patchwork-notify@kernel.org>
+Message-Id: <164528881150.6364.7423694364094851793.git-patchwork-notify@kernel.org>
 Date:   Sat, 19 Feb 2022 16:40:11 +0000
-References: <1645177190-6949-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-In-Reply-To: <1645177190-6949-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, taras.chornyi@plvision.eu,
-        mickeyr@marvell.com, serhiy.pshyk@plvision.eu, vmytnyk@marvell.com,
-        tchornyi@marvell.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org
+References: <20220218055106.1944485-1-matt@codeconstruct.com.au>
+In-Reply-To: <20220218055106.1944485-1-matt@codeconstruct.com.au>
+To:     Matt Johnston <matt@codeconstruct.com.au>
+Cc:     davem@davemloft.net, kuba@kernel.org, jk@codeconstruct.com.au,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
+        zev@bewilderbeest.net
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,23 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 18 Feb 2022 11:39:49 +0200 you wrote:
-> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+On Fri, 18 Feb 2022 13:51:04 +0800 you wrote:
+> This patch series adds a netdev driver providing MCTP transport over
+> I2C.
 > 
-> Fix flower destroy template callback to release template
-> only for specific tc chain instead of all chain tempaltes.
-> 
-> The issue was intruduced by previous commit that introduced
-> multi-chain support.
+> I think I've addressed all the points raised in v5. It now has
+> mctp_i2c_unregister() to run things in the correct order, waiting for
+> the worker thread and I2C rx to complete.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2] net: prestera: flower: fix destroy tmpl in chain
-    https://git.kernel.org/netdev/net-next/c/b3ae2d350ddf
+  - [net-next,v6,1/2] dt-bindings: net: New binding mctp-i2c-controller
+    https://git.kernel.org/netdev/net-next/c/6881e493b08f
+  - [net-next,v6,2/2] mctp i2c: MCTP I2C binding driver
+    https://git.kernel.org/netdev/net-next/c/f5b8abf9fc3d
 
 You are awesome, thank you!
 -- 
