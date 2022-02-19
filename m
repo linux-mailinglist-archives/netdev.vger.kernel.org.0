@@ -2,86 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B96294BCAB9
+	by mail.lfdr.de (Postfix) with ESMTP id 605984BCAB8
 	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 22:33:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiBSVUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 16:20:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35924 "EHLO
+        id S230334AbiBSVWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 16:22:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiBSVUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 16:20:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BD04739B
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 13:20:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F894B80CDA
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 21:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BA5C5C340EB;
-        Sat, 19 Feb 2022 21:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645305608;
-        bh=kcckSGCHC5K32XW9VLcfTMdn6dYLnZYolXTK5XiQ8bY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qiiv1AXgtkBW/xct9T5KHk48k+WKmluyQ9IFqSKLsd5wtVosMoJz2aiMMn41CDd8u
-         eZGeoE4aGmhlfeRHB7X09/f9lqWpZwEy/JY4ieW42Z/DWKSW/gWqNd+J5tckMzwtGN
-         5urJa6+CrXgeeyFyJXMvMWN1W+Wax+T3M7ox2/77WMoIGo3l06MBqPWjeJFQGeqIkZ
-         yGB/RQDlqdqt1zaUyG/nPXO6dXIkFpkY/+3z/vwSj8IT4kA/ROhijGLCQk02OxCyTn
-         Zr04thZYnH57X0qp2Dpv8Yw5cUXLHeWe0jS6L7m4TqP5CXTSQeUHo6aTW4tni/wDZU
-         2P1rukCat6LZg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B705E7BB0A;
-        Sat, 19 Feb 2022 21:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230404AbiBSVWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 16:22:47 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E163134D
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 13:22:27 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id d10so23158790eje.10
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 13:22:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EOogGeuI64yHvl9Z+xbxaGRk6UC+hsBNQtzEmQyz9U8=;
+        b=eQJggaX1tOfUdSh343erKj/Z4s7gdLUgXa5tf4CiQ4EY1cbYJz3uXqtylUSwSVdmtu
+         QgyUxEyJZyEyAnV1iTuPqFQOt9YHZygo1sjcwtspLxZzRb3iyOzW5PmsQYA0fW2s+LYL
+         fZS28qh9WeO8yJydJjlZ+7o3KMHRyP6aF8AFYyPgfpW1ggq0RjR7ZlOXaLCuBytNkn6d
+         /ABHwXV3uk4JKrCKchbPN6xRI0fFR+sfsJlkOx6ky4I+ASRVLYjJkbfZfxJWIKWPx25Z
+         NX2mq6jQdkN6asbS/kB8sf5+zXeewBggVhFWevj1Kb8r3lpvnu0W5nvPO0/GfZG5NotS
+         248g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EOogGeuI64yHvl9Z+xbxaGRk6UC+hsBNQtzEmQyz9U8=;
+        b=YDr+U6V5q6x4y4n1XdFSH1EYjraKaS53nM6OiWoubYyYzy0GxLl0PpW6ifl0pKTwBu
+         9Eyp2L/eZzWEZhU0Sv3Fby0faBVLrj9pAvcGkJzMsJqWCLJjtM2NQZ9QcjXDXe0f6QCn
+         hc4sK3IhITYIL6MApPYSFLiVo36aKkviD01s41H18vBSVkanDsnRJ1WOPsM/oXyBnkBr
+         5w7qEe+3oA9GNCuGHd296YtPbNTQIrtfeK+sG3HZZgD6fR7X9zjOg188PySEryKX9siI
+         sNYAIXl7xg4XwIesRSyLfupEEBR6ScyduYP+J7r2tGL+ac3NQutJnPj2VFyTJ25FyOgR
+         +62g==
+X-Gm-Message-State: AOAM530ATCIxxrepqDjGFsRWPKMcGw4jqLVZsT7Msr/y0WpJ07MgzXVd
+        /aOW2l2qydKNuwlVWXaPRE8=
+X-Google-Smtp-Source: ABdhPJy1MeFUnWsGjA02SrSnIShvOgiyi9JllNC1nTgsHd17JWof14I0xZseDJqRl58Osk3DEcRtOw==
+X-Received: by 2002:a17:907:986d:b0:6d0:7e8:a0a with SMTP id ko13-20020a170907986d00b006d007e80a0amr10389194ejc.81.1645305746244;
+        Sat, 19 Feb 2022 13:22:26 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id x7sm3293457edr.12.2022.02.19.13.22.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Feb 2022 13:22:25 -0800 (PST)
+Date:   Sat, 19 Feb 2022 23:22:24 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next v2 1/6] net: dsa: add support for phylink
+ mac_select_pcs()
+Message-ID: <20220219212223.efd2mfxmdokvaosq@skbuf>
+References: <Yg6UHt2HAw7YTiwN@shell.armlinux.org.uk>
+ <E1nKlY3-009aKs-Oo@rmk-PC.armlinux.org.uk>
+ <20220219211241.beyajbwmuz7fg2bt@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: avoid call to __dev_set_promiscuity() while
- rtnl_mutex isn't held
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164530560863.19212.14892876083818590654.git-patchwork-notify@kernel.org>
-Date:   Sat, 19 Feb 2022 21:20:08 +0000
-References: <20220218121302.3961040-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220218121302.3961040-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        o.rempel@pengutronix.de
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220219211241.beyajbwmuz7fg2bt@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 18 Feb 2022 14:13:02 +0200 you wrote:
-> If the DSA master doesn't support IFF_UNICAST_FLT, then the following
-> call path is possible:
+On Sat, Feb 19, 2022 at 11:12:41PM +0200, Vladimir Oltean wrote:
+> >  static const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+> >  	.validate = dsa_port_phylink_validate,
+> > +	.mac_select_pcs = dsa_port_phylink_mac_select_pcs,
 > 
-> dsa_slave_switchdev_event_work
-> -> dsa_port_host_fdb_add
->    -> dev_uc_add
->       -> __dev_set_rx_mode
->          -> __dev_set_promiscuity
-> 
-> [...]
+> This patch breaks probing on DSA switch drivers that weren't converted
+> to supported_interfaces, due to this check in phylink_create():
 
-Here is the summary with links:
-  - [net] net: dsa: avoid call to __dev_set_promiscuity() while rtnl_mutex isn't held
-    https://git.kernel.org/netdev/net/c/8940e6b669ca
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+And this is only the most superficial layer of breakage. Everywhere in
+phylink.c where pl->mac_ops->mac_select_pcs() is used, its presence is
+checked and non-zero return codes from it are treated as hard errors,
+even -EOPNOTSUPP, even if this particular error code is probably
+intended to behave identically as the absence of the function pointer,
+for compatibility.
