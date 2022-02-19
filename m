@@ -2,96 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BEBE4BC868
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 13:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BC94BC86E
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 13:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241823AbiBSMkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 07:40:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48914 "EHLO
+        id S242258AbiBSMwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 07:52:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234235AbiBSMka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 07:40:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B65196A38
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 04:40:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 189E960AEA
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 12:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 75721C340EF;
-        Sat, 19 Feb 2022 12:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645274410;
-        bh=nYWDjvMeFNzUggvQY7QoHxcu2awj+Pwz82vQ7/rz7Ns=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TtUdiwkuA8/OwdRMEt0S1NFDM9RGzOFKobex3yeWlpl0Lz7HSzEoE8Z3ltj66795M
-         0mThtZTP4cXksLO9TPlJLLZDDAp5o9I4TRq5MMjkA/LgpE8fiHBklh5cg1c3Mudz7l
-         NQwQCq6U7SjvXIVkyeDl5FwjaDeuhWxcRa+FqnbUTWgG6nYS7136nqbpMmvIDvKv2z
-         LWMtHHzKP14UyTslHeFKGTmiym2AJKaEsyhipmhzJ7BEcSY2t9Tei1SFTWUWWmr5bc
-         NMjjsJR9v4Qw7Mt+s9uqoiTWTinPH8oNtIoKTfaF5FcackrQbrEOiH0XgAOZGtvn8v
-         E4SmYRuaV1MIg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56ABFE7BB0A;
-        Sat, 19 Feb 2022 12:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233494AbiBSMwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 07:52:01 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA7224587;
+        Sat, 19 Feb 2022 04:51:43 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id g1so4629171pfv.1;
+        Sat, 19 Feb 2022 04:51:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=IMJgWx7dxr7dZx5sJ73qfcNpld1JI4tT0p225zF6cG0=;
+        b=dU/T2yqk+TgCmfiFg32eSwNa84h7ucHYxp5k0GjToJPUGg8v7ZihB1stJ++D67aQ3W
+         awd9XD+tPTro0CV5GOLHn0rUksImEBCRzv9NXCWW2tqzKuu1MQF7z6B6ZLcDmtBYzdWo
+         oUMVr57B7QWpLDosa6OWHGxNRc48/OoPNT0v9oG5u6cmzq9SkNzdadnRivYFHHOjb2rA
+         Jr0eyhUnHBkDjshM6OCuEk+YezSUQN8X+5oho8uBnZjDAPO38uIkHrG/gsGzswnRjegK
+         VIcV5EF5vGdYs7CopG20Pc9MYDG/GHtXQXF1tQsbPq4EltMLXC3nOHshSjY1ItkN0xrc
+         6A+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=IMJgWx7dxr7dZx5sJ73qfcNpld1JI4tT0p225zF6cG0=;
+        b=mbkfqW03MeY0t+wpbvudVW6BXzRawQcGkjWjLbA5RaJCNAL/Vl+jo6vwgNv6bdPsWl
+         E2SXUqnfcLuIN/D/g+sOi0PKGXRp4Q+Nmlqd/lRt6uYEqvLw+n0agWQCY9iuE/nmW7Dv
+         R4QZYXtBZHC4RPYypv2f4mOSak3vwFEZJYQmyz0j8D20fRiyYV5OjaLvR6ku1BZuC0FU
+         vSEkdF+vuiIWgyENUi5muOvpzLwo69J4fvzCh7IVxaXm4rmttB6jldFR6cZ12qQPkWMX
+         zC05LUCifQ7PC1AdmjNAS9TqYslYSXQZyLadAfeKjxWsk/QzbjIauIJLvi6T0o5yKvC2
+         Db9w==
+X-Gm-Message-State: AOAM532YOhXKe5DrWj64OSSzZnSS+RoTJgvDhRIpprdUtnS47s5x279s
+        KKWp9EKfSg35nbj0tGd3pPA=
+X-Google-Smtp-Source: ABdhPJwO8xMzwzBLV7r4jxRlT9diEn26HFgySlHax5JoawxF3lfofBhUPh7s2vAQrZR/TVeGrJVCPA==
+X-Received: by 2002:a05:6a00:b41:b0:4e1:3a1:50a7 with SMTP id p1-20020a056a000b4100b004e103a150a7mr12427960pfo.30.1645275102690;
+        Sat, 19 Feb 2022 04:51:42 -0800 (PST)
+Received: from [192.168.99.7] (i220-99-138-239.s42.a013.ap.plala.or.jp. [220.99.138.239])
+        by smtp.googlemail.com with ESMTPSA id v20sm2181201pju.9.2022.02.19.04.51.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Feb 2022 04:51:42 -0800 (PST)
+Message-ID: <24910a58-5d23-a97c-650f-7b53030dd40d@gmail.com>
+Date:   Sat, 19 Feb 2022 21:51:37 +0900
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net-next 1/3] netfilter: flowtable: Support GRE
+Content-Language: en-US
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Paul Blakey <paulb@nvidia.com>
+References: <20220203115941.3107572-1-toshiaki.makita1@gmail.com>
+ <20220203115941.3107572-2-toshiaki.makita1@gmail.com>
+ <YgFdS0ak3LIR2waA@salvia> <9d4fd782-896d-4a44-b596-517c84d97d5a@gmail.com>
+ <YgOQ6a0itcJjQJqx@salvia> <8309e037-840d-0a7d-26c1-f07fda9ba744@gmail.com>
+In-Reply-To: <8309e037-840d-0a7d-26c1-f07fda9ba744@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/7] mptcp: Fix address advertisement races and stabilize
- tests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164527441033.11752.7886795976671254449.git-patchwork-notify@kernel.org>
-Date:   Sat, 19 Feb 2022 12:40:10 +0000
-References: <20220218213544.70285-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220218213544.70285-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, pabeni@redhat.com,
-        geliang.tang@suse.com, mptcp@lists.linux.dev
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Ping, Pablo?
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 18 Feb 2022 13:35:37 -0800 you wrote:
-> Patches 1, 2, and 7 modify two self tests to give consistent, accurate
-> results by fixing timing issues and accounting for syncookie behavior.
+On 2022/02/12 10:54, Toshiaki Makita wrote:
+> On 2022/02/09 19:01, Pablo Neira Ayuso wrote:
+>> On Tue, Feb 08, 2022 at 11:30:03PM +0900, Toshiaki Makita wrote:
+>>> On 2022/02/08 2:56, Pablo Neira Ayuso wrote:
+>>>> On Thu, Feb 03, 2022 at 08:59:39PM +0900, Toshiaki Makita wrote:
+>> [...]
+>>>>> diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+>>>>> index 889cf88..48e2f58 100644
+>>>>> --- a/net/netfilter/nf_flow_table_ip.c
+>>>>> +++ b/net/netfilter/nf_flow_table_ip.c
+>> [...]
+>>>>> @@ -202,15 +209,25 @@ static int nf_flow_tuple_ip(struct sk_buff *skb, const 
+>>>>> struct net_device *dev,
+>>>>>        if (!pskb_may_pull(skb, thoff + *hdrsize))
+>>>>>            return -1;
+>>>>> +    if (ipproto == IPPROTO_GRE) {
+>>>>
+>>>> No ifdef here? Maybe remove these ifdef everywhere?
+>>>
+>>> I wanted to avoid adding many ifdefs and I expect this to be compiled out
+>>> when CONFIG_NF_CT_PROTO_GRE=n as this block is unreachable anyway. It rather
+>>> may have been unintuitive though.
+>>>
+>>> Removing all of these ifdefs will cause inconsistent behavior between
+>>> CONFIG_NF_CT_PROTO_GRE=n/y.
+>>> When CONFIG_NF_CT_PROTO_GRE=n, conntrack cannot determine GRE version, thus
+>>> it will track GREv1 without key infomation, and the flow will be offloaded.
+>>> When CONFIG_NF_CT_PROTO_GRE=y, GREv1 will have key information and will not
+>>> be offloaded.
+>>> I wanted to just refuse offloading of GRE to avoid this inconsistency.
+>>> Anyway this kind of inconsistency seems to happen in software conntrack, so
+>>> if you'd like to remove ifdefs, I will do.
+>>
+>> Good point, thanks for explaining. LGTM.
 > 
-> Paches 3-6 fix two races in overlapping address advertisement send and
-> receive. Associated self tests are updated, including addition of two
-> MIBs to enable testing and tracking dropped address events.
+> Let me confirm, did you agree to keep ifdefs, or delete them?
 > 
-> [...]
-
-Here is the summary with links:
-  - [net,1/7] selftests: mptcp: fix diag instability
-    https://git.kernel.org/netdev/net/c/0cd33c5ffec1
-  - [net,2/7] selftests: mptcp: improve 'fair usage on close' stability
-    https://git.kernel.org/netdev/net/c/5b31dda736e3
-  - [net,3/7] mptcp: fix race in overlapping signal events
-    https://git.kernel.org/netdev/net/c/98247bc16a27
-  - [net,4/7] mptcp: fix race in incoming ADD_ADDR option processing
-    https://git.kernel.org/netdev/net/c/837cf45df163
-  - [net,5/7] mptcp: add mibs counter for ignored incoming options
-    https://git.kernel.org/netdev/net/c/f73c11946345
-  - [net,6/7] selftests: mptcp: more robust signal race test
-    https://git.kernel.org/netdev/net/c/6ef84b1517e0
-  - [net,7/7] selftests: mptcp: be more conservative with cookie MPJ limits
-    https://git.kernel.org/netdev/net/c/e35f885b357d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Toshiaki Makita
