@@ -2,83 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1CCE4BC785
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 11:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7FF4BC799
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 11:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241881AbiBSKA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 05:00:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44302 "EHLO
+        id S231844AbiBSKJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 05:09:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231863AbiBSKA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 05:00:58 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E16A1BFA;
-        Sat, 19 Feb 2022 02:00:38 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id hw13so20541213ejc.9;
-        Sat, 19 Feb 2022 02:00:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eyoLzh3GoCjEcko6E6TRX3Q0MN5P8KHlKdLhPGSzjas=;
-        b=nnddJEcHqLBBgfgW6X8nP2hJ+jbcGZujjBROoEt9DQKra/B8N1F3VqRROEaOdXzS1G
-         TnmFhHNUyN5sK64vsVyWIaI5/IWYIRSDlRlHN9lO44vm9/RH205qjm0HVp0WDQBkojHS
-         SxK7lXv9qPuxBw0h8IcrUN22V3RAYtX9gwDEXgiSTbwCKm6Cv+emuMeHX4pjOUOxLO1r
-         SBJvros1knM0ArBLcFpYEDQBMbDEOjZyNBZZLUKg0Dh+l34NitpBj33SGW8TgzKLy4aU
-         BUdMEoxEsM4NVFdyaStDhqIhtOms7cKP4Ae+XytJsnPBGISv5erc6kLo/q/y+6+jwYSL
-         tJVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eyoLzh3GoCjEcko6E6TRX3Q0MN5P8KHlKdLhPGSzjas=;
-        b=ikZVPyIlASmHZ8l0LzizvdISxXwDLAR9X8p3ifNg1lWZ1QB9bSlmWF2ucgYVRlNzil
-         2mLL0frS+3j3BRiiDasziSZa3I/iVMvU7vHm1bP1d+5yze98xKlwIfI4okKhWM4Y9yNv
-         hGHpYiACfFJ+Swpsr8TxowJ8nR/J9EVe3GIueqaJsGcCZtByXsI9SlKNg8g/WN99suyf
-         5D5CvnCfAoCqO6ouU3dYEZehToU8lFX59uC4b/6eBWoJho1OTktfXiCrFH/1cVSNe05u
-         VM8iMi/dE6eRXQR7AM/mDLqFOQz62kO7+GtlD7KsDIRRMCz/98K7hb53hVaLdMi2M7V5
-         SX1Q==
-X-Gm-Message-State: AOAM531SyddbjLXZ6CCt4lCJv3jaM4D+l5KiUkWoeZv4CScBbj40UQmk
-        IKcMn/dZfnm2ZK3Ub+OZYrg=
-X-Google-Smtp-Source: ABdhPJx1V2gD2Zh/g9vSl2TlbwK/2IUdNqZeGbq6SyVxCfhg7AYOb4RmbSYhkOf48WpzRbDFW0e3YQ==
-X-Received: by 2002:a17:906:154c:b0:6ce:21d7:2826 with SMTP id c12-20020a170906154c00b006ce21d72826mr9312950ejd.9.1645264837397;
-        Sat, 19 Feb 2022 02:00:37 -0800 (PST)
-Received: from skbuf ([188.27.184.105])
-        by smtp.gmail.com with ESMTPSA id b20sm5824839ede.23.2022.02.19.02.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 02:00:36 -0800 (PST)
-Date:   Sat, 19 Feb 2022 12:00:34 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next v3 4/5] net: dsa: mv88e6xxx: Add support for
- bridge port locked mode
-Message-ID: <20220219100034.lh343dkmc4fbiad3@skbuf>
-References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
- <20220218155148.2329797-5-schultz.hans+netdev@gmail.com>
+        with ESMTP id S233728AbiBSKI7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 05:08:59 -0500
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16CD160437;
+        Sat, 19 Feb 2022 02:08:39 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guoheyi@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V4tUAJL_1645265316;
+Received: from 30.15.223.223(mailfrom:guoheyi@linux.alibaba.com fp:SMTPD_---0V4tUAJL_1645265316)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 19 Feb 2022 18:08:37 +0800
+Message-ID: <4964f8c3-8349-4fad-e176-8c26840d1a08@linux.alibaba.com>
+Date:   Sat, 19 Feb 2022 18:08:35 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218155148.2329797-5-schultz.hans+netdev@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [Issue report] drivers/ftgmac100: DHCP occasionally fails during
+ boot up or link down/up
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Dylan Hung <dylan_hung@aspeedtech.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <0e456c4d-aa22-4e7f-9b2c-3059fe840cb9@linux.alibaba.com>
+ <YgwSAjGN2eWUpamo@lunn.ch>
+From:   Heyi Guo <guoheyi@linux.alibaba.com>
+In-Reply-To: <YgwSAjGN2eWUpamo@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,47 +49,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 04:51:47PM +0100, Hans Schultz wrote:
-> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-> index ab41619a809b..46b7381899a0 100644
-> --- a/drivers/net/dsa/mv88e6xxx/port.c
-> +++ b/drivers/net/dsa/mv88e6xxx/port.c
-> @@ -1234,6 +1234,39 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
->  	return err;
->  }
->  
-> +int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-> +			    bool locked)
-> +{
-> +	u16 reg;
-> +	int err;
-> +
-> +	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
-> +	if (err)
-> +		return err;
-> +
-> +	reg &= ~MV88E6XXX_PORT_CTL0_SA_FILT_MASK;
-> +	if (locked)
-> +		reg |= MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK;
-> +
-> +	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
-> +	if (err)
-> +		return err;
-> +
-> +	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, &reg);
-> +	if (err)
-> +		return err;
-> +
-> +	reg &= ~MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-> +	if (locked)
-> +		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-> +
-> +	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, reg);
+Hi Andrew,
 
-	return mv88e6xxx_port_write(...);
+The DHCP issue is gone after applying below patch. I put the lock 
+statements outside of the pure reset function, for the phydev lock has 
+been acquired before calling adjust_link. The lock order in 
+ftgmac100_reset_task() was also changed, to make it the same as the lock 
+procedure in adjust_link, in which the phydev is locked first and then 
+rtnl_lock. I'm not quite sure whether it will bring in any potential 
+dead lock. Any advice?
 
-> +	if (err)
-> +		return err;
-> +
-> +	return 0;
-> +}
+Thanks,
+
+Heyi
+
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c 
+b/drivers/net/ethernet/faraday/ftgmac100.c
+index 1c7912a94e36d..9610b59ca0876 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1002,6 +1002,8 @@ static int ftgmac100_alloc_rx_buffers(struct 
+ftgmac100 *priv)
+         return 0;
+  }
+
++static void ftgmac100_reset(struct ftgmac100 *priv);
++
+  static void ftgmac100_adjust_link(struct net_device *netdev)
+  {
+         struct ftgmac100 *priv = netdev_priv(netdev);
+@@ -1050,8 +1052,14 @@ static void ftgmac100_adjust_link(struct 
+net_device *netdev)
+         /* Disable all interrupts */
+         iowrite32(0, priv->base + FTGMAC100_OFFSET_IER);
+
+-       /* Reset the adapter asynchronously */
+-       schedule_work(&priv->reset_task);
++       if (priv->mii_bus)
++               mutex_lock(&priv->mii_bus->mdio_lock);
++       /* Lock the world */
++       rtnl_lock();
++       ftgmac100_reset(priv);
++       rtnl_unlock();
++       if (priv->mii_bus)
++               mutex_unlock(&priv->mii_bus->mdio_lock);
+  }
+
+  static int ftgmac100_mii_probe(struct ftgmac100 *priv, phy_interface_t 
+intf)
+@@ -1388,26 +1396,17 @@ static int ftgmac100_init_all(struct ftgmac100 
+*priv, bool ignore_alloc_err)
+         return err;
+  }
+
+-static void ftgmac100_reset_task(struct work_struct *work)
++static void ftgmac100_reset(struct ftgmac100 *priv)
+  {
+-       struct ftgmac100 *priv = container_of(work, struct ftgmac100,
+-                                             reset_task);
+         struct net_device *netdev = priv->netdev;
+         int err;
+
+         netdev_dbg(netdev, "Resetting NIC...\n");
+
+-       /* Lock the world */
+-       rtnl_lock();
+-       if (netdev->phydev)
+-               mutex_lock(&netdev->phydev->lock);
+-       if (priv->mii_bus)
+-               mutex_lock(&priv->mii_bus->mdio_lock);
+-
+
+         /* Check if the interface is still up */
+         if (!netif_running(netdev))
+-               goto bail;
++               return;
+
+         /* Stop the network stack */
+         netif_trans_update(netdev);
+@@ -1429,12 +1428,29 @@ static void ftgmac100_reset_task(struct 
+work_struct *work)
+         ftgmac100_init_all(priv, true);
+
+         netdev_dbg(netdev, "Reset done !\n");
+- bail:
++}
++
++static void ftgmac100_reset_task(struct work_struct *work)
++{
++       struct ftgmac100 *priv = container_of(work, struct ftgmac100,
++                                             reset_task);
++       struct net_device *netdev = priv->netdev;
++
++       int err;
++       /* Lock the world */
++       if (netdev->phydev)
++               mutex_lock(&netdev->phydev->lock);
++       if (priv->mii_bus)
++               mutex_lock(&priv->mii_bus->mdio_lock);
++       rtnl_lock();
++
++       ftgmac100_reset(priv);
++
++       rtnl_unlock();
+         if (priv->mii_bus)
+                 mutex_unlock(&priv->mii_bus->mdio_lock);
+         if (netdev->phydev)
+                 mutex_unlock(&netdev->phydev->lock);
+-       rtnl_unlock();
+  }
+
+  static int ftgmac100_open(struct net_device *netdev)
+
+在 2022/2/16 上午4:50, Andrew Lunn 写道:
+> On Tue, Feb 15, 2022 at 02:38:51PM +0800, Heyi Guo wrote:
+>> Hi,
+>>
+>> We are using Aspeed 2600 and found DHCP occasionally fails during boot up or
+>> link down/up. The DHCP client is systemd 247.6 networkd. Our network device
+>> is 2600 MAC4 connected to a RGMII PHY module.
+>>
+>> Current investigation shows the first DHCP discovery packet sent by
+>> systemd-networkd might be corrupted, and sysmtemd-networkd will continue to
+>> send DHCP discovery packets with the same XID, but no other packets, as
+>> there is no IP obtained at the moment. However the server side will not
+>> respond with this serial of DHCP requests, until it receives some other
+>> packets. This situation can be recovered by another link down/up, or a "ping
+>> -I eth0 xxx.xxx.xxx.xxx" command to insert some other TX packets.
+>>
+>> Navigating the driver code ftgmac.c, I've some question about the work flow
+>> from link down to link up. I think the flow is as below:
+>>
+>> 1. ftgmac100_open() will enable net interface with ftgmac100_init_all(), and
+>> then call phy_start()
+>>
+>> 2. When PHY is link up, it will call netif_carrier_on() and then adjust_link
+>> interface, which is ftgmac100_adjust_link() for ftgmac100
+> The order there is questionable. Maybe it should first call the adjust
+> link callback, and then the netif_carrier_on(). However...
+>
+>> 3. In ftgmac100_adjust_link(), it will schedule the reset work
+>> (ftgmac100_reset_task)
+>>
+>> 4. ftgmac100_reset_task() will then reset the MAC
+> Because of this delayed reset, changing the order will not help this
+> driver.
+>
+>> I found networkd will start to send DHCP request immediately after
+>> netif_carrier_on() called in step 2, but step 4 will reset the MAC, which
+>> may potentially corrupt the sending packet.
+> What is not clear to my is why it is scheduling the work rather than
+> just doing it. At least for adjust_link, it is in a context it can
+> sleep. ftgmac100_set_ringparam() should also be able to
+> sleep. ftgmac100_interrupt() cannot sleep, so it does need to schedule
+> work.
+>
+> I would suggest you refactor ftgmac100_reset_task() into a function
+> that actually does the reset, and a wrapper which takes a
+> work_struct. adjust_link can then directly do the reset, which
+> probably solves your problem.
+>
+> 	 Andrew
