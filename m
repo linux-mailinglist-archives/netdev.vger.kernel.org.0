@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 148984BC63D
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 08:08:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8256D4BC632
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 08:08:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241387AbiBSHH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 02:07:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41012 "EHLO
+        id S241401AbiBSHIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 02:08:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230412AbiBSHH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 02:07:56 -0500
+        with ESMTP id S229800AbiBSHIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 02:08:10 -0500
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F0825A31A;
-        Fri, 18 Feb 2022 23:07:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5E125A31A;
+        Fri, 18 Feb 2022 23:07:52 -0800 (PST)
 Received: by verein.lst.de (Postfix, from userid 2407)
-        id 7C03468BEB; Sat, 19 Feb 2022 08:07:31 +0100 (CET)
-Date:   Sat, 19 Feb 2022 08:07:31 +0100
+        id 20A5068C4E; Sat, 19 Feb 2022 08:07:49 +0100 (CET)
+Date:   Sat, 19 Feb 2022 08:07:48 +0100
 From:   Christoph Hellwig <hch@lst.de>
 To:     Baoquan He <bhe@redhat.com>
 Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
@@ -29,13 +29,14 @@ Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
         svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
         linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: Re: [PATCH 01/22] parisc: pci-dma: remove stale code and comment
-Message-ID: <20220219070731.GA26505@lst.de>
-References: <20220219005221.634-1-bhe@redhat.com> <20220219005221.634-2-bhe@redhat.com>
+Subject: Re: [PATCH 02/22] net: moxa: Don't use GFP_DMA when calling
+ dma_alloc_coherent()
+Message-ID: <20220219070748.GB26505@lst.de>
+References: <20220219005221.634-1-bhe@redhat.com> <20220219005221.634-3-bhe@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220219005221.634-2-bhe@redhat.com>
+In-Reply-To: <20220219005221.634-3-bhe@redhat.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
@@ -46,10 +47,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 08:52:00AM +0800, Baoquan He wrote:
-> The gfp assignment has been commented out in ancient times, combined with
-> the code comment, obviously it's not needed since then. Let's remove the
-> whole ifdeffery block so that GFP_DMA searching won't point to this.
+On Sat, Feb 19, 2022 at 08:52:01AM +0800, Baoquan He wrote:
+> From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> 
+> dma_alloc_coherent() allocates dma buffer with device's addressing
+> limitation in mind. It's redundent to specify GFP_DMA when calling
+> dma_alloc_coherent().
 
 Looks good:
 
