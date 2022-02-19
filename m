@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F14574BC572
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 05:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E75E04BC579
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 06:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241323AbiBSE64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Feb 2022 23:58:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48114 "EHLO
+        id S231304AbiBSFDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 00:03:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241321AbiBSE6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Feb 2022 23:58:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA625F259
-        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 20:58:36 -0800 (PST)
+        with ESMTP id S229472AbiBSFDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 00:03:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CAC66231
+        for <netdev@vger.kernel.org>; Fri, 18 Feb 2022 21:03:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75429B82545
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 04:58:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E320DC004E1;
-        Sat, 19 Feb 2022 04:58:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41519B82545
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 05:03:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABB5C004E1;
+        Sat, 19 Feb 2022 05:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645246714;
-        bh=saGmzTj9IX9+ieOIVHKsmNGBFyfpPvmmCCZz4F6HQUs=;
+        s=k20201202; t=1645247010;
+        bh=bNIvby34CuigM2PSk6JYLnnb13kvfmVggRGp1IJZkRU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L7PERKGmmz79oawaCrwYcBi4aQzhtmqvSjjb7JnvO9/q5f0cy14aK7Mejr3xCAZjA
-         0j8u5pHXnvXJxTcOrrfM/75qAukaITi9OQT1ThIhvuadxihvMuSoFm1Qwh7fbr6y24
-         09SKJGqfe4DOSNgUeY7hANh0GY8rwkYbfm403Ss0jjpYDqs2304PqVVi4vdrh3jkHn
-         twxC0tKJK6ROujIH/OQUOFbdV9mQu320kg02ITXTUItwiWFd5YxRtZCrTca+HtImGS
-         0InS1UEpESrVFNCW7689HleOh0E/wyyEG1nqpcHUFS+TTUTDeywcwnLHbeI5N01ADQ
-         UvE8flCoqPyLQ==
-Date:   Fri, 18 Feb 2022 20:58:33 -0800
+        b=biDS3BUnqBFJgDDT+12b6zzhwpeJZNNEA0AhU0UZSEF1bM5SmNfMVxZ+47Pb9zpEI
+         LTwzL3FQ3EOa2HzXjuiKFgB9peY/v/Ra5xysAPvof0ZjdKJacwukXqvS5WJbyUchag
+         gVUChBC791zfntTxd4LypZfi4RcZ/sHPtR8S2r00jd1s7BW1wKfOuQnMgqc/re+Xl7
+         RQbVOnwPsnIOfiQ4hXwASFgMmIWl3V2FojSQ40ZtFNnCfnftJMdec9csfeJmEWjcD1
+         IVKiU6KbBaa/LICXXYNyhr+maDgxMsj4ZoloiITj8N6bTFwmdL71ZUTbw9hk1uFO3v
+         h4j/4db6vm67Q==
+Date:   Fri, 18 Feb 2022 21:03:28 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch
-Subject: Re: [PATCH net-next v7 0/8] new Fungible Ethernet driver
-Message-ID: <20220218205833.0145f8c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220218234536.9810-1-dmichail@fungible.com>
-References: <20220218234536.9810-1-dmichail@fungible.com>
+To:     Marcin Szycik <marcin.szycik@linux.intel.com>
+Cc:     netdev@vger.kernel.org, michal.swiatkowski@linux.intel.com,
+        wojciech.drewek@intel.com, davem@davemloft.net,
+        pablo@netfilter.org, laforge@gnumonks.org,
+        intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v6 6/7] ice: Fix FV offset searching
+Message-ID: <20220218210328.4420a768@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220218145339.7322-1-marcin.szycik@linux.intel.com>
+References: <20220218145048.6718-1-marcin.szycik@linux.intel.com>
+        <20220218145339.7322-1-marcin.szycik@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,17 +56,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Feb 2022 15:45:28 -0800 Dimitris Michailidis wrote:
-> This patch series contains a new network driver for the Ethernet
-> functionality of Fungible cards.
+On Fri, 18 Feb 2022 15:53:39 +0100 Marcin Szycik wrote:
+> From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 > 
-> It contains two modules. The first one in patch 2 is a library module
-> that implements some of the device setup, queue managenent, and support
-> for operating an admin queue. These are placed in a separate module
-> because the cards provide a number of PCI functions handled by different
-> types of drivers and all use the same common means to interact with the
-> device. Each of the drivers will be relying on this library module for
-> them.
+> Checking only protocol ids while searching for correct FVs can lead to a
+> situation, when incorrect FV will be added to the list. Incorrect means
+> that FV has correct protocol id but incorrect offset.
+> 
+> Call ice_get_sw_fv_list with ice_prot_lkup_ext struct which contains all
+> protocol ids with offsets.
+> 
+> With this modification allocating and collecting protocol ids list is
+> not longer needed.
+> 
+> Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-I'll review this after the long weekend. Please try to avoid dumping
-large chunks of code on the reviewers on Friday afternoon.
+> diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+> index 38fe0a7e6975..9746db6e19b5 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+> @@ -1884,7 +1884,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type req_profs,
+>   * allocated for every list entry.
+>   */
+>  int
+> -ice_get_sw_fv_list(struct ice_hw *hw, u8 *prot_ids, u16 ids_cnt,
+> +ice_get_sw_fv_list(struct ice_hw *hw, struct ice_prot_lkup_ext *lkups,
+>  		   unsigned long *bm, struct list_head *fv_list)
+>  {
+>  	struct ice_sw_fv_list_entry *fvl;
+
+drivers/net/ethernet/intel/ice/ice_flex_pipe.c:1889: warning: Function parameter or member 'lkups' not described in 'ice_get_sw_fv_list'
+drivers/net/ethernet/intel/ice/ice_flex_pipe.c:1889: warning: Excess function parameter 'prot_ids' description in 'ice_get_sw_fv_list'
+drivers/net/ethernet/intel/ice/ice_flex_pipe.c:1889: warning: Excess function parameter 'ids_cnt' description in 'ice_get_sw_fv_list'
+
+There's another one in the next patch.
