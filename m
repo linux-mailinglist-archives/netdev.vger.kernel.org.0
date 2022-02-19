@@ -2,113 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 989F74BCA21
-	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 19:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABC0E4BCA5A
+	for <lists+netdev@lfdr.de>; Sat, 19 Feb 2022 20:00:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236658AbiBSSpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 13:45:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52658 "EHLO
+        id S241791AbiBSTAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 14:00:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232813AbiBSSo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 13:44:59 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B253760ABB;
-        Sat, 19 Feb 2022 10:44:40 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id p23so10691941pgj.2;
-        Sat, 19 Feb 2022 10:44:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=G+2MUlyds6L1UN+52LQNnBAdZGXp/gCp9l8pxjmr+mI=;
-        b=ShVAMF61ljh/1Zzbcf6or7CFO4KMpDRmyOpkVk7PxjpbVKlG8ixWtyo9jwNqMMC871
-         aa4yw+L9V1aJCmkfoCbMLS6f2wAG5YpsyxuaqfHBU3O5mNvDYU9TQXpmzXYGduC5xEuw
-         yk9QpGwPe0UnQx4N/yxOWugHjr6S4pi/IDYVchkpwD96THVogTiHBhIZkcIeOmQ6FOD5
-         fcfNK2Fn//Hlud8KREnTubatFtPUcXMC4qpl4R9gB8tnwtyfmilHYyvKD3t2+lHzNtXe
-         UtUQATx0ukgr42zrelFM3ZhgtvL/klE2ERUAQvHUvZflO4vibZPf/3loo+yCDWqqtDyf
-         lhbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=G+2MUlyds6L1UN+52LQNnBAdZGXp/gCp9l8pxjmr+mI=;
-        b=EyMzCibVb6iwwQxQKL2Or8g4CUar4r3rsRZhFACe4FBLYfAHWl4NOMNzrDx5XRInPJ
-         5lTNvLs3UZb2H18Tf9NktPB4Q45yhvZywmoJB05WKBfi1/JruDBa2E5Gpv35w6L722iv
-         DraKmWAI24gul7H9aAXS2zsg01BVuTz5NMUQn1Qzs+acMNFxuM64kUvvpniNRuar2jiX
-         H1x8fcZ0qAN0N2hTrpOB6ml039JVhD70zcXHS1T5nUr1o0KFwz3yrJAbPUw25cDihnT/
-         ShwgGsK8pKQ7IXPxAqW20R4KCzw7bGslN1BiJbz4zZ05aZtiy2ctAdzyJHF06+Sk/q0T
-         sZMw==
-X-Gm-Message-State: AOAM532MwH6kmcfpGRim35+HeFapCDJBdVtyzHijuf8WZdK9rafJcwdx
-        si91fts+WdTk+2FEvxQRlc3mhkl3iHNcnZw/tG2v95rD
-X-Google-Smtp-Source: ABdhPJxYTmlS9JDmd0to38011+Xkz4nm+eMj6CDnnt2Jf7hDO+3/Ik60sBAtjOdz4CwzJCWremeDu3uleKJiyXAvqX0=
-X-Received: by 2002:a63:e657:0:b0:34b:e1da:c2c with SMTP id
- p23-20020a63e657000000b0034be1da0c2cmr10425961pgj.543.1645296280243; Sat, 19
- Feb 2022 10:44:40 -0800 (PST)
+        with ESMTP id S229437AbiBSTAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 14:00:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EF259A53;
+        Sat, 19 Feb 2022 11:00:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B67DA60E84;
+        Sat, 19 Feb 2022 19:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B344C340EC;
+        Sat, 19 Feb 2022 19:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645297210;
+        bh=koCVmhrrOoMAENsrk2W+MxsXDFkkYZ7Hlx1gDJI17a8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=D1LbqvijCZ+M250vjz9yT5c65gxKVLrDA4NSV/7QW6dCB53mquo5xKspQMT0vOL1n
+         Vf8+5qG5zU3RYrOsb4tcKV4k75+FA1JeLZKHe9W+hjA4j7Koa1b9z9iKen6o0cXLwa
+         WRT/gknJrrklbDmBDO+lQr87UtY+562nhVt2X4m8zzEOX4QyZO/NgEdtGenfbtDgBt
+         +Y+Q+tF1xubl+KU9ZBVKCVPZe4r852ZtgjHclx2LYvQ7fpaE7vOZuZgc8mpgSzgDRM
+         PxdYY1SvSHURF5DeGc6C+OJlGVtDzfTiUhPBWEaHTPivnK6ccHQOYw37SNabnaONK8
+         b37YaUj+dP+fQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F266FE7BB0B;
+        Sat, 19 Feb 2022 19:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220214111337.3539-1-houtao1@huawei.com> <20220217035041.axk46atz7j4svi2k@ast-mbp.dhcp.thefacebook.com>
- <3b968224-c086-a8b6-159a-55db7ec46011@huawei.com>
-In-Reply-To: <3b968224-c086-a8b6-159a-55db7ec46011@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 19 Feb 2022 10:44:29 -0800
-Message-ID: <CAADnVQ+z75P0sryoGhgUwrHRMr2Jw=eFO4eCRe0Ume554si9Zg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next v2 0/3] bpf: support string key in htab
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Joanne Koong <joannekoong@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 1/1] net: dsa: microchip: ksz9477: export HW stats
+ over stats64 interface
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164529720998.31615.18049890364706478684.git-patchwork-notify@kernel.org>
+Date:   Sat, 19 Feb 2022 19:00:09 +0000
+References: <20220219082630.2454948-1-o.rempel@pengutronix.de>
+In-Reply-To: <20220219082630.2454948-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 5:54 AM Hou Tao <houtao1@huawei.com> wrote:
->
-> > We've been thinking about "dynamic pointer" concept where
-> > pointer + length will be represented as an object.
-> I have seen the proposal from Joanne Koong on "dynamic pointers".
-> It can solve the storage problem of string, but the lookup of
-> string is still a problem. Hash is a option but can we support
-> two dynamic pointers points to the same internal object and use
-> the id of the internal object to represent the string ?
+Hello:
 
-Let's have a discussion about dynptr in that thread.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> > The program will be able to allocate it and persist into a map value
-> > and potentially into a map key.
-> > For storing a bunch of strings one can use a strong hash and store
-> > that hash in the key while keeping full string as a variable sized
-> > object inside the value.
-> Will using a strong hash function impact the lookup performance because
-> each lookup will need to calculate the hash ?
->
-> > Another approach is to introduce a trie to store strings, or dfa,
-> > or aho-corasick, etc. There are plenty of data structures that are
-> > more suitable for storing and searching strings depending on the use case.
-> > Using hash table for strings has its downsides.
-> > .
-> Before add support for string key in hash table, we had implement tries,
-> ternary search tree and hash table in user-space for string lookup. hash
-> table shows better performance and memory usage, so we decide to do string
-> support in hash table. We will revisit our tests and investigate new string
-> data structures.
+On Sat, 19 Feb 2022 09:26:30 +0100 you wrote:
+> Provide access to HW offloaded packets over stats64 interface.
+> The rx/tx_bytes values needed some fixing since HW is accounting size of
+> the Ethernet frame together with FCS.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+> changes v4:
+> - do not copy raw counters to the stack
+> changes v3:
+> - move dev->dev_ops->r_mib_stat64 insight of the mutex
+> changes v2:
+> - fix locking issue in in atomic context
+> 
+> [...]
 
-What performance characteristics did you consider?
-Just the speed of the lookup ?
-How many elements are there in the map ?
-Is it 80% or 10% full ?
-Did you compare memory usage ?
-Did you consider the speed of update/delete ?
-preallocated or dynamic alloc ?
+Here is the summary with links:
+  - [net-next,v4,1/1] net: dsa: microchip: ksz9477: export HW stats over stats64 interface
+    https://git.kernel.org/netdev/net-next/c/a7f4f13a0a68
 
-With dynamic pointers and further verifier improvements bpf programs
-will be able to implement a hash table on their own.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
