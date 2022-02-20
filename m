@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E12D4BCDF6
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B904BCDAD
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243588AbiBTJ7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 04:59:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40434 "EHLO
+        id S243602AbiBTJ7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 04:59:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242828AbiBTJ7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:59:06 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2060.outbound.protection.outlook.com [40.107.94.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9401F54191;
-        Sun, 20 Feb 2022 01:58:45 -0800 (PST)
+        with ESMTP id S243596AbiBTJ7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:59:11 -0500
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2059.outbound.protection.outlook.com [40.107.102.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A353154191;
+        Sun, 20 Feb 2022 01:58:49 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K4m+x0MarzeMSf8LfxX7SbjaNqzDpmZaL4gW/Y+znHf3Jm4F06y5hKgTIqli/j9XGwX9Vih7XUW1PabkC+h16fpnnmBnxuZUdZRh62D30zFxpnmo2vVx+F2I1TEos3zRusZ9ek0/yZL+v/MaJtrMvoRQKI83+8u0Go+Fjnn2RDlVz79MVh3RYEL7IW+EpUQY2bWavJLVKSWo+1LuxvgsEfQ3VkBAIlzDSYIVQ3yY3RrmXnNOjOBdV+PRHNew/aqrYiXFkYxPwK0i+SeaZanxXl7B3vbG0MEwP+UjQsEL6eVlP4lACNZjJqSY6fn4Rt9vNkPKaWLkONwAgf7JcX04JQ==
+ b=APyqsFSTRhoP/MMp11vcaLQZoFPojlzxzCsQWt16DGPYudEKY00ND1q5OmUVw9C0fNjsxaWA1RiQAp+SFA1I9EirBz6O/bFfw4GD4hK+Io5MwTzXHkW5sd6NPl6pF7SA9PxhHzcliB94ggIGu9kg9pWRcZ5v9h97/VPmvl0J7JvmfjWCKnKk2uWLFMDPVshHwuUBiVFstO5vDwbDG6USITpXNJSJCor2+AOcSleg9JsxFzqNLE8nauo55Wc/zN7CCgYKkHM2Z2Lj0Vx+nMdV7RW6tZkfUfJbGpma2+rNnsYoxmfFbjlFeAhEIPOXrAo3ZKawlDJ3AuuNegONNLjNsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=61gwSfylWpcH4wUM2gijTwlrZsz7BPMQi4AgoGVantk=;
- b=MAJYFVsDutKc+PYDMqnluj8JHd+N+aYitNQokfrXiumtVKsbe2Efza+NoUfvmKHklxihNfzdMbY0XDS8QIMN5C7E+1BHpABPULNJvHhY9pTQ/4/+1Qx9uGCHP8YGE4ciQNINugqaPu/wgVOEMFtDyo++TVwF76s0jLBZ3FaE3Ek2KOSjDmgYmxFscuCU6w45zLSI1XDLPDDjwJ2wW45znVtaZCsl/JI6qHwoQ9oqWtoqYp47NETlEY0u60sXAV7HDsv+8niwN60Y3Yg3+6TQKb+z3auLcQbHNtEPL7N9v2m9a+b4FkulH22Ah0dsQ5RGbVC3j59/XX6XQlZ2fzpkMw==
+ bh=sh+Wv4Rj0ROCI1moErIr+cKiO00G2TXSHsDSrJjkwxo=;
+ b=JX1Vtz0muQgQlr2yl2fMQWVrxYmnaVZ+MH9wP/g06UHZbE38jZCXAQfv0KzO919HbKDOSIrb+HNTJ4aPyLMIoRTDLNdzAKa24DqpzhrbZxoEwPda6zEWcaVoZ0sjUUn2hH5w83sqVKKPCtWbFJmMEhr/OdaRn9u0S1hpDEMW0kgieDIf3F/KFnPiPVYkSMPkU8SyrVP2BaR+yUkdLt7JivT8QqzYW6UIVuQvI3wOOSbPa3LjyjSIiZcANZK8RrfzZoXdn/R1Elc0YzD1u94TrypXz+5tDty+pxD1mwf6Mhd4P2MHhEgmmgaWYItwDsrBF6IfRanOvmekVxgyge16Ig==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=61gwSfylWpcH4wUM2gijTwlrZsz7BPMQi4AgoGVantk=;
- b=TgfblsNv7B2qCoZvDiesk2NVBZ5tYr4iLmJj5iVcmUG67RLBLMScSWLtPQlRlk1o7uofAauFonqFigdl3Q2X8OOMX3KkeBN/PPt8vc0JWj1tGK/J7ZZ/quvn6UgmQbE8U5YbfzNBzPoFJBYC8jUQ79oZFZaB3ML/hTybBVdSSqzYCz7i1wuDEbsEtmxyCpJJisxmwPpKs2Xnh9NFwTfurYgv+CfBTYHrumsq91fIOMzQ+/AIrVg8HE/1yLKrUTm3ggn13YGnZeXVo7kYerVo5rDT5rW5gVTGGxw64dQxJYyh02//1uP3PSbaguJRWFiHy9fgf6q46wSQg3qa5rybkQ==
-Received: from DS7PR03CA0129.namprd03.prod.outlook.com (2603:10b6:5:3b4::14)
- by SJ0PR12MB5609.namprd12.prod.outlook.com (2603:10b6:a03:42c::12) with
+ bh=sh+Wv4Rj0ROCI1moErIr+cKiO00G2TXSHsDSrJjkwxo=;
+ b=bJBdBTsZP43NBToEALcG59kzfqTWjjpo/949KsNMHUJfWbjDmpU0MVSaljC74wfOnOiifw5XpX4lZoGT0zd2P+Bn7w7KD6+vY8Ka8oes1J63AWP1sB6eqBVnycGOMD1/Afn4lGN0o/ZL4dMRb0PowVbJjDC4FeSgbFTgwgygv8KczA9Ym63bq8IDEp8kNJ2lEYLp72yH+C4z0msSP1325I5Xg7gscia1gWBQsUfTLZK/TFvr1ZKrMjQtJ1hQSDb8tsQHyB4I18R4E6b6vjNXqnoDEEHzsbKYQ9+DWr04LQB7Rxc96CUFYW9fvlf1NBtk0EVS/Kt3hizqnwqcKS8xew==
+Received: from CO2PR04CA0005.namprd04.prod.outlook.com (2603:10b6:102:1::15)
+ by MW2PR12MB2570.namprd12.prod.outlook.com (2603:10b6:907:a::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.15; Sun, 20 Feb
- 2022 09:58:44 +0000
-Received: from DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b4:cafe::e5) by DS7PR03CA0129.outlook.office365.com
- (2603:10b6:5:3b4::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17 via Frontend
- Transport; Sun, 20 Feb 2022 09:58:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Sun, 20 Feb
+ 2022 09:58:47 +0000
+Received: from CO1NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:102:1:cafe::f5) by CO2PR04CA0005.outlook.office365.com
+ (2603:10b6:102:1::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24 via Frontend
+ Transport; Sun, 20 Feb 2022 09:58:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT026.mail.protection.outlook.com (10.13.172.161) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT013.mail.protection.outlook.com (10.13.174.227) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Sun, 20 Feb 2022 09:58:43 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 20 Feb
- 2022 09:58:41 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.4995.15 via Frontend Transport; Sun, 20 Feb 2022 09:58:47 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 20 Feb
+ 2022 09:58:46 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Sun, 20 Feb 2022
- 01:58:40 -0800
+ 01:58:46 -0800
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.7)
  with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Sun, 20 Feb
- 2022 01:58:35 -0800
+ 2022 01:58:41 -0800
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <bhelgaas@google.com>,
         <jgg@nvidia.com>, <saeedm@nvidia.com>
@@ -69,9 +69,9 @@ CC:     <linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
         <yishaih@nvidia.com>, <maorg@nvidia.com>, <cohuck@redhat.com>,
         <ashok.raj@intel.com>, <kevin.tian@intel.com>,
         <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH V8 mlx5-next 05/15] net/mlx5: Expose APIs to get/put the mlx5 core device
-Date:   Sun, 20 Feb 2022 11:57:06 +0200
-Message-ID: <20220220095716.153757-6-yishaih@nvidia.com>
+Subject: [PATCH V8 mlx5-next 06/15] net/mlx5: Introduce migration bits and structures
+Date:   Sun, 20 Feb 2022 11:57:07 +0200
+Message-ID: <20220220095716.153757-7-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220220095716.153757-1-yishaih@nvidia.com>
 References: <20220220095716.153757-1-yishaih@nvidia.com>
@@ -80,24 +80,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 689cde50-b9a3-4330-b505-08d9f457944c
-X-MS-TrafficTypeDiagnostic: SJ0PR12MB5609:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR12MB56098A86EE3627DFD366AD4BC3399@SJ0PR12MB5609.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 79393c18-6955-47e5-b98f-08d9f457969e
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2570:EE_
+X-Microsoft-Antispam-PRVS: <MW2PR12MB25707B7005C61F4B3EF2E479C3399@MW2PR12MB2570.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UmS8mUHlkHPDBKTLFpekjhIheYQC4ibn7GgbX7M00RoiqEocf1OjLwxzaDg0ghlL5geWYvjER6pTi/U8XoN2zO7HccoiM15ClReYn0lbZQH2HcWZcLMwhwxifpIF0SdFW/18ftGK6xCf3G2HCWzsK4VEeyIWtjWigxUPCP65Hu2eeFJrw8Gpv/U105wBjheDBJEIxjI9wGsy6bXiGp68a+jyw7/V1GVpYrVxBaPGVAi63izat8ulZurJNdFU2OF2sfrr8D9Zzep92ljrhkdZexOfOc395KEGDU8DT0VZzSNi774cp2ofqFKiuR7vvsCT4uJontYEdXTEnIy68SpNF00bp4rPB9xxXFjggkRQ35zWtWFkzUIjn5Mzrl5nBKSfxfuHXTNTtmT22cjCPOzsf3PF9jzmXVx9a9Ub2OHTGT+sTmvN+oCTf9nApv1uZ6C2q6p3ztaFYgptxiQ1hgcUMjnCBczDuSwYSr7W1B/UqvuyzOLOdUCqwH3R/Z2SZojbRmy+K5V3N9bRuNlU5foUWaj2EO7BeaGmGKY7JW468e4sNqLa3koNbyLOVVIRt3H4l0MzkgRmf2lJrVpbPtFG6ANn1WaQXnNP7ZmXvY6QkOiNKSU4kzLFerlZ6yI8JMxdjkLkAdBahqL/RHseYvnfmlqf+CJ0dg7Z1wZ2EF1LcaXf6IxadmEG3KcbhvYJdlvV6N29NXHfgPcrLk9qHtrxFQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(8676002)(1076003)(81166007)(356005)(70206006)(70586007)(508600001)(4326008)(36756003)(83380400001)(6666004)(316002)(86362001)(82310400004)(2906002)(7696005)(5660300002)(7416002)(40460700003)(36860700001)(186003)(26005)(8936002)(47076005)(426003)(336012)(110136005)(54906003)(2616005)(6636002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: FqYgQ/Ymvs3ZTtqjb+HuUDnx/91FeQmCYMSZNBcbGd3SIfqNO1GUDvkiJpcSAGCPLxZ3FgcmhMRmTT8ymm58CPWdw39HO6O3f302AY6o09WNx6kyTEpgOHBJ600a4iz1hQ9rMmiVHZ4mJBewtluQ3jnLD0+WFCw7wwcuQ527/BnjQwvbwK9rputZjnZ8xdABkkDTM9+o9x7BOc7PFbPDLzqoxo4ousCnpsebIZwX0RRmUhbblueWVDXdH5ThSmUSOxCLtULhN/7fsCDx0/QQx3WhUROLYOSiu0fiYlBc16foRlT4jOSCR2sRKgUfJSEcZIM8GyPL5YXO0pa4JeoOzGIHlKG9Oannhklx/NyElkGfq7CaTPCcKb295m4a7qabPDlS2QT7iD/sQ2LzAQnBrERdlILvxfPTxaW3O0+CzJtMSqb09VOxhJb9KaglGevzz3TMpxaVADJTIXsDz7E0LUo/0+OXZ6aeW6bJyY0d+sZG08eQLLrxlPAy2f5neKQLiRSKUaLUWIlVAFgIblhVzE4f/aasM0Zs7hXk4kSkKDt0XwC0tSfKsQJ4eSut30O6+bP6Dm46aL1cjWwab2lChC+awT0M1mu3n5Dk1ZYrT1rF6lO+L4U7oamDJDfsz+TulD/m/ZmqiqvakgfePdEwm7ky6yFIWLAeUglQdfLWG1lbfqHlJN+BLRYelztq2w7N5eF8QVhHK2WJna3gDS6Vaw==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(316002)(2906002)(7696005)(86362001)(82310400004)(54906003)(336012)(110136005)(426003)(6636002)(6666004)(2616005)(47076005)(5660300002)(7416002)(40460700003)(8936002)(36860700001)(186003)(26005)(1076003)(81166007)(356005)(4326008)(83380400001)(70206006)(70586007)(8676002)(36756003)(508600001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2022 09:58:43.5773
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2022 09:58:47.4858
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 689cde50-b9a3-4330-b505-08d9f457944c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79393c18-6955-47e5-b98f-08d9f457969e
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT026.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT013.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5609
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2570
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -108,103 +108,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose an API to get the mlx5 core device from a given VF PCI device if
-mlx5_core is its driver.
-
-Upon the get API we stay with the intf_state_mutex locked to make sure
-that the device can't be gone/unloaded till the caller will complete
-its job over the device, this expects to be for a short period of time
-for any flow that the lock is taken.
-
-Upon the put API we unlock the intf_state_mutex.
-
-The use case for those APIs is the migration flow of a VF over VFIO PCI.
-In that case the VF doesn't ride on mlx5_core, because the device is
-driving *two* different PCI devices, the PF owned by mlx5_core and the
-VF owned by the vfio driver.
-
-The mlx5_core of the PF is accessed only during the narrow window of the
-VF's ioctl that requires its services.
-
-This allows the PF driver to be more independent of the VF driver, so
-long as it doesn't reset the FW.
+Introduce migration IFC related stuff to enable migration commands.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/main.c    | 44 +++++++++++++++++++
- include/linux/mlx5/driver.h                   |  3 ++
- 2 files changed, 47 insertions(+)
+ include/linux/mlx5/mlx5_ifc.h | 147 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 146 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 5b8958186157..e9aeba4267ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1881,6 +1881,50 @@ static struct pci_driver mlx5_core_driver = {
- 	.sriov_set_msix_vec_count = mlx5_core_sriov_set_msix_vec_count,
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 598ac3bcc901..45891a75c5ca 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -127,6 +127,11 @@ enum {
+ 	MLX5_CMD_OP_QUERY_SF_PARTITION            = 0x111,
+ 	MLX5_CMD_OP_ALLOC_SF                      = 0x113,
+ 	MLX5_CMD_OP_DEALLOC_SF                    = 0x114,
++	MLX5_CMD_OP_SUSPEND_VHCA                  = 0x115,
++	MLX5_CMD_OP_RESUME_VHCA                   = 0x116,
++	MLX5_CMD_OP_QUERY_VHCA_MIGRATION_STATE    = 0x117,
++	MLX5_CMD_OP_SAVE_VHCA_STATE               = 0x118,
++	MLX5_CMD_OP_LOAD_VHCA_STATE               = 0x119,
+ 	MLX5_CMD_OP_CREATE_MKEY                   = 0x200,
+ 	MLX5_CMD_OP_QUERY_MKEY                    = 0x201,
+ 	MLX5_CMD_OP_DESTROY_MKEY                  = 0x202,
+@@ -1757,7 +1762,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         reserved_at_682[0x1];
+ 	u8         log_max_sf[0x5];
+ 	u8         apu[0x1];
+-	u8         reserved_at_689[0x7];
++	u8         reserved_at_689[0x4];
++	u8         migration[0x1];
++	u8         reserved_at_68e[0x2];
+ 	u8         log_min_sf_size[0x8];
+ 	u8         max_num_sf_partitions[0x8];
+ 
+@@ -11519,4 +11526,142 @@ enum {
+ 	MLX5_MTT_PERM_RW	= MLX5_MTT_PERM_READ | MLX5_MTT_PERM_WRITE,
  };
  
-+/**
-+ * mlx5_vf_get_core_dev - Get the mlx5 core device from a given VF PCI device if
-+ *                     mlx5_core is its driver.
-+ * @pdev: The associated PCI device.
-+ *
-+ * Upon return the interface state lock stay held to let caller uses it safely.
-+ * Caller must ensure to use the returned mlx5 device for a narrow window
-+ * and put it back with mlx5_vf_put_core_dev() immediately once usage was over.
-+ *
-+ * Return: Pointer to the associated mlx5_core_dev or NULL.
-+ */
-+struct mlx5_core_dev *mlx5_vf_get_core_dev(struct pci_dev *pdev)
-+			__acquires(&mdev->intf_state_mutex)
-+{
-+	struct mlx5_core_dev *mdev;
++enum {
++	MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_MASTER  = 0x0,
++	MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_SLAVE   = 0x1,
++};
 +
-+	mdev = pci_iov_get_pf_drvdata(pdev, &mlx5_core_driver);
-+	if (IS_ERR(mdev))
-+		return NULL;
++struct mlx5_ifc_suspend_vhca_in_bits {
++	u8         opcode[0x10];
++	u8         uid[0x10];
 +
-+	mutex_lock(&mdev->intf_state_mutex);
-+	if (!test_bit(MLX5_INTERFACE_STATE_UP, &mdev->intf_state)) {
-+		mutex_unlock(&mdev->intf_state_mutex);
-+		return NULL;
-+	}
++	u8         reserved_at_20[0x10];
++	u8         op_mod[0x10];
 +
-+	return mdev;
-+}
-+EXPORT_SYMBOL(mlx5_vf_get_core_dev);
++	u8         reserved_at_40[0x10];
++	u8         vhca_id[0x10];
 +
-+/**
-+ * mlx5_vf_put_core_dev - Put the mlx5 core device back.
-+ * @mdev: The mlx5 core device.
-+ *
-+ * Upon return the interface state lock is unlocked and caller should not
-+ * access the mdev any more.
-+ */
-+void mlx5_vf_put_core_dev(struct mlx5_core_dev *mdev)
-+			__releases(&mdev->intf_state_mutex)
-+{
-+	mutex_unlock(&mdev->intf_state_mutex);
-+}
-+EXPORT_SYMBOL(mlx5_vf_put_core_dev);
++	u8         reserved_at_60[0x20];
++};
 +
- static void mlx5_core_verify_params(void)
- {
- 	if (prof_sel >= ARRAY_SIZE(profile)) {
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 78655d8d13a7..319322a8ff94 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1143,6 +1143,9 @@ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
- int mlx5_dm_sw_icm_dealloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
- 			   u64 length, u16 uid, phys_addr_t addr, u32 obj_id);
- 
-+struct mlx5_core_dev *mlx5_vf_get_core_dev(struct pci_dev *pdev);
-+void mlx5_vf_put_core_dev(struct mlx5_core_dev *mdev);
++struct mlx5_ifc_suspend_vhca_out_bits {
++	u8         status[0x8];
++	u8         reserved_at_8[0x18];
 +
- #ifdef CONFIG_MLX5_CORE_IPOIB
- struct net_device *mlx5_rdma_netdev_alloc(struct mlx5_core_dev *mdev,
- 					  struct ib_device *ibdev,
++	u8         syndrome[0x20];
++
++	u8         reserved_at_40[0x40];
++};
++
++enum {
++	MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_SLAVE   = 0x0,
++	MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_MASTER  = 0x1,
++};
++
++struct mlx5_ifc_resume_vhca_in_bits {
++	u8         opcode[0x10];
++	u8         uid[0x10];
++
++	u8         reserved_at_20[0x10];
++	u8         op_mod[0x10];
++
++	u8         reserved_at_40[0x10];
++	u8         vhca_id[0x10];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_resume_vhca_out_bits {
++	u8         status[0x8];
++	u8         reserved_at_8[0x18];
++
++	u8         syndrome[0x20];
++
++	u8         reserved_at_40[0x40];
++};
++
++struct mlx5_ifc_query_vhca_migration_state_in_bits {
++	u8         opcode[0x10];
++	u8         uid[0x10];
++
++	u8         reserved_at_20[0x10];
++	u8         op_mod[0x10];
++
++	u8         reserved_at_40[0x10];
++	u8         vhca_id[0x10];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_query_vhca_migration_state_out_bits {
++	u8         status[0x8];
++	u8         reserved_at_8[0x18];
++
++	u8         syndrome[0x20];
++
++	u8         reserved_at_40[0x40];
++
++	u8         required_umem_size[0x20];
++
++	u8         reserved_at_a0[0x160];
++};
++
++struct mlx5_ifc_save_vhca_state_in_bits {
++	u8         opcode[0x10];
++	u8         uid[0x10];
++
++	u8         reserved_at_20[0x10];
++	u8         op_mod[0x10];
++
++	u8         reserved_at_40[0x10];
++	u8         vhca_id[0x10];
++
++	u8         reserved_at_60[0x20];
++
++	u8         va[0x40];
++
++	u8         mkey[0x20];
++
++	u8         size[0x20];
++};
++
++struct mlx5_ifc_save_vhca_state_out_bits {
++	u8         status[0x8];
++	u8         reserved_at_8[0x18];
++
++	u8         syndrome[0x20];
++
++	u8         actual_image_size[0x20];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_load_vhca_state_in_bits {
++	u8         opcode[0x10];
++	u8         uid[0x10];
++
++	u8         reserved_at_20[0x10];
++	u8         op_mod[0x10];
++
++	u8         reserved_at_40[0x10];
++	u8         vhca_id[0x10];
++
++	u8         reserved_at_60[0x20];
++
++	u8         va[0x40];
++
++	u8         mkey[0x20];
++
++	u8         size[0x20];
++};
++
++struct mlx5_ifc_load_vhca_state_out_bits {
++	u8         status[0x8];
++	u8         reserved_at_8[0x18];
++
++	u8         syndrome[0x20];
++
++	u8         reserved_at_40[0x40];
++};
++
+ #endif /* MLX5_IFC_H */
 -- 
 2.18.1
 
