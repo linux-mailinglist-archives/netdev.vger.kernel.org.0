@@ -2,167 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E1E4BCD64
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 09:51:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 157AD4BCD61
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 09:49:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243438AbiBTIt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 03:49:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44478 "EHLO
+        id S241053AbiBTItR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 03:49:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235485AbiBTIt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 03:49:26 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2069.outbound.protection.outlook.com [40.107.94.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3A454BCA;
-        Sun, 20 Feb 2022 00:49:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E3cfnOFuHniugXnEQv4Q0EMngVvITryDhC0s7FBtwA2hoJ3s6fKESQ315j+1UL0hdUxUU2EANSG6Q3C7CZwYjVyL0I6hf96ihqN18uWTsGHb1WQ9byI+HqJwtqhgeryRcJXYZ+7cv5uCiCt6J1jXB42VOJ9730kmRmR+aUOpGBuyITynXUkCVqSAUIolG56gEbouvlgRJquevOyNGJMMupzJ3tmvlH2SBP8vjFAEgDrtwz6LS1U8POseJzmIHBDqifSd3K33Qg+e+QnzJUKnm8+76cO6MEHFe9sA7mt0Gur1tljlc82SfQzyVmhVLdNWuDgb1eWKx1WeHYR6JtjfWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lB37hVrY0fzvMWPshVC00E5k2xme6qe6qiKY7gorh8I=;
- b=KmvmtJl1At47l2DCZKT1D1sK5JDxp5vRYz/zmUu865A8x8QcwThzU7QUeStROaaXu6+unJnzHl1492OgPsTEAx8Lm3EUj/6cydVWEPSR/PjryTY0wWk0aU1UlACrJxTmryHF2uZdF2KVsUbg4OzDwKPE4qfAAsp6/9if3kOi7yH185EEh/UfXcuyXvjVfMagDScOPoGKEbyktq68q40Vis34h6siq7kKCvaWED0l2eE+0XvLRMOh3VCixnsfmJDFGJMDgds179HzxMMEzazouoyg3Txlz27siCLIgXUrDNc5yeHTnAxUx31Fi/XL/x4JgKIUWg4Dl7H8iPNfzARQAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lB37hVrY0fzvMWPshVC00E5k2xme6qe6qiKY7gorh8I=;
- b=qU46EM3HU1MRSCAWwz/4dJt0SPbD8SvUPq38Kxa4eNaG2GlSQMI32zpqarYqf1hpaRSg8OPjdVv9liXg9vZilRDuQ+Hx/YjslkRHJQvmqsnT+MTV9ASbwXWDREGgAtAq/Vmg0i8QobXhd3WPf2U6+h808ZhFnsdMqKxo0Dt/wNRi3Vzm854MCU4HFfizH/MmM4Eark/LfXF6tiLu5SM4K2bG3UWZzLztuh1T5/yA8dcQZqUGTR29Cn8uBTNJ20fMG8drjEuywXdyVPOCQrmgzR6oEvvLSm5A3pIOBLxs9TTb3Gk1Sg9esqtvBrbQb9HK1rcvznQt/4lrgmzMbJycjg==
-Received: from MWHPR20CA0045.namprd20.prod.outlook.com (2603:10b6:300:ed::31)
- by DM6PR12MB2987.namprd12.prod.outlook.com (2603:10b6:5:3b::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Sun, 20 Feb
- 2022 08:49:03 +0000
-Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:ed:cafe::d6) by MWHPR20CA0045.outlook.office365.com
- (2603:10b6:300:ed::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.20 via Frontend
- Transport; Sun, 20 Feb 2022 08:49:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Sun, 20 Feb 2022 08:49:03 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 20 Feb
- 2022 08:49:02 +0000
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.126.230.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Sun, 20 Feb 2022 00:48:57 -0800
-Date:   Sun, 20 Feb 2022 10:48:47 +0200
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        <dev@openvswitch.org>, <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>, <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "Cong Wang" <xiyou.wangcong@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <netfilter-devel@vger.kernel.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>, <coreteam@netfilter.org>
-Subject: Re: [PATCH net 1/1] net/sched: act_ct: Fix flow table lookup failure
- with no originating ifindex
-In-Reply-To: <Yg7itx2dt4rIa24W@salvia>
-Message-ID: <af7f1a21-5776-9b92-63d6-ce19b97489a2@nvidia.com>
-References: <20220217093424.23601-1-paulb@nvidia.com> <Yg5Tz5ucVAI3zOTs@salvia> <20220217232708.yhigtv2ssrlfsexs@t14s.localdomain> <Yg7gWIrIlGDDiVer@salvia> <Yg7itx2dt4rIa24W@salvia>
+        with ESMTP id S235445AbiBTItR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 03:49:17 -0500
+Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D2554BCB
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 00:48:56 -0800 (PST)
+Received: from [192.168.1.18] ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id LhtknwpeDuCn2Lhtlnufcr; Sun, 20 Feb 2022 09:48:54 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 20 Feb 2022 09:48:54 +0100
+X-ME-IP: 90.126.236.122
+Message-ID: <a4006848-3dfe-8511-5010-37daa31df464@wanadoo.fr>
+Date:   Sun, 20 Feb 2022 09:48:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 91490b06-22ef-49bb-c6a1-08d9f44dd896
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2987:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB29871D96716F18FB71E34056C2399@DM6PR12MB2987.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MNxC0Kte+nNk2Ei+olLovNMkMLxU/b/tM39JK9oGv7b/TIcABd+sCDdTtDPdI58KZ1fNjXPw50CyumT8Xr798PBZO4EHQBPHpg8yb3KkBCWhVzZWTd2RCt9R/l15WMhGvSCz5IEHhfx7/iUj/FKvmRm6/P0jVll1IF3i/i4NqrwdszBjm0RRXdYdDXTYGYBe5fkqnDz/ffvrF0mn5gzl51dH1ICFKJp5fPpR+5uMKsRP4k8ARqTOd5d1o7DFL/wTgyfjRxrztmKSfXYYWbrObaqFavm10lKU7P++MEJeXGUUqDkyKAw8PjImKiZVl1T7IGU5n562o9audFX49gPCbGkyLtJFxYWDBbbeijPcT9uSCUwBd3kTNfr8xnGdPs3+mtFDXO3T54heIgRMCJGGV/i9IvRMAFo5s2qeK7v03MEyQ8ScWC002slvYpJEGG5PezSrS68AWqv+7M8s2E7pmz4L9loG8NIIwYM4lfTcnl72G9GgY8py+P1zYaicY0RGdWV6KYhHVyo6DXZlo8dAfj1KbWXKO+vUGckuArOT1EqyjDMXspSUhhWLk56nca19oy6k9laIRrrZgrauQDzKh6eOUisil0uzsASeuH/mna+g25i2q3uImcsS+wMcdoPqVaxvW4UYfmShhvQAbCS5asM3ffK5vWQIqR3+V8Wtd/cm1Qer8lliS8pG79VziEugSf1zSMrTlEGtiQ7Reyjnqw==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36860700001)(36756003)(31686004)(47076005)(40460700003)(186003)(26005)(81166007)(16526019)(2906002)(356005)(336012)(426003)(83380400001)(4326008)(5660300002)(6916009)(54906003)(316002)(6666004)(8936002)(7416002)(2616005)(82310400004)(70206006)(70586007)(86362001)(508600001)(31696002)(8676002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2022 08:49:03.1961
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 91490b06-22ef-49bb-c6a1-08d9f44dd896
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2987
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ravb: Use GFP_KERNEL instead of GFP_ATOMIC when possible
+Content-Language: en-US
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+References: <3d67f0369909010d620bd413c41d11b302eb0ff8.1645342015.git.christophe.jaillet@wanadoo.fr>
+ <OS0PR01MB5922D806D40856485CDD612086399@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <OS0PR01MB5922D806D40856485CDD612086399@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On Fri, 18 Feb 2022, Pablo Neira Ayuso wrote:
-
-> On Fri, Feb 18, 2022 at 12:55:07AM +0100, Pablo Neira Ayuso wrote:
-> > On Thu, Feb 17, 2022 at 08:27:08PM -0300, Marcelo Ricardo Leitner wrote:
-> > > On Thu, Feb 17, 2022 at 02:55:27PM +0100, Pablo Neira Ayuso wrote:
-> > > > On Thu, Feb 17, 2022 at 11:34:24AM +0200, Paul Blakey wrote:
-> > > > > After cited commit optimizted hw insertion, flow table entries are
-> > > > > populated with ifindex information which was intended to only be used
-> > > > > for HW offload. This tuple ifindex is hashed in the flow table key, so
-> > > > > it must be filled for lookup to be successful. But tuple ifindex is only
-> > > > > relevant for the netfilter flowtables (nft), so it's not filled in
-> > > > > act_ct flow table lookup, resulting in lookup failure, and no SW
-> > > > > offload and no offload teardown for TCP connection FIN/RST packets.
-> > > > > 
-> > > > > To fix this, allow flow tables that don't hash the ifindex.
-> > > > > Netfilter flow tables will keep using ifindex for a more specific
-> > > > > offload, while act_ct will not.
-> > > > 
-> > > > Using iif == zero should be enough to specify not set?
-> > > 
-> > > You mean, when searching, if search input iif == zero, to simply not
-> > > check it? That seems dangerous somehow.
-> > 
-> > dev_new_index() does not allocate ifindex as zero.
-> > 
-> > Anyway, @Paul: could you add a tc_ifidx field instead in the union
-> > right after __hash instead to fix 9795ded7f924?
+Le 20/02/2022 à 08:53, Biju Das a écrit :
+> Hi Christophe,
 > 
-> I mean this incomplete patch below:
+> Thanks for the patch.
 > 
-> diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-> index a3647fadf1cc..d4fa4f716f68 100644
-> --- a/include/net/netfilter/nf_flow_table.h
-> +++ b/include/net/netfilter/nf_flow_table.h
-> @@ -142,6 +142,7 @@ struct flow_offload_tuple {
->                         u8              h_source[ETH_ALEN];
->                         u8              h_dest[ETH_ALEN];
->                 } out;
-> +               u32                     tc_ifidx;
->         };
->  };
+> Just a  question, As per [1], former can be allocated from interrupt context.
+> But nothing mentioned for the allocation using the patch you mentioned[2]. I agree GFP_KERNEL
+> gives more opportunities of successful allocation.
+
+Hi,
+
+netdev_alloc_skb() uses an implicit GFP_ATOMIC, that is why it can be 
+safely called from an interrupt context.
+__netdev_alloc_skb() is the same as netdev_alloc_skb(), except that you 
+can choose the GFP flag you want to use. ([1])
+
+Here, the netdev_alloc_skb() is called just after some 
+"kcalloc(GFP_KERNEL);"
+
+So this function can already NOT be called from interrupt context.
+
+So if GFP_KERNEL is fine here for kcalloc(), it is fine also for 
+netdev_alloc_skb(), hence __netdev_alloc_skb(GFP_KERNEL).
+
 > 
-> You will need to update nf_flow_rule_match() to set key->meta.ingress_ifindex to
-> use tc_ifidx if it is set to non-zero value.
+> Q1) Here it allocates 8K instead of 1K on each loop, Is there any limitation for netdev_alloc_skb for allocating 8K size?
+
+Not sure to understand.
+My patch does NOT change anything on the amount of memory allocated. it 
+only changes a GFP_ATOMIC into a GFP_KERNEL.
+
+I'm not aware of specific limitation for netdev_alloc_skb().
+My understanding is that in the worst case, it will behave just like 
+malloc() ([3])
+
+So, if it was an issue before, it is still an issue after my patch.
+
+> Q2) In terms of allocation performance which is better netdev_alloc_skb or __netdev_alloc_skb?
+
+AFAIK, there should be no difference, but __netdev_alloc_skb(GFP_KERNEL) 
+can succeed where netdev_alloc_skb() can fail. In such a case, it would 
+be slower but most importantly, it would succeed.
+
+
+CJ
+
+[1]: 
+https://elixir.bootlin.com/linux/v5.17-rc4/source/include/linux/skbuff.h#L2945
+
+[2]: 
+https://elixir.bootlin.com/linux/v5.17-rc4/source/drivers/net/ethernet/renesas/ravb_main.c#L470
+
+[3]: 
+https://elixir.bootlin.com/linux/v5.17-rc3/source/net/core/skbuff.c#L488
+
+
+> 
+> [1] https://www.kernel.org/doc/htmldocs/networking/API-netdev-alloc-skb.html
+> [2] https://www.kernel.org/doc/htmldocs/networking/API---netdev-alloc-skb.html
+> 
+> Regards,
+> Biju
+> 
+>> Subject: [PATCH] ravb: Use GFP_KERNEL instead of GFP_ATOMIC when possible
+>>
+>> 'max_rx_len' can be up to GBETH_RX_BUFF_MAX (i.e. 8192) (see
+>> 'gbeth_hw_info').
+>> The default value of 'num_rx_ring' can be BE_RX_RING_SIZE (i.e. 1024).
+>>
+>> So this loop can allocate 8 Mo of memory.
+>>
+>> Previous memory allocations in this function already use GFP_KERNEL, so
+>> use __netdev_alloc_skb() and an explicit GFP_KERNEL instead of a implicit
+>> GFP_ATOMIC.
+>>
+>> This gives more opportunities of successful allocation.
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>>   drivers/net/ethernet/renesas/ravb_main.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c
+>> b/drivers/net/ethernet/renesas/ravb_main.c
+>> index 24e2635c4c80..525d66f71f02 100644
+>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+>> @@ -475,7 +475,7 @@ static int ravb_ring_init(struct net_device *ndev, int
+>> q)
+>>   		goto error;
+>>
+>>   	for (i = 0; i < priv->num_rx_ring[q]; i++) {
+>> -		skb = netdev_alloc_skb(ndev, info->max_rx_len);
+>> +		skb = __netdev_alloc_skb(ndev, info->max_rx_len, GFP_KERNEL);
+>>   		if (!skb)
+>>   			goto error;
+>>   		ravb_set_buffer_align(skb);
+>> --
+>> 2.32.0
+> 
 > 
 
-I  understand how it could fix the original issue, but I don't think this
-is better, because it makes tuple less generic. What you suggested with 
-using 0 to avoid needing the new flag is good enough for me, and is 
-cleaner in my opinion.
-
-I'll send the == 0 one as V2 for chance you agree, and if you want to 
-change to this, I won't mind sending it as V3.
