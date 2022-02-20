@@ -2,125 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A516E4BD1BB
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 21:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B73C4BD1C4
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 22:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240997AbiBTU71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 15:59:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48952 "EHLO
+        id S239643AbiBTVAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 16:00:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234315AbiBTU7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 15:59:25 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4172FFE7
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 12:59:03 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id a23so28005511eju.3
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 12:59:03 -0800 (PST)
+        with ESMTP id S235640AbiBTVAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 16:00:20 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652252DD47;
+        Sun, 20 Feb 2022 12:59:58 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id y11so6971170pfa.6;
+        Sun, 20 Feb 2022 12:59:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=zTCY5mF3R2lLVganCITyt3z5qqyOgdnuYbYNuvO9quU=;
-        b=L7oc+GiLX3I55MAtg3eTm7R6pmKEDtE+J4w1ES+hJVLBu7wG3RshfhzMLbs5JrYR+O
-         dn4cryWCwOTKzuMwyLM815FcMjz5wJSCdkr1zc5/RlIEr7HfYKqovRwS/dBvBv64JxxJ
-         6ps47jiFOgd3Xu2WhrrqzHtdeZ2UTdj3tFUg0SBg/GtvUPymDnwuaSpBACNi90r5pYOO
-         U2sUCbBQ6Mjxn15WeVCvHZ7YgxKleLkTnEKNKMai9Gcfw74fUC9FyCxwloiH7rOYtRGq
-         rBDy9uilFJkHr5E6wWlokhpDAKmU71pZ/rOUiBxgjQVA+I3nH3kFd46PoSGtOAhntLnL
-         sqvA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vZ02YZOgDrVwpXxu5Hh2IeZyutIz7L7EXvfRr92KaEQ=;
+        b=FV9CHBay5FKiJSC+n+l9oLKIuj9FLBV15sKCHkhSkn6ryQojFLju4EqcomQbtYIMRK
+         tnKsWZlerzWjR61cah1t9seN9hRUMHrg0MmDS4rAWzLE3xtGmulL8Wkj0oMIdg8+7kiU
+         dZzGKuT3IqYh1KTiTqr/1VRJmkcmPviNw/MrnDkXOCCEVntrxzqEewnM3ZRxTlY6eSHb
+         IMIBARuzjLMQWbNH3a+GW1pv/3svBVfzQS/bG/4BtzrT5flPfeCM3Dvk6SvP7kgs5wsH
+         iDxwz9TAngLGsi5rvYEk6MCILVKDxhHoYKj/wjU44iP5jb0HBlJIIgnPUp2zd1ZAZtb2
+         sKEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=zTCY5mF3R2lLVganCITyt3z5qqyOgdnuYbYNuvO9quU=;
-        b=39GbC1w4sZnzy9MmjAjBXnYItDbUzKqJK8wL+ZT48tB99AiOAY6634zr8ufG4iFB3i
-         4mdQbbRrgG+RTsv77d58Gc+J+5qWXqfHVfFRJMrkt8ZRIHCo26XZeFQUi2OlPnIa4DQR
-         h5hJ/JVoqE2rC5f7jF2QyxX35wIZe1baGkCHdwYFIXE0HBk6byjwPRJoxhyWVs3kutZT
-         Djqf1G2UjF2Uzt+CB8gnoFFCAtVJWZq0LUivfsDWl+ewqjCgGYr/AL8WiXMmJkkxwXja
-         w0RqfT5M1AlfKG++f2s2LWiD/RXZ93VBidE9mwJHlH03Hk902jUdivxHJsd68necfBVp
-         7mag==
-X-Gm-Message-State: AOAM532p7aMhmCxLJy/vyjF6Vdy9eT9X7J26jgcQ84rAXupFLwicIEaB
-        FOsN9ExJ964fnW/Qd7QHxJMrNIBn9/I/i27GVr8=
-X-Google-Smtp-Source: ABdhPJxq/9ALPm/gAleZON4uRF/kjfM9pGNbyu4Fnc3S7pc4CTAGpsDNrOKyqQkpgv0S+Wcw/3x6eT5dYrFUoVEMeo4=
-X-Received: by 2002:a17:906:6b8e:b0:6cf:8e6e:609a with SMTP id
- l14-20020a1709066b8e00b006cf8e6e609amr13692307ejr.243.1645390741892; Sun, 20
- Feb 2022 12:59:01 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vZ02YZOgDrVwpXxu5Hh2IeZyutIz7L7EXvfRr92KaEQ=;
+        b=ZMmfq/3qHKjphxq0be/C8YUI9/9l/UTl/DV9N7uWO7Cq++U0k+qwu2+NpThvijaHG6
+         X9xbZ03CNYb5UCM9tMvvJ9faiHStjsa6/VKI1QJIEXv2Hh+UegcmG8LIgfyc5TkTNyuE
+         Qi1jSmNj5FE9qDPMCysVpe5t/RExZ7hpj3fV6BpOGVBAT4qIpk65rMnJ2G4AXAbFyofw
+         BWxiyb4DSsFwcrc2Du41tpXWih2zKQxGSIx82+SDM1dFYQXzTWXDE6FRlmGrXqCnKLrE
+         noLSzltfW0pnx6JXwPQLWEv11cEzqf2kbmyfDydDu+1hCMcAM46NgbIxQ/MHNkAjyI4U
+         k/yw==
+X-Gm-Message-State: AOAM530h3K96qhvdIqD85CsIycrMZ7lGbl0j7MTx8joIvDySqwsLPwgo
+        SqEzH9Oxx9kIJ0J8llc3LdF95YFpVVYmXuDAGsTOmSOX+Mg=
+X-Google-Smtp-Source: ABdhPJzkfljOiO/45d10wt5Ent2wIyxLX/k2INviYgRDEVaIX/7lgH9wARbj8ccdTKTUJ1kKJ3qxTxApZdJzFHyEWqA=
+X-Received: by 2002:a05:6a00:809:b0:4f1:14bb:40b1 with SMTP id
+ m9-20020a056a00080900b004f114bb40b1mr5767416pfk.69.1645390797775; Sun, 20 Feb
+ 2022 12:59:57 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:ab4:a22f:0:0:0:0:0 with HTTP; Sun, 20 Feb 2022 12:59:01
- -0800 (PST)
-From:   hamid abbas <hamidabbas853@gmail.com>
-Date:   Sun, 20 Feb 2022 23:59:01 +0300
-Message-ID: <CA+qX7mO4pE3Us7JbtA+Abpjg6LQwGDbuAyCKq5iDB4PHxPvJZw@mail.gmail.com>
-Subject: Hallo ontvanger
-To:     undisclosed-recipients:;
+References: <20220218095612.52082-1-laoar.shao@gmail.com> <20220218095612.52082-3-laoar.shao@gmail.com>
+ <CAADnVQJhGmvY1NDsy9WE6tnqYM6JCmi4iZtB7xHuWh4yC-awPw@mail.gmail.com> <CALOAHbCytBP4osCXSZ_7+A69NuVf6SYDWGFC62O_MkHn9Fn10Q@mail.gmail.com>
+In-Reply-To: <CALOAHbCytBP4osCXSZ_7+A69NuVf6SYDWGFC62O_MkHn9Fn10Q@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 20 Feb 2022 12:59:46 -0800
+Message-ID: <CAADnVQ+FuK2wihDy5GumBN3LVBky0r04CmS4h1JsVoS7QoH6LA@mail.gmail.com>
+Subject: Re: [PATCH RFC 2/3] bpf: set attached cgroup name in attach_name
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:632 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [hamidabbas853[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [hamidabbas853[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  1.0 FREEMAIL_REPLY From and body contain different freemails
-        *  3.5 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *****
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo vriend,
-    Hoe is het vandaag met je? Ik ben Giovanni Lanzo, een medewerker
-van UBI Banca, Itali=C3=AB. Ik neem contact met u op met betrekking tot een
-overleden cli=C3=ABnt die omkwam bij een auto-ongeluk terwijl hij op weg
-was naar Milaan, Itali=C3=AB in 2004, hij was een prominente cli=C3=ABnt va=
-n
-mij. Voor zijn dood heeft mijn cli=C3=ABnt (420.346,00 euro) gestort in de
-kluis van mijn financi=C3=ABle instelling hier in Rome, Itali=C3=AB,
-documentatie met betrekking tot deze transacties geeft aan dat claims
-alleen kunnen worden ingediend door zijn naaste verwanten. Helaas had
-hij geen testament op het moment van zijn overlijden.
-     Alle geleverde inspanningen onthulden geen link met een van zijn
-familieleden. Het nieuwe Italiaanse erfrecht/vorderingen/fonds geeft
-echter een duur aan waarin dergelijke vorderingen kunnen worden
-getolereerd. De financi=C3=ABle instelling heeft mij opgedragen om de
-nabestaanden te presenteren die de gelden zullen opeisen. Als u niet
-op dit ultimatum reageert, zou de financi=C3=ABle instelling wettelijk
-toestaan =E2=80=8B=E2=80=8Bdeze gelden aan de Banca d'Italia (Centrale Bank=
- van
-Itali=C3=AB) te rapporteren als niet-opge=C3=ABiste gelden.
-   Mijn collega en ik hebben alle noodzakelijke vereisten opgesteld
-met betrekking tot de vrijgave van deze fondsen en het is mijn
-bedoeling om u als begunstigde deze mogelijkheid te bieden. Houd er
-rekening mee dat ik wettelijk ben uitgerust met alle benodigde
-informatie/documentatie met betrekking tot dit fonds. Neem alstublieft
-contact met mij op met uw mening door uw antwoord naar mijn
-persoonlijke e-mailadres te sturen:
-giovannilanzo07@gmail.com
+On Sun, Feb 20, 2022 at 6:17 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+>
+> On Sun, Feb 20, 2022 at 2:27 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Feb 18, 2022 at 1:56 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> > >
+> > > Set the cgroup path when a bpf prog is attached to a cgroup, and unset
+> > > it when the bpf prog is detached.
+> > >
+> > > Below is the result after this change,
+> > > $ cat progs.debug
+> > >   id name             attached
+> > >    5 dump_bpf_map     bpf_iter_bpf_map
+> > >    7 dump_bpf_prog    bpf_iter_bpf_prog
+> > >   17 bpf_sockmap      cgroup:/
+> > >   19 bpf_redir_proxy
+> > >
+> > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > > ---
+> > >  kernel/bpf/cgroup.c | 8 ++++++++
+> > >  1 file changed, 8 insertions(+)
+> > >
+> > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > > index 43eb3501721b..ebd87e54f2d0 100644
+> > > --- a/kernel/bpf/cgroup.c
+> > > +++ b/kernel/bpf/cgroup.c
+> > > @@ -440,6 +440,7 @@ static int __cgroup_bpf_attach(struct cgroup *cgrp,
+> > >         struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
+> > >         struct bpf_cgroup_storage *new_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
+> > >         enum cgroup_bpf_attach_type atype;
+> > > +       char cgrp_path[64] = "cgroup:";
+> > >         struct bpf_prog_list *pl;
+> > >         struct list_head *progs;
+> > >         int err;
+> > > @@ -508,6 +509,11 @@ static int __cgroup_bpf_attach(struct cgroup *cgrp,
+> > >         else
+> > >                 static_branch_inc(&cgroup_bpf_enabled_key[atype]);
+> > >         bpf_cgroup_storages_link(new_storage, cgrp, type);
+> > > +
+> > > +       cgroup_name(cgrp, cgrp_path + strlen("cgroup:"), 64);
+> > > +       cgrp_path[63] = '\0';
+> > > +       prog->aux->attach_name = kstrdup(cgrp_path, GFP_KERNEL);
+> > > +
+> >
+> > This is pure debug code. We cannot have it in the kernel.
+> > Not even under #ifdef.
+> >
+> > Please do such debug code on a side as your own bpf program.
+> > For example by kprobe-ing in this function and keeping the path
+> > in a bpf map or send it to user space via ringbuf.
+> > Or enable cgroup tracepoint and monitor cgroup_mkdir with full path.
+> > Record it in user space or in bpf map, etc.
+> >
+>
+> It is another possible solution to  hook the related kernel functions
+> or tracepoints, but it may be a little complicated to track all the
+> bpf attach types, for example we also want to track
+> BPF_PROG_TYPE_SK_MSG[1], BPF_PROG_TYPE_FLOW_DISSECTOR and etc.
+> While the attach_name provides us a generic way to get how the bpf
+> progs are attached, which can't be got by bpftool.
 
-
-VRIENDELIJKE GROETEN
-Giovanni Lanzo
-BANKREKENING OFFICIER
+bpftool can certainly print such details.
+See how it's using task_file iterator.
+It can be extended to look into cgroups and sockmap,
+and for each program print "sockmap:%d", map->id if so desired.
