@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED5674BCB87
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 02:39:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 721134BCB8A
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 02:40:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243283AbiBTBkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 20:40:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48206 "EHLO
+        id S243324AbiBTBka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 20:40:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbiBTBkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 20:40:02 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F06642A09;
-        Sat, 19 Feb 2022 17:39:43 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id y16so3619777pjt.0;
-        Sat, 19 Feb 2022 17:39:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JR8OjwwykcXCRxukVQiMhfl+weFk63dNW5x8uO22H7Q=;
-        b=T1OuH5T9i8SB9ObqxfJlFUxNc2yhPkuITeBgmgQHrxwASOHja0osWeCSK25PSdcY4+
-         5mkMKydmM7TnLHkaEw6mVD/WPLLQDhH5Jg3dO9pgiprhHiL5A6tCIYfV3mcelt8nz/Pn
-         qaYPP4vFs3BzaIy9qV+uNi2YOdQVlLhctxucg5HZG+YKsXc0wlSAIBsWgSDHZ0GaqLLP
-         R+TdXoICvM2XgPewNjYuOiKNfHHIRYCu+wdG3qcMk3VqCQES83lD5VHPMFjqNnTWPOUd
-         GcS6WTKUoFDLc7BZSFasbCjA6FvNZ4YpyBBGqtoPgiiAwqDh1m2rdk2MlLnu9cjh+/R/
-         dRRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JR8OjwwykcXCRxukVQiMhfl+weFk63dNW5x8uO22H7Q=;
-        b=7Ff0YL418l74p6qyY0m8K8Bx8RYOU9lmWzuR82sXIlhhGhdD//+fMfY4Ydx6H+6CNW
-         aNyM0PeMa+MRnXoRJ4Zz/nPh2DeLRzV7UnORjVO1Wz5f+q4X7dRcOXH2geIdjyf1Nzvh
-         0BnvwTNJY7Nv7PZ9r5dsW1hU9yxU9bD46tnfWw3i3uVfADwmdVmPowdyRwi7FagtVbGz
-         WwglgA1Ul5RQpSfKgVZzcpvkurLSjtUgnutSgWORixyYr3CVXqb30DGbRP1FOOiuakdH
-         RUcMRESOYLAHcznnzamxwDY0ib8lxA6Po3rIb/HsgrcTsfA71OEHPxs6oUxbMcu83aGT
-         Ny8g==
-X-Gm-Message-State: AOAM531kfswu0clQEzj97Ycdba5eCdOay4WahoIJyUmBrphCHc1Ev0WE
-        rPjy9h/YzN/Lx1rG9EzAMAqkfvZuTk7WCSJQqT8=
-X-Google-Smtp-Source: ABdhPJz39vL7ithBfwtLfxFnN5ihD1o2tEmFxDYm1K1liAVlvGp/MgiUJ/arkijbCMAUNMMD+fBfaY/Hy9RmtXx7Se0=
-X-Received: by 2002:a17:902:76c5:b0:14e:e325:9513 with SMTP id
- j5-20020a17090276c500b0014ee3259513mr13538605plt.55.1645321182777; Sat, 19
- Feb 2022 17:39:42 -0800 (PST)
+        with ESMTP id S240694AbiBTBk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 20:40:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C9F42A09;
+        Sat, 19 Feb 2022 17:40:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 727A560F46;
+        Sun, 20 Feb 2022 01:40:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CF9FCC340EC;
+        Sun, 20 Feb 2022 01:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645321208;
+        bh=PnukixR+A2KtHQcL/rrSlVPDRMyonzeS6wryKYPbRhU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kkaPLVSj+sV/2yqpJHhi2KgwPgBT3/yXlLTVdx6zBoSEY7F44YDrelQCdwz7toDhq
+         yw8b2DTj6vnImAqN2naHYu7i8kShf8OuhU2eatcHe5Y1ayWd24njtQI9kszstMaXNt
+         518KzXhcsCeGW9+sy55jJ3muB+Q1cZG7653K4sklzwacy3fP0Ealy4sEUE9nSrfkV6
+         WaqzQv1IBlBHKebv1f0J7lCmx4XKffw8r9aPg6+f5NW9iN/hI5b+iEg+W9xKVPwjsN
+         unD8hw2cOC0tAJD5nfxJqiynt+HCYwvSCdYtV78KOclKvdB6dA/KGV39PtLyggNe8n
+         A2M5rd7k77BUg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B87A2E7BB0C;
+        Sun, 20 Feb 2022 01:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220219163915.125770-1-jrdr.linux@gmail.com> <20220220004209.hlutexplxhvrmpi6@apollo.legion>
-In-Reply-To: <20220220004209.hlutexplxhvrmpi6@apollo.legion>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 19 Feb 2022 17:39:31 -0800
-Message-ID: <CAADnVQLTcYJSNHGCKNso4K6V+SGT93c6YCmEUNrkJooix3sLHQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Subject: Re: [PATCH] bpf: Initialize ret to 0 inside btf_populate_kfunc_set()
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Souptick Joarder <jrdr.linux@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164532120875.31312.6528483112580808010.git-patchwork-notify@kernel.org>
+Date:   Sun, 20 Feb 2022 01:40:08 +0000
+References: <20220219163915.125770-1-jrdr.linux@gmail.com>
+In-Reply-To: <20220219163915.125770-1-jrdr.linux@gmail.com>
+To:     Souptick Joarder <jrdr.linux@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, memxor@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 4:42 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Sat, Feb 19, 2022 at 10:09:15PM IST, Souptick Joarder wrote:
-> > From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
-> >
-> > Kernel test robot reported below error ->
-> >
-> > kernel/bpf/btf.c:6718 btf_populate_kfunc_set()
-> > error: uninitialized symbol 'ret'.
-> >
-> > Initialize ret to 0.
-> >
-> > Fixes:        dee872e124e8 ("bpf: Populate kfunc BTF ID sets in struct btf")
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-> > ---
->
-> Thanks for the fix.
->
-> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Hello:
 
-Applied to bpf-next, since the bug will not trigger in practice.
+This patch was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
+
+On Sat, 19 Feb 2022 22:09:15 +0530 you wrote:
+> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
+> 
+> Kernel test robot reported below error ->
+> 
+> kernel/bpf/btf.c:6718 btf_populate_kfunc_set()
+> error: uninitialized symbol 'ret'.
+> 
+> [...]
+
+Here is the summary with links:
+  - bpf: Initialize ret to 0 inside btf_populate_kfunc_set()
+    https://git.kernel.org/bpf/bpf-next/c/d0b3822902b6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
