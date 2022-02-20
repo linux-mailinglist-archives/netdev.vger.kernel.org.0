@@ -2,110 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF9E54BCEE7
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 15:35:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 864714BCF6D
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 16:38:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243976AbiBTOag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 09:30:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43780 "EHLO
+        id S236452AbiBTPdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 10:33:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiBTOaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 09:30:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B94240E41;
-        Sun, 20 Feb 2022 06:30:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EED69B80D44;
-        Sun, 20 Feb 2022 14:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B1704C340F0;
-        Sun, 20 Feb 2022 14:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645367411;
-        bh=HeZrcKR/lgSNS+/4ZyVGZPY0lkICBDxbcqGF2W7KZyo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RiQABvqen/itqZyLL/Pj80FCA5Rxm1u4oh2Fym1aq79VNsSKT+iyWhhOQvnmCIsrG
-         MBOPtN+PT85nVeb+iTULnZpS4e/xIfJx7vtBkOaaC1xAAxXTb/Q5SMHdxZXahq1HPu
-         vlAdWSiVUrF7vPRHMIGUZe1RDiixqxym25761SVkHetcKdKDwUiIXNeNqITRsVxTMZ
-         W1ds95++hNzMNk5DnP2Uk5LFxHzsx9g6WheEIA41IDe+Ul1C8dCLblbMkt48M0V33H
-         xZenHTYFXK9ZhmIcqXa0vayn+c2D+SPht13/3ZLEZGj2AG7r2Sp8VA2ID13nX5AJp+
-         vF11qOuCDlBNQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 910A3E7BB19;
-        Sun, 20 Feb 2022 14:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232319AbiBTPdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 10:33:21 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9543E369C4
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 07:33:00 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id 75so12157582pgb.4
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 07:33:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8ttO1dyEeSfJbFEwSN0LzHEqcR5vGyrBvm/SgMkHrAI=;
+        b=I3iok89sxZivLnf9F/IKUMgP/ES6ioYxZ0ryzCiH/Xe/1x7AAA6f80JYsTloIEyIVy
+         9NaGkc3ubxB8MbpApIpmaWTYnsLGv136Y1FLmo3qIvcogV2hJXdQYY2j6a1N3nPPpyps
+         phexfaknt4lMXNr8sdoRzb/MhfQvdGuGrG2SZdmtLLmhecI1krmow1fccdHdgYt+aFKD
+         B1MAey3VFFJK1J1jAWv4fPBpUAFeGU91D1uyhkB/FUmFk/jiYvLmVUr9i/yNy04jotia
+         3esCJT0IangzK+FU+bRLRCUpWfQh7hU6rRH7Lglr6RQK3UIjhjvJHDWWwUAt6Ossniel
+         hR1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8ttO1dyEeSfJbFEwSN0LzHEqcR5vGyrBvm/SgMkHrAI=;
+        b=FmbleKAtMak8MePcouGM83NaUtE04IFqFNBoObes6WwZ4+4A+ZVtRAAbil+Zxu4vgi
+         XCrQA/6F94/ysIKsES8sEnpSgP7HMGXmKet8gNsg9ZR71+8oSP87E0XogkjmoegeCt53
+         CYJYy7KzMiBpHp7LiXLQ9R2HK4uiQKNrM4Y1k0x9mT41z7E47Ghlb2tVSsfKXrzOKLu+
+         +jqf36fvkhGz90gZ/uaVGx8SspSmVcEl+B/ucJw92YyzZWo7G2VJA2mRDQfEq1o0eWHt
+         Z2bcdKtezrv7kiTmds1JdHCHwxyObfyeWV5y+OfPIJa3oN4CJyGMQHxbP0NubzhCRADW
+         OixQ==
+X-Gm-Message-State: AOAM531fDhJNy0tYMj28Y+4nCBJT0fpAoI25ysxfCQmFAvEOxthzFJKa
+        mU2jw1xNohM2byL7oHYytpZMwHcoX154gIuOwLY=
+X-Google-Smtp-Source: ABdhPJympChZVPOfqPQ2u4HGKfwOZzCXf+Jh0RW6cVvMtebmfbG2JnevOMgs6/+h1M/fh5usMEypRg==
+X-Received: by 2002:a05:6a00:16cd:b0:4e1:366:7ee8 with SMTP id l13-20020a056a0016cd00b004e103667ee8mr16463972pfc.9.1645371179637;
+        Sun, 20 Feb 2022 07:32:59 -0800 (PST)
+Received: from localhost.localdomain ([58.76.185.115])
+        by smtp.gmail.com with ESMTPSA id u19sm5583221pfk.203.2022.02.20.07.32.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Feb 2022 07:32:59 -0800 (PST)
+From:   Juhee Kang <claudiajkang@gmail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        eric.dumazet@gmail.com
+Cc:     ennoerlangen@gmail.com, george.mccollister@gmail.com,
+        olteanv@gmail.com, marco.wenzel@a-eberle.de
+Subject: [PATCH net-next] net: hsr: fix hsr build error when lockdep is not enabled
+Date:   Sun, 20 Feb 2022 15:32:50 +0000
+Message-Id: <20220220153250.5285-1-claudiajkang@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/9] net: add skb drop reasons to TCP packet
- receive
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164536741158.13103.3993205016299229625.git-patchwork-notify@kernel.org>
-Date:   Sun, 20 Feb 2022 14:30:11 +0000
-References: <20220220070637.162720-1-imagedong@tencent.com>
-In-Reply-To: <20220220070637.162720-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     dsahern@kernel.org, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
-        yoshfuji@linux-ipv6.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, imagedong@tencent.com,
-        talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, alobakin@pm.me, memxor@gmail.com,
-        atenart@kernel.org, bigeasy@linutronix.de, pabeni@redhat.com,
-        linyunsheng@huawei.com, arnd@arndb.de, yajun.deng@linux.dev,
-        roopa@nvidia.com, willemb@google.com, vvs@virtuozzo.com,
-        cong.wang@bytedance.com, luiz.von.dentz@intel.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, flyingpeng@tencent.com, mengensun@tencent.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In hsr, lockdep_is_held() is needed for rcu_dereference_bh_check().
+But if lockdep is not enabled, lockdep_is_held() causes a build error:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+    ERROR: modpost: "lockdep_is_held" [net/hsr/hsr.ko] undefined!
 
-On Sun, 20 Feb 2022 15:06:28 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
-> 
-> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
-> we added the support of reporting the reasons of skb drops to kfree_skb
-> tracepoint. And in this series patches, reasons for skb drops are added
-> to TCP layer (both TCPv4 and TCPv6 are considered).
-> Following functions are processed:
-> 
-> [...]
+Thus, this patch solved by adding lockdep_hsr_is_held(). This helper
+function calls the lockdep_is_held() when lockdep is enabled, and returns 1
+if not defined.
 
-Here is the summary with links:
-  - [net-next,v3,1/9] net: tcp: introduce tcp_drop_reason()
-    https://git.kernel.org/netdev/net-next/c/082116ffcb74
-  - [net-next,v3,2/9] net: tcp: add skb drop reasons to tcp_v4_rcv()
-    https://git.kernel.org/netdev/net-next/c/255f9034d305
-  - [net-next,v3,3/9] net: tcp: use kfree_skb_reason() for tcp_v6_rcv()
-    https://git.kernel.org/netdev/net-next/c/c0e3154d9c88
-  - [net-next,v3,4/9] net: tcp: add skb drop reasons to tcp_v{4,6}_inbound_md5_hash()
-    https://git.kernel.org/netdev/net-next/c/643b622b51f1
-  - [net-next,v3,5/9] net: tcp: add skb drop reasons to tcp_add_backlog()
-    https://git.kernel.org/netdev/net-next/c/7a26dc9e7b43
-  - [net-next,v3,6/9] net: tcp: use kfree_skb_reason() for tcp_v{4,6}_do_rcv()
-    https://git.kernel.org/netdev/net-next/c/8eba65fa5f06
-  - [net-next,v3,7/9] net: tcp: use tcp_drop_reason() for tcp_rcv_established()
-    https://git.kernel.org/netdev/net-next/c/2a968ef60e1f
-  - [net-next,v3,8/9] net: tcp: use tcp_drop_reason() for tcp_data_queue()
-    https://git.kernel.org/netdev/net-next/c/a7ec381049c0
-  - [net-next,v3,9/9] net: tcp: use tcp_drop_reason() for tcp_data_queue_ofo()
-    https://git.kernel.org/netdev/net-next/c/d25e481be0c5
+Fixes: e7f27420681f ("net: hsr: fix suspicious RCU usage warning in hsr_node_get_first()")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+---
+ net/hsr/hsr_framereg.c | 25 +++++++++++++++----------
+ net/hsr/hsr_framereg.h |  8 +++++++-
+ 2 files changed, 22 insertions(+), 11 deletions(-)
 
-You are awesome, thank you!
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 62272d76545c..584e21788799 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -20,6 +20,13 @@
+ #include "hsr_framereg.h"
+ #include "hsr_netlink.h"
+ 
++#ifdef CONFIG_LOCKDEP
++int lockdep_hsr_is_held(spinlock_t *lock)
++{
++	return lockdep_is_held(lock);
++}
++#endif
++
+ u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr)
+ {
+ 	u32 hash = jhash(addr, ETH_ALEN, hsr->hash_seed);
+@@ -27,11 +34,12 @@ u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr)
+ 	return reciprocal_scale(hash, hsr->hash_buckets);
+ }
+ 
+-struct hsr_node *hsr_node_get_first(struct hlist_head *head, int cond)
++struct hsr_node *hsr_node_get_first(struct hlist_head *head, spinlock_t *lock)
+ {
+ 	struct hlist_node *first;
+ 
+-	first = rcu_dereference_bh_check(hlist_first_rcu(head), cond);
++	first = rcu_dereference_bh_check(hlist_first_rcu(head),
++					 lockdep_hsr_is_held(lock));
+ 	if (first)
+ 		return hlist_entry(first, struct hsr_node, mac_list);
+ 
+@@ -59,8 +67,7 @@ bool hsr_addr_is_self(struct hsr_priv *hsr, unsigned char *addr)
+ {
+ 	struct hsr_node *node;
+ 
+-	node = hsr_node_get_first(&hsr->self_node_db,
+-				  lockdep_is_held(&hsr->list_lock));
++	node = hsr_node_get_first(&hsr->self_node_db, &hsr->list_lock);
+ 	if (!node) {
+ 		WARN_ONCE(1, "HSR: No self node\n");
+ 		return false;
+@@ -107,8 +114,7 @@ int hsr_create_self_node(struct hsr_priv *hsr,
+ 	ether_addr_copy(node->macaddress_B, addr_b);
+ 
+ 	spin_lock_bh(&hsr->list_lock);
+-	oldnode = hsr_node_get_first(self_node_db,
+-				     lockdep_is_held(&hsr->list_lock));
++	oldnode = hsr_node_get_first(self_node_db, &hsr->list_lock);
+ 	if (oldnode) {
+ 		hlist_replace_rcu(&oldnode->mac_list, &node->mac_list);
+ 		spin_unlock_bh(&hsr->list_lock);
+@@ -127,8 +133,7 @@ void hsr_del_self_node(struct hsr_priv *hsr)
+ 	struct hsr_node *node;
+ 
+ 	spin_lock_bh(&hsr->list_lock);
+-	node = hsr_node_get_first(self_node_db,
+-				  lockdep_is_held(&hsr->list_lock));
++	node = hsr_node_get_first(self_node_db, &hsr->list_lock);
+ 	if (node) {
+ 		hlist_del_rcu(&node->mac_list);
+ 		kfree_rcu(node, rcu_head);
+@@ -194,7 +199,7 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
+ 
+ 	spin_lock_bh(&hsr->list_lock);
+ 	hlist_for_each_entry_rcu(node, node_db, mac_list,
+-				 lockdep_is_held(&hsr->list_lock)) {
++				 lockdep_hsr_is_held(&hsr->list_lock)) {
+ 		if (ether_addr_equal(node->macaddress_A, addr))
+ 			goto out;
+ 		if (ether_addr_equal(node->macaddress_B, addr))
+@@ -601,7 +606,7 @@ void *hsr_get_next_node(struct hsr_priv *hsr, void *_pos,
+ 
+ 	if (!_pos) {
+ 		node = hsr_node_get_first(&hsr->node_db[hash],
+-					  lockdep_is_held(&hsr->list_lock));
++					  &hsr->list_lock);
+ 		if (node)
+ 			ether_addr_copy(addr, node->macaddress_A);
+ 		return node;
+diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
+index 2efd03fb3465..f3762e9e42b5 100644
+--- a/net/hsr/hsr_framereg.h
++++ b/net/hsr/hsr_framereg.h
+@@ -28,8 +28,14 @@ struct hsr_frame_info {
+ 	bool is_from_san;
+ };
+ 
++#ifdef CONFIG_LOCKDEP
++int lockdep_hsr_is_held(spinlock_t *lock);
++#else
++#define lockdep_hsr_is_held(lock)	1
++#endif
++
+ u32 hsr_mac_hash(struct hsr_priv *hsr, const unsigned char *addr);
+-struct hsr_node *hsr_node_get_first(struct hlist_head *head, int cond);
++struct hsr_node *hsr_node_get_first(struct hlist_head *head, spinlock_t *lock);
+ void hsr_del_self_node(struct hsr_priv *hsr);
+ void hsr_del_nodes(struct hlist_head *node_db);
+ struct hsr_node *hsr_get_node(struct hsr_port *port, struct hlist_head *node_db,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
