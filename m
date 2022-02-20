@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABF564BCD8E
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 646D24BCDA3
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243479AbiBTJGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 04:06:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48126 "EHLO
+        id S243491AbiBTJGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 04:06:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243482AbiBTJGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:44 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2865631935
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:24 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso16237075pjg.0
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:24 -0800 (PST)
+        with ESMTP id S243488AbiBTJGp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:45 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758F831919
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:25 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so689127pjw.5
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VIhQRHjajsSQXDo77s/MyTmBOFb2ebVTKmCwDrvspBo=;
-        b=TxA/86dcRNbSsCLwJXdjaXT0ecWMybylwDFhq/dOFAA2eQbB+S0/uaQkkOHQzibztv
-         s7rJbJZWwaSKkBCt2gimNXgejAP1xNH2mKsJxQMkI6ZUTeRuIoXdxYLB5Y/zTGrJq4ar
-         lS8BKYnPhkGWOvQlDQEZfGV2ZmHJoXzc4zhxo=
+        bh=HfOcs845FH3udlQwQ+9qKjD6VpJOWPeDp/jF0QyG82w=;
+        b=dgxJ3hdHCzlk0i9gAnTHXGek6YG2FaFWyBrhsc6+2wa+FXm1Bq/AqxG5CM6nUWYlnY
+         fngrIhygchPNs1I9X/646ydflaeYr9id9jQmv/py9ls4M8b3uPqkCXB1y26jLoYesLmw
+         QRpClAY2a0f+aHSwbXQDEelRXFtXoOzxsxvKI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=VIhQRHjajsSQXDo77s/MyTmBOFb2ebVTKmCwDrvspBo=;
-        b=RLwS22v1eoVSf7BxIdH1vczvlTp4xjcvDUCOQEuDYi5WDS3qN9flFRhL8eMuL19sHg
-         s7nZbS1HP5gODvIU3Fe66ihTh4fG+oFEFnkFf19htjn8cJDI+5cIDlmetgoKk1TZY1OM
-         qpnfbLdslzQBye97dfj7LhMj3zwflQcFcWjg3w3W9ChiBWIpcULZw7VM5Qz4hEVaLDls
-         /wGKqp43wAtoS2bSHFCGp0HZmPlU/kpnj6nDewNANFvMqYVEwYnJqMDZ5+Ucf5l5yEAo
-         eQLv1nWLX536BzF/ejIUKBIK1dICifgEo/4vgOaZYtWFHtnZ1hjpot6qE94bw2QLpSVS
-         ji9Q==
-X-Gm-Message-State: AOAM532S4BkhFvWfEK0EnheySpy3AF66q4qX8kSdwXzVH2lrv6uS5d4p
-        RXIkk0uOqwPJD6ZF9PoFNBAMVA==
-X-Google-Smtp-Source: ABdhPJyX+fj8E8W9q+DbWyqRQsEvV+3UGPMNPls1G8X3YS5unPaivjMAnEOjHbA0jEx/J8xnmf3cZg==
-X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id d22-20020a170902729600b0014b4bc60e81mr14494957pll.132.1645347983377;
-        Sun, 20 Feb 2022 01:06:23 -0800 (PST)
+        bh=HfOcs845FH3udlQwQ+9qKjD6VpJOWPeDp/jF0QyG82w=;
+        b=6sBYftwvVVsVTT+7+tbLAIPwPyEp7ffUL8/qVmGXO/rDlKd9i3aAdOc53JIHnZ/3OH
+         ozpRpVWrw5HpSE/lmYG4icDjtB3wCSpkA0ZYcwN76M6naCeUmYcIEa9KnqjGVtJWA4kw
+         gHwL+qGoC7JPRoXEhXiEJPpc0kdt1VthjzcXaJlKiyghjaKCzA7whNBBJVJVRQ/95m8I
+         R/AF932IleMQToGWhWCbdhOO7jhcM5BTTXM1FJAM/wdxQvoGKLLNbNl2R2mMAutZdCV1
+         shfWh9Q/qamCeE9reJ7foKj6Dk1ETg4vi/Zk5PwL2xXj+Gn20SmPTKbdyjK56qfwfLZ0
+         6XGw==
+X-Gm-Message-State: AOAM532yx+xo570BosRgVZehIzp9UPgB1epYsezTA17Iz4wxGs0aQOet
+        t6i/YoYeflkPBjWgxW/s4j90I2kUvcEwXQ==
+X-Google-Smtp-Source: ABdhPJx0bfEF40ECB+7NlhftrOebnuUmv61eCq0ltbvIAr4lq67WrAQZX2BjV8QN5KDyGwtQyCFjZw==
+X-Received: by 2002:a17:902:ec83:b0:14f:ba2b:990c with SMTP id x3-20020a170902ec8300b0014fba2b990cmr353756plg.119.1645347984611;
+        Sun, 20 Feb 2022 01:06:24 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.22
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Feb 2022 01:06:23 -0800 (PST)
+        Sun, 20 Feb 2022 01:06:24 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 6/7] bnxt_en: Increase firmware message response DMA wait time
-Date:   Sun, 20 Feb 2022 04:05:52 -0500
-Message-Id: <1645347953-27003-7-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Subject: [PATCH net 7/7] bnxt_en: Fix devlink fw_activate
+Date:   Sun, 20 Feb 2022 04:05:53 -0500
+Message-Id: <1645347953-27003-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001d211705d86f6e56"
+        boundary="000000000000313e8005d86f6eef"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,78 +66,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001d211705d86f6e56
+--000000000000313e8005d86f6eef
 
-When polling for the firmware message response, we first poll for the
-response message header.  Once the valid length is detected in the
-header, we poll for the valid bit at the end of the message which
-signals DMA completion.  Normally, this poll time for DMA completion
-is extremely short (0 to a few usec).  But on some devices under some
-rare conditions, it can be up to about 20 msec.
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-Increase this delay to 50 msec and use udelay() for the first 10 usec
-for the common case, and usleep_range() beyond that.
+To install a livepatch, first flash the package to NVM, and then
+activate the patch through the "HWRM_FW_LIVEPATCH" fw command.
+To uninstall a patch from NVM, flash the removal package and then
+activate it through the "HWRM_FW_LIVEPATCH" fw command.
 
-Also, change the error message to include the above delay time when
-printing the timeout value.
+The "HWRM_FW_LIVEPATCH" fw command has to consider following scenarios:
 
-Fixes: 3c8c20db769c ("bnxt_en: move HWRM API implementation into separate file")
-Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
+1. no patch in NVM and no patch active. Do nothing.
+2. patch in NVM, but not active. Activate the patch currently in NVM.
+3. patch is not in NVM, but active. Deactivate the patch.
+4. patch in NVM and the patch active. Do nothing.
+
+Fix the code to handle these scenarios during devlink "fw_activate".
+
+To install and activate a live patch:
+devlink dev flash pci/0000:c1:00.0 file thor_patch.pkg
+devlink -f dev reload pci/0000:c1:00.0 action fw_activate limit no_reset
+
+To remove and deactivate a live patch:
+devlink dev flash pci/0000:c1:00.0 file thor_patch_rem.pkg
+devlink -f dev reload pci/0000:c1:00.0 action fw_activate limit no_reset
+
+Fixes: 3c4153394e2c ("bnxt_en: implement firmware live patching")
+Reviewed-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c | 12 +++++++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h |  2 +-
- 2 files changed, 10 insertions(+), 4 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 39 +++++++++++++++----
+ 1 file changed, 31 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index 566c9487ef55..b01d42928a53 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -644,17 +644,23 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 
- 		/* Last byte of resp contains valid bit */
- 		valid = ((u8 *)ctx->resp) + len - 1;
--		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; j++) {
-+		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; ) {
- 			/* make sure we read from updated DMA memory */
- 			dma_rmb();
- 			if (*valid)
- 				break;
--			usleep_range(1, 5);
-+			if (j < 10) {
-+				udelay(1);
-+				j++;
-+			} else {
-+				usleep_range(20, 30);
-+				j += 20;
-+			}
- 		}
- 
- 		if (j >= HWRM_VALID_BIT_DELAY_USEC) {
- 			hwrm_err(bp, ctx, "Error (timeout: %u) msg {0x%x 0x%x} len:%d v:%d\n",
--				 hwrm_total_timeout(i), req_type,
-+				 hwrm_total_timeout(i) + j, req_type,
- 				 le16_to_cpu(ctx->req->seq_id), len, *valid);
- 			goto exit;
- 		}
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-index d52bd2d63aec..c98032e38188 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-@@ -90,7 +90,7 @@ static inline unsigned int hwrm_total_timeout(unsigned int n)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 4da31b1b84f9..f6e21fac0e69 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -367,6 +367,16 @@ bnxt_dl_livepatch_report_err(struct bnxt *bp, struct netlink_ext_ack *extack,
+ 	}
  }
  
- 
--#define HWRM_VALID_BIT_DELAY_USEC	150
-+#define HWRM_VALID_BIT_DELAY_USEC	50000
- 
- static inline bool bnxt_cfa_hwrm_message(u16 req_type)
++/* Live patch status in NVM */
++#define BNXT_LIVEPATCH_NOT_INSTALLED	0
++#define BNXT_LIVEPATCH_INSTALLED	FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL
++#define BNXT_LIVEPATCH_REMOVED		FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE
++#define BNXT_LIVEPATCH_MASK		(FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL | \
++					 FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE)
++#define BNXT_LIVEPATCH_ACTIVATED	BNXT_LIVEPATCH_MASK
++
++#define BNXT_LIVEPATCH_STATE(flags)	((flags) & BNXT_LIVEPATCH_MASK)
++
+ static int
+ bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
  {
+@@ -374,8 +384,9 @@ bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
+ 	struct hwrm_fw_livepatch_query_input *query_req;
+ 	struct hwrm_fw_livepatch_output *patch_resp;
+ 	struct hwrm_fw_livepatch_input *patch_req;
++	u16 flags, live_patch_state;
++	bool activated = false;
+ 	u32 installed = 0;
+-	u16 flags;
+ 	u8 target;
+ 	int rc;
+ 
+@@ -394,7 +405,6 @@ bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
+ 		hwrm_req_drop(bp, query_req);
+ 		return rc;
+ 	}
+-	patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_ACTIVATE;
+ 	patch_req->loadtype = FW_LIVEPATCH_REQ_LOADTYPE_NVM_INSTALL;
+ 	patch_resp = hwrm_req_hold(bp, patch_req);
+ 
+@@ -407,12 +417,20 @@ bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
+ 		}
+ 
+ 		flags = le16_to_cpu(query_resp->status_flags);
+-		if (~flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL)
++		live_patch_state = BNXT_LIVEPATCH_STATE(flags);
++
++		if (live_patch_state == BNXT_LIVEPATCH_NOT_INSTALLED)
+ 			continue;
+-		if ((flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE) &&
+-		    !strncmp(query_resp->active_ver, query_resp->install_ver,
+-			     sizeof(query_resp->active_ver)))
++
++		if (live_patch_state == BNXT_LIVEPATCH_ACTIVATED) {
++			activated = true;
+ 			continue;
++		}
++
++		if (live_patch_state == BNXT_LIVEPATCH_INSTALLED)
++			patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_ACTIVATE;
++		else if (live_patch_state == BNXT_LIVEPATCH_REMOVED)
++			patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_DEACTIVATE;
+ 
+ 		patch_req->fw_target = target;
+ 		rc = hwrm_req_send(bp, patch_req);
+@@ -424,8 +442,13 @@ bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
+ 	}
+ 
+ 	if (!rc && !installed) {
+-		NL_SET_ERR_MSG_MOD(extack, "No live patches found");
+-		rc = -ENOENT;
++		if (activated) {
++			NL_SET_ERR_MSG_MOD(extack, "Live patch already activated");
++			rc = -EEXIST;
++		} else {
++			NL_SET_ERR_MSG_MOD(extack, "No live patches found");
++			rc = -ENOENT;
++		}
+ 	}
+ 	hwrm_req_drop(bp, query_req);
+ 	hwrm_req_drop(bp, patch_req);
 -- 
 2.18.1
 
 
---0000000000001d211705d86f6e56
+--000000000000313e8005d86f6eef
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -207,13 +257,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEGBhvRRcu8KIu7s26tgAiAeF9X5jYmD
-7VSJF/wa1ERxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
-MDA5MDYyM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII2+fHFME7wLtfDvkAcAY5A0uklPIzt3
+0DuN69oxGwUmMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
+MDA5MDYyNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAFpLkJMrLbZJt4x2MGlzWFaB1sDm42bjFxbaMrkdos3jm8+XnT
-SeYBHuXcXzJ5fPHeE5eSWgQC0AqwFMRKBtZ9ONIFIXi1ve5PkfF0g72NCqvxlue4u9om8FwF2NY5
-OtwcXR8v1wmynFRNAq3NtZ0UhcIC7OvUbb3a6fPqec7yhwGDeRpp6l4BhRf1Vuw6iechqZDEd3yy
-i2c0Vea/30B9JzwlANYujqV7Ole1SegjMqFJyNQaJvT4YxyFcPMq7k+jeiv0gdULFn4l5PhOLaWO
-dODlq1IyMO56llPHquk+FfDQ6MmiTtIbA6s5Sl1YX49b0HTAVcu8AnPyd3ce2+SW
---0000000000001d211705d86f6e56--
+ATANBgkqhkiG9w0BAQEFAASCAQA+tdhlQGROh5OBMj+WYa5TzixIydxvhAMMzcTrASip4ar2YiGa
+arxB98lQvEWo9yx6UEajJoP8idLPshINhL2bhTXfHNpvYxlgXoFSbnYeSfQpu0ZKHk5r5wkShyyS
+eY+iuhEN9mM+oT0q2la60vzKWLyuo60+q69Tk2qX8WKbZ4AhoyV8f9jWxqtveNoQr68Cz7IUYDSp
+yJCS37bHBfTuCD5LrDoVNVlXGCfN1fDfL8eG7nUqAs0HLfYfjt6mjsHRXAJHzme5hkEpZiYX9UwP
+I2rRyWuAjO+lZ/wGqf1axnuEK78PoN3J2lqM4+cYdtvarPqY4wpBll95muYbTOUE
+--000000000000313e8005d86f6eef--
