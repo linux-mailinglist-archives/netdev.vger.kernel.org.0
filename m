@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA32B4BCC1F
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 05:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C354BCC21
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 05:12:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238222AbiBTEHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Feb 2022 23:07:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53844 "EHLO
+        id S234785AbiBTEMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Feb 2022 23:12:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbiBTEHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 23:07:33 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6644B875
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 20:07:12 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id e140so27367881ybh.9
-        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 20:07:12 -0800 (PST)
+        with ESMTP id S229985AbiBTEMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Feb 2022 23:12:19 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C610E37A83
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 20:11:59 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id u12so10229839plf.13
+        for <netdev@vger.kernel.org>; Sat, 19 Feb 2022 20:11:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8ivcgFa6xdzX8NagdtCdUu3hWJ7guA2nBncVSmMBkyk=;
-        b=RxKD2jJHnOE1hYHec1GAaD2WvSsYRyV65gw7mOo0a7TZDAMFsBq7nwLdR/mqhiWCrG
-         9Q7zXPy2+T/y/q6CpWmYNmpxBwZYcj/lmFY3kXo4uRXM63e41lJ+LWbNglKsjrxkP95f
-         aapPQVxHa378L3CUQ8Qanzf8NkXWOQnoOESzMUDpz5qIx8b7FZIfDn3PdQpBndNEJP+t
-         +c9MyP/HBOLx6BFdqNm45kfbXSx/lOWKb16eBMPh57Zpe4JuQK7Cc18SgoFa0hHfueK8
-         2IC7MXW7/zKVUjQAXM7riVLlLpG9LZmM1/RwshDRxY5XKE9t7sY8cqUkrUZo9Kx/zTnW
-         k3ww==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZI4iDVy0yscb5iKnvpMkrer9uJHyCPzcfYbYlczhttI=;
+        b=egtrhZQr33JfSmKm/rjeMx2v4LMS4bdfIGPA3BCqtS4tu8NwJjwtKn+V9faOPZaETd
+         VC60i/BCswcp0lRtiDJuBlg7Z4CwtMJCJdGT+6se7pO4bYIcLlwLnyFJ5+A6PWekgM87
+         ruXAVV5qL2IuxDNaJ9T1aBiuc1zgimEBWKL/8Y2+lkFCOc58nyhbQFBpkv7YoiSTFBId
+         slv+aQQe9JupV2KwNAxVb1nAKc9rLU7bU5HKEBmeCW47oG6d1Ix1q5QitlMNWD3EcH7q
+         HaOvBYJbwzF+JRkUB0VU9eSQ+/UoMkKKJ/j4HXkzNskJtr3KGCQxgDT/Sr+/TQI9gvHT
+         qb+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8ivcgFa6xdzX8NagdtCdUu3hWJ7guA2nBncVSmMBkyk=;
-        b=BBuSz8FIc1JFqsW1jIu2A5fnmzn3Q/9gLgKCgnj0EEkDupXurFxsVKEG8ixx+13Dl4
-         yQCetXZwP/vn71pXxK+MQPcO6BHck6Pw9AGco1XHQlXiToABhmqC/QL6awiof4NF9WBM
-         XG5hrrC7SaGZ5hYaJg99dnHWYFAOKMq4fWgTPnuVsUETeFyNLt/dpD5Ski4L9HJU1Y3r
-         XMcKVUQKq1oVEXBh42KYLCRQCCKsdQn9v9iMWPfOZ5vn7LCLT4m0h9WEsgoQtVeV9nUw
-         +d1KBvoH4mK18KzLxDJks7GfCa4q6KRTPoDWDiStMuxBm1JKeR8n9D6P4FJ+94wjVU1u
-         OIfw==
-X-Gm-Message-State: AOAM532rPuogU6FXgsoatPB8ITmrln9aBkEcgxJO0WatFz0m93wiVV6J
-        p68EScoQfuXh9MUzfQ0DAYdYWMOMyQV0AYk+e3c=
-X-Google-Smtp-Source: ABdhPJxoh1+6wfD5BcXCFrNa5wrYlWJ7vg2nE01jOkFz4BYwRFqrZv5s8DdB6epHZEWt5X/79NKDdxvo2RIptgwhD9g=
-X-Received: by 2002:a25:ac58:0:b0:624:5095:88fa with SMTP id
- r24-20020a25ac58000000b00624509588famr8215670ybd.568.1645330031498; Sat, 19
- Feb 2022 20:07:11 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZI4iDVy0yscb5iKnvpMkrer9uJHyCPzcfYbYlczhttI=;
+        b=gBd9XqR5SSQ1O47HWphQtskR0j0bmYchL/0Uq+IFz6AL4ZiWNfghY4OM7aBN6ChRQt
+         d+c/+I6UFO9R5MkLMORVxXcgnuJIK9WVv6Lvw9WHW9d3ezY4sM+eGW7Se1PjAfNOxmiU
+         1EhZyioXERFlEyKU+LavY9R9qgK8MWQ7QmRhOrs/UpmrXpgYNJc3D65wUD0Fy9HieDQi
+         FmSfXWghKvMlkjRaLhP8cytx8E++gbB+6onu73e+itbno7Q7bZNWqe8nULueFsMep9HK
+         Cm5dT6hZVXLGAevxo1U+111UDpi7wSQWTFZScoazRLpySJtTLcpYCMnPM6eK+SoJEo7Z
+         L8HQ==
+X-Gm-Message-State: AOAM5320XFYje7gU2ZMgA52uiq9dcaFYrvgC7x5b4LTj3PKSHOT8NOou
+        Yekkc0rMQDNXrnkcYef2ch7MOtnTNqQ=
+X-Google-Smtp-Source: ABdhPJwo44Owdf3s79yBIlsAivYgwzxshyjdNsqeIp7Z+QdaVjr5uH/ySIKmlJmcAxwvlKnAPYFwmw==
+X-Received: by 2002:a17:90a:7803:b0:1bb:9945:d68c with SMTP id w3-20020a17090a780300b001bb9945d68cmr19043205pjk.100.1645330319315;
+        Sat, 19 Feb 2022 20:11:59 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3c33:9150:a86a:6874])
+        by smtp.gmail.com with ESMTPSA id x126sm7444579pfb.117.2022.02.19.20.11.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Feb 2022 20:11:58 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next] gro_cells: avoid using synchronize_rcu() in gro_cells_destroy()
+Date:   Sat, 19 Feb 2022 20:11:55 -0800
+Message-Id: <20220220041155.607637-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
 MIME-Version: 1.0
-References: <20220219152959.5761-1-claudiajkang@gmail.com> <164528940965.11889.6977167914313513410.git-patchwork-notify@kernel.org>
- <70de0cc3-c8c6-b973-fcc7-ac19b02fbbec@gmail.com>
-In-Reply-To: <70de0cc3-c8c6-b973-fcc7-ac19b02fbbec@gmail.com>
-From:   Juhee Kang <claudiajkang@gmail.com>
-Date:   Sun, 20 Feb 2022 13:06:35 +0900
-Message-ID: <CAK+SQuR+SutQ3fqsASVzPiSfCfyH5EtaJtn=ksvpg7TouVFDcQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: hsr: fix suspicious RCU usage warning in hsr_node_get_first()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, ennoerlangen@gmail.com,
-        george.mccollister@gmail.com, Vladimir Oltean <olteanv@gmail.com>,
-        marco.wenzel@a-eberle.de,
-        syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -70,130 +69,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 20, 2022 at 11:55 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
-> On 2/19/22 08:50, patchwork-bot+netdevbpf@kernel.org wrote:
-> > Hello:
-> >
-> > This patch was applied to netdev/net-next.git (master)
-> > by David S. Miller <davem@davemloft.net>:
-> >
-> > On Sat, 19 Feb 2022 15:29:59 +0000 you wrote:
-> >> When hsr_create_self_node() calls hsr_node_get_first(), the suspicious
-> >> RCU usage warning is occurred. The reason why this warning is raised is
-> >> the callers of hsr_node_get_first() use rcu_read_lock_bh() and
-> >> other different synchronization mechanisms. Thus, this patch solved by
-> >> replacing rcu_dereference() with rcu_dereference_bh_check().
-> >>
-> >> The kernel test robot reports:
-> >>      [   50.083470][ T3596] =============================
-> >>      [   50.088648][ T3596] WARNING: suspicious RCU usage
-> >>      [   50.093785][ T3596] 5.17.0-rc3-next-20220208-syzkaller #0 Not tainted
-> >>      [   50.100669][ T3596] -----------------------------
-> >>      [   50.105513][ T3596] net/hsr/hsr_framereg.c:34 suspicious rcu_dereference_check() usage!
-> >>      [   50.113799][ T3596]
-> >>      [   50.113799][ T3596] other info that might help us debug this:
-> >>      [   50.113799][ T3596]
-> >>      [   50.124257][ T3596]
-> >>      [   50.124257][ T3596] rcu_scheduler_active = 2, debug_locks = 1
-> >>      [   50.132368][ T3596] 2 locks held by syz-executor.0/3596:
-> >>      [   50.137863][ T3596]  #0: ffffffff8d3357e8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3be/0xb80
-> >>      [   50.147470][ T3596]  #1: ffff88807ec9d5f0 (&hsr->list_lock){+...}-{2:2}, at: hsr_create_self_node+0x225/0x650
-> >>      [   50.157623][ T3596]
-> >>      [   50.157623][ T3596] stack backtrace:
-> >>      [   50.163510][ T3596] CPU: 1 PID: 3596 Comm: syz-executor.0 Not tainted 5.17.0-rc3-next-20220208-syzkaller #0
-> >>      [   50.173381][ T3596] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> >>      [   50.183623][ T3596] Call Trace:
-> >>      [   50.186904][ T3596]  <TASK>
-> >>      [   50.189844][ T3596]  dump_stack_lvl+0xcd/0x134
-> >>      [   50.194640][ T3596]  hsr_node_get_first+0x9b/0xb0
-> >>      [   50.199499][ T3596]  hsr_create_self_node+0x22d/0x650
-> >>      [   50.204688][ T3596]  hsr_dev_finalize+0x2c1/0x7d0
-> >>      [   50.209669][ T3596]  hsr_newlink+0x315/0x730
-> >>      [   50.214113][ T3596]  ? hsr_dellink+0x130/0x130
-> >>      [   50.218789][ T3596]  ? rtnl_create_link+0x7e8/0xc00
-> >>      [   50.223803][ T3596]  ? hsr_dellink+0x130/0x130
-> >>      [   50.228397][ T3596]  __rtnl_newlink+0x107c/0x1760
-> >>      [   50.233249][ T3596]  ? rtnl_setlink+0x3c0/0x3c0
-> >>      [   50.238043][ T3596]  ? is_bpf_text_address+0x77/0x170
-> >>      [   50.243362][ T3596]  ? lock_downgrade+0x6e0/0x6e0
-> >>      [   50.248219][ T3596]  ? unwind_next_frame+0xee1/0x1ce0
-> >>      [   50.253605][ T3596]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
-> >>      [   50.259669][ T3596]  ? __sanitizer_cov_trace_cmp4+0x1c/0x70
-> >>      [   50.265423][ T3596]  ? is_bpf_text_address+0x99/0x170
-> >>      [   50.270819][ T3596]  ? kernel_text_address+0x39/0x80
-> >>      [   50.275950][ T3596]  ? __kernel_text_address+0x9/0x30
-> >>      [   50.281336][ T3596]  ? unwind_get_return_address+0x51/0x90
-> >>      [   50.286975][ T3596]  ? create_prof_cpu_mask+0x20/0x20
-> >>      [   50.292178][ T3596]  ? arch_stack_walk+0x93/0xe0
-> >>      [   50.297172][ T3596]  ? kmem_cache_alloc_trace+0x42/0x2c0
-> >>      [   50.302637][ T3596]  ? rcu_read_lock_sched_held+0x3a/0x70
-> >>      [   50.308194][ T3596]  rtnl_newlink+0x64/0xa0
-> >>      [   50.312524][ T3596]  ? __rtnl_newlink+0x1760/0x1760
-> >>      [   50.317545][ T3596]  rtnetlink_rcv_msg+0x413/0xb80
-> >>      [   50.322631][ T3596]  ? rtnl_newlink+0xa0/0xa0
-> >>      [   50.327159][ T3596]  netlink_rcv_skb+0x153/0x420
-> >>      [   50.331931][ T3596]  ? rtnl_newlink+0xa0/0xa0
-> >>      [   50.336436][ T3596]  ? netlink_ack+0xa80/0xa80
-> >>      [   50.341095][ T3596]  ? netlink_deliver_tap+0x1a2/0xc40
-> >>      [   50.346532][ T3596]  ? netlink_deliver_tap+0x1b1/0xc40
-> >>      [   50.351839][ T3596]  netlink_unicast+0x539/0x7e0
-> >>      [   50.356633][ T3596]  ? netlink_attachskb+0x880/0x880
-> >>      [   50.361750][ T3596]  ? __sanitizer_cov_trace_const_cmp8+0x1d/0x70
-> >>      [   50.368003][ T3596]  ? __sanitizer_cov_trace_const_cmp8+0x1d/0x70
-> >>      [   50.374707][ T3596]  ? __phys_addr_symbol+0x2c/0x70
-> >>      [   50.379753][ T3596]  ? __sanitizer_cov_trace_cmp8+0x1d/0x70
-> >>      [   50.385568][ T3596]  ? __check_object_size+0x16c/0x4f0
-> >>      [   50.390859][ T3596]  netlink_sendmsg+0x904/0xe00
-> >>      [   50.395715][ T3596]  ? netlink_unicast+0x7e0/0x7e0
-> >>      [   50.400722][ T3596]  ? __sanitizer_cov_trace_const_cmp4+0x1c/0x70
-> >>      [   50.407003][ T3596]  ? netlink_unicast+0x7e0/0x7e0
-> >>      [   50.412119][ T3596]  sock_sendmsg+0xcf/0x120
-> >>      [   50.416548][ T3596]  __sys_sendto+0x21c/0x320
-> >>      [   50.421052][ T3596]  ? __ia32_sys_getpeername+0xb0/0xb0
-> >>      [   50.426427][ T3596]  ? lockdep_hardirqs_on_prepare+0x400/0x400
-> >>      [   50.432721][ T3596]  ? __context_tracking_exit+0xb8/0xe0
-> >>      [   50.438188][ T3596]  ? lock_downgrade+0x6e0/0x6e0
-> >>      [   50.443041][ T3596]  ? lock_downgrade+0x6e0/0x6e0
-> >>      [   50.447902][ T3596]  __x64_sys_sendto+0xdd/0x1b0
-> >>      [   50.452759][ T3596]  ? lockdep_hardirqs_on+0x79/0x100
-> >>      [   50.457964][ T3596]  ? syscall_enter_from_user_mode+0x21/0x70
-> >>      [   50.464150][ T3596]  do_syscall_64+0x35/0xb0
-> >>      [   50.468565][ T3596]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> >>      [   50.474452][ T3596] RIP: 0033:0x7f3148504e1c
-> >>      [   50.479052][ T3596] Code: fa fa ff ff 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8b 54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff ff 77 34 89 ef 48 89 44 24 08 e8 20 fb ff ff 48 8b
-> >>      [   50.498926][ T3596] RSP: 002b:00007ffeab5f2ab0 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-> >>      [   50.507342][ T3596] RAX: ffffffffffffffda RBX: 00007f314959d320 RCX: 00007f3148504e1c
-> >>      [   50.515393][ T3596] RDX: 0000000000000048 RSI: 00007f314959d370 RDI: 0000000000000003
-> >>      [   50.523444][ T3596] RBP: 0000000000000000 R08: 00007ffeab5f2b04 R09: 000000000000000c
-> >>      [   50.531492][ T3596] R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
-> >>      [   50.539455][ T3596] R13: 00007f314959d370 R14: 0000000000000003 R15: 0000000000000000
-> >>
-> >> [...]
-> > Here is the summary with links:
-> >    - [net-next,v3] net: hsr: fix suspicious RCU usage warning in hsr_node_get_first()
-> >      https://git.kernel.org/netdev/net-next/c/e7f27420681f
-> >
-> > You are awesome, thank you!
->
->
-> This patch broke the build, please revert or fix.
->
->
-> ERROR: modpost: "lockdep_is_held" [net/hsr/hsr.ko] undefined!
->
->
->
->
+From: Eric Dumazet <edumazet@google.com>
 
-Hi Eric,
-Thank you.
+Another thing making netns dismantles potentially very slow is located
+in gro_cells_destroy(),
+whenever cleanup_net() has to remove a device using gro_cells framework.
 
-I will send a new patch after some tests.
+RTNL is not held at this stage, so synchronize_net()
+is calling synchronize_rcu():
 
-Thank you so much.
+netdev_run_todo()
+ ip_tunnel_dev_free()
+  gro_cells_destroy()
+   synchronize_net()
+    synchronize_rcu() // Ouch.
+
+This patch uses call_rcu(), and gave me a 25x performance improvement
+in my tests.
+
+cleanup_net() is no longer blocked ~10 ms per synchronize_rcu()
+call.
+
+In the case we could not allocate the memory needed to queue the
+deferred free, use synchronize_rcu_expedited()
+
+v2: made percpu_free_defer_callback() static
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/gro_cells.c | 36 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 31 insertions(+), 5 deletions(-)
+
+diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+index 6eb2e5ec2c5068e1d798557e55d084b785187a9b..8462f926ab457322a12510a4d294ecca617948f0 100644
+--- a/net/core/gro_cells.c
++++ b/net/core/gro_cells.c
+@@ -89,8 +89,23 @@ int gro_cells_init(struct gro_cells *gcells, struct net_device *dev)
+ }
+ EXPORT_SYMBOL(gro_cells_init);
+ 
++struct percpu_free_defer {
++	struct rcu_head rcu;
++	void __percpu	*ptr;
++};
++
++static void percpu_free_defer_callback(struct rcu_head *head)
++{
++	struct percpu_free_defer *defer;
++
++	defer = container_of(head, struct percpu_free_defer, rcu);
++	free_percpu(defer->ptr);
++	kfree(defer);
++}
++
+ void gro_cells_destroy(struct gro_cells *gcells)
+ {
++	struct percpu_free_defer *defer;
+ 	int i;
+ 
+ 	if (!gcells->cells)
+@@ -102,12 +117,23 @@ void gro_cells_destroy(struct gro_cells *gcells)
+ 		__netif_napi_del(&cell->napi);
+ 		__skb_queue_purge(&cell->napi_skbs);
+ 	}
+-	/* This barrier is needed because netpoll could access dev->napi_list
+-	 * under rcu protection.
++	/* We need to observe an rcu grace period before freeing ->cells,
++	 * because netpoll could access dev->napi_list under rcu protection.
++	 * Try hard using call_rcu() instead of synchronize_rcu(),
++	 * because we might be called from cleanup_net(), and we
++	 * definitely do not want to block this critical task.
+ 	 */
+-	synchronize_net();
+-
+-	free_percpu(gcells->cells);
++	defer = kmalloc(sizeof(*defer), GFP_KERNEL | __GFP_NOWARN);
++	if (likely(defer)) {
++		defer->ptr = gcells->cells;
++		call_rcu(&defer->rcu, percpu_free_defer_callback);
++	} else {
++		/* We do not hold RTNL at this point, synchronize_net()
++		 * would not be able to expedite this sync.
++		 */
++		synchronize_rcu_expedited();
++		free_percpu(gcells->cells);
++	}
+ 	gcells->cells = NULL;
+ }
+ EXPORT_SYMBOL(gro_cells_destroy);
 -- 
+2.35.1.473.g83b2b277ed-goog
 
-Best regards,
-Juhee Kang
