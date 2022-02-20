@@ -2,160 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5DA34BD28D
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 00:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA09A4BD28A
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 00:17:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243234AbiBTW4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 17:56:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52470 "EHLO
+        id S243787AbiBTXGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 18:06:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbiBTW4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 17:56:22 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5A2517FF;
-        Sun, 20 Feb 2022 14:56:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645397760; x=1676933760;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sdYAtXZV6VS6Py+w36OsucDIDtzFkCYCuiuihXMs5lI=;
-  b=k8fy1iNW58IDEiltwwMNt/DkeRUePg9uAiBPZmYKpcRXXQRs1UMA3ofl
-   lbIAfGKp3MHXw1kUAxu7nyq1+9xL2GDinznVvwKlnQgUlomC85C0Ubv+T
-   KxLPKRkw2ejwotBe8Jf3rzBkc9rj8IU3pF3uRio8oaaJ8rxxjPdoufUzY
-   REXlMNrcP4uuR8oIaqnjEj+1sj6a9rCQ9boTxPBbcGuLHgwfXHhiqf/cd
-   8AxxSTS8iuXIs9VpppzoSObzs+FncDcjOiU8XCA0bnoKL8C+Lx3IQPodN
-   KWi79vCYuYbn6fNKIwICVL0+HTI7La7h+Td+I00VYVDK15D561GGFFXIl
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="251590340"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="251590340"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 14:56:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="706044068"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 20 Feb 2022 14:55:56 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nLv7U-0000yo-4e; Sun, 20 Feb 2022 22:55:56 +0000
-Date:   Mon, 21 Feb 2022 06:55:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v1 10/15] bpf: Wire up freeing of referenced
- PTR_TO_BTF_ID in map
-Message-ID: <202202210651.wyTgHcwt-lkp@intel.com>
-References: <20220220134813.3411982-11-memxor@gmail.com>
+        with ESMTP id S229794AbiBTXGO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 18:06:14 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503E945040;
+        Sun, 20 Feb 2022 15:05:52 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id o6so12134869ljp.3;
+        Sun, 20 Feb 2022 15:05:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d6WjrznPFgIX6CuAd5lqklb2/6Lx0uXfvC4YzTqEtvA=;
+        b=iMojWWI+7n2PpBTO70eTfp8MW0MzGy2jsjxoDA/jM7LSbgSMvz+CYhaBcCSUgKU6qV
+         wGF+vispyXV31QoMLymdM2y0gQCRBOCVQrdmm7mhW1p6vqQsKjwHnYkPb6LdQJT6jX4u
+         0Sa8A2m4qHdmKuQcQ58T7X5hkYGanx597cErp/5DADxV3fEeMQ6XbM4/qy5eA6yJAO8q
+         4WN+DtbndyHyejG1jiDiG3n16tzWrUDVhBqmh8uPiPaHhLqGdhOrA2ZaewccoS0UxASI
+         Plsk5NqiInQlq59Da4UoH2qFPT7Q7koTWvfpvYC6Blvk7XoI5F9u2ZhXKHI/mnfERzlY
+         MOGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d6WjrznPFgIX6CuAd5lqklb2/6Lx0uXfvC4YzTqEtvA=;
+        b=yBJrDDFe6/4TTIIoCmxpSV1Urd6gaYiEgg2o8cutS7MviLwRH/LHZdqsuaWPMOf2Q/
+         modhIQaLbkD8V1vIsdjoFaO8NxYSO2+w+3RhOOQY18Rx20lqn01fknNB9lMezoCti3fe
+         4k/ip8pKM7SYszfRuDgDNPDebtGdQq0H7d0Rt+NLP5p0E3mNtpEAe19hIVV3hR4vUEu5
+         CuTHIps2V24ELBuAmMZHlzli/Bz5HnqyxvjFVE1UT1fo9d2if1feODr2NjsJFHrbyisB
+         qous8Pwajdkt2PC4FskvKiOkBr44t2HDM4xE77hBtkg2CK+ETYnYJIYF1D8tX53zvYhB
+         bxfw==
+X-Gm-Message-State: AOAM531PYx5FBDP4knm4KFRwFIrKC2yMNK8/jkjRl7mkHaCKQGvf2F48
+        rKWaH/sX+uP7xx1urXH7S804U8w+CEdFDzOplksuUXwlZqk=
+X-Google-Smtp-Source: ABdhPJxRJj8QR0il65uClOD8XZzZT0EpucNsBb0C84UmDCLFX0biPyxwmJiPXgddtECvFKINHNwKJr5lK8V9VswbDrs=
+X-Received: by 2002:a2e:3a17:0:b0:246:387c:46ab with SMTP id
+ h23-20020a2e3a17000000b00246387c46abmr4147234lja.77.1645398350598; Sun, 20
+ Feb 2022 15:05:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220220134813.3411982-11-memxor@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220128110825.1120678-1-miquel.raynal@bootlin.com>
+ <20220128110825.1120678-2-miquel.raynal@bootlin.com> <CAB_54W60OiGmjLQ2dAvnraq6fkZ6GGTLMVzjVbVAobcvNsaWtQ@mail.gmail.com>
+ <20220131152345.3fefa3aa@xps13> <CAB_54W7SZmgU=2_HEm=_agE0RWfsXxEs_4MHmnAPPFb+iVvxsQ@mail.gmail.com>
+ <20220201155507.549cd2e3@xps13> <CAB_54W5mnovPX0cyq5dwVoQKa6VZx3QPCfVoPAF+LQ5DkdQ3Mw@mail.gmail.com>
+ <20220207084918.0c2e6d13@xps13>
+In-Reply-To: <20220207084918.0c2e6d13@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Sun, 20 Feb 2022 18:05:39 -0500
+Message-ID: <CAB_54W6RC9dqRzPyN3OYb6pWfst+UixSAKppaCtDaCvzE0_kAQ@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 1/5] net: ieee802154: Improve the way
+ supported channels are declared
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kumar,
+Hi,
 
-Thank you for the patch! Yet something to improve:
+On Mon, Feb 7, 2022 at 2:49 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> alex.aring@gmail.com wrote on Sun, 6 Feb 2022 16:37:23 -0500:
+>
+> > Hi,
+> >
+> > On Tue, Feb 1, 2022 at 9:55 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > ...
+> > >
+> > > Given the new information that I am currently processing, I believe the
+> > > array is not needed anymore, we can live with a minimal number of
+> > > additional helpers, like the one getting the PRF value for the UWB
+> > > PHYs. It's the only one I have in mind so far.
+> >
+> > I am not really sure if I understood now. So far those channel/page
+> > combinations are the same because we have no special "type" value in
+> > wpan_phy,
+>
+> Yes, my assumption was more: I know there are only -legacy- phy types
+> supported, we will add another (or improve the current) way of defining
+> channels when we'll need to. Eg when improving UWB support.
+>
+> > what we currently support is the "normal" (I think they name
+> > it legacy devices) phy type (no UWB, sun phy, whatever) and as Channel
+> > Assignments says that it does not apply for those PHY's I think it
+> > there are channel/page combinations which are different according to
+> > the PHY "type". However we don't support them and I think there might
+> > be an upcoming type field in wpan_phy which might be set only once at
+> > registration time.
+>
+> An idea might be to create a callback that drivers might decide to
+> implement or not. If they implement it, the core might call it to get
+> further information about the channels. The core would provide a {page,
+> channel} couple and retrieve a structure with many information such as
+> the the frequency, the protocol, eventually the prf, etc.
+>
 
-[auto build test ERROR on next-20220217]
-[cannot apply to bpf-next/master bpf/master linus/master v5.17-rc4 v5.17-rc3 v5.17-rc2 v5.17-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+As I said before, for "many information" we should look at how
+wireless is using that with regdb and extend it with 802.15.4
+channels/etc. The kernel should only deal with an unique
+identification of a database key for "regdb" which so far I see is a
+combination of phy type, page id and channel id. Then from "somewhere"
+also the country code gets involved into that and you get a subset of
+what is available.
 
-url:    https://github.com/0day-ci/linux/commits/Kumar-Kartikeya-Dwivedi/Introduce-typed-pointer-support-in-BPF-maps/20220220-215105
-base:    3c30cf91b5ecc7272b3d2942ae0505dd8320b81c
-config: mips-randconfig-r012-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210651.wyTgHcwt-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/09a47522ec608218eb6aabd5011316d78ad245e0
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Kumar-Kartikeya-Dwivedi/Introduce-typed-pointer-support-in-BPF-maps/20220220-215105
-        git checkout 09a47522ec608218eb6aabd5011316d78ad245e0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash kernel/bpf/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from kernel/bpf/syscall.c:4:
-   In file included from include/linux/bpf.h:9:
-   In file included from include/linux/workqueue.h:9:
-   In file included from include/linux/timer.h:6:
-   In file included from include/linux/ktime.h:24:
-   In file included from include/linux/time.h:60:
-   In file included from include/linux/time32.h:13:
-   In file included from include/linux/timex.h:65:
-   In file included from arch/mips/include/asm/timex.h:19:
-   In file included from arch/mips/include/asm/cpu-type.h:12:
-   In file included from include/linux/smp.h:13:
-   In file included from include/linux/cpumask.h:13:
-   In file included from include/linux/atomic.h:7:
-   In file included from arch/mips/include/asm/atomic.h:23:
->> arch/mips/include/asm/cmpxchg.h:83:11: error: call to __xchg_called_with_bad_pointer declared with 'error' attribute: Bad argument size for xchg
-                           return __xchg_called_with_bad_pointer();
-                                  ^
-   1 error generated.
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for OMAP_GPMC
-   Depends on MEMORY && OF_ADDRESS
-   Selected by
-   - MTD_NAND_OMAP2 && MTD && MTD_RAW_NAND && (ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST && HAS_IOMEM
-
-
-vim +/error +83 arch/mips/include/asm/cmpxchg.h
-
-5154f3b4194910 Paul Burton         2017-06-09  66  
-b70eb30056dc84 Paul Burton         2017-06-09  67  extern unsigned long __xchg_small(volatile void *ptr, unsigned long val,
-b70eb30056dc84 Paul Burton         2017-06-09  68  				  unsigned int size);
-b70eb30056dc84 Paul Burton         2017-06-09  69  
-46f1619500d022 Thomas Bogendoerfer 2019-10-09  70  static __always_inline
-46f1619500d022 Thomas Bogendoerfer 2019-10-09  71  unsigned long __xchg(volatile void *ptr, unsigned long x, int size)
-b81947c646bfef David Howells       2012-03-28  72  {
-b81947c646bfef David Howells       2012-03-28  73  	switch (size) {
-b70eb30056dc84 Paul Burton         2017-06-09  74  	case 1:
-b70eb30056dc84 Paul Burton         2017-06-09  75  	case 2:
-b70eb30056dc84 Paul Burton         2017-06-09  76  		return __xchg_small(ptr, x, size);
-b70eb30056dc84 Paul Burton         2017-06-09  77  
-b81947c646bfef David Howells       2012-03-28  78  	case 4:
-62c6081dca75d6 Paul Burton         2017-06-09  79  		return __xchg_asm("ll", "sc", (volatile u32 *)ptr, x);
-62c6081dca75d6 Paul Burton         2017-06-09  80  
-b81947c646bfef David Howells       2012-03-28  81  	case 8:
-62c6081dca75d6 Paul Burton         2017-06-09  82  		if (!IS_ENABLED(CONFIG_64BIT))
-62c6081dca75d6 Paul Burton         2017-06-09 @83  			return __xchg_called_with_bad_pointer();
-62c6081dca75d6 Paul Burton         2017-06-09  84  
-62c6081dca75d6 Paul Burton         2017-06-09  85  		return __xchg_asm("lld", "scd", (volatile u64 *)ptr, x);
-62c6081dca75d6 Paul Burton         2017-06-09  86  
-d15dc68c1143e2 Paul Burton         2017-06-09  87  	default:
-d15dc68c1143e2 Paul Burton         2017-06-09  88  		return __xchg_called_with_bad_pointer();
-b81947c646bfef David Howells       2012-03-28  89  	}
-b81947c646bfef David Howells       2012-03-28  90  }
-b81947c646bfef David Howells       2012-03-28  91  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+- Alex
