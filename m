@@ -2,268 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 073E94BCE9D
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 14:22:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6B964BCEBE
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 14:56:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243835AbiBTNWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 08:22:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47178 "EHLO
+        id S237969AbiBTNvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 08:51:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232564AbiBTNWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 08:22:04 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2080.outbound.protection.outlook.com [40.107.93.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7DCDF5A
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 05:21:42 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VmuvSk3/SySePe37H4ioQbV1CM1m1YHNhzeL4yl5At6QnzKsdSOn1SWK9AlHG7AGGBCN4NKUTGmSEwmBuxeIFaPkNzGoaK5NjOlWhD3+f+vai564uvukzz9It/mAWHg6gWmIBwnbDBkR0HYXJPhXvwwG3SJBScqdQzpy32M844HYhx+PZrwTwA9c6X6Fhfnr9S7kS5tQ/bAWOCqqeqcxvi9oc+wcngT0iOXN9a9yQCBX+BYWH3VT0310v5zjcUfYEJMkYnWfrMMFbXZ7VildxFbbfNgJKRpTiszsYh0HAAfhqmw3qNFJqcfpSSJ7w7MdDMrNHYf/jGwYz5ZWoGaWxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tos2kPV9+jjDmUktZITuoAXQ05jzmODcSP58D7gX//I=;
- b=B65XEsetCfQ1MzOAmeqL2WK+o/eebbEKQYeQZln6xDbpme0Yq9/IWNOV8rA/AyO+HZ3oHTbAjdxMvf5EBE1UHD+rbCn+qNoDndHfEGJg3K946KEKyXHDd9LlnQf+kESgn4vH1kIdbed7TdzXXvgQ+wa5drHvV4wFuse2fnzF7BRMKCANvwuzSEZvXWQK3wjhClytkKjOjcbuItzzPc00z24CXoYq/fyjHmC5MTJOc0ZSqbTT+24SDRCu3AkB/O0i+qiElOQSKvZlAsRfXw+u8gRQ6kEi/UU6gNg9iIpTqvMSzu2SnSbCtpc69S9pkM5Eu8ddD7glvKv/gggXNaY3hw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tos2kPV9+jjDmUktZITuoAXQ05jzmODcSP58D7gX//I=;
- b=RgUFU8sy6dEy9SmDUJmsGqTowtds9Ijd9c/NBk8Z9Tb1jt/uoGO7cSG6PLlBXJHmbuqQ2F2M1Oegd8DDAeTjSYbxNsYL+LVZWcVgJ28pqpUj7bKWgBqNmtoivDYbEeK8MUUDTmXb1zUEdoss+14VemGyPZVa3Or6c3t0kSqO5GaLGDgKwnuxXYDm+1YBQPXKI1n03b119suII1/d+HffBg0Lkhnkashj9+LkntrAUZfyQ/CsXdJr0kXe7jl9qb/tdFlCj0GkFkbRPaylS4N9QVWCUaZrE97tjSdA0CjL41lQYiWBz6HgPXfkuUw5tOHMVj0IcngrUIibGD+oNm3WRw==
-Received: from MWHPR07CA0011.namprd07.prod.outlook.com (2603:10b6:300:116::21)
- by MN2PR12MB2911.namprd12.prod.outlook.com (2603:10b6:208:a9::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Sun, 20 Feb
- 2022 13:21:40 +0000
-Received: from CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:116:cafe::96) by MWHPR07CA0011.outlook.office365.com
- (2603:10b6:300:116::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
- Transport; Sun, 20 Feb 2022 13:21:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT025.mail.protection.outlook.com (10.13.175.232) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Sun, 20 Feb 2022 13:21:39 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 20 Feb
- 2022 13:21:37 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Sun, 20 Feb 2022
- 05:21:35 -0800
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
- mail.nvidia.com (10.129.68.8) with Microsoft SMTP Server id 15.2.986.9 via
- Frontend Transport; Sun, 20 Feb 2022 05:21:33 -0800
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>, <dev@openvswitch.org>,
-        <netdev@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        "Pravin B Shelar" <pshelar@ovn.org>, <davem@davemloft.net>,
+        with ESMTP id S235018AbiBTNvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 08:51:46 -0500
+X-Greylist: delayed 115 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 05:51:25 PST
+Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6365621813;
+        Sun, 20 Feb 2022 05:51:25 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.west.internal (Postfix) with ESMTP id 63AE62B00158;
+        Sun, 20 Feb 2022 08:49:27 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Sun, 20 Feb 2022 08:49:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Hzfm38
+        gwPt5b09qOmLkmmfY2IIYl8DekKzBTC8y6E/4=; b=Mh2eOvmHHkVx++fz80uns8
+        7+Y+xWxOHRMVpsAEIc1iX9iGRssSrqTt4DEoPDkKx1zMSVEFmktobYjSc+Q1vqpE
+        NB3k0jRzA8yiLumKKiNCTPhOv39knberB8iIy1iNXVam1m3xZ6RSDAXrqrZv8jX+
+        22yZfgzepiyULlT8Tz9i7x1r8X55zgZl8EZFYADfPMtKl/mzHfYyUHRn9F32L8x5
+        AKBkMSn9RahYlDyjeZLmzBXrhHBv5seX3OlpAlQfvr+eIxQRsqqhKWY76ow10uQ1
+        6Mdrffpszfy/cfGdr0ALfw3W1veNut0gsBQH0iw9CHa0rkPUs2n6BxamINmtawbw
+        ==
+X-ME-Sender: <xms:5kYSYlZgeDpGHPwBYlonXCSlDA0koRyD9axOwL3Z0YRw_CmQo-vWOw>
+    <xme:5kYSYsZkDLdYwizt3-sWnDo0Ek_-VY4wz4nUUXDRQm0KjWCCWcgIghGQQDlmgRR1H
+    gUdKOwZErNerA>
+X-ME-Received: <xmr:5kYSYn8kuaTIvJOQXtNXDSf_ZOaNsWIkXIB_zr2Ob-zXUb5UEpK2gIRWp0tu1j402tCpXi8AMuyBoBnqBS-_PsBDhHnIRE1I6n7OsbTNlbAh77k7t4A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeggdehkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvffufffkofggtghogfesthekredtredtjeenucfhrhhomhepofgrrhgvkhcu
+    ofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinhhvih
+    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepgedvfefh
+    tdfgkeefveetkefhiedvuedvjeffuefggeefffdvueffvefgueelteehnecuffhomhgrih
+    hnpehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
+    mhgrihhlfhhrohhmpehmrghrmhgrrhgvkhesihhnvhhishhisghlvghthhhinhhgshhlrg
+    gsrdgtohhm
+X-ME-Proxy: <xmx:5kYSYjoQloU_-2nKAY4zkNwVwTH0cnfqm9aPKAwL1aCC9pjApIe0Sg>
+    <xmx:5kYSYgrJNDHfSBhfWrXbh6aXi_ynQA1dHd5K9tXEFd7SIoILG-VPjg>
+    <xmx:5kYSYpQxN-LOWG68VKFpG8cBbHvCtcI2Y_kJqNdU2_BtkTjlS_xZ3A>
+    <xmx:5kYSYscqhqYX42m4acL8gaVOPiOG9sWqWL9OVERVct4UnFI7b5HIcb_l0sI>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 20 Feb 2022 08:49:25 -0500 (EST)
+From:   =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, stable@vger.kernel.org,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>
-CC:     Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>
-Subject: [PATCH net v4 1/1] openvswitch: Fix setting ipv6 fields causing hw csum failure
-Date:   Sun, 20 Feb 2022 15:21:14 +0200
-Message-ID: <20220220132114.18989-1-paulb@nvidia.com>
-X-Mailer: git-send-email 2.30.1
+        Antoine Tenart <atenart@kernel.org>,
+        xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR INTERFACE),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+Subject: [PATCH] xen/netfront: destroy queues before real_num_tx_queues is zeroed
+Date:   Sun, 20 Feb 2022 14:42:01 +0100
+Message-Id: <20220220134202.2187485-1-marmarek@invisiblethingslab.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Organization: Invisible Things Lab
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f61a1fe2-8f87-404d-20dc-08d9f473ed8a
-X-MS-TrafficTypeDiagnostic: MN2PR12MB2911:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB2911B19C144CFC350385F2B2C2399@MN2PR12MB2911.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cqXrc6gNbY+tDFzhh+vywgn5W9l/+qtUOzsyT2lcuq+0ZCy/Iy7V/07/1Q4MupOugFXw8LYZMHX8kLKYNf16mxWkH6WxxPW2/Sa0QzmUCR4gzBvsoCQoFfBI61sNBv4SnBRiXJ1TunpMaE54Xfn3rZtqdpsQ53nPrH4M/MoJpj0tFNqsJqZ4BcRJE1V7txed7FLDqxcrN7RIFd/WizGhewo0HZbERJspJOVhHUlWgL9/Nt2v0mBhj4J8ovMSa/nYPpWkNJU7veftSimAwEyx26hLIOz0YiVBqbnvPOTMAlLku6ByzvXWs4dgXBwU3sbyJMuArCzJt7soLTcBfpsW75D6Py6MIiyerh4oOFobRf9LdWD7B9U1PzKlfvUwGH0S/zh/bLL0Br3P7SH79ZNJsi7n7ANTm8Cwxax9k1V99Suio157qun8Id5HxsIj0C7C8Jpupvvt0CgtsxMZCe8fQbUNK613hVQDnPVgpDyHwTK2iRcHai0Wk38rw+fhEuHxEP1TvSPyfsQk+Bna7piDk8NwT5nDHL51yjiCnM/BPtiINsQddSmMUy0n1hEj9PY4edvxQ4MnSX3LEWRZ/WuoIe6CS1NRdRJNjzytjehUylNzSnFJ+Svf+px6tbKKNXe9GlDer9Tgyo5x2rNIhxIb8S98DTc2CDOexEDU9t+GRVu7pP+gSypahq8yHRvcCRAgGz+28v2YF6TOH0ZzszacaA==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(8936002)(356005)(81166007)(5660300002)(40460700003)(6666004)(2906002)(82310400004)(86362001)(8676002)(508600001)(4326008)(36860700001)(83380400001)(47076005)(36756003)(70206006)(70586007)(426003)(186003)(26005)(1076003)(54906003)(316002)(336012)(2616005)(107886003)(110136005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2022 13:21:39.2211
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f61a1fe2-8f87-404d-20dc-08d9f473ed8a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2911
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ipv6 ttl, label and tos fields are modified without first
-pulling/pushing the ipv6 header, which would have updated
-the hw csum (if available). This might cause csum validation
-when sending the packet to the stack, as can be seen in
-the trace below.
+xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
+delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
+("net-sysfs: update the queue counts in the unregistration path"),
+unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
+facts together means, that xennet_destroy_queues() called from
+xennet_remove() cannot do its job, because it's called after
+unregister_netdev(). This results in kfree-ing queues that are still
+linked in napi, which ultimately crashes:
 
-Fix this by updating skb->csum if available.
+    BUG: kernel NULL pointer dereference, address: 0000000000000000
+    #PF: supervisor read access in kernel mode
+    #PF: error_code(0x0000) - not-present page
+    PGD 0 P4D 0
+    Oops: 0000 [#1] PREEMPT SMP PTI
+    CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-1.32.fc32.qubes.x86_64+ #226
+    RIP: 0010:free_netdev+0xa3/0x1a0
+    Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 85 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
+    RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
+    RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
+    RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
+    RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
+    R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
+    R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
+    FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:0000000000000000
+    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
+    Call Trace:
+     <TASK>
+     xennet_remove+0x13d/0x300 [xen_netfront]
+     xenbus_dev_remove+0x6d/0xf0
+     __device_release_driver+0x17a/0x240
+     device_release_driver+0x24/0x30
+     bus_remove_device+0xd8/0x140
+     device_del+0x18b/0x410
+     ? _raw_spin_unlock+0x16/0x30
+     ? klist_iter_exit+0x14/0x20
+     ? xenbus_dev_request_and_reply+0x80/0x80
+     device_unregister+0x13/0x60
+     xenbus_dev_changed+0x18e/0x1f0
+     xenwatch_thread+0xc0/0x1a0
+     ? do_wait_intr_irq+0xa0/0xa0
+     kthread+0x16b/0x190
+     ? set_kthread_struct+0x40/0x40
+     ret_from_fork+0x22/0x30
+     </TASK>
 
-Trace resulted by ipv6 ttl dec and then sending packet
-to conntrack [actions: set(ipv6(hlimit=63)),ct(zone=99)]:
-[295241.900063] s_pf0vf2: hw csum failure
-[295241.923191] Call Trace:
-[295241.925728]  <IRQ>
-[295241.927836]  dump_stack+0x5c/0x80
-[295241.931240]  __skb_checksum_complete+0xac/0xc0
-[295241.935778]  nf_conntrack_tcp_packet+0x398/0xba0 [nf_conntrack]
-[295241.953030]  nf_conntrack_in+0x498/0x5e0 [nf_conntrack]
-[295241.958344]  __ovs_ct_lookup+0xac/0x860 [openvswitch]
-[295241.968532]  ovs_ct_execute+0x4a7/0x7c0 [openvswitch]
-[295241.979167]  do_execute_actions+0x54a/0xaa0 [openvswitch]
-[295242.001482]  ovs_execute_actions+0x48/0x100 [openvswitch]
-[295242.006966]  ovs_dp_process_packet+0x96/0x1d0 [openvswitch]
-[295242.012626]  ovs_vport_receive+0x6c/0xc0 [openvswitch]
-[295242.028763]  netdev_frame_hook+0xc0/0x180 [openvswitch]
-[295242.034074]  __netif_receive_skb_core+0x2ca/0xcb0
-[295242.047498]  netif_receive_skb_internal+0x3e/0xc0
-[295242.052291]  napi_gro_receive+0xba/0xe0
-[295242.056231]  mlx5e_handle_rx_cqe_mpwrq_rep+0x12b/0x250 [mlx5_core]
-[295242.062513]  mlx5e_poll_rx_cq+0xa0f/0xa30 [mlx5_core]
-[295242.067669]  mlx5e_napi_poll+0xe1/0x6b0 [mlx5_core]
-[295242.077958]  net_rx_action+0x149/0x3b0
-[295242.086762]  __do_softirq+0xd7/0x2d6
-[295242.090427]  irq_exit+0xf7/0x100
-[295242.093748]  do_IRQ+0x7f/0xd0
-[295242.096806]  common_interrupt+0xf/0xf
-[295242.100559]  </IRQ>
-[295242.102750] RIP: 0033:0x7f9022e88cbd
-[295242.125246] RSP: 002b:00007f9022282b20 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffda
-[295242.132900] RAX: 0000000000000005 RBX: 0000000000000010 RCX: 0000000000000000
-[295242.140120] RDX: 00007f9022282ba8 RSI: 00007f9022282a30 RDI: 00007f9014005c30
-[295242.147337] RBP: 00007f9014014d60 R08: 0000000000000020 R09: 00007f90254a8340
-[295242.154557] R10: 00007f9022282a28 R11: 0000000000000246 R12: 0000000000000000
-[295242.161775] R13: 00007f902308c000 R14: 000000000000002b R15: 00007f9022b71f40
+Fix this by calling xennet_destroy_queues() from xennet_close() too,
+when real_num_tx_queues is still available. This ensures that queues are
+destroyed when real_num_tx_queues is set to 0, regardless of how
+unregister_netdev() was called.
 
-Fixes: 3fdbd1ce11e5 ("openvswitch: add ipv6 'set' action")
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Originally reported at
+https://github.com/QubesOS/qubes-issues/issues/7257
+
+Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the unregistration path")
+Cc: stable@vger.kernel.org # 5.16+
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+
 ---
- Changelog:
-    v4->v3:
-      Use new helper csum_block_replace
-    v2->v3:
-      Use u8 instead of __u8
-      Fix sparse warnings on conversions
-    v1->v2:
-      Replaced push pull rcsum checksum calc with actual checksum calc
+While this fixes the issue, I'm not sure if that is the correct thing
+to do. xennet_remove() calls xennet_destroy_queues() under rtnl_lock,
+which may be important here? Just moving xennet_destroy_queues() before
+unregister_netdev() in xennet_remove() did not helped - it crashed in
+another way (use-after-free in xennet_close()).
 
- include/net/checksum.h    |  7 ++++++
- net/openvswitch/actions.c | 47 ++++++++++++++++++++++++++++++++-------
- 2 files changed, 46 insertions(+), 8 deletions(-)
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+---
+ drivers/net/xen-netfront.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
 
-diff --git a/include/net/checksum.h b/include/net/checksum.h
-index 5218041e5c8f..ce39e47b2881 100644
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -106,6 +106,12 @@ csum_block_sub(__wsum csum, __wsum csum2, int offset)
- 	return csum_block_add(csum, ~csum2, offset);
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index d514d96027a6..5b69a930581e 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -828,6 +828,22 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
+ 	return NETDEV_TX_OK;
  }
  
-+static inline __wsum
-+csum_block_replace(__wsum csum, __wsum old, __wsum new, int offset)
++static void xennet_destroy_queues(struct netfront_info *info)
 +{
-+	return csum_block_add(csum_block_sub(csum, old, offset), new, offset);
++	unsigned int i;
++
++	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
++		struct netfront_queue *queue = &info->queues[i];
++
++		if (netif_running(info->netdev))
++			napi_disable(&queue->napi);
++		netif_napi_del(&queue->napi);
++	}
++
++	kfree(info->queues);
++	info->queues = NULL;
 +}
 +
- static inline __wsum csum_unfold(__sum16 n)
+ static int xennet_close(struct net_device *dev)
  {
- 	return (__force __wsum)n;
-@@ -184,4 +190,5 @@ static inline __wsum wsum_negate(__wsum val)
- {
- 	return (__force __wsum)-((__force u32)val);
- }
-+
- #endif
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 076774034bb9..1bc9037e4b9e 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -423,12 +423,44 @@ static void set_ipv6_addr(struct sk_buff *skb, u8 l4_proto,
- 	memcpy(addr, new_addr, sizeof(__be32[4]));
- }
- 
--static void set_ipv6_fl(struct ipv6hdr *nh, u32 fl, u32 mask)
-+static void set_ipv6_dsfield(struct sk_buff *skb, struct ipv6hdr *nh, u8 ipv6_tclass, u8 mask)
- {
-+	u8 old_ipv6_tclass = ipv6_get_dsfield(nh);
-+
-+	ipv6_tclass = OVS_MASKED(old_ipv6_tclass, ipv6_tclass, mask);
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		skb->csum = csum_block_replace(skb->csum, (__force __wsum)(old_ipv6_tclass << 4),
-+					       (__force __wsum)(ipv6_tclass << 4), 1);
-+
-+	ipv6_change_dsfield(nh, ~mask, ipv6_tclass);
-+}
-+
-+static void set_ipv6_fl(struct sk_buff *skb, struct ipv6hdr *nh, u32 fl, u32 mask)
-+{
-+	u32 old_fl;
-+
-+	old_fl = nh->flow_lbl[0] << 16 |  nh->flow_lbl[1] << 8 |  nh->flow_lbl[2];
-+	fl = OVS_MASKED(old_fl, fl, mask);
-+
- 	/* Bits 21-24 are always unmasked, so this retains their values. */
--	OVS_SET_MASKED(nh->flow_lbl[0], (u8)(fl >> 16), (u8)(mask >> 16));
--	OVS_SET_MASKED(nh->flow_lbl[1], (u8)(fl >> 8), (u8)(mask >> 8));
--	OVS_SET_MASKED(nh->flow_lbl[2], (u8)fl, (u8)mask);
-+	nh->flow_lbl[0] = (u8)(fl >> 16);
-+	nh->flow_lbl[1] = (u8)(fl >> 8);
-+	nh->flow_lbl[2] = (u8)fl;
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		skb->csum = csum_block_replace(skb->csum, (__force __wsum)htonl(old_fl),
-+					       (__force __wsum)htonl(fl), 0);
-+}
-+
-+static void set_ipv6_ttl(struct sk_buff *skb, struct ipv6hdr *nh, u8 new_ttl, u8 mask)
-+{
-+	new_ttl = OVS_MASKED(nh->hop_limit, new_ttl, mask);
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		skb->csum = csum_block_replace(skb->csum, (__force __wsum)nh->hop_limit,
-+					       (__force __wsum)new_ttl, 1);
-+	nh->hop_limit = new_ttl;
- }
- 
- static void set_ip_ttl(struct sk_buff *skb, struct iphdr *nh, u8 new_ttl,
-@@ -546,18 +578,17 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
- 		}
+ 	struct netfront_info *np = netdev_priv(dev);
+@@ -839,6 +855,7 @@ static int xennet_close(struct net_device *dev)
+ 		queue = &np->queues[i];
+ 		napi_disable(&queue->napi);
  	}
- 	if (mask->ipv6_tclass) {
--		ipv6_change_dsfield(nh, ~mask->ipv6_tclass, key->ipv6_tclass);
-+		set_ipv6_dsfield(skb, nh, key->ipv6_tclass, mask->ipv6_tclass);
- 		flow_key->ip.tos = ipv6_get_dsfield(nh);
- 	}
- 	if (mask->ipv6_label) {
--		set_ipv6_fl(nh, ntohl(key->ipv6_label),
-+		set_ipv6_fl(skb, nh, ntohl(key->ipv6_label),
- 			    ntohl(mask->ipv6_label));
- 		flow_key->ipv6.label =
- 		    *(__be32 *)nh & htonl(IPV6_FLOWINFO_FLOWLABEL);
- 	}
- 	if (mask->ipv6_hlimit) {
--		OVS_SET_MASKED(nh->hop_limit, key->ipv6_hlimit,
--			       mask->ipv6_hlimit);
-+		set_ipv6_ttl(skb, nh, key->ipv6_hlimit, mask->ipv6_hlimit);
- 		flow_key->ip.ttl = nh->hop_limit;
- 	}
++	xennet_destroy_queues(np);
  	return 0;
+ }
+ 
+@@ -2103,22 +2120,6 @@ static int write_queue_xenstore_keys(struct netfront_queue *queue,
+ 	return err;
+ }
+ 
+-static void xennet_destroy_queues(struct netfront_info *info)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
+-		struct netfront_queue *queue = &info->queues[i];
+-
+-		if (netif_running(info->netdev))
+-			napi_disable(&queue->napi);
+-		netif_napi_del(&queue->napi);
+-	}
+-
+-	kfree(info->queues);
+-	info->queues = NULL;
+-}
+-
+ 
+ 
+ static int xennet_create_page_pool(struct netfront_queue *queue)
 -- 
-2.30.1
+2.31.1
 
