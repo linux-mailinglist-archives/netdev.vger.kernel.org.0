@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5574E4BCFAF
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 17:14:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A914BCFB5
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 17:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244275AbiBTP71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 10:59:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60694 "EHLO
+        id S244290AbiBTP7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 10:59:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243520AbiBTP7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 10:59:23 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C2E4476D;
-        Sun, 20 Feb 2022 07:59:02 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id 12so8631261pgd.0;
-        Sun, 20 Feb 2022 07:59:02 -0800 (PST)
+        with ESMTP id S244286AbiBTP72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 10:59:28 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612F1443D3;
+        Sun, 20 Feb 2022 07:59:07 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id l17so1329234plg.0;
+        Sun, 20 Feb 2022 07:59:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=44LYBQpyrjIKyg3Y9on2cX6HSqaMbgnWx5oGl5OsXPY=;
-        b=XEODjzbh6LmU2vDPqqhz1yXoiLwka8QJblDkRG0ZXapsTjpPNgUu3/PDQMaPfAAsly
-         SYusaQSBQDjpLemEbYwG//xfO2DCi+osj64jheB/NC7JeFh3kn3ObUr1mJuJ7Hl4q9/P
-         MoNQ4BlKTI1VRBuyhgFdb0uawAwiH06xiv0aA00q/tic0hSuiUltEkxxQiUbSZWeBCVq
-         Zsm9C9QdgYZHiX7P6+TctVvwBf9hvpqDbAjZb8wI3NTQBjEL7aKPyK0sKCTOWPK4FVn7
-         aLxv7kgfi3wYMOKj2k7lDF587ELxh1iTobvErixEqhvu8DgjJovpv7SQ9rkvf2/ljY6S
-         uYpQ==
+        bh=pyq6u+oy+fqZeW/hecUnoAg2DOu5MbfwxNlJm6r1Xhc=;
+        b=nhNXKjiu6EaOKVNgwNWDgMQAPqgMwsRFUEymL567UuWUK/arrTFPbe44ACR42cYIBL
+         bsN0eLNtzre4HgEeRuF8ScM8yxmTEfo2b/QbVuK9VD5j6gDvzMA0qfrn5zGdCT7n5fBR
+         myLeaYTe2aqFcjbJEqxFrWBr+5poGn3GlFM9xQ8vAYNWQJ01KmsBNXZOGnXeyjWB2lBr
+         L8OPTmlMzBsDz3M87LeFQtVljORl+JOQ0YQsELxbxgMckEycSdeX1WBRCvkcf9RHzpmx
+         /zpv3O2GTASPwelzwWD7l7Je6mHKpMpYv0WRF/8ZHcjhVSk8SqfFwHQVpIbku+sqcuKD
+         7CsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=44LYBQpyrjIKyg3Y9on2cX6HSqaMbgnWx5oGl5OsXPY=;
-        b=RE9pD3nqOebqktNUagepsZMFMU2YWdNAN8Z9Jz5dYeuvzwygiYPsElw3fHjYKFVtMg
-         H0NTyp8VUSO+64qkrhRkIW19QO05RJI7UhoNu+42w41OgWpxeZ9Wh2kc15AaLvi0Y3pY
-         Zy9QHngXKSpA+zVlJMWntf/COHnh/+8BvimOaDhVrK0HOxFrUT5DGY8Yr+TaO3bMyXsS
-         nJz163Ef57kMulSltPBnGu4iXG0pPxmNY3hXsDuqosq7+Tpmp2mrwVrIgTiUGbXmMk6h
-         F5LOFMH0N7OJdyeEbm9UbrNQMXYEcBtnpmdMZhwfjGaETXD3ZWzwSp1gYhH4/sRt70FH
-         GLBQ==
-X-Gm-Message-State: AOAM531FixWKpDolWYHziWGyeWPZaVwv1dTgW4B8Zn77S8C3XnsJ0GiS
-        6YnbTgRbqq1MwQvR6nN99tfyAUynzE4=
-X-Google-Smtp-Source: ABdhPJzn9S0cEXinVzxQHrgEyWcCZaNhLMOJNxIeZgoh99J3QV3vnukOy/kS4zl8voBMFhggoqRhlQ==
-X-Received: by 2002:a05:6a00:1995:b0:4e1:a7dd:96d6 with SMTP id d21-20020a056a00199500b004e1a7dd96d6mr16218258pfl.16.1645372741775;
-        Sun, 20 Feb 2022 07:59:01 -0800 (PST)
+        bh=pyq6u+oy+fqZeW/hecUnoAg2DOu5MbfwxNlJm6r1Xhc=;
+        b=T+S/0YM2LumXjw04abeU/w8S2IwXO6C41bA3eEjhIP6JA9ED6OZ0ZXmGnRWXO1WYeT
+         Ub0iBSHI8JhnTz6nucjuo8T1c64w9IQm0JJ4W/6ucHcT3kNcKBr4MR4dmxZVDUO0savY
+         HWS6ssozW5N7JjWlEMVtIw4HPIahXPp4y9QJZYJ4jwMMEg0JWoOELYyHQQe0zS2ApCA+
+         6rwyiY192R+OFN2iTBWwgJd3ieHO7QeYKelrBGo0Z/VtZCuPGuev1u/v6/zGOLqrWmAT
+         D59ZWZ8TCj7yYPzcztMNbGG8u9h+5CeTbume4aDxwK7AiKXxOzjn67YmgtuEtg7vLDOv
+         2I+g==
+X-Gm-Message-State: AOAM533mB7nho57eX2d1lUOWhn2mzQFdq0tQ5l8JrlaKWzgJmXnUpWXD
+        fjBuKdDxrnxkkczHR2CCeq4=
+X-Google-Smtp-Source: ABdhPJyDvTw5u1Ag3PqOeCX1fHbyL3QF88xpCu/Gh3BQO2dQKLD7HyGzmy1YoZhB7ui8yKZigMidAQ==
+X-Received: by 2002:a17:903:192:b0:14d:8b5a:5446 with SMTP id z18-20020a170903019200b0014d8b5a5446mr15649776plg.46.1645372746931;
+        Sun, 20 Feb 2022 07:59:06 -0800 (PST)
 Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id o14sm5001927pfw.121.2022.02.20.07.58.56
+        by smtp.gmail.com with ESMTPSA id o14sm5001927pfw.121.2022.02.20.07.59.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 07:59:01 -0800 (PST)
+        Sun, 20 Feb 2022 07:59:06 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     kuba@kernel.org
@@ -58,9 +58,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         flyingpeng@tencent.com, mengensun@tencent.com,
         daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/3] net: neigh: use kfree_skb_reason() for __neigh_event_send()
-Date:   Sun, 20 Feb 2022 23:57:04 +0800
-Message-Id: <20220220155705.194266-3-imagedong@tencent.com>
+Subject: [PATCH net-next 3/3] net: neigh: add skb drop reasons to arp_error_report()
+Date:   Sun, 20 Feb 2022 23:57:05 +0800
+Message-Id: <20220220155705.194266-4-imagedong@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220220155705.194266-1-imagedong@tencent.com>
 References: <20220220155705.194266-1-imagedong@tencent.com>
@@ -78,79 +78,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() used in __neigh_event_send() with
-kfree_skb_reason(). Following drop reasons are added:
+When neighbour become invalid or destroyed, neigh_invalidate() will be
+called. neigh->ops->error_report() will be called if the neighbour's
+state is NUD_FAILED, and seems here is the only use of error_report().
+So we can tell that the reason of skb drops in arp_error_report() is
+SKB_DROP_REASON_NEIGH_FAILED.
 
-SKB_DROP_REASON_NEIGH_FAILED
-SKB_DROP_REASON_NEIGH_QUEUEFULL
-
-The two reasons above should be the hot path that skb drops in
-neighbour subsystem.
+Replace kfree_skb() used in arp_error_report() with kfree_skb_reason().
 
 Reviewed-by: Mengen Sun <mengensun@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h     | 9 +++++++++
- include/trace/events/skb.h | 2 ++
- net/core/neighbour.c       | 4 ++--
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ net/ipv4/arp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index c310a4a8fc86..206b66f5ce6b 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -393,6 +393,15 @@ enum skb_drop_reason {
- 					 * see the doc for disable_ipv6
- 					 * in ip-sysctl.rst for detail
- 					 */
-+	SKB_DROP_REASON_NEIGH_FAILED,	/* dropped as the state of
-+					 * neighbour is NUD_FAILED
-+					 */
-+	SKB_DROP_REASON_NEIGH_QUEUEFULL,	/* the skbs that waiting
-+						 * for sending on the queue
-+						 * of neigh->arp_queue is
-+						 * full, and the skbs on the
-+						 * tail will be dropped
-+						 */
- 	SKB_DROP_REASON_MAX,
- };
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index 4db0325f6e1a..8e4ca4738c43 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -293,7 +293,7 @@ static int arp_constructor(struct neighbour *neigh)
+ static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
+ {
+ 	dst_link_failure(skb);
+-	kfree_skb(skb);
++	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
+ }
  
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 47dedef7b6b8..dd06366ded4a 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -41,6 +41,8 @@
- 	EM(SKB_DROP_REASON_BPF_CGROUP_EGRESS,			\
- 	   BPF_CGROUP_EGRESS)					\
- 	EM(SKB_DROP_REASON_IPV6DSIABLED, IPV6DSIABLED)		\
-+	EM(SKB_DROP_REASON_NEIGH_FAILED, NEIGH_FAILED)		\
-+	EM(SKB_DROP_REASON_NEIGH_QUEUEFULL, NEIGH_QUEUEFULL)	\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index ec0bf737b076..c353834e8fa9 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1171,7 +1171,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
- 			neigh->updated = jiffies;
- 			write_unlock_bh(&neigh->lock);
- 
--			kfree_skb(skb);
-+			kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- 			return 1;
- 		}
- 	} else if (neigh->nud_state & NUD_STALE) {
-@@ -1193,7 +1193,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
- 				if (!buff)
- 					break;
- 				neigh->arp_queue_len_bytes -= buff->truesize;
--				kfree_skb(buff);
-+				kfree_skb_reason(buff, SKB_DROP_REASON_NEIGH_QUEUEFULL);
- 				NEIGH_CACHE_STAT_INC(neigh->tbl, unres_discards);
- 			}
- 			skb_dst_force(skb);
+ /* Create and send an arp packet. */
 -- 
 2.35.1
 
