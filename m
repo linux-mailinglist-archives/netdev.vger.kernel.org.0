@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2F54BCDD7
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF564BCD8E
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243486AbiBTJGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 04:06:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48110 "EHLO
+        id S243479AbiBTJGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 04:06:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243479AbiBTJGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:43 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F953366A2
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:23 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id q11-20020a17090a304b00b001b94d25eaecso12503964pjl.4
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:23 -0800 (PST)
+        with ESMTP id S243482AbiBTJGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:44 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2865631935
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:24 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso16237075pjg.0
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ZcoxsAYhpedU3kP0gZ1E9rs7GvC/JbZ1FmgOsnZQTyA=;
-        b=FLUedk3/rFONwezyHn5QfujWh/sUMTJWB55Zqo7faXCzG9nSUQ2d75MbtKEG8qvoNm
-         B4LZvVDssITAWX2+C6K3M7MyxTtdSM7YahqYMZNUAR7YU4pBnGhvNg9/hVEzsmTtbbg6
-         hNBppdcQCA4i3qPrKvgorqG9D3Fh4xYIa6jn8=
+        bh=VIhQRHjajsSQXDo77s/MyTmBOFb2ebVTKmCwDrvspBo=;
+        b=TxA/86dcRNbSsCLwJXdjaXT0ecWMybylwDFhq/dOFAA2eQbB+S0/uaQkkOHQzibztv
+         s7rJbJZWwaSKkBCt2gimNXgejAP1xNH2mKsJxQMkI6ZUTeRuIoXdxYLB5Y/zTGrJq4ar
+         lS8BKYnPhkGWOvQlDQEZfGV2ZmHJoXzc4zhxo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ZcoxsAYhpedU3kP0gZ1E9rs7GvC/JbZ1FmgOsnZQTyA=;
-        b=LmQU/dDz13T4N95zChoRpw6q4By8gEiYJNhXhoYnSxikxLfi7NmN5sCZ0X1mmhDwj8
-         9j7+n9GAbg9gjudMMQJ0dq/4eoD8g8t8/7jCWpzWQQQ5J7suV6ujnbQg7CzbuNxb/MOi
-         vfeYAdmigjQ8oXL9ooceFHGvONkMf3uM0ZL3BS7HohwluH3VkwWb7to3ahRX2KUbf9nG
-         P0iEGAe9J5EwKStP4NYNmMMEfUO7lddHnO+DTvCoR+FPI+N+ugCwBssdoEXdwllO2Uar
-         YRpbciCergyNZXuT9EMdsVcqamvP0fKRBR28DFaLUvNRCHbN/+FgiQB7R8TnYqxKuXZF
-         Jr1A==
-X-Gm-Message-State: AOAM533bCXfhDEaakww2VOHR3Xzcmsmh6q9OgbUTjTRkOPxxxOmIcSIu
-        pApeSWJ0YmEM3aUwpO+fRbJj7w==
-X-Google-Smtp-Source: ABdhPJy9q+G5Sili9GHLPoQRzM/tp6pBgGPMJNLeJUh0GuIiJq1q+ri3gBt2eI2q8z98Sd8UrZ+zZA==
-X-Received: by 2002:a17:903:40cd:b0:14e:dd7f:f3d5 with SMTP id t13-20020a17090340cd00b0014edd7ff3d5mr14532625pld.88.1645347982403;
-        Sun, 20 Feb 2022 01:06:22 -0800 (PST)
+        bh=VIhQRHjajsSQXDo77s/MyTmBOFb2ebVTKmCwDrvspBo=;
+        b=RLwS22v1eoVSf7BxIdH1vczvlTp4xjcvDUCOQEuDYi5WDS3qN9flFRhL8eMuL19sHg
+         s7nZbS1HP5gODvIU3Fe66ihTh4fG+oFEFnkFf19htjn8cJDI+5cIDlmetgoKk1TZY1OM
+         qpnfbLdslzQBye97dfj7LhMj3zwflQcFcWjg3w3W9ChiBWIpcULZw7VM5Qz4hEVaLDls
+         /wGKqp43wAtoS2bSHFCGp0HZmPlU/kpnj6nDewNANFvMqYVEwYnJqMDZ5+Ucf5l5yEAo
+         eQLv1nWLX536BzF/ejIUKBIK1dICifgEo/4vgOaZYtWFHtnZ1hjpot6qE94bw2QLpSVS
+         ji9Q==
+X-Gm-Message-State: AOAM532S4BkhFvWfEK0EnheySpy3AF66q4qX8kSdwXzVH2lrv6uS5d4p
+        RXIkk0uOqwPJD6ZF9PoFNBAMVA==
+X-Google-Smtp-Source: ABdhPJyX+fj8E8W9q+DbWyqRQsEvV+3UGPMNPls1G8X3YS5unPaivjMAnEOjHbA0jEx/J8xnmf3cZg==
+X-Received: by 2002:a17:902:7296:b0:14b:4bc6:e81 with SMTP id d22-20020a170902729600b0014b4bc60e81mr14494957pll.132.1645347983377;
+        Sun, 20 Feb 2022 01:06:23 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.21
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Feb 2022 01:06:21 -0800 (PST)
+        Sun, 20 Feb 2022 01:06:23 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
-Subject: [PATCH net 5/7] bnxt_en: Restore the resets_reliable flag in bnxt_open()
-Date:   Sun, 20 Feb 2022 04:05:51 -0500
-Message-Id: <1645347953-27003-6-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net 6/7] bnxt_en: Increase firmware message response DMA wait time
+Date:   Sun, 20 Feb 2022 04:05:52 -0500
+Message-Id: <1645347953-27003-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001082cf05d86f6eae"
+        boundary="0000000000001d211705d86f6e56"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,71 +65,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001082cf05d86f6eae
+--0000000000001d211705d86f6e56
 
-From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+When polling for the firmware message response, we first poll for the
+response message header.  Once the valid length is detected in the
+header, we poll for the valid bit at the end of the message which
+signals DMA completion.  Normally, this poll time for DMA completion
+is extremely short (0 to a few usec).  But on some devices under some
+rare conditions, it can be up to about 20 msec.
 
-During ifdown, we call bnxt_inv_fw_health_reg() which will clear
-both the status_reliable and resets_reliable flags if these
-registers are mapped.  This is correct because a FW reset during
-ifdown will clear these register mappings.  If we detect that FW
-has gone through reset during the next ifup, we will remap these
-registers.
+Increase this delay to 50 msec and use udelay() for the first 10 usec
+for the common case, and usleep_range() beyond that.
 
-But during normal ifup with no FW reset, we need to restore the
-resets_reliable flag otherwise we will not show the reset counter
-during devlink diagnose.
+Also, change the error message to include the above delay time when
+printing the timeout value.
 
-Fixes: 8cc95ceb7087 ("bnxt_en: improve fw diagnose devlink health messages")
-Reviewed-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Fixes: 3c8c20db769c ("bnxt_en: move HWRM API implementation into separate file")
+Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c | 12 +++++++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h |  2 +-
+ 2 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index fc5b1d816bdb..b1c98d1408b8 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7789,6 +7789,19 @@ static int bnxt_map_fw_health_regs(struct bnxt *bp)
- 	return 0;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+index 566c9487ef55..b01d42928a53 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+@@ -644,17 +644,23 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 
+ 		/* Last byte of resp contains valid bit */
+ 		valid = ((u8 *)ctx->resp) + len - 1;
+-		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; j++) {
++		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; ) {
+ 			/* make sure we read from updated DMA memory */
+ 			dma_rmb();
+ 			if (*valid)
+ 				break;
+-			usleep_range(1, 5);
++			if (j < 10) {
++				udelay(1);
++				j++;
++			} else {
++				usleep_range(20, 30);
++				j += 20;
++			}
+ 		}
+ 
+ 		if (j >= HWRM_VALID_BIT_DELAY_USEC) {
+ 			hwrm_err(bp, ctx, "Error (timeout: %u) msg {0x%x 0x%x} len:%d v:%d\n",
+-				 hwrm_total_timeout(i), req_type,
++				 hwrm_total_timeout(i) + j, req_type,
+ 				 le16_to_cpu(ctx->req->seq_id), len, *valid);
+ 			goto exit;
+ 		}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+index d52bd2d63aec..c98032e38188 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+@@ -90,7 +90,7 @@ static inline unsigned int hwrm_total_timeout(unsigned int n)
  }
  
-+static void bnxt_remap_fw_health_regs(struct bnxt *bp)
-+{
-+	if (!bp->fw_health)
-+		return;
-+
-+	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) {
-+		bp->fw_health->status_reliable = true;
-+		bp->fw_health->resets_reliable = true;
-+	} else {
-+		bnxt_try_map_fw_health_reg(bp);
-+	}
-+}
-+
- static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
- {
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
-@@ -9856,8 +9869,8 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
- 		resc_reinit = true;
- 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
- 		fw_reset = true;
--	else if (bp->fw_health && !bp->fw_health->status_reliable)
--		bnxt_try_map_fw_health_reg(bp);
-+	else
-+		bnxt_remap_fw_health_regs(bp);
  
- 	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state) && !fw_reset) {
- 		netdev_err(bp->dev, "RESET_DONE not set during FW reset.\n");
+-#define HWRM_VALID_BIT_DELAY_USEC	150
++#define HWRM_VALID_BIT_DELAY_USEC	50000
+ 
+ static inline bool bnxt_cfa_hwrm_message(u16 req_type)
+ {
 -- 
 2.18.1
 
 
---0000000000001082cf05d86f6eae
+--0000000000001d211705d86f6e56
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -201,13 +207,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIClrn1Iz8dVApdYBsXOhWsSAERc9Mhfk
-kAjNoWM2mW9wMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEGBhvRRcu8KIu7s26tgAiAeF9X5jYmD
+7VSJF/wa1ERxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
 MDA5MDYyM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAL4OUikRie61EQKS3TgzsyN3tJ21zVT/5wdnakTX5p56HVuNrq
-s7/t0H7gb+eH3ALPVl2EXGupqi2Wnsuf9Id8qZZpcH3CBXeKd9tyWObDa46jzB5s29ELPRfSz2wT
-F+UZQqq+hK1hU650cOmElmS0sxgCCjgNOOLvTTVhDXEmZC3Vx2Blu/HtbYMamhYncolYObvbcwYu
-QlJCu0tIax4qB6g49nApruzWQteZxtmHBE+3wiJn/tmG7B/wxJ5IZNhmzKWf8zYufoOSg98J094i
-7DdfkFVf5Tp+OisPlNYbJDX1b6+8Z9t9fk7qROjUIO6gijPGcvtD1EulkgQ4UNNN
---0000000000001082cf05d86f6eae--
+ATANBgkqhkiG9w0BAQEFAASCAQAFpLkJMrLbZJt4x2MGlzWFaB1sDm42bjFxbaMrkdos3jm8+XnT
+SeYBHuXcXzJ5fPHeE5eSWgQC0AqwFMRKBtZ9ONIFIXi1ve5PkfF0g72NCqvxlue4u9om8FwF2NY5
+OtwcXR8v1wmynFRNAq3NtZ0UhcIC7OvUbb3a6fPqec7yhwGDeRpp6l4BhRf1Vuw6iechqZDEd3yy
+i2c0Vea/30B9JzwlANYujqV7Ole1SegjMqFJyNQaJvT4YxyFcPMq7k+jeiv0gdULFn4l5PhOLaWO
+dODlq1IyMO56llPHquk+FfDQ6MmiTtIbA6s5Sl1YX49b0HTAVcu8AnPyd3ce2+SW
+--0000000000001d211705d86f6e56--
