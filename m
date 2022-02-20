@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 487984BCEAF
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 14:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89ACA4BCEC0
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 14:56:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237065AbiBTNsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 08:48:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48204 "EHLO
+        id S241184AbiBTNsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 08:48:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiBTNsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 08:48:38 -0500
+        with ESMTP id S229884AbiBTNsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 08:48:41 -0500
 Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5029921813;
-        Sun, 20 Feb 2022 05:48:17 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id ay3so2024504plb.1;
-        Sun, 20 Feb 2022 05:48:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4523921813;
+        Sun, 20 Feb 2022 05:48:20 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id l8so10858885pls.7;
+        Sun, 20 Feb 2022 05:48:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tyzdp/jbfseg65ev0g7jdUi8Rfi1IKTDUUpRhEM4lag=;
-        b=iVoZO2+UF6GzmTL25SzJseUqI1wWLCFh/Z2RVawQD2XqnyGgzZLOaezd054PX/z7Xz
-         hgm1pd40El7Ih3O1zC8i8nqLbpkf5U+9reursUW2Ckv+pIl65gGLkMBLBgStX/p/YuQ1
-         mQtWgwO0nTIBNy3wW76fSHECg2qCA1dT8ovs54GmpKZV1ujsyBGftYeRC77u0801eeWn
-         c/w5YgbfM/IJ5qI/Lz0DlzlLfVKktXnryeaHHRtKwDgpO+fnHN/p4+nspUT8KMR54zp2
-         glOHU95aZEN+Z3bhyzxxEwVXD+kvFukBU0CqCWrsHv09M39FYFCGFpuTlDG4dk5Qhl/t
-         McNg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PzcNo+2Cl6iYUCYcvpUBH3gr0tfx0tpOlkynbpKJJzs=;
+        b=gnkR8SFne9AxfmrY6l1U3pCSAtxEEohSpRVSFpn4eHh0ml4Jme0rYQTjuVFoDLakMh
+         N4eQNTxJkoRY+/myDHc96XRvuVXV5Jujoy7Cq2Ruk5e00DC5/VQEpl9oXD/Grlf7RbrR
+         cPy3ZAFPgyA0l09vRq5MECIRYXovWC3s9sGWkTrBiKElJCKDZjD0nesWncdFN8m39Kar
+         uvPvX3XiCwpsduDJ0IineI1MF62YDqT3fAUKwJPUGv9n9Lq3JjlLKCcRFmr0jje4kX69
+         UpvDtq0CX6UjbnQxen/FOQYStpjDzyUnbx5iwZughSYpJGRhhpmOncefnA8rXhsmrRHT
+         qm3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tyzdp/jbfseg65ev0g7jdUi8Rfi1IKTDUUpRhEM4lag=;
-        b=7uvyViZL4j4VNWd1fTHstoPD7DUjQj6B1dSshYJvspr55O7PCOvZPH+IPrmDUyihe9
-         HZ3e2XZ1I9R8ZfN9uASBi81nzKsbnMg77F2aCuzQq1dMdPBxk15MVkz8Yd/MOu/0+SAL
-         OlY3dWDEfRR8E7jqC0zIEIFrwRXYWcg4V6IGxq7+JylMjZkA73TuvhMuC4R+VShDyp5D
-         j2jnN2Pika9gtJ6lXLD5V0oX33V924L0vAoVsDhgY5t5OXCzaeSQj2Tzbl4EiC3HVdMJ
-         eIhORZMFTJql4AASkLfeO3Ay0sZT9kSdZy5HPv8koLczOnLafZXLXZ5M0qmA3UdXtgte
-         1M1A==
-X-Gm-Message-State: AOAM5317Si+aILImez/o42N8eZXiRGKSXVNE8li1caXyAiYwIfbM2uTD
-        mS0ZBob+4zUy3XzWrRD/fk8SMdLPNrc=
-X-Google-Smtp-Source: ABdhPJz7yDAir3Pp7By8EcC8ZsQw2erTXsUCZA0TU/KByTGLho+tTGXn2BM3gGGFlS2Emyr1Ejhl3A==
-X-Received: by 2002:a17:902:a412:b0:14f:9c99:1690 with SMTP id p18-20020a170902a41200b0014f9c991690mr4863165plq.142.1645364896576;
-        Sun, 20 Feb 2022 05:48:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PzcNo+2Cl6iYUCYcvpUBH3gr0tfx0tpOlkynbpKJJzs=;
+        b=EgMqZUllYqhhlHhK2l8oP03ADEhScGhM09lo6A6qdAjzPDCn0drRTfHM3HKr9491/n
+         x+yx05BCNTANSWR3lqneL7PnKnwQwYUrJLfff/w+bXCJuTZtc/WF0187I9jiW28U7VQd
+         kaaq0LnaZS3WwKCsgGG75g+nDE7JoImla/Inl82HYN7LVmIrF1OJL8JngzNa9evpRxjk
+         atKNM+3+j0Ut5Djg360CtEPrieAfWgCyVVWqFoZqXdGj825lk6VdD8R6iIBvIfZVp5qG
+         iVGDqRzyx8s2vw5IL7qyW7fILI0PpKtmnMA3jXnRb8o5x1ARrocXlSdI9SyqidGbIV80
+         6acg==
+X-Gm-Message-State: AOAM530NXBrzMJLgLyvWv9FcSlY7FAhiGOI183DW7NtZqSv4tryVEfJ2
+        bj+g1ZL7gNs30oDzoeU2Km4Ek0kpfeo=
+X-Google-Smtp-Source: ABdhPJxqFb7mKuV/HBOE8jJordIDkenzpU+FOrtk0NuYyxSbBgqwHYFumCCvdIjy4oBUBuMqkzlYeA==
+X-Received: by 2002:a17:903:2283:b0:14d:b86b:165b with SMTP id b3-20020a170903228300b0014db86b165bmr15171985plh.41.1645364899656;
+        Sun, 20 Feb 2022 05:48:19 -0800 (PST)
 Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id d8sm10057328pfv.84.2022.02.20.05.48.15
+        by smtp.gmail.com with ESMTPSA id g63sm9060558pfb.65.2022.02.20.05.48.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 05:48:16 -0800 (PST)
+        Sun, 20 Feb 2022 05:48:19 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -55,12 +55,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v1 00/15] Introduce typed pointer support in BPF maps
-Date:   Sun, 20 Feb 2022 19:17:58 +0530
-Message-Id: <20220220134813.3411982-1-memxor@gmail.com>
+Subject: [PATCH bpf-next v1 01/15] bpf: Factor out fd returning from bpf_btf_find_by_name_kind
+Date:   Sun, 20 Feb 2022 19:17:59 +0530
+Message-Id: <20220220134813.3411982-2-memxor@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220220134813.3411982-1-memxor@gmail.com>
+References: <20220220134813.3411982-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7134; h=from:subject; bh=gN4hB4C2rirVwlB4suNXTjjGmsF7Zx1ocsK735GCqhc=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiEkZXvZi6e1cepTHG/wb9O2j8RRGbgYNvn+RnMikn t4Y8pfWJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYhJGVwAKCRBM4MiGSL8RysOWEA Cb9H6Jy3z7PjK/6K3Hdc6YLgBrZAxD9yjsEkW/XyA69O73Z2hS4XiN76Ilx/3PSDzZcv7u6DIuiXH1 F0IiyXA928mequyQfB3wJI1AKLD2eRYkUr8SIdCtxRuat/8aaTfucI7oVJXHn6JjJIb7GIt6vYxJ+h clbKFcLc+6YIx20MhvxiiHdV1ECr/8YDf/gnjAOcV0lPc/98Uy90QeUTHJ8kNmjjxwEchevJgXD72E ddZEqZJcJbAkcqm+7qyYhke0wgC6Y/EFOPwsTTLc4hPPKZgNs+Pd+UHLGrCZkvTXPwQjJlCxJD3Pqd r+h7kRLT/gRILcA8Ngk8xz8CcMrrCo6TYu9WyshYRn1EaLjoRkjj8t2QpxOvK1f1iU7W+Ga7DZToFQ B4A1ELMDrZSJjHxz3XSq8RmevwjX/RHcELsCvo9s+PSDmPy1MUwLFoj6v/MB4hCgrbKDK1sdgrSfh5 37hMaCmQveHKk7TwV1bbFFD3t3HKJ74x4RKweiiY1Pl+X2+G2GnfOsrUcno3ZXJapABkIUNaag+9k4 BLWG4AuoaEbka2Q5kqnILIlCFS1D+Fg+QXJdYxj3xOpvrvcbYwnMFmUl5Wsy+w3TBus/zIkFeuCJR0 Rytyss0ySbdBMdnxyyxq1hGUQBENMU9Yx/aBeII5UgGSmX+RbRnzq1IhvmCA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2938; h=from:subject; bh=/DfuqiVvvM+Atumhzb4HyEeRwNtGOpOsgZS5ZW8b5tQ=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiEkZXkMyYe/Lt+F66RQ4bL9Z/mevwOrvjMnzoNuHb UewkETyJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYhJGVwAKCRBM4MiGSL8RyhZEEA C65AeyeTfBXOEkpFn9Eq6xuZtpdc9omJPpWReu529cRJRFrjUYDvFK0KN+F9rNDwJsC2O0Hxicpy6B CX7BOpIrOKrrlbiGluICkOiEB+GiCyndtyJ+UC71Po2tbAaEm2Yz1evJL41M2ovtdUCLHPG/q7QA3O Zql7ooRamhF9UD86tNobw5esP7xJXDa8BCkX+M/8bnIloKXZZvMd4sFeVdhZTPHPUws6jTA88hvNYL AF/S5SVAf2Sa0vz5+yWB5tAQUvKhlVJba4zuaYngd8eq68u36hFhMZLI0j8Us0AUsSIN1aCrzPAgXQ 9s2Qf0nTw3HzBDNwwi6o3ybUvfq7QXTp8Dyp/01x8+EJQSCNt94fCIKbVSxoE+S7j5wrLcx+XJp5O1 A7mQT+eA/GCBFU32NP93PIcqsi0izNtyfNuGPjY2Xj55QxF9/mJMxesFgpvlVU1I89rKvUNgQANaKs MS7ImcUoiz+nA46oQqueVemKYom36FY+Yt8rY60N+yiMuoDuq0dp9wbCRu7TMiEEHtPCwT8CONw2Bq 419k3FJ7RN9oJJ3MQftXr43AZcO7VCnu0V/lV3dCsbD7M8TcQLaTqxk4c2z+Vay+CuKcazISe9Z51a EO0pTAYniMtdqUdRaYX/2WU55kj+Qh4R60p+ubbAx0E1YXDQxkWql+7AnAHA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -73,149 +75,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduction
-------------
+In next few patches, we need a helper that searches all kernel BTFs
+(vmlinux and module BTFs), and finds the type denoted by 'name' and
+'kind'. Turns out bpf_btf_find_by_name_kind already does the same thing,
+but it instead returns a BTF ID and optionally fd (if module BTF). This
+is used for relocating ksyms in BPF loader code (bpftool gen skel -L).
 
-This set enables storing pointers of a certain type in BPF map, and extends the
-verifier to enforce type safety and lifetime correctness properties.
+We extract the core code out into a new helper
+btf_find_by_name_kind_all, which returns the BTF ID and BTF pointer in
+an out parameter. The reference for the returned BTF pointer is only
+bumped if it is a module BTF, this needs to be kept in mind when using
+this helper.
 
-The infrastructure being added is generic enough for allowing storing any kind
-of pointers whose type is available using BTF (user or kernel) in the future
-(e.g. strongly typed memory allocation in BPF program), which are internally
-tracked in the verifier as PTR_TO_BTF_ID, but for now the series limits them to
-four kinds of pointers obtained from the kernel.
+Hence, the user must release the BTF reference iff btf_is_module is
+true, otherwise transfer the ownership to e.g. an fd.
 
-Obviously, use of this feature depends on map BTF.
+In case of the helper, the fd is only allocated for module BTFs, so no
+extra handling for btf_vmlinux case is required.
 
-1. Unreferenced kernel pointer
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+---
+ kernel/bpf/btf.c | 47 +++++++++++++++++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 16 deletions(-)
 
-In this case, there are very few restrictions. The pointer type being stored
-must match the type declared in the map value. However, such a pointer when
-loaded from the map can only be dereferenced, but not passed to any in-kernel
-helpers or kernel functions available to the program. This is because while the
-verifier's exception handling mechanism coverts BPF_LDX to PROBE_MEM loads,
-which are then handled specially by the JIT implementation, the same liberty is
-not available to accesses inside the kernel. The pointer by the time it is
-passed into a helper has no lifetime related guarantees about the object it is
-pointing to, and may well be referencing invalid memory.
-
-2. Referenced kernel pointer
-
-This case imposes a lot of restrictions on the programmer, to ensure safety. To
-transfer the ownership of a reference in the BPF program to the map, the user
-must use the BPF_XCHG instruction, which returns the old pointer contained in
-the map, as an acquired reference, and releases verifier state for the
-referenced pointer being exchanged, as it moves into the map.
-
-This a normal PTR_TO_BTF_ID that can be used with in-kernel helpers and kernel
-functions callable by the program.
-
-However, if BPF_LDX is used to load a referenced pointer from the map, it is
-still not permitted to pass it to in-kernel helpers or kernel functions. To
-obtain a reference usable with helpers, the user must invoke a kfunc helper
-which returns a usable reference (which also must be eventually released before
-BPF_EXIT, or moved into a map).
-
-Since the load of the pointer (preserving data dependency ordering) must happen
-inside the RCU read section, the kfunc helper will take a pointer to the map
-value, which must point to the actual pointer of the object whose reference is
-to be raised. The type will be verified from the BTF information of the kfunc,
-as the prototype must be:
-
-	T *func(T **, ... /* other arguments */);
-
-Then, the verifier checks whether pointer at offset of the map value points to
-the type T, and permits the call.
-
-This convention is followed so that such helpers may also be called from
-sleepable BPF programs, where RCU read lock is not necessarily held in the BPF
-program context, hence necessiating the need to pass in a pointer to the actual
-pointer to perform the load inside the RCU read section.
-
-3. per-CPU kernel pointer
-
-These have very little restrictions. The user can store a PTR_TO_PERCPU_BTF_ID
-into the map, and when loading from the map, they must NULL check it before use,
-because while a non-zero value stored into the map should always be valid, it can
-still be reset to zero on updates. After checking it to be non-NULL, it can be
-passed to bpf_per_cpu_ptr and bpf_this_cpu_ptr helpers to obtain a PTR_TO_BTF_ID
-to underlying per-CPU object.
-
-It is also permitted to write 0 and reset the value.
-
-4. Userspace pointer
-
-The verifier recently gained support for annotating BTF with __user type tag.
-This indicates pointers pointing to memory which must be read using the
-bpf_probe_read_user helper to ensure correct results. The set also permits
-storing them into the BPF map, and ensures user pointer cannot be stored
-into other kinds of pointers mentioned above.
-
-When loaded from the map, the only thing that can be done is to pass this
-pointer to bpf_probe_read_user. No dereference is allowed.
-
-Notes
------
-
-This set requires the following LLVM fix to pass the BPF CI:
-
-  https://reviews.llvm.org/D119799
-
-Also, I applied Alexei's suggestion of removing callback for btf_find_field, but
-that 'ugly' is still required, since bad offset alignment etc. can return an
-error, and we don't want to leave a partial ptr_off_tab around in that case. The
-other option is freeing inside btf_find_field, but that would be more code
-conditional on BTF_FIELD_KPTR, when the caller can do it based on ret < 0.
-
-TODO
-----
-
-Needs a lot more testing, especially for stuff apart from verifier correctness.
-Will work on that in parallel during v1 review. The idea was to get a little
-more feedback (esp. for kptr_get stuff) before moving forward with adding more
-tests. Posting it now to just get discussion started. The verifier tests fairly
-comprehensively test many edge cases I could think of.
-
-Kumar Kartikeya Dwivedi (15):
-  bpf: Factor out fd returning from bpf_btf_find_by_name_kind
-  bpf: Make btf_find_field more generic
-  bpf: Allow storing PTR_TO_BTF_ID in map
-  bpf: Allow storing referenced PTR_TO_BTF_ID in map
-  bpf: Allow storing PTR_TO_PERCPU_BTF_ID in map
-  bpf: Allow storing __user PTR_TO_BTF_ID in map
-  bpf: Prevent escaping of pointers loaded from maps
-  bpf: Adapt copy_map_value for multiple offset case
-  bpf: Populate pairs of btf_id and destructor kfunc in btf
-  bpf: Wire up freeing of referenced PTR_TO_BTF_ID in map
-  bpf: Teach verifier about kptr_get style kfunc helpers
-  net/netfilter: Add bpf_ct_kptr_get helper
-  libbpf: Add __kptr* macros to bpf_helpers.h
-  selftests/bpf: Add C tests for PTR_TO_BTF_ID in map
-  selftests/bpf: Add verifier tests for PTR_TO_BTF_ID in map
-
- include/linux/bpf.h                           |  90 ++-
- include/linux/btf.h                           |  24 +
- include/net/netfilter/nf_conntrack_core.h     |  17 +
- kernel/bpf/arraymap.c                         |  13 +-
- kernel/bpf/btf.c                              | 565 ++++++++++++++--
- kernel/bpf/hashtab.c                          |  27 +-
- kernel/bpf/map_in_map.c                       |   5 +-
- kernel/bpf/syscall.c                          | 227 ++++++-
- kernel/bpf/verifier.c                         | 311 ++++++++-
- net/bpf/test_run.c                            |  17 +-
- net/netfilter/nf_conntrack_bpf.c              | 132 +++-
- net/netfilter/nf_conntrack_core.c             |  17 -
- tools/lib/bpf/bpf_helpers.h                   |   4 +
- .../selftests/bpf/prog_tests/map_btf_ptr.c    |  13 +
- .../testing/selftests/bpf/progs/map_btf_ptr.c | 105 +++
- .../testing/selftests/bpf/progs/test_bpf_nf.c |  31 +
- tools/testing/selftests/bpf/test_verifier.c   |  57 +-
- .../selftests/bpf/verifier/map_btf_ptr.c      | 624 ++++++++++++++++++
- 18 files changed, 2144 insertions(+), 135 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/map_btf_ptr.c
- create mode 100644 tools/testing/selftests/bpf/progs/map_btf_ptr.c
- create mode 100644 tools/testing/selftests/bpf/verifier/map_btf_ptr.c
-
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 2c4c5dbe2abe..3645d8c14a18 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6545,16 +6545,10 @@ static struct btf *btf_get_module_btf(const struct module *module)
+ 	return btf;
+ }
+ 
+-BPF_CALL_4(bpf_btf_find_by_name_kind, char *, name, int, name_sz, u32, kind, int, flags)
++static s32 btf_find_by_name_kind_all(const char *name, u32 kind, struct btf **btfp)
+ {
+ 	struct btf *btf;
+-	long ret;
+-
+-	if (flags)
+-		return -EINVAL;
+-
+-	if (name_sz <= 1 || name[name_sz - 1])
+-		return -EINVAL;
++	s32 ret;
+ 
+ 	btf = bpf_get_btf_vmlinux();
+ 	if (IS_ERR(btf))
+@@ -6580,19 +6574,40 @@ BPF_CALL_4(bpf_btf_find_by_name_kind, char *, name, int, name_sz, u32, kind, int
+ 			spin_unlock_bh(&btf_idr_lock);
+ 			ret = btf_find_by_name_kind(mod_btf, name, kind);
+ 			if (ret > 0) {
+-				int btf_obj_fd;
+-
+-				btf_obj_fd = __btf_new_fd(mod_btf);
+-				if (btf_obj_fd < 0) {
+-					btf_put(mod_btf);
+-					return btf_obj_fd;
+-				}
+-				return ret | (((u64)btf_obj_fd) << 32);
++				*btfp = mod_btf;
++				return ret;
+ 			}
+ 			spin_lock_bh(&btf_idr_lock);
+ 			btf_put(mod_btf);
+ 		}
+ 		spin_unlock_bh(&btf_idr_lock);
++	} else {
++		*btfp = btf;
++	}
++	return ret;
++}
++
++BPF_CALL_4(bpf_btf_find_by_name_kind, char *, name, int, name_sz, u32, kind, int, flags)
++{
++	struct btf *btf = NULL;
++	int btf_obj_fd = 0;
++	long ret;
++
++	if (flags)
++		return -EINVAL;
++
++	if (name_sz <= 1 || name[name_sz - 1])
++		return -EINVAL;
++
++	ret = btf_find_by_name_kind_all(name, kind, &btf);
++	if (ret > 0 && btf_is_module(btf)) {
++		/* reference for btf is only raised if module BTF */
++		btf_obj_fd = __btf_new_fd(btf);
++		if (btf_obj_fd < 0) {
++			btf_put(btf);
++			return btf_obj_fd;
++		}
++		return ret | (((u64)btf_obj_fd) << 32);
+ 	}
+ 	return ret;
+ }
 -- 
 2.35.1
 
