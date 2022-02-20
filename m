@@ -2,110 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49A914BCFB5
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 17:14:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 774794BCFE2
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 17:33:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244290AbiBTP7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 10:59:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32834 "EHLO
+        id S243064AbiBTQcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 11:32:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244286AbiBTP72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 10:59:28 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612F1443D3;
-        Sun, 20 Feb 2022 07:59:07 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id l17so1329234plg.0;
-        Sun, 20 Feb 2022 07:59:07 -0800 (PST)
+        with ESMTP id S235857AbiBTQck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 11:32:40 -0500
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CC6E70
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 08:32:19 -0800 (PST)
+Received: by mail-vs1-xe35.google.com with SMTP id y26so11251143vsq.8
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 08:32:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pyq6u+oy+fqZeW/hecUnoAg2DOu5MbfwxNlJm6r1Xhc=;
-        b=nhNXKjiu6EaOKVNgwNWDgMQAPqgMwsRFUEymL567UuWUK/arrTFPbe44ACR42cYIBL
-         bsN0eLNtzre4HgEeRuF8ScM8yxmTEfo2b/QbVuK9VD5j6gDvzMA0qfrn5zGdCT7n5fBR
-         myLeaYTe2aqFcjbJEqxFrWBr+5poGn3GlFM9xQ8vAYNWQJ01KmsBNXZOGnXeyjWB2lBr
-         L8OPTmlMzBsDz3M87LeFQtVljORl+JOQ0YQsELxbxgMckEycSdeX1WBRCvkcf9RHzpmx
-         /zpv3O2GTASPwelzwWD7l7Je6mHKpMpYv0WRF/8ZHcjhVSk8SqfFwHQVpIbku+sqcuKD
-         7CsQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JYnP3q7TXlLUy1XLn2m5CwnhR2OGlO525rdZ+tITisc=;
+        b=Rw9l43W0JdjL2vZDCqx1F2qjFrPh47g8mOhG3tGA5e1RK+tcalXRWqm+PTqL2/AIO2
+         BhwbQpf7T1ZW6RqmPlmJ67BrMaxq/r2qD/ngnHgmeYlcOkMIwYgAqJrJuduKI3eDE6x3
+         JLhwo9gNsZDZ6p12l5sDYPcggA1un2YorDmxyd7GGTGWF3B6RWvXzc5A1Y4Vfhx5jOIX
+         G4fKtya8iHPmIrIthhnYUo1eeq+2djuAdxzXyJdmeEuXf21UylC0aDu8NGWwvqkQjF1s
+         SGdiW+zt0A+MHJhLgxU+hHGt8WWKY6jxYPgzz0VLJaDOEP6n1IFykDR1u7x+NH9Q2pNQ
+         BMtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pyq6u+oy+fqZeW/hecUnoAg2DOu5MbfwxNlJm6r1Xhc=;
-        b=T+S/0YM2LumXjw04abeU/w8S2IwXO6C41bA3eEjhIP6JA9ED6OZ0ZXmGnRWXO1WYeT
-         Ub0iBSHI8JhnTz6nucjuo8T1c64w9IQm0JJ4W/6ucHcT3kNcKBr4MR4dmxZVDUO0savY
-         HWS6ssozW5N7JjWlEMVtIw4HPIahXPp4y9QJZYJ4jwMMEg0JWoOELYyHQQe0zS2ApCA+
-         6rwyiY192R+OFN2iTBWwgJd3ieHO7QeYKelrBGo0Z/VtZCuPGuev1u/v6/zGOLqrWmAT
-         D59ZWZ8TCj7yYPzcztMNbGG8u9h+5CeTbume4aDxwK7AiKXxOzjn67YmgtuEtg7vLDOv
-         2I+g==
-X-Gm-Message-State: AOAM533mB7nho57eX2d1lUOWhn2mzQFdq0tQ5l8JrlaKWzgJmXnUpWXD
-        fjBuKdDxrnxkkczHR2CCeq4=
-X-Google-Smtp-Source: ABdhPJyDvTw5u1Ag3PqOeCX1fHbyL3QF88xpCu/Gh3BQO2dQKLD7HyGzmy1YoZhB7ui8yKZigMidAQ==
-X-Received: by 2002:a17:903:192:b0:14d:8b5a:5446 with SMTP id z18-20020a170903019200b0014d8b5a5446mr15649776plg.46.1645372746931;
-        Sun, 20 Feb 2022 07:59:06 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id o14sm5001927pfw.121.2022.02.20.07.59.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 07:59:06 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, imagedong@tencent.com,
-        edumazet@google.com, alobakin@pm.me, cong.wang@bytedance.com,
-        paulb@nvidia.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: neigh: add skb drop reasons to arp_error_report()
-Date:   Sun, 20 Feb 2022 23:57:05 +0800
-Message-Id: <20220220155705.194266-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220220155705.194266-1-imagedong@tencent.com>
-References: <20220220155705.194266-1-imagedong@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JYnP3q7TXlLUy1XLn2m5CwnhR2OGlO525rdZ+tITisc=;
+        b=nIk7XxKl8OA6BIBeU5WH6WvRX6BHcTM5MzpaQBqFaN5Xlk72Sh2rE1MCHJK7maPBTQ
+         FgMBnMUdfFK1pY/hFyBg3frAUlqbfQJIqyQbZRZS80ZoFtVD0TfZaV4KQfwsK4OQuD59
+         YxbKGHs18+HPxsddynX9rlbdiGjKRNp7zoZMaj97ptBAwRMGCF4dRuy+Suw+ZXreiDjk
+         rqBP9GkcU8BJJHsyOCR/1tGyXFIl37xSfPwWbk9atML3M8bYQSDjXmDeNN8BJXIVFEGB
+         2DNLU8232fp69BeFB/ttGrkXrwy88kPfXN3zdd4kJdAUeYV0ZKUqFsGdJOBNAAjwfTAa
+         Ootg==
+X-Gm-Message-State: AOAM5301rs3/w78BH85gUqb7mk/MmlxC+X7KZ233p6YQriIPVoPGt2jq
+        c4AVHj5FA8iUf80LcA3G4OJtSkM4kAM=
+X-Google-Smtp-Source: ABdhPJy/srndRMJdmcVZbMH/LuvLk5hA3Tx34M66QRuZKG3C22//PVVRhSzFkDomcMXFSE32A8I3pA==
+X-Received: by 2002:a05:6102:a90:b0:31b:6ed9:7702 with SMTP id n16-20020a0561020a9000b0031b6ed97702mr6454830vsg.70.1645374738616;
+        Sun, 20 Feb 2022 08:32:18 -0800 (PST)
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
+        by smtp.gmail.com with ESMTPSA id g27sm477327vsp.3.2022.02.20.08.32.17
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Feb 2022 08:32:18 -0800 (PST)
+Received: by mail-vs1-f54.google.com with SMTP id g20so15128539vsb.9
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 08:32:17 -0800 (PST)
+X-Received: by 2002:a67:c384:0:b0:31b:6b52:33c7 with SMTP id
+ s4-20020a67c384000000b0031b6b5233c7mr6847946vsj.74.1645374737046; Sun, 20 Feb
+ 2022 08:32:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220218143524.61642-1-thomas.liu@ucloud.cn>
+In-Reply-To: <20220218143524.61642-1-thomas.liu@ucloud.cn>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 20 Feb 2022 08:31:41 -0800
+X-Gmail-Original-Message-ID: <CA+FuTScWvCUH3-fyMNeO5KS7FQ0QBmhfLuGAybiV0rhM1q2b0Q@mail.gmail.com>
+Message-ID: <CA+FuTScWvCUH3-fyMNeO5KS7FQ0QBmhfLuGAybiV0rhM1q2b0Q@mail.gmail.com>
+Subject: Re: [PATCH net v3] gso: do not skip outer ip header in case of ipip
+ and net_failover
+To:     Tao Liu <thomas.liu@ucloud.cn>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Fri, Feb 18, 2022 at 6:36 AM Tao Liu <thomas.liu@ucloud.cn> wrote:
+>
+> We encounter a tcp drop issue in our cloud environment. Packet GROed in
+> host forwards to a VM virtio_net nic with net_failover enabled. VM acts
+> as a IPVS LB with ipip encapsulation. The full path like:
+> host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+>  -> ipip encap -> net_failover tx -> virtio_net tx
+>
+> When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
+> SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
+> did because it supports TSO and GSO_IPXIP4. But network_header points to
+> inner ip header.
+>
+> Call Trace:
+>  tcp4_gso_segment        ------> return NULL
+>  inet_gso_segment        ------> inner iph, network_header points to
+>  ipip_gso_segment
+>  inet_gso_segment        ------> outer iph
+>  skb_mac_gso_segment
+>
+> Afterwards virtio_net transmits the pkt, only inner ip header is modified.
+> And the outer one just keeps unchanged. The pkt will be dropped in remote
+> host.
+>
+> Call Trace:
+>  inet_gso_segment        ------> inner iph, outer iph is skipped
+>  skb_mac_gso_segment
+>  __skb_gso_segment
+>  validate_xmit_skb
+>  validate_xmit_skb_list
+>  sch_direct_xmit
+>  __qdisc_run
+>  __dev_queue_xmit        ------> virtio_net
+>  dev_hard_start_xmit
+>  __dev_queue_xmit        ------> net_failover
+>  ip_finish_output2
+>  ip_output
+>  iptunnel_xmit
+>  ip_tunnel_xmit
+>  ipip_tunnel_xmit        ------> ipip
+>  dev_hard_start_xmit
+>  __dev_queue_xmit
+>  ip_finish_output2
+>  ip_output
+>  ip_forward
+>  ip_rcv
+>  __netif_receive_skb_one_core
+>  netif_receive_skb_internal
+>  napi_gro_receive
+>  receive_buf
+>  virtnet_poll
+>  net_rx_action
+>
+> The root cause of this issue is specific with the rare combination of
+> SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
+> SKB_GSO_DODGY is set from external virtio_net. We need to reset network
+> header when callbacks.gso_segment() returns NULL.
+>
+> This patch also includes ipv6_gso_segment(), considering SIT, etc.
+>
+> Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+> Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
 
-When neighbour become invalid or destroyed, neigh_invalidate() will be
-called. neigh->ops->error_report() will be called if the neighbour's
-state is NUD_FAILED, and seems here is the only use of error_report().
-So we can tell that the reason of skb drops in arp_error_report() is
-SKB_DROP_REASON_NEIGH_FAILED.
-
-Replace kfree_skb() used in arp_error_report() with kfree_skb_reason().
-
-Reviewed-by: Mengen Sun <mengensun@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- net/ipv4/arp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 4db0325f6e1a..8e4ca4738c43 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -293,7 +293,7 @@ static int arp_constructor(struct neighbour *neigh)
- static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
- {
- 	dst_link_failure(skb);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- }
- 
- /* Create and send an arp packet. */
--- 
-2.35.1
-
+Reviewed-by: Willem de Bruijn <willemb@google.com>
