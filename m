@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4497D4BD23E
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 23:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DA34BD28D
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 00:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244086AbiBTW0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 17:26:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44916 "EHLO
+        id S243234AbiBTW4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 17:56:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236427AbiBTW0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 17:26:19 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D57C4B422
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 14:25:58 -0800 (PST)
+        with ESMTP id S231292AbiBTW4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 17:56:22 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5A2517FF;
+        Sun, 20 Feb 2022 14:56:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645395958; x=1676931958;
+  t=1645397760; x=1676933760;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=T/r4vfEwFPYk1j0gY9aoCW1I7CgawpxUlqZPqI7iB0A=;
-  b=X8QUn4Wx2EpLEQGqKPjhGRG3IOOl7MJVP1mMJ4GAA9DJtvK300W4RW6I
-   UX7jbPTN0m9hvs/S5yFh1vAw7mDkoNp500deKLPJ7BwpbJsD5p9DClh2U
-   jSwtxlPJJGjrkt8CDMDYjbsv2FH8Citwr8H9EgTcGe6pZ3+KWOl8/ud4c
-   H+yx0Y3zsyXcqWLJdFofs0cN67HzAHOYFyA2AbHe+zFzsc/KbeXDjVOtE
-   TFe0oY8oTeiJaUk/kI9sUFQrAt4j12Q81PpCcI88W5IXruwQALswIb0tP
-   /iRyX3JI2L6BDQ3WouBCkvNR9eqXqJ6ADFAScYKYrskmOEf+ahxmkQLUb
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="232027967"
+  bh=sdYAtXZV6VS6Py+w36OsucDIDtzFkCYCuiuihXMs5lI=;
+  b=k8fy1iNW58IDEiltwwMNt/DkeRUePg9uAiBPZmYKpcRXXQRs1UMA3ofl
+   lbIAfGKp3MHXw1kUAxu7nyq1+9xL2GDinznVvwKlnQgUlomC85C0Ubv+T
+   KxLPKRkw2ejwotBe8Jf3rzBkc9rj8IU3pF3uRio8oaaJ8rxxjPdoufUzY
+   REXlMNrcP4uuR8oIaqnjEj+1sj6a9rCQ9boTxPBbcGuLHgwfXHhiqf/cd
+   8AxxSTS8iuXIs9VpppzoSObzs+FncDcjOiU8XCA0bnoKL8C+Lx3IQPodN
+   KWi79vCYuYbn6fNKIwICVL0+HTI7La7h+Td+I00VYVDK15D561GGFFXIl
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="251590340"
 X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="232027967"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 14:25:58 -0800
+   d="scan'208";a="251590340"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 14:56:00 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="778524954"
+   d="scan'208";a="706044068"
 Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 20 Feb 2022 14:25:55 -0800
+  by orsmga005.jf.intel.com with ESMTP; 20 Feb 2022 14:55:56 -0800
 Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nLueR-0000w9-1V; Sun, 20 Feb 2022 22:25:55 +0000
-Date:   Mon, 21 Feb 2022 06:24:51 +0800
+        id 1nLv7U-0000yo-4e; Sun, 20 Feb 2022 22:55:56 +0000
+Date:   Mon, 21 Feb 2022 06:55:44 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Roopa Prabhu <roopa@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        stephen@networkplumber.org, nikolay@cumulusnetworks.com,
-        idosch@nvidia.com, dsahern@gmail.com
-Subject: Re: [PATCH net-next 08/12] vxlan: vni filtering support on collect
- metadata device
-Message-ID: <202202210620.Qp46jPJO-lkp@intel.com>
-References: <20220220140405.1646839-9-roopa@nvidia.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v1 10/15] bpf: Wire up freeing of referenced
+ PTR_TO_BTF_ID in map
+Message-ID: <202202210651.wyTgHcwt-lkp@intel.com>
+References: <20220220134813.3411982-11-memxor@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220220140405.1646839-9-roopa@nvidia.com>
+In-Reply-To: <20220220134813.3411982-11-memxor@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -66,86 +69,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roopa,
+Hi Kumar,
 
-I love your patch! Yet something to improve:
+Thank you for the patch! Yet something to improve:
 
-[auto build test ERROR on net-next/master]
+[auto build test ERROR on next-20220217]
+[cannot apply to bpf-next/master bpf/master linus/master v5.17-rc4 v5.17-rc3 v5.17-rc2 v5.17-rc5]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/0day-ci/linux/commits/Roopa-Prabhu/vxlan-metadata-device-vnifiltering-support/20220220-220748
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 129c77b5692d4a95a00aa7d58075afe77179623e
-config: m68k-randconfig-s032-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210620.Qp46jPJO-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce:
+url:    https://github.com/0day-ci/linux/commits/Kumar-Kartikeya-Dwivedi/Introduce-typed-pointer-support-in-BPF-maps/20220220-215105
+base:    3c30cf91b5ecc7272b3d2942ae0505dd8320b81c
+config: mips-randconfig-r012-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210651.wyTgHcwt-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/5344344656a955610e1a596bf3de904d5c6647f4
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/0day-ci/linux/commit/09a47522ec608218eb6aabd5011316d78ad245e0
         git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Roopa-Prabhu/vxlan-metadata-device-vnifiltering-support/20220220-220748
-        git checkout 5344344656a955610e1a596bf3de904d5c6647f4
+        git fetch --no-tags linux-review Kumar-Kartikeya-Dwivedi/Introduce-typed-pointer-support-in-BPF-maps/20220220-215105
+        git checkout 09a47522ec608218eb6aabd5011316d78ad245e0
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/vxlan/ kernel/time/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash kernel/bpf/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All error/warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
->> drivers/net/vxlan/vxlan_multicast.c:181:5: warning: no previous prototype for 'vxlan_multicast_join_vnigrp' [-Wmissing-prototypes]
-     181 | int vxlan_multicast_join_vnigrp(struct vxlan_dev *vxlan)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/net/vxlan/vxlan_multicast.c:218:5: warning: no previous prototype for 'vxlan_multicast_leave_vnigrp' [-Wmissing-prototypes]
-     218 | int vxlan_multicast_leave_vnigrp(struct vxlan_dev *vxlan)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/net/vxlan/vxlan_multicast.c:12:
-   drivers/net/vxlan/vxlan_private.h:13:17: warning: 'all_zeros_mac' defined but not used [-Wunused-const-variable=]
-      13 | static const u8 all_zeros_mac[ETH_ALEN + 2];
-         |                 ^~~~~~~~~~~~~
---
->> drivers/net/vxlan/vxlan_vnifilter.c:20:6: warning: no previous prototype for 'vxlan_vs_add_del_vninode' [-Wmissing-prototypes]
-      20 | void vxlan_vs_add_del_vninode(struct vxlan_dev *vxlan,
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/vxlan/vxlan_vnifilter.c: In function 'vxlan_vnifilter_dump_dev':
-   drivers/net/vxlan/vxlan_vnifilter.c:202:39: warning: variable 'tmsg' set but not used [-Wunused-but-set-variable]
-     202 |         struct tunnel_msg *new_tmsg, *tmsg;
-         |                                       ^~~~
-   drivers/net/vxlan/vxlan_vnifilter.c: In function 'vxlan_vni_alloc':
->> drivers/net/vxlan/vxlan_vnifilter.c:546:18: error: 'struct vxlan_vni_node' has no member named 'hlist6'; did you mean 'hlist4'?
-     546 |         vninode->hlist6.vxlan = vxlan;
-         |                  ^~~~~~
-         |                  hlist4
-   drivers/net/vxlan/vxlan_vnifilter.c: In function 'vxlan_vnigroup_uninit':
-   drivers/net/vxlan/vxlan_vnifilter.c:731:40: error: 'struct vxlan_vni_node' has no member named 'hlist6'; did you mean 'hlist4'?
-     731 |                 hlist_del_init_rcu(&v->hlist6.hlist);
-         |                                        ^~~~~~
-         |                                        hlist4
+   In file included from kernel/bpf/syscall.c:4:
+   In file included from include/linux/bpf.h:9:
+   In file included from include/linux/workqueue.h:9:
+   In file included from include/linux/timer.h:6:
+   In file included from include/linux/ktime.h:24:
+   In file included from include/linux/time.h:60:
+   In file included from include/linux/time32.h:13:
+   In file included from include/linux/timex.h:65:
+   In file included from arch/mips/include/asm/timex.h:19:
+   In file included from arch/mips/include/asm/cpu-type.h:12:
+   In file included from include/linux/smp.h:13:
+   In file included from include/linux/cpumask.h:13:
+   In file included from include/linux/atomic.h:7:
+   In file included from arch/mips/include/asm/atomic.h:23:
+>> arch/mips/include/asm/cmpxchg.h:83:11: error: call to __xchg_called_with_bad_pointer declared with 'error' attribute: Bad argument size for xchg
+                           return __xchg_called_with_bad_pointer();
+                                  ^
+   1 error generated.
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for OMAP_GPMC
+   Depends on MEMORY && OF_ADDRESS
+   Selected by
+   - MTD_NAND_OMAP2 && MTD && MTD_RAW_NAND && (ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST && HAS_IOMEM
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/vxlan/vxlan_multicast.c:181:5: sparse: sparse: symbol 'vxlan_multicast_join_vnigrp' was not declared. Should it be static?
->> drivers/net/vxlan/vxlan_multicast.c:218:5: sparse: sparse: symbol 'vxlan_multicast_leave_vnigrp' was not declared. Should it be static?
+vim +/error +83 arch/mips/include/asm/cmpxchg.h
 
-vim +546 drivers/net/vxlan/vxlan_vnifilter.c
-
-   535	
-   536	static struct vxlan_vni_node *vxlan_vni_alloc(struct vxlan_dev *vxlan,
-   537						      __be32 vni)
-   538	{
-   539		struct vxlan_vni_node *vninode;
-   540	
-   541		vninode = kzalloc(sizeof(*vninode), GFP_ATOMIC);
-   542		if (!vninode)
-   543			return NULL;
-   544		vninode->vni = vni;
-   545		vninode->hlist4.vxlan = vxlan;
- > 546		vninode->hlist6.vxlan = vxlan;
-   547	
-   548		return vninode;
-   549	}
-   550	
+5154f3b4194910 Paul Burton         2017-06-09  66  
+b70eb30056dc84 Paul Burton         2017-06-09  67  extern unsigned long __xchg_small(volatile void *ptr, unsigned long val,
+b70eb30056dc84 Paul Burton         2017-06-09  68  				  unsigned int size);
+b70eb30056dc84 Paul Burton         2017-06-09  69  
+46f1619500d022 Thomas Bogendoerfer 2019-10-09  70  static __always_inline
+46f1619500d022 Thomas Bogendoerfer 2019-10-09  71  unsigned long __xchg(volatile void *ptr, unsigned long x, int size)
+b81947c646bfef David Howells       2012-03-28  72  {
+b81947c646bfef David Howells       2012-03-28  73  	switch (size) {
+b70eb30056dc84 Paul Burton         2017-06-09  74  	case 1:
+b70eb30056dc84 Paul Burton         2017-06-09  75  	case 2:
+b70eb30056dc84 Paul Burton         2017-06-09  76  		return __xchg_small(ptr, x, size);
+b70eb30056dc84 Paul Burton         2017-06-09  77  
+b81947c646bfef David Howells       2012-03-28  78  	case 4:
+62c6081dca75d6 Paul Burton         2017-06-09  79  		return __xchg_asm("ll", "sc", (volatile u32 *)ptr, x);
+62c6081dca75d6 Paul Burton         2017-06-09  80  
+b81947c646bfef David Howells       2012-03-28  81  	case 8:
+62c6081dca75d6 Paul Burton         2017-06-09  82  		if (!IS_ENABLED(CONFIG_64BIT))
+62c6081dca75d6 Paul Burton         2017-06-09 @83  			return __xchg_called_with_bad_pointer();
+62c6081dca75d6 Paul Burton         2017-06-09  84  
+62c6081dca75d6 Paul Burton         2017-06-09  85  		return __xchg_asm("lld", "scd", (volatile u64 *)ptr, x);
+62c6081dca75d6 Paul Burton         2017-06-09  86  
+d15dc68c1143e2 Paul Burton         2017-06-09  87  	default:
+d15dc68c1143e2 Paul Burton         2017-06-09  88  		return __xchg_called_with_bad_pointer();
+b81947c646bfef David Howells       2012-03-28  89  	}
+b81947c646bfef David Howells       2012-03-28  90  }
+b81947c646bfef David Howells       2012-03-28  91  
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
