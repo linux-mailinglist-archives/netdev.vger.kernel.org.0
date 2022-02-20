@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC20F4BCDC2
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A97F4BCDE2
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243075AbiBTJGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 04:06:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48050 "EHLO
+        id S243450AbiBTJGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 04:06:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237656AbiBTJGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:37 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626D131919
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:17 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id m1-20020a17090a668100b001bc023c6f34so2307786pjj.3
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:17 -0800 (PST)
+        with ESMTP id S237656AbiBTJGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:38 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A803E31919
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:18 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id y11so6069676pfa.6
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=0Cs2JDe+zKKywth1CU+d9dMj79yPtXTcezUEcgmD+vw=;
-        b=XaVETpvj7gxGoYmNYMi410eaZ23tQTrAAQepOPJyJvcG+NeMyYNbQlvQ4nzLsACj3D
-         YtrX+2WnN37419j18JWRbMZtfyio5+t0qG2HVUfUusaWKA1FBLGWFYZxGC+djLx7MTAW
-         Ex9gsML05OzkTj9sjPHYce5UnSQlzvy2HHjgg=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=9BIS0/lV7oIPMD9kd8lU8f0AVthjwEwStyqqvXGPxIU=;
+        b=WNb6ZdSeYPNePiU9rLlTS9aYDXnT6SIZxRFeZIOSuWA5ko9AFjRA/R1PGkchBlrTp0
+         5XyYrEV2hr8UV4YeB6HfYgUfbfzzMt28ZlFEfykKYWKo8oau8RNtNmmkUzyd82n2UcSf
+         7WpGndNmzQqK/6Eodr/rmhO6h1zagjnHiXJ8U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=0Cs2JDe+zKKywth1CU+d9dMj79yPtXTcezUEcgmD+vw=;
-        b=EXRJZOrztfzEBM58zoPGwD9VnNfvHb3YT3CvARziX0Q3iUsSiDYox7L/ZEX5Cl2TlB
-         Zm8r27xiGq7akCDSONw5sBa67MrtpQz+qxv1uxdjTRc8GR1BMpgLvEgT9R3myHoQ3zEI
-         zz06h9Ple32bUyWP/QOiqmir45xVCt8KIjPJxigsJsITRGBfNK4uMQBGpe+6MgnQS0ei
-         CVJfwi6A10tmmEBZW6mL1DGSTOl3+RzQGEY2rlZHgLPgCmldukWTVy1Nu+LAOVVnGvk/
-         3EvjrVjoaS9kE3XKzs1iDQHETUDuavfV5EBKcBD6Ue3X5foGZhIsV3mzFcKwxr5sJVPY
-         ZP4g==
-X-Gm-Message-State: AOAM533Qwjn2qgaQFnpRDvhvzAUWTGW/84511hIPYFSwYQ9tB3n3XdYR
-        DwN36halD+nTT7eeo8loATW7t3DiFVsCWg==
-X-Google-Smtp-Source: ABdhPJx9CjPfKUiv3sZ1ciOvDSaIHLFUIIWymx2WpYTuQWjiZCFO1abnBTf/WEZI8u9ys1KcrB2RZg==
-X-Received: by 2002:a17:902:ea0a:b0:14f:206c:e3df with SMTP id s10-20020a170902ea0a00b0014f206ce3dfmr14344468plg.145.1645347976672;
-        Sun, 20 Feb 2022 01:06:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=9BIS0/lV7oIPMD9kd8lU8f0AVthjwEwStyqqvXGPxIU=;
+        b=TZLHNJGsqtpiC+3dLdk4gt+0CHdY2fODDfDzkVoOwY4MGrx8wfcGZThpkQrw66FAw/
+         siLL8IgtJLqVALYSz28uVV8BSMmHHMFtKZAcX98W1FQAOW7G+oZy2Jvh7+C5h+pCREog
+         6U7YDwKzIrl5sPWRgHnkrDSTOwrqSWIaRJQXAPL0F53cuNZ9tE4OPTy1hUGKQd2H1+Gq
+         wXzBKLFDenCZmCa52cu70WcWSIElE5peHNJ+BMAL26T82OIT9Un8RTNekcD5kay/UfvI
+         JQzVe1H7y7XSE+FK8nl2Yb+1oR8sJPeok6ECDlMb9xSQ5kcCssffZ18jD3VDsl/p4bXO
+         X+mg==
+X-Gm-Message-State: AOAM532Tc8HiIPDY3SOTXVCrZo9nE4245MYzMHz+Hl2BleXcqtKoJME5
+        E++6DBYy/Ql9bl1Dq1AaM7HGUQ==
+X-Google-Smtp-Source: ABdhPJyzDpnoTwU9SEwqbknq5yK0TYdayJuxCEj1V4cz12MxBEaBCtcW9oeA8iezn9Hl2tOAaESNdA==
+X-Received: by 2002:a05:6a00:218a:b0:4e1:9ed6:c399 with SMTP id h10-20020a056a00218a00b004e19ed6c399mr15131829pfi.8.1645347977845;
+        Sun, 20 Feb 2022 01:06:17 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.15
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.16
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Feb 2022 01:06:16 -0800 (PST)
+        Sun, 20 Feb 2022 01:06:17 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 0/7] bnxt_en: Bug fixes
-Date:   Sun, 20 Feb 2022 04:05:46 -0500
-Message-Id: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Somnath Kotur <somnath.kotur@broadcom.com>
+Subject: [PATCH net 1/7] bnxt_en: Fix active FEC reporting to ethtool
+Date:   Sun, 20 Feb 2022 04:05:47 -0500
+Message-Id: <1645347953-27003-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
+References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b5db1f05d86f6df0"
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="000000000000c9890a05d86f6d04"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,40 +66,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000b5db1f05d86f6df0
+--000000000000c9890a05d86f6d04
 
-This series contains bug fixes for FEC reporting, ethtool self test,
-multicast setup, devlink health reporting and live patching, and
-a firmware response timeout.
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-Kalesh AP (2):
-  bnxt_en: Restore the resets_reliable flag in bnxt_open()
-  bnxt_en: Fix devlink fw_activate
+ethtool --show-fec <interface> does not show anything when the Active
+FEC setting in the chip is set to None.  Fix it to properly return
+ETHTOOL_FEC_OFF in that case.
 
-Michael Chan (3):
-  bnxt_en: Fix offline ethtool selftest with RDMA enabled
-  bnxt_en: Fix occasional ethtool -t loopback test failures
-  bnxt_en: Increase firmware message response DMA wait time
+Fixes: 8b2775890ad8 ("bnxt_en: Report FEC settings to ethtool.")
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Pavan Chebbi (1):
-  bnxt_en: Fix incorrect multicast rx mask setting when not requested
-
-Somnath Kotur (1):
-  bnxt_en: Fix active FEC reporting to ethtool
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 47 ++++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 39 +++++++++++----
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 17 +++++--
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 12 +++--
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |  2 +-
- 6 files changed, 90 insertions(+), 28 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 003330e8cd58..e195f4a669d8 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1969,6 +1969,9 @@ static int bnxt_get_fecparam(struct net_device *dev,
+ 	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_RS272_IEEE_ACTIVE:
+ 		fec->active_fec |= ETHTOOL_FEC_LLRS;
+ 		break;
++	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_NONE_ACTIVE:
++		fec->active_fec |= ETHTOOL_FEC_OFF;
++		break;
+ 	}
+ 	return 0;
+ }
 -- 
 2.18.1
 
 
---000000000000b5db1f05d86f6df0
+--000000000000c9890a05d86f6d04
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -166,13 +170,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIObZFcYPvovKHbC+pTyBOtWH3brpRif3
-VwSIPK2f51rHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
-MDA5MDYxN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFYdpqrmvkzztcdkgHE5+c9ZCO+8V3nG
+b8QfghpvxjggMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
+MDA5MDYxOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQArDSkHaAzMWDVIn6vQX5UhyqOGm6ub8xZr6iTf6O+RLXG6x4Wb
-mgZuPoGsuA9lKC5nP7cwYjTgle5EjVB93/50AJdLKBHQI960/IaCAfF80qoM80oVrgxuLUIvFx9P
-VJ7NgFCXCL81SO0miWQ58rgBAbnJ236U/e7vqm8apcdDa2/0G053A4yjRDB5KQfxtuM5+dJ9MNyR
-e6eyHWB/008uECT3KWCSj7r639G49UeTXDyqptTsKOZX9SNT1p/VL7NdesxtmXOFkmt6r3XXdAkD
-tiisKBz0m3Jj2aMGmDz4FwofMkpHShjPIJDY6KMQN10oVAZdMiETUVWrtdcDApUm
---000000000000b5db1f05d86f6df0--
+ATANBgkqhkiG9w0BAQEFAASCAQAVrteMt2k7ybHQE+eyoEmt2aLFSUkQE/lok87tyzEipD06YGZp
+6yK58odgVB/gktzNsuadr/we8h5nKsysZmY45H6D/oy30RhmfOiAJbnihyq7m0e5/aZdGRalDceL
+B8wskZZASXJJd5GdFOlgp90Yjwk2dH/LbUUg4/ydCuD61Uxj+x/JhopfUl8p4N91xvWC0wTAajz6
+em1+mfslcFzrCjxmcuwMRVpF8xwjZVJ43xEuUqmWpP4hme2mbpbGAFtwa8cm1EvgFKO0INifbilj
+xWE+IJoJ++Wg4DzBH3kNW7jLEO4LtmxPBgklrOro4wIihw6bTzOt84y2SAOSq9th
+--000000000000c9890a05d86f6d04--
