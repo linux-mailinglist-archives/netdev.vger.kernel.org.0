@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A97F4BCDE2
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A98924BCDF7
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243450AbiBTJGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 04:06:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48062 "EHLO
+        id S243471AbiBTJGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 04:06:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237656AbiBTJGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:38 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A803E31919
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:18 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id y11so6069676pfa.6
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:18 -0800 (PST)
+        with ESMTP id S237656AbiBTJGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:40 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0030131919
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:19 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id s16so11640687pgs.13
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9BIS0/lV7oIPMD9kd8lU8f0AVthjwEwStyqqvXGPxIU=;
-        b=WNb6ZdSeYPNePiU9rLlTS9aYDXnT6SIZxRFeZIOSuWA5ko9AFjRA/R1PGkchBlrTp0
-         5XyYrEV2hr8UV4YeB6HfYgUfbfzzMt28ZlFEfykKYWKo8oau8RNtNmmkUzyd82n2UcSf
-         7WpGndNmzQqK/6Eodr/rmhO6h1zagjnHiXJ8U=
+        bh=9MlticILXp8gGWaIshbvGf7eB3gqXylWOJL0P5eJzO4=;
+        b=KGX8xhyvOpyw+JHtMxq+Z32Cms5AHwKOS9ZnG53Z90t+cN0DTr7COHbSkamCja46em
+         zVkdCxQ7SNOQ9nwOv7yjvpUwARxMCp56TeRqezhrEt8QXyX1+0ocPCN1Cht2NiVRKOHK
+         Euff4Sy5gyRLmemJ18rANz/fP6IZWxTo97t5M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=9BIS0/lV7oIPMD9kd8lU8f0AVthjwEwStyqqvXGPxIU=;
-        b=TZLHNJGsqtpiC+3dLdk4gt+0CHdY2fODDfDzkVoOwY4MGrx8wfcGZThpkQrw66FAw/
-         siLL8IgtJLqVALYSz28uVV8BSMmHHMFtKZAcX98W1FQAOW7G+oZy2Jvh7+C5h+pCREog
-         6U7YDwKzIrl5sPWRgHnkrDSTOwrqSWIaRJQXAPL0F53cuNZ9tE4OPTy1hUGKQd2H1+Gq
-         wXzBKLFDenCZmCa52cu70WcWSIElE5peHNJ+BMAL26T82OIT9Un8RTNekcD5kay/UfvI
-         JQzVe1H7y7XSE+FK8nl2Yb+1oR8sJPeok6ECDlMb9xSQ5kcCssffZ18jD3VDsl/p4bXO
-         X+mg==
-X-Gm-Message-State: AOAM532Tc8HiIPDY3SOTXVCrZo9nE4245MYzMHz+Hl2BleXcqtKoJME5
-        E++6DBYy/Ql9bl1Dq1AaM7HGUQ==
-X-Google-Smtp-Source: ABdhPJyzDpnoTwU9SEwqbknq5yK0TYdayJuxCEj1V4cz12MxBEaBCtcW9oeA8iezn9Hl2tOAaESNdA==
-X-Received: by 2002:a05:6a00:218a:b0:4e1:9ed6:c399 with SMTP id h10-20020a056a00218a00b004e19ed6c399mr15131829pfi.8.1645347977845;
-        Sun, 20 Feb 2022 01:06:17 -0800 (PST)
+        bh=9MlticILXp8gGWaIshbvGf7eB3gqXylWOJL0P5eJzO4=;
+        b=MpsQY+ENlOGeWpDprZO0/I7qyzFt5RKNAg9tgfiSW0I/Ll7hxYPZGfFFtJyMkH7EjR
+         boNMdOU95IdragC+hnDvLH9o1NHKdAmXvooHULlgPF5VX2ZHJ5lvsYQg5UAxmGPpBU/T
+         Fsonk1pqtwGTEeVswnHcmH3iAFS16qzhqO7opbKgUgcgcClfTGZmksuN/5CTYrL23VZm
+         3v3FODJxBwPBaWz9CmovEDuXPWXNTRV9bRl1Ffa2azsqtlJ68eI4loI5wTVkUxu4KjQV
+         4W7XnCxqfbKwJk52LeeuxanT1w9EwVRTrJwNj+xbCr5bHloaF1AQOdkKHBrUOBadbuSc
+         krUg==
+X-Gm-Message-State: AOAM531L5dP3R2P1cdrw1/LYCeFwPzvCEVKm4SP/CI6A+WeUBRWX9HLd
+        vlkqdoNQjNNYChNFOSQaEQppjJjx3HebZA==
+X-Google-Smtp-Source: ABdhPJz8ffWY+fr7PprwutM7zKnw3W1DZ1C1l2Tu8pUXoMMtrbzhKz+2hgmbwhe/P9Rimqzlvh7t2Q==
+X-Received: by 2002:a05:6a00:244b:b0:4c9:319e:ecb7 with SMTP id d11-20020a056a00244b00b004c9319eecb7mr15276744pfj.58.1645347979025;
+        Sun, 20 Feb 2022 01:06:19 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.16
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.18
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Feb 2022 01:06:17 -0800 (PST)
+        Sun, 20 Feb 2022 01:06:18 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Somnath Kotur <somnath.kotur@broadcom.com>
-Subject: [PATCH net 1/7] bnxt_en: Fix active FEC reporting to ethtool
-Date:   Sun, 20 Feb 2022 04:05:47 -0500
-Message-Id: <1645347953-27003-2-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net 2/7] bnxt_en: Fix offline ethtool selftest with RDMA enabled
+Date:   Sun, 20 Feb 2022 04:05:48 -0500
+Message-Id: <1645347953-27003-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c9890a05d86f6d04"
+        boundary="000000000000dd7cae05d86f6da7"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,40 +65,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c9890a05d86f6d04
+--000000000000dd7cae05d86f6da7
 
-From: Somnath Kotur <somnath.kotur@broadcom.com>
+For offline (destructive) self tests, we need to stop the RDMA driver
+first.  Otherwise, the RDMA driver will run into unrecoverable errors
+when destructive firmware tests are being performed.
 
-ethtool --show-fec <interface> does not show anything when the Active
-FEC setting in the chip is set to None.  Fix it to properly return
-ETHTOOL_FEC_OFF in that case.
+The irq_re_init parameter used in the half close and half open
+sequence when preparing the NIC for offline tests should be set to
+true because the RDMA driver will free all IRQs before the offline
+tests begin.
 
-Fixes: 8b2775890ad8 ("bnxt_en: Report FEC settings to ethtool.")
-Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Fixes: 55fd0cf320c3 ("bnxt_en: Add external loopback test to ethtool selftest.")
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Ben Li <ben.li@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 10 +++++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 12 +++++++++---
+ 2 files changed, 14 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 4f94136a011a..23bbb1c5812d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10330,12 +10330,12 @@ int bnxt_half_open_nic(struct bnxt *bp)
+ 		goto half_open_err;
+ 	}
+ 
+-	rc = bnxt_alloc_mem(bp, false);
++	rc = bnxt_alloc_mem(bp, true);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "bnxt_alloc_mem err: %x\n", rc);
+ 		goto half_open_err;
+ 	}
+-	rc = bnxt_init_nic(bp, false);
++	rc = bnxt_init_nic(bp, true);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "bnxt_init_nic err: %x\n", rc);
+ 		goto half_open_err;
+@@ -10344,7 +10344,7 @@ int bnxt_half_open_nic(struct bnxt *bp)
+ 
+ half_open_err:
+ 	bnxt_free_skbs(bp);
+-	bnxt_free_mem(bp, false);
++	bnxt_free_mem(bp, true);
+ 	dev_close(bp->dev);
+ 	return rc;
+ }
+@@ -10354,9 +10354,9 @@ int bnxt_half_open_nic(struct bnxt *bp)
+  */
+ void bnxt_half_close_nic(struct bnxt *bp)
+ {
+-	bnxt_hwrm_resource_free(bp, false, false);
++	bnxt_hwrm_resource_free(bp, false, true);
+ 	bnxt_free_skbs(bp);
+-	bnxt_free_mem(bp, false);
++	bnxt_free_mem(bp, true);
+ }
+ 
+ void bnxt_reenable_sriov(struct bnxt *bp)
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 003330e8cd58..e195f4a669d8 100644
+index e195f4a669d8..a85b18858b32 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1969,6 +1969,9 @@ static int bnxt_get_fecparam(struct net_device *dev,
- 	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_RS272_IEEE_ACTIVE:
- 		fec->active_fec |= ETHTOOL_FEC_LLRS;
- 		break;
-+	case PORT_PHY_QCFG_RESP_ACTIVE_FEC_FEC_NONE_ACTIVE:
-+		fec->active_fec |= ETHTOOL_FEC_OFF;
-+		break;
+@@ -25,6 +25,7 @@
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+ #include "bnxt_hwrm.h"
++#include "bnxt_ulp.h"
+ #include "bnxt_xdp.h"
+ #include "bnxt_ptp.h"
+ #include "bnxt_ethtool.h"
+@@ -3551,9 +3552,12 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
+ 	if (!offline) {
+ 		bnxt_run_fw_tests(bp, test_mask, &test_results);
+ 	} else {
+-		rc = bnxt_close_nic(bp, false, false);
+-		if (rc)
++		bnxt_ulp_stop(bp);
++		rc = bnxt_close_nic(bp, true, false);
++		if (rc) {
++			bnxt_ulp_start(bp, rc);
+ 			return;
++		}
+ 		bnxt_run_fw_tests(bp, test_mask, &test_results);
+ 
+ 		buf[BNXT_MACLPBK_TEST_IDX] = 1;
+@@ -3563,6 +3567,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
+ 		if (rc) {
+ 			bnxt_hwrm_mac_loopback(bp, false);
+ 			etest->flags |= ETH_TEST_FL_FAILED;
++			bnxt_ulp_start(bp, rc);
+ 			return;
+ 		}
+ 		if (bnxt_run_loopback(bp))
+@@ -3588,7 +3593,8 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
+ 		}
+ 		bnxt_hwrm_phy_loopback(bp, false, false);
+ 		bnxt_half_close_nic(bp);
+-		rc = bnxt_open_nic(bp, false, true);
++		rc = bnxt_open_nic(bp, true, true);
++		bnxt_ulp_start(bp, rc);
  	}
- 	return 0;
- }
+ 	if (rc || bnxt_test_irq(bp)) {
+ 		buf[BNXT_IRQ_TEST_IDX] = 1;
 -- 
 2.18.1
 
 
---000000000000c9890a05d86f6d04
+--000000000000dd7cae05d86f6da7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -170,13 +245,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFYdpqrmvkzztcdkgHE5+c9ZCO+8V3nG
-b8QfghpvxjggMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
-MDA5MDYxOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINptNK2EG1kRixowwbOnCzjzDTfhw4Vd
+sKWqj4GvBQhpMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
+MDA5MDYxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAVrteMt2k7ybHQE+eyoEmt2aLFSUkQE/lok87tyzEipD06YGZp
-6yK58odgVB/gktzNsuadr/we8h5nKsysZmY45H6D/oy30RhmfOiAJbnihyq7m0e5/aZdGRalDceL
-B8wskZZASXJJd5GdFOlgp90Yjwk2dH/LbUUg4/ydCuD61Uxj+x/JhopfUl8p4N91xvWC0wTAajz6
-em1+mfslcFzrCjxmcuwMRVpF8xwjZVJ43xEuUqmWpP4hme2mbpbGAFtwa8cm1EvgFKO0INifbilj
-xWE+IJoJ++Wg4DzBH3kNW7jLEO4LtmxPBgklrOro4wIihw6bTzOt84y2SAOSq9th
---000000000000c9890a05d86f6d04--
+ATANBgkqhkiG9w0BAQEFAASCAQBE+2GOkmOOAi23KDTbw5xM7Xnoo742tjm5JnOit1fVniwsks3o
+oQ5q7gOzW7B8JUoY+GulkOSWDTQvteIV3IOAloSjJZ7f1iBkMV4gvbJuwI2VH40L8TSOH+SyGdmg
+jJvNcxg8dYub31nrlQsvLOdxUP9PlkfP+SwcLsNXJ293ZOton4Ce01UCqbHeJyuEqPpQE7uVifgg
+mp9TUKO0Fr4WlvrR4pzYKk2GpxheG57FFOxM/HbNifLUiDGzeaagNA9H2RtdMoBRrbvvomdSbIf/
+bgSxdczsdQ1wlKYVL4mUALa6x3bW7Ru9cHh5vqk6wHdqo6/1LhMWoD1QbXAGBuDf
+--000000000000dd7cae05d86f6da7--
