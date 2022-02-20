@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A02E44BCED0
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 14:56:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8334BCEC2
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 14:56:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243920AbiBTNtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 08:49:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49780 "EHLO
+        id S243897AbiBTNtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 08:49:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243889AbiBTNtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 08:49:03 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B0921813;
-        Sun, 20 Feb 2022 05:48:41 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id i21so6403317pfd.13;
-        Sun, 20 Feb 2022 05:48:41 -0800 (PST)
+        with ESMTP id S243893AbiBTNtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 08:49:05 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BEA2D1EA;
+        Sun, 20 Feb 2022 05:48:44 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id v8-20020a17090a634800b001bb78857ccdso14208793pjs.1;
+        Sun, 20 Feb 2022 05:48:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pIC5+WXrEeyIxvYSwThdX0RKAIalXL8BJkc2S7tcfKw=;
-        b=U09A3aHEWLcSZtIQs1bZGdvaq6QvKB6EcaoJk8Il0kaUMuCnQgG3EeKbHAL0uZhhgu
-         81fImhEsABSb++rzCwIsZUrGFdrl/w3WkH58rxYcxTHxdOOLneZg3YAr++e7fjJA0tJH
-         0u3yuMB6QmBL/UxZ7jqUzaBaZeCpv618APzpMfkreTuY7D4BJvmDTDqu/s3axFgKRQkh
-         yzUoV8tDWTs0KGisddQlB24bP/RFJuxCjoX6XN+Kl3e28cuyIKbMa2V+kAdId/AF/VaL
-         ylyltQqaGBF4vjOHiYi28Q3tidValepLrB0eN5fOv2Kdj2r25D0NkHEwRxVsmMIg8N7e
-         U8og==
+        bh=tRgersc7+YiHsFoqjkDw4Ohre3w5vPK2wp9oy5KJBzI=;
+        b=gmMjHzzthS+Pc8+pZwqt44EjB3kst7Y1OcDKz4vCjRs/4jNcP0oHae8quxqX+cEQOx
+         Fw1T9wpe9qXc6KuK8FmuKfFy5nbzy0p1uQ4MMspodbiz6o9hmEBtGDaDAx7BiOHEWsz0
+         HgAF14kep+RfALD8EewfXDs5InzNL7j1ewIaVm3isMo3tJkNx+CarcakDIeOouyq5/94
+         bHYZh8ADNFJ2F/JP0gK5ZZVyAUachPhf4c+9W5J8jIRdfhusoHh8ikH0I/p2eRp1imkP
+         tMW9OYTR/8tY6D+YFTb3h3Vr94lCbiboBDquHRtf5DPTjugsaZ2CnYkiOMFDsBMo4kII
+         XFjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pIC5+WXrEeyIxvYSwThdX0RKAIalXL8BJkc2S7tcfKw=;
-        b=hsdMdzQ9S2zSW6h23c/hF7VQDVnSgVNJweKUkZwVOqFKDRKF9IIwpSByYLf0vM6PjL
-         r6+0KSNHrjIPucJ3j+5qmlDjCcPMCSAtMQFDJK1ZwkjymWNcUvm2PaEekKsOAWZ8vVgZ
-         fUVZri7AJTSDV22/o4mwN8pcnfPIkPUjaJg/q1t9rJvB2kWQOrZkwRrFhPA47n3J4f5z
-         49Vb7S/Mypdq4wPn3GI04z3G5mwqctPmOmWaUihuUxg92XfLDemxRlVFdye21EnOotBm
-         3326xMa3f3OGqHhxZo1Xikp1/SDO/NBMwgusUYVuylpatv8GNAiCbM7ynJCfBOxZj1jv
-         kOqQ==
-X-Gm-Message-State: AOAM5312p5QxXCOmfQ1I2eelFG9kQSuLL7YMylf60qoHjjExU5t277DS
-        lypIjTJrW4BaSiaYnh4DJSQTneCmsTk=
-X-Google-Smtp-Source: ABdhPJzVaiY8SWSJqGrRIImmIAebrxfjydSNtUMRtokoWlWFgeHPxDXgj6g2I+oEAcAkY8wnUxAEGw==
-X-Received: by 2002:a65:4c0f:0:b0:373:f389:b7e0 with SMTP id u15-20020a654c0f000000b00373f389b7e0mr7104280pgq.411.1645364921086;
-        Sun, 20 Feb 2022 05:48:41 -0800 (PST)
+        bh=tRgersc7+YiHsFoqjkDw4Ohre3w5vPK2wp9oy5KJBzI=;
+        b=HeQNSwoN96QobCzp+/hfx3G8PKg9zIyi78HLRwtDXjXw8Adp4nXyQPlM2gV8a/hJMF
+         DwiCGbfLcKO5S4QorquqocUHFMnnMs5nFY+qFuA33vzd5aKWq7cwyRv4EBrzV6E/dSkq
+         C4tlTY0a3ebBaCD2eNl5vSTnzYkp89XusQ7mGPkPNmqBQVqz91YRiKqhzjefUQ+arPyo
+         Hw/hHZxKN3G5MCI1UjKqS/5XnKwgUjXuNY5zcM6eEMkCOG+Zv+ewX1Ix2aLRt0IrJ3Kf
+         jC9ibPgavP+GOljIctG0WDBeUC9kLur/scB9g2P87L3axlVwqnKIN0RdEavSqReX43RN
+         DZ0g==
+X-Gm-Message-State: AOAM5335nwMfa49zv2a1B4oTMdU9ikS3b9jasydCFFSTMhz+4l8hF0/R
+        4cnbFCKiMXHWjfp6c5unvJQJ3YC4iJo=
+X-Google-Smtp-Source: ABdhPJyOETrW6jI5qRGlR7NC506DjIBk1zKstL63YLIIcRI89gS37xcbOIJ4hYWpCBzWjCoGkNp0hw==
+X-Received: by 2002:a17:902:8497:b0:14f:919:9fdd with SMTP id c23-20020a170902849700b0014f09199fddmr15431878plo.52.1645364924085;
+        Sun, 20 Feb 2022 05:48:44 -0800 (PST)
 Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id g20sm9526597pfj.64.2022.02.20.05.48.40
+        by smtp.gmail.com with ESMTPSA id q9sm9921393pfk.31.2022.02.20.05.48.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 05:48:40 -0800 (PST)
+        Sun, 20 Feb 2022 05:48:43 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -55,14 +55,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v1 08/15] bpf: Adapt copy_map_value for multiple offset case
-Date:   Sun, 20 Feb 2022 19:18:06 +0530
-Message-Id: <20220220134813.3411982-9-memxor@gmail.com>
+Subject: [PATCH bpf-next v1 09/15] bpf: Populate pairs of btf_id and destructor kfunc in btf
+Date:   Sun, 20 Feb 2022 19:18:07 +0530
+Message-Id: <20220220134813.3411982-10-memxor@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220220134813.3411982-1-memxor@gmail.com>
 References: <20220220134813.3411982-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5506; h=from:subject; bh=QC3eOPhRZ70Vfv0ZVgnLYlIXFjYgOARRsEoQm0vCP0c=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiEkZX8enrcy5zjuM51gXuZUW/extU3HrWA0LHh0RX sZCmGKKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYhJGVwAKCRBM4MiGSL8RyudYD/ 4+0UiSISVfkfKRAa6IDsSX+iz6hWQgpXqBpxv2NMjJbQrxDmhk8/89wG/4gfFXl0WH8uLHalZsgbzs ttYc3Pi+/Hve9coTHxnli32ex5dQzRwpl7YbZJDKcwgr2zL/dSxLp4wl5RNrCpRZC8LNI4FMBbNLhB CwOz4Xv5HRvqTidT9lEFP4qAs2bI+FdC/U1ZabHtOXOMiLly77NXPIZkUI/sCdJ/L2fWUMk6XuWGDJ 4Pc7z/wCXTaIwsAvS2RlnhCT9aroZU5PXTolVL8ok/DgJLlVEwsdAud8Jlp0tZnSZotni2V1CqYQhH i3Q6zrQJHOhJ3b0FNEs6LluKjqmxjjzhxsns3yy81t2LW2w+xhrvOEVVf3KhDsVQ4vdRIEzgNoPP2c sDhKYVMCks9ViyZ8fMzFFXx5xGqPhFVmHe8Otuvc7UbcBNrBuyozNsKzi9VxSZxOx4TAVUb7ddeUKd cGZTtGQdleE4gYPr/SbkOMB+rtcfWB3ZhxrepvVwRHpoinTZTqcb5YRC53sgOGfKsYxcP98ePqEarD SWY3wTAwyvg93CrMgTfSL5m2GVUC1yhtmixv62g777r+13GHA8DIlQbImXTlIBc1Oxd2jY9zJJ1TZv wN264PZEcjPRZ0CTmqdbUTazUWarPGIKuyvvERrGyIdo9c9d4m2jMHOCqsNQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6298; h=from:subject; bh=bEtsOEx3UKJJcW3J592imsq8QQaOzR84HSnwrs6Zyzo=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiEkZY0debdctwSyfadfikEkSTZaceVwjMv9F6SfUe R4rLvMKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYhJGWAAKCRBM4MiGSL8RymWLD/ 4kKQgF/G8Wx42sO4kS/V3jpxqvYE5QJIbwOrmxPXwqD5WuFUn1/Eq1cmaBdfwZ3bhxhTMxzuD923a9 ZLWRotwtCxo5BpyvVH0la4PckOrGvKqPISQbLNGzjt2ZQ7dHpi7QOcX4yrUggm+YN6G6NUBwi0Fj6W 5Eq9Fg6QdfVHep/V8Y6HdR7QfZ7ARw0isopS/3yGqvMrQjxciTinJveVqlXoe1dDAxcOG4kJ/B/qcG AI5KEt5hseY0ESGJU72iX2sEQouljLIOIowIyQkrGBBTq+qmXOHAlGc3L3eYFOmJ403zwE5nyMXQR4 OEvNqNqf9dCu/Hczet7DWBs6roQxPJ4UxUlJ1gsisUc2HHLc2PeIJOIQql7fLOUlEFBbFVGVx+wupt NIYzPruSd3DVj0SmSg8Jy0nVQte4Bt+aj68xlisWrGoRE1z2dzWI/kzqqjGD2m+kCAyx42wConwiV7 /c6rUZSOAZ4gxteVnkvoBuEmzOZlxcRdk/3UB7dqWtsWOg4eu1V3QrPJlnkxLfw2f9w76mIKFdTOIi s0mhmSJwKJe5uLq6eoDCnJePvktVbynmfJa+AyJlZEOJW/bIOmF9YQFedNJJHnM4wuAr7UOPbdX18m wdzwv2r6r1s29Bw5lrxdQxrqdRTqhkWWyicnNlzBAA6eDShpZXPbqcORQwbA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,170 +75,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The changes in this patch deserve closer look, so it has been split into
-its own independent patch. While earlier we just had to skip two objects
-at most while copying in and out of map, now we have potentially many
-objects (at most 8 + 2 = 10, due to the BPF_MAP_VALUE_OFF_MAX limit).
+To support storing referenced PTR_TO_BTF_ID in maps, we require
+associating a specific BTF ID with a 'destructor' kfunc. This is because
+we need to release a live referenced pointer at a certain offset in map
+value from the map destruction path, otherwise we end up leaking
+resources.
 
-Hence, divide the copy_map_value function into an inlined fast path and
-function call to slowpath. The slowpath handles the case of > 3 offsets,
-while we handle the most common cases (0, 1, 2, or 3 offsets) in the
-inline function itself.
+Hence, introduce support for passing an array of btf_id, kfunc_btf_id
+pairs that denote a BTF ID and its associated release function. Then,
+add an accessor 'btf_find_dtor_kfunc' which can be used to look up the
+destructor kfunc of a certain BTF ID. If found, we can use it to free
+the object from the map free path.
 
-In copy_map_value_slow, we use 11 offsets, just to make the for loop
-that copies the value free of edge cases for the last offset, by using
-map->value_size as final offset to subtract remaining area to copy from.
+The registration of these pairs also serve as a whitelist of structures
+which are allowed as referenced PTR_TO_BTF_ID in a BPF map, because
+without finding the destructor kfunc, we will bail and return an error.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf.h  | 43 +++++++++++++++++++++++++++++++---
- kernel/bpf/syscall.c | 55 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 95 insertions(+), 3 deletions(-)
+ include/linux/btf.h |  17 +++++++
+ kernel/bpf/btf.c    | 109 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 126 insertions(+)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ae599aaf8d4c..5d845ca02eba 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -253,12 +253,22 @@ static inline void check_and_init_map_value(struct bpf_map *map, void *dst)
- 		memset(dst + map->spin_lock_off, 0, sizeof(struct bpf_spin_lock));
- 	if (unlikely(map_value_has_timer(map)))
- 		memset(dst + map->timer_off, 0, sizeof(struct bpf_timer));
-+	if (unlikely(map_value_has_ptr_to_btf_id(map))) {
-+		struct bpf_map_value_off *tab = map->ptr_off_tab;
-+		int i;
-+
-+		for (i = 0; i < tab->nr_off; i++)
-+			*(u64 *)(dst + tab->off[i].offset) = 0;
-+	}
- }
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 6592183aeb23..a304a1ea39d9 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -41,6 +41,11 @@ struct btf_kfunc_id_set {
+ 	};
+ };
  
-+void copy_map_value_slow(struct bpf_map *map, void *dst, void *src, u32 s_off,
-+			 u32 s_sz, u32 t_off, u32 t_sz);
++struct btf_id_dtor_kfunc {
++	u32 btf_id;
++	u32 kfunc_btf_id;
++};
 +
- /* copy everything but bpf_spin_lock and bpf_timer. There could be one of each. */
- static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
+ extern const struct file_operations btf_fops;
+ 
+ void btf_get(struct btf *btf);
+@@ -347,6 +352,9 @@ bool btf_kfunc_id_set_contains(const struct btf *btf,
+ 			       enum btf_kfunc_type type, u32 kfunc_btf_id);
+ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
+ 			      const struct btf_kfunc_id_set *s);
++s32 btf_find_dtor_kfunc(struct btf *btf, u32 btf_id);
++int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dtors, u32 add_cnt,
++				struct module *owner);
+ #else
+ static inline const struct btf_type *btf_type_by_id(const struct btf *btf,
+ 						    u32 type_id)
+@@ -370,6 +378,15 @@ static inline int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
  {
--	u32 s_off = 0, s_sz = 0, t_off = 0, t_sz = 0;
-+	u32 s_off = 0, s_sz = 0, t_off = 0, t_sz = 0, p_off = 0, p_sz = 0;
- 
- 	if (unlikely(map_value_has_spin_lock(map))) {
- 		s_off = map->spin_lock_off;
-@@ -268,13 +278,40 @@ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
- 		t_off = map->timer_off;
- 		t_sz = sizeof(struct bpf_timer);
- 	}
-+	/* Multiple offset case is slow, offload to function */
-+	if (unlikely(map_value_has_ptr_to_btf_id(map))) {
-+		struct bpf_map_value_off *tab = map->ptr_off_tab;
-+
-+		/* Inline the likely common case */
-+		if (likely(tab->nr_off == 1)) {
-+			p_off = tab->off[0].offset;
-+			p_sz = sizeof(u64);
-+		} else {
-+			copy_map_value_slow(map, dst, src, s_off, s_sz, t_off, t_sz);
-+			return;
-+		}
-+	}
-+
-+	if (unlikely(s_sz || t_sz || p_sz)) {
-+		/* The order is p_off, t_off, s_off, use insertion sort */
- 
--	if (unlikely(s_sz || t_sz)) {
-+		if (t_off < p_off || !t_sz) {
-+			swap(t_off, p_off);
-+			swap(t_sz, p_sz);
-+		}
- 		if (s_off < t_off || !s_sz) {
- 			swap(s_off, t_off);
- 			swap(s_sz, t_sz);
-+			if (t_off < p_off || !t_sz) {
-+				swap(t_off, p_off);
-+				swap(t_sz, p_sz);
-+			}
- 		}
--		memcpy(dst, src, t_off);
-+
-+		memcpy(dst, src, p_off);
-+		memcpy(dst + p_off + p_sz,
-+		       src + p_off + p_sz,
-+		       t_off - p_off - p_sz);
- 		memcpy(dst + t_off + t_sz,
- 		       src + t_off + t_sz,
- 		       s_off - t_off - t_sz);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index beb96866f34d..83d71d6912f5 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -30,6 +30,7 @@
- #include <linux/pgtable.h>
- #include <linux/bpf_lsm.h>
- #include <linux/poll.h>
-+#include <linux/sort.h>
- #include <linux/bpf-netns.h>
- #include <linux/rcupdate_trace.h>
- #include <linux/memcontrol.h>
-@@ -230,6 +231,60 @@ static int bpf_map_update_value(struct bpf_map *map, struct fd f, void *key,
- 	return err;
+ 	return 0;
  }
- 
-+static int copy_map_value_cmp(const void *_a, const void *_b)
++static inline s32 btf_find_dtor_kfunc(struct btf *btf, u32 btf_id)
 +{
-+	const u32 a = *(const u32 *)_a;
-+	const u32 b = *(const u32 *)_b;
-+
-+	/* We only need to sort based on offset */
-+	if (a < b)
-+		return -1;
-+	else if (a > b)
-+		return 1;
++	return -ENOENT;
++}
++static inline int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dtors,
++					      u32 add_cnt, struct module *owner)
++{
 +	return 0;
 +}
+ #endif
+ 
+ #endif
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index bafceae90c32..8a6ec1847f17 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -207,12 +207,18 @@ enum btf_kfunc_hook {
+ 
+ enum {
+ 	BTF_KFUNC_SET_MAX_CNT = 32,
++	BTF_DTOR_KFUNC_MAX_CNT = 256,
+ };
+ 
+ struct btf_kfunc_set_tab {
+ 	struct btf_id_set *sets[BTF_KFUNC_HOOK_MAX][BTF_KFUNC_TYPE_MAX];
+ };
+ 
++struct btf_id_dtor_kfunc_tab {
++	u32 cnt;
++	struct btf_id_dtor_kfunc dtors[];
++};
 +
-+void copy_map_value_slow(struct bpf_map *map, void *dst, void *src, u32 s_off,
-+			 u32 s_sz, u32 t_off, u32 t_sz)
+ struct btf {
+ 	void *data;
+ 	struct btf_type **types;
+@@ -228,6 +234,7 @@ struct btf {
+ 	u32 id;
+ 	struct rcu_head rcu;
+ 	struct btf_kfunc_set_tab *kfunc_set_tab;
++	struct btf_id_dtor_kfunc_tab *dtor_kfunc_tab;
+ 
+ 	/* split BTF support */
+ 	struct btf *base_btf;
+@@ -1572,8 +1579,19 @@ static void btf_free_kfunc_set_tab(struct btf *btf)
+ 	btf->kfunc_set_tab = NULL;
+ }
+ 
++static void btf_free_dtor_kfunc_tab(struct btf *btf)
 +{
-+	struct bpf_map_value_off *tab = map->ptr_off_tab; /* already set to non-NULL */
-+	/* 3 = 2 for bpf_timer, bpf_spin_lock, 1 for map->value_size sentinel */
-+	struct {
-+		u32 off;
-+		u32 sz;
-+	} off_arr[BPF_MAP_VALUE_OFF_MAX + 3];
-+	int i, cnt = 0;
++	struct btf_id_dtor_kfunc_tab *tab = btf->dtor_kfunc_tab;
 +
-+	/* Reconsider stack usage when bumping BPF_MAP_VALUE_OFF_MAX */
-+	BUILD_BUG_ON(sizeof(off_arr) != 88);
-+
-+	for (i = 0; i < tab->nr_off; i++) {
-+		off_arr[cnt].off = tab->off[i].offset;
-+		off_arr[cnt++].sz = sizeof(u64);
-+	}
-+	if (s_sz) {
-+		off_arr[cnt].off = s_off;
-+		off_arr[cnt++].sz = s_sz;
-+	}
-+	if (t_sz) {
-+		off_arr[cnt].off = t_off;
-+		off_arr[cnt++].sz = t_sz;
-+	}
-+	off_arr[cnt].off = map->value_size;
-+
-+	sort(off_arr, cnt, sizeof(off_arr[0]), copy_map_value_cmp, NULL);
-+
-+	/* There is always at least one element */
-+	memcpy(dst, src, off_arr[0].off);
-+	/* Copy the rest, while skipping other regions */
-+	for (i = 1; i < cnt; i++) {
-+		u32 curr_off = off_arr[i - 1].off + off_arr[i - 1].sz;
-+		u32 next_off = off_arr[i].off;
-+
-+		memcpy(dst + curr_off, src + curr_off, next_off - curr_off);
-+	}
++	if (!tab)
++		return;
++	kfree(tab);
++	btf->dtor_kfunc_tab = NULL;
 +}
 +
- static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
- 			      __u64 flags)
+ static void btf_free(struct btf *btf)
  {
++	btf_free_dtor_kfunc_tab(btf);
+ 	btf_free_kfunc_set_tab(btf);
+ 	kvfree(btf->types);
+ 	kvfree(btf->resolved_sizes);
+@@ -7037,6 +7055,97 @@ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
+ }
+ EXPORT_SYMBOL_GPL(register_btf_kfunc_id_set);
+ 
++s32 btf_find_dtor_kfunc(struct btf *btf, u32 btf_id)
++{
++	struct btf_id_dtor_kfunc_tab *tab = btf->dtor_kfunc_tab;
++	struct btf_id_dtor_kfunc *dtor;
++
++	if (!tab)
++		return -ENOENT;
++	/* Even though the size of tab->dtors[0] is > sizeof(u32), we only need
++	 * to compare the first u32 with btf_id, so we can reuse btf_id_cmp_func.
++	 */
++	BUILD_BUG_ON(offsetof(struct btf_id_dtor_kfunc, btf_id) != 0);
++	dtor = bsearch(&btf_id, tab->dtors, tab->cnt, sizeof(tab->dtors[0]), btf_id_cmp_func);
++	if (!dtor)
++		return -ENOENT;
++	return dtor->kfunc_btf_id;
++}
++
++/* This function must be invoked only from initcalls/module init functions */
++int register_btf_id_dtor_kfuncs(const struct btf_id_dtor_kfunc *dtors, u32 add_cnt,
++				struct module *owner)
++{
++	struct btf_id_dtor_kfunc_tab *tab;
++	struct btf *btf;
++	u32 tab_cnt;
++	int ret;
++
++	btf = btf_get_module_btf(owner);
++	if (!btf) {
++		if (!owner && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) {
++			pr_err("missing vmlinux BTF, cannot register dtor kfuncs\n");
++			return -ENOENT;
++		}
++		if (owner && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES)) {
++			pr_err("missing module BTF, cannot register dtor kfuncs\n");
++			return -ENOENT;
++		}
++		return 0;
++	}
++	if (IS_ERR(btf))
++		return PTR_ERR(btf);
++
++	if (add_cnt >= BTF_DTOR_KFUNC_MAX_CNT) {
++		pr_err("cannot register more than %d kfunc destructors\n", BTF_DTOR_KFUNC_MAX_CNT);
++		ret = -E2BIG;
++		goto end;
++	}
++
++	tab = btf->dtor_kfunc_tab;
++	/* Only one call allowed for modules */
++	if (WARN_ON_ONCE(tab && btf_is_module(btf))) {
++		ret = -EINVAL;
++		goto end;
++	}
++
++	tab_cnt = tab ? tab->cnt : 0;
++	if (tab_cnt > U32_MAX - add_cnt) {
++		ret = -EOVERFLOW;
++		goto end;
++	}
++	if (tab_cnt + add_cnt >= BTF_DTOR_KFUNC_MAX_CNT) {
++		pr_err("cannot register more than %d kfunc destructors\n", BTF_DTOR_KFUNC_MAX_CNT);
++		ret = -E2BIG;
++		goto end;
++	}
++
++	tab = krealloc(btf->dtor_kfunc_tab,
++		       offsetof(struct btf_id_dtor_kfunc_tab, dtors[tab_cnt + add_cnt]),
++		       GFP_KERNEL | __GFP_NOWARN);
++	if (!tab) {
++		ret = -ENOMEM;
++		goto end;
++	}
++
++	if (!btf->dtor_kfunc_tab)
++		tab->cnt = 0;
++	btf->dtor_kfunc_tab = tab;
++
++	memcpy(tab->dtors + tab->cnt, dtors, add_cnt * sizeof(tab->dtors[0]));
++	tab->cnt += add_cnt;
++
++	sort(tab->dtors, tab->cnt, sizeof(tab->dtors[0]), btf_id_cmp_func, NULL);
++
++	return 0;
++end:
++	btf_free_dtor_kfunc_tab(btf);
++	if (btf_is_module(btf))
++		btf_put(btf);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(register_btf_id_dtor_kfuncs);
++
+ #define MAX_TYPES_ARE_COMPAT_DEPTH 2
+ 
+ static
 -- 
 2.35.1
 
