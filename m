@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 262634BCD89
-	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A0DC4BCD91
+	for <lists+netdev@lfdr.de>; Sun, 20 Feb 2022 11:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243470AbiBTJGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 04:06:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48082 "EHLO
+        id S237656AbiBTJGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 04:06:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235374AbiBTJGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:41 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E4531935
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:21 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id q1so1973230plx.4
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:21 -0800 (PST)
+        with ESMTP id S243468AbiBTJGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 04:06:42 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EC631919
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:22 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id 139so11683479pge.1
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 01:06:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Lmt4m7GQTGDKp023enGcI6nCt6NdqCkC3JCKPF/CAJk=;
-        b=THI7JHNTF7UedhGOWq8q9bih4M+8ReMUnMwJOwAqSiPqIstDeGwPBPG+fps8vN1fSZ
-         Hd383hMI8sr6jR/U80OIOU82NYKS0+oRSiE+ztsWAvlUTJqnK9bPZ0bvu028ETr2437a
-         pCKeZB5hYUVwm6EbP3d2swFb2TwyAcsGZLPL4=
+        bh=1OvWYX0z4JRtRR0V9MbS4YMsa6a9NCZJI4VjyxEp7/8=;
+        b=IbBQtmsIzhRsB9fbfWRkhwhgkG5MpRPChxXpxHYnjqa3OfP2XJujz96XBFuEeAaGRK
+         nfzzE9BWYGDqa/pBee1Vw3OFnrmXhqzfDdM37eZXwLlwe77WD6mng1mSrnkeplLB+Gop
+         60XG0wuEev/ZrMSD5H8BjIOs2VjlkLhpc/t/A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Lmt4m7GQTGDKp023enGcI6nCt6NdqCkC3JCKPF/CAJk=;
-        b=DPv7QJZW3+GJa89q6TcxDdJrUXxgLnnCUdVyFYxbjCdgqkYmsPvVbVv1eGn4iFqE0e
-         SJMa52p7BZznwcVHcfDTf2VXGpyJjyrw0y4ltqR37ZDJ7+0Z/Bzn7JtQDBtlMtPoWjHV
-         Ez7oP/3t3BfhTQ2NymXPWP43c1iMPqhQeA+bnqcF6Mm3mB1mZHkaQgdOq5pn3jk18tS0
-         /W1+BMsGDSRNJX/JdjKoe+43/mbbmGmnJ6bz7L5W3MajF9Xo6Ixzu3TXXob1GyiyWK2k
-         t1Gb2ZeWm0XZEkauWhZru2FyN+QcXnfO86JdEXQ7NXARZvu3xqzEPAOtFIeKXwK8mt6T
-         a4IA==
-X-Gm-Message-State: AOAM530HiO/Y+qVYBeUDsvMMT1xPcmWJPzVmynGI2ukDtpghjTLA8Lmd
-        UQU5o7zzr4ry9cw8eH1e3FvkaQ==
-X-Google-Smtp-Source: ABdhPJxTRR8E/GB2Y0NJVzsFC5tNrl8cwsqc66t6lOBM8T519lrNV27ZuMUqI2Vd34g+PwkhQ92vtw==
-X-Received: by 2002:a17:90b:3ca:b0:1b9:e1a5:c315 with SMTP id go10-20020a17090b03ca00b001b9e1a5c315mr16177839pjb.43.1645347980070;
-        Sun, 20 Feb 2022 01:06:20 -0800 (PST)
+        bh=1OvWYX0z4JRtRR0V9MbS4YMsa6a9NCZJI4VjyxEp7/8=;
+        b=MZQYXYV2jLvEodMc6uJUCG15Ris8ktL2QXHQQBB2XvlTIfpk3VdsNl1VOkEqD9sGWd
+         zkJvXzHRIW+6y/01njxW3OEs1P3x8YTbKbSnRO2Wl1GFJptnNdAFmR3MIsclpYuNl93A
+         3uX3G1GG0ig9GYsQ96zYQEQsepkdN7Lh9Snk4kypCVtfHpa0mXklIDtgn8JBa4PonIRy
+         WoB30GWubay/UVjPp3acu6jrMl9t+RaoSrrwD65r+HtvFjyiC4Hp3Ht/ORRrbiwJqsbv
+         qtCfOGF0zMmiSMTJGwBnUnzhMs5UOCJ5sNd54Tf0Dcfrh85AcnwL32hcKbGfgq5UEVaS
+         n8ow==
+X-Gm-Message-State: AOAM530ey7cf1zxUvZbBNd3L2yl3M8+ivKu33BPdtocvXeRI7zMcwtmJ
+        5mZwi9uFESSqW+YNwRA2iZgXtA==
+X-Google-Smtp-Source: ABdhPJwB+nKqWpbHaZVjyBF1gtSdvjMcVnqfesnvJeunacua+7j6SkuHOJInS7wK+EvkYxgZ3PmE0A==
+X-Received: by 2002:a05:6a00:1d8b:b0:4f1:bd8:811 with SMTP id z11-20020a056a001d8b00b004f10bd80811mr4703174pfw.25.1645347981219;
+        Sun, 20 Feb 2022 01:06:21 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.19
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090b068500b001b9bef22bf5sm4061865pjz.5.2022.02.20.01.06.20
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Feb 2022 01:06:19 -0800 (PST)
+        Sun, 20 Feb 2022 01:06:20 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 3/7] bnxt_en: Fix occasional ethtool -t loopback test failures
-Date:   Sun, 20 Feb 2022 04:05:49 -0500
-Message-Id: <1645347953-27003-4-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: [PATCH net 4/7] bnxt_en: Fix incorrect multicast rx mask setting when not requested
+Date:   Sun, 20 Feb 2022 04:05:50 -0500
+Message-Id: <1645347953-27003-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f0c4fd05d86f6de0"
+        boundary="000000000000fadbac05d86f6d36"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,101 +66,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f0c4fd05d86f6de0
+--000000000000fadbac05d86f6d36
 
-In the current code, we setup the port to PHY or MAC loopback mode
-and then transmit a test broadcast packet for the loopback test.  This
-scheme fails sometime if the port is shared with management firmware
-that can also send packets.  The driver may receive the management
-firmware's packet and the test will fail when the contents don't
-match the test packet.
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-Change the test packet to use it's own MAC address as the destination
-and setup the port to only receive it's own MAC address.  This should
-filter out other packets sent by management firmware.
+We should setup multicast only when net_device flags explicitly
+has IFF_MULTICAST set. Otherwise we will incorrectly turn it on
+even when not asked.  Fix it by only passing the multicast table
+to the firmware if IFF_MULTICAST is set.
 
-Fixes: 91725d89b97a ("bnxt_en: Add PHY loopback to ethtool self-test.")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Fixes: 7d2837dd7a32 ("bnxt_en: Setup multicast properly after resetting device.")
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 7 +++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         | 1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 23bbb1c5812d..785436f6dd24 100644
+index 785436f6dd24..fc5b1d816bdb 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8639,6 +8639,9 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
- 	vnic->uc_filter_count = 1;
+@@ -4747,8 +4747,10 @@ static int bnxt_hwrm_cfa_l2_set_rx_mask(struct bnxt *bp, u16 vnic_id)
+ 		return rc;
  
- 	vnic->rx_mask = 0;
-+	if (test_bit(BNXT_STATE_HALF_OPEN, &bp->state))
-+		goto skip_rx_mask;
-+
- 	if (bp->dev->flags & IFF_BROADCAST)
- 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_BCAST;
- 
-@@ -8659,6 +8662,7 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
- 	if (rc)
- 		goto err_out;
- 
-+skip_rx_mask:
- 	rc = bnxt_hwrm_set_coal(bp);
- 	if (rc)
- 		netdev_warn(bp->dev, "HWRM set coalescing failure rc: %x\n",
-@@ -10335,8 +10339,10 @@ int bnxt_half_open_nic(struct bnxt *bp)
- 		netdev_err(bp->dev, "bnxt_alloc_mem err: %x\n", rc);
- 		goto half_open_err;
- 	}
-+	set_bit(BNXT_STATE_HALF_OPEN, &bp->state);
- 	rc = bnxt_init_nic(bp, true);
- 	if (rc) {
-+		clear_bit(BNXT_STATE_HALF_OPEN, &bp->state);
- 		netdev_err(bp->dev, "bnxt_init_nic err: %x\n", rc);
- 		goto half_open_err;
- 	}
-@@ -10357,6 +10363,7 @@ void bnxt_half_close_nic(struct bnxt *bp)
- 	bnxt_hwrm_resource_free(bp, false, true);
- 	bnxt_free_skbs(bp);
- 	bnxt_free_mem(bp, true);
-+	clear_bit(BNXT_STATE_HALF_OPEN, &bp->state);
+ 	req->vnic_id = cpu_to_le32(vnic->fw_vnic_id);
+-	req->num_mc_entries = cpu_to_le32(vnic->mc_list_count);
+-	req->mc_tbl_addr = cpu_to_le64(vnic->mc_list_mapping);
++	if (vnic->rx_mask & CFA_L2_SET_RX_MASK_REQ_MASK_MCAST) {
++		req->num_mc_entries = cpu_to_le32(vnic->mc_list_count);
++		req->mc_tbl_addr = cpu_to_le64(vnic->mc_list_mapping);
++	}
+ 	req->mask = cpu_to_le32(vnic->rx_mask);
+ 	return hwrm_req_send_silent(bp, req);
  }
+@@ -8651,7 +8653,7 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
+ 	if (bp->dev->flags & IFF_ALLMULTI) {
+ 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST;
+ 		vnic->mc_list_count = 0;
+-	} else {
++	} else if (bp->dev->flags & IFF_MULTICAST) {
+ 		u32 mask = 0;
  
- void bnxt_reenable_sriov(struct bnxt *bp)
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 440dfeb4948b..666fc1e7a7d2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1921,6 +1921,7 @@ struct bnxt {
- #define BNXT_STATE_RECOVER		12
- #define BNXT_STATE_FW_NON_FATAL_COND	13
- #define BNXT_STATE_FW_ACTIVATE_RESET	14
-+#define BNXT_STATE_HALF_OPEN		15	/* For offline ethtool tests */
+ 		bnxt_mc_list_updated(bp, &mask);
+@@ -10779,7 +10781,7 @@ static void bnxt_set_rx_mode(struct net_device *dev)
+ 	if (dev->flags & IFF_ALLMULTI) {
+ 		mask |= CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST;
+ 		vnic->mc_list_count = 0;
+-	} else {
++	} else if (dev->flags & IFF_MULTICAST) {
+ 		mc_update = bnxt_mc_list_updated(bp, &mask);
+ 	}
  
- #define BNXT_NO_FW_ACCESS(bp)					\
- 	(test_bit(BNXT_STATE_FW_FATAL_COND, &(bp)->state) ||	\
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index a85b18858b32..8aaa2335f848 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3458,7 +3458,7 @@ static int bnxt_run_loopback(struct bnxt *bp)
- 	if (!skb)
- 		return -ENOMEM;
- 	data = skb_put(skb, pkt_size);
--	eth_broadcast_addr(data);
-+	ether_addr_copy(&data[i], bp->dev->dev_addr);
- 	i += ETH_ALEN;
- 	ether_addr_copy(&data[i], bp->dev->dev_addr);
- 	i += ETH_ALEN;
+@@ -10856,9 +10858,10 @@ static int bnxt_cfg_rx_mode(struct bnxt *bp)
+ 	    !bnxt_promisc_ok(bp))
+ 		vnic->rx_mask &= ~CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS;
+ 	rc = bnxt_hwrm_cfa_l2_set_rx_mask(bp, 0);
+-	if (rc && vnic->mc_list_count) {
++	if (rc && (vnic->rx_mask & CFA_L2_SET_RX_MASK_REQ_MASK_MCAST)) {
+ 		netdev_info(bp->dev, "Failed setting MC filters rc: %d, turning on ALL_MCAST mode\n",
+ 			    rc);
++		vnic->rx_mask &= ~CFA_L2_SET_RX_MASK_REQ_MASK_MCAST;
+ 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST;
+ 		vnic->mc_list_count = 0;
+ 		rc = bnxt_hwrm_cfa_l2_set_rx_mask(bp, 0);
 -- 
 2.18.1
 
 
---000000000000f0c4fd05d86f6de0
+--000000000000fadbac05d86f6d36
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -230,13 +204,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKBtXzjuO7YaTfW3jhAHwtq+XagnTxAX
-fd5ir2p4J1xBMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILvMom5d83pXIHfXwtnpVWKoaLL7XfQa
+qxOmO5C98qQwMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
 MDA5MDYyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAAkUOCCsyU5GlXWDFHhiQiTNl3hXdvgCMqBG+Xls0DLbEBDbw4
-S0uif79m9GHhMYaYQJkE2yzGf/B7Ni700W0olQS1k+BD2+JelnvhXTPG1vuyiUU6gFyu4MPBZ9KX
-bRsJjTLndLcw4K6eN6JC7n/Ao1AKYeI5j2i79e0NoRnpNvcBbpVrAEfLrwKmbEDWnZBYr5Mg8Asb
-71Jy6KiOLIAUPRv8i0xwglQ3iVdEyFzjPcXpMe1Shq3XlC4aWL1vLEDokxcreNFuVyKTp9MYDFYW
-72UsGDlVBXmo7GRn1n6JwARQQMg9rUHBA6fWxXR7Bpd7+Z3952cRrY/JV4lH/YcG
---000000000000f0c4fd05d86f6de0--
+ATANBgkqhkiG9w0BAQEFAASCAQCG5z2UR7jklJ9o0hNEGAZpTHwQPnO2BFD8UTBiv4UY0shUBRXN
+c6Uyas96apb8XwU8M79k+TpAAFy6aD6ZkzcA/ph2HgVt2Z+lQjufdOBv/72to9BKUUEZffH147Rk
+OkPL8ONenvSsSMYQ3FAx22oAoChk2A6/tGYgCT95j2RRFGZeO2IkE5BrJF72rhAfLDaqti+EzI8c
+kKKb4Y4Elby9K1YkAjYx7M/QHJczHwawwRp7rkA4eTsvnnT0Tub+DPxrsOAlpkNEfOU5EEGDbcSd
+kTaWT9iyscAzR0R2ZSA81f3EzNvJgW1FN9sClULAMqChf4RQA1Lbr1mJ2sueckdb
+--000000000000fadbac05d86f6d36--
