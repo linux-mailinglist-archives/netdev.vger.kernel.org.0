@@ -2,66 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F3D4BE73F
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C99424BDF3E
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:49:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356471AbiBULd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 06:33:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52300 "EHLO
+        id S1356802AbiBULwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 06:52:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356454AbiBULd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 06:33:27 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CB2DF35;
-        Mon, 21 Feb 2022 03:33:04 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645443182;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DDK33/3302m/AxEjlqU7JR5WuOZd5Q+b5EdJBto11HM=;
-        b=4YWj9EREiqE/4z9lRjzJiDCe2ileZomSn6vZTDKEA8y5hupG1tPoR9ME40N7lwiDuHKnd6
-        bcQu7W7k5DaojT3yK5NmzHCUrcF1n8VlVruftElI4NfwOO8ZQPS3UnAfpZb8xa/xHf/iqP
-        i5I/K0uVgBgff9mnMZa0DYj/Kapi0TG3lgoiu+44QmimuDoQM3430lXOiok7/pUQia5GpH
-        Ylj14nB7AMUylwdSAC/roiPE0FO9S6u7A7esTSu4jHDP9twbIL+yA6N2rmuvblNGmoKJTQ
-        ZVXctRztuqb5og+i/uU7LPW3OfyMcFO7dLcu04vjiF2XKZMsKMpzgB5Ud+K9Fw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645443182;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DDK33/3302m/AxEjlqU7JR5WuOZd5Q+b5EdJBto11HM=;
-        b=DzX8bC47wbA5MEoCl2FNLvxhuTBdRP0FKtqmoDsNab1UVrwMOS5/w3bVrPlaMJTRrjXqJy
-        jWEr89tMGCNNl/DA==
-To:     Lee Jones <lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH v4 0/7] Provide and use generic_handle_irq_safe() where
- appropriate.
-In-Reply-To: <87a6ekleye.ffs@tglx>
-References: <20220211181500.1856198-1-bigeasy@linutronix.de>
- <Ygu6UewoPbYC9yPa@google.com> <Ygu9xtrMxxq36FRH@linutronix.de>
- <YgvD1HpN2oyalDmj@google.com> <YgvH4ROUQVgusBdA@linutronix.de>
- <YgvJ1fCUYmaV0Mbx@google.com> <87a6ekleye.ffs@tglx>
-Date:   Mon, 21 Feb 2022 12:33:02 +0100
-Message-ID: <875yp8laj5.ffs@tglx>
+        with ESMTP id S1356822AbiBULwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 06:52:24 -0500
+X-Greylist: delayed 318 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 03:52:00 PST
+Received: from mx.tkos.co.il (guitar.tcltek.co.il [84.110.109.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1884B2BCA
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 03:51:58 -0800 (PST)
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 270DC44054B;
+        Mon, 21 Feb 2022 13:46:03 +0200 (IST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+        s=default; t=1645443963;
+        bh=DXl6zSHyL6xzcZPueiyZyEWv1FJoMaN44o4k6mex8h0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ilQrx3EjNxDH1vHV31sB/ieVVIuDeR3/ChOC/E8F+efG8ZJirdX/h/Z7tIOWl+TIV
+         7LbPQHX8G1BPpv9V5BJIROr9yYdkdSOifjLFLuZMRFMVJDwgr0lWzl5ZvpgKpQ96jv
+         ZbfjsWF2R3Y2NZMgwSQ6XDJgtZCJTQ3290fDt4UbNMsAKozpW2W/XNMVXx0rUE9DBH
+         /BYCRvzEFXBzCFVh8sWyyiUnJo8wXkvx1dkE036Xj4rVMMxruSNjhb5YPWBm0GIX0Q
+         zoyqkolhDL3YIJENT9oKwm7XM6aRz0BMYEXalVX5PezmR10H+LQ98KdizQgnQN8dSL
+         skxE87mwWon0w==
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Baruch Siach <baruch.siach@siklu.com>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Luo Jie <luoj@codeaurora.org>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH] net: mdio-ipq4019: add delay after clock enable
+Date:   Mon, 21 Feb 2022 13:45:57 +0200
+Message-Id: <01c6b6afb00c02a48fa99542c5b4c6a2c69092b0.1645443957.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,29 +55,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lee & al!
+From: Baruch Siach <baruch.siach@siklu.com>
 
-On Mon, Feb 21 2022 at 10:57, Thomas Gleixner wrote:
-> On Tue, Feb 15 2022 at 15:42, Lee Jones wrote:
->> What is your preference Thomas?
->
-> I suggest doing it the following way:
->
->  1) I apply 1/7 on top of -rc5 and tag it
+Experimentation shows that PHY detect might fail when the code attempts
+MDIO bus read immediately after clock enable. Add delay to stabilize the
+clock before bus access.
 
-That's what I did now. The tag to pull from is:
+PHY detect failure started to show after commit 7590fc6f80ac ("net:
+mdio: Demote probed message to debug print") that removed coincidental
+delay between clock enable and bus access.
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-api-2022-02-21
+10ms is meant to match the time it take to send the probed message over
+UART at 115200 bps. This might be a far overshoot.
 
->  2) Driver maintainers who want to merge via their trees pull that tag
->     apply the relevant driver changes
->
->  3) I collect the leftovers and merge them via irq/core
+Fixes: 23a890d493e3 ("net: mdio: Add the reset function for IPQ MDIO driver")
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+---
+ drivers/net/mdio/mdio-ipq4019.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-So everyone who wants to merge the relevant driver changes, please pull
-and let me know which driver patch(es) you merged. I'll pick up the
-leftovers after -rc6.
+diff --git a/drivers/net/mdio/mdio-ipq4019.c b/drivers/net/mdio/mdio-ipq4019.c
+index 5f4cd24a0241..4eba5a91075c 100644
+--- a/drivers/net/mdio/mdio-ipq4019.c
++++ b/drivers/net/mdio/mdio-ipq4019.c
+@@ -200,7 +200,11 @@ static int ipq_mdio_reset(struct mii_bus *bus)
+ 	if (ret)
+ 		return ret;
+ 
+-	return clk_prepare_enable(priv->mdio_clk);
++	ret = clk_prepare_enable(priv->mdio_clk);
++	if (ret == 0)
++		mdelay(10);
++
++	return ret;
+ }
+ 
+ static int ipq4019_mdio_probe(struct platform_device *pdev)
+-- 
+2.34.1
 
-Thanks,
-
-        tglx
