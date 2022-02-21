@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B5BC4BEB82
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 21:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9A14BEB89
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 21:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233316AbiBUUBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 15:01:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38812 "EHLO
+        id S233367AbiBUUEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 15:04:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233305AbiBUUBg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 15:01:36 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2488922BD6;
-        Mon, 21 Feb 2022 12:01:13 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id q5so12078424oij.6;
-        Mon, 21 Feb 2022 12:01:13 -0800 (PST)
+        with ESMTP id S232083AbiBUUEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 15:04:44 -0500
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C658522BDA
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 12:04:17 -0800 (PST)
+Received: by mail-oo1-xc2b.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so14606057ooi.2
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 12:04:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6pzKBa3wjo/GJPKZsQ/polHNRWOW8HKl2pEaJ8tCqjE=;
-        b=p0NT9fJ6vpbGel6GlLbHiHJcnPzqpGXbVN23G2+CHxQ96SstHA0hTR+2sLBnmpu1WE
-         R9FUV8wlKeUh7e8giAZCMcTXs/7iiWa2Rdzb9WMuXYoRiJX3lnEX7b6ymr+wZsJuPEj3
-         WpHFXVWCE8/NMa04QxhjvvVeuFZaexSVxGVbIYvI86yd1HbcNqRON5MnFJjxBvx1uETo
-         ar7342fPKMd0oiBtptM+NK7Eu38vVUedqvP2DtGvnPe7w9HfJcoS9wGwQO0EVgLV83Mb
-         C6fZX1GTGE9WdlYp/zqKHFLLRe2rF+BSoT4W+8jLXsS5ihC8iVPwmHKs7SzQJmUwJnqb
-         Ommg==
+        bh=JoqaO5OP51pV9FQRoc7TWD8p6Z2gTdhilmjICyDGsSA=;
+        b=Xf/CWCAyQDi6JP17zzZPun8VMpjx7XsE2ZDmapj25WTZ1n1bD+V7FWu844TxTv8E9P
+         izBjcBUcBzRjdXW9cbZBewjoPivIOSanbV0XdWnUYcGcJQ4UQVMiPwnJ57tlbeIE2C2q
+         h6aadSbdi03aidKUsszt/5pqhPAe75F5b7tTFRzh46uhH60cfMqsIpCek8BH0kt0Yypf
+         8b6Zr8u5uvhrzg8Jme+5S5oYvZd/Yy4UrXlZTxeAd5oGne2VYpukoIssJEOpTJnfgs2x
+         XMB8PPLVapXO4U4Fx8bOh+NspukCGGPhrlUUQxe+/xApl6QLM2UpO0dzFa7ySBqMYFYw
+         5C6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6pzKBa3wjo/GJPKZsQ/polHNRWOW8HKl2pEaJ8tCqjE=;
-        b=HkWQ/kHf/HWM4vf/UkzvnOUmLbm9WhvJLFbs+hmWh9qielYKu5XHMFsIzNQiKtjdqd
-         KrajXUA9rsKCVgwv+BBCksguFCjc6nmRJRY4BzOtoa8mm4m6O3yAfwjIDnWlSC2WbYF3
-         35NVocRB4BK7ixVoshF/srwvLpC7hHIm1DAtgZA7MISY+BGtej9ERdBq3lWinianJcqg
-         wamVI148AE88IJ4LrRolwuEUzx8wV9elccn9mjBXsY/bV3u82QRg0RS1wS8fkGavXasw
-         pgMBjIADB7TIDbFlV6sHL0LTJ06AHUSzs4ebyGo2tZSGxuzZVfl3AC6l+rkAsfx9U70N
-         93+w==
-X-Gm-Message-State: AOAM533959jyPNO8VoKvhTcNNAyQdK9nvQ5zloVRyXdtB7I8zGA4hfGq
-        m0Av0dDW5r9CNnfbF4L1psHlMeXet+E1bw==
-X-Google-Smtp-Source: ABdhPJxAonxJSHMLb+ZJBNadcvNI6YVfxJ0Od/thqnWj3cB/pwF8DGpghFriRhMoONE66pMPf2Qcfw==
-X-Received: by 2002:a05:6808:f0a:b0:2cd:453:eb45 with SMTP id m10-20020a0568080f0a00b002cd0453eb45mr319648oiw.71.1645473672096;
-        Mon, 21 Feb 2022 12:01:12 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id l19sm15938933oao.12.2022.02.21.12.01.07
+        bh=JoqaO5OP51pV9FQRoc7TWD8p6Z2gTdhilmjICyDGsSA=;
+        b=d7jHLOj7wG2UYOdvOwhnOYY5AxcT6VaGQxCX/qsW+Cez2hTHgMJ6ACOKUWuxQO1/SS
+         JeIvNlNtPCXEG4F4fdYIjP0rF4MQQBEMjh5nP91q0Jo5BsbwWLS02b8ZR2lT8f2Vhe8j
+         3HSkL5mgD2gN5AtS9Ea5RejKyKSZyRYyG9BAgk9ocX8f7Rte5BAJ4CB9guNm7Af+mb1T
+         cmx1uNR2xTzCqTC9Ua29zFPsJjoN1zOuFHjdPrNIDDD7t6+G8Xg38A++SfoGtRduqqJo
+         /c+u+YI1amDrD8bH9gxj6kY5Mb4V3p49L3nYPqcEaScgOMz64ZMGXvhQQQAJQNra6Ad0
+         +2Cw==
+X-Gm-Message-State: AOAM5334D+HzgJ2ARXEIXjoIpCoA3QvUVqfPXz9j+XW53iBk8Te6PSUh
+        lK+pWUowgQgBObV39kLZJGZRX3OruEDedQ==
+X-Google-Smtp-Source: ABdhPJz6e5+DChCACExUVu+daZ8BKLBhIhA894yJMeXmQacewionc5gjd0wJ3htpnAcmAqAm9aOxOw==
+X-Received: by 2002:a05:6870:a794:b0:b9:62d0:56fd with SMTP id x20-20020a056870a79400b000b962d056fdmr259658oao.115.1645473856623;
+        Mon, 21 Feb 2022 12:04:16 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
+        by smtp.gmail.com with ESMTPSA id g18sm409365otp.17.2022.02.21.12.04.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 12:01:11 -0800 (PST)
+        Mon, 21 Feb 2022 12:04:16 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To:     devicetree@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH v3 1/2] dt-bindings: net: dsa: add new mdio property
-Date:   Mon, 21 Feb 2022 17:01:02 -0300
-Message-Id: <20220221200102.6290-1-luizluca@gmail.com>
+Subject: [PATCH net-next v3 2/2] net: dsa: OF-ware slave_mii_bus
+Date:   Mon, 21 Feb 2022 17:04:07 -0300
+Message-Id: <20220221200407.6378-1-luizluca@gmail.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -77,36 +68,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The optional mdio property will be used by dsa switch to configure
-slave_mii_bus when the driver does not allocate it during setup.
-
-Some drivers already offer/require a similar property but, in some
-cases, they rely on a compatible string to identify the mdio bus node.
-Each subdriver might decide to keep existing approach or migrate to this
-new common property.
+If found, register the DSA internally allocated slave_mii_bus with an OF
+"mdio" child object. It can save some drivers from creating their
+custom internal MDIO bus.
 
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- Documentation/devicetree/bindings/net/dsa/dsa.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/dsa/dsa2.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-index b9d48e357e77..f9aa09052785 100644
---- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-@@ -32,6 +32,12 @@ properties:
-       (single device hanging off a CPU port) must not specify this property
-     $ref: /schemas/types.yaml#/definitions/uint32-array
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index e498c927c3d0..2206e2d2a7b3 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -13,6 +13,7 @@
+ #include <linux/slab.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/of.h>
++#include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include <net/devlink.h>
+ #include <net/sch_generic.h>
+@@ -869,6 +870,7 @@ static int dsa_switch_setup_tag_protocol(struct dsa_switch *ds)
+ static int dsa_switch_setup(struct dsa_switch *ds)
+ {
+ 	struct dsa_devlink_priv *dl_priv;
++	struct device_node *dn;
+ 	struct dsa_port *dp;
+ 	int err;
  
-+  mdio:
-+    unevaluatedProperties: false
-+    description:
-+      Container of PHY and devices on the switches MDIO bus.
-+    $ref: /schemas/net/mdio.yaml#
+@@ -924,7 +926,10 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+ 
+ 		dsa_slave_mii_bus_init(ds);
+ 
+-		err = mdiobus_register(ds->slave_mii_bus);
++		dn = of_get_child_by_name(ds->dev->of_node, "mdio");
 +
- patternProperties:
-   "^(ethernet-)?ports$":
-     type: object
++		err = of_mdiobus_register(ds->slave_mii_bus, dn);
++		of_node_put(dn);
+ 		if (err < 0)
+ 			goto free_slave_mii_bus;
+ 	}
 -- 
 2.35.1
 
