@@ -2,139 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F086E4BDFD6
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:50:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F7E74BE2D8
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349412AbiBUJ1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 04:27:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51026 "EHLO
+        id S1350821AbiBUJvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 04:51:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350003AbiBUJ1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 04:27:01 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DFA20F5B;
-        Mon, 21 Feb 2022 01:11:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645434671; x=1676970671;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UHJyMtuKTt6keT+yxnngiSoVONkyZhQhlKsTRvMsUrU=;
-  b=n7dxZU+d09qhlft/6iSKcBe+de+pr37sj+Mpxyh/dDtkO2Lnvpxqp0dr
-   oyeB6x6cKqoJA7Nw0Cy4ZVJ0BccDQIGiAKgJn9MibgLeCjODceZEaqXfU
-   2kFtWBqqaBET5pUAptiTh3D9Z23jAkWC2M4jZCiPRga/O95unXAdwipIY
-   rPDSgnOtHEd1voNqaViVrK84Osu/aKysde13Z6pHQg3s9SrG9YTDjhkNN
-   1mAl+ePYmS09bgSswVytpuF/cJWOLgHnK9UeOb+Cm8cVknV6HUKlLfWKG
-   XswovNBBtctk+SU10ic2BQqCdUyxKD3QCcfQDM5Wru0dSUlgklFv7IFUq
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="238884535"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="238884535"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 01:11:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="778639289"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Feb 2022 01:11:10 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM4ir-0001SA-Es; Mon, 21 Feb 2022 09:11:09 +0000
-Date:   Mon, 21 Feb 2022 17:10:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= 
-        <marmarek@invisiblethingslab.com>, linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] Revert "xen-netback: remove 'hotplug-status' once it
- has served its purpose"
-Message-ID: <202202211740.AbFni9u8-lkp@intel.com>
-References: <20220221034214.2237097-1-marmarek@invisiblethingslab.com>
+        with ESMTP id S1352143AbiBUJrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 04:47:11 -0500
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E026A40A3F;
+        Mon, 21 Feb 2022 01:19:03 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R651e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V52UcIF_1645435139;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V52UcIF_1645435139)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 21 Feb 2022 17:19:00 +0800
+Date:   Mon, 21 Feb 2022 17:18:59 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     jgg@ziepe.ca, liangwenpeng@huawei.com,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        liweihang@huawei.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
+ smc_pnet_apply_ib
+Message-ID: <YhNZAyoqSzIAfF9Y@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <000000000000b772b805d8396f14@google.com>
+ <2691692.BEx9A2HvPv@leap>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220221034214.2237097-1-marmarek@invisiblethingslab.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2691692.BEx9A2HvPv@leap>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi "Marek,
+On Thu, Feb 17, 2022 at 07:05:31PM +0100, Fabio M. De Francesco wrote:
+> On giovedì 17 febbraio 2022 17:41:22 CET syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    c832962ac972 net: bridge: multicast: notify switchdev driv..
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=16b157bc700000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=4f322a6d84e991c38775
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > 
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
+> > 
+> > infiniband syz1: set down
+> > infiniband syz1: added lo
+> > RDS/IB: syz1: added
+> > smc: adding ib device syz1 with port count 1
+> > BUG: sleeping function called from invalid context at kernel/locking/mutex.c:577
+> > in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 17974, name: syz-executor.3
+> > preempt_count: 1, expected: 0
+> > RCU nest depth: 0, expected: 0
+> > 6 locks held by syz-executor.3/17974:
+> >  #0: ffffffff90865838 (&rdma_nl_types[idx].sem){.+.+}-{3:3}, at: rdma_nl_rcv_msg+0x161/0x690 drivers/infiniband/core/netlink.c:164
+> >  #1: ffffffff8d04edf0 (link_ops_rwsem){++++}-{3:3}, at: nldev_newlink+0x25d/0x560 drivers/infiniband/core/nldev.c:1707
+> >  #2: ffffffff8d03e650 (devices_rwsem){++++}-{3:3}, at: enable_device_and_get+0xfc/0x3b0 drivers/infiniband/core/device.c:1321
+> >  #3: ffffffff8d03e510 (clients_rwsem){++++}-{3:3}, at: enable_device_and_get+0x15b/0x3b0 drivers/infiniband/core/device.c:1329
+> >  #4: ffff8880482c85c0 (&device->client_data_rwsem){++++}-{3:3}, at: add_client_context+0x3d0/0x5e0 drivers/infiniband/core/device.c:718
+> >  #5: ffff8880230a4118 (&pnettable->lock){++++}-{2:2}, at: smc_pnetid_by_table_ib+0x18c/0x470 net/smc/smc_pnet.c:1159
+> > Preemption disabled at:
+> > [<0000000000000000>] 0x0
+> > CPU: 1 PID: 17974 Comm: syz-executor.3 Not tainted 5.17.0-rc3-syzkaller-00170-gc832962ac972 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> >  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9576
+> >  __mutex_lock_common kernel/locking/mutex.c:577 [inline]
+> >  __mutex_lock+0x9f/0x12f0 kernel/locking/mutex.c:733
+> >  smc_pnet_apply_ib+0x28/0x160 net/smc/smc_pnet.c:251
+> >  smc_pnetid_by_table_ib+0x2ae/0x470 net/smc/smc_pnet.c:1164
+> 
+> If I recall it well, read_lock() disables preemption. 
+> 
+> smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib() 
+> which, in turn, calls mutex_lock(&smc_ib_devices.mutex). Therefore the code 
+> acquires a mutex while in atomic and we get a SAC bug.
+> 
+> Actually, even if my argument is correct(?), I don't know if the read_lock() 
+> in smc_pnetid_by_table_ib() can be converted to a sleeping lock like a mutex or 
+> a semaphore.
+ 
+Take the email above. I think it is safe to convert read_lock() to
+mutex, which is already used by smc_ib_devices.mutex.
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on linux/master]
-[also build test ERROR on linus/master v5.17-rc5 next-20220217]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Marek-Marczykowski-G-recki/Revert-xen-netback-remove-hotplug-status-once-it-has-served-its-purpose/20220221-114409
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2c271fe77d52a0555161926c232cd5bc07178b39
-config: x86_64-randconfig-a011-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211740.AbFni9u8-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/0605cde993ca8f5f7ab43ae68117d73623edd227
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Marek-Marczykowski-G-recki/Revert-xen-netback-remove-hotplug-status-once-it-has-served-its-purpose/20220221-114409
-        git checkout 0605cde993ca8f5f7ab43ae68117d73623edd227
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/xen-netback/xenbus.c:259:22: error: use of undeclared identifier 'dev'
-                   xenbus_rm(XBT_NIL, dev->nodename, "hotplug-status");
-                                      ^
-   1 error generated.
-
-
-vim +/dev +259 drivers/net/xen-netback/xenbus.c
-
-   249	
-   250	static void backend_disconnect(struct backend_info *be)
-   251	{
-   252		struct xenvif *vif = be->vif;
-   253	
-   254		if (vif) {
-   255			unsigned int num_queues = vif->num_queues;
-   256			unsigned int queue_index;
-   257	
-   258			xen_unregister_watchers(vif);
- > 259			xenbus_rm(XBT_NIL, dev->nodename, "hotplug-status");
-   260	#ifdef CONFIG_DEBUG_FS
-   261			xenvif_debugfs_delif(vif);
-   262	#endif /* CONFIG_DEBUG_FS */
-   263			xenvif_disconnect_data(vif);
-   264	
-   265			/* At this point some of the handlers may still be active
-   266			 * so we need to have additional synchronization here.
-   267			 */
-   268			vif->num_queues = 0;
-   269			synchronize_net();
-   270	
-   271			for (queue_index = 0; queue_index < num_queues; ++queue_index)
-   272				xenvif_deinit_queue(&vif->queues[queue_index]);
-   273	
-   274			vfree(vif->queues);
-   275			vif->queues = NULL;
-   276	
-   277			xenvif_disconnect_ctrl(vif);
-   278		}
-   279	}
-   280	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thank you,
+Tony Lu
