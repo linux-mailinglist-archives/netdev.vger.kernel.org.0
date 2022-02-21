@@ -2,136 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E6E4BEBE7
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 21:33:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D63584BEBE8
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 21:35:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231239AbiBUUeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 15:34:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51742 "EHLO
+        id S232026AbiBUUgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 15:36:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiBUUeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 15:34:18 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B62D237CC;
-        Mon, 21 Feb 2022 12:33:54 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id e17so16334799ljk.5;
-        Mon, 21 Feb 2022 12:33:54 -0800 (PST)
+        with ESMTP id S229739AbiBUUgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 15:36:08 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62AA237CC
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 12:35:44 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id u1so29030686wrg.11
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 12:35:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7itRkysVUTevMA0bL5e/DENphNPAShUbszmIAUM1SpU=;
-        b=nc08u9b9M2EHDFcUzsTFBIbe2yEtQXgB5H/IWKMAy9WuinW6gmBN4qidlfR481nS3n
-         iFGpqA0dVkX6xi0g0KTZJFLv/GmbAVPzr3RqVm571+P4YeA4E+ZXY3iGEyND+P8pJ7pW
-         X/bDj9XEe35dxDErsR80OQoMMC6bfD4LKQlKZ3px3wZwjmWeZqT0112j2W3E8KxXWfmd
-         3NtC35nMzB6Wn2nLmI30KTLQ9aXQk1eGHo+8AvAA/48+tCoAyNZKgzP0uAqGtr5w6xd6
-         j0N5f9AdtSRA1QuPZUMqTGOmb3pbVxgqbicxdpyFB/BRIvbFKtET4Cdc3KkKM6Tk/9IE
-         itCA==
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XlzX9gDy4XjD1q8Bv6zI2a9b8+oDi1jGLfGPO3lK4QA=;
+        b=ErgE3hl6pB2qeUes/BQtqtdPE+0OgQ2ciDaS+K+37IX27VhVWyVl5wQ+sNp2uFtdSI
+         VEsmonrdZ4WskwvCNc5yHAQeBgJbZAiISxYS1Ol272lQpg7zGwhcsG0HuQfBEneMkJet
+         JMpdP0lPmjSPszfRjtGf6011po1WcyvCyNu0s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7itRkysVUTevMA0bL5e/DENphNPAShUbszmIAUM1SpU=;
-        b=29CYXTC+gEaxxvDdCe1/iJu87jWXsnHYM34NBgqyOAkNIMnzv3vWodmjZyxph3HmQG
-         U3kVY2vYGH8XmnivREXqyWLHwkbS+9jkrZHEa2g9IJDvBrjPD5kBTAvipdN716+yInqR
-         IKLHFkyBItbBLBVZMtGT/Ej6iiCCcWswjeUWabXvFX6nbCP5HvhQKsdhbvfbFd0jUUnP
-         j/9rEZGSKEy2SBaeVhkWw8D3Hab/NpwqnE1G2ddwNAEL+NEhQk91T267a0ChgU6g57li
-         y/rAR7YZuprY2I0c5s10vJd2m3x29sTBIYSMRqRLCu4b1sEQdHk3xt3Ses2yV0UBaprG
-         r9EQ==
-X-Gm-Message-State: AOAM5326U9Npbipi7hFTBdjF65Emvp1DqToBtUsmBtPFRqbMqmtjAVWa
-        +KFWkzjDEEA/4EPVFDOf39TPnuLvDrXb4jvbpnM=
-X-Google-Smtp-Source: ABdhPJwMZlyKwsHT6K1DSDZkb8SwWUJY/HAxdT6bTiVWouEyJKwWkp36mVruE/18Hd9n6iTmhD/whA5ULN/KtjSHu5M=
-X-Received: by 2002:a2e:7007:0:b0:246:2b76:31a with SMTP id
- l7-20020a2e7007000000b002462b76031amr10941520ljc.397.1645475632996; Mon, 21
- Feb 2022 12:33:52 -0800 (PST)
-MIME-Version: 1.0
-References: <20220207144804.708118-1-miquel.raynal@bootlin.com>
- <20220207144804.708118-15-miquel.raynal@bootlin.com> <CAB_54W45p6e5sY6O=yHq39vsN+h_Yi6e9=GGky+1vO_H3oUj9A@mail.gmail.com>
- <CAB_54W5YHhcOtZ6D7cgSvDb0cakoL5tJjrN7fX9jiK6x=gOTVQ@mail.gmail.com>
-In-Reply-To: <CAB_54W5YHhcOtZ6D7cgSvDb0cakoL5tJjrN7fX9jiK6x=gOTVQ@mail.gmail.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Mon, 21 Feb 2022 15:33:41 -0500
-Message-ID: <CAB_54W6M+AhrB5mT0Lhm2XoKvxgXTowExiF33uzJdXd_KoQhRQ@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 14/14] net: mac802154: Introduce a
- synchronous API for MLME commands
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XlzX9gDy4XjD1q8Bv6zI2a9b8+oDi1jGLfGPO3lK4QA=;
+        b=IvgZZHDruoYjqERocDz7T0+f0YprOZprEsJ7dDh9o3H2/OfQGrsH37VzUr5NWkVTUs
+         YgXDn/fGDUR9ZAWLJYpH5q/oQ/7zeoxLImBAnLyljldwFQXrgChWP9nMjJonAgAtiSZZ
+         4kLXfHhN2mRhANfNtRrjqWCv1/JxX7MKlrI5n1gW0D+w4Xc8IvFHHic+blW8ujryN6ZI
+         YU0T0en82T9t7vRi5pgnJ4hjdQrnxC3iFl5phqRWSSCnvl1tWBx5hbxw/wyfbVacRhby
+         afOprnA9U+DtbY3I8vo1dXeRdTSC2dfNEzunIW4+HFdhipFGzJ63sXThathu6JWxAwN1
+         jOfQ==
+X-Gm-Message-State: AOAM531OoB7mrur1DL8Z6R+ux7XZ4a0ddHVr7AmUdsVr2NK4gCZz8YJf
+        yAN3U+kM6tNiljZzHVa1WDSwfw==
+X-Google-Smtp-Source: ABdhPJzvvmtJ+9B1GaTk+STcgmWeNruO76Gbv8vjsh/To+Ojd0Y/wS1prszpFloSPh7yaI8DmfoQIA==
+X-Received: by 2002:a05:6000:15cb:b0:1ea:7db2:f5bb with SMTP id y11-20020a05600015cb00b001ea7db2f5bbmr1382967wry.709.1645475743321;
+        Mon, 21 Feb 2022 12:35:43 -0800 (PST)
+Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id z24-20020a1c4c18000000b0037bd7f40771sm340380wmf.30.2022.02.21.12.35.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 12:35:42 -0800 (PST)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net] net: dsa: fix panic when removing unoffloaded port from bridge
+Date:   Mon, 21 Feb 2022 21:35:38 +0100
+Message-Id: <20220221203539.310690-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-On Mon, Feb 21, 2022 at 3:33 PM Alexander Aring <alex.aring@gmail.com> wrote:
->
-> Hi,
->
-> On Sun, Feb 20, 2022 at 6:52 PM Alexander Aring <alex.aring@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > On Mon, Feb 7, 2022 at 9:48 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > This is the slow path, we need to wait for each command to be processed
-> > > before continuing so let's introduce an helper which does the
-> > > transmission and blocks until it gets notified of its asynchronous
-> > > completion. This helper is going to be used when introducing scan
-> > > support.
-> > >
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  net/mac802154/ieee802154_i.h | 1 +
-> > >  net/mac802154/tx.c           | 6 ++++++
-> > >  2 files changed, 7 insertions(+)
-> > >
-> > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-> > > index 295c9ce091e1..ad76a60af087 100644
-> > > --- a/net/mac802154/ieee802154_i.h
-> > > +++ b/net/mac802154/ieee802154_i.h
-> > > @@ -123,6 +123,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
-> > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
-> > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
-> > >  void ieee802154_sync_and_stop_tx(struct ieee802154_local *local);
-> > > +void ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb);
-> > >  netdev_tx_t
-> > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
-> > >  netdev_tx_t
-> > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > > index 06ae2e6cea43..7c281458942e 100644
-> > > --- a/net/mac802154/tx.c
-> > > +++ b/net/mac802154/tx.c
-> > > @@ -126,6 +126,12 @@ void ieee802154_sync_and_stop_tx(struct ieee802154_local *local)
-> > >         atomic_dec(&local->phy->hold_txs);
-> > >  }
-> > >
-> > > +void ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
-> > > +{
-> > > +       ieee802154_tx(local, skb);
-> > > +       ieee802154_sync_and_stop_tx(local);
-> >
-> > Some of those functions can fail, in async case we can do some stats
-> > but here we can deliver the caller an error. Please do so.
-> >
->
-> to more specify what I mean here is also to get an error if the async
-> transmit path ends with the error case and not success. You need to
+If a bridged port is not offloaded to the hardware - either because the
+underlying driver does not implement the port_bridge_{join,leave} ops,
+or because the operation failed - then its dp->bridge pointer will be
+NULL when dsa_port_bridge_leave() is called. Avoid dereferncing NULL.
 
-s/not success/success/
+This fixes the following splat when removing a port from a bridge:
 
-- Alex
+ Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000000
+ Internal error: Oops: 96000004 [#1] PREEMPT_RT SMP
+ CPU: 3 PID: 1119 Comm: brctl Tainted: G           O      5.17.0-rc4-rt4 #1
+ Call trace:
+  dsa_port_bridge_leave+0x8c/0x1e4
+  dsa_slave_changeupper+0x40/0x170
+  dsa_slave_netdevice_event+0x494/0x4d4
+  notifier_call_chain+0x80/0xe0
+  raw_notifier_call_chain+0x1c/0x24
+  call_netdevice_notifiers_info+0x5c/0xac
+  __netdev_upper_dev_unlink+0xa4/0x200
+  netdev_upper_dev_unlink+0x38/0x60
+  del_nbp+0x1b0/0x300
+  br_del_if+0x38/0x114
+  add_del_if+0x60/0xa0
+  br_ioctl_stub+0x128/0x2dc
+  br_ioctl_call+0x68/0xb0
+  dev_ifsioc+0x390/0x554
+  dev_ioctl+0x128/0x400
+  sock_do_ioctl+0xb4/0xf4
+  sock_ioctl+0x12c/0x4e0
+  __arm64_sys_ioctl+0xa8/0xf0
+  invoke_syscall+0x4c/0x110
+  el0_svc_common.constprop.0+0x48/0xf0
+  do_el0_svc+0x28/0x84
+  el0_svc+0x1c/0x50
+  el0t_64_sync_handler+0xa8/0xb0
+  el0t_64_sync+0x17c/0x180
+ Code: f9402f00 f0002261 f9401302 913cc021 (a9401404)
+ ---[ end trace 0000000000000000 ]---
+
+Fixes: d3eed0e57d5d ("net: dsa: keep the bridge_dev and bridge_num as part of the same structure")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+v1 -> v2:
+- replace trailing comma with semicolon *facepalm*
+---
+ net/dsa/port.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index eef4a98f2628..1a40c52f5a42 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -395,10 +395,17 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
+ 		.tree_index = dp->ds->dst->index,
+ 		.sw_index = dp->ds->index,
+ 		.port = dp->index,
+-		.bridge = *dp->bridge,
+ 	};
+ 	int err;
+ 
++	/* If the port could not be offloaded to begin with, then
++	 * there is nothing to do.
++	 */
++	if (!dp->bridge)
++		return;
++
++	info.bridge = *dp->bridge;
++
+ 	/* Here the port is already unbridged. Reflect the current configuration
+ 	 * so that drivers can program their chips accordingly.
+ 	 */
+-- 
+2.35.1
+
