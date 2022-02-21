@@ -2,74 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7CCD4BD478
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 05:01:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10AB84BD4A1
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 05:19:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242220AbiBUD7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Feb 2022 22:59:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50828 "EHLO
+        id S1343731AbiBUESg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Feb 2022 23:18:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbiBUD7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 22:59:01 -0500
+        with ESMTP id S231460AbiBUESf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Feb 2022 23:18:35 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A139351E72
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 19:58:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 637F7B02
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 20:18:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645415918;
+        s=mimecast20190719; t=1645417090;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lDMA9bBeQIDn1Dg8UmtwgqOpL2IgXMpjzKkQnXB3h40=;
-        b=SRNB6MAx872QkXCVy0waWyYmc6zTrfXI+l/DyL+gIOXtzDC5EkQza9HDxR98hMvfqZiCtt
-        3Wlp4tYNh6+iFiDHEdEAd+7f7st1R4vhES6WI6rzPD5SGSJCfk1EF5itLi8UAUqARWKYZK
-        Rr2ZQP5by/kWoTy6W2U1kRlOcq15AWQ=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=XPvcfmMLgUD29Jl+0qIlNj/HSITkccGuA6rRi8S7CIc=;
+        b=Iw0smOJTUXNCtTHYekUkOFgAfVlOpPYnR0P82784CYWqNA170qEKOw63hmlVQyc0WT27yF
+        q7nshonvlXxuJUQHxSVtL3975S411vGf377+tUHPiVvaVZr03KFhRHGFosHcp2D0FhlhUy
+        Sv1P34d6ELD0SRqgXAflIR5em3A+77U=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-440-VdVnEqA0PaCK8RGXzCgC_A-1; Sun, 20 Feb 2022 22:58:37 -0500
-X-MC-Unique: VdVnEqA0PaCK8RGXzCgC_A-1
-Received: by mail-pj1-f71.google.com with SMTP id m19-20020a17090aab1300b001bbef243093so4924378pjq.1
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 19:58:37 -0800 (PST)
+ us-mta-466-NTMRZPexM8mXQ-B-NAfSCA-1; Sun, 20 Feb 2022 23:18:09 -0500
+X-MC-Unique: NTMRZPexM8mXQ-B-NAfSCA-1
+Received: by mail-pg1-f197.google.com with SMTP id d192-20020a6336c9000000b00372eb4c4bf4so8763192pga.8
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 20:18:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=lDMA9bBeQIDn1Dg8UmtwgqOpL2IgXMpjzKkQnXB3h40=;
-        b=hmslWFW84/C4UOPol93izzUoWqFkANwm1BCf14ouHTMa6EP1jy6y6lqR7YfgHeNmLr
-         3j6c1hXGcGolYxofJokKuCSwTs37DnT0nrQeGmplrUC+9m0uzVs+MGCcopRdxP03+mLG
-         gcsP3tO3aV40wJHHVbttFINd9HxwVsrZxtsRMgr1D9XQWZeZ/VDkN97/BMR+CgfT1HE5
-         +XyS+Nqy8zjlAL70w2BUUa1t5SYpSfkKg57ujhaEk2a3dbx3R9TPYjzznyp0iEY5zoJC
-         cg+Y/wCt99dWRgChAU4i/chQBPKVYmnUWDlyCX/+9Bihn8PMQJN3AK3FvUL5PvFW4wyl
-         oYiw==
-X-Gm-Message-State: AOAM531B0lbMBvZLbMNbczQGEebMXTmBlHb0VMuPVlTGU0o+GDNpfQFP
-        OKe+p+Zz6LgnsgYiFjcDTWSkJmWyukmv3mGMDK5Dymoi8Km8fiqWEA1r25tmupQuaaqm/3kf5+s
-        RUa49x8RoQTwHqHG5
-X-Received: by 2002:a17:90a:480e:b0:1bc:1d88:8d4e with SMTP id a14-20020a17090a480e00b001bc1d888d4emr6281610pjh.157.1645415916413;
-        Sun, 20 Feb 2022 19:58:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxw58fBVvffTweTGNkCS8fa6tGLxvJi7NO0f+mn6RmyA7RcEs7ppvJpRe8g2PrSaGWk2V+NRw==
-X-Received: by 2002:a17:90a:480e:b0:1bc:1d88:8d4e with SMTP id a14-20020a17090a480e00b001bc1d888d4emr6281591pjh.157.1645415916145;
-        Sun, 20 Feb 2022 19:58:36 -0800 (PST)
+        bh=XPvcfmMLgUD29Jl+0qIlNj/HSITkccGuA6rRi8S7CIc=;
+        b=kZJ167Rftrxyl6TqoG/UVhY6wS62TLdezmwZoMrWiuVCqD0VvwA83jjNuN0dOo7oQn
+         a0uVsorqrPFmtXjU8cI5Ro34AcrnV+CByOyJwu/KIb/kYcQ1l3fVVfjskSqROtY/MYQH
+         UKnYzjJquN2GtsmKnm8zi3SVFHQvzvAo85hk02innkw8ZyWvdBYCCwDJrU0z9dPBkVO1
+         WIq/xMNDtzSOpC0JFL7jU9sRG6x0bVctVB3/M2rrUIHFiSfAfv5NUf1w65KbLayFKqpZ
+         DfTCM1usEyjn7sr6RWVMSOBmZumTvMLAo/jgoDCBwYezQPY5WRG4HFvLeX4/DB16gsxT
+         Du3g==
+X-Gm-Message-State: AOAM531CDLAwu7Xo6yZfN73sQCx87H42Qdg3WY2VXQfK50fKa2j671Ik
+        0AQ8LTnc6htmOVApRDjQisCXxQVyPl918Js7GfITc14nx8iKlV1ePzVEMydx1zag7EMxgPZkJi1
+        jJ0UWy3cpiFqB/XXD
+X-Received: by 2002:a17:90b:e89:b0:1b5:f4e4:7fd7 with SMTP id fv9-20020a17090b0e8900b001b5f4e47fd7mr19947687pjb.79.1645417087988;
+        Sun, 20 Feb 2022 20:18:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwJaK3kKom8SApGW6QJMnk3DuJSUTdUkHF+xRIEilLJ63YSAuIt0wTS2DSFvwxNHabNFzmw4Q==
+X-Received: by 2002:a17:90b:e89:b0:1b5:f4e4:7fd7 with SMTP id fv9-20020a17090b0e8900b001b5f4e47fd7mr19947668pjb.79.1645417087730;
+        Sun, 20 Feb 2022 20:18:07 -0800 (PST)
 Received: from [10.72.12.96] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 8sm10648859pfl.164.2022.02.20.19.58.33
+        by smtp.gmail.com with ESMTPSA id g11sm11312896pfj.83.2022.02.20.20.18.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 19:58:35 -0800 (PST)
-Message-ID: <2eaa5546-a1d9-76ca-e1d5-410399e27d3a@redhat.com>
-Date:   Mon, 21 Feb 2022 11:58:32 +0800
+        Sun, 20 Feb 2022 20:18:07 -0800 (PST)
+Message-ID: <b36e4a63-7fac-212a-2d6b-e267d49c5e72@redhat.com>
+Date:   Mon, 21 Feb 2022 12:18:03 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH v2 3/4] vdpa: Support for configuring max VQ pairs for a
- device
+Subject: Re: [PATCH v2 4/4] vdpa: Support reading device features
 Content-Language: en-US
 To:     Eli Cohen <elic@nvidia.com>, stephen@networkplumber.org,
         netdev@vger.kernel.org
 Cc:     lulu@redhat.com, si-wei.liu@oracle.com
 References: <20220217123024.33201-1-elic@nvidia.com>
- <20220217123024.33201-4-elic@nvidia.com>
+ <20220217123024.33201-5-elic@nvidia.com>
 From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220217123024.33201-4-elic@nvidia.com>
+In-Reply-To: <20220217123024.33201-5-elic@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -84,129 +83,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 在 2022/2/17 下午8:30, Eli Cohen 写道:
-> Use VDPA_ATTR_DEV_MGMTDEV_MAX_VQS to specify max number of virtqueue
-> pairs to configure for a vdpa device when adding a device.
+> When showing the available management devices, check if
+> VDPA_ATTR_DEV_SUPPORTED_FEATURES feature is available and print the
+> supported features for a management device.
 >
 > Examples:
-> 1. Create a device with 3 virtqueue pairs:
-> $ vdpa dev add name vdpa-a mgmtdev auxiliary/mlx5_core.sf.1 max_vqp 3
+> $ vdpa mgmtdev show
+> auxiliary/mlx5_core.sf.1:
+>    supported_classes net
+>    max_supported_vqs 257
+>    dev_features CSUM GUEST_CSUM MTU HOST_TSO4 HOST_TSO6 STATUS CTRL_VQ MQ \
+>                 CTRL_MAC_ADDR VERSION_1 ACCESS_PLATFORM
 >
-> 2. Read the configuration of a vdpa device
-> $ vdpa dev config show vdpa-a
->    vdpa-a: mac 00:00:00:00:88:88 link up link_announce false max_vq_pairs 3 \
->            mtu 1500
->    negotiated_features CSUM GUEST_CSUM MTU MAC HOST_TSO4 HOST_TSO6 STATUS \
->                        CTRL_VQ MQ CTRL_MAC_ADDR VERSION_1 ACCESS_PLATFORM
+> $ vdpa -jp mgmtdev show
+> {
+>      "mgmtdev": {
+>          "auxiliary/mlx5_core.sf.1": {
+>              "supported_classes": [ "net" ],
+>              "max_supported_vqs": 257,
+>              "dev_features": [
+> "CSUM","GUEST_CSUM","MTU","HOST_TSO4","HOST_TSO6","STATUS","CTRL_VQ","MQ",\
+> "CTRL_MAC_ADDR","VERSION_1","ACCESS_PLATFORM" ]
+>          }
+>      }
+> }
 >
 > Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
 > Signed-off-by: Eli Cohen <elic@nvidia.com>
-
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
 > ---
 >   vdpa/include/uapi/linux/vdpa.h |  1 +
->   vdpa/vdpa.c                    | 27 +++++++++++++++++++++++++--
->   2 files changed, 26 insertions(+), 2 deletions(-)
+>   vdpa/vdpa.c                    | 14 +++++++++++++-
+>   2 files changed, 14 insertions(+), 1 deletion(-)
 >
 > diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
-> index 748c350450b2..a3ebf4d4d9b8 100644
+> index a3ebf4d4d9b8..96ccbf305d14 100644
 > --- a/vdpa/include/uapi/linux/vdpa.h
 > +++ b/vdpa/include/uapi/linux/vdpa.h
-> @@ -41,6 +41,7 @@ enum vdpa_attr {
->   	VDPA_ATTR_DEV_NET_CFG_MTU,		/* u16 */
+> @@ -42,6 +42,7 @@ enum vdpa_attr {
 >   
 >   	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
-> +	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
+>   	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
+> +	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
 >   
 >   	/* new attributes must be added above here */
 >   	VDPA_ATTR_MAX,
 > diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-> index f60e647b8cf8..78736b1422b6 100644
+> index 78736b1422b6..bdc366880ab9 100644
 > --- a/vdpa/vdpa.c
 > +++ b/vdpa/vdpa.c
-> @@ -25,6 +25,7 @@
->   #define VDPA_OPT_VDEV_HANDLE		BIT(3)
->   #define VDPA_OPT_VDEV_MAC		BIT(4)
->   #define VDPA_OPT_VDEV_MTU		BIT(5)
-> +#define VDPA_OPT_MAX_VQP		BIT(6)
->   
->   struct vdpa_opts {
->   	uint64_t present; /* flags of present items */
-> @@ -34,6 +35,7 @@ struct vdpa_opts {
->   	unsigned int device_id;
->   	char mac[ETH_ALEN];
->   	uint16_t mtu;
-> +	uint16_t max_vqp;
->   };
->   
->   struct vdpa {
-> @@ -81,6 +83,7 @@ static const enum mnl_attr_data_type vdpa_policy[VDPA_ATTR_MAX + 1] = {
->   	[VDPA_ATTR_DEV_MAX_VQS] = MNL_TYPE_U32,
+> @@ -84,6 +84,7 @@ static const enum mnl_attr_data_type vdpa_policy[VDPA_ATTR_MAX + 1] = {
 >   	[VDPA_ATTR_DEV_MAX_VQ_SIZE] = MNL_TYPE_U16,
 >   	[VDPA_ATTR_DEV_NEGOTIATED_FEATURES] = MNL_TYPE_U64,
-> +	[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS] = MNL_TYPE_U32,
+>   	[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS] = MNL_TYPE_U32,
+> +	[VDPA_ATTR_DEV_SUPPORTED_FEATURES] = MNL_TYPE_U64,
 >   };
 >   
 >   static int attr_cb(const struct nlattr *attr, void *data)
-> @@ -222,6 +225,8 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
->   			     sizeof(opts->mac), opts->mac);
->   	if (opts->present & VDPA_OPT_VDEV_MTU)
->   		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MTU, opts->mtu);
-> +	if (opts->present & VDPA_OPT_MAX_VQP)
-> +		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vqp);
->   }
+> @@ -494,13 +495,14 @@ static void print_features(struct vdpa *vdpa, uint64_t features, bool mgmtdevf,
+>   static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
+>   				struct nlattr **tb)
+>   {
+> +	uint64_t classes = 0;
+>   	const char *class;
+>   	unsigned int i;
 >   
->   static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
-> @@ -290,6 +295,14 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+>   	pr_out_handle_start(vdpa, tb);
 >   
->   			NEXT_ARG_FWD();
->   			o_found |= VDPA_OPT_VDEV_MTU;
-> +		} else if ((matches(*argv, "max_vqp")  == 0) && (o_optional & VDPA_OPT_MAX_VQP)) {
-> +			NEXT_ARG_FWD();
-> +			err = vdpa_argv_u16(vdpa, argc, argv, &opts->max_vqp);
-> +			if (err)
-> +				return err;
-> +
-> +			NEXT_ARG_FWD();
-> +			o_found |= VDPA_OPT_MAX_VQP;
->   		} else {
->   			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
->   			return -EINVAL;
-> @@ -500,6 +513,15 @@ static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
->   		pr_out_array_end(vdpa);
+>   	if (tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]) {
+> -		uint64_t classes = mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]);
+> +		classes = mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]);
+>   		pr_out_array_start(vdpa, "supported_classes");
+>   
+>   		for (i = 1; i < 64; i++) {
+> @@ -522,6 +524,16 @@ static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
+>   		print_uint(PRINT_ANY, "max_supported_vqs", "  max_supported_vqs %d", num_vqs);
 >   	}
 >   
-> +	if (tb[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS]) {
-> +		uint16_t num_vqs;
+> +	if (tb[VDPA_ATTR_DEV_SUPPORTED_FEATURES]) {
+> +		uint64_t features;
 > +
-> +		if (!vdpa->json_output)
-> +			printf("\n");
-> +		num_vqs = mnl_attr_get_u16(tb[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS]);
-> +		print_uint(PRINT_ANY, "max_supported_vqs", "  max_supported_vqs %d", num_vqs);
+> +		features  = mnl_attr_get_u64(tb[VDPA_ATTR_DEV_SUPPORTED_FEATURES]);
+> +		if (classes & BIT(VIRTIO_ID_NET))
+> +			print_features(vdpa, features, true, VIRTIO_ID_NET);
+> +		else
+> +			print_features(vdpa, features, true, 0);
+
+
+I wonder what happens if we try to read a virtio_blk device consider:
+
+static const char * const *dev_to_feature_str[] = {
+         [VIRTIO_ID_NET] = net_feature_strs,
+};
+
+Thanks
+
+
 > +	}
 > +
 >   	pr_out_handle_end(vdpa);
 >   }
->   
-> @@ -559,7 +581,7 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
->   static void cmd_dev_help(void)
->   {
->   	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
-> -	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
-> +	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ] [max_vqp MAX_VQ_PAIRS]\n");
->   	fprintf(stderr, "       vdpa dev del DEV\n");
->   	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
->   }
-> @@ -649,7 +671,8 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
->   					  NLM_F_REQUEST | NLM_F_ACK);
->   	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
->   				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
-> -				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU);
-> +				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU |
-> +				  VDPA_OPT_MAX_VQP);
->   	if (err)
->   		return err;
 >   
 
