@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F0A4BEA20
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:09:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDEEF4BEA1F
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:09:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbiBUSEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 13:04:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58286 "EHLO
+        id S230005AbiBUSEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 13:04:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiBUSDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:03:02 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70050.outbound.protection.outlook.com [40.107.7.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CBE15A3B
+        with ESMTP id S231596AbiBUSDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:03:03 -0500
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140047.outbound.protection.outlook.com [40.107.14.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDF7B53
         for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:54:18 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HRwGFSbbItrmlHFkhSCarIbsunYlOkAzYu1IYLpVM8P2l71KXms6m5fsO3ZidrK8uxm3Tqq/Ddxp1vsNWmndzrsWWvHQjGjMOBhcTGAdQRkZ13O1ZMZY+QxPREdgttYOjFYjwU4rFHquyPJf5QPAl7VisU8JukLhcw+9D4WMwmSVcIiCIoLH9yx7HiwDxS5TeK9qdcGv4HLl8/oQM1pJFs3o6qjyKmJKsCTJGYzC8ZZpWC2voTNeo1W7N+bxrFTygGcFO9+ZhAwOZv7WbQdDjoKffqV5mL/xFw2gthY+KCJ1Vs3e/1/4oTd4X27FsRLzRSq0VUeA0z+9j5IO2wVLcQ==
+ b=YZRZjO1yQLA58y2ScFOHwcBU2g2HbAG1xWzS4oFkjHyOmPl5+dBdzza+1qQuAjev3mKqhgbn4kBM5i5wJcs6PuXo3X2z6ExgndWWRxBAD1TNfDF8bRsuyKqI7U8SebR+GAiEiQS+gL5CmqZ+l/xpFqE7NwMDQAZ23Slsb6xomi3t4s1Oc2HYvag/XLclW55GxHh6DOXdh55skDqGhKLgSdyLwfqlLTBjCysxZIoupH4rKfPqzHZ/qjXeluxydHKllFLt1hqXda3zD9HVJRcV/D5PCrjMhWPATEQlU4YIz0VoBXfMEUjUx0zhUgr/Ffryl/7C9H4rwV/7HPV4IZV2BA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3qSTr2BImFZ0R7PprHWVSWxmMfraPoWbZ74Rh9ttSYE=;
- b=mqQNCX6xXlFtzVuU4Ti4hklr7LKllrBESAig33d1Pt1ZJ4QQbK8WHJAlvgrZDv3ZoVw5sDt4tOyBwIr71m6Oju2u4WSkTGW4VUw8Jb178ryYt8h30367lMvqhBjowWUZ2U5G1frJY7DNvpaHh7iiMX0jEUHje72bxooPm9IXVDh5uw/FEH/j8OqVe+jGqVHgp7Lowlygw59LK5rVkMaPlXWeyYr9VU7IlVzU4aFEld44+duMrrivvbvzuo/kdBXmUs8uFRTwZU/BT6YYk0cs/moYOyvrGs/woHWzQLhrxaE6afCDx5kZBKelYJWwvt+z9g9qetALoiTXy6GXs+FduA==
+ bh=6bGnkVIuHO8L8oW+8lEyvQif3nMzzU7Rsdz+FuheivE=;
+ b=BpPH7Te3rW0zX91jp0nA7rl1gLxyG1gJm+eTTuwAJXweQp+0UQs80StUGE34z96+PsSut2Y1WN/Pgu1nneY8IBV2fJBrAocB0UrBAWrXuzdjAE5xMzD1BoPtBAYeR3l3jHcCcx20lj+heboJ7GkHL0EpPXt7rhIXXTlqlnhaOAM8+jmiyZ3ZDnBwMR0+VPk0bi99/p1JPREhgsIpf7lRKKaNPVSlxwSP82IM1jhkVYK1kGP5lpwecjmd1BqcWuAwqJ1T5JzMJP/RGtRCKzzSJsemnvqOVwDFbfULpLoEpBDCVbLM7L8qwJDi4B8LwxhpNKzNp6vDdtE0+zokkYc8JA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3qSTr2BImFZ0R7PprHWVSWxmMfraPoWbZ74Rh9ttSYE=;
- b=KgykWoL3D+qaE18Na8lNORUluAuY0/rhqlKfxgEsGK1v2B9jQHbbj/tDTBHh6LaTKyimY2kSmAgkLXAoUh0Gwoj/RlEpr3xzm6KwZthvGGwACoTVL/zDmV8xn1C4RJLJV6q0RSLs259lGf8OxQPk3aWRFELnxUMxHsLfLMMl36g=
+ bh=6bGnkVIuHO8L8oW+8lEyvQif3nMzzU7Rsdz+FuheivE=;
+ b=kLmi9C/zyNzsg+sjhM2Niz/YyVrt4lgi+j+omP6XC7JnpFlUBb5RHEt7gnt/hsRvKHa0sTpNdYCBre9+Y6XThyutNT9DID/3+ut8sasT7YkciVBfhnFqSK7iKMbjayrGsDsQijvKmbSPpXPi1Hw3Kp83N654m23ZeVi5MJEXpPs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3693.eurprd04.prod.outlook.com (2603:10a6:803:18::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.27; Mon, 21 Feb
- 2022 17:54:12 +0000
+ 2022 17:54:13 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Mon, 21 Feb 2022
- 17:54:12 +0000
+ 17:54:13 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -53,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v3 net-next 06/11] net: dsa: create a dsa_lag structure
-Date:   Mon, 21 Feb 2022 19:53:51 +0200
-Message-Id: <20220221175356.1688982-7-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 07/11] net: switchdev: remove lag_mod_cb from switchdev_handle_fdb_event_to_device
+Date:   Mon, 21 Feb 2022 19:53:52 +0200
+Message-Id: <20220221175356.1688982-8-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220221175356.1688982-1-vladimir.oltean@nxp.com>
 References: <20220221175356.1688982-1-vladimir.oltean@nxp.com>
@@ -66,53 +66,53 @@ X-ClientProxiedBy: VI1PR10CA0097.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 855663a6-456e-4d27-db18-08d9f5632ae1
+X-MS-Office365-Filtering-Correlation-Id: 719ba417-5487-4936-356b-08d9f5632b60
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3693:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB369369AB81D63D66413E66FEE03A9@VI1PR0402MB3693.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB369301C9948E14C753F77889E03A9@VI1PR0402MB3693.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jlV9RXilCe5HAyI1M2iOo7mft6q529qvZ2OvpDX61L1mAGnKYJPf/XjXRlDnyMd2hDqFaZelHKzNVAzj5VzkhqIanYGlTdZVFPAFyIVKCJXmiEVpJc1o0ayOHzYyByCxK/nm5vGNFyOUf8fCCOAbSPxmVGbIfwnff95UPvekzYzPjfWSxZAwhSkRW+l6lwzuYKmO2COkyFaZTIscurW69+sPZ6Y3++z3BfW+WN6uSw8mb2HqrIPWqd1dzpOU1q3MHd66GY30IZFHBmobXQfDCqf55QB5q4uC+Srb1wycNONhVeBY3srMbawlyio4LVNhw1TH7OWNEH8PP+4J8wsUjA0TjCnY/iovzYGwtmaF4xIEmfreSq1tRxugsBV291AwJNVfzE2WaMXPtN8Fq4AAhgvaoiK4WqMLLh0uahfdpneLaTKeLOxqEvnwiyYLCx13/FWd8YBTpBcnop+FCRm7HA9Mwg55NEDi1V8N0olJ9WzHnF2AdB2Lr+5E0wcBMoAbFOnzwNTPrgHGT8IyigPNNoF9S+k6qsdDUGlPWIFQvNlssPtgSnqn4Ml2iJ44vuDjAYMPijodVyQgtwtJOir6Mzvijlj1JRKumLBiEiv9RLOf4RDSjaeWQIPxt8t8w02TMbQgSv2aoAzU9lt0OXPNA+c5skbCpoSxZaIkidqMRgvygyH+u04i6gbS2yrvb/6xiDVSEkk+6kdn+4g5wA40NQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(66556008)(4326008)(8676002)(66476007)(8936002)(26005)(7416002)(54906003)(5660300002)(30864003)(83380400001)(66946007)(186003)(316002)(44832011)(86362001)(52116002)(6486002)(6506007)(6666004)(36756003)(2616005)(2906002)(38350700002)(38100700002)(508600001)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Mrq6aTJbxPLrdVQzRxVupm2ha/TK/+p5RdrR/TyhGNQfbFa4YExUZy8OaFlJeMrIeIcOqSmJ2QPT3+BNlN62iwNWIxFdAd5XEHguk5J6UwompkZSS6wOQzjiG1k2N0vEX/jz7J9581N/dg5A45rpAqMeF0qZbaWijQLMAns6yCGxQBR9DS15Tt4Nt7i3n48nUE5dTfQnXtYDKfTs/xDkx8S/3OqkgLR1LWvDuytHJ2q4vfY7StsR/s5zwUzKY0Bcg32ydyNgoMB/XNKXQrQeTQVP+aqZa4+ALvRtFZq9wpZYaudLwNMq3v8+Kw+JzC+L/orn4qH+i3Db2GwtgY4tnDEOEwC4y4X+0O/myxersIMJ5Pqgaw3poo2c0iyXT/OrBOEASMrSo4bD87bJiyH1Wfa7bV2SwPKScJEsC0GF9XOzVCTweeo8bEJwUPW89KiFUqcWBE4Juz8PH1u1qzJ2uNBx0cgqg8Kf+Z3o4TcAzYvugbJKoj0LAWhoN0QEG89PKNm38L8FF/OcZ91ZUKFwIo0kTN0CrvrHwRCjEpw3Ebqe97b4YJRgprFaez7T33sTIIAPm4jtbHfbw4C70/aLJ1RNXhW6h/yczM0W/QvkcXOkjFNwHFYPLD7jG1B+Su3C/1E4d2+T5Y6YXu2O8fCMxI/3jwHZSBeeskc2/Y/ckYpQPOiA0ZHra94mRCn9JMOkk9AMx2qbrrwT+AHeOK1v3sWnRIvBoxtjEt01NLPb+Bkx4S+cBdOs6bS5/VOF0GiBq+3/lWZBT/cBjfsrHZoqCy+oEHWjnPlFfCuAwJcz4g8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(66556008)(4326008)(8676002)(66476007)(8936002)(26005)(7416002)(54906003)(5660300002)(30864003)(83380400001)(66946007)(186003)(316002)(44832011)(86362001)(52116002)(966005)(6486002)(6506007)(6666004)(36756003)(2616005)(2906002)(38350700002)(38100700002)(508600001)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FYx1uBLR7hJLobqTt4m1SMRdh7g3XwD3h4GUZJCfX6w5uiSgAYAyEZZHSVSX?=
- =?us-ascii?Q?ihyrxENdIiXzlihqDh6HtKYllhWZMvecqqo9Syk5uEfjDpaKrAzo4a5AXZb6?=
- =?us-ascii?Q?OAuwnrM2AXs+v4FVn/lqmUkjd8Kun6wwY1zhsTTYwukcHtG8cVhq0/qzuueA?=
- =?us-ascii?Q?r48z3M2cqLBHQvm0Aq19MjhpC0lva3xY+5cYPk8e1u1BLHLza5CE6qu3b5rh?=
- =?us-ascii?Q?YHEhEMInV2sjGXAoZJXCxMiEbr4kT0xBOjd6AXauuo2PMXC6Neevd5ZRHwrG?=
- =?us-ascii?Q?cJJbuEzOxYozxSMwT2pBRBPk/+tru+Bjx907lCo5P4X8ulK1YDeRvJVGg4jW?=
- =?us-ascii?Q?AMh3xG18KAvrOGLpaT7c0xQAGaJlFs1xbFOs0tips6laC+eUkEpqihyvaS5H?=
- =?us-ascii?Q?Ur/1S+4zMHrTONLrN9aJYlKMcMzPJPtr/2ABZrTarkk/pyRs8ZC4QFn7PR0w?=
- =?us-ascii?Q?hlEnt5LC5sSKGqRZKt9EPhYRDlRSlig15sth8fZHXlmPJDThsiv9AtPpP0ST?=
- =?us-ascii?Q?PoYXPJD3BnA0XW5jzwqzPvH0mM3gtDRDlbhiQVG/bQMx5/RZSzOSGhowYuxx?=
- =?us-ascii?Q?JhPbJzZqjwqfjTRogH0CQQ31pkxCHpIc2zaJlwxAbN/2erYiRQ91UWGBEBbu?=
- =?us-ascii?Q?cALKl2p4aSPc0th6vTdpjxi3PV9Sy/4t0kU4tvqRE9IaF2V9wTinPRlUVxB7?=
- =?us-ascii?Q?7LULtLoi6tCDbl7PnrfCuiUjYuaKK1DwwCH7o/Say6IChvK89SrmbZ9pNZS3?=
- =?us-ascii?Q?1ZdwiSWoXpY8GzUSHyGfaNzKFum4Im7xJUsfx0fCmPohuI95BIO3FYrRHXEH?=
- =?us-ascii?Q?qox7Pxl4ctGLN2Eaa3xmgdQetv3tbJejRFGpVoHTbaoyEJlTIkP8o+ie68I3?=
- =?us-ascii?Q?c8kRwm1be8rlKuvwLB3hAAnZTndG96xOdheyxPAdVZ3NrKZmZTVF+bzH0Fa7?=
- =?us-ascii?Q?bM3eeaRtaXtaRXE2Pm/ZTpd7q3BkDyWk6fAVcdzZQ5p8XaOqc/OclEG+LTuN?=
- =?us-ascii?Q?Jhf+OHQYqkFjxYZvjilyCMVmft8HQUX3MZI73aWRtFDUNFzEw0jv7ApVmfMd?=
- =?us-ascii?Q?IOzV+NTKr15SSNQYZnLp/esgkqYToegY1YWBhAjO57+2R9nC4NFgJ5ks7I+H?=
- =?us-ascii?Q?eQM+664a8utqqfK5EECDfwR/n3jgXVIY+8DNg8ONrlbnVEGSfsQ7tKeRxISa?=
- =?us-ascii?Q?TcVaRU6dSuyU82cRX1XUMeSJJ6VVZYEFhwpv4dvxRHvZMYxqzt7ctrYUUGXM?=
- =?us-ascii?Q?/fI69/OeHY0Q3R7VYD7Sk8b86Auj1uq+GKL65A/Hrmvc/mG4lHfNWvZyGnao?=
- =?us-ascii?Q?KfVmEFauF6YCv+zSx6e1oLJPEiVqb0gCfeJnpzqjs1DQRLYbWzMaEnggmDR2?=
- =?us-ascii?Q?ALmvr+pVGyaVMXyUUNWjD3CUJTmrKi4fA1HpYBAD0pH2Cz5KKIFZJ1+o1eCo?=
- =?us-ascii?Q?Gi2qxXGQwhu2PUNDOCJd4fRiDMVDZySHJD0QGhRP/oFsYxNjqMlook5I5iMF?=
- =?us-ascii?Q?ZVdJg7gIWobGnga9rwbgthczdLHJszj/OQX29+Bnj2by8To3PD+bFeKNqq+R?=
- =?us-ascii?Q?Y4xbh5doU9IXH1jSSlBqnU4jD+icI6F7JsvthyOiGFqzLlerMl1dcwv68RYK?=
- =?us-ascii?Q?Tf5uanes/JhVY+lmDNBT/ZI=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UjzcCCZw6x9/dQledgMgD550djlLia5kOeA5Pf3RJwJrlOTQfnHkbtVaJXcN?=
+ =?us-ascii?Q?gBYcbaNy8KqOLK2GrPwCdAI2fw9ImY/kBWMJlANc0A2X4Sk/hD95c4wQm65r?=
+ =?us-ascii?Q?e6O5K9ReeuCmndm2KvlAz/eugbdPbUKPKgcilXkj++G3i84aiIYdNFHdC2NQ?=
+ =?us-ascii?Q?1HH0+/zvFJWfFBsAnlZboJJN3lu5RDBnBc59d/T66rjJ37cb4kIUTQAL/pcZ?=
+ =?us-ascii?Q?DxJj+Qn6xmVdzXcT/JBKzjz+AQlAwUjvTgQ5Pvt4T/1wRMYnubbwtjqPp/u4?=
+ =?us-ascii?Q?QluI+VLjfXwPP95/P/udacHkhJBDNP5Bfg3k5nmRz/f9t9mxPNU0H7O3S9/3?=
+ =?us-ascii?Q?vVlCqnyjOXQlLeDT8inJUdtAnhEE2zeuwrjJ9kLNM3u9PwA2S4ARQVUsjL1d?=
+ =?us-ascii?Q?fMovGlFInI0Odkq691Qmh4qBJr6FpYUFDp31TG79u16r4QaMKttuwsgLCqus?=
+ =?us-ascii?Q?WSe2hShi93amuOkWjNSydi8mIf2CueyarSdIupPI8N/fU1jLI+RqwnDvgi/I?=
+ =?us-ascii?Q?mZL6EBxnelmSSkqinBWzZh5v+TidDnHExTNhsIE9ELDb4a3GZrHZleoAc68d?=
+ =?us-ascii?Q?FrwcpLT+MNj2V6zgONVJ97lJwL0DlmafBW3Yq55qHMN+G+UA93Y8/dKmNjjP?=
+ =?us-ascii?Q?hzzEbRaX/lP/eIM+P729M6aT6vKeZGmoTMcBCX4AXp8BteOROY1RRUACOdv6?=
+ =?us-ascii?Q?PTkpOveZTFnwFJJtNyDd5Ib/m25nHVSAbzxb4DAx3n5YXFs++R4hnRCgYcBI?=
+ =?us-ascii?Q?tobDMuLJN54WdPJ0uzrbpC32dBAYF8m/xZCAYUAc55RGl//lIeFupFlwlKmj?=
+ =?us-ascii?Q?HTjz3OTgfQKf38/ixt98AwCykd0QufBn+cdGlnLJHcCttNswK0edLo3NwQpB?=
+ =?us-ascii?Q?oWBbBykedSG2jQwkngdf5QVwaHfbRzXXRP1LHez/BPVYo9geqtILf8kWivod?=
+ =?us-ascii?Q?y0q7MnNlNjmJ1XBl+dJJqV3JOvXDUgW0qOjPeG+tm6IMpqEFMTo2L2DznWLJ?=
+ =?us-ascii?Q?5/e4UtzewJtYhkvHVvRI4CUQ/NaI7GkS2i8KRPL4H8ZGHhTzC2ev0XFG2eMc?=
+ =?us-ascii?Q?bUwTxbwIm2JmOZTEnO5IVaYhFmPJdM7brbDSkVZJ9iuUZOW57ihjOJgAvDkr?=
+ =?us-ascii?Q?Va763xueHoeZ9moAYy+KHbqUJCulY63kQqs83P+HLdczaoMHO5satYT+jGHe?=
+ =?us-ascii?Q?RIytN68c5xF/wwSvRoYn53eBKy/Ji+VrXbIk3z+Kxk/nKzsARjjEW59KXzcX?=
+ =?us-ascii?Q?mjW6b6fgJDWR6dPWRW3RDMiP26ug5iIvxCu7Us8GAqrlP+V16jAghkEmyTJ1?=
+ =?us-ascii?Q?ncVPM0GVQFI8pIJdn3RLRDgUO9Ai3Of7zqKFStJA1G7HQeckqxIQQSoGiEr0?=
+ =?us-ascii?Q?ZuO5sHhkhHOkaZB3O8hZL2oh+fkwDo0OFBYcTkvvPH1HicrloJ/gqEI45/Tk?=
+ =?us-ascii?Q?Sb/YEGsw8HpFS3zCD4Ypb4cXHii1wSBhTGxiYhrLGVLJnGZqPvUT+Gb/ezr+?=
+ =?us-ascii?Q?T4/1kwzUNQCoo5qAGfFU278nKj51hd74KX+Us3CQFg53ntAzuQMlHAmso2cz?=
+ =?us-ascii?Q?a8ODqBiNPz87uofQFIG87KR6q/C4xTxnJtfbCxKtpzMHAZPr/fCffsT7sEp7?=
+ =?us-ascii?Q?ZsZ99pyJVI0J1Kj9CPklhGE=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 855663a6-456e-4d27-db18-08d9f5632ae1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 719ba417-5487-4936-356b-08d9f5632b60
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:54:12.1679
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:54:12.9491
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iNaFdeU2dVDQquyO+a2eHAiLCKZ88NpjGY805FaFn5Pfpzml6CuiQZoAnMcbzCJ+MsQ4ZQbi3pwFlG8um30meA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6IXqZeiRFv7D5eWzlBZrMwtnF+kz1kxkZ/9QUgaK0n9asN+Z/wtMcfNl+YKfOvEL8N5bKuhXv4afB8N+1++bdw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3693
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,850 +124,282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The main purpose of this change is to create a data structure for a LAG
-as seen by DSA. This is similar to what we have for bridging - we pass a
-copy of this structure by value to ->port_lag_join and ->port_lag_leave.
-For now we keep the lag_dev, id and a reference count in it. Future
-patches will add a list of FDB entries for the LAG (these also need to
-be refcounted to work properly).
+When the switchdev_handle_fdb_event_to_device() event replication helper
+was created, my original thought was that FDB events on LAG interfaces
+should most likely be special-cased, not just replicated towards all
+switchdev ports beneath that LAG. So this replication helper currently
+does not recurse through switchdev lower interfaces of LAG bridge ports,
+but rather calls the lag_mod_cb() if that was provided.
 
-The LAG structure is created using dsa_port_lag_create() and destroyed
-using dsa_port_lag_destroy(), just like we have for bridging.
+No switchdev driver uses this helper for FDB events on LAG interfaces
+yet, so that was an assumption which was yet to be tested. It is
+certainly usable for that purpose, as my RFC series shows:
 
-Because now, the dsa_lag itself is refcounted, we can simplify
-dsa_lag_map() and dsa_lag_unmap(). These functions need to keep a LAG in
-the dst->lags array only as long as at least one port uses it. The
-refcounting logic inside those functions can be removed now - they are
-called only when we should perform the operation.
+https://patchwork.kernel.org/project/netdevbpf/cover/20220210125201.2859463-1-vladimir.oltean@nxp.com/
 
-dsa_lag_dev() is renamed to dsa_lag_by_id() and now returns the dsa_lag
-structure instead of the lag_dev net_device.
+however this approach is slightly convoluted because:
 
-dsa_lag_foreach_port() now takes the dsa_lag structure as argument.
+- the switchdev driver gets a "dev" that isn't its own net device, but
+  rather the LAG net device. It must call switchdev_lower_dev_find(dev)
+  in order to get a handle of any of its own net devices (the ones that
+  pass check_cb).
 
-dst->lags holds an array of dsa_lag structures.
+- in order for FDB entries on LAG ports to be correctly refcounted per
+  the number of switchdev ports beneath that LAG, we haven't escaped the
+  need to iterate through the LAG's lower interfaces. Except that is now
+  the responsibility of the switchdev driver, because the replication
+  helper just stopped half-way.
 
-dsa_lag_map() now also saves the dsa_lag->id value, so that linear
-walking of dst->lags in drivers using dsa_lag_id() is no longer
-necessary. They can just look at lag.id.
+So, even though yes, FDB events on LAG bridge ports must be
+special-cased, in the end it's simpler to let switchdev_handle_fdb_*
+just iterate through the LAG port's switchdev lowers, and let the
+switchdev driver figure out that those physical ports are under a LAG.
 
-dsa_port_lag_id_get() is a helper, similar to dsa_port_bridge_num_get(),
-which can be used by drivers to get the LAG ID assigned by DSA to a
-given port.
+The switchdev_handle_fdb_event_to_device() helper takes a
+"foreign_dev_check" callback so it can figure out whether @dev can
+autonomously forward to @foreign_dev. DSA fills this method properly:
+if the LAG is offloaded by another port in the same tree as @dev, then
+it isn't foreign. If it is a software LAG, it is foreign - forwarding
+happens in software.
+
+Whether an interface is foreign or not decides whether the replication
+helper will go through the LAG's switchdev lowers or not. Since the
+lan966x doesn't properly fill this out, FDB events on software LAG
+uppers will get called. By changing lan966x_foreign_dev_check(), we can
+suppress them.
+
+Whereas DSA will now start receiving FDB events for its offloaded LAG
+uppers, so we need to return -EOPNOTSUPP, since we currently don't do
+the right thing for them.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v3: none
+v2->v3: patch is new, logically replaces previous patch "net: switchdev:
+        export switchdev_lower_dev_find"
 
- drivers/net/dsa/mv88e6xxx/chip.c | 60 +++++++++++++++----------------
- drivers/net/dsa/ocelot/felix.c   |  8 ++---
- drivers/net/dsa/qca8k.c          | 37 +++++++++----------
- include/net/dsa.h                | 50 +++++++++++++++++++-------
- net/dsa/dsa2.c                   | 41 +++++++++++----------
- net/dsa/dsa_priv.h               |  8 +++--
- net/dsa/port.c                   | 61 +++++++++++++++++++++++++-------
- net/dsa/slave.c                  |  4 +--
- net/dsa/switch.c                 |  8 ++---
- net/dsa/tag_dsa.c                |  4 ++-
- 10 files changed, 172 insertions(+), 109 deletions(-)
+ .../microchip/lan966x/lan966x_switchdev.c     | 12 +--
+ include/net/switchdev.h                       | 10 +--
+ net/dsa/slave.c                               |  6 +-
+ net/switchdev/switchdev.c                     | 80 +++++++------------
+ 4 files changed, 42 insertions(+), 66 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index d96db9825033..da7b38b1a3b8 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1625,7 +1625,7 @@ static int mv88e6xxx_pvt_map(struct mv88e6xxx_chip *chip, int dev, int port)
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+index 85099a51d4c7..e3555c94294d 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+@@ -419,6 +419,9 @@ static int lan966x_netdevice_event(struct notifier_block *nb,
+ 	return notifier_from_errno(ret);
+ }
  
- 		ds = dsa_switch_find(dst->index, dev);
- 		dp = ds ? dsa_to_port(ds, port) : NULL;
--		if (dp && dp->lag_dev) {
-+		if (dp && dp->lag) {
- 			/* As the PVT is used to limit flooding of
- 			 * FORWARD frames, which use the LAG ID as the
- 			 * source port, we must translate dev/port to
-@@ -1634,7 +1634,7 @@ static int mv88e6xxx_pvt_map(struct mv88e6xxx_chip *chip, int dev, int port)
- 			 * (zero-based).
- 			 */
- 			dev = MV88E6XXX_G2_PVT_ADDR_DEV_TRUNK;
--			port = dsa_lag_id(dst, dp->lag_dev) - 1;
-+			port = dsa_port_lag_id_get(dp) - 1;
- 		}
++/* We don't offload uppers such as LAG as bridge ports, so every device except
++ * the bridge itself is foreign.
++ */
+ static bool lan966x_foreign_dev_check(const struct net_device *dev,
+ 				      const struct net_device *foreign_dev)
+ {
+@@ -426,10 +429,10 @@ static bool lan966x_foreign_dev_check(const struct net_device *dev,
+ 	struct lan966x *lan966x = port->lan966x;
+ 
+ 	if (netif_is_bridge_master(foreign_dev))
+-		if (lan966x->bridge != foreign_dev)
+-			return true;
++		if (lan966x->bridge == foreign_dev)
++			return false;
+ 
+-	return false;
++	return true;
+ }
+ 
+ static int lan966x_switchdev_event(struct notifier_block *nb,
+@@ -449,8 +452,7 @@ static int lan966x_switchdev_event(struct notifier_block *nb,
+ 		err = switchdev_handle_fdb_event_to_device(dev, event, ptr,
+ 							   lan966x_netdevice_check,
+ 							   lan966x_foreign_dev_check,
+-							   lan966x_handle_fdb,
+-							   NULL);
++							   lan966x_handle_fdb);
+ 		return notifier_from_errno(err);
  	}
  
-@@ -1672,7 +1672,7 @@ static void mv88e6xxx_port_fast_age(struct dsa_switch *ds, int port)
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index c32e1c8f79ec..3e424d40fae3 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -313,10 +313,7 @@ int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long e
+ 					     const struct net_device *foreign_dev),
+ 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+ 			      unsigned long event, const void *ctx,
+-			      const struct switchdev_notifier_fdb_info *fdb_info),
+-		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+-				  unsigned long event, const void *ctx,
+-				  const struct switchdev_notifier_fdb_info *fdb_info));
++			      const struct switchdev_notifier_fdb_info *fdb_info));
  
--	if (dsa_to_port(ds, port)->lag_dev)
-+	if (dsa_to_port(ds, port)->lag)
- 		/* Hardware is incapable of fast-aging a LAG through a
- 		 * regular ATU move operation. Until we have something
- 		 * more fancy in place this is a no-op.
-@@ -6169,21 +6169,20 @@ static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
- }
- 
- static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
--				      struct net_device *lag_dev,
-+				      struct dsa_lag lag,
- 				      struct netdev_lag_upper_info *info)
+ int switchdev_handle_port_obj_add(struct net_device *dev,
+ 			struct switchdev_notifier_port_obj_info *port_obj_info,
+@@ -443,10 +440,7 @@ switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event
+ 					     const struct net_device *foreign_dev),
+ 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+ 			      unsigned long event, const void *ctx,
+-			      const struct switchdev_notifier_fdb_info *fdb_info),
+-		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+-				  unsigned long event, const void *ctx,
+-				  const struct switchdev_notifier_fdb_info *fdb_info))
++			      const struct switchdev_notifier_fdb_info *fdb_info))
  {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	struct dsa_port *dp;
--	int id, members = 0;
-+	int members = 0;
- 
- 	if (!mv88e6xxx_has_lag(chip))
- 		return false;
- 
--	id = dsa_lag_id(ds->dst, lag_dev);
--	if (id <= 0 || id > ds->num_lag_ids)
-+	if (!lag.id)
- 		return false;
- 
--	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
-+	dsa_lag_foreach_port(dp, ds->dst, &lag)
- 		/* Includes the port joining the LAG */
- 		members++;
- 
-@@ -6203,8 +6202,7 @@ static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
- 	return true;
- }
- 
--static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds,
--				  struct net_device *lag_dev)
-+static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds, struct dsa_lag lag)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	struct dsa_port *dp;
-@@ -6212,13 +6210,13 @@ static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds,
- 	int id;
- 
- 	/* DSA LAG IDs are one-based, hardware is zero-based */
--	id = dsa_lag_id(ds->dst, lag_dev) - 1;
-+	id = lag.id - 1;
- 
- 	/* Build the map of all ports to distribute flows destined for
- 	 * this LAG. This can be either a local user port, or a DSA
- 	 * port if the LAG port is on a remote chip.
- 	 */
--	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
-+	dsa_lag_foreach_port(dp, ds->dst, &lag)
- 		map |= BIT(dsa_towards_port(ds, dp->ds->index, dp->index));
- 
- 	return mv88e6xxx_g2_trunk_mapping_write(chip, id, map);
-@@ -6262,9 +6260,9 @@ static void mv88e6xxx_lag_set_port_mask(u16 *mask, int port,
- static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
--	struct net_device *lag_dev;
- 	unsigned int id, num_tx;
- 	struct dsa_port *dp;
-+	struct dsa_lag *lag;
- 	int i, err, nth;
- 	u16 mask[8];
- 	u16 ivec;
-@@ -6274,7 +6272,7 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
- 
- 	/* Disable all masks for ports that _are_ members of a LAG. */
- 	dsa_switch_for_each_port(dp, ds) {
--		if (!dp->lag_dev)
-+		if (!dp->lag)
- 			continue;
- 
- 		ivec &= ~BIT(dp->index);
-@@ -6287,12 +6285,12 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
- 	 * are in the Tx set.
- 	 */
- 	dsa_lags_foreach_id(id, ds->dst) {
--		lag_dev = dsa_lag_dev(ds->dst, id);
--		if (!lag_dev)
-+		lag = dsa_lag_by_id(ds->dst, id);
-+		if (!lag)
- 			continue;
- 
- 		num_tx = 0;
--		dsa_lag_foreach_port(dp, ds->dst, lag_dev) {
-+		dsa_lag_foreach_port(dp, ds->dst, lag) {
- 			if (dp->lag_tx_enabled)
- 				num_tx++;
- 		}
-@@ -6301,7 +6299,7 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
- 			continue;
- 
- 		nth = 0;
--		dsa_lag_foreach_port(dp, ds->dst, lag_dev) {
-+		dsa_lag_foreach_port(dp, ds->dst, lag) {
- 			if (!dp->lag_tx_enabled)
- 				continue;
- 
-@@ -6323,14 +6321,14 @@ static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
- }
- 
- static int mv88e6xxx_lag_sync_masks_map(struct dsa_switch *ds,
--					struct net_device *lag_dev)
-+					struct dsa_lag lag)
- {
- 	int err;
- 
- 	err = mv88e6xxx_lag_sync_masks(ds);
- 
- 	if (!err)
--		err = mv88e6xxx_lag_sync_map(ds, lag_dev);
-+		err = mv88e6xxx_lag_sync_map(ds, lag);
- 
- 	return err;
- }
-@@ -6347,17 +6345,17 @@ static int mv88e6xxx_port_lag_change(struct dsa_switch *ds, int port)
- }
- 
- static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
--				   struct net_device *lag_dev,
-+				   struct dsa_lag lag,
- 				   struct netdev_lag_upper_info *info)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err, id;
- 
--	if (!mv88e6xxx_lag_can_offload(ds, lag_dev, info))
-+	if (!mv88e6xxx_lag_can_offload(ds, lag, info))
- 		return -EOPNOTSUPP;
- 
- 	/* DSA LAG IDs are one-based */
--	id = dsa_lag_id(ds->dst, lag_dev) - 1;
-+	id = lag.id - 1;
- 
- 	mv88e6xxx_reg_lock(chip);
- 
-@@ -6365,7 +6363,7 @@ static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
- 	if (err)
- 		goto err_unlock;
- 
--	err = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
-+	err = mv88e6xxx_lag_sync_masks_map(ds, lag);
- 	if (err)
- 		goto err_clear_trunk;
- 
-@@ -6380,13 +6378,13 @@ static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
- }
- 
- static int mv88e6xxx_port_lag_leave(struct dsa_switch *ds, int port,
--				    struct net_device *lag_dev)
-+				    struct dsa_lag lag)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err_sync, err_trunk;
- 
- 	mv88e6xxx_reg_lock(chip);
--	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
-+	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag);
- 	err_trunk = mv88e6xxx_port_set_trunk(chip, port, false, 0);
- 	mv88e6xxx_reg_unlock(chip);
- 	return err_sync ? : err_trunk;
-@@ -6405,18 +6403,18 @@ static int mv88e6xxx_crosschip_lag_change(struct dsa_switch *ds, int sw_index,
- }
- 
- static int mv88e6xxx_crosschip_lag_join(struct dsa_switch *ds, int sw_index,
--					int port, struct net_device *lag_dev,
-+					int port, struct dsa_lag lag,
- 					struct netdev_lag_upper_info *info)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
- 
--	if (!mv88e6xxx_lag_can_offload(ds, lag_dev, info))
-+	if (!mv88e6xxx_lag_can_offload(ds, lag, info))
- 		return -EOPNOTSUPP;
- 
- 	mv88e6xxx_reg_lock(chip);
- 
--	err = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
-+	err = mv88e6xxx_lag_sync_masks_map(ds, lag);
- 	if (err)
- 		goto unlock;
- 
-@@ -6428,13 +6426,13 @@ static int mv88e6xxx_crosschip_lag_join(struct dsa_switch *ds, int sw_index,
- }
- 
- static int mv88e6xxx_crosschip_lag_leave(struct dsa_switch *ds, int sw_index,
--					 int port, struct net_device *lag_dev)
-+					 int port, struct dsa_lag lag)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err_sync, err_pvt;
- 
- 	mv88e6xxx_reg_lock(chip);
--	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag_dev);
-+	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag);
- 	err_pvt = mv88e6xxx_pvt_map(chip, sw_index, port);
- 	mv88e6xxx_reg_unlock(chip);
- 	return err_sync ? : err_pvt;
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 9ffd5491bf2d..6d483887af04 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -677,20 +677,20 @@ static void felix_bridge_leave(struct dsa_switch *ds, int port,
- }
- 
- static int felix_lag_join(struct dsa_switch *ds, int port,
--			  struct net_device *bond,
-+			  struct dsa_lag lag,
- 			  struct netdev_lag_upper_info *info)
- {
- 	struct ocelot *ocelot = ds->priv;
- 
--	return ocelot_port_lag_join(ocelot, port, bond, info);
-+	return ocelot_port_lag_join(ocelot, port, lag.dev, info);
- }
- 
- static int felix_lag_leave(struct dsa_switch *ds, int port,
--			   struct net_device *bond)
-+			   struct dsa_lag lag)
- {
- 	struct ocelot *ocelot = ds->priv;
- 
--	ocelot_port_lag_leave(ocelot, port, bond);
-+	ocelot_port_lag_leave(ocelot, port, lag.dev);
- 
  	return 0;
  }
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 89a65f5d5302..0c21cd679a10 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -2779,18 +2779,16 @@ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- }
- 
- static bool
--qca8k_lag_can_offload(struct dsa_switch *ds,
--		      struct net_device *lag_dev,
-+qca8k_lag_can_offload(struct dsa_switch *ds, struct dsa_lag lag,
- 		      struct netdev_lag_upper_info *info)
- {
- 	struct dsa_port *dp;
--	int id, members = 0;
-+	int members = 0;
- 
--	id = dsa_lag_id(ds->dst, lag_dev);
--	if (id <= 0 || id > ds->num_lag_ids)
-+	if (!lag.id)
- 		return false;
- 
--	dsa_lag_foreach_port(dp, ds->dst, lag_dev)
-+	dsa_lag_foreach_port(dp, ds->dst, &lag)
- 		/* Includes the port joining the LAG */
- 		members++;
- 
-@@ -2808,16 +2806,14 @@ qca8k_lag_can_offload(struct dsa_switch *ds,
- }
- 
- static int
--qca8k_lag_setup_hash(struct dsa_switch *ds,
--		     struct net_device *lag_dev,
-+qca8k_lag_setup_hash(struct dsa_switch *ds, struct dsa_lag lag,
- 		     struct netdev_lag_upper_info *info)
- {
-+	struct net_device *lag_dev = lag.dev;
- 	struct qca8k_priv *priv = ds->priv;
- 	bool unique_lag = true;
-+	unsigned int i;
- 	u32 hash = 0;
--	int i, id;
--
--	id = dsa_lag_id(ds->dst, lag_dev);
- 
- 	switch (info->hash_type) {
- 	case NETDEV_LAG_HASH_L23:
-@@ -2834,7 +2830,7 @@ qca8k_lag_setup_hash(struct dsa_switch *ds,
- 
- 	/* Check if we are the unique configured LAG */
- 	dsa_lags_foreach_id(i, ds->dst)
--		if (i != id && dsa_lag_dev(ds->dst, i)) {
-+		if (i != lag.id && dsa_lag_by_id(ds->dst, i)) {
- 			unique_lag = false;
- 			break;
- 		}
-@@ -2859,14 +2855,14 @@ qca8k_lag_setup_hash(struct dsa_switch *ds,
- 
- static int
- qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
--			  struct net_device *lag_dev, bool delete)
-+			  struct dsa_lag lag, bool delete)
- {
- 	struct qca8k_priv *priv = ds->priv;
- 	int ret, id, i;
- 	u32 val;
- 
- 	/* DSA LAG IDs are one-based, hardware is zero-based */
--	id = dsa_lag_id(ds->dst, lag_dev) - 1;
-+	id = lag.id - 1;
- 
- 	/* Read current port member */
- 	ret = regmap_read(priv->regmap, QCA8K_REG_GOL_TRUNK_CTRL0, &val);
-@@ -2928,27 +2924,26 @@ qca8k_lag_refresh_portmap(struct dsa_switch *ds, int port,
- }
- 
- static int
--qca8k_port_lag_join(struct dsa_switch *ds, int port,
--		    struct net_device *lag_dev,
-+qca8k_port_lag_join(struct dsa_switch *ds, int port, struct dsa_lag lag,
- 		    struct netdev_lag_upper_info *info)
- {
- 	int ret;
- 
--	if (!qca8k_lag_can_offload(ds, lag_dev, info))
-+	if (!qca8k_lag_can_offload(ds, lag, info))
- 		return -EOPNOTSUPP;
- 
--	ret = qca8k_lag_setup_hash(ds, lag_dev, info);
-+	ret = qca8k_lag_setup_hash(ds, lag, info);
- 	if (ret)
- 		return ret;
- 
--	return qca8k_lag_refresh_portmap(ds, port, lag_dev, false);
-+	return qca8k_lag_refresh_portmap(ds, port, lag, false);
- }
- 
- static int
- qca8k_port_lag_leave(struct dsa_switch *ds, int port,
--		     struct net_device *lag_dev)
-+		     struct dsa_lag lag)
- {
--	return qca8k_lag_refresh_portmap(ds, port, lag_dev, true);
-+	return qca8k_lag_refresh_portmap(ds, port, lag, true);
- }
- 
- static void
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 7c6befb88c82..30ef064080b1 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -116,6 +116,12 @@ struct dsa_netdevice_ops {
- #define MODULE_ALIAS_DSA_TAG_DRIVER(__proto)				\
- 	MODULE_ALIAS(DSA_TAG_DRIVER_ALIAS __stringify(__proto##_VALUE))
- 
-+struct dsa_lag {
-+	struct net_device *dev;
-+	unsigned int id;
-+	refcount_t refcount;
-+};
-+
- struct dsa_switch_tree {
- 	struct list_head	list;
- 
-@@ -134,7 +140,7 @@ struct dsa_switch_tree {
- 	/* Maps offloaded LAG netdevs to a zero-based linear ID for
- 	 * drivers that need it.
- 	 */
--	struct net_device **lags;
-+	struct dsa_lag **lags;
- 
- 	/* Tagging protocol operations */
- 	const struct dsa_device_ops *tag_ops;
-@@ -170,14 +176,14 @@ struct dsa_switch_tree {
- 
- #define dsa_lag_foreach_port(_dp, _dst, _lag)			\
- 	list_for_each_entry((_dp), &(_dst)->ports, list)	\
--		if ((_dp)->lag_dev == (_lag))
-+		if (dsa_port_offloads_lag((_dp), (_lag)))
- 
- #define dsa_hsr_foreach_port(_dp, _ds, _hsr)			\
- 	list_for_each_entry((_dp), &(_ds)->dst->ports, list)	\
- 		if ((_dp)->ds == (_ds) && (_dp)->hsr_dev == (_hsr))
- 
--static inline struct net_device *dsa_lag_dev(struct dsa_switch_tree *dst,
--					     unsigned int id)
-+static inline struct dsa_lag *dsa_lag_by_id(struct dsa_switch_tree *dst,
-+					    unsigned int id)
- {
- 	/* DSA LAG IDs are one-based, dst->lags is zero-based */
- 	return dst->lags[id - 1];
-@@ -189,8 +195,10 @@ static inline int dsa_lag_id(struct dsa_switch_tree *dst,
- 	unsigned int id;
- 
- 	dsa_lags_foreach_id(id, dst) {
--		if (dsa_lag_dev(dst, id) == lag_dev)
--			return id;
-+		struct dsa_lag *lag = dsa_lag_by_id(dst, id);
-+
-+		if (lag->dev == lag_dev)
-+			return lag->id;
- 	}
- 
- 	return -ENODEV;
-@@ -293,7 +301,7 @@ struct dsa_port {
- 	struct devlink_port	devlink_port;
- 	struct phylink		*pl;
- 	struct phylink_config	pl_config;
--	struct net_device	*lag_dev;
-+	struct dsa_lag		*lag;
- 	struct net_device	*hsr_dev;
- 
- 	struct list_head list;
-@@ -648,14 +656,30 @@ static inline bool dsa_port_is_vlan_filtering(const struct dsa_port *dp)
- 		return dp->vlan_filtering;
- }
- 
-+static inline unsigned int dsa_port_lag_id_get(struct dsa_port *dp)
-+{
-+	return dp->lag ? dp->lag->id : 0;
-+}
-+
-+static inline struct net_device *dsa_port_lag_dev_get(struct dsa_port *dp)
-+{
-+	return dp->lag ? dp->lag->dev : NULL;
-+}
-+
-+static inline bool dsa_port_offloads_lag(struct dsa_port *dp,
-+					 const struct dsa_lag *lag)
-+{
-+	return dsa_port_lag_dev_get(dp) == lag->dev;
-+}
-+
- static inline
- struct net_device *dsa_port_to_bridge_port(const struct dsa_port *dp)
- {
- 	if (!dp->bridge)
- 		return NULL;
- 
--	if (dp->lag_dev)
--		return dp->lag_dev;
-+	if (dp->lag)
-+		return dp->lag->dev;
- 	else if (dp->hsr_dev)
- 		return dp->hsr_dev;
- 
-@@ -970,10 +994,10 @@ struct dsa_switch_ops {
- 	int	(*crosschip_lag_change)(struct dsa_switch *ds, int sw_index,
- 					int port);
- 	int	(*crosschip_lag_join)(struct dsa_switch *ds, int sw_index,
--				      int port, struct net_device *lag_dev,
-+				      int port, struct dsa_lag lag,
- 				      struct netdev_lag_upper_info *info);
- 	int	(*crosschip_lag_leave)(struct dsa_switch *ds, int sw_index,
--				       int port, struct net_device *lag_dev);
-+				       int port, struct dsa_lag lag);
- 
- 	/*
- 	 * PTP functionality
-@@ -1045,10 +1069,10 @@ struct dsa_switch_ops {
- 	 */
- 	int	(*port_lag_change)(struct dsa_switch *ds, int port);
- 	int	(*port_lag_join)(struct dsa_switch *ds, int port,
--				 struct net_device *lag_dev,
-+				 struct dsa_lag lag,
- 				 struct netdev_lag_upper_info *info);
- 	int	(*port_lag_leave)(struct dsa_switch *ds, int port,
--				  struct net_device *lag_dev);
-+				  struct dsa_lag lag);
- 
- 	/*
- 	 * HSR integration
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 4915abe0d4d2..030d5f26715a 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -72,27 +72,24 @@ int dsa_broadcast(unsigned long e, void *v)
- }
- 
- /**
-- * dsa_lag_map() - Map LAG netdev to a linear LAG ID
-+ * dsa_lag_map() - Map LAG structure to a linear LAG array
-  * @dst: Tree in which to record the mapping.
-- * @lag_dev: Netdev that is to be mapped to an ID.
-+ * @lag: LAG structure that is to be mapped to the tree's array.
-  *
-- * dsa_lag_id/dsa_lag_dev can then be used to translate between the
-+ * dsa_lag_id/dsa_lag_by_id can then be used to translate between the
-  * two spaces. The size of the mapping space is determined by the
-  * driver by setting ds->num_lag_ids. It is perfectly legal to leave
-  * it unset if it is not needed, in which case these functions become
-  * no-ops.
-  */
--void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag_dev)
-+void dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag)
- {
- 	unsigned int id;
- 
--	if (dsa_lag_id(dst, lag_dev) > 0)
--		/* Already mapped */
--		return;
--
- 	for (id = 1; id <= dst->lags_len; id++) {
--		if (!dsa_lag_dev(dst, id)) {
--			dst->lags[id - 1] = lag_dev;
-+		if (!dsa_lag_by_id(dst, id)) {
-+			dst->lags[id - 1] = lag;
-+			lag->id = id;
- 			return;
- 		}
- 	}
-@@ -108,28 +105,36 @@ void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag_dev)
- /**
-  * dsa_lag_unmap() - Remove a LAG ID mapping
-  * @dst: Tree in which the mapping is recorded.
-- * @lag_dev: Netdev that was mapped.
-+ * @lag: LAG structure that was mapped.
-  *
-  * As there may be multiple users of the mapping, it is only removed
-  * if there are no other references to it.
-  */
--void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag_dev)
-+void dsa_lag_unmap(struct dsa_switch_tree *dst, struct dsa_lag *lag)
- {
--	struct dsa_port *dp;
- 	unsigned int id;
- 
--	dsa_lag_foreach_port(dp, dst, lag_dev)
--		/* There are remaining users of this mapping */
--		return;
--
- 	dsa_lags_foreach_id(id, dst) {
--		if (dsa_lag_dev(dst, id) == lag_dev) {
-+		if (dsa_lag_by_id(dst, id) == lag) {
- 			dst->lags[id - 1] = NULL;
-+			lag->id = 0;
- 			break;
- 		}
- 	}
- }
- 
-+struct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,
-+				  const struct net_device *lag_dev)
-+{
-+	struct dsa_port *dp;
-+
-+	list_for_each_entry(dp, &dst->ports, list)
-+		if (dsa_port_lag_dev_get(dp) == lag_dev)
-+			return dp->lag;
-+
-+	return NULL;
-+}
-+
- struct dsa_bridge *dsa_tree_bridge_find(struct dsa_switch_tree *dst,
- 					const struct net_device *br)
- {
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 0293a749b3ac..8612ff8ea7fe 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -76,7 +76,7 @@ struct dsa_notifier_mdb_info {
- 
- /* DSA_NOTIFIER_LAG_* */
- struct dsa_notifier_lag_info {
--	struct net_device *lag_dev;
-+	struct dsa_lag lag;
- 	int sw_index;
- 	int port;
- 
-@@ -487,8 +487,10 @@ int dsa_switch_register_notifier(struct dsa_switch *ds);
- void dsa_switch_unregister_notifier(struct dsa_switch *ds);
- 
- /* dsa2.c */
--void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag_dev);
--void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag_dev);
-+void dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag);
-+void dsa_lag_unmap(struct dsa_switch_tree *dst, struct dsa_lag *lag);
-+struct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,
-+				  const struct net_device *lag_dev);
- int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
- int dsa_broadcast(unsigned long e, void *v);
- int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 0e5dfb1c12db..2d174a1a0ac6 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -422,7 +422,7 @@ int dsa_port_lag_change(struct dsa_port *dp,
- 	};
- 	bool tx_enabled;
- 
--	if (!dp->lag_dev)
-+	if (!dp->lag)
- 		return 0;
- 
- 	/* On statically configured aggregates (e.g. loadbalance
-@@ -440,6 +440,45 @@ int dsa_port_lag_change(struct dsa_port *dp,
- 	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_CHANGE, &info);
- }
- 
-+static int dsa_port_lag_create(struct dsa_port *dp,
-+			       struct net_device *lag_dev)
-+{
-+	struct dsa_switch *ds = dp->ds;
-+	struct dsa_lag *lag;
-+
-+	lag = dsa_tree_lag_find(ds->dst, lag_dev);
-+	if (lag) {
-+		refcount_inc(&lag->refcount);
-+		dp->lag = lag;
-+		return 0;
-+	}
-+
-+	lag = kzalloc(sizeof(*lag), GFP_KERNEL);
-+	if (!lag)
-+		return -ENOMEM;
-+
-+	refcount_set(&lag->refcount, 1);
-+	lag->dev = lag_dev;
-+	dsa_lag_map(ds->dst, lag);
-+	dp->lag = lag;
-+
-+	return 0;
-+}
-+
-+static void dsa_port_lag_destroy(struct dsa_port *dp)
-+{
-+	struct dsa_lag *lag = dp->lag;
-+
-+	dp->lag = NULL;
-+	dp->lag_tx_enabled = false;
-+
-+	if (!refcount_dec_and_test(&lag->refcount))
-+		return;
-+
-+	dsa_lag_unmap(dp->ds->dst, lag);
-+	kfree(lag);
-+}
-+
- int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
- 		      struct netdev_lag_upper_info *uinfo,
- 		      struct netlink_ext_ack *extack)
-@@ -447,15 +486,16 @@ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
- 	struct dsa_notifier_lag_info info = {
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
--		.lag_dev = lag_dev,
- 		.info = uinfo,
- 	};
- 	struct net_device *bridge_dev;
- 	int err;
- 
--	dsa_lag_map(dp->ds->dst, lag_dev);
--	dp->lag_dev = lag_dev;
-+	err = dsa_port_lag_create(dp, lag_dev);
-+	if (err)
-+		goto err_lag_create;
- 
-+	info.lag = *dp->lag;
- 	err = dsa_port_notify(dp, DSA_NOTIFIER_LAG_JOIN, &info);
- 	if (err)
- 		goto err_lag_join;
-@@ -473,8 +513,8 @@ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
- err_bridge_join:
- 	dsa_port_notify(dp, DSA_NOTIFIER_LAG_LEAVE, &info);
- err_lag_join:
--	dp->lag_dev = NULL;
--	dsa_lag_unmap(dp->ds->dst, lag_dev);
-+	dsa_port_lag_destroy(dp);
-+err_lag_create:
- 	return err;
- }
- 
-@@ -492,11 +532,11 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev)
- 	struct dsa_notifier_lag_info info = {
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
--		.lag_dev = lag_dev,
-+		.lag = *dp->lag,
- 	};
- 	int err;
- 
--	if (!dp->lag_dev)
-+	if (!dp->lag)
- 		return;
- 
- 	/* Port might have been part of a LAG that in turn was
-@@ -505,16 +545,13 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev)
- 	if (br)
- 		dsa_port_bridge_leave(dp, br);
- 
--	dp->lag_tx_enabled = false;
--	dp->lag_dev = NULL;
-+	dsa_port_lag_destroy(dp);
- 
- 	err = dsa_port_notify(dp, DSA_NOTIFIER_LAG_LEAVE, &info);
- 	if (err)
- 		dev_err(dp->ds->dev,
- 			"port %d failed to notify DSA_NOTIFIER_LAG_LEAVE: %pe\n",
- 			dp->index, ERR_PTR(err));
--
--	dsa_lag_unmap(dp->ds->dst, lag_dev);
- }
- 
- /* Must be called under rcu_read_lock() */
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index f61e6b72ffbb..e31c7710fee9 100644
+index e31c7710fee9..4ea6e0fd4b99 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -2134,7 +2134,7 @@ dsa_slave_lag_changeupper(struct net_device *dev,
- 			continue;
+@@ -2461,6 +2461,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+ 	bool host_addr = fdb_info->is_local;
+ 	struct dsa_switch *ds = dp->ds;
  
- 		dp = dsa_slave_to_port(lower);
--		if (!dp->lag_dev)
-+		if (!dp->lag)
- 			/* Software LAG */
- 			continue;
++	if (dp->lag)
++		return -EOPNOTSUPP;
++
+ 	if (ctx && ctx != dp)
+ 		return 0;
  
-@@ -2163,7 +2163,7 @@ dsa_slave_lag_prechangeupper(struct net_device *dev,
- 			continue;
- 
- 		dp = dsa_slave_to_port(lower);
--		if (!dp->lag_dev)
-+		if (!dp->lag)
- 			/* Software LAG */
- 			continue;
- 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index c71bade9269e..0bb3987bd4e6 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -468,12 +468,12 @@ static int dsa_switch_lag_join(struct dsa_switch *ds,
- 			       struct dsa_notifier_lag_info *info)
+@@ -2526,8 +2529,7 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
+ 		err = switchdev_handle_fdb_event_to_device(dev, event, ptr,
+ 							   dsa_slave_dev_check,
+ 							   dsa_foreign_dev_check,
+-							   dsa_slave_fdb_event,
+-							   NULL);
++							   dsa_slave_fdb_event);
+ 		return notifier_from_errno(err);
+ 	default:
+ 		return NOTIFY_DONE;
+diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
+index 28d2ccfe109c..474f76383033 100644
+--- a/net/switchdev/switchdev.c
++++ b/net/switchdev/switchdev.c
+@@ -458,63 +458,40 @@ static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
+ 					     const struct net_device *foreign_dev),
+ 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+ 			      unsigned long event, const void *ctx,
+-			      const struct switchdev_notifier_fdb_info *fdb_info),
+-		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+-				  unsigned long event, const void *ctx,
+-				  const struct switchdev_notifier_fdb_info *fdb_info))
++			      const struct switchdev_notifier_fdb_info *fdb_info))
  {
- 	if (ds->index == info->sw_index && ds->ops->port_lag_join)
--		return ds->ops->port_lag_join(ds, info->port, info->lag_dev,
-+		return ds->ops->port_lag_join(ds, info->port, info->lag,
- 					      info->info);
+ 	const struct switchdev_notifier_info *info = &fdb_info->info;
+-	struct net_device *br, *lower_dev;
++	struct net_device *br, *lower_dev, *switchdev;
+ 	struct list_head *iter;
+ 	int err = -EOPNOTSUPP;
  
- 	if (ds->index != info->sw_index && ds->ops->crosschip_lag_join)
- 		return ds->ops->crosschip_lag_join(ds, info->sw_index,
--						   info->port, info->lag_dev,
-+						   info->port, info->lag,
- 						   info->info);
+ 	if (check_cb(dev))
+ 		return mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
  
- 	return -EOPNOTSUPP;
-@@ -483,11 +483,11 @@ static int dsa_switch_lag_leave(struct dsa_switch *ds,
- 				struct dsa_notifier_lag_info *info)
- {
- 	if (ds->index == info->sw_index && ds->ops->port_lag_leave)
--		return ds->ops->port_lag_leave(ds, info->port, info->lag_dev);
-+		return ds->ops->port_lag_leave(ds, info->port, info->lag);
+-	if (netif_is_lag_master(dev)) {
+-		if (!switchdev_lower_dev_find_rcu(dev, check_cb, foreign_dev_check_cb))
+-			goto maybe_bridged_with_us;
+-
+-		/* This is a LAG interface that we offload */
+-		if (!lag_mod_cb)
+-			return -EOPNOTSUPP;
+-
+-		return lag_mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
+-	}
+-
+ 	/* Recurse through lower interfaces in case the FDB entry is pointing
+-	 * towards a bridge device.
++	 * towards a bridge or a LAG device.
+ 	 */
+-	if (netif_is_bridge_master(dev)) {
+-		if (!switchdev_lower_dev_find_rcu(dev, check_cb, foreign_dev_check_cb))
+-			return 0;
+-
+-		/* This is a bridge interface that we offload */
+-		netdev_for_each_lower_dev(dev, lower_dev, iter) {
+-			/* Do not propagate FDB entries across bridges */
+-			if (netif_is_bridge_master(lower_dev))
+-				continue;
+-
+-			/* Bridge ports might be either us, or LAG interfaces
+-			 * that we offload.
+-			 */
+-			if (!check_cb(lower_dev) &&
+-			    !switchdev_lower_dev_find_rcu(lower_dev, check_cb,
+-							  foreign_dev_check_cb))
+-				continue;
+-
+-			err = __switchdev_handle_fdb_event_to_device(lower_dev, orig_dev,
+-								     event, fdb_info, check_cb,
+-								     foreign_dev_check_cb,
+-								     mod_cb, lag_mod_cb);
+-			if (err && err != -EOPNOTSUPP)
+-				return err;
+-		}
++	netdev_for_each_lower_dev(dev, lower_dev, iter) {
++		/* Do not propagate FDB entries across bridges */
++		if (netif_is_bridge_master(lower_dev))
++			continue;
  
- 	if (ds->index != info->sw_index && ds->ops->crosschip_lag_leave)
- 		return ds->ops->crosschip_lag_leave(ds, info->sw_index,
--						    info->port, info->lag_dev);
-+						    info->port, info->lag);
+-		return 0;
++		/* Bridge ports might be either us, or LAG interfaces
++		 * that we offload.
++		 */
++		if (!check_cb(lower_dev) &&
++		    !switchdev_lower_dev_find_rcu(lower_dev, check_cb,
++						  foreign_dev_check_cb))
++			continue;
++
++		err = __switchdev_handle_fdb_event_to_device(lower_dev, orig_dev,
++							     event, fdb_info, check_cb,
++							     foreign_dev_check_cb,
++							     mod_cb);
++		if (err && err != -EOPNOTSUPP)
++			return err;
+ 	}
  
- 	return -EOPNOTSUPP;
+-maybe_bridged_with_us:
+ 	/* Event is neither on a bridge nor a LAG. Check whether it is on an
+ 	 * interface that is in a bridge with us.
+ 	 */
+@@ -522,12 +499,16 @@ static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
+ 	if (!br || !netif_is_bridge_master(br))
+ 		return 0;
+ 
+-	if (!switchdev_lower_dev_find_rcu(br, check_cb, foreign_dev_check_cb))
++	switchdev = switchdev_lower_dev_find_rcu(br, check_cb, foreign_dev_check_cb);
++	if (!switchdev)
+ 		return 0;
+ 
++	if (!foreign_dev_check_cb(switchdev, dev))
++		return err;
++
+ 	return __switchdev_handle_fdb_event_to_device(br, orig_dev, event, fdb_info,
+ 						      check_cb, foreign_dev_check_cb,
+-						      mod_cb, lag_mod_cb);
++						      mod_cb);
  }
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index 26435bc4a098..c8b4bbd46191 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -246,12 +246,14 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
  
- 	if (trunk) {
- 		struct dsa_port *cpu_dp = dev->dsa_ptr;
-+		struct dsa_lag *lag;
+ int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event,
+@@ -537,16 +518,13 @@ int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long e
+ 					     const struct net_device *foreign_dev),
+ 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+ 			      unsigned long event, const void *ctx,
+-			      const struct switchdev_notifier_fdb_info *fdb_info),
+-		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
+-				  unsigned long event, const void *ctx,
+-				  const struct switchdev_notifier_fdb_info *fdb_info))
++			      const struct switchdev_notifier_fdb_info *fdb_info))
+ {
+ 	int err;
  
- 		/* The exact source port is not available in the tag,
- 		 * so we inject the frame directly on the upper
- 		 * team/bond.
- 		 */
--		skb->dev = dsa_lag_dev(cpu_dp->dst, source_port + 1);
-+		lag = dsa_lag_by_id(cpu_dp->dst, source_port + 1);
-+		skb->dev = lag ? lag->dev : NULL;
- 	} else {
- 		skb->dev = dsa_master_find_slave(dev, source_device,
- 						 source_port);
+ 	err = __switchdev_handle_fdb_event_to_device(dev, dev, event, fdb_info,
+ 						     check_cb, foreign_dev_check_cb,
+-						     mod_cb, lag_mod_cb);
++						     mod_cb);
+ 	if (err == -EOPNOTSUPP)
+ 		err = 0;
+ 
 -- 
 2.25.1
 
