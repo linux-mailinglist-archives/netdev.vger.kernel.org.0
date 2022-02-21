@@ -2,84 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE8F4BE1C1
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5574BE9D1
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:08:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343557AbiBUKpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 05:45:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44010 "EHLO
+        id S1381595AbiBURTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 12:19:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355283AbiBUKot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 05:44:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C6F86E7AB
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 02:05:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645437908;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a7pC/8c3cMpM8i5986p+h+SJ6tgl0KTE+K3MKLjypsA=;
-        b=PQU92g3y0dj6LFA6pUEqO/ze6GJiTDmg+2zeNfWfhndt2LXJHx4nqPLcFkuiqgrBvxHXXI
-        +z7v5UGqsYNfiCdEHCE5hOItZeCsWCxyu8rTzsaNwxS2eZw5JqYsL2oIsPYKAhf3SH/Wu8
-        FoTR4ZHMWYLmTKstWfWZ+oq8Qc1A1eI=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-344-r6ZafZPsNW-k_yaS979K9w-1; Mon, 21 Feb 2022 05:05:05 -0500
-X-MC-Unique: r6ZafZPsNW-k_yaS979K9w-1
-Received: by mail-wr1-f70.google.com with SMTP id q21-20020adfab15000000b001e57c9a342aso7180740wrc.6
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 02:05:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a7pC/8c3cMpM8i5986p+h+SJ6tgl0KTE+K3MKLjypsA=;
-        b=jOuHivy+x8sH1ktcFmuZ1B23LhkuP/F4d5yM/7ZDfBzGQuyTmWp3oi/LccoeIO+X1R
-         VpBsVrMQBcgugEi83/HKSIw1tKrS/1I8mlarF8EAK6PxNvLOil6ocaWzTpPbGAmb96E4
-         gRVV4Jf8TQ6gzaJa4z8MlTDKU0u0278IYRiKzlFej3jbqOHb0Dt/usRPCcX61Wo/WgXw
-         Sd9mKhXIwqWuDVOl4oSBKmVy/rLuVIpsjSBWRXcI8U11UxOY4MqDd+cnROtDav9rR6aw
-         K0Pfgwh/1RumSMOatuglU3wD3dtKG8Z1uaS82AjdyOwjqhnn3bzXLcZOsSIJuO8geOks
-         zUcg==
-X-Gm-Message-State: AOAM533X3f+ZwT8rjQ7R34RhdSmA3uQbif6Bcfj9We8Qm8DYv7qjVren
-        2JS0IN7bj28ao0J2Ps1nLGBWWn8KSePknA8Ul6/w0CU5P1qMjKAmDIvG5cmCJHyt71HPsTwZ/X8
-        z77Wbrq3ddU16OpI/
-X-Received: by 2002:adf:cf12:0:b0:1e3:25ac:7b25 with SMTP id o18-20020adfcf12000000b001e325ac7b25mr15345144wrj.196.1645437904147;
-        Mon, 21 Feb 2022 02:05:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwvL0v2ye0HlLbbizXym02UGy3yMeTg2IZU57hEMg6++fpRjZHeoaP1iJDYrJhnJl0FoOTdYg==
-X-Received: by 2002:adf:cf12:0:b0:1e3:25ac:7b25 with SMTP id o18-20020adfcf12000000b001e325ac7b25mr15345112wrj.196.1645437903844;
-        Mon, 21 Feb 2022 02:05:03 -0800 (PST)
-Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
-        by smtp.gmail.com with ESMTPSA id w18sm32300769wrl.62.2022.02.21.02.05.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 02:05:03 -0800 (PST)
-Date:   Mon, 21 Feb 2022 11:05:00 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Mike Christie <michael.christie@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        syzbot <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com>,
-        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs@googlegroups.com,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [syzbot] WARNING in vhost_dev_cleanup (2)
-Message-ID: <20220221100500.2x3s2sddqahgdfyt@sgarzare-redhat>
-References: <0000000000006f656005d82d24e2@google.com>
- <CACGkMEsyWBBmx3g613tr97nidHd3-avMyO=WRxS8RpcEk7j2=A@mail.gmail.com>
- <20220217023550-mutt-send-email-mst@kernel.org>
- <CACGkMEtuL_4eRYYWd4aQj6rG=cJDQjjr86DWpid3o_N-6xvTWQ@mail.gmail.com>
- <20220217024359-mutt-send-email-mst@kernel.org>
- <CAGxU2F7CjNu5Wxg3k1hQF8A8uRt-wKLjMW6TMjb+UVCF+MHZbw@mail.gmail.com>
- <0b2a5c63-024b-b7a5-e4d1-aa12390bdd38@oracle.com>
- <a5fca5da-c139-b9bb-1929-d7621c06163d@oracle.com>
+        with ESMTP id S1347637AbiBURTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 12:19:38 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8489CCFB
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:19:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645463955; x=1676999955;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tUhXvk+LFkLoswi++f9XcpeeaQoJBVXpSjX5dbLbTgU=;
+  b=Kz7WSdTQRU7Z6euwfWylCk7Hmp1i8GZjLA7S/w9tZGqA3dIH8GA1by2+
+   A3ZDBQsm6diQ9KwbeFFiaO/TjtMr5g8MWKN+IvZtamEpVjj4qaFuJKUdH
+   +oLkw+C0QdJZ9t2nO2q9a9on1RvBMdM//g2e3zHU/lc/wD6MXIkJPEjJh
+   8+kfbR07wZosRWXwLU9aKHkmxDG4EBsdYyeodgrSNFMTFN1ZESmVGyfQZ
+   Ho5YDSjQgQxzwvgeoFdMF1ZA2k7+9/7/HL6LPpOlr9+0M1Nvj/TknQM/l
+   zQyNF+3lU9T5Sda7W20uazM3REz954SgYkAM+PsQN7i00N6zTDEjtp4Mi
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="232165822"
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="232165822"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:19:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="490502351"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga003.jf.intel.com with ESMTP; 21 Feb 2022 09:19:12 -0800
+Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 21LHJBnN010069;
+        Mon, 21 Feb 2022 17:19:11 GMT
+From:   Marcin Szycik <marcin.szycik@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
+        davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        laforge@gnumonks.org, jiri@resnulli.us,
+        osmocom-net-gprs@lists.osmocom.org,
+        intel-wired-lan@lists.osuosl.org,
+        Marcin Szycik <marcin.szycik@linux.intel.com>
+Subject: [PATCH net-next v7 0/7] ice: GTP support in switchdev
+Date:   Mon, 21 Feb 2022 11:14:18 +0100
+Message-Id: <20220221101425.19776-1-marcin.szycik@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <a5fca5da-c139-b9bb-1929-d7621c06163d@oracle.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,141 +64,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 12:23:10PM -0600, Mike Christie wrote:
->On 2/18/22 11:53 AM, Mike Christie wrote:
->> On 2/17/22 3:48 AM, Stefano Garzarella wrote:
->>>
->>> On Thu, Feb 17, 2022 at 8:50 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>
->>>> On Thu, Feb 17, 2022 at 03:39:48PM +0800, Jason Wang wrote:
->>>>> On Thu, Feb 17, 2022 at 3:36 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->>>>>>
->>>>>> On Thu, Feb 17, 2022 at 03:34:13PM +0800, Jason Wang wrote:
->>>>>>> On Thu, Feb 17, 2022 at 10:01 AM syzbot
->>>>>>> <syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com> wrote:
->>>>>>>>
->>>>>>>> Hello,
->>>>>>>>
->>>>>>>> syzbot found the following issue on:
->>>>>>>>
->>>>>>>> HEAD commit:    c5d9ae265b10 Merge tag 'for-linus' of git://git.kernel.org..
->>>>>>>> git tree:       upstream
->>>>>>>> console output: https://urldefense.com/v3/__https://syzkaller.appspot.com/x/log.txt?x=132e687c700000__;!!ACWV5N9M2RV99hQ!fLqQTyosTBm7FK50IVmo0ozZhsvUEPFCivEHFDGU3GjlAHDWl07UdOa-t9uf9YisMihn$
->>>>>>>> kernel config:  https://urldefense.com/v3/__https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912__;!!ACWV5N9M2RV99hQ!fLqQTyosTBm7FK50IVmo0ozZhsvUEPFCivEHFDGU3GjlAHDWl07UdOa-t9uf9RjOhplp$
->>>>>>>> dashboard link: https://urldefense.com/v3/__https://syzkaller.appspot.com/bug?extid=1e3ea63db39f2b4440e0__;!!ACWV5N9M2RV99hQ!fLqQTyosTBm7FK50IVmo0ozZhsvUEPFCivEHFDGU3GjlAHDWl07UdOa-t9uf9bBf5tv0$
->>>>>>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->>>>>>>>
->>>>>>>> Unfortunately, I don't have any reproducer for this issue yet.
->>>>>>>>
->>>>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>>>>>>> Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
->>>>>>>>
->>>>>>>> WARNING: CPU: 1 PID: 10828 at drivers/vhost/vhost.c:715 vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
->>>>>>>> Modules linked in:
->>>>>>>> CPU: 0 PID: 10828 Comm: syz-executor.0 Not tainted 5.17.0-rc4-syzkaller-00051-gc5d9ae265b10 #0
->>>>>>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->>>>>>>> RIP: 0010:vhost_dev_cleanup+0x8b8/0xbc0 drivers/vhost/vhost.c:715
->>>>>>>
->>>>>>> Probably a hint that we are missing a flush.
->>>>>>>
->>>>>>> Looking at vhost_vsock_stop() that is called by vhost_vsock_dev_release():
->>>>>>>
->>>>>>> static int vhost_vsock_stop(struct vhost_vsock *vsock)
->>>>>>> {
->>>>>>> size_t i;
->>>>>>>         int ret;
->>>>>>>
->>>>>>>         mutex_lock(&vsock->dev.mutex);
->>>>>>>
->>>>>>>         ret = vhost_dev_check_owner(&vsock->dev);
->>>>>>>         if (ret)
->>>>>>>                 goto err;
->>>>>>>
->>>>>>> Where it could fail so the device is not actually stopped.
->>>>>>>
->>>>>>> I wonder if this is something related.
->>>>>>>
->>>>>>> Thanks
->>>>>>
->>>>>>
->>>>>> But then if that is not the owner then no work should be running, right?
->>>>>
->>>>> Could it be a buggy user space that passes the fd to another process
->>>>> and changes the owner just before the mutex_lock() above?
->>>>>
->>>>> Thanks
->>>>
->>>> Maybe, but can you be a bit more explicit? what is the set of
->>>> conditions you see that can lead to this?
->>>
->>> I think the issue could be in the vhost_vsock_stop() as Jason mentioned,
->>> but not related to fd passing, but related to the do_exit() function.
->>>
->>> Looking the stack trace, we are in exit_task_work(), that is called
->>> after exit_mm(), so the vhost_dev_check_owner() can fail because
->>> current->mm should be NULL at that point.
->>>
->>> It seems the fput work is queued by fput_many() in a worker queue, and
->>> in some cases (maybe a lot of files opened?) the work is still queued
->>> when we enter in do_exit().
->> It normally happens if userspace doesn't do a close() when the VM
->
->Just one clarification. I meant to say it "always" happens when userspace
->doesn't do a close.
->
->It doesn't have anything to do with lots of files or something like that.
->We are actually running the vhost device's release function from
->do_exit->task_work_run and so all those __fputs are done from something
->like qemu's context (current == that process).
->
->We are *not* hitting the case:
->
->do_exit->exit_files->put_files_struct->filp_close->fput->fput_many
->
->and then in there hitting the schedule_delayed_work path. For that
->the last __fput would be done from a workqueue thread and so the current
->pointer would point to a completely different thread.
->
->
->
->> is shutdown and instead let's the kernel's reaper code cleanup. The qemu
->> vhost-scsi code doesn't do a close() during shutdown and so this is our
->> normal code path. It also happens when something like qemu is not
->> gracefully shutdown like during a crash.
->>
->> So fire up qemu, start IO, then crash it or kill 9 it while IO is still
->> running and you can hit it.
+Add support for adding GTP-C and GTP-U filters in switchdev mode.
 
-Thank you very much for this detailed explanation!
+To create a filter for GTP, create a GTP-type netdev with ip tool, enable
+hardware offload, add qdisc and add a filter in tc:
 
->>
->>>
->>> That said, I don't know if we can simply remove that check in
->>> vhost_vsock_stop(), or check if current->mm is NULL, to understand if
->>> the process is exiting.
->>>
->>
->> Should the caller do the vhost_dev_check_owner or tell vhost_vsock_stop
->> when to check?
->>
->> - vhost_vsock_dev_ioctl always wants to check for ownership right?
->>
->> - For vhost_vsock_dev_release ownership doesn't matter because we
->> always want to clean up or it doesn't hurt too much.
->>
->> For the case where we just do open then close and no ioctls then
->> running vhost_vq_set_backend in vhost_vsock_stop is just a minor
->> hit of extra work. If we've done ioctls, but are now in
->> vhost_vsock_dev_release then we know for the graceful and ungraceful
->> case that nothing is going to be accessing this device in the future
->> and it's getting completely freed so we must completely clean it up.
+ip link add $GTP0 type gtp role <sgsn/ggsn> hsize <hsize>
+ethtool -K $PF0 hw-tc-offload on
+tc qdisc add dev $GTP0 ingress
+tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
+action mirred egress redirect dev $VF1_PR
 
-Yep, I think the easiest way is to add a parameter to vhost_vsock_stop() 
-to tell when to call vhost_dev_check_owner() or not.  This is because 
-dev->mm is protected by dev->mutex, acquired in vhost_vsock_stop().
+By default, a filter for GTP-U will be added. To add a filter for GTP-C,
+specify enc_dst_port = 2123, e.g.:
 
-I will send a patch right away, it would be great if you can review.
+tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
+enc_dst_port 2123 action mirred egress redirect dev $VF1_PR
 
-Thanks,
-Stefano
+Note: outer IPv6 offload is not supported yet.
+Note: GTP-U with no payload offload is not supported yet.
+
+ICE COMMS package is required to create a filter as it contains GTP
+profiles.
+
+Changes in iproute2 [1] are required to be able to add GTP netdev and use
+GTP-specific options (QFI and PDU type).
+
+[1] https://lore.kernel.org/netdev/20220211182902.11542-1-wojciech.drewek@intel.com/T
+---
+v2: Adding more CC
+v3: Fixed mail thread, sorry for spam
+v4: Added GTP echo response in gtp module
+v5: Change patch order
+v6: Added GTP echo request in gtp module
+v7: Fix kernel-docs in ice
+
+Marcin Szycik (1):
+  ice: Support GTP-U and GTP-C offload in switchdev
+
+Michal Swiatkowski (1):
+  ice: Fix FV offset searching
+
+Wojciech Drewek (5):
+  gtp: Allow to create GTP device without FDs
+  gtp: Implement GTP echo response
+  gtp: Implement GTP echo request
+  net/sched: Allow flower to match on GTP options
+  gtp: Add support for checking GTP device type
+
+ drivers/net/ethernet/intel/ice/ice.h          |   1 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |  52 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |   2 +-
+ .../net/ethernet/intel/ice/ice_flex_type.h    |   6 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |  19 +
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 630 +++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   9 +
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 105 ++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   3 +
+ drivers/net/gtp.c                             | 661 +++++++++++++++++-
+ include/net/gtp.h                             |  42 ++
+ include/uapi/linux/gtp.h                      |   2 +
+ include/uapi/linux/if_link.h                  |   2 +
+ include/uapi/linux/if_tunnel.h                |   4 +-
+ include/uapi/linux/pkt_cls.h                  |  15 +
+ net/sched/cls_flower.c                        | 116 +++
+ 16 files changed, 1565 insertions(+), 104 deletions(-)
+
+-- 
+2.35.1
 
