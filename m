@@ -2,63 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 599304BE405
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:58:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6A74BDD5D
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234650AbiBURDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 12:03:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52140 "EHLO
+        id S236354AbiBURD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 12:03:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbiBURDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 12:03:05 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8603725EA2
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:02:42 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id f8so14786240pgc.8
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:02:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jdo6qs3W3VWxl2VOEPHnxDm9DO0+mjPtSUqp/JaJSO8=;
-        b=3LF8PPUHqEonUEH3rkDuj8pEfMX0ycLuC7NndFyBgl4rBHATg+5BOxQaHQUvFRS6vN
-         nD5/bXyLNZzHdOfkgN7expaEv/qy++JR4gtkny9aESJSIwzSUMvuJmnbno4sSzi42FqH
-         b2lLVcyydPQzgwssytnNqTu7ldDWr5RKIaURbHu8bAeYEpcuoP2BPYjqoQeuifn52jz8
-         PlR9pIjpCPbyAco5MDYw9waVKOLu4tI/HkmzVxQzuAVPpDe8a3Ip1NC6KitaJ9fZcPYF
-         vZpgHwya6nZp+AD4twpCk4pAANx9uIsrd/iG7vKGsdK0qM3d/bB6anXBIlvnsYqAZ/mg
-         VwMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jdo6qs3W3VWxl2VOEPHnxDm9DO0+mjPtSUqp/JaJSO8=;
-        b=hXR3dt3nXzkzw5bbAxKkvb4RXwmCH7V0O+dqFs6AB13QMLo8r0ajBUMD58wi0frkzr
-         4Hl73gW4921aB6ivz9rUjckaUl7pmmvMHCXwNl4p8Da55cJH7LkmcbPGLcMmgzq6b4ku
-         iGCTrSnZDMNtnnvevZ+7+gdAqvzy+PycgS+6y85oLLoMdkvIcX8tQzGVd/PODQAUPsAB
-         VKfAfDUECNv3HlZACVQ5MU1JssikaUb1Bzqk47jeUP2gZw3jECfI6uKgPE0RWMWwkZxi
-         WB7wDh696GN5ytb+pO5GduMDMmA3EZHKXnQ5pxgjxEZUr1d7UNI4IjOA0jVZNfKtMgQA
-         Kspw==
-X-Gm-Message-State: AOAM531mMGLzajuCLVaZTFJOqkHfOmRIj/NlKrTibGD8jRg+cvicWu9t
-        MSmdKHjh1xtEzPJXYw6YyWBqvrt2tYPAN+TL
-X-Google-Smtp-Source: ABdhPJwAa9VIIAFoZFgPVG0RrJBi/woKEiACFQSBpBaWXnw5Kd7hQTIZQn7bqv/+1MdT96qeynhU/A==
-X-Received: by 2002:a63:554a:0:b0:370:62f0:8880 with SMTP id f10-20020a63554a000000b0037062f08880mr16997979pgm.319.1645462961995;
-        Mon, 21 Feb 2022 09:02:41 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id v20-20020a17090a899400b001bc44cd08fesm3067681pjn.20.2022.02.21.09.02.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 09:02:41 -0800 (PST)
-Date:   Mon, 21 Feb 2022 09:02:38 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     yoshfuji@linux-ipv6.org, davem@davemloft.net, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: Fw: [Bug 215629] New: heap overflow in net/ipv6/esp6.c
-Message-ID: <20220221090238.495e8e78@hermes.local>
+        with ESMTP id S231158AbiBURD1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 12:03:27 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11hn2230.outbound.protection.outlook.com [52.100.173.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331B425EAE;
+        Mon, 21 Feb 2022 09:03:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NJHYHG9gnRQJCTwuFWQGukzy0WybD1KwF8VIAqmLQoNGevQnx5mJqAxrahL3OkA9vFomgCQX/ziMQvNSBiwLuzcLOzQbncYJ1y3yQH9VIbbFY2gea26WWsidYtXBgnzPlLv6nB8BZZSORLH4sv8fR6CFpc/OSMr/QycpS/0VQ/NZSd8AHihQeQhS7pY1Q5BBTd/qsscXFipu01CRLLudzA/CWv3gyOFD7p6QgwCJX/Sf90fxa/fIfiM31v/0ezNmMHv2Qbsun4tCNN1Q9lT8Ih2z9ITdTvEH3MjKtDMkTg1Sb1yQVxnGigJeRXWLf6Z1hU/xK5ILJTwF6qsIbu8Q3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6R90xFzwP3GyIZDm4oX8bAQ3EPprjFWsp2cUrjCVT0k=;
+ b=Okmg0zZxqt65saq5SVfQqSzXG6MGJV/NPfaz6DBmm6uUwWK4OC81AoNiPm4Gw3RrgTX29wlnh/Vn4Y3Eojsq1FCDVFa48Rsu1TMUVFKbR5HRfERNbHV1a2TE94H/5FaQMb7UhxEuAKfbLRdlha/0y44TWUcrF8BdtwGbjPvUBVz7oHbzPblBA8NCWYw8xXvtct0xg/sm2cFLzxIlk/jOP4mT3rDjw41jVUjEiHfCCamcEn3BgQrztIH82RV6M83N4yyBoyWOHKP5Sw7MY1a7QeO3LcXXXT6Fp20v9SXuYWgNBKi0UMKUd2Lv6ufcHqBCf+jkVCT4gnOl5M3RctWOyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6R90xFzwP3GyIZDm4oX8bAQ3EPprjFWsp2cUrjCVT0k=;
+ b=HyLOAjV24jdiIlUDX5iTHO4E5meUfDdnnc7ZEXa4JgWP/QBGp7YsFuKulNzmB37D5SPNCs6D3Jd3e0jBH6PDOFuX1lsBj80XaVcRjxm9oZ4Xkhh4VPywDymEhaG0s6gbaAGc+uD78QGS4/3piCrbgHexkoRBWoOFdY0lTJ+romO9wlG9GYzrX09/LQFN8YpXEb+SE9p3Y0eKIbIAGEVH5NC45ES18YSZwJxDl40WS+iEh9xvB3gGr6DPKK8xzhEKIq9UymNif0Xk2RTsqt+P97knqrFpIn9oLyojN4U43XQMXbaAX99rA1FD+zdveitD3kTHvkGnDGHt1naMR8VeYg==
+Received: from MWHPR14CA0048.namprd14.prod.outlook.com (2603:10b6:300:12b::34)
+ by LV2PR12MB5846.namprd12.prod.outlook.com (2603:10b6:408:175::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.26; Mon, 21 Feb
+ 2022 17:03:02 +0000
+Received: from CO1NAM11FT023.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:12b:cafe::81) by MWHPR14CA0048.outlook.office365.com
+ (2603:10b6:300:12b::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.15 via Frontend
+ Transport; Mon, 21 Feb 2022 17:03:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT023.mail.protection.outlook.com (10.13.175.35) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4995.15 via Frontend Transport; Mon, 21 Feb 2022 17:03:02 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 21 Feb
+ 2022 17:03:01 +0000
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
+ Mon, 21 Feb 2022 09:02:57 -0800
+Date:   Mon, 21 Feb 2022 19:02:45 +0200
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <dev@openvswitch.org>, <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "Cong Wang" <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <netfilter-devel@vger.kernel.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Ariel Levkovich <lariel@nvidia.com>, <coreteam@netfilter.org>
+Subject: Re: [PATCH net v2 1/1] net/sched: act_ct: Fix flow table lookup
+ failure with no originating ifindex
+In-Reply-To: <YhKCtlpgJlliT9Bc@salvia>
+Message-ID: <c615b6c2-6a84-7348-2bd8-447e28cbb8b@nvidia.com>
+References: <20220220093226.15042-1-paulb@nvidia.com> <YhKCtlpgJlliT9Bc@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="US-ASCII"
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cdc06433-122a-4937-a2f1-08d9f55c0555
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5846:EE_
+X-Microsoft-Antispam-PRVS: <LV2PR12MB584670D24C5692D55B722438C23A9@LV2PR12MB5846.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?ptonqkrxjDr6sRdrneJmbVlNDytWW3bmSua757QHgYLSfoE7UsmK2qmweSVa?=
+ =?us-ascii?Q?MLTO3E/d565qgotkg/ELphUAoo4VQXtm0hXgf/G4pNgLWljUvDUFPvGx5+Ez?=
+ =?us-ascii?Q?1zaVtM3L7tkdqoBYXZZzTcPAo4YMu3PXPDEA6WuSroPncIUOv5OewwCl/uMm?=
+ =?us-ascii?Q?JzcS6bPT7P9VuJCw7XWeN4PTj3Kq0z3J27PIuypI1IzlEKVC4CHAuKpuppxL?=
+ =?us-ascii?Q?GtpDrmASgB90CQFwd6hik6eA5106CPA0Q9Q+2CRcAo1NaFlOhObhBUBfb1G4?=
+ =?us-ascii?Q?KnG5NSM9cA1Z14ArEclR4dD5nA60U1qpROQf9UEJANztR4jbM2GCFPtIGLkq?=
+ =?us-ascii?Q?FA4FSJsqvkym4fbaUmPn4S7SuiE757ZfGoAOVP5PR6/eMvEmqqEw9tosWC7Q?=
+ =?us-ascii?Q?jT5bVXr6yPvDYBXcQhX9LW2yBSNTzo4jIWxCZcZYVJqf6KykRj1hugNMFpsm?=
+ =?us-ascii?Q?1xbhXYF+03pNLTpOgJlSTypZoYrDsiLE+rhTGIyFU6P99BvGkz/H9iJoWoXm?=
+ =?us-ascii?Q?8OX3f9frvwX9hQLU96eZgjiQZRYooWaFcpc16/FUBY0i+hnHDlmZ4npwF6AT?=
+ =?us-ascii?Q?TqjnxaatBljywLWZZPanaHWkUg9dWm2bdQLzqNjmkk4M89PnaMhkHcvtHSG0?=
+ =?us-ascii?Q?EF8U0NxkJOcM0F4uUkL5TwGK0u8Hq+seD6vEe/POnp5oKLSsbbPMbMKeV4B5?=
+ =?us-ascii?Q?fqsLamIEkc6wmXb7pqiEFWTmnUJ4owWoxsnwZIxZt7ht2hHLd0gm4Nhr3qdt?=
+ =?us-ascii?Q?OVkv8WPqnytgGNkgPIa/yicdg0G3glwoFKbXhFodTTleQm7k1i4Wnjb/mH+s?=
+ =?us-ascii?Q?gyFhMQkAnu7wU9cTjTcpk67gqs05I6KnuTUktLD44P8cBWyeBO3wuU3sMk3u?=
+ =?us-ascii?Q?PRf+xgwjS2P0Fg3NBDCKWr+f9ZOswMMf3XxEcFVWyNoHKjYuv8bgTAT2JHcQ?=
+ =?us-ascii?Q?UVdIe4I96H+vbgDoH4BpynnQf//drbT9N4tXxWLG6hEcM/iINcXIHeAENw83?=
+ =?us-ascii?Q?pe9TuKKMsi1LmcpFAv8uS0YBTAhjFxocsvdsAvJz023HTF8=3D?=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:5;SRV:;IPV:CAL;SFV:SPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:OSPM;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36860700001)(2906002)(40460700003)(356005)(86362001)(82310400004)(81166007)(6916009)(54906003)(70206006)(16526019)(36756003)(186003)(6666004)(508600001)(70586007)(4326008)(5660300002)(2616005)(336012)(316002)(8676002)(8936002)(7416002)(47076005)(426003)(26005)(83380400001)(58440200007)(36900700001);DIR:OUT;SFP:1501;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:03:02.3836
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cdc06433-122a-4937-a2f1-08d9f55c0555
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT023.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5846
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -67,175 +129,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-Begin forwarded message:
 
-Date: Mon, 21 Feb 2022 16:52:26 +0000
-From: bugzilla-daemon@kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 215629] New: heap overflow in net/ipv6/esp6.c
+On Sun, 20 Feb 2022, Pablo Neira Ayuso wrote:
 
+> Hi Paul,
+> 
+> On Sun, Feb 20, 2022 at 11:32:26AM +0200, Paul Blakey wrote:
+> > After cited commit optimizted hw insertion, flow table entries are
+> > populated with ifindex information which was intended to only be used
+> > for HW offload. This tuple ifindex is hashed in the flow table key, so
+> > it must be filled for lookup to be successful. But tuple ifindex is only
+> > relevant for the netfilter flowtables (nft), so it's not filled in
+> > act_ct flow table lookup, resulting in lookup failure, and no SW
+> > offload and no offload teardown for TCP connection FIN/RST packets.
+> > 
+> > To fix this, remove ifindex from hash, and allow lookup without
+> > the ifindex. Act ct will lookup without the ifindex filled.
+> 
+> I think it is good to add FLOW_OFFLOAD_XMIT_TC (instead of relying on
+> FLOW_OFFLOAD_XMIT_UNSPEC), this allows for more tc specific fields in
+> the future.
+> 
+> See attached patch.
+> 
+> Thanks.
+> 
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215629
+This patch will fix it, but ifindex which we fill is for the input device 
+and not related to XMIT, exactly what tuple->iifidx means. We don't have 
+XMIT, so I think it was ok to use  UNSPEC for now. If I use 
+tuple->tc.iifidx as you suggest, tuple->iifidx  will remain unused.
 
-            Bug ID: 215629
-           Summary: heap overflow in net/ipv6/esp6.c
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.17
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: slipper.alive@gmail.com
-        Regression: No
+I think once we have more fields that are really specific to TC, we 
+can do what you sugguest, right now we can share the ifindex.
 
-I found a heap out-of-bound write vulnerability in net/ipv6/esp6.c by reviewing
-a syzkaller bug report
-(https://syzkaller.appspot.com/bug?id=57375340ab81a369df5da5eb16cfcd4aef9dfb9d).
-This bug could lead to privilege escalation.
-
-
-The bug is caused by the incorrect use of `skb_page_frag_refill`
-(https://github.com/torvalds/linux/blob/v5.17-rc3/net/core/sock.c#L2700). 
-
-/**
- * skb_page_frag_refill - check that a page_frag contains enough room
- * @sz: minimum size of the fragment we want to get
- * @pfrag: pointer to page_frag
- * @gfp: priority for memory allocation
- *
- * Note: While this allocator tries to use high order pages, there is
- * no guarantee that allocations succeed. Therefore, @sz MUST be
- * less or equal than PAGE_SIZE.
- */
-bool skb_page_frag_refill(unsigned int sz, struct page_frag *pfrag, gfp_t gfp)
-{
-        if (pfrag->page) {
-                if (page_ref_count(pfrag->page) == 1) {
-                        pfrag->offset = 0;
-                        return true;
-                }
-                if (pfrag->offset + sz <= pfrag->size)
-                        return true;
-                put_page(pfrag->page);
-        }
-
-        pfrag->offset = 0;
-        if (SKB_FRAG_PAGE_ORDER &&
-            !static_branch_unlikely(&net_high_order_alloc_disable_key)) {
-                /* Avoid direct reclaim but allow kswapd to wake */
-                pfrag->page = alloc_pages((gfp & ~__GFP_DIRECT_RECLAIM) |
-                                          __GFP_COMP | __GFP_NOWARN |
-                                          __GFP_NORETRY,
-                                          SKB_FRAG_PAGE_ORDER);
-                if (likely(pfrag->page)) {
-                        pfrag->size = PAGE_SIZE << SKB_FRAG_PAGE_ORDER;
-                        return true;
-                }
-        }
-        pfrag->page = alloc_page(gfp);
-        if (likely(pfrag->page)) {
-                pfrag->size = PAGE_SIZE;
-                return true;
-        }
-        return false;
-}
-EXPORT_SYMBOL(skb_page_frag_refill);
-
-
-In the comment it says the `sz` parameter must be less than PAGE_SIZE, but it
-is not enforced in the vulnerable code
-https://github.com/torvalds/linux/blob/v5.17-rc3/net/ipv6/esp6.c#L512 
-
-
-int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
-*esp)
-{
-...
-                        allocsize = ALIGN(tailen, L1_CACHE_BYTES);
-
-                        spin_lock_bh(&x->lock);
-
-                        if (unlikely(!skb_page_frag_refill(allocsize, pfrag,
-GFP_ATOMIC))) {
-                                spin_unlock_bh(&x->lock);
-                                goto cow;
-                        }
-...
-
-and https://github.com/torvalds/linux/blob/v5.17-rc3/net/ipv6/esp6.c#L623
-
-int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
-*esp)
-{
-...
-        if (!esp->inplace) {
-                int allocsize;
-                struct page_frag *pfrag = &x->xfrag;
-
-                allocsize = ALIGN(skb->data_len, L1_CACHE_BYTES);
-
-                spin_lock_bh(&x->lock);
-                if (unlikely(!skb_page_frag_refill(allocsize, pfrag,
-GFP_ATOMIC))) {
-                        spin_unlock_bh(&x->lock);
-                        goto error_free;
-                }
-
-
-The `allocsize` here can be manipulated by the `tfcpad` of the `xfrm_state`. 
-
-
-static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
-{
-        int alen;
-        int blksize;
-        struct ip_esp_hdr *esph;
-        struct crypto_aead *aead;
-        struct esp_info esp;
-
-        esp.inplace = true;
-
-        esp.proto = *skb_mac_header(skb);
-        *skb_mac_header(skb) = IPPROTO_ESP;
-
-        /* skb is pure payload to encrypt */
-
-        aead = x->data;
-        alen = crypto_aead_authsize(aead);
-
-        esp.tfclen = 0;
-        if (x->tfcpad) {
-                struct xfrm_dst *dst = (struct xfrm_dst *)skb_dst(skb);
-                u32 padto;
-
-                padto = min(x->tfcpad, __xfrm_state_mtu(x,
-dst->child_mtu_cached));
-                if (skb->len < padto)
-                        esp.tfclen = padto - skb->len;
-        }
-        blksize = ALIGN(crypto_aead_blocksize(aead), 4);
-        esp.clen = ALIGN(skb->len + 2 + esp.tfclen, blksize);
-        esp.plen = esp.clen - skb->len - esp.tfclen;
-        esp.tailen = esp.tfclen + esp.plen + alen;
-
-
-
-If it is set to a value greater than 0x8000, the page next to the allocated
-page frag will be overwritten by the padding message.
-
-
-The bug requires CAP_NET_ADMIN to be triggered. It seems to be introduced by
-commit 03e2a30f6a27e2f3e5283b777f6ddd146b38c738. The same bug exists in the
-ipv4 code net/ipv4/esp4.c introduced by commit
-cac2661c53f35cbe651bef9b07026a5a05ab8ce0.
-
--- 
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
