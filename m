@@ -2,121 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2032C4BE01A
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:51:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 232B94BE1E0
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358606AbiBUNIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 08:08:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40422 "EHLO
+        id S234929AbiBUNKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 08:10:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358604AbiBUNIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 08:08:37 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8CD1EC6B
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 05:08:12 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id ci24-20020a17090afc9800b001bc3071f921so2950983pjb.5
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 05:08:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=r1zJaBUPNQBJIkixJM/WVkMBxWgtgajvPcDkUoia8nw=;
-        b=QxqPjpDi7wL+7ZIsp5J2H6BQ16G8QsKCJ7quH6sQ7ZxrYjyLx3BFW7pBriWYPlwgEU
-         Jroc/8jOe9By28aVKN3zjKrv6H9AMaLHFt7l81eBLA6n2jnblIIlFJTghc0FQEgpJ4oq
-         pk2Ga33ER3TXY8knSRfJFJIVJKu4+aNGBmVsDYHUZ0DrBVpwIStyykBy8f4IOiwsfWJf
-         AQVZe6wL9Lk56SvZw5dvgSceUU/9TY2j5fRwG8lc6CJXSRxl39kQb4h9noGL2It7XTRL
-         4WXjI0IKInREfBIni89kLS8znRfOz6AFYEpzwafnCd++b+NxU2AeZy0G/7XvSqFI2Vz/
-         Lc5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=r1zJaBUPNQBJIkixJM/WVkMBxWgtgajvPcDkUoia8nw=;
-        b=KgPi7OOtgvN1isohDx/vb/5vpbec2tZEEjlo25SHQTIBfGJo0dTdEc18dRt0k1B0zs
-         Y3oSmkbWnfVKyknLHGE8xuc4qZvVgSoTeicnh799Z/kW9TD8R0cJCE3SHLyyMpTXvI8h
-         etdXL8t3L0fiWLiydtHOY9Drwb3Tuec1EfnYVwOvua/DnojmhtnTkARn8RkgPgGAk+gi
-         RYHenHn5tpvnR1PgOqEFZes7/aBgGRa0WYiF58WmAs6fHhww3bQj19vhBOIPcmtCXuOU
-         hv2nsuNxkzWYaIwDQNtsiIaWWqYgHdrRJclhBCH/v87u8z2KgO8pf+WddiNnEjWlXF/I
-         bVlg==
-X-Gm-Message-State: AOAM531XtYn943AxfeawrLmMmeDvP+5k6fSRz1me9CgIMCILmm5kpfhM
-        LW2SWU7BbyPu/tyRPQhnS97Ow0UOK1bZi2UiLts=
-X-Google-Smtp-Source: ABdhPJxPk3V5aN1NC0VaOVPwStgdHK+BQoBlDWm4VpaKI+lTtN3H8uRU3lTygGWIp3x3Fue/0LlyYubE7efIdgTBhps=
-X-Received: by 2002:a17:90b:1b51:b0:1b9:b61a:aaf4 with SMTP id
- nv17-20020a17090b1b5100b001b9b61aaaf4mr25666081pjb.79.1645448891664; Mon, 21
- Feb 2022 05:08:11 -0800 (PST)
+        with ESMTP id S238073AbiBUNKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 08:10:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1FF1EAFB;
+        Mon, 21 Feb 2022 05:10:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B6BAB81185;
+        Mon, 21 Feb 2022 13:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E29D1C340F6;
+        Mon, 21 Feb 2022 13:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645449009;
+        bh=H/AAOV/KPpcqeTNpNQIxUs7cqf+Kkl2uYNPyOYOeorI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TBEwfzE6Oj60w3d/u4uCzdf2Oqkac8lonvJhZHWRPNdn0ydmjS+INIIE/0HHhy2lj
+         68JrNsCiSp3+gUeYFA9TDYhjvhQh7MmZYVbysJUXEka17UIp8B+AMDt1joowlukmWX
+         cR7jxVdtgweTq9z5ZrkqCKk/hiVwQmSyip1NqSmqptdqZrGi6yMIcCib/x+t0GF5Pf
+         NJwykknNfSb3AWcDG/mc/9OCS6nblb99R5qnBEePoGECI1HDS5dATFxrq/qtls8/OU
+         pE3Pa2ky6L1Q1DAXwLiOjz89nDGmni/5CFtfCkTrjEQsngruECmbPIF8+yTmUdhwK9
+         TL5SiFDmM7NKA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D1330E6D3E8;
+        Mon, 21 Feb 2022 13:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Reply-To: wallaceharrisonun1@gmail.com
-Sender: mj6455009@gmail.com
-Received: by 2002:a05:6a20:4a09:b0:76:527d:adaa with HTTP; Mon, 21 Feb 2022
- 05:08:11 -0800 (PST)
-From:   "Mr. wallace harrisonun" <wallaceharrisonun1@gmail.com>
-Date:   Mon, 21 Feb 2022 05:08:11 -0800
-X-Google-Sender-Auth: k85gDkU6CBEmzur8UYqilUz8y7g
-Message-ID: <CALQs60yt6XVau0mx2DKfo+kNGkVuGaJmVz_NgkhRLcuXC8fnUw@mail.gmail.com>
-Subject: Palliative Empowerment
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,
-        MONEY_FORM_SHORT,MONEY_FRAUD_3,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,T_HK_NAME_FM_MR_MRS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:102f listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [wallaceharrisonun1[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [wallaceharrisonun1[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mj6455009[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
-        *      information
-        *  1.0 MONEY_FORM_SHORT Lots of money if you fill out a short form
-        *  3.5 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-        *  0.0 MONEY_FRAUD_3 Lots of money and several fraud phrases
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next PATCH v2 0/2] RVU AF and NETDEV drivers' PTP updates.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164544900985.23760.15653354946520544563.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Feb 2022 13:10:09 +0000
+References: <20220221064508.19148-1-rsaladi2@marvell.com>
+In-Reply-To: <20220221064508.19148-1-rsaladi2@marvell.com>
+To:     Rakesh Babu Saladi <rsaladi2@marvell.com>
+Cc:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        richardcochran@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings!
+Hello:
 
- We are writing this message to you from the United Nations Centre to
-inform you that you have been chosen as our Representative in your
-country, to distribute the total sum of $500,000 US Dollars, For
-Palliative Empowerment in order to help the poor people in your city.
-Such as the Disabled people, The homeless, Orphanages, schools, and
-Generals=E2=80=99 Hospitals ,if you receive the message reply to us with yo=
-ur
-details, Your Full Name Your Address: Your Occupation: Via this
-Email:<wallaceharrisonun1@gmail.com>  For more information about the
-payment.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Regards
-Dylan.
+On Mon, 21 Feb 2022 12:15:06 +0530 you wrote:
+> Patch 1: Add suppot such that RVU drivers support new timestamp format.
+> Patch 2: This patch adds workaround for PTP errata.
+> 
+> Changes made from  v1 to v2
+> 1. CC'd Richard Cochran to review PTP related patches.
+> 2. Removed a patch from the old patch series. Will submit the removed patch
+> separately.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2,1/2] octeontx2-pf: cn10k: add support for new ptp timestamp format
+    https://git.kernel.org/netdev/net-next/c/74c1b2338e0e
+  - [net-next,v2,2/2] octeontx2-af: cn10k: add workaround for ptp errata
+    https://git.kernel.org/netdev/net-next/c/6426fc3abab9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
