@@ -2,157 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A58554BE2A8
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A7D4BE54E
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354916AbiBUK2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 05:28:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38152 "EHLO
+        id S1353293AbiBUK30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 05:29:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354687AbiBUK2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 05:28:31 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEF843498;
-        Mon, 21 Feb 2022 01:50:16 -0800 (PST)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21L9UF6w003786;
-        Mon, 21 Feb 2022 09:49:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=mqV9ioEpGUM+nr2aOQEq72cJGl+emxart9ZqqmOtsdw=;
- b=Jj+8vrrXxxHZfH/e7XaLDB7bpRNt8q/1HUE+iwFepj8nmB3/TYHzAMYtLmldxygvUuDY
- RBqCSTVHTrElkekivW+5Flg0HT7zlw+M3NY8ggcBA/9BtKQ8em5HrQEDLELNBn+bAe5+
- qaNrk4vFNTLAqk6h5ANXDrlgGRZhDFSVeDPbFT5nIXz/3ugNnLV0RLEitUO/A7+/du9n
- S4S3jfliGpUIUMayDBK5JNivfwDebIfoSZoL/1qN6Ji/zxSn3jr1+hboFea7cNfJ4sjj
- 5YvfHZ/LMaREOy8rGRM+Z+F/WKwGbJFsSN6XmD+m1dPmudtlHp579BU8e00Kg1Vkr40u zg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3eas3v3kkx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 09:49:35 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21L9eUG2123313;
-        Mon, 21 Feb 2022 09:49:22 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2108.outbound.protection.outlook.com [104.47.70.108])
-        by userp3020.oracle.com with ESMTP id 3eat0k9su6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 09:49:22 +0000
+        with ESMTP id S1354479AbiBUK3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 05:29:11 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2041.outbound.protection.outlook.com [40.107.93.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D8166AE4
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 01:51:00 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HmmwkHjYX0OjOUk3WWgsxRBvGueqBBJPyR7qK//RbKGAdXO9kugaofSMoZBHKzysl3jtYDPJMwRcy4AtPn4kEJYKMgtZyXwLpt8WNtPgus7lcu/oihGZN8eVkoThe7IBPssivUymOw/VPXso/T/XaMk09ZijU01YXRwxdxgABVgCOfnxJrUtMu7/pdd+fh9uTj66ysnhZP2+FNLZRMaPb2S2pox/6xgVXo68qZXEaiV0WicrzRKxHVaOVhPZeIqliayrHloofxODVIEi1KXwwzeaiWPwxZlSsjSkQSfO6XNyx9GDkXZJ9neQabJm3YCc2ZOIF8Tqz7j+T+XHSKhmGA==
+ b=Cc7OZf3m2nJFw+WPl2j8x1QtWnwGyM3S9uweYsOFoXd1e6X2OxV1NWx90HJWWowfgcZFODMDTM3fRh0+l0Ah9lqkVN/QYUrkN9ZjJ87ShIo9WLZZ7UyiQnDvSenOGHoZnRPpjckgk5y8hUtgeqto16eIx9WsZoYRVpVIdHDg1rgE6zPGsFHaArlOtjb9RVwEF0Ty7Br30Chlle7/51dNtVFNFmDTd0I+1fSn9ijwUFdhZOtW0hVYEBEJT7vOlslQJWnHKPDaXeYgGGCDSya40CwDPMIhxo/CQFv+jm/W/OQ2N+8l5jwZsY+zMzMD68HSgPzvk/6TU39rW4DuTseJLQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mqV9ioEpGUM+nr2aOQEq72cJGl+emxart9ZqqmOtsdw=;
- b=T7IiN5RvJaADsOCOY6ANoeczxbbjWnNW5f8xgrIhvtiUs9MMLNr+mZ0o/vLt3q1YgiWS+5sd+RZhFBCOu24NU+2c8QfV4K7k+r4gmJbZmbwcLedbSTUO8+msaqfL2KQq0YIllhmY2NZye6asIjUxJ3DBGjDJ68fKA77HAGKQVBmNl/d19xxaVYKzAyyBCjQ/QCURaEoCJNU7+0d6KIxTGD9RGqvN366huQ3xAePRIsLJ0ehYQJfIGYZ/bpBk6LLt9Rshyj4k06mmdRwrIf4QGh6F45Vm1vyu4m5SATR3F6BT3I+aUTwTSMgyi8RNG0k1nkUliWVeayrOMUx0+Tlv/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ bh=4SYxTd92NGhT7Mts/VbcUVdC+xc6gRINV2xj+oFznsU=;
+ b=XBjhpSatY/YvsCaeviQik6mSwEYMmwY0Fro8520xryrXz6JXpqUxkm6BqdN82hs91XsThJi9flY7WBW4ve/WBB0JhTDFJ5JNiVMO1dninpMQHllT91+BQ/RihrBNyJIGg+sbolaqtEykcxNiHLDrN6rw8uNskMvsoUbM+FscQgXyTcslvuSVMXfLHa217Qyl9H5wQpqoQI1nIBv6IREyjDsII84epWuQJdqKaZ6fF6oqd9FMDixJ+upLOZCF1tzvUThYqGYvKzyVN/Ml7UP8rQIEWgxMMojbLCWOzPMR6+f65Gakv2qOtjluotrX6EuI7B+XeG063VrQmq1NERSvdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mqV9ioEpGUM+nr2aOQEq72cJGl+emxart9ZqqmOtsdw=;
- b=VU/TElN8Eru553IHzS45zGXpVrsjDuYxA9ybPud/0pAXiqlfu5ZfF8RLdIdiMbJr9syyfItCbx6ACnkh0cR7LaPhgoRi8ie3VwFOok5+INCZzKIFsLG30uXiw0dda2R1b1gqs3F4PBaeiwq02dg4njlTDdnGAPds7tHEblKpkQE=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BN0PR10MB5093.namprd10.prod.outlook.com
- (2603:10b6:408:12d::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Mon, 21 Feb
- 2022 09:49:20 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 09:49:19 +0000
-Date:   Mon, 21 Feb 2022 12:48:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        coiby.xu@gmail.com, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: qlge: add unregister_netdev in qlge_probe
-Message-ID: <20220221094858.GA3965@kadam>
-References: <20220221022312.9101-1-hbh25y@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221022312.9101-1-hbh25y@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0007.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::19)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=4SYxTd92NGhT7Mts/VbcUVdC+xc6gRINV2xj+oFznsU=;
+ b=GG+31mER58I50UvKKtEEKCqfM9d6/4aPeh6OnArUPH/J6IUJ42GI+bKKmGPsKA747J1b0zeETn+l1KqSq+xQthftunE/rzRjbIMZdm4/cH8IDt3TXYp+VS4tqpXA89AljCFH0SaaerZR9RR9A9ynove70RVm8B8jCM4wiSw5zp9o/CLlaYpxCj9h1/7CD+ZmjcWvB+ltJGitbGN5moXVYv79bLbZ0jWCuXZiVwfOjetZslJRhXFiJL3Eoy9aLpNlWoxDdl4Km5cpzBDQW5kieM453t0uocSo+N8MSI5t0z6ZpEFBfsMYMXTVPwXuK/O+5L2ZckE+6KHj42TmXrHabg==
+Received: from DM3PR11CA0014.namprd11.prod.outlook.com (2603:10b6:0:54::24) by
+ MN0PR12MB5977.namprd12.prod.outlook.com (2603:10b6:208:37c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Mon, 21 Feb
+ 2022 09:50:37 +0000
+Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:54:cafe::ff) by DM3PR11CA0014.outlook.office365.com
+ (2603:10b6:0:54::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
+ Transport; Mon, 21 Feb 2022 09:50:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4995.15 via Frontend Transport; Mon, 21 Feb 2022 09:50:36 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 21 Feb
+ 2022 09:50:35 +0000
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.126.231.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
+ Mon, 21 Feb 2022 01:50:31 -0800
+Date:   Mon, 21 Feb 2022 11:50:22 +0200
+From:   Paul Blakey <paulb@nvidia.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+CC:     "dev@openvswitch.org" <dev@openvswitch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "Pravin B Shelar" <pshelar@ovn.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Ariel Levkovich <lariel@nvidia.com>
+Subject: RE: [PATCH net v4 1/1] openvswitch: Fix setting ipv6 fields causing
+ hw csum failure
+In-Reply-To: <6dad3593d88d4afcae331b1225888884@AcuMS.aculab.com>
+Message-ID: <52b4dbf5-8bd1-d9c7-f672-e7405a91b050@nvidia.com>
+References: <20220220132114.18989-1-paulb@nvidia.com> <6dad3593d88d4afcae331b1225888884@AcuMS.aculab.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5c8f6adf-7131-453d-9cf4-08d9f51f6e08
-X-MS-TrafficTypeDiagnostic: BN0PR10MB5093:EE_
-X-Microsoft-Antispam-PRVS: <BN0PR10MB50937F08BA3492A8A33559F68E3A9@BN0PR10MB5093.namprd10.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 80c65104-4218-45ae-e739-08d9f51f9c4d
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5977:EE_
+X-Microsoft-Antispam-PRVS: <MN0PR12MB5977946C3A4AF4A3B83DBCECC23A9@MN0PR12MB5977.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: N75UdJr193GszQNLpNYaHwYkWMoGEjyIZiVngiTxrF37PZOUFvJ6aREptqXD1G61/VnZ8Ug2KkdVZbyhA5vL98fqviiAQPI9u3g8R5XiBa5uz0L2n+cienWU+m/ZIPTV69njk08uptAuwQmGRSF/hRq4a64oBazCpMqqvwCdnqsuo93yRpUgY3xV+glwrwBiXgCoc0prw1wlH4fSEZadtSqc+abyGwgNq71qk6Qo0dHMkWPQhd/YrjG3cvlKQ46iFrQ7p0gaZ2YfbjdS1Wf2gCvbQywIZG7Y/bdNRlR7CK3xVJ1R2tcovGovWr8vPPc2jwkPkXaOS5eEKsUsio9OiNnNFRoYi9nv1PM6ftj31dXGwMDYMkdumZuVMJgfwmIRAgm0uho71/ZrSOZRc+mNy46YFfntji2w5TW6xneDmZiDJAGWPSjkcZW1HZwBKrDFtCa29LQtt/5iNPnZD8/G7d0SLqGC/xjMQ6rRkV5bo2WvqzKJQSN4oGp5hZAMotolakmUUNqz63gzjDqyYCu5gHwd6UEwqD7QyLOhZG66rwe+h+FCMxeKor9E3tAxgvS6T06/zpKu4qOoMT+aMSs7s4VXy8wokubL94Tbc7PeL/eYmV1y9ufkCSnCT/o+GiAA5jGvVKF+yU6wJyrc/Kgyqft8sWtvuAJTRK9DpocS24a9tvsN1N8HyJkCXGBBiBHiEI18tuuhXsj5ntm28PY28A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(558084003)(33716001)(33656002)(6916009)(316002)(4326008)(66946007)(1076003)(2906002)(66556008)(66476007)(6506007)(9686003)(6512007)(38350700002)(6486002)(508600001)(44832011)(38100700002)(6666004)(5660300002)(8676002)(186003)(86362001)(26005)(8936002)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q3Wl00BVrY4b4KGH2z8eQTotmMTUEOERRNCMIL8ofgIVQwIfbliuyZKp/8c6?=
- =?us-ascii?Q?l3WEGeZuaKGty3jVK7awXhnOpgPPmi5QSWmOhf9UwOGvGnuzt6UispWGYM+D?=
- =?us-ascii?Q?UrC+axVuY1AUXy1SdH0eHIvmuJ+2q7mjzBf7j3aIrOaha2CT5IsvsVV/Ln3o?=
- =?us-ascii?Q?q0JzUWZJGqMnsqhLeJ6PO0kjVS2h3R3iAmpVW4m4TPnD45tOzopuHdyY82mN?=
- =?us-ascii?Q?bXrpp3tQqRk7D8wK6lY8ustYdrrDXiytCNAUEmFSmPj9VxfB3cxohCK9Jspc?=
- =?us-ascii?Q?TcsGjn8wyXnEoutLnNlNMblkOF3DI003W5EBRWlN25HSihzksjWY7QrxWPv+?=
- =?us-ascii?Q?gefHUK5mrnYwKnLhbc6imI15ZDL8H2OXnkuR2EkjopgdZRcPQUMJQB69QW+Q?=
- =?us-ascii?Q?IvrwVgPpoqZM9bvas4anDZ9EElmOlfAlfUBR7cBUaa/P7k3K9mCgkVD3y9xF?=
- =?us-ascii?Q?sG7Mhn9F5FGLvj2AKuE7p4Dq/8p1iiaa8TfYU+wYf7sPLbrTU1VMYzj8/j5C?=
- =?us-ascii?Q?YsQFu8Tp/mDnSByfc3NcndJiHAZ+acmzQMYqn2v3Fa5+RNanbWlE7GsLr4bL?=
- =?us-ascii?Q?s/ooIRnhQtQL4iaYfuu8nhSU4fCjCfjOXe9FYofyLF8DjbDcdteG1Y1PtKDH?=
- =?us-ascii?Q?Apzqf6Q7qfUXvFc2+iZWyM0f7g5kv7iXlCOjQKj//iNR8VOAXzsrgqQuSaa0?=
- =?us-ascii?Q?SWWHbyjEeCdyh0S+e5F47ZNcAQFA5FCUfH3AmUdN2NVAZ+6AEeohL8D0J3o/?=
- =?us-ascii?Q?7H4LcfnYRm6w7y8r744za2Fy/PIRxovJXazcrQwgqeanZG1JwzF9dMjJtXYk?=
- =?us-ascii?Q?fs1btqGxTmUezknpAlPIbsABcgS03y/YdwUKCQwXxJY+apsghNIRqjkhGPmA?=
- =?us-ascii?Q?rMVF2RaORrcVBgjnDFd+G7rtypdZ54eDSPU/G+cE2su6dEZK/jpsIOoh62e+?=
- =?us-ascii?Q?+DYQ4Mf4enRK01QHCWGLreL8a+gj+s4mmKSPnOULzsLCfMl/2WZeqRkzA6Pk?=
- =?us-ascii?Q?7vUJK6CbRxgafJiDBSgC5Ujd4s/pALATK1GynN7Idf6rr9NBb0ch85cZxSOn?=
- =?us-ascii?Q?4t2S+i1z/QXmkBpzZFv7+Q0zVjGIoq/HuNrJtBxFoufdv4FcS9uvPHFRWO+n?=
- =?us-ascii?Q?YqbCrWqniD4T7TqfYn5nebyF5d36/VgJTCnipD4UmnaHHvQ0v2nHnvG5eUUF?=
- =?us-ascii?Q?oH1XyzL568TcDFjuR/df5WczujPcf+EEQAmyBbIjWrEQVIeFlI4E+FRKmyP4?=
- =?us-ascii?Q?Ld+VIi6/MbpS4gm8KycJ2FNCM2iuGL7zM1wV+ew1X2YRJ0NFGAbK1yvPBda+?=
- =?us-ascii?Q?OiHSEpuOmVv5KgBbRGWSjZj88F3gDTVvg6yxvB35Uc7dQ/HgfxQ4zeqjJas2?=
- =?us-ascii?Q?aFPPTTuXTpxim15k7t1NKjDayUSy+VNc2ZwkBC0LD27wA52bE5Jw3PtnKFPt?=
- =?us-ascii?Q?+Lkybiex9P7h9ySgRLZ9OgrNiHdBxXIGd+VHduCAhEaOwp55htQ6A53hyRZI?=
- =?us-ascii?Q?h1gaUCyx54JKDO4BCkjfezNJlBVOZCwmHPpL8kh+W4nYEqRTwJY9v/ExH6nS?=
- =?us-ascii?Q?fTvtGtjk1ZwpYwWjuo2VMNbENJZOeYqCMsNeBKPriLEptawkCH/OrEKYQEd9?=
- =?us-ascii?Q?J77/XrKow29kP09w4go+T1jKoiWrssYDgF42Y5eUIQwtxxv5XvGIqOlmUzYK?=
- =?us-ascii?Q?3BpmMQ=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c8f6adf-7131-453d-9cf4-08d9f51f6e08
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 09:49:19.1453
+X-Microsoft-Antispam-Message-Info: Y2xU86bEb6+i9EJsokAatIrmAShJEaTpl9fyxNepoXEP9dBFBfRqoqbl+IT5VyKu/BA2EO/Qovp4QBlPhuKma+HDGNmVv4PiRjJpibAL7Xx8M28p8h96A9OSd8elh7Gtw88ow0EjXftASCx+neZJB9bTQpAHFYwQarq1IZGeD/34r2IQXeOgTs4hrzMfRMdNr1AE8OkPI7z1bK/lqk8UfM8x964jWezTN3WusoODq9totwq9tJa1nbRjKPoABuNztl4ExDFi0NRJYDXjg2ySdUxLyCKPsaX8ZK3zDPh8CiBwywj9dk/sO9KtLAHzjPGeWJFzg7hsqAlM8WsCV4PkF1D3ovN1gUdRNBXu/C5/3jsR6EU6+KDrbO4/OMUeCLMHVNIA4OYTsnyItwl7sKqsar8EDRxoBk+nim+rSZXzRmNdpM5uFWNeLqWEB4yqHz/EVHFdX/6NyV+CSFPS5xFOs0V3fMmjC59kItcKIfo7xz19qK+o2MJkwoM6uONPQDYmq0SiyVAzpasMXziE1wUwT5x8rPg/D24W0I2SRk5pUOWz4w+3FHX/C+5BrRwq5nqLt8NCMevyWwIu89r511l35LtTyz6FFDgaqBEonaURla/UOwpAMi40WRkvWhIqgBzxxh1k9idfqaqbdvWfIREH1IVivXizdcs7stYhCiRhduXneI6zGqp4YfY007gvDNjO0NDCi8jZfvWnQ3/hhsTG+w==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(8676002)(81166007)(4326008)(6666004)(31696002)(508600001)(86362001)(70586007)(356005)(70206006)(82310400004)(54906003)(6916009)(316002)(186003)(2616005)(16526019)(26005)(31686004)(107886003)(2906002)(36860700001)(40460700003)(336012)(36756003)(8936002)(83380400001)(47076005)(5660300002)(426003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 09:50:36.3528
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ecf94l1VKyPaNiKEObTYE5Ew+nG5AQpWEZC3TEPaH4rTBwXoKxJJwmTNYuIu2Zte3YKIbYb3ARts7URbByxWmSFlRIhBbVM4UXkvTdf+oAA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5093
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10264 signatures=677614
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 spamscore=0
- mlxscore=0 adultscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202210057
-X-Proofpoint-GUID: DkR8M-TwjWUHhaD78xZBzeLFImoKte2U
-X-Proofpoint-ORIG-GUID: DkR8M-TwjWUHhaD78xZBzeLFImoKte2U
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80c65104-4218-45ae-e739-08d9f51f9c4d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5977
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:23:12AM +0800, Hangyu Hua wrote:
-> unregister_netdev need to be called when register_netdev succeeds
-> qlge_health_create_reporters fails.
+
+
+
+On Sun, 20 Feb 2022, David Laight wrote:
+
+> From: Paul Blakey
+> > Sent: 20 February 2022 13:21
+> > 
+> > Ipv6 ttl, label and tos fields are modified without first
+> > pulling/pushing the ipv6 header, which would have updated
+> > the hw csum (if available). This might cause csum validation
+> > when sending the packet to the stack, as can be seen in
+> > the trace below.
+> > 
+> > Fix this by updating skb->csum if available.
+> ...
+> > +static inline __wsum
+> > +csum_block_replace(__wsum csum, __wsum old, __wsum new, int offset)
+> > +{
+> > +	return csum_block_add(csum_block_sub(csum, old, offset), new, offset);
+> > +}
 > 
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> That look computationally OTT for sub 32bit adjustments.
+> 
+> It ought to be enough to do:
+> 	return csum_add(old_csum, 0xf0000fff + new - old);
+> 
+> Although it will need 'tweaking' for odd aligned 24bit values.
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
+> 
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-regards,
-dan carpenter
-
+I'm not comfortable with manually implementing some low-level
+bit fideling checksum calculation, while covering all cases.
+And as you said it also doesnt have the offset param (odd aligned).
+The same could be said about csum_block_add()/sub(), replace()
+just uses them. I think the csum operations are more readable and
+should  be inlined/optimize, so can we do it the readable way,
+and then,  if needed, optimize it?
