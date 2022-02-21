@@ -2,61 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E09D64BEE49
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 00:40:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C49E4BEE34
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 00:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236449AbiBUXSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 18:18:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33650 "EHLO
+        id S236486AbiBUXSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 18:18:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236487AbiBUXSb (ORCPT
+        with ESMTP id S236488AbiBUXSb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 18:18:31 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF8A24BFC;
-        Mon, 21 Feb 2022 15:18:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A90624F0A;
+        Mon, 21 Feb 2022 15:18:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645485485; x=1677021485;
+  t=1645485486; x=1677021486;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mmpDbho6EFBReIp+UJ+Rf409yBMByOTa3FwPx9dN22o=;
-  b=au0okqs5NLhxGOVu+96uqqJ5gqW6IuVDXN9gzxnb1zXaUsimZbYteaaT
-   XAxuv1zeZRnwKMBCtNvgUDjG9hVigHDFMU0wYn1891jVU35JpTqQzeHck
-   +BtnTBssVW3Wo7Xy/DaL2RFsecBDffn7//XA32EcT5N55ZoopYJ7ejiR/
-   nj9hn78td8XUa3WCwUVHXxHr9tR/AReNo3U67dc5B+3Fjkiwf2vdaimwp
-   lneOXsGHACFHi4azQHKkNNw9oCxmm2aUgTIsr5xIYDkYGFxQ6CG/aO2TC
-   cpbA6kZZrdSTGMn6OyWz8gieUBrgU74jVqsZ86rvW8JmH2qfFXaCkdLFf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251530441"
+  bh=yBcBvjJ/VepSDsCpwUwjixNuXeR4oixpM4h2duuH8BA=;
+  b=EKhMYs83K7pNBYzT2/qbZpdD7m2S3okxSx3yy6btuFCcNpc2usTmMKuM
+   2ot/2jaBId0vCUpjIZosAG0tVKvU3dknbXw5sLFvgpGUF0NtQMcGI3CjO
+   6O52l+mG2M5fe9fNtHGYZOPoI77iohOQY17iFA1r9XAw9jIxHqBlO9bEK
+   8gDWz1C2GL14qJumkh/i3TpDhkgbgLvMBMqNNsE4MaqAk9WvExSINgHt1
+   62vTW0SUvEwNl2xMa3nay7dYJzU4qbKgknuu3TiKz2QSV65pxqZysh+Ua
+   UF2+cqFTK3bf99GwQ88h0fVYIzgO05gMhtdeKyMPVPRQmNLq8XYdTNBQj
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251530444"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251530441"
+   d="scan'208";a="251530444"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:18:02 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:18:05 -0800
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="638694532"
+   d="scan'208";a="638694547"
 Received: from lab-ah.igk.intel.com ([10.91.215.196])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:17:59 -0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:18:02 -0800
 From:   Andrzej Hajda <andrzej.hajda@intel.com>
 To:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, netdev <netdev@vger.kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         Lucas De Marchi <lucas.demarchi@intel.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
         Eric Dumazet <edumazet@google.com>,
         Dmitry Vyukov <dvyukov@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Chris Wilson <chris@chris-wilson.co.uk>
-Subject: [PATCH v2 6/9] drm/i915: Separate wakeref tracking
-Date:   Tue, 22 Feb 2022 00:16:56 +0100
-Message-Id: <20220221231705.1481059-15-andrzej.hajda@intel.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2 06/11] lib/ref_tracker: add printing to memory buffer
+Date:   Tue, 22 Feb 2022 00:16:57 +0100
+Message-Id: <20220221231705.1481059-16-andrzej.hajda@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220221231705.1481059-1-andrzej.hajda@intel.com>
 References: <20220221231705.1481059-1-andrzej.hajda@intel.com>
 MIME-Version: 1.0
 Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -68,787 +66,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Wilson <chris.p.wilson@intel.com>
+In case one wants to show stats via debugfs.
 
-Extract the callstack tracking of intel_runtime_pm.c into its own
-utility so that that we can reuse it for other online debugging of
-scoped wakerefs.
-
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
 Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Reviewed-by: Chris Wilson <chris.p.wilson@intel.com>
 ---
- drivers/gpu/drm/i915/Kconfig.debug           |   9 +
- drivers/gpu/drm/i915/Makefile                |   4 +
- drivers/gpu/drm/i915/intel_runtime_pm.c      | 244 +++----------------
- drivers/gpu/drm/i915/intel_runtime_pm.h      |  10 +-
- drivers/gpu/drm/i915/intel_wakeref.h         |   6 +-
- drivers/gpu/drm/i915/intel_wakeref_tracker.c | 234 ++++++++++++++++++
- drivers/gpu/drm/i915/intel_wakeref_tracker.h |  76 ++++++
- 7 files changed, 355 insertions(+), 228 deletions(-)
- create mode 100644 drivers/gpu/drm/i915/intel_wakeref_tracker.c
- create mode 100644 drivers/gpu/drm/i915/intel_wakeref_tracker.h
+ include/linux/ref_tracker.h |  8 ++++++
+ lib/ref_tracker.c           | 56 +++++++++++++++++++++++++++++++------
+ 2 files changed, 56 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/Kconfig.debug b/drivers/gpu/drm/i915/Kconfig.debug
-index e7fd3e76f8a20..8b1973146e848 100644
---- a/drivers/gpu/drm/i915/Kconfig.debug
-+++ b/drivers/gpu/drm/i915/Kconfig.debug
-@@ -33,6 +33,7 @@ config DRM_I915_DEBUG
- 	select PREEMPT_COUNT
- 	select I2C_CHARDEV
- 	select STACKDEPOT
-+	select STACKTRACE
- 	select DRM_DP_AUX_CHARDEV
- 	select X86_MSR # used by igt/pm_rpm
- 	select DRM_VGEM # used by igt/prime_vgem (dmabuf interop checks)
-@@ -45,6 +46,7 @@ config DRM_I915_DEBUG
- 	select DRM_I915_DEBUG_GEM
- 	select DRM_I915_DEBUG_GEM_ONCE
- 	select DRM_I915_DEBUG_MMIO
-+	select DRM_I915_TRACK_WAKEREF
- 	select DRM_I915_DEBUG_RUNTIME_PM
- 	select DRM_I915_SW_FENCE_DEBUG_OBJECTS
- 	select DRM_I915_SELFTEST
-@@ -235,11 +237,18 @@ config DRM_I915_DEBUG_VBLANK_EVADE
+diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
+index a2cf1f6309adb..2fdbfd2e14797 100644
+--- a/include/linux/ref_tracker.h
++++ b/include/linux/ref_tracker.h
+@@ -50,6 +50,8 @@ void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
+ void ref_tracker_dir_print(struct ref_tracker_dir *dir,
+ 			   unsigned int display_limit);
  
- 	  If in doubt, say "N".
- 
-+config DRM_I915_TRACK_WAKEREF
-+	depends on STACKDEPOT
-+	depends on STACKTRACE
-+	bool
++int ref_tracker_dir_snprint(struct ref_tracker_dir *dir, char *buf, size_t size);
 +
- config DRM_I915_DEBUG_RUNTIME_PM
- 	bool "Enable extra state checking for runtime PM"
- 	depends on DRM_I915
- 	default n
- 	select STACKDEPOT
-+	select STACKTRACE
-+	select DRM_I915_TRACK_WAKEREF
- 	help
- 	  Choose this option to turn on extra state checking for the
- 	  runtime PM functionality. This may introduce overhead during
-diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
-index 9d588d936e3dc..88a403d3294cb 100644
---- a/drivers/gpu/drm/i915/Makefile
-+++ b/drivers/gpu/drm/i915/Makefile
-@@ -75,6 +75,10 @@ i915-$(CONFIG_DEBUG_FS) += \
- 	i915_debugfs_params.o \
- 	display/intel_display_debugfs.o \
- 	display/intel_pipe_crc.o
-+
-+i915-$(CONFIG_DRM_I915_TRACK_WAKEREF) += \
-+	intel_wakeref_tracker.o
-+
- i915-$(CONFIG_PERF_EVENTS) += i915_pmu.o
+ int ref_tracker_alloc(struct ref_tracker_dir *dir,
+ 		      struct ref_tracker **trackerp, gfp_t gfp);
  
- # "Graphics Technology" (aka we talk to the gpu)
-diff --git a/drivers/gpu/drm/i915/intel_runtime_pm.c b/drivers/gpu/drm/i915/intel_runtime_pm.c
-index 6ed5786bcd299..7bd10efa56bf3 100644
---- a/drivers/gpu/drm/i915/intel_runtime_pm.c
-+++ b/drivers/gpu/drm/i915/intel_runtime_pm.c
-@@ -52,182 +52,37 @@
- 
- #if IS_ENABLED(CONFIG_DRM_I915_DEBUG_RUNTIME_PM)
- 
--#include <linux/sort.h>
--
--#define STACKDEPTH 8
--
--static noinline depot_stack_handle_t __save_depot_stack(void)
--{
--	unsigned long entries[STACKDEPTH];
--	unsigned int n;
--
--	n = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
--	return stack_depot_save(entries, n, GFP_NOWAIT | __GFP_NOWARN);
--}
--
- static void init_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm)
- {
--	spin_lock_init(&rpm->debug.lock);
--	stack_depot_init();
-+	intel_wakeref_tracker_init(&rpm->debug);
- }
- 
--static noinline depot_stack_handle_t
-+static intel_wakeref_t
- track_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm)
- {
--	depot_stack_handle_t stack, *stacks;
--	unsigned long flags;
--
--	if (rpm->no_wakeref_tracking)
--		return -1;
--
--	stack = __save_depot_stack();
--	if (!stack)
-+	if (!rpm->available)
- 		return -1;
- 
--	spin_lock_irqsave(&rpm->debug.lock, flags);
--
--	if (!rpm->debug.count)
--		rpm->debug.last_acquire = stack;
--
--	stacks = krealloc(rpm->debug.owners,
--			  (rpm->debug.count + 1) * sizeof(*stacks),
--			  GFP_NOWAIT | __GFP_NOWARN);
--	if (stacks) {
--		stacks[rpm->debug.count++] = stack;
--		rpm->debug.owners = stacks;
--	} else {
--		stack = -1;
--	}
--
--	spin_unlock_irqrestore(&rpm->debug.lock, flags);
--
--	return stack;
-+	return intel_wakeref_tracker_add(&rpm->debug);
- }
- 
- static void untrack_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm,
--					     depot_stack_handle_t stack)
-+					     intel_wakeref_t wakeref)
- {
--	struct drm_i915_private *i915 = container_of(rpm,
--						     struct drm_i915_private,
--						     runtime_pm);
--	unsigned long flags, n;
--	bool found = false;
--
--	if (unlikely(stack == -1))
--		return;
--
--	spin_lock_irqsave(&rpm->debug.lock, flags);
--	for (n = rpm->debug.count; n--; ) {
--		if (rpm->debug.owners[n] == stack) {
--			memmove(rpm->debug.owners + n,
--				rpm->debug.owners + n + 1,
--				(--rpm->debug.count - n) * sizeof(stack));
--			found = true;
--			break;
--		}
--	}
--	spin_unlock_irqrestore(&rpm->debug.lock, flags);
--
--	if (drm_WARN(&i915->drm, !found,
--		     "Unmatched wakeref (tracking %lu), count %u\n",
--		     rpm->debug.count, atomic_read(&rpm->wakeref_count))) {
--		char *buf;
--
--		buf = kmalloc(PAGE_SIZE, GFP_NOWAIT | __GFP_NOWARN);
--		if (!buf)
--			return;
--
--		stack_depot_snprint(stack, buf, PAGE_SIZE, 2);
--		DRM_DEBUG_DRIVER("wakeref %x from\n%s", stack, buf);
--
--		stack = READ_ONCE(rpm->debug.last_release);
--		if (stack) {
--			stack_depot_snprint(stack, buf, PAGE_SIZE, 2);
--			DRM_DEBUG_DRIVER("wakeref last released at\n%s", buf);
--		}
--
--		kfree(buf);
--	}
-+	intel_wakeref_tracker_remove(&rpm->debug, wakeref);
- }
- 
--static int cmphandle(const void *_a, const void *_b)
-+static void untrack_all_intel_runtime_pm_wakerefs(struct intel_runtime_pm *rpm)
- {
--	const depot_stack_handle_t * const a = _a, * const b = _b;
-+	struct drm_printer p = drm_debug_printer("i915");
- 
--	if (*a < *b)
--		return -1;
--	else if (*a > *b)
--		return 1;
--	else
--		return 0;
--}
--
--static void
--__print_intel_runtime_pm_wakeref(struct drm_printer *p,
--				 const struct intel_runtime_pm_debug *dbg)
--{
--	unsigned long i;
--	char *buf;
--
--	buf = kmalloc(PAGE_SIZE, GFP_NOWAIT | __GFP_NOWARN);
--	if (!buf)
--		return;
--
--	if (dbg->last_acquire) {
--		stack_depot_snprint(dbg->last_acquire, buf, PAGE_SIZE, 2);
--		drm_printf(p, "Wakeref last acquired:\n%s", buf);
--	}
--
--	if (dbg->last_release) {
--		stack_depot_snprint(dbg->last_release, buf, PAGE_SIZE, 2);
--		drm_printf(p, "Wakeref last released:\n%s", buf);
--	}
--
--	drm_printf(p, "Wakeref count: %lu\n", dbg->count);
--
--	sort(dbg->owners, dbg->count, sizeof(*dbg->owners), cmphandle, NULL);
--
--	for (i = 0; i < dbg->count; i++) {
--		depot_stack_handle_t stack = dbg->owners[i];
--		unsigned long rep;
--
--		rep = 1;
--		while (i + 1 < dbg->count && dbg->owners[i + 1] == stack)
--			rep++, i++;
--		stack_depot_snprint(stack, buf, PAGE_SIZE, 2);
--		drm_printf(p, "Wakeref x%lu taken at:\n%s", rep, buf);
--	}
--
--	kfree(buf);
--}
--
--static noinline void
--__untrack_all_wakerefs(struct intel_runtime_pm_debug *debug,
--		       struct intel_runtime_pm_debug *saved)
--{
--	*saved = *debug;
--
--	debug->owners = NULL;
--	debug->count = 0;
--	debug->last_release = __save_depot_stack();
--}
--
--static void
--dump_and_free_wakeref_tracking(struct intel_runtime_pm_debug *debug)
--{
--	if (debug->count) {
--		struct drm_printer p = drm_debug_printer("i915");
--
--		__print_intel_runtime_pm_wakeref(&p, debug);
--	}
--
--	kfree(debug->owners);
-+	intel_wakeref_tracker_reset(&rpm->debug, &p);
- }
- 
- static noinline void
- __intel_wakeref_dec_and_check_tracking(struct intel_runtime_pm *rpm)
- {
--	struct intel_runtime_pm_debug dbg = {};
-+	struct intel_wakeref_tracker saved;
- 	unsigned long flags;
- 
- 	if (!atomic_dec_and_lock_irqsave(&rpm->wakeref_count,
-@@ -235,60 +90,21 @@ __intel_wakeref_dec_and_check_tracking(struct intel_runtime_pm *rpm)
- 					 flags))
- 		return;
- 
--	__untrack_all_wakerefs(&rpm->debug, &dbg);
-+	saved = __intel_wakeref_tracker_reset(&rpm->debug);
- 	spin_unlock_irqrestore(&rpm->debug.lock, flags);
- 
--	dump_and_free_wakeref_tracking(&dbg);
--}
--
--static noinline void
--untrack_all_intel_runtime_pm_wakerefs(struct intel_runtime_pm *rpm)
--{
--	struct intel_runtime_pm_debug dbg = {};
--	unsigned long flags;
--
--	spin_lock_irqsave(&rpm->debug.lock, flags);
--	__untrack_all_wakerefs(&rpm->debug, &dbg);
--	spin_unlock_irqrestore(&rpm->debug.lock, flags);
-+	if (saved.count) {
-+		struct drm_printer p = drm_debug_printer("i915");
- 
--	dump_and_free_wakeref_tracking(&dbg);
-+		__intel_wakeref_tracker_show(&saved, &p);
-+		intel_wakeref_tracker_fini(&saved);
-+	}
- }
- 
- void print_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm,
- 				    struct drm_printer *p)
- {
--	struct intel_runtime_pm_debug dbg = {};
--
--	do {
--		unsigned long alloc = dbg.count;
--		depot_stack_handle_t *s;
--
--		spin_lock_irq(&rpm->debug.lock);
--		dbg.count = rpm->debug.count;
--		if (dbg.count <= alloc) {
--			memcpy(dbg.owners,
--			       rpm->debug.owners,
--			       dbg.count * sizeof(*s));
--		}
--		dbg.last_acquire = rpm->debug.last_acquire;
--		dbg.last_release = rpm->debug.last_release;
--		spin_unlock_irq(&rpm->debug.lock);
--		if (dbg.count <= alloc)
--			break;
--
--		s = krealloc(dbg.owners,
--			     dbg.count * sizeof(*s),
--			     GFP_NOWAIT | __GFP_NOWARN);
--		if (!s)
--			goto out;
--
--		dbg.owners = s;
--	} while (1);
--
--	__print_intel_runtime_pm_wakeref(p, &dbg);
--
--out:
--	kfree(dbg.owners);
-+	intel_wakeref_tracker_show(&rpm->debug, p);
- }
- 
- #else
-@@ -297,14 +113,14 @@ static void init_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm)
+@@ -78,6 +80,12 @@ static inline void ref_tracker_dir_print(struct ref_tracker_dir *dir,
  {
  }
  
--static depot_stack_handle_t
-+static intel_wakeref_t
- track_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm)
- {
- 	return -1;
- }
- 
- static void untrack_intel_runtime_pm_wakeref(struct intel_runtime_pm *rpm,
--					     intel_wakeref_t wref)
-+					     intel_wakeref_t wakeref)
- {
- }
- 
-@@ -349,9 +165,8 @@ intel_runtime_pm_release(struct intel_runtime_pm *rpm, int wakelock)
- static intel_wakeref_t __intel_runtime_pm_get(struct intel_runtime_pm *rpm,
- 					      bool wakelock)
- {
--	struct drm_i915_private *i915 = container_of(rpm,
--						     struct drm_i915_private,
--						     runtime_pm);
-+	struct drm_i915_private *i915 =
-+		container_of(rpm, struct drm_i915_private, runtime_pm);
- 	int ret;
- 
- 	ret = pm_runtime_get_sync(rpm->kdev);
-@@ -556,9 +371,8 @@ void intel_runtime_pm_put(struct intel_runtime_pm *rpm, intel_wakeref_t wref)
-  */
- void intel_runtime_pm_enable(struct intel_runtime_pm *rpm)
- {
--	struct drm_i915_private *i915 = container_of(rpm,
--						     struct drm_i915_private,
--						     runtime_pm);
-+	struct drm_i915_private *i915 =
-+		container_of(rpm, struct drm_i915_private, runtime_pm);
- 	struct device *kdev = rpm->kdev;
- 
- 	/*
-@@ -604,9 +418,8 @@ void intel_runtime_pm_enable(struct intel_runtime_pm *rpm)
- 
- void intel_runtime_pm_disable(struct intel_runtime_pm *rpm)
- {
--	struct drm_i915_private *i915 = container_of(rpm,
--						     struct drm_i915_private,
--						     runtime_pm);
-+	struct drm_i915_private *i915 =
-+		container_of(rpm, struct drm_i915_private, runtime_pm);
- 	struct device *kdev = rpm->kdev;
- 
- 	/* Transfer rpm ownership back to core */
-@@ -621,9 +434,8 @@ void intel_runtime_pm_disable(struct intel_runtime_pm *rpm)
- 
- void intel_runtime_pm_driver_release(struct intel_runtime_pm *rpm)
- {
--	struct drm_i915_private *i915 = container_of(rpm,
--						     struct drm_i915_private,
--						     runtime_pm);
-+	struct drm_i915_private *i915 =
-+		container_of(rpm, struct drm_i915_private, runtime_pm);
- 	int count = atomic_read(&rpm->wakeref_count);
- 
- 	drm_WARN(&i915->drm, count,
-@@ -637,7 +449,7 @@ void intel_runtime_pm_driver_release(struct intel_runtime_pm *rpm)
- void intel_runtime_pm_init_early(struct intel_runtime_pm *rpm)
- {
- 	struct drm_i915_private *i915 =
--			container_of(rpm, struct drm_i915_private, runtime_pm);
-+		container_of(rpm, struct drm_i915_private, runtime_pm);
- 	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
- 	struct device *kdev = &pdev->dev;
- 
-diff --git a/drivers/gpu/drm/i915/intel_runtime_pm.h b/drivers/gpu/drm/i915/intel_runtime_pm.h
-index d9160e3ff4afc..0871fa2176474 100644
---- a/drivers/gpu/drm/i915/intel_runtime_pm.h
-+++ b/drivers/gpu/drm/i915/intel_runtime_pm.h
-@@ -61,15 +61,7 @@ struct intel_runtime_pm {
- 	 * paired rpm_put) we can remove corresponding pairs of and keep
- 	 * the array trimmed to active wakerefs.
- 	 */
--	struct intel_runtime_pm_debug {
--		spinlock_t lock;
--
--		depot_stack_handle_t last_acquire;
--		depot_stack_handle_t last_release;
--
--		depot_stack_handle_t *owners;
--		unsigned long count;
--	} debug;
-+	struct intel_wakeref_tracker debug;
- #endif
- };
- 
-diff --git a/drivers/gpu/drm/i915/intel_wakeref.h b/drivers/gpu/drm/i915/intel_wakeref.h
-index 4f4c2e15e736e..e6ba389652d74 100644
---- a/drivers/gpu/drm/i915/intel_wakeref.h
-+++ b/drivers/gpu/drm/i915/intel_wakeref.h
-@@ -17,7 +17,9 @@
- #include <linux/timer.h>
- #include <linux/workqueue.h>
- 
--#if IS_ENABLED(CONFIG_DRM_I915_DEBUG)
-+#include "intel_wakeref_tracker.h"
-+
-+#if IS_ENABLED(CONFIG_DRM_I915_DEBUG_WAKEREF)
- #define INTEL_WAKEREF_BUG_ON(expr) BUG_ON(expr)
- #else
- #define INTEL_WAKEREF_BUG_ON(expr) BUILD_BUG_ON_INVALID(expr)
-@@ -26,8 +28,6 @@
- struct intel_runtime_pm;
- struct intel_wakeref;
- 
--typedef depot_stack_handle_t intel_wakeref_t;
--
- struct intel_wakeref_ops {
- 	int (*get)(struct intel_wakeref *wf);
- 	int (*put)(struct intel_wakeref *wf);
-diff --git a/drivers/gpu/drm/i915/intel_wakeref_tracker.c b/drivers/gpu/drm/i915/intel_wakeref_tracker.c
-new file mode 100644
-index 0000000000000..a0bcef13a1085
---- /dev/null
-+++ b/drivers/gpu/drm/i915/intel_wakeref_tracker.c
-@@ -0,0 +1,234 @@
-+// SPDX-License-Identifier: MIT
-+/*
-+ * Copyright © 2021 Intel Corporation
-+ */
-+
-+#include <linux/slab.h>
-+#include <linux/stackdepot.h>
-+#include <linux/stacktrace.h>
-+#include <linux/sort.h>
-+
-+#include <drm/drm_print.h>
-+
-+#include "intel_wakeref.h"
-+
-+#define STACKDEPTH 8
-+
-+static noinline depot_stack_handle_t __save_depot_stack(void)
++static inline int ref_tracker_dir_snprint(struct ref_tracker_dir *dir,
++					  char *buf, size_t size)
 +{
-+	unsigned long entries[STACKDEPTH];
-+	unsigned int n;
-+
-+	n = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
-+	return stack_depot_save(entries, n, GFP_NOWAIT | __GFP_NOWARN);
++	return 0;
 +}
 +
-+static void __print_depot_stack(depot_stack_handle_t stack,
-+				char *buf, int sz, int indent)
-+{
-+	unsigned long *entries;
-+	unsigned int nr_entries;
-+
-+	nr_entries = stack_depot_fetch(stack, &entries);
-+	stack_trace_snprint(buf, sz, entries, nr_entries, indent);
-+}
-+
-+static int cmphandle(const void *_a, const void *_b)
-+{
-+	const depot_stack_handle_t * const a = _a, * const b = _b;
-+
-+	if (*a < *b)
-+		return -1;
-+	else if (*a > *b)
-+		return 1;
-+	else
-+		return 0;
-+}
-+
-+void
-+__intel_wakeref_tracker_show(const struct intel_wakeref_tracker *w,
-+			     struct drm_printer *p)
-+{
-+	unsigned long i;
+ static inline int ref_tracker_alloc(struct ref_tracker_dir *dir,
+ 				    struct ref_tracker **trackerp,
+ 				    gfp_t gfp)
+diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
+index ab1253fde244e..2ef4596b6b36f 100644
+--- a/lib/ref_tracker.c
++++ b/lib/ref_tracker.c
+@@ -62,8 +62,27 @@ ref_tracker_get_stats(struct ref_tracker_dir *dir, unsigned int limit)
+ 	return stats;
+ }
+ 
+-void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
+-			   unsigned int display_limit)
++struct ostream {
 +	char *buf;
-+
-+	buf = kmalloc(PAGE_SIZE, GFP_NOWAIT | __GFP_NOWARN);
-+	if (!buf)
-+		return;
-+
-+	if (w->last_acquire) {
-+		__print_depot_stack(w->last_acquire, buf, PAGE_SIZE, 2);
-+		drm_printf(p, "Wakeref last acquired:\n%s", buf);
-+	}
-+
-+	if (w->last_release) {
-+		__print_depot_stack(w->last_release, buf, PAGE_SIZE, 2);
-+		drm_printf(p, "Wakeref last released:\n%s", buf);
-+	}
-+
-+	drm_printf(p, "Wakeref count: %lu\n", w->count);
-+
-+	sort(w->owners, w->count, sizeof(*w->owners), cmphandle, NULL);
-+
-+	for (i = 0; i < w->count; i++) {
-+		depot_stack_handle_t stack = w->owners[i];
-+		unsigned long rep;
-+
-+		rep = 1;
-+		while (i + 1 < w->count && w->owners[i + 1] == stack)
-+			rep++, i++;
-+		__print_depot_stack(stack, buf, PAGE_SIZE, 2);
-+		drm_printf(p, "Wakeref x%lu taken at:\n%s", rep, buf);
-+	}
-+
-+	kfree(buf);
-+}
-+
-+void intel_wakeref_tracker_show(struct intel_wakeref_tracker *w,
-+				struct drm_printer *p)
-+{
-+	struct intel_wakeref_tracker tmp = {};
-+
-+	do {
-+		unsigned long alloc = tmp.count;
-+		depot_stack_handle_t *s;
-+
-+		spin_lock_irq(&w->lock);
-+		tmp.count = w->count;
-+		if (tmp.count <= alloc)
-+			memcpy(tmp.owners, w->owners, tmp.count * sizeof(*s));
-+		tmp.last_acquire = w->last_acquire;
-+		tmp.last_release = w->last_release;
-+		spin_unlock_irq(&w->lock);
-+		if (tmp.count <= alloc)
-+			break;
-+
-+		s = krealloc(tmp.owners,
-+			     tmp.count * sizeof(*s),
-+			     GFP_NOWAIT | __GFP_NOWARN);
-+		if (!s)
-+			goto out;
-+
-+		tmp.owners = s;
-+	} while (1);
-+
-+	__intel_wakeref_tracker_show(&tmp, p);
-+
-+out:
-+	intel_wakeref_tracker_fini(&tmp);
-+}
-+
-+intel_wakeref_t intel_wakeref_tracker_add(struct intel_wakeref_tracker *w)
-+{
-+	depot_stack_handle_t stack, *stacks;
-+	unsigned long flags;
-+
-+	stack = __save_depot_stack();
-+	if (!stack)
-+		return -1;
-+
-+	spin_lock_irqsave(&w->lock, flags);
-+
-+	if (!w->count)
-+		w->last_acquire = stack;
-+
-+	stacks = krealloc(w->owners,
-+			  (w->count + 1) * sizeof(*stacks),
-+			  GFP_NOWAIT | __GFP_NOWARN);
-+	if (stacks) {
-+		stacks[w->count++] = stack;
-+		w->owners = stacks;
-+	} else {
-+		stack = -1;
-+	}
-+
-+	spin_unlock_irqrestore(&w->lock, flags);
-+
-+	return stack;
-+}
-+
-+void intel_wakeref_tracker_remove(struct intel_wakeref_tracker *w,
-+				  intel_wakeref_t stack)
-+{
-+	unsigned long flags, n;
-+	bool found = false;
-+
-+	if (unlikely(stack == -1))
-+		return;
-+
-+	spin_lock_irqsave(&w->lock, flags);
-+	for (n = w->count; n--; ) {
-+		if (w->owners[n] == stack) {
-+			memmove(w->owners + n,
-+				w->owners + n + 1,
-+				(--w->count - n) * sizeof(stack));
-+			found = true;
-+			break;
-+		}
-+	}
-+	spin_unlock_irqrestore(&w->lock, flags);
-+
-+	if (WARN(!found,
-+		 "Unmatched wakeref %x, tracking %lu\n",
-+		 stack, w->count)) {
-+		char *buf;
-+
-+		buf = kmalloc(PAGE_SIZE, GFP_NOWAIT | __GFP_NOWARN);
-+		if (!buf)
-+			return;
-+
-+		__print_depot_stack(stack, buf, PAGE_SIZE, 2);
-+		pr_err("wakeref %x from\n%s", stack, buf);
-+
-+		stack = READ_ONCE(w->last_release);
-+		if (stack && !w->count) {
-+			__print_depot_stack(stack, buf, PAGE_SIZE, 2);
-+			pr_err("wakeref last released at\n%s", buf);
-+		}
-+
-+		kfree(buf);
-+	}
-+}
-+
-+struct intel_wakeref_tracker
-+__intel_wakeref_tracker_reset(struct intel_wakeref_tracker *w)
-+{
-+	struct intel_wakeref_tracker saved;
-+
-+	lockdep_assert_held(&w->lock);
-+
-+	saved = *w;
-+
-+	w->owners = NULL;
-+	w->count = 0;
-+	w->last_release = __save_depot_stack();
-+
-+	return saved;
-+}
-+
-+void intel_wakeref_tracker_reset(struct intel_wakeref_tracker *w,
-+				 struct drm_printer *p)
-+{
-+	struct intel_wakeref_tracker tmp;
-+
-+	spin_lock_irq(&w->lock);
-+	tmp = __intel_wakeref_tracker_reset(w);
-+	spin_unlock_irq(&w->lock);
-+
-+	if (tmp.count)
-+		__intel_wakeref_tracker_show(&tmp, p);
-+
-+	intel_wakeref_tracker_fini(&tmp);
-+}
-+
-+void intel_wakeref_tracker_init(struct intel_wakeref_tracker *w)
-+{
-+	memset(w, 0, sizeof(*w));
-+	spin_lock_init(&w->lock);
-+	stack_depot_init();
-+}
-+
-+void intel_wakeref_tracker_fini(struct intel_wakeref_tracker *w)
-+{
-+	kfree(w->owners);
-+}
-diff --git a/drivers/gpu/drm/i915/intel_wakeref_tracker.h b/drivers/gpu/drm/i915/intel_wakeref_tracker.h
-new file mode 100644
-index 0000000000000..61df68e28c0fb
---- /dev/null
-+++ b/drivers/gpu/drm/i915/intel_wakeref_tracker.h
-@@ -0,0 +1,76 @@
-+/* SPDX-License-Identifier: MIT */
-+/*
-+ * Copyright © 2019 Intel Corporation
-+ */
-+
-+#ifndef INTEL_WAKEREF_TRACKER_H
-+#define INTEL_WAKEREF_TRACKER_H
-+
-+#include <linux/kconfig.h>
-+#include <linux/spinlock.h>
-+#include <linux/stackdepot.h>
-+
-+typedef depot_stack_handle_t intel_wakeref_t;
-+
-+struct drm_printer;
-+
-+struct intel_wakeref_tracker {
-+	spinlock_t lock;
-+
-+	depot_stack_handle_t last_acquire;
-+	depot_stack_handle_t last_release;
-+
-+	depot_stack_handle_t *owners;
-+	unsigned long count;
++	int size, used;
 +};
 +
-+#if IS_ENABLED(CONFIG_DRM_I915_TRACK_WAKEREF)
++#define pr_ostream(stream, fmt, args...) \
++({ \
++	struct ostream *_s = (stream); \
++\
++	if (!_s->buf) { \
++		pr_err(fmt, ##args); \
++	} else { \
++		int ret, len = _s->size - _s->used; \
++		ret = snprintf(_s->buf + _s->used, len, pr_fmt(fmt), ##args); \
++		_s->used += min(ret, len); \
++	} \
++})
 +
-+void intel_wakeref_tracker_init(struct intel_wakeref_tracker *w);
-+void intel_wakeref_tracker_fini(struct intel_wakeref_tracker *w);
++static void
++__ref_tracker_dir_pr_ostream(struct ref_tracker_dir *dir,
++			     unsigned int display_limit, struct ostream *s)
+ {
+ 	struct ref_tracker_dir_stats *stats;
+ 	unsigned int i = 0, skipped;
+@@ -77,8 +96,8 @@ void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
+ 
+ 	stats = ref_tracker_get_stats(dir, display_limit);
+ 	if (IS_ERR(stats)) {
+-		pr_err("%s@%pK: couldn't get stats, error %pe\n",
+-		       dir->name, dir, stats);
++		pr_ostream(s, "%s@%pK: couldn't get stats, error %pe\n",
++			   dir->name, dir, stats);
+ 		return;
+ 	}
+ 
+@@ -88,19 +107,27 @@ void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
+ 		stack = stats->stacks[i].stack_handle;
+ 		if (sbuf && !stack_depot_snprint(stack, sbuf, STACK_BUF_SIZE, 4))
+ 			sbuf[0] = 0;
+-		pr_err("%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
+-		       stats->stacks[i].count, stats->total, sbuf);
++		pr_ostream(s, "%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
++			   stats->stacks[i].count, stats->total, sbuf);
+ 		skipped -= stats->stacks[i].count;
+ 	}
+ 
+ 	if (skipped)
+-		pr_err("%s@%pK skipped reports about %d/%d users.\n",
+-		       dir->name, dir, skipped, stats->total);
++		pr_ostream(s, "%s@%pK skipped reports about %d/%d users.\n",
++			   dir->name, dir, skipped, stats->total);
+ 
+ 	kfree(sbuf);
+ 
+ 	kfree(stats);
+ }
 +
-+intel_wakeref_t intel_wakeref_tracker_add(struct intel_wakeref_tracker *w);
-+void intel_wakeref_tracker_remove(struct intel_wakeref_tracker *w,
-+			   intel_wakeref_t handle);
-+
-+struct intel_wakeref_tracker
-+__intel_wakeref_tracker_reset(struct intel_wakeref_tracker *w);
-+void intel_wakeref_tracker_reset(struct intel_wakeref_tracker *w,
-+				 struct drm_printer *p);
-+
-+void __intel_wakeref_tracker_show(const struct intel_wakeref_tracker *w,
-+				  struct drm_printer *p);
-+void intel_wakeref_tracker_show(struct intel_wakeref_tracker *w,
-+				struct drm_printer *p);
-+
-+#else
-+
-+static inline void intel_wakeref_tracker_init(struct intel_wakeref_tracker *w) {}
-+static inline void intel_wakeref_tracker_fini(struct intel_wakeref_tracker *w) {}
-+
-+static inline intel_wakeref_t
-+intel_wakeref_tracker_add(struct intel_wakeref_tracker *w)
++void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
++			   unsigned int display_limit)
 +{
-+	return -1;
++	struct ostream os = {};
++
++	__ref_tracker_dir_pr_ostream(dir, display_limit, &os);
 +}
-+
-+static inline void
-+intel_wakeref_untrack_remove(struct intel_wakeref_tracker *w, intel_wakeref_t handle) {}
-+
-+static inline struct intel_wakeref_tracker
-+__intel_wakeref_tracker_reset(struct intel_wakeref_tracker *w)
+ EXPORT_SYMBOL(__ref_tracker_dir_print);
+ 
+ void ref_tracker_dir_print(struct ref_tracker_dir *dir,
+@@ -114,6 +141,19 @@ void ref_tracker_dir_print(struct ref_tracker_dir *dir,
+ }
+ EXPORT_SYMBOL(ref_tracker_dir_print);
+ 
++int ref_tracker_dir_snprint(struct ref_tracker_dir *dir, char *buf, size_t size)
 +{
-+	return (struct intel_wakeref_tracker){};
++	struct ostream os = { .buf = buf, .size = size };
++	unsigned long flags;
++
++	spin_lock_irqsave(&dir->lock, flags);
++	__ref_tracker_dir_pr_ostream(dir, 16, &os);
++	spin_unlock_irqrestore(&dir->lock, flags);
++
++	return os.used;
 +}
++EXPORT_SYMBOL(ref_tracker_dir_snprint);
 +
-+static inline void intel_wakeref_tracker_reset(struct intel_wakeref_tracker *w,
-+					       struct drm_printer *p)
-+{
-+}
-+
-+static inline void __intel_wakeref_tracker_show(const struct intel_wakeref_tracker *w, struct drm_printer *p) {}
-+static inline void intel_wakeref_tracker_show(struct intel_wakeref_tracker *w, struct drm_printer *p) {}
-+
-+#endif
-+
-+#endif /* INTEL_WAKEREF_TRACKER_H */
+ void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
+ {
+ 	struct ref_tracker *tracker, *n;
 -- 
 2.25.1
 
