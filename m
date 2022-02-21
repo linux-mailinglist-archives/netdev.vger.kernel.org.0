@@ -2,107 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB2574BEA77
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7731B4BEACB
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231560AbiBUSO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 13:14:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41726 "EHLO
+        id S229849AbiBUSTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 13:19:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbiBUSMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:12:34 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F130281
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:04:01 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id p20so7463348ljo.0
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:04:01 -0800 (PST)
+        with ESMTP id S232394AbiBUSSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:18:30 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100B31081
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:08:16 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id r20so15857369ljj.1
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:08:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+O4j0r4gRZpPCC8vALOAdAGm1/r/gDtTHQV3KxQb75o=;
-        b=hMDjfRGCkPpKr/qoVL2ISwgEhL7XHbwSHkuOVbOkfEvQIItZIMyqkvVY3oNaShng6t
-         DtKhIIfplZEczrJLSGiT0Q4+NDlhYkUlvmBfc9SnIDxxeBVaWYoeMEWBJNURAH74RBXG
-         KdSDV4oAqK1Nt4ost+MoqCzUAJkqta0+exQVM=
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Hs6kJn9+mOIIZwDsnQIFcNqBIpimtFZQAKHVsCTwrY=;
+        b=F9GqQ1yN68fTRSzJUF+6cFoxD/GJ4aEMJQM0idrGvH+aEu+5n70OrVWNUZXsyxFrfj
+         kWhz7EitKMGt0/qI82LpmFIQjX/Q0J29BzsDlGFcSomRJ/AAcG9cvjF9yxvd9oLQPwuz
+         DJ40EV4FqE3d2qsjo4LB8ULboh4BhsNrZ/3iQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+O4j0r4gRZpPCC8vALOAdAGm1/r/gDtTHQV3KxQb75o=;
-        b=ZbQNlinaiUzj/gwXivDIPm+IaJs17WSh8htiB5eIvBvH1t7h7j26XP0Q5+kSmtMBZ/
-         lfbqxOKiPCFacPBuymkuMWCSpGlM5dp+s7yPI2L9DcY9vpqEMbz+rI2LssvZvvg5K9gV
-         qAVzzH5BFRG0+wldi3FN9kNPDk6dAoJyWnpkFgf2TzBS5ljduQmlMBeu1lJ0e8ruVwPw
-         tb/heWwRizal1DP1T/YjhXFar24oSulxfyjLSCfF0q/n2dDF3zxYYvyHwArINDoRskvS
-         Sw2vwVzYAOpeWUJ128owODH21y7cUdzY1MA676pfQveZwotn0cQM3xs54nZUHH3Mxl/P
-         6ixQ==
-X-Gm-Message-State: AOAM532AtP7Txw/b3VENKZW3BeyEwqa4GA5g/f0qCcd8Sqgr/rnjUHEU
-        JZrVGMZDt5iqKHhnEbMr7SJSLw==
-X-Google-Smtp-Source: ABdhPJy0DjD64G+W06eKaFMzPMV8XzVyWeWdSC363fNMhbt/ShgJf0U2HYmm+FnTMBu4YzHlloB/5g==
-X-Received: by 2002:a2e:8681:0:b0:246:3f2f:20d with SMTP id l1-20020a2e8681000000b002463f2f020dmr4358540lji.321.1645466639800;
-        Mon, 21 Feb 2022 10:03:59 -0800 (PST)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id o12sm1172961lfo.69.2022.02.21.10.03.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 10:03:59 -0800 (PST)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix implementation-defined behavior in sk_lookup test
-Date:   Mon, 21 Feb 2022 19:03:58 +0100
-Message-Id: <20220221180358.169101-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Hs6kJn9+mOIIZwDsnQIFcNqBIpimtFZQAKHVsCTwrY=;
+        b=qhGPHIf1TGLgltfyDQVao0kQDykLHLAYuFqHPOK+bsFitpaNuwKmtYkBMymZD1VhOt
+         t4BN/k+jmnVU5OS7vzMXVuypZkZtzDxfoL7ZyMuBJtK12kW21riMgo+rY4298UghUl57
+         q+D5D1tsfzFgszcf6Gf7wrTycBkrvZjLS39tadC5LmelQuzza9pWFEdc3XIQp3Y0G/Ex
+         1krulLMHypdZDdodsqEc80JkTB2j0EdZGEd9dkq3qnmH9Hu8XFJzKQ2JBSMxQCaJSg7j
+         bvQtXFfB2GffQcWBYRZotnDVgRMPZpF3LJjfuHix2pJrO+BRDhD8tRDfRJ2S0xHgCUb/
+         WkJw==
+X-Gm-Message-State: AOAM531GivSubpgFLVnl6eegx8lKZHdpmEgtKJKYRYk4gyR9erintCMs
+        SPZ9pnOb7+V6wGgQUadzRTxBBob5T1Q8Xidy
+X-Google-Smtp-Source: ABdhPJySAexBuxScu7Gvgo9UchGh5cBboApCgrIK2FCtBaDIt9vgApkEaxJDNr+30u8VhQp6bpXgdg==
+X-Received: by 2002:a2e:8752:0:b0:23e:d951:4184 with SMTP id q18-20020a2e8752000000b0023ed9514184mr15664811ljj.410.1645466894151;
+        Mon, 21 Feb 2022 10:08:14 -0800 (PST)
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com. [209.85.167.45])
+        by smtp.gmail.com with ESMTPSA id e6sm1178053lfs.15.2022.02.21.10.08.13
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 10:08:13 -0800 (PST)
+Received: by mail-lf1-f45.google.com with SMTP id j7so20145377lfu.6
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:08:13 -0800 (PST)
+X-Received: by 2002:a05:6512:130b:b0:443:c2eb:399d with SMTP id
+ x11-20020a056512130b00b00443c2eb399dmr10459971lfu.27.1645466893192; Mon, 21
+ Feb 2022 10:08:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+ <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com> <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
+ <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+In-Reply-To: <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 21 Feb 2022 10:07:57 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
+Message-ID: <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
+Subject: Re: Linux 5.17-rc5
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Woody Suwalski <wsuwalski@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shifting 16-bit type by 16 bits is implementation-defined for BPF programs.
-Don't rely on it in case it is causing the test failures we are seeing on
-s390x z15 target.
+On Mon, Feb 21, 2022 at 10:02 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> I am pretty sure Pablo fixed this one week ago.
 
-Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load from remote_port in bpf_sk_lookup")
-Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
+.. looks about right. Apart from the "it was never sent to me, so -rc5
+ended up showing the problem" part.
 
-I don't have a dev env for s390x/z15 set up yet, so can't definitely confirm the fix.
-That said, it seems worth fixing either way.
-
- tools/testing/selftests/bpf/progs/test_sk_lookup.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-index bf5b7caefdd0..7d47276a8964 100644
---- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-+++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-@@ -65,6 +65,7 @@ static const __u32 KEY_SERVER_A = SERVER_A;
- static const __u32 KEY_SERVER_B = SERVER_B;
- 
- static const __u16 SRC_PORT = bpf_htons(8008);
-+static const __u32 SRC_PORT_U32 = bpf_htonl(8008U << 16);
- static const __u32 SRC_IP4 = IP4(127, 0, 0, 2);
- static const __u32 SRC_IP6[] = IP6(0xfd000000, 0x0, 0x0, 0x00000002);
- 
-@@ -421,7 +422,7 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
- 
- 	/* Load from remote_port field with zero padding (backward compatibility) */
- 	val_u32 = *(__u32 *)&ctx->remote_port;
--	if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
-+	if (val_u32 != SRC_PORT_U32)
- 		return SK_DROP;
- 
- 	/* Narrow loads from local_port field. Expect DST_PORT. */
--- 
-2.35.1
-
+             Linus
