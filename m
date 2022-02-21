@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAE44BEA2A
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:10:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BE3B4BEA2D
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiBUSFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 13:05:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50366 "EHLO
+        id S231596AbiBUSFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 13:05:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231789AbiBUSDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:03:09 -0500
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140047.outbound.protection.outlook.com [40.107.14.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573F265B4
+        with ESMTP id S231818AbiBUSDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:03:13 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70050.outbound.protection.outlook.com [40.107.7.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5D265B8
         for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:54:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SL4u2+YeIYwzOW5s2//1Cq6M5ft7TO5N1aYPRZzchRcPryEekLbzAWkNcf4VvpivYmCBZtjQZO0DNtCh2Cgr+HWygwJJ621UW+hKxfcvRkvOOg+i5QbBTGKBSVJ4DkFkR0wlejRFKn7IziXuAU09aZjGHNQ/aKtXf6MPMQ2mtqRHUcJ+j5UoRqqDTksNJ9tCavQ6oZMypw2wJe4IdWR2hxlVTCgBcCriY48sbCcmBoI2Ak+Rp/tAMbDbzbQq7mXy2eJIbRvC6R13iAx7xRV/ZHxCOZSOu3CmHWPEwrK5H7xokfqR2VE4103XKswL5GQ5U5ODqUEAPfiTMSIiwFYChQ==
+ b=dCB1jCcrEXyKHN5R04tfEPwPlpwB3u4vhhGhM/DZxTJ6E/6mR58fG8ZlR6Ya/C0DU6hgYbGMs7WkUBJzhurqFcto8lAtIA1Q/OH5efOKUv4aLDez5FMdNaNS6z0kwRzpwt0zGVABO2ESJHUEs0ocdi6eu7uUBxT6i+l/wQWaq+i/pa/mEWzXpgZoeunHm7c3qj7+GEV05IOK6TyKHbED322St92yagG17OUqLhWYGjPsvb+NgdrFN+AvBu1ICsVlKbdHsBkacc4Q2JgJnSmNYrP9uFww1PZDWJW8rrYzh8h3zFxwf9liZ0CKDvYfgXmfVL3khR18DJGF8nJ86kubOQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gKkd5Tx9eoZfzd2mAEia8gb1l6aDHif9uVdYZDk0j3M=;
- b=Br4QxGfueQuWgs+/3Uco0BqKmSBXkpFIpVl+Yztrq5Z7+yZednT135gtSIbyDhq4yOIX3/GjL4t5bu47J6CLA3Q3mYIaJt/lhZn60Tjxe0bzpVSf2tNj2ha/I3dZgtc0ipoTHakRx4VDppDD11uSlmP2SmAqow3QGkd4OS1cVBbq4KjPUjefW+tCqtN2zjzbmG2Wxh/fv6qMKjlYPBCXK826RtndJIdNImbq78Rty5hLl34VGK/bM3U+MJkEMQ39FsBbEOr71x1oeLQhvi+VVZBZeZle4YXq3SipjzvlNSDzGT6ktFgaZGGaYJugRvl8Z41LSPlotrFWCzSadOLgjg==
+ bh=B2eIwyLNvGLjTXBR8FXx1V+UFiTpzwh664Z4f7jbKYg=;
+ b=FkVt44VRqk2gg4keH5BNw6agccZukxJWlGP8bLKAHfGoUSY7x5nGgMlwMoPim/8gUGLprxKt6ebs73AAkyHfgEBgiiDdsvLCzrJAojpkhXTeSkC6Qt7e23aMu6zYYK37HpyPMby9ObPbQ05MODKkfi+YBZ8kXHF7ehznHqtJjwFNvlGr49p6SS41/o5RvqkFu8wmbsyOlFISwn7EBhUo3YZboqM2j6WDN77DOCPODt02g8YVLtrgcAtm3idEVKObnEElBDZWxrUsL95eTX5jEiKqUg9KN9jYy7NYtardS9Ije0PMwP6ncjCO1ZxOFn6ZlAGKqb6AnoGf4YqTlFAifA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gKkd5Tx9eoZfzd2mAEia8gb1l6aDHif9uVdYZDk0j3M=;
- b=P+NxIs3V9j+jpmk7eeWxTnh4js/n3UflRSnwftcJJhROIB/KM2kiZHE3VlAGkda0UB/iJPNmvENFV4X3U/PDcRCja/HFok7OBWa/SAb/Dd74HmbjDDw5iV+Jcnrr8c0FXpvm/daBcMofMLuRWkbq7XyTPQ93XRX5w7aRu6fOSfo=
+ bh=B2eIwyLNvGLjTXBR8FXx1V+UFiTpzwh664Z4f7jbKYg=;
+ b=jKRBF/fk0XyWqwIqmIN+51N21YgxdMjO8sKEbPMcyNVTCwwRa9ZJ9C7BV9ktgTbRuARx4gc0oQ71kL8e3YP4q+/NdLDHi2MRjrg9WdKVTFTPVz69P3K0GhDjoGo/fVdM56IvoupcpNzv1nj1rzOqT60+SoHiUvQLONxOopQskTY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3693.eurprd04.prod.outlook.com (2603:10a6:803:18::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.27; Mon, 21 Feb
- 2022 17:54:15 +0000
+ 2022 17:54:16 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Mon, 21 Feb 2022
- 17:54:15 +0000
+ 17:54:16 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -53,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v3 net-next 10/11] net: dsa: support FDB events on offloaded LAG interfaces
-Date:   Mon, 21 Feb 2022 19:53:55 +0200
-Message-Id: <20220221175356.1688982-11-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 11/11] net: dsa: felix: support FDB entries on offloaded LAG interfaces
+Date:   Mon, 21 Feb 2022 19:53:56 +0200
+Message-Id: <20220221175356.1688982-12-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220221175356.1688982-1-vladimir.oltean@nxp.com>
 References: <20220221175356.1688982-1-vladimir.oltean@nxp.com>
@@ -66,53 +66,53 @@ X-ClientProxiedBy: VI1PR10CA0097.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 940438fd-b293-4407-cfb0-08d9f5632cc5
+X-MS-Office365-Filtering-Correlation-Id: 1787a3da-5874-4a5d-c7a0-08d9f5632d41
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3693:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3693C5815D6CCAE79E5D8F91E03A9@VI1PR0402MB3693.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3693A6820FA4707EB2CB697BE03A9@VI1PR0402MB3693.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s1/dHQLYaWT7O8VkKLw3qLDwH0Nn40pU/fIe3Be18qsfnyk4yMHr0KtSFnZaehttEZQGuwb9DpZAg9ERpVl5yiYkYB1PyalbE9U7dGUbyEKJbkZg8gAItsVLwZmTvcVPNbVdF959HDHtFow6BbOE5g0IxWuqpp8cNjLMCB7hmpJWP5iBm9lkfgJTJF7TqQsDe75UTk8Wa0pGUcW1UjKKh77eON7yz6YhsIcFY2eX5zQcIzKuSEmmPf9+0zmm927QyGy6NYTYFqZagja7vtbFRUb9rafy3FaK9Ekegh4q2ravmAGraJdU4qwgmj6ZZS3Neq+jrPQtSViF+8YlB2IyTU3ZuS5F3AJd9D6Oyh7UwJI1jynK5TqARThW55rYdNNpDaa/ehQ4OqIzjtTbWTwKjYmqOLOFQGPBQ8zy2KxejkbKU0mEteZPB5GiUEiU+IOUMk5E9bB8yrhyCJ9bItRj5yQ1gyQHJ5SX9OScjba+6QHiJ9lGe/cJ+hggZ0+w0Tol4PJIQJraycxxwPWyhM7eCCIe0GSCexQ/Yv1J15y/EJrGwRAlzoZxmOeNfJJ4+hT8MW1+8W1dqXrR7NP6q6DVwfAJpvMDfI6UgjolIQFCIgLzNqDmD0vpRMKu+InlCGe6xMpQbvQYf+koXcu9dmA/Fb5rFGR5mc2FLS1wxFlGh7ar1tpGXwATpbWrtJ2GQ/3qXkU7piPUObAoCfHIfLq9ig==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(66556008)(4326008)(8676002)(66476007)(8936002)(26005)(7416002)(54906003)(5660300002)(30864003)(83380400001)(66946007)(186003)(316002)(44832011)(86362001)(52116002)(6486002)(6506007)(6666004)(36756003)(2616005)(2906002)(38350700002)(38100700002)(508600001)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: D8hue0Y0LKGf8UWFVA1wXI7UT7dujAwYIkQyse5VHFaX1JMN3MpOiYvepElago1q1LEOgnhETv0mJNOBZpPB0XslxX9bFU2jc9EqFptJhP1uaQIvQEfE/Y15yRHY5Rlh9ocJsgv8aDtORiCSgfqGpYWg4lEwSJ+TQFm9QKZ5xrcfHj34xNR/6cXJoVaeW2gaAuRf1t309/VUj68o1BD9+1xw8mikyFSVw8WAc6i4a700h8BI/H729dl7/6L1vrLBt2f+lqXAQtEB5R8hWu2ssrIns+3nNQA5MUBNiXG1Yl51daRRTcTiJ8/WhzuR4KnmO7UNUvh7a3lWfBd/OQMlzQhx5IUy86W15KHF46LO2na5z2VDnAtwz6zlJd3K3DgyE9Q1fS7Duq85ScAEY0FQFzOeL/4vkGDI1BPgNajq5fYuziP33L+i5gqRHkTowc6OXF3nwOiJZQBwA58CpXXXrLydXfmLO3nv5GCul0DktSaHBxnWdkbYB2JGL4wDmoLLcYSoAupQspXbleOlgNr/EP6QKVMUPhdFxsgnkttj4wuDH61AdXq49v8NTwVZBQfvbfKdIHrLUIFyIRjwiMTNacs2QNgXtLl2iD15pGUs3qoZXtp2LmME22Gj/fKZNAKq530cqENSVQXMddkTRmslxXIc+GoNh4Gw8hrJawz0L5Rg1UnvOr+JsxaJ87XsRecM5sOg8CZRjGXhIJ+rA8SMlw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(66556008)(4326008)(8676002)(66476007)(8936002)(26005)(7416002)(54906003)(5660300002)(83380400001)(66946007)(186003)(316002)(44832011)(86362001)(52116002)(6486002)(6506007)(6666004)(36756003)(2616005)(2906002)(38350700002)(38100700002)(508600001)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y4ED2Vlj07OVp43lZo5y7zl3XtlFpjh7HM+eIQJwsWg4eQoMmctT+2WbCksE?=
- =?us-ascii?Q?OmqUO0JGDXRMFM7qbVvFwLbuNKJOJvpSzlUb64QH/9GX2ExpmNuWUUNotkeS?=
- =?us-ascii?Q?A6I5allbpOQX9cWLeDRwNkW7uWDOPOkeIU+T9L+9U4/oXxNmGZu3VFHmfl5z?=
- =?us-ascii?Q?n18gfVxy7hxwuiBfvsJd5VQ/b+m73aC0vtS5BK63dap3x3eJMaMUUH2UK4r1?=
- =?us-ascii?Q?BAkfCPUhMTeh48cclza+obfyXG5eixRAgr0p7c/m0defbFe4bg1BM1UHXyOk?=
- =?us-ascii?Q?hYnyClgjHQMWGw+UHx5QdjVkESlVoFwPOyzuWjtfZvKf8isxUjTVtfYP1ktw?=
- =?us-ascii?Q?XezdI2du+SCNAB3QTj5OkR8csqD2Wrc8/aBxW4xXiKMdp4Bglq+Jd++p7l1B?=
- =?us-ascii?Q?1Wlkw4MUx2LLO32zaKUlAgby91gRmG/lVxtoOv/VTOenppILMmRHtpqf2wEF?=
- =?us-ascii?Q?UlbIR6FRlEyfCTZ4zgdiEvpD9DCiIThFVMOf/g7/gFHAmDyqTO8jDeju5R+r?=
- =?us-ascii?Q?1Hwh57SXkyZ/q05glENBYNzBd1kKGgmMmoEqg1T0DVQ1b8TLniHahOnZx54c?=
- =?us-ascii?Q?+8XnPL7/ZAV+RZrsWCm2WAgkFoBhDzXv5fq0yRIOab/iy2wGbJUPaziGuTHe?=
- =?us-ascii?Q?qnuQyOtBLRfZpiltqGSL7NlR8X0ZkLs8/nu+csg/SB1l/el6z0JbJFtFPldA?=
- =?us-ascii?Q?paLlHkdm75yyfAMmPvxOn0O8SaF0PohDeq+SnvEHvSvrUGiC/tIsI902353u?=
- =?us-ascii?Q?odO68aNb8+yJcs9vKDw4rRaCHvW1x+BG9ruHQU4p08eA1W1yl94g9R1qANZI?=
- =?us-ascii?Q?QMLtF8nIgxXV3+aZPHB0DL38RXlXRmS3xkQqtx7mQDyZLpiQPQq6lgxWQtn/?=
- =?us-ascii?Q?WASJU1PUg7UVSM/3XPL9nKwVOZsJIuHFIRyft3M9ddR4cT6jbHcs9Q1XHI3s?=
- =?us-ascii?Q?L8N/QExKt/jRt479wF+a5ICvWq0JG/ODvl3BoHBb8d4BOFm5QUinC73L9oNk?=
- =?us-ascii?Q?Gp+fdZ1B32EOImb0TJAwggDFQ4q/2nKJknf6Sfcl+Jm9AnqoeFfuDgTka9/y?=
- =?us-ascii?Q?0DO27GGTOtO06lc8gJ4zaWK4LJyDvMwoxQmb9CG8BgHSoFFaaR10XZ/llx3Z?=
- =?us-ascii?Q?F4hFN2sOnJKWPOjEG4ORxJ9yvmzV4pLky9Gi7RdzOGAvoXRe8gpPV1KFjTIF?=
- =?us-ascii?Q?vp4GGcfLP6xscxwKLRKxg7OLMteYbrhqv5nTTEa2awWDE5pz5DJmmc4YrNUt?=
- =?us-ascii?Q?qGX7uiBAhEH8ARR5U2A3gmD7XOlURHRwEDHJn9AvwQfLnmVwY8zHjTjhsJJD?=
- =?us-ascii?Q?1VYamlDeAmqTCQ1N/HjvtFOIjhDC8FFuEClKpkbj7JRjXXPDOz+r8Bbz0wNL?=
- =?us-ascii?Q?EJx6RGKNZbgfCPAOULucvlKC+PqXlbXwVF7DB2+ObHex4qeA3bqpT+Ymkxk2?=
- =?us-ascii?Q?yJxs70GTY8Pd40Cte/8YR46DDhl9KMfUowMmg2WunFDGzAAG7/97Hxxl6udZ?=
- =?us-ascii?Q?R2U0OHGJtVFYSNAFtisPV4qpIui+WCUNVaO9Xj9yhQ96z/jXEN8Tkl+qJ7ZT?=
- =?us-ascii?Q?86G6RxFIfKFqmZ98RMknDHd4qtreXqcvH7a2UbLhrPWIY7Lkop4wWKA3Pjlm?=
- =?us-ascii?Q?YUV2WS/Ae2jIfH8jQA0kjMA=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9Tn2+dFryCXCSDgEHyHVDRu21WT0nRsW6aoom1t0vzz2DwoqOSsgU+2hPGBt?=
+ =?us-ascii?Q?LlbzrqN2Sv4N5WylwFF5rRsbZC7WbpOKAof85jyifwzqcOMORwv7gLFgxHms?=
+ =?us-ascii?Q?aXTTyIAdxrlmnz7reyOfZtKVTn6BCJEnSQ1joFO1oQ07Qng/rWKy/N+Izvnb?=
+ =?us-ascii?Q?7uf2GIqm1/jOgUThh1Lr7S2yhyLJ/aINZvAB+foWkByiF+uA9mEgzW0DmhcU?=
+ =?us-ascii?Q?zVnL0hWdgynJyQi1gRHCtPZJuiPYkRAjdUhbjvXLyR+ZrPj18MR3A1qXwP27?=
+ =?us-ascii?Q?AQxUkhtOyfBu1RjO6DbMoRQksi6lyrkp5PPDsKW5tikdmK5q265zhFSvou3y?=
+ =?us-ascii?Q?6p51iXtk9J+MvTWkKgcVKfDATAClMnpJh8yfhMHFvQYQy4W054jaBTpqx2mJ?=
+ =?us-ascii?Q?0pOuxzuheuL0kaVIJSwiA/4yQZjtFSgSrO4iXNIIdOV/7fBpWNbM2PybThFm?=
+ =?us-ascii?Q?dREyXMrOIy9PDIfER0Zq00l8Yx1Vuk3pA1oRb6ev7brlbWTVcg1svGnplsMA?=
+ =?us-ascii?Q?Yh4yhAbZ/17fQFqtKIIJLf1p8HJwy1OuclEukSbXfOXuhMDiDRbyqxaGopN9?=
+ =?us-ascii?Q?8e5CwvcxLrgPfF2r+Fwox2yupjoy5rs3lmI2xKZUwW5/6lVPcpY6W2dUhYwI?=
+ =?us-ascii?Q?cncvHX/rzX32W+eldNclvc5TSRQYslMi38If8KxDon6EwI0KsSvxPRocBBH8?=
+ =?us-ascii?Q?V65VGyaXpKvTVTQZDlcn6xNDyxvp5x7loMqdeCFVJ2upv+jbRxMcl1hYzW8x?=
+ =?us-ascii?Q?/epAKBhrNi9Kfek0z6jBKafZCXl7Vwh/AZGlc01hcXWReWRWUtpagHcZJKkE?=
+ =?us-ascii?Q?PhaPsYYJElSgha9IZBf/poSaUj0U7Cb2JDzXYlG3xv4+9qs6UogaSGnYEgvz?=
+ =?us-ascii?Q?+CxoBmztPPjJP9sfUj8M07+28SHzxaPLuAqBnqJ7ZzVG1d03Xn9SYeVbNDne?=
+ =?us-ascii?Q?RGX98pAlu86D4tq73WKc0AWqAKMrt0mYOYad1Ows5ZEz/yHx05t6vsIfbdDM?=
+ =?us-ascii?Q?loGfvVk1MwYj278ekNnB4lAbgvvMwKASL+0oMNNIdMfe1ywfLTloF1CXwmw/?=
+ =?us-ascii?Q?c3R2eJE0l1Pq3krDoymXM/L6jBjKj+8fTYfF0dMmb/clLeCK7qGVDcZmX1Wd?=
+ =?us-ascii?Q?mIOphahlsabYkjloI8rkk9m/alhhM6y6gITWbgxggAnRGDKxKyPb5koJWloI?=
+ =?us-ascii?Q?5R/AIsfp2n+C9ZnXzcI57oXZNyGWvxnztk9Q5WFv1iuNomGucZ4FcBdgFinw?=
+ =?us-ascii?Q?Vm3hYIAGJDcnsMyfDPfW4JsOvfNCt6P82bhjxkTs4H8fmjujdxGWYKsIVKc/?=
+ =?us-ascii?Q?hzv8YINZ8hhkVRgFCAZJxpru8z7qNRzwcNPQuz4uwypeOuj0Nvymwst1XOEe?=
+ =?us-ascii?Q?hGdodJhMCnFVbUBqUXXAlubjrzerhL1UjCh0dNvrQBxoHCcjdMJfifvleeyX?=
+ =?us-ascii?Q?lgSMD2OjfP7Up2JAzssUSz+ycneSvqZgjL0BmiISIC70Fj8AHJpKvoc8Pt1+?=
+ =?us-ascii?Q?waGjc+0l5BQeBOfjeNXX6wTStVXffpejTcr49wu45jLHkdgy4O2XpE/k3CO8?=
+ =?us-ascii?Q?KSnc1Svlsiy875WDckp1+l50KMVutLnvVP6nNpoxG6NZX4te16f4uQwxBpN2?=
+ =?us-ascii?Q?/vWeUmu/Hp5rGyyAdH34Q8I=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 940438fd-b293-4407-cfb0-08d9f5632cc5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1787a3da-5874-4a5d-c7a0-08d9f5632d41
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:54:15.3083
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:54:16.0895
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s9+jFwUWMKb8entbv0QthswIYcOHkfFUIr6baB9vBCzk8qPHOqF3PGahVZQNAbFA/YvtDwa2Sgz0M4zAy56bsg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: /noEUuJ9u4obbjC6KbMh6ZUa9vdXJtsC6HmUn4NmbLn45MrLlzUkydIJrQlYEwsZRrDW8hmp2FT+D2sq6Aefmw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3693
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,432 +124,297 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change introduces support for installing static FDB entries towards
-a bridge port that is a LAG of multiple DSA switch ports, as well as
-support for filtering towards the CPU local FDB entries emitted for LAG
-interfaces that are bridge ports.
+This adds the logic in the Felix DSA driver and Ocelot switch library.
+For Ocelot switches, the DEST_IDX that is the output of the MAC table
+lookup is a logical port (equal to physical port, if no LAG is used, or
+a dynamically allocated number otherwise). The allocation we have in
+place for LAG IDs is different from DSA's, so we can't use that:
+- DSA allocates a continuous range of LAG IDs starting from 1
+- Ocelot appears to require that physical ports and LAG IDs are in the
+  same space of [0, num_phys_ports), and additionally, ports that aren't
+  in a LAG must have physical port id == logical port id
 
-Conceptually, host addresses on LAG ports are identical to what we do
-for plain bridge ports. Whereas FDB entries _towards_ a LAG can't simply
-be replicated towards all member ports like we do for multicast, or VLAN.
-Instead we need new driver API. Hardware usually considers a LAG to be a
-"logical port", and sets the entire LAG as the forwarding destination.
-The physical egress port selection within the LAG is made by hashing
-policy, as usual.
-
-To represent the logical port corresponding to the LAG, we pass by value
-a copy of the dsa_lag structure to all switches in the tree that have at
-least one port in that LAG.
-
-To illustrate why a refcounted list of FDB entries is needed in struct
-dsa_lag, it is enough to say that:
-- a LAG may be a bridge port and may therefore receive FDB events even
-  while it isn't yet offloaded by any DSA interface
-- DSA interfaces may be removed from a LAG while that is a bridge port;
-  we don't want FDB entries lingering around, but we don't want to
-  remove entries that are still in use, either
-
-For all the cases below to work, the idea is to always keep an FDB entry
-on a LAG with a reference count equal to the DSA member ports. So:
-- if a port joins a LAG, it requests the bridge to replay the FDB, and
-  the FDB entries get created, or their refcount gets bumped by one
-- if a port leaves a LAG, the FDB replay deletes or decrements refcount
-  by one
-- if an FDB is installed towards a LAG with ports already present, that
-  entry is created (if it doesn't exist) and its refcount is bumped by
-  the amount of ports already present in the LAG
-
-echo "Adding FDB entry to bond with existing ports"
-ip link del bond0
-ip link add bond0 type bond mode 802.3ad
-ip link set swp1 down && ip link set swp1 master bond0 && ip link set swp1 up
-ip link set swp2 down && ip link set swp2 master bond0 && ip link set swp2 up
-ip link del br0
-ip link add br0 type bridge
-ip link set bond0 master br0
-bridge fdb add dev bond0 00:01:02:03:04:05 master static
-
-ip link del br0
-ip link del bond0
-
-echo "Adding FDB entry to empty bond"
-ip link del bond0
-ip link add bond0 type bond mode 802.3ad
-ip link del br0
-ip link add br0 type bridge
-ip link set bond0 master br0
-bridge fdb add dev bond0 00:01:02:03:04:05 master static
-ip link set swp1 down && ip link set swp1 master bond0 && ip link set swp1 up
-ip link set swp2 down && ip link set swp2 master bond0 && ip link set swp2 up
-
-ip link del br0
-ip link del bond0
-
-echo "Adding FDB entry to empty bond, then removing ports one by one"
-ip link del bond0
-ip link add bond0 type bond mode 802.3ad
-ip link del br0
-ip link add br0 type bridge
-ip link set bond0 master br0
-bridge fdb add dev bond0 00:01:02:03:04:05 master static
-ip link set swp1 down && ip link set swp1 master bond0 && ip link set swp1 up
-ip link set swp2 down && ip link set swp2 master bond0 && ip link set swp2 up
-
-ip link set swp1 nomaster
-ip link set swp2 nomaster
-ip link del br0
-ip link del bond0
+The implication is that an FDB entry towards a LAG might need to be
+deleted and reinstalled when the LAG ID changes.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v2->v3:
-- leave iteration among DSA slave interfaces that are members of
-  the LAG bridge port to switchdev_handle_fdb_event_to_device()
-- reorder some checks that previously resulted in the access of an
-  uninitialized "ds" pointer
+v1->v3: none
 
- include/net/dsa.h  |   6 +++
- net/dsa/dsa_priv.h |  14 ++++++
- net/dsa/port.c     |  27 +++++++++++
- net/dsa/slave.c    |  43 +++++++++++-------
- net/dsa/switch.c   | 109 +++++++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 184 insertions(+), 15 deletions(-)
+ drivers/net/dsa/ocelot/felix.c     |  18 ++++
+ drivers/net/ethernet/mscc/ocelot.c | 128 ++++++++++++++++++++++++++++-
+ include/soc/mscc/ocelot.h          |  12 +++
+ 3 files changed, 157 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 30ef064080b1..5c2890fa66db 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -119,6 +119,8 @@ struct dsa_netdevice_ops {
- struct dsa_lag {
- 	struct net_device *dev;
- 	unsigned int id;
-+	struct mutex fdb_lock;
-+	struct list_head fdbs;
- 	refcount_t refcount;
- };
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 6d483887af04..9959407fede8 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -614,6 +614,22 @@ static int felix_fdb_del(struct dsa_switch *ds, int port,
+ 	return ocelot_fdb_del(ocelot, port, addr, vid);
+ }
  
-@@ -946,6 +948,10 @@ struct dsa_switch_ops {
- 				const unsigned char *addr, u16 vid);
- 	int	(*port_fdb_dump)(struct dsa_switch *ds, int port,
- 				 dsa_fdb_dump_cb_t *cb, void *data);
-+	int	(*lag_fdb_add)(struct dsa_switch *ds, struct dsa_lag lag,
-+			       const unsigned char *addr, u16 vid);
-+	int	(*lag_fdb_del)(struct dsa_switch *ds, struct dsa_lag lag,
-+			       const unsigned char *addr, u16 vid);
++static int felix_lag_fdb_add(struct dsa_switch *ds, struct dsa_lag lag,
++			     const unsigned char *addr, u16 vid)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_lag_fdb_add(ocelot, lag.dev, addr, vid);
++}
++
++static int felix_lag_fdb_del(struct dsa_switch *ds, struct dsa_lag lag,
++			     const unsigned char *addr, u16 vid)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_lag_fdb_del(ocelot, lag.dev, addr, vid);
++}
++
+ static int felix_mdb_add(struct dsa_switch *ds, int port,
+ 			 const struct switchdev_obj_port_mdb *mdb)
+ {
+@@ -1579,6 +1595,8 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_fdb_dump			= felix_fdb_dump,
+ 	.port_fdb_add			= felix_fdb_add,
+ 	.port_fdb_del			= felix_fdb_del,
++	.lag_fdb_add			= felix_lag_fdb_add,
++	.lag_fdb_del			= felix_lag_fdb_del,
+ 	.port_mdb_add			= felix_mdb_add,
+ 	.port_mdb_del			= felix_mdb_del,
+ 	.port_pre_bridge_flags		= felix_pre_bridge_flags,
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 2fb713e9baa4..0e8fa0a4fc69 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1907,6 +1907,8 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
+ 	u32 mask = 0;
+ 	int port;
  
- 	/*
- 	 * Multicast database
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index f2364c5adc04..322f816824b7 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -25,6 +25,8 @@ enum {
- 	DSA_NOTIFIER_FDB_DEL,
- 	DSA_NOTIFIER_HOST_FDB_ADD,
- 	DSA_NOTIFIER_HOST_FDB_DEL,
-+	DSA_NOTIFIER_LAG_FDB_ADD,
-+	DSA_NOTIFIER_LAG_FDB_DEL,
- 	DSA_NOTIFIER_LAG_CHANGE,
- 	DSA_NOTIFIER_LAG_JOIN,
- 	DSA_NOTIFIER_LAG_LEAVE,
-@@ -67,6 +69,13 @@ struct dsa_notifier_fdb_info {
- 	u16 vid;
- };
++	lockdep_assert_held(&ocelot->fwd_domain_lock);
++
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+ 		struct ocelot_port *ocelot_port = ocelot->ports[port];
  
-+/* DSA_NOTIFIER_LAG_FDB_* */
-+struct dsa_notifier_lag_fdb_info {
-+	struct dsa_lag *lag;
-+	const unsigned char *addr;
+@@ -1920,6 +1922,19 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
+ 	return mask;
+ }
+ 
++/* The logical port number of a LAG is equal to the lowest numbered physical
++ * port ID present in that LAG. It may change if that port ever leaves the LAG.
++ */
++static int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
++{
++	int bond_mask = ocelot_get_bond_mask(ocelot, bond);
++
++	if (!bond_mask)
++		return -ENOENT;
++
++	return __ffs(bond_mask);
++}
++
+ u32 ocelot_get_bridge_fwd_mask(struct ocelot *ocelot, int src_port)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[src_port];
+@@ -2413,7 +2428,7 @@ static void ocelot_setup_logical_port_ids(struct ocelot *ocelot)
+ 
+ 		bond = ocelot_port->bond;
+ 		if (bond) {
+-			int lag = __ffs(ocelot_get_bond_mask(ocelot, bond));
++			int lag = ocelot_bond_get_id(ocelot, bond);
+ 
+ 			ocelot_rmw_gix(ocelot,
+ 				       ANA_PORT_PORT_CFG_PORTID_VAL(lag),
+@@ -2428,6 +2443,46 @@ static void ocelot_setup_logical_port_ids(struct ocelot *ocelot)
+ 	}
+ }
+ 
++/* Documentation for PORTID_VAL says:
++ *     Logical port number for front port. If port is not a member of a LLAG,
++ *     then PORTID must be set to the physical port number.
++ *     If port is a member of a LLAG, then PORTID must be set to the common
++ *     PORTID_VAL used for all member ports of the LLAG.
++ *     The value must not exceed the number of physical ports on the device.
++ *
++ * This means we have little choice but to migrate FDB entries pointing towards
++ * a logical port when that changes.
++ */
++static void ocelot_migrate_lag_fdbs(struct ocelot *ocelot,
++				    struct net_device *bond,
++				    int lag)
++{
++	struct ocelot_lag_fdb *fdb;
++	int err;
++
++	lockdep_assert_held(&ocelot->fwd_domain_lock);
++
++	list_for_each_entry(fdb, &ocelot->lag_fdbs, list) {
++		if (fdb->bond != bond)
++			continue;
++
++		err = ocelot_mact_forget(ocelot, fdb->addr, fdb->vid);
++		if (err) {
++			dev_err(ocelot->dev,
++				"failed to delete LAG %s FDB %pM vid %d: %pe\n",
++				bond->name, fdb->addr, fdb->vid, ERR_PTR(err));
++		}
++
++		err = ocelot_mact_learn(ocelot, lag, fdb->addr, fdb->vid,
++					ENTRYTYPE_LOCKED);
++		if (err) {
++			dev_err(ocelot->dev,
++				"failed to migrate LAG %s FDB %pM vid %d: %pe\n",
++				bond->name, fdb->addr, fdb->vid, ERR_PTR(err));
++		}
++	}
++}
++
+ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+ 			 struct net_device *bond,
+ 			 struct netdev_lag_upper_info *info)
+@@ -2452,14 +2507,23 @@ EXPORT_SYMBOL(ocelot_port_lag_join);
+ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
+ 			   struct net_device *bond)
+ {
++	int old_lag_id, new_lag_id;
++
+ 	mutex_lock(&ocelot->fwd_domain_lock);
+ 
++	old_lag_id = ocelot_bond_get_id(ocelot, bond);
++
+ 	ocelot->ports[port]->bond = NULL;
+ 
+ 	ocelot_setup_logical_port_ids(ocelot);
+ 	ocelot_apply_bridge_fwd_mask(ocelot, false);
+ 	ocelot_set_aggr_pgids(ocelot);
+ 
++	new_lag_id = ocelot_bond_get_id(ocelot, bond);
++
++	if (new_lag_id >= 0 && old_lag_id != new_lag_id)
++		ocelot_migrate_lag_fdbs(ocelot, bond, new_lag_id);
++
+ 	mutex_unlock(&ocelot->fwd_domain_lock);
+ }
+ EXPORT_SYMBOL(ocelot_port_lag_leave);
+@@ -2468,13 +2532,74 @@ void ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 
++	mutex_lock(&ocelot->fwd_domain_lock);
++
+ 	ocelot_port->lag_tx_active = lag_tx_active;
+ 
+ 	/* Rebalance the LAGs */
+ 	ocelot_set_aggr_pgids(ocelot);
++
++	mutex_unlock(&ocelot->fwd_domain_lock);
+ }
+ EXPORT_SYMBOL(ocelot_port_lag_change);
+ 
++int ocelot_lag_fdb_add(struct ocelot *ocelot, struct net_device *bond,
++		       const unsigned char *addr, u16 vid)
++{
++	struct ocelot_lag_fdb *fdb;
++	int lag, err;
++
++	fdb = kzalloc(sizeof(*fdb), GFP_KERNEL);
++	if (!fdb)
++		return -ENOMEM;
++
++	ether_addr_copy(fdb->addr, addr);
++	fdb->vid = vid;
++	fdb->bond = bond;
++
++	mutex_lock(&ocelot->fwd_domain_lock);
++	lag = ocelot_bond_get_id(ocelot, bond);
++
++	err = ocelot_mact_learn(ocelot, lag, addr, vid, ENTRYTYPE_LOCKED);
++	if (err) {
++		mutex_unlock(&ocelot->fwd_domain_lock);
++		kfree(fdb);
++		return err;
++	}
++
++	list_add_tail(&fdb->list, &ocelot->lag_fdbs);
++	mutex_unlock(&ocelot->fwd_domain_lock);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ocelot_lag_fdb_add);
++
++int ocelot_lag_fdb_del(struct ocelot *ocelot, struct net_device *bond,
++		       const unsigned char *addr, u16 vid)
++{
++	struct ocelot_lag_fdb *fdb, *tmp;
++
++	mutex_lock(&ocelot->fwd_domain_lock);
++
++	list_for_each_entry_safe(fdb, tmp, &ocelot->lag_fdbs, list) {
++		if (!ether_addr_equal(fdb->addr, addr) || fdb->vid != vid ||
++		    fdb->bond != bond)
++			continue;
++
++		ocelot_mact_forget(ocelot, addr, vid);
++		list_del(&fdb->list);
++		mutex_unlock(&ocelot->fwd_domain_lock);
++		kfree(fdb);
++
++		return 0;
++	}
++
++	mutex_unlock(&ocelot->fwd_domain_lock);
++
++	return -ENOENT;
++}
++EXPORT_SYMBOL_GPL(ocelot_lag_fdb_del);
++
+ /* Configure the maximum SDU (L2 payload) on RX to the value specified in @sdu.
+  * The length of VLAN tags is accounted for automatically via DEV_MAC_TAGS_CFG.
+  * In the special case that it's the NPI port that we're configuring, the
+@@ -2769,6 +2894,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	INIT_LIST_HEAD(&ocelot->multicast);
+ 	INIT_LIST_HEAD(&ocelot->pgids);
+ 	INIT_LIST_HEAD(&ocelot->vlans);
++	INIT_LIST_HEAD(&ocelot->lag_fdbs);
+ 	ocelot_detect_features(ocelot);
+ 	ocelot_mact_init(ocelot);
+ 	ocelot_vlan_init(ocelot);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 78f56502bc09..dd4fc34d2992 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -635,6 +635,13 @@ enum macaccess_entry_type {
+ #define OCELOT_QUIRK_PCS_PERFORMS_RATE_ADAPTATION	BIT(0)
+ #define OCELOT_QUIRK_QSGMII_PORTS_MUST_BE_UP		BIT(1)
+ 
++struct ocelot_lag_fdb {
++	unsigned char addr[ETH_ALEN];
 +	u16 vid;
++	struct net_device *bond;
++	struct list_head list;
 +};
 +
- /* DSA_NOTIFIER_MDB_* */
- struct dsa_notifier_mdb_info {
- 	const struct switchdev_obj_port_mdb *mdb;
-@@ -129,6 +138,7 @@ struct dsa_switchdev_event_work {
- 	unsigned char addr[ETH_ALEN];
- 	u16 vid;
- 	bool host_addr;
-+	const void *ctx;
- };
+ struct ocelot_port {
+ 	struct ocelot			*ocelot;
  
- struct dsa_slave_priv {
-@@ -214,6 +224,10 @@ int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 			  u16 vid);
- int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 			  u16 vid);
-+int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
-+			 u16 vid);
-+int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+			 u16 vid);
- int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data);
- int dsa_port_mdb_add(const struct dsa_port *dp,
- 		     const struct switchdev_obj_port_mdb *mdb);
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 2d174a1a0ac6..a99a61caf2c5 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -461,6 +461,8 @@ static int dsa_port_lag_create(struct dsa_port *dp,
- 	lag->dev = lag_dev;
- 	dsa_lag_map(ds->dst, lag);
- 	dp->lag = lag;
-+	mutex_init(&lag->fdb_lock);
-+	INIT_LIST_HEAD(&lag->fdbs);
+@@ -690,6 +697,7 @@ struct ocelot {
  
- 	return 0;
- }
-@@ -475,6 +477,7 @@ static void dsa_port_lag_destroy(struct dsa_port *dp)
- 	if (!refcount_dec_and_test(&lag->refcount))
- 		return;
+ 	struct list_head		vlans;
+ 	struct list_head		traps;
++	struct list_head		lag_fdbs;
  
-+	WARN_ON(!list_empty(&lag->fdbs));
- 	dsa_lag_unmap(dp->ds->dst, lag);
- 	kfree(lag);
- }
-@@ -852,6 +855,30 @@ int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
- }
- 
-+int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
-+			 u16 vid)
-+{
-+	struct dsa_notifier_lag_fdb_info info = {
-+		.lag = dp->lag,
-+		.addr = addr,
-+		.vid = vid,
-+	};
-+
-+	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_FDB_ADD, &info);
-+}
-+
-+int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+			 u16 vid)
-+{
-+	struct dsa_notifier_lag_fdb_info info = {
-+		.lag = dp->lag,
-+		.addr = addr,
-+		.vid = vid,
-+	};
-+
-+	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_FDB_DEL, &info);
-+}
-+
- int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data)
- {
- 	struct dsa_switch *ds = dp->ds;
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 4aeb3e092dd6..089616206b11 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2398,6 +2398,9 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		if (switchdev_work->host_addr)
- 			err = dsa_port_host_fdb_add(dp, switchdev_work->addr,
- 						    switchdev_work->vid);
-+		else if (dp->lag)
-+			err = dsa_port_lag_fdb_add(dp, switchdev_work->addr,
-+						   switchdev_work->vid);
- 		else
- 			err = dsa_port_fdb_add(dp, switchdev_work->addr,
- 					       switchdev_work->vid);
-@@ -2415,6 +2418,9 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		if (switchdev_work->host_addr)
- 			err = dsa_port_host_fdb_del(dp, switchdev_work->addr,
- 						    switchdev_work->vid);
-+		else if (dp->lag)
-+			err = dsa_port_lag_fdb_del(dp, switchdev_work->addr,
-+						   switchdev_work->vid);
- 		else
- 			err = dsa_port_fdb_del(dp, switchdev_work->addr,
- 					       switchdev_work->vid);
-@@ -2457,25 +2463,20 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	bool host_addr = fdb_info->is_local;
- 	struct dsa_switch *ds = dp->ds;
- 
--	if (dp->lag)
--		return -EOPNOTSUPP;
--
- 	if (ctx && ctx != dp)
- 		return 0;
- 
--	if (!ds->ops->port_fdb_add || !ds->ops->port_fdb_del)
--		return -EOPNOTSUPP;
--
--	if (dsa_slave_dev_check(orig_dev) &&
--	    switchdev_fdb_is_dynamically_learned(fdb_info))
--		return 0;
-+	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
-+		if (dsa_port_offloads_bridge_port(dp, orig_dev))
-+			return 0;
- 
--	/* FDB entries learned by the software bridge should be installed as
--	 * host addresses only if the driver requests assisted learning.
--	 */
--	if (switchdev_fdb_is_dynamically_learned(fdb_info) &&
--	    !ds->assisted_learning_on_cpu_port)
--		return 0;
-+		/* FDB entries learned by the software bridge or by foreign
-+		 * bridge ports should be installed as host addresses only if
-+		 * the driver requests assisted learning.
-+		 */
-+		if (!ds->assisted_learning_on_cpu_port)
-+			return 0;
-+	}
- 
- 	/* Also treat FDB entries on foreign interfaces bridged with us as host
- 	 * addresses.
-@@ -2483,6 +2484,18 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	if (dsa_foreign_dev_check(dev, orig_dev))
- 		host_addr = true;
- 
-+	/* Check early that we're not doing work in vain.
-+	 * Host addresses on LAG ports still require regular FDB ops,
-+	 * since the CPU port isn't in a LAG.
-+	 */
-+	if (dp->lag && !host_addr) {
-+		if (!ds->ops->lag_fdb_add || !ds->ops->lag_fdb_del)
-+			return -EOPNOTSUPP;
-+	} else {
-+		if (!ds->ops->port_fdb_add || !ds->ops->port_fdb_del)
-+			return -EOPNOTSUPP;
-+	}
-+
- 	switchdev_work = kzalloc(sizeof(*switchdev_work), GFP_ATOMIC);
- 	if (!switchdev_work)
- 		return -ENOMEM;
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 0bb3987bd4e6..0c2961cbc105 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -385,6 +385,75 @@ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 	return err;
- }
- 
-+static int dsa_switch_do_lag_fdb_add(struct dsa_switch *ds, struct dsa_lag *lag,
-+				     const unsigned char *addr, u16 vid)
-+{
-+	struct dsa_mac_addr *a;
-+	int err = 0;
-+
-+	mutex_lock(&lag->fdb_lock);
-+
-+	a = dsa_mac_addr_find(&lag->fdbs, addr, vid);
-+	if (a) {
-+		refcount_inc(&a->refcount);
-+		goto out;
-+	}
-+
-+	a = kzalloc(sizeof(*a), GFP_KERNEL);
-+	if (!a) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	err = ds->ops->lag_fdb_add(ds, *lag, addr, vid);
-+	if (err) {
-+		kfree(a);
-+		goto out;
-+	}
-+
-+	ether_addr_copy(a->addr, addr);
-+	a->vid = vid;
-+	refcount_set(&a->refcount, 1);
-+	list_add_tail(&a->list, &lag->fdbs);
-+
-+out:
-+	mutex_unlock(&lag->fdb_lock);
-+
-+	return err;
-+}
-+
-+static int dsa_switch_do_lag_fdb_del(struct dsa_switch *ds, struct dsa_lag *lag,
-+				     const unsigned char *addr, u16 vid)
-+{
-+	struct dsa_mac_addr *a;
-+	int err = 0;
-+
-+	mutex_lock(&lag->fdb_lock);
-+
-+	a = dsa_mac_addr_find(&lag->fdbs, addr, vid);
-+	if (!a) {
-+		err = -ENOENT;
-+		goto out;
-+	}
-+
-+	if (!refcount_dec_and_test(&a->refcount))
-+		goto out;
-+
-+	err = ds->ops->lag_fdb_del(ds, *lag, addr, vid);
-+	if (err) {
-+		refcount_set(&a->refcount, 1);
-+		goto out;
-+	}
-+
-+	list_del(&a->list);
-+	kfree(a);
-+
-+out:
-+	mutex_unlock(&lag->fdb_lock);
-+
-+	return err;
-+}
-+
- static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
- 				   struct dsa_notifier_fdb_info *info)
- {
-@@ -451,6 +520,40 @@ static int dsa_switch_fdb_del(struct dsa_switch *ds,
- 	return dsa_port_do_fdb_del(dp, info->addr, info->vid);
- }
- 
-+static int dsa_switch_lag_fdb_add(struct dsa_switch *ds,
-+				  struct dsa_notifier_lag_fdb_info *info)
-+{
-+	struct dsa_port *dp;
-+
-+	if (!ds->ops->lag_fdb_add)
-+		return -EOPNOTSUPP;
-+
-+	/* Notify switch only if it has a port in this LAG */
-+	dsa_switch_for_each_port(dp, ds)
-+		if (dsa_port_offloads_lag(dp, info->lag))
-+			return dsa_switch_do_lag_fdb_add(ds, info->lag,
-+							 info->addr, info->vid);
-+
-+	return 0;
-+}
-+
-+static int dsa_switch_lag_fdb_del(struct dsa_switch *ds,
-+				  struct dsa_notifier_lag_fdb_info *info)
-+{
-+	struct dsa_port *dp;
-+
-+	if (!ds->ops->lag_fdb_del)
-+		return -EOPNOTSUPP;
-+
-+	/* Notify switch only if it has a port in this LAG */
-+	dsa_switch_for_each_port(dp, ds)
-+		if (dsa_port_offloads_lag(dp, info->lag))
-+			return dsa_switch_do_lag_fdb_del(ds, info->lag,
-+							 info->addr, info->vid);
-+
-+	return 0;
-+}
-+
- static int dsa_switch_lag_change(struct dsa_switch *ds,
- 				 struct dsa_notifier_lag_info *info)
- {
-@@ -904,6 +1007,12 @@ static int dsa_switch_event(struct notifier_block *nb,
- 	case DSA_NOTIFIER_HOST_FDB_DEL:
- 		err = dsa_switch_host_fdb_del(ds, info);
- 		break;
-+	case DSA_NOTIFIER_LAG_FDB_ADD:
-+		err = dsa_switch_lag_fdb_add(ds, info);
-+		break;
-+	case DSA_NOTIFIER_LAG_FDB_DEL:
-+		err = dsa_switch_lag_fdb_del(ds, info);
-+		break;
- 	case DSA_NOTIFIER_LAG_CHANGE:
- 		err = dsa_switch_lag_change(ds, info);
- 		break;
+ 	/* Switches like VSC9959 have flooding per traffic class */
+ 	int				num_flooding_pgids;
+@@ -866,6 +874,10 @@ int ocelot_fdb_add(struct ocelot *ocelot, int port,
+ 		   const unsigned char *addr, u16 vid);
+ int ocelot_fdb_del(struct ocelot *ocelot, int port,
+ 		   const unsigned char *addr, u16 vid);
++int ocelot_lag_fdb_add(struct ocelot *ocelot, struct net_device *bond,
++		       const unsigned char *addr, u16 vid);
++int ocelot_lag_fdb_del(struct ocelot *ocelot, struct net_device *bond,
++		       const unsigned char *addr, u16 vid);
+ int ocelot_vlan_prepare(struct ocelot *ocelot, int port, u16 vid, bool pvid,
+ 			bool untagged, struct netlink_ext_ack *extack);
+ int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
 -- 
 2.25.1
 
