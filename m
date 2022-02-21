@@ -2,97 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 931824BEC0D
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 21:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F2CD4BEC17
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 21:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233982AbiBUUqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 15:46:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58078 "EHLO
+        id S234039AbiBUUv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 15:51:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230412AbiBUUqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 15:46:23 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE71B237F1;
-        Mon, 21 Feb 2022 12:45:59 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id bq11so10527956edb.2;
-        Mon, 21 Feb 2022 12:45:59 -0800 (PST)
+        with ESMTP id S231644AbiBUUv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 15:51:28 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C5B237F1
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 12:51:04 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2d62593ad9bso151262167b3.8
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 12:51:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=sArEs4i+TWwbLDKHjUB5Hm9AhrhMG2e1+fbvFn1kdjk=;
-        b=jy748iPwgDsaD45Y4tJIjkHIjodPrvI7bdKiLJUrQ704l6Ie2gpWZiVGc0Ru7Y9tVw
-         zl/9/ZTlb7Wvhvbvqea46fHp+G2eijFBCW1ZRl372kI8h6Mc6ONcG+cqU0zDjiLfB+Aw
-         HiiAzFTL9L0/+t+z9Ot2IPtVGK2sCo6+xmfqtOtdpSn6DJI3jTp8soVsuB/XlA+Cp3li
-         Gsb2Ms7Rg/fuL+V4HyMhtsdsrWU1BnJRkF/VWsSZECcWtOhUdwPoZ/nx0R2ZHYTPzTL5
-         8c2SCrNgo7JVqXCTGgzVPJfKgKJNAFrIkEL1O1rlGxtN595RKJURfLIDe1XcXkeszGCS
-         MSmw==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bM8fGjR8QJyKYDyoytdMfHLyx5gVU8QKAKx7b66oysM=;
+        b=mwtEYT4IcE71ApIhxLBYomRm66hmzEG4W3zX2bzHuijnAzeA6rwcRr/sJq6ZaYmggy
+         oSkCo+6t62IuvqJ1oKcupaDm65FOudITPtQfBebrWCNnusewu9vZhiDiX2LtZjvGFF5G
+         pS6amffxCzIRzX1031AH0CxcKNAGSdyw82sXryBPVe+Uj/d7BjXLyTX97Nfhd1ihTlGH
+         jYXL8nsjZQSmk5LpEx+DIT5ObatcrjNYn4oGWbqXbHReGzb031zWY8fz11c03J7/MkUZ
+         /YML3SnZ6VtW1UIQwMdGO4MQ92na+mUw43godeyhkQJfX7Mii1uH2NebZZWN0kx7I4pj
+         PyYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=sArEs4i+TWwbLDKHjUB5Hm9AhrhMG2e1+fbvFn1kdjk=;
-        b=YyqG6eux5jlh3ISmwetcI3DwkJ0bhL0al9MibmeQyS3nqK2LgfR6G2CCCuuk1cX2bB
-         nsLaq2IaOllRcB1/BZ3SewklHslPJsTiPxKmP6WM2ZTVPw9Ir+C9F6RvfiZZ8EPS3MCN
-         84kzp4Iy+Kp7BeL4sBZY/GEaNG/5QmA8+RNdjv5AYrkW9VJmhnRevKGC3ieifLJxPnPu
-         tIzl91vKFljYFQG/TGKdTlJ/W53buoxkgxfAA6iKK1HmrzqdjDIYBR8WjRM0fULenrQG
-         J7DElZXvwImwqTtoPZdXhUUpR2RdmQDY2jWlWCAdSapWo1NcBP6FMGvAN3uzMSkoTHPq
-         v2tA==
-X-Gm-Message-State: AOAM533qsNSXsG/ENptkKNaPJ5POkotHESKJk6/IeeKfycQAxyptfXCu
-        2nlbDjqQU/+DId078R8ZUv8=
-X-Google-Smtp-Source: ABdhPJwb4oapY7zioWOh4tvQOJemevk+jli14tRMx/qRS6MqyXHFmkFeYAKai1beCTJxhrU4vkLRzQ==
-X-Received: by 2002:aa7:c90c:0:b0:410:a178:319f with SMTP id b12-20020aa7c90c000000b00410a178319fmr23245367edt.451.1645476358454;
-        Mon, 21 Feb 2022 12:45:58 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id z12sm2452892edc.80.2022.02.21.12.45.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 12:45:58 -0800 (PST)
-Date:   Mon, 21 Feb 2022 22:45:56 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: fix panic when removing unoffloaded port
- from bridge
-Message-ID: <20220221204556.ymlwsrm4rfllp54y@skbuf>
-References: <20220221201931.296500-1-alvin@pqrs.dk>
- <20220221202637.he5hm6fbqhuayisv@skbuf>
- <87ilt8hs5e.fsf@bang-olufsen.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bM8fGjR8QJyKYDyoytdMfHLyx5gVU8QKAKx7b66oysM=;
+        b=oc0JG5SZda7cwCS4W5/ANqfuYQMxsnbtA00D4c2eLLGUFWbP0uGiczibGF90lh39Nf
+         dIFeF5X0q9vNFRshu9eBdOrPCHHXg1vg1qPixKU4+A8wphEXSghL0UwBx/f7SpldhN7F
+         exHT3zKzzYDgD9QKE3pVNig4IwJW1awmmAOf7/ilPeHt3MrC5pRhClEl4BPK6KG2D9qP
+         6HregF/xNG165pV+EmUTk7UA19kWgcHXX476MnTnAdK610eoBoqBycvI3QakjTV7hCsD
+         fcUVRGTX0P6gFgd1QkagAwHTcM5pwIEX8EmCQ1Rk8NIS1ureeadODh80mt1A7vr20ddP
+         899Q==
+X-Gm-Message-State: AOAM5334Syiri+wtdL1k/KqaxGVqV15N0NZ090CoNzWCp7OZB1HcNkt2
+        LOJxw0a1h7ctSncQAZQytV+uqdqn8Bsgs5/Ys02MPg==
+X-Google-Smtp-Source: ABdhPJy2YhVkZ0HHy0/Wpbu/F4l87DANXsovnIyPNZA1s2AwiKwdkVtJCTNGVkJE2dxr2dsIJlXl2DdWHYkU+oN+xM4=
+X-Received: by 2002:a81:21c3:0:b0:2d6:eff3:11bb with SMTP id
+ h186-20020a8121c3000000b002d6eff311bbmr12632383ywh.129.1645476662995; Mon, 21
+ Feb 2022 12:51:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87ilt8hs5e.fsf@bang-olufsen.dk>
+References: <20220221084930.872957717@linuxfoundation.org>
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 22 Feb 2022 02:20:51 +0530
+Message-ID: <CA+G9fYtW1xOWQLC8YEuQxwnJBu7dvsc5B=0p5xYqKUzYcurB7g@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/196] 5.15.25-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 08:38:21PM +0000, Alvin Šipraga wrote:
-> >> +	info.bridge = *dp->bridge,
-> >
-> > By the way, does this patch compile, with the comma and not the
-> > semicolon, like that?
-> 
-> Yikes, sorry about that. Sent a corrected v2 now.
-> 
-> It does actually compile though.
+On Mon, 21 Feb 2022 at 14:37, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.25 release.
+> There are 196 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.25-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Yes, I see, I think it probably works too:
 
-	info.bridge = *dp->bridge, dsa_port_bridge_destroy(dp, br);
+Results from Linaro=E2=80=99s test farm.
+Regressions on arm64, arm and mips for following build errors /warnings.
 
-although I would never write code like that.
+arm and arm64 build log:
+drivers/tee/optee/core.c: In function 'optee_probe':
+drivers/tee/optee/core.c:726:20: warning: operation on 'rc' may be
+undefined [-Wsequence-point]
+  726 |                 rc =3D rc =3D PTR_ERR(ctx);
+      |                 ~~~^~~~~~~~~~~~~~~~~~~
+
+
+mips build log:
+  - gcc-10-malta_defconfig
+  - gcc-8-malta_defconfig
+net/netfilter/xt_socket.c: In function 'socket_mt_destroy':
+net/netfilter/xt_socket.c:224:3: error: implicit declaration of
+function 'nf_defrag_ipv6_disable'; did you mean
+'nf_defrag_ipv4_disable'? [-Werror=3Dimplicit-function-declaration]
+   nf_defrag_ipv6_disable(par->net);
+   ^~~~~~~~~~~~~~~~~~~~~~
+   nf_defrag_ipv4_disable
+cc1: some warnings being treated as errors
+
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+- regressions
+ - arm64
+  - build
+   - gcc-8-defconfig-warnings
+   - gcc-9-defconfig-warnings
+   - gcc-10-defconfig-warnings
+   - gcc-11-defconfig-warnings
+   - clang-nightly-defconfig-warnings
+   - clang-13-defconfig-warnings
+   - clang-12-defconfig-warnings
+   - clang-11-defconfig-warnings
+   - gcc-11-defconfig-fac1da4b-warnings
+   - gcc-11-defconfig-5e73d44a-warnings
+   - gcc-11-defconfig-389abf09-warnings
+   - gcc-11-defconfig-eec653ad-warnings
+   - clang-13-defconfig-5b09568e-warnings
+   - gcc-11-defconfig-59041e85-warnings
+   - gcc-11-defconfig-904271f2-warnings
+   - gcc-11-defconfig-5b09568e-warnings
+   - gcc-11-defconfig-1ee88247-warnings
+   - gcc-11-defconfig-0eba0eda-warnings
+   - clang-nightly-defconfig-5b09568e-warnings
+   - gcc-11-defconfig-bcbd88e2-warnings
+   - clang-12-defconfig-eb1b7d61-warnings
+   - clang-14-defconfig-warnings
+   - clang-14-defconfig-5b09568e-warnings  -
+
+ - arm
+  - build
+   - gcc-8-imx_v6_v7_defconfig-warnings
+   - gcc-9-imx_v6_v7_defconfig-warnings
+   - gcc-10-imx_v6_v7_defconfig-warnings
+   - gcc-11-imx_v6_v7_defconfig-warnings
+   - clang-nightly-imx_v6_v7_defconfig-warnings
+   - clang-13-imx_v6_v7_defconfig-warnings
+   - clang-13-mini2440_defconfig-warnings
+   - clang-13-omap1_defconfig-warnings
+   - clang-12-footbridge_defconfig-warnings
+   - clang-12-imx_v6_v7_defconfig-warnings
+   - clang-11-footbridge_defconfig-warnings
+   - clang-11-imx_v6_v7_defconfig-warnings
+   - clang-14-imx_v6_v7_defconfig-warnings  -
+
+ - mips
+   - gcc-10-malta_defconfig
+   - gcc-8-malta_defconfig
+
+--
+Linaro LKFT
+https://lkft.linaro.org/
