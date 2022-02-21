@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDEEF4BEA1F
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A4A4BEA2C
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiBUSEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 13:04:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36246 "EHLO
+        id S231570AbiBUSFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 13:05:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231596AbiBUSDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:03:03 -0500
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140047.outbound.protection.outlook.com [40.107.14.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDF7B53
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:54:18 -0800 (PST)
+        with ESMTP id S231717AbiBUSDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:03:09 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70050.outbound.protection.outlook.com [40.107.7.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6188065B3
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 09:54:20 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YZRZjO1yQLA58y2ScFOHwcBU2g2HbAG1xWzS4oFkjHyOmPl5+dBdzza+1qQuAjev3mKqhgbn4kBM5i5wJcs6PuXo3X2z6ExgndWWRxBAD1TNfDF8bRsuyKqI7U8SebR+GAiEiQS+gL5CmqZ+l/xpFqE7NwMDQAZ23Slsb6xomi3t4s1Oc2HYvag/XLclW55GxHh6DOXdh55skDqGhKLgSdyLwfqlLTBjCysxZIoupH4rKfPqzHZ/qjXeluxydHKllFLt1hqXda3zD9HVJRcV/D5PCrjMhWPATEQlU4YIz0VoBXfMEUjUx0zhUgr/Ffryl/7C9H4rwV/7HPV4IZV2BA==
+ b=AvMOAxedNMfBesJOXjha3h2Nj/0tkOytbuxXKR8KiN18KT+yknSkovoQ1sdBVphg+Dd9zBWHHjJNR+06Hn046NQWNFwakM/YN1VoeSmGxWWuCQBQp4C/iLA36UkKPeIbMjPKNqCIamU0TlUl6zkI1Xpl+/nqJ0twswUDc3+1gwT4bzqUuV6ck38vjokChUMeGKwblURIFvKZpRZXv0z5gut827//IhXXVsnrmnzpYtfB3Mr7s03WyXh6kcY5mCtiFlmY0c7bEmeIef/I91qfLeoW/9rsMhLGSlq8Vy7CiOzDb7rPivAc8lM1W3nlwTVKeeTDIHQAYUA0AumOYc/YRg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6bGnkVIuHO8L8oW+8lEyvQif3nMzzU7Rsdz+FuheivE=;
- b=BpPH7Te3rW0zX91jp0nA7rl1gLxyG1gJm+eTTuwAJXweQp+0UQs80StUGE34z96+PsSut2Y1WN/Pgu1nneY8IBV2fJBrAocB0UrBAWrXuzdjAE5xMzD1BoPtBAYeR3l3jHcCcx20lj+heboJ7GkHL0EpPXt7rhIXXTlqlnhaOAM8+jmiyZ3ZDnBwMR0+VPk0bi99/p1JPREhgsIpf7lRKKaNPVSlxwSP82IM1jhkVYK1kGP5lpwecjmd1BqcWuAwqJ1T5JzMJP/RGtRCKzzSJsemnvqOVwDFbfULpLoEpBDCVbLM7L8qwJDi4B8LwxhpNKzNp6vDdtE0+zokkYc8JA==
+ bh=U0Ij1IW2iOF3KoEoy35y0lzDvg7yHK2umBYwSBWlavw=;
+ b=d1TP60UojNcQRDfoFtInvEa/bGiy37vCml965sNyA4a5aALz73B2xH9xsUWJUUVtjNKc8mh6FzoHWgfx5qX/msRpAcKXSNOXfEtFin1+/8eJ+V7ggFSTCMiq0fneFcCk7K/BzLLUlxsFLkg+ACBlLbrSp6s9K4/DTZY4cZ85OCQwzhq8jsRXpN/2quCrroeM3bYYEvfIuS34qkxQVTgyRJjexqLshOXKo59S/wpFKkbexiANFWl53svr2TmsERqA6d3hWXudQINUSOkit5NJk/4C3SWlYl5Gj2fB13b8bCgA/KPNw1ohzj8hwefL1a3ZzPA16XebOyx6NCieoQBWmA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6bGnkVIuHO8L8oW+8lEyvQif3nMzzU7Rsdz+FuheivE=;
- b=kLmi9C/zyNzsg+sjhM2Niz/YyVrt4lgi+j+omP6XC7JnpFlUBb5RHEt7gnt/hsRvKHa0sTpNdYCBre9+Y6XThyutNT9DID/3+ut8sasT7YkciVBfhnFqSK7iKMbjayrGsDsQijvKmbSPpXPi1Hw3Kp83N654m23ZeVi5MJEXpPs=
+ bh=U0Ij1IW2iOF3KoEoy35y0lzDvg7yHK2umBYwSBWlavw=;
+ b=YbkSi9X5IlW9T4YteJn7TPsAT7x/MUs/ZHc6PO38D/GxCweMj9LttLvrTnLS0jVgfQOD/ZiPHBBo+jbgedieGW6fywuS7rYlZBrdugrJyvC9VtWzfdl4B8+PsBMzn0eBsI2j6L1aO9Eo+NYAtWUnvVZHpcXVoeJ0Q8QSKn9fgzc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -53,9 +53,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v3 net-next 07/11] net: switchdev: remove lag_mod_cb from switchdev_handle_fdb_event_to_device
-Date:   Mon, 21 Feb 2022 19:53:52 +0200
-Message-Id: <20220221175356.1688982-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 08/11] net: dsa: remove "ds" and "port" from struct dsa_switchdev_event_work
+Date:   Mon, 21 Feb 2022 19:53:53 +0200
+Message-Id: <20220221175356.1688982-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220221175356.1688982-1-vladimir.oltean@nxp.com>
 References: <20220221175356.1688982-1-vladimir.oltean@nxp.com>
@@ -66,53 +66,53 @@ X-ClientProxiedBy: VI1PR10CA0097.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 719ba417-5487-4936-356b-08d9f5632b60
+X-MS-Office365-Filtering-Correlation-Id: 907a6fc6-10fa-4872-cb28-08d9f5632bd9
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3693:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB369301C9948E14C753F77889E03A9@VI1PR0402MB3693.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB36939E8C0B5AE3C7995890D8E03A9@VI1PR0402MB3693.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mrq6aTJbxPLrdVQzRxVupm2ha/TK/+p5RdrR/TyhGNQfbFa4YExUZy8OaFlJeMrIeIcOqSmJ2QPT3+BNlN62iwNWIxFdAd5XEHguk5J6UwompkZSS6wOQzjiG1k2N0vEX/jz7J9581N/dg5A45rpAqMeF0qZbaWijQLMAns6yCGxQBR9DS15Tt4Nt7i3n48nUE5dTfQnXtYDKfTs/xDkx8S/3OqkgLR1LWvDuytHJ2q4vfY7StsR/s5zwUzKY0Bcg32ydyNgoMB/XNKXQrQeTQVP+aqZa4+ALvRtFZq9wpZYaudLwNMq3v8+Kw+JzC+L/orn4qH+i3Db2GwtgY4tnDEOEwC4y4X+0O/myxersIMJ5Pqgaw3poo2c0iyXT/OrBOEASMrSo4bD87bJiyH1Wfa7bV2SwPKScJEsC0GF9XOzVCTweeo8bEJwUPW89KiFUqcWBE4Juz8PH1u1qzJ2uNBx0cgqg8Kf+Z3o4TcAzYvugbJKoj0LAWhoN0QEG89PKNm38L8FF/OcZ91ZUKFwIo0kTN0CrvrHwRCjEpw3Ebqe97b4YJRgprFaez7T33sTIIAPm4jtbHfbw4C70/aLJ1RNXhW6h/yczM0W/QvkcXOkjFNwHFYPLD7jG1B+Su3C/1E4d2+T5Y6YXu2O8fCMxI/3jwHZSBeeskc2/Y/ckYpQPOiA0ZHra94mRCn9JMOkk9AMx2qbrrwT+AHeOK1v3sWnRIvBoxtjEt01NLPb+Bkx4S+cBdOs6bS5/VOF0GiBq+3/lWZBT/cBjfsrHZoqCy+oEHWjnPlFfCuAwJcz4g8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(66556008)(4326008)(8676002)(66476007)(8936002)(26005)(7416002)(54906003)(5660300002)(30864003)(83380400001)(66946007)(186003)(316002)(44832011)(86362001)(52116002)(966005)(6486002)(6506007)(6666004)(36756003)(2616005)(2906002)(38350700002)(38100700002)(508600001)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GqK5LFeV0+x2xcFLkAVFdAKXFzoBU/MYlL7/+1UW7l3T+mkpzLVQTOFV8Et72yvrA/WvXwQvMlaytwWonoWhk+dQMys6ZkFES8PuFYBi9+zYbb20cB+1vKIvfEhACIb4QCdw+ppiK7N0XgiDpZ8vhCXd0Q7dwrrF++4xM7AsL5cdgNAHine3R16SBqvjG0bsxKZ77lKCkYHdDMs8jhDQd69O6CsLnUKICgtx3clZaBUEkQpqe85gLrV0Ctku6tFI2/nkwxPym3XlQcDk3uvzxv8KnPG9IJeKQTNCl7+SE7llGzxlZAu5oyWpLtlfrrKgeuBoern6ciba+4IV6nR2KDPdnVaUIpaaLYJ1YhChNtB2PvvNadSoi15xjEEoNgKbBBf57l4UmtlTgGiaXsnmWYlIkY7HE7s6BFcxnIb5nU6nAPuTganRAHPCR+a5xaUEZz8B3OMushjSk3xPvi3WHZwn1qU42veMi7+0d6Ibs6SRnZrcUgcDCLGPlbgWmDLZ/n2JHbH14fL3QRBsyuFjbhbbyTEZ7UvPLqllTNmF4CROO1xRvE0RGkjJdOgBHO98Hw+SIHZLXuYj7csvXtCTUwj8gb5nobbJ3VMsblM/HUD54xFq3ko2GQkdjMBN6E0oPKyl/XGzB6dOOUlLe4QgD2G/WtVM76ALdzF9ioJXIroMn39j5/al6/ASBROM8FCfVw2slaaEU8maBQV+yv0/wQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(66556008)(4326008)(8676002)(66476007)(8936002)(26005)(7416002)(54906003)(5660300002)(83380400001)(66946007)(186003)(316002)(44832011)(86362001)(52116002)(6486002)(6506007)(6666004)(36756003)(2616005)(2906002)(38350700002)(38100700002)(508600001)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UjzcCCZw6x9/dQledgMgD550djlLia5kOeA5Pf3RJwJrlOTQfnHkbtVaJXcN?=
- =?us-ascii?Q?gBYcbaNy8KqOLK2GrPwCdAI2fw9ImY/kBWMJlANc0A2X4Sk/hD95c4wQm65r?=
- =?us-ascii?Q?e6O5K9ReeuCmndm2KvlAz/eugbdPbUKPKgcilXkj++G3i84aiIYdNFHdC2NQ?=
- =?us-ascii?Q?1HH0+/zvFJWfFBsAnlZboJJN3lu5RDBnBc59d/T66rjJ37cb4kIUTQAL/pcZ?=
- =?us-ascii?Q?DxJj+Qn6xmVdzXcT/JBKzjz+AQlAwUjvTgQ5Pvt4T/1wRMYnubbwtjqPp/u4?=
- =?us-ascii?Q?QluI+VLjfXwPP95/P/udacHkhJBDNP5Bfg3k5nmRz/f9t9mxPNU0H7O3S9/3?=
- =?us-ascii?Q?vVlCqnyjOXQlLeDT8inJUdtAnhEE2zeuwrjJ9kLNM3u9PwA2S4ARQVUsjL1d?=
- =?us-ascii?Q?fMovGlFInI0Odkq691Qmh4qBJr6FpYUFDp31TG79u16r4QaMKttuwsgLCqus?=
- =?us-ascii?Q?WSe2hShi93amuOkWjNSydi8mIf2CueyarSdIupPI8N/fU1jLI+RqwnDvgi/I?=
- =?us-ascii?Q?mZL6EBxnelmSSkqinBWzZh5v+TidDnHExTNhsIE9ELDb4a3GZrHZleoAc68d?=
- =?us-ascii?Q?FrwcpLT+MNj2V6zgONVJ97lJwL0DlmafBW3Yq55qHMN+G+UA93Y8/dKmNjjP?=
- =?us-ascii?Q?hzzEbRaX/lP/eIM+P729M6aT6vKeZGmoTMcBCX4AXp8BteOROY1RRUACOdv6?=
- =?us-ascii?Q?PTkpOveZTFnwFJJtNyDd5Ib/m25nHVSAbzxb4DAx3n5YXFs++R4hnRCgYcBI?=
- =?us-ascii?Q?tobDMuLJN54WdPJ0uzrbpC32dBAYF8m/xZCAYUAc55RGl//lIeFupFlwlKmj?=
- =?us-ascii?Q?HTjz3OTgfQKf38/ixt98AwCykd0QufBn+cdGlnLJHcCttNswK0edLo3NwQpB?=
- =?us-ascii?Q?oWBbBykedSG2jQwkngdf5QVwaHfbRzXXRP1LHez/BPVYo9geqtILf8kWivod?=
- =?us-ascii?Q?y0q7MnNlNjmJ1XBl+dJJqV3JOvXDUgW0qOjPeG+tm6IMpqEFMTo2L2DznWLJ?=
- =?us-ascii?Q?5/e4UtzewJtYhkvHVvRI4CUQ/NaI7GkS2i8KRPL4H8ZGHhTzC2ev0XFG2eMc?=
- =?us-ascii?Q?bUwTxbwIm2JmOZTEnO5IVaYhFmPJdM7brbDSkVZJ9iuUZOW57ihjOJgAvDkr?=
- =?us-ascii?Q?Va763xueHoeZ9moAYy+KHbqUJCulY63kQqs83P+HLdczaoMHO5satYT+jGHe?=
- =?us-ascii?Q?RIytN68c5xF/wwSvRoYn53eBKy/Ji+VrXbIk3z+Kxk/nKzsARjjEW59KXzcX?=
- =?us-ascii?Q?mjW6b6fgJDWR6dPWRW3RDMiP26ug5iIvxCu7Us8GAqrlP+V16jAghkEmyTJ1?=
- =?us-ascii?Q?ncVPM0GVQFI8pIJdn3RLRDgUO9Ai3Of7zqKFStJA1G7HQeckqxIQQSoGiEr0?=
- =?us-ascii?Q?ZuO5sHhkhHOkaZB3O8hZL2oh+fkwDo0OFBYcTkvvPH1HicrloJ/gqEI45/Tk?=
- =?us-ascii?Q?Sb/YEGsw8HpFS3zCD4Ypb4cXHii1wSBhTGxiYhrLGVLJnGZqPvUT+Gb/ezr+?=
- =?us-ascii?Q?T4/1kwzUNQCoo5qAGfFU278nKj51hd74KX+Us3CQFg53ntAzuQMlHAmso2cz?=
- =?us-ascii?Q?a8ODqBiNPz87uofQFIG87KR6q/C4xTxnJtfbCxKtpzMHAZPr/fCffsT7sEp7?=
- =?us-ascii?Q?ZsZ99pyJVI0J1Kj9CPklhGE=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?m5T+6AwTOjqEVGr6jz5unckXW5AlxD6icv8hMfBXO3uia8tRpZXRanw4a0dL?=
+ =?us-ascii?Q?8KOSvTK1sJuJVzmcuUTRhpvGkHBr8k9V7hEdnh0FjCBGQu7wyA6AsCe+KPhb?=
+ =?us-ascii?Q?kgUvuMmNeGlDrCX9h3r9qHfs+3bbk3cvu78YdAoxdWiulZpXJgFaKZhNdxgV?=
+ =?us-ascii?Q?GUIp1A/pWAHP+AwQ8LGrOoXl2AP8/yt805R9OxjUDg/h3kgiMmeEPAMsK+I5?=
+ =?us-ascii?Q?kfLBVWYS2Zqu/AZ8lpDdM/CKjyQRoPSYF/XF6NBqVeEUKKrJLcRUJKzVPehf?=
+ =?us-ascii?Q?e6XJikn2bEEZxwgjuN2th0JcawA9wFvtlYjIFBiv5a79xFcn0CGtDZbo4Qer?=
+ =?us-ascii?Q?r127Dakui94rFHZunaUnX7tJ2EE+ooEGTz3gQZHpCFxcgX7WQQvyGEPrnqRu?=
+ =?us-ascii?Q?3oNVhM4LUX9nRklm3tVjIwYM1Q51OfdSfKi3npTZxnXVesLwG8ba4sxIXrHq?=
+ =?us-ascii?Q?I2Uh4FTMcW8/S4i4uFY0TpK/kcsVaN4kFjF5Jke0YsjXn18qJOTgvTDqoPXU?=
+ =?us-ascii?Q?VQMDfnX9A6x6IPhto5VRZQ4/i3mn2QnwzA3mExZGY3hdrvuKg7eJaRP5Ze9N?=
+ =?us-ascii?Q?w5eqw62UDOqyl6+GuqRwdkTAvqNW4vwig9W1LKwwdNzI1Zr89SqYmJbAB0ys?=
+ =?us-ascii?Q?Hqe4IxG0XtxSD6yMw3m3Ptc8dynylaZnmRFG9F9UdftWMC+oPQtTOjv9or1Z?=
+ =?us-ascii?Q?IZJcm9jvDtghlCV3wR7E5yZNvbOpZ+WShWKGQ4yR/LiI5qZoqxVZ05sr/wky?=
+ =?us-ascii?Q?RKv9PUY5GD4lvXFmvr9copRrlZijoq66FHfSwLM7mXOCT3JFHxAJbIkvSCv3?=
+ =?us-ascii?Q?klpsXLFID/q7GrJb5jrJ0JvtvYOh02Zld8AP2vGeuBqwEhp97v7S8XceeXX4?=
+ =?us-ascii?Q?T5WTAThJJcoCJ533TFfuovxPBGcLowcvm44TuJA88E5mAuYhoyl9Zs4x8gaI?=
+ =?us-ascii?Q?KpZe2j68fokarZmF6WqLvTgfYjYx2Strx5808QPF+f+jxiRPJXl8aa1QZPXd?=
+ =?us-ascii?Q?+m/HMWq9EZZPHaPEprGOzbAwdxcP1rJSjVleFEytSdJnmZn8psOgpRikLwXx?=
+ =?us-ascii?Q?R0AbPz1XpWXxDfO9s+yOCVIZD1kLp/s/5Q4KVO/dPzR8J1re295reRyDea7L?=
+ =?us-ascii?Q?9HQWXiGdFLbhabn/nU+L2uscN1+Fe5gPTo0kmdegEdRdoLDgRsZPG6PSd148?=
+ =?us-ascii?Q?XJxaB80k8OJB5pUjjYLSd337uIDoUtTAfBzmfZ2eCxFieo5l82FWGpVbgPEP?=
+ =?us-ascii?Q?P/RWF61Jd/U8tBrcvZ6iHTMM1EM6wDVUOUL7Dct4GD/MDcuO4idhqVYXKsZI?=
+ =?us-ascii?Q?5w+hM995fzBcXM1H9+XeaNTTi7D4g3jwqGEvd0GpIqqae+5wNfJrC+V2DO/Z?=
+ =?us-ascii?Q?TBApcE6X1RUAlpjiunvh5N7XYfHN+h9D8KouZ7o+0xWpZXuljGAKKaeaffve?=
+ =?us-ascii?Q?HSOPmWqaNr99YWGaempNKKXPezHm103a6lyndLj5YID/jCoX8kfucVNBOWvr?=
+ =?us-ascii?Q?99u6ZWSqB93GpCB0qdJhcPRelK6iUcNYgznxJ4GLz98oQiLmqfuO6w528SvM?=
+ =?us-ascii?Q?EcE6NW3Bkt1p769GuQiaBXIylzXy9G67kCRJYGoqFnounn91hg7FkXqrJh8T?=
+ =?us-ascii?Q?UW4jqqjKV60+b+xPHgihelg=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 719ba417-5487-4936-356b-08d9f5632b60
+X-MS-Exchange-CrossTenant-Network-Message-Id: 907a6fc6-10fa-4872-cb28-08d9f5632bd9
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:54:12.9491
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 17:54:13.7459
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6IXqZeiRFv7D5eWzlBZrMwtnF+kz1kxkZ/9QUgaK0n9asN+Z/wtMcfNl+YKfOvEL8N5bKuhXv4afB8N+1++bdw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: EWjJsX9m3dGDA668RcOTDtU0iOeKOKH0yHuKyOuZmApeb3R/NLNYU1YIkeJkmubzxxhhaSm9Ecoj+jAU5mVOMQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3693
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,281 +124,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the switchdev_handle_fdb_event_to_device() event replication helper
-was created, my original thought was that FDB events on LAG interfaces
-should most likely be special-cased, not just replicated towards all
-switchdev ports beneath that LAG. So this replication helper currently
-does not recurse through switchdev lower interfaces of LAG bridge ports,
-but rather calls the lag_mod_cb() if that was provided.
+By construction, the struct net_device *dev passed to
+dsa_slave_switchdev_event_work() via struct dsa_switchdev_event_work
+is always a DSA slave device.
 
-No switchdev driver uses this helper for FDB events on LAG interfaces
-yet, so that was an assumption which was yet to be tested. It is
-certainly usable for that purpose, as my RFC series shows:
+Therefore, it is redundant to pass struct dsa_switch and int port
+information in the deferred work structure. This can be retrieved at all
+times from the provided struct net_device via dsa_slave_to_port().
 
-https://patchwork.kernel.org/project/netdevbpf/cover/20220210125201.2859463-1-vladimir.oltean@nxp.com/
-
-however this approach is slightly convoluted because:
-
-- the switchdev driver gets a "dev" that isn't its own net device, but
-  rather the LAG net device. It must call switchdev_lower_dev_find(dev)
-  in order to get a handle of any of its own net devices (the ones that
-  pass check_cb).
-
-- in order for FDB entries on LAG ports to be correctly refcounted per
-  the number of switchdev ports beneath that LAG, we haven't escaped the
-  need to iterate through the LAG's lower interfaces. Except that is now
-  the responsibility of the switchdev driver, because the replication
-  helper just stopped half-way.
-
-So, even though yes, FDB events on LAG bridge ports must be
-special-cased, in the end it's simpler to let switchdev_handle_fdb_*
-just iterate through the LAG port's switchdev lowers, and let the
-switchdev driver figure out that those physical ports are under a LAG.
-
-The switchdev_handle_fdb_event_to_device() helper takes a
-"foreign_dev_check" callback so it can figure out whether @dev can
-autonomously forward to @foreign_dev. DSA fills this method properly:
-if the LAG is offloaded by another port in the same tree as @dev, then
-it isn't foreign. If it is a software LAG, it is foreign - forwarding
-happens in software.
-
-Whether an interface is foreign or not decides whether the replication
-helper will go through the LAG's switchdev lowers or not. Since the
-lan966x doesn't properly fill this out, FDB events on software LAG
-uppers will get called. By changing lan966x_foreign_dev_check(), we can
-suppress them.
-
-Whereas DSA will now start receiving FDB events for its offloaded LAG
-uppers, so we need to return -EOPNOTSUPP, since we currently don't do
-the right thing for them.
+For the same reason, we can drop the dsa_is_user_port() check in
+dsa_fdb_offload_notify().
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v2->v3: patch is new, logically replaces previous patch "net: switchdev:
-        export switchdev_lower_dev_find"
+v1->v3: none
 
- .../microchip/lan966x/lan966x_switchdev.c     | 12 +--
- include/net/switchdev.h                       | 10 +--
- net/dsa/slave.c                               |  6 +-
- net/switchdev/switchdev.c                     | 80 +++++++------------
- 4 files changed, 42 insertions(+), 66 deletions(-)
+ net/dsa/dsa_priv.h |  2 --
+ net/dsa/slave.c    | 16 +++++-----------
+ 2 files changed, 5 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index 85099a51d4c7..e3555c94294d 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -419,6 +419,9 @@ static int lan966x_netdevice_event(struct notifier_block *nb,
- 	return notifier_from_errno(ret);
- }
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 8612ff8ea7fe..f35b7a1496e1 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -119,8 +119,6 @@ struct dsa_notifier_master_state_info {
+ };
  
-+/* We don't offload uppers such as LAG as bridge ports, so every device except
-+ * the bridge itself is foreign.
-+ */
- static bool lan966x_foreign_dev_check(const struct net_device *dev,
- 				      const struct net_device *foreign_dev)
- {
-@@ -426,10 +429,10 @@ static bool lan966x_foreign_dev_check(const struct net_device *dev,
- 	struct lan966x *lan966x = port->lan966x;
- 
- 	if (netif_is_bridge_master(foreign_dev))
--		if (lan966x->bridge != foreign_dev)
--			return true;
-+		if (lan966x->bridge == foreign_dev)
-+			return false;
- 
--	return false;
-+	return true;
- }
- 
- static int lan966x_switchdev_event(struct notifier_block *nb,
-@@ -449,8 +452,7 @@ static int lan966x_switchdev_event(struct notifier_block *nb,
- 		err = switchdev_handle_fdb_event_to_device(dev, event, ptr,
- 							   lan966x_netdevice_check,
- 							   lan966x_foreign_dev_check,
--							   lan966x_handle_fdb,
--							   NULL);
-+							   lan966x_handle_fdb);
- 		return notifier_from_errno(err);
- 	}
- 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index c32e1c8f79ec..3e424d40fae3 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -313,10 +313,7 @@ int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long e
- 					     const struct net_device *foreign_dev),
- 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
- 			      unsigned long event, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
--				  unsigned long event, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info));
-+			      const struct switchdev_notifier_fdb_info *fdb_info));
- 
- int switchdev_handle_port_obj_add(struct net_device *dev,
- 			struct switchdev_notifier_port_obj_info *port_obj_info,
-@@ -443,10 +440,7 @@ switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event
- 					     const struct net_device *foreign_dev),
- 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
- 			      unsigned long event, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
--				  unsigned long event, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info))
-+			      const struct switchdev_notifier_fdb_info *fdb_info))
- {
- 	return 0;
- }
+ struct dsa_switchdev_event_work {
+-	struct dsa_switch *ds;
+-	int port;
+ 	struct net_device *dev;
+ 	struct work_struct work;
+ 	unsigned long event;
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index e31c7710fee9..4ea6e0fd4b99 100644
+index 4ea6e0fd4b99..7eb972691ce9 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -2461,6 +2461,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	bool host_addr = fdb_info->is_local;
- 	struct dsa_switch *ds = dp->ds;
- 
-+	if (dp->lag)
-+		return -EOPNOTSUPP;
-+
- 	if (ctx && ctx != dp)
- 		return 0;
- 
-@@ -2526,8 +2529,7 @@ static int dsa_slave_switchdev_event(struct notifier_block *unused,
- 		err = switchdev_handle_fdb_event_to_device(dev, event, ptr,
- 							   dsa_slave_dev_check,
- 							   dsa_foreign_dev_check,
--							   dsa_slave_fdb_event,
--							   NULL);
-+							   dsa_slave_fdb_event);
- 		return notifier_from_errno(err);
- 	default:
- 		return NOTIFY_DONE;
-diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
-index 28d2ccfe109c..474f76383033 100644
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@ -458,63 +458,40 @@ static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
- 					     const struct net_device *foreign_dev),
- 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
- 			      unsigned long event, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
--				  unsigned long event, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info))
-+			      const struct switchdev_notifier_fdb_info *fdb_info))
+@@ -2373,29 +2373,25 @@ static void
+ dsa_fdb_offload_notify(struct dsa_switchdev_event_work *switchdev_work)
  {
- 	const struct switchdev_notifier_info *info = &fdb_info->info;
--	struct net_device *br, *lower_dev;
-+	struct net_device *br, *lower_dev, *switchdev;
- 	struct list_head *iter;
- 	int err = -EOPNOTSUPP;
- 
- 	if (check_cb(dev))
- 		return mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
- 
--	if (netif_is_lag_master(dev)) {
--		if (!switchdev_lower_dev_find_rcu(dev, check_cb, foreign_dev_check_cb))
--			goto maybe_bridged_with_us;
+ 	struct switchdev_notifier_fdb_info info = {};
+-	struct dsa_switch *ds = switchdev_work->ds;
+-	struct dsa_port *dp;
 -
--		/* This is a LAG interface that we offload */
--		if (!lag_mod_cb)
--			return -EOPNOTSUPP;
--
--		return lag_mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
--	}
--
- 	/* Recurse through lower interfaces in case the FDB entry is pointing
--	 * towards a bridge device.
-+	 * towards a bridge or a LAG device.
- 	 */
--	if (netif_is_bridge_master(dev)) {
--		if (!switchdev_lower_dev_find_rcu(dev, check_cb, foreign_dev_check_cb))
--			return 0;
--
--		/* This is a bridge interface that we offload */
--		netdev_for_each_lower_dev(dev, lower_dev, iter) {
--			/* Do not propagate FDB entries across bridges */
--			if (netif_is_bridge_master(lower_dev))
--				continue;
--
--			/* Bridge ports might be either us, or LAG interfaces
--			 * that we offload.
--			 */
--			if (!check_cb(lower_dev) &&
--			    !switchdev_lower_dev_find_rcu(lower_dev, check_cb,
--							  foreign_dev_check_cb))
--				continue;
--
--			err = __switchdev_handle_fdb_event_to_device(lower_dev, orig_dev,
--								     event, fdb_info, check_cb,
--								     foreign_dev_check_cb,
--								     mod_cb, lag_mod_cb);
--			if (err && err != -EOPNOTSUPP)
--				return err;
--		}
-+	netdev_for_each_lower_dev(dev, lower_dev, iter) {
-+		/* Do not propagate FDB entries across bridges */
-+		if (netif_is_bridge_master(lower_dev))
-+			continue;
+-	if (!dsa_is_user_port(ds, switchdev_work->port))
+-		return;
  
--		return 0;
-+		/* Bridge ports might be either us, or LAG interfaces
-+		 * that we offload.
-+		 */
-+		if (!check_cb(lower_dev) &&
-+		    !switchdev_lower_dev_find_rcu(lower_dev, check_cb,
-+						  foreign_dev_check_cb))
-+			continue;
-+
-+		err = __switchdev_handle_fdb_event_to_device(lower_dev, orig_dev,
-+							     event, fdb_info, check_cb,
-+							     foreign_dev_check_cb,
-+							     mod_cb);
-+		if (err && err != -EOPNOTSUPP)
-+			return err;
- 	}
- 
--maybe_bridged_with_us:
- 	/* Event is neither on a bridge nor a LAG. Check whether it is on an
- 	 * interface that is in a bridge with us.
- 	 */
-@@ -522,12 +499,16 @@ static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
- 	if (!br || !netif_is_bridge_master(br))
- 		return 0;
- 
--	if (!switchdev_lower_dev_find_rcu(br, check_cb, foreign_dev_check_cb))
-+	switchdev = switchdev_lower_dev_find_rcu(br, check_cb, foreign_dev_check_cb);
-+	if (!switchdev)
- 		return 0;
- 
-+	if (!foreign_dev_check_cb(switchdev, dev))
-+		return err;
-+
- 	return __switchdev_handle_fdb_event_to_device(br, orig_dev, event, fdb_info,
- 						      check_cb, foreign_dev_check_cb,
--						      mod_cb, lag_mod_cb);
-+						      mod_cb);
+ 	info.addr = switchdev_work->addr;
+ 	info.vid = switchdev_work->vid;
+ 	info.offloaded = true;
+-	dp = dsa_to_port(ds, switchdev_work->port);
+ 	call_switchdev_notifiers(SWITCHDEV_FDB_OFFLOADED,
+-				 dp->slave, &info.info, NULL);
++				 switchdev_work->dev, &info.info, NULL);
  }
  
- int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long event,
-@@ -537,16 +518,13 @@ int switchdev_handle_fdb_event_to_device(struct net_device *dev, unsigned long e
- 					     const struct net_device *foreign_dev),
- 		int (*mod_cb)(struct net_device *dev, struct net_device *orig_dev,
- 			      unsigned long event, const void *ctx,
--			      const struct switchdev_notifier_fdb_info *fdb_info),
--		int (*lag_mod_cb)(struct net_device *dev, struct net_device *orig_dev,
--				  unsigned long event, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info))
-+			      const struct switchdev_notifier_fdb_info *fdb_info))
+ static void dsa_slave_switchdev_event_work(struct work_struct *work)
  {
+ 	struct dsa_switchdev_event_work *switchdev_work =
+ 		container_of(work, struct dsa_switchdev_event_work, work);
+-	struct dsa_switch *ds = switchdev_work->ds;
++	struct net_device *dev = switchdev_work->dev;
++	struct dsa_switch *ds;
+ 	struct dsa_port *dp;
  	int err;
  
- 	err = __switchdev_handle_fdb_event_to_device(dev, dev, event, fdb_info,
- 						     check_cb, foreign_dev_check_cb,
--						     mod_cb, lag_mod_cb);
-+						     mod_cb);
- 	if (err == -EOPNOTSUPP)
- 		err = 0;
+-	dp = dsa_to_port(ds, switchdev_work->port);
++	dp = dsa_slave_to_port(dev);
++	ds = dp->ds;
+ 
+ 	switch (switchdev_work->event) {
+ 	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+@@ -2497,8 +2493,6 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+ 		   host_addr ? " as host address" : "");
+ 
+ 	INIT_WORK(&switchdev_work->work, dsa_slave_switchdev_event_work);
+-	switchdev_work->ds = ds;
+-	switchdev_work->port = dp->index;
+ 	switchdev_work->event = event;
+ 	switchdev_work->dev = dev;
  
 -- 
 2.25.1
