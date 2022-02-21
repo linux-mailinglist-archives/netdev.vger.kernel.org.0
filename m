@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 835E54BE62D
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:01:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 028BD4BE505
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:59:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380853AbiBUQjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 11:39:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49582 "EHLO
+        id S1380911AbiBUQj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 11:39:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380793AbiBUQjK (ORCPT
+        with ESMTP id S1380788AbiBUQjK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 11:39:10 -0500
 Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98894237FF;
-        Mon, 21 Feb 2022 08:38:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE2022BE8;
+        Mon, 21 Feb 2022 08:38:37 -0800 (PST)
 Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 83F0BC3549;
-        Mon, 21 Feb 2022 16:29:18 +0000 (UTC)
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id F103FC2458;
+        Mon, 21 Feb 2022 16:29:16 +0000 (UTC)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E0190FF80E;
-        Mon, 21 Feb 2022 16:29:13 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8A417FF815;
+        Mon, 21 Feb 2022 16:29:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645460955;
+        t=1645460956;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yFZyD/xsoWg/S0R33oq47fx2Ang45t7YDLbGipkmDBU=;
-        b=owA9gnqTS5qqrRnkgIHNLJMrzZ/Xpguf/yNrSyIkJdRdPNBZiwWwffvpJqwydxsTlrBXIG
-        4GqmqKnGSJecFBvzF1zKDEtl5eBZeRrHKTEJUOR4Ditxxp0JQfi1GDtwYNiEkpy8n58X5w
-        DQAeRKgHbiUu6XRKL+62CPJpJDXbEVaTvyyznf//QxXDeBvr77b8Ly3Wu8WwL+OrB5K8z7
-        YQglolFnIAL2wIUaxw/h3d3o4CM5DFQ+w9In8tyTRvHH3tMD+K/iw+4XYG6EDJjIadrXkj
-        0LGjKCnJEuueFOzQdKreE9C5LYJ22XL67mO3FM4EdsizWoorp/DFpab6nAqfPw==
+        bh=w8VXJLW2FAIIFmTtYZLQHDFFw7si1/w4sSkhBjrOQnI=;
+        b=pEzyFYzNzHAqzU266UJ1CEeViLXPnqIXs7PsoQwbDM3DfG20pTF/W/4ida1KoDfZEkd7/U
+        ZhQBjh8pOzwuy+oIGXzUT632IAZLLf1uy13+beH/oW53pSzIjYq3xayNS0I7aJpabVcqWu
+        YBaJxLKsChgwMMlYpwbyYephOlCn51B00BSX7E7t8JIcUTEEKGiV7V4l6ReAiruQ7mqdvb
+        EOL/id9lbhV31J57324G09Bug277sdAPHBYX9Wrq4WrPB1lN7kZH4ZCcnMYcwOMsrherii
+        tx6iGY0V8d+sJ2t6EajUmurjr2T7ieZ4EWja7cqe06jSUz1XL+Ak049/gIAQSw==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Daniel Scally <djrscally@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC 04/10] property: add a callback parameter to fwnode_property_match_string()
-Date:   Mon, 21 Feb 2022 17:26:46 +0100
-Message-Id: <20220221162652.103834-5-clement.leger@bootlin.com>
+Subject: [RFC 05/10] property: add fwnode_property_read_string_index()
+Date:   Mon, 21 Feb 2022 17:26:47 +0100
+Message-Id: <20220221162652.103834-6-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220221162652.103834-1-clement.leger@bootlin.com>
 References: <20220221162652.103834-1-clement.leger@bootlin.com>
@@ -69,82 +69,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function will be modified to be reused for
-fwnode_property_read_string_index(). In order to avoid copy/paste of
-existing code, split the existing function and pass a callback that
-will be executed once the string array has been retrieved.
-
-In order to reuse this function with other actions.
+Add fwnode_property_read_string_index() function which allows to
+retrieve a string from an array by its index. This function is the
+equivalent of of_property_read_string_index() but for fwnode support.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/base/property.c | 50 +++++++++++++++++++++++++++++++++++------
- 1 file changed, 43 insertions(+), 7 deletions(-)
+ drivers/base/property.c  | 48 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/property.h |  3 +++
+ 2 files changed, 51 insertions(+)
 
 diff --git a/drivers/base/property.c b/drivers/base/property.c
-index 6ffb3ac4509c..cd1c30999fd9 100644
+index cd1c30999fd9..00d9f171329c 100644
 --- a/drivers/base/property.c
 +++ b/drivers/base/property.c
-@@ -410,10 +410,11 @@ EXPORT_SYMBOL_GPL(fwnode_property_read_string);
-  * fwnode_property_match_string - find a string in an array and return index
-  * @fwnode: Firmware node to get the property of
-  * @propname: Name of the property holding the array
-- * @string: String to look for
-+ * @cb: callback to execute on the string array
-+ * @data: data to be passed to the callback
-  *
-- * Find a given string in a string array and if it is found return the
-- * index back.
-+ * Execute a given callback on a string array values and returns the callback
-+ * return value.
-  *
-  * Return: %0 if the property was found (success),
-  *	   %-EINVAL if given arguments are not valid,
-@@ -421,8 +422,10 @@ EXPORT_SYMBOL_GPL(fwnode_property_read_string);
-  *	   %-EPROTO if the property is not an array of strings,
-  *	   %-ENXIO if no suitable firmware interface is present.
-  */
--int fwnode_property_match_string(const struct fwnode_handle *fwnode,
--	const char *propname, const char *string)
-+static int fwnode_property_string_match(const struct fwnode_handle *fwnode,
-+					const char *propname,
-+					int (*cb)(const char **, int, void *),
-+					void *data)
- {
- 	const char **values;
- 	int nval, ret;
-@@ -442,13 +445,46 @@ int fwnode_property_match_string(const struct fwnode_handle *fwnode,
- 	if (ret < 0)
- 		goto out;
+@@ -487,6 +487,54 @@ int fwnode_property_match_string(const struct fwnode_handle *fwnode,
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_match_string);
  
-+	ret = cb(values, nval, data);
-+out:
-+	kfree(values);
-+	return ret;
++struct read_index_data {
++	const char **string;
++	int index;
++};
++
++static int read_string_index(const char **values, int nval, void *data)
++{
++	struct read_index_data *cb_data = data;
++
++	if (cb_data->index >= nval)
++		return -EINVAL;
++
++	*cb_data->string = values[cb_data->index];
++
++	return 0;
 +}
 +
-+static int match_string_callback(const char **values, int nval, void *data)
-+{
-+	int ret;
-+	const char *string = data;
-+
- 	ret = match_string(values, nval, string);
- 	if (ret < 0)
- 		ret = -ENODATA;
--out:
--	kfree(values);
-+
- 	return ret;
- }
-+
 +/**
-+ * fwnode_property_match_string - find a string in an array and return index
++ * fwnode_property_read_string_index - read a string in an array using an index
++ * and return a pointer to the string
 + * @fwnode: Firmware node to get the property of
 + * @propname: Name of the property holding the array
-+ * @string: String to look for
++ * @index: Index of the string to look for
++ * @string: Pointer to the string if found
 + *
-+ * Find a given string in a string array and if it is found return the
-+ * index back.
++ * Find a string by a given index in a string array and if it is found return
++ * the string value in @string.
 + *
 + * Return: %0 if the property was found (success),
 + *	   %-EINVAL if given arguments are not valid,
@@ -152,16 +121,37 @@ index 6ffb3ac4509c..cd1c30999fd9 100644
 + *	   %-EPROTO if the property is not an array of strings,
 + *	   %-ENXIO if no suitable firmware interface is present.
 + */
-+int fwnode_property_match_string(const struct fwnode_handle *fwnode,
-+				 const char *propname, const char *string)
++int fwnode_property_read_string_index(const struct fwnode_handle *fwnode,
++				      const char *propname, int index,
++				      const char **string)
 +{
-+	return fwnode_property_string_match(fwnode, propname,
-+					    match_string_callback,
-+					    (void *)string);
++	struct read_index_data cb_data;
++
++	cb_data.index = index;
++	cb_data.string = string;
++
++	return fwnode_property_string_match(fwnode, propname, read_string_index,
++					    &cb_data);
 +}
- EXPORT_SYMBOL_GPL(fwnode_property_match_string);
- 
++EXPORT_SYMBOL_GPL(fwnode_property_read_string_index);
++
  /**
+  * fwnode_property_get_reference_args() - Find a reference with arguments
+  * @fwnode:	Firmware node where to look for the reference
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 7f727c492602..f6ede3840c40 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -70,6 +70,9 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
+ 				      size_t nval);
+ int fwnode_property_read_string(const struct fwnode_handle *fwnode,
+ 				const char *propname, const char **val);
++int fwnode_property_read_string_index(const struct fwnode_handle *fwnode,
++				      const char *propname, int index,
++				      const char **string);
+ int fwnode_property_match_string(const struct fwnode_handle *fwnode,
+ 				 const char *propname, const char *string);
+ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
 -- 
 2.34.1
 
