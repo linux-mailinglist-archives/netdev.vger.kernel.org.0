@@ -2,128 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 262A14BDC60
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D8D4BDCCB
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:42:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379426AbiBUPod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 10:44:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37220 "EHLO
+        id S1379522AbiBUPtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 10:49:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379460AbiBUPoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 10:44:08 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E02122B32
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 07:43:30 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id u12so21219703ybd.7
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 07:43:30 -0800 (PST)
+        with ESMTP id S1379511AbiBUPtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 10:49:13 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EF724095
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 07:48:49 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id cm8so20644692edb.3
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 07:48:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8CiXW+ordTPvlB+u9HbUK6sbw1rc2hC0tPgjcuKVOVM=;
-        b=qUcvoofk8rUJAf0+4Hif+JUd1A284UxMQ/JJk7kRQn93WTS/uI4J9O3QoDFcKalbXt
-         rTfHx5TC1V040BXgKQJLZwfR+hK7Hh9QNfrYcSE2Y2EA7fCI3K3l4EDpoP3+lfmQR2xn
-         t0zle6EricYu1Gpra8GkZspUtBsUrTKMmQ/GF2DCxqa/MGEVn4+JMIOvMxPgSf1huyxZ
-         wc06SF+cnafh3OUrDhy2v7Wtl8iAiRdGjErskv8WTACS2psKUbm3QbNtYySpy8DnI+s8
-         B6/+4Gmsqk9qoaW05SOAnNf6fbG5+jKd+AEDVZE7g1XWKDtO4b53JP52RrJ9U8SqHZqs
-         oouA==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AV3DNdIg+UtXULJt0thwZ048Q1Y0fhQSNYoEkjMO2Q0=;
+        b=AxhXhjCgP5813Q+O7+B6GgcKOub80Mi1M1QGGLrXcKpDdiLyhpb0id3ciKYYLngiMI
+         e0x9hhlKER64yur71WOiNWqtIpDiD5KKYTmvKhY5KO0AF3U/Vx7HuC0+QvinYAQnh3wA
+         5fw6wyYJ1vhS5BKpASRQ3pW4o93VzQk0tNKswSsaH70ZTe73LmEidhzBzeyXxiT3dQcB
+         IhMlXVpDeL06CRP1Xedbd2PGZ+lpxc6ANAV47KgI0C20+hMo3nhwZCZd9Zqobtjbq8VM
+         bLaSSEUSEyOnMjz3V3zDtRKKdbPQItoFnAUSd5mIoOaAs1A94gh208K9hkXsp3z0cbgL
+         pGAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8CiXW+ordTPvlB+u9HbUK6sbw1rc2hC0tPgjcuKVOVM=;
-        b=65oWPdRMqB5vH9lBhJIJ9iXgzRT2ipdzDwaAfEelX/0K4ith8mdGz+v+K7DzqL7tsx
-         30zBrySPxYmV8b0Lu73Vn6bjhI+s+IBnOk9YtdOy7uAjU9U/GnHpxTHUipP88p3xQ1+G
-         GMXqy4Dy56dc7veXuqX1FYWOjIakIW5X94JzC7NEcieHlLdc0WphG9JuKtfiXV6AaeOq
-         cNjSIlTqpY4Ty44meRjyAIBeJTVGPJhJ3NIyINC3IlKExq5M0KWB1ZEVQkEdjVVCSmg6
-         XzhlCby2M5Z0W/F+0dpuFpsUX16mN1+eqZYVBHTAd94ByqK3X42pfZO1tkOBKq3kFVSW
-         tSgA==
-X-Gm-Message-State: AOAM530x6Y6l4FxvB+KT5vDtJw7ilQ6DxXSn4SLMkivpJQddQuzpmCLi
-        9DFXtEsV9RHTFn/Iziy0C2AkBnQXLTHiXDehNwMBbQ==
-X-Google-Smtp-Source: ABdhPJxdkqqwtNvDKWif6dKTTnGdo3MNqTsPxysw3CgEmS0eSJlkISpcJQj8TmNxzR0EW0Fp9m3MpKLCfKQKB6Ec6z8=
-X-Received: by 2002:a25:d614:0:b0:61d:bb22:8759 with SMTP id
- n20-20020a25d614000000b0061dbb228759mr19289175ybg.231.1645458209249; Mon, 21
- Feb 2022 07:43:29 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AV3DNdIg+UtXULJt0thwZ048Q1Y0fhQSNYoEkjMO2Q0=;
+        b=0+j1SC0K0kNG1BRiAIdukV7e/2kYpPwo4Fsa0EYvfH/RmcG5P8xT3hubg5M9At3Oe5
+         NsS+mhmfqY+x0ivDBy1gebp17zueiCPHadthT4v0l66VsTK7GhnCVhGVzDIQgIAtP1/4
+         y+CZRIzGTmAC8hAOd2iIzbtdSHSHxzTPYEUPNNPVCBtudqzWWsjwb4GixQwzobaKmKpJ
+         XmUtHpfXVSfXLY1A+XhxGxs3mPPbUNITqAeDWXIveLbKJitEdcOy6hQXOs0FQX6eDuOC
+         867mwpxs0kj+dHsen3ZpB8TBj+EV0Yi47Kur52idDVr5LnW30yfvVuH1BLovOiZzhVqh
+         pSnQ==
+X-Gm-Message-State: AOAM5305u5aMt5NYUhEO1A70QnXH5fEfktT4dIuKiojZMy1w1WHIoXG0
+        nmqZr52pjSmeH8m6cVIJu54P4GtEg0mbgQ==
+X-Google-Smtp-Source: ABdhPJyzby6JkcCPLDtXOkJhpALP2Wss8voyNJPhnXl72VlxjfV0BmXbyq9Ld6w3UzbR1gBz6KFR/A==
+X-Received: by 2002:a05:6402:190b:b0:412:8cfc:c266 with SMTP id e11-20020a056402190b00b004128cfcc266mr22202959edz.274.1645458528118;
+        Mon, 21 Feb 2022 07:48:48 -0800 (PST)
+Received: from [192.168.1.8] ([149.86.76.215])
+        by smtp.gmail.com with ESMTPSA id f3sm7454951edy.72.2022.02.21.07.48.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 07:48:47 -0800 (PST)
+Message-ID: <f2c11f1a-ab7d-2d7b-7583-d1edb94cace9@isovalent.com>
+Date:   Mon, 21 Feb 2022 15:48:46 +0000
 MIME-Version: 1.0
-References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
-In-Reply-To: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 21 Feb 2022 07:43:18 -0800
-Message-ID: <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
- device from smaller to bigger
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH bpf-next v2] bpftool: Remove usage of reallocarray()
+Content-Language: en-GB
+To:     =?UTF-8?Q?Mauricio_V=c3=a1squez?= <mauricio@kinvolk.io>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+References: <20220221125617.39610-1-mauricio@kinvolk.io>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220221125617.39610-1-mauricio@kinvolk.io>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC Herbert Xu, author of blamed commit.
+2022-02-21 07:56 UTC-0500 ~ Mauricio Vásquez <mauricio@kinvolk.io>
+> This commit fixes a compilation error on systems with glibc < 2.26 [0]:
+> 
+> ```
+> In file included from main.h:14:0,
+>                  from gen.c:24:
+> linux/tools/include/tools/libc_compat.h:11:21: error: attempt to use poisoned "reallocarray"
+>  static inline void *reallocarray(void *ptr, size_t nmemb, size_t size)
+> ```
+> 
+> This happens because gen.c pulls <bpf/libbpf_internal.h>, and then
+> <tools/libc_compat.h> (through main.h). When
+> COMPAT_NEED_REALLOCARRAY is set, libc_compat.h defines reallocarray()
+> which libbpf_internal.h poisons with a GCC pragma.
+> 
+> This commit reuses libbpf_reallocarray() implemented in commit
+> 029258d7b228 ("libbpf: Remove any use of reallocarray() in libbpf").
+> 
+> v1 -> v2:
+> - reuse libbpf_reallocarray() instead of reimplementing it
+> 
+> Reported-by: Quentin Monnet <quentin@isovalent.com>
+> Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
+> 
+> [0]: https://lore.kernel.org/bpf/3bf2bd49-9f2d-a2df-5536-bc0dde70a83b@isovalent.com/
 
-On Mon, Feb 21, 2022 at 4:28 AM Ziyang Xuan
-<william.xuanziyang@huawei.com> wrote:
->
-> vlan device MTU can only follow real device change from bigger to smaller
-> but from smaller to bigger under the premise of vlan device MTU not exceed
-> the real device MTU.
->
-> This issue can be seen using the following commands:
->
-> ip link add link eth1 dev eth1.100 type vlan id 100
-> ip link set eth1 mtu 256
-> ip link set eth1 mtu 1500
-> ip link show
->
-> Modify to allow vlan device follow real device MTU change from smaller
-> to bigger when user has not configured vlan device MTU which is not
-> equal to real device MTU. That also ensure user configuration has higher
-> priority.
->
-> Fixes: 2e477c9bd2bb ("vlan: Propagate physical MTU changes")
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->  net/8021q/vlan.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-> index 788076b002b3..7de4f462525a 100644
-> --- a/net/8021q/vlan.c
-> +++ b/net/8021q/vlan.c
-> @@ -361,6 +361,7 @@ static int __vlan_device_event(struct net_device *dev, unsigned long event)
->  static int vlan_device_event(struct notifier_block *unused, unsigned long event,
->                              void *ptr)
->  {
-> +       unsigned int orig_mtu = ((struct netdev_notifier_info_ext *)ptr)->ext.mtu;
->         struct netlink_ext_ack *extack = netdev_notifier_info_to_extack(ptr);
->         struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->         struct vlan_group *grp;
-> @@ -419,7 +420,7 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
->
->         case NETDEV_CHANGEMTU:
->                 vlan_group_for_each_dev(grp, i, vlandev) {
-> -                       if (vlandev->mtu <= dev->mtu)
-> +                       if (vlandev->mtu <= dev->mtu && vlandev->mtu != orig_mtu)
->                                 continue;
->
->                         dev_set_mtu(vlandev, dev->mtu);
-> --
-> 2.25.1
->
+Fixes: a9caaba399f9 ("bpftool: Implement "gen min_core_btf" logic")
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 
-Herbert, do you recall why only a decrease was taken into consideration ?
-
-Thanks.
+Thanks!
