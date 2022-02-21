@@ -2,61 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B184BE781
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:03:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34E54BDF08
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242951AbiBUK5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 05:57:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54956 "EHLO
+        id S244369AbiBUK5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 05:57:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351033AbiBUKzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 05:55:11 -0500
+        with ESMTP id S1355439AbiBUKzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 05:55:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B852BB23;
-        Mon, 21 Feb 2022 02:23:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646272D1EF;
+        Mon, 21 Feb 2022 02:24:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FFFCB80DA4;
-        Mon, 21 Feb 2022 10:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0449DC340E9;
-        Mon, 21 Feb 2022 10:22:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE121B80F10;
+        Mon, 21 Feb 2022 10:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A4C5C340E9;
+        Mon, 21 Feb 2022 10:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645438983;
-        bh=tHe3JwBIdJi3QL5KPklA2JTFVmcZqzfdgzVj2VoOjjw=;
+        s=k20201202; t=1645439047;
+        bh=6s+hgRMRd1mGGSL9Zvl+8+90hKWB0EL5G7F0mNadTzo=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=AKMLirWg96eouuBDF+un4SrJMR1H101vE7r6RQqjdNPFZgx1nhLRA+PqY5d6VMn++
-         ykG95FbSPHw4rKjx2BfKpciFy/9pc+idoaGNGBrMmv8YuhPGSX3y8Hz+jrFUU/oTcD
-         mAa60rpbYE0tNnsXrYXyB6FBQvtXtDDxvf8DmwzBhdHReB3nwyplB+qcBc/hT8Iiv8
-         0Vy/vLXvG1JoN42byRSNciejxrGdv/dTaInhgKS04y3BLtjNqjYqKXxWFv5gr2b66S
-         HW3QeGrBJIRA2KxADQtr1u20gPtuM1Tn9Vio07HsgBLaZAHtHr1sZv+nxy87vUYI+W
-         u+4DbZW9pr3Vw==
+        b=MtjrfxSImCQN6xpeOrz63uqubJDixtbjelbnF/EFsOhFr0Z25J99wQmKSULgReg9h
+         L31eXvy6S0rODX8i79FTkHgiopSLKaDyA1YzTsnG0dQwjz7QKv9TuHT44fbPhxZAjG
+         t87+oUvdR7qBojyhSpwSKAcD0gIGByttCzo9fwHHcYE/s2PwKFA/RCLXPAqy1gNmeh
+         x0g+D70fWq5h8YK1NcpH6tQBjJNTxpdfaAztkTF72STdoDQcbAk7j9huQurf0nIvd2
+         0DnvyCR3tn48HCA8sstUgS58AETs4KS5IzssOBXGLm2QVcQWBkYprH/hoxlCXETVcM
+         b+Ju2bPQUJ4kA==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] ath9k: use hw_random API instead of directly dumping
- into
- random.c
+Subject: Re: [PATCH][next] ath10k: Replace zero-length array with
+ flexible-array
+ member
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220216113323.53332-1-Jason@zx2c4.com>
-References: <20220216113323.53332-1-Jason@zx2c4.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     miaoqing@codeaurora.org, Rui Salvaterra <rsalvaterra@gmail.com>,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
+In-Reply-To: <20220216194807.GA904008@embeddedor>
+References: <20220216194807.GA904008@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164543897830.26423.13654986323403498456.kvalo@kernel.org>
-Date:   Mon, 21 Feb 2022 10:22:59 +0000 (UTC)
+Message-ID: <164543904389.26423.17294004275131018250.kvalo@kernel.org>
+Date:   Mon, 21 Feb 2022 10:24:05 +0000 (UTC)
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -67,28 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> wrote:
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-> Hardware random number generators are supposed to use the hw_random
-> framework. This commit turns ath9k's kthread-based design into a proper
-> hw_random driver.
+> There is a regular need in the kernel to provide a way to declare
+> having a dynamically sized set of trailing elements in a structure.
+> Kernel code should always use “flexible array members”[1] for these
+> cases. The older style of one-element or zero-length arrays should
+> no longer be used[2].
 > 
-> Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Rui Salvaterra <rsalvaterra@gmail.com>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
-> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Link: https://github.com/KSPP/linux/issues/78
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
 > Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
 Patch applied to ath-next branch of ath.git, thanks.
 
-fcd09c90c3c5 ath9k: use hw_random API instead of directly dumping into random.c
+8bc66426ca54 ath10k: Replace zero-length array with flexible-array member
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220216113323.53332-1-Jason@zx2c4.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20220216194807.GA904008@embeddedor/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
