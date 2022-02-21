@@ -2,206 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8CF54BD7EB
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 09:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB474BD84D
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 09:41:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245401AbiBUI3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 03:29:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43570 "EHLO
+        id S1343868AbiBUIkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 03:40:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiBUI3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 03:29:34 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2076.outbound.protection.outlook.com [40.107.212.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5E5BC
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 00:29:12 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=apAYieZFrHIF4U53vNIPiH7FcQ6LNhGptFB96RFhR/sHsHM5DzDxpO2GH97FdKx8MvSM7YrNHnWWDDeFXeylHh12+8CtWUksXQH7eqjA3WU6l5XZDb01JtGo4adgHHKVQXqgAZ2PgE1xacBagWbzuN/273RksD4xTr+W/2tqDoKcnS6DpFUrbyuWBgKZr7RHfUNKiVZasbx+5ZEtbBPTzy0KOLSuBb69Hsr/N7tQhMfJoa1HhDWZIJJmJedylyXEm4VLTqHnD0XhGmbXDg5X/gptKTYLDynYafdGV2/PVPCkikipb4c8RmXIel6hcNrwICDqfAdCXmiwAxIC14WLXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CYfp5a4DremCm8mR8S2GNGbrILjFEnrEcxD64NA0Yjg=;
- b=Ze8XKAR1P+4lIc0pxHj4F9T8xfA0+Nlti1VFArUHuOtObgGpgTeKdjDPjZpbu6VX9vba9GhxMsx5OJiP2EEx9EBfpDqheJB2P+rrGo4l1EoY/iHtGfefNf0Ip5J0FylDmwc/LMkXHbN9H30XjYCEaZwFV9dM/7jSmKK/417wdeHVknXkpbCkXfBU0DdrvyuW5EzhvFjgUFBuQqr4kq3wSN6XwOqRJx5YiO6jzFZGCB5DsAfSyQBiiD9iaWO5Kxp0c1mggrXoUVEbQh9n3Rl+bUkyVfK7y4Wcxdwh+YgytWFzRyVyVzwaF82xkwwUT75o2nWQ0wj4uYKtCygaXFQ4Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CYfp5a4DremCm8mR8S2GNGbrILjFEnrEcxD64NA0Yjg=;
- b=WU4PzHGoVRHG6o1rcxkZi9iqOiTGXiVg/O9xLXMzfEbNX51JrIHS8qMOFYUvBNYi7L510nABpyo8pE3zHIqq4qx5u5fOx6qU8Pq02BkPRSzmRmNLiIWx5YogxdsQucGrmqTRLdK4/mSxmTz3FRsHX2H0w5EL7msZTbFzidqxQxLQz4ei41BbkzmUQinScoMbB2KoqEpQyYZV5uxsZxVWVmpKzZ7slUbwU0aT0GpgQpowNaobsfjfK8b/6lYZGXPcb63TrJboYFm9OdmqEKL23b1pR6f4mXkLQLCX/EpzEgN83BK6zDl0XFJaAnMDqiZdWNTOFz5uGszCtNAyEq05pA==
-Received: from MWHPR17CA0055.namprd17.prod.outlook.com (2603:10b6:300:93::17)
- by BY5PR12MB3956.namprd12.prod.outlook.com (2603:10b6:a03:1ab::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Mon, 21 Feb
- 2022 08:29:09 +0000
-Received: from CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:93:cafe::d5) by MWHPR17CA0055.outlook.office365.com
- (2603:10b6:300:93::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.26 via Frontend
- Transport; Mon, 21 Feb 2022 08:29:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- CO1NAM11FT061.mail.protection.outlook.com (10.13.175.200) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Mon, 21 Feb 2022 08:29:09 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 21 Feb
- 2022 08:28:58 +0000
-Received: from mtl-vdi-166.wap.labs.mlnx (10.126.230.35) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Mon, 21 Feb 2022 00:28:56 -0800
-Date:   Mon, 21 Feb 2022 10:28:52 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     <stephen@networkplumber.org>, <netdev@vger.kernel.org>,
-        <lulu@redhat.com>, <si-wei.liu@oracle.com>
-Subject: Re: [PATCH v2 4/4] vdpa: Support reading device features
-Message-ID: <20220221070416.GB45328@mtl-vdi-166.wap.labs.mlnx>
-References: <20220217123024.33201-1-elic@nvidia.com>
- <20220217123024.33201-5-elic@nvidia.com>
- <b36e4a63-7fac-212a-2d6b-e267d49c5e72@redhat.com>
+        with ESMTP id S1343972AbiBUIkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 03:40:46 -0500
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202CC3F;
+        Mon, 21 Feb 2022 00:40:22 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R791e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V51uqPX_1645432819;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V51uqPX_1645432819)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 21 Feb 2022 16:40:20 +0800
+Date:   Mon, 21 Feb 2022 16:40:18 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     jgg@ziepe.ca, liangwenpeng@huawei.com,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        liweihang@huawei.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
+ smc_pnet_apply_ib
+Message-ID: <YhNP8vU0FueNeDPr@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <000000000000b772b805d8396f14@google.com>
+ <2691692.BEx9A2HvPv@leap>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b36e4a63-7fac-212a-2d6b-e267d49c5e72@redhat.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 20766ff0-953e-43f6-b5ec-08d9f5143b60
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3956:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB3956DA96CAF373717B84CC15AB3A9@BY5PR12MB3956.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: scvFsOtAT8IcMhmkhs9sOdXMqjGpzyZjkLB9EHIOhSRVw8Jfw/Q03dS96dgP0Mp3jwEswgmW875/pI8sTAedw1xKUsPu0k1ViO4BzO753tYzrIjNWA4+U6P7bCZ0ycmt9kcELC8Gak/p75Y+qJurtEMW717JwHDVjL1Y0Pm3WT9a05XTu442BL49TbTNoAfegbvivqzZuv8CuarL1nFrbVG6e/31b+y+TmCS/l2NWDcM3FuGST6O/FA1Bzcd1QI8+lwZJrdzM/JD2uWhRFl46Dbteiyv9V48XWiOnSXBCMuZnL2ZIQ17dZL7XRKXQRcJvUzQLKWUmePK4uCyuLe7lkE8CzyhIBMqq+kAwrIsTc7npFsWrQOND3nwq36+oQzMB8zoUx4nbSrhup3mgU8Kv//xT/GIKZOq4eahfX+Iwu9m1jVMXLfKNb+1Cwr4uh4TgbNjeRaU9d/2Xbc9WyUhZ31CUhJDbjzhBMZ0DmtLs8HPpeF3UbrXOzIRa80m5aZp5NOxhDHT8+5xVmyi4/QXDbLoMoui3pEZT9AXfx7IfnXrDFnew5yNXYsxlyNv37HYNbCg+OQ2L0q4MiQQV9VUgsayX/iXZF2sVKML0icssHC8H4KnEWkwOu/mI2AKWFWAN1sBgl/ndBSez4KAINcWHDqks0z4lInu7b2fS1nb71aWjz8vzf52TL8u1GJlrDOlqNqNl4HKBqpNbclcL7JyFQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(36860700001)(356005)(81166007)(86362001)(40460700003)(70586007)(70206006)(4326008)(8676002)(54906003)(6916009)(55016003)(316002)(47076005)(26005)(5660300002)(2906002)(8936002)(16526019)(1076003)(426003)(336012)(186003)(83380400001)(508600001)(82310400004)(6666004)(9686003)(33656002)(7696005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 08:29:09.3043
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20766ff0-953e-43f6-b5ec-08d9f5143b60
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3956
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <2691692.BEx9A2HvPv@leap>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 12:18:03PM +0800, Jason Wang wrote:
-> 
-> 在 2022/2/17 下午8:30, Eli Cohen 写道:
-> > When showing the available management devices, check if
-> > VDPA_ATTR_DEV_SUPPORTED_FEATURES feature is available and print the
-> > supported features for a management device.
+On Thu, Feb 17, 2022 at 07:05:31PM +0100, Fabio M. De Francesco wrote:
+> On gioved� 17 febbraio 2022 17:41:22 CET syzbot wrote:
+> > Hello,
 > > 
-> > Examples:
-> > $ vdpa mgmtdev show
-> > auxiliary/mlx5_core.sf.1:
-> >    supported_classes net
-> >    max_supported_vqs 257
-> >    dev_features CSUM GUEST_CSUM MTU HOST_TSO4 HOST_TSO6 STATUS CTRL_VQ MQ \
-> >                 CTRL_MAC_ADDR VERSION_1 ACCESS_PLATFORM
+> > syzbot found the following issue on:
 > > 
-> > $ vdpa -jp mgmtdev show
-> > {
-> >      "mgmtdev": {
-> >          "auxiliary/mlx5_core.sf.1": {
-> >              "supported_classes": [ "net" ],
-> >              "max_supported_vqs": 257,
-> >              "dev_features": [
-> > "CSUM","GUEST_CSUM","MTU","HOST_TSO4","HOST_TSO6","STATUS","CTRL_VQ","MQ",\
-> > "CTRL_MAC_ADDR","VERSION_1","ACCESS_PLATFORM" ]
-> >          }
-> >      }
-> > }
+> > HEAD commit:    c832962ac972 net: bridge: multicast: notify switchdev driv..
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=16b157bc700000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=4f322a6d84e991c38775
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 > > 
-> > Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > ---
-> >   vdpa/include/uapi/linux/vdpa.h |  1 +
-> >   vdpa/vdpa.c                    | 14 +++++++++++++-
-> >   2 files changed, 14 insertions(+), 1 deletion(-)
+> > Unfortunately, I don't have any reproducer for this issue yet.
 > > 
-> > diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
-> > index a3ebf4d4d9b8..96ccbf305d14 100644
-> > --- a/vdpa/include/uapi/linux/vdpa.h
-> > +++ b/vdpa/include/uapi/linux/vdpa.h
-> > @@ -42,6 +42,7 @@ enum vdpa_attr {
-> >   	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
-> >   	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
-> > +	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
-> >   	/* new attributes must be added above here */
-> >   	VDPA_ATTR_MAX,
-> > diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-> > index 78736b1422b6..bdc366880ab9 100644
-> > --- a/vdpa/vdpa.c
-> > +++ b/vdpa/vdpa.c
-> > @@ -84,6 +84,7 @@ static const enum mnl_attr_data_type vdpa_policy[VDPA_ATTR_MAX + 1] = {
-> >   	[VDPA_ATTR_DEV_MAX_VQ_SIZE] = MNL_TYPE_U16,
-> >   	[VDPA_ATTR_DEV_NEGOTIATED_FEATURES] = MNL_TYPE_U64,
-> >   	[VDPA_ATTR_DEV_MGMTDEV_MAX_VQS] = MNL_TYPE_U32,
-> > +	[VDPA_ATTR_DEV_SUPPORTED_FEATURES] = MNL_TYPE_U64,
-> >   };
-> >   static int attr_cb(const struct nlattr *attr, void *data)
-> > @@ -494,13 +495,14 @@ static void print_features(struct vdpa *vdpa, uint64_t features, bool mgmtdevf,
-> >   static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
-> >   				struct nlattr **tb)
-> >   {
-> > +	uint64_t classes = 0;
-> >   	const char *class;
-> >   	unsigned int i;
-> >   	pr_out_handle_start(vdpa, tb);
-> >   	if (tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]) {
-> > -		uint64_t classes = mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]);
-> > +		classes = mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]);
-> >   		pr_out_array_start(vdpa, "supported_classes");
-> >   		for (i = 1; i < 64; i++) {
-> > @@ -522,6 +524,16 @@ static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *nlh,
-> >   		print_uint(PRINT_ANY, "max_supported_vqs", "  max_supported_vqs %d", num_vqs);
-> >   	}
-> > +	if (tb[VDPA_ATTR_DEV_SUPPORTED_FEATURES]) {
-> > +		uint64_t features;
-> > +
-> > +		features  = mnl_attr_get_u64(tb[VDPA_ATTR_DEV_SUPPORTED_FEATURES]);
-> > +		if (classes & BIT(VIRTIO_ID_NET))
-> > +			print_features(vdpa, features, true, VIRTIO_ID_NET);
-> > +		else
-> > +			print_features(vdpa, features, true, 0);
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
+> > 
+> > infiniband syz1: set down
+> > infiniband syz1: added lo
+> > RDS/IB: syz1: added
+> > smc: adding ib device syz1 with port count 1
+> > BUG: sleeping function called from invalid context at kernel/locking/mutex.c:577
+> > in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 17974, name: syz-executor.3
+> > preempt_count: 1, expected: 0
+> > RCU nest depth: 0, expected: 0
+> > 6 locks held by syz-executor.3/17974:
+> >  #0: ffffffff90865838 (&rdma_nl_types[idx].sem){.+.+}-{3:3}, at: rdma_nl_rcv_msg+0x161/0x690 drivers/infiniband/core/netlink.c:164
+> >  #1: ffffffff8d04edf0 (link_ops_rwsem){++++}-{3:3}, at: nldev_newlink+0x25d/0x560 drivers/infiniband/core/nldev.c:1707
+> >  #2: ffffffff8d03e650 (devices_rwsem){++++}-{3:3}, at: enable_device_and_get+0xfc/0x3b0 drivers/infiniband/core/device.c:1321
+> >  #3: ffffffff8d03e510 (clients_rwsem){++++}-{3:3}, at: enable_device_and_get+0x15b/0x3b0 drivers/infiniband/core/device.c:1329
+> >  #4: ffff8880482c85c0 (&device->client_data_rwsem){++++}-{3:3}, at: add_client_context+0x3d0/0x5e0 drivers/infiniband/core/device.c:718
+> >  #5: ffff8880230a4118 (&pnettable->lock){++++}-{2:2}, at: smc_pnetid_by_table_ib+0x18c/0x470 net/smc/smc_pnet.c:1159
+> > Preemption disabled at:
+> > [<0000000000000000>] 0x0
+> > CPU: 1 PID: 17974 Comm: syz-executor.3 Not tainted 5.17.0-rc3-syzkaller-00170-gc832962ac972 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> >  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9576
+> >  __mutex_lock_common kernel/locking/mutex.c:577 [inline]
+> >  __mutex_lock+0x9f/0x12f0 kernel/locking/mutex.c:733
+> >  smc_pnet_apply_ib+0x28/0x160 net/smc/smc_pnet.c:251
+> >  smc_pnetid_by_table_ib+0x2ae/0x470 net/smc/smc_pnet.c:1164
 > 
+> If I recall it well, read_lock() disables preemption. 
 > 
-> I wonder what happens if we try to read a virtio_blk device consider:
+> smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib() 
+> which, in turn, calls mutex_lock(&smc_ib_devices.mutex). Therefore the code 
+> acquires a mutex while in atomic and we get a SAC bug.
 > 
-> static const char * const *dev_to_feature_str[] = {
->         [VIRTIO_ID_NET] = net_feature_strs,
-> };
-
-In that case we will print bit_xx for each non general bit.
-
-> 
-> Thanks
-> 
-> 
-> > +	}
-> > +
-> >   	pr_out_handle_end(vdpa);
-> >   }
-> 
+> Actually, even if my argument is correct(?), I don't know if the read_lock() 
+> in smc_pnetid_by_table_ib() can be converted to a sleeping lock like a mutex or 
+> a semaphore.
+ 
+I think it is okay to use mutex, because this path is not so hot and no
+limit to require spinlocks. pnettable is accessed by netlink, syscall
+and netdevice notifier.
