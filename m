@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 627684BD578
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 06:45:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 677F74BD57B
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 06:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344594AbiBUFi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 00:38:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52032 "EHLO
+        id S1344559AbiBUFiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 00:38:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343958AbiBUFiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 00:38:23 -0500
+        with ESMTP id S233752AbiBUFiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 00:38:22 -0500
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4996940A1E;
-        Sun, 20 Feb 2022 21:38:01 -0800 (PST)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21L5OiH2016401;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4FE40A1E;
+        Sun, 20 Feb 2022 21:37:59 -0800 (PST)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21L4oXCd024603;
         Mon, 21 Feb 2022 05:35:15 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-type : mime-version;
- s=corp-2021-07-09; bh=Y68ZqUohIQc0hRxJ93YHFLU+KGjFgAMBNJbG6MgMcXs=;
- b=zPA1UF93AcKCXmeTWvMYES8mJryunGbpk6tbOyA8/LAmmynh3wwdrGvxvDRPne3ABUHj
- rOgXYhpXYEj2oRM5bD1kZt+J4dDtRNS52oxGNw4dRvLR9E8nbkamfodSFGOj9r1doJ4R
- x3C0J8ob05WYG82ke6sMS5AGXTHE7sFp8y2NdvnkTI7Ow+XTEPqOB38dFUJBsEP0y+JG
- y++DLwHhe4i19YoOwzJp4onYQstRZCanXWShX/IxCTNiYf6TjmTYaxNwNeCvRwQeI0bX
- YvY3Wk1NXJ56kvqtrDWuRCH/+JsZx8SlyGANEQ+KLniASyH8S1Hn/KTRYqFxkAv5wty/ Zg== 
+ subject : date : message-id : in-reply-to : references : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=CBHyDs3SS2Drrr+S9+OVEQm1MZOBD8sNV5RCnFu9JrA=;
+ b=fE8x8FqeGcaw7gXGrAFoRMdUnkT1DF7mnq405Um5xccYlfX9kyV8v87Bn73J4I8iwqtA
+ 89PF/kkIE9D05llGclJNaBLa90gWtuH8iK3IloYTYHxP+pJPyUiKbXJKP5FpKr5/j9D6
+ c5zYlsq7rqbw+Ju7Ya/J/dywE92bb767H1jb9/6zUgmAqlOoJr2VdOsYrNnjrkALZKD2
+ unE6nNRBp87b8o12DmYJBfc0QGWl6sod0B28s4dRWx+21tjcnLSjJsB802X7Gf2VKRqZ
+ LMV+X/ve8HiljjWyKSkYNDMJfn8/xl/A4QOgBrgQ12lVaDhnZkfjuV2DLG71Vr0A9r9+ Bg== 
 Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3eapye33hh-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3eaqb3b4jy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 05:35:14 +0000
+        Mon, 21 Feb 2022 05:35:15 +0000
 Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21L5WNA2077278;
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21L5WNA3077278;
         Mon, 21 Feb 2022 05:35:14 GMT
 Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2042.outbound.protection.outlook.com [104.47.51.42])
-        by aserp3020.oracle.com with ESMTP id 3eb47y8ntk-1
+        by aserp3020.oracle.com with ESMTP id 3eb47y8ntk-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Mon, 21 Feb 2022 05:35:14 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gEYjBWlsOWv87a9eL23wyZTRPveYVBnnaQSVHmp9bpZkX2MiAULKcis577s7B0xH4xs2b6C26OhOxMRV/ezaJpu3v+8AUMfo/kRQwGpaQRZ6uw93Rp/a/2hRluahLIMqtHebGrT5BwnGD3DIpbHfYYY7AwfRYF7So3luqzLAwYp1+iRFILBvS4i4xrdkcvdcEjubrKlDn0t9oMaF8h60dQNDe7pcr8TISD7GFOs61aP9OtlX3G3tcMR+GGyozDU3JaYXal/AgZpCIVLobFGlMHia9AELBioIFbQHj8CsQHPsKaMCYDyL0rI8Dn/Jnaawt7ZlGtphDdhtC6zLYrGkNw==
+ b=B5emhA4c2wjYkdD3VeNK71ZSdkqm44PStlvfkkavZbF7Xb/cf4WmCObaI0uyHXd4RpRHw0h+2yBxHWjgycfBCr9LTp/OJ5Y4dwaCH4zGfT0jJ2oGr4il8ooW27LrWO/FJyvgXojdCT/lug6m5uYp9GIslOzZ7P0VNgPaL2Q0RaLNa12NvUra+yuZ7q5lRrajZiWB53GVxMYpNwTBGNLnIcKGLE+AX0fGKYj7NHP5usbS2mb7zmnKBCoA76XYcJTZncThkJyLTnARKuss4mGFoSbC8P6p18LRANIdMfpiX+3CzOELSk9ljnBKSdSu/T7h6hoJQidp4PbeFDKCeI/MVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y68ZqUohIQc0hRxJ93YHFLU+KGjFgAMBNJbG6MgMcXs=;
- b=PV2Xqj37gAkgf+XJJUt1fpi+CNIZijolB0Io7uEfRTWjdoqYIuZO63+cUNstIPRQ/kj2Et23havnujlsU/AuLTzO3H/hcARE4dZ97Pty9M11ThaRAGFezP1rw18h1mSnQb0ZhohUnUsmfj9mpSIFnJ/O7m9sdHHio2VcIAzyHKZ9jUjiOZyRiiLUpig7pP3A8WEGN6mZsTJlKw0WWubiMNzxW1+bYYhSS3NoZRIdTWbSLJwIKsnLo2IbApW3sIpsecKYDmTKMJuSBQ/2c32UyTKT1egwgLheaG2/qeAwARgyp/xSDbd6kscc/ja45eU0sMOHrnjawLp0OOf9dvKl7w==
+ bh=CBHyDs3SS2Drrr+S9+OVEQm1MZOBD8sNV5RCnFu9JrA=;
+ b=GM5FddXkULF/zk180Rt1JQDbIz/m/56LQ8pAlQw9mBp43PB44D9+ttkDwpFW0awBTc8DIBIlvF0OSBUIRJtukgWnh6/bC+C3CnoWhdPpHhlRUchYZcByGDg8JsJcVYxkeZSpRFhGOp4wOLaZwzKIgXUtyFgMYVu4fQFOcKPhxdo11RDBOY6cUtUK7hmoW4vVe99WdsDERoZtY+ktf9M5UfhHV3z6grZiAOz7EA0d5qgRsDhS3bjF14oIBTGSOfIhGbicNvSsP+pUuSEGHDT2+7I8/4eX6G5RBNTP5rru4zv9cT2r66jFAz2auMqnW0c642dVs8JI6cy3Xn8nPhX1pA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y68ZqUohIQc0hRxJ93YHFLU+KGjFgAMBNJbG6MgMcXs=;
- b=i8E4i+EoZocvkON6LZawHB1NzZKTIxeB91t9nDVX1S72MfR91kuR8wNFocoSaFbFAAnIt9p5j4F5RYjYN05gjNfQ/UAKtwZXltaeHOkyBvmt4vmMDYHMyWP8MXOpdiBvP6OOKkQqOYI04gmzJFni76/rAokhc3+TTZkTZ/1nvF4=
+ bh=CBHyDs3SS2Drrr+S9+OVEQm1MZOBD8sNV5RCnFu9JrA=;
+ b=diSGyDAJOU5mPVcw7sui0bAO2oncYa0HZpC/93dKTUxZ3eLsfrRkv+pn+gc75QflwEnjJcAA/NrXap8p8PL/hihDJtMIkMjFAnxql+i/uKKfLcCoCDz8yW56mVJDd5In3h+ch/XvtqXaQK+l4LDU8r6ZmuCbTL+JXlTIPN9cngg=
 Received: from BYAPR10MB2663.namprd10.prod.outlook.com (2603:10b6:a02:a9::20)
  by MWHPR10MB1533.namprd10.prod.outlook.com (2603:10b6:300:26::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Mon, 21 Feb
- 2022 05:35:11 +0000
+ 2022 05:35:13 +0000
 Received: from BYAPR10MB2663.namprd10.prod.outlook.com
  ([fe80::a0d5:610d:bcf:9b47]) by BYAPR10MB2663.namprd10.prod.outlook.com
  ([fe80::a0d5:610d:bcf:9b47%4]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 05:35:11 +0000
+ 05:35:12 +0000
 From:   Dongli Zhang <dongli.zhang@oracle.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
@@ -67,71 +68,73 @@ Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
         joao.m.martins@oracle.com, joe.jin@oracle.com, dsahern@gmail.com,
         edumazet@google.com
-Subject: [PATCH net-next v3 0/3] tun/tap: use kfree_skb_reason() to trace dropped skb
-Date:   Sun, 20 Feb 2022 21:34:36 -0800
-Message-Id: <20220221053440.7320-1-dongli.zhang@oracle.com>
+Subject: [PATCH net-next v3 1/4] skbuff: introduce kfree_skb_list_reason()
+Date:   Sun, 20 Feb 2022 21:34:37 -0800
+Message-Id: <20220221053440.7320-2-dongli.zhang@oracle.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220221053440.7320-1-dongli.zhang@oracle.com>
+References: <20220221053440.7320-1-dongli.zhang@oracle.com>
 Content-Type: text/plain
 X-ClientProxiedBy: SA1P222CA0020.NAMP222.PROD.OUTLOOK.COM
  (2603:10b6:806:22c::21) To BYAPR10MB2663.namprd10.prod.outlook.com
  (2603:10b6:a02:a9::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 236d8261-894b-44f2-ec7a-08d9f4fbed7e
+X-MS-Office365-Filtering-Correlation-Id: 582e49bd-d6a6-49b2-287c-08d9f4fbeea4
 X-MS-TrafficTypeDiagnostic: MWHPR10MB1533:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB15338E7C8F30DFE040842295F03A9@MWHPR10MB1533.namprd10.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <MWHPR10MB15334311209A8DAFAB5C17F6F03A9@MWHPR10MB1533.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WrrutXBnvvwy54X7PkOoDDwCDd6cTIyL1c0xngPhlbjl0eE4tnc566K8Vx+bDE3P1v6Rxoq/NKrGrG83X+ukWg9smC68JM094it5xXiUoDAhnj0Ub+ThcB23zPGYaZ1V8ONmRsSZ1XOZ4L0mUo3WHYpZEiYlxxxNePuG3fEUZ5GuTdqbmfauRZIomxduQV3+wz0sGRa7mrSaAS3exF3uemmG/cH7z1OkSNxA5RhaolyGw/bh3jbJY5djr/7f8UI4Vj/h0pwMlbHnxh12W3RQOt1WAmoFHrTnT/iUnLtnUABwtBDuNY7/2H5L9HDuJ5jOagIvKVaPRizjzovOKoMMcr+DaSNPBYAEouRPxFtyuQRJjgRrHaRBJUZxVFOcGU4Q8PH+GLtM5ASsAhFKqVIS6qhpv5oWiCmnEuyTi2jpVSj5gb3lLk4ZW2KrWEYAxKX4F5RYWg+Wn5hJsGw4SyQbueWzHy7ib/Gw2WNgQBi0pt5fGa2MJ7o1je7ZY1xMCwSJ5S6v3kTa8T6HlwomGPGoHXOS5G3gose1O5JiEDHdgHW/yRpnS3hptIXf4D76m9GEMYKCU+O9tNFPWnX+RAYnuj6ibUsD0EY607Ju0OxOGf+Z9vAtM/8a6/s0U9TXe89TMHwYUZWLZTOaBOZ+53Sj2kOHYpXihIs2EPl9eqvLhIaLJaaUxkSik34ctbQQJk+4
+X-Microsoft-Antispam-Message-Info: dtqLkAYQ93cGnW2/Z8ZsMZG4Q3Ttq3pbDmFB4fjwxCgHXzxIVq4euY3D99crYcCDVZzQ2hhr7mmlJH/mWYFRC6QT0sfWO69vjnh5WNp+4cgtJsZ0Mxoj04QS70/eh9o5lDhX6r4UXAyMvF4GR8HinaYdW/2qdsnkQvUtwJFnG2dSOfJtEzHw3or7WCdWqYN7g6NDFW+eiTZZvLl8OQSjkBoQpmXB1AXGnpXF7EZStqTTuGL6PitRYHElnkiqi2Ad6ldP2m4LNP6SqC39lVJsa3tC4ByPn8VmJgHMiIH/XsyNA405VJr2iC8W7i2XIMAk839vrrLc8scUZuzIacH7bmC0naxApuczLpb8oDTDYWd6h+0rcsAGmHdBmf0LEnv5oOgVnd6kQ0tl0Ss8t8ftPNj6kS7P7qQvAn4hIz7EO0F8i+6JCuIxKkbZp16lJ2abTqwN6VDmuzqDgzSdDT5vDi2Ln1usiwAPAuRMUSv3mymacdt3F0lrfQENPts7oK9nvNI2H8zPYMhuy+DtBEkQ82egqzH1LlxCXCLQtWjZ/WfdvFW8ljzPXnkJ9ilraj+uqOkZjjYPm7Qd7cLU211WU0QeM96y1dnZO0Um1NJbefTCklD3fnyJxqPTeoObTja2gSDr9t9G2qZu2Ddmk02zHM5l6o53j7RscJAsEuFUY2gQUsQ814YBa4+sKqmYQQaue8q20fpiC27jT3itDgRm+A==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2663.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(38100700002)(38350700002)(83380400001)(36756003)(7416002)(44832011)(5660300002)(2906002)(8936002)(2616005)(8676002)(6486002)(6506007)(26005)(52116002)(186003)(66946007)(66556008)(6512007)(1076003)(66476007)(6666004)(508600001)(316002)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qnhY4Suz8IS/0Bbs735tPyS/rrrf3TAQNMKw8841JnbTJR1yerOgeR9iC8lP?=
- =?us-ascii?Q?OK3rmgQeBX0vyKx8wkxKUgKncZznjomzecUa0SX2P1c7t5xDNPBweagH1rXU?=
- =?us-ascii?Q?kGFp0ml9989wjc7l37eRWgC25TEKQ7D6JoG/q1QkYhItId41NYAhPywBFCJ3?=
- =?us-ascii?Q?Vnteqz8lUnLGgMLL13QG0703NYnXn7M/Hn0+zufD7VlVBRqbpfUAjE3A+wJr?=
- =?us-ascii?Q?eCinc6yFk9TKsDkQdXXDW4Z5z8cAWHR5fsyiqJimW0Z5JpVeNsXrHuSLPjQK?=
- =?us-ascii?Q?MszSDZX6i6lwrWi9csGbmQ2xeRT/xO31tQnNVtKrKf9PXQn1Jr4aK3oK8WWS?=
- =?us-ascii?Q?GWAtHupRYzLKauewiFKx5x1Kx7gJTeDu5DXVNT/eDBfAIE/TlVaUJOHxJb3I?=
- =?us-ascii?Q?Ybb6zJ85B/X9ufnkvKOQmWtFs4KdAiqr3TOPcJJU+T938F9B6YreIk+RWGLC?=
- =?us-ascii?Q?OGLNKLTgG7ZGmAdZIEjQCxUbF40P+yclt08P6obbWVypzDfgAuB56ams8fBw?=
- =?us-ascii?Q?uP3QHI1McOCzrqhGmwxSHGTjR9zSvNy0jEBi2KhAgeCYEWm9X6wPQhMS3DIu?=
- =?us-ascii?Q?1pbCP8HczkvnLWHy5XRSD7OK3Iu8Y2OoZHiYEGHaQTBC1m18xva4Y2Wki/g/?=
- =?us-ascii?Q?A4CSxwBxW5TAtQui8WnDrjfeV/gftGOxFSM/oeebHa3SndaRFU+ipnH0+cR2?=
- =?us-ascii?Q?U2rfTNWkDjWNmnB/jpsawl3mf7B6MNdJ9wvgqpop8kTWSqVz7WbxElIvYjDB?=
- =?us-ascii?Q?Bil2gGjkzGRl28G6B3ix8boiNK+3rBFUlTMpm2/qL7qvdYUfZ35o8JAAbIeu?=
- =?us-ascii?Q?XBTkC+NO4U4xNjgc1JEKLtJuYGEpkvjMMYLt76ErjuGFc/4K5rQAxpyiDQST?=
- =?us-ascii?Q?66blHFS9xODM2uGVBgAF3EByYXncqwfDAm3di84r2Ck+3z8gAK0ZOcUE7UlM?=
- =?us-ascii?Q?BhWhx4wB0WfGvDgdT8aTutk3G9QSfyC6NotteYoLbHIzgBAiDNqShwWYR8Yl?=
- =?us-ascii?Q?qSrjb2EUj8/Levwzd1X6VECbOI06fnsXEpsqOZOzKK7SUVZIZ0U1efcMbhBw?=
- =?us-ascii?Q?e94OtKD8sN575qYQXSxq4dWfXlnzoes7IF7X/W+9mlQMCXZLVv8E/skdx4HW?=
- =?us-ascii?Q?aLt53xOx+MohfAOQz7TO9WNnKhA+v7dK8jYnRD/DQaNfBDd2k5BxrANpmH2I?=
- =?us-ascii?Q?n95dPgp1Ho0Ih4XBBvoGLjlV5WbrnWDkR3dv+2124BHH7jsdCejtiSZu2p0Q?=
- =?us-ascii?Q?wvC5cMGqemq7/+2NEWWYqDRNDfx+CjpC4LCMFhnHdbketS0ZD2JuEfdjTj6q?=
- =?us-ascii?Q?qgmXyeNzNHWY9+I8S1U8kcNkV6ecH9DUs57+qfqPS32Z27Fg5qgHAkA5E3B8?=
- =?us-ascii?Q?lymxV795vaQ9pllw9NHhbR7aYaWN1F53rBWMnCuZOfT1PHqA07pgQXM3FnC8?=
- =?us-ascii?Q?L+stMbPdICsUcvXZjGpRibXZJnXak8XUIqPb1ZY2+xJDeH73gSD8iPQUfhuS?=
- =?us-ascii?Q?56UP3YlAFMtN7xsziTgoLZnC4+DmmDpqvac5oyKA4jJs24X+5omcgRkAOlfA?=
- =?us-ascii?Q?59xb+5dJtZ1K69OmFyvLsEYJNxinkZrs/OjyqTAkOImvWxSxZMc2iXvFZgyr?=
- =?us-ascii?Q?j3x5LMh/0xh65oifrMtnHwE=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8KLX3vpcIBAE0ys5Ggr68GdLjrBN1LR5mXP+1lbTQ21FREvV8XCumwc/t2B7?=
+ =?us-ascii?Q?2QDJvuTfhSZ9BCwXeT1JlDJkDJChieGmXuwF3FzI3a7lVJ6JaL0XMa2noyHs?=
+ =?us-ascii?Q?LL/sCVARu4IOPNbGPTjn1YVznqpE6TmWqsCKyKrxT9/AFCaaOXHrCO5lArKI?=
+ =?us-ascii?Q?8u/74h0gQjU5IqdbH99O1oZn7fKveIZitu0N46oX57zKjHzsnM5PE2X3A9cu?=
+ =?us-ascii?Q?/kkIOuwnGXb72OMtXmzKMSW+8HKSMerlYe6NVjgrCkaR8Li0+HxfOkgsYOzE?=
+ =?us-ascii?Q?qYjiPWYQ9/9k6C6Ue+vKittk6Y+FQoUbrcbCWuLoKDNtqFlT7GtIRZyDR1xf?=
+ =?us-ascii?Q?L7re556kaSgrGx662GiR80CQ0cz4NQe0BodrxTLOW/ZeZGh9+ynm1/72HF8U?=
+ =?us-ascii?Q?ZCh/lmCqolghVLCXzOy+nxsNg/suLkDFpLk0wV84GYoesmBIWF7O3uSN36Mi?=
+ =?us-ascii?Q?tzKMBOXwHr9U3NW0kWqpn4Hh+9PSxXhLmgYyjdf8/CBwvrvdABIj2esVWGca?=
+ =?us-ascii?Q?IqdOZYVGGsh+KoBAF0lG2+2NPJ42YGDeB6E7TLqQ9cC+lo2SMWzVbVduI2EX?=
+ =?us-ascii?Q?KRucdIxG9ixWCckrNa7JhAEKaJ8CQQhmA+uZfb9maF1yIODU5pcIC/4lnZcn?=
+ =?us-ascii?Q?p0d1Dto3+POWH8LOtPLNNOjXj9S6YnOJ4xTSpo5FZYFjJ5MfrI/UE475AnvX?=
+ =?us-ascii?Q?5NhTDB3ENPGghfyeRsNMzxyflUqlGRsdHpr5eIx1pWsGJN+jES92adBQlrlc?=
+ =?us-ascii?Q?I8yAWYXGz8LrYOX/c4tolpG8RrmVRrWs0lSlnixbS9dW+a8Gt9IuPDUoaSQx?=
+ =?us-ascii?Q?qjIlJiJ+SU9vDfX9InIQECcFRPJL6fuCiMcluZROi5xaYN/uwT+qZBtNr3Nr?=
+ =?us-ascii?Q?MGne6faYNhCOa891KQVktVSVb+e3bR7pAV29+lamCtE8qzmuv1Hpookl8Hk3?=
+ =?us-ascii?Q?7Kbd5Vsya4rFGWncoGd/Y0isFnkapcxwUV3Bk5iR2R8jgwz6MuhFOUPVsC0Y?=
+ =?us-ascii?Q?ZYOlFW/XVRCIAQI3Oqzuc3fc6J0GCUjjtyjpDsdJhe7eVndIyjlNR4l8LRs8?=
+ =?us-ascii?Q?94XbO+rETp8wKvL18oPN5ds2zwfbC6IMtr0fRyhC7jrgiTybRaLwfXy8FQNA?=
+ =?us-ascii?Q?zmWTB1aapDSZpwGzKNZa+6/Fs3HmEW106cTqVS9GS8QrzeZgnXC0xii0ghYx?=
+ =?us-ascii?Q?/F/Ebdkfr/zIekuatLiD+CnClQPJcvq9kOOVTA1qT/KjVvFFHOWT1NsOLw4T?=
+ =?us-ascii?Q?ut3JC+12x4HWdhiH+fl+46KW0l8j900fzto2AIN6+fBZMB8+ZpeWYE6D4MGL?=
+ =?us-ascii?Q?mRhwW+luf1vH/Ovw/U5LBeRUfEyAI1R18cJTA5GeRkb8O9I352huI0dWfbUI?=
+ =?us-ascii?Q?tUD09e8SA6HFilrVRyoJyiU0zVU5FmDQqg9RG/i4v9yz5jdac0jLfp4dGi0Y?=
+ =?us-ascii?Q?Lfr08+JzLo/PrC+PkCNW8yJnJDmID38sjI06joLhBAF7UmMJINKnvMWpJig4?=
+ =?us-ascii?Q?suPlcfVB3//W5NUa8u2GYQcHNAPoDo2ZI1yAtxBSialOGwOOs8yef1UHiGao?=
+ =?us-ascii?Q?kyRaEcHqjF5P9m3x+6bDkNjTGdfKtj2phKyLbWrLXli7DadUJgGxZ83uJoD1?=
+ =?us-ascii?Q?rKvpVwASG3CCPMfqopZc0Zc=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 236d8261-894b-44f2-ec7a-08d9f4fbed7e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 582e49bd-d6a6-49b2-287c-08d9f4fbeea4
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2663.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 05:35:11.0622
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 05:35:12.9058
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Syu++M5BwvjLzITNQmB3PMSwW+c213WXbIWe2221s5hQqgkzRvbuwY8mnCgDOXHCepIafkCLLfA6zyLBSnobbg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: kGAUHMp0NMuAES2KogcT7/DIpglo87IVHved4f+DwBCttbfarFauF1Td6kBRdVgBlKhV68bz9+Ii/OfX7YZ1qA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1533
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10264 signatures=677614
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0
- mlxlogscore=955 adultscore=0 bulkscore=0 phishscore=0 suspectscore=0
+ mlxlogscore=999 adultscore=0 bulkscore=0 phishscore=0 suspectscore=0
  spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2201110000 definitions=main-2202210034
-X-Proofpoint-ORIG-GUID: oTosf1OsjzxId_RKwUqqgDEAQZm58-4e
-X-Proofpoint-GUID: oTosf1OsjzxId_RKwUqqgDEAQZm58-4e
+X-Proofpoint-ORIG-GUID: jhvBI8MgqPoZR5iJkRNeG5hbW_xJp4aO
+X-Proofpoint-GUID: jhvBI8MgqPoZR5iJkRNeG5hbW_xJp4aO
 X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
@@ -142,100 +145,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()") has
-introduced the kfree_skb_reason() to help track the reason.
+This is to introduce kfree_skb_list_reason() to drop a list of sk_buff with
+a specific reason.
 
-The tun and tap are commonly used as virtio-net/vhost-net backend. This is to
-use kfree_skb_reason() to trace the dropped skb for those two drivers. 
+Cc: Joao Martins <joao.m.martins@oracle.com>
+Cc: Joe Jin <joe.jin@oracle.com>
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+---
+ include/linux/skbuff.h |  2 ++
+ net/core/skbuff.c      | 11 +++++++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-Changed since v1:
-- I have renamed many of the reasons since v1. I make them as generic as
-  possible so that they can be re-used by core networking and drivers.
-
-Changed since v2:
-- declare drop_reason as type "enum skb_drop_reason"
-- handle the drop in skb_list_walk_safe() case for tap driver, and
-  kfree_skb_list_reason() is introduced
-
-
-The following reasons are introduced.
-
-- SKB_DROP_REASON_SKB_CSUM
-
-This is used whenever there is checksum error with sk_buff.
-
-- SKB_DROP_REASON_SKB_COPY_DATA
-
-The kernel may (zero) copy the data to or from sk_buff, e.g.,
-zerocopy_sg_from_iter(), skb_copy_datagram_from_iter() and
-skb_orphan_frags_rx(). This reason is for the copy related error.
-
-- SKB_DROP_REASON_SKB_GSO_SEG
-
-Any error reported when GSO processing the sk_buff. It is frequent to process
-sk_buff gso data and we introduce a new reason to handle that.
-	
-- SKB_DROP_REASON_SKB_PULL
-- SKB_DROP_REASON_SKB_TRIM
-
-It is frequent to pull to sk_buff data or trim the sk_buff data.
-
-- SKB_DROP_REASON_DEV_HDR
-
-Any driver may report error if there is any error in the metadata on the DMA
-ring buffer.
-
-- SKB_DROP_REASON_DEV_READY
-
-The device is not ready/online or initialized to receive data.
-
-- SKB_DROP_REASON_DEV_FILTER
-
-David Ahern suggested SKB_DROP_REASON_TAP_FILTER. I changed from 'TAP' to 'DEV'
-to make it more generic.
-
-- SKB_DROP_REASON_FULL_RING
-
-Suggested by Eric Dumazet.
-
-- SKB_DROP_REASON_BPF_FILTER
-
-Dropped by ebpf filter
-
-
-This is the output for TUN device.
-
-# cat /sys/kernel/debug/tracing/trace_pipe
-          <idle>-0       [018] ..s1.  1478.130490: kfree_skb: skbaddr=00000000c4f21b8d protocol=0 location=00000000aff342c7 reason: NOT_SPECIFIED
-      vhost-9003-9020    [012] b..1.  1478.196264: kfree_skb: skbaddr=00000000b174fb9b protocol=2054 location=000000001cf38db0 reason: FULL_RING
-          arping-9639    [018] b..1.  1479.082993: kfree_skb: skbaddr=00000000c4f21b8d protocol=2054 location=000000001cf38db0 reason: FULL_RING
-          <idle>-0       [012] b.s3.  1479.110472: kfree_skb: skbaddr=00000000e0c3681f protocol=4 location=000000001cf38db0 reason: FULL_RING
-          arping-9639    [018] b..1.  1480.083086: kfree_skb: skbaddr=00000000c4f21b8d protocol=2054 location=000000001cf38db0 reason: FULL_RING
-
-
-This is the output for TAP device.
-
-# cat /sys/kernel/debug/tracing/trace_pipe
-          <idle>-0       [014] ..s1.  1096.418621: kfree_skb: skbaddr=00000000f8f41946 protocol=0 location=00000000aff342c7 reason: NOT_SPECIFIED
-          arping-7006    [001] ..s1.  1096.843961: kfree_skb: skbaddr=000000002ec803a8 protocol=2054 location=000000009a57b32f reason: FULL_RING
-          arping-7006    [001] ..s1.  1097.844035: kfree_skb: skbaddr=000000002ec803a8 protocol=2054 location=000000009a57b32f reason: FULL_RING
-          arping-7006    [001] ..s1.  1098.844102: kfree_skb: skbaddr=00000000295eb0da protocol=2054 location=000000009a57b32f reason: FULL_RING
-          arping-7006    [001] ..s1.  1099.844160: kfree_skb: skbaddr=00000000295eb0da protocol=2054 location=000000009a57b32f reason: FULL_RING
-          arping-7006    [001] ..s1.  1100.844214: kfree_skb: skbaddr=00000000295eb0da protocol=2054 location=000000009a57b32f reason: FULL_RING
-          arping-7006    [001] ..s1.  1101.844230: kfree_skb: skbaddr=00000000295eb0da protocol=2054 location=000000009a57b32f reason: FULL_RING
-
-
- drivers/net/tap.c          | 35 +++++++++++++++++++++++++----------
- drivers/net/tun.c          | 38 ++++++++++++++++++++++++++++++--------
- include/linux/skbuff.h     | 18 ++++++++++++++++++
- include/trace/events/skb.h | 10 ++++++++++
- net/core/skbuff.c          | 11 +++++++++--
- 5 files changed, 92 insertions(+), 20 deletions(-)
-
-Please let me know if there is any suggestion on the definition of reasons.
-
-Thank you very much!
-
-Dongli Zhang
-
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index a3e90ef..87ebe2f 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1176,6 +1176,8 @@ static inline void kfree_skb(struct sk_buff *skb)
+ }
+ 
+ void skb_release_head_state(struct sk_buff *skb);
++void kfree_skb_list_reason(struct sk_buff *segs,
++			   enum skb_drop_reason reason);
+ void kfree_skb_list(struct sk_buff *segs);
+ void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
+ void skb_tx_error(struct sk_buff *skb);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 9d0388be..dfdd71e 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -777,15 +777,22 @@ void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
+ }
+ EXPORT_SYMBOL(kfree_skb_reason);
+ 
+-void kfree_skb_list(struct sk_buff *segs)
++void kfree_skb_list_reason(struct sk_buff *segs,
++			   enum skb_drop_reason reason)
+ {
+ 	while (segs) {
+ 		struct sk_buff *next = segs->next;
+ 
+-		kfree_skb(segs);
++		kfree_skb_reason(segs, reason);
+ 		segs = next;
+ 	}
+ }
++EXPORT_SYMBOL(kfree_skb_list_reason);
++
++void kfree_skb_list(struct sk_buff *segs)
++{
++	kfree_skb_list_reason(segs, SKB_DROP_REASON_NOT_SPECIFIED);
++}
+ EXPORT_SYMBOL(kfree_skb_list);
+ 
+ /* Dump skb information and contents.
+-- 
+1.8.3.1
 
