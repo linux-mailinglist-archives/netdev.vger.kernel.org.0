@@ -2,75 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B51174BEA9F
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:36:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B69B4BEA8D
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:36:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbiBUSKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 13:10:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39402 "EHLO
+        id S231284AbiBUSL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 13:11:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232290AbiBUSIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:08:31 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCD2E027;
-        Mon, 21 Feb 2022 09:58:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645466316; x=1677002316;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=F5Erzo7moAppweyNzBFU2zwfIhgVP+wmsJ3bqhuiQtI=;
-  b=AmpnkJ7k18zZY+NRIcEeF3ANyA2owVqL4Eq1BXiF2gvtGBhTuvSwpot2
-   f/d6aUM59PA3DbMHoWxxm03fwT0pXawR8WhshovA8xR/nN7zjwYsBLNgO
-   DG/cKv479GzttmeO252R5CaAeTEYW7ky1dYA9+D46np++Z6c4OU1dad3K
-   0LHpf6N48je4W8+Zlk6zMOT+InCGNURxhzE5n4N+V8N89IEGHWaZA8aOl
-   vCeW+YEG0bn5gKHfsl8tbCHt2VavN93cw8FF8bzfMOFr7Nwf+v624G2M2
-   8yW3ziMt4Pr7hrv1tV/M48VjyGTf44wraeQ4yorRX9ims8p24Vl89Tnm3
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251307194"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251307194"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:58:36 -0800
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="636735094"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:58:31 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMCwN-006s9N-GW;
-        Mon, 21 Feb 2022 19:57:39 +0200
-Date:   Mon, 21 Feb 2022 19:57:39 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
-Message-ID: <YhPSkz8+BIcdb72R@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-11-clement.leger@bootlin.com>
+        with ESMTP id S232544AbiBUSJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:09:23 -0500
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7B9E0B4;
+        Mon, 21 Feb 2022 09:59:26 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1645466360; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=M4HbPSHqQKqT0lY5KANOxHIA/V18IHgXRINGEiXGa/Ptf2HOQa3nR30sszW3nVQxWhVs+aGf4V6NhW+7xbVXcn20feqImYQIR6YHgNOL6aX04pSjJxfEoKvQ0+w1rfEn9dlhC1LyGDC1reyCFCPCmL0y+N5yjsLB4snyofavBkA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1645466360; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=p9FMeARyU/UK9vImcBhCGDjm5/pEu3zr2S3g4npkyi4=; 
+        b=MPGB/Id+ZkCzDIp8KMgCJhYGoNDAwQyKrZsTMr19vkAHP278Si9G0ONtgw380G9HTpc5Qgambc+33QeVOLh42aIH+wmCWDZC9Fqhr+RZ2/oFm8I3PdbvPUKPGeayZSbfYWSMz5yNrFdFbn601whG+k4pvlN9b4GeoXYqrkquUYI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645466360;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
+        bh=p9FMeARyU/UK9vImcBhCGDjm5/pEu3zr2S3g4npkyi4=;
+        b=nW2HZOHEfH//uWW8jvCWZnXehAVwQz2Y9aWhD1Tairk9+2GwmGPc1tGFXbH1qLZL
+        GoEY0xM1CTs7GKRiqTSg+e4Ka3nZXhXpHMs1K2DTTXGdq3BTQdIS5O7EqQyApp5WPpG
+        MtVaPsQqZm4zsH0d0mexgLG6Dtj03IlkCq24yU80=
+Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
+        with SMTPS id 1645466358576851.8410784523194; Mon, 21 Feb 2022 09:59:18 -0800 (PST)
+Date:   Mon, 21 Feb 2022 23:29:11 +0530
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost: handle zero regions in vhost_set_memory
+Message-ID: <YhPS78dGWh3LY+8t@anirudhrb.com>
+References: <20220221072852.31820-1-mail@anirudhrb.com>
+ <20220221164817.obpw477w74auxlkn@sgarzare-redhat>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221162652.103834-11-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+In-Reply-To: <20220221164817.obpw477w74auxlkn@sgarzare-redhat>
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,18 +61,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:26:52PM +0100, Clément Léger wrote:
-> Add support to retrieve a i2c bus in sfp with a fwnode. This support
-> is using the fwnode API which also works with device-tree and ACPI.
-> For this purpose, the device-tree and ACPI code handling the i2c
-> adapter retrieval was factorized with the new code. This also allows
-> i2c devices using a software_node description to be used by sfp code.
+On Mon, Feb 21, 2022 at 05:48:17PM +0100, Stefano Garzarella wrote:
+> On Mon, Feb 21, 2022 at 12:58:51PM +0530, Anirudh Rayabharam wrote:
+> > Return early when userspace sends zero regions in the VHOST_SET_MEM_TABLE
+> > ioctl.
+> > 
+> > Otherwise, this causes an erroneous entry to be added to the iotlb. This
+> > entry has a range size of 0 (due to u64 overflow). This then causes
+> > iotlb_access_ok() to loop indefinitely resulting in a hung thread.
+> > Syzbot has reported this here:
+> > 
+> > https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+> 
+> IIUC vhost_iotlb_add_range() in the for loop is never called if mem.nregions
+> is 0, so I'm not sure the problem reported by syzbot is related.
 
-If I'm not mistaken this patch can even go separately right now, since all used
-APIs are already available.
+Oh you're right. My bad! The problem is actually elsewhere.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> In any case maybe this patch is fine, but currently I think we're just
+> registering an iotlb without any regions, which in theory shouldn't cause
+> any problems.
 
+Yeah, there shouldn't be any problems here. The problem actually seems
+to be in vhost_process_iotlb_msg() where we end up adding a zero sized
+region to the iotlb. I will send a new patch...
 
+Thanks!
+	- Anirudh.
+
+> 
+> Thanks,
+> Stefano
+> 
+> > 
+> > Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+> > ---
+> > drivers/vhost/vhost.c | 2 ++
+> > 1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index 59edb5a1ffe2..821aba60eac2 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -1428,6 +1428,8 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
+> > 		return -EFAULT;
+> > 	if (mem.padding)
+> > 		return -EOPNOTSUPP;
+> > +	if (mem.nregions == 0)
+> > +		return 0;
+> > 	if (mem.nregions > max_mem_regions)
+> > 		return -E2BIG;
+> > 	newmem = kvzalloc(struct_size(newmem, regions, mem.nregions),
+> > -- 
+> > 2.35.1
+> > 
+> 
