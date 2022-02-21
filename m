@@ -2,117 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7364BE367
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7F84BDD6C
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:45:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358854AbiBUNTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 08:19:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53754 "EHLO
+        id S236109AbiBUNaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 08:30:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232982AbiBUNTP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 08:19:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0982C1EEF7;
-        Mon, 21 Feb 2022 05:18:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E5D6137C;
-        Mon, 21 Feb 2022 13:18:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE45C340E9;
-        Mon, 21 Feb 2022 13:18:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645449530;
-        bh=zZBPLOwN6VC415V5nh8joz0veP6og+pbcOBCbahM5NY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tII7+LMLdbC5SVB2FtWb7FEzAeHIwAAc7hck7Mk5k7BIJa5ZC+l5QzIHp0AGiq0X2
-         UR80X/ciAYECVR636j0ilnAmXMdL2J+P21y9xkwTnjAKd+yVPiDKfUtgqqPewazSl+
-         WX7Lo+qrwPdXkRF48WdblnbBPHYqYB9U6l3HREEmvkInODlHDJ3MHC43sIXxtV6Jpq
-         7Uz3S64nVyhSZOtRLoKFXK72a7+q9wo6upqb/OLFv8kjDQBlQO3PhzzNxiLWaqW0/Z
-         oUf/Xudcffgr4uj9hBRtO5kuwJ6Th8voIrviv0OwXKFDWkIJ7TWzdT4dqkMIFQEyYA
-         2serFy4vZWSPA==
-From:   broonie@kernel.org
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Geliang Tang <geliang.tang@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Date:   Mon, 21 Feb 2022 13:18:42 +0000
-Message-Id: <20220221131842.468893-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S235963AbiBUNai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 08:30:38 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C174113D30
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 05:30:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ahkwxjWHNSiT2ayAwIqa4ergL7YUdarz58urXi+nBbg=; b=mGKkGAqNQo7I7ZH9BN8Pq9lnRJ
+        q2BjO6YaArzhys39opY5UuaoS6QrwIgQkA+DvXdR5Ckj0Y+PxDvo4LV7EePywQSm8OLvkoAQ5C0az
+        py1V1JW7bTZIdpWGnLMH73VanWnkXKTNJVAc25yaTAuPAOVX5fEhuBFHmv+QeFjqxDAezruu1HQ2r
+        4trBYg0tPu0NawQWE6hdEoAx0BV0ix8Me/D6Y/8+irhPL+n0A+jOgZjeodTQuUQFvQXEQZjhVUzde
+        CODvZIda06B+yrCOl3BL+RRPGRsipvBEduIYjWC/2cHHOXeyEWaVqUorUTAn17dnisU5oam3MUwud
+        AxwSHj+w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57390)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nM8lW-0000QC-SF; Mon, 21 Feb 2022 13:30:10 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nM8lV-0007KL-1K; Mon, 21 Feb 2022 13:30:09 +0000
+Date:   Mon, 21 Feb 2022 13:30:09 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next v2 1/6] net: dsa: add support for phylink
+ mac_select_pcs()
+Message-ID: <YhOT4WbZ1FHXDHIg@shell.armlinux.org.uk>
+References: <Yg6UHt2HAw7YTiwN@shell.armlinux.org.uk>
+ <E1nKlY3-009aKs-Oo@rmk-PC.armlinux.org.uk>
+ <20220219211241.beyajbwmuz7fg2bt@skbuf>
+ <20220219212223.efd2mfxmdokvaosq@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220219212223.efd2mfxmdokvaosq@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Sat, Feb 19, 2022 at 11:22:24PM +0200, Vladimir Oltean wrote:
+> On Sat, Feb 19, 2022 at 11:12:41PM +0200, Vladimir Oltean wrote:
+> > >  static const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+> > >  	.validate = dsa_port_phylink_validate,
+> > > +	.mac_select_pcs = dsa_port_phylink_mac_select_pcs,
+> > 
+> > This patch breaks probing on DSA switch drivers that weren't converted
+> > to supported_interfaces, due to this check in phylink_create():
+> 
+> And this is only the most superficial layer of breakage. Everywhere in
+> phylink.c where pl->mac_ops->mac_select_pcs() is used, its presence is
+> checked and non-zero return codes from it are treated as hard errors,
+> even -EOPNOTSUPP, even if this particular error code is probably
+> intended to behave identically as the absence of the function pointer,
+> for compatibility.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+I don't understand what problem you're getting at here - and I don't
+think there is a problem.
 
-  tools/testing/selftests/net/mptcp/mptcp_join.sh
+While I know it's conventional in DSA to use EOPNOTSUPP to indicate
+that a called method is not implemented, this is not something that
+is common across the board - and is not necessary here.
 
-between commit:
+The implementation of dsa_port_phylink_mac_select_pcs() returns a
+NULL PCS when the DSA operation for it is not implemented. This
+means that:
 
-  6ef84b1517e08 ("selftests: mptcp: more robust signal race test")
+1) phylink_validate_mac_and_pcs() won't fail due to mac_select_pcs()
+   being present but DSA drivers not implementing it.
 
-from the net tree and commit:
+2) phylink_major_config() will not attempt to call phylink_set_pcs()
+   to change the PCS.
 
-  34aa6e3bccd86 ("selftests: mptcp: add ip mptcp wrappers")
+So, that much is perfectly safe.
 
-from the net-next tree.
+As for your previous email reporting the problem with phylink_create(),
+thanks for the report and sorry for the breakage - the breakage was
+obviously not intended, and came about because of all the patch
+shuffling I've done over the last six months trying to get these
+changes in, and having forgotten about this dependency.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+I imagine the reason you've raised EOPNOTSUPP is because you wanted to
+change dsa_port_phylink_mac_select_pcs() to return an error-pointer
+encoded with that error code rather than NULL, but you then (no
+surprises to me) caused phylink to fail.
 
-diff --cc tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 0c8a2a20b96cf,725924012b412..0000000000000
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@@ -1163,20 -1287,17 +1302,21 @@@ signal_address_tests(
-  
-  	# signal addresses race test
-  	reset
-- 	ip netns exec $ns1 ./pm_nl_ctl limits 4 4
-- 	ip netns exec $ns2 ./pm_nl_ctl limits 4 4
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.1 flags signal
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.4.1 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.1.2 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags signal
-++
-+ 	pm_nl_set_limits $ns1 4 4
-+ 	pm_nl_set_limits $ns2 4 4
-+ 	pm_nl_add_endpoint $ns1 10.0.1.1 flags signal
-+ 	pm_nl_add_endpoint $ns1 10.0.2.1 flags signal
-+ 	pm_nl_add_endpoint $ns1 10.0.3.1 flags signal
-+ 	pm_nl_add_endpoint $ns1 10.0.4.1 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.1.2 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.2.2 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.3.2 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.4.2 flags signal
- -	run_tests $ns1 $ns2 10.0.1.1
- +
- +	# the peer could possibly miss some addr notification, allow retransmission
- +	ip netns exec $ns1 sysctl -q net.mptcp.add_addr_timeout=1
- +	run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow
-  	chk_join_nr "signal addresses race test" 3 3 3
-  
-  	# the server will not signal the address terminating
+Considering the idea of using EOPNOTSUPP, at the two places we call
+mac_select_pcs(), we would need to treat this the same way we currently
+treat NULL. We would also need phylink_create() to call
+mac_select_pcs() if the method is non-NULL to discover if the DSA
+sub-driver implements the method - but we would need to choose an
+interface at this point.
+
+I think at this point, I'd rather:
+
+1) add a bool in struct phylink to indicate whether we should be calling
+   mac_select_pcs, and replace the
+
+	if (pl->mac_ops->mac_select_pcs)
+
+   with
+
+        if (pl->using_mac_select_pcs)
+
+2) have phylink_create() do:
+
+	bool using_mac_select_pcs = false;
+
+	if (mac_ops->mac_select_pcs &&
+	    mac_ops->mac_select_pcs(config, PHY_INTERFACE_MODE_NA) != 
+	      ERR_PTR(-EOPNOTSUPP))
+		using_mac_select_pcs = true;
+
+	if (using_mac_select_pcs &&
+	    phy_interface_empty(config->supported_interfaces)) {
+		...
+
+	...
+
+	pl->using_mac_select_pcs = using_mac_select_pcs;
+
+which should give what was intended until DSA drivers are all updated
+to fill in config->supported_interfaces.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
