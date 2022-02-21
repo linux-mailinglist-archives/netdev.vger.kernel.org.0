@@ -2,54 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0ED4BECC2
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 22:44:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7DE4BECCC
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 22:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbiBUVor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 16:44:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55744 "EHLO
+        id S235029AbiBUVxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 16:53:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230430AbiBUVoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 16:44:46 -0500
+        with ESMTP id S231601AbiBUVxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 16:53:01 -0500
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCC922BC6;
-        Mon, 21 Feb 2022 13:44:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F08622BD3;
+        Mon, 21 Feb 2022 13:52:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WenxZscsM06/+bT/19IGHZEhWMyvVaGW5AQNl0sRgAg=; b=c1Zpoi2CCRTbgsy/twPRazIVDE
-        RsaVvwLsNgoYnXukPhUxNayXBYCtgChSG9VOR8/fDcq5RZyrCkh+v11lnHnRe2YnmKtRTFzAR1s/Y
-        obF0/aidXb21wf1uaGahKjhyW6T53io0igFHZbNlRQg23achMWsKdIH5wvUMIfJoXO78=;
+        bh=RTi6LH7ru8wXWXIcwXIKmvFznUB5QZjmZSaLCHDFKXI=; b=lPeEODzSNa7Id/B/Ga35RJtUVA
+        qY8KmZc1rQO4mBxy8m1bJLjsqHt0c0Lg8Vtql3smYmmQ2ys5AnvLRoNqaW8BH4R+ORr3OSHWY4ppe
+        lqwpKH6ekkP4ocm05cvu8/WdXa/eUyk9JMxi72xe+mmpwX9kvAaKy2gv1HMnY0k82OZM=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1nMGTY-007Qz4-3N; Mon, 21 Feb 2022 22:44:08 +0100
-Date:   Mon, 21 Feb 2022 22:44:08 +0100
+        id 1nMGbX-007R6S-5r; Mon, 21 Feb 2022 22:52:23 +0100
+Date:   Mon, 21 Feb 2022 22:52:23 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <YhQHqDJvahgriDZK@lunn.ch>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: net: dsa: add new mdio property
+Message-ID: <YhQJlyfdM8KQZE/P@lunn.ch>
+References: <20220221200102.6290-1-luizluca@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220221162652.103834-1-clement.leger@bootlin.com>
+In-Reply-To: <20220221200102.6290-1-luizluca@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -59,19 +55,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This series has been tested on a x86 kernel build without CONFIG_OF.
-> Another kernel was also built with COMPILE_TEST and CONFIG_OF support
-> to build as most drivers as possible. It was also tested on a sparx5
-> arm64 with CONFIG_OF. However, it was not tested with an ACPI
-> description evolved enough to validate all the changes.
+On Mon, Feb 21, 2022 at 05:01:02PM -0300, Luiz Angelo Daros de Luca wrote:
+> The optional mdio property will be used by dsa switch to configure
+> slave_mii_bus when the driver does not allocate it during setup.
+> 
+> Some drivers already offer/require a similar property but, in some
+> cases, they rely on a compatible string to identify the mdio bus node.
+> Each subdriver might decide to keep existing approach or migrate to this
+> new common property.
 
-By that, do you mean a DSD description?
+Your threading of these two patches is broken. The usual way to do this is
 
-In the DT world, we avoid snow flakes. Once you define a binding, it
-is expected every following board will use it. So what i believe you
-are doing here is defining how i2c muxes are described in APCI. How
-SFP devices are described in ACPI. Until the ACPI standards committee
-says otherwise, this is it. So you need to clearly document
-this. Please add to Documentation/firmware-guide/acpi/dsd.
+git format-patch HEAD~2
+git send-email *.patch
 
-      Andrew
+You will then get uniform subject lines and the two emails threaded
+together.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
