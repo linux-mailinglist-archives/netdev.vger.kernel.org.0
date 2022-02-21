@@ -2,272 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E1F4BE96E
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:07:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 522894BE90E
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:06:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379908AbiBUQKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 11:10:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59218 "EHLO
+        id S1380020AbiBUQQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 11:16:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379902AbiBUQKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 11:10:05 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E68A220E7;
-        Mon, 21 Feb 2022 08:09:40 -0800 (PST)
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 18D6D6022B;
-        Mon, 21 Feb 2022 17:08:42 +0100 (CET)
-Date:   Mon, 21 Feb 2022 17:09:34 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
-        lwn@lwn.net
-Subject: [ANNOUNCE] nftables 1.0.2 release
-Message-ID: <YhO5Pn+6+dgAgSd9@salvia>
+        with ESMTP id S1379981AbiBUQPx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 11:15:53 -0500
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3115F23BD4;
+        Mon, 21 Feb 2022 08:15:28 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1645460114; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=DuraJutovSGUPCk2XURRrMVrKu6VjFrkpxn3ohqo5fprZYZythN4kZr5L9vB+4OWuIwfdwPp+RpUOJquHBSulT8FY/qwXVq43kqpJaKCM9aJM2wf7dl29hIRxg7vzkYPpGh2RMi+ark3/46aurhztCscwZ1lXvxWARegXKg5BD0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1645460114; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=WKgVCY1x560wjpb2d6+V1DLhy9frcWvJFP7CwbCVLYo=; 
+        b=nicyYhark7OR16sCX1xhUBcwDGIYt4LknSzouz0gc7yc5uN5RKAAm8i9TKH/DRcPHjW8wTWm7vmGVvlD9PBKLQiAhutmoNm2zD4KL4rynz9FX3JxcFggEgUyRTIkgWPodjkn3d3po5z4HU+hnL/RWx6iATs5fF4HkVVIhIygPvE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645460114;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
+        bh=WKgVCY1x560wjpb2d6+V1DLhy9frcWvJFP7CwbCVLYo=;
+        b=jGUZ9sbhScheWcPDrud7NDlwDJxZu5m76omQlDu2Vg5+271FB2w8f/PRG7UQpB2f
+        2EjASNOE+EbFI/B0ooZl7DSteqIpUvjkw0RXrCMT3fHe+bdJDeSJIv/Cp0CMN4t4RX6
+        QgxShMv7rSPGHGKHtXew11+2odP6x1wKSZ0tz0FA=
+Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
+        with SMTPS id 1645460088394764.7856299620081; Mon, 21 Feb 2022 08:14:48 -0800 (PST)
+Date:   Mon, 21 Feb 2022 21:44:39 +0530
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        kvm <kvm@vger.kernel.org>, Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop()
+ while releasing
+Message-ID: <YhO6bwu7iDtUFQGj@anirudhrb.com>
+References: <20220221114916.107045-1-sgarzare@redhat.com>
+ <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="idxEts+FEiNamxS2"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 21, 2022 at 02:59:30PM +0100, Stefano Garzarella wrote:
+> On Mon, Feb 21, 2022 at 12:49 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> >
+> > vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+> > ownership. It expects current->mm to be valid.
+> >
+> > vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+> > the user has not done close(), so when we are in do_exit(). In this
+> > case current->mm is invalid and we're releasing the device, so we
+> > should clean it anyway.
+> >
+> > Let's check the owner only when vhost_vsock_stop() is called
+> > by an ioctl.
+> >
+> > Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+> > Cc: stable@vger.kernel.org
+> > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > ---
+> >  drivers/vhost/vsock.c | 14 ++++++++------
+> >  1 file changed, 8 insertions(+), 6 deletions(-)
+> 
+> Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
 
---idxEts+FEiNamxS2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+I don't think this patch fixes "INFO: task hung in vhost_work_dev_flush"
+even though syzbot says so. I am able to reproduce the issue locally
+even with this patch applied.
 
-Hi!
+Thanks,
 
-The Netfilter project proudly presents:
+	- Anirudh.
 
-        nftables 1.0.2
-
-This release contains new features available up to the Linux kernel
-5.17-rc release:
-
-* New ruleset optimization -o/--optimize option. You can combine this
-  option with the dry run mode (--check) to review the proposed ruleset
-  updates without actually loading the ruleset, e.g.
-
-        # nft -c -o -f ruleset.test
-        Merging:
-                 ruleset.nft:16:3-37:           ip daddr 192.168.0.1 counter accept
-                 ruleset.nft:17:3-37:           ip daddr 192.168.0.2 counter accept
-                 ruleset.nft:18:3-37:           ip daddr 192.168.0.3 counter accept
-        into:
-                 ip daddr { 192.168.0.1, 192.168.0.2, 192.168.0.3 } counter packets 0 bytes 0 accept
-
-  This option also coalesces rules using concatenation+set, e.g.
-
-      meta iifname eth1 ip saddr 1.1.1.1 ip daddr 2.2.2.3 accept
-      meta iifname eth1 ip saddr 1.1.1.2 ip daddr 2.2.2.5 accept
-
-   into:
-
-      meta iifname . ip saddr . ip daddr { eth1 . 1.1.1.1 . 2.2.2.3, eth1 . 1.1.1.2 . 2.2.2.5 } accept
-
-   and it uses verdict maps to coalesce rules with same selectors but different
-   verdicts, e.g.
-
-      ip saddr 1.1.1.1 ip daddr 2.2.2.2 accept
-      ip saddr 2.2.2.2 ip daddr 3.3.3.3 drop
-
-   into:
-
-      ip saddr . ip daddr vmap { 1.1.1.1 . 2.2.2.2 : accept, 2.2.2.2 . 3.3.3.3 : drop }
-
-- Support for ip and tcp options and sctp chunks in sets, e.g.
-
-        set s5 {
-               typeof ip option ra value
-               elements = { 1, 1024 }
-        }
-
-        set s7 {
-               typeof sctp chunk init num-inbound-streams
-               elements = { 1, 4 }
-        }
-
-        chain c5 {
-               ip option ra value @s5 accept
-        }
-
-        chain c7 {
-               sctp chunk init num-inbound-streams @s7 accept
-        }
-
-- Support for tcp fastopen, md5sig and mptcp options.
-
-- mp-tcp subtype matching support, e.g.
-
-        tcp option mptcp subtype 1
-
-- Improved kernel-side filtering via listing options.
-
-- complete JSON support for flowtables.
-
-... this release also include fixes (highlights):
-
-- fix --terse option with anonymous sets.
-- fix crash with `nft describe' on invalid field or datatype.
-- Big Endian fixes for ct expiration, meta sk{u,g}uid, meta hour,
-  ct label, meta {i,o}ifname with wildcard, payload matching with
-  bitmasks.
-- allow for quote strings as device names in flowtable declarations.
-- ethernet matching with reject, e.g.
-
-        ether saddr aa:bb:cc:dd:ee:ff ip daddr 192.168.0.1 reject
-
-- turn on dynamic flag if rule dynamically updates a set.
-
-... and incremental documentation updates.
-
-This release also includes libnftables C example code now available
-under the examples/ folder.
-
-You can download this new release from:
-
-https://www.netfilter.org/projects/nftables/downloads.html
-https://www.netfilter.org/pub/nftables/
-
-To build the code, libnftnl >= 1.2.1 and libmnl >= 1.0.4 are required:
-
-* https://netfilter.org/projects/libnftnl/index.html
-* https://netfilter.org/projects/libmnl/index.html
-
-Visit our wikipage for user documentation at:
-
-* https://wiki.nftables.org
-
-For the manpage reference, check man(8) nft.
-
-In case of bugs and feature request, file them via:
-
-* https://bugzilla.netfilter.org
-
-Happy firewalling.
-
---idxEts+FEiNamxS2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment; filename="changes-nftables-1.0.2.txt"
-Content-Transfer-Encoding: 8bit
-
-Eugene Crosser (1):
-      netlink: Use abort() in case of netlink_abi_error
-
-Florian Westphal (24):
-      exthdr: fix type number saved in udata
-      netlink_delinearize: use correct member type
-      netlink_delinearize: rename misleading variable
-      netlink_delinearize: binop: make accesses to expr->left/right conditional
-      tcpopt: remove KIND keyword
-      scanner: add tcp flex scope
-      parser: split tcp option rules
-      tcpopt: add md5sig, fastopen and mptcp options
-      tests: py: add test cases for md5sig, fastopen and mptcp mnemonics
-      mptcp: add subtype matching
-      exthdr: fix tcpopt_find_template to use length after mask adjustment
-      tests: py: add tcp subtype match test cases
-      ipopt: drop unused 'ptr' argument
-      exthdr: support ip/tcp options and sctp chunks in typeof expressions
-      iptopt: fix crash with invalid field/type combo
-      tests: add shift+and typeof test cases
-      payload: skip templates with meta key set
-      netlink_delinearize: and/shift postprocessing
-      netlink_delinearize: zero shift removal
-      evaluate: attempt to set_eval flag if dynamic updates requested
-      src: silence compiler warnings
-      json: add flow statement json export + parser
-      parser_json: fix flowtable device datatype
-      parser_json: permit empty device list
-
-Jeremy Sowden (18):
-      proto: short-circuit loops over upper protocols
-      evaluate: correct typo's
-      evaluate: reject: support ethernet as L2 protocol for inet table
-      tests: shell: remove stray debug flag.
-      build: fix autoconf warnings
-      build: remove scanner.c and parser_bison.c with `maintainer-clean`
-      tests: py: fix inet/sets.t netdev payload
-      tests: py: fix inet/ip.t payloads
-      tests: py: fix inet/ip_tcp.t test
-      netlink_delinearize: fix typo
-      src: remove arithmetic on booleans
-      src: reduce indentation
-      src: simplify logic governing storing payload dependencies
-      tests: py: fix inet/ip.t bridge payload
-      src: add a helper that returns a payload dependency for a particular base
-      src: store more than one payload dependency
-      tests: py: remove redundant payload expressions
-      tests: shell: remove redundant payload expressions
-
-Pablo Neira Ayuso (30):
-      cache: do not skip populating anonymous set with -t
-      mnl: different signedness compilation warning
-      cli: remove #include <editline/history.h>
-      cli: save history on ctrl-d with editline
-      tests: shell: extend catchall tests for maps
-      proto: revisit short-circuit loops over upper protocols
-      erec: expose print_location() and line_location()
-      src: error reporting with -f and read from stdin
-      src: remove '$' in symbol_expr_print
-      src: add ruleset optimization infrastructure
-      optimize: merge rules with same selectors into a concatenation
-      optimize: merge same selector with different verdict into verdict map
-      optimize: merge several selectors with different verdict into verdict map
-      src: do not use the nft_cache_filter object from mnl.c
-      cache: do not set error code twice
-      cache: add helper function to fill up the rule cache
-      src: 'nft list chain' prints anonymous chains correctly
-      libnftables: use xrealloc()
-      parser_bison: missing synproxy support in map declarations
-      optimize: add __expr_cmp()
-      optimize: merge verdict maps with same lookup key
-      optimize: check for payload base and offset when searching for mergers
-      optimize: do not merge raw payload expressions
-      iface: handle EINTR case when creating the cache
-      examples: add libnftables example program
-      examples: load ruleset from JSON
-      netlink: check key is EXPR_CONCAT before accessing field
-      segtree: memleak get element command
-      build: Bump version to 1.0.2
-      build: missing SUBIRS update
-
-Phil Sutter (18):
-      tests/py: Avoid duplicate records in *.got files
-      exthdr: Fix for segfault with unknown exthdr
-      mnl: Fix for missing info in rule dumps
-      src: Fix payload statement mask on Big Endian
-      meta: Fix {g,u}id_type on Big Endian
-      meta: Fix hour_type size
-      datatype: Fix size of time_type
-      ct: Fix ct label value parser
-      netlink_delinearize: Fix for escaped asterisk strings on Big Endian
-      cache: Filter tables on kernel side
-      cache: Filter rule list on kernel side
-      cache: Filter chain list on kernel side
-      cache: Filter set list on server side
-      cache: Support filtering for a specific flowtable
-      tests: py: Test connlimit statement
-      scanner: Move 'maps' keyword into list cmd scope
-      scanner: Some time units are only used in limit scope
-      scanner: rt: Move seg-left keyword into scope
-
-Pierre Ducroquet (1):
-      doc: add undefine and redefine keywords
-
-Stijn Tintel (1):
-      parser: allow quoted string in flowtable_expr_member
-
-Štěpán Němec (1):
-      tests: shell: better parameters for the interval stack overflow test
-
-
---idxEts+FEiNamxS2--
+> Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
+> 
