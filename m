@@ -2,119 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 753D94BE40D
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:58:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50DA04BE8F1
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378496AbiBUO4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 09:56:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47210 "EHLO
+        id S1378620AbiBUO5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 09:57:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378482AbiBUO4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 09:56:07 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BCD205F8
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 06:55:43 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id vz16so34056060ejb.0
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 06:55:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R6tbRgnav0NVatnJIBLZzCorlK7swYro1ARDqOwI80M=;
-        b=pt8oL6V2zcvagVDfu2HKkXI9j0akNaeZZMYhTtskAlGNVlqBEBN1d/Ct2LOLPqw0F1
-         XN1YusrQyD0/y/0tDj50GuLNThcfmOGtYkX9J4LNuxY9ygj3dQGdeSpthnO9Va21me44
-         cDnsdsrJYYCYaaHd5w5++3Fcsg6cR4iy0pqslSoNBA5Fxqu678bbtbPEQy7CW+dNJdK9
-         WKnH5AnlVom73EOkT/r6F00Xl6J2/HzbcefQbgwfY0AdY4jHZaSgqq0D6NI0racGaG9l
-         71y58oZbU5d50nVz/dMGiguGBoRJUAUJ1D1lq+TVGi0rVpe/K63UcJFZ8Rjze3u4b/Af
-         eBmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R6tbRgnav0NVatnJIBLZzCorlK7swYro1ARDqOwI80M=;
-        b=cHTGiI0ruEm2/SVfFxc6zgTamGgEcQB+e1KCxAZ4yKnauXY7c2JWU8+2CvepZ7HHHd
-         OMGLuMUDEw+dzgz5fAehaha8GeKTQ6IQAW9niKx5aXEs96pyCC/qLj5p8j+E4f7aDKvP
-         YBNCMSPTOhW8qCNFq68NThRvCVl+LcMP+VytAsQSgC+IqAzr7nQ5w8SvBmo18n/wX5wp
-         7fSIzwDhZ0+V2BibWteJqqxoUTW87huBLHfNuMHFZ1DfAlfE656r1SkcEnRuZQ298KUk
-         q9AphdjRc3/p56KiuiKIMSMcU+zBws4zvAQ4pNK0DZoJAkhGD1n4BZEVux0rEaiEnUTm
-         l8lQ==
-X-Gm-Message-State: AOAM533To1evnG7V483zliUjBU/h7RjiS8Ukvi+qRNY2Dh2ukR1dx95g
-        N4lRj00tvyA8rvLRtH9Mulk=
-X-Google-Smtp-Source: ABdhPJynTc9N/ladrXNtZRO6wJUuR3dgXFzR1fsQ0z2/as40/sz9uVHxe5qtOJohP+RaG8KlIctadg==
-X-Received: by 2002:a17:907:30cc:b0:6ce:d97:cb0f with SMTP id vl12-20020a17090730cc00b006ce0d97cb0fmr16281044ejb.0.1645455342456;
-        Mon, 21 Feb 2022 06:55:42 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id j18sm5257468ejc.166.2022.02.21.06.55.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 06:55:42 -0800 (PST)
-Date:   Mon, 21 Feb 2022 16:55:40 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next v2 1/6] net: dsa: add support for phylink
- mac_select_pcs()
-Message-ID: <20220221145540.ek375azxukz3nrvj@skbuf>
-References: <Yg6UHt2HAw7YTiwN@shell.armlinux.org.uk>
- <E1nKlY3-009aKs-Oo@rmk-PC.armlinux.org.uk>
- <20220219211241.beyajbwmuz7fg2bt@skbuf>
- <20220219212223.efd2mfxmdokvaosq@skbuf>
- <YhOT4WbZ1FHXDHIg@shell.armlinux.org.uk>
- <20220221143254.3g3iqysqkqrfu5rm@skbuf>
- <YhOlUtcr7CQunM6M@shell.armlinux.org.uk>
+        with ESMTP id S1378602AbiBUO50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 09:57:26 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76369E2D;
+        Mon, 21 Feb 2022 06:56:58 -0800 (PST)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21LEChub026107;
+        Mon, 21 Feb 2022 14:56:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=z8dAVPL+0fiEdAo8zkHagi40TLvbZM8TdDfOeMIUoQ8=;
+ b=Jf9FgX373wnPuqP9JazQRxWFTQ7fqeaN4jHpEJhWCL3PmZ1DgDKw02qOET+9Sbiclgwn
+ FyfSc66lMTYkiTgEEiscIZQg/kGtGIjRoyZn32HKF/6+Qw9hqGUaYYH9EviC/4JFDB2m
+ ENlnJl9vVad0zx7o+FEyOYkgMkhNCxzkaNXaDHmgQsgqJopSlmhzsW/3uywD3+066oia
+ diVP95tIYCHmt8nV9rA0zFGdrVxxjamW2c6XBRam2nwIdTkFuegBmA4FOe4GSKt4r7uS
+ svDSzV4PJGUgi53Nkfv2zzLY3RxYJwIc65bdOr3Ig4vT0Gj7iedcwd2WDv+ScUBHJe+P iw== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ecc9urydx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 14:56:54 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21LEuk6G013211;
+        Mon, 21 Feb 2022 14:56:52 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma02fra.de.ibm.com with ESMTP id 3ear68tjeq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 14:56:52 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21LEunbd36045066
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Feb 2022 14:56:49 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D0244C04E;
+        Mon, 21 Feb 2022 14:56:49 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2A4B54C058;
+        Mon, 21 Feb 2022 14:56:49 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon, 21 Feb 2022 14:56:49 +0000 (GMT)
+Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
+        id C777DE030F; Mon, 21 Feb 2022 15:56:48 +0100 (CET)
+From:   Alexandra Winter <wintera@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>, agordeev@linux.ibm.com,
+        Alexandra Winter <wintera@linux.ibm.com>
+Subject: [PATCH net-next 0/2] s390/net: updates 2022-02-21
+Date:   Mon, 21 Feb 2022 15:56:31 +0100
+Message-Id: <20220221145633.3869621-1-wintera@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhOlUtcr7CQunM6M@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: I5eynmMtzPfjAzNeoGUrpzD16-Ow8AQy
+X-Proofpoint-GUID: I5eynmMtzPfjAzNeoGUrpzD16-Ow8AQy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-21_07,2022-02-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=890
+ clxscore=1011 spamscore=0 impostorscore=0 bulkscore=0 priorityscore=1501
+ mlxscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202210087
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 02:44:34PM +0000, Russell King (Oracle) wrote:
-> On Mon, Feb 21, 2022 at 04:32:54PM +0200, Vladimir Oltean wrote:
-> > Alternatively, phylink_create() gets the initial PHY interface mode
-> > passed to it, I wonder, couldn't we call mac_select_pcs() with that in
-> > order to determine whether the function is a stub or not?
-> 
-> That would be rather prone to odd behaviour depending on how
-> phylink_create() is called, depending on the initial interface mode.
-> If the initial interface mode causes mac_select_pcs() to return NULL
-> but it actually needed to return a PCS for a different interface mode,
-> then we fail.
+Hello Dave & Jakub,
 
-I agree. I just wanted to make it clear that if you have a better idea
-than a pointer-encoded -EOPNOTSUPP, I'm not bent on going with -EOPNOTSUPP.
+please apply the following patches to netdev's net-next tree.
 
-> > *and as I haven't considered, to be honest. When phylink_major_config()
-> > gets called after a SGMII to 10GBaseR switchover, and mac_select_pcs is
-> > called and returns NULL, the current behavior is to keep working with
-> > the PCS for SGMII. Is that intended?
-> 
-> It was not originally intended, but as a result of the discussion
-> around this patch which didn't go anywhere useful, I dropped it as
-> a means to a path of least resistance.
-> 
-> https://patchwork.kernel.org/project/linux-arm-kernel/patch/E1mpSba-00BXp6-9e@rmk-PC.armlinux.org.uk/
+Just cleanup. No functional changes, as currently virt=phys in s390.
 
-Oh, but that patch didn't close exactly this condition that we're
-talking about here, did it? It allows phylink_set_pcs() to be called
-with NULL, but phylink_major_config() still has the non-NULL check,
-which prevents it from having any effect in this scenario:
+Thank you
+Alexandra
 
-	/* If we have a new PCS, switch to the new PCS after preparing the MAC
-	 * for the change.
-	 */
-	if (pcs)
-		phylink_set_pcs(pl, pcs);
+Alexander Gordeev (2):
+  s390/iucv: sort out physical vs virtual pointers usage
+  s390/net: sort out physical vs virtual pointers usage
 
-I re-read the conversation and I still don't see this argument being
-given, otherwise I wouldn't have opposed...
+ drivers/s390/net/lcs.c            | 8 ++++----
+ drivers/s390/net/qeth_core_main.c | 2 +-
+ net/iucv/iucv.c                   | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+-- 
+2.32.0
+
