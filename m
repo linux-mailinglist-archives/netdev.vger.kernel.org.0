@@ -2,184 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13BDE4BDEE4
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:47:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 924244BE609
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:01:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355724AbiBULRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 06:17:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47362 "EHLO
+        id S1355629AbiBULRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 06:17:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355954AbiBULPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 06:15:41 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8385F4B;
-        Mon, 21 Feb 2022 02:54:58 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21L9WUZg002355;
-        Mon, 21 Feb 2022 10:54:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=glkbg++XiiklfCjkn3ChrKY1JAlcFqvJvgwInzV370s=;
- b=RUVcZs2Q+gcBBcZhu+p6ow3MC3hZj0GJ0sV5+wpe++QF1UsuDVknMBf7HVzfha62uXFg
- +X591Zfm3oTheDUP9Kr8nhvxEsmHuCdq6TBPBXzcCwe7f1qrl6TlFfHbG1HFwqww5T33
- zxO/+626dlCvg+rTq7F6GUfoa7Q5VCNUNEyOkh3z+0+q2EnZDXmjBv2vc4MD0W0zAIlF
- 1WX55l0Q/mARjSAjSL40jMYwEMkzSXVylLqwRlNJnig0DK6ugiEVDb31nBnZ9bJ+aj1D
- +WN0ew/3dTzpcUduIpwsZOh3QVyI+2ciUhwTC8OKgYPMqX/uC49Ho+lxte1Dx+MWgM4X QA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ear5t3t46-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 10:54:53 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21LAomjS006558;
-        Mon, 21 Feb 2022 10:54:52 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2041.outbound.protection.outlook.com [104.47.66.41])
-        by aserp3030.oracle.com with ESMTP id 3eapkejbq7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 10:54:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zn+qjPPugpFEcb4tk2Cn8TYErqAYvEvbxOApEPKRhfUdTA9K3aVajv1TCur7kqpvFFsAeOgjhn2MERgdbD0w1GH1KC0i5yAF6pkeetSppETm2WMptAEq+emKlzHvFXdFAn+2wF9io/9BmdSy2Q2549q0YUCEqWSw5WWrjgCnkQ2SzonXWSBhfeFktQJghYdJpfau6MDjysD1M0ITgFmfDo9gxoHk1hfADMpHqnlLuLWVT7dv9nYQg/RiiyQHSsSTwhOKQAPMLlIPvSfODjzyrgfNvW4Shv7c+oY726dWSTxAhp6HySqK9qZICrlUckHd4ec7JrW/ufBG8Z6vMdBIgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=glkbg++XiiklfCjkn3ChrKY1JAlcFqvJvgwInzV370s=;
- b=NWOB8Wv3bzlXJYUs1dhM43ZznOtiIpt0FCcO3TxOlvmXxulvt/sOFJijdUvfzN35BY+WI+TlPrsm8+ISNQ3X3kNroGwBGyI3yPGk78IsC+jYmbpnX3TXVxwCuP+aiIr0gHWz56kjDyWy60lo1mvzcEBG++3cTLl34t0WCr2Qmuvj7Gi8NT67YdiLq3cJj4q3Y4RrGhuCEZu56rxpdh0x53mCgXA3Igrt4UEsYqBVK0M2xUIgrkYkom+OswdkwJN4ySPyfrW7liGb7T6O5+F/pKpSrvlt9XmbcePujHviTVVcT254tAbqFklMS+vrz4Bk0xvkrFsJwJPEsjfl6ZINYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        with ESMTP id S1356011AbiBULPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 06:15:42 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8981D6391
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 02:55:43 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id v13-20020a17090ac90d00b001b87bc106bdso18527915pjt.4
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 02:55:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=glkbg++XiiklfCjkn3ChrKY1JAlcFqvJvgwInzV370s=;
- b=i9TwTtwnLJlwq5uK4px2m5yfKp+0Qp/cWqcg+5xECZbVvFiU/po/0wbLYfLg29IDv3se4DECAKUw74nWU4voRrlpjy8dwm1VTnd5eyuukkHT+ypbatbCHqlaJPJfNzyBvvmy7PZeh2GWmlkweHMuPQFOzMJPkT1SgN+x7y1e7uY=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4450.namprd10.prod.outlook.com
- (2603:10b6:303:93::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Mon, 21 Feb
- 2022 10:54:50 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 10:54:50 +0000
-Date:   Mon, 21 Feb 2022 13:54:40 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Joseph CHAMG <josright123@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Joseph CHAMG <josright123@gmail.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH v2 net-next] net: dm9051: Fix use after free in
- dm9051_loop_tx()
-Message-ID: <20220221105440.GA10045@kili>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ZR0P278CA0008.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:16::18) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zBMxT6mUsrZF5CxDEWFMeByDYV1JnyiE3N8k2hcGECU=;
+        b=oqqOHqSypYg25IJxdVoI6B6JMbaJVEET4dh0ZwvKdM02nESkKShqcQcEAeJH4V0VCM
+         uXI9iuhFXbb++O9ukcBiCbNALAKfx5DpdMHwczy9DbTUsW44kL/lnka85qqWvRej0RPF
+         RnZ5VQi9/Mjq9HqVC0zMI/jx6jaX6l3eySLLacUi2cknQyzHpMuotUajsmC3GEpzlOin
+         o1tPkiMKwsJupC8oYXfyRQVBef8zEU0ZGw4rtAZoHwAnKLbd9vZK1AgZndTWoifXBC8/
+         AuESCa6BessImTSDHkf64leJzic5r/rVZzBOg5nQtxSNoV3iHs4YEsgn1YleKilaig88
+         BkCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zBMxT6mUsrZF5CxDEWFMeByDYV1JnyiE3N8k2hcGECU=;
+        b=pPVVGv7btV3w9SHKKN0kDgqzLXRkmm0ruuISgV8tLYPeSqm5pDbUpv9wPV5VR7Icql
+         ZEn9EItCSLUUyfgQ3/3hC7KlCSdOiSLKGgkjBBVV+eneU7LtpuGZgjwbnUxTjqvo+il5
+         sqXK9uDiENc5bqsCSPEVYJwGzAaWyQNWt+gBMTnhN0/CpEI/2VzpBGeDkW3VSUX3C5GJ
+         J0uR9QI4K4oyI7QH3lH8x+/4iW7or97iSqOLUBYYWnhOP9MhXd372vI0lDklgkEJQ4p1
+         V/Brbpk5/5w2wwUD0J+k6vpcy5WSC8DTFu8gFEc58XhyYfdU9uZfjjlpf5ySynLXO95D
+         sHpw==
+X-Gm-Message-State: AOAM530POXKWc0PgDb3jhoiqmniNdInLAFP5741RjMda5WSkNfaodiqR
+        VDFimdDVV9yYOlSLCXDelcpQaxlSz2k4N86Eb1hGxw==
+X-Google-Smtp-Source: ABdhPJzLPLl27GzyMzXw22z+KHCroSxZ4M5UCV0cxecdAaXbkaNvw97Gtw7SM49XgmH59JPQQgrNHNZqjAsxzIhWJ+U=
+X-Received: by 2002:a17:90a:db90:b0:1bc:529f:7071 with SMTP id
+ h16-20020a17090adb9000b001bc529f7071mr1589092pjv.40.1645440943069; Mon, 21
+ Feb 2022 02:55:43 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b189f72c-e5cc-4a44-a646-08d9f528956f
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4450:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR10MB4450A32E74317E1B5DA9EF408E3A9@CO1PR10MB4450.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W40OHOZ39lO/h7jrAv4nlh8U5cxN8heKRXTGj4MlLyf+PR53UziejDyF/XTwXnYmPOIRuR1pFwkQ69fTFI/ASCvOIqexgjUjKLeIKESQ/N1An7yz6s4oT0gXUCiwfqQSsTH8QWFGoSx6rVKfCqmhbykt58QIjqoX0yFjbz9svImX00I0mP7poNVfLw3rIr9Lmk+puIXrGqT39k8W9HIgwGSmz1ig842chWbn5J+farO9RwMAe4M8vHPTdCnZqRmj2w/eKOZRaystOapeTC82rVjxvlNy/4NzMLV0AT4OdABKN3gNVJlhU9vnyz2g+ydK0ro+3GKT+zK/6xpmoaPutDn0NGQlsxn8cNzlgiIJDuISPN2oAg8Qli7qfQPrVpDQM4/VwTEOyqaM/vlsIqx/EbP3PXInnwUgJXOxHuWLpAfI1VYNJHEvcpMaK1QOpooLugyBbNMbBDpdOe9SA6xLe/GeGwLChhrQaD/baiJFnTXoovsK7+FjRrjSsx6eIj0HNwyRwXWyFLIj86J7zCUZvs4NN1F2AItTsfY48KuBxdM97AU2toYe0FdJIKQ8a85xj/tX4CRZFpBVIaYX6F4ljXId/BCh78j43mPSlyiSOtMX8WSgHMn1Ad2X9/Ge1vvPqsaz+EdJa9MjoeyqcwqXOnlpeglTM08KqB8GcCD3xtvom/Op/22ZYeTqlhjZFdS1IF6BFFo71yig6uhb+Tv6eQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(33716001)(33656002)(83380400001)(54906003)(110136005)(316002)(4326008)(1076003)(2906002)(66556008)(66476007)(6506007)(9686003)(6512007)(38350700002)(6486002)(508600001)(44832011)(38100700002)(8676002)(5660300002)(6666004)(4744005)(186003)(66946007)(86362001)(26005)(8936002)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VEoDB1KZ9kKLNIuwrrMAYwwPehQb+vnSaaWYkBRKcvCMWxdCTYouvjduMSSM?=
- =?us-ascii?Q?TIAF+BRIZITMGEiide6ciMPAIYtZ96uRj9Ncw8J4SA2Ynb5yBPhGF0393oWW?=
- =?us-ascii?Q?NGb/hjr0HqO7cZ4JdlPUEVBLsHmpXKWteJ6x3UfhNogb4/McKlbTRzJSNaDs?=
- =?us-ascii?Q?J6GCO01sfg8y8P1IIMl/olZzCD+U3h+7LfqEpYBL0jlLOtzd2wTGHVXm0mep?=
- =?us-ascii?Q?FRgJGg2TxkyY6Fa31nm/eXZUIoEiS3N7LPPPd3e8zHGoJEBhcg5qhCcD0trn?=
- =?us-ascii?Q?Dg0LaF0D5ZOHj1xM2btAyxlv3akeZSQcMcgZhUsoh72/16RaBt0VxXu2Sj6P?=
- =?us-ascii?Q?vA+rfO9HoUmIJnm1jutv1jLaiDnNVIIAcVCmRtXRi/+5z+BP6V1XT7voV7Yf?=
- =?us-ascii?Q?coTHwgs6J0OdQeb05YvYy0wZN9veDb7ZdwkuGBZOo4GDSvMTy+GpPdpLWaa1?=
- =?us-ascii?Q?L5kWxW9t88gha9CeURSkNxY6W0roVWsaaMxO25lLoypz1yPAKU6+aD14wrs3?=
- =?us-ascii?Q?tvcHs44Bmga7iP6bQkQs+tYXzQt48kPFzIfFgs4KM3Y4mvNJuSj8RhWxn1zq?=
- =?us-ascii?Q?USbG7+98zmFdekAFrt+zMniOxvQKA001xUQLTpIe8AKFeMBrovCQIyZl66G5?=
- =?us-ascii?Q?6XkrSkdI94PcQq0vqv7tQVImznvBQ9GW+4w6+q+FMCwv6/QIgWAZvv2osZdF?=
- =?us-ascii?Q?az3URy9/CraX/QT9j5X5CVr5U5tvqHPalssOXeLxqtWSob3N8TVMBH78ri1A?=
- =?us-ascii?Q?13ILW6GNdDP5qG/Nm/z8tCGMCCgOLtZAYaagivGtng9Tpq64oslZByV5MO6q?=
- =?us-ascii?Q?VLaXQ+WbMFixveXpcn6pF1aufYndNl1hcUMCKf7TKyH8j3HvuPfJw8mEfXNZ?=
- =?us-ascii?Q?4zL4qr4zCVgeYXWrkpkiYh4YoVnUACv18e/fsDN9TfPC/yVP1XznHQwc0cqC?=
- =?us-ascii?Q?SkBRSiK9uiUVinacNMJ/CbF+8LWrnlAX5QREOPhm5dq2eaP8j4PvNMLRDuP0?=
- =?us-ascii?Q?acv5bRCeF5VkAB3dYFW3EzlhFmedYYfS3qhvXHnNF0bWeqeR3PvW1lJ8JZu6?=
- =?us-ascii?Q?atxWULKX+KmB3YHDgm9I7RC0NSXCCWYICDC3MifZex3Gzdf8/kODZmrTUY8K?=
- =?us-ascii?Q?WJ1O/Y4TDUHaRNY88GFA027NvEYO4c7rG1y5vhmMHmER8OMy0Ua7C9f9alDy?=
- =?us-ascii?Q?gnWq3TbNmmGUdv83KzDshsx8JUjl1iR3zusToeTpSPMH+ju8l9g6U6Y9wJSy?=
- =?us-ascii?Q?Cv8WsOrGDivzxEeyaaYoEHvrhourUyk3iJK9XF0hhvhQo0KqUYo5V0r3EH5R?=
- =?us-ascii?Q?XWj6mD8QA/HiROYyx+wEBUrI4F1d6pJyQgc1uZIy6oQ7QBJb6QFzda4KwKqB?=
- =?us-ascii?Q?ddGagAZM7q7muY7pHSTVeSaM+ub4WB0GaH+2CiOChMXnS1cOnLNLAAx2JZ56?=
- =?us-ascii?Q?HH4I0bjPlbvhxyORM6m6m3A7fA1+eVEW2vkN3BVXtKoJdZe+8E6igUWjZSlU?=
- =?us-ascii?Q?y6Vx68h5zm53SKrjvjwwZRoVt4T6azdTUjynWo9qtml3HApkslfY0KioQuLX?=
- =?us-ascii?Q?nsRKSJiDFMIbKQgX2OxRc1n8sfu/6thKNEiWAEeptIh4NxWrxDT3uHV4JlQS?=
- =?us-ascii?Q?mBtGcG8HRKEA5Ai4KxYmE5hzBWdiWLGTzmIP6+88qGZkX+MmzdfLwdB7nmeM?=
- =?us-ascii?Q?/dB/tA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b189f72c-e5cc-4a44-a646-08d9f528956f
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 10:54:50.5504
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LG91i/ipChvLMIVznlGr5d3bZwuKA+iDJ9NTXKQUm7UijpOPuwlhMUKc0jsWCV4X2GYxG49Y9OQlWFXmDnGJ9VEpJ76LjA2Tw+te8EmJ6G0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4450
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10264 signatures=677614
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
- spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202210064
-X-Proofpoint-GUID: e7qTKJJwLw-YItpoKkFuDj-sdizu0_HM
-X-Proofpoint-ORIG-GUID: e7qTKJJwLw-YItpoKkFuDj-sdizu0_HM
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <yonglin.tan@outlook.com> <MEYP282MB237443EA389045F03FF2B48BFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+ <CAMZdPi9xN_gQRUz3C2MPoSu9O_byaHnydZm3spX3Buecb8_hng@mail.gmail.com> <MEYP282MB2374345FC80FFA7045D897FEFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+In-Reply-To: <MEYP282MB2374345FC80FFA7045D897FEFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 21 Feb 2022 11:55:07 +0100
+Message-ID: <CAMZdPi__Kf__hy4TGJ1sz=VA_PCZpKk_HPgXX8+AH3sv_8mkmg@mail.gmail.com>
+Subject: Re: [PATCH] net: wwan: To support SAHARA port for Qualcomm WWAN module.
+To:     =?UTF-8?B?6LCtIOawuOaelw==?= <yonglin.tan@outlook.com>
+Cc:     "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code dereferences "skb" after calling dev_kfree_skb().
+On Mon, 21 Feb 2022 at 10:27, =E8=B0=AD =E6=B0=B8=E6=9E=97 <yonglin.tan@out=
+look.com> wrote:
+>
+> Dear Loic,
+>
+> The Qualcomm x24&x55&x6x platform are all using SAHARA port to collect me=
+mory dump log. User can use QLOG tool to collect the whole memory dump of d=
+evice while the device entered into Dump mode. The firehose protocol is use=
+d to download FW from the host, it's different from SAHARA. MHI CH 2&3 are =
+used as SAHARA CH but firehose use 34&35 CH.
 
-Fixes: 2dc95a4d30ed ("net: Add dm9051 driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v2: Only record successful transfers
+Ah right, firehose programmer is loaded when entering EDL mode, not SBL.
 
- drivers/net/ethernet/davicom/dm9051.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> The bus driver use " MHI_CHANNEL_CONFIG_UL&DL_SBL " to initiate SAHARA CH=
+ configs.
+>
+> The code is Quectel EM1XX channel config.
+> MHI_CHANNEL_CONFIG_DL_SBL(3, "SAHARA", 32, 0),
+>
+> For example,
+> - Once the device crashed due to some reasons.
+> - The module entered into DUMP mode(SBL Stage), and changed the EE to SBL=
+.
+> - Then the host should detect the change and re-enumerate the SAHARA port=
+.
+> - Then users can use QLOG tool to collect the Device Memory LOG by SAHARA=
+ Protocol via CH 2&3.
 
-diff --git a/drivers/net/ethernet/davicom/dm9051.c b/drivers/net/ethernet/davicom/dm9051.c
-index a63d17e669a0..20cdca06d267 100644
---- a/drivers/net/ethernet/davicom/dm9051.c
-+++ b/drivers/net/ethernet/davicom/dm9051.c
-@@ -845,17 +845,19 @@ static int dm9051_loop_tx(struct board_info *db)
- 
- 	while (!skb_queue_empty(&db->txq)) {
- 		struct sk_buff *skb;
-+		unsigned int len;
- 
- 		skb = skb_dequeue(&db->txq);
- 		if (skb) {
- 			ntx++;
- 			ret = dm9051_single_tx(db, skb->data, skb->len);
-+			len = skb->len;
- 			dev_kfree_skb(skb);
- 			if (ret < 0) {
- 				db->bc.tx_err_counter++;
- 				return 0;
- 			}
--			ndev->stats.tx_bytes += skb->len;
-+			ndev->stats.tx_bytes += len;
- 			ndev->stats.tx_packets++;
- 		}
- 
--- 
-2.20.1
+OK, you should add that to the commit message.
 
+Also, instead of exposing the raw sahara protocol, can't this be
+integrated with the devcoredump framework
+(https://lwn.net/Articles/610887/)?
+
+Regards,
+Loic
