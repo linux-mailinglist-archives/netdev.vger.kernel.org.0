@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF7364BEE20
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 00:40:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20DB74BEE04
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 00:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236148AbiBUXSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 18:18:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33012 "EHLO
+        id S236183AbiBUXSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 18:18:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236051AbiBUXSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 18:18:01 -0500
+        with ESMTP id S236154AbiBUXSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 18:18:04 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865C8245AD;
-        Mon, 21 Feb 2022 15:17:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D99245BD;
+        Mon, 21 Feb 2022 15:17:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645485457; x=1677021457;
+  t=1645485461; x=1677021461;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Hxxx7U/IhkSHLnB5PbYul9lg1GjO2Izf/ptB46o3iFI=;
-  b=gmmZK8abjwwCvc5LvvB8sjTAnReXC0LHRqiXqjpUyFZgiX9oNWSQAeR8
-   hj13Up6cC2NugLzumx0ljHXsbnPKH12V0VcBWhNuW6hEVPj6BSTZICK4M
-   UQO2vg+cgXmD5jAgQP3t0JpLzi6e4USVn3KxasPmVuv3b+4wCHT8dryXZ
-   7bKF34IhHoMop/ys114yeAH7vyXEiCUf9sy0p8iQFHLzDO3JE1M2XBZmc
-   zwW4Txutssw83vePN/3eD/RxWH9iF+UgjFmg3bBYugf3TG30BJe9NBVDO
-   ExXel8rbItnnXVqYyzIqqsJ4EVH7SpfdFUKMZpWHRGIrfP85rP2wFvulK
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251530383"
+  bh=mCvpydHF1iIboEBA+Uw1DVwXJZydjDJfqmrcbQB+Qt0=;
+  b=N1U1BgoygZTPBRZWdVDXoBTFW6VgSSYMIRxermN2rX/MVjvK8DaNwNUK
+   rcJhOPVGXTx9d+5d4+wjxSArLG2nlxo9QG6OZ4GubgCse4wLZUH5pg3S+
+   66D/buX2Fcx+GjRoKXqHiD05tks2In1vrrGl256X2sN2ApitMn/wl+2we
+   pJRIsi2g5PCg+qfQFDdY1UTkjSx1M91dx2VOaEvhj3MSUjvepW6OEaZy7
+   ol7Oo6tJrWVZXJIZjgoPltmPF4w9OiJHDUMIRaoB5wGMNJ3qRqbd2Gy/A
+   w/k5DJT8RVlqAMVMF/WtDS0M8EInvFe44qQYgo2w5an0dgQNHbyGKqrGq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251530388"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251530383"
+   d="scan'208";a="251530388"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:17:37 -0800
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:17:40 -0800
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="638694418"
+   d="scan'208";a="638694432"
 Received: from lab-ah.igk.intel.com ([10.91.215.196])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:17:34 -0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:17:37 -0800
 From:   Andrzej Hajda <andrzej.hajda@intel.com>
 To:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, netdev <netdev@vger.kernel.org>
@@ -47,10 +47,12 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Chris Wilson <chris.p.wilson@intel.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v2 02/11] ref_tracker: add a count of untracked references
-Date:   Tue, 22 Feb 2022 00:16:48 +0100
-Message-Id: <20220221231705.1481059-7-andrzej.hajda@intel.com>
+Subject: [PATCH v2 03/11] [DO NOT MERGE] ref_tracker: remove filter_irq_stacks() call
+Date:   Tue, 22 Feb 2022 00:16:49 +0100
+Message-Id: <20220221231705.1481059-8-andrzej.hajda@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220221231705.1481059-1-andrzej.hajda@intel.com>
 References: <20220221231705.1481059-1-andrzej.hajda@intel.com>
@@ -69,85 +71,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-We are still chasing a netdev refcount imbalance, and we suspect
-we have one rogue dev_put() that is consuming a reference taken
-from a dev_hold_track()
-
-To detect this case, allow ref_tracker_alloc() and ref_tracker_free()
-to be called with a NULL @trackerp parameter, and use a dedicated
-refcount_t just for them.
+After commit e94006608949 ("lib/stackdepot: always do filter_irq_stacks()
+in stack_depot_save()") it became unnecessary to filter the stack
+before calling stack_depot_save().
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
 ---
- include/linux/ref_tracker.h |  2 ++
- lib/ref_tracker.c           | 12 +++++++++++-
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ lib/ref_tracker.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
-index a443abda937d8..9ca353ab712b5 100644
---- a/include/linux/ref_tracker.h
-+++ b/include/linux/ref_tracker.h
-@@ -13,6 +13,7 @@ struct ref_tracker_dir {
- 	spinlock_t		lock;
- 	unsigned int		quarantine_avail;
- 	refcount_t		untracked;
-+	refcount_t		no_tracker;
- 	bool			dead;
- 	struct list_head	list; /* List of active trackers */
- 	struct list_head	quarantine; /* List of dead trackers */
-@@ -29,6 +30,7 @@ static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
- 	dir->quarantine_avail = quarantine_count;
- 	dir->dead = false;
- 	refcount_set(&dir->untracked, 1);
-+	refcount_set(&dir->no_tracker, 1);
- 	stack_depot_init();
- }
- 
 diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-index 32ff6bd497f8e..9c0c2e09df666 100644
+index 9c0c2e09df666..dc7b14aa3431e 100644
 --- a/lib/ref_tracker.c
 +++ b/lib/ref_tracker.c
-@@ -38,6 +38,7 @@ void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- 	spin_unlock_irqrestore(&dir->lock, flags);
- 	WARN_ON_ONCE(leak);
- 	WARN_ON_ONCE(refcount_read(&dir->untracked) != 1);
-+	WARN_ON_ONCE(refcount_read(&dir->no_tracker) != 1);
- }
- EXPORT_SYMBOL(ref_tracker_dir_exit);
+@@ -89,7 +89,6 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
+ 		return -ENOMEM;
+ 	}
+ 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+-	nr_entries = filter_irq_stacks(entries, nr_entries);
+ 	tracker->alloc_stack_handle = stack_depot_save(entries, nr_entries, gfp);
  
-@@ -75,6 +76,10 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 
- 	WARN_ON_ONCE(dir->dead);
- 
-+	if (!trackerp) {
-+		refcount_inc(&dir->no_tracker);
-+		return 0;
-+	}
- 	if (gfp & __GFP_DIRECT_RECLAIM)
- 		gfp_mask |= __GFP_NOFAIL;
- 	*trackerp = tracker = kzalloc(sizeof(*tracker), gfp_mask);
-@@ -98,13 +103,18 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
- 		     struct ref_tracker **trackerp)
- {
- 	unsigned long entries[REF_TRACKER_STACK_ENTRIES];
--	struct ref_tracker *tracker = *trackerp;
- 	depot_stack_handle_t stack_handle;
-+	struct ref_tracker *tracker;
- 	unsigned int nr_entries;
- 	unsigned long flags;
- 
- 	WARN_ON_ONCE(dir->dead);
- 
-+	if (!trackerp) {
-+		refcount_dec(&dir->no_tracker);
-+		return 0;
-+	}
-+	tracker = *trackerp;
- 	if (!tracker) {
- 		refcount_dec(&dir->untracked);
+ 	spin_lock_irqsave(&dir->lock, flags);
+@@ -120,7 +119,6 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
  		return -EEXIST;
+ 	}
+ 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
+-	nr_entries = filter_irq_stacks(entries, nr_entries);
+ 	stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
+ 
+ 	spin_lock_irqsave(&dir->lock, flags);
 -- 
 2.25.1
 
