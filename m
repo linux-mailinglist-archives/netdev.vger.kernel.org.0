@@ -2,91 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3D34BEA7B
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B424BEAE2
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:37:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbiBUSab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230310AbiBUSab (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 21 Feb 2022 13:30:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49304 "EHLO
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231688AbiBUS2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:28:33 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A44117A;
-        Mon, 21 Feb 2022 10:27:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645468040; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=I2nhWluehVpIg7LYRGj0lb+HtX6yuKYu20+HSz62h32exN7yPEiJDQn8btAI11cyM5XmiYUZthdipTX49sSJnVqXsXK3hvTrh25OpG7vTWSkW68Y2k+gy6PllvTG1Uc303TaXZT7hWlZrmChmLa5muOpbeH0Tos7bi6vUTCBe3U=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645468040; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=lsUTstuCLZiXo8cyZqtWGt1ha64pvUvvNjWGO5Xlg8k=; 
-        b=j/qndHkpJz3g23MiJ2RQqOTup8U4Nbm1ZsuiDzs9z6Cggx1DOFtM3usA3n/oP/5aUaAGHFgXuAzd915/28De3m5K9wSUdg/0L9wDXcc0lOtLnBmaljZcmNjiyaK9nUM9wzCbym5yrmDxzSiihgq74wWox1NzMDUQpGBHz2D041k=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645468040;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=lsUTstuCLZiXo8cyZqtWGt1ha64pvUvvNjWGO5Xlg8k=;
-        b=S7s2+BgP6VRv8X/YaNCQeF+h2DvmTXQeaHMZyBwzzeNAoZYo722ahsD4VjPBiYPA
-        OnbPTx6Pun2OdKdOFs0xQD3BxTOHMXw1jxf3/96lSSJi2rhTVMZ+0RQlrP3xmtCerQJ
-        3F3zbJiZ+0C5ZdLUFg+PofrziETk0It2Vdfmqkiw=
-Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
-        with SMTPS id 1645468038663423.2394169010746; Mon, 21 Feb 2022 10:27:18 -0800 (PST)
-Date:   Mon, 21 Feb 2022 23:57:11 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     syzbot <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [syzbot] INFO: task hung in vhost_work_dev_flush
-Message-ID: <YhPZf7qHeOWHgTHe@anirudhrb.com>
-References: <00000000000057702a05d8532b18@google.com>
+        with ESMTP id S232418AbiBUS3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:29:50 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0CECDF
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:28:58 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id j12so36127131ybh.8
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:28:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d9PRkAnu4rWgkNf7FMpG/2aRjthJJP/oay+IMr9qlso=;
+        b=h3a9qey6Rf4dTVze8rQGdhclm6vibCyCiZrqdTsDvKU/a29mtdlDJGjg/a9KrJb/+9
+         Sldi+zsLepOlitgV6isaU5ca26ImxtLydIdtGTmOdbuf6pualqJLDqH6+ewJDOHK6BPY
+         5ljFUAV/8LiixoYIqanmKETtU84mdJmsdjyWaGQIzFsSpFjV/E5rZMaZxksisRI+xbhh
+         CHLUJKPt9RY3JrXeoUTek88KiZKH/+sL8d8eeFKS99LnNwKF+uE46LXEbVPmtLhiMNYU
+         5CwXu9YS9qgITWH6zwn5fl0WWmaqtpbpW3slNbWiNS4kCQBtBav/Y8znw4NCmIciPgpC
+         SdlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d9PRkAnu4rWgkNf7FMpG/2aRjthJJP/oay+IMr9qlso=;
+        b=uOVShS4xhUCNQ0vcU09cscv8K03A+qBjRcesBphEYydMl74tpYdfu+MkeB2yjF9Nn8
+         l6d/pobHV+yjSsQ37k0E2kMDtxZ3W/VsuhWBuG8yUxqakxIr0UGDkUkCgZcZ7NnvQBQ4
+         4nFMs5Z4vB7e29CceGQKHi3Do84E6NKU3Lv6dfnFrfsmISSeIIhEajF96Hf0a3iR1Tgu
+         QEEEaotNdLdMQYuP3J4M6E+qw42mZxy76XK8RXtEh9TGbuuMf+M9td7ZSnojMU9R50Xb
+         f8n++BQIhtXwwHfmEixj7LLV317TekMfoug/sK7OL56dzM+NS8Nsqsj5laS9PKZ/AToM
+         KhTw==
+X-Gm-Message-State: AOAM533tlyIMn0qNQGGl6LgK2ft1zQ9/kNnNbBNC/vXu+IhSGMV+iPmm
+        TIJZX3tCzY4qE7flUc1zAySO+EhDc3znj99qzmZrUw==
+X-Google-Smtp-Source: ABdhPJwNsokvzVCETZiA+pXCIHC4BZaoSZMPWKx3mOto+E3tTumxE6L4EmjC4Z+RCNEwPML3MlNIPsNrfUTzH1bspDQ=
+X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr19355803ybq.407.1645468137290;
+ Mon, 21 Feb 2022 10:28:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000057702a05d8532b18@google.com>
-X-ZohoMailClient: External
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+ <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com> <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
+ <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+ <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
+ <CANn89iJ2tmou5RNqmL22EHf+D2dptJPgpOVufSFEyoeJujw1cw@mail.gmail.com> <YhPZNLWkxH21uDAq@salvia>
+In-Reply-To: <YhPZNLWkxH21uDAq@salvia>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 21 Feb 2022 10:28:46 -0800
+Message-ID: <CANn89i+72dv1AaeE1ThkceMVBHGCh3P49hOwuCkMSb1Y6U=hmg@mail.gmail.com>
+Subject: Re: Linux 5.17-rc5
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Woody Suwalski <wsuwalski@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+On Mon, Feb 21, 2022 at 10:25 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>
+> On Mon, Feb 21, 2022 at 10:21:16AM -0800, Eric Dumazet wrote:
+> > On Mon, Feb 21, 2022 at 10:08 AM Linus Torvalds
+> > <torvalds@linux-foundation.org> wrote:
+> > >
+> > > On Mon, Feb 21, 2022 at 10:02 AM Eric Dumazet <edumazet@google.com> wrote:
+> > > >
+> > > > I am pretty sure Pablo fixed this one week ago.
+> > >
+> > > .. looks about right. Apart from the "it was never sent to me, so -rc5
+> > > ended up showing the problem" part.
+> > >
+> >
+> > Indeed, I personally these kinds of trivial fixes should be sent right away,
+> > especially considering two bots complained about it.
+>
+> I did not consider this so important, that was my fault.
 
-diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-index 670d56c879e5..fef9daa9f09f 100644
---- a/drivers/vhost/iotlb.c
-+++ b/drivers/vhost/iotlb.c
-@@ -53,8 +53,13 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
- 			      void *opaque)
- {
- 	struct vhost_iotlb_map *map;
-+	u64 size = last - start + 1;
- 
--	if (last < start)
-+	pr_info("vhost_iotlb_add_range: iotlb=%p, start=%llu, last=%llx, addr=%llu\n",
-+			iotlb, start, last, addr);
-+
-+	// size can overflow to 0 when start is 0 and last is (2^64 - 1).
-+	if (last < start || size == 0)
- 		return -EFAULT;
- 
- 	if (iotlb->limit &&
-@@ -69,7 +74,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
- 		return -ENOMEM;
- 
- 	map->start = start;
--	map->size = last - start + 1;
-+	map->size = size;
- 	map->last = last;
- 	map->addr = addr;
- 	map->perm = perm;
+Well, I was the one adding this compile error ;)
+
+Testing CONFIG_IPV6=n builds is not my top priority.
