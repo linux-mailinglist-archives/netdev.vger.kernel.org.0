@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 707C04BE7DF
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:04:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D13F4BE984
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 19:07:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380845AbiBUQjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 11:39:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49570 "EHLO
+        id S1380820AbiBUQjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 11:39:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380777AbiBUQjJ (ORCPT
+        with ESMTP id S1380785AbiBUQjJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 11:39:09 -0500
 Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E31220EB;
-        Mon, 21 Feb 2022 08:38:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9482E22BCA;
+        Mon, 21 Feb 2022 08:38:36 -0800 (PST)
 Received: from relay9-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::229])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 8FF28D22C7;
-        Mon, 21 Feb 2022 16:29:12 +0000 (UTC)
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id E3897D2381;
+        Mon, 21 Feb 2022 16:29:13 +0000 (UTC)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B5A9EFF810;
-        Mon, 21 Feb 2022 16:29:06 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id DFC37FF811;
+        Mon, 21 Feb 2022 16:29:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645460948;
+        t=1645460950;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jJIjX5kyEXdZneeW1iQPYNI42BljbOS0DFhi+yxomik=;
-        b=e7Zz/d7hE6pk2zoFlLt7/7CuzBYoP3scaT5vrEia0Xsdrk1dv4KzrT9W77+NqfOuvRw38c
-        2QDIN+f7ZFCLVQD1kZEHU5bbRJcJcY8xbvIJaMT3ZhMrASoKaBfxpw6IgOTOovkI4kDinb
-        hA8w0GaeRZjpO3obEVtzzZdaz0Zb28anlFeMczIZECUShgcwgKq70HwtQNzp/hhgAPpQbe
-        y6quOmYO4tR+fpdYZXgN2oZFMyB6lguQ214RCBre46U41d80ZPkKxY1DMUFgqMP9WeRqwO
-        mJ/+tk3LzyCpEDofqvon0oKg94UBFWvnnrgj5uVWnhWK4eF/QFKWiEHeyzhUrQ==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xXIueXWvKxX/LWoZoq8jZVCI0+VYYMkfxQec0Aoej8w=;
+        b=k9pOzn/E8KfAwsEXXS7qTBi2mXEUtZG4qKbix+L1jspzTevhd5LWGxEAv85ivZ7qWQhUei
+        WyOsKvz8JiRFtKGrD/OXRZXhT5fHPxjeJ1+49RdQaM5W0hVZBeyyQ1O2PpwgDBcv8LCmuk
+        tZtwKY1gzZWnRWWoogwQaANIgQVzRp7KGVMUG4LGmLgTjb/RJAy7XpS0GX+5alDLrGqqw4
+        Aqq/lR+k4CPkwel6dkE0G54BIxePw/YD+jg0gClUw+mWilAcyi4SuL1Uq4SSIfzryj8Zjm
+        zIsgBH18h658z2Cq598xFuSu9n5EVLEibMm76swdi72qjnldQJKkb191qY0o4A==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Daniel Scally <djrscally@gmail.com>,
@@ -49,10 +50,12 @@ Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Date:   Mon, 21 Feb 2022 17:26:42 +0100
-Message-Id: <20220221162652.103834-1-clement.leger@bootlin.com>
+Subject: [RFC 01/10] property: add fwnode_match_node()
+Date:   Mon, 21 Feb 2022 17:26:43 +0100
+Message-Id: <20220221162652.103834-2-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220221162652.103834-1-clement.leger@bootlin.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -66,180 +69,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The purpose of this work is to allow i2c muxes and adapters to be
-usable with devices that are described with software_node. A solution
-for this is to use the fwnode API which works with both device-tree,
-ACPI and software node. In this series, functions are added to retrieve
-i2c_adapter from fwnode and to create new mux adapters from fwnode.
+Add a function equivalent to of_match_node() which is usable for fwnode
+support. Matching is based on the compatible property and it returns
+the best matches for the node according to the compatible list
+ordering.
 
-This series is part of a larger changeset that touches multiple
-subsystems. series will be sent separately for each subsystems since
-the amount of modified file is quite large. The following cover letter
-gives an overview of this work:
-
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
+ drivers/base/property.c  | 23 +++++++++++++++++++++++
+ include/linux/property.h |  3 +++
+ 2 files changed, 26 insertions(+)
 
-The LAN966X SoC can either run it's own Linux system or be plugged in
-a PCIe slot as a PCIe switch. When running with a Linux system, a
-device-tree description is used to describe the system. However, when
-plugged in a PCIe slot (on a x86), there is no device-tree support and
-the peripherals that are present must be described in some other way.
-
-Reusing the existing drivers is of course mandatory and they should
-also be able to work without device-tree description. We decided to
-describe this card using software nodes and a MFD device. Indeed, the
-MFD subsystem allows to describe such systems using struct mfd_cells
-and mfd_add_devices(). This support also allows to attach a
-software_node description which might be used by fwnode API in drivers
-and subsystems.
-
-We thought about adding CONFIG_OF to x86 and potentially describe this
-card using device-tree overlays but it introduce other problems that
-also seems difficult to solve (overlay loading without base
-device-tree, fixup of IRQs, adresses, and so on) and CONFIG_OF is not
-often enabled on x86 to say the least.
-
-TLDR: I know the series touches a lot of different files and has big
-implications, but it turns out software_nodes looks the "best" way of
-achieving this goal and has the advantage of converting some subsystems
-to be node agnostics, also allowing some ACPI factorization. Criticism
-is of course welcome as I might have overlooked something way simpler !
-
----
-
-This series introduce a number of changes in multiple subsystems to
-allow registering and using devices that are described with a
-software_node description attached to a mfd_cell, making them usable
-with the fwnode API. It was needed to modify many subsystem where
-CONFIG_OF was tightly integrated through the use of of_xlate()
-functions and other of_* calls. New calls have been added to use fwnode
-API and thus be usable with a wider range of nodes. Functions that are
-used to get the devices (pinctrl_get, clk_get and so on) also needed
-to be changed to use the fwnode API internally.
-
-For instance, the clk framework has been modified to add a
-fwnode_xlate() callback and a new named fwnode_clk_add_hw_provider()
-has been added. This function will register a clock using
-fwnode_xlate() callback. Note that since the fwnode API is compatible
-with devices that have a of_node member set, it will still be possible
-to use the driver and get the clocks with CONFIG_OF enabled
-configurations.
-
-In some subsystems, it was possible to keep OF related function by
-wrapping the fwnode ones. It is not yet sure if both support
-(device-tree and fwnode) should still continue to coexists. For instance
-if fwnode_xlate() and of_xlate() should remain since the fwnode version
-also supports device-tree. Removing of_xlate() would of course require
-to modify all drivers that uses it.
-
-Here is an excerpt of the lan966x description when used as a PCIe card.
-The complete description is visible at [2]. This part only describe the
-flexcom controller and the fixed-clock that is used as an input clock.
-
-static const struct property_entry ddr_clk_props[] = {
-        PROPERTY_ENTRY_U32("clock-frequency", 30000000),
-        PROPERTY_ENTRY_U32("#clock-cells", 0),
-        {}
-};
-
-static const struct software_node ddr_clk_node = {
-        .name = "ddr_clk",
-        .properties = ddr_clk_props,
-};
-
-static const struct property_entry lan966x_flexcom_props[] = {
-        PROPERTY_ENTRY_U32("atmel,flexcom-mode", ATMEL_FLEXCOM_MODE_TWI),
-        PROPERTY_ENTRY_REF("clocks", &ddr_clk_node),
-        {}
-};
-
-static const struct software_node lan966x_flexcom_node = {
-        .name = "lan966x-flexcom",
-        .properties = lan966x_flexcom_props,
-};
-
-...
-
-static struct resource lan966x_flexcom_res[] = {
-        [0] = {
-                .flags = IORESOURCE_MEM,
-                .start = LAN966X_DEV_ADDR(FLEXCOM_0_FLEXCOM_REG),
-                .end = LAN966X_DEV_ADDR(FLEXCOM_0_FLEXCOM_REG),
-        },
-};
-
-...
-
-static struct mfd_cell lan966x_pci_mfd_cells[] = {
-        ...
-        [LAN966X_DEV_DDR_CLK] = {
-                .name = "of_fixed_clk",
-                .swnode = &ddr_clk_node,
-        },
-        [LAN966X_DEV_FLEXCOM] = {
-                .name = "atmel_flexcom",
-                .num_resources = ARRAY_SIZE(lan966x_flexcom_res),
-                .resources = lan966x_flexcom_res,
-                .swnode = &lan966x_flexcom_node,
-        },
-        ...
-},
-
-And finally registered using:
-
-ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO,
-                           lan966x_pci_mfd_cells,
-                           ARRAY_SIZE(lan966x_pci_mfd_cells), pci_base, irq_base,
-                           irq_domain);
-
-With the modifications that have been made on this tree, it is now
-possible to probe such description using existing platform drivers,
-providing that they have been modified a bit to retrieve properties
-using fwnode API and using the fwnode_xlate() callback instead of
-of_xlate().
-
-This series has been tested on a x86 kernel build without CONFIG_OF.
-Another kernel was also built with COMPILE_TEST and CONFIG_OF support
-to build as most drivers as possible. It was also tested on a sparx5
-arm64 with CONFIG_OF. However, it was not tested with an ACPI
-description evolved enough to validate all the changes.
-
-A branch containing all theses modifications can be seen at [1] along
-with a PCIe driver [2] which describes the card using software nodes.
-Modifications that are on this branch are not completely finished (ie,
-subsystems modifications for fwnode have not been factorized with OF
-for all of them) in absence of feedback on the beginning of this work
-from the community.
-
-[1] https://github.com/clementleger/linux/tree/fwnode_support
-[2] https://github.com/clementleger/linux/blob/fwnode_support/drivers/mfd/lan966x_pci_mfd.c
-
-Clément Léger (10):
-  property: add fwnode_match_node()
-  property: add fwnode_get_match_data()
-  base: swnode: use fwnode_get_match_data()
-  property: add a callback parameter to fwnode_property_match_string()
-  property: add fwnode_property_read_string_index()
-  i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
-  i2c: of: use fwnode_get_i2c_adapter_by_node()
-  i2c: mux: pinctrl: remove CONFIG_OF dependency and use fwnode API
-  i2c: mux: add support for fwnode
-  net: sfp: add support for fwnode
-
- drivers/base/property.c             | 133 ++++++++++++++++++++++++++--
- drivers/base/swnode.c               |   1 +
- drivers/i2c/Makefile                |   1 +
- drivers/i2c/i2c-core-fwnode.c       |  40 +++++++++
- drivers/i2c/i2c-core-of.c           |  30 -------
- drivers/i2c/i2c-mux.c               |  39 ++++----
- drivers/i2c/muxes/Kconfig           |   1 -
- drivers/i2c/muxes/i2c-mux-pinctrl.c |  21 ++---
- drivers/net/phy/sfp.c               |  44 +++------
- include/linux/i2c.h                 |   7 +-
- include/linux/property.h            |   9 ++
- 11 files changed, 225 insertions(+), 101 deletions(-)
- create mode 100644 drivers/i2c/i2c-core-fwnode.c
-
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index e6497f6877ee..434c2713fd99 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1158,6 +1158,29 @@ int fwnode_graph_parse_endpoint(const struct fwnode_handle *fwnode,
+ }
+ EXPORT_SYMBOL(fwnode_graph_parse_endpoint);
+ 
++const struct of_device_id *fwnode_match_node(const struct fwnode_handle *fwnode,
++					     const struct of_device_id *matches)
++{
++	int index;
++	const struct of_device_id *best_match = NULL;
++	int best_index = INT_MAX;
++
++	if (!matches)
++		return NULL;
++
++	for (; matches->name[0] || matches->type[0] || matches->compatible[0]; matches++) {
++		index = fwnode_property_match_string(fwnode, "compatible",
++						     matches->compatible);
++		if (index >= 0 && index < best_index) {
++			best_match = matches;
++			best_index = index;
++		}
++	}
++
++	return best_match;
++}
++EXPORT_SYMBOL(fwnode_match_node);
++
+ const void *device_get_match_data(struct device *dev)
+ {
+ 	return fwnode_call_ptr_op(dev_fwnode(dev), device_get_match_data, dev);
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 7399a0b45f98..978ecf6be34e 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -446,6 +446,9 @@ static inline void *device_connection_find_match(struct device *dev,
+ 	return fwnode_connection_find_match(dev_fwnode(dev), con_id, data, match);
+ }
+ 
++const struct of_device_id *fwnode_match_node(const struct fwnode_handle *fwnode,
++					     const struct of_device_id *matches);
++
+ /* -------------------------------------------------------------------------- */
+ /* Software fwnode support - when HW description is incomplete or missing */
+ 
 -- 
 2.34.1
 
