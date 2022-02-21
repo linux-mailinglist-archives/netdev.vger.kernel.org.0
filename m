@@ -2,89 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E614BDE80
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 122DA4BDC43
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 18:41:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378006AbiBUOg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 09:36:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46974 "EHLO
+        id S1378063AbiBUOhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 09:37:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377884AbiBUOfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 09:35:50 -0500
-Received: from mx.tkos.co.il (guitar.tcltek.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2F01C116;
-        Mon, 21 Feb 2022 06:35:26 -0800 (PST)
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id EBA2F440F4B;
-        Mon, 21 Feb 2022 16:34:50 +0200 (IST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1645454091;
-        bh=8Yo/rDOE+4o1/9eoH/MnPevjHwozuDlo2GnwOqB7MmI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NdB14XKWAaLzWE8tbZZn3/N4aBXMUw6ftC1P0+k7dhaZv5qH3SNN6CC29N/35ZtVQ
-         W76PKfv+3I1oup2BdznTUuC6sKh33uV/eSiV0nvoGBZNQrcvz4XhuRucRUgy/5/ob8
-         SrMm1XeKI5cOiSe3kXIDX6pFFuovK3omvw17Tc9NFgN48IkFIV5qkBOJfArFqSvMo0
-         t91MWA30Dqo7NfS+LjRR4i1RBLgOeTWxjoDslgVTj0SFb2wN9KoEam3OsmmZfXOMhw
-         LL+tgf/uauWlJHVTOIyVvBwPhpZC8C4zk6IhMFFGAKe7Q/4le1DSNHHweji2d7ulAv
-         QVmeqBxf95W9g==
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Robert Marko <robert.marko@sartura.hr>
-Cc:     Baruch Siach <baruch.siach@siklu.com>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH 2/2] arm64: dts: qcom: ipq6018: Add mdio bus description
-Date:   Mon, 21 Feb 2022 16:33:22 +0200
-Message-Id: <5e7e06e0cb189bab4586646470894bbda572785d.1645454002.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <a4b1ad7b15c13f368b637efdb903da143b830a88.1645454002.git.baruch@tkos.co.il>
-References: <a4b1ad7b15c13f368b637efdb903da143b830a88.1645454002.git.baruch@tkos.co.il>
+        with ESMTP id S1350453AbiBUOha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 09:37:30 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461141FA42
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 06:37:07 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id y9-20020a927d09000000b002c24b428ff4so1088197ilc.18
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 06:37:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=UXuZuAFf06AjNDv96AIjaTSOnvpwB56946KWBbv5zI8=;
+        b=ShRncO+EjPxiB2O5toyMe2DuPPz2zdQ0y3R0/tWUylPR51syM6Q6FeE0KaunlUMgPt
+         xxrYEQwSHZ9WpXgyNhUxiGwx9SrcAHfZwjvvVo7euhtWTOK8BMKzlLp6PKcSIlgr0vdg
+         G2g5tHHfYn2uP3jvRgSEYYC+8cTqxmfcvX+bA7uJ9GgFgnqDMcQpAq1wb4vaWFtxqAR0
+         Q1xYUuEHRqVxu5iQ8mTMKGEo4wK1L17hoH242EEa5Y5cZ1yeOnLKV4ijjtrFU5s89t0t
+         6RUor2cp2fBfTWLOHcBawETJH8sJgvFdYNz/c8d3NUGvaiFiTWbRMCJCiQqVsuyN4o/4
+         KyZg==
+X-Gm-Message-State: AOAM533U/OzXljTfQtpRuByvtk9ssZd9H3K9NNdNtVwLHO2w8sHoBBg1
+        +vvjwy000WWtsR40cOzBy7RCS3adAm8ePpqsXxk2W78b3lfI
+X-Google-Smtp-Source: ABdhPJxI9n7981umWgxAkYi8nKTFYbbnjwZVOUXk22WmatR+LG0H0VtkRrDs5wSXcX4+ImWNsFu8NNEDe6+uhDX1c+HlQGRQyJSt
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:1d86:b0:2bd:ef9f:cfa6 with SMTP id
+ h6-20020a056e021d8600b002bdef9fcfa6mr16231349ila.314.1645454226686; Mon, 21
+ Feb 2022 06:37:06 -0800 (PST)
+Date:   Mon, 21 Feb 2022 06:37:06 -0800
+In-Reply-To: <CAGxU2F4nGWxG0wymrDZzd8Hwhm2=8syuEB3fLMd+t7bbN7qWrQ@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ad0c4005d8882aa8@google.com>
+Subject: Re: [syzbot] INFO: task hung in vhost_work_dev_flush
+From:   syzbot <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com>
+To:     jasowang@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, sgarzare@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Baruch Siach <baruch.siach@siklu.com>
+Hello,
 
-The IPQ60xx has the same MDIO bug block as IPQ4019. Add IO range and
-clock resources description.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
----
- arch/arm64/boot/dts/qcom/ipq6018.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-index 5eb7dc9cc231..093011d18ca6 100644
---- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-@@ -635,6 +635,16 @@ qrtr_requests {
- 			};
- 		};
- 
-+		mdio: mdio@90000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "qcom,ipq6018-mdio", "qcom,ipq4019-mdio";
-+			reg = <0x0 0x90000 0x0 0x64>;
-+			clocks = <&gcc GCC_MDIO_AHB_CLK>;
-+			clock-names = "gcc_mdio_ahb_clk";
-+			status = "disabled";
-+		};
-+
- 		qusb_phy_1: qusb@59000 {
- 			compatible = "qcom,ipq6018-qusb2-phy";
- 			reg = <0x0 0x059000 0x0 0x180>;
--- 
-2.34.1
+Tested on:
 
+commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+dashboard link: https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1502488e700000
+
+Note: testing is done by a robot and is best-effort only.
