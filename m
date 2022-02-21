@@ -2,119 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6FB04BEA71
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:36:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB2574BEA77
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 20:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbiBUSOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 13:14:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41724 "EHLO
+        id S231560AbiBUSO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 13:14:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232294AbiBUSMe (ORCPT
+        with ESMTP id S231909AbiBUSMe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 13:12:34 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B56E195;
-        Mon, 21 Feb 2022 10:03:31 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645466599; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=YZyMF51P4+/S3dlgHlVUpxcI7aWblCY2sMq8Mn+tA5JO5mh2/dGB1qSkvIywCFZMGWxNADVWG3JvceJWo0j+8DnPkt+j7/d35uztkjl9wjpIxh+ucPTAl/0dwHmt02PiaSqHXZkWlXmlSrnaP9egmkFqAdSN/rSxunRFP5K6acQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645466599; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=fsIUXYehvEEwhdbyTVnwdNs58dADoiqa7FrNZpH5MvQ=; 
-        b=NvDSgUrgG2JK77anNLKyUhkXHdKaC5MSGK1LjlVJNAnX5Jsbw6nmpyNvN6KfcDUM2VMW6N9R9vG+/YOplUKG/kTA4BtA1JZXTrvNHiztsWiWwXGA3sXBTApJnJCNXkgaYF2kKSiP1zheqAuAmUSXEKYqvjJlkILzmbKoFeE3Jxk=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645466599;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=fsIUXYehvEEwhdbyTVnwdNs58dADoiqa7FrNZpH5MvQ=;
-        b=pIbnLjTv5NJg42fxoUE97UNJyrtYslgTpEEwhf8FdicVjVcQBYZsqyxvEUboafkZ
-        +VGYCbnfFkHHKrPiu0l0pSOhitli54K1wStQJTP0RNkgCZWmc6Ak+xTpQ5S0zM6dSg7
-        sFjN+o6xvbtIPIpq2CvLUxXU6P1j5MMzaqloFxPY=
-Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
-        with SMTPS id 1645466598393587.852076311628; Mon, 21 Feb 2022 10:03:18 -0800 (PST)
-Date:   Mon, 21 Feb 2022 23:33:11 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Mike Christie <michael.christie@oracle.com>,
-        Jason Wang <jasowang@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        kvm <kvm@vger.kernel.org>, Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop()
- while releasing
-Message-ID: <YhPT37ETuSfmxr5G@anirudhrb.com>
-References: <20220221114916.107045-1-sgarzare@redhat.com>
- <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
- <YhO6bwu7iDtUFQGj@anirudhrb.com>
- <20220221164420.cnhs6sgxizc6tcok@sgarzare-redhat>
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F130281
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:04:01 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id p20so7463348ljo.0
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 10:04:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+O4j0r4gRZpPCC8vALOAdAGm1/r/gDtTHQV3KxQb75o=;
+        b=hMDjfRGCkPpKr/qoVL2ISwgEhL7XHbwSHkuOVbOkfEvQIItZIMyqkvVY3oNaShng6t
+         DtKhIIfplZEczrJLSGiT0Q4+NDlhYkUlvmBfc9SnIDxxeBVaWYoeMEWBJNURAH74RBXG
+         KdSDV4oAqK1Nt4ost+MoqCzUAJkqta0+exQVM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+O4j0r4gRZpPCC8vALOAdAGm1/r/gDtTHQV3KxQb75o=;
+        b=ZbQNlinaiUzj/gwXivDIPm+IaJs17WSh8htiB5eIvBvH1t7h7j26XP0Q5+kSmtMBZ/
+         lfbqxOKiPCFacPBuymkuMWCSpGlM5dp+s7yPI2L9DcY9vpqEMbz+rI2LssvZvvg5K9gV
+         qAVzzH5BFRG0+wldi3FN9kNPDk6dAoJyWnpkFgf2TzBS5ljduQmlMBeu1lJ0e8ruVwPw
+         tb/heWwRizal1DP1T/YjhXFar24oSulxfyjLSCfF0q/n2dDF3zxYYvyHwArINDoRskvS
+         Sw2vwVzYAOpeWUJ128owODH21y7cUdzY1MA676pfQveZwotn0cQM3xs54nZUHH3Mxl/P
+         6ixQ==
+X-Gm-Message-State: AOAM532AtP7Txw/b3VENKZW3BeyEwqa4GA5g/f0qCcd8Sqgr/rnjUHEU
+        JZrVGMZDt5iqKHhnEbMr7SJSLw==
+X-Google-Smtp-Source: ABdhPJy0DjD64G+W06eKaFMzPMV8XzVyWeWdSC363fNMhbt/ShgJf0U2HYmm+FnTMBu4YzHlloB/5g==
+X-Received: by 2002:a2e:8681:0:b0:246:3f2f:20d with SMTP id l1-20020a2e8681000000b002463f2f020dmr4358540lji.321.1645466639800;
+        Mon, 21 Feb 2022 10:03:59 -0800 (PST)
+Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id o12sm1172961lfo.69.2022.02.21.10.03.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 10:03:59 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: [PATCH bpf-next] selftests/bpf: Fix implementation-defined behavior in sk_lookup test
+Date:   Mon, 21 Feb 2022 19:03:58 +0100
+Message-Id: <20220221180358.169101-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221164420.cnhs6sgxizc6tcok@sgarzare-redhat>
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:44:20PM +0100, Stefano Garzarella wrote:
-> On Mon, Feb 21, 2022 at 09:44:39PM +0530, Anirudh Rayabharam wrote:
-> > On Mon, Feb 21, 2022 at 02:59:30PM +0100, Stefano Garzarella wrote:
-> > > On Mon, Feb 21, 2022 at 12:49 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> > > >
-> > > > vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
-> > > > ownership. It expects current->mm to be valid.
-> > > >
-> > > > vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
-> > > > the user has not done close(), so when we are in do_exit(). In this
-> > > > case current->mm is invalid and we're releasing the device, so we
-> > > > should clean it anyway.
-> > > >
-> > > > Let's check the owner only when vhost_vsock_stop() is called
-> > > > by an ioctl.
-> > > >
-> > > > Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-> > > > Cc: stable@vger.kernel.org
-> > > > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
-> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > > ---
-> > > >  drivers/vhost/vsock.c | 14 ++++++++------
-> > > >  1 file changed, 8 insertions(+), 6 deletions(-)
-> > > 
-> > > Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > 
-> > I don't think this patch fixes "INFO: task hung in vhost_work_dev_flush"
-> > even though syzbot says so. I am able to reproduce the issue locally
-> > even with this patch applied.
-> 
-> Are you using the sysbot reproducer or another test?
-> In that case, can you share it?
+Shifting 16-bit type by 16 bits is implementation-defined for BPF programs.
+Don't rely on it in case it is causing the test failures we are seeing on
+s390x z15 target.
 
-I am using the syzbot reproducer.
+Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load from remote_port in bpf_sk_lookup")
+Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
 
-> 
-> From the stack trace it seemed to me that the worker accesses a zone that
-> has been cleaned (iotlb), so it is invalid and fails.
+I don't have a dev env for s390x/z15 set up yet, so can't definitely confirm the fix.
+That said, it seems worth fixing either way.
 
-Would the thread hang in that case? How?
+ tools/testing/selftests/bpf/progs/test_sk_lookup.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+index bf5b7caefdd0..7d47276a8964 100644
+--- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
++++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+@@ -65,6 +65,7 @@ static const __u32 KEY_SERVER_A = SERVER_A;
+ static const __u32 KEY_SERVER_B = SERVER_B;
+ 
+ static const __u16 SRC_PORT = bpf_htons(8008);
++static const __u32 SRC_PORT_U32 = bpf_htonl(8008U << 16);
+ static const __u32 SRC_IP4 = IP4(127, 0, 0, 2);
+ static const __u32 SRC_IP6[] = IP6(0xfd000000, 0x0, 0x0, 0x00000002);
+ 
+@@ -421,7 +422,7 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
+ 
+ 	/* Load from remote_port field with zero padding (backward compatibility) */
+ 	val_u32 = *(__u32 *)&ctx->remote_port;
+-	if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
++	if (val_u32 != SRC_PORT_U32)
+ 		return SK_DROP;
+ 
+ 	/* Narrow loads from local_port field. Expect DST_PORT. */
+-- 
+2.35.1
 
-	- Anirudh.
-
-> That's why I had this patch tested which should stop the worker before
-> cleaning.
-> 
-> Thanks,
-> Stefano
-> 
