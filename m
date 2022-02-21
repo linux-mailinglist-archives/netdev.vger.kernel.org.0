@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 520404BD5B9
-	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 07:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9774BD5B0
+	for <lists+netdev@lfdr.de>; Mon, 21 Feb 2022 07:00:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343815AbiBUFzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 00:55:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35522 "EHLO
+        id S1344795AbiBUFzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 00:55:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244634AbiBUFzi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 00:55:38 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FD051334
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 21:55:16 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id w37so7009665pga.7
-        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 21:55:16 -0800 (PST)
+        with ESMTP id S1344796AbiBUFzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 00:55:42 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8403D5133F
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 21:55:20 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id qe15so14144674pjb.3
+        for <netdev@vger.kernel.org>; Sun, 20 Feb 2022 21:55:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gCe0OI6kcHN1H667YWzFpDyE89e9i4+tQIOs2sQ4kMs=;
-        b=dURnCRDUiyU4Zk3DI7xgUcooCDvcWSbKAtEQkmYM5QRVxxk7qdqEuQ+pkektO18zzO
-         JZRdVTghEUnO6Y03NgMOSsZmnGg8EFU88UqswriJR7WrvSKNSgl2Gx/OE11P85wwOwkd
-         TowAivx5oE7glcJk59+QeOj0j5kn7rNelh4OiaiYwzo+hHYfxjHd+eH9rdZzwvZDAIU2
-         ECWADXAHSMXQTbmiBZGG8PkMen0uYnyi7lwbHkVACvp9WPtdpV2t25DPkjE8oS6gLt7W
-         dKBEwViCv914jxQRIBMV78MKG9FvpquDqc/zIN15dn67dmdN9IduvrmOwSFUcLWU2ODM
-         fy1A==
+        bh=jKsdS0Q+KxMxQcDFSUzldQEKhocLBHQRYT/z+4OmJnw=;
+        b=q2SVUQaWozpG4gRF2QGN7vk2D874x1uegINuIM0ddWxQEVBJNU7IGJGfB4FE1ZqRM+
+         egLq1PMNlX16VYTsOAZ1GdTm5X45275rGJUy4e14mcoQPAJybPIYcxfXVCEtEMP6sRL4
+         UenIHGSkdMiqinuvK06AvmsyQnHyTbiqcD86kgDrM5FHHBE55cA7mjKHw1lIXkxXL0dR
+         PzEgLeFOBLWFrh3+UHg7s3nC3HEoEn+jJp5WoVBv9lTToal/n3dczY9CRbnjpJjrh5CS
+         jvrcxcSXZoMveMk4QoDpWFq9Sp3HbT07NQZkrUr6Qyzfv+Kq9rqV6tMfiQyq77VlOT/x
+         7wyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gCe0OI6kcHN1H667YWzFpDyE89e9i4+tQIOs2sQ4kMs=;
-        b=alaU84eKw0Y+TRUgOqYB+cHgDU7RMtZRDdQAKwAs02ccuq2bqyvryixKgv/DoiCyAc
-         WB2VlFGTESZtoVBqaUqGltJgwRBT6jhexiBpcgFIIvA3jXZbULbYmUmfn4W1weSBcQ9Z
-         M4+tApa1tiTav0exj/aOEEJ1BrgWFKM2z1wlttsqWfz0OykqeJGRzvJ4MgWXyZUHt2O7
-         nR/oEOPMihctYMnCHDMopLbgNFO+QNwUj+XxGbQ2/NbO8d2WgKZ35u+ut/pjdLUBY5wA
-         ipZceLi1HP6DVJUl0Rsn/0M9Erfes5EJi0dFwMpuYP64rJn5a1ErOBr+RhDxSPeN7goV
-         B9cw==
-X-Gm-Message-State: AOAM532qL2+D96ru9sboroefoNEdFPvC3FypJ/93g/7cS2poi5Rxbz1r
-        Z2Vus/jqBXiPdAufyWX4w+YhOfgbLTc=
-X-Google-Smtp-Source: ABdhPJyCJpKcTgotpZhnNM1vkU80ldoKzmttawzWqgr5cxoVcnxRH+QRxznos2TvLc+BVao8mpejjQ==
-X-Received: by 2002:a05:6a00:14ce:b0:4ec:aa7a:53c7 with SMTP id w14-20020a056a0014ce00b004ecaa7a53c7mr14876938pfu.62.1645422915514;
-        Sun, 20 Feb 2022 21:55:15 -0800 (PST)
+        bh=jKsdS0Q+KxMxQcDFSUzldQEKhocLBHQRYT/z+4OmJnw=;
+        b=kgQ+Z0GveIGohPH7FRC6NGjaAT/QYRcAOHnWTm75Zrt1rbzruXEP3GTEkygUGmexZk
+         7p8oWwZ8K0gvi895SjQ5UoG+0vz9kMIUOCbsS7QgD68PzNf4T+iUCJRr6+QZWxYR83oT
+         XwSn2bsB6eNlfnCttYwralINPmQNSG83JJKEgN1svJEEiaSMRlKwx3Un6VM3l6zd7Ajq
+         L/GLuGNfPhEnILkMa9ygFvPyZIhLfOYCJiSbjIha6+deYY5ccNC78tGSfdGlu7wygTwj
+         Y76UgArKGlTssy4FurKJ604rmptP1RnOJ1cs53KOpUqeUbf1VA0+OWIN3opng4rb6uSY
+         ksCw==
+X-Gm-Message-State: AOAM532D/QIMbk5ZVgmlAjeOgD7lvjVtZQrs6SpBU53YYk7nphXPjyZO
+        UrTac12hwB5qzL9bYMb7CSsiQIeRxDA=
+X-Google-Smtp-Source: ABdhPJyT2pe2c6G/TTwSxCoMo6fIlCMQPQbgXdAOUlEcLCHkidlk/2rs4bpD/cO8yeNEOgxuf0l3fA==
+X-Received: by 2002:a17:90b:4a85:b0:1b9:d80d:bff with SMTP id lp5-20020a17090b4a8500b001b9d80d0bffmr24204796pjb.67.1645422919828;
+        Sun, 20 Feb 2022 21:55:19 -0800 (PST)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s15sm17359767pgn.30.2022.02.20.21.55.11
+        by smtp.gmail.com with ESMTPSA id s15sm17359767pgn.30.2022.02.20.21.55.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 21:55:15 -0800 (PST)
+        Sun, 20 Feb 2022 21:55:19 -0800 (PST)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Jonathan Toppins <jtoppins@redhat.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net-next 1/5] ipv6: separate ndisc_ns_create() from ndisc_send_ns()
-Date:   Mon, 21 Feb 2022 13:54:53 +0800
-Message-Id: <20220221055458.18790-2-liuhangbin@gmail.com>
+Subject: [PATCHv2 net-next 2/5] Bonding: split bond_handle_vlan from bond_arp_send
+Date:   Mon, 21 Feb 2022 13:54:54 +0800
+Message-Id: <20220221055458.18790-3-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220221055458.18790-1-liuhangbin@gmail.com>
 References: <20220221055458.18790-1-liuhangbin@gmail.com>
@@ -77,130 +77,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch separate NS message allocation steps from ndisc_send_ns(),
-so it could be used in other places, like bonding, to allocate and
-send IPv6 NS message.
-
-Also export ndisc_send_skb() and ndisc_ns_create() for later bonding usage.
+Function bond_handle_vlan() is split from bond_arp_send() for later
+IPv6 usage.
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- include/net/ndisc.h |  5 +++++
- net/ipv6/ndisc.c    | 49 +++++++++++++++++++++++++++++----------------
- 2 files changed, 37 insertions(+), 17 deletions(-)
+ drivers/net/bonding/bond_main.c | 58 +++++++++++++++++++--------------
+ 1 file changed, 34 insertions(+), 24 deletions(-)
 
-diff --git a/include/net/ndisc.h b/include/net/ndisc.h
-index 53cb8de0e589..aac3a42de432 100644
---- a/include/net/ndisc.h
-+++ b/include/net/ndisc.h
-@@ -447,10 +447,15 @@ void ndisc_cleanup(void);
- 
- int ndisc_rcv(struct sk_buff *skb);
- 
-+struct sk_buff *ndisc_ns_create(struct net_device *dev, const struct in6_addr *solicit,
-+				const struct in6_addr *saddr, u64 nonce);
- void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
- 		   const struct in6_addr *daddr, const struct in6_addr *saddr,
- 		   u64 nonce);
- 
-+void ndisc_send_skb(struct sk_buff *skb, const struct in6_addr *daddr,
-+		    const struct in6_addr *saddr);
-+
- void ndisc_send_rs(struct net_device *dev,
- 		   const struct in6_addr *saddr, const struct in6_addr *daddr);
- void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 1c06d0cd02f7..fcb288b0ae13 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -466,9 +466,8 @@ static void ip6_nd_hdr(struct sk_buff *skb,
- 	hdr->daddr = *daddr;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 57d182c9f7d5..ca8613d0f947 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2793,31 +2793,15 @@ static bool bond_has_this_ip(struct bonding *bond, __be32 ip)
+ 	return ret;
  }
  
--static void ndisc_send_skb(struct sk_buff *skb,
--			   const struct in6_addr *daddr,
--			   const struct in6_addr *saddr)
-+void ndisc_send_skb(struct sk_buff *skb, const struct in6_addr *daddr,
-+		    const struct in6_addr *saddr)
- {
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct net *net = dev_net(skb->dev);
-@@ -515,6 +514,7 @@ static void ndisc_send_skb(struct sk_buff *skb,
- 
- 	rcu_read_unlock();
- }
-+EXPORT_SYMBOL(ndisc_send_skb);
- 
- void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
- 		   const struct in6_addr *solicited_addr,
-@@ -598,22 +598,16 @@ static void ndisc_send_unsol_na(struct net_device *dev)
- 	in6_dev_put(idev);
- }
- 
--void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
--		   const struct in6_addr *daddr, const struct in6_addr *saddr,
--		   u64 nonce)
-+struct sk_buff *ndisc_ns_create(struct net_device *dev, const struct in6_addr *solicit,
-+				const struct in6_addr *saddr, u64 nonce)
+-/* We go to the (large) trouble of VLAN tagging ARP frames because
+- * switches in VLAN mode (especially if ports are configured as
+- * "native" to a VLAN) might not pass non-tagged frames.
+- */
+-static void bond_arp_send(struct slave *slave, int arp_op, __be32 dest_ip,
+-			  __be32 src_ip, struct bond_vlan_tag *tags)
++static bool bond_handle_vlan(struct slave *slave, struct bond_vlan_tag *tags,
++			     struct sk_buff *skb)
  {
 -	struct sk_buff *skb;
--	struct in6_addr addr_buf;
- 	int inc_opt = dev->addr_len;
--	int optlen = 0;
-+	struct sk_buff *skb;
- 	struct nd_msg *msg;
-+	int optlen = 0;
- 
--	if (!saddr) {
--		if (ipv6_get_lladdr(dev, &addr_buf,
--				   (IFA_F_TENTATIVE|IFA_F_OPTIMISTIC)))
--			return;
--		saddr = &addr_buf;
--	}
-+	if (!saddr)
-+		return NULL;
- 
- 	if (ipv6_addr_any(saddr))
- 		inc_opt = false;
-@@ -625,7 +619,7 @@ void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
- 
- 	skb = ndisc_alloc_skb(dev, sizeof(*msg) + optlen);
- 	if (!skb)
+-	struct bond_vlan_tag *outer_tag = tags;
+-	struct net_device *slave_dev = slave->dev;
+ 	struct net_device *bond_dev = slave->bond->dev;
+-
+-	slave_dbg(bond_dev, slave_dev, "arp %d on slave: dst %pI4 src %pI4\n",
+-		  arp_op, &dest_ip, &src_ip);
+-
+-	skb = arp_create(arp_op, ETH_P_ARP, dest_ip, slave_dev, src_ip,
+-			 NULL, slave_dev->dev_addr, NULL);
+-
+-	if (!skb) {
+-		net_err_ratelimited("ARP packet allocation failed\n");
 -		return;
-+		return NULL;
+-	}
++	struct net_device *slave_dev = slave->dev;
++	struct bond_vlan_tag *outer_tag = tags;
  
- 	msg = skb_put(skb, sizeof(*msg));
- 	*msg = (struct nd_msg) {
-@@ -647,7 +641,28 @@ void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
- 		memcpy(opt + 2, &nonce, 6);
+ 	if (!tags || tags->vlan_proto == VLAN_N_VID)
+-		goto xmit;
++		return true;
+ 
+ 	tags++;
+ 
+@@ -2834,7 +2818,7 @@ static void bond_arp_send(struct slave *slave, int arp_op, __be32 dest_ip,
+ 						tags->vlan_id);
+ 		if (!skb) {
+ 			net_err_ratelimited("failed to insert inner VLAN tag\n");
+-			return;
++			return false;
+ 		}
+ 
+ 		tags++;
+@@ -2847,8 +2831,34 @@ static void bond_arp_send(struct slave *slave, int arp_op, __be32 dest_ip,
+ 				       outer_tag->vlan_id);
  	}
  
--	ndisc_send_skb(skb, daddr, saddr);
-+	return skb;
+-xmit:
+-	arp_xmit(skb);
++	return true;
 +}
-+EXPORT_SYMBOL(ndisc_ns_create);
 +
-+void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
-+		   const struct in6_addr *daddr, const struct in6_addr *saddr,
-+		   u64 nonce)
++/* We go to the (large) trouble of VLAN tagging ARP frames because
++ * switches in VLAN mode (especially if ports are configured as
++ * "native" to a VLAN) might not pass non-tagged frames.
++ */
++static void bond_arp_send(struct slave *slave, int arp_op, __be32 dest_ip,
++			  __be32 src_ip, struct bond_vlan_tag *tags)
 +{
-+	struct in6_addr addr_buf;
++	struct net_device *bond_dev = slave->bond->dev;
++	struct net_device *slave_dev = slave->dev;
 +	struct sk_buff *skb;
 +
-+	if (!saddr) {
-+		if (ipv6_get_lladdr(dev, &addr_buf,
-+				    (IFA_F_TENTATIVE | IFA_F_OPTIMISTIC)))
-+			return;
-+		saddr = &addr_buf;
++	slave_dbg(bond_dev, slave_dev, "arp %d on slave: dst %pI4 src %pI4\n",
++		  arp_op, &dest_ip, &src_ip);
++
++	skb = arp_create(arp_op, ETH_P_ARP, dest_ip, slave_dev, src_ip,
++			 NULL, slave_dev->dev_addr, NULL);
++
++	if (!skb) {
++		net_err_ratelimited("ARP packet allocation failed\n");
++		return;
 +	}
 +
-+	skb = ndisc_ns_create(dev, solicit, saddr, nonce);
-+
-+	if (skb)
-+		ndisc_send_skb(skb, daddr, saddr);
++	if (bond_handle_vlan(slave, tags, skb))
++		arp_xmit(skb);
++	return;
  }
  
- void ndisc_send_rs(struct net_device *dev, const struct in6_addr *saddr,
+ /* Validate the device path between the @start_dev and the @end_dev.
 -- 
 2.31.1
 
