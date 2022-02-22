@@ -2,180 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 392CE4BFE9D
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 17:31:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62EEC4BFE97
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 17:31:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233621AbiBVQcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 11:32:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S233038AbiBVQb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 11:31:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiBVQcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 11:32:09 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1FA6E54E;
-        Tue, 22 Feb 2022 08:31:41 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2F93420003;
-        Tue, 22 Feb 2022 16:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645547500;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DX9NhASmajHZnyC217wOwL7ov42sa2Tz6XVPF8ddW48=;
-        b=fxrNoOOksIBC1l5jidCWAAr+FXTdxwIp8gWk4WyB7gClWMLtgcsXyc3A5AR4kvQb8TldMv
-        2BWw2VfmwDCecO2uE9h3yultbIRm+SfRJUFKnKcB4r0GOXZ7j9uIrvktXSkufIhm0Fax9S
-        FGMZt6csFKJ5F1Yw0euMmULxpV+Y6eI50ruJqz3N69qRQq6EEXqP1pZ+nGrNtFo61aKHQE
-        Fue4GuJVvnmemlvUWJ6gT56QOxQ43FonwjGxNUzB4BoEWAfgMREaLy30XEWDrxH/daz3k9
-        4ieES7Wfi6/8u47FTCyuIT1BfnD1MxOao7CzI/KejjawmbhpvBZ7rx5w1czB+g==
-Date:   Tue, 22 Feb 2022 17:30:19 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <20220222173019.2380dcaf@fixe.home>
-In-Reply-To: <YhPOxL++yhNHh+xH@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
-        <YhPOxL++yhNHh+xH@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        with ESMTP id S232197AbiBVQbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 11:31:51 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84657167F91;
+        Tue, 22 Feb 2022 08:31:25 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 50AB35802CB;
+        Tue, 22 Feb 2022 11:31:22 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 22 Feb 2022 11:31:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=4ss1OyObCw6S1k0Bd
+        D49Bd/baqeCBEC7bJc1jbF4kQ8=; b=Zr/jral3v63ownQ139f6+E1aDV9q8GCHc
+        KcTQMkkm41zRVwqqeRw+mE0twRJb8xNBgaoDzK4OW7As70ult9xz7UFXuMDlqGTN
+        Vin2dmDadlbFkZtCZcMg7Qepi5DEEWurHkkfkgtR5WYoMS2ccaj6VTUjUyjxTR+J
+        Dco1PWhrY+HXa+WRv6BHHjj5ly3XiQH5KOEDii3t6MfowBddgHK2Zr+hJuq3q9tp
+        WnLprQCI2WxP5fcFvqyN/aq+YsCIhlGOp87G9/UVpt7NPAM2qQ8bqGv3L/0eFeXE
+        RbqiQ50evYv7FFDIJddcPlUwjhkDWNalKUFtkBsq2EAXVwz/WGQog==
+X-ME-Sender: <xms:2A8VYlizXRrpm-lof6juTHVPTX1wdlyGcFJyJO-e04ClbWBT2p0iww>
+    <xme:2A8VYqCIHFYedOOfl_LLu6kgSn_yve2Yv8nV4WsMVQZBM-sbFcoteoLXVm_dnu03r
+    SuIfjaUenoA-Ow>
+X-ME-Received: <xmr:2A8VYlFExvdFaBqqXvIBd-LpuqQF-6srEFT3vuEshY_PPg82dWeH1Rp-aPqXuVPm6CFRPErT7Gv3oV16eZ4as_h6awI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgdekkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:2A8VYqRIWx5dxUGGtzepG7eWrUSMcjCBLDsqggKFU8COb1rXcMYuyg>
+    <xmx:2A8VYiwKlVsG-o6frmym9pzzrfLIfO5B5JP2SxOpinJMGQbwg_r3Fg>
+    <xmx:2A8VYg55D-9rXrFLrexJEzc2_fsRt3GfRhQ8HXMmKDnGobmrAvanFg>
+    <xmx:2g8VYsqmbIT4gyC0pp00XkrHZtXN9KfiWMtZSAajG9LDBUInFMKZWQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 22 Feb 2022 11:31:19 -0500 (EST)
+Date:   Tue, 22 Feb 2022 18:31:14 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Baowen Zheng <baowen.zheng@corigine.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        oss-drivers <oss-drivers@corigine.com>,
+        "hkelam@marvell.com" <hkelam@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Nole Zhang <peng.zhang@corigine.com>,
+        "louis.peens@netronome.com" <louis.peens@netronome.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "rajur@chelsio.com" <rajur@chelsio.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        "sbhatta@marvell.com" <sbhatta@marvell.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        Roi Dayan <roid@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "sgoutham@marvell.com" <sgoutham@marvell.com>,
+        "gakula@marvell.com" <gakula@marvell.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/2] flow_offload: reject offload for all
+ drivers with invalid police parameters
+Message-ID: <YhUP0lVaq+M/mwdY@shredder>
+References: <20220217082803.3881-1-jianbol@nvidia.com>
+ <20220217082803.3881-3-jianbol@nvidia.com>
+ <20220217124935.p7pbgv2cfmhpshxv@skbuf>
+ <6291dabcca7dd2d95b4961f660ec8b0226b8fbce.camel@nvidia.com>
+ <20220222100929.gj2my4maclyrwz35@skbuf>
+ <DM5PR1301MB21724BB2B0FF7C7A57BD1631E73B9@DM5PR1301MB2172.namprd13.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM5PR1301MB21724BB2B0FF7C7A57BD1631E73B9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Mon, 21 Feb 2022 19:41:24 +0200,
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
+On Tue, Feb 22, 2022 at 10:29:57AM +0000, Baowen Zheng wrote:
+> Since almost all the drivers that support to offload police action make the similar validation, if it make sense to add the validation in the file of flow_offload.h or flow_offload.c?
+> Then the other drivers do not need to make the similar validation.
+> WDYT?
 
-> >=20
-> > We thought about adding CONFIG_OF to x86 and potentially describe this
-> > card using device-tree overlays but it introduce other problems that
-> > also seems difficult to solve (overlay loading without base
-> > device-tree, fixup of IRQs, adresses, and so on) and CONFIG_OF is not
-> > often enabled on x86 to say the least. =20
->=20
-> Why it can't be described by SSDT overlay (if the x86 platform in questio=
-n is
-> ACPI based)?
+But not all the drivers need the same validation. For example, nfp is
+one of the few drivers that supports policing based on packet rate. The
+octeontx2 driver has different restrictions based on whether the policer
+is attached to matchall or flower.
 
-This devices uses a SoC for which drivers are already available but are
-meant to be used by a device-tree description. These drivers uses the
-following subsystems:
-- reset (no ACPI support ?)
-- clk (no ACPI support ?)
-- pinctrl (no ACPI support ?)
-- syscon (no ACPI support ?)
-- gpio
-- phy
-- mdio
-
-Converting existing OF support to fwnode support and thus allowing
-drivers and subsystems to be compatible with software nodes seemed like
-the easiest way to do what I needed by keeping all existing drivers.
-With this support, the driver is completely self-contained and does
-allow the card to be plugged on whatever platform the user may have.
-
-Again, the PCI card is independent of the platform, I do not really see
-why it should be described using platform description language.
-
-> >=20
-> > This series introduce a number of changes in multiple subsystems to
-> > allow registering and using devices that are described with a
-> > software_node description attached to a mfd_cell, making them usable
-> > with the fwnode API. It was needed to modify many subsystem where
-> > CONFIG_OF was tightly integrated through the use of of_xlate()
-> > functions and other of_* calls. New calls have been added to use fwnode
-> > API and thus be usable with a wider range of nodes. Functions that are
-> > used to get the devices (pinctrl_get, clk_get and so on) also needed
-> > to be changed to use the fwnode API internally.
-> >=20
-> > For instance, the clk framework has been modified to add a
-> > fwnode_xlate() callback and a new named fwnode_clk_add_hw_provider()
-> > has been added. This function will register a clock using
-> > fwnode_xlate() callback. Note that since the fwnode API is compatible
-> > with devices that have a of_node member set, it will still be possible
-> > to use the driver and get the clocks with CONFIG_OF enabled
-> > configurations. =20
->=20
-> How does this all is compatible with ACPI approaches?
-> I mean we usually do not reintroduce 1:1 DT schemas in ACPI.
-
-For the moment, I only added fwnode API support as an alternative to
-support both OF and software nodes. ACPI is not meant to be handled by
-this code "as-is". There is for sure some modifications to be made and
-I do not know how clocks are handled when using ACPI. Based on some
-thread dating back to 2018 [1], it seem it was even not supported at
-all.
-
-To be clear, I added the equivalent of the OF support but using
-fwnode API because I was interested primarly in using it with software
-nodes and still wanted OF support to work. I did not planned it to be
-"ACPI compliant" right now since I do not have any knowledge in that
-field.
-
->=20
-> I think the CCF should be converted to use fwnode APIs and meanwhile
-> we may discuss how to deal with clocks on ACPI platforms, because
-> it may be a part of the power management methods.
-
-Ok, before going down that way, should the fwnode support be the "only"
-one, ie remove of_clk_register and others and convert them to
-fwnode_clk_register for instance or should it be left to avoid
-modifying all clock drivers ?
-
->=20
-> > In some subsystems, it was possible to keep OF related function by
-> > wrapping the fwnode ones. It is not yet sure if both support
-> > (device-tree and fwnode) should still continue to coexists. For instance
-> > if fwnode_xlate() and of_xlate() should remain since the fwnode version
-> > also supports device-tree. Removing of_xlate() would of course require
-> > to modify all drivers that uses it.
-> >=20
-> > Here is an excerpt of the lan966x description when used as a PCIe card.
-> > The complete description is visible at [2]. This part only describe the
-> > flexcom controller and the fixed-clock that is used as an input clock.
-> >=20
-> > static const struct property_entry ddr_clk_props[] =3D {
-> >         PROPERTY_ENTRY_U32("clock-frequency", 30000000), =20
->=20
-> >         PROPERTY_ENTRY_U32("#clock-cells", 0), =20
->=20
-> Why this is used?
->=20
-
-These props actually describes a fixed-clock properties. When adding
-fwnode support to clk framework, it was needed to add the
-equivalent of of_xlate() for fwnode (fwnode_xlate()). The number of
-cells used to describe a reference is still needed to do the
-translation using fwnode_property_get_reference_args() and give the
-correct arguments to fwnode_xlate().
-
-[1]
-https://lore.kernel.org/lkml/914341e7-ca94-054d-6127-522b745006b4@arm.com/T/
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+We can put the restrictions that are common between all the drivers
+somewhere, but it's not that much and it will also change over time,
+resulting in needless churn where checks are moved to individual
+drivers.
