@@ -2,168 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 228504BF4F8
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 10:48:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 683AB4BF534
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 10:56:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbiBVJsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 04:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47468 "EHLO
+        id S229834AbiBVJ5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 04:57:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230237AbiBVJsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 04:48:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A48D91AC0
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 01:47:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645523271;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1vLjaLOpjM/maPs9UeQipZMtimlrY+ZZDRN/XdiV3h8=;
-        b=WcVhtuzsa7ItfAXpLDoOE7FAjHSXonTyUUbTbysge5ygKJGLGfW0XfwJ4rsYY9WSpx340V
-        KGl6t+Q68wfzEmEIjicP6ahCeqDiDrowDpfv6KGlRSnH1owt/BfTH6zkGq85XunUwyDR2E
-        qXXbWSG2/QMwtHz25vHQntTBIca2plU=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-673-cCcffFBeM3S9Wq5apf-SdA-1; Tue, 22 Feb 2022 04:47:49 -0500
-X-MC-Unique: cCcffFBeM3S9Wq5apf-SdA-1
-Received: by mail-qv1-f71.google.com with SMTP id p4-20020a05621421e400b0042d006b2328so20294345qvj.15
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 01:47:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1vLjaLOpjM/maPs9UeQipZMtimlrY+ZZDRN/XdiV3h8=;
-        b=t+qcQ+q07XBrPxyZPxhvDZybZFWvnRA4+dO2bp0PRaeTo563thvtO4DXZE8UsDQ0Xd
-         JP4alKJ2KTWdt3zp6C0hXmE9iOD+I3xL48T4GryFlw6yJhHeapRQOgMkdemrw+yJIpq/
-         AEaD+Nk4dttbHj4t9VFuX/Hn4kbrwSXWXxoqetiUAFExfVe3N2YWfj6hcfjJngH5nsfi
-         VzUxrg8VxD4boIC8Ic9ZoSTjkHJfb0fKLLkN/tVHkCtvRPyszxhvqeQHovVSopWNE42P
-         RZePwQE/odw9TiZRkT8kxl9X6jrVYFrCWr60lKWL7l+L3UmYJeg2XUIxV/za2Hq6zFkR
-         g4fQ==
-X-Gm-Message-State: AOAM53130DSc38MidKLZ5ZTk+qeznIFK42/CMwQIuh5VFcKSvp5kz1xi
-        wEFNfcgjhvjSdtHUjQASLvGysUL9RxqmfZtq4DsMkqPJFeC5f2kXi6cb9+rNx/y44d+uUfuOdU6
-        U+Gcin+ryHa+c29Xr
-X-Received: by 2002:ac8:5f4c:0:b0:2d9:9327:1355 with SMTP id y12-20020ac85f4c000000b002d993271355mr21214803qta.518.1645523268797;
-        Tue, 22 Feb 2022 01:47:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLRApCkpCfkLM6BoxEEMUdWN7hRcfpssUWglONmZj/+bkfEiUyPxNFxljOVxDFiUxHMmgtfQ==
-X-Received: by 2002:ac8:5f4c:0:b0:2d9:9327:1355 with SMTP id y12-20020ac85f4c000000b002d993271355mr21214790qta.518.1645523268571;
-        Tue, 22 Feb 2022 01:47:48 -0800 (PST)
-Received: from step1.redhat.com (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
-        by smtp.gmail.com with ESMTPSA id br35sm27922533qkb.118.2022.02.22.01.47.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 01:47:47 -0800 (PST)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
-        kvm@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
-        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org,
-        Mike Christie <michael.christie@oracle.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v2] vhost/vsock: don't check owner in vhost_vsock_stop() while releasing
-Date:   Tue, 22 Feb 2022 10:47:42 +0100
-Message-Id: <20220222094742.16359-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S229481AbiBVJ5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 04:57:01 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FFF5109A;
+        Tue, 22 Feb 2022 01:56:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1645523606;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=dWKZOFQ+HIvrBNvfir4obwb7uVDZZb0beIIECXtlDkQ=;
+    b=exfJhR7jvCtg4CEw/NPhwh4CrS/VHlNeZhrary/CFZIVX0kpWMYhA10vK6naSw4iMY
+    nYyBeUC8Afyiu/qE7odMcG7NAQIFB9J41nU7dVAbQVLO3QmiY9cqp8faFxXIuGMFbzYw
+    KziTMkmXEwB0XAmjIkyE1GVV2nH4Qns92uFRI3zyIg3TuW0nw4D9ww1mn7FyJAorGnHE
+    yhJOqiyDQWnA+5Ll8RxVVFOQynKJ4EfD8iKLZPtJud/ZaaItB2dsBwDSW1j7BsbqkEv2
+    vRPmVu+o5PWG/mzREGV0C/+iZQ7OS3P/V0Qs4GgJCXRDBdkQbYoJK/vPtVecD9MMkLpF
+    EA5A==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/87J2o0="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp05-05.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.40.0 AUTH)
+    with ESMTPSA id 6c30c7y1M9rQ2KB
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Tue, 22 Feb 2022 10:53:26 +0100 (CET)
+Date:   Tue, 22 Feb 2022 10:53:26 +0100 (CET)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        Pavel Machek <pavel@denx.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Message-ID: <1103141484.974980.1645523606875@webmail.strato.com>
+In-Reply-To: <20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH] can: rcar_canfd: Register the CAN device when fully
+ ready
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev38
+X-Originating-Client: open-xchange-appsuite
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
-ownership. It expects current->mm to be valid.
 
-vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
-the user has not done close(), so when we are in do_exit(). In this
-case current->mm is invalid and we're releasing the device, so we
-should clean it anyway.
+> On 02/21/2022 11:59 PM Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> 
+>  
+> Register the CAN device only when all the necessary initialization
+> is completed. This patch makes sure all the data structures and locks are
+> initialized before registering the CAN device.
+> 
+> Reported-by: Pavel Machek <pavel@denx.de>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/net/can/rcar/rcar_canfd.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+> index 3ad3a6f6a1dd..8c378b20b2aa 100644
+> --- a/drivers/net/can/rcar/rcar_canfd.c
+> +++ b/drivers/net/can/rcar/rcar_canfd.c
+> @@ -1783,15 +1783,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+>  
+>  	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
+>  		       RCANFD_NAPI_WEIGHT);
+> +	spin_lock_init(&priv->tx_lock);
+> +	devm_can_led_init(ndev);
+> +	gpriv->ch[priv->channel] = priv;
+>  	err = register_candev(ndev);
+>  	if (err) {
+>  		dev_err(&pdev->dev,
+>  			"register_candev() failed, error %d\n", err);
+>  		goto fail_candev;
+>  	}
+> -	spin_lock_init(&priv->tx_lock);
+> -	devm_can_led_init(ndev);
+> -	gpriv->ch[priv->channel] = priv;
+>  	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
+>  	return 0;
+>  
+> -- 
+> 2.17.1
 
-Let's check the owner only when vhost_vsock_stop() is called
-by an ioctl.
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
 
-When invoked from release we can not fail so we don't check return
-code of vhost_vsock_stop(). We need to stop vsock even if it's not
-the owner.
-
-Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
-v2:
-- initialized `ret` in vhost_vsock_stop [Dan]
-- added comment about vhost_vsock_stop() calling in the code and an explanation
-  in the commit message [MST]
-
-v1: https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarzare@redhat.com
----
- drivers/vhost/vsock.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index d6ca1c7ad513..37f0b4274113 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -629,16 +629,18 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
- 	return ret;
- }
- 
--static int vhost_vsock_stop(struct vhost_vsock *vsock)
-+static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
- {
- 	size_t i;
--	int ret;
-+	int ret = 0;
- 
- 	mutex_lock(&vsock->dev.mutex);
- 
--	ret = vhost_dev_check_owner(&vsock->dev);
--	if (ret)
--		goto err;
-+	if (check_owner) {
-+		ret = vhost_dev_check_owner(&vsock->dev);
-+		if (ret)
-+			goto err;
-+	}
- 
- 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
- 		struct vhost_virtqueue *vq = &vsock->vqs[i];
-@@ -753,7 +755,12 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 	 * inefficient.  Room for improvement here. */
- 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
- 
--	vhost_vsock_stop(vsock);
-+	/* Don't check the owner, because we are in the release path, so we
-+	 * need to stop the vsock device in any case.
-+	 * vhost_vsock_stop() can not fail in this case, so we don't need to
-+	 * check the return code.
-+	 */
-+	vhost_vsock_stop(vsock, false);
- 	vhost_vsock_flush(vsock);
- 	vhost_dev_stop(&vsock->dev);
- 
-@@ -868,7 +875,7 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
- 		if (start)
- 			return vhost_vsock_start(vsock);
- 		else
--			return vhost_vsock_stop(vsock);
-+			return vhost_vsock_stop(vsock, true);
- 	case VHOST_GET_FEATURES:
- 		features = VHOST_VSOCK_FEATURES;
- 		if (copy_to_user(argp, &features, sizeof(features)))
--- 
-2.35.1
-
+CU
+Uli
