@@ -2,258 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7F24C04DF
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 23:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 424904C0526
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 00:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236148AbiBVWtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 17:49:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
+        id S236120AbiBVXS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 18:18:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235034AbiBVWtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 17:49:14 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8696C133967
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:48:47 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id p15so16285028oip.3
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:48:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OLodFo+EFLYoPsi+wdOHLLQ/vX3kieHkDvwNQ5bucUs=;
-        b=BrvslKV5RYDh3QkIgW4Cs5WF4Df2MYSyH3w7sbXlyYzgXUCz23De/ApStJ1aTM8iSJ
-         dHWr034VDXGWgUnLuArRXQUTn2emlDNfOUSAQxlJp5bA1/c1xumWJsGFoQJcdLJfneXv
-         ebN8kyGDX6dgyGU0VS6Q+QBd8+Wtd/LGxgpV3kGwVEWBZ1Y/8ixisaK3mIPcARzqiUtB
-         OnCKAGXVnFrio2ZAG/VRq6dbtMZoP2FSBgZ9ZwvUUcSz/F8Y8zBJbYheub/tCJVEKHg8
-         z15NKZ0NHK95buPeGe0WMCCtGITE31owLPKTdTt83Y0z6RHLZnwHpLZipm0ILbWezi9I
-         GoMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OLodFo+EFLYoPsi+wdOHLLQ/vX3kieHkDvwNQ5bucUs=;
-        b=1/hldA4j6G8gEq/eAFZEqr+ayc/Homohtp959d+ACsOfRsg/irTDgF5xg+nkN5rKvr
-         Lw1D5wnHBLzI4iC1R7WvhTO6i8yg0tSQ6ZmPJOgx7pizrhNUUorZsOF5P0Bo7KkMKg6K
-         chesyNvkZk6qxfnmCmN/qw01LVapaQQZcTmQVKFJAoG+tWz56hpagHp56895UjLgdonW
-         trpBB27ySP6/I8GBB4wNVuwrlnAOqC3XMvJi/hpk4IwilGzI11LchBuAfrHf/IH8zxcB
-         zLpEYhx697/MHGwAehEMudj//jNJZvay/DH3GxNxeEipkguA+PaMVquqXiX1zw9nzRQE
-         QprQ==
-X-Gm-Message-State: AOAM5313GvpiBNoVntcc917aTQmpXTEvLMQP7ZSoMHpNEyZL93Qldzkc
-        ga37r7c2KgoMyEwztji5BbqkenRNhts2iQ==
-X-Google-Smtp-Source: ABdhPJxYv41stMfzseUim48CNHSoW3+prRKbrvc+A1dIrVo22+cY8wZl6oeQ4sHjnzKUBtYSiEv9Lw==
-X-Received: by 2002:a05:6808:1892:b0:2d4:9241:dfad with SMTP id bi18-20020a056808189200b002d49241dfadmr3268766oib.106.1645570126610;
-        Tue, 22 Feb 2022 14:48:46 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id c9sm7033380otd.26.2022.02.22.14.48.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 14:48:46 -0800 (PST)
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v3 2/2] net: dsa: realtek: rtl8365mb: add support for rtl8_4t
-Date:   Tue, 22 Feb 2022 19:47:58 -0300
-Message-Id: <20220222224758.11324-3-luizluca@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220222224758.11324-1-luizluca@gmail.com>
-References: <20220222224758.11324-1-luizluca@gmail.com>
+        with ESMTP id S233405AbiBVXS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 18:18:26 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5443D9027F;
+        Tue, 22 Feb 2022 15:17:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645571879; x=1677107879;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sRi3Y0px8+ojBe6BJa3k8tR0XaiCszxkZ0yaIFLeAEE=;
+  b=Q9FpGganICMPmwANM53SvDjLaQPxZmfs2oMxTyo97qE0O2wZH7pXCupF
+   xMGw5MSib3rP7N5gqwgsU5owmfKMqr0DW8pXb81kfSBrcdEYnIgKaeQXY
+   +QTU+dbjyDDAqXfyOo/K5wzplWb3CvKocsxaw8e0/Scc8W4qEICB74jx6
+   bohVf8VMiKGEOa8QO2averLulF0F9cF/fiIRpa067aPdXBot9fNUJ3ZBs
+   80P35eQESAovgpY9O/rbaf4qQKWi6L3CbzS3PTZ9OkdXje87FyFskmpsb
+   njHtvbun3iER++yFQpMN5DGqwbP0jnn66+c/fNGioQ9qyBhierLCSFCGA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231810092"
+X-IronPort-AV: E=Sophos;i="5.88,389,1635231600"; 
+   d="scan'208";a="231810092"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 15:17:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,389,1635231600"; 
+   d="scan'208";a="776476619"
+Received: from skoppolu-mobl4.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.252.138.103])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 15:17:57 -0800
+From:   Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH v1 0/6] Add TDX Guest Attestation support
+Date:   Tue, 22 Feb 2022 15:17:29 -0800
+Message-Id: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The trailing tag is also supported by this family. The default is still
-rtl8_4 but now the switch supports changing the tag to rtl8_4t.
+Hi All,
 
-Reintroduce the dropped cpu in struct rtl8365mb (removed by 6147631).
+Intel's Trust Domain Extensions (TDX) protect guest VMs from malicious
+hosts and some physical attacks. VM guest with TDX support is called
+as TD Guest.
 
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
----
- drivers/net/dsa/realtek/rtl8365mb.c | 82 +++++++++++++++++++++++------
- 1 file changed, 67 insertions(+), 15 deletions(-)
+In TD Guest, the attestation process is used to verify the 
+trustworthiness of TD guest to the 3rd party servers. Such attestation
+process is required by 3rd party servers before sending sensitive
+information to TD guests. One usage example is to get encryption keys
+from the key server for mounting the encrypted rootfs or secondary drive.
+    
+Following patches add the attestation support to TDX guest which
+includes attestation user interface driver, user agent example, and
+related hypercall support.
 
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 2ed592147c20..ff865af65d55 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -566,6 +566,7 @@ struct rtl8365mb_port {
-  * @chip_ver: chip silicon revision
-  * @port_mask: mask of all ports
-  * @learn_limit_max: maximum number of L2 addresses the chip can learn
-+ * @cpu: CPU tagging and CPU port configuration for this chip
-  * @mib_lock: prevent concurrent reads of MIB counters
-  * @ports: per-port data
-  * @jam_table: chip-specific initialization jam table
-@@ -580,6 +581,7 @@ struct rtl8365mb {
- 	u32 chip_ver;
- 	u32 port_mask;
- 	u32 learn_limit_max;
-+	struct rtl8365mb_cpu cpu;
- 	struct mutex mib_lock;
- 	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
- 	const struct rtl8365mb_jam_tbl_entry *jam_table;
-@@ -770,6 +772,16 @@ static enum dsa_tag_protocol
- rtl8365mb_get_tag_protocol(struct dsa_switch *ds, int port,
- 			   enum dsa_tag_protocol mp)
- {
-+	struct realtek_priv *priv = ds->priv;
-+	struct rtl8365mb_cpu *cpu;
-+	struct rtl8365mb *mb;
-+
-+	mb = priv->chip_data;
-+	cpu = &mb->cpu;
-+
-+	if (cpu->position == RTL8365MB_CPU_POS_BEFORE_CRC)
-+		return DSA_TAG_PROTO_RTL8_4T;
-+
- 	return DSA_TAG_PROTO_RTL8_4;
- }
- 
-@@ -1725,8 +1737,10 @@ static void rtl8365mb_irq_teardown(struct realtek_priv *priv)
- 	}
- }
- 
--static int rtl8365mb_cpu_config(struct realtek_priv *priv, const struct rtl8365mb_cpu *cpu)
-+static int rtl8365mb_cpu_config(struct realtek_priv *priv)
- {
-+	struct rtl8365mb *mb = priv->chip_data;
-+	struct rtl8365mb_cpu *cpu = &mb->cpu;
- 	u32 val;
- 	int ret;
- 
-@@ -1752,6 +1766,42 @@ static int rtl8365mb_cpu_config(struct realtek_priv *priv, const struct rtl8365m
- 	return 0;
- }
- 
-+static int rtl8365mb_change_tag_protocol(struct dsa_switch *ds, int cpu_index,
-+					 enum dsa_tag_protocol proto)
-+{
-+	struct realtek_priv *priv = ds->priv;
-+	struct rtl8365mb_cpu *cpu;
-+	struct rtl8365mb *mb;
-+	int ret;
-+
-+	mb = priv->chip_data;
-+	cpu = &mb->cpu;
-+
-+	switch (proto) {
-+	case DSA_TAG_PROTO_RTL8_4:
-+		cpu->format = RTL8365MB_CPU_FORMAT_8BYTES;
-+		cpu->position = RTL8365MB_CPU_POS_AFTER_SA;
-+		break;
-+	case DSA_TAG_PROTO_RTL8_4T:
-+		cpu->format = RTL8365MB_CPU_FORMAT_8BYTES;
-+		cpu->position = RTL8365MB_CPU_POS_BEFORE_CRC;
-+		break;
-+	/* The switch also supports a 4-byte format, similar to rtl4a but with
-+	 * the same 0x04 8-bit version and probably 8-bit port source/dest.
-+	 * There is no public doc about it. Not supported yet and it will probably
-+	 * never be.
-+	 */
-+	default:
-+		return -EPROTONOSUPPORT;
-+	}
-+
-+	ret = rtl8365mb_cpu_config(priv);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int rtl8365mb_switch_init(struct realtek_priv *priv)
- {
- 	struct rtl8365mb *mb = priv->chip_data;
-@@ -1798,13 +1848,14 @@ static int rtl8365mb_reset_chip(struct realtek_priv *priv)
- static int rtl8365mb_setup(struct dsa_switch *ds)
- {
- 	struct realtek_priv *priv = ds->priv;
--	struct rtl8365mb_cpu cpu = {0};
-+	struct rtl8365mb_cpu *cpu;
- 	struct dsa_port *cpu_dp;
- 	struct rtl8365mb *mb;
- 	int ret;
- 	int i;
- 
- 	mb = priv->chip_data;
-+	cpu = &mb->cpu;
- 
- 	ret = rtl8365mb_reset_chip(priv);
- 	if (ret) {
-@@ -1827,21 +1878,14 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 		dev_info(priv->dev, "no interrupt support\n");
- 
- 	/* Configure CPU tagging */
--	cpu.trap_port = RTL8365MB_MAX_NUM_PORTS;
- 	dsa_switch_for_each_cpu_port(cpu_dp, priv->ds) {
--		cpu.mask |= BIT(cpu_dp->index);
-+		cpu->mask |= BIT(cpu_dp->index);
- 
--		if (cpu.trap_port == RTL8365MB_MAX_NUM_PORTS)
--			cpu.trap_port = cpu_dp->index;
-+		if (cpu->trap_port == RTL8365MB_MAX_NUM_PORTS)
-+			cpu->trap_port = cpu_dp->index;
- 	}
--
--	cpu.enable = cpu.mask > 0;
--	cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
--	cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
--	cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
--	cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
--
--	ret = rtl8365mb_cpu_config(priv, &cpu);
-+	cpu->enable = cpu->mask > 0;
-+	ret = rtl8365mb_cpu_config(priv);
- 	if (ret)
- 		goto out_teardown_irq;
- 
-@@ -1853,7 +1897,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 			continue;
- 
- 		/* Forward only to the CPU */
--		ret = rtl8365mb_port_set_isolation(priv, i, cpu.mask);
-+		ret = rtl8365mb_port_set_isolation(priv, i, cpu->mask);
- 		if (ret)
- 			goto out_teardown_irq;
- 
-@@ -1983,6 +2027,12 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
- 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
- 
-+		mb->cpu.trap_port = RTL8365MB_MAX_NUM_PORTS;
-+		mb->cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
-+		mb->cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
-+		mb->cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
-+		mb->cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
-+
- 		break;
- 	default:
- 		dev_err(priv->dev,
-@@ -1996,6 +2046,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 
- static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
- 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
-+	.change_tag_protocol = rtl8365mb_change_tag_protocol,
- 	.setup = rtl8365mb_setup,
- 	.teardown = rtl8365mb_teardown,
- 	.phylink_get_caps = rtl8365mb_phylink_get_caps,
-@@ -2014,6 +2065,7 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
- 
- static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
- 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
-+	.change_tag_protocol = rtl8365mb_change_tag_protocol,
- 	.setup = rtl8365mb_setup,
- 	.teardown = rtl8365mb_teardown,
- 	.phylink_get_caps = rtl8365mb_phylink_get_caps,
+In this series, only following patches are in arch/x86 and are
+intended for x86 maintainers review.
+
+* x86/tdx: Add TDREPORT TDX Module call support
+* x86/tdx: Add GetQuote TDX hypercall support
+* x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
+* x86/tdx: Add TDX Guest event notify interrupt vector support
+
+Patch titled "platform/x86: intel_tdx_attest: Add TDX Guest attestation
+interface driver" adds the attestation driver support. This is supposed
+to be reviewed by platform-x86 maintainers.
+
+Also, patch titled "tools/tdx: Add a sample attestation user app" adds
+a testing app for attestation feature which needs review from
+bpf@vger.kernel.org.
+
+Dependencies:
+--------------
+
+This feature has dependency on TDX guest core patch set series.
+
+https://lore.kernel.org/all/20220218161718.67148-1-kirill.shutemov@linux.intel.com/T/
+
+History:
+----------
+
+Previously this patch set was sent under title "Add TDX Guest
+Support (Attestation support)". In the previous version, only the
+attestation driver patch was reviewed and got acked. Rest of the
+patches need to be reviewed freshly.
+
+https://lore.kernel.org/bpf/20210806000946.2951441-1-sathyanarayanan.kuppuswamy@linux.intel.com/
+
+Changes since previous submission:
+ * Updated commit log and error handling in TDREPORT, GetQuote and
+   SetupEventNotifyInterrupt support patches.
+ * Added locking support in attestation driver.
+
+Kuppuswamy Sathyanarayanan (6):
+  x86/tdx: Add tdx_mcall_tdreport() API support
+  x86/tdx: Add tdx_hcall_get_quote() API support
+  x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
+  platform/x86: intel_tdx_attest: Add TDX Guest attestation interface
+    driver
+  x86/tdx: Add TDX Guest event notify interrupt vector support
+  tools/tdx: Add a sample attestation user app
+
+ arch/x86/coco/tdx.c                           | 170 ++++++++++++
+ arch/x86/include/asm/hardirq.h                |   4 +
+ arch/x86/include/asm/idtentry.h               |   4 +
+ arch/x86/include/asm/irq_vectors.h            |   7 +-
+ arch/x86/include/asm/tdx.h                    |   5 +
+ arch/x86/kernel/irq.c                         |   7 +
+ drivers/platform/x86/intel/Kconfig            |   1 +
+ drivers/platform/x86/intel/Makefile           |   1 +
+ drivers/platform/x86/intel/tdx/Kconfig        |  13 +
+ drivers/platform/x86/intel/tdx/Makefile       |   3 +
+ .../platform/x86/intel/tdx/intel_tdx_attest.c | 241 ++++++++++++++++++
+ include/uapi/misc/tdx.h                       |  37 +++
+ tools/Makefile                                |  13 +-
+ tools/tdx/Makefile                            |  19 ++
+ tools/tdx/attest/.gitignore                   |   2 +
+ tools/tdx/attest/Makefile                     |  24 ++
+ tools/tdx/attest/tdx-attest-test.c            | 240 +++++++++++++++++
+ 17 files changed, 784 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/platform/x86/intel/tdx/Kconfig
+ create mode 100644 drivers/platform/x86/intel/tdx/Makefile
+ create mode 100644 drivers/platform/x86/intel/tdx/intel_tdx_attest.c
+ create mode 100644 include/uapi/misc/tdx.h
+ create mode 100644 tools/tdx/Makefile
+ create mode 100644 tools/tdx/attest/.gitignore
+ create mode 100644 tools/tdx/attest/Makefile
+ create mode 100644 tools/tdx/attest/tdx-attest-test.c
+
 -- 
-2.35.1
+2.25.1
 
