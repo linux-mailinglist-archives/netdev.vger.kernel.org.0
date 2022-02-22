@@ -2,165 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44ADD4C0413
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 22:49:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1E84C041F
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 22:51:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234206AbiBVVuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 16:50:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        id S235874AbiBVVwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 16:52:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230274AbiBVVuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 16:50:02 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89EE41FB0
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 13:49:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645566572; x=1677102572;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=gus4+4g1Tz2m3RyJxr4p7JDM7QMINDftxCRKMSNCY1c=;
-  b=UFPSbWL2z7wTEyePLojLgv0PWd+EdoEZkeKFE3L04zXZ6YoKjv15/lFj
-   +8aLYeTUCHJ0mPybx8EY3Cx2a5aKDMsVrYmR/+r0zrkP3Ez5uYNjIX+ww
-   zFEz3a9RLj8cCr8TiOYPQ9qYpuEAqkh6BQDoj++7np6scZHJtzvWQpIGa
-   4ipV4yNdoozQCwuTA79C1QEB7Jl8UuJnLA/pnPC+z9KH82+NRzhJQgFNl
-   F8+x4RlJdWbz7kgDac8Gs+XdCsWMR+hA2gDbVtTvB9NnlaIM3hdzl7U9N
-   YVrJbwbt7rMJZy2eNhOujiXn69LDiA3khIGZIND2bMJQBsTIY4eQJvape
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="252011055"
-X-IronPort-AV: E=Sophos;i="5.88,389,1635231600"; 
-   d="scan'208";a="252011055"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 13:49:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,389,1635231600"; 
-   d="scan'208";a="779705239"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga005.fm.intel.com with ESMTP; 22 Feb 2022 13:49:32 -0800
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 22 Feb 2022 13:49:31 -0800
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 22 Feb 2022 13:49:31 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Tue, 22 Feb 2022 13:49:31 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.170)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 22 Feb 2022 13:49:31 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QyJI6uC2vMaPEzXH6L01TQ2d0gqeMm1qlixAHiYZpVl2ZZlL3j/qqpuZ374IRUACJMBEhyKO50KM55Qjv3EsCzFE/KQ4Fi/5bqOD/FtVj3lxBEjlMnTmWqGug9QP+9DKOhy3SnQi1c8+hh+PN80t4/fvvOi6Q2q4yJAXgcWgzPrwlLfO7uZw8D2AonWCqN6PLax/IzSOYYrfH3eQVWuJLjEz7U5SqlPocRfIU9tnscDVJ28VUIGxZuCy5WLlzaKPAFmv8s1Yp/xMU8Ym3jEzZsXOlxHPCXNJ78oTj+Ejn+MHFh+Uoo7UGvKz17gDA1k3HTjUs+u0VUrMGWAqTODt6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ubQctGCrpiV36HBCEYv1C+MBF/T2VNH1zL+lFKFlT1A=;
- b=MbIXdW7W0yokHbWLu5LZ3RfIgCe4XuJ2/vBqmIXRHFgfCXBM1A8LlzfoN0NFvdCt1kNxKnWEg5MFzS0CWvC1A0BqINf3CmImVsw4irfBIfqrVUxjG39jgxccNvJwL7hv70j8Lwf+XaMiVmdVlTsf17OxmrZZQNHDYSr4vNd6GEh1QTLidQNJaS8mekUatogX+brTb9fanXdMkPJLNEUtdLe8fTTGXg32XpT6LzoMTqmRjylxOjR5BhpXA0m2LyUtYB3D+gTAw4nupJoQXHMFADzGLHKJ5+XNvg4uD+Y7p8EyP9NEyCNBjBfZNQqKn8D2F/a9IEZlS6/nh0u/cm2itw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW4PR11MB5776.namprd11.prod.outlook.com (2603:10b6:303:183::9)
- by MN0PR11MB6011.namprd11.prod.outlook.com (2603:10b6:208:372::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Tue, 22 Feb
- 2022 21:49:29 +0000
-Received: from MW4PR11MB5776.namprd11.prod.outlook.com
- ([fe80::79bd:61ad:6fb6:b739]) by MW4PR11MB5776.namprd11.prod.outlook.com
- ([fe80::79bd:61ad:6fb6:b739%5]) with mapi id 15.20.4995.027; Tue, 22 Feb 2022
- 21:49:29 +0000
-From:   "Drewek, Wojciech" <wojciech.drewek@intel.com>
-To:     Harald Welte <laforge@gnumonks.org>
-CC:     Marcin Szycik <marcin.szycik@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "osmocom-net-gprs@lists.osmocom.org" 
-        <osmocom-net-gprs@lists.osmocom.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [PATCH net-next v7 3/7] gtp: Implement GTP echo request
-Thread-Topic: [PATCH net-next v7 3/7] gtp: Implement GTP echo request
-Thread-Index: AQHYJ0c0x8wgPYhfJE2Ej/qOlKqz9qyfHWAAgAAxdFCAALtjgIAADYIw
-Date:   Tue, 22 Feb 2022 21:49:29 +0000
-Message-ID: <MW4PR11MB57761DD076EA744C52C49FD5FD3B9@MW4PR11MB5776.namprd11.prod.outlook.com>
-References: <20220221101425.19776-1-marcin.szycik@linux.intel.com>
- <20220221101425.19776-4-marcin.szycik@linux.intel.com>
- <YhSDfvQoNDyoAaV9@nataraja>
- <MW4PR11MB5776AA2256C00293FAC07C16FD3B9@MW4PR11MB5776.namprd11.prod.outlook.com>
- <YhVKK16JRo3THp7h@nataraja>
-In-Reply-To: <YhVKK16JRo3THp7h@nataraja>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.200.16
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2d7d73bf-f294-4896-655c-08d9f64d33e7
-x-ms-traffictypediagnostic: MN0PR11MB6011:EE_
-x-microsoft-antispam-prvs: <MN0PR11MB6011A4D51B17E1753FDB3CC3FD3B9@MN0PR11MB6011.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VBX+kURd7MDSvz976YKJf7CG86JHRdAgOWD+YDKpDWXfjilQ0Cj9qtGnsIdIbcxxCUWkPDK/uxkQqv4SDmavQi1gtSBTwREDaXKj6J2bl25LyVLAZXlF9PT6pndhXd0g/qrs5tK6i3zVsFXq0OH0FEMfnVX/IUTWS9NsGW4XgnuB0lVF5d7sLO/dm02j733yCHOP3m++mM2PrZ1KGpvp+PuXzwEMyd6CC+Gkrt60Ii+Xqt2azDJJOxBHWVyOtuBqe7eo/7z5YeRmuJGiSloqhdaAczS5pPpFiET3H2FH8xiFLES5e0VqsxlR2Xplyx+CHFW3FeZ+ZvGrrfBHuiJfWv/kYcp0O0SErSGVXaQ6QjK3ld7eCyTreK25Sl6qZ3Q6jAAgdic/6jNP3esRoa2UaFGm5ARgVeYDOIetozN7g5CPFPn/uMOrREM6l2fkGMtqCTns1B1neyG6OzxDy6mALh7nWKp07tw+sGCPQFRW/1AZR02cYY1+YnMnMgJeIkHRKmG+WhSXExORCI14PVwfeOugUDFxqILGJMODxBXu8wfM7JMNqafH9ecM3+H7KfEHg0y/tujh3HLdjfJcsspOLcfgEc3HZT6WvhTjQxa0ASQUjn5bcrd92Rrgtk2je63yN1AFcWaGpLh+YUTiMtuJ9dZFzZH5ZxuKWvp+C+khnU22OFN6Y0b7lyHl5ZEhjTdxWXTFogE3tK3ZpZZMBRvbJQyzf1vQ1uAfT6VgDfD97IfkMkpObZZ5wcQq0lQSl0trUOCq0ZqM9VnDzO2xMn91eixTaUv7jf9qRBv3SM+frss=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5776.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(71200400001)(508600001)(7696005)(6506007)(9686003)(966005)(66556008)(66946007)(66446008)(64756008)(76116006)(82960400001)(66476007)(53546011)(6916009)(316002)(54906003)(86362001)(122000001)(38100700002)(38070700005)(2906002)(55016003)(8676002)(52536014)(83380400001)(26005)(186003)(4326008)(8936002)(33656002)(7416002)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gk6E2F37c/bnInS4SY/iAdnbkir5DpBYorKEu0+W/lSAwTv3CoeomDlv61XD?=
- =?us-ascii?Q?80F1tMNsuvFd/T0CQm73t/SeqTidlepDwtysCGIPwRXEC/IJi9a23sQzPA2C?=
- =?us-ascii?Q?JquxydVQ8SjaoNOXyS3YFfTHHtZLE//N1yj8pytO46IlgfoN56isnhXllDZh?=
- =?us-ascii?Q?LVmKhr+UuFk7CLUYWpsFk3y+NQDKCy+NQSvKN3ly/kxLu7w9JKNpYzgVPr0c?=
- =?us-ascii?Q?ZrN76KX1DGdvQmY0XxmoeWODxHdRlnMPtppSFjH/Yxc3LZZ6Iij7rvVtNmuw?=
- =?us-ascii?Q?9ijsq8VrFJVLw1VNtXhyVE+9Jo/mqa5W3DEkBCBMF5ThFRTbuD5Z6H6q5y9P?=
- =?us-ascii?Q?+qykw5bpapF4/lQjkfiUAIvVWLbVFOrbwSIrqgd552UkbXXUw1sKrbk2KvE/?=
- =?us-ascii?Q?8x+ibOGGiC8AzL9a5Gj9cfWCfxpOtotokmCZWw24WcBRZXJ5tNW2GCfVJdNT?=
- =?us-ascii?Q?9+huWPK7SsJZuUxeehri+//oq8wT5e5OZyBS6FKHW4NvnbCxirGbCXGgy4XU?=
- =?us-ascii?Q?I8hVqT+Z/glexLey10wmx6qWa8Tq/BjyeekceIDDIumAKjddQ1qYm59B53op?=
- =?us-ascii?Q?QfYg+ZMC0J+3h3TgNCfSrekfQ8Jak9v4qWkMgoHgseP5VHSNHeYAajZv73Dc?=
- =?us-ascii?Q?oX6snBkGVkRtnKcvGXl5Ut5Xv3Wbw/N0odneM4GqMz10d7KNY3c+sXIymOtL?=
- =?us-ascii?Q?GJYrh2B6tOSAYCPDGvs3OJdEKpbs2pA4A85JtzTXwyP5BXdEAdTcfkKDb9Pa?=
- =?us-ascii?Q?9yGIwQ9sDUzOCXumPNqHwuB8tQ8xhyQ1Or17+08GgGXzK1jO11NgNpCavPrR?=
- =?us-ascii?Q?SW8kdjseUpIA1H/CU9/WiUusKUDaSKxVwXOqtiOLSEmWUy5GqVyRWPt4XrQr?=
- =?us-ascii?Q?MeQkb9SNSZMkXGIRVm/sxrv8J7Wyfw+1ycZcy25iiy1QPvGU7fmsKcmQBszz?=
- =?us-ascii?Q?f8emNAMgtLyUpNWe9SslVhWvGgnc4+wc5OF38cM4yGCoCskvVa/bCJcjoZqs?=
- =?us-ascii?Q?uHzAisLcBArmTJDdRPG8lm+JoJsLq0HyU/mfHlTu+o4k1FpwfYPgHjCbPUlj?=
- =?us-ascii?Q?pCGoLoJLLHd9ayhYiFaPJwylRoaIcPcCq/r3zZys8kPkFqzwdYfl3h0MjvEo?=
- =?us-ascii?Q?NrJ1YIV7/LQpuxypgkY7Wm9mLxLbB4kG29fH0FxllUo/St4ThAtShX3xgrE6?=
- =?us-ascii?Q?69tyQht17iFKPuTuAG1zhOJp1dhP9T+s65OM2KoOTrU+1wO1R0qb2NaXY2o1?=
- =?us-ascii?Q?Tr9Z7TaHKc40S0tUtQUZlYK/Okvnhha3Pxfy6uqS5pMeEZGPEIv3MjNJzPop?=
- =?us-ascii?Q?Gn5pTVypQuYmJI4WIi0qOpmMPCmS0GH+WMdfDSzZF+I/+MLzpS8qM4LEAOVE?=
- =?us-ascii?Q?Qhq0xDkLdiFx04JGR+DWB17XuW5Ma7VR3RtXwQWnIX8TZvVZON/V5Rmw0Z8h?=
- =?us-ascii?Q?Vz4euwHNl0IpKN22jA0vPGCjvFfy7qkXDEY+JW/EpuHMg+FhWj3I2uaMy2K8?=
- =?us-ascii?Q?XRvYv5AcbwPq39YxKVezXfxd17QMdcqCbIkHYExmGJYpKGh+upPxZYiiid0e?=
- =?us-ascii?Q?5856UE8p1Yw1VXteAZEOjEW1sXKo1BkJeDRLuPg3DNdxh3FjKnQ83HS7yrOy?=
- =?us-ascii?Q?Tp4+E770m6MX9/dDt/SoaG1vHNN8py0Rt8iGq7nVxHU4vPq3TwzNc7Ewl1Ui?=
- =?us-ascii?Q?GygKjA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S234286AbiBVVwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 16:52:09 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0CD27161;
+        Tue, 22 Feb 2022 13:51:40 -0800 (PST)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21MKGOuI015658;
+        Tue, 22 Feb 2022 21:51:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=ShY5bluNr7TMIwQjuventtCSdXjVZ3r3lwXTCQsNi+g=;
+ b=eLpAgkQjqKpLJ4I18z4tAzqUPUnEWwIU3Ss2xILyfsgPF17VXUN7XNkLe7PqpsTNjl78
+ jiiLdh2a0h6xZ8sUa+YMhQgoXV+ostcFFFsigRwdaiJ9dEMnelYFr/M5bt09q8Mwor4o
+ F3gWYo0sPGBzv7E01GnrZ6F2rPGbMXX7sFDjGrCjmek0g057aWCHoG1dvGI9DIqvHFp9
+ HByqdIJaaPUn4efM0GCZl928tuY5JqJGkpGSuSRLaDMDwpKw41sExTeRblZcgTkvqkPo
+ /3whtGU3deMR87RneL6pWJnbmj7DkYiEL2G/FwVcbCe96E5ViBobtaKpzaU0OrQXeqpf Zg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ed6qm1sba-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 21:51:26 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21MLWihb011304;
+        Tue, 22 Feb 2022 21:51:26 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ed6qm1sb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 21:51:25 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21MLh79e004872;
+        Tue, 22 Feb 2022 21:51:24 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma05fra.de.ibm.com with ESMTP id 3ear69cj7u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 21:51:24 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21MLpLKt10879450
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 22 Feb 2022 21:51:21 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A807611C050;
+        Tue, 22 Feb 2022 21:51:21 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4302C11C04A;
+        Tue, 22 Feb 2022 21:51:21 +0000 (GMT)
+Received: from [9.171.78.41] (unknown [9.171.78.41])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 22 Feb 2022 21:51:21 +0000 (GMT)
+Message-ID: <8a88c49e2d4f5715776c33a6cc83cc1985f4e106.camel@linux.ibm.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix implementation-defined
+ behavior in sk_lookup test
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 22 Feb 2022 22:51:21 +0100
+In-Reply-To: <87bkyykapm.fsf@cloudflare.com>
+References: <20220221180358.169101-1-jakub@cloudflare.com>
+         <8ff3f2ff692acaffe9494007a3431c269372f822.camel@linux.ibm.com>
+         <88a4927eaf3ca385ce9a7406ef23062a39eb1734.camel@linux.ibm.com>
+         <0eeac90306f03b4fdb2b028ffb509e4d20121aec.camel@linux.ibm.com>
+         <87fsoakjj6.fsf@cloudflare.com>
+         <6e28c1c3ef0eda6f041593216ac32b210e55e4b7.camel@linux.ibm.com>
+         <87bkyykapm.fsf@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: d4F6fb75Gcd-DFZbSh0X7NXjf4wjdPlL
+X-Proofpoint-GUID: KpDmbjKR_Waskj-KlwancLLoa9UKcO9D
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5776.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2d7d73bf-f294-4896-655c-08d9f64d33e7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Feb 2022 21:49:29.2103
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KNVHJCYchKJGiyGC92jX9RrgoB3fpow7AKyhEvOyUq0kIvG2j9f2W/ej7mmbrOblI6GMZ8VGAKpiYdjJdNrl3AFjgSjrQrw4SPzFDjuOsj8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6011
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-22_07,2022-02-21_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ clxscore=1015 impostorscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999
+ priorityscore=1501 suspectscore=0 bulkscore=0 lowpriorityscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202220132
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -168,75 +103,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Harald,
+On Tue, 2022-02-22 at 19:24 +0100, Jakub Sitnicki wrote:
+> On Tue, Feb 22, 2022 at 06:42 PM +01, Ilya Leoshkevich wrote:
+> > On Tue, 2022-02-22 at 15:53 +0100, Jakub Sitnicki wrote:
+> > > On Tue, Feb 22, 2022 at 03:22 AM +01, Ilya Leoshkevich wrote:
+> > > > On Tue, 2022-02-22 at 01:43 +0100, Ilya Leoshkevich wrote:
+> > > > > On Mon, 2022-02-21 at 22:39 +0100, Ilya Leoshkevich wrote:
+> > > > > > On Mon, 2022-02-21 at 19:03 +0100, Jakub Sitnicki wrote:
+> > > > > > > Shifting 16-bit type by 16 bits is implementation-defined
+> > > > > > > for
+> > > > > > > BPF
+> > > > > > > programs.
+> > > > > > > Don't rely on it in case it is causing the test failures
+> > > > > > > we
+> > > > > > > are
+> > > > > > > seeing on
+> > > > > > > s390x z15 target.
+> > > > > > > 
+> > > > > > > Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load
+> > > > > > > from
+> > > > > > > remote_port in bpf_sk_lookup")
+> > > > > > > Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > > > > > > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> > > > > > > ---
+> > > > > > > 
+> > > > > > > I don't have a dev env for s390x/z15 set up yet, so can't
+> > > > > > > definitely
+> > > > > > > confirm the fix.
+> > > > > > > That said, it seems worth fixing either way.
+> > > > > > > 
+> > > > > > >  tools/testing/selftests/bpf/progs/test_sk_lookup.c | 3
+> > > > > > > ++-
+> > > > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > > > > > 
+> > > > > > > diff --git
+> > > > > > > a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+> > > > > > > b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+> > > > > > > index bf5b7caefdd0..7d47276a8964 100644
+> > > > > > > --- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+> > > > > > > +++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+> > > > > > > @@ -65,6 +65,7 @@ static const __u32 KEY_SERVER_A =
+> > > > > > > SERVER_A;
+> > > > > > >  static const __u32 KEY_SERVER_B = SERVER_B;
+> > > > > > >  
+> > > > > > >  static const __u16 SRC_PORT = bpf_htons(8008);
+> > > > > > > +static const __u32 SRC_PORT_U32 = bpf_htonl(8008U <<
+> > > > > > > 16);
+> > > > > > >  static const __u32 SRC_IP4 = IP4(127, 0, 0, 2);
+> > > > > > >  static const __u32 SRC_IP6[] = IP6(0xfd000000, 0x0, 0x0,
+> > > > > > > 0x00000002);
+> > > > > > >  
+> > > > > > > @@ -421,7 +422,7 @@ int ctx_narrow_access(struct
+> > > > > > > bpf_sk_lookup
+> > > > > > > *ctx)
+> > > > > > >  
+> > > > > > >         /* Load from remote_port field with zero padding
+> > > > > > > (backward
+> > > > > > > compatibility) */
+> > > > > > >         val_u32 = *(__u32 *)&ctx->remote_port;
+> > > > > > > -       if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) <<
+> > > > > > > 16))
+> > > > > > > +       if (val_u32 != SRC_PORT_U32)
+> > > > > > >                 return SK_DROP;
+> > > > > > >  
+> > > > > > >         /* Narrow loads from local_port field. Expect
+> > > > > > > DST_PORT.
+> > > > > > > */
+> > > > > > 
+> > > > > > Unfortunately this doesn't help with the s390 problem.
+> > > > > > I'll try to debug this.
+> > > > > 
+> > > > > I have to admit I have a hard time wrapping my head around
+> > > > > the
+> > > > > requirements here.
+> > > > > 
+> > > > > Based on the pre-9a69e2b385f4 code, do I understand correctly
+> > > > > that
+> > > > > for the following input
+> > > > > 
+> > > > > Port:     0x1f48
+> > > > > SRC_PORT: 0x481f
+> > > > > 
+> > > > > we expect the following results for different kinds of loads:
+> > > > > 
+> > > > > Size   Offset  LE      BE
+> > > > > BPF_B  0       0x1f    0
+> > > > > BPF_B  1       0x48    0
+> > > > > BPF_B  2       0       0x48
+> > > > > BPF_B  3       0       0x1f
+> > > > > BPF_H  0       0x481f  0
+> > > > > BPF_H  1       0       0x481f
+> > > > > BPF_W  0       0x481f  0x481f
+> > > > > 
+> > > > > and this is guaranteed by the struct bpf_sk_lookup ABI?
+> > > > > Because
+> > > > > then
+> > > > > it
+> > > > > looks as if 9a69e2b385f4 breaks it on big-endian as follows:
+> > > > > 
+> > > > > Size   Offset  BE-9a69e2b385f4
+> > > > > BPF_B  0       0x48
+> > > > > BPF_B  1       0x1f
+> > > > > BPF_B  2       0
+> > > > > BPF_B  3       0
+> > > > > BPF_H  0       0x481f
+> > > > > BPF_H  1       0
+> > > > > BPF_W  0       0x481f0000
+> > > > 
+> > > > Sorry, I worded this incorrectly: 9a69e2b385f4 did not change
+> > > > the
+> > > > kernel behavior, the ABI is not broken and the old compiled
+> > > > code
+> > > > should
+> > > > continue to work.
+> > > > What the second table really shows are what the results should
+> > > > be
+> > > > according to the 9a69e2b385f4 struct bpf_sk_lookup definition,
+> > > > which I
+> > > > still think is broken on big-endian and needs to be adjusted to
+> > > > match
+> > > > the ABI.
+> > > > 
+> > > > I noticed one other strange thing in the meantime: loads from
+> > > > *(__u32 *)&ctx->remote_port, *(__u16 *)&ctx->remote_port and
+> > > > *((__u16 *)&ctx->remote_port + 1) all produce 8008 on s390,
+> > > > which
+> > > > is
+> > > > clearly inconsistent. It looks as if convert_ctx_accesses()
+> > > > needs
+> > > > to be
+> > > > adjusted to handle combinations like ctx_field_size == 4 &&
+> > > > size ==
+> > > > 2
+> > > > && target_size == 2. I will continue with this tomorrow.
+> > > > 
+> > > > > Or is the old behavior a bug and this new one is desirable?
+> > > > > 9a69e2b385f4 has no Fixes: tag, so I assume that's the former
+> > > > > :-(
+> > > > > 
+> > > > > In which case, would it make sense to fix it by swapping
+> > > > > remote_port
+> > > > > and :16 in bpf_sk_lookup on big-endian?
+> > > 
+> > > Thanks for looking into it.
+> > > 
+> > > When it comes to requirements, my intention was to keep the same
+> > > behavior as before the split up of the remote_port field in
+> > > 9a69e2b385f4
+> > > ("bpf: Make remote_port field in struct bpf_sk_lookup 16-bit
+> > > wide").
+> > > 
+> > > 9a69e2b385f4 was supposed to be a formality, after a similar
+> > > change
+> > > in
+> > > 4421a582718a ("bpf: Make dst_port field in struct bpf_sock 16-bit
+> > > wide"), which went in earlier.
+> > > 
+> > > In 4421a582718a I've provided a bit more context. I understand
+> > > that
+> > > the
+> > > remote_port value, even before the type changed from u32 to u16,
+> > > appeared to the BPF program as if laid out in memory like so:
+> > > 
+> > >       offsetof(struct bpf_sk_lookup, remote_port) +0  <port MSB>
+> > >                                                   +1  <port LSB>
+> > >                                                   +2  0x00
+> > >                                                   +3  0x00
+> > > 
+> > > Translating it to your handy table format, I expect should result
+> > > in
+> > > loads as so if port is 8008 = 0x1f48:
+> > > 
+> > >       Size   Offset  LE      BE
+> > >       BPF_B  0       0x1f    0x1f
+> > >       BPF_B  1       0x48    0x48
+> > >       BPF_B  2       0       0
+> > >       BPF_B  3       0       0
+> > >       BPF_H  0       0x481f  0x1f48
+> > >       BPF_H  1       0       0
+> > >       BPF_W  0       0x481f  0x1f480000
+> > 
+> > Hmm, I think for big-endian the layout is different.
+> > If we look at test_sk_lookup.c from 9a69e2b385f4^:
+> > 
+> >         /* Narrow loads from remote_port field. Expect SRC_PORT. */
+> >         if (LSB(ctx->remote_port, 0) != ((SRC_PORT >> 0) & 0xff) ||
+> >             LSB(ctx->remote_port, 1) != ((SRC_PORT >> 8) & 0xff) ||
+> >             LSB(ctx->remote_port, 2) != 0 || LSB(ctx->remote_port,
+> > 3)
+> > != 0)
+> >                 return SK_DROP;
+> > 
+> > LSB() on little-endian is just byte indexing, so it's indeed 
+> > 1f,48,00,00. However, on big-endian it's indexing from the end, so
+> > it's 00,00,48,1f.
+> 
+> I understood that LSB() is indexing from the end on BE because
+> SRC_PORT
+> constant value differs on LE (= 0x481f) and BE (= 0x1f48) platforms,
+> so
+> 
+>                  LE  BE
+>   SRC_PORT >> 0  1f  48
+>   SRC_PORT >> 8  48  1f
+> 
+> So on LE we first compare remote_port MSB, then LSB.
+> While on BE we start with remote_port LSB, then MSB.
+> 
+> But, now that you have pointed it out, I notice that
+> sizeof(remote_port)
+> has changed and from 4 to 2, and I can't see how LSB(…, 3) and LSB(…,
+> 4)
+> loads can keep working on big-endian.
 
-> -----Original Message-----
-> From: Harald Welte <laforge@gnumonks.org>
-> Sent: wtorek, 22 lutego 2022 21:40
-> To: Drewek, Wojciech <wojciech.drewek@intel.com>
-> Cc: Marcin Szycik <marcin.szycik@linux.intel.com>; netdev@vger.kernel.org=
-; michal.swiatkowski@linux.intel.com;
-> davem@davemloft.net; kuba@kernel.org; pablo@netfilter.org; jiri@resnulli.=
-us; osmocom-net-gprs@lists.osmocom.org; intel-wired-
-> lan@lists.osuosl.org
-> Subject: Re: [PATCH net-next v7 3/7] gtp: Implement GTP echo request
->=20
-> Hi Wojciech,
->=20
-> On Tue, Feb 22, 2022 at 09:38:08AM +0000, Drewek, Wojciech wrote:
->=20
-> > > I think either the Tx and the Rx ard triggered by / notified to users=
-pace,
-> > > or you would also do periodic triggering of Tx in the kernel autonomo=
-usly,
-> > > and process the responses.  But at that point then you also need to t=
-hink
-> > > about further consequences, such as counting the number of missed ECH=
-O RESP,
-> > > and then notify userspace if that condition "N out of M last response=
-s missed".
-> > >
-> >
-> > I thought that with the GTP device created from ip link, userspace
-> > would be unable to receive Echo Response (similar to Echo Request).
-> > If it's not the case than I will get rid of handling Echo Response in t=
-he
-> > next version.
->=20
-> Well, userspace cannot 'receive' the ECHO response through the UDP socket=
- as
-> the UDP socket is hidden in the kernel.  I was thinking of the same mecha=
-nism
-> you introduce for transmit:  You can trigger the Tx of GTP ECHO REQ via n=
-etlink,
-> so why shouldn't you receive a notifiation about its completion also via =
-netlink?
+Oh, right - it should be 00,00,1f,48 on big-endian.
+Out-of-bounds LSB is indeed an issue. I've posted my current
+thoughts as an RFC series [1], this one is addressed in patch 3.
 
-How can we notify the userspace that the echo response was received? I thou=
-ght
-that I implemented it with the dumpit callback. Is there a way to send msg =
-to the
-userspace using generic netlink interface?
->=20
-> Just don't think of it as sending an ECHO REQ via netlink, but triggering=
- the tx
-> and acknowledging the completion/reception of a related response.
->=20
-> One of the advantages of the existing mechanism via 'socket is held in us=
-erspace'
-> is that we don't have to jump through any such hoops or invent strange in=
-terfaces:
-> The process can just send and receive the messages as usual via UDP socke=
-t related
-> syscalls.
->=20
-> --
-> - Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.o=
-rg/
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> "Privacy in residential applications is a desirable marketing option."
->                                                   (ETSI EN 300 175-7 Ch. =
-A6)
+[1]
+https://lore.kernel.org/bpf/20220222182559.2865596-1-iii@linux.ibm.com/
+
+> 
+> [...]
+
