@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF754BFFC0
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D274BFFC4
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:08:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbiBVRIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 12:08:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S234581AbiBVRIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 12:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234585AbiBVRI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:08:29 -0500
+        with ESMTP id S234429AbiBVRIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:08:43 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BABB27ED95;
-        Tue, 22 Feb 2022 09:07:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754648C7EF;
+        Tue, 22 Feb 2022 09:08:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B9150CE13B8;
-        Tue, 22 Feb 2022 17:07:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4FA3C340E8;
-        Tue, 22 Feb 2022 17:07:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 57054CE1791;
+        Tue, 22 Feb 2022 17:08:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 216D2C340E8;
+        Tue, 22 Feb 2022 17:08:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645549676;
-        bh=K75SB/lhbqVVIwcxlRrolz61Tn5bMuPkyGH7ZhtRhPs=;
+        s=k20201202; t=1645549688;
+        bh=yFHBdsuRceeQRBNVPPb3szBvEEm5e1vkI4dUoZkDPHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=brQhUfZa3ayqpbAxlgnWE7BPrBvoIDk9XfiCGlwA9sDd2Z4mIzXJc8KVRyXkHZ9wt
-         X84qAJJy5fzCgodojz5f7F2rDHt4LvvElpM/lFnCSrRbhZGaXRJMl7FgqvJVX82q1d
-         Zv3gOCPJfmGx9Gur9RSjX4XxG+k/V3K562O735v0/zLb0Y08vrVfG3HK6lF+uP0Jhc
-         PlqneINQGt+bwi7URen26Mce53STrKWVapKUNfWFdA8b4o3VS5mebc263qgx4BVLw8
-         ci95sE1oMRcByuvlGLjiBGwmDPprtCsIiDtlvu1K62CaTsO122k62W8PHtOdd2IZEZ
-         q7O+wEw9TcrfA==
+        b=KaKyEIbCdh650kZRkWMex9PISQa0m/xA9lY0qlaW0zI3DIYffk3XW6b11lTtQcd/H
+         cr9Nam2BkUPem/AH+84Dhgx/t+Mbbj7ffC0oPSM5SqEJDSkPkisMSEKlZEefWtJ2RD
+         uAsRhKTY34F/4yhPyp3DdQHlzkldGef2+/YaZqkWARdvD632guKbiLdZgHPMLe3hvp
+         epfnoJrgTPEJCgIh0YGltYg0nHVfE29SrCKpceU2YBcDIPwCfxxOcPRarx7bHcP/Jp
+         nmin1QgtKp/hA3VHO618P5Bb87adQCPCueyECw+v0S34/jctWNnpcHjYUVYmhH9QKw
+         U6PTaan7DInGg==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@redhat.com>,
-        Yucong Sun <fallentree@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 08/10] libbpf: Add bpf_program__attach_kprobe_opts support for multi kprobes
-Date:   Tue, 22 Feb 2022 18:05:58 +0100
-Message-Id: <20220222170600.611515-9-jolsa@kernel.org>
+Subject: [PATCH 09/10] selftest/bpf: Add kprobe_multi attach test
+Date:   Tue, 22 Feb 2022 18:05:59 +0100
+Message-Id: <20220222170600.611515-10-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220222170600.611515-1-jolsa@kernel.org>
 References: <20220222170600.611515-1-jolsa@kernel.org>
@@ -62,202 +61,206 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support to bpf_program__attach_kprobe_opts to attach kprobes
-to multiple functions.
+Adding kprobe_multi attach test that uses new fprobe interface to
+attach kprobe program to multiple functions.
 
-If the kprobe program has BPF_TRACE_KPROBE_MULTI as expected_attach_type
-it will use the new kprobe_multi link to attach the program. In this case
-it will use 'func_name' as pattern for functions to attach.
+The test is attaching programs to bpf_fentry_test* functions and
+uses single trampoline program bpf_prog_test_run to trigger
+bpf_fentry_test* functions.
 
-Adding also new section types 'kprobe.multi' and kretprobe.multi'
-that allows to specify wildcards (*?) for functions, like:
-
-  SEC("kprobe.multi/bpf_fentry_test*")
-  SEC("kretprobe.multi/bpf_fentry_test?")
-
-This will set kprobe's expected_attach_type to BPF_TRACE_KPROBE_MULTI,
-and attach it to functions provided by the function pattern.
-
-Using glob_match from selftests/bpf/test_progs.c and adding support to
-match '?' based on original perf code.
-
-Cc: Masami Hiramatsu <mhiramat@redhat.com>
-Cc: Yucong Sun <fallentree@fb.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 130 +++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 125 insertions(+), 5 deletions(-)
+ .../bpf/prog_tests/kprobe_multi_test.c        | 115 ++++++++++++++++++
+ .../selftests/bpf/progs/kprobe_multi.c        |  58 +++++++++
+ 2 files changed, 173 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi.c
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index fb530b004a0d..9bee2d70b99d 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8622,6 +8622,8 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("uprobe/",		KPROBE,	0, SEC_NONE),
- 	SEC_DEF("kretprobe/",		KPROBE, 0, SEC_NONE, attach_kprobe),
- 	SEC_DEF("uretprobe/",		KPROBE, 0, SEC_NONE),
-+	SEC_DEF("kprobe.multi/",	KPROBE,	BPF_TRACE_KPROBE_MULTI, SEC_NONE, attach_kprobe),
-+	SEC_DEF("kretprobe.multi/",	KPROBE,	BPF_TRACE_KPROBE_MULTI, SEC_NONE, attach_kprobe),
- 	SEC_DEF("tc",			SCHED_CLS, 0, SEC_NONE),
- 	SEC_DEF("classifier",		SCHED_CLS, 0, SEC_NONE | SEC_SLOPPY_PFX | SEC_DEPRECATED),
- 	SEC_DEF("action",		SCHED_ACT, 0, SEC_NONE | SEC_SLOPPY_PFX),
-@@ -10038,6 +10040,113 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
- 	return pfd;
- }
- 
-+/* Adapted from perf/util/string.c */
-+static bool glob_match(const char *str, const char *pat)
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+new file mode 100644
+index 000000000000..f5567c3865d4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -0,0 +1,115 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include "kprobe_multi.skel.h"
++#include "trace_helpers.h"
++
++static void test_skel_api(void)
 +{
-+	while (*str && *pat && *pat != '*') {
-+		if (*pat == '?') {      /* Matches any single character */
-+			str++;
-+			pat++;
-+			continue;
-+		}
-+		if (*str != *pat)
-+			return false;
-+		str++;
-+		pat++;
-+	}
-+	/* Check wild card */
-+	if (*pat == '*') {
-+		while (*pat == '*')
-+			pat++;
-+		if (!*pat) /* Tail wild card matches all */
-+			return true;
-+		while (*str)
-+			if (glob_match(str++, pat))
-+				return true;
-+	}
-+	return !*str && !*pat;
++	LIBBPF_OPTS(bpf_test_run_opts, topts);
++	struct kprobe_multi *skel = NULL;
++	int err, prog_fd;
++
++	skel = kprobe_multi__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "kprobe_multi__open_and_load"))
++		goto cleanup;
++
++	err = kprobe_multi__attach(skel);
++	if (!ASSERT_OK(err, "kprobe_multi__attach"))
++		goto cleanup;
++
++	prog_fd = bpf_program__fd(skel->progs.test1);
++	err = bpf_prog_test_run_opts(prog_fd, &topts);
++	ASSERT_OK(err, "test_run");
++	ASSERT_EQ(topts.retval, 0, "test_run");
++
++	ASSERT_EQ(skel->bss->test2_result, 8, "test2_result");
++	ASSERT_EQ(skel->bss->test3_result, 8, "test3_result");
++
++cleanup:
++	kprobe_multi__destroy(skel);
 +}
 +
-+struct kprobe_multi_resolve {
-+	const char *name;
-+	__u64 *addrs;
-+	size_t cap;
-+	size_t cnt;
-+};
-+
-+static int
-+resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
-+			const char *sym_name, void *ctx)
++static void test_link_api(struct bpf_link_create_opts *opts)
 +{
-+	struct kprobe_multi_resolve *res = ctx;
-+	int err;
++	LIBBPF_OPTS(bpf_test_run_opts, topts);
++	int err, prog_fd, link1_fd = -1, link2_fd = -1;
++	struct kprobe_multi *skel = NULL;
 +
-+	if (!glob_match(sym_name, res->name))
-+		return 0;
++	skel = kprobe_multi__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
++		goto cleanup;
 +
-+	err = libbpf_ensure_mem((void **)&res->addrs, &res->cap, sizeof(__u64),
-+				res->cnt + 1);
-+	if (err)
-+		return err;
++	prog_fd = bpf_program__fd(skel->progs.test2);
++	link1_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, opts);
++	if (!ASSERT_GE(link1_fd, 0, "link_fd"))
++		goto cleanup;
 +
-+	res->addrs[res->cnt++] = sym_addr;
++	opts->kprobe_multi.flags = BPF_F_KPROBE_MULTI_RETURN;
++	prog_fd = bpf_program__fd(skel->progs.test3);
++	link2_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, opts);
++	if (!ASSERT_GE(link2_fd, 0, "link_fd"))
++		goto cleanup;
++
++	skel->bss->test2_result = 0;
++	skel->bss->test3_result = 0;
++
++	prog_fd = bpf_program__fd(skel->progs.test1);
++	err = bpf_prog_test_run_opts(prog_fd, &topts);
++	ASSERT_OK(err, "test_run");
++	ASSERT_EQ(topts.retval, 0, "test_run");
++
++	ASSERT_EQ(skel->bss->test2_result, 8, "test2_result");
++	ASSERT_EQ(skel->bss->test3_result, 8, "test3_result");
++
++cleanup:
++	if (link1_fd != -1)
++		close(link1_fd);
++	if (link2_fd != -1)
++		close(link2_fd);
++	kprobe_multi__destroy(skel);
++}
++
++static void test_link_api_addrs(void)
++{
++	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
++	__u64 addrs[8];
++
++	kallsyms_find("bpf_fentry_test1", &addrs[0]);
++	kallsyms_find("bpf_fentry_test2", &addrs[1]);
++	kallsyms_find("bpf_fentry_test3", &addrs[2]);
++	kallsyms_find("bpf_fentry_test4", &addrs[3]);
++	kallsyms_find("bpf_fentry_test5", &addrs[4]);
++	kallsyms_find("bpf_fentry_test6", &addrs[5]);
++	kallsyms_find("bpf_fentry_test7", &addrs[6]);
++	kallsyms_find("bpf_fentry_test8", &addrs[7]);
++
++	opts.kprobe_multi.addrs = (__u64) addrs;
++	opts.kprobe_multi.cnt = 8;
++	test_link_api(&opts);
++}
++
++static void test_link_api_syms(void)
++{
++	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
++	const char *syms[8] = {
++		"bpf_fentry_test1",
++		"bpf_fentry_test2",
++		"bpf_fentry_test3",
++		"bpf_fentry_test4",
++		"bpf_fentry_test5",
++		"bpf_fentry_test6",
++		"bpf_fentry_test7",
++		"bpf_fentry_test8",
++	};
++
++	opts.kprobe_multi.syms = (__u64) syms;
++	opts.kprobe_multi.cnt = 8;
++	test_link_api(&opts);
++}
++
++void test_kprobe_multi_test(void)
++{
++	test_skel_api();
++	test_link_api_syms();
++	test_link_api_addrs();
++}
+diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi.c b/tools/testing/selftests/bpf/progs/kprobe_multi.c
+new file mode 100644
+index 000000000000..71318c65931c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kprobe_multi.c
+@@ -0,0 +1,58 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") = "GPL";
++
++extern const void bpf_fentry_test1 __ksym;
++extern const void bpf_fentry_test2 __ksym;
++extern const void bpf_fentry_test3 __ksym;
++extern const void bpf_fentry_test4 __ksym;
++extern const void bpf_fentry_test5 __ksym;
++extern const void bpf_fentry_test6 __ksym;
++extern const void bpf_fentry_test7 __ksym;
++extern const void bpf_fentry_test8 __ksym;
++
++/* No tests, just to trigger bpf_fentry_test* through tracing test_run */
++SEC("fentry/bpf_modify_return_test")
++int BPF_PROG(test1)
++{
 +	return 0;
 +}
 +
-+static struct bpf_link *
-+attach_kprobe_multi_opts(const struct bpf_program *prog,
-+		   const char *func_pattern,
-+		   const struct bpf_kprobe_opts *kopts)
++__u64 test2_result = 0;
++
++SEC("kprobe.multi/bpf_fentry_test?")
++int test2(struct pt_regs *ctx)
 +{
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-+	struct kprobe_multi_resolve res = {
-+		.name = func_pattern,
-+	};
-+	struct bpf_link *link = NULL;
-+	char errmsg[STRERR_BUFSIZE];
-+	int err, link_fd, prog_fd;
-+	bool retprobe;
++	__u64 addr = bpf_get_func_ip(ctx);
 +
-+	err = libbpf_kallsyms_parse(resolve_kprobe_multi_cb, &res);
-+	if (err)
-+		goto error;
-+	if (!res.cnt) {
-+		err = -ENOENT;
-+		goto error;
-+	}
-+
-+	retprobe = OPTS_GET(kopts, retprobe, false);
-+
-+	opts.kprobe_multi.addrs = ptr_to_u64(res.addrs);
-+	opts.kprobe_multi.cnt = res.cnt;
-+	opts.flags = retprobe ? BPF_F_KPROBE_MULTI_RETURN : 0;
-+
-+	link = calloc(1, sizeof(*link));
-+	if (!link) {
-+		err = -ENOMEM;
-+		goto error;
-+	}
-+	link->detach = &bpf_link__detach_fd;
-+
-+	prog_fd = bpf_program__fd(prog);
-+	link_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, &opts);
-+	if (link_fd < 0) {
-+		err = -errno;
-+		pr_warn("prog '%s': failed to attach to %s: %s\n",
-+			prog->name, res.name,
-+			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-+		goto error;
-+	}
-+	link->fd = link_fd;
-+	free(res.addrs);
-+	return link;
-+
-+error:
-+	free(link);
-+	free(res.addrs);
-+	return libbpf_err_ptr(err);
++	test2_result += (const void *) addr == &bpf_fentry_test1 ||
++			(const void *) addr == &bpf_fentry_test2 ||
++			(const void *) addr == &bpf_fentry_test3 ||
++			(const void *) addr == &bpf_fentry_test4 ||
++			(const void *) addr == &bpf_fentry_test5 ||
++			(const void *) addr == &bpf_fentry_test6 ||
++			(const void *) addr == &bpf_fentry_test7 ||
++			(const void *) addr == &bpf_fentry_test8;
++	return 0;
 +}
 +
- struct bpf_link *
- bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
- 				const char *func_name,
-@@ -10054,6 +10163,9 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
- 	if (!OPTS_VALID(opts, bpf_kprobe_opts))
- 		return libbpf_err_ptr(-EINVAL);
- 
-+	if (prog->expected_attach_type == BPF_TRACE_KPROBE_MULTI)
-+		return attach_kprobe_multi_opts(prog, func_name, opts);
++__u64 test3_result = 0;
 +
- 	retprobe = OPTS_GET(opts, retprobe, false);
- 	offset = OPTS_GET(opts, offset, 0);
- 	pe_opts.bpf_cookie = OPTS_GET(opts, bpf_cookie, 0);
-@@ -10122,19 +10234,27 @@ struct bpf_link *bpf_program__attach_kprobe(const struct bpf_program *prog,
- static struct bpf_link *attach_kprobe(const struct bpf_program *prog, long cookie)
- {
- 	DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts);
-+	const char *func_name = NULL;
- 	unsigned long offset = 0;
- 	struct bpf_link *link;
--	const char *func_name;
- 	char *func;
- 	int n, err;
- 
--	opts.retprobe = str_has_pfx(prog->sec_name, "kretprobe/");
--	if (opts.retprobe)
-+	opts.retprobe = str_has_pfx(prog->sec_name, "kretprobe");
++SEC("kretprobe.multi/bpf_fentry_test*")
++int test3(struct pt_regs *ctx)
++{
++	__u64 addr = bpf_get_func_ip(ctx);
 +
-+	if (str_has_pfx(prog->sec_name, "kretprobe/"))
- 		func_name = prog->sec_name + sizeof("kretprobe/") - 1;
--	else
-+	else if (str_has_pfx(prog->sec_name, "kprobe/"))
- 		func_name = prog->sec_name + sizeof("kprobe/") - 1;
-+	else if (str_has_pfx(prog->sec_name, "kretprobe.multi/"))
-+		func_name = prog->sec_name + sizeof("kretprobe.multi/") - 1;
-+	else if (str_has_pfx(prog->sec_name, "kprobe.multi/"))
-+		func_name = prog->sec_name + sizeof("kprobe.multi/") - 1;
-+
-+	if (!func_name)
-+		return libbpf_err_ptr(-EINVAL);
- 
--	n = sscanf(func_name, "%m[a-zA-Z0-9_.]+%li", &func, &offset);
-+	n = sscanf(func_name, "%m[a-zA-Z0-9_.*?]+%li", &func, &offset);
- 	if (n < 1) {
- 		err = -EINVAL;
- 		pr_warn("kprobe name is invalid: %s\n", func_name);
++	test3_result += (const void *) addr == &bpf_fentry_test1 ||
++			(const void *) addr == &bpf_fentry_test2 ||
++			(const void *) addr == &bpf_fentry_test3 ||
++			(const void *) addr == &bpf_fentry_test4 ||
++			(const void *) addr == &bpf_fentry_test5 ||
++			(const void *) addr == &bpf_fentry_test6 ||
++			(const void *) addr == &bpf_fentry_test7 ||
++			(const void *) addr == &bpf_fentry_test8;
++	return 0;
++}
 -- 
 2.35.1
 
