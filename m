@@ -2,126 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4594BFF86
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D402F4BFFA5
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:06:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233658AbiBVRBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 12:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
+        id S234469AbiBVRGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 12:06:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiBVRBS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:01:18 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E8E16E7CB;
-        Tue, 22 Feb 2022 09:00:51 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 797D65803B7;
-        Tue, 22 Feb 2022 12:00:50 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 22 Feb 2022 12:00:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=HtCItNyhGVUgQ9zYx
-        8y8HwkSSNP7qG6erjhX3gp1Vas=; b=GtZc3a+Qfwr7g0xbB/r/BXPgspmACWS5G
-        0OGqRVvN6z11OqHVovHGRWCIY+6qwMtxF85hTXbUfkCrF+fnjHoeZnPCv0XXOJla
-        0JkgBu9WCWEnKJottlEKs/Q4JTZdyLmnRmhTbDr+/rVr0IPN2yxgwBw/wMgTVpG8
-        C9DoX4S/LL3KjKX65DZDCRznCURUQokspAfI6u2Fi3Fx8wU6QTNyq8N5GoT7nieO
-        Yhhv/C7ifwD/9umjdWpzeNwMitCll2oBCOj6sJ8t/mdGGx5OHFJ+xV/TdaC/1R0N
-        6AUjtVDxl/Y72YPEjJVL0il7EKgeRDlxX1hKjl3laKNHeOagby5aA==
-X-ME-Sender: <xms:wRYVYiV488PJ8dsyWXC2-qZX4Ec6K41Dsf4gR_5L-9d82sciAItPsQ>
-    <xme:wRYVYumBrUxVr8yJp28gXjHjH6idO1Ji3PhD6ODs9V4bVAf8CwKGf-myJP2AHBedc
-    jQyhpQuubrzuUs>
-X-ME-Received: <xmr:wRYVYmb-w1BGYM1gutgPONq5dR0QQG6p26CwXhoUD4DKQDnERE5vPOkh4d_7pU4ztW3VGAKMjf_r8oAuyqgkzbGcag0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgdelfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:whYVYpVh7rh-btnjQECit2ixdjjH1xEQgpb0OQe732sLUJXzafy88w>
-    <xmx:whYVYskuy1ClagUaAi7TsEOtjRvTRcRyXCCXBfOPZhK_9PsMx-ELbw>
-    <xmx:whYVYucdvuL-RBwSfTBPxtNiwaIxsdnMxtpGFdKjt1-cJflnmCUyjw>
-    <xmx:whYVYqpPNokjYGIilBHrkHosAHqdWOFV-0p14_H7TjNh5i0VZ3gNjw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Feb 2022 12:00:48 -0500 (EST)
-Date:   Tue, 22 Feb 2022 19:00:46 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next v4 5/5] selftests: forwarding: tests of locked
- port feature
-Message-ID: <YhUWvhkhRVY+/Osd@shredder>
-References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
- <20220222132818.1180786-6-schultz.hans+netdev@gmail.com>
+        with ESMTP id S232716AbiBVRGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:06:41 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0383353B55;
+        Tue, 22 Feb 2022 09:06:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 753CFCE13B3;
+        Tue, 22 Feb 2022 17:06:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6639C340E8;
+        Tue, 22 Feb 2022 17:06:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645549572;
+        bh=envM6Pe0RNjwRRahtg36RWvOnQB8p5h1bqAvG1iwJ+I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Syn4hZMdM6n/VYkbbMBLZAjyLuBnppJIiMfpb0T6F01VJwhCiqvE2HOxlmTlpbmnV
+         lLqzT2xz5cg6eIO23M3nxa1DeS80goZ/PhA+M39IXcsHZ96eAl73EbIGaLmtstKWX9
+         CyYkiCMWnVs6IbkS71rIfiVmvkjvhzXjmYS6tvlPsNMjhIr8eTJFvA5XgSi8LGhSiP
+         jM6O0mD86X79zMb9miol1YVf+fhNgxhYO6q7XmHoW++uESkCXiV9ls67SkoD1xr85N
+         ZBwafFXF/RX7dYXeBYJgDW6LUkmqqnsz9PPYD4HI8A8heW/moUBWZG1L5VeKgO0PLH
+         WGf6uZQB7o6Wg==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCHv2 bpf-next 0/8] bpf: Add kprobe multi link
+Date:   Tue, 22 Feb 2022 18:05:50 +0100
+Message-Id: <20220222170600.611515-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222132818.1180786-6-schultz.hans+netdev@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 02:28:18PM +0100, Hans Schultz wrote:
-> diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> new file mode 100755
-> index 000000000000..a8800e531d07
-> --- /dev/null
-> +++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> @@ -0,0 +1,180 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-> +NUM_NETIFS=4
-> +CHECK_TC="no"
-> +source lib.sh
-> +
-> +h1_create()
-> +{
-> +	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
-> +	vrf_create "vrf-vlan-h1"
-> +	ip link set dev vrf-vlan-h1 up
-> +	vlan_create $h1 100 vrf-vlan-h1 198.51.100.1/24 ::ffff:c633:6401/64
+hi,
+this patchset adds new link type BPF_TRACE_KPROBE_MULTI that attaches
+kprobe program through fprobe API [1] instroduced by Masami.
 
-Hi,
-
-Why did you change it from 2001:db8:3::1/64 to ::ffff:c633:6401/64? It
-was actually OK the first time...
-
-Anyway, looking at locked_port_vlan() I see that you are only testing
-IPv4 so you can just drop this address:
-
-vlan_create $h1 100 vrf-vlan-h1 198.51.100.1/24
-
-Same for $h2
-
-LGTM otherwise. Feel free to add my tag to the next version
+The fprobe API allows to attach probe on multiple functions at once very
+fast, because it works on top of ftrace. On the other hand this limits
+the probe point to the function entry or return.
 
 
-> +}
+With bpftrace support I see following attach speed:
+
+  # perf stat --null -r 5 ./src/bpftrace -e 'kprobe:x* { } i:ms:1 { exit(); } '
+  Attaching 2 probes...
+  Attaching 3342 functions
+  ...
+
+  1.4960 +- 0.0285 seconds time elapsed  ( +-  1.91% )
+
+
+v2 changes:
+  - based on latest fprobe changes [1]
+  - renaming the uapi interface to kprobe multi
+  - adding support for sort_r to pass user pointer for swap functions
+    and using that in cookie support to keep just single functions array
+  - moving new link to kernel/trace/bpf_trace.c file
+  - using single fprobe callback function for entry and exit
+  - using kvzalloc, libbpf_ensure_mem functions
+  - adding new k[ret]probe.multi sections instead of using current kprobe
+  - used glob_match from test_progs.c, added '?' matching
+  - move bpf_get_func_ip verifier inline change to seprate change
+  - couple of other minor fixes
+
+
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  bpf/kprobe_multi
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/164458044634.586276.3261555265565111183.stgit@devnote2/
+---
+Jiri Olsa (10):
+      lib/sort: Add priv pointer to swap function
+      bpf: Add multi kprobe link
+      bpf: Add bpf_get_func_ip kprobe helper for multi kprobe link
+      bpf: Add support to inline bpf_get_func_ip helper on x86
+      bpf: Add cookie support to programs attached with kprobe multi link
+      libbpf: Add libbpf_kallsyms_parse function
+      libbpf: Add bpf_link_create support for multi kprobes
+      libbpf: Add bpf_program__attach_kprobe_opts support for multi kprobes
+      selftest/bpf: Add kprobe_multi attach test
+      selftest/bpf: Add kprobe_multi test for bpf_cookie values
+
+ include/linux/bpf_types.h                                   |   1 +
+ include/linux/sort.h                                        |   4 +-
+ include/linux/trace_events.h                                |   6 ++
+ include/linux/types.h                                       |   1 +
+ include/uapi/linux/bpf.h                                    |  14 ++++
+ kernel/bpf/syscall.c                                        |  26 ++++++--
+ kernel/bpf/verifier.c                                       |  21 +++++-
+ kernel/trace/bpf_trace.c                                    | 331 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ lib/sort.c                                                  |  42 +++++++++---
+ tools/include/uapi/linux/bpf.h                              |  14 ++++
+ tools/lib/bpf/bpf.c                                         |   7 ++
+ tools/lib/bpf/bpf.h                                         |   9 ++-
+ tools/lib/bpf/libbpf.c                                      | 192 +++++++++++++++++++++++++++++++++++++++++++++--------
+ tools/lib/bpf/libbpf_internal.h                             |   5 ++
+ tools/testing/selftests/bpf/prog_tests/bpf_cookie.c         |  72 ++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c  | 115 ++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/kprobe_multi.c            |  58 ++++++++++++++++
+ tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c |  62 +++++++++++++++++
+ 18 files changed, 930 insertions(+), 50 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
