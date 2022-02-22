@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C18624C02C4
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 21:03:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F39FC4C02CF
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 21:06:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234779AbiBVUDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 15:03:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
+        id S235400AbiBVUHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 15:07:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232041AbiBVUDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 15:03:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452F7CD5DB;
-        Tue, 22 Feb 2022 12:03:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9BB1B80AD0;
-        Tue, 22 Feb 2022 20:03:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44D2C340E8;
-        Tue, 22 Feb 2022 20:03:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645560183;
-        bh=bARya+5AojzCiqimk+yisv0RgHtnw56CKKTarijTxmI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y/AhqouUMfcglgJ6gxXppwvkehVW7t0SWEsn6Kupq2EIQ9rTu4WOY9fum5gOylfr8
-         pG8K2RVIBnpbKnOBgEc67J5/4ghNPan17C4eNnpIdAYRM04B6SweKkmkJHpi83gRf+
-         3Exn0pPGoe4tcRVzkuYMpHRWsFz4uz8GGenF8ziOxCjDa/54lio8Yjl4f0BSeASGAT
-         yCAdjKdlMU7ebNthUBFt07J8+AEEyIRLeSNmn2fDMjOaKTV8b2udtC/e0L/GsxSksk
-         HFmovAgOFO5oJHu1WuHwLUc3opu+FbnXzCeqEWIR6c/rp8UnvMTixfpsbAnVdGbM2t
-         9U8zDZOC67y6w==
-Date:   Tue, 22 Feb 2022 12:03:01 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Juergen Gross <jgross@suse.com>,
-        Marek =?UTF-8?B?TWFyY3p5a293c2tpLUc=?= =?UTF-8?B?w7NyZWNraQ==?= 
-        <marmarek@invisiblethingslab.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        "moderated list:XEN HYPERVISOR INTERFACE" 
-        <xen-devel@lists.xenproject.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xen/netfront: destroy queues before real_num_tx_queues
- is zeroed
-Message-ID: <20220222120301.10af2737@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3786b4ef-68e7-5735-0841-fcbae07f7e54@suse.com>
-References: <20220220134202.2187485-1-marmarek@invisiblethingslab.com>
-        <3786b4ef-68e7-5735-0841-fcbae07f7e54@suse.com>
+        with ESMTP id S235401AbiBVUHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 15:07:03 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AFC54BF2
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 12:06:36 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id j11so2502145qvy.0
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 12:06:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jxl20aKaJoRdSVQQAkuMlxPZK/2DA8IRbmJyBXGSnbs=;
+        b=ZRQR5BIvlMx9GmlkiaG5nEUieWA/xlQQbQEGZ7aF4Z5bQtMt9/KZwek7NpmLQgOzRf
+         uCk7LLigWMsT17QIgEgG6uRiwMuejAipPrsC+W7BKGzz87BISxyhCWB4aMSQvzMcwPuP
+         elQYnlKaqftJBDjHgGpotRJ6XltIVRwUdzcgY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jxl20aKaJoRdSVQQAkuMlxPZK/2DA8IRbmJyBXGSnbs=;
+        b=KtoLxEUAPXnFAoxMwG2SI/hA3nFBY3mKNMw68eRGdyyVO1+smQewujjapCDFhPoSjP
+         T/zyScR7U6DSyyiTb3ESCO0F/f56KYkNXBaNECUnolNetMoZ6bIeEf5G3e/H2iLrd7o8
+         Io5pEsqkLdgkvVBFP5DLO+60vnAN7mRJSgfPiVyx4XxC/ztGDacG1roNMF7G10kpV0wQ
+         86nZ03trmI7R95IjKhaIKbLeoE5jwouKEmC0g+O2CwCy1hj2FoIIzmra15+n5Pc1S5G+
+         Jv72pLaxCGnhcnAWoPcu5s/VsGVTFjFh+MP6IdHm4XOC3f1N03gGBj05FVAA69/fBwl1
+         +nbg==
+X-Gm-Message-State: AOAM531VMH+ObOUhQGyTxXULGEmm+sMXnrOtZVH2JmB6vap6Nu4SGrKZ
+        i2KP+v9vzu5yLlrfneh3ERwjIHWjm7ObRB5G2Srl5A==
+X-Google-Smtp-Source: ABdhPJzyFFWk3SPjLGr8lM+w9l1s4IiQ3L+SVMBGRJwQ6FnAvGSmKfTLFMpx1gRJMxByUwLl8noiFbzi/u6BJIlrY/E=
+X-Received: by 2002:a05:6214:223:b0:42c:2667:869 with SMTP id
+ j3-20020a056214022300b0042c26670869mr21025214qvt.17.1645560395638; Tue, 22
+ Feb 2022 12:06:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
+ <1645347953-27003-2-git-send-email-michael.chan@broadcom.com> <20220222112320.1a12b91c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220222112320.1a12b91c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Tue, 22 Feb 2022 12:06:24 -0800
+Message-ID: <CACKFLin9sbgnThjqFpeBZPQmx7WexCujzvoGjuqKYfWkhACycg@mail.gmail.com>
+Subject: Re: [PATCH net 1/7] bnxt_en: Fix active FEC reporting to ethtool
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Andrew Gospodarek <gospo@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000de612905d8a0e2e0"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,91 +66,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Feb 2022 07:27:32 +0100 Juergen Gross wrote:
-> On 20.02.22 14:42, Marek Marczykowski-G=C3=B3recki wrote:
-> > xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
-> > delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
-> > ("net-sysfs: update the queue counts in the unregistration path"),
-> > unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
-> > facts together means, that xennet_destroy_queues() called from
-> > xennet_remove() cannot do its job, because it's called after
-> > unregister_netdev(). This results in kfree-ing queues that are still
-> > linked in napi, which ultimately crashes:
-> >=20
-> >      BUG: kernel NULL pointer dereference, address: 0000000000000000
-> >      #PF: supervisor read access in kernel mode
-> >      #PF: error_code(0x0000) - not-present page
-> >      PGD 0 P4D 0
-> >      Oops: 0000 [#1] PREEMPT SMP PTI
-> >      CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-=
-1.32.fc32.qubes.x86_64+ #226
-> >      RIP: 0010:free_netdev+0xa3/0x1a0
-> >      Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 =
-fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 8=
-5 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
-> >      RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
-> >      RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
-> >      RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
-> >      RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
-> >      R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
-> >      R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
-> >      FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:000000=
-0000000000
-> >      CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >      CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
-> >      Call Trace:
-> >       <TASK>
-> >       xennet_remove+0x13d/0x300 [xen_netfront]
-> >       xenbus_dev_remove+0x6d/0xf0
-> >       __device_release_driver+0x17a/0x240
-> >       device_release_driver+0x24/0x30
-> >       bus_remove_device+0xd8/0x140
-> >       device_del+0x18b/0x410
-> >       ? _raw_spin_unlock+0x16/0x30
-> >       ? klist_iter_exit+0x14/0x20
-> >       ? xenbus_dev_request_and_reply+0x80/0x80
-> >       device_unregister+0x13/0x60
-> >       xenbus_dev_changed+0x18e/0x1f0
-> >       xenwatch_thread+0xc0/0x1a0
-> >       ? do_wait_intr_irq+0xa0/0xa0
-> >       kthread+0x16b/0x190
-> >       ? set_kthread_struct+0x40/0x40
-> >       ret_from_fork+0x22/0x30
-> >       </TASK>
-> >=20
-> > Fix this by calling xennet_destroy_queues() from xennet_close() too,
-> > when real_num_tx_queues is still available. This ensures that queues are
-> > destroyed when real_num_tx_queues is set to 0, regardless of how
-> > unregister_netdev() was called.
-> >=20
-> > Originally reported at
-> > https://github.com/QubesOS/qubes-issues/issues/7257
-> >=20
-> > Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the un=
-registration path")
-> > Cc: stable@vger.kernel.org # 5.16+
-> > Signed-off-by: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblething=
-slab.com>
-> >=20
-> > ---
-> > While this fixes the issue, I'm not sure if that is the correct thing
-> > to do. xennet_remove() calls xennet_destroy_queues() under rtnl_lock,
-> > which may be important here? Just moving xennet_destroy_queues() before=
- =20
->=20
-> I checked some of the call paths leading to xennet_close(), and all of
-> those contained an ASSERT_RTNL(), so it seems the rtnl_lock is already
-> taken here. Could you test with adding an ASSERT_RTNL() in
-> xennet_destroy_queues()?
->=20
-> > unregister_netdev() in xennet_remove() did not helped - it crashed in
-> > another way (use-after-free in xennet_close()). =20
->=20
-> Yes, this would need to basically do the xennet_close() handling in
-> xennet_destroy() instead, which I believe is not really an option.
+--000000000000de612905d8a0e2e0
+Content-Type: text/plain; charset="UTF-8"
 
-I think the patch makes open/close asymmetric, tho. After ifup ; ifdown;
-the next ifup will fail because queues are already destroyed, no?
-IOW xennet_open() expects the queues were created at an earlier stage.
+On Tue, Feb 22, 2022 at 11:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sun, 20 Feb 2022 04:05:47 -0500 Michael Chan wrote:
+> > From: Somnath Kotur <somnath.kotur@broadcom.com>
+> >
+> > ethtool --show-fec <interface> does not show anything when the Active
+> > FEC setting in the chip is set to None.  Fix it to properly return
+> > ETHTOOL_FEC_OFF in that case.
+>
+> Just to be clear - this means:
+>  - the chip supports FEC but None is selected? Or
+>  - the chip does not support FEC?
 
-Maybe we can move the destroy to ndo_uninit? (and create to ndo_init?)
+This patch is only changing the reporting of the active FEC setting to
+be ETHTOOL_FEC_OFF if firmware determines the negotiated or actual FEC
+setting to be None.  It is not changing the reporting of the chip's
+FEC capability or the user's selected FEC setting.
+
+--000000000000de612905d8a0e2e0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHLMAVvdu98Y4BVCBtgBmrrFVp2DpXcy
+ICUzukfqM6JLMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
+MjIwMDYzNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQBD9n0t+iy7YcDBKbFnn+PMYJm7wxLKriuz52ISkowfzyNIJA+e
+a0/lqQm+XY7aKM0NtJ8UxufZo2Ardu5ghx7yXW10ksubi2kns+Js2vccYEvJsf5nqK+KZetAsJar
+iTp4vb66iEq47dK5wpBOHbL3FbXAwNeV2lUDoo4nL+jEP382PmEoGMsCkM83COypu50nlUs8yfoJ
+RGogTVpx2w4VsGJcTvK6rGiQySJ8H73/8fJKTGpMWQLhvDPLcB2pHPfQ7zWh4TikF2iNvAfNBfxk
+Q/lvwjq4s++N6eXJiAxqf4QTOnPRIESGoc5YCPKJiXDgqZELw5vJSNqr/xSxi9SW
+--000000000000de612905d8a0e2e0--
