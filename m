@@ -2,81 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC184BFC53
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 16:21:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE3A4BFC6F
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 16:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbiBVPVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 10:21:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
+        id S233459AbiBVPY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 10:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiBVPVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 10:21:39 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFFC1617E2
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 07:21:13 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id j2so42012415ybu.0
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 07:21:13 -0800 (PST)
+        with ESMTP id S233456AbiBVPYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 10:24:55 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B78114FE2
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 07:24:29 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id q11so6083757pln.11
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 07:24:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HVdVMfysf95jTHRvOxuNoVjxuB0CjZvhXhqlbIHuN0Y=;
-        b=KTh8aFNGaoyntsSAxBWClVP9/nSFTBS6irzubM66J/T39Yf6IABij0qQupUfuzzdZH
-         ihIj4SU7EJtHUp3eNKbXfhrrfrdHCRjI06QOYhuWfa0CrRe5czKlGZ0kFgPhNtdusiE/
-         0cWGtj2Eo8LQ48RmeuO5gh48DJcz9Ic28mn3vkGeynwoJm2hTtHUmOW3NPXIa4x6jgsf
-         6IVhC3O85FyU1YztP8Nj8fRJuiHPBP5iQXLzDxOET1eFSu7QBjKPOJvhBmaOXJMJnFLm
-         a5nEmVP4VCmsyQ2WvCMH6N508jNFlxP3rso6X+xul9CMCySIXCetVpdBnk8Y2gRuOE2p
-         bnRA==
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=+mcTZ2eqc3eLQRfLqaTPyOtzxWrRbXuCUvN2Q5tWSyo=;
+        b=JHHsYwXZtn3qKWl/a+F0o0nHv9w35e4Hwsn9tw5DEvJIKVXpwM3VXvsU+9/IVQ3aer
+         bKEOjAAqd4T/HIpZ15s5H6z36tvbZ7T+kuXA9Hsj82K/cljQ2vxEEh8oZby07qkWvRil
+         CW02Dy3Pn/Tum3Bw41sERzBm7bFxbdc5HCD73kjpbj/h7213WRXxDnJeShgmZnE7llLZ
+         0Tn56mESBtsvGqvK8QPBzbO/BPImfj3EuoVrpxg8hgfhuagjA8tkDxB0XBnh7pOXLyhn
+         mu4Ya3qNx9Zqd5hKtMF21AgD/JiQUXoA1hPpG6kKm52/geYHL8GNwLjw8aCdHXwoxnmk
+         WRRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HVdVMfysf95jTHRvOxuNoVjxuB0CjZvhXhqlbIHuN0Y=;
-        b=btAL3PukERPU4iZG6BS4QHEQX7Poo9MjTZO2tapYWrbjNlqwutHXhjQ60A/gS8dufr
-         Xkv503mnMt/FUNnOaCoroY9JoLGo9FOhNjGVbh2pCmIsYTU+IzGMsrTPxLz7C5NdZ4A2
-         B1i8Vt2a/wd3vZLCNkArJLykK40xgRy99r/HOBWk7RuzmVCSSQVRLS6YEx6TQXPbkrgk
-         jkUgE0T0br3OrW3oLgLFi+/T3QshygAxCtl3v+neuf+ST7iZPBZ/CHOnYJICtY207aeA
-         bpvX/T9PgtkbAciOVRluFrsz+2+uHIhPoPoLMs07BW7c7HgduI5/5gVY4u+9BKcNscuo
-         2hbA==
-X-Gm-Message-State: AOAM531XOpqtBtBsclyQQHSjudkWrAjpySTy0eoY0IFVUImN3ROyHvyF
-        e+pbrlyIqEHWfzPUW66YsG3v9xgSVd/8GoI8TEVdcA==
-X-Google-Smtp-Source: ABdhPJyCcJARRbkiTPXc35f6YTtpOe1UTQH526CZggy98Wmxv6UfuXKgc5itp4zRkLxISttmSWvkXXI+3Fq9wJhPrqM=
-X-Received: by 2002:a25:aac3:0:b0:624:ab10:49dc with SMTP id
- t61-20020a25aac3000000b00624ab1049dcmr6967837ybi.291.1645543272820; Tue, 22
- Feb 2022 07:21:12 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=+mcTZ2eqc3eLQRfLqaTPyOtzxWrRbXuCUvN2Q5tWSyo=;
+        b=ZdIE6eS1Dy1ckXUYC1EkRVjHXOGrXqbdrv7qR2zU3pMkE1Q63OmuwUhXHe229OT8lP
+         hldHhlyc9Mex4XOh9Cbxi1c+ZLfhs2A5jXmwostxz6qpgpP5whlUmO1uAs8Dy9hp3MzX
+         pHF0Bxm5YqfdwxJdRnFREHFhdZ3VGNzfGr6ivyAWwSf031IMumicqJjqXEJWa9TJYFNE
+         qsGXya3IKFYZgOsmiZv2f5juET0dh7Xgm84PkO7gB1Mcen4gii93kdn7+qWjuWbz2cVk
+         WzBjNZH2EVvebF7kCqUs5g2QT2tx7DwbVxF4RJLwLE0HNfLxslZjJf4gHfoCqBolhrJW
+         TKfw==
+X-Gm-Message-State: AOAM531n5WAkVTjedn3xsBSpCanNmiNHWLLT0dXM1obQlHyUhxqPZjH9
+        HU6MhzE8egWPQQrhHZFGleFSODkZ4sm9kdS2Kbc=
+X-Google-Smtp-Source: ABdhPJznr5xfu9OYL9Sh5hyRU/BMAI6OXxn1qrNvz867g1ijRQu0Y7l3M6nXvUXSiL138E8rrHxctZDUdwUGrmWySuI=
+X-Received: by 2002:a17:90b:3594:b0:1bc:7001:5203 with SMTP id
+ mm20-20020a17090b359400b001bc70015203mr4131727pjb.84.1645543469035; Tue, 22
+ Feb 2022 07:24:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20220216212433.1373903-1-luca@z3ntu.xyz> <20220216212433.1373903-2-luca@z3ntu.xyz>
-In-Reply-To: <20220216212433.1373903-2-luca@z3ntu.xyz>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 22 Feb 2022 16:21:01 +0100
-Message-ID: <CACRpkdZhtdyni0cKT43nd9YVSnA_Dza6=kuECuXLJKbDG2rbEA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] dt-bindings: bluetooth: broadcom: add BCM43430A0
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Received: by 2002:a05:7300:80d0:b0:56:d55e:15b3 with HTTP; Tue, 22 Feb 2022
+ 07:24:28 -0800 (PST)
+From:   Michelle Goodman <michellegoodman45@gmail.com>
+Date:   Tue, 22 Feb 2022 15:24:28 +0000
+Message-ID: <CA+PxuvX62a2M99pdG6Zbb_okQLhtvgUGt-DKjdbsSXO4PgZ6Eg@mail.gmail.com>
+Subject: Halo
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:25 PM Luca Weiss <luca@z3ntu.xyz> wrote:
-
-> Document the compatible string for BCM43430A0 bluetooth.
->
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-
-Looks good to me:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+TWVyaGFiYSB1bWFyxLFtIG1lc2FqxLFtxLEgYWxtxLHFn3PEsW7EsXpkxLFyLg0KaMSxemzEsSB0
+ZXBraWxlcmUgaWh0aXlhY8SxbSB2YXINCg0KVGXFn2Vra8O8cmxlci4NCk1pY2hlbGxlDQo=
