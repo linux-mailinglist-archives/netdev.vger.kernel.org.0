@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1404D4BF07F
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:10:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C789A4BF06E
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:10:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240980AbiBVDWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 22:22:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53664 "EHLO
+        id S231932AbiBVDYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 22:24:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241386AbiBVDV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 22:21:59 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88AB1193CB
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 19:21:22 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id gi6so7437838pjb.1
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 19:21:22 -0800 (PST)
+        with ESMTP id S230154AbiBVDYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 22:24:38 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9250D5F90;
+        Mon, 21 Feb 2022 19:24:14 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id m185so18440834iof.10;
+        Mon, 21 Feb 2022 19:24:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SUujqcLr9UEzdWSTe25ghQksX8qS3CZxTzLGpT8kqSo=;
-        b=Zao/Me2y5Y4cu61C4TLYiOcUQqC9LXufs1JbYn5V90hhUoWhHUB4O+JIZigB2EKrtW
-         TWshwYeUBxhe9qa7He27U5If0hCM+iK4Aztjjzm6+vs8niBRG0+UUJPfMlIra86LydlQ
-         r9mtQHC84haPM1XawvPIUI9m6r8Brbbe3c0i3Mdp1Sy3Pnqral+8LOUXx5kCVgDmvkL2
-         MXpe9CCZGzhsgXK4piKsOiSfB5aIF/MpEnZoJ5TDwasqVUaknjQPVV0hRz+ra1fMO00U
-         w/MskEAEzoEVm98sIP0xk8vUFKYIu5XXQKHsiK7uivtK+kHH/Wq0S+r5OidY4oxqx1gG
-         KR+w==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=t9pbxXf5AxDJimERyAK/g611uy98VuNWmmEmuXc8qEw=;
+        b=cQGwRIJzviZF9BcUrpncofuqGASKjdKjS1dBrbatBcOJd+O3l02b0Z301JZGkarEm+
+         15zz8FOCluPEQI6cwB/sOGYFv1SC4APKpE2Pxv2zZDs5AztiNNp1dn4JjR2dkO91okTO
+         1BrgUjfzkTXGjmTCqJNfOGFUfhx+Xeo3VaONlKhYpNh9px33vLRoDjfMXGZ1vJAA1hTN
+         ANPJuFxm8lwLLQy3wJjFGpCwJaW6A62j3FZYxzw+/ukRJOex5tzy+gNmzqg3Dbqh+Pv1
+         uY6i8C8Rm/RQg5VsDK0Yyw9CXylZB1J/xRPtP5KDQfIsTg6r2w4IF3N1SHOxojf+oyS7
+         dUow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SUujqcLr9UEzdWSTe25ghQksX8qS3CZxTzLGpT8kqSo=;
-        b=XwnGEVoF0RFTD5pDNNaNpg3sNt7T4DwR7aUoVAYsh/aVxab6ATuTRy6rP8GqJl6Zbx
-         T7yCwyR17E5taR8vNopZJ+jkImDniBP91Ue3EYIf/BwfXqD3BbEQ0VjvuSbOLd/Pg7J4
-         mkDU7OxHgCMobUxeiRMbuWKMzBRYDcHC13FDYfKAFCevkwr8dkjJNyFHC55uniAgjkjQ
-         iM72mwPG03IahHMjOk0/ZWlDVqV3gKu7jKOLiYTvk0aQS+UMLfmTFABXraKIGBI4DjfG
-         5NT/TUE3NFvbqaE8M16BWwxRHGm8AhZTyXsyJaXfjm/zuHHRuVBi2kV947331vbJ8rO8
-         lepA==
-X-Gm-Message-State: AOAM533+Cy0hmcZZIPaQoC+Xov4+rSld7CaXDN9bb5pNv3AtpZkxPE6I
-        TW+gcoCUuwKRRC2SP9OYThs=
-X-Google-Smtp-Source: ABdhPJzqRbWxXy/e/7lmDebQrsyqUZV9SCv0BciB7qBg3EjLNIzlxqPZ5jJl9iTZ/QYrSScPn54CuA==
-X-Received: by 2002:a17:90b:4a02:b0:1b8:d3c7:7a2b with SMTP id kk2-20020a17090b4a0200b001b8d3c77a2bmr2029643pjb.194.1645500082085;
-        Mon, 21 Feb 2022 19:21:22 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:f99a:9263:216c:fd72])
-        by smtp.gmail.com with ESMTPSA id w198sm14799662pff.96.2022.02.21.19.21.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 19:21:21 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, Marco Elver <elver@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net-next 2/2] net: preserve skb_end_offset() in skb_unclone_keeptruesize()
-Date:   Mon, 21 Feb 2022 19:21:13 -0800
-Message-Id: <20220222032113.4005821-3-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-In-Reply-To: <20220222032113.4005821-1-eric.dumazet@gmail.com>
-References: <20220222032113.4005821-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=t9pbxXf5AxDJimERyAK/g611uy98VuNWmmEmuXc8qEw=;
+        b=lU4W98uiJ9x0Rb4Bcq1HevpmrG2nXeHKAffHIvJlnpZaRp0W/dudfCjlFnTCZMrAVR
+         RvoO8J1MhdMiMINqU4LW6s6rfHzww9+Zrdx2h82DvGyH808mnRAV3gKLaJoxJ/EBhUgk
+         2BwG6RP6jnfkxZM8eWVaLHWhX3c+/XXg4QmpgbNwqvjjaEIwPJEcC7hpuYqbAhWuxI6X
+         Eb0zBaWVUVan89nCXeLFxK61MLQh/aXUNKT6DWmuHzHu/N6wmKj/iSzJ1namcxIREacF
+         qr6qPNB15BNQ1OAn2H112wrUohmXRggz59eSsk6BRpPndiEzr9mZZgu4EN0KYPl8OyQa
+         56qQ==
+X-Gm-Message-State: AOAM530H/FrByKWo7h8RQJl7/rdUGdFjConMiIoh0ANNNXuT0fTmQmt2
+        OqAadU6szeoFQ6ZEFeoq+4t77c/AeZGs5w==
+X-Google-Smtp-Source: ABdhPJzZUKeg4Rm9p/szzjf9rOL8deIbDZKIYA1aPXEuZ8oBrxaWO0OEV4M3p3jSTHvvqVNFc0i4lw==
+X-Received: by 2002:a02:6d04:0:b0:306:3f0c:6e2f with SMTP id m4-20020a026d04000000b003063f0c6e2fmr16890708jac.306.1645500254031;
+        Mon, 21 Feb 2022 19:24:14 -0800 (PST)
+Received: from ?IPV6:2601:284:8200:b700:fc7f:e53f:676e:280d? ([2601:284:8200:b700:fc7f:e53f:676e:280d])
+        by smtp.googlemail.com with ESMTPSA id e14sm1973816ilu.13.2022.02.21.19.24.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 19:24:13 -0800 (PST)
+Message-ID: <cac945fa-ec67-4bbf-8893-323adf0836d8@gmail.com>
+Date:   Mon, 21 Feb 2022 20:24:12 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH net-next v3 2/4] net: tap: track dropped skb via
+ kfree_skb_reason()
+Content-Language: en-US
+To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
+        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
+References: <20220221053440.7320-1-dongli.zhang@oracle.com>
+ <20220221053440.7320-3-dongli.zhang@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220221053440.7320-3-dongli.zhang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -72,169 +78,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On 2/20/22 10:34 PM, Dongli Zhang wrote:
+> The TAP can be used as vhost-net backend. E.g., the tap_handle_frame() is
+> the interface to forward the skb from TAP to vhost-net/virtio-net.
+> 
+> However, there are many "goto drop" in the TAP driver. Therefore, the
+> kfree_skb_reason() is involved at each "goto drop" to help userspace
+> ftrace/ebpf to track the reason for the loss of packets.
+> 
+> The below reasons are introduced:
+> 
+> - SKB_DROP_REASON_SKB_CSUM
+> - SKB_DROP_REASON_SKB_COPY_DATA
+> - SKB_DROP_REASON_SKB_GSO_SEG
+> - SKB_DROP_REASON_DEV_HDR
+> - SKB_DROP_REASON_FULL_RING
+> 
+> Cc: Joao Martins <joao.m.martins@oracle.com>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> ---
+> Changed since v1:
+>   - revise the reason name
+> Changed since v2:
+>   - declare drop_reason as type "enum skb_drop_reason"
+>   - handle the drop in skb_list_walk_safe() case
+> 
+>  drivers/net/tap.c          | 35 +++++++++++++++++++++++++----------
+>  include/linux/skbuff.h     |  9 +++++++++
+>  include/trace/events/skb.h |  5 +++++
+>  3 files changed, 39 insertions(+), 10 deletions(-)
+> 
 
-syzbot found another way to trigger the infamous WARN_ON_ONCE(delta < len)
-in skb_try_coalesce() [1]
+couple of places where the new reason should be in reverse xmas order;
+logic wise:
 
-I was able to root cause the issue to kfence.
-
-When kfence is in action, the following assertion is no longer true:
-
-int size = xxxx;
-void *ptr1 = kmalloc(size, gfp);
-void *ptr2 = kmalloc(size, gfp);
-
-if (ptr1 && ptr2)
-	ASSERT(ksize(ptr1) == ksize(ptr2));
-
-We attempted to fix these issues in the blamed commits, but forgot
-that TCP was possibly shifting data after skb_unclone_keeptruesize()
-has been used, notably from tcp_retrans_try_collapse().
-
-So we not only need to keep same skb->truesize value,
-we also need to make sure TCP wont fill new tailroom
-that pskb_expand_head() was able to get from a
-addr = kmalloc(...) followed by ksize(addr)
-
-Split skb_unclone_keeptruesize() into two parts:
-
-1) Inline skb_unclone_keeptruesize() for the common case,
-   when skb is not cloned.
-
-2) Out of line __skb_unclone_keeptruesize() for the 'slow path'.
-
-WARNING: CPU: 1 PID: 6490 at net/core/skbuff.c:5295 skb_try_coalesce+0x1235/0x1560 net/core/skbuff.c:5295
-Modules linked in:
-CPU: 1 PID: 6490 Comm: syz-executor161 Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:skb_try_coalesce+0x1235/0x1560 net/core/skbuff.c:5295
-Code: bf 01 00 00 00 0f b7 c0 89 c6 89 44 24 20 e8 62 24 4e fa 8b 44 24 20 83 e8 01 0f 85 e5 f0 ff ff e9 87 f4 ff ff e8 cb 20 4e fa <0f> 0b e9 06 f9 ff ff e8 af b2 95 fa e9 69 f0 ff ff e8 95 b2 95 fa
-RSP: 0018:ffffc900063af268 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 00000000ffffffd5 RCX: 0000000000000000
-RDX: ffff88806fc05700 RSI: ffffffff872abd55 RDI: 0000000000000003
-RBP: ffff88806e675500 R08: 00000000ffffffd5 R09: 0000000000000000
-R10: ffffffff872ab659 R11: 0000000000000000 R12: ffff88806dd554e8
-R13: ffff88806dd9bac0 R14: ffff88806dd9a2c0 R15: 0000000000000155
-FS:  00007f18014f9700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020002000 CR3: 000000006be7a000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- tcp_try_coalesce net/ipv4/tcp_input.c:4651 [inline]
- tcp_try_coalesce+0x393/0x920 net/ipv4/tcp_input.c:4630
- tcp_queue_rcv+0x8a/0x6e0 net/ipv4/tcp_input.c:4914
- tcp_data_queue+0x11fd/0x4bb0 net/ipv4/tcp_input.c:5025
- tcp_rcv_established+0x81e/0x1ff0 net/ipv4/tcp_input.c:5947
- tcp_v4_do_rcv+0x65e/0x980 net/ipv4/tcp_ipv4.c:1719
- sk_backlog_rcv include/net/sock.h:1037 [inline]
- __release_sock+0x134/0x3b0 net/core/sock.c:2779
- release_sock+0x54/0x1b0 net/core/sock.c:3311
- sk_wait_data+0x177/0x450 net/core/sock.c:2821
- tcp_recvmsg_locked+0xe28/0x1fd0 net/ipv4/tcp.c:2457
- tcp_recvmsg+0x137/0x610 net/ipv4/tcp.c:2572
- inet_recvmsg+0x11b/0x5e0 net/ipv4/af_inet.c:850
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- sock_recvmsg net/socket.c:962 [inline]
- ____sys_recvmsg+0x2c4/0x600 net/socket.c:2632
- ___sys_recvmsg+0x127/0x200 net/socket.c:2674
- __sys_recvmsg+0xe2/0x1a0 net/socket.c:2704
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: c4777efa751d ("net: add and use skb_unclone_keeptruesize() helper")
-Fixes: 097b9146c0e2 ("net: fix up truesize of cloned skb in skb_prepare_for_shift()")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Marco Elver <elver@google.com>
----
- include/linux/skbuff.h | 20 +++++++++++---------
- net/core/skbuff.c      | 32 ++++++++++++++++++++++++++++++++
- 2 files changed, 43 insertions(+), 9 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 115be7f7348759f33bb7a7c77e3341e6fefd3796..36e9f3f6e1b43ee16f0eb5c807aaad60e521d015 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1795,20 +1795,22 @@ static inline int skb_unclone(struct sk_buff *skb, gfp_t pri)
- 	return 0;
- }
- 
--/* This variant of skb_unclone() makes sure skb->truesize is not changed */
-+/* This variant of skb_unclone() makes sure skb->truesize
-+ * and skb_end_offset() are not changed, whenever a new skb->head is needed.
-+ *
-+ * Indeed there is no guarantee that ksize(kmalloc(X)) == ksize(kmalloc(X))
-+ * when various debugging features are in place.
-+ */
-+int __skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri);
- static inline int skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
- {
-+
- 	might_sleep_if(gfpflags_allow_blocking(pri));
- 
--	if (skb_cloned(skb)) {
--		unsigned int save = skb->truesize;
--		int res;
--
--		res = pskb_expand_head(skb, 0, 0, pri);
--		skb->truesize = save;
--		return res;
--	}
-+	if (skb_cloned(skb))
-+		return __skb_unclone_keeptruesize(skb, pri);
- 	return 0;
-+
- }
- 
- /**
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 27a2296241c9a1b174495cc8f67c4274aec9cca3..725f2b3567698f91f2b0ee9e9b461bcfe07af737 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1787,6 +1787,38 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
- }
- EXPORT_SYMBOL(skb_realloc_headroom);
- 
-+int __skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
-+{
-+	unsigned int saved_end_offset, saved_truesize;
-+	struct skb_shared_info *shinfo;
-+	int res;
-+
-+	saved_end_offset = skb_end_offset(skb);
-+	saved_truesize = skb->truesize;
-+
-+	res = pskb_expand_head(skb, 0, 0, pri);
-+	if (res)
-+		return res;
-+
-+	skb->truesize = saved_truesize;
-+
-+	if (likely(skb_end_offset(skb) == saved_end_offset))
-+		return 0;
-+
-+	shinfo = skb_shinfo(skb);
-+
-+	/* We are about to change back skb->end,
-+	 * we need to move skb_shinfo() to its new location.
-+	 */
-+	memmove(skb->head + saved_end_offset,
-+		shinfo,
-+		offsetof(struct skb_shared_info, frags[shinfo->nr_frags]));
-+
-+	skb_set_end_offset(skb, saved_end_offset);
-+
-+	return 0;
-+}
-+
- /**
-  *	skb_expand_head - reallocate header of &sk_buff
-  *	@skb: buffer to reallocate
--- 
-2.35.1.473.g83b2b277ed-goog
-
+Reviewed-by: David Ahern <dsahern@kernel.org>
