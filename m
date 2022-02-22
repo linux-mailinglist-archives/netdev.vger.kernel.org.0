@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3954BEE84
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 02:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB484BEED7
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 02:15:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237428AbiBVAQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 19:16:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60336 "EHLO
+        id S237673AbiBVATZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 19:19:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiBVAQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 19:16:02 -0500
+        with ESMTP id S237768AbiBVATL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 19:19:11 -0500
 Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E164224BFC;
-        Mon, 21 Feb 2022 16:15:37 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id EFD5E32020A4;
-        Mon, 21 Feb 2022 19:15:34 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 21 Feb 2022 19:15:35 -0500
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE17925C6B;
+        Mon, 21 Feb 2022 16:18:28 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 7647D3200E18;
+        Mon, 21 Feb 2022 19:18:27 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 21 Feb 2022 19:18:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=rc93G4/qTvE1ZYiC5
-        yWr1O2C0TkaoFvvFLrkTcp0OiU=; b=Y69o6eJC81KbBulRopMzp6lUJuZ9AISxP
-        +1QcRCFA2Lymy2SX6QdNNij+bpUKjLI7JY4jk6B+bsTE4uvRYLBtYJQVtWxLXOF7
-        MC7BrgMjs73uOxKJd9JXq/llwO7LemYllNLWxpBII5AYt1DEKRPBJVbzniAl47EV
-        I9+klBHWuuqK0ub/hUfvoMiMtMxtH8+AXU2eUhu1qnegNWweYwBpOLP94gcFk3Ed
-        /xZmjxfMLtm6ggHg69s6N6iJbAvkHiohXHuNcbXTJ0JCAuGZGUMILtklyzt0pOtX
-        cCF3DmjcxDKdnzI5Gl1lgGvALIo1R+JX0RkT5U6LWasdG37Dbrdqw==
-X-ME-Sender: <xms:JisUYrJ7-Kx2Gz-DcSLX6JUni2MkM8yWYJQp4AoCgn2hvNSgKKT9zA>
-    <xme:JisUYvKy_JBBMxZSyUGE4ic2Ird8J5qQ0NkL0YVsZKDDDDr5YdhauOPKZEfTegD1y
-    GXHtTTeqwQ4Cw>
-X-ME-Received: <xmr:JisUYjv11Y6MM_noDbeYIUb00bL2l060gnp-_P2lzYgS7yb48dKXZo_tsjqwkhStKt7m7VELWr2YvwyH0hCdhxXSpyzovDUyiw>
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=V9Y0aM
+        UYHoxDUjucoxLUoyDrdDFBnSbiTwU4Pu0uuFw=; b=Lk7v6cS86buxdL8uLglrJ8
+        gc9GPXof0oIZU84PNZS0mRqvfXb64ccuVy9qySymDTnYJcySt/ZwrRz0HTeVk1CR
+        l61CGJ2G87b0Pmmse9ZprfW4w2/RH/6jCsvVm61jxpFdSGc5RjuFjUeL2rNr5RDd
+        ulmpGv/OUnMLQSxHyTbIRZStwuzcYkBsljArWHqMossMrQZUttPK/t2pHvrOjPuy
+        6E1VIMgHN8sQnTbsOHtm6FuwU4Zxeh//vY9jr50+jJCSvZYMn7ouk1S09tIEsv0S
+        YSaXnVWcxH0WIEAPaz0ZMsMN6fbmZ49DeZHEVxgKSVw9CR8N5QcZdtFF1lVZnadQ
+        ==
+X-ME-Sender: <xms:0isUYhajOZif2OF11acXMQugW-NrH2b_uuhjTeHOte1ytVDE7J4LdA>
+    <xme:0isUYoZQTk298bz6NhkJeJo7nh3pTWf_TqtPCeZqxGMcAvB8nZC98OnBF8stf414H
+    _ra65IIJq8Q9g>
+X-ME-Received: <xmr:0isUYj8Fma0A7ZZPlTu5Ohh-ivjB3OnThldADd9LeVck_MhkjSXkkBpMPGxEEqz1v9r9EtbJM8gDo4y_gW_AN_BwPIglIc29MWH1z2mccvDVaoiFxpg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeejgddvtdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrrhgvkhcu
+    fjughrpefhvffufffkofggtghogfesthekredtredtjeenucfhrhhomhepofgrrhgvkhcu
     ofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinhhvih
-    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepteevffei
-    gffhkefhgfegfeffhfegveeikeettdfhheevieehieeitddugeefteffnecuvehluhhsth
-    gvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrrhhmrghrvghksehi
-    nhhvihhsihgslhgvthhhihhnghhslhgrsgdrtghomh
-X-ME-Proxy: <xmx:JisUYkbYs4yRQDuWPVpdWhTz-QMKtlgY3G4siF3Azf63M4nIiJq4Rg>
-    <xmx:JisUYia-rc0nv9Ddr695FsbNsEykqpokrW3ZBB2ZlTMV7xRwvbrssA>
-    <xmx:JisUYoC2vmtUkDy87UAuKxSdgXE1Y-PGs7AKNdt35uk5T5MudK5U5A>
-    <xmx:JisUYq7doJGgZO5OJpN9rhB7hPF6DYbyZo9JLQQtjrg4kaKuGWyz8w>
+    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhephefhfeet
+    ueelvddvtedttdevieeluedtvedtfeejieelhedutdeuheduieejgfegnecuffhomhgrih
+    hnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
+    mhgrihhlfhhrohhmpehmrghrmhgrrhgvkhesihhnvhhishhisghlvghthhhinhhgshhlrg
+    gsrdgtohhm
+X-ME-Proxy: <xmx:0isUYvpB1SHuZaVw5a9ZhadbYdSGae9vJeyV7K4x5gcIdddd6wJkkQ>
+    <xmx:0isUYsp3z9sEfUZi6pmTXeG08t01qdZBkrZQzYGtyGS0gnvDoqmjNg>
+    <xmx:0isUYlQZFBhIIe7JTbGpftfH5DnpbHB-9W_VdhqSgmxKUVbwYd-ktw>
+    <xmx:0ysUYkIIpexJHEw0wIokCFdZ7Y1kjK8qUNuZ1i1wytH5LTyJUaaMIw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Feb 2022 19:15:32 -0500 (EST)
-Date:   Tue, 22 Feb 2022 01:15:29 +0100
-From:   Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
+ 21 Feb 2022 19:18:25 -0500 (EST)
+From:   =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
         <marmarek@invisiblethingslab.com>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
+To:     linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, stable@vger.kernel.org,
+        Michael Brown <mcb30@ipxe.org>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        "moderated list:XEN HYPERVISOR INTERFACE" 
-        <xen-devel@lists.xenproject.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xen/netfront: destroy queues before real_num_tx_queues
- is zeroed
-Message-ID: <YhQrIWyJ4hhEVVNb@mail-itl>
-References: <20220220134202.2187485-1-marmarek@invisiblethingslab.com>
- <3786b4ef-68e7-5735-0841-fcbae07f7e54@suse.com>
+        xen-devel@lists.xenproject.org (moderated list:XEN NETWORK BACKEND
+        DRIVER),
+        netdev@vger.kernel.org (open list:XEN NETWORK BACKEND DRIVER)
+Subject: [PATCH v2 1/2] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+Date:   Tue, 22 Feb 2022 01:18:16 +0100
+Message-Id: <20220222001817.2264967-1-marmarek@invisiblethingslab.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+tkBggBQeIzPYW+u"
-Content-Disposition: inline
-In-Reply-To: <3786b4ef-68e7-5735-0841-fcbae07f7e54@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Organization: Invisible Things Lab
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -81,58 +80,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
 
---+tkBggBQeIzPYW+u
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 22 Feb 2022 01:15:29 +0100
-From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-To: Juergen Gross <jgross@suse.com>
-Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Antoine Tenart <atenart@kernel.org>,
-	"moderated list:XEN HYPERVISOR INTERFACE" <xen-devel@lists.xenproject.org>,
-	"open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xen/netfront: destroy queues before real_num_tx_queues
- is zeroed
+The 'hotplug-status' node should not be removed as long as the vif
+device remains configured. Otherwise the xen-netback would wait for
+re-running the network script even if it was already called (in case of
+the frontent re-connecting). But also, it _should_ be removed when the
+vif device is destroyed (for example when unbinding the driver) -
+otherwise hotplug script would not configure the device whenever it
+re-appear.
 
-On Mon, Feb 21, 2022 at 07:27:32AM +0100, Juergen Gross wrote:
-> I checked some of the call paths leading to xennet_close(), and all of
-> those contained an ASSERT_RTNL(), so it seems the rtnl_lock is already
-> taken here. Could you test with adding an ASSERT_RTNL() in
-> xennet_destroy_queues()?
+Moving removal of the 'hotplug-status' node was a workaround for nothing
+calling network script after xen-netback module is reloaded. But when
+vif interface is re-created (on xen-netback unbind/bind for example),
+the script should be called, regardless of who does that - currently
+this case is not handled by the toolstack, and requires manual
+script call. Keeping hotplug-status=connected to skip the call is wrong
+and leads to not configured interface.
 
-Tried that and no issues spotted.
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
 
-> In case your test with the added ASSERT_RTNL() doesn't show any
-> problem you can add my:
->=20
-> Reviewed-by: Juergen Gross <jgross@suse.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+---
+Cc: Michael Brown <mcb30@ipxe.org>
+Changes in v2:
+ - build fix, reported by kernel test robot <lkp@intel.com>
 
-Thanks.
+---
+ drivers/net/xen-netback/xenbus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---=20
-Best Regards,
-Marek Marczykowski-G=C3=B3recki
-Invisible Things Lab
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index d24b7a7993aa..3fad58d22155 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -256,6 +256,7 @@ static void backend_disconnect(struct backend_info *be)
+ 		unsigned int queue_index;
+ 
+ 		xen_unregister_watchers(vif);
++		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ #ifdef CONFIG_DEBUG_FS
+ 		xenvif_debugfs_delif(vif);
+ #endif /* CONFIG_DEBUG_FS */
+@@ -675,7 +676,6 @@ static void hotplug_status_changed(struct xenbus_watch *watch,
+ 
+ 		/* Not interested in this watch anymore. */
+ 		unregister_hotplug_status_watch(be);
+-		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ 	}
+ 	kfree(str);
+ }
+-- 
+2.31.1
 
---+tkBggBQeIzPYW+u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhrpukzGPukRmQqkK24/THMrX1ywFAmIUKyEACgkQ24/THMrX
-1yzoYwf9Gx9pcUVHvqm8ndGiV2gIwVCSdgcmDurruCiP0HW8l4A1u6WAWRPs1qRH
-ZBdfn5OSBZwFZu0tVetXVnmWmMAKjqWAHNIF+DlptXue1GzEMa8QIy3NA5iplpOc
-E4xTNf2rn4tEhz4lunfATqTeLKtju19I0w8CD/szjq5CcqOTyHbOV5PodTF2ZdhY
-yAxGB/KTZUROG+8+orCaqmv9RTe0nob293WI8FpAGr4+QowJKuTsygIX+tryKzIA
-2baSea6s+ZjOg0d4NSGSEbU9u8o0NibNiiuT5cAVRHVkVpUNwn4bs3H7K7P25fZe
-RrtbyZfzDTeTV5TfKUQwWl9q6tORaw==
-=Kebw
------END PGP SIGNATURE-----
-
---+tkBggBQeIzPYW+u--
