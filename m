@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54C7A4C0029
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:28:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01DA04C0045
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234445AbiBVR20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 12:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
+        id S233439AbiBVRmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 12:42:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234308AbiBVR2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:28:25 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE72616FDE4;
-        Tue, 22 Feb 2022 09:27:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645550874; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=eMXn7nOmASwwv8/t2aoVCHxSO4EwQZlrTpysveTHxR6OwSReFt/VRsYY+RACyYit/BCRpGoLdyaq83PWIluLiORR2bxWSwZWnqsJ1dUKrhdQ2AnbBryuKOSRXMIdF0Jo54nKNIwAP+c+iNMFWb9Ff5ytQ7mXDHIMMxwxrFRDJIw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645550874; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=ew2wKyPNrw+QVX3xBcY5H5zCBKf3+z6sDwLHCQhCBVY=; 
-        b=Qjt0nWpzwLW/Lr5OMRKTqTPjzv80Y84XJkI4DP6E5j8+/m2CsaiL5YAZ0CRV76GnV14/bay3syueLKNiE9KQVkjJQeaNLByJ8pP+nMH4fPx9J3jP1KPEX0FSzeURaQPV3h1XqgvqxP3LW6uU8PM7cEhjQHKKh3zVXWcsRTk8HhA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645550874;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=ew2wKyPNrw+QVX3xBcY5H5zCBKf3+z6sDwLHCQhCBVY=;
-        b=OWCMDtiBzWLS9bNAv/kKTa8luEdB0RADHpxmoJFGID4s7Y/yBRWvhq4rv//fhPcE
-        jdfLFRpn4CTDdfZjYCYZcqSQbBB35VCXHfD6QSR9xRhI98IueyNAtf/ZYHy9wgX1YUq
-        5YLhwiYnWuwMBzKrDbmGgQP80NynpxB22zBHsyNE=
-Received: from anirudhrb.com (49.207.218.248 [49.207.218.248]) by mx.zohomail.com
-        with SMTPS id 1645550870229262.7087263657254; Tue, 22 Feb 2022 09:27:50 -0800 (PST)
-Date:   Tue, 22 Feb 2022 22:57:41 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
-Message-ID: <YhUdDUSxuXTLltpZ@anirudhrb.com>
-References: <20220221195303.13560-1-mail@anirudhrb.com>
- <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
- <YhRtQEWBF0kqWMsI@anirudhrb.com>
- <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
- <20220222090511-mutt-send-email-mst@kernel.org>
+        with ESMTP id S231901AbiBVRl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:41:59 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF286394
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 09:41:32 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id m1-20020a17090a668100b001bc023c6f34so226023pjj.3
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 09:41:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A2MC21KCsKq/URnkpZqrPsmsNGPhb59wpeK0W4mJwVk=;
+        b=rnRP40f6XwJWgur2yEDz0tzKznIv5VnqEVrKRPzn89zfocsUbimRjXf2kpTFIpIu7j
+         wS90n9Olt2wd3IFNmpt6nZOEUFtx98Hx5Zs8f4HT7aDJ5oO5AhRuN/8D5R1+vT4RnZxA
+         8MtNeFip+kfapamXqVxVP0d+7rB+bkruB1VDcLR9lzWM7Mfmunb4Y0AZ7bA2ALt/ptpw
+         pXu0rysLI+zTYSM/Hul37nZhTMRzGT8CNA/+pF30e6Bd513AZ1OZgA7+h8Gr8qMgPH6V
+         /hPuVfzs7u+imlHmq7Cf5KkRjqZF4itNFxkwuPaTTjB+UrAPAqKwwAboR2uXew+70+7O
+         cUzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A2MC21KCsKq/URnkpZqrPsmsNGPhb59wpeK0W4mJwVk=;
+        b=1+cNd4VIJFbyoa94ww2rmGv9s4JgRasQdw2gZOtBjtNvcDT1ivGETZ1t1DqrdLPG2c
+         kYop7sB9MCU2sl4qNvbtJBuuwxNqyH9AbslpGPidFIyte8JjwMmXkCOCSLEpe2y/bv6o
+         4uIb2HPrvlMjpa3bUCNNLPQIVce0mKjVMWBoRKtWijzwyx8muCenUzTqfVJxcoZ0sJK7
+         jOXY8u/22zr8EEn8e1FdvgZmObttqlcu6k/dc4xqw1kMERVP3cL/FkFBNl+Lax3M1wHb
+         wzUHcmu9HGpFrKBDUWgbMZKSejuNWxR7GcwSqi0tBZwRslnrWNts/1XYmuS3tbYmE4GI
+         7GqQ==
+X-Gm-Message-State: AOAM533K9NqCNmFqFW6o8Iq44QgCBzxVymFq0RiUCODIjZnX1GebdFur
+        HLt7UT60JyjDxRVWg9xhLGmF/anD4CtLccgF
+X-Google-Smtp-Source: ABdhPJxPI6hmmCcgcn61LFTGcXMGK7lfOuTPirw1q7Ja+ADWYj0B2ABVCBXj6+BDK/v5tfJu0Pj97g==
+X-Received: by 2002:a17:903:230e:b0:14d:a8c5:90c2 with SMTP id d14-20020a170903230e00b0014da8c590c2mr24651877plh.5.1645551691320;
+        Tue, 22 Feb 2022 09:41:31 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id j15sm18934353pfj.102.2022.02.22.09.41.30
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 09:41:30 -0800 (PST)
+Date:   Tue, 22 Feb 2022 09:41:27 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 215633] New: =?UTF-8?B?R0VORVZF77yaY2Fubm90?= support bind
+ listening address
+Message-ID: <20220222094128.2d0a8882@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222090511-mutt-send-email-mst@kernel.org>
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,140 +66,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 10:02:29AM -0500, Michael S. Tsirkin wrote:
-> On Tue, Feb 22, 2022 at 03:11:07PM +0800, Jason Wang wrote:
-> > On Tue, Feb 22, 2022 at 12:57 PM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > >
-> > > On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
-> > > > On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > > > >
-> > > > > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
-> > > > > before proceeding with adding it to the iotlb.
-> > > > >
-> > > > > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > > One instance where it can happen is when userspace sends an IOTLB
-> > > > > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
-> > > > > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
-> > > > > iotlb. Next time a packet is sent, iotlb_access_ok() loops
-> > > > > indefinitely due to that erroneous entry:
-> > > > >
-> > > > >         Call Trace:
-> > > > >          <TASK>
-> > > > >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-> > > > >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-> > > > >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-> > > > >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-> > > > >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> > > > >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> > > > >          </TASK>
-> > > > >
-> > > > > Reported by syzbot at:
-> > > > >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
-> > > > >
-> > > > > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
-> > > > > ---
-> > > > >  drivers/vhost/iotlb.c | 6 ++++--
-> > > > >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-> > > > > index 670d56c879e5..b9de74bd2f9c 100644
-> > > > > --- a/drivers/vhost/iotlb.c
-> > > > > +++ b/drivers/vhost/iotlb.c
-> > > > > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > > >                               void *opaque)
-> > > > >  {
-> > > > >         struct vhost_iotlb_map *map;
-> > > > > +       u64 size = last - start + 1;
-> > > > >
-> > > > > -       if (last < start)
-> > > > > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > > +       if (last < start || size == 0)
-> > > > >                 return -EFAULT;
-> > > >
-> > > > I'd move this check to vhost_chr_iter_write(), then for the device who
-> > > > has its own msg handler (e.g vDPA) can benefit from it as well.
-> > >
-> > > Thanks for reviewing!
-> > >
-> > > I kept the check here thinking that all devices would benefit from it
-> > > because they would need to call vhost_iotlb_add_range() to add an entry
-> > > to the iotlb. Isn't that correct?
-> > 
-> > Correct for now but not for the future, it's not guaranteed that the
-> > per device iotlb message handler will use vhost iotlb.
-> > 
-> > But I agree that we probably don't need to care about it too much now.
-> > 
-> > > Do you see any other benefit in moving
-> > > it to vhost_chr_iter_write()?
-> > >
-> > > One concern I have is that if we move it out some future caller to
-> > > vhost_iotlb_add_range() might forget to handle this case.
-> > 
-> > Yes.
-> > 
-> > Rethink the whole fix, we're basically rejecting [0, ULONG_MAX] range
-> > which seems a little bit odd.
-> 
-> Well, I guess ideally we'd split this up as two entries - this kind of
-> thing is after all one of the reasons we initially used first,last as
-> the API - as opposed to first,size.
 
-IIUC, the APIs exposed to userspace accept first,size. Which means that
-right now there is now way for userspace to map this range. So, is there
-any value in not simply rejecting this range?
 
-> 
-> Anirudh, could you do it like this instead of rejecting?
-> 
-> 
-> > I wonder if it's better to just remove
-> > the map->size. Having a quick glance at the the user, I don't see any
-> > blocker for this.
-> > 
-> > Thanks
-> 
-> I think it's possible but won't solve the bug by itself, and we'd need
-> to review and fix all users - a high chance of introducing
-> another regression. 
+Begin forwarded message:
 
-Agreed, I did a quick review of the usages and getting rid of size
-didn't seem trivial.
+Date: Tue, 22 Feb 2022 12:39:10 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 215633] New: GENEVE=EF=BC=9Acannot support bind listening add=
+ress
 
-Thanks,
 
-	- Anirudh.
+https://bugzilla.kernel.org/show_bug.cgi?id=3D215633
 
-> And I think there's value of fitting under the
-> stable rule of 100 lines with context.
-> So sure, but let's fix the bug first.
-> 
-> 
-> 
-> > >
-> > > Thanks!
-> > >
-> > >         - Anirudh.
-> > >
-> > > >
-> > > > Thanks
-> > > >
-> > > > >
-> > > > >         if (iotlb->limit &&
-> > > > > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > > >                 return -ENOMEM;
-> > > > >
-> > > > >         map->start = start;
-> > > > > -       map->size = last - start + 1;
-> > > > > +       map->size = size;
-> > > > >         map->last = last;
-> > > > >         map->addr = addr;
-> > > > >         map->perm = perm;
-> > > > > --
-> > > > > 2.35.1
-> > > > >
-> > > >
-> > >
-> 
+            Bug ID: 215633
+           Summary: GENEVE=EF=BC=9Acannot support bind listening address
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 4.19.90
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: rmsh1216@163.com
+        Regression: No
+
+when create geneve interface and turn it up, then found the specified port =
+is
+listening at 0.0.0.0 address.
+
+[root@localhost ~]# ip link add geneve1 type geneve id 2 dstport 6081 remote
+10.10.10.2
+[root@localhost ~]# netstat -apntu|grep 6081
+udp        0      0 0.0.0.0:6081            0.0.0.0:*                      =
+   =20
+-
+
+read the code, the geneve driver initializes the IP address to 0 by default=
+. It
+does not support setting the listening address.
+
+static struct socket *geneve_create_sock(struct net *net, bool ipv6,
+                                         __be16 port, bool ipv6_rx_csum)
+{
+        struct socket *sock;
+        struct udp_port_cfg udp_conf;
+        int err;
+
+        memset(&udp_conf, 0, sizeof(udp_conf));
+
+        if (ipv6) {
+                udp_conf.family =3D AF_INET6;
+                udp_conf.ipv6_v6only =3D 1;
+                udp_conf.use_udp6_rx_checksums =3D ipv6_rx_csum;
+        } else {
+                udp_conf.family =3D AF_INET;
+                udp_conf.local_ip.s_addr =3D htonl(INADDR_ANY);
+        }
+
+        udp_conf.local_udp_port =3D port;
+
+        /* Open UDP socket */
+        err =3D udp_sock_create(net, &udp_conf, &sock);
+        if (err < 0)
+                return ERR_PTR(err);
+
+        return sock;
+}
+
+It is necessary to support configurable listening address for the reaseon t=
+hat=20
+0.0.0.0 address listen is not safe.
+
+--=20
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
