@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0D874BF53C
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 10:57:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9244BF54F
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 11:02:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiBVJ5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 04:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
+        id S230357AbiBVKCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 05:02:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbiBVJ5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 04:57:41 -0500
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 862BCD2249;
-        Tue, 22 Feb 2022 01:57:14 -0800 (PST)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxmMhzsxRiHa8EAA--.4515S4;
-        Tue, 22 Feb 2022 17:57:08 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable in Kconfig
-Date:   Tue, 22 Feb 2022 17:57:06 +0800
-Message-Id: <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9DxmMhzsxRiHa8EAA--.4515S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7KF1kuw4UKw13uFykAF1rtFb_yoW8Zw4Dpw
-        4jqw1rKr92gr1fKayxCa47WF45G34UWr1UCFsxJ347ZF93AasrZr4ktr12qF17Zr92ga1Y
-        qrZ5uF1kXa1Uu37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPG14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2
-        xKxwCY02Avz4vE14v_GFWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l
-        x2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14
-        v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IY
-        x2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87
-        Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIF
-        yTuYvjfUYJ5rUUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S230320AbiBVKCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 05:02:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CEC4D9E1;
+        Tue, 22 Feb 2022 02:01:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB4E3B81979;
+        Tue, 22 Feb 2022 10:01:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748F6C340F1;
+        Tue, 22 Feb 2022 10:01:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645524106;
+        bh=WlKysR3fh9cyTsBx7g4oItMVVN2tFxPCnNUbkhVb5nw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NF0HYkUOI0T/c3YEkbbhITM2wsz8a1nY+2BBS7Ae1Qq3VQlDKXDwweAiLgzY07a0D
+         CkamuFzar7TxDgxm+QX7I/1Fq1DUFGwnXlPyDla0GiaEX32655LtgKJLcX4zJTFjls
+         61Il/UAGUO7DOVokjixgZgiqpmyhPo1jYvg7/pAGch63DfOdl2iFR/rng+VPpn2ELs
+         xtC7Z1kwFlCUqvcnqxPJ9osES2woTYbxMPm+oOe4oBRJa2GDNGjQmvr70CX22+ay6d
+         vDTZuWldYKrdJnsT7LE8zzB82pPUU2Dr/XdVS2sUIOGL4KiX3Iste78hkfDogmOIH0
+         zRPc6i0BqFc6A==
+Received: by mail-yb1-f178.google.com with SMTP id v186so39969219ybg.1;
+        Tue, 22 Feb 2022 02:01:46 -0800 (PST)
+X-Gm-Message-State: AOAM533Zan2M52b4S0gar/jlnhE6g/l27hzEhWn7rRiAdM2DOCpyI3FT
+        lPxte3sYTSsuCD51QJNxGp1zSUR9DasvpfhiaZ8=
+X-Google-Smtp-Source: ABdhPJzlvtAFNBuRnF7Dm7wHjcBG42cmva1ven6sDLXUphEjMJfNZZBaJeENh17z+ZNcYmS98StpGZzI20vsmBNiZmw=
+X-Received: by 2002:a25:4214:0:b0:624:6215:4823 with SMTP id
+ p20-20020a254214000000b0062462154823mr13087478yba.432.1645524105607; Tue, 22
+ Feb 2022 02:01:45 -0800 (PST)
+MIME-Version: 1.0
+References: <20220216113323.53332-1-Jason@zx2c4.com> <164543897830.26423.13654986323403498456.kvalo@kernel.org>
+In-Reply-To: <164543897830.26423.13654986323403498456.kvalo@kernel.org>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 22 Feb 2022 11:01:34 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXFLx1xGexd5P9xnB-2=cFn1DScCa8U6a7AyRAxQPLCWLw@mail.gmail.com>
+Message-ID: <CAMj1kXFLx1xGexd5P9xnB-2=cFn1DScCa8U6a7AyRAxQPLCWLw@mail.gmail.com>
+Subject: Re: [PATCH v3] ath9k: use hw_random API instead of directly dumping
+ into random.c
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, miaoqing@codeaurora.org,
+        Rui Salvaterra <rsalvaterra@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
+        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, only x86, arm64 and s390 select ARCH_WANT_DEFAULT_BPF_JIT,
-the other archs do not select ARCH_WANT_DEFAULT_BPF_JIT. On the archs
-without ARCH_WANT_DEFAULT_BPF_JIT, if we want to set bpf_jit_enable to
-1 by default, the only way is to enable CONFIG_BPF_JIT_ALWAYS_ON, then
-the users can not change it to 0 or 2, it seems bad for some users. We
-can select ARCH_WANT_DEFAULT_BPF_JIT for those archs if it is proper,
-but at least for now, make BPF_JIT_DEFAULT_ON selectable can give them
-a chance.
+On Mon, 21 Feb 2022 at 11:57, Kalle Valo <kvalo@kernel.org> wrote:
+>
+> "Jason A. Donenfeld" <Jason@zx2c4.com> wrote:
+>
+> > Hardware random number generators are supposed to use the hw_random
+> > framework. This commit turns ath9k's kthread-based design into a proper
+> > hw_random driver.
+> >
+> > Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > Cc: Kalle Valo <kvalo@kernel.org>
+> > Cc: Rui Salvaterra <rsalvaterra@gmail.com>
+> > Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> > Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
+> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+> > Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+>
+> Patch applied to ath-next branch of ath.git, thanks.
+>
+> fcd09c90c3c5 ath9k: use hw_random API instead of directly dumping into ra=
+ndom.c
+>
 
-Additionally, with this patch, under !BPF_JIT_ALWAYS_ON, we can disable
-BPF_JIT_DEFAULT_ON on the archs with ARCH_WANT_DEFAULT_BPF_JIT when make
-menuconfig, it seems flexible for some developers.
+With this patch, it seems we end up registering the hw_rng every time
+the link goes up, and unregister it again when the link goes down,
+right?
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- kernel/bpf/Kconfig | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index f3db15a..8521874 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -54,6 +54,7 @@ config BPF_JIT
- config BPF_JIT_ALWAYS_ON
- 	bool "Permanently enable BPF JIT and remove BPF interpreter"
- 	depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
-+	select BPF_JIT_DEFAULT_ON
- 	help
- 	  Enables BPF JIT and removes BPF interpreter to avoid speculative
- 	  execution of BPF instructions by the interpreter.
-@@ -63,8 +64,16 @@ config BPF_JIT_ALWAYS_ON
- 	  failure.
- 
- config BPF_JIT_DEFAULT_ON
--	def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
--	depends on HAVE_EBPF_JIT && BPF_JIT
-+	bool "Enable BPF JIT by default"
-+	default y if ARCH_WANT_DEFAULT_BPF_JIT
-+	depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
-+	help
-+	  Enables BPF JIT by default to avoid speculative execution of BPF
-+	  instructions by the interpreter.
-+
-+	  When CONFIG_BPF_JIT_DEFAULT_ON is enabled but CONFIG_BPF_JIT_ALWAYS_ON
-+	  is disabled, /proc/sys/net/core/bpf_jit_enable is set to 1 by default
-+	  and can be changed to 0 or 2.
- 
- config BPF_UNPRIV_DEFAULT_OFF
- 	bool "Disable unprivileged BPF by default"
--- 
-2.1.0
-
+Wouldn't it be better to split off this driver from the 802.11 link
+state handling?
