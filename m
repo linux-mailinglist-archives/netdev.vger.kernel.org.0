@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A04B24BEFB1
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 03:54:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B88EA4BEFBE
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 03:54:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239353AbiBVCxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 21:53:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33086 "EHLO
+        id S239368AbiBVCxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 21:53:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233056AbiBVCxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 21:53:16 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B64525C72
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 18:52:52 -0800 (PST)
+        with ESMTP id S239354AbiBVCxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 21:53:18 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2085.outbound.protection.outlook.com [40.107.94.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D8B25C72
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 18:52:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LrLhWPUWdZzWGLNdJsJmX+EUeDxZ/mQn+TTnvz/NY+ClY6LS5H2Gb8B1gZN9gU4vapF/st2nkB1B+yKYeqUp9b5I6gU84NV3X2D5FaNN+ZfV6y3gz3uz/ahV5qZKJP3xDDEbkmH50E/bvQts1BMWSevY9/yS3cTRVfvenLSFe3gZ3OxQQWPEr2h15+Z9r0ZC4AzeXSsw3IjYS7JuPtNDXxt5C2fz/w3xdtmLhbRSVd8RL8A5sylaeqUTw2V+1vbrf0PeaASV5UaXEX08OEZV3UpyEuMPemM6NWy9Jj+YLdKrShrJ8Nhg24YVYljhdapScCQxqX0UcxFB/o3qEH6Iaw==
+ b=BgOF4muMHGu+1XacxgPvmUSIu7BrW9zcXo+0pD95fzl4dcH4lfl02PouZnuRhK2uW1HgXNYkSxYUf4mV3zo0dGWvJp8e3BcD+/7qqlnpDRoIqe0PmrwabFkNUP7tZE/xUnpTZKajH+1Ix4MyboMbBJKrcuLK1YfUPausHk9R/CaGoL5MkJpWJ+UmSCEsdl4yv73MsNgq2ShkE0S8z+8OTIv8rUd0Fboms6kSI7L4od5KrHfNF3f18L7dIEY6FngBjNqTz45wEEpziIG10CJO9/vU6mzQ18t8Jd67pB2swtOg13ZepEV9rsgO94bk2kXkxKOxu59dYEnpuGE73qIRKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MZdlaYK8DkP7J8lsmMkyYSAQEAGMkYe/HdDXOTlZQA0=;
- b=KTNBr0NTjt7+t9iA7iO863ROpI1pSR5OgWxElaXT9/aVWveve2NNhVav3Z+sDXId20F4v4M7hYCDGGpnWfi1iTGx79jBCQKr734PzdVeBTIAN2hoUf9TI8kVxu9qE/XORGX6yU4FlF4Pd3kLs+eultN5vpnEULWrSBw3sVPTOSgUZJzPYI7TiOnsuSlllT5abEXyKmRJkKWQMLuFmquGlPu4TdUeMlkWkDZusR6QCTpGGvmLhfyD7kkSGy4Zho8yXaIvLFFk9OlCqxnu72fHT9WyJeKccGB4D/+rIVPEhJ+Kp6wKJqybzrM8p8H8P5KjPwQIS6Wtkyla0LoDLFS6ow==
+ bh=OM8Zw+OoMBm6zn+0K/PlZhecX0m45Ma0z4EEk8ZXMDw=;
+ b=A2ZpONXo85gWeAI4NvH0XFCrwNP7shecBdbdWoKC+vzIPtKINwJZ80g+Hc4Ei0/T2CiarbjUDB0AO1W3r1IwaAW37hnCscrwvdEgNXAOlWIge5TlA166HSFUOrVdC95mo+q8wuq8QB98KDq/u9ZOxp1eB1/K2D0UjFdCb/gL4hBftCxrtNPCdv2GSzhipg/gqEnwLSH9SJYDAo6UUB421nczRTa8dKiODynXDP4h79wr5GttNuW8nJUJihJLapInyebluMssWfqFQyK/206+MHkVjUPNBnNGcgAXGn5SybyiEaxdzWYekeDpWxYBmMXYFsuLuYPHOePnvUv3B/OOKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
+ 12.22.5.235) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MZdlaYK8DkP7J8lsmMkyYSAQEAGMkYe/HdDXOTlZQA0=;
- b=O+2693/lmxobRBnb/87z83h3wG/gAxSWrhsiwChkjMWaFW3N1Q8gaIYN9ArypszEpIJG2aWUyVZBW3yxsblbRXLYlDO/96RC9HMcVFZsn+b/KV+ASgt0T03IkVMJyqfvgXPoZirXYypv6d/3gZbJiXLnnqJRHZLu+KRx51vCcCpj4EzywRbXXsgFZXXuTZbyJGBGzudtZ+G1/ISoMXHmdOBCK8I895it4V/ezFhwgzLEhQIUmuuXUpugNJ+1R9LFU+HNgk13K7N5dgKS1Mc5gyedqqv3n8MafCe8Rbbrt3e6KIT3xMhRPMsz5a71fTmMmMS6A/DaBb4KJAiyQvv+yw==
-Received: from DM6PR14CA0071.namprd14.prod.outlook.com (2603:10b6:5:18f::48)
- by DM6PR12MB4059.namprd12.prod.outlook.com (2603:10b6:5:215::14) with
+ bh=OM8Zw+OoMBm6zn+0K/PlZhecX0m45Ma0z4EEk8ZXMDw=;
+ b=NccuoTabOB6Nre5h2rTsY+qIpt0r6QYMsuwvYYywBT3+eHMHjlKstNmtac71vZDPb6uqd/uvc+P740kUkuvC2H1yPny9EY/3w9CHPdUB0UCqo4ktziez9APA/rn79bRKIAjFTSRExfQec0FEsIf2A0l1azg+ujIsBST1GyRyCrKexiLHeJG00xmBqR81nMog2adevh7JZa+Q/LUCVCxMXhZwopywCjIL3nwi2CJOCfQTnCIA6Re2HKfgRvs72kVbtvVlVfflxverBpmUPE+Ob0gk3Ny0Ic/dSgSWEbKWcwJf2IOuExaAL2IMMtG0xQmbCH1J9wEATBiCFG2Hf3bpIg==
+Received: from BN6PR11CA0060.namprd11.prod.outlook.com (2603:10b6:404:f7::22)
+ by BN8PR12MB2948.namprd12.prod.outlook.com (2603:10b6:408:6d::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
- 2022 02:52:51 +0000
-Received: from DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:18f:cafe::80) by DM6PR14CA0071.outlook.office365.com
- (2603:10b6:5:18f::48) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.15 via Frontend
- Transport; Tue, 22 Feb 2022 02:52:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ 2022 02:52:52 +0000
+Received: from BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:f7:cafe::bb) by BN6PR11CA0060.outlook.office365.com
+ (2603:10b6:404:f7::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24 via Frontend
+ Transport; Tue, 22 Feb 2022 02:52:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT065.mail.protection.outlook.com (10.13.172.109) with Microsoft SMTP
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT037.mail.protection.outlook.com (10.13.177.182) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 02:52:50 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Feb
- 2022 02:52:50 +0000
+ 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 02:52:51 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Feb
+ 2022 02:52:51 +0000
 Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
  (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 21 Feb 2022
- 18:52:49 -0800
+ 18:52:50 -0800
 Received: from localhost.localdomain (10.127.8.13) by mail.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Mon, 21 Feb 2022 18:52:48 -0800
+ Transport; Mon, 21 Feb 2022 18:52:49 -0800
 From:   Roopa Prabhu <roopa@nvidia.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <stephen@networkplumber.org>,
         <nikolay@cumulusnetworks.com>, <idosch@nvidia.com>,
         <dsahern@gmail.com>, <bpoirier@nvidia.com>
-Subject: [PATCH net-next v2 02/12] vxlan_core: fix build warnings in vxlan_xmit_one
-Date:   Tue, 22 Feb 2022 02:52:20 +0000
-Message-ID: <20220222025230.2119189-3-roopa@nvidia.com>
+Subject: [PATCH net-next v2 03/12] vxlan_core: move common declarations to private header file
+Date:   Tue, 22 Feb 2022 02:52:21 +0000
+Message-ID: <20220222025230.2119189-4-roopa@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220222025230.2119189-1-roopa@nvidia.com>
 References: <20220222025230.2119189-1-roopa@nvidia.com>
@@ -76,24 +76,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 835be98f-4a77-40f9-5713-08d9f5ae6a86
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4059:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4059A9F582259976808EBCD8CB3B9@DM6PR12MB4059.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 9200e2b7-84ec-4578-7b98-08d9f5ae6b33
+X-MS-TrafficTypeDiagnostic: BN8PR12MB2948:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB294832C789FF3F29DA9B5196CB3B9@BN8PR12MB2948.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Yjwsxx6ChX8Q2gN+czUOAUTElzhP3OSeH6T2cUaWebtM+Tmlg9dD1FDGHp/lUyDvpqELYKXMtbFvl7Z3sS1VflV0eDQXkNcbVuM9052+jvU1XKPvAqfwROqUdKokRQbmTvZgz4DoJOvKwzmVqaIaprXufx+JenFsFo/wRHhk1Apxvncu+QkzHpJEtz/bKPMJBDErRX70SY/5MGBIT2Ms8Upo2cE+377YK3E5WdvhsFQfwCq8hZDrkiOnhMCyl7PrCx4S/pNRRhkIDXJC+jgrzUDucZnv7J51fcmRNpwtXuLy7eXprUEehFcRSH62tFUM0rOb011zfED4gwS66bKuOIMEjzqQz5rh3p2VpJ1T5V1aqGPEyUm2hZR6fFhIsByxEZYSePRpuxe8AHPciiluTSOkDhUnC9vA0Mbysboj1qNVaTglVi6vlW5OzMHO4oYOJaq5p/dnNgFuS1+n3nMkVumRoUt7wtcVUHE65G73lTmvenWCEa9yguOVvd8xRtBtLFrH64jiqrgRwqyBtixZJTnqWnMjmliR+q2g6GbJCuPrwVRS3LpcB4HQrTg0RLLceDcekQ6t6iv764gMapFCIEXK/DiMU+gOcmx6705Kig8yLIdef6u/O/98SwVX8bUnPXeKgdV7JJbsZ9BN6Bn32A7p245cURlY2XyEPLCZAsQZa4DIk0az+tm/oM206z3YVI1oaRC30otPw7HMAB8N4Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(47076005)(110136005)(36756003)(70586007)(70206006)(40460700003)(6666004)(54906003)(426003)(83380400001)(8676002)(508600001)(4326008)(336012)(107886003)(26005)(2616005)(8936002)(81166007)(1076003)(186003)(5660300002)(316002)(36860700001)(82310400004)(2906002)(86362001)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: rV6Xq4N2ZhlTGcS44XUd8bzFG8cYbzsA1abD7/qRWBmnfklu9qUhI8P1YSFMtcrwmSt19/Ax7cai6bWvdH0aorm0Bv/zCHRMswO3MlDQRbzc7w1haDDpkzprsBYEqe6gFs6D48dA38VPdifvZ2EXAwE50ImBXf+MJ0xbo4syvLCw1OC0FLm41IbsfBhDnDIyS8O67X7Xq2XLK0k08+O+tC0guIEUttwmSSHjGTjF2UOJD3RemJrbOAHrUvUMaoA8E2XSVNST4flf7B3vNLUOPdS4R6usmbfT1rODdgw4LAY9AJSLo/V48+Q0aoJ45xzzJ1Yxp3sRPO1UU8KaNUr3XUe4LVIqxaApbgciIm2obNhwgvDKJhOnQPTEweSX+tybBfLI5MsmmDWW+HoCw7Q3ETW97+HkhtI2JTJYxwCmhzhpcs741sZmvrVz5QnCuWS+om3oOTBTVT/I13H1bBeAeZ16OTFIz/2GyL+q9NLTU6VHv6npUIMvfB3A59I3GohcCpIRsCxZZfuYJZQnf6/RD8GvIkOT4VBHq7hxZ9WnRxDRBv10aFbmx+7aze0N2qG6mGAFHsdP+M3ANvaUMlTHURA4ZA1qePzOvxHiZzOnd6yS1BqUj2YBSFwdWCzrkFO324xXi5T1Myf7hAAXhAIB6zP+/ppijhAHd7kKb+Kzd3g5Ut15oHNLmge+R/BblqaXOa2DyfgRje8HbyH2YiBv4w==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(5660300002)(2616005)(426003)(1076003)(36860700001)(336012)(316002)(107886003)(86362001)(54906003)(26005)(40460700003)(83380400001)(36756003)(186003)(110136005)(47076005)(8676002)(70206006)(8936002)(82310400004)(70586007)(2906002)(508600001)(4326008)(6666004)(81166007)(356005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 02:52:50.8689
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 02:52:51.9567
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 835be98f-4a77-40f9-5713-08d9f5ae6a86
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9200e2b7-84ec-4578-7b98-08d9f5ae6b33
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT037.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4059
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2948
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -104,69 +104,250 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the below build warnings reported by kernel test robot:
-   - initialize vni in vxlan_xmit_one
-   - wrap label in ipv6 enabled checks in vxlan_xmit_one
+This patch moves common structures and global declarations
+to a shared private headerfile vxlan_private.h. Subsequent
+patches use this header file as a common header file for
+additional shared declarations.
 
-warnings:
-static
- drivers/net/vxlan/vxlan_core.c:2437:14: warning: variable 'label' set
-but not used [-Wunused-but-set-variable]
-           __be32 vni, label;
-                       ^
->> drivers/net/vxlan/vxlan_core.c:2483:7: warning: variable 'vni' is
-used uninitialized whenever 'if' condition is true
-[-Wsometimes-uninitialized]
-
-
-Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Roopa Prabhu <roopa@nvidia.com>
 ---
- drivers/net/vxlan/vxlan_core.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/vxlan/vxlan_core.c    | 84 ++-------------------------
+ drivers/net/vxlan/vxlan_private.h | 95 +++++++++++++++++++++++++++++++
+ 2 files changed, 100 insertions(+), 79 deletions(-)
+ create mode 100644 drivers/net/vxlan/vxlan_private.h
 
 diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index d0dc90d3dac2..a852582e6615 100644
+index a852582e6615..f4ef7d5e2376 100644
 --- a/drivers/net/vxlan/vxlan_core.c
 +++ b/drivers/net/vxlan/vxlan_core.c
-@@ -2603,13 +2603,16 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 	struct vxlan_metadata *md = &_md;
- 	__be16 src_port = 0, dst_port;
- 	struct dst_entry *ndst = NULL;
--	__be32 vni, label;
- 	__u8 tos, ttl;
- 	int ifindex;
- 	int err;
- 	u32 flags = vxlan->cfg.flags;
- 	bool udp_sum = false;
- 	bool xnet = !net_eq(vxlan->net, dev_net(vxlan->dev));
-+	__be32 vni = 0;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	__be32 label;
-+#endif
+@@ -34,10 +34,10 @@
+ #include <net/ip6_checksum.h>
+ #endif
  
- 	info = skb_tunnel_info(skb);
++#include "vxlan_private.h"
++
+ #define VXLAN_VERSION	"0.1"
  
-@@ -2647,7 +2650,9 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			udp_sum = !(flags & VXLAN_F_UDP_ZERO_CSUM_TX);
- 		else
- 			udp_sum = !(flags & VXLAN_F_UDP_ZERO_CSUM6_TX);
+-#define PORT_HASH_BITS	8
+-#define PORT_HASH_SIZE  (1<<PORT_HASH_BITS)
+ #define FDB_AGE_DEFAULT 300 /* 5 min */
+ #define FDB_AGE_INTERVAL (10 * HZ)	/* rescan interval */
+ 
+@@ -53,41 +53,15 @@ static bool log_ecn_error = true;
+ module_param(log_ecn_error, bool, 0644);
+ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
+ 
+-static unsigned int vxlan_net_id;
+-static struct rtnl_link_ops vxlan_link_ops;
++unsigned int vxlan_net_id;
+ 
+-static const u8 all_zeros_mac[ETH_ALEN + 2];
++const u8 all_zeros_mac[ETH_ALEN + 2];
++static struct rtnl_link_ops vxlan_link_ops;
+ 
+ static int vxlan_sock_add(struct vxlan_dev *vxlan);
+ 
+ static void vxlan_vs_del_dev(struct vxlan_dev *vxlan);
+ 
+-/* per-network namespace private data for this module */
+-struct vxlan_net {
+-	struct list_head  vxlan_list;
+-	struct hlist_head sock_list[PORT_HASH_SIZE];
+-	spinlock_t	  sock_lock;
+-	struct notifier_block nexthop_notifier_block;
+-};
+-
+-/* Forwarding table entry */
+-struct vxlan_fdb {
+-	struct hlist_node hlist;	/* linked list of entries */
+-	struct rcu_head	  rcu;
+-	unsigned long	  updated;	/* jiffies */
+-	unsigned long	  used;
+-	struct list_head  remotes;
+-	u8		  eth_addr[ETH_ALEN];
+-	u16		  state;	/* see ndm_state */
+-	__be32		  vni;
+-	u16		  flags;	/* see ndm_flags and below */
+-	struct list_head  nh_list;
+-	struct nexthop __rcu *nh;
+-	struct vxlan_dev  __rcu *vdev;
+-};
+-
+-#define NTF_VXLAN_ADDED_BY_USER 0x100
+-
+ /* salt for hash table */
+ static u32 vxlan_salt __read_mostly;
+ 
+@@ -98,17 +72,6 @@ static inline bool vxlan_collect_metadata(struct vxlan_sock *vs)
+ }
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+-static inline
+-bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
+-{
+-	if (a->sa.sa_family != b->sa.sa_family)
+-		return false;
+-	if (a->sa.sa_family == AF_INET6)
+-		return ipv6_addr_equal(&a->sin6.sin6_addr, &b->sin6.sin6_addr);
+-	else
+-		return a->sin.sin_addr.s_addr == b->sin.sin_addr.s_addr;
+-}
+-
+ static int vxlan_nla_get_addr(union vxlan_addr *ip, struct nlattr *nla)
+ {
+ 	if (nla_len(nla) >= sizeof(struct in6_addr)) {
+@@ -135,12 +98,6 @@ static int vxlan_nla_put_addr(struct sk_buff *skb, int attr,
+ 
+ #else /* !CONFIG_IPV6 */
+ 
+-static inline
+-bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
+-{
+-	return a->sin.sin_addr.s_addr == b->sin.sin_addr.s_addr;
+-}
+-
+ static int vxlan_nla_get_addr(union vxlan_addr *ip, struct nlattr *nla)
+ {
+ 	if (nla_len(nla) >= sizeof(struct in6_addr)) {
+@@ -161,37 +118,6 @@ static int vxlan_nla_put_addr(struct sk_buff *skb, int attr,
+ }
+ #endif
+ 
+-/* Virtual Network hash table head */
+-static inline struct hlist_head *vni_head(struct vxlan_sock *vs, __be32 vni)
+-{
+-	return &vs->vni_list[hash_32((__force u32)vni, VNI_HASH_BITS)];
+-}
+-
+-/* Socket hash table head */
+-static inline struct hlist_head *vs_head(struct net *net, __be16 port)
+-{
+-	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
+-
+-	return &vn->sock_list[hash_32(ntohs(port), PORT_HASH_BITS)];
+-}
+-
+-/* First remote destination for a forwarding entry.
+- * Guaranteed to be non-NULL because remotes are never deleted.
+- */
+-static inline struct vxlan_rdst *first_remote_rcu(struct vxlan_fdb *fdb)
+-{
+-	if (rcu_access_pointer(fdb->nh))
+-		return NULL;
+-	return list_entry_rcu(fdb->remotes.next, struct vxlan_rdst, list);
+-}
+-
+-static inline struct vxlan_rdst *first_remote_rtnl(struct vxlan_fdb *fdb)
+-{
+-	if (rcu_access_pointer(fdb->nh))
+-		return NULL;
+-	return list_first_entry(&fdb->remotes, struct vxlan_rdst, list);
+-}
+-
+ /* Find VXLAN socket based on network namespace, address family, UDP port,
+  * enabled unshareable flags and socket device binding (see l3mdev with
+  * non-default VRF).
+diff --git a/drivers/net/vxlan/vxlan_private.h b/drivers/net/vxlan/vxlan_private.h
+new file mode 100644
+index 000000000000..03fa955cf79f
+--- /dev/null
++++ b/drivers/net/vxlan/vxlan_private.h
+@@ -0,0 +1,95 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ *	Vxlan private header file
++ *
++ */
++
++#ifndef _VXLAN_PRIVATE_H
++#define _VXLAN_PRIVATE_H
++
++extern unsigned int vxlan_net_id;
++extern const u8 all_zeros_mac[ETH_ALEN + 2];
++
++#define PORT_HASH_BITS	8
++#define PORT_HASH_SIZE  (1 << PORT_HASH_BITS)
++
++/* per-network namespace private data for this module */
++struct vxlan_net {
++	struct list_head  vxlan_list;
++	struct hlist_head sock_list[PORT_HASH_SIZE];
++	spinlock_t	  sock_lock;
++	struct notifier_block nexthop_notifier_block;
++};
++
++/* Forwarding table entry */
++struct vxlan_fdb {
++	struct hlist_node hlist;	/* linked list of entries */
++	struct rcu_head	  rcu;
++	unsigned long	  updated;	/* jiffies */
++	unsigned long	  used;
++	struct list_head  remotes;
++	u8		  eth_addr[ETH_ALEN];
++	u16		  state;	/* see ndm_state */
++	__be32		  vni;
++	u16		  flags;	/* see ndm_flags and below */
++	struct list_head  nh_list;
++	struct nexthop __rcu *nh;
++	struct vxlan_dev  __rcu *vdev;
++};
++
++#define NTF_VXLAN_ADDED_BY_USER 0x100
++
++/* Virtual Network hash table head */
++static inline struct hlist_head *vni_head(struct vxlan_sock *vs, __be32 vni)
++{
++	return &vs->vni_list[hash_32((__force u32)vni, VNI_HASH_BITS)];
++}
++
++/* Socket hash table head */
++static inline struct hlist_head *vs_head(struct net *net, __be16 port)
++{
++	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
++
++	return &vn->sock_list[hash_32(ntohs(port), PORT_HASH_BITS)];
++}
++
++/* First remote destination for a forwarding entry.
++ * Guaranteed to be non-NULL because remotes are never deleted.
++ */
++static inline struct vxlan_rdst *first_remote_rcu(struct vxlan_fdb *fdb)
++{
++	if (rcu_access_pointer(fdb->nh))
++		return NULL;
++	return list_entry_rcu(fdb->remotes.next, struct vxlan_rdst, list);
++}
++
++static inline struct vxlan_rdst *first_remote_rtnl(struct vxlan_fdb *fdb)
++{
++	if (rcu_access_pointer(fdb->nh))
++		return NULL;
++	return list_first_entry(&fdb->remotes, struct vxlan_rdst, list);
++}
++
 +#if IS_ENABLED(CONFIG_IPV6)
- 		label = vxlan->cfg.label;
++static inline
++bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
++{
++	if (a->sa.sa_family != b->sa.sa_family)
++		return false;
++	if (a->sa.sa_family == AF_INET6)
++		return ipv6_addr_equal(&a->sin6.sin6_addr, &b->sin6.sin6_addr);
++	else
++		return a->sin.sin_addr.s_addr == b->sin.sin_addr.s_addr;
++}
++
++#else /* !CONFIG_IPV6 */
++
++static inline
++bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
++{
++	return a->sin.sin_addr.s_addr == b->sin.sin_addr.s_addr;
++}
++
 +#endif
- 	} else {
- 		if (!info) {
- 			WARN_ONCE(1, "%s: Missing encapsulation instructions\n",
-@@ -2674,7 +2679,9 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		}
- 		ttl = info->key.ttl;
- 		tos = info->key.tos;
-+#if IS_ENABLED(CONFIG_IPV6)
- 		label = info->key.label;
++
 +#endif
- 		udp_sum = !!(info->key.tun_flags & TUNNEL_CSUM);
- 	}
- 	src_port = udp_flow_src_port(dev_net(dev), skb, vxlan->cfg.port_min,
 -- 
 2.25.1
 
