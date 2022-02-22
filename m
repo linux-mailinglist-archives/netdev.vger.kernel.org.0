@@ -2,290 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 659C14C0047
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 753D74C007B
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234336AbiBVRnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 12:43:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        id S234671AbiBVRw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 12:52:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbiBVRnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:43:11 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB53168085;
-        Tue, 22 Feb 2022 09:42:46 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21MFjQ19026076;
-        Tue, 22 Feb 2022 17:42:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=OSy1/9qmeBX5gC/OhUTD1RFz3919JasNXacmPMK9XfE=;
- b=O1MMa5oJe6m0wypmIGjVb+cLTaulqZMx3SFOtOnuzBPNBLYC+7VtSGTLS+6TmCd5viOn
- 4b564ZYhZMrz3gxQweJ2DLzBW2qwndU5CZMk3nwdh2UgTeOxDGSV5+2tCxBkRpTdyS4q
- 7nmXy1EVHKLyC9CQ5e96ullIg76QCvNawStbsHzxq3+AG39C5SvHWyXK7XyD6SH00Csc
- JXTWGb0kdLZawxvhqBZa1ETBgfkTx7aZQYLnKPwNfPkvNFZrUfaSsJd7CoN5LUVGgLFX
- sbpF/Olvcwmjj8BMqVm2xouyrwk4m/IBSQfPxW7HZa6DJ1MCU3jP1vnfTEkt9P3oani6 Xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed2rmu84s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 17:42:31 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21MH12Pb025637;
-        Tue, 22 Feb 2022 17:42:31 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed2rmu83v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 17:42:31 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21MHbOqI012727;
-        Tue, 22 Feb 2022 17:42:29 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3eaqtj4wee-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 17:42:28 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21MHVnfa49676750
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 17:31:49 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B5596AE053;
-        Tue, 22 Feb 2022 17:42:26 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4C686AE045;
-        Tue, 22 Feb 2022 17:42:26 +0000 (GMT)
-Received: from [9.171.78.41] (unknown [9.171.78.41])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 22 Feb 2022 17:42:26 +0000 (GMT)
-Message-ID: <6e28c1c3ef0eda6f041593216ac32b210e55e4b7.camel@linux.ibm.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix implementation-defined
- behavior in sk_lookup test
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 22 Feb 2022 18:42:26 +0100
-In-Reply-To: <87fsoakjj6.fsf@cloudflare.com>
-References: <20220221180358.169101-1-jakub@cloudflare.com>
-         <8ff3f2ff692acaffe9494007a3431c269372f822.camel@linux.ibm.com>
-         <88a4927eaf3ca385ce9a7406ef23062a39eb1734.camel@linux.ibm.com>
-         <0eeac90306f03b4fdb2b028ffb509e4d20121aec.camel@linux.ibm.com>
-         <87fsoakjj6.fsf@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: N75m2VkDs_p92fW5CtiK13KfTye91NLl
-X-Proofpoint-ORIG-GUID: y06GeqMDO3gMX2eAptkdoIc1tNmGxB-9
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S234655AbiBVRw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:52:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E689C7E81
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 09:52:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645552319;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nni+lwg+vURAlQ1l6Xl0fUh9nRnO1LrD4u/eCChPHCE=;
+        b=DLScQrRYLhydsVITCravgMrBdldb1oTbkaZ6fCZO20zVDaoS1c0hyczeSoN2qwDHcUvk5e
+        K6flmdJbfVBIQMXcQlf4mYNHO663RtOkm5EKILDGDJednV31buw8JFO/3fdizup7S1/fuH
+        ux2XtLRkZR2gniV5ktaJkdTfO4s+Ssw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-637-TUnx2vHpM3S1tSl3hwV0LQ-1; Tue, 22 Feb 2022 12:51:56 -0500
+X-MC-Unique: TUnx2vHpM3S1tSl3hwV0LQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2924C80DE0F;
+        Tue, 22 Feb 2022 17:51:54 +0000 (UTC)
+Received: from [10.22.11.128] (unknown [10.22.11.128])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA90567658;
+        Tue, 22 Feb 2022 17:51:52 +0000 (UTC)
+Message-ID: <bb1370c7-ef68-2d84-88c4-9f73a3152e5a@redhat.com>
+Date:   Tue, 22 Feb 2022 12:51:52 -0500
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-22_05,2022-02-21_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- adultscore=0 mlxscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0
- suspectscore=0 clxscore=1015 priorityscore=1501 mlxlogscore=999
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202220107
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [syzbot] WARNING in cpuset_write_resmask
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>,
+        syzbot <syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com>
+Cc:     cgroups@vger.kernel.org, hannes@cmpxchg.org,
+        linux-kernel@vger.kernel.org, lizefan.x@bytedance.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000264b2a05d44bca80@google.com>
+ <0000000000008f71e305d89070bb@google.com> <YhUc10UcAmot1AJK@slm.duckdns.org>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YhUc10UcAmot1AJK@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-02-22 at 15:53 +0100, Jakub Sitnicki wrote:
-> On Tue, Feb 22, 2022 at 03:22 AM +01, Ilya Leoshkevich wrote:
-> > On Tue, 2022-02-22 at 01:43 +0100, Ilya Leoshkevich wrote:
-> > > On Mon, 2022-02-21 at 22:39 +0100, Ilya Leoshkevich wrote:
-> > > > On Mon, 2022-02-21 at 19:03 +0100, Jakub Sitnicki wrote:
-> > > > > Shifting 16-bit type by 16 bits is implementation-defined for
-> > > > > BPF
-> > > > > programs.
-> > > > > Don't rely on it in case it is causing the test failures we
-> > > > > are
-> > > > > seeing on
-> > > > > s390x z15 target.
-> > > > > 
-> > > > > Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load from
-> > > > > remote_port in bpf_sk_lookup")
-> > > > > Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > > > > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> > > > > ---
-> > > > > 
-> > > > > I don't have a dev env for s390x/z15 set up yet, so can't
-> > > > > definitely
-> > > > > confirm the fix.
-> > > > > That said, it seems worth fixing either way.
-> > > > > 
-> > > > >  tools/testing/selftests/bpf/progs/test_sk_lookup.c | 3 ++-
-> > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git
-> > > > > a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > > > > b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > > > > index bf5b7caefdd0..7d47276a8964 100644
-> > > > > --- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > > > > +++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-> > > > > @@ -65,6 +65,7 @@ static const __u32 KEY_SERVER_A = SERVER_A;
-> > > > >  static const __u32 KEY_SERVER_B = SERVER_B;
-> > > > >  
-> > > > >  static const __u16 SRC_PORT = bpf_htons(8008);
-> > > > > +static const __u32 SRC_PORT_U32 = bpf_htonl(8008U << 16);
-> > > > >  static const __u32 SRC_IP4 = IP4(127, 0, 0, 2);
-> > > > >  static const __u32 SRC_IP6[] = IP6(0xfd000000, 0x0, 0x0,
-> > > > > 0x00000002);
-> > > > >  
-> > > > > @@ -421,7 +422,7 @@ int ctx_narrow_access(struct
-> > > > > bpf_sk_lookup
-> > > > > *ctx)
-> > > > >  
-> > > > >         /* Load from remote_port field with zero padding
-> > > > > (backward
-> > > > > compatibility) */
-> > > > >         val_u32 = *(__u32 *)&ctx->remote_port;
-> > > > > -       if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
-> > > > > +       if (val_u32 != SRC_PORT_U32)
-> > > > >                 return SK_DROP;
-> > > > >  
-> > > > >         /* Narrow loads from local_port field. Expect
-> > > > > DST_PORT.
-> > > > > */
-> > > > 
-> > > > Unfortunately this doesn't help with the s390 problem.
-> > > > I'll try to debug this.
-> > > 
-> > > I have to admit I have a hard time wrapping my head around the
-> > > requirements here.
-> > > 
-> > > Based on the pre-9a69e2b385f4 code, do I understand correctly
-> > > that
-> > > for the following input
-> > > 
-> > > Port:     0x1f48
-> > > SRC_PORT: 0x481f
-> > > 
-> > > we expect the following results for different kinds of loads:
-> > > 
-> > > Size   Offset  LE      BE
-> > > BPF_B  0       0x1f    0
-> > > BPF_B  1       0x48    0
-> > > BPF_B  2       0       0x48
-> > > BPF_B  3       0       0x1f
-> > > BPF_H  0       0x481f  0
-> > > BPF_H  1       0       0x481f
-> > > BPF_W  0       0x481f  0x481f
-> > > 
-> > > and this is guaranteed by the struct bpf_sk_lookup ABI? Because
-> > > then
-> > > it
-> > > looks as if 9a69e2b385f4 breaks it on big-endian as follows:
-> > > 
-> > > Size   Offset  BE-9a69e2b385f4
-> > > BPF_B  0       0x48
-> > > BPF_B  1       0x1f
-> > > BPF_B  2       0
-> > > BPF_B  3       0
-> > > BPF_H  0       0x481f
-> > > BPF_H  1       0
-> > > BPF_W  0       0x481f0000
-> > 
-> > Sorry, I worded this incorrectly: 9a69e2b385f4 did not change the
-> > kernel behavior, the ABI is not broken and the old compiled code
-> > should
-> > continue to work.
-> > What the second table really shows are what the results should be
-> > according to the 9a69e2b385f4 struct bpf_sk_lookup definition,
-> > which I
-> > still think is broken on big-endian and needs to be adjusted to
-> > match
-> > the ABI.
-> > 
-> > I noticed one other strange thing in the meantime: loads from
-> > *(__u32 *)&ctx->remote_port, *(__u16 *)&ctx->remote_port and
-> > *((__u16 *)&ctx->remote_port + 1) all produce 8008 on s390, which
-> > is
-> > clearly inconsistent. It looks as if convert_ctx_accesses() needs
-> > to be
-> > adjusted to handle combinations like ctx_field_size == 4 && size ==
-> > 2
-> > && target_size == 2. I will continue with this tomorrow.
-> > 
-> > > Or is the old behavior a bug and this new one is desirable?
-> > > 9a69e2b385f4 has no Fixes: tag, so I assume that's the former :-(
-> > > 
-> > > In which case, would it make sense to fix it by swapping
-> > > remote_port
-> > > and :16 in bpf_sk_lookup on big-endian?
-> 
-> Thanks for looking into it.
-> 
-> When it comes to requirements, my intention was to keep the same
-> behavior as before the split up of the remote_port field in
-> 9a69e2b385f4
-> ("bpf: Make remote_port field in struct bpf_sk_lookup 16-bit wide").
-> 
-> 9a69e2b385f4 was supposed to be a formality, after a similar change
-> in
-> 4421a582718a ("bpf: Make dst_port field in struct bpf_sock 16-bit
-> wide"), which went in earlier.
-> 
-> In 4421a582718a I've provided a bit more context. I understand that
-> the
-> remote_port value, even before the type changed from u32 to u16,
-> appeared to the BPF program as if laid out in memory like so:
-> 
->       offsetof(struct bpf_sk_lookup, remote_port) +0  <port MSB>
->                                                   +1  <port LSB>
->                                                   +2  0x00
->                                                   +3  0x00
-> 
-> Translating it to your handy table format, I expect should result in
-> loads as so if port is 8008 = 0x1f48:
-> 
->       Size   Offset  LE      BE
->       BPF_B  0       0x1f    0x1f
->       BPF_B  1       0x48    0x48
->       BPF_B  2       0       0
->       BPF_B  3       0       0
->       BPF_H  0       0x481f  0x1f48
->       BPF_H  1       0       0
->       BPF_W  0       0x481f  0x1f480000
+On 2/22/22 12:26, Tejun Heo wrote:
+> (cc'ing Waiman and quoting whole body)
+>
+> Hello, Waiman.
+>
+> It looks like it's hitting
+>
+>   WARN_ON(!is_in_v2_mode() && !nodes_equal(cp->mems_allowed, cp->effective_mems))
+>
+> Can you take a look?
 
-Hmm, I think for big-endian the layout is different.
-If we look at test_sk_lookup.c from 9a69e2b385f4^:
+Sure. I will take a look at that.
 
-        /* Narrow loads from remote_port field. Expect SRC_PORT. */
-        if (LSB(ctx->remote_port, 0) != ((SRC_PORT >> 0) & 0xff) ||
-            LSB(ctx->remote_port, 1) != ((SRC_PORT >> 8) & 0xff) ||
-            LSB(ctx->remote_port, 2) != 0 || LSB(ctx->remote_port, 3)
-!= 0)
-                return SK_DROP;
+Cheers,
+Longman
 
-LSB() on little-endian is just byte indexing, so it's indeed 
-1f,48,00,00. However, on big-endian it's indexing from the end, so
-it's 00,00,48,1f.
-
-> But since the fix does not work, there must be a mistake somewhere in
-> my
-> reasoning.
-> 
-> I expect I should be able to get virtme for s390 working sometime
-> this
-> week to check my math. I've seen your collegue had some luck with it
-> [1].
-
-Yeah, I think it should work. In the worst case it should be possible
-to tweak vmtest.sh to cross-compile and emulate s390.
-
-> Looking forward to your findings.
-> 
-> [1] https://github.com/cilium/ebpf/issues/86#issuecomment-623945549
+>
+> Thanks.
+>
+> On Mon, Feb 21, 2022 at 04:29:18PM -0800, syzbot wrote:
+>> syzbot has found a reproducer for the following issue on:
+>>
+>> HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
+>> git tree:       bpf-next
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=113aeefa700000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=568dc81cd20b72d4a49f
+>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13bb97ce700000
+>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12062c8e700000
+>>
+>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>> Reported-by: syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com
+>>
+>> ------------[ cut here ]------------
+>> WARNING: CPU: 1 PID: 3647 at kernel/cgroup/cpuset.c:1817 update_nodemasks_hier kernel/cgroup/cpuset.c:1817 [inline]
+>> WARNING: CPU: 1 PID: 3647 at kernel/cgroup/cpuset.c:1817 update_nodemask kernel/cgroup/cpuset.c:1890 [inline]
+>> WARNING: CPU: 1 PID: 3647 at kernel/cgroup/cpuset.c:1817 cpuset_write_resmask+0x167b/0x20f0 kernel/cgroup/cpuset.c:2457
+>> Modules linked in:
+>> CPU: 0 PID: 3647 Comm: syz-executor287 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
+>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>> RIP: 0010:update_nodemasks_hier kernel/cgroup/cpuset.c:1817 [inline]
+>> RIP: 0010:update_nodemask kernel/cgroup/cpuset.c:1890 [inline]
+>> RIP: 0010:cpuset_write_resmask+0x167b/0x20f0 kernel/cgroup/cpuset.c:2457
+>> Code: 3c 08 00 0f 85 ed 08 00 00 49 8b 9c 24 38 01 00 00 48 89 ef 48 89 de e8 63 4a 04 00 48 39 dd 0f 84 dd ef ff ff e8 e5 46 04 00 <0f> 0b e9 d1 ef ff ff e8 d9 46 04 00 e8 b4 a5 ef ff e8 cf 46 04 00
+>> RSP: 0018:ffffc90003acfb18 EFLAGS: 00010293
+>> RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+>> RDX: ffff88801e193a00 RSI: ffffffff81740f0b RDI: 0000000000000003
+>> RBP: 0000000000000003 R08: 0000000000000003 R09: ffffffff8fdeca17
+>> R10: ffffffff81740efd R11: 0000000000000001 R12: ffff888074f2e000
+>> R13: ffff888074f2e054 R14: ffff888074f2e138 R15: 0000000000000000
+>> FS:  00007fee62f33700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> CR2: 00007ffcf8240960 CR3: 0000000072ae3000 CR4: 00000000003506f0
+>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>> Call Trace:
+>>   <TASK>
+>>   cgroup_file_write+0x1de/0x760 kernel/cgroup/cgroup.c:3877
+>>   kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
+>>   call_write_iter include/linux/fs.h:2086 [inline]
+>>   new_sync_write+0x431/0x660 fs/read_write.c:503
+>>   vfs_write+0x7cd/0xae0 fs/read_write.c:590
+>>   ksys_write+0x12d/0x250 fs/read_write.c:643
+>>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> RIP: 0033:0x7fee62f82b79
+>> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+>> RSP: 002b:00007fee62f33308 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+>> RAX: ffffffffffffffda RBX: 00007fee6300c4c8 RCX: 00007fee62f82b79
+>> RDX: 0000000000000001 RSI: 0000000020000080 RDI: 0000000000000006
+>> RBP: 00007fee6300c4c0 R08: 0000000000000012 R09: 0000000000000000
+>> R10: 0000000000000000 R11: 0000000000000246 R12: 00007fee6300c4cc
+>> R13: 00007fee62fd92b0 R14: 6d2e746573757063 R15: 0000000000022000
+>>   </TASK>
+>>
 
