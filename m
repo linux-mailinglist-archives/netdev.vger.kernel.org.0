@@ -2,79 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 287924BF750
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 12:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B12044BF76B
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 12:44:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231725AbiBVLgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 06:36:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
+        id S231720AbiBVLpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 06:45:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiBVLge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 06:36:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4164135712
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 03:36:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645529768;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xYBkRwZLeHPhx1322SebjPyt91384gXAdvnDLNXcpP4=;
-        b=aoau3V/qKF6JZNuAuKsAjNoGMU2zKwGe9v53ZD7FM23ZFHgvfL7P4x/zIvY2qmHyLjQUtO
-        WXJf94oMR4T5CM1Bf+rUcnh5sxRe4cAXlMRKgHQMYk9FsOJj82yCE6Uvbx5dDT7r9OmUJN
-        yOj3+Wl7MHn9+YKNBDnnBCWwQXoeZis=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-231-WrbzoeIwOwSnW2euQAVqmA-1; Tue, 22 Feb 2022 06:36:07 -0500
-X-MC-Unique: WrbzoeIwOwSnW2euQAVqmA-1
-Received: by mail-io1-f69.google.com with SMTP id z9-20020a6be009000000b00640d453b0fdso5196180iog.8
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 03:36:07 -0800 (PST)
+        with ESMTP id S229940AbiBVLpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 06:45:02 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46941139CE0
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 03:44:37 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id d3so12314451ilr.10
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 03:44:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yJHRQCgLMWoDtd5FRtcK1e6cz+hbzQFT86laYM8r5Ds=;
+        b=UjP3l4Le0EiaLCPOI0tEXe216Kqr+5sPUJHppt2plzvf0J9Eu7RwHNr99gwymg/Eu8
+         PpzMXovsSsmwfXpRENrVLS7t9dlmCzDrMlfYGmE+4tRWkxFivY29LBNDz4eWY4Ru2KWu
+         Z6jM5yko+OG/GRWzKQriOLlsZPZ+XQsabttRLE7EMYtomzmEIteT49+3TGH9+5UTJ05w
+         YsElyo0ttAFfnAbOV4pe3FYNL+txf+lcTORvxSI9D50P+EE4utRMpIna5FSrBgf69JwU
+         YUyZFBviQPEU76yETH96CnXTlOXJbigrO7SJM0pfCxGSosg5Wx+BoT70xjzw/L5P7GXI
+         yDhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xYBkRwZLeHPhx1322SebjPyt91384gXAdvnDLNXcpP4=;
-        b=7ZwMtYkndEPs6aZzJunh+S09IfSHx0o7Q3dI0NGUha2iJQ14P7uP9K2KEuWIbcvtti
-         Das4Rw1x4iSsNcVTrMf8Saw8J73oafV9Nmm9+P1EgqvvQbw4Y4g4iB4g3yToQ/4kQ2xt
-         uic6i0lfrJ+xdV7FVC4sYGleNEvn/HbS+sedC0FmJsupUwqUOfelGPDG4GK1kXaDhsk1
-         mC35VH/5Q2TxfT3//Bpud4SMsWs+9nE/2htVs0FHozxt5frKYjyeKkLX+Vyrxg51Mr1+
-         Ujn0kqK6EJjsR43jvwVfIcUf9sg7yHjlsDYJoxW9lj22SVqB8MRGseYkDcNiicp4myCK
-         ETNQ==
-X-Gm-Message-State: AOAM530O67iZubDRZq3I0LEdFRvjS+iUMWkubp1YIOhT1iQ6bipURYNi
-        7KCuSCwavtvZNUNrte6cVEFk7pOblQehQU3watHDKwQSvT/2TlN1GNitOuuByPt8Eq+j1DleKzZ
-        eEEmz9khSoEkqNAeC1L7R3cjalvlbw6QE
-X-Received: by 2002:a6b:c98f:0:b0:637:fd11:42a0 with SMTP id z137-20020a6bc98f000000b00637fd1142a0mr18973275iof.48.1645529766595;
-        Tue, 22 Feb 2022 03:36:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwSOkSsHfLcUoxB4fhkMRjGXgjL5H/5yR5bIKrAllq5tQDoX3z0izR7ouNpR5Bf0SVC0gtc3JT2SjYux9PVhZ4=
-X-Received: by 2002:a6b:c98f:0:b0:637:fd11:42a0 with SMTP id
- z137-20020a6bc98f000000b00637fd1142a0mr18973250iof.48.1645529766266; Tue, 22
- Feb 2022 03:36:06 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 22 Feb 2022 03:36:05 -0800
-From:   Marcelo Leitner <mleitner@redhat.com>
-References: <164362511347.2824752.11751862323892747321.stgit@ebuild>
- <164362638101.2824752.17865423163106515072.stgit@ebuild> <b17b6504-49be-72b5-8f09-d50e4db4881b@ovn.org>
- <DE808EB4-983E-47B1-8B72-2EDEEC86FBE6@redhat.com> <fd03a6b9-2ccb-f6d1-038b-c23b3a7827f1@ovn.org>
- <D7348910-0483-41A7-BD96-83CB364650D1@redhat.com> <7977b95b-aeb2-99ab-5b12-c65d811b765d@ovn.org>
- <CALnP8ZbdEYiecU9rm3jYg4jA=ca0Os7+==6Dn_UiDRtn9-pMRg@mail.gmail.com>
- <D5709C71-4CE5-47F2-AE3E-B8D91B57DAA3@redhat.com> <81CEDA74-119C-48E2-89B9-E0C1CC09E95B@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yJHRQCgLMWoDtd5FRtcK1e6cz+hbzQFT86laYM8r5Ds=;
+        b=ELpPg9bMNKOvGlcuSI5ei5u5GWanSWGMnZJBbMrVuG6m2LuTSsA7ryOGIVIXp8kWID
+         j5yrKD0jzGTGxFka3h3SpAdwlcaLb4XXDrh6qJN6aeUULvd7NTfJKD7KyPDwTUBOtkKx
+         wcT0T6wtBaDklE5VNCvYZguZikmSIS5jJ2BIt0mU+DlI6oypj3hA5RjmjchUS6lUBsGY
+         WqCCpYN8qB+lB9Vq6oEYntk0eO96ct95Q+Fak6pizilCu/OczKHQh2rA1sTMsFdVnfMS
+         9XtfCSHtJ5+50QJkv94LhCSbK3ZQQBNE37QfosKJA/Gl7EKfWSBpH6LC6FcYbQT1W+4o
+         dyKA==
+X-Gm-Message-State: AOAM533gxV31UP20yeBEprkBRn7euu1PNC7WQyHuyO/C2Uv7HNmOG5BO
+        AecCHaPBv9g430mxsbiEAHBTdQ==
+X-Google-Smtp-Source: ABdhPJxGD9iZ9sbxrR7uwxCuFVEF1X+tGmEPsHp9NIhrSqETGIt7m9UZMpAAj84J3kXNOp25f0PFXA==
+X-Received: by 2002:a05:6e02:1b8e:b0:2c2:2750:1178 with SMTP id h14-20020a056e021b8e00b002c227501178mr9310662ili.126.1645530276608;
+        Tue, 22 Feb 2022 03:44:36 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-124.dsl.bell.ca. [184.148.47.124])
+        by smtp.googlemail.com with ESMTPSA id b5sm9569379ilr.0.2022.02.22.03.44.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 03:44:35 -0800 (PST)
+Message-ID: <46cfd7bc-5242-0a4c-b710-48fc2e69007c@mojatatu.com>
+Date:   Tue, 22 Feb 2022 06:44:34 -0500
 MIME-Version: 1.0
-In-Reply-To: <81CEDA74-119C-48E2-89B9-E0C1CC09E95B@redhat.com>
-Date:   Tue, 22 Feb 2022 03:36:05 -0800
-Message-ID: <CALnP8ZZ251hppTzAYVmKzB7WeLTniLVQ-dXePJGekvyBcGLckg@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH v2 08/10] netdev-offload-tc: Check for none
- offloadable ct_state flag combination
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     Ilya Maximets <i.maximets@ovn.org>, dev@openvswitch.org,
-        Roi Dayan <roid@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        wenxu <wenxu@ucloud.cn>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [net-next v8 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+Content-Language: en-US
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+References: <20220126143206.23023-1-xiangxia.m.yue@gmail.com>
+ <20220126143206.23023-3-xiangxia.m.yue@gmail.com>
+ <0b486c4e-0af5-d142-44e5-ed81aa0b98c2@mojatatu.com>
+ <CAMDZJNVB4FDgv+xrTw2cZisEy2VNn1Dv9RodEhEAsd5H6qwkRA@mail.gmail.com>
+ <4e556aff-0295-52d1-0274-a0381b585fbb@mojatatu.com>
+ <CAMDZJNXbxstEvFoF=ZRD_PwH6HQc17LEn0tSvFTJvKB9aoW6Aw@mail.gmail.com>
+ <7a6b7a74-82f5-53e7-07f4-2a995df9f349@mojatatu.com>
+ <CAMDZJNUB8KwjgGOdn1iuJLHMwL4VfmfKEfvK69WCaoAmubDt3g@mail.gmail.com>
+ <bc0affeb-1d2e-3e1f-bc3f-43fc47736674@mojatatu.com>
+ <CAMDZJNW3zV07h3_u1g7rFX+uaB11smjVv1zqZKHj9n4YzctBmA@mail.gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <CAMDZJNW3zV07h3_u1g7rFX+uaB11smjVv1zqZKHj9n4YzctBmA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,109 +96,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+Cc Wenxu, Paul and netdev
+On 2022-02-20 20:43, Tonghao Zhang wrote:
+> On Mon, Feb 21, 2022 at 2:30 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>
+>> On 2022-02-18 07:43, Tonghao Zhang wrote:
+>>> On Thu, Feb 17, 2022 at 7:39 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>>>
+>>
 
-On Tue, Feb 22, 2022 at 10:33:44AM +0100, Eelco Chaudron wrote:
->
->
-> On 21 Feb 2022, at 15:53, Eelco Chaudron wrote:
->
-> > On 21 Feb 2022, at 14:33, Marcelo Leitner wrote:
->
-> <SNIP>
->
-> >>>> Don=E2=80=99t think this is true, it will only print if +trk and any=
- other flags are set.
-> >>>> Guess this is where the miscommunication is.>
-> >>>>> The message also seems to be a bit aggressive, especially since it =
-will
-> >>>>> almost always be printed.
-> >>>
-> >>> Yeah.  I missed the fact that you're checking for zero and flower->ke=
-y.ct_state
-> >>> will actually mark existence of other flags.  So, that is fine.
-> >>>
-> >>> However, I'm still not sure that the condition is fully correct.
-> >>>
-> >>> If we'll take a match on '+est' with all other flags wildcarded, that=
- will
-> >>> trigger the condition, because 'flower->key.ct_state' will contain th=
-e 'est' bit,
-> >>> but 'trk' bit will not be set.  The point is that even though -trk+es=
-t is not
-> >>
-> >> Oh ow. tc flower will reject this combination today, btw. I don't know
-> >> about hw implications for changing that by now.
-> >>
-> >> https://elixir.bootlin.com/linux/latest/C/ident/fl_validate_ct_state
-> >> 'state' parameter in there is the value masked already.
-> >>
-> >> We directly mapped openflow restrictions to the datapath.
-> >>
-> >>> a valid combination and +trk+est is, OVS may in theory produce the ma=
-tch with
-> >>> 'est' bit set and 'trk' bit wildcarded.  And that can be a correct co=
-nfiguration.
-> >>
-> >> I guess that means that the only possible parameter validation on
-> >> ct_state at tc level is about its length. Thoughts?
-> >>
-> >
-> > Guess I get it now also :) I was missing the wildcard bit that OVS impl=
-ies when not specifying any :)
-> >
-> > I think I can fix this by just adding +trk on the TC side when we get t=
-he OVS wildcard for +trk. Guess this holds true as for TC there is no -trk =
-+flags.
-> >
-> > I=E2=80=99m trying to replicate patch 9 all afternoon, and due to the f=
-act I did not write down which test was causing the problem, and it taking =
-20-30 runs, it has not happened yet :( But will do it later tomorrow, see i=
-f it works in all cases ;)
-> >
->
-> So I=E2=80=99ve been doing some experiments (and running all system-traff=
-ic tests), and I think the following fix will solve the problem by just mak=
-ing sure the +trk flag is set in this case on the TC side.
-> This will not change the behavior compared to the kernel.
->
-> diff --git a/lib/netdev-offload-tc.c b/lib/netdev-offload-tc.c
-> index 0105d883f..3d2c1d844 100644
-> --- a/lib/netdev-offload-tc.c
-> +++ b/lib/netdev-offload-tc.c
-> @@ -1541,6 +1541,12 @@ parse_match_ct_state_to_flower(struct tc_flower *f=
-lower, struct match *match)
->              flower->key.ct_state &=3D ~(TCA_FLOWER_KEY_CT_FLAGS_NEW);
->              flower->mask.ct_state &=3D ~(TCA_FLOWER_KEY_CT_FLAGS_NEW);
->          }
-> +
-> +        if (flower->key.ct_state &&
-> +            !(flower->key.ct_state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
-> +            flower->key.ct_state |=3D TCA_FLOWER_KEY_CT_FLAGS_TRACKED;
-> +            flower->mask.ct_state |=3D TCA_FLOWER_KEY_CT_FLAGS_TRACKED;
-> +        }
 
-I had meant to update the kernel instead. As Ilya was saying, as this
-is dealing with masks, the validation that tc is doing is not right. I
-mean, for a connection to be in +est, it needs +trk, right, but for
-matching, one could have the following value/mask:
- value=3Dest
- mask=3Dest
-which means: match connections in Established AND also untracked ones.
 
-Apparently this is what the test is triggering here, and the patch
-above could lead to not match the 2nd part of the AND above.
 
-When fixing the parameter validation in flower, we went too far.
 
-  Marcelo
+>>
+>> Thats a different use case than what you are presenting here.
+>> i.e the k8s pod scenario is purely a forwarding use case.
+>> But it doesnt matter tbh since your data shows reasonable results.
+>>
+>> [i didnt dig into the code but it is likely (based on your experimental
+>> data) that both skb->l4_hash and skb->sw_hash  will _not be set_
+>> and so skb_get_hash() will compute the skb->hash from scratch.]
+> No, for example, for tcp, we have set hash in __tcp_transmit_skb which
+> invokes the skb_set_hash_from_sk
+> so in skbedit, skb_get_hash only gets skb->hash.
 
->      }
->
-> I will send out a v3 of this set soon with this change included.
->
-> //Eelco
->
-> <SNIP>
->
+There is no tcp anything in the forwarding case. Your use case was for
+forwarding. I understand the local host tcp/udp variant.
+
+>>>> I may be missing something on the cpuid one - seems high likelihood
+>>>> of having the same flow on multiple queues (based on what
+>>>> raw_smp_processor_id() returns, which i believe is not guaranteed to be
+>>>> consistent). IOW, you could be sending packets out of order for the
+>>>> same 5 tuple flow (because they end up in different queues).
+>>> Yes, but think about one case, we pin one pod to one cpu, so all the
+>>> processes of the pod will
+>>> use the same cpu. then all packets from this pod will use the same tx queue.
+>>
+>> To Cong's point - if you already knew the pinned-to cpuid then you could
+>> just as easily set that queue map from user space?
+> Yes, we can set it from user space. If we can know the cpu which the
+> pod uses, and select the one tx queue
+> automatically in skbedit, that can make the things easy?
+
+Yes, but you know the CPU - so Cong's point is valid. You knew the
+CPU when you setup the cgroup for iperf by hand, you can use the
+same hand to set the queue map skbedit.
+
+>>> ip li set dev $NETDEV up
+>>>
+>>> tc qdisc del dev $NETDEV clsact 2>/dev/null
+>>> tc qdisc add dev $NETDEV clsact
+>>>
+>>> ip link add ipv1 link $NETDEV type ipvlan mode l2
+>>> ip netns add n1
+>>> ip link set ipv1 netns n1
+>>>
+>>> ip netns exec n1 ip link set ipv1 up
+>>> ip netns exec n1 ifconfig ipv1 2.2.2.100/24 up
+>>>
+>>> tc filter add dev $NETDEV egress protocol ip prio 1 \
+>>> flower skip_hw src_ip 2.2.2.100 action skbedit queue_mapping hash-type cpuid 2 6
+>>>
+>>> tc qdisc add dev $NETDEV handle 1: root mq
+>>>
+>>> tc qdisc add dev $NETDEV parent 1:1 handle 2: htb
+>>> tc class add dev $NETDEV parent 2: classid 2:1 htb rate 100kbit
+>>> tc class add dev $NETDEV parent 2: classid 2:2 htb rate 200kbit
+>>>
+>>> tc qdisc add dev $NETDEV parent 1:2 tbf rate 100mbit burst 100mb latency 1
+>>> tc qdisc add dev $NETDEV parent 1:3 pfifo
+>>> tc qdisc add dev $NETDEV parent 1:4 pfifo
+>>> tc qdisc add dev $NETDEV parent 1:5 pfifo
+>>> tc qdisc add dev $NETDEV parent 1:6 pfifo
+>>> tc qdisc add dev $NETDEV parent 1:7 pfifo
+>>>
+>>> set the iperf3 to one cpu
+>>> # mkdir -p /sys/fs/cgroup/cpuset/n0
+>>> # echo 4 > /sys/fs/cgroup/cpuset/n0/cpuset.cpus
+>>> # echo 0 > /sys/fs/cgroup/cpuset/n0/cpuset.mems
+>>> # ip netns exec n1 iperf3 -c 2.2.2.1 -i 1 -t 1000 -P 10 -u -b 10G
+>>> # echo $(pidof iperf3) > /sys/fs/cgroup/cpuset/n0/tasks
+>>>
+>>> # ethtool -S eth0 | grep -i tx_queue_[0-9]_bytes
+>>>        tx_queue_0_bytes: 7180
+>>>        tx_queue_1_bytes: 418
+>>>        tx_queue_2_bytes: 3015
+>>>        tx_queue_3_bytes: 4824
+>>>        tx_queue_4_bytes: 3738
+>>>        tx_queue_5_bytes: 716102781 # before setting iperf3 to cpu 4
+>>>        tx_queue_6_bytes: 17989642640 # after setting iperf3 to cpu 4,
+>>> skbedit use this tx queue, and don't use tx queue 5
+>>>        tx_queue_7_bytes: 4364
+>>>        tx_queue_8_bytes: 42
+>>>        tx_queue_9_bytes: 3030
+>>>
+>>>
+>>> # tc -s class show dev eth0
+>>> class mq 1:1 root leaf 2:
+>>>    Sent 9874 bytes 63 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:2 root leaf 8001:
+>>>    Sent 418 bytes 3 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:3 root leaf 8002:
+>>>    Sent 3015 bytes 13 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:4 root leaf 8003:
+>>>    Sent 4824 bytes 8 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:5 root leaf 8004:
+>>>    Sent 4074 bytes 19 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:6 root leaf 8005:
+>>>    Sent 716102781 bytes 480624 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:7 root leaf 8006:
+>>>    Sent 18157071781 bytes 12186100 pkt (dropped 0, overlimits 0 requeues 18)
+>>>    backlog 0b 0p requeues 18
+>>> class mq 1:8 root
+>>>    Sent 4364 bytes 26 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:9 root
+>>>    Sent 42 bytes 1 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class mq 1:a root
+>>>    Sent 3030 bytes 13 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>> class tbf 8001:1 parent 8001:
+>>>
+>>> class htb 2:1 root prio 0 rate 100Kbit ceil 100Kbit burst 1600b cburst 1600b
+>>>    Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>>    lended: 0 borrowed: 0 giants: 0
+>>>    tokens: 2000000 ctokens: 2000000
+>>>
+>>> class htb 2:2 root prio 0 rate 200Kbit ceil 200Kbit burst 1600b cburst 1600b
+>>>    Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>>>    backlog 0b 0p requeues 0
+>>>    lended: 0 borrowed: 0 giants: 0
+>>>    tokens: 1000000 ctokens: 1000000
+>>>
+>>
+>> Yes, if you pin a flow/process to a cpu - this is expected. See my
+>> earlier comment. You could argue that you are automating things but
+>> it is not as a strong as the hash setup (and will have to be documented
+>> that it works only if you pin processes doing network i/o to cpus).
+> Ok, it should be documented in iproute2. and we will doc this in
+> commit message too.
+
+I think this part is iffy. You could argue automation pov
+but i dont see much else.
+
+>> Could you also post an example on the cgroups classid?
+> 
+> The setup commands:
+> NETDEV=eth0
+> ip li set dev $NETDEV up
+> 
+> tc qdisc del dev $NETDEV clsact 2>/dev/null
+> tc qdisc add dev $NETDEV clsact
+> 
+> ip link add ipv1 link $NETDEV type ipvlan mode l2
+> ip netns add n1
+> ip link set ipv1 netns n1
+> 
+> ip netns exec n1 ip link set ipv1 up
+> ip netns exec n1 ifconfig ipv1 2.2.2.100/24 up
+> 
+> tc filter add dev $NETDEV egress protocol ip prio 1 \
+> flower skip_hw src_ip 2.2.2.100 action skbedit queue_mapping hash-type
+> classid 2 6
+> 
+> tc qdisc add dev $NETDEV handle 1: root mq
+> 
+> tc qdisc add dev $NETDEV parent 1:1 handle 2: htb
+> tc class add dev $NETDEV parent 2: classid 2:1 htb rate 100kbit
+> tc class add dev $NETDEV parent 2: classid 2:2 htb rate 200kbit
+> 
+> tc qdisc add dev $NETDEV parent 1:2 tbf rate 100mbit burst 100mb latency 1
+> tc qdisc add dev $NETDEV parent 1:3 pfifo
+> tc qdisc add dev $NETDEV parent 1:4 pfifo
+> tc qdisc add dev $NETDEV parent 1:5 pfifo
+> tc qdisc add dev $NETDEV parent 1:6 pfifo
+> tc qdisc add dev $NETDEV parent 1:7 pfifo
+> 
+> setup classid
+> # mkdir -p /sys/fs/cgroup/net_cls/n0
+> # echo 0x100001 > /sys/fs/cgroup/net_cls/n0/net_cls.classid
+> # echo $(pidof iperf3) > /sys/fs/cgroup/net_cls/n0/tasks
+> 
+
+
+I would say some thing here as well. You know the classid, you manually
+set it above, you could have said:
+
+src_ip 2.2.2.100 action skbedit queue_mapping 1
+
+cheers,
+jamal
 
