@@ -2,54 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B22764C0455
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 23:08:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4239D4C049A
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 23:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235969AbiBVWJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 17:09:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
+        id S235362AbiBVW1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 17:27:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235965AbiBVWJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 17:09:07 -0500
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCD7B23B8
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:08:41 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2d6923bca1aso182127177b3.9
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:08:41 -0800 (PST)
+        with ESMTP id S234253AbiBVW1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 17:27:38 -0500
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5B77C17A
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:27:12 -0800 (PST)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2d6d0cb5da4so136411977b3.10
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:27:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Ix8P1zCQOkqH4yOfx2mWtkmJTfSxXuC1fGPUTTMshpA=;
-        b=jhwwbo55zmdXKAX3aQCVNxLJGU0WsV6kulGdI5jdE58gJz6Xq7W7aAP4dnW6LrjXVZ
-         20Z+kvkTlFUXgvth2hfgBpNkJczQB8qLlL2DvkqlH7fxkfYLB6NWZJ5OFDwjkhVVZIKu
-         pqyWXLeY+HTxOxxnpug18DeoWxPuPN+FbYuqY=
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=e3V5mFIh0kSezlREepW1IaOOm8Uybf+OrJ5Qgf9lw3Q=;
+        b=l3GiAJ+6VMAHPb/dc/vcsNhWYneByQ/+glFAdma+FCPbIRA/FoSmhQQJkHarN0jmR/
+         wMoT/Z8Un3RmQAbKpbQscu2nbDQ/di4hn/+YJBRI9c5yUJqbFV+RNiAPKQW3M9ZETBqV
+         /+ZLSb04Jx4VFQjtECXK6uJu8dmN8dKaNzj7nh99K7i6S2RI4wIGrZGv16DuDQHawSXq
+         Vpz6FARNVKcanwePU3Oh1UbRDrDIDGIArcsC/1//AcsHFL0Po4QspQaXfRwn1b1Q9V26
+         EyIePcKgi6RwmCtSEMOMP98RVuIXNUbyxAlppw5rWZhpInWNVpzxn0X/gbc2WQcQTySu
+         W76g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Ix8P1zCQOkqH4yOfx2mWtkmJTfSxXuC1fGPUTTMshpA=;
-        b=2qAYOnElKlP7DxBGIecKj4RJf8SsrMjQMYlsFVZNAWbfgkERrfaZGHE/Bf2TrGNrp7
-         0myjqCPXg+x348sal+sUtPi/6qkyFNbGjskDzhNfT75+LDLn+t/7khIJjnYcNfzOfMAF
-         j3ohD+z5u/7MxUXm/NYMOXw1AXcQLUb+kH+t0VNaxaeUJhM2gZKXB0IQ7ZW/9Ju1UChw
-         TatRroZwxF4gE9zI1mgahBpudZvquxVcxTN3eqcDwzp6+BAwj3YSEPOfu2l9QAK460W7
-         zrGQNBcL/TTuL8HZVPYHcjH7i0CI3TaWZINR2tl8CQKtvCK1Z/eUbaJmvBUmKL+vVlni
-         +2hw==
-X-Gm-Message-State: AOAM531h75YTs+XE9EebpYgfejA3Qk9jrNPuvyvMbdVLdppz2NpsHMe4
-        rGdayfQ47qSYThVEYlt4UPlnXUbmTdzWwK5m7GV2iHtxpECXYw==
-X-Google-Smtp-Source: ABdhPJwVFp6EZqicUecvPkT5zgSnYXoVp3AHjfHDvP7sQSOueMlgphSFLHuI3iyqbLU7I0cDHKcvTzCIGjNp2igksuU=
-X-Received: by 2002:a81:92c9:0:b0:2d2:cbb8:8aa3 with SMTP id
- j192-20020a8192c9000000b002d2cbb88aa3mr25464928ywg.494.1645567720680; Tue, 22
- Feb 2022 14:08:40 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=e3V5mFIh0kSezlREepW1IaOOm8Uybf+OrJ5Qgf9lw3Q=;
+        b=M5004j85ACeBtIi90YHp2NN33w9FWVWvrQLHfCB6K0yiIgqqWaqnsLGvXmX5NCENCU
+         Ak6XME6XHAzfxPrGoDulEUtZ4qtdU8ISKW1PvfyXTfvl/Tgi4+chei1g7UpKR69Va2H/
+         0QTRdvoej6/d4r5/bZmDiW4F81MXNhEziVeMi0BRUx2qCBzPXblMVPzi8gDwmgLvv8lu
+         WUAVTf1bDMPkTiuFlo3WDykegpHACCUvLx6FrgCvA/s5KtdylTTOZy6DEiU4Pg1YDwte
+         K6kM+VZxD0E9GMs+spWGfOsTM6vOIGqlQuGjyyBrTeUQD/sU1kINvflYZ74dy5BTdBgZ
+         4EbA==
+X-Gm-Message-State: AOAM532LRN2PgHkc4JCrA31M5OuuuFMH8oUL2uduZ8VAa8BqMIHljnHv
+        EGm0RlrvcNSxd70zJ5wHZFwiHflvAIQzONBYhHNz+CueF+JJ9A==
+X-Google-Smtp-Source: ABdhPJwPz2CE4Z1CkZcF6r8tirVvm9q3uXFu5ehZ+hf3yy2Dw6z0APxYTyDyrJN6uG5F6M8g5hwPVI07w5Wk+yEpSrQ=
+X-Received: by 2002:a81:9d7:0:b0:2d6:34d1:e917 with SMTP id
+ 206-20020a8109d7000000b002d634d1e917mr25802560ywj.126.1645568831661; Tue, 22
+ Feb 2022 14:27:11 -0800 (PST)
 MIME-Version: 1.0
-From:   Matthew Oswalt <moswalt@cloudflare.com>
-Date:   Tue, 22 Feb 2022 17:08:30 -0500
-Message-ID: <CAKrN56vUv_WDHu8AK_J5mxEHq3tWpmMQ5zmN2NwPxfRtObZHnQ@mail.gmail.com>
-Subject: Historical reason for differences in v4/v6 Any-IP for nonlocal binds
-To:     netdev@vger.kernel.org
-Cc:     kernel-team@cloudflare.com
+References: <20220222161408.577783-1-alvin@pqrs.dk>
+In-Reply-To: <20220222161408.577783-1-alvin@pqrs.dk>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 22 Feb 2022 23:27:00 +0100
+Message-ID: <CACRpkdY4Ymi8VcWVfEkZDQ6iwMB1YxkwgCsKpsAurfS5sj-E-w@mail.gmail.com>
+Subject: Re: [PATCH net] MAINTAINERS: add myself as co-maintainer for Realtek
+ DSA switch drivers
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ALSI@bang-olufsen.dk
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,40 +67,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+On Tue, Feb 22, 2022 at 5:14 PM Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
 
-I'm working with binding TCP sockets to nonlocal addresses (not
-configured on an interface). I noticed that both IPv4 and IPv6 sockets
-will succeed using options like IP_FREEBIND, but unlike IPv6, sockets
-using IPv4 can also succeed if a matching Any-IP route is present,
-without configuring any options or sysctl settings.
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>
+> Adding myself (Alvin =C5=A0ipraga) as another maintainer for the Realtek =
+DSA
+> switch drivers. I intend to help Linus out with reviewing and testing
+> changes to these drivers, particularly the rtl8365mb driver which I
+> authored and have hardware access to.
+>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-I noticed an old email in this mailing list that also describes this behavior:
-https://lore.kernel.org/netdev/CAMdqG7Wci6HD19rc9u4RK-_Wdh3pqQvQ7b3J5O=2SJs9NeyTJA@mail.gmail.com/
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-I'm running a somewhat recent kernel (5.10) and my testing shows
-identical results using TCP as well, so I believe this is still true.
-For IPv4 sockets, either the presence of a matching Any-IP route,
-**or** setting IP_FREEBIND (etc), results in a successful bind() to a
-nonlocal address. However, with IPv6, it doesn't appear to matter
-whether or not an Any-IP route is present. For these to succeed, an
-option like IP_FREEBIND **must** be set (or
-ipv6.sysctl.ip_nonlocal_bind, or IP_TRANSPARENT I believe would also
-work).
-
-After looking through "net/af_inet6.c" a bit, it seems obvious that
-this is intended behavior. I believe I'm able to follow that bit of
-the kernel code and understand how the decision is made.
-
-However, is there any historical reason for this discrepancy? Why does
-the IPv4 implementation perform a FIB lookup and allow a bind to
-proceed if an Any-IP route is found, but the IPv6 implementation
-doesn't? I'm really just curious if there is a specific reason why
-this aspect of the IPv4 implementation wasn't brought over to the IPv6
-implementation, or if it was just left out in favor of the more
-explicit approach via options like IP_FREEBIND, or any other reason I
-could be missing.
-
-Thanks,
-
-Matt Oswalt
+Yours,
+Linus Walleij
