@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9193D4BF05A
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:10:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1A64BF03E
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiBVDUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 22:20:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51044 "EHLO
+        id S241629AbiBVDWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 22:22:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241014AbiBVDUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 22:20:44 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BEB193F8;
-        Mon, 21 Feb 2022 19:20:10 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id c18so15914340ioc.6;
-        Mon, 21 Feb 2022 19:20:10 -0800 (PST)
+        with ESMTP id S241027AbiBVDV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 22:21:58 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5087A14015
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 19:21:18 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id z15so4852612pfe.7
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 19:21:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=byRYyFHF1RfzOq4HLIneApDEfH4u8IiUuf/rJRXw2TE=;
-        b=TJ07BWtF6OCGG5MEaK5reraVvmo57yyHKf2yxmjI9eRrja9HJpCqAp8i3Hpil+raCc
-         8x2A/EEjne4doxfSgMAnZkRDTogvda4grCCvc4kMUFh3ZSJAXf5tlxaGbiYgGll9RWjs
-         M9A8geSWxEKq7AzJ5MSBB5g1lo/u7uEO2jiZ/AchKD8+4G4uGGZ2Ba4ea87TX7889fqS
-         5dd3GTQIKNAaCeu+4Ex7i3imcakT23x9oFmfCJjECz5weZSQvpvitrCGRimV8Xqzkro/
-         vLhCCjkMsNphSvXuSShaKqQXcYwlfTIMfIRw5Knd7qjS8MGth/H01vGOAI80nVyr23/S
-         jAkQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lhVF4mqP9Cg57S9vHbWaSnNO6MEqW/tFYrFYjWd+QxU=;
+        b=MFV0621eha6Ymbg4Yzt7W5eIokMhzLaXCWqGod5/nhb9wAwZ0Ob4bgQZpt0kOMc3m7
+         u/kUbaZYs48a9yTWcvdvst1eZ4CE0WQLTPbIdRfDKAy08yNh5v9Ap3twTIB0QChiDe1U
+         PBgpvlwtdiBtkfLeUXvOZesCpN65YPHo2I8zJOvY0QxJfpGhgPf27jzmyinWaJXIeu6A
+         KKIncDaFftISKmw1CoUt04Csi8/3SJJG2CbYaDAWR7+UZ//IOiuiETZarWdpJM6+xVvL
+         ZoGIRQdwZ9kYwzlbtqJuO7GQfv6ddnk/TjZO164T2yUNvpHxlKPREfEIuXZS1icZVOLf
+         9kLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=byRYyFHF1RfzOq4HLIneApDEfH4u8IiUuf/rJRXw2TE=;
-        b=VvZZPCPNQgsH2CR2q0p5LyAJEuC/5xqlvLOGYhWoUJRTcPAtvoZN4PHdM1sBFn2COX
-         3rl8Vq/4evDOG7f6xDSKkyxGHLlvZg9DgnYUGHwf6mE+nrss0qZO1Gjfpy28ERJDxHsP
-         zDqtWXePs/B0jBsMJxuzkVpcXS7xNmTOPzPnTO5RjuXqz0et3bQg8V69TVovPu3hgHxw
-         VBEXdJuq8gaZPZ9b2OO1kWbtg67KzafvUFq7uY/EMLTrmhXx2sBIQq3boG+fHAydUtwZ
-         puMr9KHpFrTXdU8EuZ3qCP+dTF4Upn7Mo2Z8RnZja48cEyRPDwMMi4amUzoMZmUYNtWN
-         P4Iw==
-X-Gm-Message-State: AOAM53266iDVNJXLxHubUFhlgX1oxRgdvkwcaqppitlQQ4LHYzuvlVvC
-        Hj/RImTYHcX742I7ZtdRSlAL+zPdGwSPyQ==
-X-Google-Smtp-Source: ABdhPJyN2Mwd+CudxyzholjEEEfvuTP0QZs8IL1dNYZ66tk1WVh9ViGhrbbkXImRcctbAwcKH8ykAQ==
-X-Received: by 2002:a02:bb05:0:b0:314:57b4:6af3 with SMTP id y5-20020a02bb05000000b0031457b46af3mr16831289jan.244.1645500005052;
-        Mon, 21 Feb 2022 19:20:05 -0800 (PST)
-Received: from ?IPV6:2601:284:8200:b700:fc7f:e53f:676e:280d? ([2601:284:8200:b700:fc7f:e53f:676e:280d])
-        by smtp.googlemail.com with ESMTPSA id e6sm8400023ile.49.2022.02.21.19.20.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 19:20:04 -0800 (PST)
-Message-ID: <3a81db69-2900-f750-6ac2-d2f4fc710768@gmail.com>
-Date:   Mon, 21 Feb 2022 20:20:03 -0700
+        bh=lhVF4mqP9Cg57S9vHbWaSnNO6MEqW/tFYrFYjWd+QxU=;
+        b=26tywGoJeWoDiE5nZORn7cBqO0ji53AMNUSifhZTVnolAUnrT1ek5iPWaZXAk2DZ+j
+         0mwbSoFRDC3J8NVlVGyTaEsJzmZwvBjLV4MFx1MgFpnqK8AyUg70bW/kmNnVghmQzPKA
+         lWVu2MXCoYy1qWFQ+3Y+RRKw29MW2gGn+EuGiI4EXapnuE/awl+8yGd3SHqC+JUavLar
+         F2/mqHsb63Mh3jdnhD6VxeTAutUCIIs2YyTuyxQiuLeTWIzk2Vglnol/9Vhja/2oDYrN
+         vc/TgXVGwKxM5iwv4opWCL61IAQGe4pUmMqTRr8F3E+DVhc0UMeJrzSwO21ghm3dEvXT
+         xTrw==
+X-Gm-Message-State: AOAM533MXbNurUpiWRKg0TzRn4tT6SaovgqeiFKvfo14DtyZ4Wj9SFJe
+        iCzhLxs3plBkbMoXSr9GNLY=
+X-Google-Smtp-Source: ABdhPJyg1E2LyP7AbBbCmghbytBhYazupHJwmmPaDg+spj0DrT8J4vX07zZ/jTHNGka0iIEXX6L24A==
+X-Received: by 2002:a63:ce51:0:b0:362:c4fd:273b with SMTP id r17-20020a63ce51000000b00362c4fd273bmr18148059pgi.540.1645500077920;
+        Mon, 21 Feb 2022 19:21:17 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:f99a:9263:216c:fd72])
+        by smtp.gmail.com with ESMTPSA id w198sm14799662pff.96.2022.02.21.19.21.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 19:21:17 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, Marco Elver <elver@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/2] tcp: take care of another syzbot issue
+Date:   Mon, 21 Feb 2022 19:21:11 -0800
+Message-Id: <20220222032113.4005821-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next v3 1/4] skbuff: introduce kfree_skb_list_reason()
-Content-Language: en-US
-To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
-References: <20220221053440.7320-1-dongli.zhang@oracle.com>
- <20220221053440.7320-2-dongli.zhang@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220221053440.7320-2-dongli.zhang@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,20 +69,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/20/22 10:34 PM, Dongli Zhang wrote:
-> This is to introduce kfree_skb_list_reason() to drop a list of sk_buff with
-> a specific reason.
-> 
-> Cc: Joao Martins <joao.m.martins@oracle.com>
-> Cc: Joe Jin <joe.jin@oracle.com>
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> ---
->  include/linux/skbuff.h |  2 ++
->  net/core/skbuff.c      | 11 +++++++++--
->  2 files changed, 11 insertions(+), 2 deletions(-)
-> 
->
+From: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+This is a minor issue: It took months for syzbot to find a C repro,
+and even with it, I had to spend a lot of time to understand KFENCE
+was a prereq. With the default kfence 500ms interval, I had to be
+very patient to trigger the kernel warning and perform my analysis.
 
+This series targets net-next tree, because I added a new generic helper
+in the first patch, then fixed the issue in the second one.
+They can be backported once proven solid.
+
+Eric Dumazet (2):
+  net: add skb_set_end_offset() helper
+  net: preserve skb_end_offset() in skb_unclone_keeptruesize()
+
+ include/linux/skbuff.h | 30 +++++++++++++++++--------
+ net/core/skbuff.c      | 51 ++++++++++++++++++++++++++++++------------
+ 2 files changed, 58 insertions(+), 23 deletions(-)
+
+-- 
+2.35.1.473.g83b2b277ed-goog
 
