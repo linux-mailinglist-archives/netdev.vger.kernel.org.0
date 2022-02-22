@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 424904C0526
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 00:18:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D974C052A
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 00:18:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236120AbiBVXS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S236192AbiBVXS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 22 Feb 2022 18:18:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233405AbiBVXS0 (ORCPT
+        with ESMTP id S235525AbiBVXS0 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 18:18:26 -0500
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5443D9027F;
-        Tue, 22 Feb 2022 15:17:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B586A90FF5;
+        Tue, 22 Feb 2022 15:18:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645571879; x=1677107879;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sRi3Y0px8+ojBe6BJa3k8tR0XaiCszxkZ0yaIFLeAEE=;
-  b=Q9FpGganICMPmwANM53SvDjLaQPxZmfs2oMxTyo97qE0O2wZH7pXCupF
-   xMGw5MSib3rP7N5gqwgsU5owmfKMqr0DW8pXb81kfSBrcdEYnIgKaeQXY
-   +QTU+dbjyDDAqXfyOo/K5wzplWb3CvKocsxaw8e0/Scc8W4qEICB74jx6
-   bohVf8VMiKGEOa8QO2averLulF0F9cF/fiIRpa067aPdXBot9fNUJ3ZBs
-   80P35eQESAovgpY9O/rbaf4qQKWi6L3CbzS3PTZ9OkdXje87FyFskmpsb
-   njHtvbun3iER++yFQpMN5DGqwbP0jnn66+c/fNGioQ9qyBhierLCSFCGA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231810092"
+  t=1645571880; x=1677107880;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=KfWWny0tde+zNt6efZi6Huwq5vdDEsQjuFuEw8RHIIc=;
+  b=Rq9jOsAwcsIxyegM6U4NzO+yj0HUEhEf+FSP+Ru3g8LO0rUkENg6Yupp
+   lfMMiWhhSUxexDSwLCxVdmenBZeqxH6iw8vvI+CGARdPPvMIJ40DVmiNA
+   v9rYfE3pGKJwHWpiG8ES2PZlcfCqr8oF7XcLne3+xT5k/ZFEXSi/CtXXl
+   FmjbmLuSLlCYV7YwSeu071xYsMNGlCbqGIGNmn1BV1ossb8oLvDVCXqVC
+   5Iy8Op3EyE08Aa7zZUlE6TCG3K6p/8hTpe/ZjfzJQ/O8R38xfmHEWLM9q
+   yW6F1R877KJjvafNmYSc8cNO9I6DD2WuepmetyblXcfRrl3571k5CVyKo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231810093"
 X-IronPort-AV: E=Sophos;i="5.88,389,1635231600"; 
-   d="scan'208";a="231810092"
+   d="scan'208";a="231810093"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 15:17:59 -0800
 X-IronPort-AV: E=Sophos;i="5.88,389,1635231600"; 
-   d="scan'208";a="776476619"
+   d="scan'208";a="776476625"
 Received: from skoppolu-mobl4.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.252.138.103])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 15:17:57 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 15:17:58 -0800
 From:   Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
@@ -54,12 +54,13 @@ Cc:     "H . Peter Anvin" <hpa@zytor.com>,
         Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
         platform-driver-x86@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH v1 0/6] Add TDX Guest Attestation support
-Date:   Tue, 22 Feb 2022 15:17:29 -0800
-Message-Id: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v1 1/6] x86/tdx: Add tdx_mcall_tdreport() API support
+Date:   Tue, 22 Feb 2022 15:17:30 -0800
+Message-Id: <20220222231735.268919-2-sathyanarayanan.kuppuswamy@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
@@ -71,96 +72,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+In TDX guest, attestation is mainly used to verify the trust worthiness
+of a TD to the 3rd party key servers. First step in attestation process
+is to get the TDREPORT data and the generated data is further used in
+subsequent steps of attestation process. TDREPORT data contains details
+like TDX module version information, measurement of the TD, along with a
+TD-specified nonce
 
-Intel's Trust Domain Extensions (TDX) protect guest VMs from malicious
-hosts and some physical attacks. VM guest with TDX support is called
-as TD Guest.
+Add a wrapper function (tdx_mcall_tdreport()) to get the TDREPORT from
+the TDX Module.
 
-In TD Guest, the attestation process is used to verify the 
-trustworthiness of TD guest to the 3rd party servers. Such attestation
-process is required by 3rd party servers before sending sensitive
-information to TD guests. One usage example is to get encryption keys
-from the key server for mounting the encrypted rootfs or secondary drive.
-    
-Following patches add the attestation support to TDX guest which
-includes attestation user interface driver, user agent example, and
-related hypercall support.
+More details about the TDREPORT TDCALL can be found in TDX Guest-Host
+Communication Interface (GHCI) for Intel TDX 1.5, section titled
+"TDCALL [MR.REPORT]".
 
-In this series, only following patches are in arch/x86 and are
-intended for x86 maintainers review.
+Steps involved in attestation process can be found in TDX Guest-Host
+Communication Interface (GHCI) for Intel TDX 1.5, section titled
+"TD attestation"
 
-* x86/tdx: Add TDREPORT TDX Module call support
-* x86/tdx: Add GetQuote TDX hypercall support
-* x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
-* x86/tdx: Add TDX Guest event notify interrupt vector support
+[Xiaoyao: Proposed error code fix]
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ arch/x86/coco/tdx.c        | 51 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/include/asm/tdx.h |  2 ++
+ 2 files changed, 53 insertions(+)
 
-Patch titled "platform/x86: intel_tdx_attest: Add TDX Guest attestation
-interface driver" adds the attestation driver support. This is supposed
-to be reviewed by platform-x86 maintainers.
-
-Also, patch titled "tools/tdx: Add a sample attestation user app" adds
-a testing app for attestation feature which needs review from
-bpf@vger.kernel.org.
-
-Dependencies:
---------------
-
-This feature has dependency on TDX guest core patch set series.
-
-https://lore.kernel.org/all/20220218161718.67148-1-kirill.shutemov@linux.intel.com/T/
-
-History:
-----------
-
-Previously this patch set was sent under title "Add TDX Guest
-Support (Attestation support)". In the previous version, only the
-attestation driver patch was reviewed and got acked. Rest of the
-patches need to be reviewed freshly.
-
-https://lore.kernel.org/bpf/20210806000946.2951441-1-sathyanarayanan.kuppuswamy@linux.intel.com/
-
-Changes since previous submission:
- * Updated commit log and error handling in TDREPORT, GetQuote and
-   SetupEventNotifyInterrupt support patches.
- * Added locking support in attestation driver.
-
-Kuppuswamy Sathyanarayanan (6):
-  x86/tdx: Add tdx_mcall_tdreport() API support
-  x86/tdx: Add tdx_hcall_get_quote() API support
-  x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
-  platform/x86: intel_tdx_attest: Add TDX Guest attestation interface
-    driver
-  x86/tdx: Add TDX Guest event notify interrupt vector support
-  tools/tdx: Add a sample attestation user app
-
- arch/x86/coco/tdx.c                           | 170 ++++++++++++
- arch/x86/include/asm/hardirq.h                |   4 +
- arch/x86/include/asm/idtentry.h               |   4 +
- arch/x86/include/asm/irq_vectors.h            |   7 +-
- arch/x86/include/asm/tdx.h                    |   5 +
- arch/x86/kernel/irq.c                         |   7 +
- drivers/platform/x86/intel/Kconfig            |   1 +
- drivers/platform/x86/intel/Makefile           |   1 +
- drivers/platform/x86/intel/tdx/Kconfig        |  13 +
- drivers/platform/x86/intel/tdx/Makefile       |   3 +
- .../platform/x86/intel/tdx/intel_tdx_attest.c | 241 ++++++++++++++++++
- include/uapi/misc/tdx.h                       |  37 +++
- tools/Makefile                                |  13 +-
- tools/tdx/Makefile                            |  19 ++
- tools/tdx/attest/.gitignore                   |   2 +
- tools/tdx/attest/Makefile                     |  24 ++
- tools/tdx/attest/tdx-attest-test.c            | 240 +++++++++++++++++
- 17 files changed, 784 insertions(+), 7 deletions(-)
- create mode 100644 drivers/platform/x86/intel/tdx/Kconfig
- create mode 100644 drivers/platform/x86/intel/tdx/Makefile
- create mode 100644 drivers/platform/x86/intel/tdx/intel_tdx_attest.c
- create mode 100644 include/uapi/misc/tdx.h
- create mode 100644 tools/tdx/Makefile
- create mode 100644 tools/tdx/attest/.gitignore
- create mode 100644 tools/tdx/attest/Makefile
- create mode 100644 tools/tdx/attest/tdx-attest-test.c
-
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index 8a7826fe49e3..f01b03e41572 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -16,6 +16,7 @@
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+ #define TDX_GET_VEINFO			3
++#define TDX_GET_REPORT			4
+ #define TDX_ACCEPT_PAGE			6
+ 
+ /* TDX hypercall Leaf IDs */
+@@ -31,6 +32,12 @@
+ #define VE_GET_PORT_NUM(e)	((e) >> 16)
+ #define VE_IS_IO_STRING(e)	((e) & BIT(4))
+ 
++/* TDX Module call error codes */
++#define TDCALL_RETURN_CODE_MASK		0xffffffff00000000
++#define TDCALL_RETURN_CODE(a)		((a) & TDCALL_RETURN_CODE_MASK)
++#define TDCALL_INVALID_OPERAND		0x8000000000000000
++#define TDCALL_OPERAND_BUSY		0x8000020000000000
++
+ static struct {
+ 	unsigned int gpa_width;
+ 	unsigned long attributes;
+@@ -78,6 +85,50 @@ static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+ 		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
+ }
+ 
++/*
++ * tdx_mcall_tdreport() - Generate TDREPORT_STRUCT using TDCALL.
++ *
++ * @data        : Address of 1024B aligned data to store
++ *                TDREPORT_STRUCT.
++ * @reportdata  : Address of 64B aligned report data
++ *
++ * return 0 on success or failure error number.
++ */
++int tdx_mcall_tdreport(void *data, void *reportdata)
++{
++	u64 ret;
++
++	/*
++	 * Use confidential guest TDX check to ensure this API is only
++	 * used by TDX guest platforms.
++	 */
++	if (!data || !reportdata || !cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return -EINVAL;
++
++	/*
++	 * Pass the physical address of user generated reportdata
++	 * and the physical address of out pointer to store the
++	 * tdreport data to the TDX module to generate the
++	 * TD report. Generated data contains measurements/configuration
++	 * data of the TD guest. More info about ABI can be found in TDX
++	 * Guest-Host-Communication Interface (GHCI), sec titled
++	 * "TDG.MR.REPORT".
++	 */
++	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(data),
++				virt_to_phys(reportdata), 0, 0, NULL);
++
++	if (ret) {
++		if (TDCALL_RETURN_CODE(ret) == TDCALL_INVALID_OPERAND)
++			return -EINVAL;
++		if (TDCALL_RETURN_CODE(ret) == TDCALL_OPERAND_BUSY)
++			return -EBUSY;
++		return -EIO;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(tdx_mcall_tdreport);
++
+ static void get_info(void)
+ {
+ 	struct tdx_module_output out;
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 6a97d42b0de9..b2e76ae8fdf1 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -58,6 +58,8 @@ void tdx_safe_halt(void);
+ 
+ bool tdx_early_handle_ve(struct pt_regs *regs);
+ 
++int tdx_mcall_tdreport(void *data, void *reportdata);
++
+ #else
+ 
+ static inline void tdx_early_init(void) { };
 -- 
 2.25.1
 
