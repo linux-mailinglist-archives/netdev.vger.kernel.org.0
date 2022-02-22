@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 372424C04DE
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 23:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF7F24C04DF
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 23:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiBVWtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 17:49:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
+        id S236148AbiBVWtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 17:49:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231479AbiBVWtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 17:49:10 -0500
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F2F132979
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:48:44 -0800 (PST)
-Received: by mail-oo1-xc36.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so19798917ooi.2
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:48:44 -0800 (PST)
+        with ESMTP id S235034AbiBVWtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 17:49:14 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8696C133967
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:48:47 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id p15so16285028oip.3
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 14:48:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RqUc8fD+HHtM8kdUtKtgqezvjPTrevAz75LlGqQji4k=;
-        b=NUdKMLcJxKZoThV/K06TcFaI6faQqL1Td9lwyB6dsgeC6TqSmZSFG11ZsEQc/gNBe0
-         6dPT+iGnUseTHNbYjSR0RS8o/zX4MhHj2Z7fjeoUP7t2RxQHXG1dWOmfoaZCSJFkW4i3
-         HvLXK/emyy3tc56gt0hoEQe7HSad2pUMbqrX31tlaaTfCTZxo5/jEZVQLMzS+4feUPYT
-         yJpPBadYXysAir1RjoQU1FgNp1LLZ5/y7alQDKJaROSq8FMAaiZkDeOjZvNcSjFxekBh
-         2wH52+y67L7F8Yvx1/7vG2Wde8IA650qMhIKnsMJHTf69rWf8jUQHnOdvgOReoKghyRD
-         0QVg==
+        bh=OLodFo+EFLYoPsi+wdOHLLQ/vX3kieHkDvwNQ5bucUs=;
+        b=BrvslKV5RYDh3QkIgW4Cs5WF4Df2MYSyH3w7sbXlyYzgXUCz23De/ApStJ1aTM8iSJ
+         dHWr034VDXGWgUnLuArRXQUTn2emlDNfOUSAQxlJp5bA1/c1xumWJsGFoQJcdLJfneXv
+         ebN8kyGDX6dgyGU0VS6Q+QBd8+Wtd/LGxgpV3kGwVEWBZ1Y/8ixisaK3mIPcARzqiUtB
+         OnCKAGXVnFrio2ZAG/VRq6dbtMZoP2FSBgZ9ZwvUUcSz/F8Y8zBJbYheub/tCJVEKHg8
+         z15NKZ0NHK95buPeGe0WMCCtGITE31owLPKTdTt83Y0z6RHLZnwHpLZipm0ILbWezi9I
+         GoMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RqUc8fD+HHtM8kdUtKtgqezvjPTrevAz75LlGqQji4k=;
-        b=WqeV7X9xerNoWNsVSsNZNLahpyRjVJNO4OM1rJLgqZs+Hq1fddvnxbiLeZuccq8nR+
-         VQjOHYxafPrpFCxhBqQLPz1tmWlTNmAQUaVX44KrG1M0HHTB0xmKXalN2t2XG96wKnGi
-         mFnOdsdULzcsJzUgy2+jben2MlH7oRsCmDcyAPRBECpc2hCA2cI/Mq35LGn6nqf/zI9z
-         uSQzbiJFmYWAOhRuq+h91WyEingIf56yKZFzo+OBUUXfsSFGHB2oC5m08Nr9ycrB5hpz
-         1HqyLjXAox2zByCleUOuU+ezOHIqsWcfS8UhFoLKGjH+Q2ng5OjECd0GIGLUMPi8qla6
-         tC6g==
-X-Gm-Message-State: AOAM5300GWE0aR48E6e9lXGmLgPwISbGpAzcdBc2V0LQS11jlvFpX/UR
-        fMAS46AX3hXJC/bkugY/dN84DtnqdlTGoA==
-X-Google-Smtp-Source: ABdhPJzAgecbJ6jyy1YtAaT6fWKx7FL7bCdcjaQmbS1O3Tfy6Js/z1K8JyMvXRM5VfI/u1DeB931Pw==
-X-Received: by 2002:a05:6870:ed89:b0:c6:3f95:8f53 with SMTP id fz9-20020a056870ed8900b000c63f958f53mr2699727oab.269.1645570123393;
-        Tue, 22 Feb 2022 14:48:43 -0800 (PST)
+        bh=OLodFo+EFLYoPsi+wdOHLLQ/vX3kieHkDvwNQ5bucUs=;
+        b=1/hldA4j6G8gEq/eAFZEqr+ayc/Homohtp959d+ACsOfRsg/irTDgF5xg+nkN5rKvr
+         Lw1D5wnHBLzI4iC1R7WvhTO6i8yg0tSQ6ZmPJOgx7pizrhNUUorZsOF5P0Bo7KkMKg6K
+         chesyNvkZk6qxfnmCmN/qw01LVapaQQZcTmQVKFJAoG+tWz56hpagHp56895UjLgdonW
+         trpBB27ySP6/I8GBB4wNVuwrlnAOqC3XMvJi/hpk4IwilGzI11LchBuAfrHf/IH8zxcB
+         zLpEYhx697/MHGwAehEMudj//jNJZvay/DH3GxNxeEipkguA+PaMVquqXiX1zw9nzRQE
+         QprQ==
+X-Gm-Message-State: AOAM5313GvpiBNoVntcc917aTQmpXTEvLMQP7ZSoMHpNEyZL93Qldzkc
+        ga37r7c2KgoMyEwztji5BbqkenRNhts2iQ==
+X-Google-Smtp-Source: ABdhPJxYv41stMfzseUim48CNHSoW3+prRKbrvc+A1dIrVo22+cY8wZl6oeQ4sHjnzKUBtYSiEv9Lw==
+X-Received: by 2002:a05:6808:1892:b0:2d4:9241:dfad with SMTP id bi18-20020a056808189200b002d49241dfadmr3268766oib.106.1645570126610;
+        Tue, 22 Feb 2022 14:48:46 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id c9sm7033380otd.26.2022.02.22.14.48.40
+        by smtp.gmail.com with ESMTPSA id c9sm7033380otd.26.2022.02.22.14.48.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 14:48:42 -0800 (PST)
+        Tue, 22 Feb 2022 14:48:46 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
         kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v3 1/2] net: dsa: tag_rtl8_4: add rtl8_4t trailing variant
-Date:   Tue, 22 Feb 2022 19:47:57 -0300
-Message-Id: <20220222224758.11324-2-luizluca@gmail.com>
+Subject: [PATCH net-next v3 2/2] net: dsa: realtek: rtl8365mb: add support for rtl8_4t
+Date:   Tue, 22 Feb 2022 19:47:58 -0300
+Message-Id: <20220222224758.11324-3-luizluca@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220222224758.11324-1-luizluca@gmail.com>
 References: <20220222224758.11324-1-luizluca@gmail.com>
@@ -71,273 +71,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Realtek switches supports the same tag both before ethertype or between
-payload and the CRC.
+The trailing tag is also supported by this family. The default is still
+rtl8_4 but now the switch supports changing the tag to rtl8_4t.
+
+Reintroduce the dropped cpu in struct rtl8365mb (removed by 6147631).
 
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- include/net/dsa.h    |   2 +
- net/dsa/tag_rtl8_4.c | 154 +++++++++++++++++++++++++++++++++----------
- 2 files changed, 121 insertions(+), 35 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 82 +++++++++++++++++++++++------
+ 1 file changed, 67 insertions(+), 15 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index fd1f62a6e0a8..b688ced04b0e 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -52,6 +52,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_BRCM_LEGACY_VALUE		22
- #define DSA_TAG_PROTO_SJA1110_VALUE		23
- #define DSA_TAG_PROTO_RTL8_4_VALUE		24
-+#define DSA_TAG_PROTO_RTL8_4T_VALUE		25
- 
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -79,6 +80,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_SEVILLE		= DSA_TAG_PROTO_SEVILLE_VALUE,
- 	DSA_TAG_PROTO_SJA1110		= DSA_TAG_PROTO_SJA1110_VALUE,
- 	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
-+	DSA_TAG_PROTO_RTL8_4T		= DSA_TAG_PROTO_RTL8_4T_VALUE,
- };
- 
- struct dsa_switch;
-diff --git a/net/dsa/tag_rtl8_4.c b/net/dsa/tag_rtl8_4.c
-index 02686ad4045d..2e81ab49d928 100644
---- a/net/dsa/tag_rtl8_4.c
-+++ b/net/dsa/tag_rtl8_4.c
-@@ -9,11 +9,6 @@
-  *
-  * This tag header has the following format:
-  *
-- *  -------------------------------------------
-- *  | MAC DA | MAC SA | 8 byte tag | Type | ...
-- *  -------------------------------------------
-- *     _______________/            \______________________________________
-- *    /                                                                   \
-  *  0                                  7|8                                 15
-  *  |-----------------------------------+-----------------------------------|---
-  *  |                               (16-bit)                                | ^
-@@ -58,6 +53,28 @@
-  *    TX/RX      | TX (switch->CPU): port number the packet was received on
-  *               | RX (CPU->switch): forwarding port mask (if ALLOW=0)
-  *               |                   allowance port mask (if ALLOW=1)
-+ *
-+ * The tag can be positioned before Ethertype, using tag "rtl8_4":
-+ *
-+ *  +--------+--------+------------+------+-----
-+ *  | MAC DA | MAC SA | 8 byte tag | Type | ...
-+ *  +--------+--------+------------+------+-----
-+ *
-+ * If checksum offload is enabled for CPU port device, it might break if the
-+ * driver does not use csum_start/csum_offset.
-+ *
-+ * The tag can also appear between the end of the payload and before the CRC,
-+ * using tag "rtl8_4t":
-+ *
-+ * +--------+--------+------+-----+---------+------------+-----+
-+ * | MAC DA | MAC SA | TYPE | ... | payload | 8-byte tag | CRC |
-+ * +--------+--------+------+-----+---------+------------+-----+
-+ *
-+ * The added bytes after the payload will break most checksums, either in
-+ * software or hardware. To avoid this issue, if the checksum is still pending,
-+ * this tagger checksum the packet before adding the tag, rendering any
-+ * checksum offload useless.
-+ *
-  */
- 
- #include <linux/bitfield.h>
-@@ -84,87 +101,133 @@
- #define RTL8_4_TX			GENMASK(3, 0)
- #define RTL8_4_RX			GENMASK(10, 0)
- 
--static struct sk_buff *rtl8_4_tag_xmit(struct sk_buff *skb,
--				       struct net_device *dev)
-+static void rtl8_4_write_tag(struct sk_buff *skb, struct net_device *dev,
-+			     void *tag)
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 2ed592147c20..ff865af65d55 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -566,6 +566,7 @@ struct rtl8365mb_port {
+  * @chip_ver: chip silicon revision
+  * @port_mask: mask of all ports
+  * @learn_limit_max: maximum number of L2 addresses the chip can learn
++ * @cpu: CPU tagging and CPU port configuration for this chip
+  * @mib_lock: prevent concurrent reads of MIB counters
+  * @ports: per-port data
+  * @jam_table: chip-specific initialization jam table
+@@ -580,6 +581,7 @@ struct rtl8365mb {
+ 	u32 chip_ver;
+ 	u32 port_mask;
+ 	u32 learn_limit_max;
++	struct rtl8365mb_cpu cpu;
+ 	struct mutex mib_lock;
+ 	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
+ 	const struct rtl8365mb_jam_tbl_entry *jam_table;
+@@ -770,6 +772,16 @@ static enum dsa_tag_protocol
+ rtl8365mb_get_tag_protocol(struct dsa_switch *ds, int port,
+ 			   enum dsa_tag_protocol mp)
  {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	__be16 *tag;
--
--	skb_push(skb, RTL8_4_TAG_LEN);
--
--	dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
--	tag = dsa_etype_header_pos_tx(skb);
-+	__be16 tag16[RTL8_4_TAG_LEN / 2];
- 
- 	/* Set Realtek EtherType */
--	tag[0] = htons(ETH_P_REALTEK);
-+	tag16[0] = htons(ETH_P_REALTEK);
- 
- 	/* Set Protocol; zero REASON */
--	tag[1] = htons(FIELD_PREP(RTL8_4_PROTOCOL, RTL8_4_PROTOCOL_RTL8365MB));
-+	tag16[1] = htons(FIELD_PREP(RTL8_4_PROTOCOL, RTL8_4_PROTOCOL_RTL8365MB));
- 
- 	/* Zero FID_EN, FID, PRI_EN, PRI, KEEP; set LEARN_DIS */
--	tag[2] = htons(FIELD_PREP(RTL8_4_LEARN_DIS, 1));
-+	tag16[2] = htons(FIELD_PREP(RTL8_4_LEARN_DIS, 1));
- 
- 	/* Zero ALLOW; set RX (CPU->switch) forwarding port mask */
--	tag[3] = htons(FIELD_PREP(RTL8_4_RX, BIT(dp->index)));
-+	tag16[3] = htons(FIELD_PREP(RTL8_4_RX, BIT(dp->index)));
++	struct realtek_priv *priv = ds->priv;
++	struct rtl8365mb_cpu *cpu;
++	struct rtl8365mb *mb;
 +
-+	memcpy(tag, tag16, RTL8_4_TAG_LEN);
-+}
++	mb = priv->chip_data;
++	cpu = &mb->cpu;
 +
-+static struct sk_buff *rtl8_4_tag_xmit(struct sk_buff *skb,
-+				       struct net_device *dev)
-+{
-+	skb_push(skb, RTL8_4_TAG_LEN);
++	if (cpu->position == RTL8365MB_CPU_POS_BEFORE_CRC)
++		return DSA_TAG_PROTO_RTL8_4T;
 +
-+	dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
-+
-+	rtl8_4_write_tag(skb, dev, dsa_etype_header_pos_tx(skb));
- 
- 	return skb;
+ 	return DSA_TAG_PROTO_RTL8_4;
  }
  
--static struct sk_buff *rtl8_4_tag_rcv(struct sk_buff *skb,
--				      struct net_device *dev)
-+static struct sk_buff *rtl8_4t_tag_xmit(struct sk_buff *skb,
-+					struct net_device *dev)
+@@ -1725,8 +1737,10 @@ static void rtl8365mb_irq_teardown(struct realtek_priv *priv)
+ 	}
+ }
+ 
+-static int rtl8365mb_cpu_config(struct realtek_priv *priv, const struct rtl8365mb_cpu *cpu)
++static int rtl8365mb_cpu_config(struct realtek_priv *priv)
  {
--	__be16 *tag;
-+	/* Calculate the checksum here if not done yet as trailing tags will
-+	 * break either software and hardware based checksum
-+	 */
-+	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
-+		return NULL;
-+
-+	rtl8_4_write_tag(skb, dev, skb_put(skb, RTL8_4_TAG_LEN));
-+
-+	return skb;
-+}
-+
-+static int rtl8_4_read_tag(struct sk_buff *skb, struct net_device *dev,
-+			   void *tag)
++	struct rtl8365mb *mb = priv->chip_data;
++	struct rtl8365mb_cpu *cpu = &mb->cpu;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1752,6 +1766,42 @@ static int rtl8365mb_cpu_config(struct realtek_priv *priv, const struct rtl8365m
+ 	return 0;
+ }
+ 
++static int rtl8365mb_change_tag_protocol(struct dsa_switch *ds, int cpu_index,
++					 enum dsa_tag_protocol proto)
 +{
-+	__be16 tag16[RTL8_4_TAG_LEN / 2];
- 	u16 etype;
- 	u8 reason;
- 	u8 proto;
- 	u8 port;
- 
--	if (unlikely(!pskb_may_pull(skb, RTL8_4_TAG_LEN)))
--		return NULL;
--
--	tag = dsa_etype_header_pos_rx(skb);
-+	memcpy(tag16, tag, RTL8_4_TAG_LEN);
- 
- 	/* Parse Realtek EtherType */
--	etype = ntohs(tag[0]);
-+	etype = ntohs(tag16[0]);
- 	if (unlikely(etype != ETH_P_REALTEK)) {
- 		dev_warn_ratelimited(&dev->dev,
- 				     "non-realtek ethertype 0x%04x\n", etype);
--		return NULL;
-+		return -EPROTO;
- 	}
- 
- 	/* Parse Protocol */
--	proto = FIELD_GET(RTL8_4_PROTOCOL, ntohs(tag[1]));
-+	proto = FIELD_GET(RTL8_4_PROTOCOL, ntohs(tag16[1]));
- 	if (unlikely(proto != RTL8_4_PROTOCOL_RTL8365MB)) {
- 		dev_warn_ratelimited(&dev->dev,
- 				     "unknown realtek protocol 0x%02x\n",
- 				     proto);
--		return NULL;
-+		return -EPROTO;
- 	}
- 
- 	/* Parse REASON */
--	reason = FIELD_GET(RTL8_4_REASON, ntohs(tag[1]));
-+	reason = FIELD_GET(RTL8_4_REASON, ntohs(tag16[1]));
- 
- 	/* Parse TX (switch->CPU) */
--	port = FIELD_GET(RTL8_4_TX, ntohs(tag[3]));
-+	port = FIELD_GET(RTL8_4_TX, ntohs(tag16[3]));
- 	skb->dev = dsa_master_find_slave(dev, 0, port);
- 	if (!skb->dev) {
- 		dev_warn_ratelimited(&dev->dev,
- 				     "could not find slave for port %d\n",
- 				     port);
--		return NULL;
-+		return -ENOENT;
- 	}
- 
-+	if (reason != RTL8_4_REASON_TRAP)
-+		dsa_default_offload_fwd_mark(skb);
++	struct realtek_priv *priv = ds->priv;
++	struct rtl8365mb_cpu *cpu;
++	struct rtl8365mb *mb;
++	int ret;
++
++	mb = priv->chip_data;
++	cpu = &mb->cpu;
++
++	switch (proto) {
++	case DSA_TAG_PROTO_RTL8_4:
++		cpu->format = RTL8365MB_CPU_FORMAT_8BYTES;
++		cpu->position = RTL8365MB_CPU_POS_AFTER_SA;
++		break;
++	case DSA_TAG_PROTO_RTL8_4T:
++		cpu->format = RTL8365MB_CPU_FORMAT_8BYTES;
++		cpu->position = RTL8365MB_CPU_POS_BEFORE_CRC;
++		break;
++	/* The switch also supports a 4-byte format, similar to rtl4a but with
++	 * the same 0x04 8-bit version and probably 8-bit port source/dest.
++	 * There is no public doc about it. Not supported yet and it will probably
++	 * never be.
++	 */
++	default:
++		return -EPROTONOSUPPORT;
++	}
++
++	ret = rtl8365mb_cpu_config(priv);
++	if (ret)
++		return ret;
 +
 +	return 0;
 +}
 +
-+static struct sk_buff *rtl8_4_tag_rcv(struct sk_buff *skb,
-+				      struct net_device *dev)
-+{
-+	if (unlikely(!pskb_may_pull(skb, RTL8_4_TAG_LEN)))
-+		return NULL;
-+
-+	if (unlikely(rtl8_4_read_tag(skb, dev, dsa_etype_header_pos_rx(skb))))
-+		return NULL;
-+
- 	/* Remove tag and recalculate checksum */
- 	skb_pull_rcsum(skb, RTL8_4_TAG_LEN);
+ static int rtl8365mb_switch_init(struct realtek_priv *priv)
+ {
+ 	struct rtl8365mb *mb = priv->chip_data;
+@@ -1798,13 +1848,14 @@ static int rtl8365mb_reset_chip(struct realtek_priv *priv)
+ static int rtl8365mb_setup(struct dsa_switch *ds)
+ {
+ 	struct realtek_priv *priv = ds->priv;
+-	struct rtl8365mb_cpu cpu = {0};
++	struct rtl8365mb_cpu *cpu;
+ 	struct dsa_port *cpu_dp;
+ 	struct rtl8365mb *mb;
+ 	int ret;
+ 	int i;
  
- 	dsa_strip_etype_header(skb, RTL8_4_TAG_LEN);
+ 	mb = priv->chip_data;
++	cpu = &mb->cpu;
  
--	if (reason != RTL8_4_REASON_TRAP)
--		dsa_default_offload_fwd_mark(skb);
-+	return skb;
-+}
-+
-+static struct sk_buff *rtl8_4t_tag_rcv(struct sk_buff *skb,
-+				       struct net_device *dev)
-+{
-+	if (skb_linearize(skb))
-+		return NULL;
-+
-+	if (unlikely(rtl8_4_read_tag(skb, dev, skb_tail_pointer(skb) - RTL8_4_TAG_LEN)))
-+		return NULL;
-+
-+	if (pskb_trim_rcsum(skb, skb->len - RTL8_4_TAG_LEN))
-+		return NULL;
+ 	ret = rtl8365mb_reset_chip(priv);
+ 	if (ret) {
+@@ -1827,21 +1878,14 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
+ 		dev_info(priv->dev, "no interrupt support\n");
  
- 	return skb;
- }
+ 	/* Configure CPU tagging */
+-	cpu.trap_port = RTL8365MB_MAX_NUM_PORTS;
+ 	dsa_switch_for_each_cpu_port(cpu_dp, priv->ds) {
+-		cpu.mask |= BIT(cpu_dp->index);
++		cpu->mask |= BIT(cpu_dp->index);
  
-+/* Ethertype version */
- static const struct dsa_device_ops rtl8_4_netdev_ops = {
- 	.name = "rtl8_4",
- 	.proto = DSA_TAG_PROTO_RTL8_4,
-@@ -172,7 +235,28 @@ static const struct dsa_device_ops rtl8_4_netdev_ops = {
- 	.rcv = rtl8_4_tag_rcv,
- 	.needed_headroom = RTL8_4_TAG_LEN,
- };
--module_dsa_tag_driver(rtl8_4_netdev_ops);
+-		if (cpu.trap_port == RTL8365MB_MAX_NUM_PORTS)
+-			cpu.trap_port = cpu_dp->index;
++		if (cpu->trap_port == RTL8365MB_MAX_NUM_PORTS)
++			cpu->trap_port = cpu_dp->index;
+ 	}
+-
+-	cpu.enable = cpu.mask > 0;
+-	cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
+-	cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
+-	cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
+-	cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
+-
+-	ret = rtl8365mb_cpu_config(priv, &cpu);
++	cpu->enable = cpu->mask > 0;
++	ret = rtl8365mb_cpu_config(priv);
+ 	if (ret)
+ 		goto out_teardown_irq;
  
--MODULE_LICENSE("GPL");
-+DSA_TAG_DRIVER(rtl8_4_netdev_ops);
+@@ -1853,7 +1897,7 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
+ 			continue;
+ 
+ 		/* Forward only to the CPU */
+-		ret = rtl8365mb_port_set_isolation(priv, i, cpu.mask);
++		ret = rtl8365mb_port_set_isolation(priv, i, cpu->mask);
+ 		if (ret)
+ 			goto out_teardown_irq;
+ 
+@@ -1983,6 +2027,12 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+ 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
+ 
++		mb->cpu.trap_port = RTL8365MB_MAX_NUM_PORTS;
++		mb->cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
++		mb->cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
++		mb->cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
++		mb->cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
 +
- MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4);
-+
-+/* Tail version */
-+static const struct dsa_device_ops rtl8_4t_netdev_ops = {
-+	.name = "rtl8_4t",
-+	.proto = DSA_TAG_PROTO_RTL8_4T,
-+	.xmit = rtl8_4t_tag_xmit,
-+	.rcv = rtl8_4t_tag_rcv,
-+	.needed_tailroom = RTL8_4_TAG_LEN,
-+};
-+
-+DSA_TAG_DRIVER(rtl8_4t_netdev_ops);
-+
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4L);
-+
-+static struct dsa_tag_driver *dsa_tag_drivers[] = {
-+	&DSA_TAG_DRIVER_NAME(rtl8_4_netdev_ops),
-+	&DSA_TAG_DRIVER_NAME(rtl8_4t_netdev_ops),
-+};
-+module_dsa_tag_drivers(dsa_tag_drivers);
-+
-+MODULE_LICENSE("GPL");
+ 		break;
+ 	default:
+ 		dev_err(priv->dev,
+@@ -1996,6 +2046,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 
+ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
+ 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
++	.change_tag_protocol = rtl8365mb_change_tag_protocol,
+ 	.setup = rtl8365mb_setup,
+ 	.teardown = rtl8365mb_teardown,
+ 	.phylink_get_caps = rtl8365mb_phylink_get_caps,
+@@ -2014,6 +2065,7 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops_smi = {
+ 
+ static const struct dsa_switch_ops rtl8365mb_switch_ops_mdio = {
+ 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
++	.change_tag_protocol = rtl8365mb_change_tag_protocol,
+ 	.setup = rtl8365mb_setup,
+ 	.teardown = rtl8365mb_teardown,
+ 	.phylink_get_caps = rtl8365mb_phylink_get_caps,
 -- 
 2.35.1
 
