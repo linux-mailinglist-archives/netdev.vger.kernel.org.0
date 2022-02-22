@@ -2,31 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5208A4BF0ED
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9264BF0EE
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbiBVE24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 23:28:56 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55612 "EHLO
+        id S229955AbiBVEaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 23:30:15 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiBVE2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 23:28:52 -0500
+        with ESMTP id S229669AbiBVEaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 23:30:13 -0500
 Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A21C639F
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 20:17:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CBB117078
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 20:29:45 -0800 (PST)
 Received: by codeconstruct.com.au (Postfix, from userid 10001)
-        id 9AF58202B9; Tue, 22 Feb 2022 12:17:54 +0800 (AWST)
+        id 61C8B202A4; Tue, 22 Feb 2022 12:29:43 +0800 (AWST)
 From:   Matt Johnston <matt@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jeremy Kerr <jk@codeconstruct.com.au>
-Subject: [PATCH net-next v3 2/2] mctp: Fix incorrect netdev unref for extended addr
-Date:   Tue, 22 Feb 2022 12:17:39 +0800
-Message-Id: <20220222041739.511255-3-matt@codeconstruct.com.au>
+Subject: [PATCH net-next] mctp: Fix warnings reported by clang-analyzer
+Date:   Tue, 22 Feb 2022 12:29:36 +0800
+Message-Id: <20220222042936.516874-1-matt@codeconstruct.com.au>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220222041739.511255-1-matt@codeconstruct.com.au>
-References: <20220222041739.511255-1-matt@codeconstruct.com.au>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
@@ -38,62 +36,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the extended addressing local route output codepath
-dev_get_by_index_rcu() doesn't take a dev_hold() so we shouldn't
-dev_put().
+net/mctp/device.c:140:11: warning: Assigned value is garbage or undefined
+[clang-analyzer-core.uninitialized.Assign]
+        mcb->idx = idx;
+
+- Not a real problem due to how the callback runs, fix the warning.
+
+net/mctp/route.c:458:4: warning: Value stored to 'msk' is never read
+[clang-analyzer-deadcode.DeadStores]
+        msk = container_of(key->sk, struct mctp_sock, sk);
+
+- 'msk' dead assignment can be removed here.
 
 Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
 ---
- net/mctp/route.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ net/mctp/device.c | 2 +-
+ net/mctp/route.c  | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/net/mctp/device.c b/net/mctp/device.c
+index 9e097e61f23a..224f067e9d4c 100644
+--- a/net/mctp/device.c
++++ b/net/mctp/device.c
+@@ -107,7 +107,7 @@ static int mctp_dump_addrinfo(struct sk_buff *skb, struct netlink_callback *cb)
+ 	struct ifaddrmsg *hdr;
+ 	struct mctp_dev *mdev;
+ 	int ifindex;
+-	int idx, rc;
++	int idx = 0, rc;
+ 
+ 	hdr = nlmsg_data(cb->nlh);
+ 	// filter by ifindex if requested
 diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 6f277e56b168..5078ce3315cf 100644
+index fe6c8bf1ec2c..85acfcbabd9c 100644
 --- a/net/mctp/route.c
 +++ b/net/mctp/route.c
-@@ -838,7 +838,6 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 	struct mctp_skb_cb *cb = mctp_cb(skb);
- 	struct mctp_route tmp_rt = {0};
- 	struct mctp_sk_key *key;
--	struct net_device *dev;
- 	struct mctp_hdr *hdr;
- 	unsigned long flags;
- 	unsigned int mtu;
-@@ -851,12 +850,12 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 
- 	if (rt) {
- 		ext_rt = false;
--		dev = NULL;
--
- 		if (WARN_ON(!rt->dev))
- 			goto out_release;
- 
- 	} else if (cb->ifindex) {
-+		struct net_device *dev;
-+
- 		ext_rt = true;
- 		rt = &tmp_rt;
- 
-@@ -866,7 +865,6 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 			rcu_read_unlock();
- 			return rc;
- 		}
--
- 		rt->dev = __mctp_dev_get(dev);
- 		rcu_read_unlock();
- 
-@@ -947,11 +945,9 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 	if (!ext_rt)
- 		mctp_route_release(rt);
- 
--	dev_put(dev);
- 	mctp_dev_put(tmp_rt.dev);
- 
- 	return rc;
--
- }
- 
- /* route management */
+@@ -456,7 +456,6 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ 		 * the reassembly/response key
+ 		 */
+ 		if (!rc && flags & MCTP_HDR_FLAG_EOM) {
+-			msk = container_of(key->sk, struct mctp_sock, sk);
+ 			sock_queue_rcv_skb(key->sk, key->reasm_head);
+ 			key->reasm_head = NULL;
+ 			__mctp_key_done_in(key, net, f, MCTP_TRACE_KEY_REPLIED);
 -- 
 2.32.0
 
