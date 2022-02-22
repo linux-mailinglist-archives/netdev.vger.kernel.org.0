@@ -2,109 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C23244BFF11
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 17:42:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBEBA4BFF34
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 17:49:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234245AbiBVQnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 11:43:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S234332AbiBVQtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 11:49:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234277AbiBVQmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 11:42:53 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6712C7C34
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 08:42:27 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id m22so206551pja.0
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 08:42:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=n/+c7JbFhyjnuM8rIS33nSZUfbsXt4rwpS5ILzyufPA=;
-        b=Qnr2sGj5YPsbbFDTc1VeLfe1D2bPfGrHXjlhu9z/Btx79SBYWASuqbJoixivEhHgDI
-         olPgoIIvYjhwVzdfS7cO+pCWgmxmqsUdL7kt7RgBh50r4My4pYFKrQK4AXDY891+6b2O
-         jf3NCJx3MuifJnT/zDo2AbEEYmYNYqII2H0mJGAVynPBi1BC0JlkEk/BEUJv+2Ujyh/t
-         ri6ExdspwDnOkL7W/nYGiqV5ypKwsuVvkazCE1sKhSAHw3OsdpkAZqC8GrkekUpq8yMr
-         0JMnu2d3HtliiFTLQM3twOx5UHe95PM/59brnGokZ8X/OZWO11RZhkYhl4GwPHSl3Kno
-         qSCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=n/+c7JbFhyjnuM8rIS33nSZUfbsXt4rwpS5ILzyufPA=;
-        b=LyqYjL7KYAq6Q+PuiB2uE7sMIJurDufANT89SsTuolfvpAi3UCmCRIyfvUrXHhgMme
-         SyPtEBKov8JdXGGDTUMEL3VLFk6nhvJ5VuHrT4aGjwxfPZ6aVAZCGG0I4HnUsBEoDBFe
-         ZcbPF/N9O/bptwikmDlKazTvi8HKINKKBhStoFjW0hFjah5X0ZLgO9Un0Q4CZWYqHv6Y
-         Qc0f1T5W8PG0AGKlEVpuDTu6XF3eL7KtlcPr1pxC1Qc7UrvtlfFPhWMT2HlQNz62MYPr
-         zwNw9PCMFyo5WzqzpHAWRk2bm2Cm4H4GBqHvk8Qqm2K8UsOZm7S3D2k12+eJPYEsKNS5
-         kj1w==
-X-Gm-Message-State: AOAM533m5Re7mlXjZyhJZcYeWv8KLuak4YFjsFgbxWGAtwZEgltpGJrG
-        INYDAZpmmm2A+umV4ELwqIQ=
-X-Google-Smtp-Source: ABdhPJygCPgucR7iILSkvfmqhkFbFl2oJiJaBW61ncj5XGh5b7liWZRD+Lw7W4kAIX8ybpJOS22p6g==
-X-Received: by 2002:a17:90a:a02:b0:1bc:71a6:87ad with SMTP id o2-20020a17090a0a0200b001bc71a687admr4212946pjo.15.1645548147058;
-        Tue, 22 Feb 2022 08:42:27 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id j3sm17522285pfc.43.2022.02.22.08.42.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 08:42:26 -0800 (PST)
-Message-ID: <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
-Date:   Tue, 22 Feb 2022 08:42:24 -0800
+        with ESMTP id S233421AbiBVQto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 11:49:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5035916A5A5
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 08:49:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645548556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Vz9nNDvyvDMTdhA9MOOdkPb7DZP5KSBUZs6KelrdH10=;
+        b=XVpQFOJ0IEHE9zZ0tSap//WmJJ6XYy4p0IfKo1BdxtwLC9PEd9vHVBahoRuRTZJ8KPODmp
+        UAzv0ueaLgzz6hj4ej4mMXSnmbuT2SVvbeu7+RnVYbLgQeErsdrDXfLpPsfreWPiPoGhlm
+        aAGtBuRlAfvHD5JkPV06TTWP5EhRINI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-176-p5Vh5Qc4PXe_azqchgwlnw-1; Tue, 22 Feb 2022 11:49:13 -0500
+X-MC-Unique: p5Vh5Qc4PXe_azqchgwlnw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 335201091DA0;
+        Tue, 22 Feb 2022 16:49:11 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.178])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0408F837A9;
+        Tue, 22 Feb 2022 16:48:58 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
+        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com
+Cc:     linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
+        maorg@nvidia.com, ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH V8 mlx5-next 08/15] vfio: Have the core code decode the
+ VFIO_DEVICE_FEATURE ioctl
+In-Reply-To: <20220220095716.153757-9-yishaih@nvidia.com>
+Organization: Red Hat GmbH
+References: <20220220095716.153757-1-yishaih@nvidia.com>
+ <20220220095716.153757-9-yishaih@nvidia.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Tue, 22 Feb 2022 17:48:57 +0100
+Message-ID: <87o82y7sp2.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
- WoL IRQ
-Content-Language: en-US
-To:     Peter Robinson <pbrobinson@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Cc:     Javier Martinez Canillas <javierm@redhat.com>
-References: <20220222095348.2926536-1-pbrobinson@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220222095348.2926536-1-pbrobinson@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Feb 20 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
 
-
-On 2/22/2022 1:53 AM, Peter Robinson wrote:
-> The ethtool WoL enable function wasn't checking if the device
-> has the optional WoL IRQ and hence on platforms such as the
-> Raspberry Pi 4 which had working ethernet prior to the last
-> fix regressed with the last fix, so also check if we have a
-> WoL IRQ there and return ENOTSUPP if not.
-> 
-> Fixes: 9deb48b53e7f ("bcmgenet: add WOL IRQ check")
-> Fixes: 8562056f267d ("net: bcmgenet: request Wake-on-LAN interrupt")
-> Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
-> Suggested-by: Javier Martinez Canillas <javierm@redhat.com>
+> From: Jason Gunthorpe <jgg@nvidia.com>
+>
+> Invoke a new device op 'device_feature' to handle just the data array
+> portion of the command. This lifts the ioctl validation to the core code
+> and makes it simpler for either the core code, or layered drivers, to
+> implement their own feature values.
+>
+> Provide vfio_check_feature() to consolidate checking the flags/etc against
+> what the driver supports.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 > ---
->   drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> We're seeing this crash on the Raspberry Pi 4 series of devices on
-> Fedora on 5.17-rc with the top Fixes patch and wired ethernet doesn't work.
+>  drivers/vfio/pci/vfio_pci.c      |  1 +
+>  drivers/vfio/pci/vfio_pci_core.c | 94 +++++++++++++-------------------
+>  drivers/vfio/vfio.c              | 46 ++++++++++++++--
+>  include/linux/vfio.h             | 32 +++++++++++
+>  include/linux/vfio_pci_core.h    |  2 +
+>  5 files changed, 114 insertions(+), 61 deletions(-)
+>
 
-Are you positive these two things are related to one another? The 
-transmit queue timeout means that the TX DMA interrupt is not firing up 
-what is the relationship with the absence/presence of the Wake-on-LAN 
-interrupt line?
+(...)
 
-At any rate:
+> +static int vfio_ioctl_device_feature(struct vfio_device *device,
+> +				     struct vfio_device_feature __user *arg)
+> +{
+> +	size_t minsz = offsetofend(struct vfio_device_feature, flags);
+> +	struct vfio_device_feature feature;
+> +
+> +	if (copy_from_user(&feature, arg, minsz))
+> +		return -EFAULT;
+> +
+> +	if (feature.argsz < minsz)
+> +		return -EINVAL;
+> +
+> +	/* Check unknown flags */
+> +	if (feature.flags &
+> +	    ~(VFIO_DEVICE_FEATURE_MASK | VFIO_DEVICE_FEATURE_SET |
+> +	      VFIO_DEVICE_FEATURE_GET | VFIO_DEVICE_FEATURE_PROBE))
+> +		return -EINVAL;
+> +
+> +	/* GET & SET are mutually exclusive except with PROBE */
+> +	if (!(feature.flags & VFIO_DEVICE_FEATURE_PROBE) &&
+> +	    (feature.flags & VFIO_DEVICE_FEATURE_SET) &&
+> +	    (feature.flags & VFIO_DEVICE_FEATURE_GET))
+> +		return -EINVAL;
+> +
+> +	switch (feature.flags & VFIO_DEVICE_FEATURE_MASK) {
+> +	default:
+> +		if (unlikely(!device->ops->device_feature))
+> +			return -EINVAL;
+> +		return device->ops->device_feature(device, feature.flags,
+> +						   arg->data,
+> +						   feature.argsz - minsz);
+> +	}
+> +}
+> +
+>  static long vfio_device_fops_unl_ioctl(struct file *filep,
+>  				       unsigned int cmd, unsigned long arg)
+>  {
+>  	struct vfio_device *device = filep->private_data;
+>  
+> -	if (unlikely(!device->ops->ioctl))
+> -		return -EINVAL;
+> -
+> -	return device->ops->ioctl(device, cmd, arg);
+> +	switch (cmd) {
+> +	case VFIO_DEVICE_FEATURE:
+> +		return vfio_ioctl_device_feature(device, (void __user *)arg);
+> +	default:
+> +		if (unlikely(!device->ops->ioctl))
+> +			return -EINVAL;
+> +		return device->ops->ioctl(device, cmd, arg);
+> +	}
+>  }
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+One not-that-obvious change this is making is how VFIO_DEVICE_* ioctls
+are processed. With this patch, VFIO_DEVICE_FEATURE is handled a bit
+differently to other ioctl commands that are passed directly to the
+device; here we have the common handling first, then control is passed
+to the device. When I read in Documentation/driver-api/vfio.rst
+
+"The ioctl interface provides a direct pass through for VFIO_DEVICE_*
+ioctls."
+
+I would not really expect that behaviour. No objection to introducing
+it, but I think that needs a note in the doc, as you only see that if
+you actually read the implementation (and not just the header and the
+docs).
+
