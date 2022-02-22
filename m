@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D274BFFC4
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:08:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4895E4BFFC8
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 18:08:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiBVRIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 12:08:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
+        id S232629AbiBVRI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 12:08:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234429AbiBVRIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:08:43 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754648C7EF;
-        Tue, 22 Feb 2022 09:08:11 -0800 (PST)
+        with ESMTP id S234591AbiBVRIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 12:08:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1518990249;
+        Tue, 22 Feb 2022 09:08:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 57054CE1791;
-        Tue, 22 Feb 2022 17:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 216D2C340E8;
-        Tue, 22 Feb 2022 17:08:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A516161291;
+        Tue, 22 Feb 2022 17:08:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D7A1C340E8;
+        Tue, 22 Feb 2022 17:08:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645549688;
-        bh=yFHBdsuRceeQRBNVPPb3szBvEEm5e1vkI4dUoZkDPHo=;
+        s=k20201202; t=1645549702;
+        bh=bYw58Oim7YKxfKRi3NAAACDa3WAM5CvIxglbEBfCSe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KaKyEIbCdh650kZRkWMex9PISQa0m/xA9lY0qlaW0zI3DIYffk3XW6b11lTtQcd/H
-         cr9Nam2BkUPem/AH+84Dhgx/t+Mbbj7ffC0oPSM5SqEJDSkPkisMSEKlZEefWtJ2RD
-         uAsRhKTY34F/4yhPyp3DdQHlzkldGef2+/YaZqkWARdvD632guKbiLdZgHPMLe3hvp
-         epfnoJrgTPEJCgIh0YGltYg0nHVfE29SrCKpceU2YBcDIPwCfxxOcPRarx7bHcP/Jp
-         nmin1QgtKp/hA3VHO618P5Bb87adQCPCueyECw+v0S34/jctWNnpcHjYUVYmhH9QKw
-         U6PTaan7DInGg==
+        b=TEZysduse1anvebQk5Ub3ENn7A3VKtOSHtoCkDPP9CQgWhC9OR6fTLFYecgxGhGMz
+         O1FPUEUbT857+cmOvxR5CcCkvYwfMslcN64WzEm26X1c3dGfgkzfbHg2D8K93qixEZ
+         d2b3NsE4Be+5/ImeQdLFnJ90AibwXpUA8VeoyxZNZqx/3KcSzlAVx/KBJhvXXA0A03
+         w9exsqVpolSvH8V3oswd0CBmWv/v010cyzXTxV19qV8V35A+ZgiMvKAmL/6IA5GHKI
+         8Fi0YUuOT6k32gyjvaeiV/nzFZhE5loK7XZ1+VGEd+6WixwJmE9jbbHPEuESgXGoS5
+         iIXeOhvZv7J+Q==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -43,9 +43,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 09/10] selftest/bpf: Add kprobe_multi attach test
-Date:   Tue, 22 Feb 2022 18:05:59 +0100
-Message-Id: <20220222170600.611515-10-jolsa@kernel.org>
+Subject: [PATCH 10/10] selftest/bpf: Add kprobe_multi test for bpf_cookie values
+Date:   Tue, 22 Feb 2022 18:06:00 +0100
+Message-Id: <20220222170600.611515-11-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220222170600.611515-1-jolsa@kernel.org>
 References: <20220222170600.611515-1-jolsa@kernel.org>
@@ -61,102 +61,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding kprobe_multi attach test that uses new fprobe interface to
-attach kprobe program to multiple functions.
-
-The test is attaching programs to bpf_fentry_test* functions and
-uses single trampoline program bpf_prog_test_run to trigger
-bpf_fentry_test* functions.
+Adding bpf_cookie test for programs attached by kprobe_multi links.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../bpf/prog_tests/kprobe_multi_test.c        | 115 ++++++++++++++++++
- .../selftests/bpf/progs/kprobe_multi.c        |  58 +++++++++
- 2 files changed, 173 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi.c
+ .../selftests/bpf/prog_tests/bpf_cookie.c     | 72 +++++++++++++++++++
+ .../bpf/progs/kprobe_multi_bpf_cookie.c       | 62 ++++++++++++++++
+ 2 files changed, 134 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-new file mode 100644
-index 000000000000..f5567c3865d4
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -0,0 +1,115 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include "kprobe_multi.skel.h"
-+#include "trace_helpers.h"
-+
-+static void test_skel_api(void)
-+{
-+	LIBBPF_OPTS(bpf_test_run_opts, topts);
-+	struct kprobe_multi *skel = NULL;
-+	int err, prog_fd;
-+
-+	skel = kprobe_multi__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "kprobe_multi__open_and_load"))
-+		goto cleanup;
-+
-+	err = kprobe_multi__attach(skel);
-+	if (!ASSERT_OK(err, "kprobe_multi__attach"))
-+		goto cleanup;
-+
-+	prog_fd = bpf_program__fd(skel->progs.test1);
-+	err = bpf_prog_test_run_opts(prog_fd, &topts);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(topts.retval, 0, "test_run");
-+
-+	ASSERT_EQ(skel->bss->test2_result, 8, "test2_result");
-+	ASSERT_EQ(skel->bss->test3_result, 8, "test3_result");
-+
-+cleanup:
-+	kprobe_multi__destroy(skel);
-+}
-+
-+static void test_link_api(struct bpf_link_create_opts *opts)
-+{
-+	LIBBPF_OPTS(bpf_test_run_opts, topts);
-+	int err, prog_fd, link1_fd = -1, link2_fd = -1;
-+	struct kprobe_multi *skel = NULL;
-+
-+	skel = kprobe_multi__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
-+		goto cleanup;
-+
-+	prog_fd = bpf_program__fd(skel->progs.test2);
-+	link1_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, opts);
-+	if (!ASSERT_GE(link1_fd, 0, "link_fd"))
-+		goto cleanup;
-+
-+	opts->kprobe_multi.flags = BPF_F_KPROBE_MULTI_RETURN;
-+	prog_fd = bpf_program__fd(skel->progs.test3);
-+	link2_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, opts);
-+	if (!ASSERT_GE(link2_fd, 0, "link_fd"))
-+		goto cleanup;
-+
-+	skel->bss->test2_result = 0;
-+	skel->bss->test3_result = 0;
-+
-+	prog_fd = bpf_program__fd(skel->progs.test1);
-+	err = bpf_prog_test_run_opts(prog_fd, &topts);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(topts.retval, 0, "test_run");
-+
-+	ASSERT_EQ(skel->bss->test2_result, 8, "test2_result");
-+	ASSERT_EQ(skel->bss->test3_result, 8, "test3_result");
-+
-+cleanup:
-+	if (link1_fd != -1)
-+		close(link1_fd);
-+	if (link2_fd != -1)
-+		close(link2_fd);
-+	kprobe_multi__destroy(skel);
-+}
-+
-+static void test_link_api_addrs(void)
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+index cd10df6cd0fc..edfb9f8736c6 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+@@ -7,6 +7,7 @@
+ #include <unistd.h>
+ #include <test_progs.h>
+ #include "test_bpf_cookie.skel.h"
++#include "kprobe_multi_bpf_cookie.skel.h"
+ 
+ /* uprobe attach point */
+ static void trigger_func(void)
+@@ -63,6 +64,75 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
+ 	bpf_link__destroy(retlink2);
+ }
+ 
++static void kprobe_multi_subtest(void)
 +{
 +	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-+	__u64 addrs[8];
++	int err, prog_fd, link1_fd = -1, link2_fd = -1;
++	LIBBPF_OPTS(bpf_test_run_opts, topts);
++	struct kprobe_multi_bpf_cookie *skel = NULL;
++	__u64 addrs[8], cookies[8];
++
++	skel = kprobe_multi_bpf_cookie__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
++		goto cleanup;
 +
 +	kallsyms_find("bpf_fentry_test1", &addrs[0]);
 +	kallsyms_find("bpf_fentry_test2", &addrs[1]);
@@ -167,42 +107,72 @@ index 000000000000..f5567c3865d4
 +	kallsyms_find("bpf_fentry_test7", &addrs[6]);
 +	kallsyms_find("bpf_fentry_test8", &addrs[7]);
 +
-+	opts.kprobe_multi.addrs = (__u64) addrs;
++	cookies[0] = 1;
++	cookies[1] = 2;
++	cookies[2] = 3;
++	cookies[3] = 4;
++	cookies[4] = 5;
++	cookies[5] = 6;
++	cookies[6] = 7;
++	cookies[7] = 8;
++
++	opts.kprobe_multi.addrs = ptr_to_u64(&addrs);
 +	opts.kprobe_multi.cnt = 8;
-+	test_link_api(&opts);
++	opts.kprobe_multi.cookies = ptr_to_u64(&cookies);
++	prog_fd = bpf_program__fd(skel->progs.test2);
++
++	link1_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, &opts);
++	if (!ASSERT_GE(link1_fd, 0, "link1_fd"))
++		return;
++
++	cookies[0] = 8;
++	cookies[1] = 7;
++	cookies[2] = 6;
++	cookies[3] = 5;
++	cookies[4] = 4;
++	cookies[5] = 3;
++	cookies[6] = 2;
++	cookies[7] = 1;
++
++	opts.flags = BPF_F_KPROBE_MULTI_RETURN;
++	prog_fd = bpf_program__fd(skel->progs.test3);
++
++	link2_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, &opts);
++	if (!ASSERT_GE(link2_fd, 0, "link2_fd"))
++		goto cleanup;
++
++	prog_fd = bpf_program__fd(skel->progs.test1);
++	err = bpf_prog_test_run_opts(prog_fd, &topts);
++	ASSERT_OK(err, "test_run");
++	ASSERT_EQ(topts.retval, 0, "test_run");
++
++	ASSERT_EQ(skel->bss->test2_result, 8, "test2_result");
++	ASSERT_EQ(skel->bss->test3_result, 8, "test3_result");
++
++cleanup:
++	close(link1_fd);
++	close(link2_fd);
++	kprobe_multi_bpf_cookie__destroy(skel);
 +}
 +
-+static void test_link_api_syms(void)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-+	const char *syms[8] = {
-+		"bpf_fentry_test1",
-+		"bpf_fentry_test2",
-+		"bpf_fentry_test3",
-+		"bpf_fentry_test4",
-+		"bpf_fentry_test5",
-+		"bpf_fentry_test6",
-+		"bpf_fentry_test7",
-+		"bpf_fentry_test8",
-+	};
-+
-+	opts.kprobe_multi.syms = (__u64) syms;
-+	opts.kprobe_multi.cnt = 8;
-+	test_link_api(&opts);
-+}
-+
-+void test_kprobe_multi_test(void)
-+{
-+	test_skel_api();
-+	test_link_api_syms();
-+	test_link_api_addrs();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi.c b/tools/testing/selftests/bpf/progs/kprobe_multi.c
+ static void uprobe_subtest(struct test_bpf_cookie *skel)
+ {
+ 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, opts);
+@@ -249,6 +319,8 @@ void test_bpf_cookie(void)
+ 
+ 	if (test__start_subtest("kprobe"))
+ 		kprobe_subtest(skel);
++	if (test__start_subtest("multi_kprobe"))
++		kprobe_multi_subtest();
+ 	if (test__start_subtest("uprobe"))
+ 		uprobe_subtest(skel);
+ 	if (test__start_subtest("tracepoint"))
+diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
 new file mode 100644
-index 000000000000..71318c65931c
+index 000000000000..d6f8454ba093
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/kprobe_multi.c
-@@ -0,0 +1,58 @@
++++ b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
+@@ -0,0 +1,62 @@
 +// SPDX-License-Identifier: GPL-2.0
 +#include <linux/bpf.h>
 +#include <bpf/bpf_helpers.h>
@@ -228,19 +198,21 @@ index 000000000000..71318c65931c
 +
 +__u64 test2_result = 0;
 +
-+SEC("kprobe.multi/bpf_fentry_test?")
++SEC("kprobe.multi/bpf_fentry_tes??")
 +int test2(struct pt_regs *ctx)
 +{
++	__u64 cookie = bpf_get_attach_cookie(ctx);
 +	__u64 addr = bpf_get_func_ip(ctx);
 +
-+	test2_result += (const void *) addr == &bpf_fentry_test1 ||
-+			(const void *) addr == &bpf_fentry_test2 ||
-+			(const void *) addr == &bpf_fentry_test3 ||
-+			(const void *) addr == &bpf_fentry_test4 ||
-+			(const void *) addr == &bpf_fentry_test5 ||
-+			(const void *) addr == &bpf_fentry_test6 ||
-+			(const void *) addr == &bpf_fentry_test7 ||
-+			(const void *) addr == &bpf_fentry_test8;
++	test2_result += (const void *) addr == &bpf_fentry_test1 && cookie == 1;
++	test2_result += (const void *) addr == &bpf_fentry_test2 && cookie == 2;
++	test2_result += (const void *) addr == &bpf_fentry_test3 && cookie == 3;
++	test2_result += (const void *) addr == &bpf_fentry_test4 && cookie == 4;
++	test2_result += (const void *) addr == &bpf_fentry_test5 && cookie == 5;
++	test2_result += (const void *) addr == &bpf_fentry_test6 && cookie == 6;
++	test2_result += (const void *) addr == &bpf_fentry_test7 && cookie == 7;
++	test2_result += (const void *) addr == &bpf_fentry_test8 && cookie == 8;
++
 +	return 0;
 +}
 +
@@ -249,16 +221,18 @@ index 000000000000..71318c65931c
 +SEC("kretprobe.multi/bpf_fentry_test*")
 +int test3(struct pt_regs *ctx)
 +{
++	__u64 cookie = bpf_get_attach_cookie(ctx);
 +	__u64 addr = bpf_get_func_ip(ctx);
 +
-+	test3_result += (const void *) addr == &bpf_fentry_test1 ||
-+			(const void *) addr == &bpf_fentry_test2 ||
-+			(const void *) addr == &bpf_fentry_test3 ||
-+			(const void *) addr == &bpf_fentry_test4 ||
-+			(const void *) addr == &bpf_fentry_test5 ||
-+			(const void *) addr == &bpf_fentry_test6 ||
-+			(const void *) addr == &bpf_fentry_test7 ||
-+			(const void *) addr == &bpf_fentry_test8;
++	test3_result += (const void *) addr == &bpf_fentry_test1 && cookie == 8;
++	test3_result += (const void *) addr == &bpf_fentry_test2 && cookie == 7;
++	test3_result += (const void *) addr == &bpf_fentry_test3 && cookie == 6;
++	test3_result += (const void *) addr == &bpf_fentry_test4 && cookie == 5;
++	test3_result += (const void *) addr == &bpf_fentry_test5 && cookie == 4;
++	test3_result += (const void *) addr == &bpf_fentry_test6 && cookie == 3;
++	test3_result += (const void *) addr == &bpf_fentry_test7 && cookie == 2;
++	test3_result += (const void *) addr == &bpf_fentry_test8 && cookie == 1;
++
 +	return 0;
 +}
 -- 
