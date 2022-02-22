@@ -2,112 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 659084BF2C3
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 08:41:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA974BF2F1
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 08:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbiBVHdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 02:33:53 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42904 "EHLO
+        id S229654AbiBVHwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 02:52:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231195AbiBVHdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 02:33:46 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08F89D4C88;
-        Mon, 21 Feb 2022 23:33:20 -0800 (PST)
-Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 477926438B;
-        Tue, 22 Feb 2022 08:32:20 +0100 (CET)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 5/5] netfilter: nf_tables: fix memory leak during stateful obj update
-Date:   Tue, 22 Feb 2022 08:33:12 +0100
-Message-Id: <20220222073312.308406-6-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220222073312.308406-1-pablo@netfilter.org>
-References: <20220222073312.308406-1-pablo@netfilter.org>
+        with ESMTP id S229480AbiBVHwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 02:52:36 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68865E3C71;
+        Mon, 21 Feb 2022 23:52:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=MVLYW1as45dGdQ5HYH3qRKN7qZCZ0QShkvf+suOLN2I=; b=OAEd1EEjMtCLtrl9Ubv4B5Hh20
+        KOqUBO5/LAFPQ62LGWlia8yUge2H70FbJp0jthQPCFi6PEtmFBBygx69IlocQr3YsgVPKYVXPdy4g
+        8Shu8nF5AwxHfdpGsxUcohiGWCLxBfNHDRiKz577D97qy1j3QbJog039WOsZuG7+ggl4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nMPxe-007YYJ-TI; Tue, 22 Feb 2022 08:51:50 +0100
+Date:   Tue, 22 Feb 2022 08:51:50 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: net: dsa: add new mdio property
+Message-ID: <YhSWFl/dQaGA9V70@lunn.ch>
+References: <20220221200102.6290-1-luizluca@gmail.com>
+ <YhQJlyfdM8KQZE/P@lunn.ch>
+ <CAJq09z6dK20UDCM1P09A4KVGqjrHwPy0GTH3ogA27x7PTMtxtg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJq09z6dK20UDCM1P09A4KVGqjrHwPy0GTH3ogA27x7PTMtxtg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Mon, Feb 21, 2022 at 09:08:05PM -0300, Luiz Angelo Daros de Luca wrote:
+> > Your threading of these two patches is broken. The usual way to do this is
+> >
+> > git format-patch HEAD~2
+> > git send-email *.patch
+> >
+> > You will then get uniform subject lines and the two emails threaded
+> > together.
+> 
+> Thanks, Andrew, I did something like that. However, bindings and
+> net-next have different requirements. One needs the mail to go to
+> devicetree@vger.kernel.org and the other a different prefix. So, I
+> used send-email twice. Or should I use net-next for both and send both
+> also to devicetree@? I did forget to set the "In-Reply-To:" in the
+> second message.
 
-stateful objects can be updated from the control plane.
-The transaction logic allocates a temporary object for this purpose.
+Binding need to be cc: to device tree, however they are generally
+merged by some other subsystem, where ever the driver belongs. Rob
+will review the binding, give his reviewed-by: and then Jakub or David
+will merge both to net-next.
 
-The ->init function was called for this object, so plain kfree() leaks
-resources. We must call ->destroy function of the object.
+You can send both to device tree, or you can add a Cc: line to the
+binding patch, before your own signed-off. git send-email will see it
+and extend the list of recipients with whatever email address you put
+there.
 
-nft_obj_destroy does this, but it also decrements the module refcount,
-but the update path doesn't increment it.
-
-To avoid special-casing the update object release, do module_get for
-the update case too and release it via nft_obj_destroy().
-
-Fixes: d62d0ba97b58 ("netfilter: nf_tables: Introduce stateful object update operation")
-Cc: Fernando Fernandez Mancera <ffmancera@riseup.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 3081c4399f10..9cd1d7a62804 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -6551,12 +6551,15 @@ static int nf_tables_updobj(const struct nft_ctx *ctx,
- {
- 	struct nft_object *newobj;
- 	struct nft_trans *trans;
--	int err;
-+	int err = -ENOMEM;
-+
-+	if (!try_module_get(type->owner))
-+		return -ENOENT;
- 
- 	trans = nft_trans_alloc(ctx, NFT_MSG_NEWOBJ,
- 				sizeof(struct nft_trans_obj));
- 	if (!trans)
--		return -ENOMEM;
-+		goto err_trans;
- 
- 	newobj = nft_obj_init(ctx, type, attr);
- 	if (IS_ERR(newobj)) {
-@@ -6573,6 +6576,8 @@ static int nf_tables_updobj(const struct nft_ctx *ctx,
- 
- err_free_trans:
- 	kfree(trans);
-+err_trans:
-+	module_put(type->owner);
- 	return err;
- }
- 
-@@ -8185,7 +8190,7 @@ static void nft_obj_commit_update(struct nft_trans *trans)
- 	if (obj->ops->update)
- 		obj->ops->update(obj, newobj);
- 
--	kfree(newobj);
-+	nft_obj_destroy(&trans->ctx, newobj);
- }
- 
- static void nft_commit_release(struct nft_trans *trans)
-@@ -8976,7 +8981,7 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
- 			break;
- 		case NFT_MSG_NEWOBJ:
- 			if (nft_trans_obj_update(trans)) {
--				kfree(nft_trans_obj_newobj(trans));
-+				nft_obj_destroy(&trans->ctx, nft_trans_obj_newobj(trans));
- 				nft_trans_destroy(trans);
- 			} else {
- 				trans->ctx.table->use--;
--- 
-2.30.2
-
+	Andrew
