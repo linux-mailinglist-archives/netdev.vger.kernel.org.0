@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC57A4BEFBB
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 03:54:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C2E4BEFB8
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 03:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbiBVCxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 21:53:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33338 "EHLO
+        id S239435AbiBVCxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 21:53:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239425AbiBVCxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 21:53:41 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2045.outbound.protection.outlook.com [40.107.93.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1DF25C7E
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 18:53:05 -0800 (PST)
+        with ESMTP id S239399AbiBVCxZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 21:53:25 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6244225C77
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 18:53:01 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hciKK++LEHzX/4+AOJwamoBo4U2DGZ7HhwPirrxrddpGnY3tdzlh9i2HVuuDQZfFUj9W+ZC8NokqFY1VFY9fHyAvm+oLINKBA38Mi+6tBeSysD454obGfCZgSKEmtw8CUfLH9V5BtlcgXleRHYUSmKyDEHPmglWo9vkWjQWucySFA/LDdwLaDvTJ7nveO9Yx4rjjaJPO70riFB32xJ3Vfix/kzCJsOaKVuYWGO9qfpej5M08gpYXaDEWXsJmFtJoEd8Vku/PorFq77swe13XGXb7G+kLqZwnmSTsZczB9JX9NTP4ZW9Tka6fM5rrghp6wM3/Ox8qsiu5slJx81VsJQ==
+ b=ZlwHM5XpzfrnfhlnyGqjBaE8ubGx3OE01Pb9alyA5Zm9gI22i/E+LYl/5/Nqap9O5oqOFgsZethn32sO4SuCbkanvHFLyfhqbrZZcXLTuiKBS9Ixu2gnAV9ToIdPfe+QoYgfjxoeuA5iowHzqQlGmh6CAC9N3jiwPEMPohO9ejGHnvQaT0KV703NuM+GJSXribYxzdAOE9EV6uZaCV2IlmAy4yhyQqD9Wy0o+pUae3Yf/A8F0kjqwR/Tofwvea3yvmpsh6FkkzW2H9TTjPLPjv2IHBfdBDg6Shrstw2uwe6JOCcmDgp1mq6052uwBbgryD3hvgAJYvrneQcpCC6O9w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=voi8YZllVhVQdQMyYfTbzhjQZmLoZ7kgC7smm3dedqI=;
- b=TWTvzs5wsbsZBT73Lt5DHQf26B/mTR/ezIog/5QyfTtIb/+5sP2cgqeQ3r554aSpA17Yg2BtgsQsnan6aeKE4ManEISWqKUqHO67Cgr6jbb0PBxcmEnUKjvUcrP9VlXIU8xJhC2XFIP65h8EhtOaoiwtudR+opX2c9QwDyShKm+ckf+ImWOmWVozoSyfBQyNJVcV4V1dQeZZwmr+wPsf4ExyR/Rqp5/O8h6ugusFk9UIxUcjdp2RUphmeMIF1KHvdbXvBB6X5dJAGwANhCvtPClUjD1bAa8rHQkxUtvFDshr0QBgAuSbdt8ZacVidfQRODr8oe+wpfx4Y+23GVDCiQ==
+ bh=PikUqXLmbvWU1t7Gnu6Wbd5UJ+x6rlKnStRBV34txoQ=;
+ b=oH7ybykRlleLCDiCG5S/50Y0/tZ60XUEMGW8t6FOUB3AIJwvL1v51atIjg+ZmsOJ6lRiFCW1s8STpEV7RTYNlAQoMCHyPos840D3oXefQV6ICOZA+MoKVrkyHnDtJXIvFKLhfyCHyhKI89TNvwedKtUDQoN2nctu0l8Acs8jvWu9wR2pWoBAiwKTqI9WZstgCX+OuR43oTRv6eHWHjWdjuqdy4jRorBVJGHe8XM5UFD7urb4g+ssQ4OvuXnel3H5wcfqXK9BLnWhLWJkyIKY/PfKEyM2VxAdLFHDXZG4Mvdc8etiG60povqnsSJ0Ae9F9eJWMuyncwPSIzZhvpd00A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=voi8YZllVhVQdQMyYfTbzhjQZmLoZ7kgC7smm3dedqI=;
- b=WUDo9DCgY0/yYVLOcSUgUxEw+4lN5egTMcLu72OlUcJqN/GDdFhIrqkRFr2NZJdry4nDCE0gczui7CCuZ7Vv3SY2uOHTPNFCtNQdNQN3j0bLHmYji5Wc59mJpQdVbec6diwsTTPb9viJvFyX2elQ8RTZBTHQsn7SfM3ekceIpF9els5i6+8ZytxVfjF/z+Bs1Li6uimkUfcOgGRED4YHAAMRS6VNYes5yebFbTCq4NUQ4W+IsP44LTX52kVUScsa2sfWQ4vI+6uh1xU4gvYiwLS1R7B6tnh4eeDUxCr6wW0HN+ImTKCrZzTVqLU1klzC21da/NkmTEkULzEr50bDsw==
-Received: from BN8PR15CA0025.namprd15.prod.outlook.com (2603:10b6:408:c0::38)
- by MN2PR12MB3277.namprd12.prod.outlook.com (2603:10b6:208:103::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Tue, 22 Feb
- 2022 02:53:01 +0000
-Received: from BN8NAM11FT045.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:c0:cafe::d3) by BN8PR15CA0025.outlook.office365.com
- (2603:10b6:408:c0::38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.27 via Frontend
- Transport; Tue, 22 Feb 2022 02:53:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ bh=PikUqXLmbvWU1t7Gnu6Wbd5UJ+x6rlKnStRBV34txoQ=;
+ b=LU1eM++JH5oPNW6VAeq83a2hmzaPl/CdWQRnj+6ta3xNfDmDYn84ColhUS++TU7j3A29kekfDj8owsAwpuOctDrmPrF/MfMFjE5z9lljlwYLpCHnbtRD8XiFrPd3VF+C6sAv9jc6G4zPieRG3QQQBYopd+NXoajaeGcnWCtXWWW+shHP5yr8Ducz48kp80SnMAHNY6Ohm6kN8L+E5G/O6ssc0GzI0rP5o4AcyaBdiVfuAmnm0TqY++ZHJhGGGXDfK4oS55DS5eFoNFKAzdSYFoHpRsrBqJ5qMs3uvc+oKD12l3eKJUGj8EpHk3zsZ8HoVyFKYJsAkEPeGuAeLDqRbQ==
+Received: from DS7PR03CA0121.namprd03.prod.outlook.com (2603:10b6:5:3b4::6) by
+ MN2PR12MB3423.namprd12.prod.outlook.com (2603:10b6:208:cb::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4995.16; Tue, 22 Feb 2022 02:52:59 +0000
+Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b4:cafe::9e) by DS7PR03CA0121.outlook.office365.com
+ (2603:10b6:5:3b4::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.19 via Frontend
+ Transport; Tue, 22 Feb 2022 02:52:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT045.mail.protection.outlook.com (10.13.177.47) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 02:53:00 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Feb
+ 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 02:52:58 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Feb
  2022 02:52:57 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 21 Feb 2022
- 18:52:56 -0800
+ 18:52:57 -0800
 Received: from localhost.localdomain (10.127.8.13) by mail.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
  Transport; Mon, 21 Feb 2022 18:52:56 -0800
@@ -65,9 +64,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <stephen@networkplumber.org>,
         <nikolay@cumulusnetworks.com>, <idosch@nvidia.com>,
         <dsahern@gmail.com>, <bpoirier@nvidia.com>
-Subject: [PATCH net-next v2 11/12] drivers: vxlan: vnifilter: per vni stats
-Date:   Tue, 22 Feb 2022 02:52:29 +0000
-Message-ID: <20220222025230.2119189-12-roopa@nvidia.com>
+Subject: [PATCH net-next v2 12/12] drivers: vxlan: vnifilter: add support for stats dumping
+Date:   Tue, 22 Feb 2022 02:52:30 +0000
+Message-ID: <20220222025230.2119189-13-roopa@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220222025230.2119189-1-roopa@nvidia.com>
 References: <20220222025230.2119189-1-roopa@nvidia.com>
@@ -76,24 +75,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b48e6467-6255-4200-2946-08d9f5ae7071
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3277:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3277E3F7445C0DBD9BD82774CB3B9@MN2PR12MB3277.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 2d78c213-afe9-41bd-c837-08d9f5ae6f1d
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3423:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3423D054E2F7A44B89531FDACB3B9@MN2PR12MB3423.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2xwGfuyGNoiDnHIqMCl4A17SfO6n4tK6VaHKKiAy+lDFE+E6xIdfot7cL9fioX0PEUsUPYIW8iJ9p6+kR2oer6GQgb3nvmMnXdT30dbCcWdNZ91eu2emkAHsqKczBZTXhQdxeQC3LhYEvmsKZTfVpuD27gBJ+ZSmqwGavSFCLBWzHfe2nnQps2hxac3mZW/UQ9aV5/lTnFq4qutN9eXGAM6Qh6ET4gXl0JLMNX/BGUILDE+LKDBDAv6tGN8EmKchcNR/Ia9FSYWoSpJCQGrh0VzFTv+cuc2fduHcQMPTWotolPNCPsZMKKNMCYOzw7GCf7LYnNfgSxzvU8JrlItEfbp75yj+90NpqommHVBl1DLi6NwfxxrwVNsuUdztlp5Pi3tTbjxQRMWSQMrYimmqc5ltlq3TzuRHT5n19WCtz0qFMwEdEzB6XG4Lxl952J0dK+P+EqQDpL3P+rqf2HWq5R057RCtDz7DplJuSIyRz5Nfr47wAIVCKw61bGrO3i/BKklJeeul8ko2V+yCoX62wr/sM+VWkcLwRQFA7dlyZu4HsNGQs0zdtfHicVYRWIbND/LbzpmSMy0JJIAQCtyfXRwdGAdMsYuP7mfwmB+HOBH28lhAwfV8rtRInH/qjUbI1hyImkS7bFMhlFODUqsyAPUBwafRPP+SotM9+vDwAb9tSw9i0P2hJbkhrudDCo/Zat96IuUOOH0sX/HhW7Qmtw==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4326008)(426003)(47076005)(336012)(83380400001)(36756003)(40460700003)(5660300002)(2906002)(8936002)(26005)(2616005)(1076003)(107886003)(186003)(36860700001)(70206006)(70586007)(81166007)(356005)(54906003)(110136005)(508600001)(316002)(6666004)(86362001)(8676002)(82310400004)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: N1bNnrAK/F+tPFta6BaIRUxNK2uol6mEpEnEKp6d1elG8mqcr+aj96m4iBev1MiBKANQ8+R4BU1jq5xNsJ1zwG675OmCxptwjFDlGiAHneAzz8WFMdebt4egHD3x8wlR+IYhsyPVGkVkFbGYGNNqLVy/p+b1KPwlOqKaHZBFS7LDOX7vJ5JiwG4yNvjyv3HQ4DSvnqy8Ib7mh5nIhj080P0K64CxB1rTX41CCPc4FkPDy3TN9HCndHC9m8MNvaqVVm3je9LSM0xQXK+FtF/4I4runn/WDwxBuVl/jrHNbeGyPT/bFlcuz3KISDWMVDFrxenEMRTIrH+2Opna2ywnZTjErZJYmkd3OtgEDEjOg5QJRRUnyi09zv13p7l+Ag3O1qlFhOiYMv3LIvVzmRlIWcm1bVLrLdxQ9dXB1NXBWNtZfSDbJGA1UtYTUbph1qyyBipHrH5NFqDrgXVd5+DLGqmpGsAkfAGhYIxSAf19tRbGfKYqYPvpDs87esJ0IDz32epvK3fcmbxs0Zp5UmKDSAHeXZsCmm6y94x5z68yhpSMvMvKrZkCFfg/xp5Qezyg1m7VS9dKdvD7FsLaxqvBE2hib4FwiXauq1nrSVWxIuDvf9kboqVey/BybwPmxQjmV0PR71NWp4UVvdme83pRMwSbJPiPJFMeIF36nzwpBMGUw1iwRfyPZiPWP31+gW4pkn/adBDZnsAMkos5jh7ihA==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36756003)(6666004)(2616005)(40460700003)(508600001)(107886003)(47076005)(2906002)(36860700001)(1076003)(5660300002)(110136005)(54906003)(26005)(8936002)(186003)(316002)(356005)(82310400004)(426003)(86362001)(81166007)(336012)(70586007)(70206006)(83380400001)(4326008)(8676002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 02:53:00.7496
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 02:52:58.5879
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b48e6467-6255-4200-2946-08d9f5ae7071
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d78c213-afe9-41bd-c837-08d9f5ae6f1d
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT045.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3277
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3423
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -106,318 +105,179 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Add per-vni statistics for vni filter mode. Counting Rx/Tx
-bytes/packets/drops/errors at the appropriate places.
+Add support for VXLAN vni filter entries' stats dumping
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- drivers/net/vxlan/vxlan_core.c      | 29 +++++++++--
- drivers/net/vxlan/vxlan_private.h   |  3 +-
- drivers/net/vxlan/vxlan_vnifilter.c | 80 +++++++++++++++++++++++++++++
- include/net/vxlan.h                 | 26 ++++++++++
- 4 files changed, 134 insertions(+), 4 deletions(-)
+ drivers/net/vxlan/vxlan_vnifilter.c | 59 ++++++++++++++++++++++++++---
+ include/uapi/linux/if_link.h        | 23 ++++++++++-
+ 2 files changed, 75 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index a3c20ad18243..e0221fb8f2e5 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -1746,6 +1746,7 @@ static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
- 	if (!vxlan_ecn_decapsulate(vs, oiph, skb)) {
- 		++vxlan->dev->stats.rx_frame_errors;
- 		++vxlan->dev->stats.rx_errors;
-+		vxlan_vnifilter_count(vxlan, vni, VXLAN_VNI_STATS_RX_ERRORS, 0);
- 		goto drop;
- 	}
- 
-@@ -1754,10 +1755,12 @@ static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
- 	if (unlikely(!(vxlan->dev->flags & IFF_UP))) {
- 		rcu_read_unlock();
- 		atomic_long_inc(&vxlan->dev->rx_dropped);
-+		vxlan_vnifilter_count(vxlan, vni, VXLAN_VNI_STATS_RX_DROPS, 0);
- 		goto drop;
- 	}
- 
- 	dev_sw_netstats_rx_add(vxlan->dev, skb->len);
-+	vxlan_vnifilter_count(vxlan, vni, VXLAN_VNI_STATS_RX, skb->len);
- 	gro_cells_receive(&vxlan->gro_cells, skb);
- 
- 	rcu_read_unlock();
-@@ -1865,8 +1868,12 @@ static int arp_reduce(struct net_device *dev, struct sk_buff *skb, __be32 vni)
- 		reply->ip_summed = CHECKSUM_UNNECESSARY;
- 		reply->pkt_type = PACKET_HOST;
- 
--		if (netif_rx_ni(reply) == NET_RX_DROP)
-+		if (netif_rx_ni(reply) == NET_RX_DROP) {
- 			dev->stats.rx_dropped++;
-+			vxlan_vnifilter_count(vxlan, vni,
-+					      VXLAN_VNI_STATS_RX_DROPS, 0);
-+		}
-+
- 	} else if (vxlan->cfg.flags & VXLAN_F_L3MISS) {
- 		union vxlan_addr ipa = {
- 			.sin.sin_addr.s_addr = tip,
-@@ -2020,9 +2027,11 @@ static int neigh_reduce(struct net_device *dev, struct sk_buff *skb, __be32 vni)
- 		if (reply == NULL)
- 			goto out;
- 
--		if (netif_rx_ni(reply) == NET_RX_DROP)
-+		if (netif_rx_ni(reply) == NET_RX_DROP) {
- 			dev->stats.rx_dropped++;
--
-+			vxlan_vnifilter_count(vxlan, vni,
-+					      VXLAN_VNI_STATS_RX_DROPS, 0);
-+		}
- 	} else if (vxlan->cfg.flags & VXLAN_F_L3MISS) {
- 		union vxlan_addr ipa = {
- 			.sin6.sin6_addr = msg->target,
-@@ -2356,15 +2365,19 @@ static void vxlan_encap_bypass(struct sk_buff *skb, struct vxlan_dev *src_vxlan,
- 	tx_stats->tx_packets++;
- 	tx_stats->tx_bytes += len;
- 	u64_stats_update_end(&tx_stats->syncp);
-+	vxlan_vnifilter_count(src_vxlan, vni, VXLAN_VNI_STATS_TX, len);
- 
- 	if (__netif_rx(skb) == NET_RX_SUCCESS) {
- 		u64_stats_update_begin(&rx_stats->syncp);
- 		rx_stats->rx_packets++;
- 		rx_stats->rx_bytes += len;
- 		u64_stats_update_end(&rx_stats->syncp);
-+		vxlan_vnifilter_count(dst_vxlan, vni, VXLAN_VNI_STATS_RX, len);
- 	} else {
- drop:
- 		dev->stats.rx_dropped++;
-+		vxlan_vnifilter_count(dst_vxlan, vni, VXLAN_VNI_STATS_RX_DROPS,
-+				      0);
- 	}
- 	rcu_read_unlock();
- }
-@@ -2394,6 +2407,8 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
- 					   vxlan->cfg.flags);
- 		if (!dst_vxlan) {
- 			dev->stats.tx_errors++;
-+			vxlan_vnifilter_count(vxlan, vni,
-+					      VXLAN_VNI_STATS_TX_ERRORS, 0);
- 			kfree_skb(skb);
- 
- 			return -ENOENT;
-@@ -2417,6 +2432,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 	union vxlan_addr remote_ip, local_ip;
- 	struct vxlan_metadata _md;
- 	struct vxlan_metadata *md = &_md;
-+	unsigned int pkt_len = skb->len;
- 	__be16 src_port = 0, dst_port;
- 	struct dst_entry *ndst = NULL;
- 	__u8 tos, ttl;
-@@ -2644,12 +2660,14 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 				     label, src_port, dst_port, !udp_sum);
- #endif
- 	}
-+	vxlan_vnifilter_count(vxlan, vni, VXLAN_VNI_STATS_TX, pkt_len);
- out_unlock:
- 	rcu_read_unlock();
- 	return;
- 
- drop:
- 	dev->stats.tx_dropped++;
-+	vxlan_vnifilter_count(vxlan, vni, VXLAN_VNI_STATS_TX_DROPS, 0);
- 	dev_kfree_skb(skb);
- 	return;
- 
-@@ -2661,6 +2679,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		dev->stats.tx_carrier_errors++;
- 	dst_release(ndst);
- 	dev->stats.tx_errors++;
-+	vxlan_vnifilter_count(vxlan, vni, VXLAN_VNI_STATS_TX_ERRORS, 0);
- 	kfree_skb(skb);
- }
- 
-@@ -2693,6 +2712,8 @@ static void vxlan_xmit_nh(struct sk_buff *skb, struct net_device *dev,
- 
- drop:
- 	dev->stats.tx_dropped++;
-+	vxlan_vnifilter_count(netdev_priv(dev), vni,
-+			      VXLAN_VNI_STATS_TX_DROPS, 0);
- 	dev_kfree_skb(skb);
- }
- 
-@@ -2767,6 +2788,8 @@ static netdev_tx_t vxlan_xmit(struct sk_buff *skb, struct net_device *dev)
- 				vxlan_fdb_miss(vxlan, eth->h_dest);
- 
- 			dev->stats.tx_dropped++;
-+			vxlan_vnifilter_count(vxlan, vni,
-+					      VXLAN_VNI_STATS_TX_DROPS, 0);
- 			kfree_skb(skb);
- 			return NETDEV_TX_OK;
- 		}
-diff --git a/drivers/net/vxlan/vxlan_private.h b/drivers/net/vxlan/vxlan_private.h
-index d697d6c51cb5..1a8ffddab947 100644
---- a/drivers/net/vxlan/vxlan_private.h
-+++ b/drivers/net/vxlan/vxlan_private.h
-@@ -154,6 +154,8 @@ void vxlan_vnigroup_uninit(struct vxlan_dev *vxlan);
- 
- void vxlan_vnifilter_init(void);
- void vxlan_vnifilter_uninit(void);
-+void vxlan_vnifilter_count(struct vxlan_dev *vxlan, __be32 vni,
-+			   int type, unsigned int len);
- 
- void vxlan_vs_add_vnigrp(struct vxlan_dev *vxlan,
- 			 struct vxlan_sock *vs,
-@@ -164,7 +166,6 @@ int vxlan_vnilist_update_group(struct vxlan_dev *vxlan,
- 			       union vxlan_addr *new_remote_ip,
- 			       struct netlink_ext_ack *extack);
- 
--
- /* vxlan_multicast.c */
- int vxlan_multicast_join(struct vxlan_dev *vxlan);
- int vxlan_multicast_leave(struct vxlan_dev *vxlan);
 diff --git a/drivers/net/vxlan/vxlan_vnifilter.c b/drivers/net/vxlan/vxlan_vnifilter.c
-index 9647184a1d5a..30534391948b 100644
+index 30534391948b..867b4e90f6b7 100644
 --- a/drivers/net/vxlan/vxlan_vnifilter.c
 +++ b/drivers/net/vxlan/vxlan_vnifilter.c
-@@ -97,6 +97,80 @@ void vxlan_vs_del_vnigrp(struct vxlan_dev *vxlan)
- 	spin_unlock(&vn->sock_lock);
+@@ -186,9 +186,48 @@ static size_t vxlan_vnifilter_entry_nlmsg_size(void)
+ 		+ nla_total_size(sizeof(struct in6_addr));/* VXLAN_VNIFILTER_ENTRY_GROUP{6} */
  }
  
-+static void vxlan_vnifilter_stats_get(const struct vxlan_vni_node *vninode,
-+				      struct vxlan_vni_stats *dest)
++static int __vnifilter_entry_fill_stats(struct sk_buff *skb,
++					const struct vxlan_vni_node *vbegin)
 +{
-+	int i;
++	struct vxlan_vni_stats vstats;
++	struct nlattr *vstats_attr;
 +
-+	memset(dest, 0, sizeof(*dest));
-+	for_each_possible_cpu(i) {
-+		struct vxlan_vni_stats_pcpu *pstats;
-+		struct vxlan_vni_stats temp;
-+		unsigned int start;
++	vstats_attr = nla_nest_start(skb, VXLAN_VNIFILTER_ENTRY_STATS);
++	if (!vstats_attr)
++		goto out_stats_err;
 +
-+		pstats = per_cpu_ptr(vninode->stats, i);
-+		do {
-+			start = u64_stats_fetch_begin_irq(&pstats->syncp);
-+			memcpy(&temp, &pstats->stats, sizeof(temp));
-+		} while (u64_stats_fetch_retry_irq(&pstats->syncp, start));
++	vxlan_vnifilter_stats_get(vbegin, &vstats);
++	if (nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_RX_BYTES,
++			      vstats.rx_bytes, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_RX_PKTS,
++			      vstats.rx_packets, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_RX_DROPS,
++			      vstats.rx_drops, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_RX_ERRORS,
++			      vstats.rx_errors, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_TX_BYTES,
++			      vstats.tx_bytes, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_TX_PKTS,
++			      vstats.tx_packets, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_TX_DROPS,
++			      vstats.tx_drops, VNIFILTER_ENTRY_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, VNIFILTER_ENTRY_STATS_TX_ERRORS,
++			      vstats.tx_errors, VNIFILTER_ENTRY_STATS_PAD))
++		goto out_stats_err;
 +
-+		dest->rx_packets += temp.rx_packets;
-+		dest->rx_bytes += temp.rx_bytes;
-+		dest->rx_drops += temp.rx_drops;
-+		dest->rx_errors += temp.rx_errors;
-+		dest->tx_packets += temp.tx_packets;
-+		dest->tx_bytes += temp.tx_bytes;
-+		dest->tx_drops += temp.tx_drops;
-+		dest->tx_errors += temp.tx_errors;
-+	}
++	nla_nest_end(skb, vstats_attr);
++
++	return 0;
++
++out_stats_err:
++	nla_nest_cancel(skb, vstats_attr);
++	return -EMSGSIZE;
 +}
 +
-+static void vxlan_vnifilter_stats_add(struct vxlan_vni_node *vninode,
-+				      int type, unsigned int len)
-+{
-+	struct vxlan_vni_stats_pcpu *pstats = this_cpu_ptr(vninode->stats);
-+
-+	u64_stats_update_begin(&pstats->syncp);
-+	switch (type) {
-+	case VXLAN_VNI_STATS_RX:
-+		pstats->stats.rx_bytes += len;
-+		pstats->stats.rx_packets++;
-+		break;
-+	case VXLAN_VNI_STATS_RX_DROPS:
-+		pstats->stats.rx_drops++;
-+		break;
-+	case VXLAN_VNI_STATS_RX_ERRORS:
-+		pstats->stats.rx_errors++;
-+		break;
-+	case VXLAN_VNI_STATS_TX:
-+		pstats->stats.tx_bytes += len;
-+		pstats->stats.tx_packets++;
-+		break;
-+	case VXLAN_VNI_STATS_TX_DROPS:
-+		pstats->stats.tx_drops++;
-+		break;
-+	case VXLAN_VNI_STATS_TX_ERRORS:
-+		pstats->stats.tx_errors++;
-+		break;
-+	}
-+	u64_stats_update_end(&pstats->syncp);
-+}
-+
-+void vxlan_vnifilter_count(struct vxlan_dev *vxlan, __be32 vni,
-+			   int type, unsigned int len)
-+{
-+	struct vxlan_vni_node *vninode;
-+
-+	if (!(vxlan->cfg.flags & VXLAN_F_VNIFILTER))
-+		return;
-+
-+	vninode = vxlan_vnifilter_lookup(vxlan, vni);
-+	if (!vninode)
-+		return;
-+
-+	vxlan_vnifilter_stats_add(vninode, type, len);
-+}
-+
- static u32 vnirange(struct vxlan_vni_node *vbegin,
- 		    struct vxlan_vni_node *vend)
+ static bool vxlan_fill_vni_filter_entry(struct sk_buff *skb,
+ 					struct vxlan_vni_node *vbegin,
+-					struct vxlan_vni_node *vend)
++					struct vxlan_vni_node *vend,
++					bool fill_stats)
  {
-@@ -539,6 +613,11 @@ static struct vxlan_vni_node *vxlan_vni_alloc(struct vxlan_dev *vxlan,
- 	vninode = kzalloc(sizeof(*vninode), GFP_ATOMIC);
- 	if (!vninode)
- 		return NULL;
-+	vninode->stats = netdev_alloc_pcpu_stats(struct vxlan_vni_stats_pcpu);
-+	if (!vninode->stats) {
-+		kfree(vninode);
-+		return NULL;
-+	}
- 	vninode->vni = vni;
- 	vninode->hlist4.vxlan = vxlan;
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -596,6 +675,7 @@ static void vxlan_vni_node_rcu_free(struct rcu_head *rcu)
- 	struct vxlan_vni_node *v;
+ 	struct nlattr *ventry;
+ 	u32 vs = be32_to_cpu(vbegin->vni);
+@@ -221,6 +260,9 @@ static bool vxlan_fill_vni_filter_entry(struct sk_buff *skb,
+ 		}
+ 	}
  
- 	v = container_of(rcu, struct vxlan_vni_node, rcu);
-+	free_percpu(v->stats);
- 	kfree(v);
- }
++	if (fill_stats && __vnifilter_entry_fill_stats(skb, vbegin))
++		goto out_err;
++
+ 	nla_nest_end(skb, ventry);
  
-diff --git a/include/net/vxlan.h b/include/net/vxlan.h
-index 8eb961bb9589..bca5b01af247 100644
---- a/include/net/vxlan.h
-+++ b/include/net/vxlan.h
-@@ -227,6 +227,31 @@ struct vxlan_config {
- 	enum ifla_vxlan_df	df;
+ 	return true;
+@@ -253,7 +295,7 @@ static void vxlan_vnifilter_notify(const struct vxlan_dev *vxlan,
+ 	tmsg->family = AF_BRIDGE;
+ 	tmsg->ifindex = vxlan->dev->ifindex;
+ 
+-	if (!vxlan_fill_vni_filter_entry(skb, vninode, vninode))
++	if (!vxlan_fill_vni_filter_entry(skb, vninode, vninode, false))
+ 		goto out_err;
+ 
+ 	nlmsg_end(skb, nlh);
+@@ -273,10 +315,11 @@ static int vxlan_vnifilter_dump_dev(const struct net_device *dev,
+ {
+ 	struct vxlan_vni_node *tmp, *v, *vbegin = NULL, *vend = NULL;
+ 	struct vxlan_dev *vxlan = netdev_priv(dev);
+-	struct tunnel_msg *new_tmsg;
++	struct tunnel_msg *new_tmsg, *tmsg;
+ 	int idx = 0, s_idx = cb->args[1];
+ 	struct vxlan_vni_group *vg;
+ 	struct nlmsghdr *nlh;
++	bool dump_stats;
+ 	int err = 0;
+ 
+ 	if (!(vxlan->cfg.flags & VXLAN_F_VNIFILTER))
+@@ -287,6 +330,9 @@ static int vxlan_vnifilter_dump_dev(const struct net_device *dev,
+ 	if (!vg || !vg->num_vnis)
+ 		return 0;
+ 
++	tmsg = nlmsg_data(cb->nlh);
++	dump_stats = !!(tmsg->flags & TUNNEL_MSG_FLAG_STATS);
++
+ 	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
+ 			RTM_NEWTUNNEL, sizeof(*new_tmsg), NLM_F_MULTI);
+ 	if (!nlh)
+@@ -306,11 +352,12 @@ static int vxlan_vnifilter_dump_dev(const struct net_device *dev,
+ 			vend = v;
+ 			continue;
+ 		}
+-		if (vnirange(vend, v) == 1 &&
++		if (!dump_stats && vnirange(vend, v) == 1 &&
+ 		    vxlan_addr_equal(&v->remote_ip, &vend->remote_ip)) {
+ 			goto update_end;
+ 		} else {
+-			if (!vxlan_fill_vni_filter_entry(skb, vbegin, vend)) {
++			if (!vxlan_fill_vni_filter_entry(skb, vbegin, vend,
++							 dump_stats)) {
+ 				err = -EMSGSIZE;
+ 				break;
+ 			}
+@@ -322,7 +369,7 @@ static int vxlan_vnifilter_dump_dev(const struct net_device *dev,
+ 	}
+ 
+ 	if (!err && vbegin) {
+-		if (!vxlan_fill_vni_filter_entry(skb, vbegin, vend))
++		if (!vxlan_fill_vni_filter_entry(skb, vbegin, vend, dump_stats))
+ 			err = -EMSGSIZE;
+ 	}
+ 
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 3343514db47d..a45a7a7f23dd 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -715,18 +715,39 @@ enum ipvlan_mode {
+ /* Tunnel RTM header */
+ struct tunnel_msg {
+ 	__u8 family;
+-	__u8 reserved1;
++	__u8 flags;
+ 	__u16 reserved2;
+ 	__u32 ifindex;
  };
  
+ /* VXLAN section */
++
++/* include statistics in the dump */
++#define TUNNEL_MSG_FLAG_STATS	0x01
++
++/* Embedded inside VXLAN_VNIFILTER_ENTRY_STATS */
 +enum {
-+	VXLAN_VNI_STATS_RX,
-+	VXLAN_VNI_STATS_RX_DROPS,
-+	VXLAN_VNI_STATS_RX_ERRORS,
-+	VXLAN_VNI_STATS_TX,
-+	VXLAN_VNI_STATS_TX_DROPS,
-+	VXLAN_VNI_STATS_TX_ERRORS,
++	VNIFILTER_ENTRY_STATS_UNSPEC,
++	VNIFILTER_ENTRY_STATS_RX_BYTES,
++	VNIFILTER_ENTRY_STATS_RX_PKTS,
++	VNIFILTER_ENTRY_STATS_RX_DROPS,
++	VNIFILTER_ENTRY_STATS_RX_ERRORS,
++	VNIFILTER_ENTRY_STATS_TX_BYTES,
++	VNIFILTER_ENTRY_STATS_TX_PKTS,
++	VNIFILTER_ENTRY_STATS_TX_DROPS,
++	VNIFILTER_ENTRY_STATS_TX_ERRORS,
++	VNIFILTER_ENTRY_STATS_PAD,
++	__VNIFILTER_ENTRY_STATS_MAX
 +};
++#define VNIFILTER_ENTRY_STATS_MAX (__VNIFILTER_ENTRY_STATS_MAX - 1)
 +
-+struct vxlan_vni_stats {
-+	u64 rx_packets;
-+	u64 rx_bytes;
-+	u64 rx_drops;
-+	u64 rx_errors;
-+	u64 tx_packets;
-+	u64 tx_bytes;
-+	u64 tx_drops;
-+	u64 tx_errors;
-+};
-+
-+struct vxlan_vni_stats_pcpu {
-+	struct vxlan_vni_stats stats;
-+	struct u64_stats_sync syncp;
-+};
-+
- struct vxlan_dev_node {
- 	struct hlist_node hlist;
- 	struct vxlan_dev *vxlan;
-@@ -241,6 +266,7 @@ struct vxlan_vni_node {
- 	struct list_head vlist;
- 	__be32 vni;
- 	union vxlan_addr remote_ip; /* default remote ip for this vni */
-+	struct vxlan_vni_stats_pcpu __percpu *stats;
- 
- 	struct rcu_head rcu;
+ enum {
+ 	VXLAN_VNIFILTER_ENTRY_UNSPEC,
+ 	VXLAN_VNIFILTER_ENTRY_START,
+ 	VXLAN_VNIFILTER_ENTRY_END,
+ 	VXLAN_VNIFILTER_ENTRY_GROUP,
+ 	VXLAN_VNIFILTER_ENTRY_GROUP6,
++	VXLAN_VNIFILTER_ENTRY_STATS,
+ 	__VXLAN_VNIFILTER_ENTRY_MAX
  };
+ #define VXLAN_VNIFILTER_ENTRY_MAX	(__VXLAN_VNIFILTER_ENTRY_MAX - 1)
 -- 
 2.25.1
 
