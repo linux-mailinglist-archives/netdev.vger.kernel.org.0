@@ -2,114 +2,362 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B0E4BEE91
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 02:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE954BEE92
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 02:14:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237826AbiBVA3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 19:29:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38860 "EHLO
+        id S237848AbiBVAiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 19:38:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237806AbiBVA3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 19:29:44 -0500
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6BB2559C
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 16:29:19 -0800 (PST)
-Received: by mail-il1-f199.google.com with SMTP id v13-20020a927a0d000000b002c1ecbb3a5dso4661537ilc.7
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 16:29:19 -0800 (PST)
+        with ESMTP id S231435AbiBVAiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 19:38:23 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA4F24BC9
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 16:37:59 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id gi6so7117322pjb.1
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 16:37:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aCoqbfKOgilF5NNSKi0fFE9aDPPXg9hf1s2dsMs1QEM=;
+        b=eITeVoCVu7X8t8plVdeTRIGrsjxNvqdG2H2+dKgUqHCtguJi3PYmCAxxox1A+bM8qw
+         6Kcv9PxydFzFLv0Bw5qHej/vxEURNw1dLTK6c04++bqr1D+anf3j92fcvvRf7zUdTML8
+         9eKCSsAcpcOjY3PPenrQaVU7vaFakzFZPBCY/K00chgbB0WkyGBM58nQSrerDh6q5C7n
+         wDQa9Vs9t+yiINaALTdEM1XSkJcwR/gCLa8u02fFeoPoFXZyTnpmYypDXKDLRGk87ULQ
+         IJL57ee18ptzm91hduBb6G5bY/N/C59JSHmdEihkpLyo3Qgtei0DmGp/VDeDo0QIFmVI
+         ozRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0BZwrNloClntFMswwx+cnpzCRFfY9U/Eu/+IXatkajU=;
-        b=0Y1QIw7Ol+Fe6MX3WOy9VHKEpwnoFXFZiOweMZK37ya10vSav1i36oSoLSo23BOuLS
-         2CjcQcX+DuwUje7ERy4Pg0DJwC9QGV9/1ZxTUPa4Px+/nO1HXlSWBo9mKog0vV1fhpC0
-         mg2f63y0SgcUiSGuqw1pOFXRmdHSsrvMaF9oXLAGYhkzVluqIWLDPnLNKxahr0JzcqJN
-         ybVcEUVVMtV8k3UjLtOYwtqtF+XvDFZlMkuILkIGM76DhARmC+1gcUW9/CljGGoVLgry
-         Bu8eB1/8GebkCboEPJDuRJkseslxrEf5y7kHf4AYxFXT415WKcdEIb57TcnZJRdm91f4
-         EGdQ==
-X-Gm-Message-State: AOAM531+lwfnd8XUG4xc7vTLSbQRwCyTyz8AJT6QIjrVQP1Untm02LRD
-        ibXyMusdcdz8KS1WYRzpQsxabuMgzUNJ6DahZhb+yJ4HXJRo
-X-Google-Smtp-Source: ABdhPJxAxRYMrEcUINLoSv3fvwzOA8DoG69h5G/pu1ZS4VjLCHJw9JVGDFu4NcW3tBRJ5ppM1UJ/UNIm5sXjVOegZPq38xj0DBvy
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aCoqbfKOgilF5NNSKi0fFE9aDPPXg9hf1s2dsMs1QEM=;
+        b=fmtk1xt1l/0EINGCSB86vdeaB8Pi5LldPl8PN5OLPs3opgzLV5A0vDoqR+dMKIPzh4
+         tLiUpTq0JRXgZ6U/swj1lkFbsp4GZlqAzsLkISM5d5MN+HiovM+1v2k84s2Sr2syA/MA
+         EH02l90rtyB9q7/HaAoX4RQxiyk1D94GjsDfrS41xQ6FjasmFY4gx1N7VW1wWRAPnz7B
+         DmwvHJa31yJjO223DDbwS/735Svus06EGAEqubkde2TDocKZLWuABkxt25mnoVvsxWFv
+         mlQLusA7/i2Z/XOZAHhK8UzNaZAmCjWWKdM93KNUARw8DdoaRoBzRtfR51D/B1iRpnIs
+         FLVw==
+X-Gm-Message-State: AOAM532qEboJ7BuZtjPAqJZk1wHNtVd95iEcTeMUnAmGaflfhWIbPsxS
+        XQ0L3HN3IcJe49XmDtkSSrb/aC7u4fuV3arC7dU=
+X-Google-Smtp-Source: ABdhPJzWzM6rQLixkclIJcRtY8iLv7RJZcZOndYUToLJuEqLBnc5NgWdVUarncJJ8a58Y8avUTPD0cd4WNvqB9K95SI=
+X-Received: by 2002:a17:902:da88:b0:14a:26ae:4e86 with SMTP id
+ j8-20020a170902da8800b0014a26ae4e86mr21815710plx.59.1645490278807; Mon, 21
+ Feb 2022 16:37:58 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c24a:0:b0:640:97be:f792 with SMTP id
- w10-20020a5ec24a000000b0064097bef792mr12138085iop.15.1645489758890; Mon, 21
- Feb 2022 16:29:18 -0800 (PST)
-Date:   Mon, 21 Feb 2022 16:29:18 -0800
-In-Reply-To: <000000000000264b2a05d44bca80@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008f71e305d89070bb@google.com>
-Subject: Re: [syzbot] WARNING in cpuset_write_resmask
-From:   syzbot <syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com>
-To:     cgroups@vger.kernel.org, hannes@cmpxchg.org,
-        linux-kernel@vger.kernel.org, lizefan.x@bytedance.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org
+References: <20220218060959.6631-1-luizluca@gmail.com> <20220218060959.6631-2-luizluca@gmail.com>
+ <877d9spfct.fsf@bang-olufsen.dk>
+In-Reply-To: <877d9spfct.fsf@bang-olufsen.dk>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Mon, 21 Feb 2022 21:37:47 -0300
+Message-ID: <CAJq09z7VDR8Dv20MU5mbsAd4Ux1uL+1qofiuJCrLRubV3uKtpQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] net: dsa: tag_rtl8_4: add rtl8_4t
+ trailing variant
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Em sex., 18 de fev. de 2022 =C3=A0s 08:46, Alvin =C5=A0ipraga
+<ALSI@bang-olufsen.dk> escreveu:
+>
+> Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
+>
+> > The switch supports the same tag both before ethertype or before CRC.
+>
+> s/The switch supports/Realtek switches support/?
 
-HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=113aeefa700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-dashboard link: https://syzkaller.appspot.com/bug?extid=568dc81cd20b72d4a49f
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13bb97ce700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12062c8e700000
+Thanks!
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com
+>
+> I think you should update the documentation at the top of the file as
+> well.
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 3647 at kernel/cgroup/cpuset.c:1817 update_nodemasks_hier kernel/cgroup/cpuset.c:1817 [inline]
-WARNING: CPU: 1 PID: 3647 at kernel/cgroup/cpuset.c:1817 update_nodemask kernel/cgroup/cpuset.c:1890 [inline]
-WARNING: CPU: 1 PID: 3647 at kernel/cgroup/cpuset.c:1817 cpuset_write_resmask+0x167b/0x20f0 kernel/cgroup/cpuset.c:2457
-Modules linked in:
-CPU: 0 PID: 3647 Comm: syz-executor287 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:update_nodemasks_hier kernel/cgroup/cpuset.c:1817 [inline]
-RIP: 0010:update_nodemask kernel/cgroup/cpuset.c:1890 [inline]
-RIP: 0010:cpuset_write_resmask+0x167b/0x20f0 kernel/cgroup/cpuset.c:2457
-Code: 3c 08 00 0f 85 ed 08 00 00 49 8b 9c 24 38 01 00 00 48 89 ef 48 89 de e8 63 4a 04 00 48 39 dd 0f 84 dd ef ff ff e8 e5 46 04 00 <0f> 0b e9 d1 ef ff ff e8 d9 46 04 00 e8 b4 a5 ef ff e8 cf 46 04 00
-RSP: 0018:ffffc90003acfb18 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff88801e193a00 RSI: ffffffff81740f0b RDI: 0000000000000003
-RBP: 0000000000000003 R08: 0000000000000003 R09: ffffffff8fdeca17
-R10: ffffffff81740efd R11: 0000000000000001 R12: ffff888074f2e000
-R13: ffff888074f2e054 R14: ffff888074f2e138 R15: 0000000000000000
-FS:  00007fee62f33700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffcf8240960 CR3: 0000000072ae3000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- cgroup_file_write+0x1de/0x760 kernel/cgroup/cgroup.c:3877
- kernfs_fop_write_iter+0x342/0x500 fs/kernfs/file.c:296
- call_write_iter include/linux/fs.h:2086 [inline]
- new_sync_write+0x431/0x660 fs/read_write.c:503
- vfs_write+0x7cd/0xae0 fs/read_write.c:590
- ksys_write+0x12d/0x250 fs/read_write.c:643
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fee62f82b79
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fee62f33308 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 00007fee6300c4c8 RCX: 00007fee62f82b79
-RDX: 0000000000000001 RSI: 0000000020000080 RDI: 0000000000000006
-RBP: 00007fee6300c4c0 R08: 0000000000000012 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fee6300c4cc
-R13: 00007fee62fd92b0 R14: 6d2e746573757063 R15: 0000000000022000
- </TASK>
+OK
 
+>
+> >
+> > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> > ---
+> >  include/net/dsa.h    |   2 +
+> >  net/dsa/tag_rtl8_4.c | 127 +++++++++++++++++++++++++++++++++----------
+> >  2 files changed, 99 insertions(+), 30 deletions(-)
+> >
+> > diff --git a/include/net/dsa.h b/include/net/dsa.h
+> > index fd1f62a6e0a8..b688ced04b0e 100644
+> > --- a/include/net/dsa.h
+> > +++ b/include/net/dsa.h
+> > @@ -52,6 +52,7 @@ struct phylink_link_state;
+> >  #define DSA_TAG_PROTO_BRCM_LEGACY_VALUE              22
+> >  #define DSA_TAG_PROTO_SJA1110_VALUE          23
+> >  #define DSA_TAG_PROTO_RTL8_4_VALUE           24
+> > +#define DSA_TAG_PROTO_RTL8_4T_VALUE          25
+> >
+> >  enum dsa_tag_protocol {
+> >       DSA_TAG_PROTO_NONE              =3D DSA_TAG_PROTO_NONE_VALUE,
+> > @@ -79,6 +80,7 @@ enum dsa_tag_protocol {
+> >       DSA_TAG_PROTO_SEVILLE           =3D DSA_TAG_PROTO_SEVILLE_VALUE,
+> >       DSA_TAG_PROTO_SJA1110           =3D DSA_TAG_PROTO_SJA1110_VALUE,
+> >       DSA_TAG_PROTO_RTL8_4            =3D DSA_TAG_PROTO_RTL8_4_VALUE,
+> > +     DSA_TAG_PROTO_RTL8_4T           =3D DSA_TAG_PROTO_RTL8_4T_VALUE,
+> >  };
+> >
+> >  struct dsa_switch;
+> > diff --git a/net/dsa/tag_rtl8_4.c b/net/dsa/tag_rtl8_4.c
+> > index 02686ad4045d..d80357cb74b0 100644
+> > --- a/net/dsa/tag_rtl8_4.c
+> > +++ b/net/dsa/tag_rtl8_4.c
+> > @@ -84,87 +84,133 @@
+> >  #define RTL8_4_TX                    GENMASK(3, 0)
+> >  #define RTL8_4_RX                    GENMASK(10, 0)
+> >
+> > -static struct sk_buff *rtl8_4_tag_xmit(struct sk_buff *skb,
+> > -                                    struct net_device *dev)
+> > +static void rtl8_4_write_tag(struct sk_buff *skb, struct net_device *d=
+ev,
+> > +                          void *tag)
+> >  {
+> >       struct dsa_port *dp =3D dsa_slave_to_port(dev);
+> > -     __be16 *tag;
+> > -
+> > -     skb_push(skb, RTL8_4_TAG_LEN);
+> > -
+> > -     dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
+> > -     tag =3D dsa_etype_header_pos_tx(skb);
+> > +     __be16 tag16[RTL8_4_TAG_LEN / 2];
+> >
+> >       /* Set Realtek EtherType */
+> > -     tag[0] =3D htons(ETH_P_REALTEK);
+> > +     tag16[0] =3D htons(ETH_P_REALTEK);
+> >
+> >       /* Set Protocol; zero REASON */
+> > -     tag[1] =3D htons(FIELD_PREP(RTL8_4_PROTOCOL, RTL8_4_PROTOCOL_RTL8=
+365MB));
+> > +     tag16[1] =3D htons(FIELD_PREP(RTL8_4_PROTOCOL, RTL8_4_PROTOCOL_RT=
+L8365MB));
+> >
+> >       /* Zero FID_EN, FID, PRI_EN, PRI, KEEP; set LEARN_DIS */
+> > -     tag[2] =3D htons(FIELD_PREP(RTL8_4_LEARN_DIS, 1));
+> > +     tag16[2] =3D htons(FIELD_PREP(RTL8_4_LEARN_DIS, 1));
+> >
+> >       /* Zero ALLOW; set RX (CPU->switch) forwarding port mask */
+> > -     tag[3] =3D htons(FIELD_PREP(RTL8_4_RX, BIT(dp->index)));
+> > +     tag16[3] =3D htons(FIELD_PREP(RTL8_4_RX, BIT(dp->index)));
+> > +
+> > +     memcpy(tag, tag16, RTL8_4_TAG_LEN);
+>
+> Why not just cast tag to __be16 and avoid an extra memcpy for each xmit?
+
+The last version I sent, there was a valid concern about unaligned
+access. With ethertype tags, we know the exact position the tag will
+be. However, at the end of the packet, the two bytes might fall into
+different words depending on the payload. I did test different
+payloads without any issues but my big endian system might have
+helped.
+
+I checked the machine code and the compiler seems to be doing a good
+job here, converting the memcpy to a simple "register to memory" each
+byte at a time.
+
+>
+> > +}
+> > +
+> > +static struct sk_buff *rtl8_4_tag_xmit(struct sk_buff *skb,
+> > +                                    struct net_device *dev)
+> > +{
+> > +     skb_push(skb, RTL8_4_TAG_LEN);
+> > +
+> > +     dsa_alloc_etype_header(skb, RTL8_4_TAG_LEN);
+> > +
+> > +     rtl8_4_write_tag(skb, dev, dsa_etype_header_pos_tx(skb));
+> >
+> >       return skb;
+> >  }
+> >
+> > -static struct sk_buff *rtl8_4_tag_rcv(struct sk_buff *skb,
+> > -                                   struct net_device *dev)
+> > +static struct sk_buff *rtl8_4t_tag_xmit(struct sk_buff *skb,
+> > +                                     struct net_device *dev)
+> > +{
+> > +     /* Calculate the checksum here if not done yet as trailing tags w=
+ill
+> > +      * break either software and hardware based checksum
+> > +      */
+> > +     if (skb->ip_summed =3D=3D CHECKSUM_PARTIAL && skb_checksum_help(s=
+kb))
+> > +             return NULL;
+> > +
+> > +     rtl8_4_write_tag(skb, dev, skb_put(skb, RTL8_4_TAG_LEN));
+> > +
+> > +     return skb;
+> > +}
+> > +
+> > +static int rtl8_4_read_tag(struct sk_buff *skb, struct net_device *dev=
+,
+> > +                        void *tag)
+> >  {
+> > -     __be16 *tag;
+> >       u16 etype;
+> >       u8 reason;
+> >       u8 proto;
+> >       u8 port;
+> > +     __be16 tag16[RTL8_4_TAG_LEN / 2];
+>
+> nit: Reverse christmas-tree order?
+
+Sure! My bad.
+
+>
+> >
+> > -     if (unlikely(!pskb_may_pull(skb, RTL8_4_TAG_LEN)))
+> > -             return NULL;
+> > -
+> > -     tag =3D dsa_etype_header_pos_rx(skb);
+> > +     memcpy(tag16, tag, RTL8_4_TAG_LEN);
+>
+> Likewise can you avoid this memcpy?
+>
+> >
+> >       /* Parse Realtek EtherType */
+> > -     etype =3D ntohs(tag[0]);
+> > +     etype =3D ntohs(tag16[0]);
+> >       if (unlikely(etype !=3D ETH_P_REALTEK)) {
+> >               dev_warn_ratelimited(&dev->dev,
+> >                                    "non-realtek ethertype 0x%04x\n", et=
+ype);
+> > -             return NULL;
+> > +             return -EPROTO;
+> >       }
+> >
+> >       /* Parse Protocol */
+> > -     proto =3D FIELD_GET(RTL8_4_PROTOCOL, ntohs(tag[1]));
+> > +     proto =3D FIELD_GET(RTL8_4_PROTOCOL, ntohs(tag16[1]));
+> >       if (unlikely(proto !=3D RTL8_4_PROTOCOL_RTL8365MB)) {
+> >               dev_warn_ratelimited(&dev->dev,
+> >                                    "unknown realtek protocol 0x%02x\n",
+> >                                    proto);
+> > -             return NULL;
+> > +             return -EPROTO;
+> >       }
+> >
+> >       /* Parse REASON */
+> > -     reason =3D FIELD_GET(RTL8_4_REASON, ntohs(tag[1]));
+> > +     reason =3D FIELD_GET(RTL8_4_REASON, ntohs(tag16[1]));
+> >
+> >       /* Parse TX (switch->CPU) */
+> > -     port =3D FIELD_GET(RTL8_4_TX, ntohs(tag[3]));
+> > +     port =3D FIELD_GET(RTL8_4_TX, ntohs(tag16[3]));
+> >       skb->dev =3D dsa_master_find_slave(dev, 0, port);
+> >       if (!skb->dev) {
+> >               dev_warn_ratelimited(&dev->dev,
+> >                                    "could not find slave for port %d\n"=
+,
+> >                                    port);
+> > -             return NULL;
+> > +             return -ENOENT;
+> >       }
+> >
+> > +     if (reason !=3D RTL8_4_REASON_TRAP)
+> > +             dsa_default_offload_fwd_mark(skb);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static struct sk_buff *rtl8_4_tag_rcv(struct sk_buff *skb,
+> > +                                   struct net_device *dev)
+> > +{
+> > +     if (unlikely(!pskb_may_pull(skb, RTL8_4_TAG_LEN)))
+> > +             return NULL;
+> > +
+> > +     if (unlikely(rtl8_4_read_tag(skb, dev, dsa_etype_header_pos_rx(sk=
+b))))
+> > +             return NULL;
+> > +
+> >       /* Remove tag and recalculate checksum */
+> >       skb_pull_rcsum(skb, RTL8_4_TAG_LEN);
+> >
+> >       dsa_strip_etype_header(skb, RTL8_4_TAG_LEN);
+> >
+> > -     if (reason !=3D RTL8_4_REASON_TRAP)
+> > -             dsa_default_offload_fwd_mark(skb);
+> > +     return skb;
+> > +}
+> > +
+> > +static struct sk_buff *rtl8_4t_tag_rcv(struct sk_buff *skb,
+> > +                                    struct net_device *dev)
+> > +{
+>
+> I wonder if it's necessary to check pskb_may_pull() here too.
+
+I didn't add it because no trailing tag used it. I checked
+tag_hellcreek.c, tag_ksz.c, tag_xrs700x.c. tag_sja1105.c seems to use
+both head and tail space and it indeed use pskb_may_pull() but only
+related to the head space (SJA1110_HEADER_LEN).
+
+>
+> > +     if (skb_linearize(skb))
+> > +             return NULL;
+> > +
+> > +     if (unlikely(rtl8_4_read_tag(skb, dev, skb_tail_pointer(skb) - RT=
+L8_4_TAG_LEN)))
+> > +             return NULL;
+> > +
+> > +     if (pskb_trim_rcsum(skb, skb->len - RTL8_4_TAG_LEN))
+> > +             return NULL;
+> >
+> >       return skb;
+> >  }
+> >
+> > +/* Ethertype version */
+> >  static const struct dsa_device_ops rtl8_4_netdev_ops =3D {
+> >       .name =3D "rtl8_4",
+> >       .proto =3D DSA_TAG_PROTO_RTL8_4,
+> > @@ -172,7 +218,28 @@ static const struct dsa_device_ops rtl8_4_netdev_o=
+ps =3D {
+> >       .rcv =3D rtl8_4_tag_rcv,
+> >       .needed_headroom =3D RTL8_4_TAG_LEN,
+> >  };
+> > -module_dsa_tag_driver(rtl8_4_netdev_ops);
+> >
+> > -MODULE_LICENSE("GPL");
+> > +DSA_TAG_DRIVER(rtl8_4_netdev_ops);
+> > +
+> >  MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4);
+> > +
+> > +/* Tail version */
+> > +static const struct dsa_device_ops rtl8_4t_netdev_ops =3D {
+> > +     .name =3D "rtl8_4t",
+> > +     .proto =3D DSA_TAG_PROTO_RTL8_4T,
+> > +     .xmit =3D rtl8_4t_tag_xmit,
+> > +     .rcv =3D rtl8_4t_tag_rcv,
+> > +     .needed_tailroom =3D RTL8_4_TAG_LEN,
+> > +};
+> > +
+> > +DSA_TAG_DRIVER(rtl8_4t_netdev_ops);
+> > +
+> > +MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4L);
+> > +
+> > +static struct dsa_tag_driver *dsa_tag_drivers[] =3D {
+> > +     &DSA_TAG_DRIVER_NAME(rtl8_4_netdev_ops),
+> > +     &DSA_TAG_DRIVER_NAME(rtl8_4t_netdev_ops),
+> > +};
+> > +module_dsa_tag_drivers(dsa_tag_drivers);
+> > +
+> > +MODULE_LICENSE("GPL");
