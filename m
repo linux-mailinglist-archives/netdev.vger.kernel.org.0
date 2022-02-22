@@ -2,91 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F18F44BF1A3
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 06:42:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 471C24BF1DE
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 07:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbiBVFnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 00:43:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43182 "EHLO
+        id S230150AbiBVGFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 01:05:53 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiBVFnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 00:43:13 -0500
-Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCF4EDEAB;
-        Mon, 21 Feb 2022 21:42:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-        :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GmHGvFlMERYoctqrhlXNA24je+le5xDzuYUVLipVXiQ=; b=HXKbeB87PoAiP5/i0Tiq7WLqNR
-        xhurak0NO3Du3ZAg3Xy+YxnAQyxIuV4VnW0EEkUWVdQ4nh5bkKVW9vt+TechfdA9c7aw2LRgS4xIe
-        YlwfCssgeJ9YC+Ey2wFFVrlgz2tBOXx26+JAxgoWu9dupU8YqdNMvHtCO5XNkgjeweDIE0MEG1Mpq
-        yg1Up+ua9gv+ZTQuK6s/YTyoar3/GBvED+x57araH6sQS6B87YmDVmKzG+i2xtwqT8I3Onr/O0AoI
-        e6Qu+KbwyBpmJ6lBRUzd0eP9KTUPY+fo2NpMetRD3eqO7W5++2LCAtZuVvY0tcAaH0/5er5nG6s+Z
-        sJwkzcrw==;
-Received: from 20e7-cd64-ca8f-bce1-aa00-87c4-07d0-2001.dyn.estpak.ee ([2001:7d0:87c4:aa00:bce1:ca8f:cd64:20e7]:62077)
-        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <maukka@ext.kapsi.fi>)
-        id 1nMNwW-0000BI-5o; Tue, 22 Feb 2022 07:42:32 +0200
-Message-ID: <91729285-67f9-8fdb-4f97-f0e958cff8dd@ext.kapsi.fi>
-Date:   Tue, 22 Feb 2022 07:42:30 +0200
+        with ESMTP id S230078AbiBVGFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 01:05:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D09D0E5;
+        Mon, 21 Feb 2022 22:05:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E540660F49;
+        Tue, 22 Feb 2022 06:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 479F6C36AE3;
+        Tue, 22 Feb 2022 06:05:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645509926;
+        bh=sTgSEKKoICol33yrPaBoC5i5Zy7dMIxDHtgX1m8Wif0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jvYiGVqzS6uC1sMS0YYUMW6roBhxyPQvTtRoYJ0CfpSX2zjuHbSyAQ2B0eIo7X/f/
+         EVBdm/n8jGfiJhbxwqLnvC03t0JCe4KM8WLrLyGS/bPhwADxipv7EB/xhUhjrUQrvG
+         jO8dvEUyBu/UodszQHrpSzGUERMSQfsmWfPxi30tSSwcQZXAARHA+gSMOJp267OWUH
+         FssrCn8iodiohTSACoC1WzjrlrYYH06X4x318t6xQnAldW79CGM10tTd+bs8YyjqsR
+         vYQVRZnVNnui4ojM7AYGRoPiX8MR/QEcTZmbMEd2rfzVQjesMH2IlXv4RNogekiLQI
+         faFKZcMxgh5aA==
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2d310db3812so161780817b3.3;
+        Mon, 21 Feb 2022 22:05:26 -0800 (PST)
+X-Gm-Message-State: AOAM5333sBR/IMjP/1CjBkyI9ZGNcX7R0TxRoqMBkfZGxz7rffLRwzRQ
+        i8Oq60bwSpWg+BwcQHM7cj7nV0sQzaSt3/hW1iI=
+X-Google-Smtp-Source: ABdhPJzEZ/bEc8cwZMK0aBgwowso24AHWiaqSakzFUZIobZmtbYInj/25T2cMOnwraye3UOTl0ZiQabsjfRQcJc3oNA=
+X-Received: by 2002:a81:9895:0:b0:2d7:7e75:9ba8 with SMTP id
+ p143-20020a819895000000b002d77e759ba8mr4335827ywg.130.1645509925349; Mon, 21
+ Feb 2022 22:05:25 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, maukka@ext.kapsi.fi
-References: <20220221062441.2685-1-maukka@ext.kapsi.fi>
- <YhOD3eCm8mYHJ1HF@lunn.ch>
- <72041ee7-a618-85d0-4687-76dae2b04bbc@ext.kapsi.fi>
- <YhQO52cvzIo8prKi@lunn.ch>
-From:   Mauri Sandberg <maukka@ext.kapsi.fi>
-In-Reply-To: <YhQO52cvzIo8prKi@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:7d0:87c4:aa00:bce1:ca8f:cd64:20e7
-X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
+References: <20220220134813.3411982-1-memxor@gmail.com>
+In-Reply-To: <20220220134813.3411982-1-memxor@gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 21 Feb 2022 22:05:14 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW53epuRQ3X5bYeoxRUL9sdEm7MUQ8bUoQCsf=C7k3hQ8A@mail.gmail.com>
+Message-ID: <CAPhsuW53epuRQ3X5bYeoxRUL9sdEm7MUQ8bUoQCsf=C7k3hQ8A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 00/15] Introduce typed pointer support in BPF maps
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-Subject: Re: [PATCH] net: mv643xx_eth: handle EPROBE_DEFER
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Feb 20, 2022 at 5:48 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> Introduction
+> ------------
+>
+> This set enables storing pointers of a certain type in BPF map, and extends the
+> verifier to enforce type safety and lifetime correctness properties.
+>
+> The infrastructure being added is generic enough for allowing storing any kind
+> of pointers whose type is available using BTF (user or kernel) in the future
+> (e.g. strongly typed memory allocation in BPF program), which are internally
+> tracked in the verifier as PTR_TO_BTF_ID, but for now the series limits them to
+> four kinds of pointers obtained from the kernel.
+>
+> Obviously, use of this feature depends on map BTF.
+>
+> 1. Unreferenced kernel pointer
+>
+> In this case, there are very few restrictions. The pointer type being stored
+> must match the type declared in the map value. However, such a pointer when
+> loaded from the map can only be dereferenced, but not passed to any in-kernel
+> helpers or kernel functions available to the program. This is because while the
+> verifier's exception handling mechanism coverts BPF_LDX to PROBE_MEM loads,
+> which are then handled specially by the JIT implementation, the same liberty is
+> not available to accesses inside the kernel. The pointer by the time it is
+> passed into a helper has no lifetime related guarantees about the object it is
+> pointing to, and may well be referencing invalid memory.
+>
+> 2. Referenced kernel pointer
+>
+> This case imposes a lot of restrictions on the programmer, to ensure safety. To
+> transfer the ownership of a reference in the BPF program to the map, the user
+> must use the BPF_XCHG instruction, which returns the old pointer contained in
+> the map, as an acquired reference, and releases verifier state for the
+> referenced pointer being exchanged, as it moves into the map.
+>
+> This a normal PTR_TO_BTF_ID that can be used with in-kernel helpers and kernel
+> functions callable by the program.
+>
+> However, if BPF_LDX is used to load a referenced pointer from the map, it is
+> still not permitted to pass it to in-kernel helpers or kernel functions. To
+> obtain a reference usable with helpers, the user must invoke a kfunc helper
+> which returns a usable reference (which also must be eventually released before
+> BPF_EXIT, or moved into a map).
+>
+> Since the load of the pointer (preserving data dependency ordering) must happen
+> inside the RCU read section, the kfunc helper will take a pointer to the map
+> value, which must point to the actual pointer of the object whose reference is
+> to be raised. The type will be verified from the BTF information of the kfunc,
+> as the prototype must be:
+>
+>         T *func(T **, ... /* other arguments */);
+>
+> Then, the verifier checks whether pointer at offset of the map value points to
+> the type T, and permits the call.
+>
+> This convention is followed so that such helpers may also be called from
+> sleepable BPF programs, where RCU read lock is not necessarily held in the BPF
+> program context, hence necessiating the need to pass in a pointer to the actual
+> pointer to perform the load inside the RCU read section.
+>
+> 3. per-CPU kernel pointer
+>
+> These have very little restrictions. The user can store a PTR_TO_PERCPU_BTF_ID
+> into the map, and when loading from the map, they must NULL check it before use,
+> because while a non-zero value stored into the map should always be valid, it can
+> still be reset to zero on updates. After checking it to be non-NULL, it can be
+> passed to bpf_per_cpu_ptr and bpf_this_cpu_ptr helpers to obtain a PTR_TO_BTF_ID
+> to underlying per-CPU object.
+>
+> It is also permitted to write 0 and reset the value.
+>
+> 4. Userspace pointer
+>
+> The verifier recently gained support for annotating BTF with __user type tag.
+> This indicates pointers pointing to memory which must be read using the
+> bpf_probe_read_user helper to ensure correct results. The set also permits
+> storing them into the BPF map, and ensures user pointer cannot be stored
+> into other kinds of pointers mentioned above.
+>
+> When loaded from the map, the only thing that can be done is to pass this
+> pointer to bpf_probe_read_user. No dereference is allowed.
+>
 
-On 22.2.2022 0.15, Andrew Lunn wrote:
->>> Please can you add code to remove the platform device when the probe
->>> fails.
->>
->> I am looking at the vector 'port_platdev' that holds pointers to already
->> initialised ports. There is this mv643xx_eth_shared_of_remove(), which
->> probably could be utilised to remove them. Should I remove the platform
->> devices only in case of probe defer or always if probe fails?
->   
-> In general, a failing probe should always undo anything it has done so
-> far. Sometimes you can call the release function, or its
-> helpers. Other times you do a goto out: and then release stuff in the
-> reverse order it was taken.
-> 
-> It looks like platform_device_del() can take a NULL pointer, so it is
-> probably O.K. to call mv643xx_eth_shared_of_remove().
+I guess I missed some context here. Could you please provide some reference
+to the use cases of these features?
 
-While I am on it, should I call of_node_put() to all port nodes as is
-being done to the current child node if probe fails in function
-mv643xx_eth_shared_of_probe() [1]?
+For Unreferenced kernel pointer and userspace pointer, it seems that there is
+no guarantee the pointer will still be valid during access (we only know it is
+valid when it is stored in the map). Is this correct?
 
-[1] 
-https://elixir.bootlin.com/linux/v5.16/source/drivers/net/ethernet/marvell/mv643xx_eth.c#L2800
+Thanks,
+Song
 
--- Mauri
+[...]
