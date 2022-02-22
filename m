@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C59EB4BF95E
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 14:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3EDE4BF961
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 14:29:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbiBVNaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 08:30:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S232465AbiBVNaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 08:30:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232481AbiBVNaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 08:30:03 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C426E15D3B8;
-        Tue, 22 Feb 2022 05:29:36 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id v22so17637895ljh.7;
-        Tue, 22 Feb 2022 05:29:36 -0800 (PST)
+        with ESMTP id S232474AbiBVNaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 08:30:08 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38401136ED6;
+        Tue, 22 Feb 2022 05:29:43 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id m14so24777885lfu.4;
+        Tue, 22 Feb 2022 05:29:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=EwW1ad9aaDxzLEmHNXCm17nZVCt4Pcys+G0syr6CYU4=;
-        b=pZe7+VYM2Ch4tnW0vNrVk4kIXpos0UkPqBnqRz0liSSCmjg5WR46ijNkTFp1HCgHFG
-         G7xtFljcmI1+/ai2y4SDM+SuB0bYJ6ujqEiFCprXncNFqQuO3QTWAYzw1L2HjZjT4H3N
-         v/0RVdM4I4DpTyyct5KApt+YAfxnXRgaxNJUJAMngBXVw0Ri55ZE9X1fL2nhUd6LZcrn
-         skDkxgDKgNOhZFP6P6RWDaFGYspOza6cihrkcaaDHNr72RtORhJmLoMNX/dxH0eZmcRY
-         MNvzvYmKHTdpW8/Glo8PDfXtx+xP4+15Juf+9hRUfW87XIYD64cyFvB8sH6Ie98g2nc5
-         gR+g==
+        bh=Z+hbLNvF0Nhve3XBOMxW8KtWdx8aJiHJ43sZ0z9sw1E=;
+        b=qO5Sru+DZqGzH4+Za4ahOJYJK/duIXhEZA7V/VVfsVzC5RwvI/uX/oPlWpfAzaWqzV
+         107TBki28TfJolkKkSAvh2IFNfqHT6f62lZ5mLMFDNS7EdYGIV9NwM9Kl6a9RNdOP5i+
+         nkW26DL79MK2HzK5rsy47tYU7EQg9PhP1SyQYgc+NI92/MlgTF12CK7J5s6f0No+Zmop
+         EZ/R9GrW/mbWigROLcu1w3qZBUYAnNWHE88/fvsrV4YZR4UviqsCv10r8EbOKrEyAXBg
+         iEV+DlFF7X3WoMjYQTX+pDbeetysz/YOzRmQtJ7JhPY4Jm2SZDPu7RxYZTYvtUgWYyBi
+         7kwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=EwW1ad9aaDxzLEmHNXCm17nZVCt4Pcys+G0syr6CYU4=;
-        b=bftf3bZUv7exZUErG+O9ivP51fuo+zaRG4OZ8Yr5Koo/gKCOPOQCIuYjXWoDRtVMeA
-         a1KLdTHxDA+W69FOEwbouCRDYOcJchjlV1McC0hZVAKNdiMMmEahyX6Gep0ld4sWOs4Z
-         eFqOLLIszjP7e8z5qR2vYGB/ayswaANPWU20c+dPKahyvdF9+O8J6gJTarIqzwtc/UhT
-         oGA8kavvB1N5T7culGT3IJDfY0W8YTH4BvQw7XAyWXvdXS4DVwukLQUVQpwp0FYSYBGX
-         Av2QRAmKwkGWD2u8lkpqlkFe09iqqFti+i9YaXkJAU7aOGqksWjzJQPehsZqwkyihN1g
-         MTUg==
-X-Gm-Message-State: AOAM530+7N4iblDikUGjppB3DU4iV0DBVNsXIs/UogwqwJ/piTXPszfl
-        OfIPW/4dVwM23o/8b+jox9c=
-X-Google-Smtp-Source: ABdhPJzHDYyISKgjREvcwBLgHfMKpwDFHOum7zloAcofWXBg+CYq18JOmAuV0xwIBhhLStIP1a2GLQ==
-X-Received: by 2002:a2e:8752:0:b0:23e:d951:4184 with SMTP id q18-20020a2e8752000000b0023ed9514184mr18296155ljj.410.1645536575198;
-        Tue, 22 Feb 2022 05:29:35 -0800 (PST)
+        bh=Z+hbLNvF0Nhve3XBOMxW8KtWdx8aJiHJ43sZ0z9sw1E=;
+        b=MAcVYsT2L3j2FuDo+z+UhgvNLCdTowATEgCmXteuY2D3w4HygLnuQECRRihs5Zy7sV
+         cpgF60Dk0vLYmklWA+hWwnuMuPfdJbiJDhUx+QJBPYAT29SLjRNn6RmhV2Z1MtgU9Jyn
+         67JcXkRbSv9GGIwz+x6AiIhiENafZI5TQokS+D9HKhpvNcTQS2oFnvvhqM0I5RbQbW6u
+         45q5L6BBOmbcbbX3rYdqAsNkrQJ90FGi9TTT4KTKdvmKBGPBpR15oN/mnSgOrkbGr9oZ
+         qsa3V/ABZcSRRmjRr8hEdSEyuRbcWnVfhLIJQ7H+0eqbiuvGjUqOzAQp9CminYwiBXBf
+         Cj/A==
+X-Gm-Message-State: AOAM532q0nLxRAcp+ZBvqcJdINV10ze0u2WSE60h4dgIp+WmM0sV6Xw5
+        GZljImM2DwDc2/kteRJzoe4=
+X-Google-Smtp-Source: ABdhPJwolKKl+qChVGRAvJCxdChiH+ZkxIpLXFQkRe02q8DltrOGJJiqQzm+Xu0ntqAFve+Idw9aCQ==
+X-Received: by 2002:a05:6512:3f08:b0:443:3d74:2461 with SMTP id y8-20020a0565123f0800b004433d742461mr16779614lfa.461.1645536581597;
+        Tue, 22 Feb 2022 05:29:41 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id e22sm1703685ljb.17.2022.02.22.05.29.32
+        by smtp.gmail.com with ESMTPSA id e22sm1703685ljb.17.2022.02.22.05.29.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 05:29:34 -0800 (PST)
+        Tue, 22 Feb 2022 05:29:41 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
         Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
         Stephen Suryaputra <ssuryaextr@gmail.com>,
         David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
         Petr Machata <petrm@nvidia.com>,
         Amit Cohen <amcohen@nvidia.com>,
         Po-Hsu Lin <po-hsu.lin@canonical.com>,
         Baowen Zheng <baowen.zheng@corigine.com>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next v4 2/5] net: bridge: Add support for offloading of locked port flag
-Date:   Tue, 22 Feb 2022 14:28:15 +0100
-Message-Id: <20220222132818.1180786-3-schultz.hans+netdev@gmail.com>
+Subject: [PATCH net-next v4 3/5] net: dsa: Include BR_PORT_LOCKED in the list of synced brport flags
+Date:   Tue, 22 Feb 2022 14:28:16 +0100
+Message-Id: <20220222132818.1180786-4-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
 References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
@@ -85,30 +87,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Various switchcores support setting ports in locked mode, so that
-clients behind locked ports cannot send traffic through the port
-unless a fdb entry is added with the clients MAC address.
+Ensures that the DSA switch driver gets notified of changes to the
+BR_PORT_LOCKED flag as well, for the case when a DSA port joins or
+leaves a LAG that is a bridge port.
 
 Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- net/bridge/br_switchdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dsa/port.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index f8fbaaa7c501..bf549fc22556 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -72,7 +72,7 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index bd78192e0e47..01ed22ed74a1 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -176,7 +176,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
+ 					 struct netlink_ext_ack *extack)
+ {
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
+ 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+ 	int flag, err;
  
- /* Flags that can be offloaded to hardware */
- #define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
--				  BR_MCAST_FLOOD | BR_BCAST_FLOOD)
-+				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED)
+@@ -200,7 +200,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
+ {
+ 	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
+ 	int flag, err;
  
- int br_switchdev_set_port_flag(struct net_bridge_port *p,
- 			       unsigned long flags,
+ 	for_each_set_bit(flag, &mask, 32) {
 -- 
 2.30.2
 
