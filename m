@@ -2,56 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42324BF2AB
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 08:40:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDBD74BF2B3
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 08:40:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231251AbiBVHcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 02:32:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34300 "EHLO
+        id S229601AbiBVHdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 02:33:42 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiBVHcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 02:32:15 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FCB26565;
-        Mon, 21 Feb 2022 23:31:49 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K2rN53B6Pzbbfj;
-        Tue, 22 Feb 2022 15:27:17 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Feb 2022 15:31:46 +0800
-Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
- device from smaller to bigger
-To:     Eric Dumazet <edumazet@google.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
- <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
- <YhQ1KrtpEr3TgCwA@gondor.apana.org.au>
- <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
- <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <124e1c43-95a8-1aad-c781-b43eba09984a@huawei.com>
-Date:   Tue, 22 Feb 2022 15:31:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S229539AbiBVHdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 02:33:42 -0500
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABE26D3ADE;
+        Mon, 21 Feb 2022 23:33:16 -0800 (PST)
+Received: from localhost.localdomain (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id F0D1364384;
+        Tue, 22 Feb 2022 08:32:16 +0100 (CET)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/5,v2] Netfilter fixes for net
+Date:   Tue, 22 Feb 2022 08:33:07 +0100
+Message-Id: <20220222073312.308406-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,53 +35,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Mon, Feb 21, 2022 at 6:06 PM Ziyang Xuan (William)
-> <william.xuanziyang@huawei.com> wrote:
->>
->>> On Mon, Feb 21, 2022 at 07:43:18AM -0800, Eric Dumazet wrote:
->>>>
->>>> Herbert, do you recall why only a decrease was taken into consideration ?
->>>
->>> Because we shouldn't override administrative settings of the MTU
->>> on the vlan device, unless we have to because of an MTU reduction
->>> on the underlying device.
->>>
->>> Yes this is not perfect if the admin never set an MTU to start with
->>> but as we don't have a way of telling whether the admin has or has
->>> not changed the MTU setting, the safest course of action is to do
->>> nothing in that case.
->> If the admin has changed the vlan device MTU smaller than the underlying
->> device MTU firstly, then changed the underlying device MTU smaller than
->> the vlan device MTU secondly. The admin's configuration has been overridden.
->> Can we consider that the admin's configuration for the vlan device MTU has
->> been invalid and disappeared after the second change? I think so.
-> 
-> The answer is no.
-> 
-> Herbert is saying:
-> 
-> ip link add link eth1 dev eth1.100 type vlan id 100
-> ...
-> ip link set eth1.100 mtu 800
-> ..
-> ip link set eth1 mtu 256
-> ip link set eth1 mtu 1500
-> 
-> -> we do not want eth1.100 mtu being set back to 1500, this might
-> break applications, depending on old kernel feature.
->  Eventually, setting back to 800 seems ok.
+This is fixing up the use without proper initialization in patch 5/5
 
-It seem that setting back to 800 more reasonable. We can record user
-setting MTU by interface ndo_change_mtu() in struct vlan_dev_priv.
+-o-
 
-> 
-> If you want this new feature, we need to record in eth1.100 device
-> that no admin ever changed the mtu,
-> as Herbert suggested.
-> 
-> Then, it is okay to upgrade the vlan mtu (but still is a behavioral
-> change that _could_ break some scripts)
-> 
-> Thank you.
-> .
-> 
+Hi,
+
+The following patchset contains Netfilter fixes for net:
+
+1) Missing #ifdef CONFIG_IP6_NF_IPTABLES in recent xt_socket fix.
+
+2) Fix incorrect flow action array size in nf_tables.
+
+3) Unregister flowtable hooks from netns exit path.
+
+4) Fix missing limit object release, from Florian Westphal.
+
+5) Memleak in nf_tables object update path, also from Florian.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
+
+Thank you
+
+----------------------------------------------------------------
+
+The following changes since commit 143de8d97d79316590475dc2a84513c63c863ddf:
+
+  tipc: fix a bit overflow in tipc_crypto_key_rcv() (2022-02-13 12:12:25 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
+
+for you to fetch changes up to dad3bdeef45f81a6e90204bcc85360bb76eccec7:
+
+  netfilter: nf_tables: fix memory leak during stateful obj update (2022-02-22 08:28:04 +0100)
+
+----------------------------------------------------------------
+Florian Westphal (2):
+      netfilter: nft_limit: fix stateful object memory leak
+      netfilter: nf_tables: fix memory leak during stateful obj update
+
+Pablo Neira Ayuso (3):
+      netfilter: xt_socket: missing ifdef CONFIG_IP6_NF_IPTABLES dependency
+      netfilter: nf_tables_offload: incorrect flow offload action array size
+      netfilter: nf_tables: unregister flowtable hooks on netns exit
+
+ include/net/netfilter/nf_tables.h         |  2 +-
+ include/net/netfilter/nf_tables_offload.h |  2 --
+ net/netfilter/nf_tables_api.c             | 16 ++++++++++++----
+ net/netfilter/nf_tables_offload.c         |  3 ++-
+ net/netfilter/nft_dup_netdev.c            |  6 ++++++
+ net/netfilter/nft_fwd_netdev.c            |  6 ++++++
+ net/netfilter/nft_immediate.c             | 12 +++++++++++-
+ net/netfilter/nft_limit.c                 | 18 ++++++++++++++++++
+ net/netfilter/xt_socket.c                 |  2 ++
+ 9 files changed, 58 insertions(+), 9 deletions(-)
