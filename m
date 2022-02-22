@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EEBA4BF6F1
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 12:07:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 928CE4BF6F6
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 12:10:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbiBVLIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 06:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
+        id S231573AbiBVLIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 06:08:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiBVLIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 06:08:04 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2068.outbound.protection.outlook.com [40.107.223.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE565B54EC;
-        Tue, 22 Feb 2022 03:07:38 -0800 (PST)
+        with ESMTP id S231587AbiBVLIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 06:08:09 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2078.outbound.protection.outlook.com [40.107.92.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1902CB6D01;
+        Tue, 22 Feb 2022 03:07:43 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LSxq21kr56ymOTjD3OZrspOc8Tu5eUsnN+dC3yfym2t7sAifTORpnfD8xdnaPfJvMIV5/EjSgWN+AeROnRI1wdXZaJnkAU+7lX1iahTkA+Ngv33Mec32WmqVbw9xkc/gYxH6Pc17NQy0zb3BlkCMFAZVlWDnQXKTtgQH/cF2QTuzGbOHP9ezd1vwMOJS4vn2gfOHdF4J7aGfL0CWMtCQV7V2Qs4qNv6ISYd4IARaEJWJ1PocWjIYjT6u11Uj1cNHNl66DtMAAsOkKxEZbwr+40bf3/yJ03NPubi6KmJvI+Zp4x5+CFp7033b5V1Zgg1+0P22/fTR4gcKi+w+2sdbnw==
+ b=D3J9GIta6yMIXZQ3Vcq+9Vxdg2/tOxBFrfFHj9kfXparDtTItCSCrlqHdAfvRaCyBcTBMKXgeKkdVsSdMh0FQXzfrUU1VIQswPDAr9m14wujjtzyt6X618kgGNSu2PxmPC1dBoK3CLuHLZeFTlFdc2P0PWqmn2UNrJtYEjn3LuP9tkZM482yUnE4xrXuXaJqCH/ys/2isInl8JlXyzcyJgPfUm3wO9br8F384r24yGto+UKEHCX2T7ky/v6uyGm9Too8+OHq1k5VJTcJAAe1j5WO08JAlpwsuW046RqWD7zSiTfqtRL/e93jY+axX0F9h8+fC/SHJDm7X0EEzU4CKA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sOMFDq4QE6VORqebDv2FV/10xjOx8JvCW+nDUBQjRz4=;
- b=lQ3zoPNh0nTTE3W9lVV2uKH5wqUBljCVV8O7phnDC2fjpSx6gOlHIYNhBvy3jZWhe5EiwqVs09b3DUrq8RYJr1dkAdAxz0rYZJ2Bg778WnXRKv1hI1zaUL6onD9xyVaOVz3Mx55Uv9cTzRoHAAHopsSAhsK4j8zl80/s7CaTOqgsHvOd4QQLBUNndwigEM/ejoEbtPz4eQrofyE2fc0hLi0+Js1EqfkqjXwc7oxt+WsGbrMJDIU1qgNH/9pA9RQLBZ7B+3KsIypcqJg3QDhK9VNXErj3ry/8L1KizdL25xAqaYDFwZyqJnhpYRt8ISH5qb9tEXiiDgr+ed1djbz8mA==
+ bh=rMJd7HpZsjDU4WSJBWmdc3agHDtbQz7Z3yngAULUUg8=;
+ b=fYvsM6lG8aAsKiHrLBmaqRq12Wbq5XL87/IaWiR5FqJ3pUT8W+na8cV4zp//EOmKir84sR5kNpIV3EnGlXWczfH/0Pgl2oDiLJRHEfhcuymKnazc8flRGPLnqAZdPLx3ZwJ+OhR4BdWVg4auoWHSZ6qQr4Zh3ZGt6zzv1J8x/7QD9sCK8+3r6K+PbpWsAAj8ghcWT2bBsUwFw0oe3ok5OWPMzsk1vMVQ220UnJgclaUDvir8VSR8IobqO852cqfaEsLlhx2Qjt1RuqO/xqBcyk/lpYsRXtOWcAmaqaCUORja4IfWkMzRY3xRSM7UeKG0ClRZVGjAMmQ3AkbuT8adNg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sOMFDq4QE6VORqebDv2FV/10xjOx8JvCW+nDUBQjRz4=;
- b=uSF332aLGdvPHKxM5/VATROGm1bdy9DxHHoqvAGwGUyUEt0Tng9AeC7yNGkMSYxGmk+Kg6NxfH2yRQHZp/YftRi5vhPER/R311e9s/vsQJ4wctvEzZgSc3ZPUehm0OO/L/U85+vNKcSFRxL15h3RA+wcqawipY7QRqY/lr49xqV/LfQJ6faH3yJPSlNY+WlmffSlsj98ev5nhem/JBPbkCQ56+JkRdXXCf5xLmuM9+62En10jgZpW0MlVZ5EC+pTjmJFCghzr5uBVfpJxQMUJTtEU4QSQQ04V2E48EjXXoviEJ/B1GXYqH8qqNA6DIIsq3iLJv8oldYiDGYFz7VXrQ==
+ bh=rMJd7HpZsjDU4WSJBWmdc3agHDtbQz7Z3yngAULUUg8=;
+ b=AKQYM8AaMQAfSDhkA+6fGzJ8IsxPluB7egk3+o+jTDK4Hdoj9GJc0rc35maY8EXfYLWrjpsofN9d2UHJ08HvuCDQFUD7V2Cv9hy1dlTui7lFw1PjTzgOWGEUQSEsQghoKq8Ea03zS0VQ23esH/DAmZC6QxzdWgkZEGytVxyD5VRcgbJciPUAYI0U8TXSIkNweSEOHkAre5aJwVm6L/e4L3jCI5RxQqv2v58tsHY+R6XHOQngL4ytOl43bU5PEReUITnbc4u380LI2cvh8r245nx5Qjw0Xo7s5oUtQXVwg5o4blDei5iaqt4ST1N815bk0DTk1r0ZNFzyJVg+uMq6bw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MWHPR12MB1310.namprd12.prod.outlook.com (2603:10b6:300:a::21)
- by MW5PR12MB5683.namprd12.prod.outlook.com (2603:10b6:303:1a0::10) with
+ by DM6PR12MB5552.namprd12.prod.outlook.com (2603:10b6:5:1bd::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.26; Tue, 22 Feb
- 2022 11:07:37 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Tue, 22 Feb
+ 2022 11:07:40 +0000
 Received: from MWHPR12MB1310.namprd12.prod.outlook.com
  ([fe80::5165:db44:70d5:1c2a]) by MWHPR12MB1310.namprd12.prod.outlook.com
  ([fe80::5165:db44:70d5:1c2a%11]) with mapi id 15.20.4995.027; Tue, 22 Feb
- 2022 11:07:37 +0000
+ 2022 11:07:40 +0000
 From:   Shay Drory <shayd@nvidia.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     jiri@nvidia.com, saeedm@nvidia.com, parav@nvidia.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Shay Drory <shayd@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next 1/4] net netlink: Introduce NLA_BITFIELD type
-Date:   Tue, 22 Feb 2022 12:58:09 +0200
-Message-Id: <20220222105812.18668-2-shayd@nvidia.com>
+Subject: [PATCH net-next 2/4] devlink: Add support for NLA_BITFIELD for devlink param
+Date:   Tue, 22 Feb 2022 12:58:10 +0200
+Message-Id: <20220222105812.18668-3-shayd@nvidia.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20220222105812.18668-1-shayd@nvidia.com>
 References: <20220222105812.18668-1-shayd@nvidia.com>
@@ -59,54 +59,54 @@ X-ClientProxiedBy: AM5PR0201CA0002.eurprd02.prod.outlook.com
  (2603:10b6:300:a::21)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ffb0d4c1-9d0c-46fb-c2ee-08d9f5f388cb
-X-MS-TrafficTypeDiagnostic: MW5PR12MB5683:EE_
-X-Microsoft-Antispam-PRVS: <MW5PR12MB568395E8DC0E75C34A427E18CF3B9@MW5PR12MB5683.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: e8669a79-eb9e-492e-e0cf-08d9f5f38a97
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5552:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB55524967A846944373F7C00FCF3B9@DM6PR12MB5552.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ct7omhR6+XdoQZTmBJCRj96sP34W5DdU3tMDVwr5D+ACx6+xoU5BziEh9pRf9EJTNczxlKctKawkRgyHFYCG9BFdE+u4tNi/J0GORynB7ewOxrN6ovzvbi06KLT0qqoH0djsRrpp6jOLaPFZhGj6VF4WZfWerYq984mcw/wNXYVS2uPz2nKsaKPnbsAPEv4MxoXAM2HX1mQSHU4jvAbeax0pCrxxY5Lj8wjuMSRFL+rjTLmW16swHNyK75QP+b3m0jOxurPyFAES6OqgC8v+JqgKGPel5brf6KteEcmuDp1F/sAti/kvmuvVpYmSnqpx8wG6dVt/OJJ6tyy43J5i+5klwMLK6RNpmL+fq1V+9AHAaFTlL/FDRFGvYWy2R27863eCNEcMnnFhmLEUdgIAmGp8Lfo1+9SMMjiYLdf3WJU1O//eEWxkxaEVbWEKo06QYgVztn1JbOy7d1ULa5MHg398JiwjCiLvyhZUa2RLYLrl0gXyjWOgLAuhVRtXK6r/OThIIW9DotercDrUrBvQldDyamVsNaPJ4cH/ef3YUbBqlSoDqN14NmdV/7OeMrFG3dHnM4nGCMuSOwKI+b2AgAq6yzWdWyWfudQDFyZDvh6lYTvWW1UnLqy3fqARWu7IyAUaDVZGEH80RlLBR2u4b9dXNAMMIAppBP4uaOCQjvp111ftrBj8bs7C7FfttPskGuxNF1cuqvQOy6ppw1tEwQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR12MB1310.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(186003)(2616005)(1076003)(26005)(38350700002)(508600001)(8936002)(38100700002)(2906002)(36756003)(107886003)(86362001)(52116002)(4326008)(6486002)(66556008)(66476007)(5660300002)(30864003)(6666004)(54906003)(8676002)(316002)(66946007)(110136005)(6506007)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 73CiVa3a4wSUv1+uxmCTd4rZw0U+v4OfVYU62x0yxUpPU9Djv9obwKEfUdvDlKYS8ljgRlw7TtQlkTBcdc5g1APSoU6w7tQy0a62vtZniJRU3qCzXKK69WHpLkUHIKzTaqDclsOJ3lam8JOHpHZh1K5/C4W4nmzmhOUEB7ZM2TRRSst9r5ose78WSrLcITRqklVUNQVRkOM44NMiO9BkYTvN5Go4HWCKSKCIJLcR6abvlYzp1pavIf92i5+bu80xbPsmxHfip9dANMKjsf1ZOIpJzcPzUGyMQSFUKBWl7cR31BStJv/tOcGY8WN8Reec00lLkBt8aYAp87wte4OpuUf2XLfzOgdrZPqlkGRXh8S3vzW0Zt1d8R58/jeisKZX/DJxbd4lCTBIZZ5jiFUIz/napBP7LQZ/aGR4e0lUAJEJtjCMVQO6X3XJ327Zc5qpJcUjDWCd7JEKtJtVVKbgXXXwb7abJ1PabAlt/GvP3VfeWds4WsDHivEeOFvAUufEbnKF0qw8sV681v1Rp7oC0p7xnZEXssgqirfmrQglAhLF9HFqa26AThRdKxuuBVI/H5mrR3aTyYoELdZ7LMo7Xc1UTNehYdZDAAjUTktcpFK1XZLATkt/y2YIX9VzpkoWby5atblNTE3H3Jt+hLRAHvuEU8LcuSJ4aYR2LioiGUfYoRI6MxH6RF3o4DLdO5X+myy5HqkROavle4WR/dirYQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR12MB1310.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(38100700002)(36756003)(508600001)(30864003)(5660300002)(6486002)(86362001)(8936002)(316002)(54906003)(8676002)(66476007)(66556008)(4326008)(66946007)(1076003)(2616005)(107886003)(83380400001)(186003)(6666004)(6512007)(6506007)(52116002)(2906002)(110136005)(26005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GtPE+L8jAqA5hHygU01CaJNFlWCVvXYTCQfwTIz1moGwtXE/h1eW/pGqTSUt?=
- =?us-ascii?Q?8/rdL0mZjjBiofcrHxd+upnB3RJeW4cJ0XjYVZ3Y6IBU8WFW23KncZm5Yrqb?=
- =?us-ascii?Q?+zXqMuAaWiLDwAxRIZD3l5r/H9NGmLrABnpRNu+x+GKQo/Im1Tu4lqFQyRtT?=
- =?us-ascii?Q?nYGR1BXj36hRSDrzGbDSU3k2BwBD7mzEBwEH1LEme/0dUBDgmaEkTd1WSQqD?=
- =?us-ascii?Q?YJuD++iEOJvtvByOEaF0BnBMkMK6Tq4CZSIyaNDrbtSr0tcUhZnV6vjonbe0?=
- =?us-ascii?Q?r+QC/Uu44tuTO45B+evcJCE/VOH7O+DhrZPWqOsqy4FSwj3L1MBUHYceo+s8?=
- =?us-ascii?Q?x4WlFN5gP0Qml2f8BPFMHpHYFKYVxF7X+Y6K3pSl+b0UhhkPU1j/noZEmzU3?=
- =?us-ascii?Q?I/svSAC4waqnokusY/0XuVCRAtd2u8W6dHAcYeybWwqvCHw0uaduVA6tR8WV?=
- =?us-ascii?Q?wTJsnvmc6D49XMf9neRA4vw9WGpmhfLfxTkE8k+FgQz94FYc+ZaymzwglERf?=
- =?us-ascii?Q?aGGlVkmn0OcTSOB/2EWV7gr5Wj4hI1kLcke2kRZFB8YKuDwLeIOdyw8SBZBa?=
- =?us-ascii?Q?yKYXPiTHpTywuJXfZ6n9dUH3EbN2UMxIyx07CkNzsR1fQFref7jXDnamwiaG?=
- =?us-ascii?Q?Gj4YS55oPIXf5gNhq5kv3a4eYZvaJpsm5YjP4dCrB8ogL626RZ9BKqFpyyS5?=
- =?us-ascii?Q?hzwNwXwAwT6hBl6C5rY+F1m7SrkxI2RVMba896soccKthIxMLMJwsguSZu83?=
- =?us-ascii?Q?AXPIYfwVPcKtEPTWgSaJ1SA7lzuSOLe646XV23Keu1pLZapxQmN6h4khijQ0?=
- =?us-ascii?Q?RqYKuXVxKLlcDq2IDmQ4wTAuSixJsRQOrwVWJ+JRINAA5VZdwCFMFg/ZxB1m?=
- =?us-ascii?Q?xIFTvn6S4kuEyQOkZ8NGjquem/FtDkmawOxdijpjDbecnDVQz/OjfGzZuHoy?=
- =?us-ascii?Q?JZiPThDEKB5bCNph/wbhJjZC0G9ybrSBN1zI1SKkfbOziXnxzNvb40gXSXzm?=
- =?us-ascii?Q?hMZ3aVnayEDXCBGoTPgTkdgXNsR+/5qnjCBUyMWKwYdTXjRSvm38FmszTdPz?=
- =?us-ascii?Q?L02Sye2+JjYemhy4+XKpg3OCNJx04hcDRyvoAr2Ban8P2QXR7kE8avB+87Iw?=
- =?us-ascii?Q?5QVI8qNhz4aNu1UEwOksn+z/iH0LaBttxRT+gJprAcLBTpjts5JkS6siQZyn?=
- =?us-ascii?Q?7TYg96M8r33cPby8NteXmrhbrzMwbjFNejCam5KXyfPA7fxGg8k9TyYUuSHv?=
- =?us-ascii?Q?/E5W8PBhscXyaymr7VV2MDZrRnCMQswnZgsUBnOZhNvov56HwWNVzUoL+R6B?=
- =?us-ascii?Q?46cBV67mQghEvq/CQqvFHezX8q6CA3cfnL7+iFH4SV9XgMdVHAyiWm55sKvS?=
- =?us-ascii?Q?OPYRN9x9gKene9jNMZTl1IMW1036z9TZsSk1dT/9yhpF1MAhUYRWU8HE6KDG?=
- =?us-ascii?Q?cHtFVD13GQ8gqoozWome2YRek7wcbVwYKZDNTR+DX8b9hNZhJ4AamtguP/aF?=
- =?us-ascii?Q?+QIhyJKnHevoAjxn2SCU6Y09DWtrr3PsEgQxa65BZGPQu1oe1y7kcL+ETslV?=
- =?us-ascii?Q?SIpSGsnHPXP60vIN4lTU/01Y9uaRfe8seh5nbhQ8bn3Wxwz67Tm9MwbSNfHd?=
- =?us-ascii?Q?4uohr4nYDWp2H5rC1KONfJs=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VMJqxik/7Ilv1AEY5J1gkrBYs/yYk4To54MqU7XErphb1I9P5hwup4G4IO2s?=
+ =?us-ascii?Q?4sU89ycA09ZYL0/x7cla7a47ZThs61f8DtCMm4KOpWn7ws4tPQuciu8yBMhj?=
+ =?us-ascii?Q?O7DO9EWwtTuWvocAF5rPuKIKIiVn6B43qbdknK08QBGjs+rfk5YGKPDYRH7W?=
+ =?us-ascii?Q?vcxiDW9p9YKEsVCY4JrM1n0iSCPBaLS8aiwWrEIqlhzsyBcXTIR2+5uNPgaQ?=
+ =?us-ascii?Q?2XK7/N8ci3AepfCDAmTyR1E4bpnirhr49cJzQAzHGCyWrcBsbZL02bygdBu9?=
+ =?us-ascii?Q?p9VOCJPxxpE+/nGmiAdu2HehyxncIupQEjal/hAS5QU9sDapOImvgTeK1pSQ?=
+ =?us-ascii?Q?ZHfVmrHG0lFA8ldrgQ0bWToKiXJrHGwZKzCxFNTE1C3/WLsPPY5jQR2u33dL?=
+ =?us-ascii?Q?pV8y7EMacHX70Ejfdca66Q3lxSae3HGDTblYRNYlGjEFzUfmRc6lT7xzMOZE?=
+ =?us-ascii?Q?vuNtNQs1WbQrqUHhIlzsWLJ6hL0hG0dvsceo6EO+qJqarWN+2Ppeoy4nFxUA?=
+ =?us-ascii?Q?Fk+DepoERrSFgIBAG7FDVuUmVmf5jejaGzmA8j1af357fIq39bdi5mjIKmxf?=
+ =?us-ascii?Q?kT1pR+VsvsZoM0AF+47vgZ8kOuxXZ00M0HZYfOh2dL9LX4G70yCDpn3V3PXr?=
+ =?us-ascii?Q?hj185TjHa4Fof/w09iECkzy+u3A6ZdbcK5ViJQZMX0Eq3VOZhC/olTLkxd2e?=
+ =?us-ascii?Q?WxBam0ndp8GRLumtMPMUZ0do3SZPovBZtyxoPHtH6NrBZDQQcMjRFHYpWADk?=
+ =?us-ascii?Q?XAOAfalvZq/+qo9MK0VqFdqgncz5UaeXuE0xOPu5XRtMwwvBTLo9QxQC5w7W?=
+ =?us-ascii?Q?gZfKZf4PImC2AcqiKDas69Y6HbCCZdyeb8SMXh7dP0R5gdyYPYib6z5doHyM?=
+ =?us-ascii?Q?wB9IbSY3EZfaBlPEzcvbf1C0YcTso9kieV2uW5/2Id7LvC4ckaeDYJiWM7Tz?=
+ =?us-ascii?Q?RO1CAh8KD0C0FdhGJ7g/J2YwRD4d7MEk4KD/lnrOtZPgPDDKx+oeXhRwi2KX?=
+ =?us-ascii?Q?Xq8I18TnAh4pLDiB2RV8SvNqBz4sHZbo3p8k76lln9ShIXk1H0FmW2Rdbj17?=
+ =?us-ascii?Q?SxlDo6hr8o3GcgBQZn01dz7ifKZ0G3i2meOAiwtFMsKz/P1UYveJXjK1RGBU?=
+ =?us-ascii?Q?U8F0BeiYa4PBteMnyZJO86In8MRegNIsn3XSgybgVtSaN1JGW3MC4ylqqkDp?=
+ =?us-ascii?Q?GVIQus6qa2P3QUtWecgSPXmW8Iy+jGawvY3XZZnJDEyr100gLMoco/KBTDft?=
+ =?us-ascii?Q?gVm049o1JdLRMcUOVnRN4pDgq0DJwatnak72EA384ucWUbsESfUFv9n9E2Ac?=
+ =?us-ascii?Q?wYQA5XpSgAprj1rutwT4dPjrO6k/iYc0RSNsfzmOIawm++g34HmVyH0pbDnV?=
+ =?us-ascii?Q?OFUTix08uaHRw9afYyLcodDyn1AnmoZUFdn9ql2qcGBOiFUppNhVeURdT6w+?=
+ =?us-ascii?Q?Mzt/93Yv3ArnHt/c4BzIhbUGODRhFkqqD/gCiITMkRrqFGT/aTrePLQDEhnJ?=
+ =?us-ascii?Q?Rm8M97KsoWWaWG1cB1Fxw8S+jQNpFWFffC7IEq0PE92s1WPqhjMmfokungBE?=
+ =?us-ascii?Q?uxPcgNEEvI9XlbDF5GkWK7BDSrb0mHi3+0AwZCUyZpyvSVDNsrcuSz5t3qsY?=
+ =?us-ascii?Q?mxnoybIigGXnY8YKFwUGMy0=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ffb0d4c1-9d0c-46fb-c2ee-08d9f5f388cb
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8669a79-eb9e-492e-e0cf-08d9f5f38a97
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR12MB1310.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 11:07:37.4298
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 11:07:40.3046
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SnTD+cyFjugRa777PP/aAKX98xGzZJTn6dRwzZROrO6oKFsJkyK3P/yjolL6J+c0+HhOkiFBskWchDR9yts/zg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5683
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1L12tXIPvdAEjJFTk+Iq0Bd+EJbadbawEvunHeKBvUw4r7WmpYb5F1uDOBdgzfc8rmiKdJY62AycECPAPLmyyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5552
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -117,344 +117,371 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Generic bitfield attribute content sent to the kernel by user.
-With this netlink attr type the user can either set or unset a
-bitmap in the kernel.
-
-This attribute is an extension (dynamic array) of NLA_BITFIELD32,
-and have similar checks and policies.
+Add devlink support for param of type NLA_BITFIELD.
+kernel user need to provide a bitmap to devlink.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 ---
- include/net/netlink.h        |  30 ++++++++
- include/uapi/linux/netlink.h |  10 +++
- lib/nlattr.c                 | 145 ++++++++++++++++++++++++++++++++++-
- net/netlink/policy.c         |   4 +
- 4 files changed, 185 insertions(+), 4 deletions(-)
+ include/net/devlink.h |  18 ++++++
+ net/core/devlink.c    | 138 ++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 139 insertions(+), 17 deletions(-)
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 7a2a9d3144ba..52a0bcccae36 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -180,6 +180,7 @@ enum {
- 	NLA_S32,
- 	NLA_S64,
- 	NLA_BITFIELD32,
-+	NLA_BITFIELD,
- 	NLA_REJECT,
- 	__NLA_TYPE_MAX,
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 8d5349d2fb68..f411482f716d 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -372,6 +372,7 @@ enum devlink_param_type {
+ 	DEVLINK_PARAM_TYPE_U32,
+ 	DEVLINK_PARAM_TYPE_STRING,
+ 	DEVLINK_PARAM_TYPE_BOOL,
++	DEVLINK_PARAM_TYPE_BITFIELD,
  };
-@@ -235,12 +236,16 @@ enum nla_policy_validation {
-  *                         given type fits, using it verifies minimum length
-  *                         just like "All other"
-  *    NLA_BITFIELD32       Unused
-+ *    NLA_BITFIELD         Maximum length of attribute payload
-  *    NLA_REJECT           Unused
-  *    All other            Minimum length of attribute payload
-  *
-  * Meaning of validation union:
-  *    NLA_BITFIELD32       This is a 32-bit bitmap/bitselector attribute and
-  *                         `bitfield32_valid' is the u32 value of valid flags
-+ *    NLA_BITFIELD         This is a dynamic array of 32-bit bitmap/bitselector
-+ *                         attribute and `arr_bitfield32_valid' is the u32
-+ *                         values array of valid flags.
-  *    NLA_REJECT           This attribute is always rejected and `reject_message'
-  *                         may point to a string to report as the error instead
-  *                         of the generic one in extended ACK.
-@@ -318,6 +323,7 @@ struct nla_policy {
- 	u16		len;
- 	union {
- 		const u32 bitfield32_valid;
-+		const u32 *arr_bitfield32_valid;
- 		const u32 mask;
- 		const char *reject_message;
- 		const struct nla_policy *nested_policy;
-@@ -363,6 +369,8 @@ struct nla_policy {
- 	_NLA_POLICY_NESTED_ARRAY(ARRAY_SIZE(policy) - 1, policy)
- #define NLA_POLICY_BITFIELD32(valid) \
- 	{ .type = NLA_BITFIELD32, .bitfield32_valid = valid }
-+#define NLA_POLICY_BITFIELD(valid, size) \
-+	{ .type = NLA_BITFIELD, .arr_bitfield32_valid = valid, .len = size }
  
- #define __NLA_IS_UINT_TYPE(tp)						\
- 	(tp == NLA_U8 || tp == NLA_U16 || tp == NLA_U32 || tp == NLA_U64)
-@@ -1545,6 +1553,19 @@ static inline int nla_put_bitfield32(struct sk_buff *skb, int attrtype,
- 	return nla_put(skb, attrtype, sizeof(tmp), &tmp);
+ union devlink_param_value {
+@@ -380,6 +381,7 @@ union devlink_param_value {
+ 	u32 vu32;
+ 	char vstr[__DEVLINK_PARAM_MAX_STRING_VALUE];
+ 	bool vbool;
++	unsigned long *vbitmap;
+ };
+ 
+ struct devlink_param_gset_ctx {
+@@ -412,6 +414,8 @@ struct devlink_flash_notify {
+  * @generic: indicates if the parameter is generic or driver specific
+  * @type: parameter type
+  * @supported_cmodes: bitmap of supported configuration modes
++ * @nbits: number of bits this param need to use, if this param is
++ *         of dynamic len.
+  * @get: get parameter value, used for runtime and permanent
+  *       configuration modes
+  * @set: set parameter value, used for runtime and permanent
+@@ -427,6 +431,7 @@ struct devlink_param {
+ 	bool generic;
+ 	enum devlink_param_type type;
+ 	unsigned long supported_cmodes;
++	u64 nbits;
+ 	int (*get)(struct devlink *devlink, u32 id,
+ 		   struct devlink_param_gset_ctx *ctx);
+ 	int (*set)(struct devlink *devlink, u32 id,
+@@ -542,6 +547,19 @@ enum devlink_param_generic_id {
+ 	.validate = _validate,						\
  }
  
-+/**
-+ * nla_put_bitfield - Add a bitfield netlink attribute to a socket buffer
-+ * @skb: socket buffer to add attribute to
-+ * @attrtype: attribute type
-+ * @bitfield: bitfield
-+ */
-+static inline int nla_put_bitfield(struct sk_buff *skb, int attrtype,
-+				   const struct nla_bitfield *bitfield)
-+{
-+	return nla_put(skb, attrtype, bitfield->size * sizeof(struct nla_bitfield32)
-+		       + sizeof(*bitfield), bitfield);
++#define DEVLINK_PARAM_DYNAMIC_GENERIC(_id, _cmodes, _get, _set, _validate, _nbits)\
++{									\
++	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
++	.name = DEVLINK_PARAM_GENERIC_##_id##_NAME,			\
++	.type = DEVLINK_PARAM_GENERIC_##_id##_TYPE,			\
++	.generic = true,						\
++	.supported_cmodes = _cmodes,					\
++	.nbits = _nbits,						\
++	.get = _get,							\
++	.set = _set,							\
++	.validate = _validate,						\
 +}
 +
- /**
-  * nla_get_u32 - return payload of u32 attribute
-  * @nla: u32 netlink attribute
-@@ -1738,6 +1759,15 @@ static inline struct nla_bitfield32 nla_get_bitfield32(const struct nlattr *nla)
- 	return tmp;
- }
- 
-+struct nla_bitfield *nla_bitfield_alloc(__u64 nbits);
-+void nla_bitfield_free(struct nla_bitfield *bitfield);
-+void nla_bitfield_to_bitmap(unsigned long *bitmap,
-+			    struct nla_bitfield *bitfield);
-+void nla_bitfield_from_bitmap(struct nla_bitfield *bitfield,
-+			      unsigned long *bitmap, __u64 bitmap_nbits);
-+bool nla_bitfield_len_is_valid(struct nla_bitfield *bitfield, size_t user_len);
-+bool nla_bitfield_nbits_valid(struct nla_bitfield *bitfield, size_t nbits);
-+
- /**
-  * nla_memdup - duplicate attribute memory (kmemdup)
-  * @src: netlink attribute to duplicate from
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index 4c0cde075c27..a11bb91e3386 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -252,6 +252,14 @@ struct nla_bitfield32 {
- 	__u32 selector;
- };
- 
-+/* Generic bitmap attribute content sent to the kernel.
-+ * The size is the number of elements in the array.
-+ */
-+struct nla_bitfield {
-+	__u64 size;
-+	struct nla_bitfield32 data[0];
-+};
-+
- /*
-  * policy descriptions - it's specific to each family how this is used
-  * Normally, it should be retrieved via a dump inside another attribute
-@@ -283,6 +291,7 @@ struct nla_bitfield32 {
-  *	entry has attributes again, the policy for those inner ones
-  *	and the corresponding maxtype may be specified.
-  * @NL_ATTR_TYPE_BITFIELD32: &struct nla_bitfield32 attribute
-+ * @NL_ATTR_TYPE_BITFIELD: &struct nla_bitfield attribute
-  */
- enum netlink_attribute_type {
- 	NL_ATTR_TYPE_INVALID,
-@@ -307,6 +316,7 @@ enum netlink_attribute_type {
- 	NL_ATTR_TYPE_NESTED_ARRAY,
- 
- 	NL_ATTR_TYPE_BITFIELD32,
-+	NL_ATTR_TYPE_BITFIELD,
- };
- 
- /**
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 86029ad5ead4..6d20bf38850b 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -58,11 +58,9 @@ static int __nla_validate_parse(const struct nlattr *head, int len, int maxtype,
- 				struct netlink_ext_ack *extack,
- 				struct nlattr **tb, unsigned int depth);
- 
--static int validate_nla_bitfield32(const struct nlattr *nla,
--				   const u32 valid_flags_mask)
-+static int validate_bitfield32(const struct nla_bitfield32 *bf,
-+			       const u32 valid_flags_mask)
- {
--	const struct nla_bitfield32 *bf = nla_data(nla);
--
- 	if (!valid_flags_mask)
+ /* Part number, identifier of board design */
+ #define DEVLINK_INFO_VERSION_GENERIC_BOARD_ID	"board.id"
+ /* Revision of board design */
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index fcd9f6d85cf1..3d7e27abc487 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4568,6 +4568,8 @@ devlink_param_type_to_nla_type(enum devlink_param_type param_type)
+ 		return NLA_STRING;
+ 	case DEVLINK_PARAM_TYPE_BOOL:
+ 		return NLA_FLAG;
++	case DEVLINK_PARAM_TYPE_BITFIELD:
++		return NLA_BITFIELD;
+ 	default:
  		return -EINVAL;
+ 	}
+@@ -4575,11 +4577,13 @@ devlink_param_type_to_nla_type(enum devlink_param_type param_type)
  
-@@ -81,6 +79,33 @@ static int validate_nla_bitfield32(const struct nlattr *nla,
- 	return 0;
+ static int
+ devlink_nl_param_value_fill_one(struct sk_buff *msg,
+-				enum devlink_param_type type,
++				const struct devlink_param *param,
+ 				enum devlink_param_cmode cmode,
+ 				union devlink_param_value val)
+ {
+ 	struct nlattr *param_value_attr;
++	struct nla_bitfield *bitfield;
++	int err;
+ 
+ 	param_value_attr = nla_nest_start_noflag(msg,
+ 						 DEVLINK_ATTR_PARAM_VALUE);
+@@ -4589,7 +4593,7 @@ devlink_nl_param_value_fill_one(struct sk_buff *msg,
+ 	if (nla_put_u8(msg, DEVLINK_ATTR_PARAM_VALUE_CMODE, cmode))
+ 		goto value_nest_cancel;
+ 
+-	switch (type) {
++	switch (param->type) {
+ 	case DEVLINK_PARAM_TYPE_U8:
+ 		if (nla_put_u8(msg, DEVLINK_ATTR_PARAM_VALUE_DATA, val.vu8))
+ 			goto value_nest_cancel;
+@@ -4612,6 +4616,17 @@ devlink_nl_param_value_fill_one(struct sk_buff *msg,
+ 		    nla_put_flag(msg, DEVLINK_ATTR_PARAM_VALUE_DATA))
+ 			goto value_nest_cancel;
+ 		break;
++	case DEVLINK_PARAM_TYPE_BITFIELD:
++		bitfield = nla_bitfield_alloc(param->nbits);
++		if (!bitfield)
++			return -ENOMEM;
++		nla_bitfield_from_bitmap(bitfield, val.vbitmap, param->nbits);
++		err = nla_put_bitfield(msg, DEVLINK_ATTR_PARAM_VALUE_DATA,
++				       bitfield);
++		nla_bitfield_free(bitfield);
++		if (err)
++			goto value_nest_cancel;
++		break;
+ 	}
+ 
+ 	nla_nest_end(msg, param_value_attr);
+@@ -4623,6 +4638,24 @@ devlink_nl_param_value_fill_one(struct sk_buff *msg,
+ 	return -EMSGSIZE;
  }
  
-+static int validate_nla_bitfield32(const struct nlattr *nla,
-+				   const u32 valid_flags_mask)
++static int devlink_param_value_get(const struct devlink_param *param,
++				   union devlink_param_value *value)
 +{
-+	const struct nla_bitfield32 *bf = nla_data(nla);
-+
-+	return validate_bitfield32(bf, valid_flags_mask);
-+}
-+
-+static int validate_nla_bitfield(const struct nlattr *nla,
-+				 const u32 *valid_flags_masks,
-+				 const u16 nbits)
-+{
-+	struct nla_bitfield *bf = nla_data(nla);
-+	int err;
-+	int i;
-+
-+	if (!nla_bitfield_len_is_valid(bf, nla_len(nla)) ||
-+	    !nla_bitfield_nbits_valid(bf, nbits))
-+		return -EINVAL;
-+	for (i = 0; i < bf->size; i++) {
-+		err = validate_bitfield32(&bf->data[i], valid_flags_masks[i]);
-+		if (err)
-+			return err;
++	if (param->type == DEVLINK_PARAM_TYPE_BITFIELD) {
++		value->vbitmap = bitmap_zalloc(param->nbits, GFP_KERNEL);
++		if (!value->vbitmap)
++			return -ENOMEM;
 +	}
 +	return 0;
 +}
 +
- static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
- 			      const struct nla_policy *policy,
- 			      struct netlink_ext_ack *extack,
-@@ -422,6 +447,12 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 			goto out_err;
- 		break;
- 
-+	case NLA_BITFIELD:
-+		err = validate_nla_bitfield(nla, pt->arr_bitfield32_valid, pt->len);
-+		if (err)
-+			goto out_err;
-+		break;
++static void devlink_param_value_put(const struct devlink_param *param,
++				    union devlink_param_value *value)
++{
++	if (param->type == DEVLINK_PARAM_TYPE_BITFIELD)
++		bitmap_free(value->vbitmap);
++}
 +
- 	case NLA_NUL_STRING:
- 		if (pt->len)
- 			minlen = min_t(int, attrlen, pt->len + 1);
-@@ -839,6 +870,112 @@ int nla_strcmp(const struct nlattr *nla, const char *str)
+ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+ 				 unsigned int port_index,
+ 				 struct devlink_param_item *param_item,
+@@ -4645,14 +4678,22 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+ 		if (!devlink_param_cmode_is_supported(param, i))
+ 			continue;
+ 		if (i == DEVLINK_PARAM_CMODE_DRIVERINIT) {
+-			if (!param_item->driverinit_value_valid)
+-				return -EOPNOTSUPP;
++			if (!param_item->driverinit_value_valid) {
++				err = -EOPNOTSUPP;
++				goto param_value_put;
++			}
+ 			param_value[i] = param_item->driverinit_value;
+ 		} else {
+ 			ctx.cmode = i;
+-			err = devlink_param_get(devlink, param, &ctx);
++			err = devlink_param_value_get(param, &param_value[i]);
+ 			if (err)
+-				return err;
++				goto param_value_put;
++			ctx.val = param_value[i];
++			err = devlink_param_get(devlink, param, &ctx);
++			if (err) {
++				devlink_param_value_put(param, &param_value[i]);
++				goto param_value_put;
++			}
+ 			param_value[i] = ctx.val;
+ 		}
+ 		param_value_set[i] = true;
+@@ -4660,7 +4701,7 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+ 
+ 	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
+ 	if (!hdr)
+-		return -EMSGSIZE;
++		goto genlmsg_put_err;
+ 
+ 	if (devlink_nl_put_handle(msg, devlink))
+ 		goto genlmsg_cancel;
+@@ -4693,10 +4734,13 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+ 	for (i = 0; i <= DEVLINK_PARAM_CMODE_MAX; i++) {
+ 		if (!param_value_set[i])
+ 			continue;
+-		err = devlink_nl_param_value_fill_one(msg, param->type,
++		err = devlink_nl_param_value_fill_one(msg, param,
+ 						      i, param_value[i]);
+ 		if (err)
+ 			goto values_list_nest_cancel;
++		if (i != DEVLINK_PARAM_CMODE_DRIVERINIT)
++			devlink_param_value_put(param, &param_value[i]);
++		param_value_set[i] = false;
+ 	}
+ 
+ 	nla_nest_end(msg, param_values_list);
+@@ -4710,7 +4754,13 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+ 	nla_nest_cancel(msg, param_attr);
+ genlmsg_cancel:
+ 	genlmsg_cancel(msg, hdr);
+-	return -EMSGSIZE;
++genlmsg_put_err:
++	err = -EMSGSIZE;
++param_value_put:
++	for (i = 0; i <= DEVLINK_PARAM_CMODE_MAX; i++)
++		if (i != DEVLINK_PARAM_CMODE_DRIVERINIT && param_value_set[i])
++			devlink_param_value_put(param, &param_value[i]);
++	return err;
  }
- EXPORT_SYMBOL(nla_strcmp);
  
-+/**
-+ * nla_bitfield_alloc - Alloc struct nla_bitfield
-+ * @nbits: number of bits to accommodate
-+ */
-+struct nla_bitfield *nla_bitfield_alloc(__u64 nbits)
-+{
-+	struct nla_bitfield *bitfield;
-+	size_t bitfield_size;
-+	size_t bitfield_len;
-+
-+	bitfield_len = DIV_ROUND_UP(nbits, BITS_PER_TYPE(u32));
-+	bitfield_size = bitfield_len * sizeof(struct nla_bitfield32) +
-+		sizeof(*bitfield);
-+	bitfield = kzalloc(bitfield_size, GFP_KERNEL);
-+	if (bitfield)
-+		bitfield->size = bitfield_len;
-+	return bitfield;
-+}
-+EXPORT_SYMBOL(nla_bitfield_alloc);
-+
-+/**
-+ * nla_bitfield_free - Free struct nla_bitfield
-+ * @bitfield: the bitfield to free
-+ */
-+void nla_bitfield_free(struct nla_bitfield *bitfield)
-+{
-+	kfree(bitfield);
-+}
-+EXPORT_SYMBOL(nla_bitfield_free);
-+
-+/**
-+ * nla_bitfield_to_bitmap - Convert bitfield to bitmap
-+ * @bitmap: bitmap to copy to (dst)
-+ * @bitfield: bitfield to be copied (src)
-+ */
-+void nla_bitfield_to_bitmap(unsigned long *bitmap,
-+			    struct nla_bitfield *bitfield)
-+{
-+	int i, j;
-+	u32 tmp;
-+
-+	for (i = 0; i < bitfield->size; i++) {
-+		tmp = bitfield->data[i].value & bitfield->data[i].selector;
-+		for (j = 0; j < BITS_PER_TYPE(u32); j++)
-+			if (tmp & (1 << j))
-+				set_bit(j + i * BITS_PER_TYPE(u32), bitmap);
-+	}
-+}
-+EXPORT_SYMBOL(nla_bitfield_to_bitmap);
-+
-+/**
-+ * nla_bitfield_from_bitmap - Convert bitmap to bitfield
-+ * @bitfield: bitfield to copy to (dst)
-+ * @bitmap: bitmap to be copied (src)
-+ * @bitmap_nbits: len of bitmap
-+ */
-+void nla_bitfield_from_bitmap(struct nla_bitfield *bitfield,
-+			      unsigned long *bitmap, __u64 bitmap_nbits)
-+{
-+	long size;
-+	int i, j;
-+
-+	size = DIV_ROUND_UP(bitmap_nbits, BITS_PER_TYPE(u32));
-+	for (i = 0; i < size; i++) {
-+		for (j = 0; j < min_t(__u64, bitmap_nbits, BITS_PER_TYPE(u32)); j++)
-+			if (test_bit(j + i * BITS_PER_TYPE(u32), bitmap))
-+				bitfield->data[i].value |= 1 << j;
-+		bitfield->data[i].selector = bitmap_nbits >= BITS_PER_TYPE(u32) ?
-+			UINT_MAX : (1 << bitmap_nbits) - 1;
-+		bitmap_nbits -= BITS_PER_TYPE(u32);
-+	}
-+}
-+EXPORT_SYMBOL(nla_bitfield_from_bitmap);
-+
-+/**
-+ * nla_bitfield_len_is_valid - validate the len of the bitfield
-+ * @bitfield: bitfield to validate
-+ * @user_len: len of the nla.
-+ */
-+bool nla_bitfield_len_is_valid(struct nla_bitfield *bitfield, size_t user_len)
-+{
-+	return !(user_len % sizeof(bitfield->data[0]) ||
-+		 sizeof(bitfield->data[0]) * bitfield->size +
-+		 sizeof(*bitfield) != user_len);
-+}
-+EXPORT_SYMBOL(nla_bitfield_len_is_valid);
-+
-+/**
-+ * nla_bitfield_nbits_valid - validate the len of the bitfield vs a given nbits
-+ * @bitfield: bitfield to validate
-+ * @nbits: number of bits the user wants to use.
-+ */
-+bool nla_bitfield_nbits_valid(struct nla_bitfield *bitfield, size_t nbits)
-+{
-+	u32 *last_value = &bitfield->data[bitfield->size - 1].value;
-+	u32 last_bit;
-+
-+	if (BITS_PER_TYPE(u32) * (bitfield->size - 1) > nbits)
-+		return false;
-+
-+	nbits -= BITS_PER_TYPE(u32) * (bitfield->size - 1);
-+	last_bit = find_last_bit((unsigned long *)last_value, BITS_PER_TYPE(u32));
-+	return last_bit == BITS_PER_TYPE(u32) ? true : last_bit <= nbits - 1;
-+}
-+EXPORT_SYMBOL(nla_bitfield_nbits_valid);
-+
- #ifdef CONFIG_NET
- /**
-  * __nla_reserve - reserve room for attribute on the skb
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index 8d7c900e27f4..c9fffb3b8045 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -227,6 +227,7 @@ int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt)
- 	case NLA_STRING:
- 	case NLA_NUL_STRING:
- 	case NLA_BINARY:
-+	case NLA_BITFIELD:
- 		/* maximum is common, u32 min-length/max-length */
- 		return common + 2 * nla_attr_size(sizeof(u32));
+ static void devlink_param_notify(struct devlink *devlink,
+@@ -4815,6 +4865,9 @@ devlink_param_type_get_from_info(struct genl_info *info,
  	case NLA_FLAG:
-@@ -338,11 +339,14 @@ __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
+ 		*param_type = DEVLINK_PARAM_TYPE_BOOL;
  		break;
- 	case NLA_STRING:
- 	case NLA_NUL_STRING:
 +	case NLA_BITFIELD:
- 	case NLA_BINARY:
- 		if (pt->type == NLA_STRING)
- 			type = NL_ATTR_TYPE_STRING;
- 		else if (pt->type == NLA_NUL_STRING)
- 			type = NL_ATTR_TYPE_NUL_STRING;
-+		else if (pt->type == NLA_BITFIELD)
-+			type = NL_ATTR_TYPE_BITFIELD;
- 		else
- 			type = NL_ATTR_TYPE_BINARY;
++		*param_type = DEVLINK_PARAM_TYPE_BITFIELD;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -4827,6 +4880,7 @@ devlink_param_value_get_from_info(const struct devlink_param *param,
+ 				  struct genl_info *info,
+ 				  union devlink_param_value *value)
+ {
++	struct nla_bitfield *bitfield;
+ 	struct nlattr *param_data;
+ 	int len;
  
+@@ -4863,6 +4917,18 @@ devlink_param_value_get_from_info(const struct devlink_param *param,
+ 			return -EINVAL;
+ 		value->vbool = nla_get_flag(param_data);
+ 		break;
++	case DEVLINK_PARAM_TYPE_BITFIELD:
++		bitfield = nla_data(param_data);
++
++		if (!nla_bitfield_len_is_valid(bitfield, nla_len(param_data)) ||
++		    !nla_bitfield_nbits_valid(bitfield, param->nbits))
++			return -EINVAL;
++		value->vbitmap = bitmap_zalloc(param->nbits, GFP_KERNEL);
++		if (!value->vbitmap)
++			return -ENOMEM;
++
++		nla_bitfield_to_bitmap(value->vbitmap, bitfield);
++		break;
+ 	}
+ 	return 0;
+ }
+@@ -4936,33 +5002,48 @@ static int __devlink_nl_cmd_param_set_doit(struct devlink *devlink,
+ 	if (param->validate) {
+ 		err = param->validate(devlink, param->id, value, info->extack);
+ 		if (err)
+-			return err;
++			goto out;
+ 	}
+ 
+-	if (!info->attrs[DEVLINK_ATTR_PARAM_VALUE_CMODE])
+-		return -EINVAL;
++	if (!info->attrs[DEVLINK_ATTR_PARAM_VALUE_CMODE]) {
++		err = -EINVAL;
++		goto out;
++	}
+ 	cmode = nla_get_u8(info->attrs[DEVLINK_ATTR_PARAM_VALUE_CMODE]);
+-	if (!devlink_param_cmode_is_supported(param, cmode))
+-		return -EOPNOTSUPP;
++	if (!devlink_param_cmode_is_supported(param, cmode)) {
++		err = -EOPNOTSUPP;
++		goto out;
++	}
+ 
+ 	if (cmode == DEVLINK_PARAM_CMODE_DRIVERINIT) {
+ 		if (param->type == DEVLINK_PARAM_TYPE_STRING)
+ 			strcpy(param_item->driverinit_value.vstr, value.vstr);
++		else if (param->type == DEVLINK_PARAM_TYPE_BITFIELD)
++			bitmap_copy(param_item->driverinit_value.vbitmap,
++				    value.vbitmap,
++				    param_item->param->nbits);
+ 		else
+ 			param_item->driverinit_value = value;
+ 		param_item->driverinit_value_valid = true;
+ 	} else {
+-		if (!param->set)
+-			return -EOPNOTSUPP;
++		if (!param->set) {
++			err = -EOPNOTSUPP;
++			goto out;
++		}
+ 		ctx.val = value;
+ 		ctx.cmode = cmode;
+ 		err = devlink_param_set(devlink, param, &ctx);
+ 		if (err)
+-			return err;
++			goto out;
+ 	}
+ 
++	devlink_param_value_put(param, &value);
+ 	devlink_param_notify(devlink, port_index, param_item, cmd);
+ 	return 0;
++
++out:
++	devlink_param_value_put(param, &value);
++	return err;
+ }
+ 
+ static int devlink_nl_cmd_param_set_doit(struct sk_buff *skb,
+@@ -10098,6 +10179,8 @@ static int devlink_param_verify(const struct devlink_param *param)
+ {
+ 	if (!param || !param->name || !param->supported_cmodes)
+ 		return -EINVAL;
++	if (param->type == DEVLINK_PARAM_TYPE_BITFIELD && !param->nbits)
++		return -EINVAL;
+ 	if (param->generic)
+ 		return devlink_param_generic_verify(param);
+ 	else
+@@ -10188,6 +10271,16 @@ int devlink_param_register(struct devlink *devlink,
+ 		return -ENOMEM;
+ 
+ 	param_item->param = param;
++	if (param_item->param->type == DEVLINK_PARAM_TYPE_BITFIELD &&
++	    devlink_param_cmode_is_supported(param_item->param,
++					     DEVLINK_PARAM_CMODE_DRIVERINIT)) {
++		param_item->driverinit_value.vbitmap =
++			bitmap_zalloc(param_item->param->nbits, GFP_KERNEL);
++		if (!param_item->driverinit_value.vbitmap) {
++			kfree(param_item);
++			return -ENOMEM;
++		}
++	}
+ 
+ 	list_add_tail(&param_item->list, &devlink->param_list);
+ 	return 0;
+@@ -10210,6 +10303,10 @@ void devlink_param_unregister(struct devlink *devlink,
+ 		devlink_param_find_by_name(&devlink->param_list, param->name);
+ 	WARN_ON(!param_item);
+ 	list_del(&param_item->list);
++	if (param_item->param->type == DEVLINK_PARAM_TYPE_BITFIELD &&
++	    devlink_param_cmode_is_supported(param_item->param,
++					     DEVLINK_PARAM_CMODE_DRIVERINIT))
++		bitmap_free(param_item->driverinit_value.vbitmap);
+ 	kfree(param_item);
+ }
+ EXPORT_SYMBOL_GPL(devlink_param_unregister);
+@@ -10244,6 +10341,10 @@ int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
+ 
+ 	if (param_item->param->type == DEVLINK_PARAM_TYPE_STRING)
+ 		strcpy(init_val->vstr, param_item->driverinit_value.vstr);
++	else if (param_item->param->type == DEVLINK_PARAM_TYPE_BITFIELD)
++		bitmap_copy(init_val->vbitmap,
++			    param_item->driverinit_value.vbitmap,
++			    param_item->param->nbits);
+ 	else
+ 		*init_val = param_item->driverinit_value;
+ 
+@@ -10280,6 +10381,9 @@ int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
+ 
+ 	if (param_item->param->type == DEVLINK_PARAM_TYPE_STRING)
+ 		strcpy(param_item->driverinit_value.vstr, init_val.vstr);
++	else if (param_item->param->type == DEVLINK_PARAM_TYPE_BITFIELD)
++		bitmap_copy(param_item->driverinit_value.vbitmap,
++			    init_val.vbitmap, param_item->param->nbits);
+ 	else
+ 		param_item->driverinit_value = init_val;
+ 	param_item->driverinit_value_valid = true;
 -- 
 2.21.3
 
