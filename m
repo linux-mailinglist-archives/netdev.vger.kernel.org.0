@@ -2,169 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F39FC4C02CF
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 21:06:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 068AC4C02D4
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 21:07:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235400AbiBVUHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 15:07:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
+        id S235419AbiBVUHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 15:07:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235401AbiBVUHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 15:07:03 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AFC54BF2
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 12:06:36 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id j11so2502145qvy.0
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 12:06:36 -0800 (PST)
+        with ESMTP id S235416AbiBVUHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 15:07:43 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C119DB54D9
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 12:07:17 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id b35so15817947ybi.13
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 12:07:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jxl20aKaJoRdSVQQAkuMlxPZK/2DA8IRbmJyBXGSnbs=;
-        b=ZRQR5BIvlMx9GmlkiaG5nEUieWA/xlQQbQEGZ7aF4Z5bQtMt9/KZwek7NpmLQgOzRf
-         uCk7LLigWMsT17QIgEgG6uRiwMuejAipPrsC+W7BKGzz87BISxyhCWB4aMSQvzMcwPuP
-         elQYnlKaqftJBDjHgGpotRJ6XltIVRwUdzcgY=
+        bh=AjnaX+96lqe7LijU9Rl3ogEW4Pg0WWxDUtU2eg0y22Q=;
+        b=QuoRQZ9xGDd3kLv1UUcnSJ9VydU7KPF/+yLCDpnbT/rhn9N5skeK0Uwk/vTAPcHOF6
+         dggaAIrCWnQ+DQNgV/C0wa1ceLRh7yja3OlPfN2nFrH0aO9CoZh004ZvMl02D02FNWOx
+         BQa7fX3eh+iN7b4FB+vR3WV8O91Shcs/uUeTws3cwD0GajmB7X9SBLxxVJMe33vwC2kS
+         I9FMIr67qG4hJjpCnnk4V/YL6rb0sPZgceIt4EQdY7FQfV4fOlBsQu8B+d2CE6XHPIsn
+         YKR9VGOaNlmQPb5V4m9O57OavxUaYnY9A8fQo4OpAO2jDVQhTrv8Eg/9sPuMCjKrNuMc
+         E2gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jxl20aKaJoRdSVQQAkuMlxPZK/2DA8IRbmJyBXGSnbs=;
-        b=KtoLxEUAPXnFAoxMwG2SI/hA3nFBY3mKNMw68eRGdyyVO1+smQewujjapCDFhPoSjP
-         T/zyScR7U6DSyyiTb3ESCO0F/f56KYkNXBaNECUnolNetMoZ6bIeEf5G3e/H2iLrd7o8
-         Io5pEsqkLdgkvVBFP5DLO+60vnAN7mRJSgfPiVyx4XxC/ztGDacG1roNMF7G10kpV0wQ
-         86nZ03trmI7R95IjKhaIKbLeoE5jwouKEmC0g+O2CwCy1hj2FoIIzmra15+n5Pc1S5G+
-         Jv72pLaxCGnhcnAWoPcu5s/VsGVTFjFh+MP6IdHm4XOC3f1N03gGBj05FVAA69/fBwl1
-         +nbg==
-X-Gm-Message-State: AOAM531VMH+ObOUhQGyTxXULGEmm+sMXnrOtZVH2JmB6vap6Nu4SGrKZ
-        i2KP+v9vzu5yLlrfneh3ERwjIHWjm7ObRB5G2Srl5A==
-X-Google-Smtp-Source: ABdhPJzyFFWk3SPjLGr8lM+w9l1s4IiQ3L+SVMBGRJwQ6FnAvGSmKfTLFMpx1gRJMxByUwLl8noiFbzi/u6BJIlrY/E=
-X-Received: by 2002:a05:6214:223:b0:42c:2667:869 with SMTP id
- j3-20020a056214022300b0042c26670869mr21025214qvt.17.1645560395638; Tue, 22
- Feb 2022 12:06:35 -0800 (PST)
+        bh=AjnaX+96lqe7LijU9Rl3ogEW4Pg0WWxDUtU2eg0y22Q=;
+        b=MnWOBt536YxQyik+n0DsxesiPNQMZo+5TEaEZzY/LNFoqzDRSDQkAVq/K16c94V/KE
+         OaG7TIPehMmuNjoNCcM5JfHsytBiwT21VcH1pJubsY1clTO32zCwM5p5QNUMln/X0T/J
+         5uTWSegShOd7GEzaR+ZRyrYpQUIbzbONm/1wCVcyEI8/JUN3ilrgjZfu5gFws0jg6ZlV
+         Q+GI36htivEZL84yOQTEQGt6PlRvmrEWhpmRODYqRz0iZ3c/BMQNFoEUsGPu1FAJbds0
+         3+1ElnD2beu/+wz23lBKWOCCoP+MRKWznwmHW3m+dEAUQTAguzi4TJ7gIOtLNDwrxxG1
+         qsBA==
+X-Gm-Message-State: AOAM530EYqJQ1lhAJg2CZjZ8sqQColaFG3ChiTun+mNv3fa2Ok9jfdI9
+        bS874YL/qgbCReBq7pJDwhVzBpfJb9kUL06SqA9ELg==
+X-Google-Smtp-Source: ABdhPJwMkyFR0SUCG3KBZfZtk+rrGhU5lYfT5M5/nEf1SdaEERKaPV5W4dz9u31w/k5niv2/ZjHpFspIWGGLvAfupWs=
+X-Received: by 2002:a25:f441:0:b0:611:4f60:aab1 with SMTP id
+ p1-20020a25f441000000b006114f60aab1mr25228544ybe.598.1645560436619; Tue, 22
+ Feb 2022 12:07:16 -0800 (PST)
 MIME-Version: 1.0
-References: <1645347953-27003-1-git-send-email-michael.chan@broadcom.com>
- <1645347953-27003-2-git-send-email-michael.chan@broadcom.com> <20220222112320.1a12b91c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220222112320.1a12b91c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 22 Feb 2022 12:06:24 -0800
-Message-ID: <CACKFLin9sbgnThjqFpeBZPQmx7WexCujzvoGjuqKYfWkhACycg@mail.gmail.com>
-Subject: Re: [PATCH net 1/7] bnxt_en: Fix active FEC reporting to ethtool
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Andrew Gospodarek <gospo@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000de612905d8a0e2e0"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220222181331.811085-1-eric.dumazet@gmail.com> <20220222194605.GA28705@breakpoint.cc>
+In-Reply-To: <20220222194605.GA28705@breakpoint.cc>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 22 Feb 2022 12:07:05 -0800
+Message-ID: <CANn89iLz4yML_RktHUadAkU966h9QCRJQ=cMPVzUDU7dHXg0sw@mail.gmail.com>
+Subject: Re: [PATCH net] netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000de612905d8a0e2e0
-Content-Type: text/plain; charset="UTF-8"
-
-On Tue, Feb 22, 2022 at 11:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Feb 22, 2022 at 11:46 AM Florian Westphal <fw@strlen.de> wrote:
 >
-> On Sun, 20 Feb 2022 04:05:47 -0500 Michael Chan wrote:
-> > From: Somnath Kotur <somnath.kotur@broadcom.com>
+> Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > From: Eric Dumazet <edumazet@google.com>
 > >
-> > ethtool --show-fec <interface> does not show anything when the Active
-> > FEC setting in the chip is set to None.  Fix it to properly return
-> > ETHTOOL_FEC_OFF in that case.
+> > While kfree_rcu(ptr) _is_ supported, it has some limitations.
+> >
+> > Given that 99.99% of kfree_rcu() users [1] use the legacy
+> > two parameters variant, and @catchall objects do have an rcu head,
+> > simply use it.
+> >
+> > Choice of kfree_rcu(ptr) variant was probably not intentional.
 >
-> Just to be clear - this means:
->  - the chip supports FEC but None is selected? Or
->  - the chip does not support FEC?
+> In case someone wondered, this causes expensive
+> sycnhronize_rcu + kfree for each removal operation.
 
-This patch is only changing the reporting of the active FEC setting to
-be ETHTOOL_FEC_OFF if firmware determines the negotiated or actual FEC
-setting to be None.  It is not changing the reporting of the chip's
-FEC capability or the user's selected FEC setting.
+This fallback to synchronize_rcu() only happens if kvfree_call_rcu() has been
+unable to allocate a new block of memory.
 
---000000000000de612905d8a0e2e0
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+But yes, I guess I would add a Fixes: tag, because we can easily avoid
+this potential issue.
 
-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
-xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
-xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
-CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
-DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
-FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
-1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
-DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHLMAVvdu98Y4BVCBtgBmrrFVp2DpXcy
-ICUzukfqM6JLMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIy
-MjIwMDYzNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBD9n0t+iy7YcDBKbFnn+PMYJm7wxLKriuz52ISkowfzyNIJA+e
-a0/lqQm+XY7aKM0NtJ8UxufZo2Ardu5ghx7yXW10ksubi2kns+Js2vccYEvJsf5nqK+KZetAsJar
-iTp4vb66iEq47dK5wpBOHbL3FbXAwNeV2lUDoo4nL+jEP382PmEoGMsCkM83COypu50nlUs8yfoJ
-RGogTVpx2w4VsGJcTvK6rGiQySJ8H73/8fJKTGpMWQLhvDPLcB2pHPfQ7zWh4TikF2iNvAfNBfxk
-Q/lvwjq4s++N6eXJiAxqf4QTOnPRIESGoc5YCPKJiXDgqZELw5vJSNqr/xSxi9SW
---000000000000de612905d8a0e2e0--
+Pablo, if not too late:
+
+Fixes: aaa31047a6d2 ("netfilter: nftables: add catch-all set element support")
+
+>
+> Reviewed-by: Florian Westphal <fw@strlen.de>
+>
