@@ -2,133 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 069E24BF7AF
+	by mail.lfdr.de (Postfix) with ESMTP id E66844BF7B1
 	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 13:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbiBVMCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 07:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53926 "EHLO
+        id S231378AbiBVMC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 07:02:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbiBVMCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 07:02:33 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BA324BC1
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 04:02:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645531328; x=1677067328;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eSzJj0N8l3dCBZZhWzfgVLnLLai3pgPIz51XNdjaPQc=;
-  b=Jjuz5IJCAnuWNqXSf6KtTiQ+xylAHZfcdJvByIntob/dKupfJeSC52Bt
-   cJ2hRQey7ogNlk30ficJs7F+CNWQSQUPcyMTmttJ01XwMk0PQMoGftrdr
-   LKME6AHoQ0QwXlrVxh/hud9ApJiyU35urHQk/IwfF/3VliKbYJOX2rC0M
-   EA/wFhKc3oSOZrz81vuJJIrl+j37AgUf2XyaVkZQF3DTjt0ay1yQ/0DWW
-   XpjsWQoPiU3i5lbCkVbsOG6+mrORxTl+BHA+cWpGD2TdtpnbNs9Ss5b9+
-   G+9/y5KrZQ6651N3msWTL2xxyHvIEgHAbsPttLUUSZJ99Rr27d725JRIj
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="338117866"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="338117866"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 04:02:07 -0800
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="490772600"
-Received: from unknown (HELO cra01infra01.deacluster.intel.com) ([10.240.193.73])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 04:02:05 -0800
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V6 5/5] vDPA/ifcvf: cacheline alignment for ifcvf_hw
-Date:   Tue, 22 Feb 2022 19:54:28 +0800
-Message-Id: <20220222115428.998334-6-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220222115428.998334-1-lingshan.zhu@intel.com>
-References: <20220222115428.998334-1-lingshan.zhu@intel.com>
+        with ESMTP id S231928AbiBVMCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 07:02:18 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC5524BC1
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 04:01:33 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id f11so11364145ljq.11
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 04:01:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FzYNR2sKDetapYfGLWWudbc7yc1Ktg/KaORx1hjvCVQ=;
+        b=4aO75Z6ibjpnvJtJm9vFf+C1Cs8xY5swKEEbD5ADFmeDBZ6zj+gi1xD8nhzvxm78x1
+         pBsZIM5BgIRrjJtXenkK9q7vGokX7yfmdFjB6DQlzNpsiRZLTWVYw+sWJQ6wO3xKEDvH
+         ILje7SS0I5xpWYbhZDKr6dlzbhdgWZSQIRmcZ1geG/Z8CCwAfSq+4mJLZrZfLzFxF7+K
+         64yt+nUdpOhBEbCUu593jPu5Ryx0kfmZn011uvrNgu5THWhISG/bBtMYISGLc4DPZwSh
+         sNf5GSI+4f0HuEN/4rAgBxLwls+SxGt1Ypj9VuI+ZNb9/Kd7VP2agqayJ/jLUsPIjg88
+         oQRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FzYNR2sKDetapYfGLWWudbc7yc1Ktg/KaORx1hjvCVQ=;
+        b=q3bCiyKxaL6fGx7VAzunKx5TOlIhj1ZrjjVubXaK0lzll4QZZobtKZsilvccMjPvU7
+         LNRVKOH73stj6TLofjy5i2eSpPXzPvPl3hBYA+0ePQykMFhbythsRSZ+h44CZOzUatr6
+         4+RMEl0/fjoXfsdu4tfpE74najBj7Pw3Z7ZF51mevuAuLRT9B67lkE8nH76bhyNe08OQ
+         7NLF2i/Q3O0oZPW3GD+TslUyq7gtdAMrQHFVHYY19PV+HPvEgi0qV6cJRinr7UfSkmvl
+         NwdYv9YVpDpqjIJP+qPp1HS5bJWQm7CWDge6ywjqwcSFArvJq0EVk7Q4bYPcEMQHq80+
+         KRbg==
+X-Gm-Message-State: AOAM530+nBVK9ZD9YHOQXxe69hThT6JDgqjsOg9Nlo+RidnnvdTwYooH
+        +FA5B1qoQx0dYrOAAQeKrerUH96U4I+Qaw==
+X-Google-Smtp-Source: ABdhPJwGQOfNgPwytiF1r2dQWgVgu6SzGM3zrIl9c3Z1NfSqcUk5K2eYcvGZE8RkVljl2SCy4STEKQ==
+X-Received: by 2002:a2e:978f:0:b0:246:360:6cff with SMTP id y15-20020a2e978f000000b0024603606cffmr17319826lji.106.1645531291571;
+        Tue, 22 Feb 2022 04:01:31 -0800 (PST)
+Received: from navi.cosmonova.net.ua ([95.67.24.131])
+        by smtp.gmail.com with ESMTPSA id v29sm1664024ljv.72.2022.02.22.04.01.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 04:01:31 -0800 (PST)
+From:   Andrew Melnychenko <andrew@daynix.com>
+To:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jasowang@redhat.com, mst@redhat.com
+Cc:     yan@daynix.com, yuri.benditovich@daynix.com
+Subject: [PATCH v4 0/4] RSS support for VirtioNet.
+Date:   Tue, 22 Feb 2022 14:00:50 +0200
+Message-Id: <20220222120054.400208-1-andrew@daynix.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces a new cacheline aligned layout for
-ifcvf_hw.
+Virtio-net supports "hardware" RSS with toeplitz key.
+Also, it allows receiving calculated hash in vheader
+that may be used with RPS.
+Added ethtools callbacks to manipulate RSS.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.c |  4 ----
- drivers/vdpa/ifcvf/ifcvf_base.h | 10 +++++-----
- 2 files changed, 5 insertions(+), 9 deletions(-)
+Technically hash calculation may be set only for
+SRC+DST and SRC+DST+PORTSRC+PORTDST hashflows.
+The completely disabling hash calculation for TCP or UDP
+would disable hash calculation for IP.
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index 8aba3ab4a2f3..48c4dadb0c7c 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -340,10 +340,8 @@ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num)
- static int ifcvf_hw_enable(struct ifcvf_hw *hw)
- {
- 	struct virtio_pci_common_cfg __iomem *cfg;
--	struct ifcvf_adapter *ifcvf;
- 	u32 i;
- 
--	ifcvf = vf_to_adapter(hw);
- 	cfg = hw->common_cfg;
- 	for (i = 0; i < hw->nr_vring; i++) {
- 		if (!hw->vring[i].ready)
-@@ -366,10 +364,8 @@ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
- 
- static void ifcvf_hw_disable(struct ifcvf_hw *hw)
- {
--	struct virtio_pci_common_cfg __iomem *cfg;
- 	u32 i;
- 
--	cfg = hw->common_cfg;
- 	ifcvf_set_config_vector(hw, VIRTIO_MSI_NO_VECTOR);
- 	for (i = 0; i < hw->nr_vring; i++) {
- 		ifcvf_set_vq_vector(hw, i, VIRTIO_MSI_NO_VECTOR);
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index dcd31accfce5..115b61f4924b 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -66,16 +66,18 @@ struct ifcvf_hw {
- 	u8 __iomem *isr;
- 	/* Live migration */
- 	u8 __iomem *lm_cfg;
--	u16 nr_vring;
- 	/* Notification bar number */
- 	u8 notify_bar;
-+	u8 msix_vector_status;
-+	/* virtio-net or virtio-blk device config size */
-+	u32 config_size;
- 	/* Notificaiton bar address */
- 	void __iomem *notify_base;
- 	phys_addr_t notify_base_pa;
- 	u32 notify_off_multiplier;
-+	u32 dev_type;
- 	u64 req_features;
- 	u64 hw_features;
--	u32 dev_type;
- 	struct virtio_pci_common_cfg __iomem *common_cfg;
- 	void __iomem *dev_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUES];
-@@ -84,9 +86,7 @@ struct ifcvf_hw {
- 	struct vdpa_callback config_cb;
- 	int config_irq;
- 	int vqs_reused_irq;
--	/* virtio-net or virtio-blk device config size */
--	u32 config_size;
--	u8 msix_vector_status;
-+	u16 nr_vring;
- };
- 
- struct ifcvf_adapter {
+RSS/RXHASH is disabled by default.
+
+Changes since v3:
+* Moved hunks a bit.
+* Added indirection table zero size check
+  for hash report only feature.
+* Added virtio_skb_set_hash() helper instead of in-place routine.
+
+Changes since v2:
+* Fixed issue with calculating padded header length.
+  During review/tests, there was found an issue that
+  will crash the kernel if VIRTIO_NET_F_MRG_RXBUF
+  was not set. (thx to Jason Wang <jasowang@redhat.com>)
+* Refactored the code according to review.
+
+Changes since v1:
+* Refactored virtnet_set_hashflow.
+* Refactored virtio_net_ctrl_rss.
+* Moved hunks between patches a bit.
+
+Changes since rfc:
+* Code refactored.
+* Patches reformatted.
+* Added feature validation.
+
+Andrew Melnychenko (4):
+  drivers/net/virtio_net: Fixed padded vheader to use v1 with hash.
+  drivers/net/virtio_net: Added basic RSS support.
+  drivers/net/virtio_net: Added RSS hash report.
+  drivers/net/virtio_net: Added RSS hash report control.
+
+ drivers/net/virtio_net.c | 389 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 376 insertions(+), 13 deletions(-)
+
 -- 
-2.27.0
+2.34.1
 
