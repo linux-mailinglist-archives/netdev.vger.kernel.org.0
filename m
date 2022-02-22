@@ -2,121 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B564C0242
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 20:47:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D667E4C0261
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 20:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235263AbiBVTr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 14:47:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
+        id S235270AbiBVTur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 14:50:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233551AbiBVTr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 14:47:56 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D3AB4582;
-        Tue, 22 Feb 2022 11:47:30 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id v4so626792pjh.2;
-        Tue, 22 Feb 2022 11:47:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2W938Ggu2Aydi5IPGQ9z0TKv8ovKzH72EC0el5VtOyQ=;
-        b=YMqtl9StewhccBKOdrPVC8tdw8VjBKym1msstZyS3FTcnHKXv7uJAC2b2zX6Xjv2mF
-         ragQiQpjFOnP6HMFlMebezCrOouXJzLctcvzP1dqWVkJaA121Wvwf6iBkF5EnXl2mfUL
-         9c1PLbiS9n/YHpuC7P63VXwrtFYc8+1L60dd3hOH95oxRHfG+vohOMg4yLzl/rsuMOoj
-         +ebDDqbHWrIsFyJ2Wq7lbW3lFj8vt9rn7LX1A3LRhKNtfZ52OhBM0/YqLMX1bwYmiQbi
-         LYhavcAN6WPTKSH2KvSmlFLc43hfY255BtFekjmqEtB0LBjNnXJ5Bdzf3kJNcp0OXFkO
-         ZFtQ==
+        with ESMTP id S234179AbiBVTup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 14:50:45 -0500
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19CBB8B5E
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 11:50:18 -0800 (PST)
+Received: by mail-io1-f71.google.com with SMTP id t72-20020a6bc34b000000b0063d7b2c24ecso12370264iof.12
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 11:50:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2W938Ggu2Aydi5IPGQ9z0TKv8ovKzH72EC0el5VtOyQ=;
-        b=JqCBz/tqq0vVCsiKqr+0eJJ2Ax0QhJORyBNiyjRzOTQjyXyOw6rOJiAAz8xqFP8qII
-         M7FgnYkSVt38OUONIhLPrBWOQ9Hm3Y9jRsR2EvFlPxfc7GnqTV56BKpXf/OjEn3ALC32
-         MeizuHQ3BANsTjjw/82CMswpw761iYzHwqywFRVzyUjQQgCCekpwAq3UiVs8fNVGPu3e
-         gnOXGOFxwVoSHQlD0V/ZbgIcn9j+VqpBtaNPWVLOj7Vbd5G6rgBZsDrc9U60SX4nvIFl
-         a6i0Qud8UeK09zO4XfPyQb+zi5kFrrJw1kE5S5J+4d9bN2B5E3Crdl/yfBo/lPzQip5D
-         Cc4g==
-X-Gm-Message-State: AOAM5316pnWMsNbTKj6TIiOaDyfOaVUKgTP7vJNRyFxkCpgCWdnb7/FF
-        OQS3iq7ffEqFoF1TkQNIgBY=
-X-Google-Smtp-Source: ABdhPJwnj5EJPQHUhEAFys23GNoiaml0c9MnGqifgybD1GdXBesdE+GvgAvz5kUq+M8rxLuH+W3c7Q==
-X-Received: by 2002:a17:902:76c5:b0:14e:e325:9513 with SMTP id j5-20020a17090276c500b0014ee3259513mr24548706plt.55.1645559250319;
-        Tue, 22 Feb 2022 11:47:30 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id y191sm18599469pfb.78.2022.02.22.11.47.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 11:47:29 -0800 (PST)
-Message-ID: <0bf8c693-3e0e-535f-f6f1-2059c11779ad@gmail.com>
-Date:   Tue, 22 Feb 2022 11:47:27 -0800
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=fdJDIrhq6AjxWdy9QWWruG80JTZiFgwR3NgptNzXp7c=;
+        b=lNEDcyYntvnUDJ3Jo8+CTCUqz5s++YwPqLHPORoLNBQ9cSSI/Gnh51ThklGXoQl0r/
+         p/5pecWk/1+d74MVycii2I+t7BOA9cuI8TP0gZYLqUfo+eR0HIMq50lSr/PUxFHeg/oI
+         x8EGVeLCZGVCs5xhK6SVcOGQtm2DQ4QtDTSXd/F4myNbZgoinJU1pVRqEBCILhjF7aoO
+         3gu3D7/NDBrrhfeBcuEh49iFpnWV7P0qMDJwBSZi3TaOKotzUVdi6wIXK/eqontXD+LB
+         ArMHz5k/wq0d708lPshJPSabNv7Rlklv9JH2BwmL0Vl5UcBTWIEnznY8HW4nRRQKmZan
+         yHtA==
+X-Gm-Message-State: AOAM530Xjn91VoXrUEi4qr+tP+vPjt2Z4Wu6AoF//xZ7MDr6AkIGlf59
+        qlbmxItbdk6bKcGCLqHKXk8SQO+XGToha9RvZA4ZAmdWUG3g
+X-Google-Smtp-Source: ABdhPJxzXn0HAF1srxPYH/n0a3v62AYi50L/gJXjfHtDtnDNU49drLAVxvbnu6K3fs8YAGrf6XHppYvz3uOVanIHvG4rs484szF+
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings for
- microchip lan937x
-Content-Language: en-US
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>,
-        andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
-        robh+dt@kernel.org
-Cc:     UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, devicetree@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
- <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
- <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
- <ebf1b233da821e2cd3586f403a1cdc2509671cde.camel@microchip.com>
- <d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com>
- <4b3a954cde4e9d1b6a94991964eb21e80278a8ab.camel@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <4b3a954cde4e9d1b6a94991964eb21e80278a8ab.camel@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a5d:8714:0:b0:636:13bb:bc89 with SMTP id
+ u20-20020a5d8714000000b0063613bbbc89mr20048910iom.126.1645559418262; Tue, 22
+ Feb 2022 11:50:18 -0800 (PST)
+Date:   Tue, 22 Feb 2022 11:50:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000951c2505d8a0a8e5@google.com>
+Subject: [syzbot] WARNING in j1939_session_deactivate_activate_next
+From:   syzbot <syzbot+3d2eaacbc2b94537c6c5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kernel@pengutronix.de, kuba@kernel.org,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    7993e65fdd0f Merge tag 'mtd/fixes-for-5.17-rc5' of git://g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16c9b264700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b41a243aa9878175
+dashboard link: https://syzkaller.appspot.com/bug?extid=3d2eaacbc2b94537c6c5
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133ec75a700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1039840a700000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+3d2eaacbc2b94537c6c5@syzkaller.appspotmail.com
+
+vcan0: j1939_xtp_rx_dat_one: 0xffff88801fdd2800: Data of RX-looped back packet (00 ff ff ff ff ff ff) doesn't match TX data (00 00 00 00 00 00 00)!
+vcan0: j1939_xtp_rx_dat_one: 0xffff88801c86f000: last 15
+vcan0: j1939_xtp_rx_abort_one: 0xffff88801fdd2800: 0x00000: (5) Maximal retransmit request limit reached
+vcan0: j1939_xtp_rx_abort_one: 0xffff88801fdd2000: 0x00000: (5) Maximal retransmit request limit reached
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 13 at net/can/j1939/transport.c:1090 j1939_session_deactivate net/can/j1939/transport.c:1090 [inline]
+WARNING: CPU: 0 PID: 13 at net/can/j1939/transport.c:1090 j1939_session_deactivate_activate_next+0x95/0xd3 net/can/j1939/transport.c:1100
+Modules linked in:
+CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.17.0-rc4-syzkaller-00217-g7993e65fdd0f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:j1939_session_deactivate net/can/j1939/transport.c:1090 [inline]
+RIP: 0010:j1939_session_deactivate_activate_next+0x95/0xd3 net/can/j1939/transport.c:1100
+Code: 03 38 d0 7c 0c 84 d2 74 08 4c 89 ef e8 73 71 75 f8 8b 5d 28 bf 01 00 00 00 89 de e8 04 e3 2d f8 83 fb 01 77 07 e8 7a df 2d f8 <0f> 0b e8 73 df 2d f8 48 89 ef e8 8b 7a de fe 4c 89 e7 89 c3 e8 e1
+RSP: 0018:ffffc90000d279b0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000100
+RDX: ffff888011918000 RSI: ffffffff894afea6 RDI: 0000000000000003
+RBP: ffff88801fdd2000 R08: 0000000000000001 R09: ffff88801fdd202b
+R10: ffffffff894afe9c R11: 0000000000000000 R12: ffff88801dd41070
+R13: ffff88801fdd2028 R14: ffff88801c9fd818 R15: ffffffff8ac38340
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000048 CR3: 000000007f5b2000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ j1939_xtp_rx_abort_one.cold+0x20b/0x33c net/can/j1939/transport.c:1340
+ j1939_xtp_rx_abort net/can/j1939/transport.c:1352 [inline]
+ j1939_tp_cmd_recv net/can/j1939/transport.c:2100 [inline]
+ j1939_tp_recv+0xb3d/0xcb0 net/can/j1939/transport.c:2133
+ j1939_can_recv+0x6ff/0x9a0 net/can/j1939/main.c:108
+ deliver net/can/af_can.c:574 [inline]
+ can_rcv_filter+0x5d4/0x8d0 net/can/af_can.c:608
+ can_receive+0x31d/0x580 net/can/af_can.c:665
+ can_rcv+0x120/0x1c0 net/can/af_can.c:696
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5351
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5465
+ process_backlog+0x2a5/0x6c0 net/core/dev.c:5797
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6365
+ napi_poll net/core/dev.c:6432 [inline]
+ net_rx_action+0x801/0xb40 net/core/dev.c:6519
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
 
 
-On 2/18/2022 8:38 AM, Prasanna Vengateshan wrote:
-> On Fri, 2022-02-11 at 19:56 -0800, Florian Fainelli wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
->> content is safe
->>
->> On 2/9/2022 3:58 AM, Prasanna Vengateshan wrote:
->>> On Mon, 2022-02-07 at 18:53 -0800, Florian Fainelli wrote:
->>>>
->>>>> +                rx-internal-delay-ps:
->>>>> +                  $ref: "#/$defs/internal-delay-ps"
->>>>> +                tx-internal-delay-ps:
->>>>> +                  $ref: "#/$defs/internal-delay-ps"
->>>>
->>>> Likewise, this should actually be changed in ethernet-controller.yaml
->>>
->>> There is *-internal-delay-ps property defined for mac in ethernet-
->>> controller.yaml. Should that be changed like above?
->>
->> It seems to me that these properties override whatever 'phy-mode'
->> property is defined, but in premise you are right that this is largely
->> applicable to RGMII only. I seem to recall that the QCA8K driver had
->> some sort of similar delay being applied even in SGMII mode but I am not
->> sure if we got to the bottom of this.
->>
->> Please make sure that this does not create regressions for other DTS in
->> the tree before going with that change in ethernet-controller.yaml.
-> 
-> Okay, Can these be submitted as a seperate patch?
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Well yes, it has to be a separate patch, but it should be part of the 
-same series as this one, otherwise your patch adding the binding for 
-lan937x would fail validation.
--- 
-Florian
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
