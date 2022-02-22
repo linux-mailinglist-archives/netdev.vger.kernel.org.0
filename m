@@ -2,82 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA084BF087
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:10:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0D34BF0A5
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 05:10:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240782AbiBVD2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 22:28:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48642 "EHLO
+        id S240814AbiBVD3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 22:29:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240070AbiBVD2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 22:28:36 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1723222B20
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 19:28:10 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id y11-20020a056602164b00b00640ddd94d80so3521546iow.11
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 19:28:10 -0800 (PST)
+        with ESMTP id S234051AbiBVD3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 22:29:00 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248F722B1F;
+        Mon, 21 Feb 2022 19:28:35 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id j5so8852682ila.2;
+        Mon, 21 Feb 2022 19:28:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PJVXd6uPpgWdmHZEx7s8y7RU08UT5hr73kZpWlT93uI=;
+        b=YYs0od3w0+7ABTLgw6mTJCMTVYS8FoUt4crhqeXiZKZB3IlDa7mZaEMskMLFUWucvg
+         KW2hkB7rwLLdKz0Cet+dTHFS1cf8tJ+dtHmN6NVZ9+GRdkTSQ6E219oSm7/JqaQQgBuX
+         z/KTTi99jI6Io2VnfIoGQwy1n39AueRtseipLfEfobRp7MIJqgnOLt48v0R446GAO6FX
+         j2DHFg/I4xK8R2poZAjOjtg1hD5XrGmyw2FLLc0E8eU2momZRZ+wgwWdr0frTXK5J6uM
+         pl5+AzTCgb/huTn5n4mnEt1r4ZsjcyHim2yZR9JdmIup5l2n42v7aB7sZsT3u42NYFDb
+         WoAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=jn1v1wrtUy0we1aF2ni8zoooQ45E+ro5had3wgyBV54=;
-        b=K8jyQqHu77rsihitI3AbOKYEl7zhKbdQmzZdbcxVKc9wsX3XiMn7XgaPMroBp3kNIp
-         ViqFLj1jIIAK0GJ+gOJalBLo+wn04xDO/13bgmu0P5fcx0qWHJjh6K6uCDVStFUXoZyd
-         eWRRD+t5Jtd9+fyTN93iF8yX6UKzf+dYT0zRSLw4vABiyC+7LehBOr0SxzlVw6IbJO6m
-         FmKfre6wWVGflNjSbQb1JAB0n6EMfgtgJVDs8+JFUotZbL1jC3XBw4zHxpkuZVnl3IIc
-         IRsaSggdwNGQLO8uC0zk1zB/xfmTBJcQFqrBoEqR6K66jjAdh3py/ydOJ/jdD5EC+AXj
-         jT5Q==
-X-Gm-Message-State: AOAM532lXtQ9BVeHgfTNV59CuuVRUe2RfM0oUzNqlM40mfIV5bLOAWjx
-        zgU0e81VMwffWfbD7nI60sIWZL5axqXBRguPzJQwTIe6/zOK
-X-Google-Smtp-Source: ABdhPJwvcdGWpoK/XmWmrt/RJmM7zJMzG1YEJtPZ2U2O45PYEbMt2BhVRCfFBhCzCJlCLVEnBbK1cFfhGL/cB+uriO9DuGX7UU0r
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PJVXd6uPpgWdmHZEx7s8y7RU08UT5hr73kZpWlT93uI=;
+        b=Nkb57JszOAVjLJpqCIavwDbx2lcxWVHThxztAtnKEmnNPk0UR0kglXAVqk/hTPd0uZ
+         L9ZTCMTbvclPQLclaPB8QkRdPcgauz0v885HbtTog9ZdvCJTgXKzK7o6VOuTszQ4tceV
+         4G7XijE4wWquBrPZEvu1zoAnFcclDDaQBVmMDcPwacQHvz0gaVlrB+O2dTr9DEcsgWkD
+         nqDjqR/T/BMgquLCVRFsbYVmbnDHhFHJqHY66YZx1onZF0meQT9nZkATrt6csWQr7ERF
+         gUb5Vu0rGbktbcrmHOEpbW4lIDWAWeV4h0IOWgmdYwaOVbj91Bk0I+6YcYbIE88EyM/D
+         79RQ==
+X-Gm-Message-State: AOAM5339mQycq0RaeF0t+xdtsmywDUxmWF5Dt7PMmz4d17RVLUXHQvhB
+        YflvWBdw+avlPIrs1K/HLMY=
+X-Google-Smtp-Source: ABdhPJz14bkgcNlvUTWpGLS2bzkE8NPCw56tyu6vl8k5rGRhQ4QGlUMl7b0zFUOEPoLaw5tbJHV9zg==
+X-Received: by 2002:a05:6e02:19cf:b0:2b8:b53e:7aba with SMTP id r15-20020a056e0219cf00b002b8b53e7abamr18260121ill.258.1645500514587;
+        Mon, 21 Feb 2022 19:28:34 -0800 (PST)
+Received: from ?IPV6:2601:284:8200:b700:fc7f:e53f:676e:280d? ([2601:284:8200:b700:fc7f:e53f:676e:280d])
+        by smtp.googlemail.com with ESMTPSA id n15sm1379445ilo.26.2022.02.21.19.28.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 19:28:34 -0800 (PST)
+Message-ID: <877dfc5d-c3a1-463f-3abc-15e5827cfdb6@gmail.com>
+Date:   Mon, 21 Feb 2022 20:28:33 -0700
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1a07:b0:2be:1b0:bd05 with SMTP id
- s7-20020a056e021a0700b002be01b0bd05mr19161773ild.211.1645500489485; Mon, 21
- Feb 2022 19:28:09 -0800 (PST)
-Date:   Mon, 21 Feb 2022 19:28:09 -0800
-In-Reply-To: <000000000000264b2a05d44bca80@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002752dc05d892f094@google.com>
-Subject: Re: [syzbot] WARNING in cpuset_write_resmask
-From:   syzbot <syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com>
-To:     cgroups@vger.kernel.org, changbin.du@intel.com,
-        christian.brauner@ubuntu.com, davem@davemloft.net,
-        edumazet@google.com, hannes@cmpxchg.org, hkallweit1@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lizefan.x@bytedance.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tj@kernel.org,
-        yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH net-next v3 4/4] net: tun: track dropped skb via
+ kfree_skb_reason()
+Content-Language: en-US
+To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
+        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
+References: <20220221053440.7320-1-dongli.zhang@oracle.com>
+ <20220221053440.7320-5-dongli.zhang@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220221053440.7320-5-dongli.zhang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On 2/20/22 10:34 PM, Dongli Zhang wrote:
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index aa27268..bf7d8cd 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1062,13 +1062,16 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+>  	struct netdev_queue *queue;
+>  	struct tun_file *tfile;
+>  	int len = skb->len;
+> +	enum skb_drop_reason drop_reason;
 
-commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Tue Dec 7 01:30:37 2021 +0000
+this function is already honoring reverse xmas tree style, so this needs
+to be moved up.
 
-    netlink: add net device refcount tracker to struct ethnl_req_info
+>  
+>  	rcu_read_lock();
+>  	tfile = rcu_dereference(tun->tfiles[txq]);
+>  
+>  	/* Drop packet if interface is not attached */
+> -	if (!tfile)
+> +	if (!tfile) {
+> +		drop_reason = SKB_DROP_REASON_DEV_READY;
+>  		goto drop;
+> +	}
+>  
+>  	if (!rcu_dereference(tun->steering_prog))
+>  		tun_automq_xmit(tun, skb);
+> @@ -1078,22 +1081,32 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+>  	/* Drop if the filter does not like it.
+>  	 * This is a noop if the filter is disabled.
+>  	 * Filter can be enabled only for the TAP devices. */
+> -	if (!check_filter(&tun->txflt, skb))
+> +	if (!check_filter(&tun->txflt, skb)) {
+> +		drop_reason = SKB_DROP_REASON_DEV_FILTER;
+>  		goto drop;
+> +	}
+>  
+>  	if (tfile->socket.sk->sk_filter &&
+> -	    sk_filter(tfile->socket.sk, skb))
+> +	    sk_filter(tfile->socket.sk, skb)) {
+> +		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+>  		goto drop;
+> +	}
+>  
+>  	len = run_ebpf_filter(tun, skb, len);
+> -	if (len == 0)
+> +	if (len == 0) {
+> +		drop_reason = SKB_DROP_REASON_BPF_FILTER;
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15c42532700000
-start commit:   e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
-git tree:       bpf-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=17c42532700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13c42532700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
-dashboard link: https://syzkaller.appspot.com/bug?extid=568dc81cd20b72d4a49f
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13bb97ce700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12062c8e700000
+how does this bpf filter differ from SKB_DROP_REASON_SOCKET_FILTER? I
+think the reason code needs to be a little clearer on the distinction.
 
-Reported-by: syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com
-Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
