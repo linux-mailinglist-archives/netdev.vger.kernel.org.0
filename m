@@ -2,179 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E084BFB02
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 15:39:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5081D4BFC91
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 16:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232884AbiBVOkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 09:40:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
+        id S231805AbiBVP27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 10:28:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231901AbiBVOkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 09:40:19 -0500
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B934EA20;
-        Tue, 22 Feb 2022 06:39:53 -0800 (PST)
-Received: by mail-oo1-xc36.google.com with SMTP id x6-20020a4a4106000000b003193022319cso17812904ooa.4;
-        Tue, 22 Feb 2022 06:39:53 -0800 (PST)
+        with ESMTP id S232786AbiBVP25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 10:28:57 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6195151D10
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 07:28:31 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id v22so18232917ljh.7
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 07:28:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8HtKvgP9c8lj3jdXox7eFQAQfru0ANSsDmI/ula35HM=;
-        b=K1/FSrEvZlwbJ/z/izSGBjxSvAz+Ov/+WhAFdL0w2lu4DckhJQcJhyo+hPTDyiwcc/
-         6qj6gB6J2nMVKk/7KxNqTYYy1FcIT8xa/7TiT41wajv1mkgbQ+ZjthPuABl0O3JgLvbr
-         tw/7E89yOgxYPJv4fT7de76OWEndbpyy5TnG9Y/35mQzoeuvWlXQ71Ut1jNmmiIKsg3h
-         tE/0BsFC2O4c5qhxej0N92XVW4bJd3rH7Y/ajPByTETe5hQ1Pkyxt2k7l37nbnZAn5Mj
-         lCthilDQc+vJwXzZOUhwpo8aIp6dYcsgEb92l9V16l87XkjVPBWU7eXqXvc2Nk4Ezn5n
-         62Aw==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version:content-transfer-encoding;
+        bh=5Camp1f5YD6S5y4s958IvGmaEcdbiPH6xGBLOsrZkMc=;
+        b=CRd4Fp52psQ+4Ye6htpIi/lovPHL8wdHLU4HQPPSqwFhyJSB6SjMXArOxVhP6e1Mm2
+         yYSDf6RO+RTXwqXd+6AIcKVeI4Unhw+5r8GJefvDElPa16YGQTyJd1Qo8i88mUKbCGsq
+         wpZ4npyH2dfeVmYnX0PRqew9K+vAbySsYiI28=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8HtKvgP9c8lj3jdXox7eFQAQfru0ANSsDmI/ula35HM=;
-        b=5i1u5bqbLl3DvOR4UaBtecsdMGDdtlau2EZra+QFZlIw8eE9+/tdyw4mlqpHhcvzSx
-         55zUQwtAHnZ+0K+8nCZsAcoOyJC1IUS9cggkzta81EWOOoY3vvyIYON3PSD2hegpHtew
-         8fBaRtjB3XjSDpAYnJdgt5VXtvnytSeJqqh+CHGeHkXKUCPY6R1rxJJJOXltteU8rMwO
-         lfI/FHur7mC/9lLFZHdPuuJsKETvytztzU7tkPKXCvyYHrh8jR7uBe/T9O1mu5hKR9pl
-         SX4+f79vuBqsZ/vEd1AGHbYwUXXEBpP3L7gKArAGvpdIj+82DZtNR9GPIm+7kiJhOdNi
-         LhdQ==
-X-Gm-Message-State: AOAM532HIwSRQndfYbjIx6bKSu0CZutS2h+JzR0mZ2QytJMmmcnLur95
-        TQ9RnNboWKidaDap8olsaEpA8AtaGgDKsw==
-X-Google-Smtp-Source: ABdhPJzfy25BuAvr3cX+8+YLBL3ixm9jGl9YvPyO8dvdhgtGhb51HzuTSioLS1yWrFonG9T3BjKq5g==
-X-Received: by 2002:a05:6870:a702:b0:d3:5740:1d61 with SMTP id g2-20020a056870a70200b000d357401d61mr1813353oam.340.1645540792919;
-        Tue, 22 Feb 2022 06:39:52 -0800 (PST)
-Received: from ?IPV6:2601:284:8200:b700:fc7f:e53f:676e:280d? ([2601:284:8200:b700:fc7f:e53f:676e:280d])
-        by smtp.googlemail.com with ESMTPSA id r131sm6241358oor.7.2022.02.22.06.39.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 06:39:52 -0800 (PST)
-Message-ID: <c25691a0-96ab-34de-4739-524cd3ab1875@gmail.com>
-Date:   Tue, 22 Feb 2022 07:39:49 -0700
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version:content-transfer-encoding;
+        bh=5Camp1f5YD6S5y4s958IvGmaEcdbiPH6xGBLOsrZkMc=;
+        b=klLSXheln1Mkk6znLkGolD2e9NLYjJExGB2rJL3bgnFGJd1Ut7P6ktz2B1wgGqnbTT
+         IrqUFfmtaS1Z9xgwAviyg6IjfF0fmljkupyV4iHSeIRpA0+5TgZ1CQwEAVQZquIdsM+4
+         BuokUjMu3w3NX0L6dRoQiFcHnHjYlcKG/CwFsRtrWo87D18K7rfnVSI1UXYGa7QjSRZN
+         MnZNZGyPWZzLSoOakJvKgviGEvML4UhKKVaeBv+byeLS7EsEMB1w6AvpwK7HtNwy4NaD
+         6cVjt5iRMF6WYdzw1QMgc8UTS4X9GFSiyeIRM5sZJZCMWCH+eyuXuAxDP8VHJKJm/DeG
+         juuw==
+X-Gm-Message-State: AOAM53374f6YW4sEdPHIJo7T5BMCEVwDW/fk0EE8hnwJDyUWuB6Log+h
+        IVnDTadhkR5eeTQ0nbfM/BaA+w==
+X-Google-Smtp-Source: ABdhPJwZgA8QLLN8UuoQ3Ut5Enywy/ypQyozI0AsaVNju9yKNZKQihq3bAU9bdM6jc9/SLwdIYP+Ng==
+X-Received: by 2002:a2e:8746:0:b0:246:2930:53f7 with SMTP id q6-20020a2e8746000000b00246293053f7mr14055009ljj.0.1645543710016;
+        Tue, 22 Feb 2022 07:28:30 -0800 (PST)
+Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id a9sm1403629lfb.191.2022.02.22.07.28.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 07:28:29 -0800 (PST)
+References: <20220221180358.169101-1-jakub@cloudflare.com>
+ <8ff3f2ff692acaffe9494007a3431c269372f822.camel@linux.ibm.com>
+ <88a4927eaf3ca385ce9a7406ef23062a39eb1734.camel@linux.ibm.com>
+ <0eeac90306f03b4fdb2b028ffb509e4d20121aec.camel@linux.ibm.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix implementation-defined
+ behavior in sk_lookup test
+Date:   Tue, 22 Feb 2022 15:53:00 +0100
+In-reply-to: <0eeac90306f03b4fdb2b028ffb509e4d20121aec.camel@linux.ibm.com>
+Message-ID: <87fsoakjj6.fsf@cloudflare.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next v3 4/4] net: tun: track dropped skb via
- kfree_skb_reason()
-Content-Language: en-US
-To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
-References: <20220221053440.7320-1-dongli.zhang@oracle.com>
- <20220221053440.7320-5-dongli.zhang@oracle.com>
- <877dfc5d-c3a1-463f-3abc-15e5827cfdb6@gmail.com>
- <6eab223b-028d-c822-01ad-47e5869e0fe8@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <6eab223b-028d-c822-01ad-47e5869e0fe8@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/21/22 9:45 PM, Dongli Zhang wrote:
-> Hi David,
-> 
-> On 2/21/22 7:28 PM, David Ahern wrote:
->> On 2/20/22 10:34 PM, Dongli Zhang wrote:
->>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
->>> index aa27268..bf7d8cd 100644
->>> --- a/drivers/net/tun.c
->>> +++ b/drivers/net/tun.c
->>> @@ -1062,13 +1062,16 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
->>>  	struct netdev_queue *queue;
->>>  	struct tun_file *tfile;
->>>  	int len = skb->len;
->>> +	enum skb_drop_reason drop_reason;
->>
->> this function is already honoring reverse xmas tree style, so this needs
->> to be moved up.
-> 
-> I will move this up to before "int txq = skb->queue_mapping;".
-> 
->>
->>>  
->>>  	rcu_read_lock();
->>>  	tfile = rcu_dereference(tun->tfiles[txq]);
->>>  
->>>  	/* Drop packet if interface is not attached */
->>> -	if (!tfile)
->>> +	if (!tfile) {
->>> +		drop_reason = SKB_DROP_REASON_DEV_READY;
->>>  		goto drop;
->>> +	}
->>>  
->>>  	if (!rcu_dereference(tun->steering_prog))
->>>  		tun_automq_xmit(tun, skb);
->>> @@ -1078,22 +1081,32 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
->>>  	/* Drop if the filter does not like it.
->>>  	 * This is a noop if the filter is disabled.
->>>  	 * Filter can be enabled only for the TAP devices. */
->>> -	if (!check_filter(&tun->txflt, skb))
->>> +	if (!check_filter(&tun->txflt, skb)) {
->>> +		drop_reason = SKB_DROP_REASON_DEV_FILTER;
->>>  		goto drop;
->>> +	}
->>>  
->>>  	if (tfile->socket.sk->sk_filter &&
->>> -	    sk_filter(tfile->socket.sk, skb))
->>> +	    sk_filter(tfile->socket.sk, skb)) {
->>> +		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
->>>  		goto drop;
->>> +	}
->>>  
->>>  	len = run_ebpf_filter(tun, skb, len);
->>> -	if (len == 0)
->>> +	if (len == 0) {
->>> +		drop_reason = SKB_DROP_REASON_BPF_FILTER;
->>
->> how does this bpf filter differ from SKB_DROP_REASON_SOCKET_FILTER? I
->> think the reason code needs to be a little clearer on the distinction.
->>
-> 
-> 
-> While there is a diff between BPF_FILTER (here) and SOCKET_FILTER ...
-> 
-> ... indeed the issue is: there is NO diff between BPF_FILTER (here) and
-> DEV_FILTER (introduced by the patch).
-> 
-> 
-> The run_ebpf_filter() is to run the bpf filter attached to the TUN device (not
-> socket). This is similar to DEV_FILTER, which is to run a device specific filter.
-> 
-> Initially, I would use DEV_FILTER at both locations. This makes trouble to me as
-> there would be two places with same reason=DEV_FILTER. I will not be able to
-> tell where the skb is dropped.
-> 
-> 
-> I was thinking about to introduce a SKB_DROP_REASON_DEV_BPF. While I have
-> limited experience in device specific bpf, the TUN is the only device I know
-> that has a device specific ebpf filter (by commit aff3d70a07ff ("tun: allow to
-> attach ebpf socket filter")). The SKB_DROP_REASON_DEV_BPF is not generic enough
-> to be re-used by other drivers.
-> 
-> 
-> Would you mind sharing your suggestion if I would re-use (1)
-> SKB_DROP_REASON_DEV_FILTER or (2) introduce a new SKB_DROP_REASON_DEV_BPF, which
-> is for sk_buff dropped by ebpf attached to device (not socket).
-> 
-> 
-> To answer your question, the SOCKET_FILTER is for filter attached to socket, the
-> BPF_FILTER was supposed for ebpf filter attached to device (tun->filter_prog).
-> 
-> 
+On Tue, Feb 22, 2022 at 03:22 AM +01, Ilya Leoshkevich wrote:
+> On Tue, 2022-02-22 at 01:43 +0100, Ilya Leoshkevich wrote:
+>> On Mon, 2022-02-21 at 22:39 +0100, Ilya Leoshkevich wrote:
+>> > On Mon, 2022-02-21 at 19:03 +0100, Jakub Sitnicki wrote:
+>> > > Shifting 16-bit type by 16 bits is implementation-defined for BPF
+>> > > programs.
+>> > > Don't rely on it in case it is causing the test failures we are
+>> > > seeing on
+>> > > s390x z15 target.
+>> > >=20
+>> > > Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load from
+>> > > remote_port in bpf_sk_lookup")
+>> > > Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+>> > > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> > > ---
+>> > >=20
+>> > > I don't have a dev env for s390x/z15 set up yet, so can't
+>> > > definitely
+>> > > confirm the fix.
+>> > > That said, it seems worth fixing either way.
+>> > >=20
+>> > > =C2=A0tools/testing/selftests/bpf/progs/test_sk_lookup.c | 3 ++-
+>> > > =C2=A01 file changed, 2 insertions(+), 1 deletion(-)
+>> > >=20
+>> > > diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+>> > > b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+>> > > index bf5b7caefdd0..7d47276a8964 100644
+>> > > --- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+>> > > +++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+>> > > @@ -65,6 +65,7 @@ static const __u32 KEY_SERVER_A =3D SERVER_A;
+>> > > =C2=A0static const __u32 KEY_SERVER_B =3D SERVER_B;
+>> > > =C2=A0
+>> > > =C2=A0static const __u16 SRC_PORT =3D bpf_htons(8008);
+>> > > +static const __u32 SRC_PORT_U32 =3D bpf_htonl(8008U << 16);
+>> > > =C2=A0static const __u32 SRC_IP4 =3D IP4(127, 0, 0, 2);
+>> > > =C2=A0static const __u32 SRC_IP6[] =3D IP6(0xfd000000, 0x0, 0x0,
+>> > > 0x00000002);
+>> > > =C2=A0
+>> > > @@ -421,7 +422,7 @@ int ctx_narrow_access(struct bpf_sk_lookup
+>> > > *ctx)
+>> > > =C2=A0
+>> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Load from remote_=
+port field with zero padding
+>> > > (backward
+>> > > compatibility) */
+>> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0val_u32 =3D *(__u32 =
+*)&ctx->remote_port;
+>> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (val_u32 !=3D bpf_hton=
+l(bpf_ntohs(SRC_PORT) << 16))
+>> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (val_u32 !=3D SRC_PORT=
+_U32)
+>> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return SK_DROP;
+>> > > =C2=A0
+>> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Narrow loads from=
+ local_port field. Expect DST_PORT.
+>> > > */
+>> >=20
+>> > Unfortunately this doesn't help with the s390 problem.
+>> > I'll try to debug this.
+>>=20
+>> I have to admit I have a hard time wrapping my head around the
+>> requirements here.
+>>=20
+>> Based on the pre-9a69e2b385f4 code, do I understand correctly that
+>> for the following input
+>>=20
+>> Port:=C2=A0=C2=A0=C2=A0=C2=A0 0x1f48
+>> SRC_PORT: 0x481f
+>>=20
+>> we expect the following results for different kinds of loads:
+>>=20
+>> Size=C2=A0=C2=A0 Offset=C2=A0 LE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BE
+>> BPF_B=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1f=C2=A0=C2=A0=C2=A0=
+ 0
+>> BPF_B=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x48=C2=A0=C2=A0=C2=A0=
+ 0
+>> BPF_B=C2=A0 2=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 0x48
+>> BPF_B=C2=A0 3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 0x1f
+>> BPF_H=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x481f=C2=A0 0
+>> BPF_H=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 0x481f
+>> BPF_W=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x481f=C2=A0 0x481f
+>>=20
+>> and this is guaranteed by the struct bpf_sk_lookup ABI? Because then
+>> it
+>> looks as if 9a69e2b385f4 breaks it on big-endian as follows:
+>>=20
+>> Size=C2=A0=C2=A0 Offset=C2=A0 BE-9a69e2b385f4
+>> BPF_B=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x48
+>> BPF_B=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1f
+>> BPF_B=C2=A0 2=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0
+>> BPF_B=C2=A0 3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0
+>> BPF_H=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x481f
+>> BPF_H=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0
+>> BPF_W=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x481f0000
+>
+> Sorry, I worded this incorrectly: 9a69e2b385f4 did not change the
+> kernel behavior, the ABI is not broken and the old compiled code should
+> continue to work.
+> What the second table really shows are what the results should be
+> according to the 9a69e2b385f4 struct bpf_sk_lookup definition, which I
+> still think is broken on big-endian and needs to be adjusted to match
+> the ABI.
+>
+> I noticed one other strange thing in the meantime: loads from
+> *(__u32 *)&ctx->remote_port, *(__u16 *)&ctx->remote_port and
+> *((__u16 *)&ctx->remote_port + 1) all produce 8008 on s390, which is
+> clearly inconsistent. It looks as if convert_ctx_accesses() needs to be
+> adjusted to handle combinations like ctx_field_size =3D=3D 4 && size =3D=
+=3D 2
+> && target_size =3D=3D 2. I will continue with this tomorrow.
+>
+>> Or is the old behavior a bug and this new one is desirable?
+>> 9a69e2b385f4 has no Fixes: tag, so I assume that's the former :-(
+>>=20
+>> In which case, would it make sense to fix it by swapping remote_port
+>> and :16 in bpf_sk_lookup on big-endian?
 
-tun/tap does have some unique filtering options. The other sets focused
-on the core networking stack is adding a drop reason of
-SKB_DROP_REASON_BPF_CGROUP_EGRESS for cgroup based egress filters.
+Thanks for looking into it.
 
-For tun unique filters, how about using a shortened version of the ioctl
-name used to set the filter.
+When it comes to requirements, my intention was to keep the same
+behavior as before the split up of the remote_port field in 9a69e2b385f4
+("bpf: Make remote_port field in struct bpf_sk_lookup 16-bit wide").
+
+9a69e2b385f4 was supposed to be a formality, after a similar change in
+4421a582718a ("bpf: Make dst_port field in struct bpf_sock 16-bit
+wide"), which went in earlier.
+
+In 4421a582718a I've provided a bit more context. I understand that the
+remote_port value, even before the type changed from u32 to u16,
+appeared to the BPF program as if laid out in memory like so:
+
+      offsetof(struct bpf_sk_lookup, remote_port) +0  <port MSB>
+                                                  +1  <port LSB>
+                                                  +2  0x00
+                                                  +3  0x00
+
+Translating it to your handy table format, I expect should result in
+loads as so if port is 8008 =3D 0x1f48:
+
+      Size=C2=A0=C2=A0 Offset=C2=A0 LE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BE
+      BPF_B=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1f=C2=A0=C2=A0=C2=
+=A0 0x1f
+      BPF_B=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x48=C2=A0=C2=A0=C2=
+=A0 0x48
+      BPF_B=C2=A0 2=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 0
+      BPF_B=C2=A0 3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 0
+      BPF_H=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x481f=C2=A0 0x1f48
+      BPF_H=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 0
+      BPF_W=C2=A0 0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x481f=C2=A0 0x1f48=
+0000
+
+But since the fix does not work, there must be a mistake somewhere in my
+reasoning.
+
+I expect I should be able to get virtme for s390 working sometime this
+week to check my math. I've seen your collegue had some luck with it
+[1].
+
+Looking forward to your findings.
+
+[1] https://github.com/cilium/ebpf/issues/86#issuecomment-623945549
