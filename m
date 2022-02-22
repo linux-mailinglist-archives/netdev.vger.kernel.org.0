@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 422174BEFB3
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC574BEFB4
 	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 03:54:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239386AbiBVCxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Feb 2022 21:53:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33122 "EHLO
+        id S239400AbiBVCx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Feb 2022 21:53:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239327AbiBVCxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 21:53:19 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2057.outbound.protection.outlook.com [40.107.236.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3F225C70
-        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 18:52:55 -0800 (PST)
+        with ESMTP id S239383AbiBVCxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Feb 2022 21:53:22 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2056.outbound.protection.outlook.com [40.107.96.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C2125C7D
+        for <netdev@vger.kernel.org>; Mon, 21 Feb 2022 18:52:56 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qa+QXSS7SG3CyU4hH9EGMtlBmEKLAoPPWL3aeR3JpyP6q/AMOBcaRAWj390E1o2Yn4bQ1+fgu8YRnMXd6q46KTLXWvmVuGSKZ9LT9G0FrN+PHAcgRP4Mn+vahpirZbPeRAsOnVhsWISznDPEgRHXjI4EnpmW8tJJttlZpb/j7jiDlk7vF8WAqUGF2KE7Vq6RnjO5vonhtyqzdTp14IUK0ASz/WHuPgSAOr6itbK7GfxJ8m3TK0u4s/nsiEe8KtXWipRBp/Fu2aY5mueOk/2at2A0a7amaS76qJygiWc9Vp7Sdavw/glGj/ao9ObADbDEkPHm2CsSX5Df71ngKlaMiA==
+ b=FbScok4ylClkd+647pKjsDpSn5vDGvP1V2rlNjspLrcKcmoZY6OAx1LTrBdbhUGKRtSzXcFaDsDJ3PY++nCytjI/WZjaadWnTyIVZNS6iUnAkLhtMphIg4WV+TUUh3NW5ysi1YhpPTfNzY9DkFqscfo0ANCNHv370ZQAMKv3UB95+jP+QpHZPAMAUqUZnLm/kmbLDbvZhfikI8JKur7grHpBLflss9lB1512H5JJ7XXkQBDqEI2cDw3LPCzcu8t5XYlKWIGwCEGdTo2opfJm645H2cd3SludrFlR5XCi1jgIcmGBzpaNpEd8EnRpQvrB3E+FYNxV3PWmPpSagF3Rdw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M0UcotvqnOF7rrGpgVPOWrOzyGiBTzwvcayRF3Ps7BY=;
- b=ljjCiaQIKfP5hRA1pn2giTHCc3ODuxGyqtGspYcKcrlCeNOujQe6URuyIAxA4kjY2kK73tVJlrI4yLMulErFbZMIgf4/Mn1zYpXLkmkTTIY7UrWmIYzsPFtQDvBrPite8oHCPA0ye0JwoA7pccAIENlKXwuKHwPwqvKbnHAgRztIuekxHVy4paxelEJjcaPcd8ZRhmVA30SXF4GJ/KOu9eW0QhNK5inBUvNWQzFGeU7y95xj5rHG3v/q8ej23fu77Skjux11lnq4Q3JHh5+T4bMWPZlSGGjJa+jMZDUn0etltyG4gIv2/JoFWWCws5Cs8Nh3kssoEm1u4pB9p4pwBA==
+ bh=eK7jhTWWRtS2cdO5b8tS6YkVyZwvF5WvXtDDmmyXSmA=;
+ b=Tup0YjCJkP3DZ4KSCH4SpAIs8d5nZb4OInHHfI8ellbS/eg2QyTFZcOSZY+CMjyhN0kdrfcaEXM5jpWjuz5FJrJh69tH7G0bMZJgAYtMC3SWl7t2iRohWX9wYiY1DNb54YHaZ83CyWBYXO60tXzkfVDmOILPmyE/u8MbamB9kkGNBgKm0n7jw2lamg08s8FsNrvcpWvgFOWYdLHCn7lgqtvu+KMM3CBMk47xrk5vurngG/EdRPVjE0W9cVO589f/dzFmQe5imxhEDiw8ttJFS+53k8sE2cCLOwst7DDNk7MuOtoxCLcR3sh51BF4YuVByScpYboeQwUJQK/hUez/pg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  12.22.5.234) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,17 +28,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M0UcotvqnOF7rrGpgVPOWrOzyGiBTzwvcayRF3Ps7BY=;
- b=nA/OQdh3yrmc82bGFK7vFiscsI5OK15ZRqoyX2vf659LxpgOlLrSREyCEg6jTFKW8Ntnm1Yk3bFAXLU732Y2GLRLcxQbWEI7GXrK+mPI6Q2IbnXCqOL9mNaz3J9oylWwkbkJGIuVvhofu3BYXytXtNKC3m8jOgmdpYVou1UIc8uSqyKMbTVjSyZh/jsJimMWvMc+vCHAKk6fzl9A4yq5USTQgCGc7hkUM9X7Fzgk4+wsW2aVNwkGWoIuQRwJekyqBpgyIC+3zvrcQEwwSzCiRzKeqXtOd6oluFwWnvzst/zIRPyj5pdvLKJkKbcI0rfJ7hoXNH8aHGvb5NSErbRftQ==
-Received: from DS7PR05CA0066.namprd05.prod.outlook.com (2603:10b6:8:57::11) by
- DM4PR12MB5745.namprd12.prod.outlook.com (2603:10b6:8:5c::7) with Microsoft
+ bh=eK7jhTWWRtS2cdO5b8tS6YkVyZwvF5WvXtDDmmyXSmA=;
+ b=J5/k72iP1Ppc7RcaWdrFYpsT4BirUaZDtWhy3emgydO3ts+mFYDqHOLu0o2Q37+DPkvlNihY8LEzkfZ9kH2tI88BGJiazRDHxmSdinQXs8uZ0Eyj2GA6zW/dKbzhHXxDFrF6fIJJ1UHZFKQyaVfAFHrs2x4vclKuLA5UJFGqnoCJhhgf8LkllCMGCT5IpTUzDW2IM92/eBR3Czh+/0qsRXfeHW/Glt1apPw+H599mM3U1gtXeeE/j54QVCPtbFKPrdpn4pYlLE3e27pQyUJfyuitwHo1Eggz8z1B4pwpodvraHBBVP8gMR1m67Tu8VPHAqP5eQ3pYs4D2fWGJYVbNg==
+Received: from DS7PR05CA0072.namprd05.prod.outlook.com (2603:10b6:8:57::7) by
+ DM6PR12MB2811.namprd12.prod.outlook.com (2603:10b6:5:45::28) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.17; Tue, 22 Feb 2022 02:52:53 +0000
+ 15.20.4995.24; Tue, 22 Feb 2022 02:52:54 +0000
 Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:57:cafe::f2) by DS7PR05CA0066.outlook.office365.com
- (2603:10b6:8:57::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.8 via Frontend
- Transport; Tue, 22 Feb 2022 02:52:53 +0000
+ (2603:10b6:8:57:cafe::33) by DS7PR05CA0072.outlook.office365.com
+ (2603:10b6:8:57::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.7 via Frontend
+ Transport; Tue, 22 Feb 2022 02:52:54 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -48,14 +48,14 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (12.22.5.234) by
  DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 02:52:53 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
+ 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 02:52:54 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
  (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Feb
- 2022 02:52:53 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 02:52:54 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 21 Feb 2022
- 18:52:52 -0800
+ 18:52:53 -0800
 Received: from localhost.localdomain (10.127.8.13) by mail.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
  Transport; Mon, 21 Feb 2022 18:52:52 -0800
@@ -64,9 +64,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <stephen@networkplumber.org>,
         <nikolay@cumulusnetworks.com>, <idosch@nvidia.com>,
         <dsahern@gmail.com>, <bpoirier@nvidia.com>
-Subject: [PATCH net-next v2 06/12] vxlan_core: add helper vxlan_vni_in_use
-Date:   Tue, 22 Feb 2022 02:52:24 +0000
-Message-ID: <20220222025230.2119189-7-roopa@nvidia.com>
+Subject: [PATCH net-next v2 07/12] rtnetlink: add new rtm tunnel api for tunnel id filtering
+Date:   Tue, 22 Feb 2022 02:52:25 +0000
+Message-ID: <20220222025230.2119189-8-roopa@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220222025230.2119189-1-roopa@nvidia.com>
 References: <20220222025230.2119189-1-roopa@nvidia.com>
@@ -75,24 +75,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 059d8313-32b5-4223-1c49-08d9f5ae6c4a
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5745:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB57456F7FF447208B489C2766CB3B9@DM4PR12MB5745.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 066c42da-8f1c-42e7-eae8-08d9f5ae6cdd
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2811:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB28110EB4E805BFAA96AD4027CB3B9@DM6PR12MB2811.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uzSYoAwffxy5/HcEeRwxMUvtnO9rGNheeHtw+R7fnri1bIkylW80G3eBbHHxsZBfCEj92z7saV9OjSpMNNIC3z4yh5KiMVVVLJJSKqPaCVltIqbZgh5NEvNihBhVEIDG3WLD9+L84N2TKCEB+BIikQCtXI+Sgs0agoPTNhhsm0lLcTD4pME/y54Ygi4KkeTofcY8o0YSka7Vi67S9EZKwIiGY1PU5BwzadXGuBy1uAoWgr+3+J5DDp57sWRUQXUeKUoCuoUG3n4bT92BRtwptlt/M2P69Vx2qAvMfTawwEqWUl1U9VT+bdY5/z73uR3XItYFnB1isaeV2bJ+xL8E+/131NOsm/v9huUdieP4WDfZa7zqnWWVU0GDMkBkX0GVaLqD2srpFtvcn7rrguvklM1KOXXaXD3d6d5EstG0DELi+XUjRDbUI+YTbsHR3Cw/vuu1lSVyDwHdhRkbYJXdwL0F9a/rOiqFj6eM/577ZHYxC6kGznFLiKdxLL/hOwUZGqmasnhZT4cDastC3BJyaUX+xaDTEBoXal95qTwNj6yPCUvC6Vn+fu9E0NAimT3Fx1vSQXJBxNcXaL3v9X2esLr4x+x2UH71vUvd1XX1sn2tEy4v937/PkRmRPoL+RyR/uHGLFYmVokzMSZUJrC5mJw7tnv6a/lOvIc8SozQlYSGdNYCKXVoD4jooaeEZKdU9JRXcz72dItCG2Q4KuU3sA==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(5660300002)(8936002)(186003)(26005)(426003)(336012)(81166007)(2616005)(356005)(1076003)(70586007)(82310400004)(107886003)(8676002)(4326008)(6666004)(508600001)(47076005)(54906003)(36756003)(110136005)(70206006)(83380400001)(36860700001)(86362001)(40460700003)(2906002)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: b/KzzuHZeU7tlxNCa/okr1FUqYsqRcOMFxmNVpWpIowL8TCQIZIBFJ/LvynLtcXQJZ+sfFMPq8rhmuAfoZuM83210G9HD1OS1S0HDn0395I6t2rNrUHWuMzOmLtjIy/9CTxfl9EG7pKpRAJ9q8ylXc2ctdsN8BApb1/ZOPgvCMadTD3VuBSUWMGH5K3iZz/jpb060v5hcfGD7bTEWAvSkRq4NKwuHxdXoQHjwx/LnAHUr4d3C3/o/IrNQRTceGMk5jNrQXde8aRxLW1rgOuP3bV32O1R0OpPH4HPivSZXaDLyV40+jhuYsWKS68usxgqI1Q6WWLsUVHoVCfAM6Lq/hdYWtzLanF8NAOAwSfCcDV8DIgrznzK3V8S1iYv48xQAwVSLjmNWMuMn3zpHMlRdwhnqvcm3TK8AHb7eyPd5fo5AUKoUarJSrHN14gz2sS8b1NDKdubK85ffgiIetzUI2oaaG+vJT0V3lUv8g2bGhqw+2T2vlY8/Lhobu1spQr1SpFKRiPmZNUn+8f7w8mnqegRdeITktPz9Dj4uFEeUxjTl6G1fHrqvgxkRy6r8BFwIdaxKupOGCcRmM4BSzFBWV9Je/h9kWCfA25v5uTm7+6nVZbB1ZO4UxeZ6P3LIfLVZ/F+kih2xub8Casghsq4JTxhfjeAJSRMZThigSGuWTK6FotexntDNoBCb8Ohf/IJhhnTB34AcYezuH3ZqkQWCw==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(508600001)(8936002)(82310400004)(356005)(86362001)(1076003)(54906003)(110136005)(40460700003)(83380400001)(2906002)(316002)(5660300002)(2616005)(107886003)(81166007)(8676002)(186003)(426003)(70586007)(336012)(70206006)(36860700001)(4326008)(26005)(6666004)(47076005)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 02:52:53.8296
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 02:52:54.7983
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 059d8313-32b5-4223-1c49-08d9f5ae6c4a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 066c42da-8f1c-42e7-eae8-08d9f5ae6cdd
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5745
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2811
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -103,82 +103,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-more users in follow up patches
+This patch adds new rtm tunnel msg and api for tunnel id
+filtering in dst_metadata devices. First dst_metadata
+device to use the api is vxlan driver with AF_BRIDGE
+family.
+
+This and later changes add ability in vxlan driver to do
+tunnel id filtering (or vni filtering) on dst_metadata
+devices. This is similar to vlan api in the vlan filtering bridge.
+
+this patch includes selinux nlmsg_route_perms support for RTM_*TUNNEL
+api from Benjamin Poirier.
 
 Signed-off-by: Roopa Prabhu <roopa@nvidia.com>
 ---
- drivers/net/vxlan/vxlan_core.c | 46 +++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 18 deletions(-)
+ include/uapi/linux/if_link.h   | 26 ++++++++++++++++++++++++++
+ include/uapi/linux/rtnetlink.h |  9 +++++++++
+ security/selinux/nlmsgtab.c    |  5 ++++-
+ 3 files changed, 39 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index df8ef919216c..8c193d47c1e4 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -3554,13 +3554,38 @@ static int vxlan_sock_add(struct vxlan_dev *vxlan)
- 	return ret;
- }
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index e1ba2d51b717..3343514db47d 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -712,7 +712,32 @@ enum ipvlan_mode {
+ #define IPVLAN_F_PRIVATE	0x01
+ #define IPVLAN_F_VEPA		0x02
  
-+static int vxlan_vni_in_use(struct net *src_net, struct vxlan_dev *vxlan,
-+			    struct vxlan_config *conf, __be32 vni)
-+{
-+	struct vxlan_net *vn = net_generic(src_net, vxlan_net_id);
-+	struct vxlan_dev *tmp;
++/* Tunnel RTM header */
++struct tunnel_msg {
++	__u8 family;
++	__u8 reserved1;
++	__u16 reserved2;
++	__u32 ifindex;
++};
 +
-+	list_for_each_entry(tmp, &vn->vxlan_list, next) {
-+		if (tmp == vxlan)
-+			continue;
-+		if (tmp->cfg.vni != vni)
-+			continue;
-+		if (tmp->cfg.dst_port != conf->dst_port)
-+			continue;
-+		if ((tmp->cfg.flags & (VXLAN_F_RCV_FLAGS | VXLAN_F_IPV6)) !=
-+		    (conf->flags & (VXLAN_F_RCV_FLAGS | VXLAN_F_IPV6)))
-+			continue;
+ /* VXLAN section */
++enum {
++	VXLAN_VNIFILTER_ENTRY_UNSPEC,
++	VXLAN_VNIFILTER_ENTRY_START,
++	VXLAN_VNIFILTER_ENTRY_END,
++	VXLAN_VNIFILTER_ENTRY_GROUP,
++	VXLAN_VNIFILTER_ENTRY_GROUP6,
++	__VXLAN_VNIFILTER_ENTRY_MAX
++};
++#define VXLAN_VNIFILTER_ENTRY_MAX	(__VXLAN_VNIFILTER_ENTRY_MAX - 1)
 +
-+		if ((conf->flags & VXLAN_F_IPV6_LINKLOCAL) &&
-+		    tmp->cfg.remote_ifindex != conf->remote_ifindex)
-+			continue;
++enum {
++	VXLAN_VNIFILTER_UNSPEC,
++	VXLAN_VNIFILTER_ENTRY,
++	__VXLAN_VNIFILTER_MAX
++};
++#define VXLAN_VNIFILTER_MAX	(__VXLAN_VNIFILTER_MAX - 1)
 +
-+		return -EEXIST;
-+	}
-+
-+	return 0;
-+}
-+
- static int vxlan_config_validate(struct net *src_net, struct vxlan_config *conf,
- 				 struct net_device **lower,
- 				 struct vxlan_dev *old,
- 				 struct netlink_ext_ack *extack)
- {
--	struct vxlan_net *vn = net_generic(src_net, vxlan_net_id);
--	struct vxlan_dev *tmp;
- 	bool use_ipv6 = false;
+ enum {
+ 	IFLA_VXLAN_UNSPEC,
+ 	IFLA_VXLAN_ID,
+@@ -744,6 +769,7 @@ enum {
+ 	IFLA_VXLAN_GPE,
+ 	IFLA_VXLAN_TTL_INHERIT,
+ 	IFLA_VXLAN_DF,
++	IFLA_VXLAN_VNIFILTER, /* only applicable with COLLECT_METADATA mode */
+ 	__IFLA_VXLAN_MAX
+ };
+ #define IFLA_VXLAN_MAX	(__IFLA_VXLAN_MAX - 1)
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 93d934cc4613..0970cb4b1b88 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -185,6 +185,13 @@ enum {
+ 	RTM_GETNEXTHOPBUCKET,
+ #define RTM_GETNEXTHOPBUCKET	RTM_GETNEXTHOPBUCKET
  
- 	if (conf->flags & VXLAN_F_GPE) {
-@@ -3693,22 +3718,7 @@ static int vxlan_config_validate(struct net *src_net, struct vxlan_config *conf,
- 	if (!conf->age_interval)
- 		conf->age_interval = FDB_AGE_DEFAULT;
++	RTM_NEWTUNNEL = 120,
++#define RTM_NEWTUNNEL	RTM_NEWTUNNEL
++	RTM_DELTUNNEL,
++#define RTM_DELTUNNEL	RTM_DELTUNNEL
++	RTM_GETTUNNEL,
++#define RTM_GETTUNNEL	RTM_GETTUNNEL
++
+ 	__RTM_MAX,
+ #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
+ };
+@@ -756,6 +763,8 @@ enum rtnetlink_groups {
+ #define RTNLGRP_BRVLAN		RTNLGRP_BRVLAN
+ 	RTNLGRP_MCTP_IFADDR,
+ #define RTNLGRP_MCTP_IFADDR	RTNLGRP_MCTP_IFADDR
++	RTNLGRP_TUNNEL,
++#define RTNLGRP_TUNNEL		RTNLGRP_TUNNEL
+ 	__RTNLGRP_MAX
+ };
+ #define RTNLGRP_MAX	(__RTNLGRP_MAX - 1)
+diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
+index 94ea2a8b2bb7..6ad3ee02e023 100644
+--- a/security/selinux/nlmsgtab.c
++++ b/security/selinux/nlmsgtab.c
+@@ -91,6 +91,9 @@ static const struct nlmsg_perm nlmsg_route_perms[] =
+ 	{ RTM_NEWNEXTHOPBUCKET,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_DELNEXTHOPBUCKET,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_GETNEXTHOPBUCKET,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
++	{ RTM_NEWTUNNEL,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
++	{ RTM_DELTUNNEL,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
++	{ RTM_GETTUNNEL,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
+ };
  
--	list_for_each_entry(tmp, &vn->vxlan_list, next) {
--		if (tmp == old)
--			continue;
--
--		if (tmp->cfg.vni != conf->vni)
--			continue;
--		if (tmp->cfg.dst_port != conf->dst_port)
--			continue;
--		if ((tmp->cfg.flags & (VXLAN_F_RCV_FLAGS | VXLAN_F_IPV6)) !=
--		    (conf->flags & (VXLAN_F_RCV_FLAGS | VXLAN_F_IPV6)))
--			continue;
--
--		if ((conf->flags & VXLAN_F_IPV6_LINKLOCAL) &&
--		    tmp->cfg.remote_ifindex != conf->remote_ifindex)
--			continue;
--
-+	if (vxlan_vni_in_use(src_net, old, conf, conf->vni)) {
- 		NL_SET_ERR_MSG(extack,
- 			       "A VXLAN device with the specified VNI already exists");
- 		return -EEXIST;
+ static const struct nlmsg_perm nlmsg_tcpdiag_perms[] =
+@@ -176,7 +179,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
+ 		 * structures at the top of this file with the new mappings
+ 		 * before updating the BUILD_BUG_ON() macro!
+ 		 */
+-		BUILD_BUG_ON(RTM_MAX != (RTM_NEWNEXTHOPBUCKET + 3));
++		BUILD_BUG_ON(RTM_MAX != (RTM_NEWTUNNEL + 3));
+ 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_route_perms,
+ 				 sizeof(nlmsg_route_perms));
+ 		break;
 -- 
 2.25.1
 
