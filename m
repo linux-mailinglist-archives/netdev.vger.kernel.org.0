@@ -2,119 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62EEC4BFE97
-	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 17:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C23244BFF11
+	for <lists+netdev@lfdr.de>; Tue, 22 Feb 2022 17:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233038AbiBVQb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 11:31:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
+        id S234245AbiBVQnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 11:43:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232197AbiBVQbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 11:31:51 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84657167F91;
-        Tue, 22 Feb 2022 08:31:25 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 50AB35802CB;
-        Tue, 22 Feb 2022 11:31:22 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 22 Feb 2022 11:31:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=4ss1OyObCw6S1k0Bd
-        D49Bd/baqeCBEC7bJc1jbF4kQ8=; b=Zr/jral3v63ownQ139f6+E1aDV9q8GCHc
-        KcTQMkkm41zRVwqqeRw+mE0twRJb8xNBgaoDzK4OW7As70ult9xz7UFXuMDlqGTN
-        Vin2dmDadlbFkZtCZcMg7Qepi5DEEWurHkkfkgtR5WYoMS2ccaj6VTUjUyjxTR+J
-        Dco1PWhrY+HXa+WRv6BHHjj5ly3XiQH5KOEDii3t6MfowBddgHK2Zr+hJuq3q9tp
-        WnLprQCI2WxP5fcFvqyN/aq+YsCIhlGOp87G9/UVpt7NPAM2qQ8bqGv3L/0eFeXE
-        RbqiQ50evYv7FFDIJddcPlUwjhkDWNalKUFtkBsq2EAXVwz/WGQog==
-X-ME-Sender: <xms:2A8VYlizXRrpm-lof6juTHVPTX1wdlyGcFJyJO-e04ClbWBT2p0iww>
-    <xme:2A8VYqCIHFYedOOfl_LLu6kgSn_yve2Yv8nV4WsMVQZBM-sbFcoteoLXVm_dnu03r
-    SuIfjaUenoA-Ow>
-X-ME-Received: <xmr:2A8VYlFExvdFaBqqXvIBd-LpuqQF-6srEFT3vuEshY_PPg82dWeH1Rp-aPqXuVPm6CFRPErT7Gv3oV16eZ4as_h6awI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgdekkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:2A8VYqRIWx5dxUGGtzepG7eWrUSMcjCBLDsqggKFU8COb1rXcMYuyg>
-    <xmx:2A8VYiwKlVsG-o6frmym9pzzrfLIfO5B5JP2SxOpinJMGQbwg_r3Fg>
-    <xmx:2A8VYg55D-9rXrFLrexJEzc2_fsRt3GfRhQ8HXMmKDnGobmrAvanFg>
-    <xmx:2g8VYsqmbIT4gyC0pp00XkrHZtXN9KfiWMtZSAajG9LDBUInFMKZWQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Feb 2022 11:31:19 -0500 (EST)
-Date:   Tue, 22 Feb 2022 18:31:14 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Baowen Zheng <baowen.zheng@corigine.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jianbo Liu <jianbol@nvidia.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        oss-drivers <oss-drivers@corigine.com>,
-        "hkelam@marvell.com" <hkelam@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>,
-        Nole Zhang <peng.zhang@corigine.com>,
-        "louis.peens@netronome.com" <louis.peens@netronome.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "rajur@chelsio.com" <rajur@chelsio.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "sbhatta@marvell.com" <sbhatta@marvell.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        Roi Dayan <roid@nvidia.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "sgoutham@marvell.com" <sgoutham@marvell.com>,
-        "gakula@marvell.com" <gakula@marvell.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 2/2] flow_offload: reject offload for all
- drivers with invalid police parameters
-Message-ID: <YhUP0lVaq+M/mwdY@shredder>
-References: <20220217082803.3881-1-jianbol@nvidia.com>
- <20220217082803.3881-3-jianbol@nvidia.com>
- <20220217124935.p7pbgv2cfmhpshxv@skbuf>
- <6291dabcca7dd2d95b4961f660ec8b0226b8fbce.camel@nvidia.com>
- <20220222100929.gj2my4maclyrwz35@skbuf>
- <DM5PR1301MB21724BB2B0FF7C7A57BD1631E73B9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+        with ESMTP id S234277AbiBVQmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 11:42:53 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6712C7C34
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 08:42:27 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id m22so206551pja.0
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 08:42:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=n/+c7JbFhyjnuM8rIS33nSZUfbsXt4rwpS5ILzyufPA=;
+        b=Qnr2sGj5YPsbbFDTc1VeLfe1D2bPfGrHXjlhu9z/Btx79SBYWASuqbJoixivEhHgDI
+         olPgoIIvYjhwVzdfS7cO+pCWgmxmqsUdL7kt7RgBh50r4My4pYFKrQK4AXDY891+6b2O
+         jf3NCJx3MuifJnT/zDo2AbEEYmYNYqII2H0mJGAVynPBi1BC0JlkEk/BEUJv+2Ujyh/t
+         ri6ExdspwDnOkL7W/nYGiqV5ypKwsuVvkazCE1sKhSAHw3OsdpkAZqC8GrkekUpq8yMr
+         0JMnu2d3HtliiFTLQM3twOx5UHe95PM/59brnGokZ8X/OZWO11RZhkYhl4GwPHSl3Kno
+         qSCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=n/+c7JbFhyjnuM8rIS33nSZUfbsXt4rwpS5ILzyufPA=;
+        b=LyqYjL7KYAq6Q+PuiB2uE7sMIJurDufANT89SsTuolfvpAi3UCmCRIyfvUrXHhgMme
+         SyPtEBKov8JdXGGDTUMEL3VLFk6nhvJ5VuHrT4aGjwxfPZ6aVAZCGG0I4HnUsBEoDBFe
+         ZcbPF/N9O/bptwikmDlKazTvi8HKINKKBhStoFjW0hFjah5X0ZLgO9Un0Q4CZWYqHv6Y
+         Qc0f1T5W8PG0AGKlEVpuDTu6XF3eL7KtlcPr1pxC1Qc7UrvtlfFPhWMT2HlQNz62MYPr
+         zwNw9PCMFyo5WzqzpHAWRk2bm2Cm4H4GBqHvk8Qqm2K8UsOZm7S3D2k12+eJPYEsKNS5
+         kj1w==
+X-Gm-Message-State: AOAM533m5Re7mlXjZyhJZcYeWv8KLuak4YFjsFgbxWGAtwZEgltpGJrG
+        INYDAZpmmm2A+umV4ELwqIQ=
+X-Google-Smtp-Source: ABdhPJygCPgucR7iILSkvfmqhkFbFl2oJiJaBW61ncj5XGh5b7liWZRD+Lw7W4kAIX8ybpJOS22p6g==
+X-Received: by 2002:a17:90a:a02:b0:1bc:71a6:87ad with SMTP id o2-20020a17090a0a0200b001bc71a687admr4212946pjo.15.1645548147058;
+        Tue, 22 Feb 2022 08:42:27 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id j3sm17522285pfc.43.2022.02.22.08.42.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 08:42:26 -0800 (PST)
+Message-ID: <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
+Date:   Tue, 22 Feb 2022 08:42:24 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM5PR1301MB21724BB2B0FF7C7A57BD1631E73B9@DM5PR1301MB2172.namprd13.prod.outlook.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
+ WoL IRQ
+Content-Language: en-US
+To:     Peter Robinson <pbrobinson@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>
+References: <20220222095348.2926536-1-pbrobinson@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220222095348.2926536-1-pbrobinson@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 10:29:57AM +0000, Baowen Zheng wrote:
-> Since almost all the drivers that support to offload police action make the similar validation, if it make sense to add the validation in the file of flow_offload.h or flow_offload.c?
-> Then the other drivers do not need to make the similar validation.
-> WDYT?
 
-But not all the drivers need the same validation. For example, nfp is
-one of the few drivers that supports policing based on packet rate. The
-octeontx2 driver has different restrictions based on whether the policer
-is attached to matchall or flower.
 
-We can put the restrictions that are common between all the drivers
-somewhere, but it's not that much and it will also change over time,
-resulting in needless churn where checks are moved to individual
-drivers.
+On 2/22/2022 1:53 AM, Peter Robinson wrote:
+> The ethtool WoL enable function wasn't checking if the device
+> has the optional WoL IRQ and hence on platforms such as the
+> Raspberry Pi 4 which had working ethernet prior to the last
+> fix regressed with the last fix, so also check if we have a
+> WoL IRQ there and return ENOTSUPP if not.
+> 
+> Fixes: 9deb48b53e7f ("bcmgenet: add WOL IRQ check")
+> Fixes: 8562056f267d ("net: bcmgenet: request Wake-on-LAN interrupt")
+> Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+> Suggested-by: Javier Martinez Canillas <javierm@redhat.com>
+> ---
+>   drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> We're seeing this crash on the Raspberry Pi 4 series of devices on
+> Fedora on 5.17-rc with the top Fixes patch and wired ethernet doesn't work.
+
+Are you positive these two things are related to one another? The 
+transmit queue timeout means that the TX DMA interrupt is not firing up 
+what is the relationship with the absence/presence of the Wake-on-LAN 
+interrupt line?
+
+At any rate:
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
