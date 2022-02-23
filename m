@@ -2,184 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2179F4C1433
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:31:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2EA54C1443
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236064AbiBWNcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 08:32:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
+        id S238580AbiBWNe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 08:34:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234476AbiBWNcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:32:22 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13F09ADB2
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:31:54 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id v28so17208485ljv.9
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:31:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7dnyHmrO36rrHyXARPRiGQlAPqAL/RPhHWzq7NmeXFU=;
-        b=DCpZuBYw1K5GBm3Yf8oboPq/eMpixfVzGH8pD4UEALwU6Piq0DHgYQgOt/7CAvI306
-         Dcz50R2TMDksWKMuLwdtBmupzNUlRGkvZEr3wrUGXHDsry2cMM5zBquEuUE/lGQio3cy
-         dQioRFt9XmtopGgUlNHRhYJyo7M9qv/QhTJs7H/sBz6Y+d0QTU8BHf6TQuNWtwwlfHVy
-         CsK3Xgbm2ngEooxg6hRKNJbBTvfjYRUDLlL01JPPYENYx80hxKuFn8POj2bETak/AHLu
-         Za/hbi5Gqnd8nDCavCmWhSt5NPE4zh7m8WDnAJZpqs6lI7TkKUByTA7ZENXTV7ySlrYX
-         jQDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7dnyHmrO36rrHyXARPRiGQlAPqAL/RPhHWzq7NmeXFU=;
-        b=Ekrk9Rhp2i3Uk7xlDWwK0QrBCxoAAND4UDUAeflAvDf18e2V0u6QaBSLNlSiWG+49h
-         4mHoNUtCqq00vfeJACvZOQ2a6qWT2Lc2R3bppRlihyjyUE5YzrZE8acQh7ty9i2jFMhg
-         Q4KT5JIRLH2CS5O2YB2cEuSbUBh3pwbFjWygectgR5ePA0wU80R09/Btx9gj6V+MOnQT
-         1JdvQ+RJVIFqpdCenbeCcuimXLZ3+4IoJ4A+Xlvbdb0aHE3YiwRa3OgCUb9VozluAs0V
-         D+KC9iR7e9eyvNKrSC+LewxBSIUg4v+dtJx+TrnNBQjI6CkRHmOj/b/x1jweLqhb6NX0
-         KXOA==
-X-Gm-Message-State: AOAM533Yz71+l+SU0ONnoFCsYgc5HtIPXbMXQjQFqdcJisyZsIIpzFmO
-        aNpEVWYZzymEofu/N+OvmZt75SVih2XGO/oEWe8fcA==
-X-Google-Smtp-Source: ABdhPJwJY+a32PVbCbOr6F7WLpIRa1HJ6cmeP7R7LTqqu3aAVT2hhZelkzr7J95bPvGGBDkYywmSkJE5OgieO0xkm/Q=
-X-Received: by 2002:a05:651c:1509:b0:246:5f82:eed2 with SMTP id
- e9-20020a05651c150900b002465f82eed2mr1509589ljf.271.1645623113097; Wed, 23
- Feb 2022 05:31:53 -0800 (PST)
+        with ESMTP id S231817AbiBWNe2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:34:28 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130128.outbound.protection.outlook.com [40.107.13.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6328B9BB83
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:33:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W0xciNGnyc1Vr1C1n7A7MhZ6tNF7b3LQi/jH8cAmJ3qkciDBTHwHGrf6W5UIf+D0sAtRox5Vl9cCd/wIJmiyvTbWQLAeVxEx3t1R6guUxE4I5bzWjCvGQKRhq/E51WoOliGQYrM9v/pNHd97H3gy/uUj1uHxS6ZYyLTf1+kyMKIsJMzoBzSkBPKYBZad7AtDu5xbqizATDf7bu9z/F+u/lacye1dx+OWDwcBKhAhCK9RA4HSsv2jojbEPykI0cVrL8B4D9LzmACNaWnlD2Y45UobV+K8GVRYDJEOpEvw9aYrhJZpgRzSyTby/Om+c8UyIRBS6AhoIJCFXvj5lWQr4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d7Pk5JfFYV2C3nB5qm/uodcEfnQEHFGCJ5uE1NZp0Jc=;
+ b=agm97jL5Q66byKt9fKUYvmMjOApwm83XiWJP+P2eJj9DXNIpqBx4X1375pj/vADnzGpau+YF9l6NfJK1epRwA5eJjQMU8gP+3PZefGlCBSSGNIcdcF6CVHTY+zgcqnB4PhLWjRQ75yv0tsN0NsZC6k3clVO2g5a/is39W4A3VMGFrOJ6WwkTAFDIf9Uei46RLZ9ogI+ko0btqbAjc+tpj+trdZguB1kIUmlV7lvVc6h4tpyXOglOWKHWZ3o4zaGMqScVOdwhIpVJtDbkVy1r3CNW2uwYjrXQI9qE3XyTg4I3CXOlcmFrtEVSO6LbZXjlxkPqOEk+jULYU4cUafUITQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ugent.be; dmarc=pass action=none header.from=ugent.be;
+ dkim=pass header.d=ugent.be; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ugent.be; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d7Pk5JfFYV2C3nB5qm/uodcEfnQEHFGCJ5uE1NZp0Jc=;
+ b=geAUadhjFeNOjWQ8xZgvxcKbXXYMTchitWwE9sXIKjwgtEZzAYShVE679JkpFgelkTIQd98iHw4hRRoJRj9OcDTiwwpNCqJOHuDzxKDoQ3sTeolKIX3rqejdRrjMFIHn+G8w21CWQMLvqLSZtoMDoBt/FTk6hEzhhH4CwbMgqLU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=ugent.be;
+Received: from AM0PR09MB2324.eurprd09.prod.outlook.com (2603:10a6:208:d9::26)
+ by HE1PR0902MB1753.eurprd09.prod.outlook.com (2603:10a6:3:f3::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Wed, 23 Feb
+ 2022 13:33:56 +0000
+Received: from AM0PR09MB2324.eurprd09.prod.outlook.com
+ ([fe80::fc49:e396:8dd8:5cb9]) by AM0PR09MB2324.eurprd09.prod.outlook.com
+ ([fe80::fc49:e396:8dd8:5cb9%5]) with mapi id 15.20.4995.027; Wed, 23 Feb 2022
+ 13:33:56 +0000
+Message-ID: <fab6f644-6bb6-675c-3573-2ad5faa2d8d3@ugent.be>
+Date:   Wed, 23 Feb 2022 14:33:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] ipv6: prevent a possible race condition with lifetimes
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+References: <5599cc3b-8925-4cfd-f035-ae3b87e821a3@ugent.be>
+ <20220222164317.4c7f6bcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Niels Dossche <niels.dossche@ugent.be>
+In-Reply-To: <20220222164317.4c7f6bcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PR2P264CA0029.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:101:1::17) To AM0PR09MB2324.eurprd09.prod.outlook.com
+ (2603:10a6:208:d9::26)
 MIME-Version: 1.0
-References: <20220125084702.3636253-1-andrew@daynix.com> <20220125084702.3636253-2-andrew@daynix.com>
- <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com> <CABcq3pH7HnH_-nCHcX7eet_ouqocQEptp6A9GCbs3=9guArhPA@mail.gmail.com>
- <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com>
-In-Reply-To: <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com>
-From:   Yuri Benditovich <yuri.benditovich@daynix.com>
-Date:   Wed, 23 Feb 2022 15:31:41 +0200
-Message-ID: <CAOEp5OeGNezTasp7zsvpFHGfjkM4bWRbbFY7WEWc7hRYVDSxdA@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Andrew Melnichenko <andrew@daynix.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Yan Vugenfirer <yan@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a72d4a59-3f5c-4be2-d53a-08d9f6d123c6
+X-MS-TrafficTypeDiagnostic: HE1PR0902MB1753:EE_
+X-Microsoft-Antispam-PRVS: <HE1PR0902MB175378B4F4AA06A42E41BA44883C9@HE1PR0902MB1753.eurprd09.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ul3EdPKp7YrtgSr/SVY7HpaNwN750aGEppxGcYywxtc7NPgJdP7HEYwyVfHr9YP6Wc87FCyz0vHDvyN7RnySgunxjUWOjGJ2hjlUlsrN+7WHjEyvX6ZpA3FHigesKqCNajfKB05QQeqrEr4eIjB7eKVxXhzhVIh4dLRMEp5FVLpChS7ZT/dvGEisSIeZ0WFOk2yp9dGtgIdXcb+bW4buomlHnQiGhBUQlEf6bg1F6DZLbmXo475GhAh9r2X56Mce3siKs2PkNPvE+gHX/Bo8VwL3BQgPi/RGXROSuFBzg4NqFLiKgDe1USd0nARtd5XQQOg4Y9bxG5/Yx2tiFdLNctu4YIhY3yFIv3RsyFRJWWPsD+3AHHdzGhgpmXLiZXRC8Pe2tiUyZs6Q02Y59TOEPcaKH5ux+eNSD8m0LIa2zRe/Ps7CVzNf7lux2cePITKZIhgxNe8hye9vug1UUECTKcYkvMVxhrE+xZzHUhjo4F1QCdSB9zrnFD88ObnA0k5DYJrN5z95hoM07WUQr3vYF9fIxgs+2cu1TtiyH8Kom/23QE5hzs4tltVWD9VjyL0fQYUzqTuyqw5Wa2M8EoQOzu86Q5VMNydaZq+TWUyop6JOPjnIUGZyLnuSnvcf1nEu3MmPjtZZN8TBuum/l0etxwlxTCLfLMypQJgzJuXftpq7L3d+FcfzvgThRc8XpWv0gGgebZpONy/S6H58tQ1TST7giR8HyXcDVKbmxzraJGU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR09MB2324.eurprd09.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(6666004)(6512007)(66476007)(66556008)(66946007)(54906003)(53546011)(6486002)(6916009)(31696002)(786003)(6506007)(316002)(508600001)(86362001)(2616005)(8676002)(44832011)(83380400001)(4744005)(4326008)(38100700002)(5660300002)(8936002)(31686004)(2906002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QXF0b2tjM3FIWStHRThsRWpqY3RWR1ZQVkVRdXNGQml4QmRwTVBqWmM2QmE5?=
+ =?utf-8?B?R2hUYjFyRU1LUUY2SVBMOUUzOTg1R2Y4L1lrUyswT0hSRVNJZjd4NVJncHcz?=
+ =?utf-8?B?OWQ0MGE2T1ZqZDJzRU1ua3NPZG4vSHhlaE54NmsrdFVGYmZFTWlyV0pLVUEv?=
+ =?utf-8?B?bGc4OGhpSi9IZk5UUG85MVppRE9PL2tsVC9iSmJZVlRKK2FaS3ZkcHRERjJ4?=
+ =?utf-8?B?UzdhSTRGMGFFTjNIdnNLSmJQZzl4YTA4RTJobzJDL0VyQ0JQNnc5cGx0MS95?=
+ =?utf-8?B?cWNFRWhBVHM5R3MrdVAvaktnQmdQVEQ1TGN6cE5ENWVBUUloczhyUmd4dmtN?=
+ =?utf-8?B?bzN6Q0xpYnpkYkllWGNiNWxnZjRXYXE1eVp0MU1WTWo1L0RlNTI4QVQwdnB3?=
+ =?utf-8?B?YnVUai9lbTZNUmQ5QWFVRHRKTjIzRFFuWkg3Sm5XY3djZDIxTkdSclVPY2Y1?=
+ =?utf-8?B?eU9jRmNpaGJIV0Vwc3pPc3I0cGZQUE9DTTl0WU54cGp3NHpsQ0dXekRrQllk?=
+ =?utf-8?B?cEFGeDVITkp0dk5pT0MwRzBpaFVNUGQ2ODRRMCswU2VqMFZXVGw5V1dGS0lp?=
+ =?utf-8?B?Qlg0bHJQQlJzUmxtN1luMGJpRDNWeGVCSkRJYkJZN1AwTlpIUExXaGdLZ3RS?=
+ =?utf-8?B?cjVuTzk3YVVpM3JOb3Q2S0Uwcm51U2Y4QVcrUENkWGpuQlFyekFHYUhDa0s0?=
+ =?utf-8?B?Vk1HTzVOZ0t5a2JvblpzeGVobWhEYkI2bEdPR3NnTExrM1docDJIeWJveTcy?=
+ =?utf-8?B?TkhrQnhhOU15MVRsWEpRS3Nram5ZSzM3SG1aSnJQUUo3V3lRNExGR29kemJn?=
+ =?utf-8?B?OVBuWkx5YXJUbGVFZFZvVGNtekJaRlY5ZjdFYWd6Y2I0cU1jVXBoVDBwb0V5?=
+ =?utf-8?B?WlF3dnZ4QmNQTmJ3b1E2VG95ZmhWQlhkelBGR3o3K041VDltQTB1SG5Gbmhk?=
+ =?utf-8?B?L3FiMitPWGQ2MWtzTG5PMTRzaE1SaUpiYWVXQks4OEZKMExTdm9tSHc2SDVh?=
+ =?utf-8?B?ZXp0TUxWZWRqZEZPTDdueERkYmEyc2R3eFQwNjdxaEVwTlZYWTcxcmV5UlVL?=
+ =?utf-8?B?bkE5WHlSem54VkRYL0tqbmlXK2Y5cmgvakIxL3IzV3VFbWd1TEZ3ZGh1anRK?=
+ =?utf-8?B?RDlyR2hnQ2ZBc1QxUmQwQ3JIaStpRWNhRXRtYUlHT29JTjAwdmpPYXExMm1r?=
+ =?utf-8?B?L0luYmdkdU9RNVNITEpLa3FVVm5CTXVGbnZkV3BDSmhON3JtSkhMN2thOEZV?=
+ =?utf-8?B?Y25La1MrWndYMjhtaUdhendpb0dGYVB0SWhGS2NmN1dwZzdnQkFsZ0M5TFo5?=
+ =?utf-8?B?WlNTbXJhWjFBSkNPZ3EwcmZKWERhRGtYc3Y4OU9JckoxYVRDUk1uVGlCMkcv?=
+ =?utf-8?B?Vnd5dnpoaTh0N2ZQN2huV0E4cmxjWm52WHZOOG5iaFo1Wm1YR0I5eTF6VWZp?=
+ =?utf-8?B?VmFxa3Z2VFJ2NmtqZWVvUnB6cHBPZUR5MGtUK1BwY0JxOWxCTDdwUFIrVzVV?=
+ =?utf-8?B?UXFSQUcwRyt1b3pxQ1RQbHBoQWFma3ZRWjlnT1l4S2ZnZkxjQ1daTElKSzNq?=
+ =?utf-8?B?b3V4NzJCdm4rUm5LaGJsVlFZUFRVUWo5UHkzdk1USTlwTUxkOWdrcGtlYTNn?=
+ =?utf-8?B?UGRvNW15cGVsdXliMWp0WTF4QzhmaTNSZTltdFJXQWtveThJcDJEV2s4OUFQ?=
+ =?utf-8?B?YnM1VVQ5dkExbFdOeDhqZEJ6REZDNHNKYVNoZ0lnVU5TcXVUK3dXUXYvM1ZK?=
+ =?utf-8?B?b2RmSmxLekxxQ2VoK3FCTktlRXJTZEFmeEhvenZ6aU1OZVNpOEhzMUtHcVMr?=
+ =?utf-8?B?L0pDMU41M2JLRUFOQnB1VW5Qb05pWjU3eTdseXpwc3M0ZkUwdGhibmJOSHlV?=
+ =?utf-8?B?Z1FLK3lwNlpMRlpPTmNxR2JjdlpzSUpxU3FPb2VqZHIxVXI1QzAzK25CM05T?=
+ =?utf-8?B?QThpZkRGOHNHdm9lUDVQWlMzTE9Wb2tsd29FSFg4alc1TnZMajcrcldvbjdB?=
+ =?utf-8?B?K3J5TjlXdHFnanpiOTdiWkUyNXFpRmNvMUJRTXBIS2VNUUd5M3M0MWpCdVNn?=
+ =?utf-8?B?Znh5b09DM20xc0dmUit3WGZyYTFoVTEzaUVxVit4NHVmZDM1cExEWU5JdjJW?=
+ =?utf-8?B?aXZoOFVKWnJRM0QvZjRyWWpmNTZqMjVoenN4VmNoVGkzWFdXUmUyc0E1NDFE?=
+ =?utf-8?B?RUlTb1VCTTk1TUUyZHZxQVFaSmFnQURiRjg3cGxPTXFaV2VlbDZzOVRvZ1lM?=
+ =?utf-8?Q?EirZE2sGk8DtXtskK8DLeTrYSaQb/7eSQgGt35zo8s=3D?=
+X-OriginatorOrg: ugent.be
+X-MS-Exchange-CrossTenant-Network-Message-Id: a72d4a59-3f5c-4be2-d53a-08d9f6d123c6
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR09MB2324.eurprd09.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 13:33:56.0029
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d7811cde-ecef-496c-8f91-a1786241b99c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9iuBzo2fFfuR18Q6NsEQfeVOfeNxPbL/dLwRkMlZ1t7BcEtw5iKsT0yGD4RkHIKeZF1jFlHBJHQoKoJKiN8zaA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0902MB1753
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jason,
-We agree that the same can be done also using the old way, i.e. try to
-set specific offload - if failed, probably it is not supported.
-We think this is a little not scalable and we suggest adding the ioctl
-that will allow us to query allo the supported features in a single
-call.
-We think this will make QEMU code more simple also in future.
-Do I understand correctly that you suggest to skip this new ioctl and
-use the old way of query for this (USO) feature and all future
-extensions?
+It appears that the mail server of the university is changing tabs to spaces.
+I will resend it from my personal gmail address, since that does not seem to
+change tabs to spaces. Sorry for the inconvenience. Thanks!
 
-Thanks
-
-
-On Wed, Feb 23, 2022 at 5:53 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Tue, Feb 22, 2022 at 9:28 PM Andrew Melnichenko <andrew@daynix.com> wr=
-ote:
-> >
-> > Hi all,
-> >
-> > On Wed, Feb 9, 2022 at 6:26 AM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > >
-> > > =E5=9C=A8 2022/1/25 =E4=B8=8B=E5=8D=884:46, Andrew Melnychenko =E5=86=
-=99=E9=81=93:
-> > > > Added TUNGETSUPPORTEDOFFLOADS that should allow
-> > > > to get bits of supported offloads.
-> > >
-> > >
-> > > So we don't use dedicated ioctls in the past, instead, we just probin=
-g
-> > > by checking the return value of TUNSETOFFLOADS.
-> > >
-> > > E.g qemu has the following codes:
-> > >
-> > > int tap_probe_has_ufo(int fd)
-> > > {
-> > >      unsigned offload;
-> > >
-> > >      offload =3D TUN_F_CSUM | TUN_F_UFO;
-> > >
-> > >      if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
-> > >          return 0;
-> > >
-> > >      return 1;
-> > > }
-> > >
-> > > Any reason we can't keep using that?
-> > >
-> > > Thanks
-> > >
-> >
-> > Well, even in this example. To check the ufo feature, we trying to set =
-it.
-> > What if we don't need to "enable" UFO and/or do not change its state?
->
-> So at least Qemu doesn't have such a requirement since during the
-> probe the virtual networking backend is not even started.
->
-> > I think it's a good idea to have the ability to get supported offloads
-> > without changing device behavior.
->
-> Do you see a real user for this?
->
-> Btw, we still need to probe this new ioctl anyway.
->
-> Thanks
->
-> >
-> > >
-> > > > Added 2 additional offlloads for USO(IPv4 & IPv6).
-> > > > Separate offloads are required for Windows VM guests,
-> > > > g.e. Windows may set USO rx only for IPv4.
-> > > >
-> > > > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> > > > ---
-> > > >   include/uapi/linux/if_tun.h | 3 +++
-> > > >   1 file changed, 3 insertions(+)
-> > > >
-> > > > diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tu=
-n.h
-> > > > index 454ae31b93c7..07680fae6e18 100644
-> > > > --- a/include/uapi/linux/if_tun.h
-> > > > +++ b/include/uapi/linux/if_tun.h
-> > > > @@ -61,6 +61,7 @@
-> > > >   #define TUNSETFILTEREBPF _IOR('T', 225, int)
-> > > >   #define TUNSETCARRIER _IOW('T', 226, int)
-> > > >   #define TUNGETDEVNETNS _IO('T', 227)
-> > > > +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
-> > > >
-> > > >   /* TUNSETIFF ifr flags */
-> > > >   #define IFF_TUN             0x0001
-> > > > @@ -88,6 +89,8 @@
-> > > >   #define TUN_F_TSO6  0x04    /* I can handle TSO for IPv6 packets =
-*/
-> > > >   #define TUN_F_TSO_ECN       0x08    /* I can handle TSO with ECN =
-bits. */
-> > > >   #define TUN_F_UFO   0x10    /* I can handle UFO packets */
-> > > > +#define TUN_F_USO4   0x20    /* I can handle USO for IPv4 packets =
-*/
-> > > > +#define TUN_F_USO6   0x40    /* I can handle USO for IPv6 packets =
-*/
-> > > >
-> > > >   /* Protocol info prepended to the packets (when IFF_NO_PI is not =
-set) */
-> > > >   #define TUN_PKT_STRIP       0x0001
-> > >
-> >
->
+On 23/02/2022 01:43, Jakub Kicinski wrote:
+> On Sun, 20 Feb 2022 18:54:40 +0100 Niels Dossche wrote:
+>> valid_lft, prefered_lft and tstamp are always accessed under the lock
+>> "lock" in other places. Reading these without taking the lock may result
+>> in inconsistencies regarding the calculation of the valid and preferred
+>> variables since decisions are taken on these fields for those variables.
+>>
+>> Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
+> 
+> Looks like your email client has replaced tabs with spaces, 
+> so the patch won't apply. Could you try resending with git send-email?
+> Please add Dave's review tag in the next version, and the subject
+> tag should be [PATCH net v2]. Thanks!
