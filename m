@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F9B4C1EDD
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 23:44:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F69E4C1ED6
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 23:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244602AbiBWWo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 17:44:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50584 "EHLO
+        id S244614AbiBWWoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 17:44:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244376AbiBWWoU (ORCPT
+        with ESMTP id S244536AbiBWWoU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 17:44:20 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084753EF06
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 14:43:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E32B3F32D
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 14:43:47 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nN0MK-0006Ya-8D
-        for netdev@vger.kernel.org; Wed, 23 Feb 2022 23:43:44 +0100
+        id 1nN0ML-0006Zv-DH
+        for netdev@vger.kernel.org; Wed, 23 Feb 2022 23:43:45 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 574953BBBF
+        by bjornoya.blackshift.org (Postfix) with SMTP id 640763BBCA
         for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 22:43:34 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 015353BB83;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 108643BB90;
         Wed, 23 Feb 2022 22:43:34 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 614b5b8f;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 6fe9e62f;
         Wed, 23 Feb 2022 22:43:33 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Srinivas Neeli <srinivas.neeli@xilinx.com>,
+        kernel@pengutronix.de,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 12/36] can: xilinx_can: Add check for NAPI Poll function
-Date:   Wed, 23 Feb 2022 23:43:08 +0100
-Message-Id: <20220223224332.2965690-13-mkl@pengutronix.de>
+Subject: [PATCH net-next 13/36] can: etas_es58x: use BITS_PER_TYPE() instead of manual calculation
+Date:   Wed, 23 Feb 2022 23:43:09 +0100
+Message-Id: <20220223224332.2965690-14-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223224332.2965690-1-mkl@pengutronix.de>
 References: <20220223224332.2965690-1-mkl@pengutronix.de>
@@ -58,38 +59,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Srinivas Neeli <srinivas.neeli@xilinx.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-Add check for NAPI poll function to avoid enabling interrupts
-with out completing the NAPI call.
+The input to the GENMASK() macro was calculated by hand. Replaced it
+with a dedicated macro: BITS_PER_TYPE() which does the exact same job.
 
-Link: https://lore.kernel.org/all/20220208162053.39896-1-srinivas.neeli@xilinx.com
-Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Link: https://lore.kernel.org/all/20220212130737.3008-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/xilinx_can.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/can/usb/etas_es58x/es58x_fd.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 1674b561c9a2..e562c5ab1149 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1215,10 +1215,11 @@ static int xcan_rx_poll(struct napi_struct *napi, int quota)
- 	}
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+index ec87126e1a7d..88d2540abbbe 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+@@ -69,7 +69,8 @@ static int es58x_fd_echo_msg(struct net_device *netdev,
+ 	int i, num_element;
+ 	u32 rcv_packet_idx;
  
- 	if (work_done < quota) {
--		napi_complete_done(napi, work_done);
--		ier = priv->read_reg(priv, XCAN_IER_OFFSET);
--		ier |= xcan_rx_int_mask(priv);
--		priv->write_reg(priv, XCAN_IER_OFFSET, ier);
-+		if (napi_complete_done(napi, work_done)) {
-+			ier = priv->read_reg(priv, XCAN_IER_OFFSET);
-+			ier |= xcan_rx_int_mask(priv);
-+			priv->write_reg(priv, XCAN_IER_OFFSET, ier);
-+		}
- 	}
- 	return work_done;
- }
+-	const u32 mask = GENMASK(31, sizeof(echo_msg->packet_idx) * 8);
++	const u32 mask = GENMASK(BITS_PER_TYPE(mask) - 1,
++				 BITS_PER_TYPE(echo_msg->packet_idx));
+ 
+ 	num_element = es58x_msg_num_element(es58x_dev->dev,
+ 					    es58x_fd_urb_cmd->echo_msg,
 -- 
 2.34.1
 
