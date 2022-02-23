@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 950CF4C1EA6
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 23:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91EA14C1E99
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 23:36:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244604AbiBWWgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 17:36:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        id S244503AbiBWWf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 17:35:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244179AbiBWWfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 17:35:46 -0500
+        with ESMTP id S244159AbiBWWfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 17:35:47 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF6650E16;
-        Wed, 23 Feb 2022 14:35:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F82C50B2E;
+        Wed, 23 Feb 2022 14:35:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645655715; x=1677191715;
+  t=1645655716; x=1677191716;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=AH2/ebpy69FuJ9XIE9uNyKFc+8Z4TgjHKUOxPIbe+yQ=;
-  b=DFO6aesvKpOPBLHvOgpg0qqo5FIJt8dKtzFEVw4DLQkUGjPw7yP//bu3
-   T/pKvtg90ASTxU4AcYqesrYOsj86WeM+NBSikLH9JI3coFQIE9+qT0+B0
-   foSpPS3nY4sMwCxY3mEE+126jHvqNLYZEi1HhdcdVCIRLnadMTEwC3pbv
-   vdKJQpdRyWJbnz49aquZSu67fs4tVDzJCcQTUyJxDlDZRsD55j7Axa4m0
-   cVukFQ4fs+6m82KlrVn1dnexJl0llA/TMqMUMChvy0cuukSmkwNUn8xZ+
-   40bONoHRKVX6WaRQSmh001TA2ShhlZlBD6LgjWIvDMCEH1+VUrhG8ApHl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232718024"
+  bh=u8iXMGl5zqUCHrnPoRhCQF4ho4m3ajp384AfpHgmRxA=;
+  b=floD+4dV4CZQz8H2CLFADNfFv5/k+oCLq7z/RKBjN9c5PoAcki3aibIR
+   Vm63AhmUNRWLtNKXitCGsX2ZKLAVU3yh/3R/GObOyXQ3aQ0RXULG54Vbz
+   W9i5BntsRvxDAV5k1RKBWT6WSujP5T5pOwp64zdN8Ge9iN4g4ZaLYe29N
+   nrdbeR4B9mkMncEz8rQbwsBapLCJQKhjS38c6Ov5TVjxqaz8G9NUQpcaj
+   BePbpEgZF5bPEQt7S4k0udbI6ptNvbM7bTd+nmnCf0RSj2hi2v6rblX5T
+   k/faoDoOIfIqJ3ITp2KKcT7csgYfwQ0e3S5is6ZFhfS8AumNV24xzVzE6
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232718026"
 X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="232718024"
+   d="scan'208";a="232718026"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 14:35:14 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 14:35:15 -0800
 X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="628252283"
+   d="scan'208";a="628252288"
 Received: from rmarti10-desk.jf.intel.com ([134.134.150.146])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 14:35:13 -0800
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 14:35:14 -0800
 From:   Ricardo Martinez <ricardo.martinez@linux.intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
@@ -49,9 +49,9 @@ Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
         sreehari.kancharla@intel.com, madhusmita.sahu@intel.com,
         Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Subject: [PATCH net-next v5 11/13] net: wwan: t7xx: Runtime PM
-Date:   Wed, 23 Feb 2022 15:33:24 -0700
-Message-Id: <20220223223326.28021-12-ricardo.martinez@linux.intel.com>
+Subject: [PATCH net-next v5 12/13] net: wwan: t7xx: Device deep sleep lock/unlock
+Date:   Wed, 23 Feb 2022 15:33:25 -0700
+Message-Id: <20220223223326.28021-13-ricardo.martinez@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220223223326.28021-1-ricardo.martinez@linux.intel.com>
 References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com>
@@ -67,281 +67,385 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Haijun Liu <haijun.liu@mediatek.com>
 
-Enables runtime power management callbacks including runtime_suspend
-and runtime_resume. Autosuspend is used to prevent overhead by frequent
-wake-ups.
+Introduce the mechanism to lock/unlock the device 'deep sleep' mode.
+When the PCIe link state is L1.2 or L2, the host side still can keep
+the device is in D0 state from the host side point of view. At the same
+time, if the device's 'deep sleep' mode is unlocked, the device will
+go to 'deep sleep' while it is still in D0 state on the host side.
 
 Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
 Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-Co-developed-by: Eliot Lee <eliot.lee@intel.com>
-Signed-off-by: Eliot Lee <eliot.lee@intel.com>
+Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 ---
- drivers/net/wwan/t7xx/t7xx_hif_cldma.c     | 14 ++++++++++++++
- drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c | 17 +++++++++++++++++
- drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c | 15 +++++++++++++++
- drivers/net/wwan/t7xx/t7xx_pci.c           | 22 ++++++++++++++++++++++
- 4 files changed, 68 insertions(+)
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c     | 12 +++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c | 14 +++-
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c | 41 ++++++---
+ drivers/net/wwan/t7xx/t7xx_mhccif.c        |  3 +
+ drivers/net/wwan/t7xx/t7xx_pci.c           | 96 ++++++++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_pci.h           | 10 +++
+ 6 files changed, 161 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-index 114b67ebb270..c67eacfd69b5 100644
+index c67eacfd69b5..5c55f3584e87 100644
 --- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
 +++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-@@ -33,6 +33,7 @@
- #include <linux/list.h>
- #include <linux/netdevice.h>
- #include <linux/pci.h>
-+#include <linux/pm_runtime.h>
- #include <linux/sched.h>
- #include <linux/skbuff.h>
- #include <linux/slab.h>
-@@ -262,6 +263,8 @@ static void t7xx_cldma_rx_done(struct work_struct *work)
- 	t7xx_cldma_clear_ip_busy(&md_ctrl->hw_info);
- 	t7xx_cldma_hw_irq_en_txrx(&md_ctrl->hw_info, queue->index, MTK_RX);
- 	t7xx_cldma_hw_irq_en_eq(&md_ctrl->hw_info, queue->index, MTK_RX);
-+	pm_runtime_mark_last_busy(md_ctrl->dev);
-+	pm_runtime_put_autosuspend(md_ctrl->dev);
- }
+@@ -945,6 +945,7 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
+ 	if (ret < 0 && ret != -EACCES)
+ 		return ret;
  
- static int t7xx_cldma_gpd_tx_collect(struct cldma_queue *queue)
-@@ -373,6 +376,9 @@ static void t7xx_cldma_tx_done(struct work_struct *work)
- 		t7xx_cldma_hw_irq_en_txrx(hw_info, queue->index, MTK_TX);
- 	}
- 	spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
-+
-+	pm_runtime_mark_last_busy(md_ctrl->dev);
-+	pm_runtime_put_autosuspend(md_ctrl->dev);
- }
- 
- static void t7xx_cldma_ring_free(struct cldma_ctrl *md_ctrl,
-@@ -579,6 +585,7 @@ static void t7xx_cldma_irq_work_cb(struct cldma_ctrl *md_ctrl)
- 		if (l2_tx_int & (TXRX_STATUS_BITMASK | EMPTY_STATUS_BITMASK)) {
- 			for_each_set_bit(i, (unsigned long *)&l2_tx_int, L2_INT_BIT_COUNT) {
- 				if (i < CLDMA_TXQ_NUM) {
-+					pm_runtime_get(md_ctrl->dev);
- 					t7xx_cldma_hw_irq_dis_eq(hw_info, i, MTK_TX);
- 					t7xx_cldma_hw_irq_dis_txrx(hw_info, i, MTK_TX);
- 					queue_work(md_ctrl->txq[i].worker,
-@@ -603,6 +610,7 @@ static void t7xx_cldma_irq_work_cb(struct cldma_ctrl *md_ctrl)
- 		if (l2_rx_int & (TXRX_STATUS_BITMASK | EMPTY_STATUS_BITMASK)) {
- 			l2_rx_int |= l2_rx_int >> CLDMA_RXQ_NUM;
- 			for_each_set_bit(i, (unsigned long *)&l2_rx_int, CLDMA_RXQ_NUM) {
-+				pm_runtime_get(md_ctrl->dev);
- 				t7xx_cldma_hw_irq_dis_eq(hw_info, i, MTK_RX);
- 				t7xx_cldma_hw_irq_dis_txrx(hw_info, i, MTK_RX);
- 				queue_work(md_ctrl->rxq[i].worker, &md_ctrl->rxq[i].cldma_work);
-@@ -933,6 +941,10 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
- 	if (qno >= CLDMA_TXQ_NUM)
- 		return -EINVAL;
- 
-+	ret = pm_runtime_resume_and_get(md_ctrl->dev);
-+	if (ret < 0 && ret != -EACCES)
-+		return ret;
-+
++	t7xx_pci_disable_sleep(md_ctrl->t7xx_dev);
  	queue = &md_ctrl->txq[qno];
  
  	spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
-@@ -976,6 +988,8 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
+@@ -966,6 +967,11 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
+ 			queue->tx_next = list_next_entry_circular(tx_req, gpd_ring, entry);
+ 			spin_unlock_irqrestore(&queue->ring_lock, flags);
+ 
++			if (!t7xx_pci_sleep_disable_complete(md_ctrl->t7xx_dev)) {
++				ret = -EBUSY;
++				break;
++			}
++
+ 			/* Protect the access to the modem for queues operations (resume/start)
+ 			 * which access shared locations by all the queues.
+ 			 * cldma_lock is independent of ring_lock which is per queue.
+@@ -978,6 +984,11 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
+ 		}
+ 		spin_unlock_irqrestore(&queue->ring_lock, flags);
+ 
++		if (!t7xx_pci_sleep_disable_complete(md_ctrl->t7xx_dev)) {
++			ret = -EBUSY;
++			break;
++		}
++
+ 		if (!t7xx_cldma_hw_queue_status(&md_ctrl->hw_info, qno, MTK_TX)) {
+ 			spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
+ 			t7xx_cldma_hw_resume_queue(&md_ctrl->hw_info, qno, MTK_TX);
+@@ -988,6 +999,7 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
  	} while (!ret);
  
  allow_sleep:
-+	pm_runtime_mark_last_busy(md_ctrl->dev);
-+	pm_runtime_put_autosuspend(md_ctrl->dev);
++	t7xx_pci_enable_sleep(md_ctrl->t7xx_dev);
+ 	pm_runtime_mark_last_busy(md_ctrl->dev);
+ 	pm_runtime_put_autosuspend(md_ctrl->dev);
  	return ret;
- }
- 
 diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
-index 85fa747078bd..72dd76d90dbb 100644
+index 72dd76d90dbb..89b4fb5188d3 100644
 --- a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
 +++ b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
-@@ -32,6 +32,7 @@
- #include <linux/minmax.h>
- #include <linux/mm.h>
- #include <linux/netdevice.h>
-+#include <linux/pm_runtime.h>
- #include <linux/sched.h>
- #include <linux/skbuff.h>
- #include <linux/slab.h>
-@@ -912,6 +913,7 @@ static void t7xx_dpmaif_rxq_work(struct work_struct *work)
- {
- 	struct dpmaif_rx_queue *rxq = container_of(work, struct dpmaif_rx_queue, dpmaif_rxq_work);
- 	struct dpmaif_ctrl *dpmaif_ctrl = rxq->dpmaif_ctrl;
-+	int ret;
- 
- 	atomic_set(&rxq->rx_processing, 1);
- 	/* Ensure rx_processing is changed to 1 before actually begin RX flow */
-@@ -923,7 +925,14 @@ static void t7xx_dpmaif_rxq_work(struct work_struct *work)
+@@ -929,8 +929,11 @@ static void t7xx_dpmaif_rxq_work(struct work_struct *work)
+ 	if (ret < 0 && ret != -EACCES)
  		return;
- 	}
  
-+	ret = pm_runtime_resume_and_get(dpmaif_ctrl->dev);
-+	if (ret < 0 && ret != -EACCES)
-+		return;
-+
- 	t7xx_dpmaif_do_rx(dpmaif_ctrl, rxq);
-+
-+	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
-+	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
+-	t7xx_dpmaif_do_rx(dpmaif_ctrl, rxq);
++	t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
++	if (t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev))
++		t7xx_dpmaif_do_rx(dpmaif_ctrl, rxq);
+ 
++	t7xx_pci_enable_sleep(dpmaif_ctrl->t7xx_dev);
+ 	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
+ 	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
  	atomic_set(&rxq->rx_processing, 0);
- }
+@@ -1141,11 +1144,16 @@ static void t7xx_dpmaif_bat_release_work(struct work_struct *work)
+ 	if (ret < 0 && ret != -EACCES)
+ 		return;
  
-@@ -1126,11 +1135,19 @@ static void t7xx_dpmaif_bat_release_work(struct work_struct *work)
- {
- 	struct dpmaif_ctrl *dpmaif_ctrl = container_of(work, struct dpmaif_ctrl, bat_release_work);
- 	struct dpmaif_rx_queue *rxq;
-+	int ret;
++	t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
 +
-+	ret = pm_runtime_resume_and_get(dpmaif_ctrl->dev);
-+	if (ret < 0 && ret != -EACCES)
-+		return;
- 
  	/* ALL RXQ use one BAT table, so choose DPF_RX_QNO_DFT */
  	rxq = &dpmaif_ctrl->rxq[DPF_RX_QNO_DFT];
- 	t7xx_dpmaif_bat_release_and_add(rxq);
- 	t7xx_dpmaif_frag_bat_release_and_add(rxq);
-+
-+	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
-+	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
- }
+-	t7xx_dpmaif_bat_release_and_add(rxq);
+-	t7xx_dpmaif_frag_bat_release_and_add(rxq);
++	if (t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev)) {
++		t7xx_dpmaif_bat_release_and_add(rxq);
++		t7xx_dpmaif_frag_bat_release_and_add(rxq);
++	}
  
- int t7xx_dpmaif_bat_rel_wq_alloc(struct dpmaif_ctrl *dpmaif_ctrl)
++	t7xx_pci_enable_sleep(dpmaif_ctrl->t7xx_dev);
+ 	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
+ 	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
+ }
 diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c
-index f588c729e957..6d1d084c404a 100644
+index 6d1d084c404a..fc4d3d59c6e0 100644
 --- a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c
 +++ b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c
-@@ -28,6 +28,7 @@
- #include <linux/list.h>
- #include <linux/minmax.h>
- #include <linux/netdevice.h>
-+#include <linux/pm_runtime.h>
- #include <linux/sched.h>
- #include <linux/spinlock.h>
- #include <linux/skbuff.h>
-@@ -164,6 +165,10 @@ static void t7xx_dpmaif_tx_done(struct work_struct *work)
- 	struct dpmaif_hw_info *hw_info;
- 	int ret;
+@@ -169,20 +169,25 @@ static void t7xx_dpmaif_tx_done(struct work_struct *work)
+ 	if (ret < 0 && ret != -EACCES)
+ 		return;
  
-+	ret = pm_runtime_resume_and_get(dpmaif_ctrl->dev);
-+	if (ret < 0 && ret != -EACCES)
-+		return;
-+
- 	hw_info = &dpmaif_ctrl->hw_info;
- 	ret = t7xx_dpmaif_tx_release(dpmaif_ctrl, txq->index, txq->drb_size_cnt);
- 	if (ret == -EAGAIN ||
-@@ -177,6 +182,9 @@ static void t7xx_dpmaif_tx_done(struct work_struct *work)
- 		t7xx_dpmaif_clr_ip_busy_sts(hw_info);
- 		t7xx_dpmaif_unmask_ulq_intr(hw_info, txq->index);
+-	hw_info = &dpmaif_ctrl->hw_info;
+-	ret = t7xx_dpmaif_tx_release(dpmaif_ctrl, txq->index, txq->drb_size_cnt);
+-	if (ret == -EAGAIN ||
+-	    (t7xx_dpmaif_ul_clr_done(hw_info, txq->index) &&
+-	     t7xx_dpmaif_drb_ring_not_empty(txq))) {
+-		queue_work(dpmaif_ctrl->txq[txq->index].worker,
+-			   &dpmaif_ctrl->txq[txq->index].dpmaif_tx_work);
+-		/* Give the device time to enter the low power state */
+-		t7xx_dpmaif_clr_ip_busy_sts(hw_info);
+-	} else {
+-		t7xx_dpmaif_clr_ip_busy_sts(hw_info);
+-		t7xx_dpmaif_unmask_ulq_intr(hw_info, txq->index);
++	/* The device may be in low power state. Disable sleep if needed */
++	t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
++	if (t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev)) {
++		hw_info = &dpmaif_ctrl->hw_info;
++		ret = t7xx_dpmaif_tx_release(dpmaif_ctrl, txq->index, txq->drb_size_cnt);
++		if (ret == -EAGAIN ||
++		    (t7xx_dpmaif_ul_clr_done(hw_info, txq->index) &&
++		     t7xx_dpmaif_drb_ring_not_empty(txq))) {
++			queue_work(dpmaif_ctrl->txq[txq->index].worker,
++				   &dpmaif_ctrl->txq[txq->index].dpmaif_tx_work);
++			/* Give the device time to enter the low power state */
++			t7xx_dpmaif_clr_ip_busy_sts(hw_info);
++		} else {
++			t7xx_dpmaif_clr_ip_busy_sts(hw_info);
++			t7xx_dpmaif_unmask_ulq_intr(hw_info, txq->index);
++		}
  	}
-+
-+	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
-+	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
+ 
++	t7xx_pci_enable_sleep(dpmaif_ctrl->t7xx_dev);
+ 	pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
+ 	pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
  }
+@@ -420,6 +425,8 @@ static int t7xx_txq_burst_send_skb(struct dpmaif_tx_queue *txq)
  
- static void t7xx_setup_msg_drb(struct dpmaif_ctrl *dpmaif_ctrl, unsigned char q_num,
-@@ -438,6 +446,7 @@ static void t7xx_do_tx_hw_push(struct dpmaif_ctrl *dpmaif_ctrl)
- static int t7xx_dpmaif_tx_hw_push_thread(void *arg)
+ static void t7xx_do_tx_hw_push(struct dpmaif_ctrl *dpmaif_ctrl)
  {
- 	struct dpmaif_ctrl *dpmaif_ctrl = arg;
-+	int ret;
- 
- 	while (!kthread_should_stop()) {
- 		if (t7xx_tx_lists_are_all_empty(dpmaif_ctrl) ||
-@@ -452,7 +461,13 @@ static int t7xx_dpmaif_tx_hw_push_thread(void *arg)
- 				break;
++	bool wait_disable_sleep = true;
++
+ 	do {
+ 		struct dpmaif_tx_queue *txq;
+ 		int drb_send_cnt;
+@@ -435,6 +442,14 @@ static void t7xx_do_tx_hw_push(struct dpmaif_ctrl *dpmaif_ctrl)
+ 			continue;
  		}
  
-+		ret = pm_runtime_resume_and_get(dpmaif_ctrl->dev);
-+		if (ret < 0 && ret != -EACCES)
-+			return ret;
++		/* Wait for the PCIe resource to unlock */
++		if (wait_disable_sleep) {
++			if (!t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev))
++				return;
 +
- 		t7xx_do_tx_hw_push(dpmaif_ctrl);
-+		pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
-+		pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
- 	}
++			wait_disable_sleep = false;
++		}
++
+ 		t7xx_dpmaif_ul_update_hw_drb_cnt(&dpmaif_ctrl->hw_info, txq->index,
+ 						 drb_send_cnt * DPMAIF_UL_DRB_SIZE_WORD);
  
- 	return 0;
+@@ -465,7 +480,9 @@ static int t7xx_dpmaif_tx_hw_push_thread(void *arg)
+ 		if (ret < 0 && ret != -EACCES)
+ 			return ret;
+ 
++		t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
+ 		t7xx_do_tx_hw_push(dpmaif_ctrl);
++		t7xx_pci_enable_sleep(dpmaif_ctrl->t7xx_dev);
+ 		pm_runtime_mark_last_busy(dpmaif_ctrl->dev);
+ 		pm_runtime_put_autosuspend(dpmaif_ctrl->dev);
+ 	}
+diff --git a/drivers/net/wwan/t7xx/t7xx_mhccif.c b/drivers/net/wwan/t7xx/t7xx_mhccif.c
+index 60c265c24a8b..6f69e970728f 100644
+--- a/drivers/net/wwan/t7xx/t7xx_mhccif.c
++++ b/drivers/net/wwan/t7xx/t7xx_mhccif.c
+@@ -59,6 +59,9 @@ static irqreturn_t t7xx_mhccif_isr_thread(int irq, void *data)
+ 
+ 	t7xx_mhccif_clear_interrupts(t7xx_dev, int_status);
+ 
++	if (int_status & D2H_INT_DS_LOCK_ACK)
++		complete_all(&t7xx_dev->sleep_lock_acquire);
++
+ 	if (int_status & D2H_INT_SR_ACK)
+ 		complete(&t7xx_dev->pm_sr_ack);
+ 
 diff --git a/drivers/net/wwan/t7xx/t7xx_pci.c b/drivers/net/wwan/t7xx/t7xx_pci.c
-index 880d9448d662..e027be718041 100644
+index e027be718041..92b85d4221c5 100644
 --- a/drivers/net/wwan/t7xx/t7xx_pci.c
 +++ b/drivers/net/wwan/t7xx/t7xx_pci.c
-@@ -31,6 +31,7 @@
- #include <linux/mutex.h>
- #include <linux/pci.h>
+@@ -33,6 +33,7 @@
  #include <linux/pm.h>
-+#include <linux/pm_runtime.h>
+ #include <linux/pm_runtime.h>
  #include <linux/pm_wakeup.h>
++#include <linux/spinlock.h>
  
  #include "t7xx_mhccif.h"
+ #include "t7xx_modem_ops.h"
 @@ -44,6 +45,7 @@
+ #define T7XX_PCI_IREG_BASE		0
  #define T7XX_PCI_EREG_BASE		2
  
++#define PM_SLEEP_DIS_TIMEOUT_MS		20
  #define PM_ACK_TIMEOUT_MS		1500
-+#define PM_AUTOSUSPEND_MS		20000
+ #define PM_AUTOSUSPEND_MS		20000
  #define PM_RESOURCE_POLL_TIMEOUT_US	10000
- #define PM_RESOURCE_POLL_STEP_US	100
- 
-@@ -86,6 +88,8 @@ static int t7xx_pci_pm_init(struct t7xx_pci_dev *t7xx_dev)
- 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_INIT);
- 
- 	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_SET_0);
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, PM_AUTOSUSPEND_MS);
-+	pm_runtime_use_autosuspend(&pdev->dev);
- 
- 	return t7xx_wait_pm_config(t7xx_dev);
- }
-@@ -100,6 +104,8 @@ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
- 			     D2H_INT_RESUME_ACK_AP);
- 	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_CLR_0);
- 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_RESUMED);
-+
-+	pm_runtime_put_noidle(&t7xx_dev->pdev->dev);
- }
- 
- static int t7xx_pci_pm_reinit(struct t7xx_pci_dev *t7xx_dev)
-@@ -108,6 +114,9 @@ static int t7xx_pci_pm_reinit(struct t7xx_pci_dev *t7xx_dev)
- 	 * so just roll back PM setting to the init setting.
- 	 */
- 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_INIT);
-+
-+	pm_runtime_get_noresume(&t7xx_dev->pdev->dev);
-+
- 	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_SET_0);
- 	return t7xx_wait_pm_config(t7xx_dev);
- }
-@@ -407,6 +416,7 @@ static int __t7xx_pci_pm_resume(struct pci_dev *pdev, bool state_check)
- 	t7xx_dev->rgu_pci_irq_en = true;
- 	t7xx_pcie_mac_set_int(t7xx_dev, SAP_RGU_INT);
- 	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_CLR_0);
-+	pm_runtime_mark_last_busy(&pdev->dev);
- 	atomic_set(&t7xx_dev->md_pm_state, MTK_PM_RESUMED);
- 
- 	return ret;
-@@ -443,6 +453,16 @@ static int t7xx_pci_pm_thaw(struct device *dev)
- 	return __t7xx_pci_pm_resume(to_pci_dev(dev), false);
- }
- 
-+static int t7xx_pci_pm_runtime_suspend(struct device *dev)
-+{
-+	return __t7xx_pci_pm_suspend(to_pci_dev(dev));
-+}
-+
-+static int t7xx_pci_pm_runtime_resume(struct device *dev)
-+{
-+	return __t7xx_pci_pm_resume(to_pci_dev(dev), true);
-+}
-+
- static const struct dev_pm_ops t7xx_pci_pm_ops = {
- 	.suspend = t7xx_pci_pm_suspend,
- 	.resume = t7xx_pci_pm_resume,
-@@ -452,6 +472,8 @@ static const struct dev_pm_ops t7xx_pci_pm_ops = {
- 	.poweroff = t7xx_pci_pm_suspend,
- 	.restore = t7xx_pci_pm_resume,
- 	.restore_noirq = t7xx_pci_pm_resume_noirq,
-+	.runtime_suspend = t7xx_pci_pm_runtime_suspend,
-+	.runtime_resume = t7xx_pci_pm_runtime_resume
+@@ -56,6 +58,21 @@ enum t7xx_pm_state {
+ 	MTK_PM_RESUMED,
  };
  
- static int t7xx_request_irq(struct pci_dev *pdev)
++static void t7xx_dev_set_sleep_capability(struct t7xx_pci_dev *t7xx_dev, bool enable)
++{
++	void __iomem *ctrl_reg = IREG_BASE(t7xx_dev) + T7XX_PCIE_MISC_CTRL;
++	u32 value;
++
++	value = ioread32(ctrl_reg);
++
++	if (enable)
++		value &= ~T7XX_PCIE_MISC_MAC_SLEEP_DIS;
++	else
++		value |= T7XX_PCIE_MISC_MAC_SLEEP_DIS;
++
++	iowrite32(value, ctrl_reg);
++}
++
+ static int t7xx_wait_pm_config(struct t7xx_pci_dev *t7xx_dev)
+ {
+ 	int ret, val;
+@@ -76,10 +93,14 @@ static int t7xx_pci_pm_init(struct t7xx_pci_dev *t7xx_dev)
+ 
+ 	INIT_LIST_HEAD(&t7xx_dev->md_pm_entities);
+ 
++	spin_lock_init(&t7xx_dev->md_pm_lock);
++
+ 	mutex_init(&t7xx_dev->md_pm_entity_mtx);
+ 
++	init_completion(&t7xx_dev->sleep_lock_acquire);
+ 	init_completion(&t7xx_dev->pm_sr_ack);
+ 
++	atomic_set(&t7xx_dev->sleep_disable_count, 0);
+ 	device_init_wakeup(&pdev->dev, true);
+ 
+ 	dev_pm_set_driver_flags(&pdev->dev, pdev->dev.power.driver_flags |
+@@ -98,6 +119,7 @@ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev)
+ {
+ 	/* Enable the PCIe resource lock only after MD deep sleep is done */
+ 	t7xx_mhccif_mask_clr(t7xx_dev,
++			     D2H_INT_DS_LOCK_ACK |
+ 			     D2H_INT_SUSPEND_ACK |
+ 			     D2H_INT_RESUME_ACK |
+ 			     D2H_INT_SUSPEND_ACK_AP |
+@@ -163,6 +185,80 @@ int t7xx_pci_pm_entity_unregister(struct t7xx_pci_dev *t7xx_dev, struct md_pm_en
+ 	return -ENXIO;
+ }
+ 
++int t7xx_pci_sleep_disable_complete(struct t7xx_pci_dev *t7xx_dev)
++{
++	struct device *dev = &t7xx_dev->pdev->dev;
++	int ret;
++
++	ret = wait_for_completion_timeout(&t7xx_dev->sleep_lock_acquire,
++					  msecs_to_jiffies(PM_SLEEP_DIS_TIMEOUT_MS));
++	if (!ret)
++		dev_err_ratelimited(dev, "Resource wait complete timed out\n");
++
++	return ret;
++}
++
++/**
++ * t7xx_pci_disable_sleep() - Disable deep sleep capability.
++ * @t7xx_dev: MTK device.
++ *
++ * Lock the deep sleep capability, note that the device can still go into deep sleep
++ * state while device is in D0 state, from the host's point-of-view.
++ *
++ * If device is in deep sleep state, wake up the device and disable deep sleep capability.
++ */
++void t7xx_pci_disable_sleep(struct t7xx_pci_dev *t7xx_dev)
++{
++	unsigned long flags;
++
++	if (atomic_read(&t7xx_dev->md_pm_state) < MTK_PM_RESUMED) {
++		atomic_inc(&t7xx_dev->sleep_disable_count);
++		complete_all(&t7xx_dev->sleep_lock_acquire);
++		return;
++	}
++
++	spin_lock_irqsave(&t7xx_dev->md_pm_lock, flags);
++	if (atomic_inc_return(&t7xx_dev->sleep_disable_count) == 1) {
++		u32 deep_sleep_enabled;
++
++		reinit_completion(&t7xx_dev->sleep_lock_acquire);
++		t7xx_dev_set_sleep_capability(t7xx_dev, false);
++
++		deep_sleep_enabled = ioread32(IREG_BASE(t7xx_dev) + T7XX_PCIE_RESOURCE_STATUS);
++		deep_sleep_enabled &= T7XX_PCIE_RESOURCE_STS_MSK;
++		if (deep_sleep_enabled) {
++			spin_unlock_irqrestore(&t7xx_dev->md_pm_lock, flags);
++			complete_all(&t7xx_dev->sleep_lock_acquire);
++			return;
++		}
++
++		t7xx_mhccif_h2d_swint_trigger(t7xx_dev, H2D_CH_DS_LOCK);
++	}
++	spin_unlock_irqrestore(&t7xx_dev->md_pm_lock, flags);
++}
++
++/**
++ * t7xx_pci_enable_sleep() - Enable deep sleep capability.
++ * @t7xx_dev: MTK device.
++ *
++ * After enabling deep sleep, device can enter into deep sleep state.
++ */
++void t7xx_pci_enable_sleep(struct t7xx_pci_dev *t7xx_dev)
++{
++	unsigned long flags;
++
++	if (atomic_read(&t7xx_dev->md_pm_state) < MTK_PM_RESUMED) {
++		atomic_dec(&t7xx_dev->sleep_disable_count);
++		return;
++	}
++
++	if (atomic_dec_and_test(&t7xx_dev->sleep_disable_count)) {
++		spin_lock_irqsave(&t7xx_dev->md_pm_lock, flags);
++		t7xx_dev_set_sleep_capability(t7xx_dev, true);
++		spin_unlock_irqrestore(&t7xx_dev->md_pm_lock, flags);
++	}
++}
++
+ static int t7xx_send_pm_request(struct t7xx_pci_dev *t7xx_dev, u32 request)
+ {
+ 	unsigned long wait_ret;
+diff --git a/drivers/net/wwan/t7xx/t7xx_pci.h b/drivers/net/wwan/t7xx/t7xx_pci.h
+index 314d8616a0e0..245d958bb4ca 100644
+--- a/drivers/net/wwan/t7xx/t7xx_pci.h
++++ b/drivers/net/wwan/t7xx/t7xx_pci.h
+@@ -21,6 +21,7 @@
+ #include <linux/irqreturn.h>
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
++#include <linux/spinlock.h>
+ #include <linux/types.h>
+ 
+ #include "t7xx_reg.h"
+@@ -50,7 +51,10 @@ typedef irqreturn_t (*t7xx_intr_callback)(int irq, void *param);
+  * @base_addr: memory base addresses of HW components
+  * @md: modem interface
+  * @md_pm_entities: list of pm entities
++ * @md_pm_lock: protects PCIe sleep lock
+  * @md_pm_entity_mtx: protects md_pm_entities list
++ * @sleep_disable_count: PCIe L1.2 lock counter
++ * @sleep_lock_acquire: indicates that sleep has been disabled
+  * @pm_sr_ack: ack from the device when went to sleep or woke up
+  * @md_pm_state: state for resume/suspend
+  * @ccmni_ctlb: context structure used to control the network data path
+@@ -67,7 +71,10 @@ struct t7xx_pci_dev {
+ 
+ 	/* Low Power Items */
+ 	struct list_head	md_pm_entities;
++	spinlock_t		md_pm_lock;		/* Protects PCI resource lock */
+ 	struct mutex		md_pm_entity_mtx;	/* Protects MD PM entities list */
++	atomic_t		sleep_disable_count;
++	struct completion	sleep_lock_acquire;
+ 	struct completion	pm_sr_ack;
+ 	atomic_t		md_pm_state;
+ 
+@@ -104,6 +111,9 @@ struct md_pm_entity {
+ 	void			*entity_param;
+ };
+ 
++void t7xx_pci_disable_sleep(struct t7xx_pci_dev *t7xx_dev);
++void t7xx_pci_enable_sleep(struct t7xx_pci_dev *t7xx_dev);
++int t7xx_pci_sleep_disable_complete(struct t7xx_pci_dev *t7xx_dev);
+ int t7xx_pci_pm_entity_register(struct t7xx_pci_dev *t7xx_dev, struct md_pm_entity *pm_entity);
+ int t7xx_pci_pm_entity_unregister(struct t7xx_pci_dev *t7xx_dev, struct md_pm_entity *pm_entity);
+ void t7xx_pci_pm_init_late(struct t7xx_pci_dev *t7xx_dev);
 -- 
 2.17.1
 
