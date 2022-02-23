@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E33EB4C06E5
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 02:29:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1874C06E7
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 02:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiBWBaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 20:30:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58018 "EHLO
+        id S232372AbiBWBaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 20:30:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiBWBaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 20:30:22 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA8549F8C
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 17:29:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=a0Y1P5YGLxQXD/g6FUhaClEN/0LpPN9nAZ+/vAJynrM=; b=W7NztS7FjI/JcLAT+et0lT/ItI
-        YM6nWXat/DJu3nHnpMmMbzOyIRac8zL8JVsVuRhxL3rXTtzg1oCIoYn/nNQed2SH59m3Jmx7XMz2d
-        0/26dm0PL5MJGDXWvnnkcva67286UCZ57OoPGh7a1X6PNTxTfxcToHM4MbBHxEKE6S4V4+/9VzEWY
-        sBpOSz/krLfE4bpiqGxvzTf51rFig5Hk/XcbjRx0T2Wf2P/OAa/2c6IRwLj0F/zdGLW+KuPS+Ohoe
-        rSFsvtTIyD9KvIPDblu9UCrBuFU1WtQbRPq06+UO7OxEgk9WNDptfw0XVv+ucRdkWnFD5PZ+vqEZ0
-        48RYNqew==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMgTZ-00C7fh-1Y; Wed, 23 Feb 2022 01:29:53 +0000
-Date:   Tue, 22 Feb 2022 17:29:53 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     xiangxia.m.yue@gmail.com
-Cc:     netdev@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Simon Horman <horms@verge.net.au>,
-        Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Akhmat Karakotov <hmukos@yandex-team.ru>
-Subject: Re: [net-next] net: core: use shared sysctl macro
-Message-ID: <YhWOETp0UB9IpU6R@bombadil.infradead.org>
-References: <20220222125628.39363-1-xiangxia.m.yue@gmail.com>
+        with ESMTP id S232171AbiBWBaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 20:30:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E449F81
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 17:30:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C141B81D9B
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 01:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 28CB9C340EB;
+        Wed, 23 Feb 2022 01:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645579810;
+        bh=LZE+jPzeH8b00214wcyrMUJskTXKm9lgzct6q2w82/o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=osK2TUMC6Acgw3JlYQHatDQ8LrNvfwH7QKQrWdPx38oNQTMu+NzRlK/rPX8QWhklC
+         j0Y0dnS53ZsuxLczGVlmcVbSst4L6fAbsDhJd01xRkeqvuiieYwGKXjzZaO8wesap1
+         2kfI2EKMv/EQmvrWJsI0lrA84Tnav3pn9bLzd6aSsX+ua9XKCGD5fTAlIcNcUBM05R
+         lHhWn7F1DKaSO7FU5mbBTq7ecMHI9G7YTkop/Q6KfF8cpQK4FXx8K7nmPTW9G+6G6k
+         r3NY3c1aUiIWpHCYC9Xen66kEgVQ+wRPhOAHBRtf/FZZgDXIH/Xd9ix0PDl2w5xDJi
+         B0ECw1YGylQvg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CB10EAC081;
+        Wed, 23 Feb 2022 01:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222125628.39363-1-xiangxia.m.yue@gmail.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ibmvnic: schedule failover only if vioctl fails
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164557981004.7747.15413251407020699194.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Feb 2022 01:30:10 +0000
+References: <20220221210545.115283-1-drt@linux.ibm.com>
+In-Reply-To: <20220221210545.115283-1-drt@linux.ibm.com>
+To:     Dany Madden <drt@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, cforno12@outlook.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 08:56:28PM +0800, xiangxia.m.yue@gmail.com wrote:
-> diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-> index 6353d6db69b2..b2ac6542455f 100644
-> --- a/include/linux/sysctl.h
-> +++ b/include/linux/sysctl.h
-> @@ -42,12 +42,13 @@ struct ctl_dir;
->  #define SYSCTL_ZERO			((void *)&sysctl_vals[1])
->  #define SYSCTL_ONE			((void *)&sysctl_vals[2])
->  #define SYSCTL_TWO			((void *)&sysctl_vals[3])
-> -#define SYSCTL_FOUR			((void *)&sysctl_vals[4])
-> -#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[5])
-> -#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[6])
-> -#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[7])
-> -#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[8])
-> -#define SYSCTL_INT_MAX			((void *)&sysctl_vals[9])
-> +#define SYSCTL_THREE			((void *)&sysctl_vals[4])
-> +#define SYSCTL_FOUR			((void *)&sysctl_vals[5])
-> +#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[6])
-> +#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[7])
-> +#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[8])
-> +#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[9])
-> +#define SYSCTL_INT_MAX			((void *)&sysctl_vals[10])
+Hello:
 
-xiangxia, thanks for you patch!
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-I welcome this change but can you please also extend lib/test_sysctl.c
-(selftests) and/or kernel/sysctl-test.c (UML kunit test) to ensure we
-don't regress any existing mappings here.
+On Mon, 21 Feb 2022 15:05:45 -0600 you wrote:
+> From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+> 
+> If client is unable to initiate a failover reset via H_VIOCTL hcall, then
+> it should schedule a failover reset as a last resort. Otherwise, there is
+> no need to do a last resort.
+> 
+> Fixes: 334c42414729 ("ibmvnic: improve failover sysfs entry")
+> Reported-by: Cris Forno <cforno12@outlook.com>
+> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+> Signed-off-by: Dany Madden <drt@linux.ibm.com>
+> 
+> [...]
 
-The test can be really simply and would seem stupid but it would be of
-great help. It would just make sure SYSCTL_ONE == 1, SYSCTL_TWO == 2, etc.
+Here is the summary with links:
+  - [net] ibmvnic: schedule failover only if vioctl fails
+    https://git.kernel.org/netdev/net/c/277f2bb14361
 
-I think using kunit makes more sense here. Once you then then have this
-test, you can use it to verify you have not introduced a regression and
-re-send the patch.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks!
 
-  Luis
