@@ -2,88 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC5234C12BD
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 13:30:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E711C4C12C2
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 13:31:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240416AbiBWMam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 07:30:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
+        id S240470AbiBWMcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 07:32:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233949AbiBWMal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 07:30:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4396498F4D;
-        Wed, 23 Feb 2022 04:30:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF468B81EFF;
-        Wed, 23 Feb 2022 12:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89133C340F0;
-        Wed, 23 Feb 2022 12:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645619411;
-        bh=j6CSj4b1i1i+lc+QnW4RLhYbTDN4Ia6gc9LCGe9XfR0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VBaGnmdyh/CNqp1y0kpU/cTGi3aI0PKfF7sfKotgdkPtDKr9XoWRz0lzMKmHG+lOX
-         WZ6J9Vq9kjnPIJig0oeNiixEqdwVSqru4xK6UgaDRCnNsyVhk2qatEKMTcFxHLcppl
-         nO5luH7kTt8JAODNQM8AKrfBDU3zU/Tnmbo8afwnd7WBto69VIwnKd5JsM0Oh0Ew+r
-         zQa/5X4UY8xykyXB/YzwWYjGB9FQkFDAI7jkzVJgoHdPqulbm3/FyGnNajuBblrjf1
-         kI7EpA6meRzC+odYUnwzV+AAFsiTzia6c8So5tT8Agye/D21/OUqeIAh99JJtTMtid
-         3UH6IYJ/piVsw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6BE9BE6D4BA;
-        Wed, 23 Feb 2022 12:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231575AbiBWMcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 07:32:20 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB4989CCD;
+        Wed, 23 Feb 2022 04:31:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=l65YBP0/Ao5VqwBl6JqRspKSljrEgHu0Gb3hdhIP+fk=; b=EHF8GZ43BfeA3j4U/oSe40Zu66
+        8FI5J/s9exDY25bMTZfaUNgz0Fm7vZm+/d2NfBWBSXaisVDLi2qV0Du2/tfbXFitf1NMGz2ioj7ha
+        nH5wntdSeV97wxL6spnxYbqWdOyeXWpZcHUsz2vIlfPe7xpcBucYtMjtdMKSgn6Hw4EA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nMqo0-007n0F-72; Wed, 23 Feb 2022 13:31:40 +0100
+Date:   Wed, 23 Feb 2022 13:31:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
+Message-ID: <YhYpLJPXxAm0FEtm@lunn.ch>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <20220221162652.103834-11-clement.leger@bootlin.com>
+ <YhPSkz8+BIcdb72R@smile.fi.intel.com>
+ <20220222142513.026ad98c@fixe.home>
+ <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
+ <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/2] net: dsa: realtek: fix PHY register read
- corruption
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164561941143.20664.9166640246094519424.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Feb 2022 12:30:11 +0000
-References: <20220221184631.252308-1-alvin@pqrs.dk>
-In-Reply-To: <20220221184631.252308-1-alvin@pqrs.dk>
-To:     =?utf-8?b?QWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBxcnMuZGs+?=@ci.codeaurora.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, mir@bang-olufsen.dk, alsi@bang-olufsen.dk,
-        luizluca@gmail.com, arinc.unal@arinc9.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> If I understand this series correctly then this is about a PCI-E card
+> which has an I2C controller on the card and behind that I2C-controller
+> there are a couple if I2C muxes + I2C clients.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+They are not i2c clients in the normal sense. The i2c bus connects to
+an SFP cage. You can hot plug different sort of network modules into
+the cage. So for example fibre optic modules or copper modules. The
+modules have an 'at24' like block of memory, which is a mix of EEPROM
+and status values. For copper modules, there is an MDIO over I2C
+protocol which allows access to the Copper Ethernet PHY inside the
+module.
 
-On Mon, 21 Feb 2022 19:46:29 +0100 you wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> 
-> These two patches fix the issue reported by Arınç where PHY register
-> reads sometimes return garbage data.
-> 
-> v1 -> v2:
-> 
-> [...]
+The current device tree binding is that you have a node for the SFP
+cage, which includes a phandle to the i2c bus, plus a list of GPIOs
+connected to pins on the SFP cage. The SFP driver will then directly
+access the memory, maybe instantiate an mdio-over-i2c device if
+needed, and control the GPIOs. The Ethernet driver then has an OF node
+with a phandle pointing to the SFP device.
 
-Here is the summary with links:
-  - [v2,net-next,1/2] net: dsa: realtek: allow subdrivers to externally lock regmap
-    https://git.kernel.org/netdev/net-next/c/907e772f6f6d
-  - [v2,net-next,2/2] net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
-    https://git.kernel.org/netdev/net-next/c/2796728460b8
+The whole design of this is based around the hardware being a
+collection of standard parts, i2c bus, i2c mux, gpio controller,
+ethernet controller, each with their own driver as part of a linux
+subsystem, and then having some glue to put all the parts
+together. And at the moment, that glue is DT.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Note the above all relies on my interpretation of this patch set,
+> which may be wrong, since as said the patch-set does seem to be
+> lacking when it comes to documentation / motivation of the patches.
 
+I think some examples from DT will help with this.
 
+  Andrew
