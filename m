@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A05164C1098
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 11:44:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC4794C10B1
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 11:48:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239701AbiBWKo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 05:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S239688AbiBWKtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 05:49:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234377AbiBWKo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 05:44:57 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8265158E7D;
-        Wed, 23 Feb 2022 02:44:30 -0800 (PST)
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 76F8260238;
-        Wed, 23 Feb 2022 11:43:26 +0100 (CET)
-Date:   Wed, 23 Feb 2022 11:44:27 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237755AbiBWKtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 05:49:08 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55CE5A0B6;
+        Wed, 23 Feb 2022 02:48:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Qj1XjCtHH+cDK9A9LI4ULsQPbWkbS/mgt53QvA7mUjY=; b=O3yHXWRHKKvJHIc9XNK4HVNkZk
+        Vep3ohqyAdr+HSvCH83pjgnjH+hCoQxhEw4Pl503hSL/E290dSN7P+iqufCxIQQMO5HbS/4045ckF
+        JnpSCuXpIx3JjVsIl+kqEw0ygTDk1Bxj9AcQEt5iBY9FWj0YgHfGxq17yBWCcyMmBUPM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nMpBq-007mAW-RP; Wed, 23 Feb 2022 11:48:10 +0100
+Date:   Wed, 23 Feb 2022 11:48:10 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heyi Guo <guoheyi@linux.alibaba.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        Paul Blakey <paulb@nvidia.com>
-Subject: Re: [PATCH net-next 1/3] netfilter: flowtable: Support GRE
-Message-ID: <YhYQC+cXcfk6CaOM@salvia>
-References: <20220203115941.3107572-1-toshiaki.makita1@gmail.com>
- <20220203115941.3107572-2-toshiaki.makita1@gmail.com>
- <YgFdS0ak3LIR2waA@salvia>
- <9d4fd782-896d-4a44-b596-517c84d97d5a@gmail.com>
- <YgOQ6a0itcJjQJqx@salvia>
- <8309e037-840d-0a7d-26c1-f07fda9ba744@gmail.com>
- <24910a58-5d23-a97c-650f-7b53030dd40d@gmail.com>
+        Joel Stanley <joel@jms.id.au>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dylan Hung <dylan_hung@aspeedtech.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 3/3] drivers/net/ftgmac100: fix DHCP potential failure
+ with systemd
+Message-ID: <YhYQ6jGQv39rSsDU@lunn.ch>
+References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
+ <20220223031436.124858-4-guoheyi@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <24910a58-5d23-a97c-650f-7b53030dd40d@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220223031436.124858-4-guoheyi@linux.alibaba.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 09:51:37PM +0900, Toshiaki Makita wrote:
-> Ping, Pablo?
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index c1deb6e5d26c5..d5356db7539a4 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -1402,8 +1402,17 @@ static void ftgmac100_adjust_link(struct net_device *netdev)
+>  	/* Disable all interrupts */
+>  	iowrite32(0, priv->base + FTGMAC100_OFFSET_IER);
+>  
+> -	/* Reset the adapter asynchronously */
+> -	schedule_work(&priv->reset_task);
+> +	/* Release phy lock to allow ftgmac100_reset to aquire it, keeping lock
+> +	 * order consistent to prevent dead lock.
+> +	 */
+> +	if (netdev->phydev)
+> +		mutex_unlock(&netdev->phydev->lock);
 
-Please go ahead, these #ifdef can go away later on.
+No need to do this test. The fact that adjust_link is being called
+indicates there must be a PHY.
 
-> On 2022/02/12 10:54, Toshiaki Makita wrote:
-> > On 2022/02/09 19:01, Pablo Neira Ayuso wrote:
-> > > On Tue, Feb 08, 2022 at 11:30:03PM +0900, Toshiaki Makita wrote:
-> > > > On 2022/02/08 2:56, Pablo Neira Ayuso wrote:
-> > > > > On Thu, Feb 03, 2022 at 08:59:39PM +0900, Toshiaki Makita wrote:
-> > > [...]
-> > > > > > diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-> > > > > > index 889cf88..48e2f58 100644
-> > > > > > --- a/net/netfilter/nf_flow_table_ip.c
-> > > > > > +++ b/net/netfilter/nf_flow_table_ip.c
-> > > [...]
-> > > > > > @@ -202,15 +209,25 @@ static int nf_flow_tuple_ip(struct
-> > > > > > sk_buff *skb, const struct net_device *dev,
-> > > > > >        if (!pskb_may_pull(skb, thoff + *hdrsize))
-> > > > > >            return -1;
-> > > > > > +    if (ipproto == IPPROTO_GRE) {
-> > > > > 
-> > > > > No ifdef here? Maybe remove these ifdef everywhere?
-> > > > 
-> > > > I wanted to avoid adding many ifdefs and I expect this to be compiled out
-> > > > when CONFIG_NF_CT_PROTO_GRE=n as this block is unreachable anyway. It rather
-> > > > may have been unintuitive though.
-> > > > 
-> > > > Removing all of these ifdefs will cause inconsistent behavior between
-> > > > CONFIG_NF_CT_PROTO_GRE=n/y.
-> > > > When CONFIG_NF_CT_PROTO_GRE=n, conntrack cannot determine GRE version, thus
-> > > > it will track GREv1 without key infomation, and the flow will be offloaded.
-> > > > When CONFIG_NF_CT_PROTO_GRE=y, GREv1 will have key information and will not
-> > > > be offloaded.
-> > > > I wanted to just refuse offloading of GRE to avoid this inconsistency.
-> > > > Anyway this kind of inconsistency seems to happen in software conntrack, so
-> > > > if you'd like to remove ifdefs, I will do.
-> > > 
-> > > Good point, thanks for explaining. LGTM.
-> > 
-> > Let me confirm, did you agree to keep ifdefs, or delete them?
-> > 
-> > Toshiaki Makita
+    Andrew
