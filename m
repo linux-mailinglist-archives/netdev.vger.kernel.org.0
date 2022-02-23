@@ -2,185 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 227584C0E65
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 09:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 012C04C0E62
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 09:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239035AbiBWIlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 03:41:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S239007AbiBWIld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 03:41:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239033AbiBWIle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 03:41:34 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E313960D8F
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 00:41:06 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nMnCk-0003yj-V4; Wed, 23 Feb 2022 09:40:58 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nMnCi-00BPbK-Fh; Wed, 23 Feb 2022 09:40:56 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S233832AbiBWIlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 03:41:32 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36CA60D8F;
+        Wed, 23 Feb 2022 00:41:04 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id u7so15992165ljk.13;
+        Wed, 23 Feb 2022 00:41:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=9b1HVsojboQfokDHRf6eoAxjmKnPdoUTHloBjMfMN0I=;
+        b=n4oeCie4e9JgX4lIDH7g4gOm8UDlE5WbJbUx9faT/ukECA6YIt1okz6ault6htyU7/
+         Fwyu9YzXEnfC4XgTyaQs65sWRajFo1uXUwykGQfv6pyNBdr7ydH87wgV4eL23fGL0XrE
+         GFhHsAoot134PCxj7R4DK74PdQOSPjCaRd+X/yh4WSjqYkJfuhl+5Q+nvyBg1cRcS06c
+         QixHgGRKLlX+6haogzQeSMI4leJsO5mBseEF5sQoALvriD9B5OtYXiQz8p3KB13EUEwe
+         d2u7CKDoQoDvvmGfSWhCtLP0CS5BiOnP5lZRtK48ozT9KJttmUqWbqx64bTmHFf1WRoP
+         iYvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=9b1HVsojboQfokDHRf6eoAxjmKnPdoUTHloBjMfMN0I=;
+        b=10AyCriS6Fa8WXkBUcHeytzMhp4Qj7eg5N8gVT8r2o94zObUZaXsu0yNPBtaWn2knV
+         XSakgIar7m1VA4wmkEcSSD9ZQDc5ghm5Ws7r3iKnaf+E8j4BxFQ3h7MXcznTHEXPtHts
+         Cfg04PwH3h3XnPsO00m5CbjanlHKKRvLIhZiU4hZlcG4rTh4gxTcq6AJtk3kGqTaGxT/
+         cDIN1Zk/oP+tSx4kONAxXrFTc1elud7IBrNctorhYBIZqVmgH6BS55OWP242bkV7vPV+
+         y7AWhRLPnzCt1QUkLpdOG3/d8vpklvzWUBfkeruwgd+BkhR+dvSTsPygL9pUx5tfRNOv
+         Qmig==
+X-Gm-Message-State: AOAM532MlHg2L6tpchvjjlnCk4NvkqRxNgI7rzuUsCtgwoK+hON+PSVj
+        o0aGwlMxhvxOlK5lv5+8ciOOUKjLK3xjuXv8gA8=
+X-Google-Smtp-Source: ABdhPJw+wy6hx52xkZV0dN0kRBGYEhCPd2uQDJcmwKeWB5sF5PJ22LcsceCBzFHTV3r3mh2LiIsCAw==
+X-Received: by 2002:a2e:91d7:0:b0:245:fce2:4551 with SMTP id u23-20020a2e91d7000000b00245fce24551mr13968389ljg.446.1645605663309;
+        Wed, 23 Feb 2022 00:41:03 -0800 (PST)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id o18sm770984ljp.104.2022.02.23.00.41.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 00:41:02 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 1/1] net: dsa: microchip: ksz9477: implement MTU configuration
-Date:   Wed, 23 Feb 2022 09:40:55 +0100
-Message-Id: <20220223084055.2719969-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/5] Add support for locked bridge ports
+ (for 802.1X)
+In-Reply-To: <20220222111523.030ab13d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
+ <20220222111523.030ab13d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Wed, 23 Feb 2022 09:40:59 +0100
+Message-ID: <86y222vuuc.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This chips supports two ways to configure max MTU size:
-- by setting SW_LEGAL_PACKET_DISABLE bit: if this bit is 0 allowed packed size
-  will be between 64 and bytes 1518. If this bit is 1, it will accept
-  packets up to 2000 bytes.
-- by setting SW_JUMBO_PACKET bit. If this bit is set, the chip will
-  ignore SW_LEGAL_PACKET_DISABLE value and use REG_SW_MTU__2 register to
-  configure MTU size.
+On tis, feb 22, 2022 at 11:15, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 22 Feb 2022 14:28:13 +0100 Hans Schultz wrote:
+>> This series starts by adding support for SA filtering to the bridge,
+>> which is then allowed to be offloaded to switchdev devices. Furthermore
+>> an offloading implementation is supplied for the mv88e6xxx driver.
+>> 
+>> Public Local Area Networks are often deployed such that there is a
+>> risk of unauthorized or unattended clients getting access to the LAN.
+>> To prevent such access we introduce SA filtering, such that ports
+>> designated as secure ports are set in locked mode, so that only
+>> authorized source MAC addresses are given access by adding them to
+>> the bridges forwarding database. Incoming packets with source MAC
+>> addresses that are not in the forwarding database of the bridge are
+>> discarded. It is then the task of user space daemons to populate the
+>> bridge's forwarding database with static entries of authorized entities.
+>> 
+>> The most common approach is to use the IEEE 802.1X protocol to take
+>> care of the authorization of allowed users to gain access by opening
+>> for the source address of the authorized host.
+>> 
+>> With the current use of the bridge parameter in hostapd, there is
+>> a limitation in using this for IEEE 802.1X port authentication. It
+>> depends on hostapd attaching the port on which it has a successful
+>> authentication to the bridge, but that only allows for a single
+>> authentication per port. This patch set allows for the use of
+>> IEEE 802.1X port authentication in a more general network context with
+>> multiple 802.1X aware hosts behind a single port as depicted, which is
+>> a commonly used commercial use-case, as it is only the number of
+>> available entries in the forwarding database that limits the number of
+>> authenticated clients.
+>> 
+>>       +--------------------------------+
+>>       |                                |
+>>       |      Bridge/Authenticator      |
+>>       |                                |
+>>       +-------------+------------------+
+>>        802.1X port  |
+>>                     |
+>>                     |
+>>              +------+-------+
+>>              |              |
+>>              |  Hub/Switch  |
+>>              |              |
+>>              +-+----------+-+
+>>                |          |
+>>             +--+--+    +--+--+
+>>             |     |    |     |
+>>     Hosts   |  a  |    |  b  |   . . .
+>>             |     |    |     |
+>>             +-----+    +-----+
+>> 
+>> The 802.1X standard involves three different components, a Supplicant
+>> (Host), an Authenticator (Network Access Point) and an Authentication
+>> Server which is typically a Radius server. This patch set thus enables
+>> the bridge module together with an authenticator application to serve
+>> as an Authenticator on designated ports.
+>> 
+>> 
+>> For the bridge to become an IEEE 802.1X Authenticator, a solution using
+>> hostapd with the bridge driver can be found at
+>> https://github.com/westermo/hostapd/tree/bridge_driver .
+>> 
+>> 
+>> The relevant components work transparently in relation to if it is the
+>> bridge module or the offloaded switchcore case that is in use.
+>
+> You still haven't answer my question. Is the data plane clear text in
+> the deployment you describe?
 
-Current driver has disabled SW_JUMBO_PACKET bit and activates
-SW_LEGAL_PACKET_DISABLE. So the switch will pass all packets up to 2000 without
-any way to configure it.
+Sorry, I didn't understand your question in the first instance. So as
+802.1X is only about authentication/authorization, the port when opened
+for a host is like any other switch port and thus communication is in
+the clear.
 
-By providing port_change_mtu we are switch to SW_JUMBO_PACKET way and will
-be able to configure MTU up to ~9000.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- rename max_mtu to max_frame and new_mtu to frame_size
-- use max() instead of if(>)
----
- drivers/net/dsa/microchip/ksz9477.c     | 40 +++++++++++++++++++++++--
- drivers/net/dsa/microchip/ksz9477_reg.h |  4 +++
- drivers/net/dsa/microchip/ksz_common.h  |  1 +
- 3 files changed, 43 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 18ffc8ded7ee..5c5f78cb970e 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -11,6 +11,7 @@
- #include <linux/platform_data/microchip-ksz.h>
- #include <linux/phy.h>
- #include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
- #include <net/dsa.h>
- #include <net/switchdev.h>
- 
-@@ -182,6 +183,33 @@ static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
- 			   bits, set ? bits : 0);
- }
- 
-+static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u16 frame_size, max_frame = 0;
-+	int i;
-+
-+	frame_size = mtu + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN;
-+
-+	if (dsa_is_cpu_port(ds, port))
-+		frame_size += KSZ9477_INGRESS_TAG_LEN;
-+
-+	/* Cache the per-port MTU setting */
-+	dev->ports[port].max_frame = frame_size;
-+
-+	for (i = 0; i < dev->port_cnt; i++)
-+		max_frame = max(max_frame, dev->ports[i].max_frame);
-+
-+	return regmap_update_bits(dev->regmap[1], REG_SW_MTU__2,
-+				  REG_SW_MTU_MASK, max_frame);
-+}
-+
-+static int ksz9477_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return KSZ9477_MAX_FRAME_SIZE - ETH_HLEN - ETH_FCS_LEN - VLAN_HLEN -
-+		KSZ9477_INGRESS_TAG_LEN;
-+}
-+
- static int ksz9477_wait_vlan_ctrl_ready(struct ksz_device *dev)
- {
- 	unsigned int val;
-@@ -1412,8 +1440,14 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 	/* Do not work correctly with tail tagging. */
- 	ksz_cfg(dev, REG_SW_MAC_CTRL_0, SW_CHECK_LENGTH, false);
- 
--	/* accept packet up to 2000bytes */
--	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_LEGAL_PACKET_DISABLE, true);
-+	/* Enable REG_SW_MTU__2 reg by setting SW_JUMBO_PACKET */
-+	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_JUMBO_PACKET, true);
-+
-+	/* Now we can configure default MTU value */
-+	ret = regmap_update_bits(dev->regmap[1], REG_SW_MTU__2, REG_SW_MTU_MASK,
-+				 VLAN_ETH_FRAME_LEN + ETH_FCS_LEN);
-+	if (ret)
-+		return ret;
- 
- 	ksz9477_config_cpu_port(ds);
- 
-@@ -1460,6 +1494,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_mirror_add	= ksz9477_port_mirror_add,
- 	.port_mirror_del	= ksz9477_port_mirror_del,
- 	.get_stats64		= ksz9477_get_stats64,
-+	.port_change_mtu	= ksz9477_change_mtu,
-+	.port_max_mtu		= ksz9477_max_mtu,
- };
- 
- static u32 ksz9477_get_port_addr(int port, int offset)
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 16939f29faa5..2278e763ee3e 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -176,6 +176,7 @@
- #define REG_SW_MAC_ADDR_5		0x0307
- 
- #define REG_SW_MTU__2			0x0308
-+#define REG_SW_MTU_MASK			GENMASK(13, 0)
- 
- #define REG_SW_ISP_TPID__2		0x030A
- 
-@@ -1662,4 +1663,7 @@
- /* 148,800 frames * 67 ms / 100 */
- #define BROADCAST_STORM_VALUE		9969
- 
-+#define KSZ9477_INGRESS_TAG_LEN		2
-+#define KSZ9477_MAX_FRAME_SIZE		9000
-+
- #endif /* KSZ9477_REGS_H */
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index c6fa487fb006..739365bfceb2 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -41,6 +41,7 @@ struct ksz_port {
- 
- 	struct ksz_port_mib mib;
- 	phy_interface_t interface;
-+	u16 max_frame;
- };
- 
- struct ksz_device {
--- 
-2.30.2
-
+I have not looked much into macsec (but know ipsec), and that is a
+crypto (key) based connection mechanism, but that is a totally different
+ballgame, and I think it would for most practical cases require hardware 
+encryption.
