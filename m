@@ -2,133 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B27CA4C0E38
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 09:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08C794C0E44
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 09:32:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238889AbiBWI1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 03:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
+        id S238975AbiBWIc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 03:32:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238866AbiBWI1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 03:27:31 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE1349CA7
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 00:27:03 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id i11so29703922lfu.3
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 00:27:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:organization:mime-version
-         :content-disposition;
-        bh=lZI8MSVW2tWWsa6fqN9PMDj/ctaa5MGPHbotbrYZ/H4=;
-        b=leNZ+zxJ4n1ZDprN8CCY783WFbvvcs5laW6eXeaL7062zrQPDOfkiYVhurWGZIoBNm
-         9sxjS4sWfhhL+KOB9fB9BdFA4CaZL3V2FCRpgBTHQA7k0jQIruYKbU2ehXK4X/MaM1rz
-         rtw8O5XVoSQvvm+d+JEb9tIEKOJuVNs+8HphNQJ+Osh1t4q6HnvBaMoDaKEYCYbyJuOJ
-         AnExhkq4ITBjnGVQcvUljHlLFwlzzkIc1KyLZ+dlLFlyde3IJr0c0hi/Bs/5GUlykSsR
-         Oy3+SCDlG+yLFmL5dfLxVMDqeS4/T8uhmaM8RNH8SsmQl6WvfRt82mqotQJ7vHv98aQg
-         tD5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:organization
-         :mime-version:content-disposition;
-        bh=lZI8MSVW2tWWsa6fqN9PMDj/ctaa5MGPHbotbrYZ/H4=;
-        b=xMRznpixiMTBUSmZz6cR0JX8Avd4G+kW3zUGKWje5Fn7ppbleWnk1CNervlxAYs/gO
-         MUJqgSq4yQIcEUQRrVb2Q+f76BNpv+mL3JsM3Jv8THl8vtlTiETLVFFDq5wMYkZMsbr6
-         dGEiucxTLXaf5gtxftyX6bCyV2lrgH4YH6U2ZZEDrEfAL+fZUJdqBJdVdaS4a8y4Z4pc
-         os4WcFsxIMGOqnPGIcHZ0Eice/FUc253q3K3+OMnAch1h48louvyH7eR7uSurwAB9KKO
-         Tvpp1nZoKjldw2Fc7B/c04ibmUklrXZUjv34niPq/M4Mof1gHRwSj/IYoXIMDRvbhgrK
-         FDNA==
-X-Gm-Message-State: AOAM5315o/CGV1zQKuvi88QcZv8sQ7Di7nJvJRjWh+5bec0q61W+E9h8
-        9vJm55zajgT3ZPB2myXs5nPUGb8b03FIlzC++14=
-X-Google-Smtp-Source: ABdhPJzObzbz3gJ7F+AglnG1nVNfk0RmcfNQFgx/D5GNcfn7rB2smGbGfNO4dce1MygLhmjscZ8ETQ==
-X-Received: by 2002:a05:6512:398b:b0:443:3b11:a985 with SMTP id j11-20020a056512398b00b004433b11a985mr19292370lfu.211.1645604821796;
-        Wed, 23 Feb 2022 00:27:01 -0800 (PST)
-Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id l1sm1464700ljq.39.2022.02.23.00.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 00:27:01 -0800 (PST)
-Date:   Wed, 23 Feb 2022 09:27:00 +0100
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234121AbiBWIcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 03:32:25 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC4147546;
+        Wed, 23 Feb 2022 00:31:58 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id AD40A20533;
+        Wed, 23 Feb 2022 09:31:56 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id XOpYCDlDAmvR; Wed, 23 Feb 2022 09:31:56 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 1903220501;
+        Wed, 23 Feb 2022 09:31:56 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 129F280004A;
+        Wed, 23 Feb 2022 09:31:56 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Wed, 23 Feb 2022 09:31:55 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 23 Feb
+ 2022 09:31:55 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 51EF73180FB1; Wed, 23 Feb 2022 09:31:55 +0100 (CET)
+Date:   Wed, 23 Feb 2022 09:31:55 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Lina Wang <lina.wang@mediatek.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David Ahern" <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next v3] net: sparx5: Support offloading of bridge port
- flooding flags
-Message-ID: <20220223082700.qrot7lepwqcdnyzw@wse-c0155>
-Organization: Westermo Network Technologies AB
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] xfrm: fix tunnel model fragmentation behavior
+Message-ID: <20220223083155.GM17351@gauss3.secunet.de>
+References: <20220221051648.22660-1-lina.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220221051648.22660-1-lina.wang@mediatek.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Though the SparX-5i can control IPv4/6 multicasts separately from non-IP
-multicasts, these are all muxed onto the bridge's BR_MCAST_FLOOD flag.
+On Mon, Feb 21, 2022 at 01:16:48PM +0800, Lina Wang wrote:
+> in tunnel mode, if outer interface(ipv4) is less, it is easily to let 
+> inner IPV6 mtu be less than 1280. If so, a Packet Too Big ICMPV6 message 
+> is received. When send again, packets are fragmentized with 1280, they
+> are still rejected with ICMPV6(Packet Too Big) by xfrmi_xmit2().
+> 
+> According to RFC4213 Section3.2.2:
+>          if (IPv4 path MTU - 20) is less than 1280
+>                  if packet is larger than 1280 bytes
+>                          Send ICMPv6 "packet too big" with MTU = 1280.
+>                          Drop packet.
+>                  else
+>                          Encapsulate but do not set the Don't Fragment
+>                          flag in the IPv4 header.  The resulting IPv4
+>                          packet might be fragmented by the IPv4 layer
+>                          on the encapsulator or by some router along
+>                          the IPv4 path.
+>                  endif
+>          else
+>                  if packet is larger than (IPv4 path MTU - 20)
+>                          Send ICMPv6 "packet too big" with
+>                          MTU = (IPv4 path MTU - 20).
+>                          Drop packet.
+>                  else
+>                          Encapsulate and set the Don't Fragment flag
+>                          in the IPv4 header.
+>                  endif
+>          endif
+> Packets should be fragmentized with ipv4 outer interface, so change it.
+> 
+> After it is fragemtized with ipv4, there will be double fragmenation.
+> No.48 & No.51 are ipv6 fragment packets, No.48 is double fragmentized, 
+> then tunneled with IPv4(No.49& No.50), which obey spec. And received peer
+> cannot decrypt it rightly.
+> 
+> 48              2002::10	2002::11 1296(length) IPv6 fragment (off=0 more=y ident=0xa20da5bc nxt=50) 
+> 49   0x0000 (0) 2002::10	2002::11 1304	      IPv6 fragment (off=0 more=y ident=0x7448042c nxt=44)
+> 50   0x0000 (0)	2002::10	2002::11 200	      ESP (SPI=0x00035000) 
+> 51		2002::10	2002::11 180	      Echo (ping) request 
+> 52   0x56dc     2002::10	2002::11 248	      IPv6 fragment (off=1232 more=n ident=0xa20da5bc nxt=50)
+> 
+> esp_noneed_fragment has fixed above issues. Finally, it acted like below:
+> 1   0x6206 192.168.1.138   192.168.1.1 1316 Fragmented IP protocol (proto=Encap Security Payload 50, off=0, ID=6206) [Reassembled in #2]
+> 2   0x6206 2002::10	   2002::11    88   IPv6 fragment (off=0 more=y ident=0x1f440778 nxt=50)
+> 3   0x0000 2002::10	   2002::11    248  ICMPv6    Echo (ping) request 
+> 
+> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
 
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
-Changes in v2:
- - Added SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS callback
-Changes in v3:
- - Removed trailing whitespace
+Can you please add a 'Fixes' tag?
 
- .../microchip/sparx5/sparx5_switchdev.c       | 21 ++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+> ---
+>  net/ipv6/xfrm6_output.c   | 16 ++++++++++++++++
+>  net/xfrm/xfrm_interface.c |  5 ++++-
+>  2 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
+> index d0d280077721..ab4384e22b4f 100644
+> --- a/net/ipv6/xfrm6_output.c
+> +++ b/net/ipv6/xfrm6_output.c
+> @@ -45,6 +45,19 @@ static int __xfrm6_output_finish(struct net *net, struct sock *sk, struct sk_buf
+>  	return xfrm_output(sk, skb);
+>  }
+>  
+> +static int esp_noneed_fragment(struct sk_buff *skb)
+> +{
+> +	struct frag_hdr *fh;
+> +	u8 prevhdr = ipv6_hdr(skb)->nexthdr;
+> +
+> +	if (prevhdr != NEXTHDR_FRAGMENT)
+> +		return 0;
+> +	fh = (struct frag_hdr *)(skb->data + sizeof(struct ipv6hdr));
+> +	if (fh->nexthdr == NEXTHDR_ESP)
+> +		return 1;
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-index 649ca609884a..c6cfe652bf88 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-@@ -19,11 +19,27 @@ struct sparx5_switchdev_event_work {
- 	unsigned long event;
- };
- 
-+static int sparx5_port_attr_pre_bridge_flags(struct sparx5_port *port,
-+					     struct switchdev_brport_flags flags)
-+{
-+	if (flags.mask & ~(BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static void sparx5_port_attr_bridge_flags(struct sparx5_port *port,
- 					  struct switchdev_brport_flags flags)
- {
-+	int pgid;
-+
- 	if (flags.mask & BR_MCAST_FLOOD)
--		sparx5_pgid_update_mask(port, PGID_MC_FLOOD, true);
-+		for (pgid = PGID_MC_FLOOD; pgid <= PGID_IPV6_MC_CTRL; pgid++)
-+			sparx5_pgid_update_mask(port, pgid, !!(flags.val & BR_MCAST_FLOOD));
-+	if (flags.mask & BR_FLOOD)
-+		sparx5_pgid_update_mask(port, PGID_UC_FLOOD, !!(flags.val & BR_FLOOD));
-+	if (flags.mask & BR_BCAST_FLOOD)
-+		sparx5_pgid_update_mask(port, PGID_BCAST, !!(flags.val & BR_BCAST_FLOOD));
- }
- 
- static void sparx5_attr_stp_state_set(struct sparx5_port *port,
-@@ -72,6 +88,9 @@ static int sparx5_port_attr_set(struct net_device *dev, const void *ctx,
- 	struct sparx5_port *port = netdev_priv(dev);
- 
- 	switch (attr->id) {
-+	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
-+		return sparx5_port_attr_pre_bridge_flags(port,
-+							 attr->u.brport_flags);
- 	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
- 		sparx5_port_attr_bridge_flags(port, attr->u.brport_flags);
- 		break;
--- 
-2.30.2
+Shouldn't this problem exist for NEXTHDR_AUTH too?
 
