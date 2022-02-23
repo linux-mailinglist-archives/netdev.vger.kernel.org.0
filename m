@@ -2,146 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2EA54C1443
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED66D4C1457
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:39:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238580AbiBWNe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 08:34:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
+        id S240986AbiBWNkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 08:40:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiBWNe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:34:28 -0500
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130128.outbound.protection.outlook.com [40.107.13.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6328B9BB83
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:33:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W0xciNGnyc1Vr1C1n7A7MhZ6tNF7b3LQi/jH8cAmJ3qkciDBTHwHGrf6W5UIf+D0sAtRox5Vl9cCd/wIJmiyvTbWQLAeVxEx3t1R6guUxE4I5bzWjCvGQKRhq/E51WoOliGQYrM9v/pNHd97H3gy/uUj1uHxS6ZYyLTf1+kyMKIsJMzoBzSkBPKYBZad7AtDu5xbqizATDf7bu9z/F+u/lacye1dx+OWDwcBKhAhCK9RA4HSsv2jojbEPykI0cVrL8B4D9LzmACNaWnlD2Y45UobV+K8GVRYDJEOpEvw9aYrhJZpgRzSyTby/Om+c8UyIRBS6AhoIJCFXvj5lWQr4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d7Pk5JfFYV2C3nB5qm/uodcEfnQEHFGCJ5uE1NZp0Jc=;
- b=agm97jL5Q66byKt9fKUYvmMjOApwm83XiWJP+P2eJj9DXNIpqBx4X1375pj/vADnzGpau+YF9l6NfJK1epRwA5eJjQMU8gP+3PZefGlCBSSGNIcdcF6CVHTY+zgcqnB4PhLWjRQ75yv0tsN0NsZC6k3clVO2g5a/is39W4A3VMGFrOJ6WwkTAFDIf9Uei46RLZ9ogI+ko0btqbAjc+tpj+trdZguB1kIUmlV7lvVc6h4tpyXOglOWKHWZ3o4zaGMqScVOdwhIpVJtDbkVy1r3CNW2uwYjrXQI9qE3XyTg4I3CXOlcmFrtEVSO6LbZXjlxkPqOEk+jULYU4cUafUITQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=ugent.be; dmarc=pass action=none header.from=ugent.be;
- dkim=pass header.d=ugent.be; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ugent.be; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d7Pk5JfFYV2C3nB5qm/uodcEfnQEHFGCJ5uE1NZp0Jc=;
- b=geAUadhjFeNOjWQ8xZgvxcKbXXYMTchitWwE9sXIKjwgtEZzAYShVE679JkpFgelkTIQd98iHw4hRRoJRj9OcDTiwwpNCqJOHuDzxKDoQ3sTeolKIX3rqejdRrjMFIHn+G8w21CWQMLvqLSZtoMDoBt/FTk6hEzhhH4CwbMgqLU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=ugent.be;
-Received: from AM0PR09MB2324.eurprd09.prod.outlook.com (2603:10a6:208:d9::26)
- by HE1PR0902MB1753.eurprd09.prod.outlook.com (2603:10a6:3:f3::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Wed, 23 Feb
- 2022 13:33:56 +0000
-Received: from AM0PR09MB2324.eurprd09.prod.outlook.com
- ([fe80::fc49:e396:8dd8:5cb9]) by AM0PR09MB2324.eurprd09.prod.outlook.com
- ([fe80::fc49:e396:8dd8:5cb9%5]) with mapi id 15.20.4995.027; Wed, 23 Feb 2022
- 13:33:56 +0000
-Message-ID: <fab6f644-6bb6-675c-3573-2ad5faa2d8d3@ugent.be>
-Date:   Wed, 23 Feb 2022 14:33:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] ipv6: prevent a possible race condition with lifetimes
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-References: <5599cc3b-8925-4cfd-f035-ae3b87e821a3@ugent.be>
- <20220222164317.4c7f6bcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Niels Dossche <niels.dossche@ugent.be>
-In-Reply-To: <20220222164317.4c7f6bcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PR2P264CA0029.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:101:1::17) To AM0PR09MB2324.eurprd09.prod.outlook.com
- (2603:10a6:208:d9::26)
+        with ESMTP id S240978AbiBWNkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:40:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FBF5AC04B
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:39:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645623571;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9ZjjBLEVy1E0rixG8g+5okuLN72qxgLAUeebM7Ze/UU=;
+        b=JQeDFBnLrQAkE0Jx+F1WAFd5dFBUR9jHZclXi65uIst1Lhj6ILDdv6OfUcwKVE/lzwOIZc
+        0vnD7+pxw6CzQmOotG7mVh/yQsjBHTP2daOWbnCb2lzvrKz5ft+GkDBUmO7h57wK/by05w
+        lcU57iT16sx/XZ0z0sNAwATmp0qYFIo=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-32-pZzyb5EENRu62S0y7iLMTw-1; Wed, 23 Feb 2022 08:39:30 -0500
+X-MC-Unique: pZzyb5EENRu62S0y7iLMTw-1
+Received: by mail-ed1-f69.google.com with SMTP id n7-20020a05640205c700b0040b7be76147so13585506edx.10
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:39:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9ZjjBLEVy1E0rixG8g+5okuLN72qxgLAUeebM7Ze/UU=;
+        b=vR92IEvTmhVgkhv8UlZUqPxPZuMoHPtlA3YyCb2o77XEoh/sSJ/HdAKm/uQ1X5gBjG
+         WljJPAziGd2Nq9L9CXn2c2hz0Bp9v3MtRYmHfwPQYN+EFmS9oPiY+7lEE46PimAmS2Sj
+         XjgalYsLcDWc4CXwI4tjSq9TnbBImsuxnSnF21V16ccNn1wEacNzoSy5QZRYRRkZMEbF
+         BRCgw0BHDeiCm7vOQTvVik0FOk13sEbEyin6FoPTQuiR8hKjbJcxkdi5QMDMkLpl83d7
+         RaHARAs5q3qkSvfiLam+at1mXFIuQov//8dY/kAOC5bG3DgByWlh3S3Lg9wyetRpXHXX
+         +UWw==
+X-Gm-Message-State: AOAM53082v/csbIuKh/UOeEdyRvVozUPBBCFOdCxMaDpS+GJ3WwRd0XQ
+        U3HKedO6K3uC2DCyjxtKXav9P3KIYP4f99CP+GJCcYvYXgUnaOaqwAHcxzBsFAgoO+KgYsV7o9m
+        K3ZoZ67D0HpbNsMNT
+X-Received: by 2002:a17:906:2ec6:b0:69f:286a:66ab with SMTP id s6-20020a1709062ec600b0069f286a66abmr23540588eji.684.1645623568942;
+        Wed, 23 Feb 2022 05:39:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzv4Ge2wJLmCbyT5FqSu5aHs9KNkldmFXzly5bPRTsLBfjQrPx6LpsM4oEgZIy3mytLBsRKzw==
+X-Received: by 2002:a17:906:2ec6:b0:69f:286a:66ab with SMTP id s6-20020a1709062ec600b0069f286a66abmr23540565eji.684.1645623568621;
+        Wed, 23 Feb 2022 05:39:28 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id z22sm12238431edd.45.2022.02.23.05.39.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 05:39:28 -0800 (PST)
+Message-ID: <4d611fe8-b82a-1709-507a-56be94263688@redhat.com>
+Date:   Wed, 23 Feb 2022 14:39:27 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a72d4a59-3f5c-4be2-d53a-08d9f6d123c6
-X-MS-TrafficTypeDiagnostic: HE1PR0902MB1753:EE_
-X-Microsoft-Antispam-PRVS: <HE1PR0902MB175378B4F4AA06A42E41BA44883C9@HE1PR0902MB1753.eurprd09.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ul3EdPKp7YrtgSr/SVY7HpaNwN750aGEppxGcYywxtc7NPgJdP7HEYwyVfHr9YP6Wc87FCyz0vHDvyN7RnySgunxjUWOjGJ2hjlUlsrN+7WHjEyvX6ZpA3FHigesKqCNajfKB05QQeqrEr4eIjB7eKVxXhzhVIh4dLRMEp5FVLpChS7ZT/dvGEisSIeZ0WFOk2yp9dGtgIdXcb+bW4buomlHnQiGhBUQlEf6bg1F6DZLbmXo475GhAh9r2X56Mce3siKs2PkNPvE+gHX/Bo8VwL3BQgPi/RGXROSuFBzg4NqFLiKgDe1USd0nARtd5XQQOg4Y9bxG5/Yx2tiFdLNctu4YIhY3yFIv3RsyFRJWWPsD+3AHHdzGhgpmXLiZXRC8Pe2tiUyZs6Q02Y59TOEPcaKH5ux+eNSD8m0LIa2zRe/Ps7CVzNf7lux2cePITKZIhgxNe8hye9vug1UUECTKcYkvMVxhrE+xZzHUhjo4F1QCdSB9zrnFD88ObnA0k5DYJrN5z95hoM07WUQr3vYF9fIxgs+2cu1TtiyH8Kom/23QE5hzs4tltVWD9VjyL0fQYUzqTuyqw5Wa2M8EoQOzu86Q5VMNydaZq+TWUyop6JOPjnIUGZyLnuSnvcf1nEu3MmPjtZZN8TBuum/l0etxwlxTCLfLMypQJgzJuXftpq7L3d+FcfzvgThRc8XpWv0gGgebZpONy/S6H58tQ1TST7giR8HyXcDVKbmxzraJGU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR09MB2324.eurprd09.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(6666004)(6512007)(66476007)(66556008)(66946007)(54906003)(53546011)(6486002)(6916009)(31696002)(786003)(6506007)(316002)(508600001)(86362001)(2616005)(8676002)(44832011)(83380400001)(4744005)(4326008)(38100700002)(5660300002)(8936002)(31686004)(2906002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QXF0b2tjM3FIWStHRThsRWpqY3RWR1ZQVkVRdXNGQml4QmRwTVBqWmM2QmE5?=
- =?utf-8?B?R2hUYjFyRU1LUUY2SVBMOUUzOTg1R2Y4L1lrUyswT0hSRVNJZjd4NVJncHcz?=
- =?utf-8?B?OWQ0MGE2T1ZqZDJzRU1ua3NPZG4vSHhlaE54NmsrdFVGYmZFTWlyV0pLVUEv?=
- =?utf-8?B?bGc4OGhpSi9IZk5UUG85MVppRE9PL2tsVC9iSmJZVlRKK2FaS3ZkcHRERjJ4?=
- =?utf-8?B?UzdhSTRGMGFFTjNIdnNLSmJQZzl4YTA4RTJobzJDL0VyQ0JQNnc5cGx0MS95?=
- =?utf-8?B?cWNFRWhBVHM5R3MrdVAvaktnQmdQVEQ1TGN6cE5ENWVBUUloczhyUmd4dmtN?=
- =?utf-8?B?bzN6Q0xpYnpkYkllWGNiNWxnZjRXYXE1eVp0MU1WTWo1L0RlNTI4QVQwdnB3?=
- =?utf-8?B?YnVUai9lbTZNUmQ5QWFVRHRKTjIzRFFuWkg3Sm5XY3djZDIxTkdSclVPY2Y1?=
- =?utf-8?B?eU9jRmNpaGJIV0Vwc3pPc3I0cGZQUE9DTTl0WU54cGp3NHpsQ0dXekRrQllk?=
- =?utf-8?B?cEFGeDVITkp0dk5pT0MwRzBpaFVNUGQ2ODRRMCswU2VqMFZXVGw5V1dGS0lp?=
- =?utf-8?B?Qlg0bHJQQlJzUmxtN1luMGJpRDNWeGVCSkRJYkJZN1AwTlpIUExXaGdLZ3RS?=
- =?utf-8?B?cjVuTzk3YVVpM3JOb3Q2S0Uwcm51U2Y4QVcrUENkWGpuQlFyekFHYUhDa0s0?=
- =?utf-8?B?Vk1HTzVOZ0t5a2JvblpzeGVobWhEYkI2bEdPR3NnTExrM1docDJIeWJveTcy?=
- =?utf-8?B?TkhrQnhhOU15MVRsWEpRS3Nram5ZSzM3SG1aSnJQUUo3V3lRNExGR29kemJn?=
- =?utf-8?B?OVBuWkx5YXJUbGVFZFZvVGNtekJaRlY5ZjdFYWd6Y2I0cU1jVXBoVDBwb0V5?=
- =?utf-8?B?WlF3dnZ4QmNQTmJ3b1E2VG95ZmhWQlhkelBGR3o3K041VDltQTB1SG5Gbmhk?=
- =?utf-8?B?L3FiMitPWGQ2MWtzTG5PMTRzaE1SaUpiYWVXQks4OEZKMExTdm9tSHc2SDVh?=
- =?utf-8?B?ZXp0TUxWZWRqZEZPTDdueERkYmEyc2R3eFQwNjdxaEVwTlZYWTcxcmV5UlVL?=
- =?utf-8?B?bkE5WHlSem54VkRYL0tqbmlXK2Y5cmgvakIxL3IzV3VFbWd1TEZ3ZGh1anRK?=
- =?utf-8?B?RDlyR2hnQ2ZBc1QxUmQwQ3JIaStpRWNhRXRtYUlHT29JTjAwdmpPYXExMm1r?=
- =?utf-8?B?L0luYmdkdU9RNVNITEpLa3FVVm5CTXVGbnZkV3BDSmhON3JtSkhMN2thOEZV?=
- =?utf-8?B?Y25La1MrWndYMjhtaUdhendpb0dGYVB0SWhGS2NmN1dwZzdnQkFsZ0M5TFo5?=
- =?utf-8?B?WlNTbXJhWjFBSkNPZ3EwcmZKWERhRGtYc3Y4OU9JckoxYVRDUk1uVGlCMkcv?=
- =?utf-8?B?Vnd5dnpoaTh0N2ZQN2huV0E4cmxjWm52WHZOOG5iaFo1Wm1YR0I5eTF6VWZp?=
- =?utf-8?B?VmFxa3Z2VFJ2NmtqZWVvUnB6cHBPZUR5MGtUK1BwY0JxOWxCTDdwUFIrVzVV?=
- =?utf-8?B?UXFSQUcwRyt1b3pxQ1RQbHBoQWFma3ZRWjlnT1l4S2ZnZkxjQ1daTElKSzNq?=
- =?utf-8?B?b3V4NzJCdm4rUm5LaGJsVlFZUFRVUWo5UHkzdk1USTlwTUxkOWdrcGtlYTNn?=
- =?utf-8?B?UGRvNW15cGVsdXliMWp0WTF4QzhmaTNSZTltdFJXQWtveThJcDJEV2s4OUFQ?=
- =?utf-8?B?YnM1VVQ5dkExbFdOeDhqZEJ6REZDNHNKYVNoZ0lnVU5TcXVUK3dXUXYvM1ZK?=
- =?utf-8?B?b2RmSmxLekxxQ2VoK3FCTktlRXJTZEFmeEhvenZ6aU1OZVNpOEhzMUtHcVMr?=
- =?utf-8?B?L0pDMU41M2JLRUFOQnB1VW5Qb05pWjU3eTdseXpwc3M0ZkUwdGhibmJOSHlV?=
- =?utf-8?B?Z1FLK3lwNlpMRlpPTmNxR2JjdlpzSUpxU3FPb2VqZHIxVXI1QzAzK25CM05T?=
- =?utf-8?B?QThpZkRGOHNHdm9lUDVQWlMzTE9Wb2tsd29FSFg4alc1TnZMajcrcldvbjdB?=
- =?utf-8?B?K3J5TjlXdHFnanpiOTdiWkUyNXFpRmNvMUJRTXBIS2VNUUd5M3M0MWpCdVNn?=
- =?utf-8?B?Znh5b09DM20xc0dmUit3WGZyYTFoVTEzaUVxVit4NHVmZDM1cExEWU5JdjJW?=
- =?utf-8?B?aXZoOFVKWnJRM0QvZjRyWWpmNTZqMjVoenN4VmNoVGkzWFdXUmUyc0E1NDFE?=
- =?utf-8?B?RUlTb1VCTTk1TUUyZHZxQVFaSmFnQURiRjg3cGxPTXFaV2VlbDZzOVRvZ1lM?=
- =?utf-8?Q?EirZE2sGk8DtXtskK8DLeTrYSaQb/7eSQgGt35zo8s=3D?=
-X-OriginatorOrg: ugent.be
-X-MS-Exchange-CrossTenant-Network-Message-Id: a72d4a59-3f5c-4be2-d53a-08d9f6d123c6
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR09MB2324.eurprd09.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 13:33:56.0029
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d7811cde-ecef-496c-8f91-a1786241b99c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9iuBzo2fFfuR18Q6NsEQfeVOfeNxPbL/dLwRkMlZ1t7BcEtw5iKsT0yGD4RkHIKeZF1jFlHBJHQoKoJKiN8zaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0902MB1753
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <20220221162652.103834-11-clement.leger@bootlin.com>
+ <YhPSkz8+BIcdb72R@smile.fi.intel.com> <20220222142513.026ad98c@fixe.home>
+ <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
+ <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
+ <YhYriwvHJKjrDQRf@shell.armlinux.org.uk>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <YhYriwvHJKjrDQRf@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It appears that the mail server of the university is changing tabs to spaces.
-I will resend it from my personal gmail address, since that does not seem to
-change tabs to spaces. Sorry for the inconvenience. Thanks!
+Hi,
 
-On 23/02/2022 01:43, Jakub Kicinski wrote:
-> On Sun, 20 Feb 2022 18:54:40 +0100 Niels Dossche wrote:
->> valid_lft, prefered_lft and tstamp are always accessed under the lock
->> "lock" in other places. Reading these without taking the lock may result
->> in inconsistencies regarding the calculation of the valid and preferred
->> variables since decisions are taken on these fields for those variables.
+On 2/23/22 13:41, Russell King (Oracle) wrote:
+> On Wed, Feb 23, 2022 at 01:02:23PM +0100, Hans de Goede wrote:
+>> Hi,
 >>
->> Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
+>> On 2/23/22 12:22, Andy Shevchenko wrote:
+>>> On Tue, Feb 22, 2022 at 02:25:13PM +0100, Clément Léger wrote:
+>>>> Le Mon, 21 Feb 2022 19:57:39 +0200,
+>>>> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
+>>>>
+>>>>> On Mon, Feb 21, 2022 at 05:26:52PM +0100, Clément Léger wrote:
+>>>>>> Add support to retrieve a i2c bus in sfp with a fwnode. This support
+>>>>>> is using the fwnode API which also works with device-tree and ACPI.
+>>>>>> For this purpose, the device-tree and ACPI code handling the i2c
+>>>>>> adapter retrieval was factorized with the new code. This also allows
+>>>>>> i2c devices using a software_node description to be used by sfp code.  
+>>>>>
+>>>>> If I'm not mistaken this patch can even go separately right now, since all used
+>>>>> APIs are already available.
+>>>>
+>>>> This patches uses fwnode_find_i2c_adapter_by_node() which is introduced
+>>>> by "i2c: fwnode: add fwnode_find_i2c_adapter_by_node()" but they can
+>>>> probably be contributed both in a separate series.
+>>>
+>>> I summon Hans into the discussion since I remember he recently refactored
+>>> a bit I2C (ACPI/fwnode) APIs. Also he might have an idea about entire big
+>>> picture approach with this series based on his ACPI experience.
+>>
+>> If I understand this series correctly then this is about a PCI-E card
+>> which has an I2C controller on the card and behind that I2C-controller
+>> there are a couple if I2C muxes + I2C clients.
 > 
-> Looks like your email client has replaced tabs with spaces, 
-> so the patch won't apply. Could you try resending with git send-email?
-> Please add Dave's review tag in the next version, and the subject
-> tag should be [PATCH net v2]. Thanks!
+> That is what I gathered as well.
+> 
+>> Assuming I did understand the above correctly. One alternative would be
+>> to simply manually instantiate the I2C muxes + clients using
+>> i2c_new_client_device(). But I'm not sure if i2c_new_client_device()
+>> will work for the muxes without adding some software_nodes which
+>> brings us back to something like this patch-set.
+> 
+> That assumes that an I2C device is always present, which is not always
+> the case - there are hot-pluggable devices on I2C buses.
+> 
+> Specifically, this series includes pluggable SFP modules, which fall
+> into this category of "hot-pluggable I2C devices" - spanning several
+> bus addresses (0x50, 0x51, 0x56). 0x50 is EEPROM like, but not quite
+> as the top 128 bytes is paged and sometimes buggy in terms of access
+> behaviour. 0x51 contains a bunch of monitoring and other controls
+> for the module which again can be paged. At 0x56, there may possibly
+> be some kind of device that translates I2C accesses to MDIO accesses
+> to access a PHY onboard.
+> 
+> Consequently, the SFP driver and MDIO translation layer wants access to
+> the I2C bus, rather than a device.
+> 
+> Now, before ARM was converted to DT, we had ways to cope with
+> non-firmware described setups like this by using platform devices and
+> platform data. Much of that ended up deprecated, because - hey - DT
+> is great and more modern and the old way is disgusting and we want to
+> get rid of it.
+> 
+> However, that approach locks us into describing stuff in firmware,
+> which is unsuitable when something like this comes along.
+> 
+> I think what we need is both approaches. We need a way for the SFP
+> driver (which is a platform_driver) to be used _without_ needing
+> descriptions in firmware. I think we have that for GPIOs, but for an
+> I2C bus, We have i2c_get_adapter() for I2C buses, but that needs the
+> bus number - we could either pass the i2c_adapter or the adapter
+> number through platform data to the SFP driver.
+> 
+> Or is there another solution to being able to reuse multi-driver
+> based infrastructure that we have developed based on DT descriptions
+> in situations such as an add-in PCI card?
+
+The use of software fwnode-s as proposed in this patch-set is another
+way to deal with this. There has been work to abstract ACPI vs
+of/dt firmware-nodes into a generic fwnode concept and software-nodes
+are a third way to define fwnode-s for "struct device" devices.
+
+Software nodes currently are mainly used as so called secondary
+fwnodes which means they can e.g. add extra properties to cover
+for the firmware description missing some info (which at least
+on ACPI happens more often then we would like).
+
+But a software-node can also be used as the primary fwnode for
+a device. So what this patch-set does is move the i2c of/dt
+enumeration code over to the fwnode abstraction (1). This allows
+the driver for the SPF card to attach a software fwnode to the
+device for the i2c-controller which describes the hotplug pins +
+any other always present hw in the same way as it would be done
+in a devicetree fwnode and then the existing of/dt based SPF
+code can be re-used as is.
+
+At least that is my understanding of this patch-set.
+
+Regards,
+
+Hans
+
+
+
+1) This should result in no functional changes for existing
+devicetree use cases.
+
