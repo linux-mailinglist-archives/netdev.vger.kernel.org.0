@@ -2,233 +2,407 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D41F4C1A4C
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6DF4C1A54
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:57:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243633AbiBWR4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
+        id S243594AbiBWR6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:58:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243628AbiBWR4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:56:16 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C9B255BA;
-        Wed, 23 Feb 2022 09:55:32 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id x18so16071638pfh.5;
-        Wed, 23 Feb 2022 09:55:32 -0800 (PST)
+        with ESMTP id S235343AbiBWR6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:58:13 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DD23C722
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:57:44 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id f17so16093326wrh.7
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:57:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=g5MUiBUuvl2XFBhVkmzyntL4m7Jquw4ZA1vWQa16xCM=;
-        b=PAn4/ZTO4UJZ88VUZ8mmuaGq+nBZ/AwiPcMbcNzrh/98L+ynTqdmamNg5VJ9fTs/yJ
-         uNwxzx1I5pSr4afLtazdRCKtLAQFeC9t92OXdRmnsSj2E+G5S/romNseBkOXjbOqBCQV
-         ZVZHSppa01U6wGzlEbKujerbZ9pum+exIjpQ9TzeTZw+x+q+gttqlgxnFW16f42xM7p0
-         6FYzYCrMaX1XoLlckg7YMnbtDqsIgYFobi/V0IdC2UVWq86rlFKrYtzTItXMXOldQlIY
-         8bfO5yg3gC5Pjgw4DsgkprOw1NMskzNit5RWbziHmArb0cLueK8g6TlhtlOAvq9MKzVd
-         bZYg==
+        d=arista.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kuUqmR8e7tBubJrcnRiXKu14uUHymMXzEtqn26wDjMY=;
+        b=QhGw0Es2gc9ImVcPAlWRojvH+QkoFfEB4c1LkFu5CQCMAFTrUXc84KlEJbD47+g9K8
+         iEbjrwBOm474BrkkrVrrgiHuVUn0ce25EHPmCVJay8FvArm0H2OPR31R+Rq+FWKgPbl/
+         GTpRCmpC0O9U3AWyJJWxvbv4C8AQo0+JzQpluVvY7AxtnFkYA3JZKow1E4pDW+UoiVJ0
+         FwHD0sGp1KHse/XVx5Bei0LS+G3UwGPj/hP4rBWZyUKsMRlkrl+6PG3UCgt5HNB+/j56
+         jYXzWqyOxkmNhHzxZ+S9BrK/KZv9NpZnLcej+AtpA+wPbC5RPhqElObf+tqMu7Sztx3L
+         gHLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=g5MUiBUuvl2XFBhVkmzyntL4m7Jquw4ZA1vWQa16xCM=;
-        b=p9nKxL2VIxPJlnPficlZT3NfdydcCO7/PK6vvDWG/THd4a7CzyEHkIR8hyB7N8jbXS
-         aI3OAPkP3PzXBQu8XGXDGnu8g3wOj1llNDngbHcdZSQIyHY4cqNZ/xC3WO5R3rlKhE1D
-         hvfz2uyI+zD5gZK0zUv+33tJXkhEQFWESqFmGu66ku5PmJ9yxf6ADKJBuAOT/ZPxIw8K
-         PkAVUKOMt7VkIt9jnHkcZbAKqDScjSdi7a/ATVk/iwlfD3uSYclQvLRdi/ZX6SEW2Tzm
-         UBtnQ/OAZUYnE+l6ADWi/2azLWXlxKJFrIaE8k5DVIWKdWy/N6nXvhETOjxst/lJZWqH
-         Ck/w==
-X-Gm-Message-State: AOAM533zzXASZaVjpissADm5M/cr9LU/4d6k4pVUewYTnSv13yckfGBv
-        7pZisB5kyIV9BJaqiAvHn5c=
-X-Google-Smtp-Source: ABdhPJwpiB5x5gfXIiuYRpt4Z4bvjryNs08dSMMPO9x3w0RDZAcHaHs6MKIYSt4MB5OksV4si1Kk+g==
-X-Received: by 2002:a63:543:0:b0:374:62b7:8ab0 with SMTP id 64-20020a630543000000b0037462b78ab0mr591954pgf.384.1645638931892;
-        Wed, 23 Feb 2022 09:55:31 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id u25sm165880pfh.46.2022.02.23.09.55.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 09:55:31 -0800 (PST)
-Message-ID: <91e2d4ad-7544-784b-defe-3a76577462f1@gmail.com>
-Date:   Wed, 23 Feb 2022 09:55:29 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 3/3] drivers/net/ftgmac100: fix DHCP potential failure
- with systemd
-Content-Language: en-US
-To:     Heyi Guo <guoheyi@linux.alibaba.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        bh=kuUqmR8e7tBubJrcnRiXKu14uUHymMXzEtqn26wDjMY=;
+        b=FKDL5rK+rC5N30OXENn3NYzR5UUEdr6C0SK9OXDOkBaNWjf4V6j3ldoW0HwFspZKLg
+         cpZ2cyMlOdBsnJQgRcb91vgcE+FJZ6M85nDNK3U23Y6+YQDEJx7dsj5aicaHiXbFb0dn
+         gx8CU7mJhUEWeJsoJgbTc4fJXmadBKgblUj+VaD+FeZPXQrmPDjo9lLk6yQXWBYbQJJy
+         U346lLiKRRFQZsf0FnZjzZTCmoV2QUWalpceZ06eGLaAfiY2szLoy7FsiUA5dz4wjOV6
+         mUe1ElVl2W2WXL5hAMwXqWrK6usAogS8dleSfVAlrYDKNs3Qb7c9I3lPqoIJ9v2BMtVt
+         B/sg==
+X-Gm-Message-State: AOAM531FS2ne3jmQdGneF8dCW9NqLtMich80UyQdEdZlza0nvf1EILQj
+        b2q4AedZ6RzcEhaDcO1ww4wdbQ==
+X-Google-Smtp-Source: ABdhPJy4uBHgzpoUQ4QYxRcrXcf5E4zECHbW6Wad2kS7WGXbh0uoVAIC2dgI59wf5MB9kzlpmFZhnw==
+X-Received: by 2002:a5d:64ec:0:b0:1e6:8d72:b8af with SMTP id g12-20020a5d64ec000000b001e68d72b8afmr572362wri.165.1645639062502;
+        Wed, 23 Feb 2022 09:57:42 -0800 (PST)
+Received: from localhost.localdomain ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id g16-20020a7bc4d0000000b0037bbe255339sm414482wmk.15.2022.02.23.09.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 09:57:42 -0800 (PST)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Dmitry Safonov <dima@arista.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dylan Hung <dylan_hung@aspeedtech.com>, netdev@vger.kernel.org
-References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
- <20220223031436.124858-4-guoheyi@linux.alibaba.com>
- <1675a52d-a270-d768-5ccc-35b1e82e56d2@gmail.com>
- <5cdf5d09-9b32-ec98-cbd1-c05365ec01fa@linux.alibaba.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <5cdf5d09-9b32-ec98-cbd1-c05365ec01fa@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH v3] net/tcp: Merge TCP-MD5 inbound callbacks
+Date:   Wed, 23 Feb 2022 17:57:40 +0000
+Message-Id: <20220223175740.452397-1-dima@arista.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The functions do essentially the same work to verify TCP-MD5 sign.
+Code can be merged into one family-independent function in order to
+reduce copy'n'paste and generated code.
+Later with TCP-AO option added, this will allow to create one function
+that's responsible for segment verification, that will have all the
+different checks for MD5/AO/non-signed packets, which in turn will help
+to see checks for all corner-cases in one function, rather than spread
+around different families and functions.
 
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+v2: Rebased on net-next
+v3: Correct rebase on net-next for !CONFIG_TCP_MD5
 
-On 2/23/2022 3:39 AM, Heyi Guo wrote:
-> Hi Florian,
-> 
-> 在 2022/2/23 下午1:00, Florian Fainelli 写道:
->>
->>
->> On 2/22/2022 7:14 PM, Heyi Guo wrote:
->>> DHCP failures were observed with systemd 247.6. The issue could be
->>> reproduced by rebooting Aspeed 2600 and then running ifconfig ethX
->>> down/up.
->>>
->>> It is caused by below procedures in the driver:
->>>
->>> 1. ftgmac100_open() enables net interface and call phy_start()
->>> 2. When PHY is link up, it calls netif_carrier_on() and then
->>> adjust_link callback
->>> 3. ftgmac100_adjust_link() will schedule the reset task
->>> 4. ftgmac100_reset_task() will then reset the MAC in another schedule
->>>
->>> After step 2, systemd will be notified to send DHCP discover packet,
->>> while the packet might be corrupted by MAC reset operation in step 4.
->>>
->>> Call ftgmac100_reset() directly instead of scheduling task to fix the
->>> issue.
->>>
->>> Signed-off-by: Heyi Guo <guoheyi@linux.alibaba.com>
->>> ---
->>> Cc: Andrew Lunn <andrew@lunn.ch>
->>> Cc: "David S. Miller" <davem@davemloft.net>
->>> Cc: Jakub Kicinski <kuba@kernel.org>
->>> Cc: Joel Stanley <joel@jms.id.au>
->>> Cc: Guangbin Huang <huangguangbin2@huawei.com>
->>> Cc: Hao Chen <chenhao288@hisilicon.com>
->>> Cc: Arnd Bergmann <arnd@arndb.de>
->>> Cc: Dylan Hung <dylan_hung@aspeedtech.com>
->>> Cc: netdev@vger.kernel.org
->>>
->>>
->>> ---
->>>   drivers/net/ethernet/faraday/ftgmac100.c | 13 +++++++++++--
->>>   1 file changed, 11 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c 
->>> b/drivers/net/ethernet/faraday/ftgmac100.c
->>> index c1deb6e5d26c5..d5356db7539a4 100644
->>> --- a/drivers/net/ethernet/faraday/ftgmac100.c
->>> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
->>> @@ -1402,8 +1402,17 @@ static void ftgmac100_adjust_link(struct 
->>> net_device *netdev)
->>>       /* Disable all interrupts */
->>>       iowrite32(0, priv->base + FTGMAC100_OFFSET_IER);
->>>   -    /* Reset the adapter asynchronously */
->>> -    schedule_work(&priv->reset_task);
->>> +    /* Release phy lock to allow ftgmac100_reset to aquire it, 
->>> keeping lock
->>
->> typo: acquire
->>
-> Thanks for the catch :)
->>> +     * order consistent to prevent dead lock.
->>> +     */
->>> +    if (netdev->phydev)
->>> +        mutex_unlock(&netdev->phydev->lock);
->>> +
->>> +    ftgmac100_reset(priv);
->>> +
->>> +    if (netdev->phydev)
->>> +        mutex_lock(&netdev->phydev->lock);
->>
->> Do you really need to perform a full MAC reset whenever the link goes 
->> up or down? Instead cannot you just extract the maccr configuration 
->> which adjusts the speed and be done with it?
-> 
-> This is the original behavior and not changed in this patch set, and I'm 
-> not familiar with the hardware design of ftgmac100, so I'd like to limit 
-> the changes to the code which really causes practical issues.
+ include/net/tcp.h   | 13 ++++++++
+ net/ipv4/tcp.c      | 70 ++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_ipv4.c | 78 +++------------------------------------------
+ net/ipv6/tcp_ipv6.c | 62 +++--------------------------------
+ 4 files changed, 92 insertions(+), 131 deletions(-)
 
-This unlocking and re-locking seems superfluous when you could introduce 
-a version of ftgmac100_reset() which does not acquire the PHY device 
-mutex, and have that version called from ftgmac100_adjust_link(). For 
-every other call site, you would acquire it. Something like this for 
-instance:
-
-
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c 
-b/drivers/net/ethernet/faraday/ftgmac100.c
-index 691605c15265..98179c3fd9ee 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1038,7 +1038,7 @@ static void ftgmac100_adjust_link(struct 
-net_device *netdev)
-         iowrite32(0, priv->base + FTGMAC100_OFFSET_IER);
-
-         /* Reset the adapter asynchronously */
--       schedule_work(&priv->reset_task);
-+       ftgmac100_reset(priv, false);
-  }
-
-  static int ftgmac100_mii_probe(struct net_device *netdev)
-@@ -1410,10 +1410,8 @@ static int ftgmac100_init_all(struct ftgmac100 
-*priv, bool ignore_alloc_err)
-         return err;
-  }
-
--static void ftgmac100_reset_task(struct work_struct *work)
-+static void ftgmac100_reset_task(struct ftgmac100_priv *priv, bool 
-lock_phy)
-  {
--       struct ftgmac100 *priv = container_of(work, struct ftgmac100,
--                                             reset_task);
-         struct net_device *netdev = priv->netdev;
-         int err;
-
-@@ -1421,7 +1419,7 @@ static void ftgmac100_reset_task(struct 
-work_struct *work)
-
-         /* Lock the world */
-         rtnl_lock();
--       if (netdev->phydev)
-+       if (netdev->phydev && lock_phy)
-                 mutex_lock(&netdev->phydev->lock);
-         if (priv->mii_bus)
-                 mutex_lock(&priv->mii_bus->mdio_lock);
-@@ -1454,11 +1452,19 @@ static void ftgmac100_reset_task(struct 
-work_struct *work)
-   bail:
-         if (priv->mii_bus)
-                 mutex_unlock(&priv->mii_bus->mdio_lock);
--       if (netdev->phydev)
-+       if (netdev->phydev && lock_phy)
-                 mutex_unlock(&netdev->phydev->lock);
-         rtnl_unlock();
-  }
-
-+static void ftgmac100_reset_task(struct work_struct *work)
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 04f4650e0ff0..479a27777ad6 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1674,6 +1674,11 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
+ 		return NULL;
+ 	return __tcp_md5_do_lookup(sk, l3index, addr, family);
+ }
++bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
++			  enum skb_drop_reason *reason,
++			  const void *saddr, const void *daddr,
++			  int family, int dif, int sdif);
++
+ 
+ #define tcp_twsk_md5_key(twsk)	((twsk)->tw_md5_key)
+ #else
+@@ -1683,6 +1688,14 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
+ {
+ 	return NULL;
+ }
++static inline bool tcp_inbound_md5_hash(const struct sock *sk,
++					const struct sk_buff *skb,
++					enum skb_drop_reason *reason,
++					const void *saddr, const void *daddr,
++					int family, int dif, int sdif)
 +{
-+       struct ftgmac100 *priv = container_of(work, struct ftgmac100,
-+                                             reset_task);
-+
-+       ftgmac100_reset(priv, true);
++	return false;
 +}
+ #define tcp_twsk_md5_key(twsk)	NULL
+ #endif
+ 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 760e8221d321..68f1236b2858 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4431,6 +4431,76 @@ int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *ke
+ }
+ EXPORT_SYMBOL(tcp_md5_hash_key);
+ 
++/* Called with rcu_read_lock() */
++bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
++			  enum skb_drop_reason *reason,
++			  const void *saddr, const void *daddr,
++			  int family, int dif, int sdif)
++{
++	/*
++	 * This gets called for each TCP segment that arrives
++	 * so we want to be efficient.
++	 * We have 3 drop cases:
++	 * o No MD5 hash and one expected.
++	 * o MD5 hash and we're not expecting one.
++	 * o MD5 hash and its wrong.
++	 */
++	const __u8 *hash_location = NULL;
++	struct tcp_md5sig_key *hash_expected;
++	const struct tcphdr *th = tcp_hdr(skb);
++	struct tcp_sock *tp = tcp_sk(sk);
++	int genhash, l3index;
++	u8 newhash[16];
 +
-  static int ftgmac100_open(struct net_device *netdev)
-  {
-         struct ftgmac100 *priv = netdev_priv(netdev)
++	/* sdif set, means packet ingressed via a device
++	 * in an L3 domain and dif is set to the l3mdev
++	 */
++	l3index = sdif ? dif : 0;
++
++	hash_expected = tcp_md5_do_lookup(sk, l3index, saddr, family);
++	hash_location = tcp_parse_md5sig_option(th);
++
++	/* We've parsed the options - do we have a hash? */
++	if (!hash_expected && !hash_location)
++		return false;
++
++	if (hash_expected && !hash_location) {
++		*reason = SKB_DROP_REASON_TCP_MD5NOTFOUND;
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
++		return true;
++	}
++
++	if (!hash_expected && hash_location) {
++		*reason = SKB_DROP_REASON_TCP_MD5UNEXPECTED;
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5UNEXPECTED);
++		return true;
++	}
++
++	/* check the signature */
++	genhash = tp->af_specific->calc_md5_hash(newhash, hash_expected,
++						 NULL, skb);
++
++	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
++		*reason = SKB_DROP_REASON_TCP_MD5FAILURE;
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
++		if (family == AF_INET) {
++			net_info_ratelimited("MD5 Hash failed for (%pI4, %d)->(%pI4, %d)%s L3 index %d\n",
++					saddr, ntohs(th->source),
++					daddr, ntohs(th->dest),
++					genhash ? " tcp_v4_calc_md5_hash failed"
++					: "", l3index);
++		} else {
++			net_info_ratelimited("MD5 Hash %s for [%pI6c]:%u->[%pI6c]:%u L3 index %d\n",
++					genhash ? "failed" : "mismatch",
++					saddr, ntohs(th->source),
++					daddr, ntohs(th->dest), l3index);
++		}
++		return true;
++	}
++	return false;
++}
++EXPORT_SYMBOL(tcp_inbound_md5_hash);
++
+ #endif
+ 
+ void tcp_done(struct sock *sk)
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index d42824aedc36..411357ad9757 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1409,76 +1409,6 @@ EXPORT_SYMBOL(tcp_v4_md5_hash_skb);
+ 
+ #endif
+ 
+-/* Called with rcu_read_lock() */
+-static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
+-				    const struct sk_buff *skb,
+-				    int dif, int sdif,
+-				    enum skb_drop_reason *reason)
+-{
+-#ifdef CONFIG_TCP_MD5SIG
+-	/*
+-	 * This gets called for each TCP segment that arrives
+-	 * so we want to be efficient.
+-	 * We have 3 drop cases:
+-	 * o No MD5 hash and one expected.
+-	 * o MD5 hash and we're not expecting one.
+-	 * o MD5 hash and its wrong.
+-	 */
+-	const __u8 *hash_location = NULL;
+-	struct tcp_md5sig_key *hash_expected;
+-	const struct iphdr *iph = ip_hdr(skb);
+-	const struct tcphdr *th = tcp_hdr(skb);
+-	const union tcp_md5_addr *addr;
+-	unsigned char newhash[16];
+-	int genhash, l3index;
+-
+-	/* sdif set, means packet ingressed via a device
+-	 * in an L3 domain and dif is set to the l3mdev
+-	 */
+-	l3index = sdif ? dif : 0;
+-
+-	addr = (union tcp_md5_addr *)&iph->saddr;
+-	hash_expected = tcp_md5_do_lookup(sk, l3index, addr, AF_INET);
+-	hash_location = tcp_parse_md5sig_option(th);
+-
+-	/* We've parsed the options - do we have a hash? */
+-	if (!hash_expected && !hash_location)
+-		return false;
+-
+-	if (hash_expected && !hash_location) {
+-		*reason = SKB_DROP_REASON_TCP_MD5NOTFOUND;
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
+-		return true;
+-	}
+-
+-	if (!hash_expected && hash_location) {
+-		*reason = SKB_DROP_REASON_TCP_MD5UNEXPECTED;
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5UNEXPECTED);
+-		return true;
+-	}
+-
+-	/* Okay, so this is hash_expected and hash_location -
+-	 * so we need to calculate the checksum.
+-	 */
+-	genhash = tcp_v4_md5_hash_skb(newhash,
+-				      hash_expected,
+-				      NULL, skb);
+-
+-	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
+-		*reason = SKB_DROP_REASON_TCP_MD5FAILURE;
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+-		net_info_ratelimited("MD5 Hash failed for (%pI4, %d)->(%pI4, %d)%s L3 index %d\n",
+-				     &iph->saddr, ntohs(th->source),
+-				     &iph->daddr, ntohs(th->dest),
+-				     genhash ? " tcp_v4_calc_md5_hash failed"
+-				     : "", l3index);
+-		return true;
+-	}
+-	return false;
+-#endif
+-	return false;
+-}
+-
+ static void tcp_v4_init_req(struct request_sock *req,
+ 			    const struct sock *sk_listener,
+ 			    struct sk_buff *skb)
+@@ -2035,8 +1965,9 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		struct sock *nsk;
+ 
+ 		sk = req->rsk_listener;
+-		if (unlikely(tcp_v4_inbound_md5_hash(sk, skb, dif, sdif,
+-						     &drop_reason))) {
++		if (unlikely(tcp_inbound_md5_hash(sk, skb, &drop_reason,
++						  &iph->saddr, &iph->daddr,
++						  AF_INET, dif, sdif))) {
+ 			sk_drops_add(sk, skb);
+ 			reqsk_put(req);
+ 			goto discard_it;
+@@ -2110,7 +2041,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		goto discard_and_relse;
+ 	}
+ 
+-	if (tcp_v4_inbound_md5_hash(sk, skb, dif, sdif, &drop_reason))
++	if (tcp_inbound_md5_hash(sk, skb, &drop_reason, &iph->saddr,
++				 &iph->daddr, AF_INET, dif, sdif))
+ 		goto discard_and_relse;
+ 
+ 	nf_reset_ct(skb);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 749de8529c83..e98af869ff3a 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -773,61 +773,6 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
+ 
+ #endif
+ 
+-static bool tcp_v6_inbound_md5_hash(const struct sock *sk,
+-				    const struct sk_buff *skb,
+-				    int dif, int sdif,
+-				    enum skb_drop_reason *reason)
+-{
+-#ifdef CONFIG_TCP_MD5SIG
+-	const __u8 *hash_location = NULL;
+-	struct tcp_md5sig_key *hash_expected;
+-	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
+-	const struct tcphdr *th = tcp_hdr(skb);
+-	int genhash, l3index;
+-	u8 newhash[16];
+-
+-	/* sdif set, means packet ingressed via a device
+-	 * in an L3 domain and dif is set to the l3mdev
+-	 */
+-	l3index = sdif ? dif : 0;
+-
+-	hash_expected = tcp_v6_md5_do_lookup(sk, &ip6h->saddr, l3index);
+-	hash_location = tcp_parse_md5sig_option(th);
+-
+-	/* We've parsed the options - do we have a hash? */
+-	if (!hash_expected && !hash_location)
+-		return false;
+-
+-	if (hash_expected && !hash_location) {
+-		*reason = SKB_DROP_REASON_TCP_MD5NOTFOUND;
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
+-		return true;
+-	}
+-
+-	if (!hash_expected && hash_location) {
+-		*reason = SKB_DROP_REASON_TCP_MD5UNEXPECTED;
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5UNEXPECTED);
+-		return true;
+-	}
+-
+-	/* check the signature */
+-	genhash = tcp_v6_md5_hash_skb(newhash,
+-				      hash_expected,
+-				      NULL, skb);
+-
+-	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
+-		*reason = SKB_DROP_REASON_TCP_MD5FAILURE;
+-		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+-		net_info_ratelimited("MD5 Hash %s for [%pI6c]:%u->[%pI6c]:%u L3 index %d\n",
+-				     genhash ? "failed" : "mismatch",
+-				     &ip6h->saddr, ntohs(th->source),
+-				     &ip6h->daddr, ntohs(th->dest), l3index);
+-		return true;
+-	}
+-#endif
+-	return false;
+-}
+-
+ static void tcp_v6_init_req(struct request_sock *req,
+ 			    const struct sock *sk_listener,
+ 			    struct sk_buff *skb)
+@@ -1687,8 +1632,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		struct sock *nsk;
+ 
+ 		sk = req->rsk_listener;
+-		if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif,
+-					    &drop_reason)) {
++		if (tcp_inbound_md5_hash(sk, skb, &drop_reason, &hdr->saddr,
++					 &hdr->daddr, AF_INET6, dif, sdif)) {
+ 			sk_drops_add(sk, skb);
+ 			reqsk_put(req);
+ 			goto discard_it;
+@@ -1759,7 +1704,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		goto discard_and_relse;
+ 	}
+ 
+-	if (tcp_v6_inbound_md5_hash(sk, skb, dif, sdif, &drop_reason))
++	if (tcp_inbound_md5_hash(sk, skb, &drop_reason, &hdr->saddr,
++				 &hdr->daddr, AF_INET6, dif, sdif))
+ 		goto discard_and_relse;
+ 
+ 	if (tcp_filter(sk, skb)) {
+
+base-commit: 922ea87ff6f2b63f413c6afa2c25b287dce76639
+prerequisite-patch-id: f4dc7ba51eadb9fccabb755c41854bedeeaf8954
 -- 
-Florian
+2.35.1
+
