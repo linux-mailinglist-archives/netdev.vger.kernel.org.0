@@ -2,162 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 424344C0F22
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 10:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62ABC4C0F3A
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 10:30:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236277AbiBWJ03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 04:26:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52136 "EHLO
+        id S239248AbiBWJar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 04:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiBWJ01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 04:26:27 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D563185648
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 01:26:00 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id c6so46646607ybk.3
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 01:26:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=roGR89KW7YSGx9Iq3wb7OaaFf87pu/a869G/gnZpXb8=;
-        b=byGC8q9A280hOaflVcWLOnnzjVAmMFZ9QXyMrgICp4TH8QfpraNALCRJxyeQZuM1Hn
-         iDh4N20k+4cW29Auzrbd1CnqrPyMbIN4/3mzz5Z6Wd6y11jFiquUNZ383pUkqRDUnhJf
-         X0kHM/KPKZJdEM+eWFIHK8bk/BggNL8wU4NCQw+na8zlBNGFgUqnYodwWF/rLdwwMKYY
-         V24+9b3DtTDkjP/KVMkbG3FgktR+ylYL7KYzZrr8vy3Vr5Xw8McRqhr4YsbaJ1j51e/f
-         DeOhXutLqVARyl0uls0sFW5KDGh7eOd6zA0fkRe/AJdfFqxcXeGbctDxhgcSYEKKiAOT
-         u7yg==
+        with ESMTP id S233201AbiBWJaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 04:30:46 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1614224BFB
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 01:30:19 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id x6-20020a923006000000b002bea39c3974so12215535ile.12
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 01:30:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=roGR89KW7YSGx9Iq3wb7OaaFf87pu/a869G/gnZpXb8=;
-        b=EMM+O8Vlih7FHER92IWxu0IC2nZ+g9vrMf9Zx428O1JLs0Uwh+KW1coR66Lf3VMBVJ
-         N63uiRojOREM87kwvry+Ytz2lgwjndy2TC1ZRR9I8FNKDi4unRLybqSP6zJCK9iI4lb4
-         EzDzkqyNRa8/+3G5KPvHQfn+bMLJ7RjUfvYui2HbN9+uKjGBWP4o2SBPZj7MbPX99qbj
-         3K+oDTWjtYhsH6Ge6Z9fiItLLNQ/0ntNv+6k34/ZlNiHKvEY7Ggpjcw8G+s4m7j83cRt
-         RE4rIOYyUV8wTeej+qT83BNrAE0HubESlMmp0ugYkK8/0iKPwvco06w9+UNsaEtmNAtI
-         FWHg==
-X-Gm-Message-State: AOAM531pf82zHAMlPYeVSUWOJZHNwyVVxPnPWQsxepPH8o7NUM3ROL/0
-        +lY50NTA58jV/Z56I0OvWmMxEFF+TT0i/untYYc3EA==
-X-Google-Smtp-Source: ABdhPJxUzhcpxnYfomRY0ENC0P3CII9/EP0EKlyqlr6y/sB0NX6GusgPzZ/itcwYOx5XbgRxvxTA20CrzxQlXt9qPfI=
-X-Received: by 2002:a25:aa51:0:b0:624:6fbf:c494 with SMTP id
- s75-20020a25aa51000000b006246fbfc494mr16346479ybi.425.1645608359780; Wed, 23
- Feb 2022 01:25:59 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=rOgWpFzlzfDic7PPkkbTbM91/9giJy4YgpDa5cNJ1TM=;
+        b=iTA3xoD8Pw3m43SdpwiFJwWPMW/h7PdtZSguKgcSDV7eP0TnTWlkwveLyw+bs8663a
+         NwJW9SlFsgJzm0HFMmGHdEvagkMcqKfpidakgIXP3GfU5Ptg+ogOSqIaWJwucQ5krHlp
+         hWhBlzc8SBCag1wgc+/PgO+XQvPYzsYgXSC7DxFNPIbICyG4wTozRZ1JpelDZHYND+Et
+         l63ozfEV70yJ5lf38r8tm0CpwTPBv1Ljwv84d//qLpi5IOsPcpvTFlczaqL6YWZyCca6
+         YwKv7FA6SLeL2Adiptj/SpDI6S1ZmgJ7YaaaBNg120e61SFe2xe2AHdkK/zyvuh2ODgy
+         rB+g==
+X-Gm-Message-State: AOAM531xSAXxptpBY1jzYAz12+7z6rNJHkFsmo8ybe5jnLz7/WgE7L2k
+        cpO+GzGB/4pWADCrvbMPnT3ZVTPbtegY2jWrFRNJ1Kz+aBjm
+X-Google-Smtp-Source: ABdhPJyGbs/d0DzgEhO+2h4MPKAwNX1W6TCt+NastddY0kCx+EpZlh5lo+m1HiWBuZ3H6FFLBNHEiwGioei+ALB6ZDn+PKSTupWv
 MIME-Version: 1.0
-References: <20220222032113.4005821-1-eric.dumazet@gmail.com> <20220222032113.4005821-3-eric.dumazet@gmail.com>
-In-Reply-To: <20220222032113.4005821-3-eric.dumazet@gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 23 Feb 2022 10:25:48 +0100
-Message-ID: <CANpmjNOwaP7QS_joNJUPbY3Q0CKYsm1Bh7YhXnqaxxKzgJHvHw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: preserve skb_end_offset() in skb_unclone_keeptruesize()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>
+X-Received: by 2002:a92:b0b:0:b0:2c2:74db:9630 with SMTP id
+ b11-20020a920b0b000000b002c274db9630mr2822578ilf.170.1645608618466; Wed, 23
+ Feb 2022 01:30:18 -0800 (PST)
+Date:   Wed, 23 Feb 2022 01:30:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000024a1f805d8ac1da3@google.com>
+Subject: [syzbot] KMSAN: uninit-value in asix_check_host_enable
+From:   syzbot <syzbot+8f5f07bb9d6935e2f8d9@syzkaller.appspotmail.com>
+To:     andrew@lunn.ch, davem@davemloft.net, glider@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux@rempel-privat.de,
+        netdev@vger.kernel.org, paskripkin@gmail.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Feb 2022 at 04:21, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> syzbot found another way to trigger the infamous WARN_ON_ONCE(delta < len)
-> in skb_try_coalesce() [1]
->
-> I was able to root cause the issue to kfence.
->
-> When kfence is in action, the following assertion is no longer true:
->
-> int size = xxxx;
-> void *ptr1 = kmalloc(size, gfp);
-> void *ptr2 = kmalloc(size, gfp);
->
-> if (ptr1 && ptr2)
->         ASSERT(ksize(ptr1) == ksize(ptr2));
->
-> We attempted to fix these issues in the blamed commits, but forgot
-> that TCP was possibly shifting data after skb_unclone_keeptruesize()
-> has been used, notably from tcp_retrans_try_collapse().
->
-> So we not only need to keep same skb->truesize value,
-> we also need to make sure TCP wont fill new tailroom
-> that pskb_expand_head() was able to get from a
-> addr = kmalloc(...) followed by ksize(addr)
->
-> Split skb_unclone_keeptruesize() into two parts:
->
-> 1) Inline skb_unclone_keeptruesize() for the common case,
->    when skb is not cloned.
->
-> 2) Out of line __skb_unclone_keeptruesize() for the 'slow path'.
->
-> WARNING: CPU: 1 PID: 6490 at net/core/skbuff.c:5295 skb_try_coalesce+0x1235/0x1560 net/core/skbuff.c:5295
-> Modules linked in:
-> CPU: 1 PID: 6490 Comm: syz-executor161 Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:skb_try_coalesce+0x1235/0x1560 net/core/skbuff.c:5295
-> Code: bf 01 00 00 00 0f b7 c0 89 c6 89 44 24 20 e8 62 24 4e fa 8b 44 24 20 83 e8 01 0f 85 e5 f0 ff ff e9 87 f4 ff ff e8 cb 20 4e fa <0f> 0b e9 06 f9 ff ff e8 af b2 95 fa e9 69 f0 ff ff e8 95 b2 95 fa
-> RSP: 0018:ffffc900063af268 EFLAGS: 00010293
-> RAX: 0000000000000000 RBX: 00000000ffffffd5 RCX: 0000000000000000
-> RDX: ffff88806fc05700 RSI: ffffffff872abd55 RDI: 0000000000000003
-> RBP: ffff88806e675500 R08: 00000000ffffffd5 R09: 0000000000000000
-> R10: ffffffff872ab659 R11: 0000000000000000 R12: ffff88806dd554e8
-> R13: ffff88806dd9bac0 R14: ffff88806dd9a2c0 R15: 0000000000000155
-> FS:  00007f18014f9700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000020002000 CR3: 000000006be7a000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  tcp_try_coalesce net/ipv4/tcp_input.c:4651 [inline]
->  tcp_try_coalesce+0x393/0x920 net/ipv4/tcp_input.c:4630
->  tcp_queue_rcv+0x8a/0x6e0 net/ipv4/tcp_input.c:4914
->  tcp_data_queue+0x11fd/0x4bb0 net/ipv4/tcp_input.c:5025
->  tcp_rcv_established+0x81e/0x1ff0 net/ipv4/tcp_input.c:5947
->  tcp_v4_do_rcv+0x65e/0x980 net/ipv4/tcp_ipv4.c:1719
->  sk_backlog_rcv include/net/sock.h:1037 [inline]
->  __release_sock+0x134/0x3b0 net/core/sock.c:2779
->  release_sock+0x54/0x1b0 net/core/sock.c:3311
->  sk_wait_data+0x177/0x450 net/core/sock.c:2821
->  tcp_recvmsg_locked+0xe28/0x1fd0 net/ipv4/tcp.c:2457
->  tcp_recvmsg+0x137/0x610 net/ipv4/tcp.c:2572
->  inet_recvmsg+0x11b/0x5e0 net/ipv4/af_inet.c:850
->  sock_recvmsg_nosec net/socket.c:948 [inline]
->  sock_recvmsg net/socket.c:966 [inline]
->  sock_recvmsg net/socket.c:962 [inline]
->  ____sys_recvmsg+0x2c4/0x600 net/socket.c:2632
->  ___sys_recvmsg+0x127/0x200 net/socket.c:2674
->  __sys_recvmsg+0xe2/0x1a0 net/socket.c:2704
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> Fixes: c4777efa751d ("net: add and use skb_unclone_keeptruesize() helper")
-> Fixes: 097b9146c0e2 ("net: fix up truesize of cloned skb in skb_prepare_for_shift()")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Marco Elver <elver@google.com>
-> ---
->  include/linux/skbuff.h | 20 +++++++++++---------
->  net/core/skbuff.c      | 32 ++++++++++++++++++++++++++++++++
->  2 files changed, 43 insertions(+), 9 deletions(-)
+Hello,
 
-FWIW, I also exposed this to syzkaller for the last 24h with
-CONFIG_KFENCE_SAMPLE_INTERVAL=10 - so far no warning.
+syzbot found the following issue on:
 
-Tested-by: Marco Elver <elver@google.com>
+HEAD commit:    724946410067 x86: kmsan: enable KMSAN builds for x86
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=11c85246700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=76f99026248b24e4
+dashboard link: https://syzkaller.appspot.com/bug?extid=8f5f07bb9d6935e2f8d9
+compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11674fe2700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1497324c700000
 
-Thanks!
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8f5f07bb9d6935e2f8d9@syzkaller.appspotmail.com
+
+asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
+asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
+asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
+=====================================================
+BUG: KMSAN: uninit-value in asix_check_host_enable+0x289/0x330 drivers/net/usb/asix_common.c:84
+ asix_check_host_enable+0x289/0x330 drivers/net/usb/asix_common.c:84
+ __asix_mdio_write+0x10d/0x5c0 drivers/net/usb/asix_common.c:532
+ asix_mdio_write+0xad/0xc0 drivers/net/usb/asix_common.c:550
+ asix_phy_reset+0xd5/0x2e0 drivers/net/usb/asix_devices.c:208
+ ax88172_bind+0x738/0x9d0 drivers/net/usb/asix_devices.c:275
+ usbnet_probe+0x1251/0x4160 drivers/net/usb/usbnet.c:1747
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
+ usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
+ usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
+ hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+ port_event drivers/usb/core/hub.c:5660 [inline]
+ hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
+ process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
+ worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
+ kthread+0x3c7/0x500 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+Local variable smsr created at:
+ asix_check_host_enable+0x66/0x330
+ __asix_mdio_write+0x10d/0x5c0 drivers/net/usb/asix_common.c:532
+
+CPU: 1 PID: 34 Comm: kworker/1:1 Not tainted 5.17.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
