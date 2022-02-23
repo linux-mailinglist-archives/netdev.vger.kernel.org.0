@@ -2,119 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9E674C0E8D
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 09:53:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A97D64C0EA6
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 09:57:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239091AbiBWIx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 03:53:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
+        id S236884AbiBWI6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 03:58:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239090AbiBWIx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 03:53:57 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7974D7B55B;
-        Wed, 23 Feb 2022 00:53:29 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id o8so490004pgf.9;
-        Wed, 23 Feb 2022 00:53:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iDb45oPj0ifDcB8Xoh2dodzalPDAwvLvo6tLmA+1g1A=;
-        b=mjbK/Qvyky40bHpb9CMcZeTXTikILi0QdvNGlkl/xfbx4ehMMLyLVLBwG4UAHrjXJC
-         qZ97pFWziKsT8Ay5h4ojKoZyq6NeXAh6ADGWvdRQa2t2iIkkdmV2eHSjj0U7qlbim6Pt
-         FOYoBJP5rOCNKtQOZvrqlHbv5uETayn7kMpKlF8KWDXNKiHmjBGNDZWHjf+DZDKrSyua
-         Lm6AqmUKEXj9hGreOdCtBvtMXNSDrHIgPQrlpdQq/UEKV8bD9T1yuxUEc8zw9Ok2X2Cx
-         N3iRl6WixrLYYwWx9/RAIeCWXNAfflB6skCejDzhXl7Y0nrM4wBCthW0YvQBvuwFhJko
-         ctiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iDb45oPj0ifDcB8Xoh2dodzalPDAwvLvo6tLmA+1g1A=;
-        b=zK7TWib1MGdDn8GbDGLRy9sHiG69cgzLpzUsWXSvgPBDUaCYXn/kxj7fZYT2h4qFd/
-         ofaWWLyaXya3vy7Wxrq+Gk+eicoGvJ7fV1JX2WT7MjiVXkVHLimNihIzBEgdjkNyIdvo
-         i+eaQ8vh0c9Rs4N61dLgsqfprHzyFk41Sxi6Zvw7oWNSBsgcvcKrE5/z89nIgc0pvaHV
-         S/eD6P/dV9Jk0qoDsBMXAyBttZeeFfjOqy3rr+qKqKX3XsQc9O4tCgMllgYI/1BYpO9Z
-         orItWqqgtS501u4OaeJ96uo6YQTTqujcCG9O5bwIH/j8H3c5qTQYDvXj1B2+V09woR9G
-         StqA==
-X-Gm-Message-State: AOAM531zDWZAyhVzq3R0ReaDEaxUiGK01fDklDDT+b8ylnWg2xQdEqzm
-        Ln/2fk2zXEY18WLH+HjAQBssuALfPl2Vp9PpnNc=
-X-Google-Smtp-Source: ABdhPJx/R0IJt/LaaJ2AfxqrABa8uf/z9Mb2sxVMk8u3hvcBKdcmjiDWBmzbbR8L5ikg9VGcY06oyQ==
-X-Received: by 2002:a63:5d09:0:b0:372:9a55:bf89 with SMTP id r9-20020a635d09000000b003729a55bf89mr22668044pgb.321.1645606408731;
-        Wed, 23 Feb 2022 00:53:28 -0800 (PST)
-Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id ft9sm2043174pjb.4.2022.02.23.00.53.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 00:53:28 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] libbpf: Simplify the find_elf_sec_sz() function
-Date:   Wed, 23 Feb 2022 16:52:44 +0800
-Message-Id: <20220223085244.3058118-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc2
+        with ESMTP id S229437AbiBWI6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 03:58:19 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131457C162
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 00:57:52 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21N0xt1C015326;
+        Wed, 23 Feb 2022 00:57:44 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=TrRKJU0iHTUd/cOXg3BSybPKlI3I3+qKcm/6WuTM/xU=;
+ b=LB/BScKC2vtuhHEtAlnGQawRuqPejm8NTHgkH22qRCa2PV9YQHvvJCbfqGIOh/aP5b22
+ LduCmFK+PA+685/gdxZNvlFH0r3A4jkfGN3v6KTAzHRYoBTJhdHbuW5WNlE3L2rLnzxQ
+ 6ddmQVdbyndouCK2akLy7fs1VVBZlBFo2iCt/oCSMghjS60vzdOzyx9secmUrEoKN2eM
+ 3g6NNszBgXnL/L8hMvI8LE4cWFn/qVYlxtLKEjF+fF+5c2iyyMlONkyam5yKS83IRFrP
+ DNPcU8q5z0SucF45z6pZqsvS2xFm6pPTY0thn/3UuVbEveLPAwadI41sCtagTWdYKAGY cA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3edavgsqbg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 00:57:44 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 23 Feb
+ 2022 00:57:43 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 23 Feb 2022 00:57:43 -0800
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 0A5433F7079;
+        Wed, 23 Feb 2022 00:57:43 -0800 (PST)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 21N8vWxC012066;
+        Wed, 23 Feb 2022 00:57:32 -0800
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 21N8vMwx012065;
+        Wed, 23 Feb 2022 00:57:22 -0800
+From:   Manish Chopra <manishc@marvell.com>
+To:     <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>, <palok@marvell.com>
+Subject: [PATCH net] bnx2x: fix driver load from initrd
+Date:   Wed, 23 Feb 2022 00:57:20 -0800
+Message-ID: <20220223085720.12021-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-GUID: uDXeR1DEjutx8Gz7gEd6j4tjG1g-ICk1
+X-Proofpoint-ORIG-GUID: uDXeR1DEjutx8Gz7gEd6j4tjG1g-ICk1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-23_03,2022-02-21_02,2021-12-02_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The check in the last return statement is unnecessary, we can just return
-the ret variable.
+Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0") added
+new firmware support in the driver with maintaining older firmware
+compatibility. However, older firmware was not added in MODULE_FIRMWARE()
+which caused missing firmware files in initrd image leading to driver load
+failure from initrd. This patch adds MODULE_FIRMWARE() for older firmware
+version to have firmware files included in initrd.
 
-But we can simplify the function further by returning 0 immediately if we
-find the section size and -ENOENT otherwise.
-
-Thus we can also remove the ret variable.
-
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215627
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
 ---
- tools/lib/bpf/libbpf.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7e978feaf822..776b8e034d62 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1374,22 +1374,20 @@ static bool bpf_map_type__is_map_in_map(enum bpf_map_type type)
- 
- static int find_elf_sec_sz(const struct bpf_object *obj, const char *name, __u32 *size)
- {
--	int ret = -ENOENT;
- 	Elf_Data *data;
- 	Elf_Scn *scn;
- 
--	*size = 0;
- 	if (!name)
- 		return -EINVAL;
- 
- 	scn = elf_sec_by_name(obj, name);
- 	data = elf_sec_data(obj, scn);
- 	if (data) {
--		ret = 0; /* found it */
- 		*size = data->d_size;
-+		return 0; /* found it */
- 	}
- 
--	return *size ? 0 : ret;
-+	return -ENOENT;
- }
- 
- static int find_elf_var_offset(const struct bpf_object *obj, const char *name, __u32 *off)
--- 
-2.35.0.rc2
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 774c1f1a..eedb48d 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -100,6 +100,9 @@
+ MODULE_FIRMWARE(FW_FILE_NAME_E1);
+ MODULE_FIRMWARE(FW_FILE_NAME_E1H);
+ MODULE_FIRMWARE(FW_FILE_NAME_E2);
++MODULE_FIRMWARE(FW_FILE_NAME_E1_V15);
++MODULE_FIRMWARE(FW_FILE_NAME_E1H_V15);
++MODULE_FIRMWARE(FW_FILE_NAME_E2_V15);
+
+ int bnx2x_num_queues;
+ module_param_named(num_queues, bnx2x_num_queues, int, 0444);
+--
+1.8.3.1
 
