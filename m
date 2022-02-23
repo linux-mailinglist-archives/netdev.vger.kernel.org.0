@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 761804C08B3
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 400DA4C08E1
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:38:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237295AbiBWCeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 21:34:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        id S237225AbiBWCdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 21:33:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237569AbiBWCdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:33:14 -0500
+        with ESMTP id S237589AbiBWCdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:33:16 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE39A5E164;
-        Tue, 22 Feb 2022 18:31:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1475E744;
+        Tue, 22 Feb 2022 18:31:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DF6261581;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B5716158A;
+        Wed, 23 Feb 2022 02:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 286A0C340F1;
         Wed, 23 Feb 2022 02:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A58DAC36AE3;
-        Wed, 23 Feb 2022 02:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583475;
-        bh=ETgDXuiQzFhaFNdJSbiMHIBC9RzGUFsPHvvMRY++lxw=;
+        s=k20201202; t=1645583477;
+        bh=n5T1+I/pmeyijBxU7FOIfuJEcV3dxvkqCaFuwww8pfg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/VSV66QN+XPOq+12ou+UM7N+w+zxtlB1Lfb5YW+8Hhm3kHNlUrzlZMvz9Z6h1bqD
-         1wEQhlMqQr5Vaid4bVawe6DXi8zjwcijLwQ+VrU4gW3z2C2/4bXv2cqAVcwNbA989u
-         fcXFaWG+ueg4/Fv7U+fs/gM/mmDkb9LfbI+R0Cb1ymbiaV52zpotiy4YkiSBGz5AuB
-         nGxwg9/wW/Ni4Kq0UKVzM2FT0uOxsrMgTXdVLGGBEloCSPjPsA9BS+CrTN4wuJ+Usu
-         480lkv6UBHRE2/Dy04dgXqpWPLu2GysycYOxGQn0PVwQ39iyvNadYtGuJtH5ZS/5dw
-         b+MIcmD96iGXQ==
+        b=GaaMVG+c0WqCz/jd4d/wfiYzh12XHTi57HeW18L1GEGlbopQAr74JcQuo0HUQ6m1h
+         vF+8PYgTQCxgEOxE+PABZpUSObkW3nBnDB4osp8vL1/R6g0rfK4BAQNznugdYZR7OS
+         d20mYVF+xH50xikzwQfprwfcg6n+jouKNvHIrxwsKrcDv2fXKlz4s6rfCM1+fFkxq2
+         jgRipkdayNw2IsRj/WXhj7MyU0gZi4YTs1J6dfcQqsHsvH7Vzg6c/ywUQTawzj6+3b
+         JzQp7cWf4oPu19jCqP4mjRaDH0CTS9VZPRgVvZLdKrlt0NT9AgpXM/PhwaQkBAKbEw
+         TiqNdlhNrdzoQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Daniele Palmas <dnlplm@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
         kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/18] CDC-NCM: avoid overflow in sanity checking
-Date:   Tue, 22 Feb 2022 21:30:34 -0500
-Message-Id: <20220223023035.241551-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 18/18] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
+Date:   Tue, 22 Feb 2022 21:30:35 -0500
+Message-Id: <20220223023035.241551-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
 References: <20220223023035.241551-1-sashal@kernel.org>
@@ -58,54 +57,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-[ Upstream commit 8d2b1a1ec9f559d30b724877da4ce592edc41fdc ]
+[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
 
-A broken device may give an extreme offset like 0xFFF0
-and a reasonable length for a fragment. In the sanity
-check as formulated now, this will create an integer
-overflow, defeating the sanity check. Both offset
-and offset + len need to be checked in such a manner
-that no overflow can occur.
-And those quantities should be unsigned.
+Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
+0x1071 composition in order to avoid bind error.
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/cdc_ncm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/usb/cdc_mbim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index eaaa5aee58251..ab91fa5b0194d 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1702,10 +1702,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- {
- 	struct sk_buff *skb;
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
--	int len;
-+	unsigned int len;
- 	int nframes;
- 	int x;
--	int offset;
-+	unsigned int offset;
- 	union {
- 		struct usb_cdc_ncm_ndp16 *ndp16;
- 		struct usb_cdc_ncm_ndp32 *ndp32;
-@@ -1777,8 +1777,8 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
- 			break;
- 		}
+diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
+index 77ac5a721e7b6..414341c9cf5ae 100644
+--- a/drivers/net/usb/cdc_mbim.c
++++ b/drivers/net/usb/cdc_mbim.c
+@@ -658,6 +658,11 @@ static const struct usb_device_id mbim_devs[] = {
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
+ 	},
  
--		/* sanity checking */
--		if (((offset + len) > skb_in->len) ||
-+		/* sanity checking - watch out for integer wrap*/
-+		if ((offset > skb_in->len) || (len > skb_in->len - offset) ||
- 				(len > ctx->rx_max) || (len < ETH_HLEN)) {
- 			netif_dbg(dev, rx_err, dev->net,
- 				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
++	/* Telit FN990 */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
++	},
++
+ 	/* default entry */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
 -- 
 2.34.1
 
