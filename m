@@ -2,46 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C8464C17C5
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 16:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FFEC4C17D4
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 16:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236160AbiBWPxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 10:53:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
+        id S242113AbiBWPzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 10:55:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233855AbiBWPxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 10:53:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23A9E8B
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 07:52:55 -0800 (PST)
+        with ESMTP id S242498AbiBWPzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 10:55:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FEAC24AA;
+        Wed, 23 Feb 2022 07:55:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5632BB820C4
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 15:52:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF30C340E7;
-        Wed, 23 Feb 2022 15:52:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26C25B820C4;
+        Wed, 23 Feb 2022 15:55:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3391BC340E7;
+        Wed, 23 Feb 2022 15:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645631573;
-        bh=cX5ja7eRNo3oh1/1CWircmpXSGRa2hFzD4aytDQ/LK8=;
+        s=k20201202; t=1645631718;
+        bh=pn0sQ7P9/1v/S2vg+chkjsn0VGfIaKHd6MtSPk1qjSI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J/YG8AApT6Ede6LNOVdifnH/QyTOM2C3sC9ZNxQjPBIqZlIrr1aDSypXCIBo40s7O
-         VIkOjfPGe8Wy18HYlPWxFmxAfOQM1wEzSyjSCAZDsL8wbqciMzue9FzvgAxHe9ITUJ
-         /jtgor5jHaYSL7P6Nncg/xSfFuCyH16vUR7NA6R6B9TYGWt713w3Et85YK38gyxh3z
-         Jr6mEZUyAoDF0QN5dvdo7W1grag2TcwTaXZ992NgdSMOKqFQdO3x23doyNa0SwJJsA
-         S5z6M3DrMSJicJF2md4LnhbedMj7Z90CrPPfENN808JBPm7JeqH/I3v7sOERDJDXj5
-         SmSrlVnjSDluw==
-Date:   Wed, 23 Feb 2022 07:52:51 -0800
+        b=L3PT8r0NYY1+xc/v3XSLp6zFyMsHLo/OKSmlowKHGM4k79bCJXG1tz4XOaZu0SBXP
+         1daaKnbFuA0Z+s+i+x2Czf+miVPz7qIv5Jed9u6ryxnkhDhtiznICCT48GlEKsDuJq
+         YU1W5IL4tosJN1z4IzIgoeHs0PcpF9NFLunQ1Eb5EXXZ2k3ISG6NtCVPu0y9Guhi4x
+         dPzOFP0ZWid+47+St1/IopRPwhj63XFxG+K2mBVOdkvasqVU496GJ4fx4lmPN8JQa9
+         pTB3ou4YKpy9rXbcaoVV7cakMqUTm/yHLihS5p9qwpRLl4trh+5BHZbLjniL0/ZMvT
+         kuhG4xtokYe+w==
+Date:   Wed, 23 Feb 2022 07:55:17 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Vasiliy Kulikov <segoon@openwall.com>
-Subject: Re: [PATCH net] ping: fix the dif and sdif check in ping_lookup
-Message-ID: <20220223075251.7d512101@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CADvbK_fgrvLNUPiTBOddrUcGFep-XkO4wbp01UXPybg0vXPVzA@mail.gmail.com>
-References: <ea03066bc7256ab86df8d3501f3440819305be57.1644988852.git.lucien.xin@gmail.com>
-        <20220217075712.6bf6368c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CADvbK_fgrvLNUPiTBOddrUcGFep-XkO4wbp01UXPybg0vXPVzA@mail.gmail.com>
+To:     Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNl?= =?UTF-8?B?bg==?= 
+        <toke@toke.dk>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNl?= =?UTF-8?B?bg==?= 
+        <toke@redhat.com>
+Subject: Re: [PATCH net-next] net: Correct wrong BH disable in
+ hard-interrupt.
+Message-ID: <20220223075517.468dec75@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YhXq18B1yCuSwun7@breakpoint.cc>
+References: <Yg05duINKBqvnxUc@linutronix.de>
+        <YhXq18B1yCuSwun7@breakpoint.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,17 +66,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Feb 2022 14:08:06 +0800 Xin Long wrote:
-> On Thu, Feb 17, 2022 at 11:57 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > Are you sure this is not reachable from some networking path allowing
-> > attacker (or local user) to DoS the kernel logs?  
-> Hi, Jakub, sorry for late.
+On Wed, 23 Feb 2022 09:05:43 +0100 Sebastian Andrzej Siewior wrote:
+> On 2022-02-16 18:50:46 [+0100], Sebastian Andrzej Siewior wrote:
+> > I missed the obvious case where netif_ix() is invoked from hard-IRQ
+> > context.
+> > 
+> > Disabling bottom halves is only needed in process context. This ensures
+> > that the code remains on the current CPU and that the soft-interrupts
+> > are processed at local_bh_enable() time.
+> > In hard- and soft-interrupt context this is already the case and the
+> > soft-interrupts will be processed once the context is left (at irq-exit
+> > time).
+> > 
+> > Disable bottom halves if neither hard-interrupts nor soft-interrupts are
+> > disabled. Update the kernel-doc, mention that interrupts must be enabled
+> > if invoked from process context.
+> > 
+> > Fixes: baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any context.")
+> > Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>  
 > 
-> I actually didn't see how a skb with protocol != IP/IPV6 could reach here.
-> ping_err() is using "BUG()" for this kind of case.
-> I added this 'else' branch mostly to avoid the possible compiling
-> warning for "Use of uninitialized value dif/sdif".
+> This patch is marked as "Changes Requested" in patchwork. Could someone
+> please explain?
+> The USB/dwc3 fallout reported by Marek was addressed in 
+>    usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
+>    https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
+> 
+> and is not a shortcoming in this patch but a problem in dwc3 that was
+> just noticed.
 
-Understood but it's best practice to avoid prints on the datapath.
-We should either drop the print completely (given it's impossible)
-or make it _once.
+Unclear, let me apply it now.
