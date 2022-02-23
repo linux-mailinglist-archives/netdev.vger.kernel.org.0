@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FF94C0823
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:31:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C36644C085C
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:32:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234394AbiBWCbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 21:31:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        id S237152AbiBWCbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 21:31:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237114AbiBWCbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:31:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4392655491;
-        Tue, 22 Feb 2022 18:29:58 -0800 (PST)
+        with ESMTP id S237003AbiBWCbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:31:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9708F55743;
+        Tue, 22 Feb 2022 18:30:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20DEBB81E18;
-        Wed, 23 Feb 2022 02:29:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1B7EC36AE3;
-        Wed, 23 Feb 2022 02:29:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E269CB81E01;
+        Wed, 23 Feb 2022 02:29:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5214C340E8;
+        Wed, 23 Feb 2022 02:29:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583391;
-        bh=+oaw10vcsziuPG1r4+KJScrE4s0dXjQd4Jd7dTVsJvg=;
+        s=k20201202; t=1645583397;
+        bh=Dl5tMiO+jS54kG75k4x/iqAcisItCJw+zKFTifuUsl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4sqHj49BbDhafQ8PsQpWS1awxpycUd8fBPwB7RpqhyVV0mOi3NCCxspdILW8t+yn
-         lvo6eG8KyBgYjrGSpFZoqh2s+oYQQYQn/Cdj/S8l1pTsfqXwyJx3w0MNKI9dUmKC3V
-         9WkqhFDi9dEAish2P6uJ5z5cYVGooxrrtWRuKU5VSBctRYOApldGvlNl97PCLV6mV5
-         c2endY9ljAUvdh6aDS/fqmCOj6gbiSyvwvuk1kkdtWRzn6QM+fKBr/+rSlLMir26z4
-         W8GMEsSbtarrnikvWpQA8HcVEeHSKGLGyb4S6GiLUCZjjgq/atCT50bIh5NFQ44kJs
-         RA0s1CLww87kw==
+        b=cCQsxvbRxIPRe4ZI1Xekg6U54tnJKpn716PvNC0Ztox/Hxecd2PMPIQpGdmkIrM1e
+         A1+SnCDmQ+EHuXPWLorjuBSqEI9/TBE+0AZaTcaFe8KR4JY2oxzpiWfjrxavnUD51M
+         J/AxTChlXu+YQ+5CbpWUm+pbnMd3sVhD1hGpL6ZH3SeqUuoz5XQp86twU2TKELvVyc
+         qAnnf6ax4ad7X+8zFJMnr6/T5Z7GkFn5o9S2QDtTyQz7q/HjAMXVrfhgcq1xIi68yw
+         zNwujg9ie/Ls7kBfhMeBRfPezwm+QL4TEmySX578q6s/VuYPZWAVwkZ+CndkUXIHsu
+         lGZXPdzMJwLcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hangyu Hua <hbh25y@gmail.com>,
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jmaloy@redhat.com,
-        ying.xue@windriver.com, kuba@kernel.org, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.15 11/28] tipc: fix a bit overflow in tipc_crypto_key_rcv()
-Date:   Tue, 22 Feb 2022 21:29:12 -0500
-Message-Id: <20220223022929.241127-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
+        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 14/28] USB: zaurus: support another broken Zaurus
+Date:   Tue, 22 Feb 2022 21:29:15 -0500
+Message-Id: <20220223022929.241127-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223022929.241127-1-sashal@kernel.org>
 References: <20220223022929.241127-1-sashal@kernel.org>
@@ -58,33 +58,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit 143de8d97d79316590475dc2a84513c63c863ddf ]
+[ Upstream commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c ]
 
-msg_data_sz return a 32bit value, but size is 16bit. This may lead to a
-bit overflow.
+This SL-6000 says Direct Line, not Ethernet
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+v2: added Reporter and Link
+
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/crypto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+ drivers/net/usb/zaurus.c    | 12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index d293614d5fc65..b5074957e8812 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -2287,7 +2287,7 @@ static bool tipc_crypto_key_rcv(struct tipc_crypto *rx, struct tipc_msg *hdr)
- 	struct tipc_crypto *tx = tipc_net(rx->net)->crypto_tx;
- 	struct tipc_aead_key *skey = NULL;
- 	u16 key_gen = msg_key_gen(hdr);
--	u16 size = msg_data_sz(hdr);
-+	u32 size = msg_data_sz(hdr);
- 	u8 *data = msg_data(hdr);
- 	unsigned int keylen;
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index eb3817d70f2b8..9b4dfa3001d6e 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -583,6 +583,11 @@ static const struct usb_device_id	products[] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -636,6 +641,13 @@ static const struct usb_device_id	products[] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
+index 8e717a0b559b3..7984f2157d222 100644
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	products [] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -313,6 +318,13 @@ static const struct usb_device_id	products [] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info = ZAURUS_PXA_INFO,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
 -- 
 2.34.1
 
