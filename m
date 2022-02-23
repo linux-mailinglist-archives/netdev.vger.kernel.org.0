@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC584C0B87
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 06:10:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 472364C0B8B
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 06:10:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238152AbiBWFLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 00:11:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
+        id S237954AbiBWFLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 00:11:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238114AbiBWFKu (ORCPT
+        with ESMTP id S238089AbiBWFKu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 00:10:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB2F69294;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E89692A9;
         Tue, 22 Feb 2022 21:10:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B0C060C2A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70B0560C55;
         Wed, 23 Feb 2022 05:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 156D0C340F5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0256C340F1;
         Wed, 23 Feb 2022 05:10:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645593019;
-        bh=8JnJOJwa0xLZJUZvZcQG78N7nZi1RKV+eoshHR+5zyw=;
+        s=k20201202; t=1645593020;
+        bh=I0wyQ8UGKX01fBc9ppmeyGzVpEcUj8PVqp1FEHBRPhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VImra9dvtIx8AADsgwVuT1lUNqHfdc/k/D5JQaiRqQw/Oh1vT6pIUddd3A9scAWRj
-         ZM1foGgVKNqmuAdyx629dqZsPI1M6Vxd0RoMaPHXlmTexuMkYEt4x4KOJ46MfQDxLC
-         hFeENeBVLvY4mIBta1G06v4k4oyole2wIa24z5w6fEeFFBsdkdGvi3tit21WfZ836N
-         fOQ/T7/FZuPn+JvoBQrE/z34ahw8RjvM5XUQ5xuJpfJHLyoEBAE07gdkujJT2JYbDK
-         e0hU+QCEoOqU6BFZgjlO+SzfOm6mJrte/Bjn5RCizsmYa2rh3LW0YmSJrHgieWZcN5
-         MGIF6FALlIjLA==
+        b=jA2fsYSwcwktdJHa93NJuLOGFaI0TGJ4UVL6us6Qi0kpmDQvy8BNhC9RZ4ktdbc/Y
+         EAkM9tCkIi6YluhgJmtA1LdWiZk0+6SH78gx0aUkMLuKCTv9pqi6qZuOtq0BWQ+KF4
+         aSaExt9xh0f/6NtdQYbguDq2H6derCniugIdfRqj/JJbnAZ4ZaFcUs0uVp18yWxo7R
+         Pp373vOEIEmOs11a9PT/dIqd4Xgo8Fhm8/o+N8CjVXDvtr25eyX8FVW+bMLaJeqY1o
+         i8P+jDaHaiuGMM4WrKUj0+EpMnSxYJ4JMmt86EjHGXUnu+tsEccpBXS2d1ty8lEbA1
+         Y0RJnmaEVXeJQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Artemy Kovalyov <artemyko@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
+        netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [mlx5-next 15/17] RDMA/mlx5: Use new command interface API
-Date:   Tue, 22 Feb 2022 21:09:30 -0800
-Message-Id: <20220223050932.244668-16-saeed@kernel.org>
+Subject: [mlx5-next 16/17] net/mlx5: Add reset_state field to MFRL register
+Date:   Tue, 22 Feb 2022 21:09:31 -0800
+Message-Id: <20220223050932.244668-17-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220223050932.244668-1-saeed@kernel.org>
 References: <20220223050932.244668-1-saeed@kernel.org>
@@ -59,158 +56,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-DEVX can now use mlx5_cmd_do() which will not intercept the command
-execution status and will provide full information of the return code.
+Add new field reset_state to MFRL register. This field expose current
+state of sync reset for fw update. This field enables sharing with the
+user more details on why fw activate failed in case it failed the sync
+reset stage.
 
-DEVX can now propagate the error code safely to upper layers, to
-indicate to the callers if the command was actually executed and the
-error code indicates the command execution status availability in
-the command outbox buffer.
-
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-Signed-off-by: Artemy Kovalyov <artemyko@mellanox.com>
-Reviewed-by: Yishai Hadas <yishaih@mellanox.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/devx.c | 55 ++++++++++++++++++-------------
- 1 file changed, 32 insertions(+), 23 deletions(-)
+ include/linux/mlx5/mlx5_ifc.h | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index 1f62c0ede048..fc036b4794fd 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -1055,7 +1055,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OTHER)(
- 	int cmd_out_len = uverbs_attr_get_len(attrs,
- 					MLX5_IB_ATTR_DEVX_OTHER_CMD_OUT);
- 	void *cmd_out;
--	int err;
-+	int err, err2;
- 	int uid;
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 598ac3bcc901..8ca2d65ff789 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -9694,7 +9694,8 @@ struct mlx5_ifc_pcam_reg_bits {
+ };
  
- 	c = devx_ufile2uctx(attrs);
-@@ -1076,14 +1076,16 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OTHER)(
- 		return PTR_ERR(cmd_out);
+ struct mlx5_ifc_mcam_enhanced_features_bits {
+-	u8         reserved_at_0[0x6b];
++	u8         reserved_at_0[0x6a];
++	u8         reset_state[0x1];
+ 	u8         ptpcyc2realtime_modify[0x1];
+ 	u8         reserved_at_6c[0x2];
+ 	u8         pci_status_and_power[0x1];
+@@ -10375,6 +10376,14 @@ struct mlx5_ifc_mcda_reg_bits {
+ 	u8         data[][0x20];
+ };
  
- 	MLX5_SET(general_obj_in_cmd_hdr, cmd_in, uid, uid);
--	err = mlx5_cmd_exec(dev->mdev, cmd_in,
--			    uverbs_attr_get_len(attrs, MLX5_IB_ATTR_DEVX_OTHER_CMD_IN),
--			    cmd_out, cmd_out_len);
--	if (err)
-+	err = mlx5_cmd_do(dev->mdev, cmd_in,
-+			  uverbs_attr_get_len(attrs, MLX5_IB_ATTR_DEVX_OTHER_CMD_IN),
-+			  cmd_out, cmd_out_len);
-+	if (err && err != -EREMOTEIO)
- 		return err;
- 
--	return uverbs_copy_to(attrs, MLX5_IB_ATTR_DEVX_OTHER_CMD_OUT, cmd_out,
-+	err2 = uverbs_copy_to(attrs, MLX5_IB_ATTR_DEVX_OTHER_CMD_OUT, cmd_out,
- 			      cmd_out_len);
++enum {
++	MLX5_MFRL_REG_RESET_STATE_IDLE = 0,
++	MLX5_MFRL_REG_RESET_STATE_IN_NEGOTIATION = 1,
++	MLX5_MFRL_REG_RESET_STATE_RESET_IN_PROGRESS = 2,
++	MLX5_MFRL_REG_RESET_STATE_TIMEOUT = 3,
++	MLX5_MFRL_REG_RESET_STATE_NACK = 4,
++};
 +
-+	return err2 ?: err;
- }
- 
- static void devx_obj_build_destroy_cmd(void *in, void *out, void *din,
-@@ -1457,7 +1459,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
- 	struct devx_obj *obj;
- 	u16 obj_type = 0;
--	int err;
-+	int err, err2 = 0;
- 	int uid;
- 	u32 obj_id;
- 	u16 opcode;
-@@ -1501,11 +1503,14 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 				     cmd_in, cmd_in_len, cmd_out,
- 				     cmd_out_len);
- 	} else {
--		err = mlx5_cmd_exec(dev->mdev, cmd_in,
--				    cmd_in_len,
--				    cmd_out, cmd_out_len);
-+		err = mlx5_cmd_do(dev->mdev, cmd_in, cmd_in_len,
-+				  cmd_out, cmd_out_len);
- 	}
- 
-+	if (err == -EREMOTEIO)
-+		err2 = uverbs_copy_to(attrs,
-+				      MLX5_IB_ATTR_DEVX_OBJ_CREATE_CMD_OUT,
-+				      cmd_out, cmd_out_len);
- 	if (err)
- 		goto obj_free;
- 
-@@ -1548,7 +1553,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 			      sizeof(out));
- obj_free:
- 	kfree(obj);
--	return err;
-+	return err2 ?: err;
- }
- 
- static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_MODIFY)(
-@@ -1563,7 +1568,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_MODIFY)(
- 		&attrs->driver_udata, struct mlx5_ib_ucontext, ibucontext);
- 	struct mlx5_ib_dev *mdev = to_mdev(c->ibucontext.device);
- 	void *cmd_out;
--	int err;
-+	int err, err2;
- 	int uid;
- 
- 	if (MLX5_GET(general_obj_in_cmd_hdr, cmd_in, vhca_tunnel_id))
-@@ -1586,14 +1591,16 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_MODIFY)(
- 	MLX5_SET(general_obj_in_cmd_hdr, cmd_in, uid, uid);
- 	devx_set_umem_valid(cmd_in);
- 
--	err = mlx5_cmd_exec(mdev->mdev, cmd_in,
--			    uverbs_attr_get_len(attrs, MLX5_IB_ATTR_DEVX_OBJ_MODIFY_CMD_IN),
--			    cmd_out, cmd_out_len);
--	if (err)
-+	err = mlx5_cmd_do(mdev->mdev, cmd_in,
-+			  uverbs_attr_get_len(attrs, MLX5_IB_ATTR_DEVX_OBJ_MODIFY_CMD_IN),
-+			  cmd_out, cmd_out_len);
-+	if (err && err != -EREMOTEIO)
- 		return err;
- 
--	return uverbs_copy_to(attrs, MLX5_IB_ATTR_DEVX_OBJ_MODIFY_CMD_OUT,
-+	err2 = uverbs_copy_to(attrs, MLX5_IB_ATTR_DEVX_OBJ_MODIFY_CMD_OUT,
- 			      cmd_out, cmd_out_len);
-+
-+	return err2 ?: err;
- }
- 
- static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_QUERY)(
-@@ -1607,7 +1614,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_QUERY)(
- 	struct mlx5_ib_ucontext *c = rdma_udata_to_drv_context(
- 		&attrs->driver_udata, struct mlx5_ib_ucontext, ibucontext);
- 	void *cmd_out;
--	int err;
-+	int err, err2;
- 	int uid;
- 	struct mlx5_ib_dev *mdev = to_mdev(c->ibucontext.device);
- 
-@@ -1629,14 +1636,16 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_QUERY)(
- 		return PTR_ERR(cmd_out);
- 
- 	MLX5_SET(general_obj_in_cmd_hdr, cmd_in, uid, uid);
--	err = mlx5_cmd_exec(mdev->mdev, cmd_in,
--			    uverbs_attr_get_len(attrs, MLX5_IB_ATTR_DEVX_OBJ_QUERY_CMD_IN),
--			    cmd_out, cmd_out_len);
--	if (err)
-+	err = mlx5_cmd_do(mdev->mdev, cmd_in,
-+			  uverbs_attr_get_len(attrs, MLX5_IB_ATTR_DEVX_OBJ_QUERY_CMD_IN),
-+			  cmd_out, cmd_out_len);
-+	if (err && err != -EREMOTEIO)
- 		return err;
- 
--	return uverbs_copy_to(attrs, MLX5_IB_ATTR_DEVX_OBJ_QUERY_CMD_OUT,
-+	err2 = uverbs_copy_to(attrs, MLX5_IB_ATTR_DEVX_OBJ_QUERY_CMD_OUT,
- 			      cmd_out, cmd_out_len);
-+
-+	return err2 ?: err;
- }
- 
- struct devx_async_event_queue {
+ enum {
+ 	MLX5_MFRL_REG_RESET_TYPE_FULL_CHIP = BIT(0),
+ 	MLX5_MFRL_REG_RESET_TYPE_NET_PORT_ALIVE = BIT(1),
+@@ -10393,7 +10402,8 @@ struct mlx5_ifc_mfrl_reg_bits {
+ 	u8         pci_sync_for_fw_update_start[0x1];
+ 	u8         pci_sync_for_fw_update_resp[0x2];
+ 	u8         rst_type_sel[0x3];
+-	u8         reserved_at_28[0x8];
++	u8         reserved_at_28[0x4];
++	u8         reset_state[0x4];
+ 	u8         reset_type[0x8];
+ 	u8         reset_level[0x8];
+ };
 -- 
 2.35.1
 
