@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 093904C06F7
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 02:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B404C0701
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 02:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236581AbiBWBkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 20:40:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35448 "EHLO
+        id S236612AbiBWBnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 20:43:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiBWBkg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 20:40:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01C54E38C
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 17:40:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37CCB61480
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 01:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83E88C340F1;
-        Wed, 23 Feb 2022 01:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645580409;
-        bh=prseocMgnZMR6xSNtFy325XeTAwI2AWmgNBjxuwhF8s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rAZ8/C3odNZaYBd+i6SjIGcXuO8fANM976FbdXXjTwwAsZFD1Zg21BREOUOvLl1V2
-         KeEualosVeo4uISpQEkhAkJbJ7TKJzAcPw5XWMq72AKswe71CbGXpn2LDHFiPXauxH
-         rQ6Umu2UufnHiAl1e/uo3moYj4PCHn8cmz9mxQKyG6l4Y0gzxxlHl7PVyQimFDFjL6
-         rsbX+xoZoBo66Mbv7beNORsAk+8BXOJnC3p6nyxT+yC5UJeSfr5+ghoO5yiS6mKR5W
-         DBDJvkWU/myWvlP4s6LN+parIZ/bGiEq7LjzFyaNHSd7hb0nN9tSQuSnlKJBzGlI4S
-         kjl8uU5gHOuaA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 69378E73590;
-        Wed, 23 Feb 2022 01:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232087AbiBWBnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 20:43:00 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B3F506D7;
+        Tue, 22 Feb 2022 17:42:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ffcgj6PnfV+M4dz8TXbmYxJQqYgM/0KYmfMhVlUwUgY=; b=Z1vaisi3Aham/6C/t+iH1xp0YY
+        437zJDe/FjItXhy9Q86HR1G005qohaLmQJHI0WCDmpCCnHZ80kh27hi6u1ImMjmCgliHBVb8So6/Q
+        VuYLdPUADGADnDgm/kdHkifGKPMh+rp5HyQ2FFoC/oIHCubCH+pxKN2/lluzR0sA4uRVuA8u83rbV
+        +S+XWee5Morh4t9GbUfr3ZGWsLK822F+GiWjaX17eNy4zvfUm1dvAS4gG/x9MfG+DZlc2l3ju0BL/
+        qI5H47QmeJ3KfSVbMx2JEGRV4euh17I+nWH65KWqqIMNbh9e/UhH5BoxxYrAxBHNGeDyGjwG6g2bp
+        NpHxA2Bw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMgfb-00C950-Dn; Wed, 23 Feb 2022 01:42:19 +0000
+Date:   Tue, 22 Feb 2022 17:42:19 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Yan Zhu <zhuyan34@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        keescook@chromium.org, yzaikin@google.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, zengweilin@huawei.com,
+        liucheng32@huawei.com, nixiaoming@huawei.com,
+        xiechengliang1@huawei.com
+Subject: Re: [PATCH] bpf: move the bpf syscall sysctl table to its own module
+Message-ID: <YhWQ+0qPorcJ/Z8l@bombadil.infradead.org>
+References: <20220223013529.67335-1-zhuyan34@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ipv6: tcp: consistently use MAX_TCP_HEADER
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164558040942.12003.10715542634405886412.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Feb 2022 01:40:09 +0000
-References: <20220222031115.4005060-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220222031115.4005060-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223013529.67335-1-zhuyan34@huawei.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Feb 23, 2022 at 09:35:29AM +0800, Yan Zhu wrote:
+> Sysctl table is easier to read under its own module.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Hey Yan, thanks for you patch!
 
-On Mon, 21 Feb 2022 19:11:15 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> All other skbs allocated for TCP tx are using MAX_TCP_HEADER already.
-> 
-> MAX_HEADER can be too small for some cases (like eBPF based encapsulation),
-> so this can avoid extra pskb_expand_head() in lower stacks.
-> 
-> [...]
+This does not explain how this is being to help with maitenance as
+otherwise this makes kernel/sysctl.c hard to maintain and we also
+tend to get many conflicts. It also does not explain how all the
+filesystem sysctls are not gone and that this is just the next step,
+moving slowly the rest of the sysctls. Explaining this in the commit
+log will help patch review and subsystem maintainers understand the
+conext / logic behind the move.
 
-Here is the summary with links:
-  - [net-next] ipv6: tcp: consistently use MAX_TCP_HEADER
-    https://git.kernel.org/netdev/net-next/c/0ebea8f9b81c
+> Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I'd be more than happy to take this if bpf folks Ack. To avoid conflicts
+I can route this through sysctl-next which is put forward in particular
+to avoid conflicts across trees for this effort. Let me know.
 
-
+ Luis
