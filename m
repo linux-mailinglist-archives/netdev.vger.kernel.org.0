@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CED2E4C201B
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:41:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 430EB4C1FF3
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234386AbiBWXkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 18:40:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
+        id S245024AbiBWXko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 18:40:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243395AbiBWXkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:40:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09A35BD29;
-        Wed, 23 Feb 2022 15:39:46 -0800 (PST)
+        with ESMTP id S244984AbiBWXk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:40:26 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E345C875;
+        Wed, 23 Feb 2022 15:39:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 775B6619EB;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 584D7CE1CEC;
+        Wed, 23 Feb 2022 23:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1974BC340F3;
         Wed, 23 Feb 2022 23:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71DF7C340EB;
-        Wed, 23 Feb 2022 23:39:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645659585;
-        bh=dgX7kW2GHWK/0UfO2HQA2udHDYinSiV9Dx2tlyfbrWA=;
+        s=k20201202; t=1645659586;
+        bh=0Gg7pQShoekXL9aMv8rYa3c3b7cFK7gk0kHmhFu+mIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pbcx6MDa4VQRx/TlYBJ1mVEwIZf/CKuC/8bZW/TBglmbRC8U7LyOjGx9NtkxgWeEc
-         Lc7B7kqzSpblbEVht4JUYMkBMhcK3Lzd5M9oQCp55IG3DrHe0qMrEHHLvvlrPimm1n
-         O9PKkrqDK/L5tECTjpFoUXSOcSoFQP6iNePv0nBoBhvJbLNhb2AMa/xKDZcT88D0lT
-         32ZLCZhB/GTVRn+N4fMXTs8AhO03pJ+LijAN8uDxps1Kc7SEiOtSNUzqhTpUKifsB4
-         BUZir2w0p0s+/gF7893aMXzyg3WH6irMDeCUvfICmC4RtTDPv0XmofjzxAwGpMDF+D
-         dc8guaaLJyDGQ==
+        b=sUSR6kUljVGw205Rl9TV9nBi3/b6Q1GUHUVSWJTpCqjkcwv4Tap8YTWqlq7ZcWvYG
+         h6fVcvT+tVELoItSw8pRXlW3JVXRhPNIrIS8CgwLHZiL2mm65n0fqz5IYQPX0ui6HO
+         fOW46ahgrbJe9lbRkpPtVA9ZkQULkdTaUwbkJlwIQMJJRrebu/Irj9X/cMJ7eocqyH
+         Zffqa+216nTdeglkT8ngio7yI+s5lFTY40Ol/zY1wFGSZh2/pf2JMnkSCCjcsM6t7e
+         H0eLsrJAoD5E6+CGo7jAmkPiDX8678jn/u8ppE17rqD6HL91eQllbh3No5LOHUeSGt
+         6IerI1m+NqQPg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,9 +38,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
         netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [for-next v2 13/17] net/mlx5: Use mlx5_cmd_do() in core create_{cq,dct}
-Date:   Wed, 23 Feb 2022 15:39:26 -0800
-Message-Id: <20220223233930.319301-14-saeed@kernel.org>
+Subject: [for-next v2 14/17] net/mlx5: cmdif, Refactor error handling and reporting of async commands
+Date:   Wed, 23 Feb 2022 15:39:27 -0800
+Message-Id: <20220223233930.319301-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220223233930.319301-1-saeed@kernel.org>
 References: <20220223233930.319301-1-saeed@kernel.org>
@@ -58,141 +58,209 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Saeed Mahameed <saeedm@mellanox.com>
 
-mlx5_core_create_{cq/dct} functions are non-trivial mlx5 commands
-functions. They check command execution status themselves and hide
-valuable FW failure information.
+Same as the new mlx5_cmd_do API, report all information to callers and
+let them handle the error values and outbox parsing.
 
-For mlx5_core/eth kernel user this is what we actually want, but for a
-devx/rdma user the hidden information is essential and should be propagated
-up to the caller, thus we convert these commands to use mlx5_cmd_do
-to return the FW/driver and command outbox status as is, and let the caller
-decide what to do with it.
+The user callback status "work->user_callback(status)" is now similar to
+the error rc code returned from the blocking mlx5_cmd_do() version,
+and now is defined as follows:
 
-For kernel callers of mlx5_core_create_{cq/dct} or those who only care about
-the binary status (FAIL/SUCCESS) they must check status themselves via
-mlx5_cmd_check() to restore the current behavior.
-
-err = mlx5_create_cq(in, out)
-err = mlx5_cmd_check(err, in, out)
-if (err)
-    // handle err
-
-For DEVX users and those who care about full visibility, They will just
-propagate the error to user space, and app can check if err == -EREMOTEIO,
-then outbox.{status,syndrome} are valid.
-
-API Note:
-mlx5_cmd_check() must be used by kernel users since it allows the driver
-to intercept the command execution status and return a driver simulated
-status in case of driver induced error handling or reset/recovery flows.
+ -EREMOTEIO : Command executed by FW, outbox.status != MLX5_CMD_STAT_OK.
+              Caller must check FW outbox status.
+ 0 : Command execution successful,  outbox.status == MLX5_CMD_STAT_OK.
+ < 0 : Command couldn't execute, FW or driver induced error.
 
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/devx.c            |  6 +++---
- drivers/infiniband/hw/mlx5/qp.c              |  1 +
- drivers/infiniband/hw/mlx5/qpc.c             |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/cq.c | 17 ++++++++++++++---
- include/linux/mlx5/cq.h                      |  2 ++
- 5 files changed, 21 insertions(+), 7 deletions(-)
+ drivers/infiniband/hw/mlx5/mr.c               | 15 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 61 +++++++++++--------
+ include/linux/mlx5/driver.h                   |  3 +-
+ 3 files changed, 52 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index 08b7f6bc56c3..1f62c0ede048 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -1497,9 +1497,9 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 		   !is_apu_cq(dev, cmd_in)) {
- 		obj->flags |= DEVX_OBJ_FLAGS_CQ;
- 		obj->core_cq.comp = devx_cq_comp;
--		err = mlx5_core_create_cq(dev->mdev, &obj->core_cq,
--					  cmd_in, cmd_in_len, cmd_out,
--					  cmd_out_len);
-+		err = mlx5_create_cq(dev->mdev, &obj->core_cq,
-+				     cmd_in, cmd_in_len, cmd_out,
-+				     cmd_out_len);
- 	} else {
- 		err = mlx5_cmd_exec(dev->mdev, cmd_in,
- 				    cmd_in_len,
-diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-index 29475cf8c7c3..b7fe47107d76 100644
---- a/drivers/infiniband/hw/mlx5/qp.c
-+++ b/drivers/infiniband/hw/mlx5/qp.c
-@@ -4465,6 +4465,7 @@ static int mlx5_ib_modify_dct(struct ib_qp *ibqp, struct ib_qp_attr *attr,
- 		err = mlx5_core_create_dct(dev, &qp->dct.mdct, qp->dct.in,
- 					   MLX5_ST_SZ_BYTES(create_dct_in), out,
- 					   sizeof(out));
-+		err = mlx5_cmd_check(dev->mdev, err, qp->dct.in, out);
- 		if (err)
- 			return err;
- 		resp.dctn = qp->dct.mdct.mqp.qpn;
-diff --git a/drivers/infiniband/hw/mlx5/qpc.c b/drivers/infiniband/hw/mlx5/qpc.c
-index 8844eacf2380..542e4c63a8de 100644
---- a/drivers/infiniband/hw/mlx5/qpc.c
-+++ b/drivers/infiniband/hw/mlx5/qpc.c
-@@ -220,7 +220,7 @@ int mlx5_core_create_dct(struct mlx5_ib_dev *dev, struct mlx5_core_dct *dct,
- 	init_completion(&dct->drained);
- 	MLX5_SET(create_dct_in, in, opcode, MLX5_CMD_OP_CREATE_DCT);
- 
--	err = mlx5_cmd_exec(dev->mdev, in, inlen, out, outlen);
-+	err = mlx5_cmd_do(dev->mdev, in, inlen, out, outlen);
- 	if (err)
- 		return err;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cq.c b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-index 5371ad0a12eb..15a74966be7d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-@@ -86,8 +86,9 @@ static void mlx5_add_cq_to_tasklet(struct mlx5_core_cq *cq,
- 	spin_unlock_irqrestore(&tasklet_ctx->lock, flags);
+diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+index 157d862fb864..06e4b8cea6bd 100644
+--- a/drivers/infiniband/hw/mlx5/mr.c
++++ b/drivers/infiniband/hw/mlx5/mr.c
+@@ -140,6 +140,19 @@ static int destroy_mkey(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr)
+ 	return mlx5_core_destroy_mkey(dev->mdev, mr->mmkey.key);
  }
  
--int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
--			u32 *in, int inlen, u32 *out, int outlen)
-+/* Callers must verify outbox status in case of err */
-+int mlx5_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
-+		   u32 *in, int inlen, u32 *out, int outlen)
++static void create_mkey_warn(struct mlx5_ib_dev *dev, int status, void *out)
++{
++	if (status == -ENXIO) /* core driver is not available */
++		return;
++
++	mlx5_ib_warn(dev, "async reg mr failed. status %d\n", status);
++	if (status != -EREMOTEIO) /* driver specific failure */
++		return;
++
++	/* Failed in FW, print cmd out failure details */
++	mlx5_cmd_out_err(dev->mdev, MLX5_CMD_OP_CREATE_MKEY, 0, out);
++}
++
+ static void create_mkey_callback(int status, struct mlx5_async_work *context)
  {
- 	int eqn = MLX5_GET(cqc, MLX5_ADDR_OF(create_cq_in, in, cq_context),
- 			   c_eqn_or_apu_element);
-@@ -101,7 +102,7 @@ int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
+ 	struct mlx5_ib_mr *mr =
+@@ -149,7 +162,7 @@ static void create_mkey_callback(int status, struct mlx5_async_work *context)
+ 	unsigned long flags;
  
- 	memset(out, 0, outlen);
- 	MLX5_SET(create_cq_in, in, opcode, MLX5_CMD_OP_CREATE_CQ);
--	err = mlx5_cmd_exec(dev, in, inlen, out, outlen);
-+	err = mlx5_cmd_do(dev, in, inlen, out, outlen);
- 	if (err)
- 		return err;
+ 	if (status) {
+-		mlx5_ib_warn(dev, "async reg mr failed. status %d\n", status);
++		create_mkey_warn(dev, status, mr->out);
+ 		kfree(mr);
+ 		spin_lock_irqsave(&ent->lock, flags);
+ 		ent->pending--;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+index a2f87a686a18..823d5808d5a0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -760,6 +760,18 @@ struct mlx5_ifc_mbox_in_bits {
+ 	u8         reserved_at_40[0x40];
+ };
  
-@@ -148,6 +149,16 @@ int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
- 	mlx5_cmd_exec_in(dev, destroy_cq, din);
++void mlx5_cmd_out_err(struct mlx5_core_dev *dev, u16 opcode, u16 op_mod, void *out)
++{
++	u32 syndrome = MLX5_GET(mbox_out, out, syndrome);
++	u8 status = MLX5_GET(mbox_out, out, status);
++
++	mlx5_core_err_rl(dev,
++			 "%s(0x%x) op_mod(0x%x) failed, status %s(0x%x), syndrome (0x%x), err(%d)\n",
++			 mlx5_command_str(opcode), opcode, op_mod,
++			 cmd_status_str(status), status, syndrome, cmd_status_to_err(status));
++}
++EXPORT_SYMBOL(mlx5_cmd_out_err);
++
+ static void cmd_status_print(struct mlx5_core_dev *dev, void *in, void *out)
+ {
+ 	u16 opcode, op_mod;
+@@ -778,10 +790,7 @@ static void cmd_status_print(struct mlx5_core_dev *dev, void *in, void *out)
+ 	err = cmd_status_to_err(status);
+ 
+ 	if (!uid && opcode != MLX5_CMD_OP_DESTROY_MKEY)
+-		mlx5_core_err_rl(dev,
+-			"%s(0x%x) op_mod(0x%x) failed, status %s(0x%x), syndrome (0x%x), err(%d)\n",
+-			mlx5_command_str(opcode), opcode, op_mod,
+-			cmd_status_str(status), status, syndrome, err);
++		mlx5_cmd_out_err(dev, opcode, op_mod, out);
+ 	else
+ 		mlx5_core_dbg(dev,
+ 			"%s(0x%x) op_mod(0x%x) uid(%d) failed, status %s(0x%x), syndrome (0x%x), err(%d)\n",
+@@ -1686,20 +1695,18 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
+ 
+ 				callback = ent->callback;
+ 				context = ent->context;
+-				err = ent->ret;
+-				if (!err && !ent->status) {
++				err = ent->ret ? : ent->status;
++				if (err > 0) /* Failed in FW, command didn't execute */
++					err = deliv_status_to_err(err);
++
++				if (!err)
+ 					err = mlx5_copy_from_msg(ent->uout,
+ 								 ent->out,
+ 								 ent->uout_size);
+ 
+-					err = mlx5_cmd_check(dev, err, ent->in->first.data,
+-							     ent->uout);
+-				}
+-
+ 				mlx5_free_cmd_msg(dev, ent->out);
+ 				free_msg(dev, ent->in);
+ 
+-				err = err ? err : ent->status;
+ 				/* final consumer is done, release ent */
+ 				cmd_ent_put(ent);
+ 				callback(err, context);
+@@ -1870,6 +1877,18 @@ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
  	return err;
  }
-+EXPORT_SYMBOL(mlx5_create_cq);
-+
-+/* oubox is checked and err val is normalized */
-+int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
-+			u32 *in, int inlen, u32 *out, int outlen)
+ 
++/* preserve -EREMOTEIO for outbox.status != OK, otherwise return err as is */
++static int cmd_status_err(int err, void *out)
 +{
-+	int err = mlx5_create_cq(dev, cq, in, inlen, out, outlen);
++	if (err) /* -EREMOTEIO is preserved */
++		return err == -EREMOTEIO ? -EIO : err;
 +
-+	return mlx5_cmd_check(dev, err, in, out);
++	if (MLX5_GET(mbox_out, out, status) != MLX5_CMD_STAT_OK)
++		return -EREMOTEIO;
++
++	return 0;
 +}
- EXPORT_SYMBOL(mlx5_core_create_cq);
++
+ /**
+  * mlx5_cmd_do - Executes a fw command, wait for completion.
+  * Unlike mlx5_cmd_exec, this function will not translate or intercept
+@@ -1892,13 +1911,7 @@ int mlx5_cmd_do(struct mlx5_core_dev *dev, void *in, int in_size, void *out, int
+ {
+ 	int err = cmd_exec(dev, in, in_size, out, out_size, NULL, NULL, false);
  
- int mlx5_core_destroy_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq)
-diff --git a/include/linux/mlx5/cq.h b/include/linux/mlx5/cq.h
-index 7bfb67363434..cb15308b5cb0 100644
---- a/include/linux/mlx5/cq.h
-+++ b/include/linux/mlx5/cq.h
-@@ -183,6 +183,8 @@ static inline void mlx5_cq_put(struct mlx5_core_cq *cq)
- 		complete(&cq->free);
+-	if (err) /* -EREMOTEIO is preserved */
+-		return err == -EREMOTEIO ? -EIO : err;
+-
+-	if (MLX5_GET(mbox_out, out, status) != MLX5_CMD_STAT_OK)
+-		return -EREMOTEIO;
+-
+-	return 0;
++	return cmd_status_err(err, out);
  }
+ EXPORT_SYMBOL(mlx5_cmd_do);
  
-+int mlx5_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
-+		   u32 *in, int inlen, u32 *out, int outlen);
- int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
- 			u32 *in, int inlen, u32 *out, int outlen);
- int mlx5_core_destroy_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq);
+@@ -1942,12 +1955,7 @@ int mlx5_cmd_exec_polling(struct mlx5_core_dev *dev, void *in, int in_size,
+ {
+ 	int err = cmd_exec(dev, in, in_size, out, out_size, NULL, NULL, true);
+ 
+-	if (err) /* -EREMOTEIO is preserved */
+-		return err == -EREMOTEIO ? -EIO : err;
+-
+-	if (MLX5_GET(mbox_out, out, status) != MLX5_CMD_STAT_OK)
+-		err = -EREMOTEIO;
+-
++	err = cmd_status_err(err, out);
+ 	return mlx5_cmd_check(dev, err, in, out);
+ }
+ EXPORT_SYMBOL(mlx5_cmd_exec_polling);
+@@ -1980,8 +1988,10 @@ EXPORT_SYMBOL(mlx5_cmd_cleanup_async_ctx);
+ static void mlx5_cmd_exec_cb_handler(int status, void *_work)
+ {
+ 	struct mlx5_async_work *work = _work;
+-	struct mlx5_async_ctx *ctx = work->ctx;
++	struct mlx5_async_ctx *ctx;
+ 
++	ctx = work->ctx;
++	status = cmd_status_err(status, work->out);
+ 	work->user_callback(status, work);
+ 	if (atomic_dec_and_test(&ctx->num_inflight))
+ 		wake_up(&ctx->wait);
+@@ -1995,6 +2005,7 @@ int mlx5_cmd_exec_cb(struct mlx5_async_ctx *ctx, void *in, int in_size,
+ 
+ 	work->ctx = ctx;
+ 	work->user_callback = callback;
++	work->out = out;
+ 	if (WARN_ON(!atomic_inc_not_zero(&ctx->num_inflight)))
+ 		return -EIO;
+ 	ret = cmd_exec(ctx->dev, in, in_size, out, out_size,
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 1b9bec8fa870..432151d7d0bf 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -955,6 +955,7 @@ typedef void (*mlx5_async_cbk_t)(int status, struct mlx5_async_work *context);
+ struct mlx5_async_work {
+ 	struct mlx5_async_ctx *ctx;
+ 	mlx5_async_cbk_t user_callback;
++	void *out; /* pointer to the cmd output buffer */
+ };
+ 
+ void mlx5_cmd_init_async_ctx(struct mlx5_core_dev *dev,
+@@ -963,7 +964,7 @@ void mlx5_cmd_cleanup_async_ctx(struct mlx5_async_ctx *ctx);
+ int mlx5_cmd_exec_cb(struct mlx5_async_ctx *ctx, void *in, int in_size,
+ 		     void *out, int out_size, mlx5_async_cbk_t callback,
+ 		     struct mlx5_async_work *work);
+-
++void mlx5_cmd_out_err(struct mlx5_core_dev *dev, u16 opcode, u16 op_mod, void *out);
+ int mlx5_cmd_do(struct mlx5_core_dev *dev, void *in, int in_size, void *out, int out_size);
+ int mlx5_cmd_check(struct mlx5_core_dev *dev, int err, void *in, void *out);
+ int mlx5_cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
 -- 
 2.35.1
 
