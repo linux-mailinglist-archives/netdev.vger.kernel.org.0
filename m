@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD0E4C1963
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCBE4C195D
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:05:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243151AbiBWRFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:05:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54582 "EHLO
+        id S243150AbiBWRFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:05:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243160AbiBWRFV (ORCPT
+        with ESMTP id S243155AbiBWRFV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:05:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE00853B71
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:04:48 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311E65372C
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:04:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A0F1B82107
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 17:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B259CC36AE5;
-        Wed, 23 Feb 2022 17:04:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2C8760FD2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 17:04:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40C43C36AE7;
+        Wed, 23 Feb 2022 17:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645635886;
-        bh=5RNPcucXqAdYsDrARFlHmphEMrY5nh3OmyRWD3Akv/s=;
+        bh=jNTdZS/CT+zl6ucAkDhYmI1TltV8OvpG0FwErI0fGrA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NpnINd4Gp3VI+JDYQCfK97QJ4c7R0WHU0AwKOB+dQm5pWyuSK0Oj0M9++q/+oHcYf
-         nQbU4p3Na9NssEJhY9ariVrxPKXgTVwxJQyXXsgTy0Xf0vMJIRyzjaHNnhV1S/Vrec
-         eEfQMSf1ptxWKUiM5zW2DqXaDcNzeijcjLoAzdBiyyY7c+8wQeXRKrYfdApi+R1DHG
-         6ufzedfDryvWXMcFFi3p4E2IMDrAeAD21+BiJm0f3VPo/WWJ9OKpyg9Zeg/O86vhES
-         joFqejHAi2lfTGz9eMNgO07wF3vBT8BOczdsW0mJW6hc8EbnDsnoCfDvya8jv1Fw4C
-         Xo4kpU/NdE2aw==
+        b=gBGS/IBIhgNZSO1MqRS0gNli4z6ZTuaj1Pb3EN9GDJcykf75j/EdAt7SHtDQytiGK
+         6nK+pisvAsnrgYi1YmOupPj61Dbo3+flktC5Z7w7WSz0aeGse2DlUSbMojiG/7PdQD
+         U7iZkYIzEyIpAqTjj95OYtPNnec1efQz9vnAASFlpRm8k8MBkTL/rGYzOLP/aKMILl
+         G4TWdn4Lx40GRHM2ZOs4dhsEJyzW70VaDeOOiMiAz46b+fq6d/QxM5YQsw8bUGeHCp
+         QvuFb89q6hJGP4VpGFdbHcwHTQ9QOkx2M0Mx/HG9rnBrGNkKCVPZ653ANKnq1fxPbI
+         B89qd5ml9xDlg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 17/19] net/mlx5e: MPLSoUDP decap, fix check for unsupported matches
-Date:   Wed, 23 Feb 2022 09:04:28 -0800
-Message-Id: <20220223170430.295595-18-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Lama Kayal <lkayal@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 18/19] net/mlx5e: Add missing increment of count
+Date:   Wed, 23 Feb 2022 09:04:29 -0800
+Message-Id: <20220223170430.295595-19-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220223170430.295595-1-saeed@kernel.org>
 References: <20220223170430.295595-1-saeed@kernel.org>
@@ -54,76 +55,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Lama Kayal <lkayal@nvidia.com>
 
-Currently offload of rule on bareudp device require tunnel key
-in order to match on mpls fields and without it the mpls fields
-are ignored, this is incorrect due to the fact udp tunnel doesn't
-have key to match on.
+Add mistakenly missing increment of count variable when looping over
+output buffer in mlx5e_self_test().
 
-Fix by returning error in case flow is matching on tunnel key.
+This resolves the issue of garbage values output when querying with self
+test via ethtool.
 
-Fixes: 72046a91d134 ("net/mlx5e: Allow to match on mpls parameters")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+before:
+$ ethtool -t eth2
+The test result is PASS
+The test extra info:
+Link Test        0
+Speed Test       1768697188
+Health Test      758528120
+Loopback Test    3288687
+
+after:
+$ ethtool -t eth2
+The test result is PASS
+The test extra info:
+Link Test        0
+Speed Test       0
+Health Test      0
+Loopback Test    0
+
+Fixes: 7990b1b5e8bd ("net/mlx5e: loopback test is not supported in switchdev mode")
+Signed-off-by: Lama Kayal <lkayal@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en/tc_tun_mplsoudp.c   | 28 ++++++++-----------
- 1 file changed, 11 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_mplsoudp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_mplsoudp.c
-index f40dbfcb6437..c5b1617d556f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_mplsoudp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_mplsoudp.c
-@@ -59,37 +59,31 @@ static int parse_tunnel(struct mlx5e_priv *priv,
- 			void *headers_v)
- {
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
--	struct flow_match_enc_keyid enc_keyid;
- 	struct flow_match_mpls match;
- 	void *misc2_c;
- 	void *misc2_v;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c b/drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c
+index 8c9163d2c646..08a75654f5f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c
+@@ -334,6 +334,7 @@ void mlx5e_self_test(struct net_device *ndev, struct ethtool_test *etest,
+ 		netdev_info(ndev, "\t[%d] %s start..\n", i, st.name);
+ 		buf[count] = st.st_func(priv);
+ 		netdev_info(ndev, "\t[%d] %s end: result(%lld)\n", i, st.name, buf[count]);
++		count++;
+ 	}
  
--	misc2_c = MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
--			       misc_parameters_2);
--	misc2_v = MLX5_ADDR_OF(fte_match_param, spec->match_value,
--			       misc_parameters_2);
--
--	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_MPLS))
--		return 0;
--
--	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_KEYID))
--		return 0;
--
--	flow_rule_match_enc_keyid(rule, &enc_keyid);
--
--	if (!enc_keyid.mask->keyid)
--		return 0;
--
- 	if (!MLX5_CAP_ETH(priv->mdev, tunnel_stateless_mpls_over_udp) &&
- 	    !(MLX5_CAP_GEN(priv->mdev, flex_parser_protocols) & MLX5_FLEX_PROTO_CW_MPLS_UDP))
- 		return -EOPNOTSUPP;
- 
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_KEYID))
-+		return -EOPNOTSUPP;
-+
-+	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_MPLS))
-+		return 0;
-+
- 	flow_rule_match_mpls(rule, &match);
- 
- 	/* Only support matching the first LSE */
- 	if (match.mask->used_lses != 1)
- 		return -EOPNOTSUPP;
- 
-+	misc2_c = MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
-+			       misc_parameters_2);
-+	misc2_v = MLX5_ADDR_OF(fte_match_param, spec->match_value,
-+			       misc_parameters_2);
-+
- 	MLX5_SET(fte_match_set_misc2, misc2_c,
- 		 outer_first_mpls_over_udp.mpls_label,
- 		 match.mask->ls[0].mpls_label);
+ 	mutex_unlock(&priv->state_lock);
 -- 
 2.35.1
 
