@@ -2,85 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0E94C195A
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:05:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9FA4C1950
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:05:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243137AbiBWRFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:05:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
+        id S243200AbiBWRF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243152AbiBWRFV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:05:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FD853B5A
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:04:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51F016111D
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 17:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4245C340EB;
-        Wed, 23 Feb 2022 17:04:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645635887;
-        bh=sNwE8asggoIsBdky/gOK+EfnvphGN9y4v7FwT6RgteM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gi/DXEqul6MNcCRBtjN+TOxpJ5tuDD+BV9V1Ucxcr68iRIZSlbMsvM4OTmthrwGF9
-         tO2vCAShepfUpNJJC9MAmlPwmCQ8drXU6s8ilSqzYCpnk1Cdk1/bgLNfqBVESL67fz
-         HEQdDvMtj4r8HdUtH5o+TO4oCsjC2kyaCfHu/yQ16+/xJ9967oWzszK5N9w2ZmwbWh
-         4rreLaay2shy9RkSROqB+E+Nw4k0HLpyergj26wFzE8djoXHfUPJdS6/SD8Zs/mR07
-         LO47CiRl5JucBauLSh6cDckx0iCAaBohAidvt1JETetA2G7jC18HxotxCIdgkIwWUK
-         aDOI7DesnmGtw==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 19/19] net/mlx5e: Fix VF min/max rate parameters interchange mistake
-Date:   Wed, 23 Feb 2022 09:04:30 -0800
-Message-Id: <20220223170430.295595-20-saeed@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220223170430.295595-1-saeed@kernel.org>
-References: <20220223170430.295595-1-saeed@kernel.org>
+        with ESMTP id S243172AbiBWRFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:05:36 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040D653B5A
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:05:07 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id q11so9472274pln.11
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:05:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/b6WfMnsXYZ00s2c/GvQAhaeUOqRUYQX35Lr5N92Ce0=;
+        b=Y9TC5Np6UhOrthaLw72Tmbkmac9ZcnyLYjKjHlfYKYivlqCn60jU6F2GWrzRbTO8M5
+         ZlGZUp6KkqzhOWY4U0T+I7nDsvwM018T8tLK+yCiXaUS72m9Mx2vqumZ2ePYDvJ0qhFT
+         12JSUAjtl91GU6mJotfNZfezDKxOquWCjOHVarCed6PYMlAlwckhtlSg0gZeWz3XPVgE
+         x4SzYOeMzwxIOXF1bW+VVvZjDNxipzxf/c//G78yPwq+ZZ6giviBZ5uCYh7v1qrafwX9
+         slhReHlGyY8niuVlLJmYP8z7TfTonDx+N+HLvYf8DPL/aSojJAlcECvf9pYNSa1qtbfS
+         JrWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/b6WfMnsXYZ00s2c/GvQAhaeUOqRUYQX35Lr5N92Ce0=;
+        b=5YJdbEtsoQqf0OeFQ8TDBnW+zYoYy6SRw+AP63GhbyI7HdfSSgLuZ9Mcqi3xyvqith
+         +b8YTPZJFbdrFlkqGpQd/3EbgaR7rKc7zPy2MQB2ZbNUlUTpcy4DaK9QXE4HFjhi3Xp7
+         lj33qQ1v4OGmYEXZtgxlQ5IXLqXFYsYab7sV5IURA0NJI0EA4jVo+zyU7BIv8YuGhDwE
+         wq672e9fJFEY4xV/XXtm0xWMSH+zQQYIEheLqNj1tnmuLGNaySE5DFqhkVsKM0WcWJYB
+         7+mutQ89t5Y8Ej87P995ssY3m9+cQL9iUpiwxvM9ia4wJmlvZmOH2aLup9fBu90uGml/
+         DZbQ==
+X-Gm-Message-State: AOAM532ucAdNcggoUGdTvgr8MhXlMqjUG1Ba1MIVa56epQPcvEk9us+W
+        cjxwPcW6lgc+k6JXYs1NdbRCIOcZcYGH5ex2
+X-Google-Smtp-Source: ABdhPJwwxZtT1+nHRCZoasgxAPStg4KmhlveczsZWUYFIlMICmGoKNCPw5uO8UbrayXG43nYtLt3hg==
+X-Received: by 2002:a17:902:ce05:b0:14f:8cfa:1ace with SMTP id k5-20020a170902ce0500b0014f8cfa1acemr469038plg.149.1645635906521;
+        Wed, 23 Feb 2022 09:05:06 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id u11sm62507pfi.71.2022.02.23.09.05.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 09:05:05 -0800 (PST)
+Date:   Wed, 23 Feb 2022 09:05:02 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
+ device from smaller to bigger
+Message-ID: <20220223090502.29e5f87a@hermes.local>
+In-Reply-To: <20220223080342.5cdd597c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
+        <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
+        <YhQ1KrtpEr3TgCwA@gondor.apana.org.au>
+        <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
+        <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
+        <20220222103733.GA3203@debian.home>
+        <20220222152815.1056ca24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220223112618.GA19531@debian.home>
+        <20220223080342.5cdd597c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+On Wed, 23 Feb 2022 08:03:42 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-The VF min and max rate were passed incorrectly and resulted in wrongly
-interchanging them. Fix the order of parameters in
-mlx5_esw_qos_set_vport_rate().
+> On Wed, 23 Feb 2022 12:26:18 +0100 Guillaume Nault wrote:
+> > Do you mean something like:
+> > 
+> >   ip link set dev eth0 vlan-mtu-policy <policy-name>
+> > 
+> > that'd affect all existing (and future) vlans of eth0?  
+> 
+> I meant
+> 
+>   ip link set dev vlan0 mtu-policy blah
+> 
+> but also
+> 
+>   ip link set dev bond0 mtu-policy blah
+> 
+> and
+> 
+>   ip link set dev macsec0 mtu-policy blah2
+>   ip link set dev vxlan0 mtu-policy blah2
 
-Fixes: d7df09f5e7b4 ("net/mlx5: E-switch, Enable vport QoS on demand")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Aya Levin <ayal@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-index 11bbcd5f5b8b..694c54066955 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-@@ -697,7 +697,7 @@ void mlx5_esw_qos_vport_disable(struct mlx5_eswitch *esw, struct mlx5_vport *vpo
- }
- 
- int mlx5_esw_qos_set_vport_rate(struct mlx5_eswitch *esw, struct mlx5_vport *vport,
--				u32 min_rate, u32 max_rate)
-+				u32 max_rate, u32 min_rate)
- {
- 	int err;
- 
--- 
-2.35.1
-
+Sorry, putting this in ip link is not the right place.
+It belongs in sysctl (if at all); not convinced this is worth doing.
