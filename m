@@ -2,128 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 939D84C1F6F
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:15:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E37884C1F75
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:16:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244744AbiBWXQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 18:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
+        id S244752AbiBWXQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 18:16:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236982AbiBWXQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:16:09 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2351357150;
-        Wed, 23 Feb 2022 15:15:41 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id w7so728785ioj.5;
-        Wed, 23 Feb 2022 15:15:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P25Zfn5c3BtqYaoA6/wRj29feqJY0Zz0Nev1IhUk9Dc=;
-        b=HfHAa2uKg47YCKjW0CQBrlojE22jxt/8JNZubtz/35jfAp6QaO8wnHBFEPeo2fSHkK
-         SlW5+ZEyXEaPUU8AlTeR+Eaixz0FpST78wWFjKrpAKpQ9O+dAFJFZ9RzEtHzFygvvCJ+
-         Ypwhe6dTmaxzM8AXonk9ymSZPpsyYGxoLUMTJd68Yq5ahc5pSE4No3w0ybWVdkDpZ46r
-         G4Rubvbu3Z9xV+KKf58+xb8TeYWX/97dGaGioNDNPx92V7kCUeBFObmLNJeRTQsaMNUK
-         25JhzDK+vd5H7pthS2OpoR/ffvFhd4p3UthPI131UoaRCQ9esrbZOUYHrkoJNG2024rk
-         eS1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P25Zfn5c3BtqYaoA6/wRj29feqJY0Zz0Nev1IhUk9Dc=;
-        b=0r0zHnATpRnEAJre4YWhRGz3getxQq+71bFd8emRhnGnBHferDdgzOrDQWFT88o8bC
-         +fmgyWiOI0DdTkWRBL/rVg95iopHBbSaHbsoKjIQBIAbyff6x33m5Du/LEusNP9VDcTh
-         RgZoj4yPvYSHqFySW7faS2WmzhZavEApjqPjNrrvNJYYa9XEuspUZhQH+VvVVHPxfVaZ
-         Newwq510RnTuY4IZ2PGQANPa34LjKETkxO8xI4QXgLPcGNa4c9G9UjNoNOgONtsWq2J/
-         X7eo+wpebBOUFc5cIeaXADr5W1jyamMcBt0T22HJPfnuZSpd3WjivLkGkeSuZmqdOmaR
-         exnw==
-X-Gm-Message-State: AOAM5327tVoGUrquZNT+Er/7OUgVzQlkuJ0Ok9a8w5MGtLG9pMCJnDtj
-        R31wESD69wCZehdcn4KVDt5899RTNs6YzpnXTR0=
-X-Google-Smtp-Source: ABdhPJyH0mfb4p1AXEHyZ7nFOjHrPR/3RLDwloDCPaFaTjCrBVgRJexaQLr2VbGg+iObXNrg/nG3gbCUia8PAMp8V7w=
-X-Received: by 2002:a05:6602:3c6:b0:63d:cac9:bd35 with SMTP id
- g6-20020a05660203c600b0063dcac9bd35mr8474iov.144.1645658140535; Wed, 23 Feb
- 2022 15:15:40 -0800 (PST)
+        with ESMTP id S236982AbiBWXQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:16:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B5057B06
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 15:16:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8422EB8219D
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 23:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7A7C340E7;
+        Wed, 23 Feb 2022 23:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645658158;
+        bh=OjqvL9c5L7J0dHkgQv2iXXZTm9OgBtlA1h2WVMzlVCk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=esgD6g724hK+uZAnQS3okBzOj6ayUdCtzrf7ndTGRd+kXsqQRZcSG9qcsXQt6nM7m
+         vRdMCzsulG8AJDGcFfQbFJ+rKRizRmHv5ff5j2HN5X66/veOrtjROh8t0gVeDOIMvf
+         W4eTSosZK4/AsXtIYRWZ1fw6fGWxzK1eKSlhPZZGu/5ZTPQQR8YlNMVqZGbQxV6cws
+         2zKh2blhVlCq/Zkbtl5mKb3zBBVCiRJV46m47Y2PQH5do3RfELbrur5FJ5A8PnlT1r
+         fdG317HJNWm6GsmROa9/lQNLVjLpvlqT16hj6VfVXc/UvPTslAX+/roB/RqNJQc+Dx
+         ndiGUoTe3ANBQ==
+Date:   Wed, 23 Feb 2022 15:15:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Peter Robinson <pbrobinson@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
+ WoL IRQ
+Message-ID: <20220223151556.45a45c39@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <6a815a39-0a0b-b3b2-443d-11370ed7d091@gmail.com>
+References: <20220222095348.2926536-1-pbrobinson@gmail.com>
+        <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
+        <CALeDE9NGckRoatePdaWFYqHXHcOJ2Xzd4PGLOoNWDibzPB_zXQ@mail.gmail.com>
+        <734024dc-dadd-f92d-cbbb-c8dc9c955ec3@gmail.com>
+        <CALeDE9Nk8gvCS425pJe5JCgcfSZugSnYwzGOkxhszrBz3Da6Fg@mail.gmail.com>
+        <3ae3a9fc-9dd1-00c6-4ae8-a65df3ed225f@gmail.com>
+        <CALeDE9PK9JkFkbTc36HOZH8CG8MM3OMhKJ24FKioKF5bspSPkA@mail.gmail.com>
+        <6cefe7ca-842b-d3af-0299-588b9307703b@gmail.com>
+        <20220223144818.2f9ce725@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <6a815a39-0a0b-b3b2-443d-11370ed7d091@gmail.com>
 MIME-Version: 1.0
-References: <20220222204236.2192513-1-stijn@linux-ipv6.be> <CAPhsuW6WgjL_atKCivbk5iMNBFHuSGcjAC0tdZYag2fOesUBKA@mail.gmail.com>
-In-Reply-To: <CAPhsuW6WgjL_atKCivbk5iMNBFHuSGcjAC0tdZYag2fOesUBKA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Feb 2022 15:15:29 -0800
-Message-ID: <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
-To:     Song Liu <song@kernel.org>
-Cc:     Stijn Tintel <stijn@linux-ipv6.be>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 6:37 PM Song Liu <song@kernel.org> wrote:
->
-> On Tue, Feb 22, 2022 at 12:51 PM Stijn Tintel <stijn@linux-ipv6.be> wrote:
-> >
-> > When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
-> > max_entries parameter set, this parameter will be set to the number of
-> > possible CPUs. Due to this, the map_is_reuse_compat function will return
-> > false, causing the following error when trying to reuse the map:
-> >
-> > libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter mismatch
-> >
-> > Fix this by checking against the number of possible CPUs if the
-> > max_entries parameter is not set in the map definition.
-> >
-> > Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
-> > Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
->
-> Acked-by: Song Liu <songliubraving@fb.com>
->
-> I think the following fix would be more future proof, but the patch
-> as-is is better for
-> stable backport? How about we add a follow up patch on top of current
-> patch to fix
-> def->max_entries once for all?
+On Wed, 23 Feb 2022 14:58:13 -0800 Florian Fainelli wrote:
+> Yes, this looks more elegant and is certainly more correct.
+> 
+> However there must have been something else going on with Peter's 
+> provided information.
+> 
+> We clearly did not have an interrupt registered for the Wake-on-LAN 
+> interrupt line as witnessed by the outputs of /proc/interrupts, however 
+> if we managed to go past the device_can_wakeup() check in 
+> bcmgenet_set_wol(), then we must have had devm_request_irq() return 
+> success on an invalid interrupt number
 
-Keeping special logic for PERF_EVENT_ARRAY in one place is
-preferrable. With this, the changes in map_is_reuse_compat() shouldn't
-be necessary at all. Stijn, can you please send v2 with Song's
-proposed changes?
+My thinking was we never called devm_request_irq().
 
->
-> Thanks,
-> Song
->
-> diff --git i/tools/lib/bpf/libbpf.c w/tools/lib/bpf/libbpf.c
-> index ad43b6ce825e..a1bc1c80bc69 100644
-> --- i/tools/lib/bpf/libbpf.c
-> +++ w/tools/lib/bpf/libbpf.c
-> @@ -4881,10 +4881,9 @@ static int bpf_object__create_map(struct
-> bpf_object *obj, struct bpf_map *map, b
->                         return nr_cpus;
->                 }
->                 pr_debug("map '%s': setting size to %d\n", map->name, nr_cpus);
-> -               max_entries = nr_cpus;
-> -       } else {
-> -               max_entries = def->max_entries;
-> +               def->max_entries = nr_cpus;
->         }
-> +       max_entries = def->max_entries;
->
->         if (bpf_map__is_struct_ops(map))
->                 create_attr.btf_vmlinux_value_type_id =
-> map->btf_vmlinux_value_type_id;
+> or worse, botch the interrupt number in priv->irq1 to the point where
+> the handler got re-installed maybe and we only end-up calling
+> bcmgenet_wol_isr but no longer bcmgenet_isr1.. Hummm.
+
+You're right, my thinking was maybe some IRQ code casts the IRQ 
+number to u8, but irq_to_desc() contains no such silliness and 
+should be exercised on every path :S
