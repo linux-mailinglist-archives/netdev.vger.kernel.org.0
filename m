@@ -2,93 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D30F44C1AC3
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:18:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B53764C1AD2
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243820AbiBWSSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 13:18:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
+        id S243737AbiBWSVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 13:21:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiBWSRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:17:22 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F1E3F8A2
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 10:16:53 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id 29so16213223ljv.10
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 10:16:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=73wDL/GVoaOR1Kvn57Br6Uw6XSipJJuyAsdU60NF+pw=;
-        b=MXZnSysa/tiLB503dmDCFGagyhcoYgqb0vIUpyRFKvQVqOoeevSvUDk4MeqJ5Ent0f
-         rC1lJxQQq0ubL4zg2d0mEpERBNMtSqWMVVUAyY1jut/y1twBRe/kozRN4KTOYHkgXY/Z
-         ugMa5SlzanD3UYKxcgRKCT/7EoXtdgfGcXuSY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=73wDL/GVoaOR1Kvn57Br6Uw6XSipJJuyAsdU60NF+pw=;
-        b=Sx0dDqEALKav5mCfPur/DbUae925AsgeciCJ7r1bzg1FguHS6gwBWt4HkjdgILj7r2
-         nGUG3griJJI+Y7HdmHLTIIf8d9+OP0Ux1HCkYCXzxF97NvOYNpxRPNA6XKurtcDK5s9x
-         e9hpHyIgx4pNU5aTPCAhpJVidGGtGz7oglsCfSciV+wdxl+PvJtmfXQevvIcgaKvW35w
-         qE1T03O9PvZtvBnd4IRba4Qz1MWU9YPn0g5BWrMF4X6prlvZ/qQW6/TDBJRCUN2th4SM
-         UtrPJtszsRo1/DGnq1dolb08waONDAeehBlODmTVP17/4lSBihqhuqv8svU0P2QBhw2o
-         AWJQ==
-X-Gm-Message-State: AOAM533PkSArJU0Orizr/k5VTq+8NF4Scw63dwds0cwDTowEAQxZt9WL
-        QvnLUy1WrCcyITLtBnQOo6Wi/oRHmitxU/fwa69yoA==
-X-Google-Smtp-Source: ABdhPJx0EVmmw+N7ED1589E3w2CYdrLjdKkkNathexe+eFM/LW5CF40GsGD3Aq4VDn4UKUgJ7StNwvheeyYCNwMnSig=
-X-Received: by 2002:a2e:a37c:0:b0:246:2ce9:5744 with SMTP id
- i28-20020a2ea37c000000b002462ce95744mr450725ljn.76.1645640211670; Wed, 23 Feb
- 2022 10:16:51 -0800 (PST)
+        with ESMTP id S241030AbiBWSVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:21:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAD149FB8;
+        Wed, 23 Feb 2022 10:20:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645640434; x=1677176434;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=rzWuqP3ripaxaKT5al8d/OWqGFWPXcQTpyLBZCqsFqE=;
+  b=aE7fMxpLR9cxMhAsHhdWfgjjsOnjnsUTa6gQg9JjA0UJfa6nzUytNqQm
+   zub/mdHiKB8FAHQFrXRvvVdf7Wseyf2IU2JRyx2nOTkzN/fycJY51WD2K
+   VAmRMPyCp4NRKeP1Y7xJO1tpwjKQcayt/Lrxof5qmnqoY8laPyOJPsdc/
+   IXGYlO1okwN6aU5bNnpqXA5U+ooFO/57w9sb9Pr1pl/kj3QWFMfZkj+AJ
+   3cr2pTd3gBM73s9UA9y/hM3H41OU81LanqIahiagi4OiJgcxs6ypJMGU8
+   FhAcXhAqi7mXdhMMCEg5LFweS4IJ8Oj9qFBMkyzKlX4Wfk2NaDm7sPT6W
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="250876053"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="250876053"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 10:20:33 -0800
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="506020647"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 10:20:28 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nMwEi-007WTl-Ku;
+        Wed, 23 Feb 2022 20:19:36 +0200
+Date:   Wed, 23 Feb 2022 20:19:36 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Enrico Weigelt <info@metux.net>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <YhZ6uAmGcVjvNZy6@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+ <20220222173019.2380dcaf@fixe.home>
+ <YhZI1XImMNJgzORb@smile.fi.intel.com>
+ <20220223161150.664aa5e6@fixe.home>
+ <YhZRtads7MGzPEEL@smile.fi.intel.com>
+ <YhZxyluc7gYhmAuh@sirena.org.uk>
 MIME-Version: 1.0
-References: <1645574424-60857-1-git-send-email-jdamato@fastly.com>
- <1645574424-60857-2-git-send-email-jdamato@fastly.com> <21c87173-667f-55c1-2eab-a1f684c75352@redhat.com>
- <CALALjgwqLhTe8zFPugbW7XcMqnhRTKevv-zuVY+CWOjSYTLQRQ@mail.gmail.com>
- <20220223094010.326b0a5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CALALjgwm9LpmnT+2kXNvv-aDiyrWWjMO=j0BBmZd4Qh4wQQXhg@mail.gmail.com> <7a2d23b2-5a7d-d68e-1ae4-13f114c5a380@redhat.com>
-In-Reply-To: <7a2d23b2-5a7d-d68e-1ae4-13f114c5a380@redhat.com>
-From:   Joe Damato <jdamato@fastly.com>
-Date:   Wed, 23 Feb 2022 10:16:40 -0800
-Message-ID: <CALALjgx1Tn2KNXPKhzbdeFuUt+V10TePr093JiBDFERFqRPWNA@mail.gmail.com>
-Subject: Re: [net-next v6 1/2] page_pool: Add page_pool stats
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, brouer@redhat.com,
-        netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
-        davem@davemloft.net, hawk@kernel.org, saeed@kernel.org,
-        ttoukan.linux@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhZxyluc7gYhmAuh@sirena.org.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:10 AM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
->
-> On 23/02/2022 18.45, Joe Damato wrote:
-> > On Wed, Feb 23, 2022 at 9:40 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >>
-> >> On Wed, 23 Feb 2022 09:05:06 -0800 Joe Damato wrote:
-> >>> Are the cache-line placement and per-cpu designations the only
-> >>> remaining issues with this change?
-> >>
-> >> page_pool_get_stats() has no callers as is, I'm not sure how we can
-> >> merge it in current form.
-> >>
-> >> Maybe I'm missing bigger picture or some former discussion.
-> >
-> > I wrote the mlx5 code to call this function and export the data via
-> > ethtool. I had assumed the mlx5 changes should be in a separate
-> > patchset. I can include that code as part of this change, if needed.
->
-> I agree with Jakub we need to see how this is used by drivers.
+On Wed, Feb 23, 2022 at 05:41:30PM +0000, Mark Brown wrote:
+> On Wed, Feb 23, 2022 at 05:24:37PM +0200, Andy Shevchenko wrote:
 
-OK. I'll include the mlx5 code which uses this API in the v7.
+...
+
+> There were separately some issues with people trying to create
+> completely swnode based enumeration mechanisms for things that required
+> totally independent code for handling swnodes which seemed very
+> concerning but it's not clear to me if that's what's going on here.
+
+This is the case IIUC.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
