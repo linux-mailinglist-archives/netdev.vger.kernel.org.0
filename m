@@ -2,202 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 690564C0CC8
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 07:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 524584C0CF6
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 08:02:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238470AbiBWGu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 01:50:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42014 "EHLO
+        id S238554AbiBWHDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 02:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238300AbiBWGuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 01:50:54 -0500
-Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9A76E352
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 22:50:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1645599025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=czTWBunkqDmTRriLhyIwr+8oCa80d/cjHM2qiQeFaQ0=;
-        b=g7g7zVp7TWgcgKq8X17MzAb8aXJguczUa+C6JbOXBZZIMZaDIKOvVfrl3gmoQ9WUZr0yht
-        1fglP69hoT2BXOUFFRQAze/XxijdjDGW2SyTDHhfnSu4AMPb2F4pSL+4UeKfdiXu2CUJ18
-        2SluKzHk+VoUkhAh9Dsp53xu+GXVU9E=
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
- (mail-vi1eur04lp2056.outbound.protection.outlook.com [104.47.14.56]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-30-9Esq5DRtNoiE3WwxiJbFGA-1; Wed, 23 Feb 2022 07:50:24 +0100
-X-MC-Unique: 9Esq5DRtNoiE3WwxiJbFGA-1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N1RDpTyu8y6WiUtU0VNiuhaKJ32hFVNScla3XfLGYKTsC43gbzkJXH/UqeSP6dHHTBkW6Wm8JwTk9cuhIRhLZSEhdr0+qIHJrW7TCFMtBvxtd4gT3pBahU/fQXFdfEUEUE34TsjiEJ0APVR3zEBVMZ8sBZgYBd/24b1gQ/VG9/RZS0Bd8vimjSYwMhGWAxU+DNNhAFfM8qNCFIIR/BgSaZfFdraRIqekh2LzVVnlWKca3S2FoYGrAsigZUFESNT/fX+fq/HRtpvprQA54z7H8ObbQBkutwkdjlHuZNjfCVC0x3qfHcAoattO7keAuAqs0aAppFYfqQ/kHppRvrRpcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ju2fSRW1SBCGia72GzaiR3aeymKl1j5uwTJNPBbH+GU=;
- b=EQworsiUHxDFx4DneNdygHVKlJQdgzxprouk56j3Zr689d2c48+0lU3VPuK1Wsg1i8xG43Y4gsaVnVWO3BkNcPWEek+yme7eYsJCFNeqINSEO4n9UGEdrInCaG/MXk3tdAJ9eNAVQ10G9X3CisX6wGyc0HOzlKVP2s9wWFonCBXei3CEkNisSXs13cW8Nii6H58doY+w6/AZCWzdoz5I0RuqFgUIRKFV623+lXAr1DkZAf+XeWd5sXfk5vlHDluWkSTDFNk4UGk1+/m+/bFEtGaYT7L50OdF/7gurOch3IYrXSWmlFPzontzKzBtPrtR5R89qjWIOXp2Oep6rw0yEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from HE1PR0402MB3497.eurprd04.prod.outlook.com (2603:10a6:7:83::14)
- by HE1PR04MB3290.eurprd04.prod.outlook.com (2603:10a6:7:20::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Wed, 23 Feb
- 2022 06:50:23 +0000
-Received: from HE1PR0402MB3497.eurprd04.prod.outlook.com
- ([fe80::60de:f804:3830:f7c5]) by HE1PR0402MB3497.eurprd04.prod.outlook.com
- ([fe80::60de:f804:3830:f7c5%4]) with mapi id 15.20.4951.019; Wed, 23 Feb 2022
- 06:50:23 +0000
-From:   Geliang Tang <geliang.tang@suse.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@kernel.org>
-CC:     Geliang Tang <geliang.tang@suse.com>, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH iproute2-next v3 3/3] mptcp: add port support for setting flags
-Date:   Wed, 23 Feb 2022 14:50:39 +0800
-Message-ID: <18bb653925ebd903715096daa5e86a2e81c3dff3.1645598911.git.geliang.tang@suse.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645598911.git.geliang.tang@suse.com>
-References: <cover.1645598911.git.geliang.tang@suse.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR0401CA0019.apcprd04.prod.outlook.com
- (2603:1096:202:2::29) To HE1PR0402MB3497.eurprd04.prod.outlook.com
- (2603:10a6:7:83::14)
+        with ESMTP id S238544AbiBWHDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 02:03:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588923A722;
+        Tue, 22 Feb 2022 23:02:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4FDEB81E83;
+        Wed, 23 Feb 2022 07:02:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08ADBC340E7;
+        Wed, 23 Feb 2022 07:02:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645599757;
+        bh=KBHXgIpEwaTCVsG+KAfE1VlLPlC95bPSZKlWtaMQujU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qH3pAs9YXNW5XCWKXzvmkEUSSpXM0WIiencQ4eFJN0HeaLyzSzscRIO3Jhyzfa5b3
+         1zfVb5y5nrzFNIS7HVP9jN2YzPxyHS6nvs/pVVj0tmDe6fDfRl8uqZ0YHW1/cHJvri
+         /YREJZu1TDx3cp0gFAepo6so/2lf9E7I9UKnqZHo=
+Date:   Wed, 23 Feb 2022 08:02:34 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Subject: Re: [PATCH] iwlwifi/mvm: check debugfs_dir ptr before use
+Message-ID: <YhXcCnEhNp0D5WF4@kroah.com>
+References: <20220223030630.23241-1-rdunlap@infradead.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e1669484-e339-40ae-7804-08d9f698c3fb
-X-MS-TrafficTypeDiagnostic: HE1PR04MB3290:EE_
-X-Microsoft-Antispam-PRVS: <HE1PR04MB32908630E14B602A1150CF99F83C9@HE1PR04MB3290.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tcYJspK39mWf+QhOjvhnr07hIDvi0LKWzcHbl6BR7yXm02twBEMavZLJhrk8wxKzvevPufbbCji49y4UefH+647a3kYUj46ymKF73wuzof8jqqIPhpWacySXoGdH2YAFgQ2SzXIeEOWjWR7hbNUOSMLy+gJG+T14lZBBQAnZdQatYZInu5gKyY8GyNXfiPzYKUs+ggKtp2zZOATShlBKz4XvcF+FMKBXAcTgOo+UXRFnu08aE0j9uaDBiHnQOlrU0N+FEg6OYXXtpXLNU5NgY0+y1EC4UYlUPmaoCv1sjUSigR/79fv0xqfpbxU2HDIfO7ymYddRs7+EbQ3EQj/e7ZVfynal/qlrB3PZQM3Ns9ZIhvV0n7JDqmTaK9m27rvaRD8/kIO7gsrhXIdRAILLyC9fOFiEc44Qrwb7wdw5Mk6aTqiNRzYGqCG2zil8ZjGikLgaO05tm1qLbdj3GylBDtMCnwncE+AwSHr3iCG+2NzYgD50XQvgymcpygWMvY4fULK7WbZOkbr0r4FlyiBP8EyMNIfZeddsw97rneWyokFAD57oIOTBFT3Mp18m+cxS93CC3Y1OjnKcSqTLo9WpftlpsExm+PS7WQiTNhNPPPbxn56j814XlJzAHYZ9ao84O2yfbuifXtcexL97sLQDPA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0402MB3497.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8676002)(66556008)(44832011)(66476007)(66946007)(38100700002)(86362001)(4326008)(5660300002)(8936002)(2906002)(36756003)(6512007)(83380400001)(110136005)(186003)(26005)(2616005)(6486002)(508600001)(6506007)(54906003)(55236004)(6666004)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?efVwhImxXGIiUnCUBc+2sMnpalH+2On3p7lHrm9LbhavjviZ8VsIInTdj6XT?=
- =?us-ascii?Q?jG4iG7Xomc3yAJoPnIZq+jjBcetkmsvKvSpzE6T0ftYgrOOd1pZcKn4GwAs9?=
- =?us-ascii?Q?EbjIqknE+TeRpeJAZZJbj/2cLnZMA1WKBGxOlQgcTfZMbIT+ghONsTCXT3rw?=
- =?us-ascii?Q?rvTdwFQwVG6uxfgH9P56/A1o85znsF4KK8pruNQETG6kElqiQcJ5dO8y40aA?=
- =?us-ascii?Q?lcLlmMVHAHArAZZ0ObW/ikeVQqjB2nvEdXWAe+tx3IGLRp/74hBm55CuIIDI?=
- =?us-ascii?Q?1Z6m7IbM5nkxAgiYpvcwZjsIfFZsU+Yom6ChcsO2WgatHO/ryuDDc/Ss/MSt?=
- =?us-ascii?Q?iBHS5H3iohShvAkT8+RsRYRSzb3dugZM3iTovBW15s569Fsrn/iTrwX41eDP?=
- =?us-ascii?Q?kCJpnwphaBWjhJR122w0C0Xud+dlVcc/84r/EBLMsLyr/DdE6u9eWh39bSQD?=
- =?us-ascii?Q?FxJZ41ST/i0przv0Ke3xjrOuvLtHuR0sFufrAUq693L2Ru1w0nMER+4KxOTG?=
- =?us-ascii?Q?yPg4fkknhh+0QhrZJrqKJm1w+LOnVRl5LcgFFLHy778o1ClfwgNhKxcS/J34?=
- =?us-ascii?Q?b2IgP3iAdR7/GCd+xJD1ZObHTHCqJ1YHeYXWx79aMZhUZQrAsPJD5bmjFdns?=
- =?us-ascii?Q?+7wfCPQah2uaQpp3kXlx9JBVlYQiVHOgrGYVpwLEFOiiJNb6bHFZLsPonZRt?=
- =?us-ascii?Q?0bDEfChHtY6Tb4mcCymP+TQZ9fkzqUIKIy9iVDiHtoRHfVoPTa/xvcUwtVIE?=
- =?us-ascii?Q?ClFmCs1F0DAsERq3DN2pzJHpO7wnX1U5CbAXLLWozsNIMTsUBnNG/MjJ7Gxs?=
- =?us-ascii?Q?tP1faH1fiJHT03PF4C867xNd0sykl29lKEB5/ofR3dkTwyASGY7hiGL4IdwT?=
- =?us-ascii?Q?kOYbHDLmy9vAUtq9gAIiufP+9PPcrl9S7OVTwO33X+4YSQHY81U5DZ/ptmCo?=
- =?us-ascii?Q?b/yXWeSKtDE23RRLrPVzhghnP6DaaSlL+S0sLDhCEJ6dwU/JRIWaTflVH/KU?=
- =?us-ascii?Q?hONKfJhQJXes6xcMbQ1A2G8JPkUbjKSFLKke68lGavw+uxwgN+YILL/lap4H?=
- =?us-ascii?Q?51lS+cPq3f2eqbeLDaHFqgmTaIpIX7z5fcZ8rq60ZqMiHDqm6Ny368C91nsG?=
- =?us-ascii?Q?AlcHobOGykXTWNMnuAvDaMQNrfLyeOiktWCfZWlj/nmh3TMt0KgNP/ZHr85/?=
- =?us-ascii?Q?Xb4og4e6oT2MuRms6L6fxtGpYIqBDYVyZuUohiKVGhSUY68/bZ00kFhTaa8N?=
- =?us-ascii?Q?HWx/czUXRn/D8GcgrwYlq54SPbeLzC2owOLmp2EPoL9Lhpy+xIdlyS366XJA?=
- =?us-ascii?Q?VYFBQ6k2KjLjE4nhyP7MCPWZbJa1cIKoPlt/2Nec8d9QB/LZ/W9ZSnOmgEcH?=
- =?us-ascii?Q?ieDhlMlM8mxwvYBwPjBZSGV/8Xd0G4SXNMGkkgWTVgRgjKoFU9xb2xGv4d21?=
- =?us-ascii?Q?FbQ+YxOn3IVvir9cTbiwevtH1SHAQExrRiA5b3QWu1Fv1ZcRN/fmFoBB8kYB?=
- =?us-ascii?Q?B5OCBem2l7PwQ/sl0UhrCElKl4KGUyX8Lryoj6YuTTFp/ZnYI0zGvN90L4i6?=
- =?us-ascii?Q?oTWYa5j9BGBhbZMtC5iuVCBfabombInbLGOaSVTuTfYtL0XpvSI/VAHh/Otj?=
- =?us-ascii?Q?BzECuCvIFiMj4ITh926rcSY=3D?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1669484-e339-40ae-7804-08d9f698c3fb
-X-MS-Exchange-CrossTenant-AuthSource: HE1PR0402MB3497.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 06:50:23.3916
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Wm+6iIfxi/E7lfEQiSxfWNzBRyYC466rhOeF2v/LiLOipK7ejSR1v1Gd7h6mLySe7VmNPRizhJA6Qxon6eWx0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR04MB3290
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223030630.23241-1-rdunlap@infradead.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch updated the port keyword check for the setting flags, allow
-to use the port keyword with the non-signal flags. Don't allow to use
-the port keyword with the id number.
+On Tue, Feb 22, 2022 at 07:06:30PM -0800, Randy Dunlap wrote:
+> When "debugfs=off" is used on the kernel command line, iwiwifi's
+> mvm module uses an invalid/unchecked debugfs_dir pointer and causes
+> a BUG:
+> 
+>  BUG: kernel NULL pointer dereference, address: 000000000000004f
+>  #PF: supervisor read access in kernel mode
+>  #PF: error_code(0x0000) - not-present page
+>  PGD 0 P4D 0 
+>  Oops: 0000 [#1] PREEMPT SMP
+>  CPU: 1 PID: 503 Comm: modprobe Tainted: G        W         5.17.0-rc5 #7
+>  Hardware name: Dell Inc. Inspiron 15 5510/076F7Y, BIOS 2.4.1 11/05/2021
+>  RIP: 0010:iwl_mvm_dbgfs_register+0x692/0x700 [iwlmvm]
+>  Code: 69 a0 be 80 01 00 00 48 c7 c7 50 73 6a a0 e8 95 cf ee e0 48 8b 83 b0 1e 00 00 48 c7 c2 54 73 6a a0 be 64 00 00 00 48 8d 7d 8c <48> 8b 48 50 e8 15 22 07 e1 48 8b 43 28 48 8d 55 8c 48 c7 c7 5f 73
+>  RSP: 0018:ffffc90000a0ba68 EFLAGS: 00010246
+>  RAX: ffffffffffffffff RBX: ffff88817d6e3328 RCX: ffff88817d6e3328
+>  RDX: ffffffffa06a7354 RSI: 0000000000000064 RDI: ffffc90000a0ba6c
+>  RBP: ffffc90000a0bae0 R08: ffffffff824e4880 R09: ffffffffa069d620
+>  R10: ffffc90000a0ba00 R11: ffffffffffffffff R12: 0000000000000000
+>  R13: ffffc90000a0bb28 R14: ffff88817d6e3328 R15: ffff88817d6e3320
+>  FS:  00007f64dd92d740(0000) GS:ffff88847f640000(0000) knlGS:0000000000000000
+>  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>  CR2: 000000000000004f CR3: 000000016fc79001 CR4: 0000000000770ee0
+>  PKRU: 55555554
+>  Call Trace:
+>   <TASK>
+>   ? iwl_mvm_mac_setup_register+0xbdc/0xda0 [iwlmvm]
+>   iwl_mvm_start_post_nvm+0x71/0x100 [iwlmvm]
+>   iwl_op_mode_mvm_start+0xab8/0xb30 [iwlmvm]
+>   _iwl_op_mode_start+0x6f/0xd0 [iwlwifi]
+>   iwl_opmode_register+0x6a/0xe0 [iwlwifi]
+>   ? 0xffffffffa0231000
+>   iwl_mvm_init+0x35/0x1000 [iwlmvm]
+>   ? 0xffffffffa0231000
+>   do_one_initcall+0x5a/0x1b0
+>   ? kmem_cache_alloc+0x1e5/0x2f0
+>   ? do_init_module+0x1e/0x220
+>   do_init_module+0x48/0x220
+>   load_module+0x2602/0x2bc0
+>   ? __kernel_read+0x145/0x2e0
+>   ? kernel_read_file+0x229/0x290
+>   __do_sys_finit_module+0xc5/0x130
+>   ? __do_sys_finit_module+0xc5/0x130
+>   __x64_sys_finit_module+0x13/0x20
+>   do_syscall_64+0x38/0x90
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>  RIP: 0033:0x7f64dda564dd
+>  Code: 5b 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 1b 29 0f 00 f7 d8 64 89 01 48
+>  RSP: 002b:00007ffdba393f88 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+>  RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f64dda564dd
+>  RDX: 0000000000000000 RSI: 00005575399e2ab2 RDI: 0000000000000001
+>  RBP: 000055753a91c5e0 R08: 0000000000000000 R09: 0000000000000002
+>  R10: 0000000000000001 R11: 0000000000000246 R12: 00005575399e2ab2
+>  R13: 000055753a91ceb0 R14: 0000000000000000 R15: 000055753a923018
+>   </TASK>
+>  Modules linked in: btintel(+) btmtk bluetooth vfat snd_hda_codec_hdmi fat snd_hda_codec_realtek snd_hda_codec_generic iwlmvm(+) snd_sof_pci_intel_tgl mac80211 snd_sof_intel_hda_common soundwire_intel soundwire_generic_allocation soundwire_cadence soundwire_bus snd_sof_intel_hda snd_sof_pci snd_sof snd_sof_xtensa_dsp snd_soc_hdac_hda snd_hda_ext_core snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core btrfs snd_compress snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi snd_hda_codec raid6_pq iwlwifi snd_hda_core snd_pcm snd_timer snd soundcore cfg80211 intel_ish_ipc(+) thunderbolt rfkill intel_ishtp ucsi_acpi wmi i2c_hid_acpi i2c_hid evdev
+>  CR2: 000000000000004f
+>  ---[ end trace 0000000000000000 ]---
+> 
+> 
+> Check the debugfs_dir pointer for an error before using it.
+> 
+> Fixes: 8c082a99edb9 ("iwlwifi: mvm: simplify iwl_mvm_dbgfs_register")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Luca Coelho <luciano.coelho@intel.com>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c |    6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> --- lnx-517-rc5.orig/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
+> +++ lnx-517-rc5/drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c
+> @@ -5,6 +5,7 @@
+>   * Copyright (C) 2016-2017 Intel Deutschland GmbH
+>   */
+>  #include <linux/vmalloc.h>
+> +#include <linux/err.h>
+>  #include <linux/ieee80211.h>
+>  #include <linux/netdevice.h>
+>  
+> @@ -1857,7 +1858,7 @@ void iwl_mvm_sta_add_debugfs(struct ieee
+>  void iwl_mvm_dbgfs_register(struct iwl_mvm *mvm)
+>  {
+>  	struct dentry *bcast_dir __maybe_unused;
+> -	char buf[100];
+> +	char buf[100] = "symlink";
+>  
+>  	spin_lock_init(&mvm->drv_stats_lock);
+>  
+> @@ -1939,6 +1940,7 @@ void iwl_mvm_dbgfs_register(struct iwl_m
+>  	 * Create a symlink with mac80211. It will be removed when mac80211
+>  	 * exists (before the opmode exists which removes the target.)
+>  	 */
+> -	snprintf(buf, 100, "../../%pd2", mvm->debugfs_dir->d_parent);
 
-With this patch, we can use setting flags in two forms, using the address
-and port number directly or the id number of the address:
+Ick, what?  Why is anyone pocking around in a debugfs dentry?
 
- ip mptcp endpoint change id 1 fullmesh
- ip mptcp endpoint change 10.0.2.1 fullmesh
- ip mptcp endpoint change 10.0.2.1 port 10100 fullmesh
+> +	if (!IS_ERR(mvm->debugfs_dir))
+> +		snprintf(buf, 100, "../../%pd2", mvm->debugfs_dir->d_parent);
 
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
----
- ip/ipmptcp.c        |  7 +++++--
- man/man8/ip-mptcp.8 | 11 +++++++----
- 2 files changed, 12 insertions(+), 6 deletions(-)
+As we "created" this debugfs file, we should know the name of the parent
+already.
 
-diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
-index c7b63761..0033f329 100644
---- a/ip/ipmptcp.c
-+++ b/ip/ipmptcp.c
-@@ -25,7 +25,7 @@ static void usage(void)
- 		"Usage:	ip mptcp endpoint add ADDRESS [ dev NAME ] [ id ID ]\n"
- 		"				      [ port NR ] [ FLAG-LIST ]\n"
- 		"	ip mptcp endpoint delete id ID [ ADDRESS ]\n"
--		"	ip mptcp endpoint change id ID CHANGE-OPT\n"
-+		"	ip mptcp endpoint change [ id ID ] [ ADDRESS ] [ port NR ] CHANGE-OPT\=
-n"
- 		"	ip mptcp endpoint show [ id ID ]\n"
- 		"	ip mptcp endpoint flush\n"
- 		"	ip mptcp limits set [ subflows NR ] [ add_addr_accepted NR ]\n"
-@@ -175,9 +175,12 @@ static int mptcp_parse_opt(int argc, char **argv, stru=
-ct nlmsghdr *n, int cmd)
- 			invarg("address is needed for deleting id 0 address\n", "ID");
- 	}
-=20
--	if (port && !(flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
-+	if (adding && port && !(flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
- 		invarg("flags must have signal when using port", "port");
-=20
-+	if (setting && id_set && port)
-+		invarg("port can't be used with id", "port");
-+
- 	attr_addr =3D addattr_nest(n, MPTCP_BUFLEN,
- 				 MPTCP_PM_ATTR_ADDR | NLA_F_NESTED);
- 	if (id_set)
-diff --git a/man/man8/ip-mptcp.8 b/man/man8/ip-mptcp.8
-index bddbff3c..72762f49 100644
---- a/man/man8/ip-mptcp.8
-+++ b/man/man8/ip-mptcp.8
-@@ -38,11 +38,14 @@ ip-mptcp \- MPTCP path manager configuration
- .RB "] "
-=20
- .ti -8
--.BR "ip mptcp endpoint change id "
-+.BR "ip mptcp endpoint change "
-+.RB "[ " id
- .I ID
--.RB "[ "
--.I CHANGE-OPT
--.RB "] "
-+.RB "] [ "
-+.IR IFADDR
-+.RB "] [ " port
-+.IR PORT " ]"
-+.RB "CHANGE-OPT"
-=20
- .ti -8
- .BR "ip mptcp endpoint show "
---=20
-2.34.1
+>  	debugfs_create_symlink("iwlwifi", mvm->hw->wiphy->debugfsdir, buf);
+
+For now, to fix this initial problem, this is fine, I'll add it to my
+list of "debugfs stuff to clean up" in the future.
+
+Cc: stable <stable@vger.kernel.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 
