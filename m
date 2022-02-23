@@ -2,89 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D650E4C0C39
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 06:36:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF194C0C4E
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 06:58:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236043AbiBWFg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 00:36:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
+        id S237919AbiBWF7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 00:59:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235021AbiBWFg4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 00:36:56 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E02C3AA4A;
-        Tue, 22 Feb 2022 21:27:04 -0800 (PST)
+        with ESMTP id S237219AbiBWF7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 00:59:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C88F1D316;
+        Tue, 22 Feb 2022 21:58:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2EDA9CE13B5;
-        Wed, 23 Feb 2022 05:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC17C340F8;
-        Wed, 23 Feb 2022 05:26:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23B6AB81E80;
+        Wed, 23 Feb 2022 05:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B07BC340E7;
+        Wed, 23 Feb 2022 05:58:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645594011;
-        bh=RpQ+yXG3WFaffUN6V0S3i2gI2RX67GakuK4ftCRhl4U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Fpa7IScXDsqk4ECKhcoTOYPxb0jIoj+13R+KevQRg78oaEY9jTJGymNzCAv2JRrSa
-         +7FWqta9tHZ5T7PmpBlQcbu/c1JZFx4LbwsYA/5ZM6fbyUyeZh3EdWg1M6yZ/fyozF
-         G/aBkk2/QuLR6aeVxxBKrwx0OmYuUSeCXV2i1vjEOxatqRcWNqyv0y0i4kDSDfydKP
-         PFrCbq1B2NzdboETdiCwYYTlwrfYsaX0J62cUmo5yCdnU4oi6L8rDifiW+G1jyMdQL
-         bz1f0DIJaD7N3ODopsDhucvNFAr97h+0ZcjBsa2ggKEfE+cPLcuwAvxmL45KZD1ojh
-         qpIdpilxoOtrw==
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2d625082ae2so198333347b3.1;
-        Tue, 22 Feb 2022 21:26:51 -0800 (PST)
-X-Gm-Message-State: AOAM533tQIaIoJii/On3HMzc3/e/zg9hQSIsQxv/i9ukljZqkEHrldKr
-        2vaKLX8owWWZOnevzw869iyIIkXcp8m45jdaC5U=
-X-Google-Smtp-Source: ABdhPJyfshd1gVhgC3vT8dx9/92eRD19V4ZvzuTAr6QYZ+Zc+JlY31XDj0BqcEtQhmq8ohDT+WD5JxLT1FNuWFWTGFk=
-X-Received: by 2002:a81:c47:0:b0:2d6:beec:b381 with SMTP id
- 68-20020a810c47000000b002d6beecb381mr22698552ywm.148.1645594010676; Tue, 22
- Feb 2022 21:26:50 -0800 (PST)
-MIME-Version: 1.0
-References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn> <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 22 Feb 2022 21:26:39 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6UHZYr49gSMo6bo_F9dd14SBDN=GGM4PeTTxJQPUCEPw@mail.gmail.com>
-Message-ID: <CAPhsuW6UHZYr49gSMo6bo_F9dd14SBDN=GGM4PeTTxJQPUCEPw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable
- in Kconfig
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+        s=k20201202; t=1645595925;
+        bh=6zqjN+ejPis2B9ACr4wZd1FjHKnzjkEF3tE0bhMxNXE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=njIsi30tL6ufxOFei92QTBJMv47QqlchMWiZPjUpGK2CgUfQaNlqmMnecmUI4qoRx
+         pr9W53ELevdeg1nUI/muGp/G+eVCD2g0vUmyTZc7e6YBSsXZoGk3bW5u5hsm+qWxiL
+         PuF8Z1kfpr+OAqynSxNlsSVUPDOdWla5N+ujGuY+fHIf469JtqElTX1f+A/9MOzQyf
+         13kVSMpfmbghCYJcfKD6MX/IcLs2H241PKTrli1Q3VPg2MBUcZOEC6uHOo96dljAMh
+         +h58Rif4y+CxBab1ZMC5g3t8Zop72jV08RGDFU7Gg5N/IOph1yAncv6YeNFLzmaBtR
+         eEjlvZ2cFmJTA==
+Date:   Wed, 23 Feb 2022 14:58:40 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
+Message-Id: <20220223145840.64f708ed2357c89039f55f07@kernel.org>
+In-Reply-To: <20220222170600.611515-3-jolsa@kernel.org>
+References: <20220222170600.611515-1-jolsa@kernel.org>
+        <20220222170600.611515-3-jolsa@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 1:57 AM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
->
-> Currently, only x86, arm64 and s390 select ARCH_WANT_DEFAULT_BPF_JIT,
-> the other archs do not select ARCH_WANT_DEFAULT_BPF_JIT. On the archs
-> without ARCH_WANT_DEFAULT_BPF_JIT, if we want to set bpf_jit_enable to
-> 1 by default, the only way is to enable CONFIG_BPF_JIT_ALWAYS_ON, then
-> the users can not change it to 0 or 2, it seems bad for some users. We
-> can select ARCH_WANT_DEFAULT_BPF_JIT for those archs if it is proper,
-> but at least for now, make BPF_JIT_DEFAULT_ON selectable can give them
-> a chance.
->
-> Additionally, with this patch, under !BPF_JIT_ALWAYS_ON, we can disable
-> BPF_JIT_DEFAULT_ON on the archs with ARCH_WANT_DEFAULT_BPF_JIT when make
-> menuconfig, it seems flexible for some developers.
->
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Hi Jiri,
 
-Acked-by: Song Liu <songliubraving@fb.com>
+On Tue, 22 Feb 2022 18:05:52 +0100
+Jiri Olsa <jolsa@kernel.org> wrote:
+
+[snip]
+> +
+> +static void
+> +kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+> +			  struct pt_regs *regs)
+> +{
+> +	unsigned long saved_ip = instruction_pointer(regs);
+> +	struct bpf_kprobe_multi_link *link;
+> +
+> +	/*
+> +	 * Because fprobe's regs->ip is set to the next instruction of
+> +	 * dynamic-ftrace instruction, correct entry ip must be set, so
+> +	 * that the bpf program can access entry address via regs as same
+> +	 * as kprobes.
+> +	 */
+> +	instruction_pointer_set(regs, entry_ip);
+
+This is true for the entry_handler, but false for the exit_handler,
+because entry_ip points the probed function address, not the
+return address. Thus, when this is done in the exit_handler,
+the bpf prog seems to be called from the entry of the function,
+not return.
+
+If it is what you expected, please explictly comment it to
+avoid confusion. Or, make another handler function for exit
+probing.
+
+> +
+> +	link = container_of(fp, struct bpf_kprobe_multi_link, fp);
+> +	kprobe_multi_link_prog_run(link, regs);
+> +
+> +	instruction_pointer_set(regs, saved_ip);
+> +}
+> +
+> +static int
+> +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
+> +			  unsigned long *addrs)
+> +{
+> +	unsigned long addr, size;
+> +	const char **syms;
+> +	int err = -ENOMEM;
+> +	unsigned int i;
+> +	char *func;
+> +
+> +	size = cnt * sizeof(*syms);
+> +	syms = kvzalloc(size, GFP_KERNEL);
+> +	if (!syms)
+> +		return -ENOMEM;
+> +
+> +	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> +	if (!func)
+> +		goto error;
+> +
+> +	if (copy_from_user(syms, usyms, size)) {
+> +		err = -EFAULT;
+> +		goto error;
+> +	}
+> +
+> +	for (i = 0; i < cnt; i++) {
+> +		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+> +		if (err == KSYM_NAME_LEN)
+> +			err = -E2BIG;
+> +		if (err < 0)
+> +			goto error;
+> +
+> +		err = -EINVAL;
+> +		if (func[0] == '\0')
+> +			goto error;
+> +		addr = kallsyms_lookup_name(func);
+> +		if (!addr)
+> +			goto error;
+> +		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+> +			size = MCOUNT_INSN_SIZE;
+
+Note that this is good for x86, but may not be good for other arch
+which use some preparation instructions before mcount call.
+Maybe you can just reject it if kallsyms_lookup_size_offset() fails.
+
+Thank you,
+
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
