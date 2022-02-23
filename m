@@ -2,258 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C51494C1541
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 15:18:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EFA84C155B
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 15:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241489AbiBWOTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 09:19:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
+        id S241528AbiBWOYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 09:24:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241486AbiBWOTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 09:19:02 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9F9B1883;
-        Wed, 23 Feb 2022 06:18:34 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645625907; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=UrwIb/WJ/uYjuuuZus0IHsiZu79svndTZoDj82Wu+cftsHxovtIVfkA0GVXHlxHD2Sf2rMnlX52CCSvijKTPBUtS5ugA5HhKTnDxH2VhxFJbtB7zkSZM8omzUY2ygKHvls4M+lWlpum+DmI9S5OjeoAUXnQis+AS0mLjQGsC5iQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645625907; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=+9XgQsvu0aB3Q0wKO7XwI7OtAKR679L/PrTdzO6tuLc=; 
-        b=d6f5zAQ5z4LQSa8Bbz+2gM4nCgnTXEWWRBbgSQ4ip+AYcwhSrCJIpO5515Sco/ZIHhuC4wwPo3GiY07rdnGhnZgv7nlLSNZ4FbmGb0/rsa0av/nVKqu3zeksl6Fmk9to9lUBySn+nv9HE/SUXWKgk2pvTIMrtuWsW6gnERQNrBg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645625907;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=+9XgQsvu0aB3Q0wKO7XwI7OtAKR679L/PrTdzO6tuLc=;
-        b=LV1FMclBeQ5GQ8oqbEubgN0kqJPESWl0GocyQwS8k7b15mUEHrZZUEC0DY50MIi+
-        6Sxl+/ohWyFc5gAbOLLbcVMkvYx5xh/6U1bEJC4Fv0P4G/FbKPKvHFplizvJRdJVb5k
-        x8kfEfj3tR5i1N/byAP6WBxoMWJUlC4omjFOj5YM=
-Received: from anirudhrb.com (49.207.192.178 [49.207.192.178]) by mx.zohomail.com
-        with SMTPS id 1645625904873288.6295271150792; Wed, 23 Feb 2022 06:18:24 -0800 (PST)
-Date:   Wed, 23 Feb 2022 19:48:18 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
-Message-ID: <YhZCKii8KwkcU8fM@anirudhrb.com>
-References: <20220221195303.13560-1-mail@anirudhrb.com>
- <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
- <YhRtQEWBF0kqWMsI@anirudhrb.com>
- <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
- <20220222090511-mutt-send-email-mst@kernel.org>
- <YhUdDUSxuXTLltpZ@anirudhrb.com>
- <20220222181927-mutt-send-email-mst@kernel.org>
+        with ESMTP id S236675AbiBWOYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 09:24:39 -0500
+Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02012B1A87;
+        Wed, 23 Feb 2022 06:24:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=alNyl1KfQO+V+SfyCQrXRZU0CihhZAB4Wnp96QyBXCk=; b=0IsdVDpsDh+adcMgpwSaRULTtn
+        AzomItLdY/7BbevphqzhFBifn7pmtFalbvNVdPabj73MJSPouu7DgUTVKIHWwkEgT7yXikKTseuL/
+        VfIlFeKdcUIfyPe9HqzR+WdGWd65/CIG6VzC1uqvsAXQWaZKtV7YyXvDlfMP7JeRKmdh2fKeJIoVV
+        aGTQAEWTgY1MI1p8/dRBok006vVn67cZ34ZmBPYWeDK8g8TdLJ8u1TKebLvUiU1NNwabudXK2Kt4n
+        hO2wPBh4imuGtc2emHPDRN1GVguuj+PxU12fP7Z3RirP8ssXl7KOM41wDuJ8N/yJcYRhOPBTC9Xh/
+        EmfT6E/Q==;
+Received: from 201-31-196-88.dyn.estpak.ee ([88.196.31.201]:56813 helo=localhost)
+        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <maukka@ext.kapsi.fi>)
+        id 1nMsYm-0002Zi-Vl; Wed, 23 Feb 2022 16:24:07 +0200
+Received: by localhost (sSMTP sendmail emulation); Wed, 23 Feb 2022 16:24:03 +0200
+From:   Mauri Sandberg <maukka@ext.kapsi.fi>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauri Sandberg <maukka@ext.kapsi.fi>,
+        Andrew Lunn <andrew@lunn.ch>
+Date:   Wed, 23 Feb 2022 16:23:37 +0200
+Message-Id: <20220223142337.41757-1-maukka@ext.kapsi.fi>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220221062441.2685-1-maukka@ext.kapsi.fi>
+References: <20220221062441.2685-1-maukka@ext.kapsi.fi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222181927-mutt-send-email-mst@kernel.org>
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 88.196.31.201
+X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
+Subject: [PATCH v2] net: mv643xx_eth: process retval from of_get_mac_address
+X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
+X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 06:21:50PM -0500, Michael S. Tsirkin wrote:
-> On Tue, Feb 22, 2022 at 10:57:41PM +0530, Anirudh Rayabharam wrote:
-> > On Tue, Feb 22, 2022 at 10:02:29AM -0500, Michael S. Tsirkin wrote:
-> > > On Tue, Feb 22, 2022 at 03:11:07PM +0800, Jason Wang wrote:
-> > > > On Tue, Feb 22, 2022 at 12:57 PM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > > > >
-> > > > > On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
-> > > > > > On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > > > > > >
-> > > > > > > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
-> > > > > > > before proceeding with adding it to the iotlb.
-> > > > > > >
-> > > > > > > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > > > > One instance where it can happen is when userspace sends an IOTLB
-> > > > > > > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
-> > > > > > > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
-> > > > > > > iotlb. Next time a packet is sent, iotlb_access_ok() loops
-> > > > > > > indefinitely due to that erroneous entry:
-> > > > > > >
-> > > > > > >         Call Trace:
-> > > > > > >          <TASK>
-> > > > > > >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-> > > > > > >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-> > > > > > >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-> > > > > > >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-> > > > > > >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> > > > > > >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> > > > > > >          </TASK>
-> > > > > > >
-> > > > > > > Reported by syzbot at:
-> > > > > > >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
-> > > > > > >
-> > > > > > > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > > > > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > > > > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
-> > > > > > > ---
-> > > > > > >  drivers/vhost/iotlb.c | 6 ++++--
-> > > > > > >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > > > > > >
-> > > > > > > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-> > > > > > > index 670d56c879e5..b9de74bd2f9c 100644
-> > > > > > > --- a/drivers/vhost/iotlb.c
-> > > > > > > +++ b/drivers/vhost/iotlb.c
-> > > > > > > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > > > > >                               void *opaque)
-> > > > > > >  {
-> > > > > > >         struct vhost_iotlb_map *map;
-> > > > > > > +       u64 size = last - start + 1;
-> > > > > > >
-> > > > > > > -       if (last < start)
-> > > > > > > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > > > > +       if (last < start || size == 0)
-> > > > > > >                 return -EFAULT;
-> > > > > >
-> > > > > > I'd move this check to vhost_chr_iter_write(), then for the device who
-> > > > > > has its own msg handler (e.g vDPA) can benefit from it as well.
-> > > > >
-> > > > > Thanks for reviewing!
-> > > > >
-> > > > > I kept the check here thinking that all devices would benefit from it
-> > > > > because they would need to call vhost_iotlb_add_range() to add an entry
-> > > > > to the iotlb. Isn't that correct?
-> > > > 
-> > > > Correct for now but not for the future, it's not guaranteed that the
-> > > > per device iotlb message handler will use vhost iotlb.
-> > > > 
-> > > > But I agree that we probably don't need to care about it too much now.
-> > > > 
-> > > > > Do you see any other benefit in moving
-> > > > > it to vhost_chr_iter_write()?
-> > > > >
-> > > > > One concern I have is that if we move it out some future caller to
-> > > > > vhost_iotlb_add_range() might forget to handle this case.
-> > > > 
-> > > > Yes.
-> > > > 
-> > > > Rethink the whole fix, we're basically rejecting [0, ULONG_MAX] range
-> > > > which seems a little bit odd.
-> > > 
-> > > Well, I guess ideally we'd split this up as two entries - this kind of
-> > > thing is after all one of the reasons we initially used first,last as
-> > > the API - as opposed to first,size.
-> > 
-> > IIUC, the APIs exposed to userspace accept first,size.
-> 
-> Some of them.
-> 
-> 
-> /* vhost vdpa IOVA range
->  * @first: First address that can be mapped by vhost-vDPA
->  * @last: Last address that can be mapped by vhost-vDPA
->  */
-> struct vhost_vdpa_iova_range {
->         __u64 first;
->         __u64 last;
-> };
+Obtaining a MAC address may be deferred in cases when the MAC is stored
+in an NVMEM block, for example, and it may not be ready upon the first
+retrieval attempt and return EPROBE_DEFER.
 
-Alright, I will split it into two entries. That doesn't fully address
-the bug though. I would also need to validate size in vhost_chr_iter_write().
+It is also possible that a port that does not rely on NVMEM has been
+already created when getting the defer request. Thus, also the resources
+allocated previously must be freed when doing a roll-back.
 
-Should I do both in one patch or as a two patch series?
+Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
+Cc: Andrew Lunn <andrew@lunn.ch>
+---
+v1 -> v2
+ - escalate all error values from of_get_mac_address()
+ - move mv643xx_eth_shared_of_remove() before
+   mv643xx_eth_shared_of_probe()
+ - release all resources potentially allocated for previous port nodes
+ - update commit title and message
+---
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 24 +++++++++++++---------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-> 
-> but
-> 
-> struct vhost_iotlb_msg {
->         __u64 iova;
->         __u64 size;
->         __u64 uaddr;
-> #define VHOST_ACCESS_RO      0x1
-> #define VHOST_ACCESS_WO      0x2
-> #define VHOST_ACCESS_RW      0x3
->         __u8 perm;
-> #define VHOST_IOTLB_MISS           1
-> #define VHOST_IOTLB_UPDATE         2
-> #define VHOST_IOTLB_INVALIDATE     3
-> #define VHOST_IOTLB_ACCESS_FAIL    4
-> /*
->  * VHOST_IOTLB_BATCH_BEGIN and VHOST_IOTLB_BATCH_END allow modifying
->  * multiple mappings in one go: beginning with
->  * VHOST_IOTLB_BATCH_BEGIN, followed by any number of
->  * VHOST_IOTLB_UPDATE messages, and ending with VHOST_IOTLB_BATCH_END.
->  * When one of these two values is used as the message type, the rest
->  * of the fields in the message are ignored. There's no guarantee that
->  * these changes take place automatically in the device.
->  */
-> #define VHOST_IOTLB_BATCH_BEGIN    5
-> #define VHOST_IOTLB_BATCH_END      6
->         __u8 type;
-> };
-> 
-> 
-> 
-> > Which means that
-> > right now there is now way for userspace to map this range. So, is there
-> > any value in not simply rejecting this range?
-> > 
-> > > 
-> > > Anirudh, could you do it like this instead of rejecting?
-> > > 
-> > > 
-> > > > I wonder if it's better to just remove
-> > > > the map->size. Having a quick glance at the the user, I don't see any
-> > > > blocker for this.
-> > > > 
-> > > > Thanks
-> > > 
-> > > I think it's possible but won't solve the bug by itself, and we'd need
-> > > to review and fix all users - a high chance of introducing
-> > > another regression. 
-> > 
-> > Agreed, I did a quick review of the usages and getting rid of size
-> > didn't seem trivial.
-> > 
-> > Thanks,
-> > 
-> > 	- Anirudh.
-> > 
-> > > And I think there's value of fitting under the
-> > > stable rule of 100 lines with context.
-> > > So sure, but let's fix the bug first.
-> > > 
-> > > 
-> > > 
-> > > > >
-> > > > > Thanks!
-> > > > >
-> > > > >         - Anirudh.
-> > > > >
-> > > > > >
-> > > > > > Thanks
-> > > > > >
-> > > > > > >
-> > > > > > >         if (iotlb->limit &&
-> > > > > > > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > > > > >                 return -ENOMEM;
-> > > > > > >
-> > > > > > >         map->start = start;
-> > > > > > > -       map->size = last - start + 1;
-> > > > > > > +       map->size = size;
-> > > > > > >         map->last = last;
-> > > > > > >         map->addr = addr;
-> > > > > > >         map->perm = perm;
-> > > > > > > --
-> > > > > > > 2.35.1
-> > > > > > >
-> > > > > >
-> > > > >
-> > > 
-> 
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index 105247582684..143ca8be5eb5 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -2704,6 +2704,16 @@ MODULE_DEVICE_TABLE(of, mv643xx_eth_shared_ids);
+ 
+ static struct platform_device *port_platdev[3];
+ 
++static void mv643xx_eth_shared_of_remove(void)
++{
++	int n;
++
++	for (n = 0; n < 3; n++) {
++		platform_device_del(port_platdev[n]);
++		port_platdev[n] = NULL;
++	}
++}
++
+ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
+ 					  struct device_node *pnp)
+ {
+@@ -2740,7 +2750,9 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
+ 		return -EINVAL;
+ 	}
+ 
+-	of_get_mac_address(pnp, ppd.mac_addr);
++	ret = of_get_mac_address(pnp, ppd.mac_addr);
++	if (ret)
++		return ret;
+ 
+ 	mv643xx_eth_property(pnp, "tx-queue-size", ppd.tx_queue_size);
+ 	mv643xx_eth_property(pnp, "tx-sram-addr", ppd.tx_sram_addr);
+@@ -2804,21 +2816,13 @@ static int mv643xx_eth_shared_of_probe(struct platform_device *pdev)
+ 		ret = mv643xx_eth_shared_of_add_port(pdev, pnp);
+ 		if (ret) {
+ 			of_node_put(pnp);
++			mv643xx_eth_shared_of_remove();
+ 			return ret;
+ 		}
+ 	}
+ 	return 0;
+ }
+ 
+-static void mv643xx_eth_shared_of_remove(void)
+-{
+-	int n;
+-
+-	for (n = 0; n < 3; n++) {
+-		platform_device_del(port_platdev[n]);
+-		port_platdev[n] = NULL;
+-	}
+-}
+ #else
+ static inline int mv643xx_eth_shared_of_probe(struct platform_device *pdev)
+ {
+
+base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
+-- 
+2.25.1
+
