@@ -2,93 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15C464C1AAE
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:12:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D30F44C1AC3
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:18:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240617AbiBWSNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 13:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43600 "EHLO
+        id S243820AbiBWSSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 13:18:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233265AbiBWSNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:13:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFF548314;
-        Wed, 23 Feb 2022 10:12:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2723C614AD;
-        Wed, 23 Feb 2022 18:12:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C6DC340E7;
-        Wed, 23 Feb 2022 18:12:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645639969;
-        bh=ibRgnubvV0+p6x08BNOIt36v4cEWtV/u2v8MQUXB0AA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M7CjAzoEC2i57dNhhJUdlGUGCKqf9hRsy0ypIqosbjxeCb1eZ7gnJ5Pd19+43jOTC
-         XF26CcFOulFoGaju+Gf93TWBRgYyknaoK3P945Xqgw7WyD2Od56GhU1bx6ZC7e8mGM
-         2kAZ4bK5r7f5ll3oEs2bRSQ0SEKq6WK8tzwBR5EIIeU2e0aFg4NFh/6Z58BlD5pYP2
-         L1PpgEj/Qbcu9NOHiIyYfB29k2a9x+5iLSl3odlMWaC+WbOpKL4feS5A2OzDDT2TNM
-         Jx3Xd5A/Gypw4H0R3lUXQfzL7pWt1hEhWHEDKiCKsvEJmTY9IZ0QjPG5PCBygDla0d
-         8LpM5lWvIHt7Q==
-Date:   Wed, 23 Feb 2022 18:12:41 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Enrico Weigelt <info@metux.net>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <YhZ5GdNmMiyLeMdq@sirena.org.uk>
-Mail-Followup-To: =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Enrico Weigelt <info@metux.net>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <YhPOxL++yhNHh+xH@smile.fi.intel.com>
- <20220222173019.2380dcaf@fixe.home>
- <YhZI1XImMNJgzORb@smile.fi.intel.com>
- <20220223161150.664aa5e6@fixe.home>
- <YhZRtads7MGzPEEL@smile.fi.intel.com>
- <YhZxyluc7gYhmAuh@sirena.org.uk>
- <20220223185927.2d272e3a@fixe.home>
+        with ESMTP id S241030AbiBWSRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:17:22 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F1E3F8A2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 10:16:53 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id 29so16213223ljv.10
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 10:16:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=73wDL/GVoaOR1Kvn57Br6Uw6XSipJJuyAsdU60NF+pw=;
+        b=MXZnSysa/tiLB503dmDCFGagyhcoYgqb0vIUpyRFKvQVqOoeevSvUDk4MeqJ5Ent0f
+         rC1lJxQQq0ubL4zg2d0mEpERBNMtSqWMVVUAyY1jut/y1twBRe/kozRN4KTOYHkgXY/Z
+         ugMa5SlzanD3UYKxcgRKCT/7EoXtdgfGcXuSY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=73wDL/GVoaOR1Kvn57Br6Uw6XSipJJuyAsdU60NF+pw=;
+        b=Sx0dDqEALKav5mCfPur/DbUae925AsgeciCJ7r1bzg1FguHS6gwBWt4HkjdgILj7r2
+         nGUG3griJJI+Y7HdmHLTIIf8d9+OP0Ux1HCkYCXzxF97NvOYNpxRPNA6XKurtcDK5s9x
+         e9hpHyIgx4pNU5aTPCAhpJVidGGtGz7oglsCfSciV+wdxl+PvJtmfXQevvIcgaKvW35w
+         qE1T03O9PvZtvBnd4IRba4Qz1MWU9YPn0g5BWrMF4X6prlvZ/qQW6/TDBJRCUN2th4SM
+         UtrPJtszsRo1/DGnq1dolb08waONDAeehBlODmTVP17/4lSBihqhuqv8svU0P2QBhw2o
+         AWJQ==
+X-Gm-Message-State: AOAM533PkSArJU0Orizr/k5VTq+8NF4Scw63dwds0cwDTowEAQxZt9WL
+        QvnLUy1WrCcyITLtBnQOo6Wi/oRHmitxU/fwa69yoA==
+X-Google-Smtp-Source: ABdhPJx0EVmmw+N7ED1589E3w2CYdrLjdKkkNathexe+eFM/LW5CF40GsGD3Aq4VDn4UKUgJ7StNwvheeyYCNwMnSig=
+X-Received: by 2002:a2e:a37c:0:b0:246:2ce9:5744 with SMTP id
+ i28-20020a2ea37c000000b002462ce95744mr450725ljn.76.1645640211670; Wed, 23 Feb
+ 2022 10:16:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="aioSh2WXTdqVU4I3"
-Content-Disposition: inline
-In-Reply-To: <20220223185927.2d272e3a@fixe.home>
-X-Cookie: I smell a wumpus.
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <1645574424-60857-1-git-send-email-jdamato@fastly.com>
+ <1645574424-60857-2-git-send-email-jdamato@fastly.com> <21c87173-667f-55c1-2eab-a1f684c75352@redhat.com>
+ <CALALjgwqLhTe8zFPugbW7XcMqnhRTKevv-zuVY+CWOjSYTLQRQ@mail.gmail.com>
+ <20220223094010.326b0a5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CALALjgwm9LpmnT+2kXNvv-aDiyrWWjMO=j0BBmZd4Qh4wQQXhg@mail.gmail.com> <7a2d23b2-5a7d-d68e-1ae4-13f114c5a380@redhat.com>
+In-Reply-To: <7a2d23b2-5a7d-d68e-1ae4-13f114c5a380@redhat.com>
+From:   Joe Damato <jdamato@fastly.com>
+Date:   Wed, 23 Feb 2022 10:16:40 -0800
+Message-ID: <CALALjgx1Tn2KNXPKhzbdeFuUt+V10TePr093JiBDFERFqRPWNA@mail.gmail.com>
+Subject: Re: [net-next v6 1/2] page_pool: Add page_pool stats
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, brouer@redhat.com,
+        netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        davem@davemloft.net, hawk@kernel.org, saeed@kernel.org,
+        ttoukan.linux@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,69 +68,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 23, 2022 at 10:10 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+>
+> On 23/02/2022 18.45, Joe Damato wrote:
+> > On Wed, Feb 23, 2022 at 9:40 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >>
+> >> On Wed, 23 Feb 2022 09:05:06 -0800 Joe Damato wrote:
+> >>> Are the cache-line placement and per-cpu designations the only
+> >>> remaining issues with this change?
+> >>
+> >> page_pool_get_stats() has no callers as is, I'm not sure how we can
+> >> merge it in current form.
+> >>
+> >> Maybe I'm missing bigger picture or some former discussion.
+> >
+> > I wrote the mlx5 code to call this function and export the data via
+> > ethtool. I had assumed the mlx5 changes should be in a separate
+> > patchset. I can include that code as part of this change, if needed.
+>
+> I agree with Jakub we need to see how this is used by drivers.
 
---aioSh2WXTdqVU4I3
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Feb 23, 2022 at 06:59:27PM +0100, Cl=E9ment L=E9ger wrote:
-> Mark Brown <broonie@kernel.org> a =E9crit :
-
-> > This doesn't look like it's trying to use a DT on an ACPI system though?
-
-> Ideally no, but it is a possibility mentionned by Andrew, use DT
-> overlays on an ACPI system. This series did not took this way (yet).
-> Andrew mentionned that it could potentially be done but judging by your
-> comment, i'm not sure you agree with that.
-
-That seems like it's opening a can of worms that might be best left
-closed.
-
-> > There's been some discussion on how to handle loadable descriptions for
-> > things like FPGA but I don't recall it ever having got anywhere concrete
-> > - I could have missed something.  Those are dynamic cases which are more
-> > trouble though.  For something that's a PCI card it's not clear that we
-> > can't just statically instanitate the devices from kernel code, that was
-> > how the MFD subsystem started off although it's now primarily applied to
-> > other applications.  That looks to be what's going on here?
-
-> Yes, in this series, I used the MFD susbsytems with mfd_cells. These
-> cells are attached with a swnode. Then, needed subsystems are
-> modified to use the fwnode API to be able to use them with
-> devices that have a swnode as a primary node.
-
-Note that not all subsystems are going to be a good fit for fwnode, it's
-concerning for the areas where ACPI and DT have substantially different
-models like regulators.
-
-> > There were separately some issues with people trying to create
-> > completely swnode based enumeration mechanisms for things that required
-> > totally independent code for handling swnodes which seemed very
-> > concerning but it's not clear to me if that's what's going on here.
-
-> The card is described entirely using swnode that in a MFD PCI
-> driver, everything is described statically. The "enumeration" is static
-> since all the devices are described in the driver and registered using
-> mfd_add_device() at probe time. Thus, I don't think it adds an
-> enumeration mechanism like you mention but I may be wrong.
-
-This was all on the side parsing the swnodes rather than injecting the
-data.
-
---aioSh2WXTdqVU4I3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIWeRkACgkQJNaLcl1U
-h9De9Af9HAjJF+uaedpeEh9o3qAvgjP/PjGuPe8DDeRUH58tPmJ83dCsKdhiU/l3
-/JGzw+qrK0G5CTRxiUSvXLp9r0yEPLjhB5PxK0uWS0ml8qXsk75dsgY+JW8wNsWn
-y8SRadWu+oqc55LqBzJXK9FvZWF5/56+DWEYv9/+qhWvdTmvYU8x2n8X2XcBVm96
-iSFYBZdt8zF24j81TmlzKdmReVWEBTgk2O59eSlOM98O+pwwX97NjrQ4ih0QD/T1
-jMHsXA9X0dm4skQVieOo3of7Fy1Awn/5b1bCjed/gHZHCvEZGsp1wDS4u3+iWCce
-njl1APIIambBTHA0JU24pDHV/w7OQA==
-=0VBQ
------END PGP SIGNATURE-----
-
---aioSh2WXTdqVU4I3--
+OK. I'll include the mlx5 code which uses this API in the v7.
