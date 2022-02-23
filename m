@@ -2,118 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D21A74C1A5C
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E0E4C1A86
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243635AbiBWR7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:59:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        id S243726AbiBWSBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 13:01:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233244AbiBWR7f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:59:35 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8023D4BA;
-        Wed, 23 Feb 2022 09:59:07 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NHCA9Q009503;
-        Wed, 23 Feb 2022 17:59:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=KQgdeyVb6XDj3wVVuf7oj1X39sHmzApFe1ufbT3McI0=;
- b=JxAtqCZZOF1XGM0Y/gjvrLKzglEvhK4ws5s2WS0BNxVeNbUxbZC+p0k5R0Bt/bJY0GyO
- 0wNxE1p0krpGWs07Ly4UHvm3JnyogLZbV0D4H2ICKd+tSudhWhs1pVab+vvHGQpa6aLN
- tshRuDrUxxmh0XU7wG4BSgnW6oMKKuA1BUVvWeRK/ge4Xa8pH7iUTVIeeix5limhZfPQ
- wC3VI464uyNOU7izNALHdK4GsP7/FcJhLU+Bqh6DinEMVY9ajPKn8cDH65iioLHdoFCu
- KSO7gP6efTlPqtMi8TJXN7uABi5qT4T6ARf2ht5npkgF46qGhGwsHUb8+PBkkOhReBiI MQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eds4210gb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:59:02 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NHcNku020370;
-        Wed, 23 Feb 2022 17:59:02 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eds4210fc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:59:01 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NHqcf0003232;
-        Wed, 23 Feb 2022 17:58:59 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 3eaqtjtat2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:58:59 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NHwvn527459868
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 17:58:57 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 32F28AE055;
-        Wed, 23 Feb 2022 17:58:57 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BA037AE051;
-        Wed, 23 Feb 2022 17:58:56 +0000 (GMT)
-Received: from [9.171.51.229] (unknown [9.171.51.229])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 17:58:56 +0000 (GMT)
-Message-ID: <9725f86f-eabe-6aaf-0ef1-74138d895834@linux.ibm.com>
-Date:   Wed, 23 Feb 2022 18:59:10 +0100
+        with ESMTP id S241790AbiBWSBe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:01:34 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057DB3E0DB;
+        Wed, 23 Feb 2022 10:00:55 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6D5F5C0004;
+        Wed, 23 Feb 2022 18:00:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645639254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kY1Ql5jNd8+akOYr5MJM/nVmbSk1hVMt1XjyszBBYhg=;
+        b=cxfiBDzVbh20mJFblTgbgSuxY4x1UQqa55dIjZA3KwnE3ugwHGCGW5i7Z7Ta3Cq93by9HE
+        fxlU0Ng8WdMipwMjR5WjIXDUv17//5FECXpN8jH5TfPhCSrSoBEgpKfwRj2t9LVyLmuDvu
+        kDAB8XZzuEZ25ksvEgj9oeomavBtwq4crhCfDGAkQ0wfR52RV7TF+PFpYJr2+h2uOEDa3i
+        Kl8+OEgNIOQLmniGi/oUkjUYQ+cjf1ZZGURQEMvdhLux0Ny/NDS5RBJbwrcgDHBCIcTR1a
+        k1PsYUP9FYxVeXkn+TuG7OpYUlCioSUWQxFQdp8tcgo9Y7PfrhKCgWqyOEc3xA==
+Date:   Wed, 23 Feb 2022 18:59:27 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Enrico Weigelt <info@metux.net>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <20220223185927.2d272e3a@fixe.home>
+In-Reply-To: <YhZxyluc7gYhmAuh@sirena.org.uk>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+        <20220222173019.2380dcaf@fixe.home>
+        <YhZI1XImMNJgzORb@smile.fi.intel.com>
+        <20220223161150.664aa5e6@fixe.home>
+        <YhZRtads7MGzPEEL@smile.fi.intel.com>
+        <YhZxyluc7gYhmAuh@sirena.org.uk>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] net/smc: Use a mutex for locking "struct smc_pnettable"
-Content-Language: en-US
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-References: <20220223100252.22562-1-fmdefrancesco@gmail.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220223100252.22562-1-fmdefrancesco@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: cBjvvFVE5h4wDlBNvxiEwIdI-1B97C5b
-X-Proofpoint-ORIG-GUID: n377XhP_E8myP0gMgqX0ryRpPzkO7S86
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
- mlxscore=0 suspectscore=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 impostorscore=0 phishscore=0 bulkscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230100
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/02/2022 11:02, Fabio M. De Francesco wrote:
-> smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib()
-> which, in turn, calls mutex_lock(&smc_ib_devices.mutex).
-> 
-> read_lock() disables preemption. Therefore, the code acquires a mutex while in
-> atomic context and it leads to a SAC bug.
-> 
-> Fix this bug by replacing the rwlock with a mutex.
-> 
-> Reported-and-tested-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-> Fixes: 64e28b52c7a6 ("net/smc: add pnet table namespace support")
-> Confirmed-by: Tony Lu <tonylu@linux.alibaba.com>
-> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> ---
+Le Wed, 23 Feb 2022 17:41:30 +0000,
+Mark Brown <broonie@kernel.org> a =C3=A9crit :
 
-Thank you Fabio!
+> On Wed, Feb 23, 2022 at 05:24:37PM +0200, Andy Shevchenko wrote:
+> > On Wed, Feb 23, 2022 at 04:11:50PM +0100, Cl=C3=A9ment L=C3=A9ger wrote=
+: =20
+> > > Le Wed, 23 Feb 2022 16:46:45 +0200,
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit : =20
+>=20
+> > > > And here is the problem. We have a few different resource providers
+> > > > (a.k.a. firmware interfaces) which we need to cope with. =20
+>=20
+> > > Understood that but does adding fwnode support means it should work
+> > > as-is with both DT and ACPI ? ACPI code is still in place and only the
+> > > of part was converted. But maybe you expect the fwnode prot to be
+> > > conformant with ACPI. =20
+>=20
+> > Not only me, I believe Mark also was against using pure DT approach on
+> > ACPI enabled platforms. =20
+>=20
+> I'm not 100% clear on the context here (I did dig about a bit in the
+> thread on lore but it looks like there's some extra context here) but in
+> general I don't think there's any enthusiasm for trying to mix different
+> firmware interfaces on a single system.  Certainly in the case of ACPI
+> and DT they have substantial differences in system model and trying to
+> paper over those cracks and integrate the two is a route to trouble.
+> This doesn't look like it's trying to use a DT on an ACPI system though?
 
-This should go to the net tree...
+Ideally no, but it is a possibility mentionned by Andrew, use DT
+overlays on an ACPI system. This series did not took this way (yet).
+Andrew mentionned that it could potentially be done but judging by your
+comment, i'm not sure you agree with that.
 
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+>=20
+> There's been some discussion on how to handle loadable descriptions for
+> things like FPGA but I don't recall it ever having got anywhere concrete
+> - I could have missed something.  Those are dynamic cases which are more
+> trouble though.  For something that's a PCI card it's not clear that we
+> can't just statically instanitate the devices from kernel code, that was
+> how the MFD subsystem started off although it's now primarily applied to
+> other applications.  That looks to be what's going on here?
+
+Yes, in this series, I used the MFD susbsytems with mfd_cells. These
+cells are attached with a swnode. Then, needed subsystems are
+modified to use the fwnode API to be able to use them with
+devices that have a swnode as a primary node.
+
+>=20
+> There were separately some issues with people trying to create
+> completely swnode based enumeration mechanisms for things that required
+> totally independent code for handling swnodes which seemed very
+> concerning but it's not clear to me if that's what's going on here.
+
+The card is described entirely using swnode that in a MFD PCI
+driver, everything is described statically. The "enumeration" is static
+since all the devices are described in the driver and registered using
+mfd_add_device() at probe time. Thus, I don't think it adds an
+enumeration mechanism like you mention but I may be wrong.
+
+>=20
+> > > As I said in the cover-letter, this approach is the only one that I d=
+id
+> > > found acceptable without being tied to some firmware description. If =
+you
+> > > have another more portable approach, I'm ok with that. But this
+> > > solution should ideally work with pinctrl, gpio, clk, reset, phy, i2c,
+> > > i2c-mux without rewriting half of the code. And also allows to easily
+> > > swap the PCIe card to other slots/computer without having to modify t=
+he
+> > > description. =20
+>=20
+> > My proposal is to use overlays that card provides with itself.
+> > These are supported mechanisms by Linux kernel. =20
+>=20
+> We have code for DT overlays in the kernel but it's not generically
+> available.  There's issues with binding onto the platform device tree,
+> though they're less of a problem with something like this where it seems
+> to be a separate card with no cross links.
+
+Indeed, the card does not have crosslinks with other devices and thus
+it might be a solution to use a device-tree overlay (loaded from the
+filesystem). But  I'm not sure if it's a good idea to do that on
+a ACPI enabled platform.
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
