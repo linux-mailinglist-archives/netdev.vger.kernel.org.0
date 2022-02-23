@@ -2,240 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46DA34C1B28
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:54:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8834C1B45
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:57:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244032AbiBWSyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 13:54:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40170 "EHLO
+        id S234617AbiBWS55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 13:57:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244029AbiBWSyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:54:46 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176EC3ED16
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 10:54:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645642458; x=1677178458;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/3tFqMXBu/GlJ0QE/uyeIgaPd6D89cHEST2lf07aLoE=;
-  b=cOBdWhDs8581Ftz5SN74d8ok/kFZlR5Tn5Y9wLymcUkRT4v5Ghf4MCkc
-   ki9RK5xbFFclU9EziXS9eyXF6BKGf8/6dbyf3ecwLUiH832YmSm0lWwL0
-   2QaTPi7wqKOCOzUwWDPtx7aKvQFhCRZiQMC1ic6BRp1A0MEaz3U3LOXLr
-   LvAThD1wLbAt5RmPLFOhKBWCiBpwd/gbKk4wdg3iJ0iOuvT6Y5BGFFIBW
-   UHR20dkwdQ1pYUfqfLTFdaLPaFTjyEZ2m5XviAMZWCHJ5UiLGBkYATbJF
-   fpa2yGFVURsOyu7PZmCFuq2jtjhWVdpoEiN0QNM0B218UUpSv1rDIJI//
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="338492244"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="338492244"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 10:54:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="508557520"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 23 Feb 2022 10:54:16 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Piotr Skajewski <piotrx.skajewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Dave Switzer <david.switzer@intel.com>
-Subject: [PATCH net-next 2/2] ixgbe: Remove non-inclusive language
-Date:   Wed, 23 Feb 2022 10:54:24 -0800
-Message-Id: <20220223185424.2129067-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220223185424.2129067-1-anthony.l.nguyen@intel.com>
-References: <20220223185424.2129067-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S237010AbiBWS54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:57:56 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0849B29837;
+        Wed, 23 Feb 2022 10:57:27 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NHIZKu026532;
+        Wed, 23 Feb 2022 18:57:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Mkh4dUQ5Ypka5egNRySemcws707R37tGQCEWyl/L/zM=;
+ b=eQXGj3VOoZ15h1E8r+fcln3UCiifoo1uw6GBdVDQBXtV+ZoNvSwgiLQcMFfib/Z8fLAZ
+ 8aogfG3DYchVsFuvoi/tW8e23dtikyzfCZsCBENigP0Zs39FGnNNBrwBo+SvklcyePwf
+ VTBMSropWUSz37zYT/JqWtZMKsg23r8SdaHuhhjv9U3i4U9Y39oe4HvxJ1zdz/CuS96K
+ BDm48If2FyRE+G1Ese/0CT/9pBORlZrV9Eoy5l8axI5s0+0wz1LIhyX8pmuoLhnLBeiv
+ a9To0Zxj9Tt1uDWnGJ7O0DMjUvjucdaJqILeFzSHMibCrBCOjFuJgOCrQsw1p/W4DxR3 GA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ede6t15eh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 18:57:24 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NICCkm029389;
+        Wed, 23 Feb 2022 18:57:24 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ede6t15dr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 18:57:23 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NIul4I026635;
+        Wed, 23 Feb 2022 18:57:21 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma02fra.de.ibm.com with ESMTP id 3ear69ajcq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 18:57:21 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NIvHbI30998894
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Feb 2022 18:57:17 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CF7B6AE053;
+        Wed, 23 Feb 2022 18:57:17 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 55042AE04D;
+        Wed, 23 Feb 2022 18:57:17 +0000 (GMT)
+Received: from [9.171.51.229] (unknown [9.171.51.229])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Feb 2022 18:57:17 +0000 (GMT)
+Message-ID: <bc3252a3-5a84-63d4-dfc5-009f602a5bec@linux.ibm.com>
+Date:   Wed, 23 Feb 2022 19:57:31 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] net/smc: Add autocork support
+Content-Language: en-US
+To:     dust.li@linux.alibaba.com,
+        Hendrik Brueckner <brueckner@linux.ibm.com>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+ <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
+ <20220216152721.GB39286@linux.alibaba.com>
+ <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+ <20220217132200.GA5443@linux.alibaba.com> <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
+ <20220218073327.GB5443@linux.alibaba.com>
+ <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
+ <20220218234232.GC5443@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220218234232.GC5443@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Fyp25lHlfm8BvSD9vJu8XFm7wJujfm-B
+X-Proofpoint-ORIG-GUID: LAyXRrWZ9CuE87Jh0JCKLx0hV-ApzYV_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 phishscore=0 impostorscore=0 mlxlogscore=999
+ clxscore=1015 mlxscore=0 malwarescore=0 adultscore=0 suspectscore=0
+ spamscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202230106
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Piotr Skajewski <piotrx.skajewski@intel.com>
+On 19/02/2022 00:42, dust.li wrote:
+> On Fri, Feb 18, 2022 at 05:03:56PM +0100, Karsten Graul wrote:
+>> Right now for me it looks like there is no way to use netlink for container runtime
+>> configuration, which is a pity.
+>> We continue our discussions about this in the team, and also here on the list.
+> 
+> Many thanks for your time on this topic !
 
-Remove non-inclusive language from the driver.
+We checked more specs (like Container Network Interface (CNI) Specification) 
+but all we found uses sysctl at the end. There is lot of infrastructure 
+to use sysctls in a container environment.
 
-Additionally correct the duplication "from from"
-reported by checkpatch after the changes above.
+Establishing netlink-like controls for containers is by far out of our scope, and
+would take a long time until it would be available in the popular projects.
 
-Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- .../net/ethernet/intel/ixgbe/ixgbe_common.c   | 36 +++++++++----------
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  4 +--
- drivers/net/ethernet/intel/ixgbe/ixgbe_type.h | 10 +++---
- 3 files changed, 25 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-index e90b5047e695..4c26c4b92f07 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-@@ -30,7 +30,7 @@ static s32 ixgbe_write_eeprom_buffer_bit_bang(struct ixgbe_hw *hw, u16 offset,
- 					     u16 words, u16 *data);
- static s32 ixgbe_detect_eeprom_page_size_generic(struct ixgbe_hw *hw,
- 						 u16 offset);
--static s32 ixgbe_disable_pcie_master(struct ixgbe_hw *hw);
-+static s32 ixgbe_disable_pcie_primary(struct ixgbe_hw *hw);
- 
- /* Base table for registers values that change by MAC */
- const u32 ixgbe_mvals_8259X[IXGBE_MVALS_IDX_LIMIT] = {
-@@ -746,10 +746,10 @@ s32 ixgbe_stop_adapter_generic(struct ixgbe_hw *hw)
- 	usleep_range(1000, 2000);
- 
- 	/*
--	 * Prevent the PCI-E bus from from hanging by disabling PCI-E master
-+	 * Prevent the PCI-E bus from hanging by disabling PCI-E primary
- 	 * access and verify no pending requests
- 	 */
--	return ixgbe_disable_pcie_master(hw);
-+	return ixgbe_disable_pcie_primary(hw);
- }
- 
- /**
-@@ -2506,15 +2506,15 @@ static u32 ixgbe_pcie_timeout_poll(struct ixgbe_hw *hw)
- }
- 
- /**
-- *  ixgbe_disable_pcie_master - Disable PCI-express master access
-+ *  ixgbe_disable_pcie_primary - Disable PCI-express primary access
-  *  @hw: pointer to hardware structure
-  *
-- *  Disables PCI-Express master access and verifies there are no pending
-- *  requests. IXGBE_ERR_MASTER_REQUESTS_PENDING is returned if master disable
-- *  bit hasn't caused the master requests to be disabled, else 0
-- *  is returned signifying master requests disabled.
-+ *  Disables PCI-Express primary access and verifies there are no pending
-+ *  requests. IXGBE_ERR_PRIMARY_REQUESTS_PENDING is returned if primary disable
-+ *  bit hasn't caused the primary requests to be disabled, else 0
-+ *  is returned signifying primary requests disabled.
-  **/
--static s32 ixgbe_disable_pcie_master(struct ixgbe_hw *hw)
-+static s32 ixgbe_disable_pcie_primary(struct ixgbe_hw *hw)
- {
- 	u32 i, poll;
- 	u16 value;
-@@ -2523,23 +2523,23 @@ static s32 ixgbe_disable_pcie_master(struct ixgbe_hw *hw)
- 	IXGBE_WRITE_REG(hw, IXGBE_CTRL, IXGBE_CTRL_GIO_DIS);
- 
- 	/* Poll for bit to read as set */
--	for (i = 0; i < IXGBE_PCI_MASTER_DISABLE_TIMEOUT; i++) {
-+	for (i = 0; i < IXGBE_PCI_PRIMARY_DISABLE_TIMEOUT; i++) {
- 		if (IXGBE_READ_REG(hw, IXGBE_CTRL) & IXGBE_CTRL_GIO_DIS)
- 			break;
- 		usleep_range(100, 120);
- 	}
--	if (i >= IXGBE_PCI_MASTER_DISABLE_TIMEOUT) {
-+	if (i >= IXGBE_PCI_PRIMARY_DISABLE_TIMEOUT) {
- 		hw_dbg(hw, "GIO disable did not set - requesting resets\n");
- 		goto gio_disable_fail;
- 	}
- 
--	/* Exit if master requests are blocked */
-+	/* Exit if primary requests are blocked */
- 	if (!(IXGBE_READ_REG(hw, IXGBE_STATUS) & IXGBE_STATUS_GIO) ||
- 	    ixgbe_removed(hw->hw_addr))
- 		return 0;
- 
--	/* Poll for master request bit to clear */
--	for (i = 0; i < IXGBE_PCI_MASTER_DISABLE_TIMEOUT; i++) {
-+	/* Poll for primary request bit to clear */
-+	for (i = 0; i < IXGBE_PCI_PRIMARY_DISABLE_TIMEOUT; i++) {
- 		udelay(100);
- 		if (!(IXGBE_READ_REG(hw, IXGBE_STATUS) & IXGBE_STATUS_GIO))
- 			return 0;
-@@ -2547,13 +2547,13 @@ static s32 ixgbe_disable_pcie_master(struct ixgbe_hw *hw)
- 
- 	/*
- 	 * Two consecutive resets are required via CTRL.RST per datasheet
--	 * 5.2.5.3.2 Master Disable.  We set a flag to inform the reset routine
--	 * of this need.  The first reset prevents new master requests from
-+	 * 5.2.5.3.2 Primary Disable.  We set a flag to inform the reset routine
-+	 * of this need.  The first reset prevents new primary requests from
- 	 * being issued by our device.  We then must wait 1usec or more for any
- 	 * remaining completions from the PCIe bus to trickle in, and then reset
- 	 * again to clear out any effects they may have had on our device.
- 	 */
--	hw_dbg(hw, "GIO Master Disable bit didn't clear - requesting resets\n");
-+	hw_dbg(hw, "GIO Primary Disable bit didn't clear - requesting resets\n");
- gio_disable_fail:
- 	hw->mac.flags |= IXGBE_FLAGS_DOUBLE_RESET_REQUIRED;
- 
-@@ -2575,7 +2575,7 @@ static s32 ixgbe_disable_pcie_master(struct ixgbe_hw *hw)
- 	}
- 
- 	hw_dbg(hw, "PCIe transaction pending bit also did not clear.\n");
--	return IXGBE_ERR_MASTER_REQUESTS_PENDING;
-+	return IXGBE_ERR_PRIMARY_REQUESTS_PENDING;
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 2c8a4a06f56a..60a72af39ff7 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5948,8 +5948,8 @@ void ixgbe_reset(struct ixgbe_adapter *adapter)
- 	case IXGBE_ERR_SFP_NOT_PRESENT:
- 	case IXGBE_ERR_SFP_NOT_SUPPORTED:
- 		break;
--	case IXGBE_ERR_MASTER_REQUESTS_PENDING:
--		e_dev_err("master disable timed out\n");
-+	case IXGBE_ERR_PRIMARY_REQUESTS_PENDING:
-+		e_dev_err("primary disable timed out\n");
- 		break;
- 	case IXGBE_ERR_EEPROM_VERSION:
- 		/* We are running on a pre-production device, log a warning */
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-index 2647937f7f4d..6da9880d766a 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-@@ -1247,7 +1247,7 @@ struct ixgbe_nvm_version {
- #define IXGBE_PSRTYPE_RQPL_SHIFT    29
- 
- /* CTRL Bit Masks */
--#define IXGBE_CTRL_GIO_DIS      0x00000004 /* Global IO Master Disable bit */
-+#define IXGBE_CTRL_GIO_DIS      0x00000004 /* Global IO Primary Disable bit */
- #define IXGBE_CTRL_LNK_RST      0x00000008 /* Link Reset. Resets everything. */
- #define IXGBE_CTRL_RST          0x04000000 /* Reset (SW) */
- #define IXGBE_CTRL_RST_MASK     (IXGBE_CTRL_LNK_RST | IXGBE_CTRL_RST)
-@@ -1811,7 +1811,7 @@ enum {
- /* STATUS Bit Masks */
- #define IXGBE_STATUS_LAN_ID         0x0000000C /* LAN ID */
- #define IXGBE_STATUS_LAN_ID_SHIFT   2          /* LAN ID Shift*/
--#define IXGBE_STATUS_GIO            0x00080000 /* GIO Master Enable Status */
-+#define IXGBE_STATUS_GIO            0x00080000 /* GIO Primary Enable Status */
- 
- #define IXGBE_STATUS_LAN_ID_0   0x00000000 /* LAN ID 0 */
- #define IXGBE_STATUS_LAN_ID_1   0x00000004 /* LAN ID 1 */
-@@ -2193,8 +2193,8 @@ enum {
- #define IXGBE_PCIDEVCTRL2_4_8s		0xd
- #define IXGBE_PCIDEVCTRL2_17_34s	0xe
- 
--/* Number of 100 microseconds we wait for PCI Express master disable */
--#define IXGBE_PCI_MASTER_DISABLE_TIMEOUT	800
-+/* Number of 100 microseconds we wait for PCI Express primary disable */
-+#define IXGBE_PCI_PRIMARY_DISABLE_TIMEOUT	800
- 
- /* RAH */
- #define IXGBE_RAH_VIND_MASK     0x003C0000
-@@ -3671,7 +3671,7 @@ struct ixgbe_info {
- #define IXGBE_ERR_ADAPTER_STOPPED               -9
- #define IXGBE_ERR_INVALID_MAC_ADDR              -10
- #define IXGBE_ERR_DEVICE_NOT_SUPPORTED          -11
--#define IXGBE_ERR_MASTER_REQUESTS_PENDING       -12
-+#define IXGBE_ERR_PRIMARY_REQUESTS_PENDING      -12
- #define IXGBE_ERR_INVALID_LINK_SETTINGS         -13
- #define IXGBE_ERR_AUTONEG_NOT_COMPLETE          -14
- #define IXGBE_ERR_RESET_FAILED                  -15
--- 
-2.31.1
-
+So at the moment I see no alternative to an additional sysctl interface in the 
+SMC module that provides controls which are useful in container environments.
