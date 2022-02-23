@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C36644C085C
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:32:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8BC4C086A
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:32:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237152AbiBWCbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 21:31:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        id S237194AbiBWCcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 21:32:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237003AbiBWCbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:31:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9708F55743;
-        Tue, 22 Feb 2022 18:30:00 -0800 (PST)
+        with ESMTP id S237133AbiBWCbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:31:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EB35577B;
+        Tue, 22 Feb 2022 18:30:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E269CB81E01;
-        Wed, 23 Feb 2022 02:29:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5214C340E8;
-        Wed, 23 Feb 2022 02:29:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C7EB61516;
+        Wed, 23 Feb 2022 02:30:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C99C340EB;
+        Wed, 23 Feb 2022 02:30:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583397;
-        bh=Dl5tMiO+jS54kG75k4x/iqAcisItCJw+zKFTifuUsl8=;
+        s=k20201202; t=1645583405;
+        bh=124lfYyWE+LaMgjw4Q4I4/7cB+m2kmkCj43VRGmBnI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cCQsxvbRxIPRe4ZI1Xekg6U54tnJKpn716PvNC0Ztox/Hxecd2PMPIQpGdmkIrM1e
-         A1+SnCDmQ+EHuXPWLorjuBSqEI9/TBE+0AZaTcaFe8KR4JY2oxzpiWfjrxavnUD51M
-         J/AxTChlXu+YQ+5CbpWUm+pbnMd3sVhD1hGpL6ZH3SeqUuoz5XQp86twU2TKELvVyc
-         qAnnf6ax4ad7X+8zFJMnr6/T5Z7GkFn5o9S2QDtTyQz7q/HjAMXVrfhgcq1xIi68yw
-         zNwujg9ie/Ls7kBfhMeBRfPezwm+QL4TEmySX578q6s/VuYPZWAVwkZ+CndkUXIHsu
-         lGZXPdzMJwLcw==
+        b=RPstiMQgf8L9ZTsvyQspRyeBlHNEurksJ6dyzbk8UDoUWlBvQjrCx81us0X+kxOzY
+         M3oZkn7J+ULu61Vf7qmOGou9r0M+z9ZqfojrA3IExxoZG16Q5xxQ9GmFwEDU+etJNi
+         +81SjINo70MI/ds2+ZcNjo8v47P71A5lAKgFp9jw2v1VnN9L72+mkBX0kTRhVObC3H
+         o5cqCNOr4On7raEG4+xhrbloPQIJWKpx2ojlBxAoLb7mdz7wabk/sBPJEqtnXPeWBh
+         53jI3LlNGNL9LJDAeI79PUFWfymgO1ChN5MAwKTkeOfu5RmAy0keSS/PJ1TttjfCVR
+         bdIpF+/ZFoAaA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Ross Maynard <bids.7405@bigpond.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
-        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 14/28] USB: zaurus: support another broken Zaurus
-Date:   Tue, 22 Feb 2022 21:29:15 -0500
-Message-Id: <20220223022929.241127-14-sashal@kernel.org>
+Cc:     Sherry Yang <sherry.yang@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 19/28] selftests/seccomp: Fix seccomp failure by adding missing headers
+Date:   Tue, 22 Feb 2022 21:29:20 -0500
+Message-Id: <20220223022929.241127-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223022929.241127-1-sashal@kernel.org>
 References: <20220223022929.241127-1-sashal@kernel.org>
@@ -58,84 +60,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Sherry Yang <sherry.yang@oracle.com>
 
-[ Upstream commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c ]
+[ Upstream commit 21bffcb76ee2fbafc7d5946cef10abc9df5cfff7 ]
 
-This SL-6000 says Direct Line, not Ethernet
+seccomp_bpf failed on tests 47 global.user_notification_filter_empty
+and 48 global.user_notification_filter_empty_threaded when it's
+tested on updated kernel but with old kernel headers. Because old
+kernel headers don't have definition of macro __NR_clone3 which is
+required for these two tests. Since under selftests/, we can install
+headers once for all tests (the default INSTALL_HDR_PATH is
+usr/include), fix it by adding usr/include to the list of directories
+to be searched. Use "-isystem" to indicate it's a system directory as
+the real kernel headers directories are.
 
-v2: added Reporter and Link
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: Ross Maynard <bids.7405@bigpond.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
+Tested-by: Sherry Yang <sherry.yang@oracle.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/cdc_ether.c | 12 ++++++++++++
- drivers/net/usb/zaurus.c    | 12 ++++++++++++
- 2 files changed, 24 insertions(+)
+ tools/testing/selftests/seccomp/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index eb3817d70f2b8..9b4dfa3001d6e 100644
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -583,6 +583,11 @@ static const struct usb_device_id	products[] = {
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+index 0ebfe8b0e147f..585f7a0c10cbe 100644
+--- a/tools/testing/selftests/seccomp/Makefile
++++ b/tools/testing/selftests/seccomp/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
+-CFLAGS += -Wl,-no-as-needed -Wall
++CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/
+ LDFLAGS += -lpthread
  
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
-  * wire-incompatible with true CDC Ethernet implementations.
-  * (And, it seems, needlessly so...)
-@@ -636,6 +641,13 @@ static const struct usb_device_id	products[] = {
- 	.idProduct              = 0x9032,	/* SL-6000 */
- 	ZAURUS_MASTER_INTERFACE,
- 	.driver_info		= 0,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+		 | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor               = 0x04DD,
-+	.idProduct              = 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info		= 0,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
-diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
-index 8e717a0b559b3..7984f2157d222 100644
---- a/drivers/net/usb/zaurus.c
-+++ b/drivers/net/usb/zaurus.c
-@@ -256,6 +256,11 @@ static const struct usb_device_id	products [] = {
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
- 
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
- {
- 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
-@@ -313,6 +318,13 @@ static const struct usb_device_id	products [] = {
- 	.idProduct              = 0x9032,	/* SL-6000 */
- 	ZAURUS_MASTER_INTERFACE,
- 	.driver_info = ZAURUS_PXA_INFO,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+			    | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor		= 0x04DD,
-+	.idProduct		= 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info = (unsigned long)&bogus_mdlm_info,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
 -- 
 2.34.1
 
