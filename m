@@ -2,308 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9FAC4C19B6
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:15:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A07204C19DF
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:24:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbiBWRPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:15:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44030 "EHLO
+        id S242978AbiBWRYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243004AbiBWRPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:15:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DB78C4B
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:14:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645636480;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rRO4MHe5Dmpeu5wHW26QySHaQNVY9l6AI+4qPBsGQkY=;
-        b=aiHcBEQRlH0Xda/b5Z0ZOF1hTTk5Dfk6udiHIX4iHH0dyjQO7stGigXQmqd3FwMXT/HJ4L
-        ePkH5SH/I8tsYVbmMzNfT53mfjvo9Ic/LaQfOCpVUjaCIPrlUSfEa0/7B1pPiNXS+s90BN
-        3cHRyjlCU93ehG0jYlfqf6NVk92VYGM=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-120-aRIkNsflNzuPKNdEs85YlQ-1; Wed, 23 Feb 2022 12:14:36 -0500
-X-MC-Unique: aRIkNsflNzuPKNdEs85YlQ-1
-Received: by mail-ej1-f70.google.com with SMTP id h22-20020a1709060f5600b006b11a2d3dcfso7392656ejj.4
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:14:36 -0800 (PST)
+        with ESMTP id S237309AbiBWRYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:24:54 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D77250060
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:24:26 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id d23so32328573lfv.13
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:24:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=E6q9nT33+JhEWdWqbn7Jtyhs2XGadu1h5pizK24uBCg=;
+        b=j5+HslsbTa454hYKu1B8fWo/elCJyO+/urMRd9Ycje9CO37gBlYKKIbGoeGrQC321d
+         dXWtHIE9WmtZ2gO+RuqwkYkNxgbQcQsMcfoS0I0z5Gu6Vf4CM/DbuFBrYn6YLjGnNNUZ
+         KLufBbIo8OqX0osCUm5Vck6LQA+k+1WkNdQNb5t5bfDEfwofwPKiEFr5YirC3UPXCwAA
+         MIoEtvK53oN8ogfoUD4p41pGhaSj3IlonirRBsC4cFUIup0YgVhhBnvw5wmNHRFMdtMG
+         zdadSG8QocJveFJ4+ErzHBtYK2lWDipyoeXban2wHE/FJT8P2DGz7qHoikig94oF7trM
+         KVHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rRO4MHe5Dmpeu5wHW26QySHaQNVY9l6AI+4qPBsGQkY=;
-        b=0Qjb/u7JyHtHCPjumSwUpMCxUJ9gL0s4qGiR+tInxxaur96oyFAoEiyTjfCn3RFMOv
-         ZSGkqXjmrnPyYViUf4ehYwwfGhBeq+nHV+k+1NmfMLzIAVJ/Zolyk+/VdENl+/8g49dM
-         Gf0DIlYvGtwE9iHmgXQ0C6BAtl355vlb4phHuOx8VpUxkETWAh9eDsKJOTyovcag9AWT
-         wzC9hvKcwXO73Ffscbj0UvhEzxtTKrd7hEbw4pfemI/tn4gIHnqfq0LyEzgKWQVYrOh7
-         a36zOWU8eyg6r4NQ+yAEY6h+8QT5fl0yiMJzaqCpO4UN0W8ORZgHFuBpCrmMQxMOy8K7
-         qV0w==
-X-Gm-Message-State: AOAM533NPVGGhNZ3jWHE7FE/0jJC1ycARYO7WDhsWHy2lusbiUqAnBqw
-        bwJSz0H3KOD3I+muFFJdcmjMMvkU9rz23zIW2FXOvGSegbE6gNpieOYe7JTrWmp3zQ5B7ZFwsBf
-        DcnUCxw03/gpv0NV0
-X-Received: by 2002:a17:906:3c1a:b0:6ce:c404:9e3 with SMTP id h26-20020a1709063c1a00b006cec40409e3mr547086ejg.454.1645636474897;
-        Wed, 23 Feb 2022 09:14:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyFbC2GbFDO/AufWV0HURAE2UGs+63XdWnFOFf8Y8ydxKIShtBILjWFthYbDKuUpTSONSh+Hw==
-X-Received: by 2002:a17:906:3c1a:b0:6ce:c404:9e3 with SMTP id h26-20020a1709063c1a00b006cec40409e3mr547061ejg.454.1645636474553;
-        Wed, 23 Feb 2022 09:14:34 -0800 (PST)
-Received: from redhat.com ([2.55.145.157])
-        by smtp.gmail.com with ESMTPSA id 9sm106442ejg.97.2022.02.23.09.14.32
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=E6q9nT33+JhEWdWqbn7Jtyhs2XGadu1h5pizK24uBCg=;
+        b=qPIuhFcv70aFj2Ho3+pw4WogVlpw82/RajwlmQSl8QUO3v64II0WLaDwCZKplKaqDw
+         PcYDgj89ljzCBcJU0e8VjquQYKdE0DdZc+DDeXqWBizhWd0sYgSUshRvKZLleEDKHuzq
+         U8yUOnUTIJ/7Nl10EpcrlOzbsoQlTWDbAujygTiWUHpGyg/01Jib5Px7UjOANbUfajKm
+         Zi5SAJ/DBRKZBBqIN3kTM3HqPlblWiVD7nurhHIU+i5Yx9Y1FBgCd2dGMa/RlBZMtfbm
+         1krHkDIr/pn7cqLJGolCfibHLAm4eBxN1SY2AQMJLn4bBm8Pbt2Gohd0Se/dq+I1pSO5
+         CB0A==
+X-Gm-Message-State: AOAM530g18AYhyDm1aB7u6xNQ5H51iETUrHDm4l1wcBpspqlRMUe5E6H
+        3FxaCYUCeb1dVum60H4Pzis=
+X-Google-Smtp-Source: ABdhPJxwP/4eWrjw2G/tNiH+afZ+y/mKhi63FVaX1czMKzS71RYTJ3zBdTTQTfbdn3pl2ZU5Sr9p6A==
+X-Received: by 2002:a05:6512:331b:b0:443:7db2:6af8 with SMTP id k27-20020a056512331b00b004437db26af8mr466231lfe.240.1645637064331;
+        Wed, 23 Feb 2022 09:24:24 -0800 (PST)
+Received: from wbg.labs.westermo.se (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id u6sm7981lfg.291.2022.02.23.09.24.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 09:14:33 -0800 (PST)
-Date:   Wed, 23 Feb 2022 12:14:29 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Anirudh Rayabharam <mail@anirudhrb.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
-Message-ID: <20220223121404-mutt-send-email-mst@kernel.org>
-References: <20220221195303.13560-1-mail@anirudhrb.com>
- <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
- <YhRtQEWBF0kqWMsI@anirudhrb.com>
- <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
- <20220222090511-mutt-send-email-mst@kernel.org>
- <YhUdDUSxuXTLltpZ@anirudhrb.com>
- <20220222181927-mutt-send-email-mst@kernel.org>
- <YhZCKii8KwkcU8fM@anirudhrb.com>
- <20220223101303-mutt-send-email-mst@kernel.org>
- <YhZlk5iiOexnBouX@anirudhrb.com>
+        Wed, 23 Feb 2022 09:24:23 -0800 (PST)
+From:   Joachim Wiberg <troglobit@gmail.com>
+To:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joachim Wiberg <troglobit@gmail.com>
+Subject: [PATCH 1/1 net-next] net: bridge: add support for host l2 mdb entries
+Date:   Wed, 23 Feb 2022 18:24:07 +0100
+Message-Id: <20220223172407.175865-1-troglobit@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhZlk5iiOexnBouX@anirudhrb.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:19:23PM +0530, Anirudh Rayabharam wrote:
-> On Wed, Feb 23, 2022 at 10:15:01AM -0500, Michael S. Tsirkin wrote:
-> > On Wed, Feb 23, 2022 at 07:48:18PM +0530, Anirudh Rayabharam wrote:
-> > > On Tue, Feb 22, 2022 at 06:21:50PM -0500, Michael S. Tsirkin wrote:
-> > > > On Tue, Feb 22, 2022 at 10:57:41PM +0530, Anirudh Rayabharam wrote:
-> > > > > On Tue, Feb 22, 2022 at 10:02:29AM -0500, Michael S. Tsirkin wrote:
-> > > > > > On Tue, Feb 22, 2022 at 03:11:07PM +0800, Jason Wang wrote:
-> > > > > > > On Tue, Feb 22, 2022 at 12:57 PM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > > > > > > >
-> > > > > > > > On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
-> > > > > > > > > On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > > > > > > > > >
-> > > > > > > > > > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
-> > > > > > > > > > before proceeding with adding it to the iotlb.
-> > > > > > > > > >
-> > > > > > > > > > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > > > > > > > One instance where it can happen is when userspace sends an IOTLB
-> > > > > > > > > > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
-> > > > > > > > > > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
-> > > > > > > > > > iotlb. Next time a packet is sent, iotlb_access_ok() loops
-> > > > > > > > > > indefinitely due to that erroneous entry:
-> > > > > > > > > >
-> > > > > > > > > >         Call Trace:
-> > > > > > > > > >          <TASK>
-> > > > > > > > > >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-> > > > > > > > > >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-> > > > > > > > > >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-> > > > > > > > > >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-> > > > > > > > > >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> > > > > > > > > >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> > > > > > > > > >          </TASK>
-> > > > > > > > > >
-> > > > > > > > > > Reported by syzbot at:
-> > > > > > > > > >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
-> > > > > > > > > >
-> > > > > > > > > > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > > > > > > > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > > > > > > > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
-> > > > > > > > > > ---
-> > > > > > > > > >  drivers/vhost/iotlb.c | 6 ++++--
-> > > > > > > > > >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > > > > > > > > >
-> > > > > > > > > > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-> > > > > > > > > > index 670d56c879e5..b9de74bd2f9c 100644
-> > > > > > > > > > --- a/drivers/vhost/iotlb.c
-> > > > > > > > > > +++ b/drivers/vhost/iotlb.c
-> > > > > > > > > > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > > > > > > > >                               void *opaque)
-> > > > > > > > > >  {
-> > > > > > > > > >         struct vhost_iotlb_map *map;
-> > > > > > > > > > +       u64 size = last - start + 1;
-> > > > > > > > > >
-> > > > > > > > > > -       if (last < start)
-> > > > > > > > > > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > > > > > > > +       if (last < start || size == 0)
-> > > > > > > > > >                 return -EFAULT;
-> > > > > > > > >
-> > > > > > > > > I'd move this check to vhost_chr_iter_write(), then for the device who
-> > > > > > > > > has its own msg handler (e.g vDPA) can benefit from it as well.
-> > > > > > > >
-> > > > > > > > Thanks for reviewing!
-> > > > > > > >
-> > > > > > > > I kept the check here thinking that all devices would benefit from it
-> > > > > > > > because they would need to call vhost_iotlb_add_range() to add an entry
-> > > > > > > > to the iotlb. Isn't that correct?
-> > > > > > > 
-> > > > > > > Correct for now but not for the future, it's not guaranteed that the
-> > > > > > > per device iotlb message handler will use vhost iotlb.
-> > > > > > > 
-> > > > > > > But I agree that we probably don't need to care about it too much now.
-> > > > > > > 
-> > > > > > > > Do you see any other benefit in moving
-> > > > > > > > it to vhost_chr_iter_write()?
-> > > > > > > >
-> > > > > > > > One concern I have is that if we move it out some future caller to
-> > > > > > > > vhost_iotlb_add_range() might forget to handle this case.
-> > > > > > > 
-> > > > > > > Yes.
-> > > > > > > 
-> > > > > > > Rethink the whole fix, we're basically rejecting [0, ULONG_MAX] range
-> > > > > > > which seems a little bit odd.
-> > > > > > 
-> > > > > > Well, I guess ideally we'd split this up as two entries - this kind of
-> > > > > > thing is after all one of the reasons we initially used first,last as
-> > > > > > the API - as opposed to first,size.
-> > > > > 
-> > > > > IIUC, the APIs exposed to userspace accept first,size.
-> > > > 
-> > > > Some of them.
-> > > > 
-> > > > 
-> > > > /* vhost vdpa IOVA range
-> > > >  * @first: First address that can be mapped by vhost-vDPA
-> > > >  * @last: Last address that can be mapped by vhost-vDPA
-> > > >  */
-> > > > struct vhost_vdpa_iova_range {
-> > > >         __u64 first;
-> > > >         __u64 last;
-> > > > };
-> > > 
-> > > Alright, I will split it into two entries. That doesn't fully address
-> > > the bug though. I would also need to validate size in vhost_chr_iter_write().
-> > 
-> > Do you mean vhost_chr_write_iter?
-> 
-> Yes, my bad.
-> 
-> > 
-> > > 
-> > > Should I do both in one patch or as a two patch series?
-> > 
-> > I'm not sure why we need to do validation in vhost_chr_iter_write,
-> > hard to say without seeing the patch.
-> 
-> Well, if userspace sends iova = 0 and size = 0 in vhost_iotlb_msg, we will end
-> up mapping the range [0, ULONG_MAX] in iotlb which doesn't make sense. We
-> should probably reject when size = 0.
-> 
-> As Jason pointed out [1], having the check in vhost_chr_write_iter() will
-> also benefit devices that have their own message handler.
-> 
-> [1]: https://lore.kernel.org/kvm/CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com/
+This patch expands on the earlier work on layer-2 mdb entries by adding
+support for host entries.  Due to the fact that host joined entries do
+not have any flag field, we infer the permanent flag when reporting the
+entries to userspace, which otherwise would be listed as 'temp'.
 
-Oh. Makes sense.
+Before patch:
 
-I think one patch is enough.
+    ~# bridge mdb add dev br0 port br0 grp 01:00:00:c0:ff:ee permanent
+    Error: bridge: Flags are not allowed for host groups.
+    ~# bridge mdb add dev br0 port br0 grp 01:00:00:c0:ff:ee
+    Error: bridge: Only permanent L2 entries allowed.
 
-> > 
-> > > > 
-> > > > but
-> > > > 
-> > > > struct vhost_iotlb_msg {
-> > > >         __u64 iova;
-> > > >         __u64 size;
-> > > >         __u64 uaddr;
-> > > > #define VHOST_ACCESS_RO      0x1
-> > > > #define VHOST_ACCESS_WO      0x2
-> > > > #define VHOST_ACCESS_RW      0x3
-> > > >         __u8 perm;
-> > > > #define VHOST_IOTLB_MISS           1
-> > > > #define VHOST_IOTLB_UPDATE         2
-> > > > #define VHOST_IOTLB_INVALIDATE     3
-> > > > #define VHOST_IOTLB_ACCESS_FAIL    4
-> > > > /*
-> > > >  * VHOST_IOTLB_BATCH_BEGIN and VHOST_IOTLB_BATCH_END allow modifying
-> > > >  * multiple mappings in one go: beginning with
-> > > >  * VHOST_IOTLB_BATCH_BEGIN, followed by any number of
-> > > >  * VHOST_IOTLB_UPDATE messages, and ending with VHOST_IOTLB_BATCH_END.
-> > > >  * When one of these two values is used as the message type, the rest
-> > > >  * of the fields in the message are ignored. There's no guarantee that
-> > > >  * these changes take place automatically in the device.
-> > > >  */
-> > > > #define VHOST_IOTLB_BATCH_BEGIN    5
-> > > > #define VHOST_IOTLB_BATCH_END      6
-> > > >         __u8 type;
-> > > > };
-> > > > 
-> > > > 
-> > > > 
-> > > > > Which means that
-> > > > > right now there is now way for userspace to map this range. So, is there
-> > > > > any value in not simply rejecting this range?
-> > > > > 
-> > > > > > 
-> > > > > > Anirudh, could you do it like this instead of rejecting?
-> > > > > > 
-> > > > > > 
-> > > > > > > I wonder if it's better to just remove
-> > > > > > > the map->size. Having a quick glance at the the user, I don't see any
-> > > > > > > blocker for this.
-> > > > > > > 
-> > > > > > > Thanks
-> > > > > > 
-> > > > > > I think it's possible but won't solve the bug by itself, and we'd need
-> > > > > > to review and fix all users - a high chance of introducing
-> > > > > > another regression. 
-> > > > > 
-> > > > > Agreed, I did a quick review of the usages and getting rid of size
-> > > > > didn't seem trivial.
-> > > > > 
-> > > > > Thanks,
-> > > > > 
-> > > > > 	- Anirudh.
-> > > > > 
-> > > > > > And I think there's value of fitting under the
-> > > > > > stable rule of 100 lines with context.
-> > > > > > So sure, but let's fix the bug first.
-> > > > > > 
-> > > > > > 
-> > > > > > 
-> > > > > > > >
-> > > > > > > > Thanks!
-> > > > > > > >
-> > > > > > > >         - Anirudh.
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > > Thanks
-> > > > > > > > >
-> > > > > > > > > >
-> > > > > > > > > >         if (iotlb->limit &&
-> > > > > > > > > > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > > > > > > > >                 return -ENOMEM;
-> > > > > > > > > >
-> > > > > > > > > >         map->start = start;
-> > > > > > > > > > -       map->size = last - start + 1;
-> > > > > > > > > > +       map->size = size;
-> > > > > > > > > >         map->last = last;
-> > > > > > > > > >         map->addr = addr;
-> > > > > > > > > >         map->perm = perm;
-> > > > > > > > > > --
-> > > > > > > > > > 2.35.1
-> > > > > > > > > >
-> > > > > > > > >
-> > > > > > > >
-> > > > > > 
-> > > > 
-> > 
+After patch:
+
+    ~# bridge mdb add dev br0 port br0 grp 01:00:00:c0:ff:ee permanent
+    ~# bridge mdb show
+    dev br0 port br0 grp 01:00:00:c0:ff:ee permanent vid 1
+
+Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+---
+ net/bridge/br_mdb.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+index 4556d913955b..9ba5c5cc2f3d 100644
+--- a/net/bridge/br_mdb.c
++++ b/net/bridge/br_mdb.c
+@@ -257,8 +257,10 @@ static int __mdb_fill_info(struct sk_buff *skb,
+ 	else if (mp->addr.proto == htons(ETH_P_IPV6))
+ 		e.addr.u.ip6 = mp->addr.dst.ip6;
+ #endif
+-	else
++	else {
+ 		ether_addr_copy(e.addr.u.mac_addr, mp->addr.dst.mac_addr);
++		e.state = MDB_PG_FLAGS_PERMANENT;
++	}
+ 	e.addr.proto = mp->addr.proto;
+ 	nest_ent = nla_nest_start_noflag(skb,
+ 					 MDBA_MDB_ENTRY_INFO);
+@@ -873,8 +875,8 @@ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
+ 		return -EINVAL;
+ 
+ 	/* host join errors which can happen before creating the group */
+-	if (!port) {
+-		/* don't allow any flags for host-joined groups */
++	if (!port && !br_group_is_l2(&group)) {
++		/* don't allow any flags for host-joined IP groups */
+ 		if (entry->state) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Flags are not allowed for host groups");
+ 			return -EINVAL;
+-- 
+2.25.1
 
