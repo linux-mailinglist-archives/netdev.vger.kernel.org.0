@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3FA4C1444
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C654C13EF
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:20:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240777AbiBWNei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 08:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        id S240852AbiBWNUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 08:20:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiBWNeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:34:36 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3590BAB469
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:34:09 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id bg10so52478067ejb.4
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:34:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yO9NXPngMi4J8sdhc+FHJvXLkq6gXA4AeF64fqeE28A=;
-        b=SNkiJsoNz6FBUYvnMFiwlBn29CuUI8t/Ye7gF4UQ8W2AQPrDDhVQi2dj5DScMQJvxD
-         dW5LJW5Ma6Hjaixz/aLVpC6varh17YjVe9fSrm7tI+qit3COnOEe7uDpEoUQde98A1Gp
-         oMd7119I8xyaLvjBTdNG88D+ZtM/H/OPTPlrW6A478LGbxAm9XLYAB5K5hBGOsSsZvLs
-         l2mesVgUuBms9zb0R4TISdgMxnMnazxZwSi8SNGi83MfLFR79rzjk0ZGqMQOgqgAdhCK
-         vZhhEltuFUo1Zf2VlKrQ6L2mSuVjyLe337EwqDaa4R2LCppJarpb41kyAUGxR1U0AABI
-         4xOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yO9NXPngMi4J8sdhc+FHJvXLkq6gXA4AeF64fqeE28A=;
-        b=QnRjUPrRaubXC57Fyb/u2fciL/HaT6I5h3v1VSrkOrcSJlTz4O/W7TJVJ9uRZk5+JR
-         SQ+kLDWNkTYT5Z3LHYfzyRFAb7Q4WIn3DNjeDgqqMpLjfsuQnc5OfYLjcBVMssMuFY57
-         wBdATOw5kLLsDB5caGXaSXBvg+H8NIJid3iS3bwB+8OPL+4VcGZ49abrHkixWCGCiTJ5
-         9ifipDkMoLHQjmEdIRAoDGeWO5tUHghBKSOoMQ1QjZDxJ1xky8WgygM5+zmvW8X8qQbq
-         peboPaMrFW0ncLh+5JdECTiLjt5rJVASMzUwndpnOPGQaSHGaLE62g4BE7jpDM28TMKL
-         mzWw==
-X-Gm-Message-State: AOAM533+vQPPJ3ozBKKo6shS0npMe5wjrI1QWQ5KSi8IAopxqR7+3DtI
-        1hb9nHUFF9SvuNVKB/uIlSg+emC4qINwTg==
-X-Google-Smtp-Source: ABdhPJzDlQ4GS0risFcOPQHI7/kATxU0VuO01C09quv+NIJ5HJ8wzqTVLJUGTJgFiySCcky8YhF55g==
-X-Received: by 2002:a17:906:d9ce:b0:6ce:6a06:c01 with SMTP id qk14-20020a170906d9ce00b006ce6a060c01mr22277502ejb.666.1645623247844;
-        Wed, 23 Feb 2022 05:34:07 -0800 (PST)
-Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
-        by smtp.gmail.com with ESMTPSA id j18sm7480534ejc.166.2022.02.23.05.34.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 05:34:07 -0800 (PST)
-From:   Niels Dossche <dossche.niels@gmail.com>
-X-Google-Original-From: Niels Dossche <niels.dossche@ugent.be>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, Niels Dossche <niels.dossche@ugent.be>,
-        Niels Dossche <dossche.niels@gmail.com>
-Subject: [PATCH net v2] ipv6: prevent a possible race condition with lifetimes
-Date:   Wed, 23 Feb 2022 14:19:56 +0100
-Message-Id: <20220223131954.6570-1-niels.dossche@ugent.be>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S240851AbiBWNUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:20:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EA0AA02B;
+        Wed, 23 Feb 2022 05:20:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3044B6153D;
+        Wed, 23 Feb 2022 13:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A385C340F1;
+        Wed, 23 Feb 2022 13:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645622411;
+        bh=4MINalVsLypM4gQLR9Y0Ac8CSDvIEk7Or3pxAcAHrp8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HV3GKjiAoVKlfbobREUE3hGsHRDqzsmzlyL6o5mMSqbKX6IyY79VoWM3Qzs1adTt+
+         LkM9R6Je7Nngy4QtNvhmvT6T7pNjV5Dy4/br1Sg3OxHES0FDEi37iLWe5U1nTm1A0g
+         Fk+uWWn9uekrNHdyn3fqu17941JuiD0iZkpinXQipSKRkRk4EeTGTutow0eYKGip7Y
+         Dttc+6C2xKBF1iq4wZWEaEQblmDcmje7g+sbNmyYkyNYfZbA3fhsoC2SMGwMAwXJJU
+         PAx/RmL186qNt6pJUJvaSyI6CxDPgyimzTNvhDJLNHD1WnNdDOJ1fIGB3BLxn1xkAo
+         XQ3XQgDRzy7Jw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78F24E6D598;
+        Wed, 23 Feb 2022 13:20:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH 0/3] drivers/net/ftgmac100: fix occasional DHCP failure
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164562241149.17147.7259955928729255752.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Feb 2022 13:20:11 +0000
+References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
+In-Reply-To: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
+To:     Heyi Guo <guoheyi@linux.alibaba.com>
+Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, davem@davemloft.net,
+        kuba@kernel.org, joel@jms.id.au, huangguangbin2@huawei.com,
+        chenhao288@hisilicon.com, arnd@arndb.de, dylan_hung@aspeedtech.com,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-valid_lft, prefered_lft and tstamp are always accessed under the lock
-"lock" in other places. Reading these without taking the lock may result
-in inconsistencies regarding the calculation of the valid and preferred
-variables since decisions are taken on these fields for those variables.
+Hello:
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
----
- net/ipv6/addrconf.c | 2 ++
- 1 file changed, 2 insertions(+)
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 3f23da8c0b10..6c8ab3e6e6fe 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4998,6 +4998,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
- 		goto error;
- 
-+	spin_lock_bh(&ifa->lock);
- 	if (!((ifa->flags&IFA_F_PERMANENT) &&
- 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
- 		preferred = ifa->prefered_lft;
-@@ -5019,6 +5020,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 		preferred = INFINITY_LIFE_TIME;
- 		valid = INFINITY_LIFE_TIME;
- 	}
-+	spin_unlock_bh(&ifa->lock);
- 
- 	if (!ipv6_addr_any(&ifa->peer_addr)) {
- 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
+On Wed, 23 Feb 2022 11:14:33 +0800 you wrote:
+> This patch set is to fix the issues discussed in the mail thread:
+> https://lore.kernel.org/netdev/51f5b7a7-330f-6b3c-253d-10e45cdb6805@linux.alibaba.com/
+> and follows the advice from Andrew Lunn.
+> 
+> The first 2 patches refactors the code to enable adjust_link calling reset
+> function directly.
+> 
+> [...]
+
+Here is the summary with links:
+  - [1/3] drivers/net/ftgmac100: refactor ftgmac100_reset_task to enable direct function call
+    https://git.kernel.org/netdev/net/c/4f1e72850d45
+  - [2/3] drivers/net/ftgmac100: adjust code place for function call dependency
+    https://git.kernel.org/netdev/net/c/3c773dba8182
+  - [3/3] drivers/net/ftgmac100: fix DHCP potential failure with systemd
+    https://git.kernel.org/netdev/net/c/1baf2e50e48f
+
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
