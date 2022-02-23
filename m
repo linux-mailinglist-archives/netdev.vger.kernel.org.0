@@ -2,78 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F65D4C1131
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 12:23:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9AF4C113A
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 12:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239824AbiBWLYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 06:24:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
+        id S239843AbiBWL0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 06:26:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234705AbiBWLYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 06:24:05 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCDE8AE55;
-        Wed, 23 Feb 2022 03:23:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645615418; x=1677151418;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=FWh5Gytqdi+aFrZmALBpSFgdHMcuZf1UxHQVAqFhB5s=;
-  b=Lfd/d5VFioq8U76Z6qj/v1k5QV/dLpXva1E7xYTPBUEOhjljVCAdKtU9
-   rug7bkovoW5kFYvhrGaV8P352YAjlvcMndxqY3VMr2lH+7M6e/3FVnMCV
-   wZF/biA+fdrZW2K4l4fKYsUln/EHReoBoODToZ6Ach85JCDRTiRra8R2k
-   9YbF+4DuXp/B+GbMVFmy+/sbLO2NgHlKoi6QOcrtTf86VlB0jkUNexFXd
-   UE4W+nNx+HZWVn1rN91SPV6V0BWF5TcsGibInGGHCfhv+4jPUN+QAucom
-   nab+qoJRG+g2njtIYLon/Tl1ApU/awm1p6SjZgwu/aTBIKEZfc7pjMVOR
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231915372"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="231915372"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:23:37 -0800
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="532642764"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:23:33 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMpjF-007OHE-SU;
-        Wed, 23 Feb 2022 13:22:41 +0200
-Date:   Wed, 23 Feb 2022 13:22:41 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
-Message-ID: <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-11-clement.leger@bootlin.com>
- <YhPSkz8+BIcdb72R@smile.fi.intel.com>
- <20220222142513.026ad98c@fixe.home>
+        with ESMTP id S239840AbiBWL0x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 06:26:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C8959024D
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 03:26:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645615585;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Haw7XCJunvY/DjkGYU10zm/TPnhQIIAXDUz4hP9McDQ=;
+        b=S7y+lRvpZeEiZxrKRjyk4EXWt9EnD/i/GpUJBuuKnPiHOfW/TLaFqQykPNCiQ0U65FnzmN
+        mhq3lQbjdvMDHnyh9T4u8gZUBA2QMx8YAWrlcKvZgTcOaQUZqSEYntpEOTvlEjHBByJJgw
+        mO3SNFcyjK33I9Ddkul9MI+feXfNUQY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-253-ms836GTiP-O3Q5V8BAaz6g-1; Wed, 23 Feb 2022 06:26:22 -0500
+X-MC-Unique: ms836GTiP-O3Q5V8BAaz6g-1
+Received: by mail-wm1-f69.google.com with SMTP id v125-20020a1cac83000000b0037e3d70e7e1so987975wme.1
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 03:26:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Haw7XCJunvY/DjkGYU10zm/TPnhQIIAXDUz4hP9McDQ=;
+        b=SEGvs04ZgADvis0C2mnEwjG8vXwkEOnI51E37MuqsSa/5qU+N9Fe207Ekz2+yuvzzD
+         hD5wU2dA7hn9Ut0uHKcBQCx7NP+MncNoELBSp9VocCi/ampz7ohcQVU1pqB9zEH1VOyq
+         0RId1hXApt0R/qJxyA8oDXvHwIaWvCWvme7QOmn4wp3sU7jcaNx5tRwA+GzqGfAcEmzi
+         F7kzAyfT0sHie/LFrnIOSVbWl0LedTTOr9+oUfs9XXXM1fJ7we9fD7po1rs+M4vOLurR
+         IcYsOpVsanYAWS/Jjlu3CAtPVn03+C8Iu/WCpAAmyCCpSt5WCZ1SXu2YyudBOrnsaJcH
+         fiIA==
+X-Gm-Message-State: AOAM530C1Tkp7F/4g7dk6rGGCthm2y5JkPqvzJ6lXk/P6yYq7T55amNb
+        HccMZVSRX3NWYLLmJ6d8cJM2rLKsSTyfcJPWxvC6l95jTZqbSIEMgsmhjiwdr84epcjeYEKVq0S
+        prP1d21uiIXqpdSAS
+X-Received: by 2002:adf:e2cf:0:b0:1ed:a702:5ef4 with SMTP id d15-20020adfe2cf000000b001eda7025ef4mr2247205wrj.487.1645615581412;
+        Wed, 23 Feb 2022 03:26:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJykSRUu2MIXs7qWqdvPoNdIH8fNfCQn7v7rt5GYse64UKs0Uo+59+0XKkms3GN06X84NEVg5Q==
+X-Received: by 2002:adf:e2cf:0:b0:1ed:a702:5ef4 with SMTP id d15-20020adfe2cf000000b001eda7025ef4mr2247190wrj.487.1645615581185;
+        Wed, 23 Feb 2022 03:26:21 -0800 (PST)
+Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
+        by smtp.gmail.com with ESMTPSA id f63sm3976646wma.17.2022.02.23.03.26.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 03:26:20 -0800 (PST)
+Date:   Wed, 23 Feb 2022 12:26:18 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
+ device from smaller to bigger
+Message-ID: <20220223112618.GA19531@debian.home>
+References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
+ <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
+ <YhQ1KrtpEr3TgCwA@gondor.apana.org.au>
+ <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
+ <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
+ <20220222103733.GA3203@debian.home>
+ <20220222152815.1056ca24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220222142513.026ad98c@fixe.home>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+In-Reply-To: <20220222152815.1056ca24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,30 +89,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 02:25:13PM +0100, Clément Léger wrote:
-> Le Mon, 21 Feb 2022 19:57:39 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
-> 
-> > On Mon, Feb 21, 2022 at 05:26:52PM +0100, Clément Léger wrote:
-> > > Add support to retrieve a i2c bus in sfp with a fwnode. This support
-> > > is using the fwnode API which also works with device-tree and ACPI.
-> > > For this purpose, the device-tree and ACPI code handling the i2c
-> > > adapter retrieval was factorized with the new code. This also allows
-> > > i2c devices using a software_node description to be used by sfp code.  
+On Tue, Feb 22, 2022 at 03:28:15PM -0800, Jakub Kicinski wrote:
+> On Tue, 22 Feb 2022 11:37:33 +0100 Guillaume Nault wrote:
+> > What about an explicit option:
 > > 
-> > If I'm not mistaken this patch can even go separately right now, since all used
-> > APIs are already available.
+> >   ip link add link eth1 dev eth1.100 type vlan id 100 follow-parent-mtu
+> > 
+> > 
+> > Or for something more future proof, an option that can accept several
+> > policies:
+> > 
+> >   mtu-update <reduce-only,follow,...>
+> > 
+> >       reduce-only (default):
+> >         update vlan's MTU only if the new MTU is smaller than the
+> >         current one (current behaviour).
+> > 
+> >       follow:
+> >         always follow the MTU of the parent device.
+> > 
+> > Then if anyone wants more complex policies:
+> > 
+> >       follow-if-not-modified:
+> >         follow the MTU of the parent device as long as the VLAN's MTU
+> >         was not manually changed. Otherwise only adjust the VLAN's MTU
+> >         when the parent's one is set to a smaller value.
+> > 
+> >       follow-if-not-modified-but-not-quite:
+> >         like follow-if-not-modified but revert back to the VLAN's
+> >         last manually modified MTU, if any, whenever possible (that is,
+> >         when the parent device's MTU is set back to a higher value).
+> >         That probably requires the possibility to dump the last
+> >         modified MTU, so the administrator can anticipate the
+> >         consequences of modifying the parent device.
+> > 
+> >      yet-another-policy (because people have a lot of imagination):
+> >        for example, keep the MTU 4 bytes lower than the parent device,
+> >        to account for VLAN overhead.
+> > 
+> > Of course feel free to suggest better names and policies :).
+> > 
+> > This way, we can keep the current behaviour and avoid unexpected
+> > heuristics that are difficult to explain (and even more difficult for
+> > network admins to figure out on their own).
 > 
-> This patches uses fwnode_find_i2c_adapter_by_node() which is introduced
-> by "i2c: fwnode: add fwnode_find_i2c_adapter_by_node()" but they can
-> probably be contributed both in a separate series.
+> My $0.02 would be that if we want to make changes that require new uAPI
+> we should do it across uppers.
 
-I summon Hans into the discussion since I remember he recently refactored
-a bit I2C (ACPI/fwnode) APIs. Also he might have an idea about entire big
-picture approach with this series based on his ACPI experience.
+Do you mean something like:
 
--- 
-With Best Regards,
-Andy Shevchenko
+  ip link set dev eth0 vlan-mtu-policy <policy-name>
 
+that'd affect all existing (and future) vlans of eth0?
+
+Then I think that for non-ethernet devices, we should reject this
+option and skip it when dumping config. But yes, that's another
+possibility.
+
+I personnaly don't really mind, as long as we keep a clear behaviour.
+
+What I'd really like to avoid is something like:
+  - By default it behaves this way.
+  - If you modified the MTU it behaves in another way
+  - But if you modified the MTU but later restored the
+    original MTU, then you're back to the default behaviour
+    (or not?), unless the MTU of the upper device was also
+    changed meanwhile, in which case ... to be continued ...
+  - BTW, you might not be able to tell how the VLAN's MTU is going to
+    behave by simply looking at its configuration, because that also
+    depends on past configurations.
+  - Well, and if your kernel is older than xxx, then you always get the
+    default behaviour.
+  - ... and we might modify the heuristics again in the future to
+    accomodate with situations or use cases we failed to consider.
 
