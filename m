@@ -2,122 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8834C1B45
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 19:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7884C1B4E
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 20:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234617AbiBWS55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 13:57:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
+        id S243179AbiBWTC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 14:02:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237010AbiBWS54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 13:57:56 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0849B29837;
-        Wed, 23 Feb 2022 10:57:27 -0800 (PST)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NHIZKu026532;
-        Wed, 23 Feb 2022 18:57:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Mkh4dUQ5Ypka5egNRySemcws707R37tGQCEWyl/L/zM=;
- b=eQXGj3VOoZ15h1E8r+fcln3UCiifoo1uw6GBdVDQBXtV+ZoNvSwgiLQcMFfib/Z8fLAZ
- 8aogfG3DYchVsFuvoi/tW8e23dtikyzfCZsCBENigP0Zs39FGnNNBrwBo+SvklcyePwf
- VTBMSropWUSz37zYT/JqWtZMKsg23r8SdaHuhhjv9U3i4U9Y39oe4HvxJ1zdz/CuS96K
- BDm48If2FyRE+G1Ese/0CT/9pBORlZrV9Eoy5l8axI5s0+0wz1LIhyX8pmuoLhnLBeiv
- a9To0Zxj9Tt1uDWnGJ7O0DMjUvjucdaJqILeFzSHMibCrBCOjFuJgOCrQsw1p/W4DxR3 GA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ede6t15eh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 18:57:24 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NICCkm029389;
-        Wed, 23 Feb 2022 18:57:24 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ede6t15dr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 18:57:23 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NIul4I026635;
-        Wed, 23 Feb 2022 18:57:21 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma02fra.de.ibm.com with ESMTP id 3ear69ajcq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 18:57:21 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NIvHbI30998894
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 18:57:17 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CF7B6AE053;
-        Wed, 23 Feb 2022 18:57:17 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 55042AE04D;
-        Wed, 23 Feb 2022 18:57:17 +0000 (GMT)
-Received: from [9.171.51.229] (unknown [9.171.51.229])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 18:57:17 +0000 (GMT)
-Message-ID: <bc3252a3-5a84-63d4-dfc5-009f602a5bec@linux.ibm.com>
-Date:   Wed, 23 Feb 2022 19:57:31 +0100
+        with ESMTP id S232675AbiBWTC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 14:02:26 -0500
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7ACE1CFFB
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 11:01:58 -0800 (PST)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2d6923bca1aso213759507b3.9
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 11:01:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T66elGWm5E1Jie1XvbzIi256mtS4uPCl8SGMEKJIIPg=;
+        b=W68jDQLebLz4vx5WtQHihE4C9AVTdNfT7vUTI0/uySsALh0U0wPP8Tu/itJilScRn5
+         FxLIQpcB0VLHAz4hrwNR4wKsVKE1WvGpYGPFcNm8kmcWFQFxDnLmfCxnCio1slx9vJA5
+         +w0bvKtEi9F6p/zR7u3FmHlpW8KQAhAQGz8oAf+JgA9oAPnvOdTRg2DmvErWk3LKWdMj
+         m3Z8O01rYTJ1KCH02LDedNNwyCL+x0xX6MxCziYiEMgK15L8sQwYwoNopLC5CmXpFRhn
+         fJFh1TDZ6lpRKVmfMAVqzlZs5982sG2KyUhfp6Boxd6AMZJMf5/skQcs5929VvbgloYS
+         qPSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T66elGWm5E1Jie1XvbzIi256mtS4uPCl8SGMEKJIIPg=;
+        b=w0QiNYsBEOs8CMCLX26ugLzTlbE1KZL52SY7EtMrHSx3R9xuhg99Ggw7fC7oZlOGxr
+         LC6mh93BP+iRZwBtt3N7DuGKLnJ7UU5w0Twck6278qiVnyGi8YMcNIYmhlqSAL9FIJRe
+         D3crcdyefb6yySNhZ2sIzDFv+quEuBnIH8dfuoph6qAiv9RHanAngNn1puObG8SqbKDj
+         Sh2ZErarrSWrFCW46G7j5uA1bqDoHlg7bZBx04XO+xOwFq8H+Mw74ByMd/2tIPlFdnGi
+         dgYyxO++GE5I5mHiVPe299wr1igj5QKv/ETNP/gCSOes8cK/wsiF7nRM+4g/0iPBWaJl
+         u42w==
+X-Gm-Message-State: AOAM532GV+aX0qY2VrqxbyYhaeV97IhgIgVhYAT0xWAKg/uTKSVWUiru
+        cZnXeX/36qz0VtN8VrDOHwdKtiV4uG3i0R9uMJ7x0A==
+X-Google-Smtp-Source: ABdhPJwbnFnuvV69POqIhVN70eF8CPPO4SK6FFDWU9U3BGMF2+0EkCUHs8VocVjFgAnDpLdlAlv2WlFmkDtHW0b6UTU=
+X-Received: by 2002:a81:ff05:0:b0:2d6:8e83:e723 with SMTP id
+ k5-20020a81ff05000000b002d68e83e723mr1025103ywn.382.1645642917934; Wed, 23
+ Feb 2022 11:01:57 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] net/smc: Add autocork support
-Content-Language: en-US
-To:     dust.li@linux.alibaba.com,
-        Hendrik Brueckner <brueckner@linux.ibm.com>
-Cc:     Stefan Raspl <raspl@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
- <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
- <20220216152721.GB39286@linux.alibaba.com>
- <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
- <20220217132200.GA5443@linux.alibaba.com> <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
- <20220218073327.GB5443@linux.alibaba.com>
- <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
- <20220218234232.GC5443@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220218234232.GC5443@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Fyp25lHlfm8BvSD9vJu8XFm7wJujfm-B
-X-Proofpoint-ORIG-GUID: LAyXRrWZ9CuE87Jh0JCKLx0hV-ApzYV_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 phishscore=0 impostorscore=0 mlxlogscore=999
- clxscore=1015 mlxscore=0 malwarescore=0 adultscore=0 suspectscore=0
- spamscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202230106
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <1645574424-60857-1-git-send-email-jdamato@fastly.com>
+ <1645574424-60857-2-git-send-email-jdamato@fastly.com> <21c87173-667f-55c1-2eab-a1f684c75352@redhat.com>
+In-Reply-To: <21c87173-667f-55c1-2eab-a1f684c75352@redhat.com>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Wed, 23 Feb 2022 21:01:21 +0200
+Message-ID: <CAC_iWj+8hYruZce3MLucUiJmcF_0NWQUo7Q+1cqJJPYPjjrEBA@mail.gmail.com>
+Subject: Re: [net-next v6 1/2] page_pool: Add page_pool stats
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Joe Damato <jdamato@fastly.com>, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, hawk@kernel.org,
+        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/02/2022 00:42, dust.li wrote:
-> On Fri, Feb 18, 2022 at 05:03:56PM +0100, Karsten Graul wrote:
->> Right now for me it looks like there is no way to use netlink for container runtime
->> configuration, which is a pity.
->> We continue our discussions about this in the team, and also here on the list.
-> 
-> Many thanks for your time on this topic !
+Hi all
 
-We checked more specs (like Container Network Interface (CNI) Specification) 
-but all we found uses sysctl at the end. There is lot of infrastructure 
-to use sysctls in a container environment.
+[...]
+> > Signed-off-by: Joe Damato <jdamato@fastly.com>
+> > ---
+> >   include/net/page_pool.h | 18 ++++++++++++++++++
+> >   net/Kconfig             | 13 +++++++++++++
+> >   net/core/page_pool.c    | 37 +++++++++++++++++++++++++++++++++----
+> >   3 files changed, 64 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > index 97c3c19..bedc82f 100644
+> > --- a/include/net/page_pool.h
+> > +++ b/include/net/page_pool.h
+> > @@ -135,7 +135,25 @@ struct page_pool {
+> >       refcount_t user_cnt;
+> >
+> >       u64 destroy_cnt;
+> > +#ifdef CONFIG_PAGE_POOL_STATS
+> > +     struct page_pool_stats __percpu *stats ____cacheline_aligned_in_smp;
+> > +#endif
+> > +};
+>
+> Adding this to the end of the struct and using attribute
+> ____cacheline_aligned_in_smp cause the structure have a lot of wasted
+> padding in the end.
+>
+> I recommend using the tool pahole to see the struct layout.
+>
+>
+> > +
+> > +#ifdef CONFIG_PAGE_POOL_STATS
+> > +struct page_pool_stats {
+> > +     struct {
+> > +             u64 fast; /* fast path allocations */
+> > +             u64 slow; /* slow-path order 0 allocations */
+> > +             u64 slow_high_order; /* slow-path high order allocations */
+> > +             u64 empty; /* failed refills due to empty ptr ring, forcing
+> > +                         * slow path allocation
+> > +                         */
+> > +             u64 refill; /* allocations via successful refill */
+> > +             u64 waive;  /* failed refills due to numa zone mismatch */
+> > +     } alloc;
+> >   };
+> > +#endif
+>
+> All of these stats are for page_pool allocation "RX" side, which is
+> protected by softirq/NAPI.
+> Thus, I find it unnecessary to do __percpu stats.
+>
+>
+> As Ilias have pointed out-before, the __percpu stats (first) becomes
+> relevant once we want stats for the free/"return" path ... which is not
+> part of this patchset.
 
-Establishing netlink-like controls for containers is by far out of our scope, and
-would take a long time until it would be available in the popular projects.
+Do we really mind though?  The point was to have the percpu variables
+in order to plug in any stats that weren't napi-protected.  I think we
+can always plug in the recycling stats later?  OTOH if you prefer
+having them in now I can work with Joe and we can get that supported
+as well.
 
-So at the moment I see no alternative to an additional sysctl interface in the 
-SMC module that provides controls which are useful in container environments.
+Cheers
+/Ilias
+>
+> --Jesper
+>
