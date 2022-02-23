@@ -2,96 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E85684C1164
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 12:35:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC774C117A
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 12:39:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239356AbiBWLft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 06:35:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52992 "EHLO
+        id S238204AbiBWLkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 06:40:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239937AbiBWLff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 06:35:35 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D505090FFF
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 03:35:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=TuMbL1VwQGdOKw/RbWRHMJuT+t+npwDGp+x9ke3hYq4=; b=CmIWXiW83Sv+GbOF35tMrTYgVV
-        VnqrCGf0Q8mEzkSdPr7pgHm96GZMoajkRFdv1Vl5ucg4KYeUgJ7xifWPmuFQijg4OyFXg8yOo4lWE
-        XWna+Uy93Zx9PkmDqS8kZ93YaMSjcXASl5jGWwnJWNYXnQIXFJP0ZLilOpfvdHcvYzQ1zPebOy56p
-        LIEzs8/TlvNoedg++ha1fqkBBwJF6+2ff54OPJi9LJa6hsXJAkws1J8G+CLFElBo2Zy5w315Rj3pj
-        822Ij6PCR1i24BpCV8wk2396xhFyLyEOYSMhCBBk7JlC2uiNc7wNWyuRHCcy4/lVPjnicNwxUcJxN
-        dkoUznzw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57394 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1nMpvE-0002l5-1K; Wed, 23 Feb 2022 11:35:04 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nMpvD-00AJpQ-Ek; Wed, 23 Feb 2022 11:35:03 +0000
-In-Reply-To: <YhYbpNsFROcSe4z+@shell.armlinux.org.uk>
-References: <YhYbpNsFROcSe4z+@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>
+        with ESMTP id S234543AbiBWLkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 06:40:14 -0500
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FDC93192;
+        Wed, 23 Feb 2022 03:39:45 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guoheyi@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V5JJLMD_1645616380;
+Received: from 30.225.139.254(mailfrom:guoheyi@linux.alibaba.com fp:SMTPD_---0V5JJLMD_1645616380)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 23 Feb 2022 19:39:41 +0800
+Message-ID: <5cdf5d09-9b32-ec98-cbd1-c05365ec01fa@linux.alibaba.com>
+Date:   Wed, 23 Feb 2022 19:39:40 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH 3/3] drivers/net/ftgmac100: fix DHCP potential failure
+ with systemd
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH RFC net-next v2 10/10] net: dsa: mt7530: mark as non-legacy
-MIME-Version: 1.0
-Content-Disposition: inline
+        Joel Stanley <joel@jms.id.au>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dylan Hung <dylan_hung@aspeedtech.com>, netdev@vger.kernel.org
+References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
+ <20220223031436.124858-4-guoheyi@linux.alibaba.com>
+ <1675a52d-a270-d768-5ccc-35b1e82e56d2@gmail.com>
+From:   Heyi Guo <guoheyi@linux.alibaba.com>
+In-Reply-To: <1675a52d-a270-d768-5ccc-35b1e82e56d2@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nMpvD-00AJpQ-Ek@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 23 Feb 2022 11:35:03 +0000
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mt7530 driver does not make use of the speed, duplex, pause or
-advertisement in its phylink_mac_config() implementation, so it can be
-marked as a non-legacy driver.
+Hi Florian,
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mt7530.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+在 2022/2/23 下午1:00, Florian Fainelli 写道:
+>
+>
+> On 2/22/2022 7:14 PM, Heyi Guo wrote:
+>> DHCP failures were observed with systemd 247.6. The issue could be
+>> reproduced by rebooting Aspeed 2600 and then running ifconfig ethX
+>> down/up.
+>>
+>> It is caused by below procedures in the driver:
+>>
+>> 1. ftgmac100_open() enables net interface and call phy_start()
+>> 2. When PHY is link up, it calls netif_carrier_on() and then
+>> adjust_link callback
+>> 3. ftgmac100_adjust_link() will schedule the reset task
+>> 4. ftgmac100_reset_task() will then reset the MAC in another schedule
+>>
+>> After step 2, systemd will be notified to send DHCP discover packet,
+>> while the packet might be corrupted by MAC reset operation in step 4.
+>>
+>> Call ftgmac100_reset() directly instead of scheduling task to fix the
+>> issue.
+>>
+>> Signed-off-by: Heyi Guo <guoheyi@linux.alibaba.com>
+>> ---
+>> Cc: Andrew Lunn <andrew@lunn.ch>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: Joel Stanley <joel@jms.id.au>
+>> Cc: Guangbin Huang <huangguangbin2@huawei.com>
+>> Cc: Hao Chen <chenhao288@hisilicon.com>
+>> Cc: Arnd Bergmann <arnd@arndb.de>
+>> Cc: Dylan Hung <dylan_hung@aspeedtech.com>
+>> Cc: netdev@vger.kernel.org
+>>
+>>
+>> ---
+>>   drivers/net/ethernet/faraday/ftgmac100.c | 13 +++++++++++--
+>>   1 file changed, 11 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c 
+>> b/drivers/net/ethernet/faraday/ftgmac100.c
+>> index c1deb6e5d26c5..d5356db7539a4 100644
+>> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+>> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+>> @@ -1402,8 +1402,17 @@ static void ftgmac100_adjust_link(struct 
+>> net_device *netdev)
+>>       /* Disable all interrupts */
+>>       iowrite32(0, priv->base + FTGMAC100_OFFSET_IER);
+>>   -    /* Reset the adapter asynchronously */
+>> -    schedule_work(&priv->reset_task);
+>> +    /* Release phy lock to allow ftgmac100_reset to aquire it, 
+>> keeping lock
+>
+> typo: acquire
+>
+Thanks for the catch :)
+>> +     * order consistent to prevent dead lock.
+>> +     */
+>> +    if (netdev->phydev)
+>> +        mutex_unlock(&netdev->phydev->lock);
+>> +
+>> +    ftgmac100_reset(priv);
+>> +
+>> +    if (netdev->phydev)
+>> +        mutex_lock(&netdev->phydev->lock);
+>
+> Do you really need to perform a full MAC reset whenever the link goes 
+> up or down? Instead cannot you just extract the maccr configuration 
+> which adjusts the speed and be done with it?
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 951381008713..afcd9db9d056 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2892,6 +2892,12 @@ static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
- 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
- 				   MAC_10 | MAC_100 | MAC_1000FD;
- 
-+	/* This driver does not make use of the speed, duplex, pause or the
-+	 * advertisement in its mac_config, so it is safe to mark this driver
-+	 * as non-legacy.
-+	 */
-+	config->legacy_pre_march2020 = false;
-+
- 	priv->info->mac_port_get_caps(ds, port, config);
- }
- 
--- 
-2.30.2
+This is the original behavior and not changed in this patch set, and I'm 
+not familiar with the hardware design of ftgmac100, so I'd like to limit 
+the changes to the code which really causes practical issues.
 
+Thanks,
+
+Heyi
+
+>
+> What kind of Ethernet MAC design is this seriously.
