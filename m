@@ -2,121 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 361794C1406
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:22:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2179F4C1433
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:31:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240896AbiBWNWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 08:22:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45150 "EHLO
+        id S236064AbiBWNcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 08:32:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240885AbiBWNWQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:22:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4893550077;
-        Wed, 23 Feb 2022 05:21:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 035D6B81FB3;
-        Wed, 23 Feb 2022 13:21:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46E9CC340F1;
-        Wed, 23 Feb 2022 13:21:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645622505;
-        bh=J891fPbxn9Gpp05VyPJjZBwUp+b4P9oUiL8KTTGPsAY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t7jQsuKZ/QzakEguwoidh6RwtgJW+7gV4yBiNTHmCzuLqQNcfgMAOpR3bHYUfwpud
-         iby/hY+HNQ6KYZU2OgXhKa6VUfIzugD3k+ZzovH6vPzAvXOw5XxjXAJFBCrhxLqEJz
-         R1xBfJCOcVKMcPjl0JGGZwSRZjuSae8sgvZHCX7i0W7kw5LeRVS4GhPCCoyZUvKBVj
-         +SJlH73idykERSltJQ56jIAHVuhJSv2xQVUobY784Z7/Nqx5r8ZXhbZWN6E/w42oL7
-         uMLOsi51sI6Apc35Htuz/YTU3VWyYt28UpLFNlyDjYi00eo1PHfjUp/qyi/Npgvb/J
-         NgeYJ5/fQN1JQ==
-Date:   Wed, 23 Feb 2022 14:21:42 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [PATCH v4 3/7] i2c: cht-wc: Use generic_handle_irq_safe().
-Message-ID: <YhY05uyl5dSVZH2W@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20220211181500.1856198-1-bigeasy@linutronix.de>
- <20220211181500.1856198-4-bigeasy@linutronix.de>
+        with ESMTP id S234476AbiBWNcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:32:22 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13F09ADB2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:31:54 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id v28so17208485ljv.9
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:31:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7dnyHmrO36rrHyXARPRiGQlAPqAL/RPhHWzq7NmeXFU=;
+        b=DCpZuBYw1K5GBm3Yf8oboPq/eMpixfVzGH8pD4UEALwU6Piq0DHgYQgOt/7CAvI306
+         Dcz50R2TMDksWKMuLwdtBmupzNUlRGkvZEr3wrUGXHDsry2cMM5zBquEuUE/lGQio3cy
+         dQioRFt9XmtopGgUlNHRhYJyo7M9qv/QhTJs7H/sBz6Y+d0QTU8BHf6TQuNWtwwlfHVy
+         CsK3Xgbm2ngEooxg6hRKNJbBTvfjYRUDLlL01JPPYENYx80hxKuFn8POj2bETak/AHLu
+         Za/hbi5Gqnd8nDCavCmWhSt5NPE4zh7m8WDnAJZpqs6lI7TkKUByTA7ZENXTV7ySlrYX
+         jQDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7dnyHmrO36rrHyXARPRiGQlAPqAL/RPhHWzq7NmeXFU=;
+        b=Ekrk9Rhp2i3Uk7xlDWwK0QrBCxoAAND4UDUAeflAvDf18e2V0u6QaBSLNlSiWG+49h
+         4mHoNUtCqq00vfeJACvZOQ2a6qWT2Lc2R3bppRlihyjyUE5YzrZE8acQh7ty9i2jFMhg
+         Q4KT5JIRLH2CS5O2YB2cEuSbUBh3pwbFjWygectgR5ePA0wU80R09/Btx9gj6V+MOnQT
+         1JdvQ+RJVIFqpdCenbeCcuimXLZ3+4IoJ4A+Xlvbdb0aHE3YiwRa3OgCUb9VozluAs0V
+         D+KC9iR7e9eyvNKrSC+LewxBSIUg4v+dtJx+TrnNBQjI6CkRHmOj/b/x1jweLqhb6NX0
+         KXOA==
+X-Gm-Message-State: AOAM533Yz71+l+SU0ONnoFCsYgc5HtIPXbMXQjQFqdcJisyZsIIpzFmO
+        aNpEVWYZzymEofu/N+OvmZt75SVih2XGO/oEWe8fcA==
+X-Google-Smtp-Source: ABdhPJwJY+a32PVbCbOr6F7WLpIRa1HJ6cmeP7R7LTqqu3aAVT2hhZelkzr7J95bPvGGBDkYywmSkJE5OgieO0xkm/Q=
+X-Received: by 2002:a05:651c:1509:b0:246:5f82:eed2 with SMTP id
+ e9-20020a05651c150900b002465f82eed2mr1509589ljf.271.1645623113097; Wed, 23
+ Feb 2022 05:31:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VtRlwyjbGA4QWudU"
-Content-Disposition: inline
-In-Reply-To: <20220211181500.1856198-4-bigeasy@linutronix.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220125084702.3636253-1-andrew@daynix.com> <20220125084702.3636253-2-andrew@daynix.com>
+ <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com> <CABcq3pH7HnH_-nCHcX7eet_ouqocQEptp6A9GCbs3=9guArhPA@mail.gmail.com>
+ <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com>
+In-Reply-To: <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com>
+From:   Yuri Benditovich <yuri.benditovich@daynix.com>
+Date:   Wed, 23 Feb 2022 15:31:41 +0200
+Message-ID: <CAOEp5OeGNezTasp7zsvpFHGfjkM4bWRbbFY7WEWc7hRYVDSxdA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Andrew Melnichenko <andrew@daynix.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Yan Vugenfirer <yan@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jason,
+We agree that the same can be done also using the old way, i.e. try to
+set specific offload - if failed, probably it is not supported.
+We think this is a little not scalable and we suggest adding the ioctl
+that will allow us to query allo the supported features in a single
+call.
+We think this will make QEMU code more simple also in future.
+Do I understand correctly that you suggest to skip this new ioctl and
+use the old way of query for this (USO) feature and all future
+extensions?
 
---VtRlwyjbGA4QWudU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Feb 11, 2022 at 07:14:56PM +0100, Sebastian Andrzej Siewior wrote:
-> Instead of manually disabling interrupts before invoking use
-> generic_handle_irq_safe() which can be invoked with enabled and disabled
-> interrupts.
->=20
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> Acked-by: Wolfram Sang <wsa@kernel.org>
-
-Applied to for-next, thanks!
+Thanks
 
 
---VtRlwyjbGA4QWudU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIWNOYACgkQFA3kzBSg
-KbY3wA//TjamDoM1RYB5FcX0sief36XT8hx1zX6EhhcmIdo2C581BZatcwCpXiRv
-1FVIsWELccefkU4PfbjshEYUUcFw4c20vfK4XONM2KFJNC1+QQjo3jvX+WwLpZTG
-r2Ir/RIwjUaLplFnqwA47P0pUXr4HBSoyNj51C8p1sih43BNFiiFC9H3/f9WeqyI
-XK4qrW+VLToDZJ1HNDH3xdETdk6b5WoVOWBI4Pj91GipVx5kyyIfmk5Da18MeYeR
-4cxyolwSQqSf6Uwsbt1g6ImmeoIThAWlw4MLGxwYo7vc7S6HMYgzhb0wYUNT0fbL
-Kp98y7x1iXiQ+8m9uKiYHmmTZh3Tu2C/ahzzCCbFo7GHsoHHZoHPKFBqZee7imdc
-xuUFyZ1u0fbx9wcjnDDGskeyVSz4RYx4CH9a5eS/fAxIEYYws70X+2OJX4YdmgI1
-wy4WLxrTzYJWFe2XjVIS8R7aR6xrdiUukOVgOpqQRMkraCkxes9BEkcRCsmCaUY1
-jxUoFqxts8j8VlBUgJ90liczQuB4FF+TNAwfFMhpB4G4aDgFllv8tVBa+b+UPuAn
-c0JqbleZ0LohYl3mr570y2iB/uS6c+V+XBITmC92J1QYrfbJ9ee8KJwA6c2muViM
-3ax/oU6oaEc/YpV+t9XReEvEfh/DhjFWuLytG6vUI8K4vS6KXSw=
-=p68w
------END PGP SIGNATURE-----
-
---VtRlwyjbGA4QWudU--
+On Wed, Feb 23, 2022 at 5:53 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Tue, Feb 22, 2022 at 9:28 PM Andrew Melnichenko <andrew@daynix.com> wr=
+ote:
+> >
+> > Hi all,
+> >
+> > On Wed, Feb 9, 2022 at 6:26 AM Jason Wang <jasowang@redhat.com> wrote:
+> > >
+> > >
+> > > =E5=9C=A8 2022/1/25 =E4=B8=8B=E5=8D=884:46, Andrew Melnychenko =E5=86=
+=99=E9=81=93:
+> > > > Added TUNGETSUPPORTEDOFFLOADS that should allow
+> > > > to get bits of supported offloads.
+> > >
+> > >
+> > > So we don't use dedicated ioctls in the past, instead, we just probin=
+g
+> > > by checking the return value of TUNSETOFFLOADS.
+> > >
+> > > E.g qemu has the following codes:
+> > >
+> > > int tap_probe_has_ufo(int fd)
+> > > {
+> > >      unsigned offload;
+> > >
+> > >      offload =3D TUN_F_CSUM | TUN_F_UFO;
+> > >
+> > >      if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
+> > >          return 0;
+> > >
+> > >      return 1;
+> > > }
+> > >
+> > > Any reason we can't keep using that?
+> > >
+> > > Thanks
+> > >
+> >
+> > Well, even in this example. To check the ufo feature, we trying to set =
+it.
+> > What if we don't need to "enable" UFO and/or do not change its state?
+>
+> So at least Qemu doesn't have such a requirement since during the
+> probe the virtual networking backend is not even started.
+>
+> > I think it's a good idea to have the ability to get supported offloads
+> > without changing device behavior.
+>
+> Do you see a real user for this?
+>
+> Btw, we still need to probe this new ioctl anyway.
+>
+> Thanks
+>
+> >
+> > >
+> > > > Added 2 additional offlloads for USO(IPv4 & IPv6).
+> > > > Separate offloads are required for Windows VM guests,
+> > > > g.e. Windows may set USO rx only for IPv4.
+> > > >
+> > > > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> > > > ---
+> > > >   include/uapi/linux/if_tun.h | 3 +++
+> > > >   1 file changed, 3 insertions(+)
+> > > >
+> > > > diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tu=
+n.h
+> > > > index 454ae31b93c7..07680fae6e18 100644
+> > > > --- a/include/uapi/linux/if_tun.h
+> > > > +++ b/include/uapi/linux/if_tun.h
+> > > > @@ -61,6 +61,7 @@
+> > > >   #define TUNSETFILTEREBPF _IOR('T', 225, int)
+> > > >   #define TUNSETCARRIER _IOW('T', 226, int)
+> > > >   #define TUNGETDEVNETNS _IO('T', 227)
+> > > > +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
+> > > >
+> > > >   /* TUNSETIFF ifr flags */
+> > > >   #define IFF_TUN             0x0001
+> > > > @@ -88,6 +89,8 @@
+> > > >   #define TUN_F_TSO6  0x04    /* I can handle TSO for IPv6 packets =
+*/
+> > > >   #define TUN_F_TSO_ECN       0x08    /* I can handle TSO with ECN =
+bits. */
+> > > >   #define TUN_F_UFO   0x10    /* I can handle UFO packets */
+> > > > +#define TUN_F_USO4   0x20    /* I can handle USO for IPv4 packets =
+*/
+> > > > +#define TUN_F_USO6   0x40    /* I can handle USO for IPv6 packets =
+*/
+> > > >
+> > > >   /* Protocol info prepended to the packets (when IFF_NO_PI is not =
+set) */
+> > > >   #define TUN_PKT_STRIP       0x0001
+> > >
+> >
+>
