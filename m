@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87CFA4C195E
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:05:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DC24C1956
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243166AbiBWRFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:05:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54554 "EHLO
+        id S243155AbiBWRFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:05:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242244AbiBWRFU (ORCPT
+        with ESMTP id S243141AbiBWRFU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:05:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159BD51E7C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA2B522F3
         for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:04:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7D7760FCA
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 17:04:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00AEFC340EB;
-        Wed, 23 Feb 2022 17:04:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EC2160FD2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 17:04:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E52C340F3;
+        Wed, 23 Feb 2022 17:04:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645635882;
-        bh=5HlVWd8sdoBmV6RaN5F0WJ8X6P9zT60QHBI3eEFAqnY=;
+        bh=CiXXtAHx3NcFJ+ECjVFrIEdbVIYyibRMSEoVmg7cjpI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8rLrdXnQnFqhSiMy5Z7y2nbEAq/73gg6RM0WxCPhlZeFlBZEovICpdYI00ma8PZz
-         bsqe+clmDdOv5adBr6EHrArXsMC4o2Qsel8UZuT1039pLsA5ZPNYpmMTslKB9BdpjI
-         GLJXQfkWc9AocTMo+M3TGmk+3v3ci9hATk92x7wHgvVTaH3z4GgW/P/XQ7t7ZOuUf8
-         jcPEPY6lqnPKqQ9R5OBDcPaKkOFkCxYY5mCK64tGFjoXwm87OMBZ0kThGPmofKVTmn
-         osJiZ9TM+KETRHPbcgyd96dh1pbGXjSY7QIB3uTsdKwVWBfehUWcR0guh4pYOTFN5V
-         CYMVfGWCvT9+A==
+        b=PctlhoHxCfyhky/8OlpMuHkYSrRI9QKLSB/r8Z7yS4UocdKEVfqViUsH8/kk5e1w1
+         zh3441+owKBxQBfISWKrB0noAzUCn5jAdkoTDNqrC7JkSAjEj0JOhGFfQaS3Ccm4WP
+         /izk7nrbisTxUbXPQTinl01WRGtUrr6yXIhTyk3X2c5/6Uxy0qQu0vt9zfmpibc/16
+         FIuUt/nhlD2obglbHDDNVe2A8PGcCvNIG+Yl4UlhYlSSFzZn6odEZkv4stHjX5oEAN
+         MZJUKoQFkB89TMcs+AojuZoCVpcKap3vokaiOPTT5dZ+WSyO9x/OMx2LqyOU2b/1jB
+         N+14A4lD4aGoQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 10/19] net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
-Date:   Wed, 23 Feb 2022 09:04:21 -0800
-Message-Id: <20220223170430.295595-11-saeed@kernel.org>
+Subject: [net 11/19] net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
+Date:   Wed, 23 Feb 2022 09:04:22 -0800
+Message-Id: <20220223170430.295595-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220223170430.295595-1-saeed@kernel.org>
 References: <20220223170430.295595-1-saeed@kernel.org>
@@ -55,32 +54,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-The ioctl EEPROM query wrongly returns success on read failures, fix
-that by returning the appropriate error code.
+For RX TLS device-offloaded packets, the HW spec guarantees checksum
+validation for the offloaded packets, but does not define whether the
+CQE.checksum field matches the original packet (ciphertext) or
+the decrypted one (plaintext). This latitude allows architetctural
+improvements between generations of chips, resulting in different decisions
+regarding the value type of CQE.checksum.
 
-Fixes: bb64143eee8c ("net/mlx5e: Add ethtool support for dump module EEPROM")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Hence, for these packets, the device driver should not make use of this CQE
+field. Here we block CHECKSUM_COMPLETE usage for RX TLS device-offloaded
+packets, and use CHECKSUM_UNNECESSARY instead.
+
+Value of the packet's tcp_hdr.csum is not modified by the HW, and it always
+matches the original ciphertext.
+
+Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 57d755db1cf5..6e80585d731f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1792,7 +1792,7 @@ static int mlx5e_get_module_eeprom(struct net_device *netdev,
- 		if (size_read < 0) {
- 			netdev_err(priv->netdev, "%s: mlx5_query_eeprom failed:0x%x\n",
- 				   __func__, size_read);
--			return 0;
-+			return size_read;
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index ee0a8f5206e3..6530d7bd5045 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1349,7 +1349,8 @@ static inline void mlx5e_handle_csum(struct net_device *netdev,
+ 	}
  
- 		i += size_read;
+ 	/* True when explicitly set via priv flag, or XDP prog is loaded */
+-	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state))
++	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state) ||
++	    get_cqe_tls_offload(cqe))
+ 		goto csum_unnecessary;
+ 
+ 	/* CQE csum doesn't cover padding octets in short ethernet
 -- 
 2.35.1
 
