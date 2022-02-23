@@ -2,157 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F464C1FC1
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:35:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2984C1FF1
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244836AbiBWXgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 18:36:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
+        id S245075AbiBWXjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 18:39:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241997AbiBWXgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:36:06 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2083.outbound.protection.outlook.com [40.107.243.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022F659A71
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 15:35:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ewRMaYKHyze6vgJOf6ALMI7l0v7UsE+rRpezlzx+QTJD3j1QPeXRgAs/6rhHbynNEyXEhRSNNVeW5/EaG0joT+6zNucMf3UsBmrqEqsYbXprl44+CBI1CgkPV9ZJDTMW51+Plul0DTmg75U0t8tDut6YUGwtlEgeDsgxZREU+mWYabplnqLI8tMwhZ+2XuJXjdK4OabcGYKkspd95+UkL0oyUXglaUHGoVscsVmNzzYGjnvlGEJN2m4W9CdTTdAUszVprti6NBPYU1nNFG22qRgUNNph9FT30Kpas1s2cpDUxytvgdkQUlarZkn2T7i0BMntDH564kRuKqkRPnZWcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5KAr9e4XcS1c/TnNQmiDyRlpB1a9A2uCbooYQpf1Krw=;
- b=drA9Z2RNTjMggdMTAUHGyKXBT3FqvbetsbDp61JsFANk0bVxA6tMZhnFS4JRzo4IeVaiGYy8hBCT92uterYbd1DDjbuoMB0MibANuyu8uHvnLv3WxV9BW1kJHAtOzBtjimus7jRBnNCeIE25fgt2ATuMlX+XJ3xWRaw6EF/eeVJOUwKn5e32WxXTk19cg4pKFtStw6miQqvcBQQNAdncirNuTpiXrZX/k2f2HnLJXwmKM0p8tjvsfeVrpp7JGcJWUeFtO9oDvn3/CNVp1UGQzKkrXs3hPJQWqtaYmg2APw6koTpgsFFYOhq6+K7a+sWoEpf7LUWiphViViLTsudJOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5KAr9e4XcS1c/TnNQmiDyRlpB1a9A2uCbooYQpf1Krw=;
- b=RTVV4szTLwd7XwORa8/BIyTrtJGOxGbYSdeKUhZejSW4+2T1gEHiAe40le4Ia1eNfd03jCxqPISrcbZ29DcIsEtaFs3XirzI3/EFHlifZu6BX4JXc9hz6IwOE9eK5rxYJTKPhnCFVT87/eEoQ6kIohA1c+uRFm/XKsjrOjtUH7UWB7ASAsEcnDxZRgyoFap4+1T61bR3lNpVa5SSTXGrNXn1sBZp6xQ1wkj5YGXLdBjckqO4bUloMQWC7eTKpKakYq9zqbdEvaF9TwsvDwB3VWDQgUOYwkCXx+4AdGd2jpJS3PgaxMlrb/R/YZbGbAJvfJIf67WzV6aIpzqtot4l7Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MW2PR12MB2489.namprd12.prod.outlook.com (2603:10b6:907:d::25)
- by BL1PR12MB5271.namprd12.prod.outlook.com (2603:10b6:208:315::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Wed, 23 Feb
- 2022 23:35:35 +0000
-Received: from MW2PR12MB2489.namprd12.prod.outlook.com
- ([fe80::8b1:f0f0:ef1e:9918]) by MW2PR12MB2489.namprd12.prod.outlook.com
- ([fe80::8b1:f0f0:ef1e:9918%7]) with mapi id 15.20.4995.027; Wed, 23 Feb 2022
- 23:35:35 +0000
-Message-ID: <5509c8e0-1689-783a-4052-85321fb7997e@nvidia.com>
-Date:   Thu, 24 Feb 2022 01:35:26 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [net 04/19] net/mlx5: DR, Don't allow match on IP w/o matching on
- full ethertype/ip_version
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20220223170430.295595-1-saeed@kernel.org>
- <20220223170430.295595-5-saeed@kernel.org>
- <20220223152641.2bd501c5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Yevgeny Kliteynik <kliteyn@nvidia.com>
-In-Reply-To: <20220223152641.2bd501c5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM6PR10CA0097.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:209:8c::38) To MW2PR12MB2489.namprd12.prod.outlook.com
- (2603:10b6:907:d::25)
+        with ESMTP id S244971AbiBWXjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:39:31 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C805A597;
+        Wed, 23 Feb 2022 15:38:37 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id x5so509988edd.11;
+        Wed, 23 Feb 2022 15:38:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=whDwH2zPitIeQOUUdx6d4kE8joYGIUm+H6ZjSRJ73C8=;
+        b=fP3R1s5LlGzdldvNhELT+AzSKqVuroeCFRjURy+R5jV670SSuLQMH1hPx8hFcYAROE
+         H0MVN9lOPkkscxhCeBbwuBS7nJOh4Y3WDqf92Jwm3izQMh3mLZCgK+yP8V/mSSne6WVt
+         QuC82aSvQHfhA9QQjsBnA3z1YVwOOR/Y+QwrNuITg+DBuq3jygUk7Tuj30Mf42ISU5vs
+         u1EC3x35bZlxPXgclUi0NZJ9um7UfnsWxwYqXyfd0tpILFEXeD8ljpou9e3vwsPRMfRD
+         Fq7/sgB0z9gQjfG97fpelY388/A7f4P6S3w4kPnknTl4ZRC3+1kEG4F/P9sLZA78LeVo
+         G1zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=whDwH2zPitIeQOUUdx6d4kE8joYGIUm+H6ZjSRJ73C8=;
+        b=ogm7BtSKYsips2EZ5pQNLbYTNuSTLbN5Md6P/XQpT52ZPqNk6NCKFzP1VmXr459ZkC
+         73iBJyDN+CUQssscitdJpQukvuILNYE6xVQ6jDnUgf9aZHK99YHyIWeNspR6pex2zLci
+         FzfrENjJqoxijlv4z6fhdANuipNv9deqgK8QFItaS5SmcRnVxvmTfJkuTkzLy5RqcHDb
+         fwxg6nwsO1FB1q1QoMwwFkSsaSKcWVVtr3dPhwLwawpuVAOSOm5+zQGSlCylXrGSEYND
+         w0BmODtHevel01bEiOkp6nkSHoZIH3etumV9EQVv5U4uhObmzXUVdRL+hqomQQBYqHii
+         ZE0w==
+X-Gm-Message-State: AOAM530TbvVplIBXODaTA7BLOPxVz5raCQEBlh0SYWqpjFJYYpwQXODX
+        7rw8rSgf28sJhxWeLHXVx80=
+X-Google-Smtp-Source: ABdhPJw4EKDZ+eF1ilXeLE5Vko0osaUG7tolZ8skj7t+blXjsRjY4xbCjcr/AOso+e4kNjG1j+a12g==
+X-Received: by 2002:a05:6402:2707:b0:410:d100:6937 with SMTP id y7-20020a056402270700b00410d1006937mr1669538edd.428.1645659515675;
+        Wed, 23 Feb 2022 15:38:35 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id v16sm448322ejo.156.2022.02.23.15.38.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 15:38:35 -0800 (PST)
+Date:   Thu, 24 Feb 2022 01:38:33 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/1] net: dsa: microchip: ksz9477: implement
+ MTU configuration
+Message-ID: <20220223233833.mjknw5ko7hpxj3go@skbuf>
+References: <20220223084055.2719969-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5abdcbfc-6747-4546-4c4f-08d9f72530a8
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5271:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5271643B57A55B6FCDB3189CC03C9@BL1PR12MB5271.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zp9bYq4vsT5hgomPwlb7hE+CAq/hKkmHQt+i7lLEGC64sP629SNOCYJhY1Cn/u6guYQoDCNpzO4JvfIzw41jC2SbENoi1bjn3cJ3Go2uDaPVixh7/SOi2pipZcMPQagSwbFGqer7AY8+jnR7iISzoh9fcbgUT+eSeHZDlz6HLkmfap/f4G0k6F+7GaW41hya0Ht9oyNaVuCvgRHcQI6lgCCU03d3Xr22ehJuqxnMCiXplCmI9lTFlTRhk19CNjGGWTi+koiLADZqH3u527GoJVR61GLmJNK1AAGgRoTgx+hQUvrJRKeyZ2gf0T+NcY6j9pFChSklQ3XezL3xjLOoISeXoq4Rz38+FIpyZuHyT/ddDd2nZAzsfeManigL4wA6Z31tmDxuDQxbRDZaSG47ZOytf1nkzZF6wsCz8M7QY9vnlm1mWs5XRgI6qHZHYxXXOsoKlb3P9n1uXexr5+ZpVk2tO9S/pdk1TMcCHqZ0cV8UA86qVTU9nlCCvSqiBzd1/mONz4PfkIKzVmNJHqiF8JcCnfWYIV5A0NZoT4CdCP82EFy/XIaqeDwr3qpC7OxYQ0/bKbbZBKg59DUvEKK7/8FTZ/hPOc8vD2rvYgS/b8q079ln13KuK+mfJM5k2ZdAdr/WbjmnyaxU8gszAgCcdC+5EoxWwoQXaw8G9AVeRlZqMveT5GuEwqcC8W/HDEzvZun5UTdLfhJMBqi3JousgY/XmN+AYTujGU3UfXWpf8Y=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB2489.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(66946007)(38100700002)(316002)(66476007)(66556008)(508600001)(54906003)(110136005)(6486002)(36756003)(31686004)(86362001)(31696002)(4326008)(6506007)(6666004)(186003)(26005)(2616005)(8936002)(2906002)(6512007)(5660300002)(107886003)(53546011)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?anNMWVFXajF5aEswSkdoRFliNmxjZG5nck1IdkYwUWh0blVwRTI1QkRBRzVK?=
- =?utf-8?B?TnFpSWVGMTQwdm0xSmRUaVJGN3FpTjMzeVN5NGs2WFl6Qkhod2E4QUEvSmt4?=
- =?utf-8?B?dHJUa2UyTDc0SUF2d3VhTmRlZ29nQm1LdE14S0YrK3luMXR0K1hMNmJnN3BO?=
- =?utf-8?B?eUhOdUJ3YnlXOXlnYWNLWW5kdHBwU3FCQU4rVWgzSHFnZitnMGNVL3lVaHVR?=
- =?utf-8?B?Q1FYMnZ5QUFqOURtekhwN0pSK2p6bHUrNjNZZDZQREV0K09KZ0h2eVFzMEZu?=
- =?utf-8?B?RmJpQW9GTzkwSmtwdW5Zd2M3dTdlcnFrNWRpLzZDdW9wNXBVbnZLcmVmQVpu?=
- =?utf-8?B?blNPVmZqbU1PREk1bTg2OVpIZVhZVmtpTjhEWmtiN3c4Sm1VaUU3SW00Zm9h?=
- =?utf-8?B?ck05aVNCSk1QVHNON25UM2cyN0FLY0ZWcnZ5Skl6amxFK25yVmZ5ckRTMnpW?=
- =?utf-8?B?TWl0Q1NiYWxEM0lkeU9ud2ljVWJjRC92ZzhzM0ZUc005WGh1bisxcVVSWUhr?=
- =?utf-8?B?akZpQnRCNE1vbWtZTTZxVGhrRkY0Rjdrc0xNcUtrQ0ZuVlpKK3MvY2FocWRV?=
- =?utf-8?B?SWxVa0VWTzlsQ1pLOHR5ZnFVT1EyYVlhWFdMVGRiM3RjQWJMaVczcDZNQ1RD?=
- =?utf-8?B?ZC9PZEdVL0JpS2tFYjJWYVRPQjNTV29HbWc4cFE4U1NORmtjNHhEN2owNU1X?=
- =?utf-8?B?c2lLbzI5RFZuQzY2dlNYL1Z0L2hZMmZZOFVPMFFaTXdva09LVm9mR3ZqRHk4?=
- =?utf-8?B?SkRrWXhnRG1hWkVpQTc3eHRFZnZEL1BZOXQ5ZTlsbzQ1TEdncUNjU1ljeEdv?=
- =?utf-8?B?alFqWU8zbE1wMzVLZ0xweEwyd01KVUE1YXpIS1RxaHkxQ04zck9sd25UdE00?=
- =?utf-8?B?NldwQW1wWU9EQXVhbGNXYmE3blhTMG9pSW55eDhXb3lOamxlRDBWQnlXQW1u?=
- =?utf-8?B?OVFqaEE5eFFkLzM1bmN5U1F2cmVCSG9CUExLQU9hdmhDbzVSK1RTNUhIanhw?=
- =?utf-8?B?aWU4MWNPUHJudFIyZWh2NHFwT3puME94cTJOU2dOVndVSEM3V1UrS2duOTVK?=
- =?utf-8?B?YzBhYkNId0pzZnQ0dVNML2JKaGpiWU1sb21EaytMblJsWmNJemJjWWNBeEtT?=
- =?utf-8?B?bXdDcDRQMDVIbmEvOEtxdGFLVnZDU0JBTmR6QzNqVVNGYnVwUk5FUVdlLy9J?=
- =?utf-8?B?OVhUZkFDSVZTQjdHc0JWOEh3TVpyMW40R1NhRE1Ga0ZrSndEdlBLU1ZiekUw?=
- =?utf-8?B?L2JNNmY2enFneXNsSm54TTdpS1hBUUhUY0YwNW9QdGoyd2F3VjBMTkpEbmhm?=
- =?utf-8?B?VTcrcDRMVXhFcXYwblZDd2VMZUtnY21BV0l3a0Y4bzgzeGRPTVZraytnbGZT?=
- =?utf-8?B?TU5obFdCNjdHamxkZHA3VjVxTElIM2tCSEU2ZGdLcmx2c3R5elc0ampSR1cr?=
- =?utf-8?B?WXJrdGZycjB5aTdoY1EvdnNkSXQzK2NUdFNiWWtHeXRrVEtjNFV3SkJ6T0ht?=
- =?utf-8?B?VUpzTFVmM3hUQzJGMjB6N0h1TjZzRlRlQzBUeElQNkZ2dGJNSnoyVkpLNzFV?=
- =?utf-8?B?MWtYNVQ5NFU0K2s5cTBRTHNXckVwTEUreTVJQWhORkJXL3V5KzlrZHVCaXVa?=
- =?utf-8?B?OExibXV6aUp6WDZDazZrdzFBdnF6Q3VmbkJZdWhXZW4zbGlqVEVGWUllQUsw?=
- =?utf-8?B?TDY2dSt2WUdsOTJuQ2hhZVFIbzJFaytkSUJWM1VSNVdrcElLTDhJRmJBVmR2?=
- =?utf-8?B?ZFVRUm9sK2VheFF4TUNxdTZVdXd3aEhLWWc4aFk3WGFzMWVBdit5SUc3clI3?=
- =?utf-8?B?aFIyaVl3dTk0Vi9HVTYrRHN2SWtsTXM0Tit3NGFqQlkxMHNrSmFmTzBDbHNs?=
- =?utf-8?B?RGZzR2dCVWdVSStXbUxlWXVzMHdxeFBwaExmbWE2MVY1SDlscjJEdEx0cVp5?=
- =?utf-8?B?eHJhTzJoUUVMcDhtYmZEdjFSYTA4MUpVUkJRY0ZSaGcreXVPMllUS0lFU1Ra?=
- =?utf-8?B?UGdCQzdINVF3Sm9ZYmU1RHdIOTdsMWp2Q2J4VlRJNFZlNitLRHJDODh2T0ZX?=
- =?utf-8?B?b2RCZFNhUmtVRHl1Nld1bm4zcGJhN3hTVzVtTVlidElDK1Q0TGpPUHNuSHpy?=
- =?utf-8?B?QzNLOXhTUE9NTWpwbzJoZjFGdzNWakluaVhMdkhWdEdSWmFKTTBXWHZpMEZv?=
- =?utf-8?Q?yinV2lR/sIRD3+e4RFXnCDA=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5abdcbfc-6747-4546-4c4f-08d9f72530a8
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB2489.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 23:35:35.6353
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3r4ogQJJts9jDwT35/tyGxU7VdUdvOT532estH4MU5QWfeLjS3H5U7DkNjyj9n8BC8d9IsoF9J6uAZx3vz06sw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5271
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223084055.2719969-1-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 24-Feb-22 01:26, Jakub Kicinski wrote:
-> External email: Use caution opening links or attachments
+On Wed, Feb 23, 2022 at 09:40:55AM +0100, Oleksij Rempel wrote:
+> This chips supports two ways to configure max MTU size:
+> - by setting SW_LEGAL_PACKET_DISABLE bit: if this bit is 0 allowed packed size
+>   will be between 64 and bytes 1518. If this bit is 1, it will accept
+>   packets up to 2000 bytes.
+> - by setting SW_JUMBO_PACKET bit. If this bit is set, the chip will
+>   ignore SW_LEGAL_PACKET_DISABLE value and use REG_SW_MTU__2 register to
+>   configure MTU size.
 > 
+> Current driver has disabled SW_JUMBO_PACKET bit and activates
+> SW_LEGAL_PACKET_DISABLE. So the switch will pass all packets up to 2000 without
+> any way to configure it.
 > 
-> On Wed, 23 Feb 2022 09:04:15 -0800 Saeed Mahameed wrote:
->> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
->>
->> Currently SMFS allows adding rule with matching on src/dst IP w/o matching
->> on full ethertype or ip_version, which is not supported by HW.
->> This patch fixes this issue and adds the check as it is done in DMFS.
->>
->> Fixes: 26d688e33f88 ("net/mlx5: DR, Add Steering entry (STE) utilities")
->> Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
->> Reviewed-by: Alex Vesker <valex@nvidia.com>
->> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> By providing port_change_mtu we are switch to SW_JUMBO_PACKET way and will
+> be able to configure MTU up to ~9000.
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c:605:5: warning: symbol 'mlx5dr_ste_build_pre_check_spec' was not declared. Should it be static?
-> drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c:605:5: warning: no previous prototype for ‘mlx5dr_ste_build_pre_check_spec’ [-Wmissing-prototypes]
->    605 | int mlx5dr_ste_build_pre_check_spec(struct mlx5dr_domain *dmn,
->        |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+> changes v2:
+> - rename max_mtu to max_frame and new_mtu to frame_size
+> - use max() instead of if(>)
+> ---
+>  drivers/net/dsa/microchip/ksz9477.c     | 40 +++++++++++++++++++++++--
+>  drivers/net/dsa/microchip/ksz9477_reg.h |  4 +++
+>  drivers/net/dsa/microchip/ksz_common.h  |  1 +
+>  3 files changed, 43 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+> index 18ffc8ded7ee..5c5f78cb970e 100644
+> --- a/drivers/net/dsa/microchip/ksz9477.c
+> +++ b/drivers/net/dsa/microchip/ksz9477.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/platform_data/microchip-ksz.h>
+>  #include <linux/phy.h>
+>  #include <linux/if_bridge.h>
+> +#include <linux/if_vlan.h>
+>  #include <net/dsa.h>
+>  #include <net/switchdev.h>
+>  
+> @@ -182,6 +183,33 @@ static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
+>  			   bits, set ? bits : 0);
+>  }
+>  
+> +static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +	u16 frame_size, max_frame = 0;
+> +	int i;
+> +
+> +	frame_size = mtu + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN;
 
-Thanks Jakub, will sent v2 shortly.
+Are you sure the unit of measurement is ok? My KSZ9477 documentation
+says this about register 0x0308:
 
--- YK
+Maximum Frame Length (MTU)
+Specifies the maximum transmission unit (MTU), which is the maximum
+frame payload size. Frames which exceed this maximum are truncated. This
+value can be set as high as 9000 (= 0x2328) if jumbo frame support is
+required.
+
+"frame payload" to me means what MTU should mean. And ETH_HLEN +
+VLAN_HLEN + ETH_FCS_LEN isn't part of that meaning.
+
+> +
+> +	if (dsa_is_cpu_port(ds, port))
+> +		frame_size += KSZ9477_INGRESS_TAG_LEN;
+> +
+> +	/* Cache the per-port MTU setting */
+> +	dev->ports[port].max_frame = frame_size;
+> +
+> +	for (i = 0; i < dev->port_cnt; i++)
+> +		max_frame = max(max_frame, dev->ports[i].max_frame);
+> +
+> +	return regmap_update_bits(dev->regmap[1], REG_SW_MTU__2,
+> +				  REG_SW_MTU_MASK, max_frame);
+> +}
+> +
+> +static int ksz9477_max_mtu(struct dsa_switch *ds, int port)
+> +{
+> +	return KSZ9477_MAX_FRAME_SIZE - ETH_HLEN - ETH_FCS_LEN - VLAN_HLEN -
+> +		KSZ9477_INGRESS_TAG_LEN;
+> +}
+> +
+>  static int ksz9477_wait_vlan_ctrl_ready(struct ksz_device *dev)
+>  {
+>  	unsigned int val;
+> @@ -1412,8 +1440,14 @@ static int ksz9477_setup(struct dsa_switch *ds)
+>  	/* Do not work correctly with tail tagging. */
+>  	ksz_cfg(dev, REG_SW_MAC_CTRL_0, SW_CHECK_LENGTH, false);
+>  
+> -	/* accept packet up to 2000bytes */
+> -	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_LEGAL_PACKET_DISABLE, true);
+> +	/* Enable REG_SW_MTU__2 reg by setting SW_JUMBO_PACKET */
+> +	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_JUMBO_PACKET, true);
+> +
+> +	/* Now we can configure default MTU value */
+> +	ret = regmap_update_bits(dev->regmap[1], REG_SW_MTU__2, REG_SW_MTU_MASK,
+> +				 VLAN_ETH_FRAME_LEN + ETH_FCS_LEN);
+
+Why do you need this? Doesn't DSA call dsa_slave_create() ->
+dsa_slave_change_mtu(ETH_DATA_LEN) on probe?
+
+> +	if (ret)
+> +		return ret;
+>  
+>  	ksz9477_config_cpu_port(ds);
+>  
+> @@ -1460,6 +1494,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+>  	.port_mirror_add	= ksz9477_port_mirror_add,
+>  	.port_mirror_del	= ksz9477_port_mirror_del,
+>  	.get_stats64		= ksz9477_get_stats64,
+> +	.port_change_mtu	= ksz9477_change_mtu,
+> +	.port_max_mtu		= ksz9477_max_mtu,
+>  };
+>  
+>  static u32 ksz9477_get_port_addr(int port, int offset)
+> diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
+> index 16939f29faa5..2278e763ee3e 100644
+> --- a/drivers/net/dsa/microchip/ksz9477_reg.h
+> +++ b/drivers/net/dsa/microchip/ksz9477_reg.h
+> @@ -176,6 +176,7 @@
+>  #define REG_SW_MAC_ADDR_5		0x0307
+>  
+>  #define REG_SW_MTU__2			0x0308
+> +#define REG_SW_MTU_MASK			GENMASK(13, 0)
+>  
+>  #define REG_SW_ISP_TPID__2		0x030A
+>  
+> @@ -1662,4 +1663,7 @@
+>  /* 148,800 frames * 67 ms / 100 */
+>  #define BROADCAST_STORM_VALUE		9969
+>  
+> +#define KSZ9477_INGRESS_TAG_LEN		2
+> +#define KSZ9477_MAX_FRAME_SIZE		9000
+> +
+>  #endif /* KSZ9477_REGS_H */
+> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+> index c6fa487fb006..739365bfceb2 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.h
+> +++ b/drivers/net/dsa/microchip/ksz_common.h
+> @@ -41,6 +41,7 @@ struct ksz_port {
+>  
+>  	struct ksz_port_mib mib;
+>  	phy_interface_t interface;
+> +	u16 max_frame;
+>  };
+>  
+>  struct ksz_device {
+> -- 
+> 2.30.2
+> 
+
