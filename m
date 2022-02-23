@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AFD94C2016
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:41:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29C9D4C1FFC
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:41:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244971AbiBWXk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 18:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
+        id S245022AbiBWXkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 18:40:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244871AbiBWXkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:40:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28A95B3DE;
-        Wed, 23 Feb 2022 15:39:44 -0800 (PST)
+        with ESMTP id S244975AbiBWXkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:40:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B4C5AEEC;
+        Wed, 23 Feb 2022 15:39:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87C19B8226A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35A0BB81878;
+        Wed, 23 Feb 2022 23:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E26FC340F0;
         Wed, 23 Feb 2022 23:39:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC68C340F3;
-        Wed, 23 Feb 2022 23:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645659583;
-        bh=0sJdf1guIu5C6xHMv6OY6rPXkkGBe1Sm+NfTNhiJ62g=;
+        bh=B6rlk1rtjI2P39ex0T5rmDlTvyxeV3kbIgFoVuLN3+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M67YOU0sVL0nsGaZt3FSepgW3rDKs/7Hb3z1KTdk5uNEpk9zBNsrmTICUGap+ptHU
-         hRdq1XAA1WeG5TGUCGyj/IKwuvnz+COQZXSpV+vgv7/aCHnIfEyA1WJ0oIxcNHMLjI
-         zG3WI27A8oboLidtSBrHSPJgxaCqKQnLIE7U6aoP5oHTKWpHLDEM+Nn0twQSaA6EDr
-         WD+873a5MM0yV5yoRDPCjX/ahezsMgs1xRt9XMiPm8T9W/QN3I+HV7Xc8EEn/Ws++i
-         2fCP2U6ce62F8I/NHvKTOitLd8Mgo4uItOlwT88mwJzvIbNbH1QOicWTe6sweKMN5j
-         G97o7DRMUPbYQ==
+        b=deb7LbxmldhjDT7JP10EAH0cjtF9ye3Xk9soVUT6HqB1Ifpep3lA9DleWkAkUbeW2
+         dPfDobfg7GdwWTOEmUAgVEEVsyzusEipSRORscMJ96yDsdVuy7cyp5h/0Evy3uVm/t
+         dgbUN95+MiJd40e87hxVZeaNAMq65IbQnKrUu8wqR0yFQ9QMhtov4XaMxP3bJREjFK
+         7oz3s1sWebkySwFBdH7pZThuFci2Vmyw/MY6u0AVWfNtDqJh+0sQLzab9Css4vk9H7
+         QRF8GaBmwivvH9xHJDa4BhBRYi2FeQ9XSyGTHrXy+vrENlnO7XnRmlBupp9o+4t7TN
+         GmQ8Tf1MzkY1Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [for-next v2 09/17] net/mlx5: Lag, offload active-backup drops to hardware
-Date:   Wed, 23 Feb 2022 15:39:22 -0800
-Message-Id: <20220223233930.319301-10-saeed@kernel.org>
+Subject: [for-next v2 10/17] net/mlx5: cmdif, Return value improvements
+Date:   Wed, 23 Feb 2022 15:39:23 -0800
+Message-Id: <20220223233930.319301-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220223233930.319301-1-saeed@kernel.org>
 References: <20220223233930.319301-1-saeed@kernel.org>
@@ -57,152 +57,207 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Saeed Mahameed <saeedm@mellanox.com>
 
-In active-backup mode the backup interface's packets are dropped by the
-bond device. In switchdev where TC rules are offloaded to the FDB
-this can lead to packets being hit in the FDB where without offload
-they would have been dropped before reaching TC rules in the kernel.
+Make sure that the two basic command interface functions cmd_exec and
+cmd_invoke will return well defined return values:
 
-Create a drop rule to make sure packets on inactive ports are dropped
-before reaching the FDB.
+return < 0 : Command execution couldn't be submitted by driver
+return > 0 : Command execution couldn't be performed by firmware
+return = 0 : Command was executed by FW, Caller must check FW
+outbox status.
 
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+These statuses are valid for the blocking call of cmd_exec() e.g. when
+callback == NULL, in a downstream patch, will refactor the code to
+provide the same return value semantics to the callback.
+
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/lag/lag.c | 75 ++++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/lag/lag.h |  1 +
- 2 files changed, 73 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 77 +++++++++++--------
+ 1 file changed, 43 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index 125ac4befd74..6cad3b72c133 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -38,6 +38,7 @@
- #include "lib/devcom.h"
- #include "mlx5_core.h"
- #include "eswitch.h"
-+#include "esw/acl/ofld.h"
- #include "lag.h"
- #include "mp.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+index 17fe05809653..3c6a533ee0c9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -190,10 +190,10 @@ static int verify_block_sig(struct mlx5_cmd_prot_block *block)
+ 	int xor_len = sizeof(*block) - sizeof(block->data) - 1;
  
-@@ -210,6 +211,62 @@ static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
- 		*port1 = MLX5_LAG_EGRESS_PORT_2;
- }
+ 	if (xor8_buf(block, rsvd0_off, xor_len) != 0xff)
+-		return -EINVAL;
++		return -EHWPOISON;
  
-+static bool mlx5_lag_has_drop_rule(struct mlx5_lag *ldev)
-+{
-+	return ldev->pf[MLX5_LAG_P1].has_drop || ldev->pf[MLX5_LAG_P2].has_drop;
-+}
-+
-+static void mlx5_lag_drop_rule_cleanup(struct mlx5_lag *ldev)
-+{
-+	int i;
-+
-+	for (i = 0; i < MLX5_MAX_PORTS; i++) {
-+		if (!ldev->pf[i].has_drop)
-+			continue;
-+
-+		mlx5_esw_acl_ingress_vport_drop_rule_destroy(ldev->pf[i].dev->priv.eswitch,
-+							     MLX5_VPORT_UPLINK);
-+		ldev->pf[i].has_drop = false;
-+	}
-+}
-+
-+static void mlx5_lag_drop_rule_setup(struct mlx5_lag *ldev,
-+				     struct lag_tracker *tracker)
-+{
-+	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
-+	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
-+	struct mlx5_core_dev *inactive;
-+	u8 v2p_port1, v2p_port2;
-+	int inactive_idx;
-+	int err;
-+
-+	/* First delete the current drop rule so there won't be any dropped
-+	 * packets
-+	 */
-+	mlx5_lag_drop_rule_cleanup(ldev);
-+
-+	if (!ldev->tracker.has_inactive)
-+		return;
-+
-+	mlx5_infer_tx_affinity_mapping(tracker, &v2p_port1, &v2p_port2);
-+
-+	if (v2p_port1 == MLX5_LAG_EGRESS_PORT_1) {
-+		inactive = dev1;
-+		inactive_idx = MLX5_LAG_P2;
-+	} else {
-+		inactive = dev0;
-+		inactive_idx = MLX5_LAG_P1;
-+	}
-+
-+	err = mlx5_esw_acl_ingress_vport_drop_rule_create(inactive->priv.eswitch,
-+							  MLX5_VPORT_UPLINK);
-+	if (!err)
-+		ldev->pf[inactive_idx].has_drop = true;
-+	else
-+		mlx5_core_err(inactive,
-+			      "Failed to create lag drop rule, error: %d", err);
-+}
-+
- static int _mlx5_modify_lag(struct mlx5_lag *ldev, u8 v2p_port1, u8 v2p_port2)
- {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
-@@ -244,6 +301,10 @@ void mlx5_modify_lag(struct mlx5_lag *ldev,
- 			       ldev->v2p_map[MLX5_LAG_P1],
- 			       ldev->v2p_map[MLX5_LAG_P2]);
- 	}
-+
-+	if (tracker->tx_type == NETDEV_LAG_TX_TYPE_ACTIVEBACKUP &&
-+	    !(ldev->flags & MLX5_LAG_FLAG_ROCE))
-+		mlx5_lag_drop_rule_setup(ldev, tracker);
- }
+ 	if (xor8_buf(block, 0, sizeof(*block)) != 0xff)
+-		return -EINVAL;
++		return -EHWPOISON;
  
- static void mlx5_lag_set_port_sel_mode(struct mlx5_lag *ldev,
-@@ -345,6 +406,10 @@ int mlx5_activate_lag(struct mlx5_lag *ldev,
- 		return err;
- 	}
- 
-+	if (tracker->tx_type == NETDEV_LAG_TX_TYPE_ACTIVEBACKUP &&
-+	    !roce_lag)
-+		mlx5_lag_drop_rule_setup(ldev, tracker);
-+
- 	ldev->flags |= flags;
- 	ldev->shared_fdb = shared_fdb;
  	return 0;
-@@ -379,11 +444,15 @@ static int mlx5_deactivate_lag(struct mlx5_lag *ldev)
- 				      "Failed to deactivate VF LAG; driver restart required\n"
- 				      "Make sure all VFs are unbound prior to VF LAG activation or deactivation\n");
- 		}
--	} else if (flags & MLX5_LAG_FLAG_HASH_BASED) {
--		mlx5_lag_port_sel_destroy(ldev);
-+		return err;
+ }
+@@ -259,12 +259,12 @@ static int verify_signature(struct mlx5_cmd_work_ent *ent)
+ 
+ 	sig = xor8_buf(ent->lay, 0, sizeof(*ent->lay));
+ 	if (sig != 0xff)
+-		return -EINVAL;
++		return -EHWPOISON;
+ 
+ 	for (i = 0; i < n && next; i++) {
+ 		err = verify_block_sig(next->buf);
+ 		if (err)
+-			return err;
++			return -EHWPOISON;
+ 
+ 		next = next->next;
+ 	}
+@@ -479,7 +479,7 @@ static int mlx5_internal_err_ret_value(struct mlx5_core_dev *dev, u16 op,
+ 	case MLX5_CMD_OP_ALLOC_SF:
+ 		*status = MLX5_DRIVER_STATUS_ABORTED;
+ 		*synd = MLX5_DRIVER_SYND;
+-		return -EIO;
++		return -ENOLINK;
+ 	default:
+ 		mlx5_core_err(dev, "Unknown FW command (%d)\n", op);
+ 		return -EINVAL;
+@@ -1101,16 +1101,27 @@ static int wait_func(struct mlx5_core_dev *dev, struct mlx5_cmd_work_ent *ent)
+ /*  Notes:
+  *    1. Callback functions may not sleep
+  *    2. page queue commands do not support asynchrous completion
++ *
++ * return value in case (!callback):
++ *	ret < 0 : Command execution couldn't be submitted by driver
++ *	ret > 0 : Command execution couldn't be performed by firmware
++ *	ret == 0: Command was executed by FW, Caller must check FW outbox status.
++ *
++ * return value in case (callback):
++ *	ret < 0 : Command execution couldn't be submitted by driver
++ *	ret == 0: Command will be submitted to FW for execution
++ *		  and the callback will be called for further status updates
+  */
+ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
+ 			   struct mlx5_cmd_msg *out, void *uout, int uout_size,
+ 			   mlx5_cmd_cbk_t callback,
+-			   void *context, int page_queue, u8 *status,
++			   void *context, int page_queue,
+ 			   u8 token, bool force_polling)
+ {
+ 	struct mlx5_cmd *cmd = &dev->cmd;
+ 	struct mlx5_cmd_work_ent *ent;
+ 	struct mlx5_cmd_stats *stats;
++	u8 status = 0;
+ 	int err = 0;
+ 	s64 ds;
+ 	u16 op;
+@@ -1141,12 +1152,12 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
+ 		cmd_work_handler(&ent->work);
+ 	} else if (!queue_work(cmd->wq, &ent->work)) {
+ 		mlx5_core_warn(dev, "failed to queue work\n");
+-		err = -ENOMEM;
++		err = -EALREADY;
+ 		goto out_free;
  	}
  
+ 	if (callback)
+-		goto out; /* mlx5_cmd_comp_handler() will put(ent) */
++		return 0; /* mlx5_cmd_comp_handler() will put(ent) */
+ 
+ 	err = wait_func(dev, ent);
+ 	if (err == -ETIMEDOUT || err == -ECANCELED)
+@@ -1164,12 +1175,11 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
+ 	mlx5_core_dbg_mask(dev, 1 << MLX5_CMD_TIME,
+ 			   "fw exec time for %s is %lld nsec\n",
+ 			   mlx5_command_str(op), ds);
+-	*status = ent->status;
+ 
+ out_free:
++	status = ent->status;
+ 	cmd_ent_put(ent);
+-out:
 -	return err;
-+	if (flags & MLX5_LAG_FLAG_HASH_BASED)
-+		mlx5_lag_port_sel_destroy(ldev);
-+	if (mlx5_lag_has_drop_rule(ldev))
-+		mlx5_lag_drop_rule_cleanup(ldev);
-+
-+	return 0;
++	return err ? : status;
  }
  
- static bool mlx5_lag_check_prereq(struct mlx5_lag *ldev)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-index 305d9adbe325..cbf9a9003e55 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h
-@@ -28,6 +28,7 @@ enum {
- struct lag_func {
- 	struct mlx5_core_dev *dev;
- 	struct net_device    *netdev;
-+	bool has_drop;
- };
+ static ssize_t dbg_write(struct file *filp, const char __user *buf,
+@@ -1719,7 +1729,7 @@ void mlx5_cmd_flush(struct mlx5_core_dev *dev)
+ 		up(&cmd->sem);
+ }
  
- /* Used for collection of netdev event info. */
+-static int status_to_err(u8 status)
++static int deliv_status_to_err(u8 status)
+ {
+ 	switch (status) {
+ 	case MLX5_CMD_DELIVERY_STAT_OK:
+@@ -1787,22 +1797,25 @@ static int is_manage_pages(void *in)
+ 	return MLX5_GET(mbox_in, in, opcode) == MLX5_CMD_OP_MANAGE_PAGES;
+ }
+ 
++/*  Notes:
++ *    1. Callback functions may not sleep
++ *    2. Page queue commands do not support asynchrous completion
++ */
+ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
+ 		    int out_size, mlx5_cmd_cbk_t callback, void *context,
+ 		    bool force_polling)
+ {
+-	struct mlx5_cmd_msg *inb;
+-	struct mlx5_cmd_msg *outb;
++	u16 opcode = MLX5_GET(mbox_in, in, opcode);
++	struct mlx5_cmd_msg *inb, *outb;
+ 	int pages_queue;
+ 	gfp_t gfp;
+-	int err;
+-	u8 status = 0;
+-	u32 drv_synd;
+-	u16 opcode;
+ 	u8 token;
++	int err;
+ 
+-	opcode = MLX5_GET(mbox_in, in, opcode);
+ 	if (mlx5_cmd_is_down(dev) || !opcode_allowed(&dev->cmd, opcode)) {
++		u32 drv_synd;
++		u8 status;
++
+ 		err = mlx5_internal_err_ret_value(dev, opcode, &drv_synd, &status);
+ 		MLX5_SET(mbox_out, out, status, status);
+ 		MLX5_SET(mbox_out, out, syndrome, drv_synd);
+@@ -1833,26 +1846,22 @@ static int cmd_exec(struct mlx5_core_dev *dev, void *in, int in_size, void *out,
+ 	}
+ 
+ 	err = mlx5_cmd_invoke(dev, inb, outb, out, out_size, callback, context,
+-			      pages_queue, &status, token, force_polling);
+-	if (err)
+-		goto out_out;
++			      pages_queue, token, force_polling);
++	if (callback)
++		return err;
+ 
+-	mlx5_core_dbg(dev, "err %d, status %d\n", err, status);
+-	if (status) {
+-		err = status_to_err(status);
+-		goto out_out;
+-	}
++	if (err > 0) /* Failed in FW, command didn't execute */
++		err = deliv_status_to_err(err);
+ 
+-	if (!callback)
+-		err = mlx5_copy_from_msg(out, outb, out_size);
++	if (err)
++		goto out_out;
+ 
++	/* command completed by FW */
++	err = mlx5_copy_from_msg(out, outb, out_size);
+ out_out:
+-	if (!callback)
+-		mlx5_free_cmd_msg(dev, outb);
+-
++	mlx5_free_cmd_msg(dev, outb);
+ out_in:
+-	if (!callback)
+-		free_msg(dev, inb);
++	free_msg(dev, inb);
+ 	return err;
+ }
+ 
 -- 
 2.35.1
 
