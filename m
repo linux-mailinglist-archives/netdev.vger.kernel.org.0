@@ -2,88 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C654C13EF
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F13D4C13F5
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 14:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240852AbiBWNUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 08:20:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        id S240851AbiBWNVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 08:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240851AbiBWNUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:20:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EA0AA02B;
-        Wed, 23 Feb 2022 05:20:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3044B6153D;
-        Wed, 23 Feb 2022 13:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A385C340F1;
-        Wed, 23 Feb 2022 13:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645622411;
-        bh=4MINalVsLypM4gQLR9Y0Ac8CSDvIEk7Or3pxAcAHrp8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HV3GKjiAoVKlfbobREUE3hGsHRDqzsmzlyL6o5mMSqbKX6IyY79VoWM3Qzs1adTt+
-         LkM9R6Je7Nngy4QtNvhmvT6T7pNjV5Dy4/br1Sg3OxHES0FDEi37iLWe5U1nTm1A0g
-         Fk+uWWn9uekrNHdyn3fqu17941JuiD0iZkpinXQipSKRkRk4EeTGTutow0eYKGip7Y
-         Dttc+6C2xKBF1iq4wZWEaEQblmDcmje7g+sbNmyYkyNYfZbA3fhsoC2SMGwMAwXJJU
-         PAx/RmL186qNt6pJUJvaSyI6CxDPgyimzTNvhDJLNHD1WnNdDOJ1fIGB3BLxn1xkAo
-         XQ3XQgDRzy7Jw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78F24E6D598;
-        Wed, 23 Feb 2022 13:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S238995AbiBWNVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 08:21:39 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8BDAA2D2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 05:21:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kHgVPnW80HT6GJ3r7bIQfijEQBLwYC+ZynGkRUpVWG0=; b=XvGWo0/RhSCCeCKCo/v/hUza8W
+        vjqFaajZz2lCJMGyIIZIYEeGIkzt1gLLhdp9vBAeVXr9GnD1L4b2Y4K8IlksEtc5eCuU6A/scP4Kw
+        A311+9fpVEFBaj7RR4rS2Ckjl/TvuyX0CzYo+OblNjXA6+MvIQAZOxr9eEeiGt+x7tjATCUv9Zz7T
+        6QUr7PCqRHTfhpOMuelthhEkJ/A+cYDZG+iZNBBOllxSJ7VL2q1f3g7SUfRhkof46YSTf5ct4ZEBL
+        zVGAvQ5ZGS3auP5PQ5uguM0/lEyduuDYwtJPELGDcFDz7CsLZ87eZ1VOjZbjMspWbDc+LlPfgOfAI
+        fMVddE5Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57444)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nMrZo-0002sy-4f; Wed, 23 Feb 2022 13:21:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nMrZl-00011o-On; Wed, 23 Feb 2022 13:21:01 +0000
+Date:   Wed, 23 Feb 2022 13:21:01 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH RFC net-next v2 01/10] net: dsa: mt7530: fix incorrect
+ test in mt753x_phylink_validate()
+Message-ID: <YhY0vabd4nyOmmeN@shell.armlinux.org.uk>
+References: <YhYbpNsFROcSe4z+@shell.armlinux.org.uk>
+ <E1nMpuT-00AJoW-Dq@rmk-PC.armlinux.org.uk>
+ <20220223131200.673xmc6euwkyphzy@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/3] drivers/net/ftgmac100: fix occasional DHCP failure
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164562241149.17147.7259955928729255752.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Feb 2022 13:20:11 +0000
-References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
-In-Reply-To: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
-To:     Heyi Guo <guoheyi@linux.alibaba.com>
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, davem@davemloft.net,
-        kuba@kernel.org, joel@jms.id.au, huangguangbin2@huawei.com,
-        chenhao288@hisilicon.com, arnd@arndb.de, dylan_hung@aspeedtech.com,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223131200.673xmc6euwkyphzy@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 23 Feb 2022 11:14:33 +0800 you wrote:
-> This patch set is to fix the issues discussed in the mail thread:
-> https://lore.kernel.org/netdev/51f5b7a7-330f-6b3c-253d-10e45cdb6805@linux.alibaba.com/
-> and follows the advice from Andrew Lunn.
+On Wed, Feb 23, 2022 at 03:12:00PM +0200, Vladimir Oltean wrote:
+> Hello,
 > 
-> The first 2 patches refactors the code to enable adjust_link calling reset
-> function directly.
+> On Wed, Feb 23, 2022 at 11:34:17AM +0000, Russell King (Oracle) wrote:
+> > Discussing one of the tests in mt753x_phylink_validate() with Landen
+> > Chao confirms that the "||" should be "&&". Fix this.
+> > 
+> > Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  drivers/net/dsa/mt7530.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> > index f74f25f479ed..69abca77ea1a 100644
+> > --- a/drivers/net/dsa/mt7530.c
+> > +++ b/drivers/net/dsa/mt7530.c
+> > @@ -2936,7 +2936,7 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
+> >  
+> >  	phylink_set_port_modes(mask);
+> >  
+> > -	if (state->interface != PHY_INTERFACE_MODE_TRGMII ||
+> > +	if (state->interface != PHY_INTERFACE_MODE_TRGMII &&
+> >  	    !phy_interface_mode_is_8023z(state->interface)) {
+> >  		phylink_set(mask, 10baseT_Half);
+> >  		phylink_set(mask, 10baseT_Full);
+> > -- 
+> > 2.30.2
+> > 
 > 
-> [...]
+> Since the "net" pull request for this week is scheduled to happen rather
+> soon, I think you should split this and send it to "net", so that you
+> won't have to wait when you resend as non-RFC.
 
-Here is the summary with links:
-  - [1/3] drivers/net/ftgmac100: refactor ftgmac100_reset_task to enable direct function call
-    https://git.kernel.org/netdev/net/c/4f1e72850d45
-  - [2/3] drivers/net/ftgmac100: adjust code place for function call dependency
-    https://git.kernel.org/netdev/net/c/3c773dba8182
-  - [3/3] drivers/net/ftgmac100: fix DHCP potential failure with systemd
-    https://git.kernel.org/netdev/net/c/1baf2e50e48f
+I don't believe this is an urgent issue. The issue has existed since
+MT7531 support was added in September 2020, and no one has raised it
+as a problem until I identified the clearly incorrect expression.
 
-You are awesome, thank you!
+What if fixing this unmasks a problem elsewhere?
+
+Therefore, I see no reason to rush getting this fix into the -rc
+kernel, especially without a review and preferably testing by the
+driver authors.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
