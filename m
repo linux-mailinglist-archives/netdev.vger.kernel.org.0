@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E694C1E02
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 22:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 091274C1E18
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 22:58:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242470AbiBWVxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 16:53:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
+        id S240606AbiBWV7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 16:59:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiBWVxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 16:53:23 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C283D4A1;
-        Wed, 23 Feb 2022 13:52:55 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id 132so7693pga.5;
-        Wed, 23 Feb 2022 13:52:55 -0800 (PST)
+        with ESMTP id S232124AbiBWV7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 16:59:15 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBC450442;
+        Wed, 23 Feb 2022 13:58:46 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id c14so259645ilm.4;
+        Wed, 23 Feb 2022 13:58:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gXGApdCCkLLJU3lWOlSSJO79UnPt9wOKOFtUSzHhqkQ=;
-        b=HR8mwc4RStBmg/lPZ2Wp4KAU3bQJ+wvNsZ1hQtoW98eO4xff9yIJCpYRwmDp7Jgdnm
-         pJJZi4PigXgsxw85PMdWTpELCcqhgBPVqxv1RipxvOlpBLKUY+sRKaA0LxoMmpfeZdGV
-         BoTQNBQ4rxoXqK9i6XyTtrolNl9msAVhV96tiRl3YJrebDJeL56IDgX/6/Q6SQhlv0iQ
-         SG+XIUngtPH0UpS6T2o+Slb8p9dIM5rgnztjaMa3iTPX4uh0P0Haiq/qVHLAJ+BwlFFI
-         cBmJhFOmwCcsHe3ceMy9KKz+YdinKxWJtdZHKTkhRA17yYSgeTlV0Xo4ltGVjWU115dj
-         Xfyg==
+        bh=SeBku3V4TaOpbCHf2mOteBWK7lzEcVbSOWaeQn/aOXM=;
+        b=GLvWU7Y7zQOOdQkVluTt+awfPYu/WjpQqoRTn03UZkz1DbH9WB3rCUjoxGbB7lvZdy
+         XN68ZQR2ZKnVfA8ylOsnZY5b5RIPdIWzJyWKkKmLyA8kQnmSrwcQPAaQc6wV0GzExHgA
+         Gi5wqgxC9fWINoPl7HAjI4D67Qg4woTH3SwNVKeF6dEbKPAF/T06wr4HUbhq3XbLU1rE
+         teXzZB4Yav8dnKM67ZtXDKODoTJD+jhibO4NQKFjDBspxh6MBSWd02xO5WRLm0Jk8foz
+         PcxcuHA2NhczjQHfYFSWpKEAJBky2BBokZpf97T8oPKs0FI20gbABoFIJCgfhsM2SKh0
+         /S+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gXGApdCCkLLJU3lWOlSSJO79UnPt9wOKOFtUSzHhqkQ=;
-        b=i3bws+ELZG40JWc2MtElhlNKfIcNapg67as9moyaTHDCvyPYge9Ca0skA9XYkP15kZ
-         mq3h1TSRomI3rqNwrvj7Mm7K1ZGw0SguHeNYSWo8eKcxAnENTDF/IJ4AAWc9OXmu7NnJ
-         mvwScAxIuYEP/jviGK77TGKSj6OGmtRlawXhKEGwt/5Gy8h7PN8eIQ2OdFkAoMQGVuoz
-         ++gKVU3X+VBOScGI5gksxN05aiTUuFa4WGf9uummato/AR1C3AzsLf0nATREhQ9e/bcr
-         3IwwxZ509JP4PfdAtX/3qWML5yCPuvrQPqdv9leVTPULP8YTiabusUMljRYNmyk0RYKm
-         Y27g==
-X-Gm-Message-State: AOAM5307LL/W42VY1tvTu4Z3XrJu5wLlvnBZlBwjj8I5aw9tyAKfnETY
-        A0cv+bmjbUfmCYAMyiGZKYAuYWi8BLUZKIlF7sk=
-X-Google-Smtp-Source: ABdhPJy9Ner6v03TtXVxjONuOPQpO6/F6xh4gxQws0cozma7eIgHXcDBJDqPBqY5h+1zFGg9Q8eT0sNbpFEeQJtp9Ck=
-X-Received: by 2002:a63:3481:0:b0:372:f3e7:6f8c with SMTP id
- b123-20020a633481000000b00372f3e76f8cmr1304605pga.336.1645653174772; Wed, 23
- Feb 2022 13:52:54 -0800 (PST)
+        bh=SeBku3V4TaOpbCHf2mOteBWK7lzEcVbSOWaeQn/aOXM=;
+        b=JdH6iJzQU5MGgDArS6uRA16zR8Gz3+hIi3BjnJ8j7J3p4f/XQCZmrwVjo9Y8szE8rx
+         YjCDPrY8IFCk/4Jj9IQilQ89RMV2ddE6J61Ndb1Udg+y+4SKo0imL/cnED+n/+yKrMiA
+         BxfmI42qActoorH8l0ESRhD91Mg1jNMJTZ5sJi0To0qPOncF64L4de0m0/8fo+Vlq5SL
+         LKZenDQCQDxt2ijjbkH/IXo+haUO8Vsds0Y7F2oqdONocpXdmGj4T1j0U3qCLH2GjSpD
+         tOJPRjrWlzmfFTluwuSaPFanHNQpHID5utHFM/SsH/BzlMsI+3xzBVwBUmv1nTJjW4+L
+         4GBQ==
+X-Gm-Message-State: AOAM530ogo0khiKARCzbjqwIm9zZc/hPD+7sCxP0a2QeWuEgjoYUZj9e
+        17X+STEmelC/KdJzblTNzovHSCdk73qHekYs2/JhkQj6m78=
+X-Google-Smtp-Source: ABdhPJxk2Bq8sJ6sfkWLtdiEzIO4fXpRQUyLFBAtcN4WsZ9VOEOzQV/8tNBD8ZimmqxCyPv6ALdDmisV4/4m75YNTp0=
+X-Received: by 2002:a92:c148:0:b0:2c2:615a:49e9 with SMTP id
+ b8-20020a92c148000000b002c2615a49e9mr1459221ilh.98.1645653526392; Wed, 23 Feb
+ 2022 13:58:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220220134813.3411982-1-memxor@gmail.com> <20220220134813.3411982-5-memxor@gmail.com>
- <20220222065349.ladxy5cqfpdklk3a@ast-mbp.dhcp.thefacebook.com>
- <20220222071026.fqdjmd5fhjbl56xl@apollo.legion> <CAADnVQLba_X7fZczY774+1GGrGcC5sopD5pzMaDK_O8P+Aeyig@mail.gmail.com>
- <20220223030447.ugwjlfjiqynntbgj@apollo.legion>
-In-Reply-To: <20220223030447.ugwjlfjiqynntbgj@apollo.legion>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 23 Feb 2022 13:52:43 -0800
-Message-ID: <CAADnVQ+vKtE7_RHAMcc73aL+6XZMir_3tcCOxGaz_0sWiRQiOA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 04/15] bpf: Allow storing referenced
- PTR_TO_BTF_ID in map
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
+References: <7b2e447f6ae34022a56158fcbf8dc890@crowdstrike.com>
+ <CAEf4BzbB6O=PRS7eDAszsVYEjxiTdR6g9XXSS4YDRh8e4Bgo0w@mail.gmail.com> <35873e0695014029a290ceb8cc767a7d@crowdstrike.com>
+In-Reply-To: <35873e0695014029a290ceb8cc767a7d@crowdstrike.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 23 Feb 2022 13:58:35 -0800
+Message-ID: <CAEf4Bzbka1YAbFtVMU=KvCH6onFzB==F88vKSywypDLa+x2mBg@mail.gmail.com>
+Subject: Re: Clarifications on linux/types.h used with libbpf
+To:     Marco Vedovati <marco.vedovati@crowdstrike.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "toke@redhat.com" <toke@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        Martin Kelly <martin.kelly@crowdstrike.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Andrii Nakryiko <andrii@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,101 +73,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 7:04 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On Wed, Feb 23, 2022 at 12:18 PM Marco Vedovati
+<marco.vedovati@crowdstrike.com> wrote:
 >
-> On Tue, Feb 22, 2022 at 09:50:00PM IST, Alexei Starovoitov wrote:
-> > On Mon, Feb 21, 2022 at 11:10 PM Kumar Kartikeya Dwivedi
-> > <memxor@gmail.com> wrote:
+> From: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Sent: Thursday, February 17, 2022 11:08 PM
+> To: Marco Vedovati
+> Cc: bpf@vger.kernel.org; toke@redhat.com; netdev@vger.kernel.org; kernel-team@fb.com; Martin Kelly; ast@kernel.org; daniel@iogearbox.net; davem@davemloft.net; Andrii Nakryiko
+> Subject: [External] Re: Clarifications on linux/types.h used with libbpf
+>
+> > On Tue, Feb 15, 2022 at 4:58 AM Marco Vedovati
+> > <marco.vedovati@crowdstrike.com> wrote:
 > > >
-> > > On Tue, Feb 22, 2022 at 12:23:49PM IST, Alexei Starovoitov wrote:
-> > > > On Sun, Feb 20, 2022 at 07:18:02PM +0530, Kumar Kartikeya Dwivedi wrote:
-> > > > >  static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regno,
-> > > > >                         int off, int bpf_size, enum bpf_access_type t,
-> > > > > -                       int value_regno, bool strict_alignment_once)
-> > > > > +                       int value_regno, bool strict_alignment_once,
-> > > > > +                       struct bpf_reg_state *atomic_load_reg)
-> > > >
-> > > > No new side effects please.
-> > > > value_regno is not pretty already.
-> > > > At least its known ugliness that we need to clean up one day.
-> > > >
-> > > > >  static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_insn *insn)
-> > > > >  {
-> > > > > +   struct bpf_reg_state atomic_load_reg;
-> > > > >     int load_reg;
-> > > > >     int err;
-> > > > >
-> > > > > +   __mark_reg_unknown(env, &atomic_load_reg);
-> > > > > +
-> > > > >     switch (insn->imm) {
-> > > > >     case BPF_ADD:
-> > > > >     case BPF_ADD | BPF_FETCH:
-> > > > > @@ -4813,6 +4894,7 @@ static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_i
-> > > > >             else
-> > > > >                     load_reg = insn->src_reg;
-> > > > >
-> > > > > +           atomic_load_reg = *reg_state(env, load_reg);
-> > > > >             /* check and record load of old value */
-> > > > >             err = check_reg_arg(env, load_reg, DST_OP);
-> > > > >             if (err)
-> > > > > @@ -4825,20 +4907,21 @@ static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_i
-> > > > >     }
-> > > > >
-> > > > >     /* Check whether we can read the memory, with second call for fetch
-> > > > > -    * case to simulate the register fill.
-> > > > > +    * case to simulate the register fill, which also triggers checks
-> > > > > +    * for manipulation of BTF ID pointers embedded in BPF maps.
-> > > > >      */
-> > > > >     err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
-> > > > > -                          BPF_SIZE(insn->code), BPF_READ, -1, true);
-> > > > > +                          BPF_SIZE(insn->code), BPF_READ, -1, true, NULL);
-> > > > >     if (!err && load_reg >= 0)
-> > > > >             err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
-> > > > >                                    BPF_SIZE(insn->code), BPF_READ, load_reg,
-> > > > > -                                  true);
-> > > > > +                                  true, load_reg >= 0 ? &atomic_load_reg : NULL);
-> > > >
-> > > > Special xchg logic should be down outside of check_mem_access()
-> > > > instead of hidden by layers of calls.
+> > > Hi,
 > > >
-> > > Right, it's ugly, but if we don't capture the reg state before that
-> > > check_reg_arg(env, load_reg, DST_OP), it's not possible to see the actual
-> > > PTR_TO_BTF_ID being moved into the map, since check_reg_arg will do a
-> > > mark_reg_unknown for value_regno. Any other ideas on what I can do?
-> > >
-> > > 37086bfdc737 ("bpf: Propagate stack bounds to registers in atomics w/ BPF_FETCH")
-> > > changed the order of check_mem_access and DST_OP check_reg_arg.
+> > > I have few questions about the linux/types.h file used to build bpf
+> > [cut]
 > >
-> > That highlights my point that side effects are bad.
-> > That commit tries to work around that behavior and makes things
-> > harder to extend like you found out with xchg logic.
-> > Another option would be to add bpf_kptr_xchg() helper
-> > instead of dealing with insn. It will be tiny bit slower,
-> > but it will work on all architectures. While xchg bpf jit is
-> > on x86,s390,mips so far.
+> >
+> > include/uapi/linux/types.h (UAPI header) is different from
+> > include/linux/types.h (kernel-internal header). Libbpf has to
+> > reimplement minimum amount of declarations from kernel-internal
+> > include/linux/types.h to build outside of the kernel. But short answer
+> > is they are different headers, so I suspect that no, libbpf can't use
+> > just UAPI version.
 >
-> Right, but kfunc is currently limited to x86, which is required to obtain a
-> refcounted PTR_TO_BTF_ID that you can move into the map, so it wouldn't make
-> much of a difference.
-
-Well the patches to add trampoline support to powerpc were already posted.
-
-> > We need to think more on how to refactor check_mem_acess without
-> > digging ourselves into an even bigger hole.
+> Thank you for clarifying some of my confusions.
 >
-> So I'm ok with working on untangling check_mem_access as a follow up, but for
-> now should we go forward with how it is? Just looking at it yesterday makes me
-> think it's going to require a fair amount of refactoring and discussion.
+> So if I understood correctly, the only use of libbpf:include/linux/types.h
+> is to allow building the library out of the kernel tree.
 >
-> Also, do you have any ideas on how to change it? Do you want it to work like how
-> is_valid_access callbacks work? So passing something like a bpf_insn_access_aux
-> into the call, where it sets how it'd like to update the register, and then
-> actual updates take place in caller context?
+> An ambiguity I have found is about what version of linux/types.h to use
+> use when building bpf source code (that includes <linux/bpf.h>).
+> I saw 2 options:
+>
+> - do like libbpf-bootstrap C examples, that uses whatever linux/types.h
+>   version available on the building host. This is however adding more
+>   dependencies that are satisfied with extra "-idirafter" compiler options.
+>
+> - do like bpftool's makefile, that builds bpf source code by including
+>   tools/include/uapi/. This does not require the "-idirafter" trick.
 
-I don't like callbacks in general.
-They're fine for walk_the_tree, for_each_elem accessors,
-but passing a callback into check_mem_access is not great.
-Do you mind going with a bpf_kptr_xchg() helper for now
-and optimizing into direct xchg insn later?
-It's not clear whether it's going to be faster to be noticeable.
+Applications shouldn't be building against Linux-internal
+include/linux/types.h. It should always be resolved to
+include/uapi/linux/types.h.
+
+>
+> Anyway, checking the history of "tools/include/uapi/linux/types.h", I
+> believe that this file is mistakenly licensed as "GPL-2.0" instead of
+> "GPL-2.0 WITH Linux-syscall-note". I may come up with a patch to fix it.
+>
+> >
+> > Thanks,
+> > Marco
+>
