@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E2944C07C3
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 504984C07CF
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236775AbiBWCYp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Feb 2022 21:24:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37692 "EHLO
+        id S236793AbiBWC25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 21:28:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233174AbiBWCYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:24:44 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F9C38798;
-        Tue, 22 Feb 2022 18:24:17 -0800 (PST)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K3KVm6hR1z1FDC2;
-        Wed, 23 Feb 2022 10:19:44 +0800 (CST)
-Received: from dggeme762-chm.china.huawei.com (10.3.19.108) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.21; Wed, 23 Feb 2022 10:24:15 +0800
-Received: from dggeme762-chm.china.huawei.com ([10.8.68.53]) by
- dggeme762-chm.china.huawei.com ([10.8.68.53]) with mapi id 15.01.2308.021;
- Wed, 23 Feb 2022 10:24:15 +0800
-From:   "zhuyan (M)" <zhuyan34@huawei.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "yzaikin@google.com" <yzaikin@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        Zengweilin <zengweilin@huawei.com>,
-        "liucheng (G)" <liucheng32@huawei.com>,
-        Nixiaoming <nixiaoming@huawei.com>,
-        xiechengliang <xiechengliang1@huawei.com>
-Subject: Re: [PATCH] bpf: move the bpf syscall sysctl table to its own module
-Thread-Topic: [PATCH] bpf: move the bpf syscall sysctl table to its own module
-Thread-Index: AdgoXFmzqljRJYDFQxeMKq5SCoOUoA==
-Date:   Wed, 23 Feb 2022 02:24:14 +0000
-Message-ID: <457a005e9fc84eeea93a19f99c11a683@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.67.108.69]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S236781AbiBWC2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:28:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECA010DC;
+        Tue, 22 Feb 2022 18:28:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2B57B81E0B;
+        Wed, 23 Feb 2022 02:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74011C340F5;
+        Wed, 23 Feb 2022 02:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645583304;
+        bh=sXhfheMSVtQLKhgLVr2ZVoVgPHxb8wJfU9Ap+pHb33o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F+EmlMp3ie2B+HcmPIuoJQBWJ2dEvpUF9MhSGoPJ5THHAzBeRcyQmZ8FxZsmbZLf0
+         lA91sPZ2LmqewD1n1lbc1yQgN6MUmQGdeX/dkfyQfOWiyRx+uL5US3/jQzwbZSpVVA
+         xeJNUT8nu34zUOUkFCrw4kjPlH8/gZa8f0O7LhWAMLUH/t4zyO+LBOrF27TQp89o+W
+         QQ1Udb+kDPS5HwjXoPqUc9/w5uW8lJ6qkW56LgN6O3M2E7cB9ylGbcLASJ9Jxw6fGi
+         BSCxm5LZfJhcHfqQyK8IvDY0LydzjFCogH75ciVgKyPVpvwDNEQKwKJNtxjywbP5ex
+         Igo91w7wmTkyw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 02/30] mac80211_hwsim: report NOACK frames in tx_status
+Date:   Tue, 22 Feb 2022 21:27:51 -0500
+Message-Id: <20220223022820.240649-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220223022820.240649-1-sashal@kernel.org>
+References: <20220223022820.240649-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 09:42:00AM +0800, Luis Chamberlain wrote:
-> On Wed, Feb 23, 2022 at 09:35:29AM +0800, Yan Zhu wrote:
-> > Sysctl table is easier to read under its own module.
-> 
-> Hey Yan, thanks for you patch!
-> 
-> This does not explain how this is being to help with maitenance as otherwise this makes
-> kernel/sysctl.c hard to maintain and we also tend to get many conflicts. It also does not
-> explain how all the filesystem sysctls are not gone and that this is just the next step, 
-> moving slowly the rest of the sysctls. Explaining this in the commit log will help patch
-> review and subsystem maintainers understand the conext / logic behind the move.
-> 
-> I'd be more than happy to take this if bpf folks Ack. To avoid conflicts I can route this
-> through sysctl-next which is put forward in particular to avoid conflicts across trees for
-> this effort. Let me know.
+From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
 
-Thank you for your reply. 
+[ Upstream commit 42a79960ffa50bfe9e0bf5d6280be89bf563a5dd ]
 
-My patch is based on sysctl-next, sorry I forgot to identify it as a patch from the
-sysctl-next branch. I will send the v2 patch later.
+Add IEEE80211_TX_STAT_NOACK_TRANSMITTED to tx_status flags to have proper
+statistics for non-acked frames.
+
+Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+Link: https://lore.kernel.org/r/20220111221327.1499881-1-benjamin.beichler@uni-rostock.de
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/mac80211_hwsim.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 23219f3747f81..20fae2df848fb 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -3770,6 +3770,10 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
+ 		}
+ 		txi->flags |= IEEE80211_TX_STAT_ACK;
+ 	}
++
++	if (hwsim_flags & HWSIM_TX_CTL_NO_ACK)
++		txi->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
++
+ 	ieee80211_tx_status_irqsafe(data2->hw, skb);
+ 	return 0;
+ out:
+-- 
+2.34.1
+
