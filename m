@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07BC44C0958
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B7944C0931
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:39:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237703AbiBWCjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 21:39:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S238113AbiBWCjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 21:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237607AbiBWChQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:37:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF10D5FF3E;
-        Tue, 22 Feb 2022 18:32:35 -0800 (PST)
+        with ESMTP id S237594AbiBWChe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:37:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFD65B8AD;
+        Tue, 22 Feb 2022 18:32:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2762D61516;
-        Wed, 23 Feb 2022 02:31:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B7ABC340F8;
-        Wed, 23 Feb 2022 02:31:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6176A61577;
+        Wed, 23 Feb 2022 02:32:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9789C340E8;
+        Wed, 23 Feb 2022 02:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583517;
-        bh=i5VHI7JTDFpPs3+CFF91y+xv8PC264aoBXGF5EYIqL8=;
+        s=k20201202; t=1645583534;
+        bh=nLWmvXF1sbSB5w0vX93/dzlHaktDdgXyzyiBM9mWbEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XeP2148SqWlbTeDBYMrPb4Mg6SfyCWcSKzH0klsyqls8cAbCS3AQrOrpju+dmF77O
-         QyKhzoLUI1qT8k2TiM76MoengcXyu5PwUZ1B67nXjwmoa2frPJftWgdT3iJv4AwAvZ
-         VAxNuQ4fJtORTAaD/NlniFvLLGKfAU1A7rHLZfPmCCNFJyUSVLmKx/sYyclxJv9kx1
-         upQutZXOhKTI5f9WoGTf/kt8cyfOsTbBtBFoOc+daqoBN+JhRPlAv0nIIy81zVIs9p
-         5iBycSipUscCkFvzqBeUJayMj15YwRkxa+1fpYhKt3fuCofIErSiTvTOJklnhhml3U
-         3KFgNwIio0WIA==
+        b=s+f6vT+ZIh7OrGkgyxc+2ZOSpQLeFGEBegZ3K6zE2rp+R/BchIGM1KE1BtgkF5xhK
+         xRbDOdjZGVrC9mzk0zS1V1uTXfEXLpsHMrvJPRuy055XRkbP9LLnm7tTbE3SZMpICh
+         w4xjy7hPmWsqqCxSuxB51It9Uee59Xvmor3eu7Et2MYngFnvAI2yq6FaNcSQKyo3iP
+         XsTghyUwMC5iAyTKLH+7ABsidWFU+PanEHlZ3y/oQBapklRNeGa5uM6izHnmj3+RoV
+         GXoi4VPEdUmjE9MN7hFRHOCnmCl0Irp2osXoz4nGD6CKE6joLDpdfbmoZHoqMV2bTZ
+         StVvZVIuvvftw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     JaeMan Park <jaeman@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/13] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
-Date:   Tue, 22 Feb 2022 21:31:41 -0500
-Message-Id: <20220223023152.242065-2-sashal@kernel.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
+        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/13] USB: zaurus: support another broken Zaurus
+Date:   Tue, 22 Feb 2022 21:31:47 -0500
+Message-Id: <20220223023152.242065-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
 References: <20220223023152.242065-1-sashal@kernel.org>
@@ -58,49 +58,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: JaeMan Park <jaeman@google.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit cacfddf82baf1470e5741edeecb187260868f195 ]
+[ Upstream commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c ]
 
-In mac80211_hwsim, the probe_req frame is created and sent while
-scanning. It is sent with ieee80211_tx_info which is not initialized.
-Uninitialized ieee80211_tx_info can cause problems when using
-mac80211_hwsim with wmediumd. wmediumd checks the tx_rates field of
-ieee80211_tx_info and doesn't relay probe_req frame to other clients
-even if it is a broadcasting message.
+This SL-6000 says Direct Line, not Ethernet
 
-Call ieee80211_tx_prepare_skb() to initialize ieee80211_tx_info for
-the probe_req that is created by hw_scan_work in mac80211_hwsim.
+v2: added Reporter and Link
 
-Signed-off-by: JaeMan Park <jaeman@google.com>
-Link: https://lore.kernel.org/r/20220113060235.546107-1-jaeman@google.com
-[fix memory leak]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+ drivers/net/usb/zaurus.c    | 12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 6cd9a8b610107..c84ee5ba53812 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2082,6 +2082,15 @@ static void hw_scan_work(struct work_struct *work)
- 			if (req->ie_len)
- 				skb_put_data(probe, req->ie, req->ie_len);
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 529c8fac15314..778bd9aaba9f1 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -584,6 +584,11 @@ static const struct usb_device_id	products[] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
-+			if (!ieee80211_tx_prepare_skb(hwsim->hw,
-+						      hwsim->hw_scan_vif,
-+						      probe,
-+						      hwsim->tmp_chan->band,
-+						      NULL)) {
-+				kfree_skb(probe);
-+				continue;
-+			}
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 +
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -637,6 +642,13 @@ static const struct usb_device_id	products[] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
+index 9c2196c3fd113..1f19fc5e6117e 100644
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -268,6 +268,11 @@ static const struct usb_device_id	products [] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -325,6 +330,13 @@ static const struct usb_device_id	products [] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info = ZAURUS_PXA_INFO,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
 -- 
 2.34.1
 
