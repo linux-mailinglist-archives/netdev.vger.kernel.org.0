@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0EBE4C0AD4
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 05:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 923B44C0ADB
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 05:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235509AbiBWEKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 23:10:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
+        id S233051AbiBWEQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 23:16:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231986AbiBWEKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 23:10:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AD565496
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 20:10:11 -0800 (PST)
+        with ESMTP id S231274AbiBWEPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 23:15:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2F44091E
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 20:15:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 304186090C
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 04:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 87648C340EB;
-        Wed, 23 Feb 2022 04:10:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF5CDB81E7A
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 04:15:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A241C340E7;
+        Wed, 23 Feb 2022 04:15:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645589410;
-        bh=PbKeju794wEG7o8VKd2NsvG+6m+JMnyyU8u8w437gW8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eP1vvcWIvGEbVxDqxoSJ0BBYOzKhPL60jsSzCpJFa8ePk2hDNMSLy0Q85T8lgHW0V
-         9jnMnGNHpzzwjsy+27x649JwqK1GwN+YhOk67AhHWPdEVKHkDX2oOgVvhwjgrnARlI
-         p64gTqhq1X3m0UWGmtoEKQ5Ci8GycMGlEkWkc58W/KyzUlIGj0hEWg0NRq26xgqI0I
-         65vJGJnmNo1jOTprg09zGjxYQeNBv0xrWnlqAjLFJrNx9/fkbZVcyFmtbjLK70UQIn
-         nt0kFK70LI1vgxJGm+5ESQj7AOxD1CPpl+VQ5GNImPywC9cWVkA1PiMlrgROePUtFz
-         K9u0vq/YroNRQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6E497E73590;
-        Wed, 23 Feb 2022 04:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        s=k20201202; t=1645589719;
+        bh=+BciX6m7Je9XCtGfOBhhm+pciSBR6V+ACfuibyfe65w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tMOlr9w9wUJmJcyB1AYGVYYLKujSlhlUSw0iKnAigmerdUg6t6H28sdzxIHS0N57v
+         cItl8AgW4D3IY4S1gP316l5bjvHZIQQZbvFJnTxAuMcrM7qKISFiQEIov+S+t3Rwjk
+         D52YXs+rXnqZ5GwfwXvb9L865B4YwwP7iJM91mRx0FyUnvpGPFBEK9X2vtynRUw0d0
+         MDpc/EqLvKQ8utvqR0PiDy3q4zPIRaZtc6bJqGlAEuA96iXfX8kOtAQKT/onhUUM0n
+         K4RvZzOtkcnUvjaADwhw3fPinlptGYjAaayZrPL+5YdmSqMvwVjjhASNHicwD9OotO
+         lE40ep4xV6bPw==
+Date:   Tue, 22 Feb 2022 20:15:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, elver@google.com, edumazet@google.com
 Subject: Re: [PATCH net-next 0/2] tcp: take care of another syzbot issue
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164558941044.26093.15086204600598443366.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Feb 2022 04:10:10 +0000
+Message-ID: <20220222201518.37122ca8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <164558941044.26093.15086204600598443366.git-patchwork-notify@kernel.org>
 References: <20220222032113.4005821-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220222032113.4005821-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        elver@google.com, edumazet@google.com
+        <164558941044.26093.15086204600598443366.git-patchwork-notify@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,30 +54,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, 23 Feb 2022 04:10:10 +0000 patchwork-bot+netdevbpf@kernel.org
+wrote:
+>   - [net-next,2/2] net: preserve skb_end_offset() in skb_unclone_keeptruesize()
+>     (no matching commit)
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 21 Feb 2022 19:21:11 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> This is a minor issue: It took months for syzbot to find a C repro,
-> and even with it, I had to spend a lot of time to understand KFENCE
-> was a prereq. With the default kfence 500ms interval, I had to be
-> very patient to trigger the kernel warning and perform my analysis.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/2] net: add skb_set_end_offset() helper
-    https://git.kernel.org/netdev/net-next/c/763087dab975
-  - [net-next,2/2] net: preserve skb_end_offset() in skb_unclone_keeptruesize()
-    (no matching commit)
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I dropped the extra new lines around the body of
+skb_unclone_keeptruesize()
