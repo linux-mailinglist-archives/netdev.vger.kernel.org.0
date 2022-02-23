@@ -2,126 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B79E4C1D02
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 21:18:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 448CF4C1D3E
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 21:37:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240829AbiBWUTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 15:19:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
+        id S241379AbiBWUiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 15:38:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232750AbiBWUTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 15:19:08 -0500
-Received: from mx0b-00206401.pphosted.com (mx0a-00206401.pphosted.com [IPv6:2620:100:9001:15::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8220A4CD71;
-        Wed, 23 Feb 2022 12:18:40 -0800 (PST)
-Received: from pps.filterd (m0092946.ppops.net [127.0.0.1])
-        by mx0a-00206401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21NFSeZH027308;
-        Wed, 23 Feb 2022 12:18:11 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crowdstrike.com; h=from : to : cc :
- date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version : subject; s=default;
- bh=IomlPTfU5BRb/hM1CUTtNQ+6rpQUrWes54NVYKcz8kA=;
- b=yVmyv7gExK1jXWHkRvzyZoQoW/w7OrmuMXJ2MtqoFdHuJxToq5Q5G+oPJGcmDxyd0BhA
- PvZmEtJL8Im2btKdiE6OS3b2ZFTbpB220e0FqPqoPLxkQSvzZ9Cb8j8L3bmAmbjNGag2
- 8XmWiluhuXXyHmp/ri8Eapy3fFRqaj0m0hajW2xOoW+k5A/8ZfvPUHOCexI+1E3JVNfl
- lVG+MUuu/zxffVgiZr2VkxGKdbjAIHsWH+TqaqMefPkxPL/QeXfHyfTrjK+uBWah0KlJ
- 35OIKYG0rknnhZKl840ZVppZLgDH1LBO9y0tOtwdTfLqN+BFA1bssmf6ZyFxo3xRR0TR UA== 
-Received: from 04wpexch03.crowdstrike.sys (dragosx.crowdstrike.com [208.42.231.60])
-        by mx0a-00206401.pphosted.com (PPS) with ESMTPS id 3ed5279u9x-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 12:18:11 -0800
-Received: from 04wpexch04.crowdstrike.sys (10.100.11.94) by
- 04wpexch03.crowdstrike.sys (10.100.11.93) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.20; Wed, 23 Feb 2022 20:18:10 +0000
-Received: from 04wpexch04.crowdstrike.sys ([fe80::f066:b5c1:cf22:763a]) by
- 04wpexch04.crowdstrike.sys ([fe80::f066:b5c1:cf22:763a%5]) with mapi id
- 15.02.0922.020; Wed, 23 Feb 2022 20:18:10 +0000
-From:   Marco Vedovati <marco.vedovati@crowdstrike.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>,
-        Martin Kelly <martin.kelly@crowdstrike.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        with ESMTP id S236435AbiBWUiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 15:38:00 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B862147AD9
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 12:37:32 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id 12so17666074pgd.0
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 12:37:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Vytxi60ZgkqynyzIJNOXGnsmlScq9QVQp0td/1B9Teo=;
+        b=RprWX9y+HamWJobWrFfcGllbqNswt6rsP15QOpcnEGhGeQiGLQSb56iqHTFSfdzx5o
+         NyKIMwnIiwek5u7W5u8AXzYh9EMOiwg5maPHBb9bVBYHpzMgelO9eSaXhmL6JA5RzuXX
+         ljAX07bz/tbI/Tb022eBUh3sk1MTMzxuJrfVOHWchCXQjboA/QRm7aKZbL0y5kcnkYbK
+         S2yRcrMX0zgFHaLQFKekALxtAcY4tFRpIqWZTMGXXOqNcztvkINoVlO+UzVO/jf57aTI
+         JYZJRUZ4uZqNrDUf8GtHNIALv5Bsb7DWY2TmJ8WSv9Qm2gL3sRzEvlSj4rG9jQeidjgD
+         VF/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Vytxi60ZgkqynyzIJNOXGnsmlScq9QVQp0td/1B9Teo=;
+        b=icPz3YgEj5KkQnv6XkrsYd5EWLkCLvMPcDrATeDtr7oni417ppnX4WUCi26/0iRtmu
+         Gs8fHze6MCq4Cw1EfrTnzDdRyHh+5G/CA495r7E3hofTRiOFu3ePZ34p/FGcKJybmtZ6
+         8h4DRFW2HK/J4vdz/cXD9nr2FXt3jzsYx4TLT6UUqB6Tssyyrrup35DkyeHtho0MEuW0
+         dslv23D/u3DFbWjunfCtndr/ndIdCghiITUelaRMUOsFXDQJAU7oSex0PF84lpkRm/hs
+         9Dbr+wzBeU/wB9xia4ZYJpdt/F7LDQrG/DU8lGsknzTiFlLFfGWCsCz7++U2fYbqsjyW
+         lw2w==
+X-Gm-Message-State: AOAM530Tv9KFwp63J9fXdj+C14boZl4gVwEywAEo/Pm9KKZp5LjMRAKZ
+        YZXllj8Bob96uqb4ayyP5diY5BZ6/i8=
+X-Google-Smtp-Source: ABdhPJzTgcQAuF50BfbfEDeUqxZqV7lgavFg6NOej7pQE/XIiwlB2OsFZrS0GpALPl3nIlL+RLzgxg==
+X-Received: by 2002:a62:7554:0:b0:4e1:5898:4fbb with SMTP id q81-20020a627554000000b004e158984fbbmr1333356pfc.2.1645648652101;
+        Wed, 23 Feb 2022 12:37:32 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id k18sm414547pfi.10.2022.02.23.12.37.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 12:37:31 -0800 (PST)
+Date:   Wed, 23 Feb 2022 12:37:29 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Cc:     "Mekala, SunithaX D" <sunithax.d.mekala@intel.com>,
+        "Mishra, Sudhansu Sekhar" <sudhansu.mishra@intel.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Thread-Topic: [External] Re: Clarifications on linux/types.h used with libbpf
-Thread-Index: AQHYImtWLXmUZLJvoESUDAAgE80rXqyYUPmAgAlMbQA=
-Date:   Wed, 23 Feb 2022 20:18:09 +0000
-Message-ID: <35873e0695014029a290ceb8cc767a7d@crowdstrike.com>
-References: <7b2e447f6ae34022a56158fcbf8dc890@crowdstrike.com>,<CAEf4BzbB6O=PRS7eDAszsVYEjxiTdR6g9XXSS4YDRh8e4Bgo0w@mail.gmail.com>
-In-Reply-To: <CAEf4BzbB6O=PRS7eDAszsVYEjxiTdR6g9XXSS4YDRh8e4Bgo0w@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.100.11.84]
-x-disclaimer: USA
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Kolacinski, Karol" <karol.kolacinski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/1] ice: add TTY for GNSS module for E810T
+ device
+Message-ID: <20220223203729.GA22419@hoboy.vegasvil.org>
+References: <20220214231536.1603051-1-anthony.l.nguyen@intel.com>
+ <20220215001807.GA16337@hoboy.vegasvil.org>
+ <4242cef091c867f93164b88c6c9613e982711abc.camel@intel.com>
+ <19a3969bec1921a5fde175299ebc9dd41bef2e83.camel@intel.com>
 MIME-Version: 1.0
-Subject:  Re: Clarifications on linux/types.h used with libbpf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <19a3969bec1921a5fde175299ebc9dd41bef2e83.camel@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Sent: Thursday, February 17, 2022 11:08 PM
-To: Marco Vedovati
-Cc: bpf@vger.kernel.org; toke@redhat.com; netdev@vger.kernel.org; kernel-te=
-am@fb.com; Martin Kelly; ast@kernel.org; daniel@iogearbox.net; davem@daveml=
-oft.net; Andrii Nakryiko
-Subject: [External] Re: Clarifications on linux/types.h used with libbpf
-=A0  =20
-> On Tue, Feb 15, 2022 at 4:58 AM Marco Vedovati
-> <marco.vedovati@crowdstrike.com> wrote:
-> >
-> > Hi,
-> >
-> > I have few questions about the linux/types.h file used to build bpf
-> [cut]=20
->=20
->=20
-> include/uapi/linux/types.h (UAPI header) is different from
-> include/linux/types.h (kernel-internal header). Libbpf has to
-> reimplement minimum amount of declarations from kernel-internal
-> include/linux/types.h to build outside of the kernel. But short answer
-> is they are different headers, so I suspect that no, libbpf can't use
-> just UAPI version.
+On Wed, Feb 23, 2022 at 07:20:43PM +0000, Nguyen, Anthony L wrote:
 
-Thank you for clarifying some of my confusions.
+> I haven't heard anything back. Are we ok with this convention? Just to
+> add this usage is fairly standard for our driver structures especially
+> in this ice_adminq.h file.
 
-So if I understood correctly, the only use of libbpf:include/linux/types.h
-is to allow building the library out of the kernel tree.
+I would put the #defines just above the struct, but maybe that is more
+of a personal preference of mine.  I don't think there is a tree wide
+CodingStyle rule about this.
 
-An ambiguity I have found is about what version of linux/types.h to use=20
-use when building bpf source code (that includes <linux/bpf.h>).=20
-I saw 2 options:
-
-- do like libbpf-bootstrap C examples, that uses whatever linux/types.h
-  version available on the building host. This is however adding more
-  dependencies that are satisfied with extra "-idirafter" compiler options.
-
-- do like bpftool's makefile, that builds bpf source code by including
-  tools/include/uapi/. This does not require the "-idirafter" trick.
-
-Anyway, checking the history of "tools/include/uapi/linux/types.h", I
-believe that this file is mistakenly licensed as "GPL-2.0" instead of
-"GPL-2.0 WITH Linux-syscall-note". I may come up with a patch to fix it.
-
->
-> Thanks,
-> Marco
-    =
+Thanks,
+Richard
