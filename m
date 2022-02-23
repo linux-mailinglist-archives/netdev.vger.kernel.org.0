@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 911504C1A57
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D21A74C1A5C
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:59:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243623AbiBWR62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:58:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53660 "EHLO
+        id S243635AbiBWR7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:59:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243624AbiBWR60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:58:26 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DABD3CFF3
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:57:58 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id az26-20020a05600c601a00b0037c078db59cso4869110wmb.4
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:57:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rcek9usknWwZHGRAFeM4pdUMbTDnc3p5b/Y1EIktamQ=;
-        b=gaS84+x207AGFih23pahC7EOQRSJeQSHsBUg+VhpCqTt0HZ8v15C18k866b5C4N0q3
-         K/Gl65R7ESpzW1BkvwFsM7TqJOX0yZKdNhjOGjwXWZos6j3BBh0wX/rNq20MPHdA6Zcr
-         UeW1xyl1bStcLSzxzAS/WipBX69LhKjh79EG1dLDSVtwnLV4L+SBvKdpwN2Wb3QNB5nn
-         UhS8+pkAwMee9jBZuZKgu2XQf1gHAAlJYZ6ZjLN6Ags3TGyf42a0tc1fQRvlF6aBKccM
-         DgV5/qYpbCTyPrR7m4O/LpncMJ4/SQuTYYaSepcL5bK7uYqDK3rC1lA4yAPJqheTe9ck
-         jBwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rcek9usknWwZHGRAFeM4pdUMbTDnc3p5b/Y1EIktamQ=;
-        b=g6U+Ez1CvWz9iQKWGvM0gYQHNedic2Z2U/5K1w3fdVD5d+a2IZ2GNTs226DoQ8aB9z
-         P6opZA/fXC4U45z7YqBQ/S5XvQ5InQKAc5L8SlZ02rHMsyr8WVQpajmtDH21f8kHwVIF
-         RDMoNvLdlK6IKALdt845KNn2EtPgelOMfktPESqXRUnETADB1nQdI+o+1ChF/vOjWU1K
-         yjUYYvJh7ArjgZu34Q9x4aXs7h37AYc8QHTqFIoKmp92c1GNp4PlS8k3sUe087sK3m/h
-         PFNNuAeGmBtE6w5zaWgrZa0EUX0sHftRve6Oyoijh7lPOZ0IyFW0QI4qaX2ygLfeT7xT
-         +jAw==
-X-Gm-Message-State: AOAM530WzToe0+M0KHvnQy50b4mzJam+vRJaLivjHZh50xmi4RuU0+9M
-        Gvac6db4C71cprBzIsLa0a3UJA==
-X-Google-Smtp-Source: ABdhPJzKg1U2OcMlWgGfciBmnTokMUe3EpxKmY38J1XDFStCj6ofKBWaJ5MKyFhcuQC6JNchDI84YA==
-X-Received: by 2002:a05:600c:4107:b0:381:1c3:5d3 with SMTP id j7-20020a05600c410700b0038101c305d3mr338944wmi.107.1645639076892;
-        Wed, 23 Feb 2022 09:57:56 -0800 (PST)
-Received: from ?IPV6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id w4sm198966wre.102.2022.02.23.09.57.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 09:57:56 -0800 (PST)
-Message-ID: <85d66f1d-0ae3-6608-4c54-7697295d5671@arista.com>
-Date:   Wed, 23 Feb 2022 17:57:55 +0000
+        with ESMTP id S233244AbiBWR7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:59:35 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8023D4BA;
+        Wed, 23 Feb 2022 09:59:07 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NHCA9Q009503;
+        Wed, 23 Feb 2022 17:59:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=KQgdeyVb6XDj3wVVuf7oj1X39sHmzApFe1ufbT3McI0=;
+ b=JxAtqCZZOF1XGM0Y/gjvrLKzglEvhK4ws5s2WS0BNxVeNbUxbZC+p0k5R0Bt/bJY0GyO
+ 0wNxE1p0krpGWs07Ly4UHvm3JnyogLZbV0D4H2ICKd+tSudhWhs1pVab+vvHGQpa6aLN
+ tshRuDrUxxmh0XU7wG4BSgnW6oMKKuA1BUVvWeRK/ge4Xa8pH7iUTVIeeix5limhZfPQ
+ wC3VI464uyNOU7izNALHdK4GsP7/FcJhLU+Bqh6DinEMVY9ajPKn8cDH65iioLHdoFCu
+ KSO7gP6efTlPqtMi8TJXN7uABi5qT4T6ARf2ht5npkgF46qGhGwsHUb8+PBkkOhReBiI MQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eds4210gb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 17:59:02 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NHcNku020370;
+        Wed, 23 Feb 2022 17:59:02 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eds4210fc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 17:59:01 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NHqcf0003232;
+        Wed, 23 Feb 2022 17:58:59 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06fra.de.ibm.com with ESMTP id 3eaqtjtat2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 17:58:59 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NHwvn527459868
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Feb 2022 17:58:57 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 32F28AE055;
+        Wed, 23 Feb 2022 17:58:57 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BA037AE051;
+        Wed, 23 Feb 2022 17:58:56 +0000 (GMT)
+Received: from [9.171.51.229] (unknown [9.171.51.229])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Feb 2022 17:58:56 +0000 (GMT)
+Message-ID: <9725f86f-eabe-6aaf-0ef1-74138d895834@linux.ibm.com>
+Date:   Wed, 23 Feb 2022 18:59:10 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2] net/tcp: Merge TCP-MD5 inbound callbacks
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] net/smc: Use a mutex for locking "struct smc_pnettable"
 Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-References: <20220223121746.421327-1-dima@arista.com>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <20220223121746.421327-1-dima@arista.com>
+        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tony Lu <tonylu@linux.alibaba.com>
+Cc:     syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
+References: <20220223100252.22562-1-fmdefrancesco@gmail.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220223100252.22562-1-fmdefrancesco@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: cBjvvFVE5h4wDlBNvxiEwIdI-1B97C5b
+X-Proofpoint-ORIG-GUID: n377XhP_E8myP0gMgqX0ryRpPzkO7S86
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1011
+ mlxscore=0 suspectscore=0 priorityscore=1501 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 phishscore=0 bulkscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202230100
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,29 +97,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/23/22 12:17, Dmitry Safonov wrote:
-> The functions do essentially the same work to verify TCP-MD5 sign.
-> Code can be merged into one family-independent function in order to
-> reduce copy'n'paste and generated code.
-> Later with TCP-AO option added, this will allow to create one function
-> that's responsible for segment verification, that will have all the
-> different checks for MD5/AO/non-signed packets, which in turn will help
-> to see checks for all corner-cases in one function, rather than spread
-> around different families and functions.
+On 23/02/2022 11:02, Fabio M. De Francesco wrote:
+> smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib()
+> which, in turn, calls mutex_lock(&smc_ib_devices.mutex).
 > 
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
+> read_lock() disables preemption. Therefore, the code acquires a mutex while in
+> atomic context and it leads to a SAC bug.
+> 
+> Fix this bug by replacing the rwlock with a mutex.
+> 
+> Reported-and-tested-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
+> Fixes: 64e28b52c7a6 ("net/smc: add pnet table namespace support")
+> Confirmed-by: Tony Lu <tonylu@linux.alibaba.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 > ---
-> v2: Rebased on net-next
 
-On rebase I didn't check !CONFIG_TCP_MD5, and managed to forget to
-change the function declaration for the stub. Duh!
-I've sent version3.
+Thank you Fabio!
 
-Thanks, sorry for the noise,
-          Dmitry
+This should go to the net tree...
+
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
