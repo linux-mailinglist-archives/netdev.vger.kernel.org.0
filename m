@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB2614C0947
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:39:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A87CB4C0905
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 03:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237644AbiBWCjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 21:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
+        id S237553AbiBWChF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 21:37:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237671AbiBWChy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:37:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E0054FBD;
-        Tue, 22 Feb 2022 18:32:51 -0800 (PST)
+        with ESMTP id S237280AbiBWCfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 21:35:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE85445538;
+        Tue, 22 Feb 2022 18:32:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37402B81E11;
-        Wed, 23 Feb 2022 02:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B658C340EB;
-        Wed, 23 Feb 2022 02:31:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3093BB81E10;
+        Wed, 23 Feb 2022 02:31:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB728C340E8;
+        Wed, 23 Feb 2022 02:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583512;
-        bh=n5T1+I/pmeyijBxU7FOIfuJEcV3dxvkqCaFuwww8pfg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gnRLfUuIW/FbY3g1a2N3tDj4OvvhC+5A4ZUH8OMWoiOhc001Q7hxGQdun3W+QJJ/t
-         TsDem0J1YeDFmPkA774u08h7EWFoxBcnf0cyvZfzu4Y6l7GWKio7XvgrPsTjhDcfiv
-         uJVVlFOwRSqFEJLhiXr13iIt6LJyiKhMGwA5wwmm4enu2Q2P0Lefw3Nzf2eIndqULb
-         uIr8TehzDAmY10gU0TXu7xhF4QgwCyoBXunmFOQakhqDSDTf+GrKVD4qRTQHRBlUap
-         PfpRHf4p9hmdV/UfPlHhYHYTKN0mU4owrhNZ6zmfb9cX22aQXvY6t7qZzCzIhoAHb1
-         WjCvDYeJmO0MQ==
+        s=k20201202; t=1645583515;
+        bh=17QqH72kUFnUkJZ4j1HejBtx6GgW1dduu5IUz82at2E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=j6QMJ3HW6u6y/s/t4aPmtRZ9/XSQph8SP6p6zHJ6NxnTWqqiYcQj681c9HbDuCoWA
+         0gP8mlX4Nf7D3U9ZaGP0r8zA5nBZQH1xI8fcxHug0fo4+CWB1hIXRShGCJO+FFtVgd
+         Za2utXF1/I2yWi4wyiqf1CUMf72KaG6fZHYwMPuJ7AhYOpAokSgwNj/xFAKoqj7fiH
+         T/+2SSHf6HjhTXb6y5vDOtnLO1sHMmXliHTF4yvco1a7H+0NuYiqBmZt+a7u1bcg6a
+         ygCCE8B+gN6L88oRzjziQiLSVf9oJPZLEvXu4PEohiWPneR74T0Xr+tWdsX54Ymzcx
+         fsPWDEPYwkKew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
-        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 13/13] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
-Date:   Tue, 22 Feb 2022 21:31:17 -0500
-Message-Id: <20220223023118.241815-13-sashal@kernel.org>
+Cc:     Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/13] mac80211_hwsim: report NOACK frames in tx_status
+Date:   Tue, 22 Feb 2022 21:31:40 -0500
+Message-Id: <20220223023152.242065-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023118.241815-1-sashal@kernel.org>
-References: <20220223023118.241815-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,36 +56,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
 
-[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
+[ Upstream commit 42a79960ffa50bfe9e0bf5d6280be89bf563a5dd ]
 
-Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
-0x1071 composition in order to avoid bind error.
+Add IEEE80211_TX_STAT_NOACK_TRANSMITTED to tx_status flags to have proper
+statistics for non-acked frames.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+Link: https://lore.kernel.org/r/20220111221327.1499881-1-benjamin.beichler@uni-rostock.de
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/cdc_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/mac80211_hwsim.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index 77ac5a721e7b6..414341c9cf5ae 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -658,6 +658,11 @@ static const struct usb_device_id mbim_devs[] = {
- 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
- 	},
- 
-+	/* Telit FN990 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
-+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
-+	},
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 3564f5869b444..6cd9a8b610107 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -3176,6 +3176,10 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
+ 		}
+ 		txi->flags |= IEEE80211_TX_STAT_ACK;
+ 	}
 +
- 	/* default entry */
- 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
- 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
++	if (hwsim_flags & HWSIM_TX_CTL_NO_ACK)
++		txi->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
++
+ 	ieee80211_tx_status_irqsafe(data2->hw, skb);
+ 	return 0;
+ out:
 -- 
 2.34.1
 
