@@ -2,211 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2837E4C15AB
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 15:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2000C4C15D9
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 15:54:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241709AbiBWOsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 09:48:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        id S237591AbiBWOzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 09:55:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiBWOsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 09:48:10 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6A5B45BD;
-        Wed, 23 Feb 2022 06:47:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645627662; x=1677163662;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=BkHybutatV6vUyGz3nWn+QmzS5y/pmABztKKcic8BMk=;
-  b=aJrmeSqIL57jpznpZUAoULcFs2MWVCtB5+bZ4Isy7gnuUdMIb/TdjlIm
-   Cb5YFg3co+32N3AqN7a3DZF0diwpJw5uhWYnbpfHpQUyrVm1D9eNjDwEN
-   ckAjkSidbgrQmTN8MtvuOsupbsHEAGlMyDA399I3K/plHPafKegReHJd/
-   LsOhSz7MIySbCtjwiDiXnjt/nHZmzKtxMbzjgjCizTTzdTgp79PrT4TNz
-   mGJp7iJ6qxA3fOY6fAAyPwB1ROEIav+IG9GUk9VNJzOB/9n7ppu9rHWjt
-   vih28bR/U5hDkeN+qthtsOFYKegW+e9IhxoQxioaM2X9XdDgKX4+lyBEO
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="312694401"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="312694401"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:47:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="707054244"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:47:37 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMsuk-007Sjr-5L;
-        Wed, 23 Feb 2022 16:46:46 +0200
-Date:   Wed, 23 Feb 2022 16:46:45 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Enrico Weigelt <info@metux.net>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <YhZI1XImMNJgzORb@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <YhPOxL++yhNHh+xH@smile.fi.intel.com>
- <20220222173019.2380dcaf@fixe.home>
+        with ESMTP id S231152AbiBWOzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 09:55:11 -0500
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30093.outbound.protection.outlook.com [40.107.3.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A849B251B
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 06:54:42 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kKI5588VAUmbNMSVmeiXL+GAw8dtIu+k1N9Z9yPjQ3bZUQRMAH09U71DhIb0vYq7Cl6Vehri63zl7NLNIOSBplQHiftukq7hdJNrSeKl0BuzwDj9n26+S8nSLxUj9KfxZTp7eAc2u4KrYU977PRJPgY/XmB3UsAgmkoTcHkwafCaQ4J2srikAGtkVgkT7oYUoNdcMfuypiB1KGTplC1qBtU0pJ0NVUQ1ZtlN1n/6TaD/N/O8ruKg3uX+PetXAoZQMbPYnJyTGggGXHoIbAeo8WGLTmKNpj64VVp8FBTYrl3lCk4sP0lOHqjKBVYW2MKp79fGyWNjEkz3YEx9na/gyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mqVhCGIuyj8k4pFnvlShqciAdV+nw0SZTxMrU92MPUY=;
+ b=EBd1KpmdjYIbwBbxJmkaZn3GVw9AVI0uJ2LvjvhvGYr1D1CZAXKH12kuY6O0KPYtORNd9gPVKiJKShmDvYMZudoJZ0B+BIUIoeon3IPqw07UK5qfa3N0N8vGszvt+UoEI7aaLUlEjawvz2rM2i6HomDmHJ0fbZ5MHmGgGgnN2zSYRxq4V/+nn3twGFFOcY02CS3DWWVIPxxkLijnX1M7sHLhGQ1PmdJHNU84DnfMXQf6py1XAk91PNXGqbhlWWZthjuLkeIUG96vqJ/sYZvl/SWYvbOcjxJT2TcEFn+nS5ucU9wvOJdzCH0QVBO/nttV6YqCrAQ20dD2A1rdtVj7+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mqVhCGIuyj8k4pFnvlShqciAdV+nw0SZTxMrU92MPUY=;
+ b=jCr5ote3W4lpySj0/rUDqpkYiLe1nzBYhVcB5iSv4k6Yai7Wk2wx8lNjdLkQFnsu5eS11XCljs8T2zWPTiQ/Ztff4OMKUY57abvcXalO/2CaHZo0A/Iq5AnsR4GPS0kB0amEAr9x9Vcb9rp2DPYRdYTgxlHSC8LTpeAzJoga39U=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by DB7PR03MB3579.eurprd03.prod.outlook.com (2603:10a6:5:4::26) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4995.27; Wed, 23 Feb 2022 14:54:39 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::6123:22f6:a2a7:5c1e]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::6123:22f6:a2a7:5c1e%5]) with mapi id 15.20.5017.022; Wed, 23 Feb 2022
+ 14:54:39 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net-next v3 1/2] net: dsa: tag_rtl8_4: add rtl8_4t
+ trailing variant
+Thread-Topic: [PATCH net-next v3 1/2] net: dsa: tag_rtl8_4: add rtl8_4t
+ trailing variant
+Thread-Index: AQHYKD5ZvCUsEirlcEC5YcpbFWA+sg==
+Date:   Wed, 23 Feb 2022 14:54:39 +0000
+Message-ID: <8735k9fxao.fsf@bang-olufsen.dk>
+References: <20220222224758.11324-1-luizluca@gmail.com>
+        <20220222224758.11324-2-luizluca@gmail.com>
+In-Reply-To: <20220222224758.11324-2-luizluca@gmail.com> (Luiz Angelo Daros de
+        Luca's message of "Tue, 22 Feb 2022 19:47:57 -0300")
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a6af2aaf-441f-42a2-9c55-08d9f6dc6ae4
+x-ms-traffictypediagnostic: DB7PR03MB3579:EE_
+x-microsoft-antispam-prvs: <DB7PR03MB3579A16200AE58118C13D66F833C9@DB7PR03MB3579.eurprd03.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kYGoLwME4ptQMg4cLXjCpsCd2VeJTUizXsP3oezj2xAijztf4OwewAfAvVZbXwW55ZrHKYXDz2P92wfuH4bllK5kkIQrHwyVLgnVnnpFJTehm/P8Cgn1t8uIbfV0s/A/bHyLukhXe5yWt2WSQ/wpiseGDVKtndfXOp2OVEL+TyRsRHVI7Ly31tBe+hSAT/WNd46wH786CS8pFei2pJNRGaA05Bqo1q+Jv0cn1W6NjkF15Zz90bCnGTdGGbedBvBqPJJtOdWmPGD/12zx6+0cay42khXKkHv8u4ZyHe+HxLSLahPq7VhAtRQnYMwiODXoEUOJ0KqIX5Fejn21Wk4hMoxLrLDT593CG3gD9KeYj/1Ycb6UxpXxfCd78CBlpi/gRLjYyxaHvqQrTPqwHi4MpeojvtnnAG8zJDCz8defvkFytg4TNnSwrrmfJBaqutiR1++Z9JHh+54TK0V7r9Z0c+mle9/3x9UUhr6aTWVeQV5Sl4xmFAxxt2xI06V/nk9GvWUKMy50whYOJvu/QRXmhUZGBgCqPGmazWjgVvdTJHjDTutYnB1/ctQJnfrdcYTdz7jUSUWaws1qqpASW0axsOfsqkQ0zVQA94Yf9JQLdShPv5YUqVwDUncRLePD0V+nGBsp/fMoBC5T8i7SDp3gCZrW8CTFsLReiCZ1PrTYskxukjS8KcQPMQaN4iHqiWObdxQVqt0MD7BuRJXB4TVJcQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(76116006)(6506007)(6486002)(122000001)(6512007)(91956017)(316002)(186003)(4744005)(26005)(7416002)(66446008)(8676002)(64756008)(66946007)(66476007)(66556008)(38100700002)(85202003)(83380400001)(71200400001)(5660300002)(85182001)(86362001)(508600001)(6916009)(38070700005)(54906003)(8976002)(36756003)(8936002)(2906002)(2616005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?N0FTeWpwVUhCTThRMmI4V0FKTGJXbE5GN2kvakErb2FuYlFHYmprcHFiazVI?=
+ =?utf-8?B?UzBCb1pqRzJ6d3lneDZibVczaE9DQ29RTEpUMHhuVlNhSWdIWmJSR1N3dkZt?=
+ =?utf-8?B?ZlNGc0RRZURZZlZzUXU1UjNXM01sajdUN2xNOHIvSnFPKzdzVGc5S1ZTZDNv?=
+ =?utf-8?B?eGREeUM5OGJyRXIvdElqTFZnMFo5QVluVEduQVNlRTNlREs4N0g0aEYySjlO?=
+ =?utf-8?B?dHltTXlmKzRzbDI3aEZucW1tVlhIaXZnbkwrOHpnaXNjNWhIM3ErV1hFc242?=
+ =?utf-8?B?SWtFMmdwK2l1QjZIUmNzeXV5cmpZUWh6aUxQSmFod1QvcXdZRGtUM3QxNitW?=
+ =?utf-8?B?WUxJeXE1TnFlaU82WTFiYnQ2elUvcmM0OXlMT2xlUGpseURPSm9td1Fwa0o1?=
+ =?utf-8?B?alkzM0VTaHVtOXVzWkxUY201d2tzdnNyV2lXWVBXY3FOZ0I0bmNhcFJIbWZW?=
+ =?utf-8?B?OHkvaGQ0TWxkdUtsTkpBK3grcEh1bkxHbFNkbm1mR3pnd2Z4czFDQWczNWxH?=
+ =?utf-8?B?SGwxS29tbW1ENFArWWhPY1A3emNwNkJ6OTM1S3BrWFVWUldmVHVBVGNhWkc2?=
+ =?utf-8?B?V2tybE9oNTB5T09UdXROUGpKMjZ1dWxrZ1cwWlZBVCtLejVrMElpbzNNNzJv?=
+ =?utf-8?B?dFE5akt6RnhLRHRqMEtPai9TdERGZkltc2M3S2w2QzIwenVxNmVjM1pJT1F6?=
+ =?utf-8?B?alZ4RHIrOFNuYlJBWWkyMW1DaitCSWQvTzVML3hza2VtSndTMkJQcHgxRjFL?=
+ =?utf-8?B?bnJ4SkRaQjMrRTJRaE1KMU51eUQxM3Q2OTVxeklmbEZWZkNyQUh1dFBBWjEx?=
+ =?utf-8?B?bVhla1JmK0VoY0ZCdDMwYWNZdnV0VzZvL0g0Wm91RDlxTytpazN5TURmNXAv?=
+ =?utf-8?B?REVwVTR3UlFKazV3SDVNTXZqU0U0WkRCbE5mTlBrWUJUWkp6dDduWml5aXU3?=
+ =?utf-8?B?U3hsbGZUb3NGTnUwNGhwTG50R0gwdElUUHQ3a2dEOFZmU0hGWi9PZFo5Y2lu?=
+ =?utf-8?B?Z2RvV3MxVVgvOG1BTTlaVHp5L2w4SFB4M1JZZ3pTQSs1T1RTdmdJQzRScUM2?=
+ =?utf-8?B?M2JjRVVTWC8xL0ltYjF3NDYxS2g3SFRWd3JkcHdSSTI5TVF3NXlENWtpNWl2?=
+ =?utf-8?B?V1gxZlA3S2VWaWFqTHp2aG1BYTZ4M3A1KzNKRDI1Tk5WVDZTQ09NNDhCditR?=
+ =?utf-8?B?dExEZE9KTVlaMjljcWZGZkF3ZmJsTUswdStYZ3lhZDM5R01ZYlFtV1pOUXpk?=
+ =?utf-8?B?VUJCT0FRVmk1bmlrMVJvb054SmxleDZQeEtxblJwNmF5Tno3eWIrSld0WXkw?=
+ =?utf-8?B?ZHhUTEliVStSalVmVlhDRXNKNWNIN3ZvNUxjdDNRNDRtNCtpanZUeGVGOW1r?=
+ =?utf-8?B?RTVNak13V2l6REZMTlhyREw2T1VXSjdkTzQyaG9hWnZFS2RIYjUwQlIyeGY5?=
+ =?utf-8?B?eFgyUjRDTGczcUVjR1FqMnFxbmcwQkNxeCtvbUo0TFFUZDFqZnZVQkJxWWlq?=
+ =?utf-8?B?Nm1QV3pRRkdiWGVNNnh2THB1VXJ6MXFjWTY2K0dUeXFVdUdnelNyTWgxZDFE?=
+ =?utf-8?B?ZXY5UU1mV0NnakszZ2ZhTmxYWDFIZXphM0lhc1A3NUVFdTJHM0swdU9lUEtB?=
+ =?utf-8?B?RVhrV3kvejlUQkJPR21yVlh5SHhyclFndFZQS3VoTmIydnpuaG9vVjRZQ1p3?=
+ =?utf-8?B?cjFIUDNCV1dwc0tZK2tENFlnWC9XNmFvY0hMWU93elRBdDdRaXN4OW1IdUw2?=
+ =?utf-8?B?bWpoZ0VDeGMrOWUveGRqZDBTaGQ2NU9HajNMZVdiSi83QndLNW95djFRVXRT?=
+ =?utf-8?B?WUswT21PWTdpS09lYzRhK3Z3Ty9IV2dCQy93eDJpZDJrekQ1ZXF5ODg2M1Nu?=
+ =?utf-8?B?QmJ1ekc4OHRQeGxzUmpCSHNPVHhPUEFTRVA0R0xVMXU3bVJqRTEzTEczSEJM?=
+ =?utf-8?B?ZmRWN0pSWDJlOTlDTDBKZWZrSm1mU2dqbVJkT2NSbGRSWVNxQXVjUUEySXg4?=
+ =?utf-8?B?NVdCZGEwUGtKUUM1aTd5QXRteGtYL1dYT2JIazQySHVRN2E5UUs0QkVONXhF?=
+ =?utf-8?B?T1hRcTY5UTZvNlJNUzVIQVdjSUhHVkIrMHJWUkl6QjYrNm8xcVNQejFyeDhY?=
+ =?utf-8?B?dDNJRkpJbGpmSm82RFdYdW4vWWNHeXNiWlFIRVFIekR4dnhYZGdEcVdMczhN?=
+ =?utf-8?Q?Adct1vEUqy4/TMjtymAzmqE=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FD356CAB4F45784085DCE58CAB61D2E0@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220222173019.2380dcaf@fixe.home>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6af2aaf-441f-42a2-9c55-08d9f6dc6ae4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2022 14:54:39.5459
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Tz16bEoXrxJ0nB7X071R5cBZbPfxOk973ZkTAK9svgHLqgJ/8C0tvJublF0ivhfMbNa/DPbG7E6UTz+hWzopjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3579
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 05:30:19PM +0100, Clément Léger wrote:
-> Le Mon, 21 Feb 2022 19:41:24 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
-
-> > > We thought about adding CONFIG_OF to x86 and potentially describe this
-> > > card using device-tree overlays but it introduce other problems that
-> > > also seems difficult to solve (overlay loading without base
-> > > device-tree, fixup of IRQs, adresses, and so on) and CONFIG_OF is not
-> > > often enabled on x86 to say the least.  
-> > 
-> > Why it can't be described by SSDT overlay (if the x86 platform in question is
-> > ACPI based)?
-> 
-> This devices uses a SoC for which drivers are already available but are
-> meant to be used by a device-tree description. These drivers uses the
-> following subsystems:
-> - reset (no ACPI support ?)
-> - clk (no ACPI support ?)
-> - pinctrl (no ACPI support ?)
-> - syscon (no ACPI support ?)
-> - gpio
-> - phy
-> - mdio
-> 
-> Converting existing OF support to fwnode support and thus allowing
-> drivers and subsystems to be compatible with software nodes seemed like
-> the easiest way to do what I needed by keeping all existing drivers.
-> With this support, the driver is completely self-contained and does
-> allow the card to be plugged on whatever platform the user may have.
-
-I agree with Hans on the point that converting to / supporting fwnode is
-a good thing by its own.
-
-> Again, the PCI card is independent of the platform, I do not really see
-> why it should be described using platform description language.
-
-Yep, and that why it should cope with the platforms it's designed to be used
-with.
-
-> > > This series introduce a number of changes in multiple subsystems to
-> > > allow registering and using devices that are described with a
-> > > software_node description attached to a mfd_cell, making them usable
-> > > with the fwnode API. It was needed to modify many subsystem where
-> > > CONFIG_OF was tightly integrated through the use of of_xlate()
-> > > functions and other of_* calls. New calls have been added to use fwnode
-> > > API and thus be usable with a wider range of nodes. Functions that are
-> > > used to get the devices (pinctrl_get, clk_get and so on) also needed
-> > > to be changed to use the fwnode API internally.
-> > > 
-> > > For instance, the clk framework has been modified to add a
-> > > fwnode_xlate() callback and a new named fwnode_clk_add_hw_provider()
-> > > has been added. This function will register a clock using
-> > > fwnode_xlate() callback. Note that since the fwnode API is compatible
-> > > with devices that have a of_node member set, it will still be possible
-> > > to use the driver and get the clocks with CONFIG_OF enabled
-> > > configurations.  
-> > 
-> > How does this all is compatible with ACPI approaches?
-> > I mean we usually do not reintroduce 1:1 DT schemas in ACPI.
-> 
-> For the moment, I only added fwnode API support as an alternative to
-> support both OF and software nodes. ACPI is not meant to be handled by
-> this code "as-is". There is for sure some modifications to be made and
-> I do not know how clocks are handled when using ACPI. Based on some
-> thread dating back to 2018 [1], it seem it was even not supported at
-> all.
-> 
-> To be clear, I added the equivalent of the OF support but using
-> fwnode API because I was interested primarly in using it with software
-> nodes and still wanted OF support to work. I did not planned it to be
-> "ACPI compliant" right now since I do not have any knowledge in that
-> field.
-
-And here is the problem. We have a few different resource providers
-(a.k.a. firmware interfaces) which we need to cope with.
-
-What is going on in this series seems to me quite a violation of the
-layers and technologies. But I guess you may find a supporter of your
-ideas (I mean Enrico). However, I'm on the other side and do not like
-this approach.
-
-> > I think the CCF should be converted to use fwnode APIs and meanwhile
-> > we may discuss how to deal with clocks on ACPI platforms, because
-> > it may be a part of the power management methods.
-> 
-> Ok, before going down that way, should the fwnode support be the "only"
-> one, ie remove of_clk_register and others and convert them to
-> fwnode_clk_register for instance or should it be left to avoid
-> modifying all clock drivers ?
-
-IRQ domain framework decided to cohabit both, while deprecating the OF one.
-(see "add" vs. "create" APIs there). I think it's a sane choice.
-
-> > > In some subsystems, it was possible to keep OF related function by
-> > > wrapping the fwnode ones. It is not yet sure if both support
-> > > (device-tree and fwnode) should still continue to coexists. For instance
-> > > if fwnode_xlate() and of_xlate() should remain since the fwnode version
-> > > also supports device-tree. Removing of_xlate() would of course require
-> > > to modify all drivers that uses it.
-> > > 
-> > > Here is an excerpt of the lan966x description when used as a PCIe card.
-> > > The complete description is visible at [2]. This part only describe the
-> > > flexcom controller and the fixed-clock that is used as an input clock.
-> > > 
-> > > static const struct property_entry ddr_clk_props[] = {
-> > >         PROPERTY_ENTRY_U32("clock-frequency", 30000000),  
-> > 
-> > >         PROPERTY_ENTRY_U32("#clock-cells", 0),  
-> > 
-> > Why this is used?
-> 
-> These props actually describes a fixed-clock properties. When adding
-> fwnode support to clk framework, it was needed to add the
-> equivalent of of_xlate() for fwnode (fwnode_xlate()). The number of
-> cells used to describe a reference is still needed to do the
-> translation using fwnode_property_get_reference_args() and give the
-> correct arguments to fwnode_xlate().
-
-What you described is the programming (overkilled) point. But does hardware
-needs this? I.o.w. does it make sense in the _hardware_ description?
-
-> [1]
-> https://lore.kernel.org/lkml/914341e7-ca94-054d-6127-522b745006b4@arm.com/T/
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+THVpeiBBbmdlbG8gRGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPiB3cml0ZXM6DQoN
+Cj4gUmVhbHRlayBzd2l0Y2hlcyBzdXBwb3J0cyB0aGUgc2FtZSB0YWcgYm90aCBiZWZvcmUgZXRo
+ZXJ0eXBlIG9yIGJldHdlZW4NCj4gcGF5bG9hZCBhbmQgdGhlIENSQy4NCj4NCj4gU2lnbmVkLW9m
+Zi1ieTogTHVpeiBBbmdlbG8gRGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPg0KPiAt
+LS0NCj4gIGluY2x1ZGUvbmV0L2RzYS5oICAgIHwgICAyICsNCj4gIG5ldC9kc2EvdGFnX3J0bDhf
+NC5jIHwgMTU0ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0NCj4g
+IDIgZmlsZXMgY2hhbmdlZCwgMTIxIGluc2VydGlvbnMoKyksIDM1IGRlbGV0aW9ucygtKQ0KDQpS
+ZXZpZXdlZC1ieTogQWx2aW4gxaBpcHJhZ2EgPGFsc2lAYmFuZy1vbHVmc2VuLmRrPg==
