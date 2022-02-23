@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E884F4C0B46
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 05:48:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C03F04C0B4A
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 05:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233044AbiBWEtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Feb 2022 23:49:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59226 "EHLO
+        id S234562AbiBWEz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Feb 2022 23:55:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbiBWEtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 23:49:13 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478401277B
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 20:48:44 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id e140so45532153ybh.9
-        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 20:48:44 -0800 (PST)
+        with ESMTP id S231172AbiBWEz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Feb 2022 23:55:27 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CC45DE6E
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 20:54:59 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id p7so5892896qvk.11
+        for <netdev@vger.kernel.org>; Tue, 22 Feb 2022 20:54:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ezkZQLw1rVr1GX7ZTil8Ns0U9+6O4LGASFHlroo1t4Y=;
-        b=MsolJfGfbjaT6S7LRgE7ZzsRIz9GGywtZpGVHT0Sc/5mu1KHfOzctqwZOrTMrE5FWi
-         NPzXFwRrbunEj2sHPxrLJzOzy6IvfPj48uS/bIlded9gO9zo1z3EA9QfLZpjC909Ww+T
-         07/fhB2gURlLnnfkUIsU/KEiPjvhP4OZkJUCviKYi8cQudo5HWt8xKIH7oeJyIitnawr
-         i1TwGwGswxuPpj2hI5n8pxaJS8Wxx3haLN7d50Acd+BKOWRmbseChdE5T+Ek7/yr62OV
-         W30Qxj+mEPjyQal+HavtlGz/qNE2PdvDO2X0796JCUahm+zY7+Z0E2akoxppwg5mcgos
-         2fqA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5NTt4ZRD2gIM9lqtl05BkQj1DQPcSxM4o/1x49c91yo=;
+        b=K9uOMxwBv4H5YFzZxD5qU+OW81LOG7cWBYyo7WyRmn5gr4gv99IPOjTpB/Za8BVazL
+         nxhJ5j9NX5N0VHVXZYSLBOkiqCiDEZSwWTCZ6v8X8d9aQp6IyOpyEVapUWFFtvMU0UkY
+         kCedGw0VZG7fI0F5uW2wfSzsP8LWjgyXlLfSCe95Vnmm5OK0DsoakcMLJ0b5I5+kRY3m
+         61Cil0NSnas5n2lPojb1W2fT7aYrrebtCk9hQHjgt1QU2DsF+Oc4Y1uBB9fgDfAKNmuK
+         mbc6fATgntxYGf8Br9BhhaoRsL4YfweOEkD79D4/rGdUXru0f2HXEzVvCluRdbYmysol
+         fvow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ezkZQLw1rVr1GX7ZTil8Ns0U9+6O4LGASFHlroo1t4Y=;
-        b=rReWTEa8RQJEgirvSqjjUSPCmgqRd0YW/iHiCIcHiIrxNKyeOgxYexcTYmdn8trSCt
-         riDqJgZDWJIMolH8XnW5DYthoALDhcCPr1+NSlxP18YO4Am4N/ZWeNTeDtcZPoo6YVHL
-         Vx84c0cabrD/iBi826YjaWjs8uy75c2NRXW2/btg221HmI/r/7iReuvP2uzd85TLS9MB
-         r7SqyGVprZyJlWrAunAOrkF5FktasRu2J+G7R9NJQn7HqNbwUB7wruvcebNeYBl2zI22
-         9YvbNOwJinOHEf0H5Oosty2ifOdiuH9v0JmAad9Lgaexm+aNLfnNaUssXCWZDkFXFDgk
-         hdiA==
-X-Gm-Message-State: AOAM5322wATtyVkeA0RdRw1tGgyqcw7iuX+vENwdHH+YJNCcaWwHvB1O
-        4wOc49jUFKzv5n3P+5gifqoxMgLTlzitfHHdw8KeSEffHmBKHfD6
-X-Google-Smtp-Source: ABdhPJwzZNjmWUlbqcLv5E9B/m8md/qRks+uVVSkU3xa/YCFfvXqlx7Ew0hq/hFG56atltbbAC3r7VmJBP1x7mcqtnc=
-X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr25959429ybq.407.1645591723059;
- Tue, 22 Feb 2022 20:48:43 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5NTt4ZRD2gIM9lqtl05BkQj1DQPcSxM4o/1x49c91yo=;
+        b=o2ZhsGWJk1J/mRoh6gP40uxb25fhK4sgglDaLIApqdaM391GVFODhtC9Wv/gnJ5Bmo
+         8y8jZDpyRYp2gmgdVnP34dBQdG3fbNdmoIe1uoL7mP5L+s/I1qdlbws1PeUgniL9OMTI
+         gxvjl+PE/Z/iaenw3IGvFL53dq+02xvmS2EVKSYNsre5OP9vzBrX7ndhhy1Wg9n5GjZV
+         slYpXwFisrt3tYpRGDI3vv8jJzqb1Hn40MGi1KXhvaSqiHcGYtDj+DPlspDDYBrMOT2m
+         3oaGm0egnolIRtnZLWRJfjoG+30adP3biNyvvDev9EYtHcxQxC8/yhrzJJrebl/zEGnI
+         VkdQ==
+X-Gm-Message-State: AOAM5333nhTfpH6y7dcU0Cp6/XXvLF2hQ5t16LAmg9Lw8gr/8PdCG9RR
+        +WtRjPrWi62QyBswNmMZco6cIAnFk1o=
+X-Google-Smtp-Source: ABdhPJxAAbS239rDKfn925V1JPyQn7osATVOwVsz02ISfbth1gE8+rZZ+taVLOAL2vq4b2k4zEbBZw==
+X-Received: by 2002:a05:6214:4114:b0:432:5ec4:8e63 with SMTP id kc20-20020a056214411400b004325ec48e63mr1167872qvb.91.1645592098747;
+        Tue, 22 Feb 2022 20:54:58 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id x12sm1403351qtw.9.2022.02.22.20.54.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 20:54:58 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        william.xuanziyang@huawei.com
+Subject: [PATCH net-next] Revert "vlan: move dev_put into vlan_dev_uninit"
+Date:   Tue, 22 Feb 2022 23:54:57 -0500
+Message-Id: <563c0a6e48510ccbff9ef4715de37209695e9fc4.1645592097.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220222032113.4005821-1-eric.dumazet@gmail.com>
- <164558941044.26093.15086204600598443366.git-patchwork-notify@kernel.org> <20220222201518.37122ca8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220222201518.37122ca8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 22 Feb 2022 20:48:32 -0800
-Message-ID: <CANn89iLYCkfKGQd==t8NrKmrH5sVbUVmCf=2bwmRHgrG1Jywvw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] tcp: take care of another syzbot issue
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     patchwork-bot+netdevbpf@kernel.org,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Marco Elver <elver@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,14 +68,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 8:15 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 23 Feb 2022 04:10:10 +0000 patchwork-bot+netdevbpf@kernel.org
-> wrote:
-> >   - [net-next,2/2] net: preserve skb_end_offset() in skb_unclone_keeptruesize()
-> >     (no matching commit)
->
-> I dropped the extra new lines around the body of
-> skb_unclone_keeptruesize()
+This reverts commit d6ff94afd90b0ce8d1715f8ef77d4347d7a7f2c0.
 
-Thanks !
+Since commit faab39f63c1f ("net: allow out-of-order netdev unregistration")
+fixed the issue in a better way, this patch is to revert the previous fix,
+as it might bring back the old problem fixed by commit 563bcbae3ba2 ("net:
+vlan: fix a UAF in vlan_dev_real_dev()").
+
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/8021q/vlan_dev.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index d1902828a18a..e5d23e75572a 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -638,12 +638,7 @@ void vlan_dev_free_egress_priority(const struct net_device *dev)
+ 
+ static void vlan_dev_uninit(struct net_device *dev)
+ {
+-	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
+-
+ 	vlan_dev_free_egress_priority(dev);
+-
+-	/* Get rid of the vlan's reference to real_dev */
+-	dev_put_track(vlan->real_dev, &vlan->dev_tracker);
+ }
+ 
+ static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
+@@ -856,6 +851,9 @@ static void vlan_dev_free(struct net_device *dev)
+ 
+ 	free_percpu(vlan->vlan_pcpu_stats);
+ 	vlan->vlan_pcpu_stats = NULL;
++
++	/* Get rid of the vlan's reference to real_dev */
++	dev_put_track(vlan->real_dev, &vlan->dev_tracker);
+ }
+ 
+ void vlan_setup(struct net_device *dev)
+-- 
+2.31.1
+
