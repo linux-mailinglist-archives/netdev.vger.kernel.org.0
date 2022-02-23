@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 507734C1888
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 17:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D62864C188D
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 17:23:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242783AbiBWQYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 11:24:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
+        id S242782AbiBWQYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 11:24:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242778AbiBWQYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 11:24:01 -0500
+        with ESMTP id S241930AbiBWQYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 11:24:02 -0500
 Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2093.outbound.protection.outlook.com [40.107.223.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B63EC621E
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 08:23:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0540AC559D
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 08:23:34 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i5pqPdQ9TR1tLY0RG4r1CluKa0874DtHksNX99Cmp2EYY8UcEiflZt+bw4HGEk3w6fZDZ18YHIUOYRiMS0lm2yZsQwyg3gBYXa2RIRnlADMSsE7lOldkeYw5KFLf5KXHkiRl7dSLjPigPlDWA9A31tUoAJOjpp0wMzeFoUFNAqAZEE7koR1uzZBct727n3c41vLpe6yznxAPPHQ5shE3RGuFTkmQHXWmxIXkqRGJsSKSz+iD+EHvU9X5K6hbwjr9n201ZWUJASyI5NfNEHPvJEc+m8WxGQOJbASVCrI0fR6go4IPQ0zFZUeoRo1vKXmFEpZVvy/EcHemTaE6jSTabQ==
+ b=S8wMCHWul8hg+Vja7iUYXzkS6yQD7CxZ1sCmN1rFgKCwIZifUoJDPpP3tvtM6eLK+Zu2lPeCnu3MyJbbyV1J6SP0gTVuiKZWhPGNbVFP6zxjLGsa1ptfRi0Vp7xSbphLfxGWBh/aTcGuQjYpfMPeEjumrvERZFzKVyLXPdf3KFjdRzubPGj/aNpsSNGmGMuXk4YnKYJ1EeXR1bqimTb+0zPnwu5yVuM8bwdNqPiZPzGQm82+wPwZUXBAxVavjqFf5JXGxzfikl4/QAGO9sQTH6yHxyIKjIuHBOZI1t2Z/Z5Ip1uy9PK/pPIfy24hhqT+NfKVdtiwktotcbAO5eUiJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z3I14n7fC4oKZpCkuh40RhGX9g9ESKQahyccWZLSlBc=;
- b=l1FLLAY/H+5C59Jl3cSErCNvw4Oize6fSRvxN+YYM0GHuYC7Y2bZ1V1mmiTmdw/gGvlRAyzn/o2YzRhdR85jhULoHO9Ff78ZLM1/YQND+Qc5+wnMNirdX+1daIjDyfT8FqI/u8VpLMeAGpOvT2Wy4c/mh4KXHi1YnGosWNRi6vaHIVScDrEHhel0bkc/SWFT0C9xAc1pIVKIZkP/WjlUNPV06cGN93C59rfVstnQojwT5+iiXjguEsN33WL8XNX5BSoKjAVhWr4ALxp9jMJKdLlOAgT2hF0bmwhezdnAf4d0omwA1Hbjsyi23JZjEbXi1g7Fbk4z8LvJ5TYnxGNMSw==
+ bh=tEw+cHiitn4KCP6THSjan5dR4lU2L84GqqyStEHhsJQ=;
+ b=NX+2NaC0B1cGSHPKnLZPSDW4KxG2YJkLr0YYwlYVzFJEuKk5G1/+MegitFNqZr5sn5MkxzUzAxY8CAZmm0A62CSBBYNrNyY1LDaM9Hw79Z06bYO2NZZ+WorudEBJpvebv/etPDgvS9yPLMgRyVLCyZpOXvNgMCdDaVVi/dHPMbhjDuLrSuFwLMKPekVmWTP235btDXcGHDTKRRElnJdKB2jYmBo8CkxHe8iT7a567aAi/HLDxRJBV6HrgYpNNOgzF+AdGozCgLKzmp2ZvdRss1bpFtq1V31+L1g0rtLADdFRyitFnuB7gODTAGEF52pB3WJvl2dXPNOXy5HpNRKd1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z3I14n7fC4oKZpCkuh40RhGX9g9ESKQahyccWZLSlBc=;
- b=CzHJyyW/Z+bV3F9o/tvaKHtmgQqDzxb/leNJhm8gFDfvLJKk69qBjJ87xMuVGB+2njweubhhpVIG5YmHnXrf5gD7eAMpNd1iHS2kfWGWh/YF/48PV4kn9CaZT2babeUPWiRqg/0Qo/DlFM6VdtgGic7G5rE7R3564lanB7VCLnc=
+ bh=tEw+cHiitn4KCP6THSjan5dR4lU2L84GqqyStEHhsJQ=;
+ b=MGwIycW6bLPqcuymZ2HxUHIbXwkxArdCcjtdXOLLD1YM3d1Y2veOi0W2qhnEXpgkfKyonL0/ANV2qs6FmXO/4sDHrlf3GgnWKE41iX6AlzEmdUP1AA4fJiaaAXDXlUBM/jcci7gvDjuiqJtMqpYz44/EKN6M1qQTfJSIga406nM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
@@ -46,9 +46,9 @@ To:     David Miller <davem@davemloft.net>,
 Cc:     Baowen Zheng <baowen.zheng@corigine.com>,
         Louis Peens <louis.peens@corigine.com>, netdev@vger.kernel.org,
         oss-drivers@corigine.com, Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v2 3/6] nfp: add hash table to store meter table
-Date:   Wed, 23 Feb 2022 17:22:59 +0100
-Message-Id: <20220223162302.97609-4-simon.horman@corigine.com>
+Subject: [PATCH net-next v2 4/6] nfp: add process to get action stats from hardware
+Date:   Wed, 23 Feb 2022 17:23:00 +0100
+Message-Id: <20220223162302.97609-5-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220223162302.97609-1-simon.horman@corigine.com>
 References: <20220223162302.97609-1-simon.horman@corigine.com>
@@ -59,55 +59,55 @@ X-ClientProxiedBy: AM0PR02CA0125.eurprd02.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 38355c0b-55c9-4f6c-c8dd-08d9f6e8d254
+X-MS-Office365-Filtering-Correlation-Id: 8fd51c75-92fc-4ee1-0de2-08d9f6e8d373
 X-MS-TrafficTypeDiagnostic: MWHPR13MB1757:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR13MB1757338ED96F5F8F8C0D1F20E83C9@MWHPR13MB1757.namprd13.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <MWHPR13MB1757BE35F314594205F81874E83C9@MWHPR13MB1757.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: d5Rj3qw2vfbyBglhJCXc4JEz/EbiSrOl0tQTa3BexuTvw+YEDopNK2xlBCE3AvNLa3aldv87E2fm7uxjy+6qkhTuIafgvWAyYI0SURpTJupGCSt/GJ46NZOiNsYQ+UAs7LYmIhk9eOtgwM2XeGwjvPrpPAimzDsLuxqqeTwEqG2wekaOzUKNTG146ggChXFIGLD+rI5JhpbrclDsYSKXV3ue+3gXKM8CAy0TRRiL2O46TaLxWNzHfvGYptmPUF30Tkc4WrgE+f99IstY00wXaG4sE2l/NzxmFZuaeRd+pD/denkpmOStMddxOp9h2Re0+xPqfrkdIO//mcyE1thNKV1b2n5qf4Bk28zGeHYPmjT1UsEzRXY48s9BXqO8idFQ5XYtyBhjSCQTSvQKeuCwqPT6uSj+cl4GfYRTJAPTbbdeqCTjSHFw3556OXP9lHz2+18VZsgjq0LiG5J+F8jDSXN/aB+zvT8hCEWhWQuElLgbOgAorPAq3uR9PJz8garDwogeZTeakS1c0fNDhNCGa2SAs540k0WFJR10Xy0isbcTwUVgi2y/lW+KN5JXom7zvRzrDMZRBppVo7R1aCAZ3JHhc2X44ivZWkMeMdeDkcS+Hu3tdxZEMX576mafN2cXSxnIck3joAuQyKevzp+C9KsuaWYiFze6G6EgQsX3+Br4tZpe6FT/ukrDg52Gxcjm
+X-Microsoft-Antispam-Message-Info: zvCQwve9nHWY5wdC3SeawMRNlhd5o0pYyJ7zxNUMUsizaXDfOKLWLjWC5kdGjNZ1e97+oMcDvJijuEX+X9zealSDOlFQbM2C8MheukkV+iz3dQ7nvY4ocilzewpQTLxw0QCTpmL9WrUiJogRnOD/usTavBG14RM00UbBDMDVWwP3AKc+wGJE+VkLcKdqtXNNZJsXv53LeeLb+J3hrYM3jvLsSju3uyrDo7AcNcI2K95ohIPHEpCvZa89or+Yn+hmxGW2u56NjIFgXmU1YSWHho83UXsNnvgXBEUCRlWkyAzQbI0BKdUHaoeLi7uso7sRf3Sdy6tpo+HLKHTCUvkqOr5PXs1uR15KYAk/aPMxtB+ImUMj1UmuDB3wciDZWPOpwa4sKmiWVORuKP2zi2h60crM6sRZ8kyDHePOhNdBtOFhf1PILnvaUYgu5xDZyFOeym/eln5UyU1Qa7d1J+aM2z+W5uxPNykKFl/+ZAopGjT8gPiNPDnrKRF78RKL5KdpctSaXtaGo9UrjxsSsQ2f8wTfwqU7YrciRGkHoFlru+RiOB9dk9buanWz9MgJRLvqTZwxfTjzyoqyWLD10oj3kzmKZ5KwZdiX9kNcdoSoCvQomtSg5kvMHSoOMjsOdab17O4k2s3gJhShgcr0Ig1zFtHZzvVvvzqp0C+5pH333r8QtQd2KVUvj5ZBFbDty9FuUBJiqLShm79uxEekfvZqtg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(376002)(346002)(136003)(366004)(396003)(39830400003)(8936002)(6506007)(86362001)(508600001)(52116002)(6486002)(36756003)(44832011)(2906002)(5660300002)(54906003)(110136005)(83380400001)(66476007)(1076003)(66556008)(8676002)(2616005)(316002)(66946007)(186003)(38100700002)(107886003)(6512007)(6666004)(4326008);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gtjFcnt1PaNJkfPdLclPNGGVe7nkaIZIQQwBUMKgr7xijw7tvva0xWSNyNoB?=
- =?us-ascii?Q?grlRMvk9etAsHPlVSlKDxzkqjQIwp1qGVwF4GhVBwJXvAZs87nX+UTEJ4RwU?=
- =?us-ascii?Q?9wtZX64OZeshf0qSrYVONwU8p3ga1ZQDLOVcUFK7yB0dAEU+ybheyK3lwP9/?=
- =?us-ascii?Q?fvSHFkjRIvdcw/EgObRrqamV+9tz5+f3GZyZUydTEBnMqcSDJ9XGnXyAuuE7?=
- =?us-ascii?Q?FKzKOdJzBq8jtDnSKf+EsdAIbKaCKj9Jk+FPN9V5gI7QvXUmobPDm5jw2Rmc?=
- =?us-ascii?Q?NubGnmuVoX0PWZMnZP3Qf/iE0kwGPNPP67ADYf0suXPLEB9U7dlf1xhKMfuU?=
- =?us-ascii?Q?oc9y0pLWwcolDRn8FhFDD6dRI5pWUdQGLzuoDKia2Vdst212EEGrJ0fRGE+J?=
- =?us-ascii?Q?ic5Tk0oOJwjCMO2CU8zrl0xXFjirAQd7p32ZqNmzmwcu49BGDZrDE8em79Bw?=
- =?us-ascii?Q?ZAFSHf1bXalkzrwMRscJLFx0yc0tHNNF7T7+FmmOLvg4crHwXRi5MT0zHgw2?=
- =?us-ascii?Q?vTD5jn+3ggJIlmMf4Xkl/Toqp7sSmE2fSaz68PeSLHDOoc9A3GQQw/r3eA2j?=
- =?us-ascii?Q?/ooXkZjPvlzuymDn80HM5dUFEbEcUj/8gqelXiTKsQ0zUfhBU+ohrT4QJWSJ?=
- =?us-ascii?Q?/geoQkI+t1IUY7jRLMHziGWG82f5VatxNTfiBrFK7LdKcW1OXjGhT9nhy4Sr?=
- =?us-ascii?Q?dDxWW7PhOjlhFdbG8bTHwJ9qvfvEkbH+8Tuk7rjhU1t7Y4j569j2c6LO3mG+?=
- =?us-ascii?Q?PFNyYOxC4J0wSCHi8YdNqsW+2QAfslTFw3wk9/u2s+Zvb92sSU7r/Cudaj1f?=
- =?us-ascii?Q?aWVbbCbUKANvm3HPVnhy6IksrAQBeMO2uI2Ip3d1UD0wt/8o8VLRPCiFKcue?=
- =?us-ascii?Q?F8/GiT4REXeizO0OdEEI79oCX/BW24Ql0ph8nG6DTeucpHsAf2gPZyBqcy9C?=
- =?us-ascii?Q?NEELNTgK4vv3Rr9LFsPHyCI3rtyC/plLwsbj5Ut2o3Mym8df0VMFqTEdYmvh?=
- =?us-ascii?Q?FcSE2HtInQ8WtQm9ipQT4dd8r2aSNouBCwY5nNROfAduux809j+iaUiZ8dy6?=
- =?us-ascii?Q?gKj12y15Oi6uqJbVULJI7YizAz67JFSFBkcPUWsOzYoEeD/O3Z79OliVCQI2?=
- =?us-ascii?Q?zQzqv4f/ooegUqFDlBVNHtUwCH84ZVZlaHAaQZTxnpaa44qU1uShF995PKWW?=
- =?us-ascii?Q?+KWPy32QBJQ2EFol8xeg+elg0X0nP7m+OMcgkvtC2H5B/LFWr3WjnC4gHItK?=
- =?us-ascii?Q?feuULPDywaA0RsR7KfKIwEGGEmsmMY4VK362A9gE83eBU2bQGlnaZ1O8aC6u?=
- =?us-ascii?Q?Q7EDJWcp3pzryPIwc4krfkDXO6FyAPC4FBAXNRzjtFO17TEDcrEtbEMrTe9Z?=
- =?us-ascii?Q?bc5OUJETlnrt/iOnE6oV9KUqYrDq0l0I7DWYCISUMOm87EiRPgWEjArE+SGt?=
- =?us-ascii?Q?SaDjVrnZHBMaGvtUt+ZGCXKMKaFFFcCkz/bYNjkCYkwGHd1W7AEY4qyPEZR3?=
- =?us-ascii?Q?uByAB76FmbanW6H7jP9cyvnZYqWSJyPTQncVMxLSuFzTY82F375sHHxT9eSJ?=
- =?us-ascii?Q?W02djgfXD2QcdMSyFeZBf16DtKY+m7FIM0WMeVsefIsq4KrTyrDIItKQSUJp?=
- =?us-ascii?Q?l5rLj73gqdpnnNi+jJamwYb0ktgH+YI/9Q4qXvH/H6Jp+/+3QdR2eNt84unm?=
- =?us-ascii?Q?bsFilojPAo2+2vND9coRj/YLbYZr2xPCi5IKqmNILT11a3DsvgzZzdPCfCtX?=
- =?us-ascii?Q?vfID4uueLA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5YEMuWHCTX/AqQHcOvqtEzvAwe4RghbRLOCWtdSqvtw0t3SuXriLmzlJ03UQ?=
+ =?us-ascii?Q?BOrF+ojafxHboM+SOGUA73NFWEChYJEFTj6G6+Tc30rC369hzuwhkU7Rnv4R?=
+ =?us-ascii?Q?jOdL+V70oMUJ+CJ1esXaD2kw5/8cnuLuTMdetLXGFaOorZQeFpJKyTiNdD5y?=
+ =?us-ascii?Q?bl1Tab6Ngf3z4+EbMVjADrUe70+KSemXU/QEY8HEHAJgnv8WPY9AyCDjNGz4?=
+ =?us-ascii?Q?DxKPmjKSdxUwaZe/4oV6RNWODadMqWCcAy3ve44PVKiKjamdh0RVVTiXrc2+?=
+ =?us-ascii?Q?Rqaex87q3D4IQg1seSyf2rQsP6/E0QVW5gKfxcsZo9sOTwo4bHt6pR5JbPI2?=
+ =?us-ascii?Q?QbOINnQJ/NI8T4fFF6DXEBzUWVO3zpdBd7eOGgUULldqiaF3QRiPkNRNJCQi?=
+ =?us-ascii?Q?7ZXbQpSs+sHWoZHN5rg1e3cQUnO30oRnlEWEkDtK2dIipi1ZdcUD80W7lMDF?=
+ =?us-ascii?Q?/wHfq9SfjHlWZc4f7PDXW8pezxUERsUe00eFkV3DV8VjeMYAxGxEq4mAVTlI?=
+ =?us-ascii?Q?e5BhI9YwI4qci0a3Oarwg4M9Q9m9Z6GA1eG+XCnz+QTZ1vyZCyjEZSt31JPA?=
+ =?us-ascii?Q?qjuHPug+3x54QaKueeztJZn6Qdb49isOQKpZDwysMhq9YZ50ASDPuhOUHGv9?=
+ =?us-ascii?Q?pTwhPZgOpvIMzKVfMggrg2GrfThTBjBzi1Ec07dYdjX1OjtLyyAoUMnQKLC2?=
+ =?us-ascii?Q?gPAPU6inlcqbwHvzXVsSWfBsyenrZ6FMDweOHwuASLyuVLX25tjH/c2Den7d?=
+ =?us-ascii?Q?um2Y2Q/HILNwGONEM0Zsc/2vxx7yaJ7zIMOx12XW8c94nSnGDguu0hZaJi7+?=
+ =?us-ascii?Q?PQrQJfQTf7B8H2z2HYf+Yi0CCmhUYPrNSvQJILJzRa0Y43Fs2izPTp7Dx1Di?=
+ =?us-ascii?Q?8QeZlgDZ/XHMZGO9QZoeWzG656zSfBLLTgK9eOhNO6K8hNP3svLgqR+s3hUE?=
+ =?us-ascii?Q?XrxIN8p5WpPzj64Pn07bvVvMDRrO7ZDcW7g/mAijKvGIz0F8GB6K82oAT2MV?=
+ =?us-ascii?Q?1liyTtiuMnPrrvLBTDbCT5yEz1pF/9uR1LKZxiqHvPWVVEVig8u4+xPpXtGT?=
+ =?us-ascii?Q?5KF30FQZqqjGZkgVNJVy+ewkiDp2J3KzDRTXSwuZsJbVxXLGBsSMIC/CxOvG?=
+ =?us-ascii?Q?KEU997VzAR8oI0dkJARiyyGjmeP7GdWRH+BcjLcTaoW4nlX3hfrDkyiUxtr3?=
+ =?us-ascii?Q?vZny+dq2I3Pm8PoASijJHY+Lgcuv8sDCF3xSEssMGU/ApvYSaINeIZg4XUfQ?=
+ =?us-ascii?Q?JVgJMreMKhOq/YYJWngSFkZ/sOBRfg6DWiZtPJdZvjRE4m4IyaFsVrGjy/Na?=
+ =?us-ascii?Q?8K5zKmfKJo9HQDlysfH/odWNNGIhydU2+FbYAd1yc9MporvnnlwJlCfu4VLJ?=
+ =?us-ascii?Q?y0JBYMkDKroYFkqrrQjMCfMzpVtHnLw2p/njIxC/6qm9S7ZraM/lttmyTpnc?=
+ =?us-ascii?Q?sLctmV/AhlW/psxIBFR/wCgIuVswnSCh2ZyQywsf4Q7yxs7fKrR9U5vvoMBh?=
+ =?us-ascii?Q?syMlkUfnkQMW3AeURWZSLRkGDbotleuoL0W3WcyVwLl1oxVOfFEyP03Vn4Im?=
+ =?us-ascii?Q?iJ0QN9306A1TA+ymzwT9ZuK7bB5HVW6s0QEQxvju0VlcjJFF6Dj/HsLWM9sF?=
+ =?us-ascii?Q?wvZFAj36U2c+4x8LEQXzsv4vD6u+uMEAaCaeCs4MsiUOv+9NWo1chK2yEq88?=
+ =?us-ascii?Q?WU8f7Nkyibv50hSUL6bHnkoYoP0RKJKDIohgh7FRUqBT+K70MC8SRchmjPCJ?=
+ =?us-ascii?Q?OeV7gJ3AzA=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 38355c0b-55c9-4f6c-c8dd-08d9f6e8d254
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8fd51c75-92fc-4ee1-0de2-08d9f6e8d373
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 16:23:27.4377
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 16:23:29.1420
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S8x3MB1YUOuvHSLCENxX5gEu3daPPvHBDJ+Oi/FTFCEwH5PxBJE+XlN57YFrd3vomD43VfVrstkWjnCLLBqI2x2uUCz+sg9k2r65vfzMWpE=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Fhn6RBpo9L0RYVBGvlJTBuwlRtE/yj4QW6Wqa3Bag0GGkdPZ8HKYRxt7MIfzrqsrAdPYztd5yDnUpxT2Eet+7NpdMqoFcK5IX9vktmmV94Q=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR13MB1757
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -120,288 +120,211 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Baowen Zheng <baowen.zheng@corigine.com>
 
-Add a hash table to store meter table.
+Add a process to update action stats from hardware.
 
-This meter table will also be used by flower action.
+This stats data will be updated to tc action when dumping actions
+or filters.
 
 Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../net/ethernet/netronome/nfp/flower/main.h  |  35 +++++
- .../ethernet/netronome/nfp/flower/qos_conf.c  | 142 +++++++++++++++++-
- 2 files changed, 176 insertions(+), 1 deletion(-)
+ .../net/ethernet/netronome/nfp/flower/main.h  |   3 +-
+ .../ethernet/netronome/nfp/flower/qos_conf.c  | 116 +++++++++++++++++-
+ 2 files changed, 114 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
-index a880f7684600..7ecba013d2ab 100644
+index 7ecba013d2ab..c2888a3bac9a 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/main.h
 +++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
-@@ -194,6 +194,8 @@ struct nfp_fl_internal_ports {
-  * @qos_stats_work:	Workqueue for qos stats processing
-  * @qos_rate_limiters:	Current active qos rate limiters
-  * @qos_stats_lock:	Lock on qos stats updates
-+ * @meter_stats_lock:   Lock on meter stats updates
-+ * @meter_table:	Hash table used to store the meter table
-  * @pre_tun_rule_cnt:	Number of pre-tunnel rules offloaded
-  * @merge_table:	Hash table to store merged flows
-  * @ct_zone_table:	Hash table used to store the different zones
-@@ -231,6 +233,8 @@ struct nfp_flower_priv {
- 	struct delayed_work qos_stats_work;
- 	unsigned int qos_rate_limiters;
- 	spinlock_t qos_stats_lock; /* Protect the qos stats */
-+	struct mutex meter_stats_lock; /* Protect the meter stats */
-+	struct rhashtable meter_table;
- 	int pre_tun_rule_cnt;
- 	struct rhashtable merge_table;
- 	struct rhashtable ct_zone_table;
-@@ -377,6 +381,31 @@ struct nfp_fl_stats_frame {
- 	__be64 stats_cookie;
- };
- 
-+struct nfp_meter_stats_entry {
-+	u64 pkts;
-+	u64 bytes;
-+	u64 drops;
-+};
-+
-+struct nfp_meter_entry {
-+	struct rhash_head ht_node;
-+	u32 meter_id;
-+	bool bps;
-+	u32 rate;
-+	u32 burst;
-+	u64 used;
-+	struct nfp_meter_stats {
-+		u64 update;
-+		struct nfp_meter_stats_entry curr;
-+		struct nfp_meter_stats_entry prev;
-+	} stats;
-+};
-+
-+enum nfp_meter_op {
-+	NFP_METER_ADD,
-+	NFP_METER_DEL,
-+};
-+
- static inline bool
- nfp_flower_internal_port_can_offload(struct nfp_app *app,
- 				     struct net_device *netdev)
-@@ -575,6 +604,12 @@ nfp_flower_update_merge_stats(struct nfp_app *app,
- 
+@@ -605,7 +605,8 @@ nfp_flower_update_merge_stats(struct nfp_app *app,
  int nfp_setup_tc_act_offload(struct nfp_app *app,
  			     struct flow_offload_action *fl_act);
-+int nfp_init_meter_table(struct nfp_app *app);
-+
+ int nfp_init_meter_table(struct nfp_app *app);
+-
++void nfp_flower_stats_meter_request_all(struct nfp_flower_priv *fl_priv);
++void nfp_act_stats_reply(struct nfp_app *app, void *pmsg);
  int nfp_flower_offload_one_police(struct nfp_app *app, bool ingress,
  				  bool pps, u32 id, u32 rate, u32 burst);
-+int nfp_flower_setup_meter_entry(struct nfp_app *app,
-+				 const struct flow_action_entry *action,
-+				 enum nfp_meter_op op,
-+				 u32 meter_id);
- #endif
+ int nfp_flower_setup_meter_entry(struct nfp_app *app,
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-index 95bc71b4421c..160c3567ec99 100644
+index 160c3567ec99..286743de8ea4 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-@@ -1,7 +1,11 @@
- // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- /* Copyright (C) 2019 Netronome Systems, Inc. */
+@@ -304,6 +304,9 @@ void nfp_flower_stats_rlim_reply(struct nfp_app *app, struct sk_buff *skb)
+ 	u32 netdev_port_id;
  
-+#include <linux/hash.h>
-+#include <linux/hashtable.h>
-+#include <linux/jhash.h>
- #include <linux/math64.h>
-+#include <linux/vmalloc.h>
- #include <net/pkt_cls.h>
- #include <net/pkt_sched.h>
- 
-@@ -440,6 +444,9 @@ void nfp_flower_qos_init(struct nfp_app *app)
- 	struct nfp_flower_priv *fl_priv = app->priv;
- 
- 	spin_lock_init(&fl_priv->qos_stats_lock);
-+	mutex_init(&fl_priv->meter_stats_lock);
-+	nfp_init_meter_table(app);
+ 	msg = nfp_flower_cmsg_get_data(skb);
++	if (be32_to_cpu(msg->head.flags_opts) & NFP_FL_QOS_METER)
++		return nfp_act_stats_reply(app, msg);
 +
- 	INIT_DELAYED_WORK(&fl_priv->qos_stats_work, &update_stats_cache);
+ 	netdev_port_id = be32_to_cpu(msg->head.port);
+ 	rcu_read_lock();
+ 	netdev = nfp_app_dev_get(app, netdev_port_id, NULL);
+@@ -335,7 +338,7 @@ void nfp_flower_stats_rlim_reply(struct nfp_app *app, struct sk_buff *skb)
+ 
+ static void
+ nfp_flower_stats_rlim_request(struct nfp_flower_priv *fl_priv,
+-			      u32 netdev_port_id)
++			      u32 id, bool ingress)
+ {
+ 	struct nfp_police_cfg_head *head;
+ 	struct sk_buff *skb;
+@@ -346,10 +349,15 @@ nfp_flower_stats_rlim_request(struct nfp_flower_priv *fl_priv,
+ 				    GFP_ATOMIC);
+ 	if (!skb)
+ 		return;
+-
+ 	head = nfp_flower_cmsg_get_data(skb);
++
+ 	memset(head, 0, sizeof(struct nfp_police_cfg_head));
+-	head->port = cpu_to_be32(netdev_port_id);
++	if (ingress) {
++		head->port = cpu_to_be32(id);
++	} else {
++		head->flags_opts = cpu_to_be32(NFP_FL_QOS_METER);
++		head->meter_id = cpu_to_be32(id);
++	}
+ 
+ 	nfp_ctrl_tx(fl_priv->app->ctrl, skb);
+ }
+@@ -379,7 +387,8 @@ nfp_flower_stats_rlim_request_all(struct nfp_flower_priv *fl_priv)
+ 			if (!netdev_port_id)
+ 				continue;
+ 
+-			nfp_flower_stats_rlim_request(fl_priv, netdev_port_id);
++			nfp_flower_stats_rlim_request(fl_priv,
++						      netdev_port_id, true);
+ 		}
+ 	}
+ 
+@@ -397,6 +406,8 @@ static void update_stats_cache(struct work_struct *work)
+ 			       qos_stats_work);
+ 
+ 	nfp_flower_stats_rlim_request_all(fl_priv);
++	nfp_flower_stats_meter_request_all(fl_priv);
++
+ 	schedule_delayed_work(&fl_priv->qos_stats_work, NFP_FL_QOS_UPDATE);
  }
  
-@@ -478,6 +485,122 @@ int nfp_flower_setup_qos_offload(struct nfp_app *app, struct net_device *netdev,
+@@ -601,6 +612,28 @@ int nfp_init_meter_table(struct nfp_app *app)
+ 	return rhashtable_init(&priv->meter_table, &stats_meter_table_params);
+ }
  
- /* offload tc action, currently only for tc police */
- 
-+static const struct rhashtable_params stats_meter_table_params = {
-+	.key_offset	= offsetof(struct nfp_meter_entry, meter_id),
-+	.head_offset	= offsetof(struct nfp_meter_entry, ht_node),
-+	.key_len	= sizeof(u32),
-+};
-+
-+static struct nfp_meter_entry *
-+nfp_flower_search_meter_entry(struct nfp_app *app, u32 meter_id)
-+{
-+	struct nfp_flower_priv *priv = app->priv;
-+
-+	return rhashtable_lookup_fast(&priv->meter_table, &meter_id,
-+				      stats_meter_table_params);
-+}
-+
-+static struct nfp_meter_entry *
-+nfp_flower_add_meter_entry(struct nfp_app *app, u32 meter_id)
++void
++nfp_flower_stats_meter_request_all(struct nfp_flower_priv *fl_priv)
 +{
 +	struct nfp_meter_entry *meter_entry = NULL;
-+	struct nfp_flower_priv *priv = app->priv;
++	struct rhashtable_iter iter;
 +
-+	meter_entry = rhashtable_lookup_fast(&priv->meter_table,
-+					     &meter_id,
-+					     stats_meter_table_params);
-+	if (meter_entry)
-+		return meter_entry;
++	mutex_lock(&fl_priv->meter_stats_lock);
++	rhashtable_walk_enter(&fl_priv->meter_table, &iter);
++	rhashtable_walk_start(&iter);
 +
-+	meter_entry = kzalloc(sizeof(*meter_entry), GFP_KERNEL);
-+	if (!meter_entry)
-+		return NULL;
-+
-+	meter_entry->meter_id = meter_id;
-+	meter_entry->used = jiffies;
-+	if (rhashtable_insert_fast(&priv->meter_table, &meter_entry->ht_node,
-+				   stats_meter_table_params)) {
-+		kfree(meter_entry);
-+		return NULL;
++	while ((meter_entry = rhashtable_walk_next(&iter)) != NULL) {
++		if (IS_ERR(meter_entry))
++			continue;
++		nfp_flower_stats_rlim_request(fl_priv,
++					      meter_entry->meter_id, false);
 +	}
 +
-+	priv->qos_rate_limiters++;
-+	if (priv->qos_rate_limiters == 1)
-+		schedule_delayed_work(&priv->qos_stats_work,
-+				      NFP_FL_QOS_UPDATE);
-+
-+	return meter_entry;
++	rhashtable_walk_stop(&iter);
++	rhashtable_walk_exit(&iter);
++	mutex_unlock(&fl_priv->meter_stats_lock);
 +}
 +
-+static void nfp_flower_del_meter_entry(struct nfp_app *app, u32 meter_id)
-+{
-+	struct nfp_meter_entry *meter_entry = NULL;
-+	struct nfp_flower_priv *priv = app->priv;
-+
-+	meter_entry = rhashtable_lookup_fast(&priv->meter_table, &meter_id,
-+					     stats_meter_table_params);
-+	if (!meter_entry)
-+		return;
-+
-+	rhashtable_remove_fast(&priv->meter_table,
-+			       &meter_entry->ht_node,
-+			       stats_meter_table_params);
-+	kfree(meter_entry);
-+	priv->qos_rate_limiters--;
-+	if (!priv->qos_rate_limiters)
-+		cancel_delayed_work_sync(&priv->qos_stats_work);
-+}
-+
-+int nfp_flower_setup_meter_entry(struct nfp_app *app,
-+				 const struct flow_action_entry *action,
-+				 enum nfp_meter_op op,
-+				 u32 meter_id)
+ static int
+ nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
+ 			struct netlink_ext_ack *extack)
+@@ -697,6 +730,79 @@ nfp_act_remove_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
+ 	return 0;
+ }
+ 
++void
++nfp_act_stats_reply(struct nfp_app *app, void *pmsg)
 +{
 +	struct nfp_flower_priv *fl_priv = app->priv;
 +	struct nfp_meter_entry *meter_entry = NULL;
-+	int err = 0;
++	struct nfp_police_stats_reply *msg = pmsg;
++	u32 meter_id;
 +
++	meter_id = be32_to_cpu(msg->head.meter_id);
 +	mutex_lock(&fl_priv->meter_stats_lock);
 +
-+	switch (op) {
-+	case NFP_METER_DEL:
-+		nfp_flower_del_meter_entry(app, meter_id);
++	meter_entry = nfp_flower_search_meter_entry(app, meter_id);
++	if (!meter_entry)
 +		goto exit_unlock;
-+	case NFP_METER_ADD:
-+		meter_entry = nfp_flower_add_meter_entry(app, meter_id);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		goto exit_unlock;
++
++	meter_entry->stats.curr.pkts = be64_to_cpu(msg->pass_pkts) +
++				       be64_to_cpu(msg->drop_pkts);
++	meter_entry->stats.curr.bytes = be64_to_cpu(msg->pass_bytes) +
++					be64_to_cpu(msg->drop_bytes);
++	meter_entry->stats.curr.drops = be64_to_cpu(msg->drop_pkts);
++	if (!meter_entry->stats.update) {
++		meter_entry->stats.prev.pkts = meter_entry->stats.curr.pkts;
++		meter_entry->stats.prev.bytes = meter_entry->stats.curr.bytes;
++		meter_entry->stats.prev.drops = meter_entry->stats.curr.drops;
 +	}
 +
++	meter_entry->stats.update = jiffies;
++
++exit_unlock:
++	mutex_unlock(&fl_priv->meter_stats_lock);
++}
++
++static int
++nfp_act_stats_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
++		      struct netlink_ext_ack *extack)
++{
++	struct nfp_flower_priv *fl_priv = app->priv;
++	struct nfp_meter_entry *meter_entry = NULL;
++	u64 diff_bytes, diff_pkts, diff_drops;
++	int err = 0;
++
++	if (fl_act->id != FLOW_ACTION_POLICE) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "unsupported offload: qos rate limit offload requires police action");
++		return -EOPNOTSUPP;
++	}
++
++	mutex_lock(&fl_priv->meter_stats_lock);
++	meter_entry = nfp_flower_search_meter_entry(app, fl_act->index);
 +	if (!meter_entry) {
-+		err = -ENOMEM;
++		err = -ENOENT;
 +		goto exit_unlock;
 +	}
++	diff_pkts = meter_entry->stats.curr.pkts > meter_entry->stats.prev.pkts ?
++		    meter_entry->stats.curr.pkts - meter_entry->stats.prev.pkts : 0;
++	diff_bytes = meter_entry->stats.curr.bytes > meter_entry->stats.prev.bytes ?
++		     meter_entry->stats.curr.bytes - meter_entry->stats.prev.bytes : 0;
++	diff_drops = meter_entry->stats.curr.drops > meter_entry->stats.prev.drops ?
++		     meter_entry->stats.curr.drops - meter_entry->stats.prev.drops : 0;
 +
-+	if (action->police.rate_bytes_ps > 0) {
-+		meter_entry->bps = true;
-+		meter_entry->rate = action->police.rate_bytes_ps;
-+		meter_entry->burst = action->police.burst;
-+	} else {
-+		meter_entry->bps = false;
-+		meter_entry->rate = action->police.rate_pkt_ps;
-+		meter_entry->burst = action->police.burst_pkt;
-+	}
++	flow_stats_update(&fl_act->stats, diff_bytes, diff_pkts, diff_drops,
++			  meter_entry->stats.update,
++			  FLOW_ACTION_HW_STATS_DELAYED);
++
++	meter_entry->stats.prev.pkts = meter_entry->stats.curr.pkts;
++	meter_entry->stats.prev.bytes = meter_entry->stats.curr.bytes;
++	meter_entry->stats.prev.drops = meter_entry->stats.curr.drops;
 +
 +exit_unlock:
 +	mutex_unlock(&fl_priv->meter_stats_lock);
 +	return err;
 +}
 +
-+int nfp_init_meter_table(struct nfp_app *app)
-+{
-+	struct nfp_flower_priv *priv = app->priv;
-+
-+	return rhashtable_init(&priv->meter_table, &stats_meter_table_params);
-+}
-+
- static int
- nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
- 			struct netlink_ext_ack *extack)
-@@ -514,10 +637,13 @@ nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
- 		}
- 
- 		if (rate != 0) {
-+			meter_id = action->hw_index;
-+			if (nfp_flower_setup_meter_entry(app, action, NFP_METER_ADD, meter_id))
-+				continue;
-+
- 			pps = false;
- 			if (action->police.rate_pkt_ps > 0)
- 				pps = true;
--			meter_id = action->hw_index;
- 			nfp_flower_offload_one_police(app, false, pps, meter_id,
- 						      rate, burst);
- 			add = true;
-@@ -531,9 +657,11 @@ static int
- nfp_act_remove_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
- 		       struct netlink_ext_ack *extack)
+ int nfp_setup_tc_act_offload(struct nfp_app *app,
+ 			     struct flow_offload_action *fl_act)
  {
-+	struct nfp_meter_entry *meter_entry = NULL;
- 	struct nfp_police_config *config;
- 	struct sk_buff *skb;
- 	u32 meter_id;
-+	bool pps;
- 
- 	/*delete qos associate data for this interface */
- 	if (fl_act->id != FLOW_ACTION_POLICE) {
-@@ -543,6 +671,14 @@ nfp_act_remove_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
+@@ -711,6 +817,8 @@ int nfp_setup_tc_act_offload(struct nfp_app *app,
+ 		return nfp_act_install_actions(app, fl_act, extack);
+ 	case FLOW_ACT_DESTROY:
+ 		return nfp_act_remove_actions(app, fl_act, extack);
++	case FLOW_ACT_STATS:
++		return nfp_act_stats_actions(app, fl_act, extack);
+ 	default:
+ 		return -EOPNOTSUPP;
  	}
- 
- 	meter_id = fl_act->index;
-+	meter_entry = nfp_flower_search_meter_entry(app, meter_id);
-+	if (!meter_entry) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "no meter entry when delete the action index.\n");
-+		return -ENOENT;
-+	}
-+	pps = !meter_entry->bps;
-+
- 	skb = nfp_flower_cmsg_alloc(app, sizeof(struct nfp_police_config),
- 				    NFP_FLOWER_CMSG_TYPE_QOS_DEL, GFP_KERNEL);
- 	if (!skb)
-@@ -552,7 +688,11 @@ nfp_act_remove_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
- 	memset(config, 0, sizeof(struct nfp_police_config));
- 	config->head.flags_opts = cpu_to_be32(NFP_FL_QOS_METER);
- 	config->head.meter_id = cpu_to_be32(meter_id);
-+	if (pps)
-+		config->head.flags_opts |= cpu_to_be32(NFP_FL_QOS_PPS);
-+
- 	nfp_ctrl_tx(app->ctrl, skb);
-+	nfp_flower_setup_meter_entry(app, NULL, NFP_METER_DEL, meter_id);
- 
- 	return 0;
- }
 -- 
 2.30.2
 
