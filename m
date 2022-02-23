@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 073564C2003
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 170554C1FFF
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 00:41:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239956AbiBWXkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 18:40:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
+        id S243639AbiBWXkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 18:40:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243095AbiBWXkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:40:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7B05B3C8;
-        Wed, 23 Feb 2022 15:39:38 -0800 (PST)
+        with ESMTP id S244974AbiBWXkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 18:40:13 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1C95B89D;
+        Wed, 23 Feb 2022 15:39:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AB1661A09;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5BFA3CE1CE5;
+        Wed, 23 Feb 2022 23:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B17C340EB;
         Wed, 23 Feb 2022 23:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942CBC340E7;
-        Wed, 23 Feb 2022 23:39:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645659577;
-        bh=OItCKh58/aajz/pTnTukWCWzM/ikpHZ0lMD9+lTG2jc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IqPaiVFZ4YwhriP9WHFhCPxSbtCj/NphtRNO2ccHshrR2f1H6g9dveT0GijOmnwNL
-         MlDTeyotSNGWqpjUaiJBDfF5qV9Hfkpb92IOKq+XLp6aDBXKyIqD1G8HJm7pkZMLGp
-         cGHKeXPjTb0r63i3AwQyin7cjjJSCW6g5BQQtWkkkFoRDRfH023Cw7D/8e+SwjrqhO
-         P19Eb6i6C7gx3xiDYXmVksBuVppr2Uk2aNn+gwz4N/OXdj6gdvnZWEffF2Rs14jVOW
-         zNrVPNU+bHW2Px8TZE+blPfkF5EZ+masPe0xHl++N+7R9NcL4evjTDHRFza7YcNVkm
-         jYtfTJ5KV+Z4w==
+        bh=qGz7EbQ53bmHTgG9hRn74lRJirmYcVm7oKU8gQeCHYg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lo2sPg5wVS3ZFRrE98VjbGb1qWnEabhMaId1yrWW0672yPj1rPLLFB0dTC6bKo3hM
+         D43vSpt0rw6nl9cZwX1hvQQkxCnvIJToF4IIzECUrC9234FIONKyzw9GJEYo2FgtpC
+         6gZuX0WJQz5WITM9gSBjb6To0x2YFvmOtRivGESCDydMbZgQULGKiCPhs/cZfjprsj
+         uCYgYFhiQwMJW6QpvMcPLYP0ykDffqCIHH7sLQWysOMiCF3bfMFUJdsDMYRPFZKyAZ
+         ssFH4CPfus0aVX4zPti5I25/E2u+9Vbl9bfUi+MPWdQ2oBgqAURGBQ9ikrSjhTeSAD
+         CQocn6iyEwpYQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
         netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][for-next v2 00/17] mlx5-next 2022-22-02
-Date:   Wed, 23 Feb 2022 15:39:13 -0800
-Message-Id: <20220223233930.319301-1-saeed@kernel.org>
+Subject: [for-next v2 01/17] mlx5: remove unused static inlines
+Date:   Wed, 23 Feb 2022 15:39:14 -0800
+Message-Id: <20220223233930.319301-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220223233930.319301-1-saeed@kernel.org>
+References: <20220223233930.319301-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,115 +55,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-Hi Dave, Jakub and Jason,
+mlx5 has some unused static inline helpers in include/
+while at it also clean static inlines in the driver itself.
 
-v1->v2:
- - Fix typo in the 1st patch's title
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../ethernet/mellanox/mlx5/core/en_accel/en_accel.h    |  9 ---------
+ drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h  |  7 -------
+ include/linux/mlx5/driver.h                            | 10 ----------
+ 3 files changed, 26 deletions(-)
 
-The following PR includes updates to mlx5-next branch:
-
-Headlines: 
-==========
-
-1) Jakub cleans up unused static inline functions
-
-2) I did some low level firmware command interface return status changes to
-provide the caller with full visibility on the error/status returned by
-the Firmware.
-
-3) Use the new command interface in RDMA DEVX usecases to avoid flooding
-dmesg with some "expected" user error prone use cases.
-
-4) Moshe also uses the new command interface to grab the specific error
-code from MFRL register command to provide the exact error reason for
-why SW reset couldn't perform internally in FW.
-
-5) From Mark Bloch: Lag, drop packets in hardware when possible
-
-In active-backup mode the inactive interface's packets are dropped by the
-bond device. In switchdev where TC rules are offloaded to the FDB
-this can lead to packets being hit in the FDB where without offload
-they would have been dropped before reaching TC rules in the kernel.
-
-Create a drop rule to make sure packets on inactive ports are dropped
-before reaching the FDB.
-
-Listen on NETDEV_CHANGEUPPER / NETDEV_CHANGEINFODATA events and record
-the inactive state and offload accordingly.
-
-==========
-
-Please pull and let me know if there's any problem.
-
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
-
-  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git mlx5-next
-
-for you to fetch changes up to 45fee8edb4b333af79efad7a99de51718ebda94b:
-
-  net/mlx5: Add clarification on sync reset failure (2022-02-23 15:21:59 -0800)
-
-----------------------------------------------------------------
-Jakub Kicinski (1):
-      mlx5: remove unused static inlines
-
-Mark Bloch (7):
-      net/mlx5: Add ability to insert to specific flow group
-      net/mlx5: E-switch, remove special uplink ingress ACL handling
-      net/mlx5: E-switch, add drop rule support to ingress ACL
-      net/mlx5: Lag, use local variable already defined to access E-Switch
-      net/mlx5: Lag, don't use magic numbers for ports
-      net/mlx5: Lag, record inactive state of bond device
-      net/mlx5: Lag, offload active-backup drops to hardware
-
-Moshe Shemesh (2):
-      net/mlx5: Add reset_state field to MFRL register
-      net/mlx5: Add clarification on sync reset failure
-
-Saeed Mahameed (6):
-      net/mlx5: cmdif, Return value improvements
-      net/mlx5: cmdif, cmd_check refactoring
-      net/mlx5: cmdif, Add new api for command execution
-      net/mlx5: Use mlx5_cmd_do() in core create_{cq,dct}
-      net/mlx5: cmdif, Refactor error handling and reporting of async commands
-      RDMA/mlx5: Use new command interface API
-
-Sunil Rani (1):
-      net/mlx5: E-Switch, reserve and use same uplink metadata across ports
-
- drivers/infiniband/hw/mlx5/devx.c                              |  61 +++++++------
- drivers/infiniband/hw/mlx5/mr.c                                |  15 +++-
- drivers/infiniband/hw/mlx5/qp.c                                |   1 +
- drivers/infiniband/hw/mlx5/qpc.c                               |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c                  | 328 +++++++++++++++++++++++++++++++++++++++++++--------------------------
- drivers/net/ethernet/mellanox/mlx5/core/cq.c                   |  17 +++-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c              |  10 +--
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h    |   9 --
- drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c |  87 +++++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h         |  15 ++++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h              |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c     |  93 ++++++--------------
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c              |   9 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c             |  57 ++++++++++--
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h             |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c              | 142 +++++++++++++++++++++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h              |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c               |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h          |   7 --
- drivers/net/ethernet/mellanox/mlx5/core/main.c                 |   5 +-
- drivers/net/ethernet/mellanox/mlx5/core/port.c                 |  20 ++++-
- include/linux/mlx5/cq.h                                        |   2 +
- include/linux/mlx5/driver.h                                    |  19 ++--
- include/linux/mlx5/fs.h                                        |   1 +
- include/linux/mlx5/mlx5_ifc.h                                  |  14 ++-
- 25 files changed, 640 insertions(+), 284 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+index d964665eaa63..62cde3e87c2e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+@@ -139,15 +139,6 @@ static inline bool mlx5e_accel_tx_begin(struct net_device *dev,
+ 	return true;
+ }
+ 
+-static inline bool mlx5e_accel_tx_is_ipsec_flow(struct mlx5e_accel_tx_state *state)
+-{
+-#ifdef CONFIG_MLX5_EN_IPSEC
+-	return mlx5e_ipsec_is_tx_flow(&state->ipsec);
+-#else
+-	return false;
+-#endif
+-}
+-
+ static inline unsigned int mlx5e_accel_tx_ids_len(struct mlx5e_txqsq *sq,
+ 						  struct mlx5e_accel_tx_state *state)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h
+index 4bad6a5fde56..f240ffe5116c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h
+@@ -92,13 +92,6 @@ mlx5_hv_vhca_agent_create(struct mlx5_hv_vhca *hv_vhca,
+ static inline void mlx5_hv_vhca_agent_destroy(struct mlx5_hv_vhca_agent *agent)
+ {
+ }
+-
+-static inline int
+-mlx5_hv_vhca_write_agent(struct mlx5_hv_vhca_agent *agent,
+-			 void *buf, int len)
+-{
+-	return 0;
+-}
+ #endif
+ 
+ #endif /* __LIB_HV_VHCA_H__ */
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 78655d8d13a7..1b398c9e17b9 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -863,20 +863,10 @@ struct mlx5_hca_vport_context {
+ 	bool			grh_required;
+ };
+ 
+-static inline void *mlx5_buf_offset(struct mlx5_frag_buf *buf, int offset)
+-{
+-		return buf->frags->buf + offset;
+-}
+-
+ #define STRUCT_FIELD(header, field) \
+ 	.struct_offset_bytes = offsetof(struct ib_unpacked_ ## header, field),      \
+ 	.struct_size_bytes   = sizeof((struct ib_unpacked_ ## header *)0)->field
+ 
+-static inline struct mlx5_core_dev *pci2mlx5_core_dev(struct pci_dev *pdev)
+-{
+-	return pci_get_drvdata(pdev);
+-}
+-
+ extern struct dentry *mlx5_debugfs_root;
+ 
+ static inline u16 fw_rev_maj(struct mlx5_core_dev *dev)
 -- 
 2.35.1
 
