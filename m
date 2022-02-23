@@ -2,201 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F21B4C1978
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:07:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9FAC4C19B6
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 18:15:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243213AbiBWRIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 12:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34636 "EHLO
+        id S243324AbiBWRPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 12:15:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243268AbiBWRHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:07:55 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A08F5418B
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:07:27 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id lw4so53860306ejb.12
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:07:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=pITr9LldPmaEk/cgBoGsPvfDwZDRD2mGjIIyoZ12GQw=;
-        b=R/N/XenKGUAgHimfuknoAteuWCGG4jvmPt4s8/vHTjx4vPNr1cBnB/x0sjaSnvwt5/
-         QLTuYvsJ0q1b6cO+8wPsuYh2pRCOqCBd/o9d0dnJ9UVXH2aoO7MZSG66z5GQF+gJP4Sm
-         E1VvtvNBMur3UvbEtjInH5a5UL2DX3aaEKYoT1MtAb4RxExj7mkUXkrymDccJUiFPlf2
-         ssCBf2npQ/LVl2xssW30aBY95sslt1HOCRUNfo/mSQu3XE/jMGNC+XuVHGdCLzcORy/2
-         UqGd2YGZIaeawDv+FHvgRlIKAfV1MW+PDah4renxTrtZkkmpt6GFkFNq0/up6totWMK1
-         I8WQ==
+        with ESMTP id S243004AbiBWRPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 12:15:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DB78C4B
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:14:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645636480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rRO4MHe5Dmpeu5wHW26QySHaQNVY9l6AI+4qPBsGQkY=;
+        b=aiHcBEQRlH0Xda/b5Z0ZOF1hTTk5Dfk6udiHIX4iHH0dyjQO7stGigXQmqd3FwMXT/HJ4L
+        ePkH5SH/I8tsYVbmMzNfT53mfjvo9Ic/LaQfOCpVUjaCIPrlUSfEa0/7B1pPiNXS+s90BN
+        3cHRyjlCU93ehG0jYlfqf6NVk92VYGM=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-120-aRIkNsflNzuPKNdEs85YlQ-1; Wed, 23 Feb 2022 12:14:36 -0500
+X-MC-Unique: aRIkNsflNzuPKNdEs85YlQ-1
+Received: by mail-ej1-f70.google.com with SMTP id h22-20020a1709060f5600b006b11a2d3dcfso7392656ejj.4
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 09:14:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=pITr9LldPmaEk/cgBoGsPvfDwZDRD2mGjIIyoZ12GQw=;
-        b=SpE/DN8HY2QPJkDEmHhx1gk2pS5zoDLqbJPUIYBPD84C+DTAdROkS+8/fMW0eNLSF5
-         N/+5vzTc/u4x/Fr8+Tt9gS3eQW9mB3aam8ZqnrOJ43Bd+UV6brs3D9A9vN4ns2n/mljC
-         reVwLAVtuXkcvaxbKN4TRFP+4KICb42legNQwJGvzAejJEu3sjFZI/kRAvqKSabppzMv
-         LF8YxAbFGlC1Zq4dhaitmpm5B7948Nb2CNn9mrEGl8xSLnozbKlR6FWz2uMFQQQBXb5u
-         n6JfVto0SyyBE5ivaq6nfxBTj9cRwFLspvePuM6YLr8yrBkD3IgYrgEtXJWpDV1/R1PL
-         vIhw==
-X-Gm-Message-State: AOAM533e8DkT7VRKMYbKaFQQleNUq7nxC4FaCUJ4YorEaRsg5ol+vP26
-        s03teJ88L28sKlP2vNDo6aWLV0z3UfGAoYxTtqg=
-X-Google-Smtp-Source: ABdhPJy201CKho62a26iA5O5xjTFKM/MVrWzLC/b4LwrGnZxcp/0bgnE+hIZuJc8m3thXm9+RKf9JkNasSOb1wh67Lw=
-X-Received: by 2002:a17:906:a10:b0:6ce:7107:598b with SMTP id
- w16-20020a1709060a1000b006ce7107598bmr485913ejf.653.1645636045813; Wed, 23
- Feb 2022 09:07:25 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rRO4MHe5Dmpeu5wHW26QySHaQNVY9l6AI+4qPBsGQkY=;
+        b=0Qjb/u7JyHtHCPjumSwUpMCxUJ9gL0s4qGiR+tInxxaur96oyFAoEiyTjfCn3RFMOv
+         ZSGkqXjmrnPyYViUf4ehYwwfGhBeq+nHV+k+1NmfMLzIAVJ/Zolyk+/VdENl+/8g49dM
+         Gf0DIlYvGtwE9iHmgXQ0C6BAtl355vlb4phHuOx8VpUxkETWAh9eDsKJOTyovcag9AWT
+         wzC9hvKcwXO73Ffscbj0UvhEzxtTKrd7hEbw4pfemI/tn4gIHnqfq0LyEzgKWQVYrOh7
+         a36zOWU8eyg6r4NQ+yAEY6h+8QT5fl0yiMJzaqCpO4UN0W8ORZgHFuBpCrmMQxMOy8K7
+         qV0w==
+X-Gm-Message-State: AOAM533NPVGGhNZ3jWHE7FE/0jJC1ycARYO7WDhsWHy2lusbiUqAnBqw
+        bwJSz0H3KOD3I+muFFJdcmjMMvkU9rz23zIW2FXOvGSegbE6gNpieOYe7JTrWmp3zQ5B7ZFwsBf
+        DcnUCxw03/gpv0NV0
+X-Received: by 2002:a17:906:3c1a:b0:6ce:c404:9e3 with SMTP id h26-20020a1709063c1a00b006cec40409e3mr547086ejg.454.1645636474897;
+        Wed, 23 Feb 2022 09:14:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyFbC2GbFDO/AufWV0HURAE2UGs+63XdWnFOFf8Y8ydxKIShtBILjWFthYbDKuUpTSONSh+Hw==
+X-Received: by 2002:a17:906:3c1a:b0:6ce:c404:9e3 with SMTP id h26-20020a1709063c1a00b006cec40409e3mr547061ejg.454.1645636474553;
+        Wed, 23 Feb 2022 09:14:34 -0800 (PST)
+Received: from redhat.com ([2.55.145.157])
+        by smtp.gmail.com with ESMTPSA id 9sm106442ejg.97.2022.02.23.09.14.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 09:14:33 -0800 (PST)
+Date:   Wed, 23 Feb 2022 12:14:29 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Anirudh Rayabharam <mail@anirudhrb.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
+Message-ID: <20220223121404-mutt-send-email-mst@kernel.org>
+References: <20220221195303.13560-1-mail@anirudhrb.com>
+ <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
+ <YhRtQEWBF0kqWMsI@anirudhrb.com>
+ <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
+ <20220222090511-mutt-send-email-mst@kernel.org>
+ <YhUdDUSxuXTLltpZ@anirudhrb.com>
+ <20220222181927-mutt-send-email-mst@kernel.org>
+ <YhZCKii8KwkcU8fM@anirudhrb.com>
+ <20220223101303-mutt-send-email-mst@kernel.org>
+ <YhZlk5iiOexnBouX@anirudhrb.com>
 MIME-Version: 1.0
-Received: by 2002:a54:3087:0:0:0:0:0 with HTTP; Wed, 23 Feb 2022 09:07:25
- -0800 (PST)
-Reply-To: www.ecobank6@gmail.com
-From:   MESSI PETER <messip883@gmail.com>
-Date:   Wed, 23 Feb 2022 18:07:25 +0100
-Message-ID: <CAFuOU_TpP_4u=H064Q1g943y3xtMRcM0upGW=hJXr3fT4stzbw@mail.gmail.com>
-Subject: ATENTIE DRAGA
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhZlk5iiOexnBouX@anirudhrb.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:643 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [www.ecobank6[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [messip883[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [messip883[at]gmail.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.5 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FONDUL MONETAR INTERNA=C8=9AIONAL (FMI)
+On Wed, Feb 23, 2022 at 10:19:23PM +0530, Anirudh Rayabharam wrote:
+> On Wed, Feb 23, 2022 at 10:15:01AM -0500, Michael S. Tsirkin wrote:
+> > On Wed, Feb 23, 2022 at 07:48:18PM +0530, Anirudh Rayabharam wrote:
+> > > On Tue, Feb 22, 2022 at 06:21:50PM -0500, Michael S. Tsirkin wrote:
+> > > > On Tue, Feb 22, 2022 at 10:57:41PM +0530, Anirudh Rayabharam wrote:
+> > > > > On Tue, Feb 22, 2022 at 10:02:29AM -0500, Michael S. Tsirkin wrote:
+> > > > > > On Tue, Feb 22, 2022 at 03:11:07PM +0800, Jason Wang wrote:
+> > > > > > > On Tue, Feb 22, 2022 at 12:57 PM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
+> > > > > > > >
+> > > > > > > > On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
+> > > > > > > > > On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
+> > > > > > > > > >
+> > > > > > > > > > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
+> > > > > > > > > > before proceeding with adding it to the iotlb.
+> > > > > > > > > >
+> > > > > > > > > > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
+> > > > > > > > > > One instance where it can happen is when userspace sends an IOTLB
+> > > > > > > > > > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
+> > > > > > > > > > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
+> > > > > > > > > > iotlb. Next time a packet is sent, iotlb_access_ok() loops
+> > > > > > > > > > indefinitely due to that erroneous entry:
+> > > > > > > > > >
+> > > > > > > > > >         Call Trace:
+> > > > > > > > > >          <TASK>
+> > > > > > > > > >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+> > > > > > > > > >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+> > > > > > > > > >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+> > > > > > > > > >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+> > > > > > > > > >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> > > > > > > > > >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> > > > > > > > > >          </TASK>
+> > > > > > > > > >
+> > > > > > > > > > Reported by syzbot at:
+> > > > > > > > > >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+> > > > > > > > > >
+> > > > > > > > > > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > > > > > > > > > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > > > > > > > > > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+> > > > > > > > > > ---
+> > > > > > > > > >  drivers/vhost/iotlb.c | 6 ++++--
+> > > > > > > > > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > > > > > > > > >
+> > > > > > > > > > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+> > > > > > > > > > index 670d56c879e5..b9de74bd2f9c 100644
+> > > > > > > > > > --- a/drivers/vhost/iotlb.c
+> > > > > > > > > > +++ b/drivers/vhost/iotlb.c
+> > > > > > > > > > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+> > > > > > > > > >                               void *opaque)
+> > > > > > > > > >  {
+> > > > > > > > > >         struct vhost_iotlb_map *map;
+> > > > > > > > > > +       u64 size = last - start + 1;
+> > > > > > > > > >
+> > > > > > > > > > -       if (last < start)
+> > > > > > > > > > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
+> > > > > > > > > > +       if (last < start || size == 0)
+> > > > > > > > > >                 return -EFAULT;
+> > > > > > > > >
+> > > > > > > > > I'd move this check to vhost_chr_iter_write(), then for the device who
+> > > > > > > > > has its own msg handler (e.g vDPA) can benefit from it as well.
+> > > > > > > >
+> > > > > > > > Thanks for reviewing!
+> > > > > > > >
+> > > > > > > > I kept the check here thinking that all devices would benefit from it
+> > > > > > > > because they would need to call vhost_iotlb_add_range() to add an entry
+> > > > > > > > to the iotlb. Isn't that correct?
+> > > > > > > 
+> > > > > > > Correct for now but not for the future, it's not guaranteed that the
+> > > > > > > per device iotlb message handler will use vhost iotlb.
+> > > > > > > 
+> > > > > > > But I agree that we probably don't need to care about it too much now.
+> > > > > > > 
+> > > > > > > > Do you see any other benefit in moving
+> > > > > > > > it to vhost_chr_iter_write()?
+> > > > > > > >
+> > > > > > > > One concern I have is that if we move it out some future caller to
+> > > > > > > > vhost_iotlb_add_range() might forget to handle this case.
+> > > > > > > 
+> > > > > > > Yes.
+> > > > > > > 
+> > > > > > > Rethink the whole fix, we're basically rejecting [0, ULONG_MAX] range
+> > > > > > > which seems a little bit odd.
+> > > > > > 
+> > > > > > Well, I guess ideally we'd split this up as two entries - this kind of
+> > > > > > thing is after all one of the reasons we initially used first,last as
+> > > > > > the API - as opposed to first,size.
+> > > > > 
+> > > > > IIUC, the APIs exposed to userspace accept first,size.
+> > > > 
+> > > > Some of them.
+> > > > 
+> > > > 
+> > > > /* vhost vdpa IOVA range
+> > > >  * @first: First address that can be mapped by vhost-vDPA
+> > > >  * @last: Last address that can be mapped by vhost-vDPA
+> > > >  */
+> > > > struct vhost_vdpa_iova_range {
+> > > >         __u64 first;
+> > > >         __u64 last;
+> > > > };
+> > > 
+> > > Alright, I will split it into two entries. That doesn't fully address
+> > > the bug though. I would also need to validate size in vhost_chr_iter_write().
+> > 
+> > Do you mean vhost_chr_write_iter?
+> 
+> Yes, my bad.
+> 
+> > 
+> > > 
+> > > Should I do both in one patch or as a two patch series?
+> > 
+> > I'm not sure why we need to do validation in vhost_chr_iter_write,
+> > hard to say without seeing the patch.
+> 
+> Well, if userspace sends iova = 0 and size = 0 in vhost_iotlb_msg, we will end
+> up mapping the range [0, ULONG_MAX] in iotlb which doesn't make sense. We
+> should probably reject when size = 0.
+> 
+> As Jason pointed out [1], having the check in vhost_chr_write_iter() will
+> also benefit devices that have their own message handler.
+> 
+> [1]: https://lore.kernel.org/kvm/CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com/
 
-Unitatea de decontare a datoriilor interna=C8=9Bionale,
-# 1900, PRE=C5=9EEDINTE AV.DU
-REF: -XVGNN82021
+Oh. Makes sense.
 
-Stimate Beneficiar!
+I think one patch is enough.
 
-=C3=8En detaliu, noul ministru al Finan=C8=9Belor =C8=99i organul de conduc=
-ere al
-Unit=C4=83=C8=9Bii Monetare a Na=C8=9Biunilor Unite ne-au autorizat s=C4=83=
- investig=C4=83m
-fondurile nerevendicate de mult =C3=AEnt=C3=A2rziate din co=C8=99ul guvernu=
-lui de la
-Na=C8=9Biunile Unite,
+> > 
+> > > > 
+> > > > but
+> > > > 
+> > > > struct vhost_iotlb_msg {
+> > > >         __u64 iova;
+> > > >         __u64 size;
+> > > >         __u64 uaddr;
+> > > > #define VHOST_ACCESS_RO      0x1
+> > > > #define VHOST_ACCESS_WO      0x2
+> > > > #define VHOST_ACCESS_RW      0x3
+> > > >         __u8 perm;
+> > > > #define VHOST_IOTLB_MISS           1
+> > > > #define VHOST_IOTLB_UPDATE         2
+> > > > #define VHOST_IOTLB_INVALIDATE     3
+> > > > #define VHOST_IOTLB_ACCESS_FAIL    4
+> > > > /*
+> > > >  * VHOST_IOTLB_BATCH_BEGIN and VHOST_IOTLB_BATCH_END allow modifying
+> > > >  * multiple mappings in one go: beginning with
+> > > >  * VHOST_IOTLB_BATCH_BEGIN, followed by any number of
+> > > >  * VHOST_IOTLB_UPDATE messages, and ending with VHOST_IOTLB_BATCH_END.
+> > > >  * When one of these two values is used as the message type, the rest
+> > > >  * of the fields in the message are ignored. There's no guarantee that
+> > > >  * these changes take place automatically in the device.
+> > > >  */
+> > > > #define VHOST_IOTLB_BATCH_BEGIN    5
+> > > > #define VHOST_IOTLB_BATCH_END      6
+> > > >         __u8 type;
+> > > > };
+> > > > 
+> > > > 
+> > > > 
+> > > > > Which means that
+> > > > > right now there is now way for userspace to map this range. So, is there
+> > > > > any value in not simply rejecting this range?
+> > > > > 
+> > > > > > 
+> > > > > > Anirudh, could you do it like this instead of rejecting?
+> > > > > > 
+> > > > > > 
+> > > > > > > I wonder if it's better to just remove
+> > > > > > > the map->size. Having a quick glance at the the user, I don't see any
+> > > > > > > blocker for this.
+> > > > > > > 
+> > > > > > > Thanks
+> > > > > > 
+> > > > > > I think it's possible but won't solve the bug by itself, and we'd need
+> > > > > > to review and fix all users - a high chance of introducing
+> > > > > > another regression. 
+> > > > > 
+> > > > > Agreed, I did a quick review of the usages and getting rid of size
+> > > > > didn't seem trivial.
+> > > > > 
+> > > > > Thanks,
+> > > > > 
+> > > > > 	- Anirudh.
+> > > > > 
+> > > > > > And I think there's value of fitting under the
+> > > > > > stable rule of 100 lines with context.
+> > > > > > So sure, but let's fix the bug first.
+> > > > > > 
+> > > > > > 
+> > > > > > 
+> > > > > > > >
+> > > > > > > > Thanks!
+> > > > > > > >
+> > > > > > > >         - Anirudh.
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > > Thanks
+> > > > > > > > >
+> > > > > > > > > >
+> > > > > > > > > >         if (iotlb->limit &&
+> > > > > > > > > > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+> > > > > > > > > >                 return -ENOMEM;
+> > > > > > > > > >
+> > > > > > > > > >         map->start = start;
+> > > > > > > > > > -       map->size = last - start + 1;
+> > > > > > > > > > +       map->size = size;
+> > > > > > > > > >         map->last = last;
+> > > > > > > > > >         map->addr = addr;
+> > > > > > > > > >         map->perm = perm;
+> > > > > > > > > > --
+> > > > > > > > > > 2.35.1
+> > > > > > > > > >
+> > > > > > > > >
+> > > > > > > >
+> > > > > > 
+> > > > 
+> > 
 
-ceea ce i-a derutat pe proprietari crez=C3=A2nd c=C4=83 au fost =C3=AEn=C8=
-=99ela=C8=9Bi de
-escroci folosind numele Na=C8=9Biunilor Unite, =C3=AEn cursul investiga=C8=
-=9Biei
-noastre. Pe baza eviden=C8=9Bei de stocare a datelor din sistemul nostru cu
-adresa dvs. de e-mail, plata dvs. se num=C4=83r=C4=83 printre 150 de Destin=
-atari
-clasifica=C8=9Bi ca:
-
-Fond de loterie nelivrat / Fond de loterie nepl=C4=83tit / Mo=C8=99tenire d=
-e
-transfer incomplet / Fonduri contractuale.
-Am descoperit, spre disperarea noastr=C4=83, c=C4=83 plata dvs. a fost
-=C3=AEnt=C3=A2rziat=C4=83 =C3=AEn mod inutil de oficiali corup=C8=9Bi ai b=
-=C4=83ncii, =C3=AEn =C3=AEncercarea
-de a v=C4=83 frauda fondul, ceea ce a dus la multe pierderi din partea dvs.
-=C8=99i =C3=AEnt=C3=A2rzieri inutile =C3=AEn primirea pl=C4=83=C8=9Bii dvs.
-
-Organiza=C8=9Bia Na=C8=9Biunilor Unite =C8=99i Fondul Monetar Interna=C8=9B=
-ional (FMI) au
-ales s=C4=83 pl=C4=83teasc=C4=83 toate fondurile de compensare c=C4=83tre 1=
-50 de
-Beneficiari din America de Nord, America de Sud, Statele Unite ale
-Americii,
-
-Europa =C8=99i Asia =C8=99i =C3=AEn =C3=AEntreaga lume prin cardul Visa  AT=
-M, deoarece
-este o tehnologie de plat=C4=83 global=C4=83 care permite consumatorilor,
-=C3=AEntreprinderilor, institu=C8=9Biilor financiare =C8=99i guvernelor s=
-=C4=83 foloseasc=C4=83
-moneda digital=C4=83 =C3=AEn loc de numerar =C8=99i cecuri.
-
-Am aranjat ca plata dumneavoastr=C4=83 s=C4=83 v=C4=83 fie pl=C4=83tit=C4=
-=83 printr-un card
-Visa ATM =C8=99i va fi emis=C4=83 pe numele dumneavoastr=C4=83 =C8=99i trim=
-is=C4=83 direct la
-adresa dumneavoastr=C4=83 prin DHL sau orice serviciu de curierat
-disponibil =C3=AEn =C8=9Bara dumneavoastr=C4=83. La contactarea noastr=C4=
-=83,
-
-suma de 800.000,00 SUA va fi creditat=C4=83 pe cardul Visa ATM =C8=99i aces=
-t
-lucru v=C4=83 va permite s=C4=83 v=C4=83 retrage=C8=9Bi fondurile de la ori=
-ce bancomat din
-=C8=9Bara dumneavoastr=C4=83 cu o retragere minim=C4=83 de 25.000 SUA pe zi=
-. =C3=8En acest
-sens, trebuie s=C4=83 comunica=C8=9Bi =C8=99i s=C4=83 furniza=C8=9Bi inform=
-a=C8=9Biile solicitate
-Direc=C8=9Biei de Pl=C4=83=C8=9Bi =C8=99i Transferuri Interna=C8=9Bionale c=
-u urm=C4=83toarele;
-1. Numele =C8=99i prenumele dvs
-2. Adresa dvs. de re=C8=99edin=C8=9B=C4=83 complet=C4=83 =C8=99i =C8=9Bara =
-dvs
-3. Nationalitate
-4. Data na=C8=99terii / sexul
-5. Ocupa=C8=9Bia
-6. Num=C4=83r de telefon/fax
-7. Adresa ora=C8=99ului dvs.
-
-Utiliza=C8=9Bi acest cod (Ref: CLIENT-966/16) ca subiect al e-mailului dvs.
-pentru identificare =C8=99i =C3=AEncerca=C8=9Bi s=C4=83 furniza=C8=9Bi info=
-rma=C8=9Biile de mai sus
-oficialilor de mai jos pentru emiterea =C8=99i livrarea cardului dvs. ATM
-Visa;
-
-Am sf=C4=83tuit agentul bancar s=C4=83 deschid=C4=83 o adres=C4=83 de e-mai=
-l privat=C4=83 cu un
-num=C4=83r nou care ne va permite s=C4=83 monitoriz=C4=83m aceste comunic=
-=C4=83ri de plat=C4=83
-=C8=99i transfer pentru a preveni =C3=AEnt=C3=A2rzierile ulterioare sau det=
-urnarea
-fondurilor dumneavoastr=C4=83. Contacta=C8=9Bi acum agentul The United Bank=
- for
-Africa cu urm=C4=83toarele detalii de contact:
-
-Contact: doamna: Angela Aneke, directorul executiv
-Departamentul de compensare a transferurilor de fonduri (Eco Bank for Afric=
-a)
-E-mail de contact: ( www.ecobank6@gmail.com)
-
-Solicit=C4=83m r=C4=83spunsul dvs. urgent la acest e-mail, a=C8=99a cum est=
-e indicat,
-pentru a evita noi =C3=AEnt=C3=A2rzieri.
-
-Cu sinceritate
-
-Doamna: Angela Aneke, directorul executiv
