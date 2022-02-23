@@ -2,64 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF124C0FC3
-	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 11:03:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D654C1008
+	for <lists+netdev@lfdr.de>; Wed, 23 Feb 2022 11:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239462AbiBWKD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 05:03:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S237964AbiBWKRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 05:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239453AbiBWKD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 05:03:26 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04048A339;
-        Wed, 23 Feb 2022 02:02:58 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id q23so3935531wra.2;
-        Wed, 23 Feb 2022 02:02:58 -0800 (PST)
+        with ESMTP id S233112AbiBWKRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 05:17:46 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C4840E59;
+        Wed, 23 Feb 2022 02:17:17 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id p20so15479299ljo.0;
+        Wed, 23 Feb 2022 02:17:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version:organization
          :content-transfer-encoding;
-        bh=SqAxPQEsa3A4xyob3zluFv3tjziMIdKJYPYJeW3AAL8=;
-        b=MBhdzcrVPaltuC7QO4FnB3SnkoeVXpFvLTouDASO7IzH2peZCz9lBAMGqOWde8Qh8D
-         kDOHiVkykGHwJ9ODUCowoUI5o8pHBoXYYTm8ATT3j0JUyxrqlLHIERCZnrLli6QX00Ow
-         ARevI9oTrw6Ql0amtIF96nKDvBQ9IRAHmr1mVVGh8IVL6kL5UvvSlCTqbxzYnSEZvw58
-         nc82P9ORs3OhQEn60SVYMaBi5QPQPP2fM2POKJutuOt+Y6q+71UeevbRXTpV3xLjaYIf
-         8XeNS0KGWZbwj0GuBmUdHJ/zi9K2C3BiL7MgnFzPYxm5wMxePOyJmfELVNujZYFKUQLE
-         R4Kw==
+        bh=VHfLSHEUp8KFCoSMOat+t/9h+kqq+wol9Ucvkw0K0Ko=;
+        b=k1DlUK+usCMRnP3C9A4Um65d39JlmyImGuUf8kGcxM0n6R0i8bPlGb6nd63eZNQ7xI
+         fSBiKr1ZKRVzRHMQTNxQjLl8Lgc21OCi5SVutYxnjauOicHe+rURiTHS5vfFl+oobaQ2
+         c40kJBYPe+h9El3Kl8DdWID3B2zSwWE2dWa16FfjySkniGme8aLxeQY71plvWQnrV/ud
+         dqHCfO63qmPXXuJh9WF8AQ9z6Umyeu8+QFJOcSEr1XP5VuaXlgT6pxQvmW7tP/zJUMBz
+         gAka2nCqILuvDUA8E21NMHr0klvc8Bmmd4OnBraKu9nf4zgQfP44pcL8sCvwzXBBuVLi
+         cFzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SqAxPQEsa3A4xyob3zluFv3tjziMIdKJYPYJeW3AAL8=;
-        b=ScmgGOwBvYXoVL39h/ShGnowRZTiOaJY0SwKnxsgOv9b5BbevCrE27kVqxJfIjDj39
-         CMdbXeqrHbXPqjtq2jhcAJd40aRNIXnSUvCs99GefckcDMzyZ6KfzDAMpehh7jJBaLzb
-         /7JXwIHN3qjYqMtVbZzmSwAcv3+hqfPgzzSvHgRbnMKpH34oTh4EyMzXX2ufX9tBkq9O
-         egP31AaZ6bE0LIyIu8EinBkk3wm5jN0ru/VHEaraVZo9jbKW3gUhQ1hqhp2Ik+VH/Bi9
-         y5ghCztTJMdFQXQuXUn5a8NY4UzLAp18fiXC9f8Px2zGxfYREAzYUrqoIomNZ5fvB9WQ
-         Sj2g==
-X-Gm-Message-State: AOAM531G+XWC+70xuJYtzo6TGHQn8+ecdT2QvQcbw8FfrXHJr4dpZxjT
-        Qix7PZUtGjtvZ3/ZI0e11mjzKTxs9q4=
-X-Google-Smtp-Source: ABdhPJyen0Gk7YkQnDQ//DA3TU+euR7cTv4E1ji+jT3VElJm06SuRDFWQiJ5DQuVZ8gyfFYvc+vmfg==
-X-Received: by 2002:a5d:47cc:0:b0:1e8:50e2:94cd with SMTP id o12-20020a5d47cc000000b001e850e294cdmr22222983wrc.34.1645610577241;
-        Wed, 23 Feb 2022 02:02:57 -0800 (PST)
-Received: from localhost.localdomain (host-79-27-0-81.retail.telecomitalia.it. [79.27.0.81])
-        by smtp.gmail.com with ESMTPSA id f14sm5856887wmq.3.2022.02.23.02.02.55
+         :organization:content-transfer-encoding;
+        bh=VHfLSHEUp8KFCoSMOat+t/9h+kqq+wol9Ucvkw0K0Ko=;
+        b=Yzl1uIYvW+g9hZtmYUqOR0//Nb27VC+b0txd0KXMD67gKnZBUGzUZ8q6Dh3nw65iM9
+         km/yD7ZqFH7PS17MnprOOGniFGzSMEo/tec2ARRQjYHyMweWKZrNI9IWY2RPQp1lRLQJ
+         IpOedqDidi0NB9pGDfKL2T+QbLxNa2GRCjxDVPFqGnpPto2OG3/7sIXAK0W7i2Eg5+98
+         Si4JIphnLa3soBKm7Q+Jovpm1+aphJMXrWhDRtUnbKGnD1R+Y4RJVW/kj1ARGduodT7L
+         nD3OO5Q7Q2XdPX5bG9gvLTv2T4YpK/LqOyn6zgUCM3PZ5RBFxD1U00Xz+gCjaGGICDks
+         OcEA==
+X-Gm-Message-State: AOAM530IZUyP4Kp+VeoVXIveeVgGhC6Qrm96eLNyYJvrBR4IiS/5+EK7
+        gk7Ti5k5E/WxkeyGDhUVm10=
+X-Google-Smtp-Source: ABdhPJzWeC6l92IEmzs6ZrdOX53TDB7MrYZGYy+pM2qk9SFWWT556NiUE9DjgCSebqQ2rv2/1JGtBA==
+X-Received: by 2002:a2e:bc17:0:b0:246:32b7:464 with SMTP id b23-20020a2ebc17000000b0024632b70464mr13473270ljf.506.1645611435483;
+        Wed, 23 Feb 2022 02:17:15 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id d5sm1613102lfs.307.2022.02.23.02.17.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 02:02:56 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-Subject: [PATCH] net/smc: Use a mutex for locking "struct smc_pnettable"
-Date:   Wed, 23 Feb 2022 11:02:52 +0100
-Message-Id: <20220223100252.22562-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 23 Feb 2022 02:17:14 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH net-next v5 0/5] Add support for locked bridge ports (for 802.1X)
+Date:   Wed, 23 Feb 2022 11:16:45 +0100
+Message-Id: <20220223101650.1212814-1-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -71,217 +85,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib()
-which, in turn, calls mutex_lock(&smc_ib_devices.mutex).
+This series starts by adding support for SA filtering to the bridge,
+which is then allowed to be offloaded to switchdev devices. Furthermore
+an offloading implementation is supplied for the mv88e6xxx driver.
 
-read_lock() disables preemption. Therefore, the code acquires a mutex while in
-atomic context and it leads to a SAC bug.
+Public Local Area Networks are often deployed such that there is a
+risk of unauthorized or unattended clients getting access to the LAN.
+To prevent such access we introduce SA filtering, such that ports
+designated as secure ports are set in locked mode, so that only
+authorized source MAC addresses are given access by adding them to
+the bridges forwarding database. Incoming packets with source MAC
+addresses that are not in the forwarding database of the bridge are
+discarded. It is then the task of user space daemons to populate the
+bridge's forwarding database with static entries of authorized entities.
 
-Fix this bug by replacing the rwlock with a mutex.
+The most common approach is to use the IEEE 802.1X protocol to take
+care of the authorization of allowed users to gain access by opening
+for the source address of the authorized host.
 
-Reported-and-tested-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-Fixes: 64e28b52c7a6 ("net/smc: add pnet table namespace support")
-Confirmed-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- net/smc/smc_pnet.c | 42 +++++++++++++++++++++---------------------
- net/smc/smc_pnet.h |  2 +-
- 2 files changed, 22 insertions(+), 22 deletions(-)
+With the current use of the bridge parameter in hostapd, there is
+a limitation in using this for IEEE 802.1X port authentication. It
+depends on hostapd attaching the port on which it has a successful
+authentication to the bridge, but that only allows for a single
+authentication per port. This patch set allows for the use of
+IEEE 802.1X port authentication in a more general network context with
+multiple 802.1X aware hosts behind a single port as depicted, which is
+a commonly used commercial use-case, as it is only the number of
+available entries in the forwarding database that limits the number of
+authenticated clients.
 
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 0599246c0376..29f0a559d884 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -113,7 +113,7 @@ static int smc_pnet_remove_by_pnetid(struct net *net, char *pnet_name)
- 	pnettable = &sn->pnettable;
- 
- 	/* remove table entry */
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry_safe(pnetelem, tmp_pe, &pnettable->pnetlist,
- 				 list) {
- 		if (!pnet_name ||
-@@ -131,7 +131,7 @@ static int smc_pnet_remove_by_pnetid(struct net *net, char *pnet_name)
- 			rc = 0;
- 		}
- 	}
--	write_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 
- 	/* if this is not the initial namespace, stop here */
- 	if (net != &init_net)
-@@ -192,7 +192,7 @@ static int smc_pnet_add_by_ndev(struct net_device *ndev)
- 	sn = net_generic(net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry_safe(pnetelem, tmp_pe, &pnettable->pnetlist, list) {
- 		if (pnetelem->type == SMC_PNET_ETH && !pnetelem->ndev &&
- 		    !strncmp(pnetelem->eth_name, ndev->name, IFNAMSIZ)) {
-@@ -206,7 +206,7 @@ static int smc_pnet_add_by_ndev(struct net_device *ndev)
- 			break;
- 		}
- 	}
--	write_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return rc;
- }
- 
-@@ -224,7 +224,7 @@ static int smc_pnet_remove_by_ndev(struct net_device *ndev)
- 	sn = net_generic(net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry_safe(pnetelem, tmp_pe, &pnettable->pnetlist, list) {
- 		if (pnetelem->type == SMC_PNET_ETH && pnetelem->ndev == ndev) {
- 			dev_put_track(pnetelem->ndev, &pnetelem->dev_tracker);
-@@ -237,7 +237,7 @@ static int smc_pnet_remove_by_ndev(struct net_device *ndev)
- 			break;
- 		}
- 	}
--	write_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return rc;
- }
- 
-@@ -370,7 +370,7 @@ static int smc_pnet_add_eth(struct smc_pnettable *pnettable, struct net *net,
- 	strncpy(new_pe->eth_name, eth_name, IFNAMSIZ);
- 	rc = -EEXIST;
- 	new_netdev = true;
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_ETH &&
- 		    !strncmp(tmp_pe->eth_name, eth_name, IFNAMSIZ)) {
-@@ -385,9 +385,9 @@ static int smc_pnet_add_eth(struct smc_pnettable *pnettable, struct net *net,
- 					     GFP_ATOMIC);
- 		}
- 		list_add_tail(&new_pe->list, &pnettable->pnetlist);
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 	} else {
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 		kfree(new_pe);
- 		goto out_put;
- 	}
-@@ -448,7 +448,7 @@ static int smc_pnet_add_ib(struct smc_pnettable *pnettable, char *ib_name,
- 	new_pe->ib_port = ib_port;
- 
- 	new_ibdev = true;
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_IB &&
- 		    !strncmp(tmp_pe->ib_name, ib_name, IB_DEVICE_NAME_MAX)) {
-@@ -458,9 +458,9 @@ static int smc_pnet_add_ib(struct smc_pnettable *pnettable, char *ib_name,
- 	}
- 	if (new_ibdev) {
- 		list_add_tail(&new_pe->list, &pnettable->pnetlist);
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 	} else {
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 		kfree(new_pe);
- 	}
- 	return (new_ibdev) ? 0 : -EEXIST;
-@@ -605,7 +605,7 @@ static int _smc_pnet_dump(struct net *net, struct sk_buff *skb, u32 portid,
- 	pnettable = &sn->pnettable;
- 
- 	/* dump pnettable entries */
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(pnetelem, &pnettable->pnetlist, list) {
- 		if (pnetid && !smc_pnet_match(pnetelem->pnet_name, pnetid))
- 			continue;
-@@ -620,7 +620,7 @@ static int _smc_pnet_dump(struct net *net, struct sk_buff *skb, u32 portid,
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return idx;
- }
- 
-@@ -864,7 +864,7 @@ int smc_pnet_net_init(struct net *net)
- 	struct smc_pnetids_ndev *pnetids_ndev = &sn->pnetids_ndev;
- 
- 	INIT_LIST_HEAD(&pnettable->pnetlist);
--	rwlock_init(&pnettable->lock);
-+	mutex_init(&pnettable->lock);
- 	INIT_LIST_HEAD(&pnetids_ndev->list);
- 	rwlock_init(&pnetids_ndev->lock);
- 
-@@ -944,7 +944,7 @@ static int smc_pnet_find_ndev_pnetid_by_table(struct net_device *ndev,
- 	sn = net_generic(net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(pnetelem, &pnettable->pnetlist, list) {
- 		if (pnetelem->type == SMC_PNET_ETH && ndev == pnetelem->ndev) {
- 			/* get pnetid of netdev device */
-@@ -953,7 +953,7 @@ static int smc_pnet_find_ndev_pnetid_by_table(struct net_device *ndev,
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return rc;
- }
- 
-@@ -1156,7 +1156,7 @@ int smc_pnetid_by_table_ib(struct smc_ib_device *smcibdev, u8 ib_port)
- 	sn = net_generic(&init_net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_IB &&
- 		    !strncmp(tmp_pe->ib_name, ib_name, IB_DEVICE_NAME_MAX) &&
-@@ -1166,7 +1166,7 @@ int smc_pnetid_by_table_ib(struct smc_ib_device *smcibdev, u8 ib_port)
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 
- 	return rc;
- }
-@@ -1185,7 +1185,7 @@ int smc_pnetid_by_table_smcd(struct smcd_dev *smcddev)
- 	sn = net_generic(&init_net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_IB &&
- 		    !strncmp(tmp_pe->ib_name, ib_name, IB_DEVICE_NAME_MAX)) {
-@@ -1194,7 +1194,7 @@ int smc_pnetid_by_table_smcd(struct smcd_dev *smcddev)
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 
- 	return rc;
- }
-diff --git a/net/smc/smc_pnet.h b/net/smc/smc_pnet.h
-index 14039272f7e4..80a88eea4949 100644
---- a/net/smc/smc_pnet.h
-+++ b/net/smc/smc_pnet.h
-@@ -29,7 +29,7 @@ struct smc_link_group;
-  * @pnetlist: List of PNETIDs
-  */
- struct smc_pnettable {
--	rwlock_t lock;
-+	struct mutex lock;
- 	struct list_head pnetlist;
- };
- 
+      +--------------------------------+
+      |                                |
+      |      Bridge/Authenticator      |
+      |                                |
+      +-------------+------------------+
+       802.1X port  |
+                    |
+                    |
+             +------+-------+
+             |              |
+             |  Hub/Switch  |
+             |              |
+             +-+----------+-+
+               |          |
+            +--+--+    +--+--+
+            |     |    |     |
+    Hosts   |  a  |    |  b  |   . . .
+            |     |    |     |
+            +-----+    +-----+
+
+The 802.1X standard involves three different components, a Supplicant
+(Host), an Authenticator (Network Access Point) and an Authentication
+Server which is typically a Radius server. This patch set thus enables
+the bridge module together with an authenticator application to serve
+as an Authenticator on designated ports.
+
+
+For the bridge to become an IEEE 802.1X Authenticator, a solution using
+hostapd with the bridge driver can be found at
+https://github.com/westermo/hostapd/tree/bridge_driver .
+
+
+The relevant components work transparently in relation to if it is the
+bridge module or the offloaded switchcore case that is in use.
+
+Hans Schultz (5):
+  net: bridge: Add support for bridge port in locked mode
+  net: bridge: Add support for offloading of locked port flag
+  net: dsa: Include BR_PORT_LOCKED in the list of synced brport flags
+  net: dsa: mv88e6xxx: Add support for bridge port locked mode
+  selftests: forwarding: tests of locked port feature
+
+ drivers/net/dsa/mv88e6xxx/chip.c              |   9 +-
+ drivers/net/dsa/mv88e6xxx/port.c              |  29 +++
+ drivers/net/dsa/mv88e6xxx/port.h              |   9 +-
+ include/linux/if_bridge.h                     |   1 +
+ include/uapi/linux/if_link.h                  |   1 +
+ net/bridge/br_input.c                         |  11 +-
+ net/bridge/br_netlink.c                       |   6 +-
+ net/bridge/br_switchdev.c                     |   2 +-
+ net/dsa/port.c                                |   4 +-
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../net/forwarding/bridge_locked_port.sh      | 180 ++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |   8 +
+ 12 files changed, 254 insertions(+), 7 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+
 -- 
-2.34.1
+2.30.2
 
