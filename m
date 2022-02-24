@@ -2,136 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B314C205B
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 01:04:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 687AD4C206C
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 01:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245115AbiBXAE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 19:04:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
+        id S245164AbiBXAMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 19:12:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233871AbiBXAEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 19:04:55 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0002458380
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 16:04:26 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id bq11so628640edb.2
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 16:04:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=k3E3owO5jAgNxAnKygoiudxItlhS95jxkp0Afx/AE38=;
-        b=UvtUAYhcbqEDaVr20rfQvsplzRJgOz4TWEh/TYbH/7FDPyLUetyhqp3JEh9oi5Kk7Y
-         qwZDNAP16doAeApFuvl6hKjUZfOHMEpYViKvmDIkUpPcxjJ7SR+FHeknyK77KBcni0wX
-         rCbpOLwFiYVRQKknVSL9pbRUeJ5f/sLt1U1mfMeqtGeoiKtIbt0KdXUxvdOAeUSMPr74
-         t5hDGDTJki5EVkW9qRX68zbYtrJnCO8KFMc7We8MUx5lvA5eylfojMDgCnEtamRyqtX3
-         K7hciDxfsNxFfbiMxWIdCRodoDbSJgetbMErgJTzlFnE0ygIZUVvxTflYtgVQkhmRn3m
-         WRrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=k3E3owO5jAgNxAnKygoiudxItlhS95jxkp0Afx/AE38=;
-        b=iUIcIdDOmXu4+xytbhFQD19Ijlgpmrf6SxBqUIYs4IWPpfT/mCKCsaK7q4SsM9YuHR
-         cNPMMmc6vzPxBUi8Ac/13x0Yl0zg2bGgxr1SjPSsTP+s4ouVaaozacdFM3AQgczJjRTK
-         GXSEpEY5WHVsUDwk5x2vubN7QSrAEbHvqtDAHRbKl2kE/haOvNx/o029HYLR0+LGjcAf
-         y936Uu1G+1h2zFnkaeD9qwSdYcU0ac6058AoQXB+8P9N2Gd0l1ivXwzR5mPu5dgq+jFE
-         hvUFbW9evOWpXxdWRngsp0CBOVdrPzepX5iu4mInTL0p9nKeEu8qSSNGicfNicIdmGhk
-         /UFQ==
-X-Gm-Message-State: AOAM532bg7z+iAD4ECi0BKIlkYTrkCmEZQ8j/OUBHNS38KIfrg+5LCW1
-        YnkLt+Ao4wOBOZ/Zn0hvJzM=
-X-Google-Smtp-Source: ABdhPJxg7nGrRU1F4ECKCxcbui03gP7AUX/Yil9aUxb3skz1R1Io0rjqM9ZmPiDOhYb5frfmg/dLOQ==
-X-Received: by 2002:a50:9d06:0:b0:410:befc:dda7 with SMTP id v6-20020a509d06000000b00410befcdda7mr13966ede.443.1645661065514;
-        Wed, 23 Feb 2022 16:04:25 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id go13sm465376ejc.190.2022.02.23.16.04.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 16:04:25 -0800 (PST)
-Date:   Thu, 24 Feb 2022 02:04:23 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, alsi@bang-olufsen.dk,
-        arinc.unal@arinc9.com
-Subject: Re: [PATCH net-next v3 1/2] net: dsa: tag_rtl8_4: add rtl8_4t
- trailing variant
-Message-ID: <20220224000423.6cb33jf47pl4e36h@skbuf>
-References: <20220222224758.11324-1-luizluca@gmail.com>
- <20220222224758.11324-2-luizluca@gmail.com>
+        with ESMTP id S245158AbiBXAMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 19:12:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028165F4D0
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 16:12:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C10FB80E9F
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 00:12:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7968C340E7;
+        Thu, 24 Feb 2022 00:12:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645661537;
+        bh=1/FPIxdLPcfVqjFVZEBKK3rY1afw9kK7gvX/YT9hMHE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hKfjzPc/TEcBPjQIzuj3z2PUzZxcJJOcJCe9/Bay+FRu2LjaZXOhAqi9/9PQlpP/H
+         fY/52NwjBT+Mst6rONiTgrUbZdJ8hphHIndpumjG+R3vy/Woeh/Vx3YcAf5MeemoWM
+         w67xNkMAe7MpR7jilIu4sp8FNBbNJNyMG+pbHeCDTahNMG94bMd/SWAL638sKQbHfG
+         EdhaTGvCDNozZhu7AKpHRu1Kl0sJInChWlYI+HrI8p1HdMEdSh7axrijyCl7vpp6xF
+         I/TZ0sVCnV9DyBaqj/0s7UvMWvFeNCQz04rJxWOGM2izl8MjOAKiNK/Z2uhHV5yRzN
+         BvijKkf0SlGBQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][v2 net 00/19] mlx5 fixes 2022-02-22
+Date:   Wed, 23 Feb 2022 16:11:04 -0800
+Message-Id: <20220224001123.365265-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222224758.11324-2-luizluca@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 07:47:57PM -0300, Luiz Angelo Daros de Luca wrote:
-> diff --git a/net/dsa/tag_rtl8_4.c b/net/dsa/tag_rtl8_4.c
-> index 02686ad4045d..2e81ab49d928 100644
-> --- a/net/dsa/tag_rtl8_4.c
-> +++ b/net/dsa/tag_rtl8_4.c
-> @@ -9,11 +9,6 @@
->   *
->   * This tag header has the following format:
->   *
-> - *  -------------------------------------------
-> - *  | MAC DA | MAC SA | 8 byte tag | Type | ...
-> - *  -------------------------------------------
-> - *     _______________/            \______________________________________
-> - *    /                                                                   \
->   *  0                                  7|8                                 15
->   *  |-----------------------------------+-----------------------------------|---
->   *  |                               (16-bit)                                | ^
-> @@ -58,6 +53,28 @@
->   *    TX/RX      | TX (switch->CPU): port number the packet was received on
->   *               | RX (CPU->switch): forwarding port mask (if ALLOW=0)
->   *               |                   allowance port mask (if ALLOW=1)
-> + *
-> + * The tag can be positioned before Ethertype, using tag "rtl8_4":
-> + *
-> + *  +--------+--------+------------+------+-----
-> + *  | MAC DA | MAC SA | 8 byte tag | Type | ...
-> + *  +--------+--------+------------+------+-----
-> + *
-> + * If checksum offload is enabled for CPU port device, it might break if the
-> + * driver does not use csum_start/csum_offset.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Please. This is true of any DSA header. If you feel you have something
-to add on this topic please do so in Documentation/networking/dsa/dsa.rst
-under "Switch tagging protocols".
+Hi Dave, Hi Jakub,
 
-Also, s/CPU port device/DSA master/.
+v1->v2:
+ - Fix warning: no previous prototype for ‘mlx5dr_ste_build_pre_check_spec’
 
-> + *
-> + * The tag can also appear between the end of the payload and before the CRC,
-> + * using tag "rtl8_4t":
-> + *
-> + * +--------+--------+------+-----+---------+------------+-----+
-> + * | MAC DA | MAC SA | TYPE | ... | payload | 8-byte tag | CRC |
-> + * +--------+--------+------+-----+---------+------------+-----+
-> + *
-> + * The added bytes after the payload will break most checksums, either in
-> + * software or hardware. To avoid this issue, if the checksum is still pending,
-> + * this tagger checksum the packet before adding the tag, rendering any
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-s/checksum/checksums/
+Thanks,
+Saeed.
 
-> + * checksum offload useless.
 
-If you're adding a tail tagging driver to work around checksum offload
-issues, this solution is about as bad as it gets. You're literally not
-gaining anything in performance over fixing your DSA master driver to
-turn off checksum offloading for unrecognized DSA tagging protocols.
-And on top of that, you're requiring your users to be aware of this
-issue and make changes to their configuration, for something that can be
-done automatically.
+The following changes since commit 0228d37bd1a4fa552916e696f70490225272d58a:
 
-Do you have another use case as well?
+  Merge branch 'ftgmac100-fixes' (2022-02-23 12:50:19 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-02-23
+
+for you to fetch changes up to ca49df96f9f5efd4f0f1e64f7c4c0c63a3329cb9:
+
+  net/mlx5e: Fix VF min/max rate parameters interchange mistake (2022-02-23 16:08:19 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2022-02-23
+
+----------------------------------------------------------------
+Ariel Levkovich (1):
+      net/mlx5: Fix wrong limitation of metadata match on ecpf
+
+Chris Mi (1):
+      net/mlx5: Fix tc max supported prio for nic mode
+
+Gal Pressman (2):
+      net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
+      net/mlx5e: Fix VF min/max rate parameters interchange mistake
+
+Lama Kayal (2):
+      net/mlx5e: Add feature check for set fec counters
+      net/mlx5e: Add missing increment of count
+
+Maher Sanalla (1):
+      net/mlx5: Update log_max_qp value to be 17 at most
+
+Maor Dickman (2):
+      net/mlx5e: Fix MPLSoUDP encap to use MPLS action information
+      net/mlx5e: MPLSoUDP decap, fix check for unsupported matches
+
+Maor Gottlieb (1):
+      net/mlx5: Fix possible deadlock on rule deletion
+
+Meir Lichtinger (1):
+      net/mlx5: Update the list of the PCI supported devices
+
+Roi Dayan (3):
+      net/mlx5e: TC, Reject rules with drop and modify hdr action
+      net/mlx5e: TC, Reject rules with forward and drop actions
+      net/mlx5e: TC, Skip redundant ct clear actions
+
+Tariq Toukan (1):
+      net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
+
+Yevgeny Kliteynik (4):
+      net/mlx5: DR, Cache STE shadow memory
+      net/mlx5: DR, Fix slab-out-of-bounds in mlx5_cmd_dr_create_fte
+      net/mlx5: DR, Don't allow match on IP w/o matching on full ethertype/ip_version
+      net/mlx5: DR, Fix the threshold that defines when pool sync is initiated
+
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.h    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c |   7 ++
+ .../ethernet/mellanox/mlx5/core/en/tc/act/mirred.c |   6 ++
+ .../ethernet/mellanox/mlx5/core/en/tc/act/mpls.c   |  11 ++
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |   1 +
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |   3 +
+ .../mellanox/mlx5/core/en/tc_tun_mplsoudp.c        |  33 +++---
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   8 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_selftest.c  |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  12 +++
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   4 -
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   2 +
+ .../ethernet/mellanox/mlx5/core/lib/fs_chains.c    |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   4 +-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 120 ++++++++++++++-------
+ .../mellanox/mlx5/core/steering/dr_matcher.c       |  20 +---
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  32 +++++-
+ .../mellanox/mlx5/core/steering/dr_types.h         |  10 ++
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  33 ++++--
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   5 +
+ 24 files changed, 236 insertions(+), 94 deletions(-)
