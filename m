@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC2F04C2069
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 01:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3EF84C206D
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 01:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245186AbiBXAM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 19:12:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        id S245176AbiBXAM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 19:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234587AbiBXAMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 19:12:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2253A5F4D1
+        with ESMTP id S245158AbiBXAMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 19:12:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C395F4DD
         for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 16:12:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE054B8228C
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 00:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F43C340F3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42F13B8228B
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 00:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C55C340F1;
         Thu, 24 Feb 2022 00:12:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645661538;
-        bh=3tiNQjyhau6u2L4Lcs99yliCP9JgIzgMv8Xyv8MYAk0=;
+        s=k20201202; t=1645661539;
+        bh=/KTuRGkSeBSzN5vbZ+8JpNAHMYy5QpUy+vpGQtA4YMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s7oyttyj6tS1aC53RgSTiXKmCqjP593KN9KbQ+Jhi42GWAS4dDh4h5+gqiWgDquDY
-         EdADD1iLFU/+my3+BUXXsjVOuYaAFnSX7cO94ZEXdFGoSxyZarADz43XyUYeqtxLyM
-         01ewju3GWSLvwxxPbbfPWQgmmcEn4YIoa8aJJcxOqbhMBr7lqodidQjOLDD7m/MeeN
-         EFf/XC3OFwRDW7hTxfkx+kLH1Pn4b5VjIl9ODwPbrHxpFyAwyLGFL44cDvRLgJeECL
-         61eZkDrxVBDGkAYMHvLX+Up3GlkufxjoxzK1fJJKRqEMyjBdWUOEWQncLpT9+SlHrc
-         qlMm0lvoTXchw==
+        b=A7CDaFFN4XTc3lqJUoxrwFzwwvBhvW9rKPR3Xi8/EKi8x/P8Tj2pTlTwo8NU5/xp5
+         DfdoGupEunqNL3htUhCwcgDiKg7rwPVIetXiSe7WGxeH/aOiifZvWmiqfZFtC0AbCl
+         NMz0WPUK7plA4U3JzWB3tz0k0G6ki5QzdyDOIEt2t427deiU3AzrJNkiI+9FZQhXnz
+         Xt6FW9c4eRaOljQC1TzpN/PW3MPqa+yNgJ5t5As6VHCQwI1K/pwqhV3lbrwpDAfJJU
+         UEHjVFEymFDI/cIfmGPF8n/a5wk56q+AsfOCWtM0UGPRcM8XYqrSH+5g4YxTvMYeIl
+         uJkdZoruurE4Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [v2 net 02/19] net/mlx5: DR, Cache STE shadow memory
-Date:   Wed, 23 Feb 2022 16:11:06 -0800
-Message-Id: <20220224001123.365265-3-saeed@kernel.org>
+Subject: [v2 net 03/19] net/mlx5: DR, Fix slab-out-of-bounds in mlx5_cmd_dr_create_fte
+Date:   Wed, 23 Feb 2022 16:11:07 -0800
+Message-Id: <20220224001123.365265-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220224001123.365265-1-saeed@kernel.org>
 References: <20220224001123.365265-1-saeed@kernel.org>
@@ -57,214 +57,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-During rule insertion on each ICM memory chunk we also allocate shadow memory
-used for management. This includes the hw_ste, dr_ste and miss list per entry.
-Since the scale of these allocations is large we noticed a performance hiccup
-that happens once malloc and free are stressed.
-In extreme usecases when ~1M chunks are freed at once, it might take up to 40
-seconds to complete this, up to the point the kernel sees this as self-detected
-stall on CPU:
+When adding a rule with 32 destinations, we hit the following out-of-band
+access issue:
 
- rcu: INFO: rcu_sched self-detected stall on CPU
+  BUG: KASAN: slab-out-of-bounds in mlx5_cmd_dr_create_fte+0x18ee/0x1e70
 
-To resolve this we will increase the reuse of shadow memory.
-Doing this we see that a time in the aforementioned usecase dropped from ~40
-seconds to ~8-10 seconds.
+This patch fixes the issue by both increasing the allocated buffers to
+accommodate for the needed actions and by checking the number of actions
+to prevent this issue when a rule with too many actions is provided.
 
-Fixes: 29cf8febd185 ("net/mlx5: DR, ICM pool memory allocator")
-Signed-off-by: Alex Vesker <valex@nvidia.com>
+Fixes: 1ffd498901c1 ("net/mlx5: DR, Increase supported num of actions to 32")
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_icm_pool.c | 109 ++++++++++++------
- .../mellanox/mlx5/core/steering/mlx5dr.h      |   5 +
- 2 files changed, 79 insertions(+), 35 deletions(-)
+ .../mellanox/mlx5/core/steering/fs_dr.c       | 33 +++++++++++++++----
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-index 7f6fd9c5e371..f496b7e9401b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
-@@ -136,37 +136,35 @@ static void dr_icm_pool_mr_destroy(struct mlx5dr_icm_mr *icm_mr)
- 	kvfree(icm_mr);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index a476da2424f8..3f311462bedf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -233,7 +233,11 @@ static bool contain_vport_reformat_action(struct mlx5_flow_rule *dst)
+ 		dst->dest_attr.vport.flags & MLX5_FLOW_DEST_VPORT_REFORMAT_ID;
  }
  
--static int dr_icm_chunk_ste_init(struct mlx5dr_icm_chunk *chunk)
-+static int dr_icm_buddy_get_ste_size(struct mlx5dr_icm_buddy_mem *buddy)
- {
--	chunk->ste_arr = kvzalloc(chunk->num_of_entries *
--				  sizeof(chunk->ste_arr[0]), GFP_KERNEL);
--	if (!chunk->ste_arr)
--		return -ENOMEM;
--
--	chunk->hw_ste_arr = kvzalloc(chunk->num_of_entries *
--				     DR_STE_SIZE_REDUCED, GFP_KERNEL);
--	if (!chunk->hw_ste_arr)
--		goto out_free_ste_arr;
--
--	chunk->miss_list = kvmalloc(chunk->num_of_entries *
--				    sizeof(chunk->miss_list[0]), GFP_KERNEL);
--	if (!chunk->miss_list)
--		goto out_free_hw_ste_arr;
-+	/* We support only one type of STE size, both for ConnectX-5 and later
-+	 * devices. Once the support for match STE which has a larger tag is
-+	 * added (32B instead of 16B), the STE size for devices later than
-+	 * ConnectX-5 needs to account for that.
-+	 */
-+	return DR_STE_SIZE_REDUCED;
-+}
+-#define MLX5_FLOW_CONTEXT_ACTION_MAX  32
++/* We want to support a rule with 32 destinations, which means we need to
++ * account for 32 destinations plus usually a counter plus one more action
++ * for a multi-destination flow table.
++ */
++#define MLX5_FLOW_CONTEXT_ACTION_MAX  34
+ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 				  struct mlx5_flow_table *ft,
+ 				  struct mlx5_flow_group *group,
+@@ -403,9 +407,9 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 			enum mlx5_flow_destination_type type = dst->dest_attr.type;
+ 			u32 id;
  
--	return 0;
-+static void dr_icm_chunk_ste_init(struct mlx5dr_icm_chunk *chunk, int offset)
-+{
-+	struct mlx5dr_icm_buddy_mem *buddy = chunk->buddy_mem;
-+	int index = offset / DR_STE_SIZE;
+-			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
+-			    num_term_actions >= MLX5_FLOW_CONTEXT_ACTION_MAX) {
+-				err = -ENOSPC;
++			if (fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
++			    num_term_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
++				err = -EOPNOTSUPP;
+ 				goto free_actions;
+ 			}
  
--out_free_hw_ste_arr:
--	kvfree(chunk->hw_ste_arr);
--out_free_ste_arr:
--	kvfree(chunk->ste_arr);
--	return -ENOMEM;
-+	chunk->ste_arr = &buddy->ste_arr[index];
-+	chunk->miss_list = &buddy->miss_list[index];
-+	chunk->hw_ste_arr = buddy->hw_ste_arr +
-+			    index * dr_icm_buddy_get_ste_size(buddy);
- }
+@@ -478,8 +482,9 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 			    MLX5_FLOW_DESTINATION_TYPE_COUNTER)
+ 				continue;
  
- static void dr_icm_chunk_ste_cleanup(struct mlx5dr_icm_chunk *chunk)
- {
--	kvfree(chunk->miss_list);
--	kvfree(chunk->hw_ste_arr);
--	kvfree(chunk->ste_arr);
-+	struct mlx5dr_icm_buddy_mem *buddy = chunk->buddy_mem;
-+
-+	memset(chunk->hw_ste_arr, 0,
-+	       chunk->num_of_entries * dr_icm_buddy_get_ste_size(buddy));
-+	memset(chunk->ste_arr, 0,
-+	       chunk->num_of_entries * sizeof(chunk->ste_arr[0]));
- }
+-			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
+-				err = -ENOSPC;
++			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
++			    fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
++				err = -EOPNOTSUPP;
+ 				goto free_actions;
+ 			}
  
- static enum mlx5dr_icm_type
-@@ -189,6 +187,44 @@ static void dr_icm_chunk_destroy(struct mlx5dr_icm_chunk *chunk,
- 	kvfree(chunk);
- }
+@@ -499,14 +504,28 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
+ 	params.match_sz = match_sz;
+ 	params.match_buf = (u64 *)fte->val;
+ 	if (num_term_actions == 1) {
+-		if (term_actions->reformat)
++		if (term_actions->reformat) {
++			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
++				err = -EOPNOTSUPP;
++				goto free_actions;
++			}
+ 			actions[num_actions++] = term_actions->reformat;
++		}
  
-+static int dr_icm_buddy_init_ste_cache(struct mlx5dr_icm_buddy_mem *buddy)
-+{
-+	int num_of_entries =
-+		mlx5dr_icm_pool_chunk_size_to_entries(buddy->pool->max_log_chunk_sz);
-+
-+	buddy->ste_arr = kvcalloc(num_of_entries,
-+				  sizeof(struct mlx5dr_ste), GFP_KERNEL);
-+	if (!buddy->ste_arr)
-+		return -ENOMEM;
-+
-+	/* Preallocate full STE size on non-ConnectX-5 devices since
-+	 * we need to support both full and reduced with the same cache.
-+	 */
-+	buddy->hw_ste_arr = kvcalloc(num_of_entries,
-+				     dr_icm_buddy_get_ste_size(buddy), GFP_KERNEL);
-+	if (!buddy->hw_ste_arr)
-+		goto free_ste_arr;
-+
-+	buddy->miss_list = kvmalloc(num_of_entries * sizeof(struct list_head), GFP_KERNEL);
-+	if (!buddy->miss_list)
-+		goto free_hw_ste_arr;
-+
-+	return 0;
-+
-+free_hw_ste_arr:
-+	kvfree(buddy->hw_ste_arr);
-+free_ste_arr:
-+	kvfree(buddy->ste_arr);
-+	return -ENOMEM;
-+}
-+
-+static void dr_icm_buddy_cleanup_ste_cache(struct mlx5dr_icm_buddy_mem *buddy)
-+{
-+	kvfree(buddy->ste_arr);
-+	kvfree(buddy->hw_ste_arr);
-+	kvfree(buddy->miss_list);
-+}
-+
- static int dr_icm_buddy_create(struct mlx5dr_icm_pool *pool)
- {
- 	struct mlx5dr_icm_buddy_mem *buddy;
-@@ -208,11 +244,19 @@ static int dr_icm_buddy_create(struct mlx5dr_icm_pool *pool)
- 	buddy->icm_mr = icm_mr;
- 	buddy->pool = pool;
++		if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
++			err = -EOPNOTSUPP;
++			goto free_actions;
++		}
+ 		actions[num_actions++] = term_actions->dest;
+ 	} else if (num_term_actions > 1) {
+ 		bool ignore_flow_level =
+ 			!!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL);
  
-+	if (pool->icm_type == DR_ICM_TYPE_STE) {
-+		/* Reduce allocations by preallocating and reusing the STE structures */
-+		if (dr_icm_buddy_init_ste_cache(buddy))
-+			goto err_cleanup_buddy;
-+	}
-+
- 	/* add it to the -start- of the list in order to search in it first */
- 	list_add(&buddy->list_node, &pool->buddy_mem_list);
- 
- 	return 0;
- 
-+err_cleanup_buddy:
-+	mlx5dr_buddy_cleanup(buddy);
- err_free_buddy:
- 	kvfree(buddy);
- free_mr:
-@@ -234,6 +278,9 @@ static void dr_icm_buddy_destroy(struct mlx5dr_icm_buddy_mem *buddy)
- 
- 	mlx5dr_buddy_cleanup(buddy);
- 
-+	if (buddy->pool->icm_type == DR_ICM_TYPE_STE)
-+		dr_icm_buddy_cleanup_ste_cache(buddy);
-+
- 	kvfree(buddy);
- }
- 
-@@ -261,26 +308,18 @@ dr_icm_chunk_create(struct mlx5dr_icm_pool *pool,
- 	chunk->byte_size =
- 		mlx5dr_icm_pool_chunk_size_to_byte(chunk_size, pool->icm_type);
- 	chunk->seg = seg;
-+	chunk->buddy_mem = buddy_mem_pool;
- 
--	if (pool->icm_type == DR_ICM_TYPE_STE && dr_icm_chunk_ste_init(chunk)) {
--		mlx5dr_err(pool->dmn,
--			   "Failed to init ste arrays (order: %d)\n",
--			   chunk_size);
--		goto out_free_chunk;
--	}
-+	if (pool->icm_type == DR_ICM_TYPE_STE)
-+		dr_icm_chunk_ste_init(chunk, offset);
- 
- 	buddy_mem_pool->used_memory += chunk->byte_size;
--	chunk->buddy_mem = buddy_mem_pool;
- 	INIT_LIST_HEAD(&chunk->chunk_list);
- 
- 	/* chunk now is part of the used_list */
- 	list_add_tail(&chunk->chunk_list, &buddy_mem_pool->used_list);
- 
- 	return chunk;
--
--out_free_chunk:
--	kvfree(chunk);
--	return NULL;
- }
- 
- static bool dr_icm_pool_is_sync_required(struct mlx5dr_icm_pool *pool)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index c7c93131b762..dfa223415fe2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -160,6 +160,11 @@ struct mlx5dr_icm_buddy_mem {
- 	 * sync_ste command sets them free.
- 	 */
- 	struct list_head	hot_list;
-+
-+	/* Memory optimisation */
-+	struct mlx5dr_ste	*ste_arr;
-+	struct list_head	*miss_list;
-+	u8			*hw_ste_arr;
- };
- 
- int mlx5dr_buddy_init(struct mlx5dr_icm_buddy_mem *buddy,
++		if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
++		    fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
++			err = -EOPNOTSUPP;
++			goto free_actions;
++		}
+ 		tmp_action = mlx5dr_action_create_mult_dest_tbl(domain,
+ 								term_actions,
+ 								num_term_actions,
 -- 
 2.35.1
 
