@@ -2,1156 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 369574C352A
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 19:56:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCDA4C3636
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 20:53:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233152AbiBXS4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 13:56:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        id S234068AbiBXTxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 14:53:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233157AbiBXS4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 13:56:14 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E45B251E62
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 10:55:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645728935; x=1677264935;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PvdlZRuURqUV8Ds1k/Ga4T0xI20gL/29Zf8mMo+lcQU=;
-  b=jB84RWVMXA8XITlDaLgGWyReek02vui99Eg2myet+It0xQSk3zSe3V1n
-   HR35GwfX0O0ey6loTK3f00PmScTv/dzyoQPcaVGF15C1WzFKA4V9rhLod
-   Rm0xt1h7WrdfYdJJE1zqzyD+Wg7QEtnqPqR0/SgjJp5+es0jim3KFeODn
-   P8kcC13/knETx3S7Lwk/9vdI18XDLNvfXflobPGZTLe5VWnqjKIC+8t5Q
-   pDCq1xFVzQAeKLajqVC8dqGep1hl4Bf6E331CDwtasE/dUoi7e68dXMLX
-   ZF2TGeXRxDnPBkLDSjJl+hPEqJQ1y+DoEXVf4WDTc1wVdFlJcReQt8xYw
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315542751"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="315542751"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 10:55:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="607521230"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga004.fm.intel.com with ESMTP; 24 Feb 2022 10:55:21 -0800
-Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 21OIt5Z4018029;
-        Thu, 24 Feb 2022 18:55:19 GMT
-From:   Marcin Szycik <marcin.szycik@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        laforge@gnumonks.org, jiri@resnulli.us,
-        osmocom-net-gprs@lists.osmocom.org,
-        intel-wired-lan@lists.osuosl.org,
-        Marcin Szycik <marcin.szycik@linux.intel.com>
-Subject: [PATCH net-next v9 7/7] ice: Support GTP-U and GTP-C offload in switchdev
-Date:   Thu, 24 Feb 2022 19:55:00 +0100
-Message-Id: <20220224185500.18384-8-marcin.szycik@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220224185500.18384-1-marcin.szycik@linux.intel.com>
-References: <20220224185500.18384-1-marcin.szycik@linux.intel.com>
+        with ESMTP id S233310AbiBXTxk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 14:53:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF70025D267;
+        Thu, 24 Feb 2022 11:53:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F357DB82920;
+        Thu, 24 Feb 2022 19:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FD11C340E9;
+        Thu, 24 Feb 2022 19:53:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645732386;
+        bh=oXItC0NjDc2WEH/99CAmErS6bAX3gw8fCyHnwvU2Iv4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=I9eRLgpHAo9JcADY7CqRwv1ZK3EGOU9xvLGueVpFRyW8YYB1N21mWE64m/Nkc6Tnj
+         DvqM64YkA2Rla+tmJJlZLCncV/Jde7hMECXXhjKapKb5sR+/bbYGIxgr3fdSToXOEx
+         XVipXiIe6xN9+PloodfjhU+NWHFQpO3iH10wdpeBUy7vCxoLgdGDUj2zy0h63jPvaU
+         kM79UO2+ywaSheOkEOms7f+ybaimDhOubwWki+xZJULF/K/B88n93jqKCuFm8EGjT2
+         iLCLLi/9SUBkjfqjG6tKX1u0Ty1sHciJF1zT6A7iMcw3UkDe7Wg/PDkv7XZmdJ98mv
+         RA91vOixWg6yA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 5.17-rc6
+Date:   Thu, 24 Feb 2022 11:53:05 -0800
+Message-Id: <20220224195305.1584666-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for creating filters for GTP-U and GTP-C in switchdev mode. Add
-support for parsing GTP-specific options (QFI and PDU type) and TEID.
+Hi Linus!
 
-By default, a filter for GTP-U will be added. To add a filter for GTP-C,
-specify enc_dst_port = 2123, e.g.:
+The following changes since commit 8b97cae315cafd7debf3601f88621e2aa8956ef3:
 
-tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
-enc_dst_port 2123 action mirred egress redirect dev $VF1_PR
+  Merge tag 'net-5.17-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-02-17 11:33:59 -0800)
 
-Note: outer IPv6 offload is not supported yet.
-Note: GTP-U with no payload offload is not supported yet.
+are available in the Git repository at:
 
-Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
----
-v7: Fix ice_get_sw_prof_type kernel-doc
-v9: Fix GTP-C dummy packet selection, GTP-C IPv6 offload working
----
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- .../net/ethernet/intel/ice/ice_flex_pipe.c    |  31 +-
- .../net/ethernet/intel/ice/ice_flex_type.h    |   6 +-
- .../ethernet/intel/ice/ice_protocol_type.h    |  19 +
- drivers/net/ethernet/intel/ice/ice_switch.c   | 604 +++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_switch.h   |   9 +
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 105 ++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   3 +
- 8 files changed, 760 insertions(+), 18 deletions(-)
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc6
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 8f40f6f9b8eb..571f331191c4 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -51,6 +51,7 @@
- #include <net/gre.h>
- #include <net/udp_tunnel.h>
- #include <net/vxlan.h>
-+#include <net/gtp.h>
- #if IS_ENABLED(CONFIG_DCB)
- #include <scsi/iscsi_proto.h>
- #endif /* CONFIG_DCB */
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index 45ce9a2bb572..8a9b24b2a997 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -1804,16 +1804,43 @@ static struct ice_buf_build *ice_pkg_buf_alloc(struct ice_hw *hw)
- 	return bld;
- }
- 
-+static bool ice_is_gtp_u_profile(u16 prof_idx)
-+{
-+	return (prof_idx >= ICE_PROFID_IPV6_GTPU_TEID &&
-+		prof_idx <= ICE_PROFID_IPV6_GTPU_IPV6_TCP_INNER) ||
-+	       prof_idx == ICE_PROFID_IPV4_GTPU_TEID;
-+}
-+
-+static bool ice_is_gtp_c_profile(u16 prof_idx)
-+{
-+	switch (prof_idx) {
-+	case ICE_PROFID_IPV4_GTPC_TEID:
-+	case ICE_PROFID_IPV4_GTPC_NO_TEID:
-+	case ICE_PROFID_IPV6_GTPC_TEID:
-+	case ICE_PROFID_IPV6_GTPC_NO_TEID:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
- /**
-  * ice_get_sw_prof_type - determine switch profile type
-  * @hw: pointer to the HW structure
-  * @fv: pointer to the switch field vector
-+ * @prof_idx: profile index to check
-  */
- static enum ice_prof_type
--ice_get_sw_prof_type(struct ice_hw *hw, struct ice_fv *fv)
-+ice_get_sw_prof_type(struct ice_hw *hw, struct ice_fv *fv, u32 prof_idx)
- {
- 	u16 i;
- 
-+	if (ice_is_gtp_c_profile(prof_idx))
-+		return ICE_PROF_TUN_GTPC;
-+
-+	if (ice_is_gtp_u_profile(prof_idx))
-+		return ICE_PROF_TUN_GTPU;
-+
- 	for (i = 0; i < hw->blk[ICE_BLK_SW].es.fvw; i++) {
- 		/* UDP tunnel will have UDP_OF protocol ID and VNI offset */
- 		if (fv->ew[i].prot_id == (u8)ICE_PROT_UDP_OF &&
-@@ -1860,7 +1887,7 @@ ice_get_sw_fv_bitmap(struct ice_hw *hw, enum ice_prof_type req_profs,
- 
- 		if (fv) {
- 			/* Determine field vector type */
--			prof_type = ice_get_sw_prof_type(hw, fv);
-+			prof_type = ice_get_sw_prof_type(hw, fv, offset);
- 
- 			if (req_profs & prof_type)
- 				set_bit((u16)offset, bm);
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-index 5735e9542a49..974d14a83b2e 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-@@ -417,6 +417,8 @@ enum ice_tunnel_type {
- 	TNL_VXLAN = 0,
- 	TNL_GENEVE,
- 	TNL_GRETAP,
-+	TNL_GTPC,
-+	TNL_GTPU,
- 	__TNL_TYPE_CNT,
- 	TNL_LAST = 0xFF,
- 	TNL_ALL = 0xFF,
-@@ -673,7 +675,9 @@ enum ice_prof_type {
- 	ICE_PROF_NON_TUN = 0x1,
- 	ICE_PROF_TUN_UDP = 0x2,
- 	ICE_PROF_TUN_GRE = 0x4,
--	ICE_PROF_TUN_ALL = 0x6,
-+	ICE_PROF_TUN_GTPU = 0x8,
-+	ICE_PROF_TUN_GTPC = 0x10,
-+	ICE_PROF_TUN_ALL = 0x1E,
- 	ICE_PROF_ALL = 0xFF,
- };
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-index dc1b0e9e6df5..bb3483df4186 100644
---- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-@@ -40,6 +40,8 @@ enum ice_protocol_type {
- 	ICE_VXLAN,
- 	ICE_GENEVE,
- 	ICE_NVGRE,
-+	ICE_GTP,
-+	ICE_GTP_NO_PAY,
- 	ICE_VXLAN_GPE,
- 	ICE_SCTP_IL,
- 	ICE_PROTOCOL_LAST
-@@ -50,6 +52,8 @@ enum ice_sw_tunnel_type {
- 	ICE_SW_TUN_VXLAN,
- 	ICE_SW_TUN_GENEVE,
- 	ICE_SW_TUN_NVGRE,
-+	ICE_SW_TUN_GTPU,
-+	ICE_SW_TUN_GTPC,
- 	ICE_ALL_TUNNELS /* All tunnel types including NVGRE */
- };
- 
-@@ -179,6 +183,20 @@ struct ice_udp_tnl_hdr {
- 	__be32 vni;     /* only use lower 24-bits */
- };
- 
-+struct ice_udp_gtp_hdr {
-+	u8 flags;
-+	u8 msg_type;
-+	__be16 rsrvd_len;
-+	__be32 teid;
-+	__be16 rsrvd_seq_nbr;
-+	u8 rsrvd_n_pdu_nbr;
-+	u8 rsrvd_next_ext;
-+	u8 rsvrd_ext_len;
-+	u8 pdu_type;
-+	u8 qfi;
-+	u8 rsvrd;
-+};
-+
- struct ice_nvgre_hdr {
- 	__be16 flags;
- 	__be16 protocol;
-@@ -195,6 +213,7 @@ union ice_prot_hdr {
- 	struct ice_sctp_hdr sctp_hdr;
- 	struct ice_udp_tnl_hdr tnl_hdr;
- 	struct ice_nvgre_hdr nvgre_hdr;
-+	struct ice_udp_gtp_hdr gtp_hdr;
- };
- 
- /* This is mapping table entry that maps every word within a given protocol
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 915aa693170c..cecd1f38fb8d 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -500,6 +500,495 @@ static const u8 dummy_vlan_udp_ipv6_packet[] = {
- 	0x00, 0x00, /* 2 bytes for 4 byte alignment */
- };
- 
-+/* Outer IPv4 + Outer UDP + GTP + Inner IPv4 + Inner TCP */
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_GTP,		42 },
-+	{ ICE_IPV4_IL,		62 },
-+	{ ICE_TCP_IL,		82 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv4_gtpu_ipv4_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x08, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x58, /* IP 14 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
-+	0x00, 0x44, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x34, /* ICE_GTP Header 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x28, /* IP 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x06, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* TCP 82 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+/* Outer IPv4 + Outer UDP + GTP + Inner IPv4 + Inner UDP */
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv4_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_GTP,		42 },
-+	{ ICE_IPV4_IL,		62 },
-+	{ ICE_UDP_ILOS,		82 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv4_gtpu_ipv4_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x08, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x4c, /* IP 14 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
-+	0x00, 0x38, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x28, /* ICE_GTP Header 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x1c, /* IP 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* UDP 82 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+/* Outer IPv6 + Outer UDP + GTP + Inner IPv4 + Inner TCP */
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_GTP,		42 },
-+	{ ICE_IPV6_IL,		62 },
-+	{ ICE_TCP_IL,		102 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv4_gtpu_ipv6_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x08, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x6c, /* IP 14 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
-+	0x00, 0x58, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x48, /* ICE_GTP Header 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 62 */
-+	0x00, 0x14, 0x06, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* TCP 102 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv4_gtpu_ipv6_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_GTP,		42 },
-+	{ ICE_IPV6_IL,		62 },
-+	{ ICE_UDP_ILOS,		102 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv4_gtpu_ipv6_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x08, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x60, /* IP 14 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 34 */
-+	0x00, 0x4c, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x3c, /* ICE_GTP Header 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 62 */
-+	0x00, 0x08, 0x11, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* UDP 102 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_UDP_OF,		54 },
-+	{ ICE_GTP,		62 },
-+	{ ICE_IPV4_IL,		82 },
-+	{ ICE_TCP_IL,		102 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv6_gtpu_ipv4_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x86, 0xdd,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
-+	0x00, 0x44, 0x11, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
-+	0x00, 0x44, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x34, /* ICE_GTP Header 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x28, /* IP 82 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x06, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* TCP 102 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv4_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_UDP_OF,		54 },
-+	{ ICE_GTP,		62 },
-+	{ ICE_IPV4_IL,		82 },
-+	{ ICE_UDP_ILOS,		102 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv6_gtpu_ipv4_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x86, 0xdd,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
-+	0x00, 0x38, 0x11, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
-+	0x00, 0x38, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x28, /* ICE_GTP Header 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x1c, /* IP 82 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* UDP 102 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_UDP_OF,		54 },
-+	{ ICE_GTP,		62 },
-+	{ ICE_IPV6_IL,		82 },
-+	{ ICE_TCP_IL,		122 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv6_gtpu_ipv6_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x86, 0xdd,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
-+	0x00, 0x58, 0x11, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
-+	0x00, 0x58, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x48, /* ICE_GTP Header 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 82 */
-+	0x00, 0x14, 0x06, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* TCP 122 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv6_gtpu_ipv6_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_UDP_OF,		54 },
-+	{ ICE_GTP,		62 },
-+	{ ICE_IPV6_IL,		82 },
-+	{ ICE_UDP_ILOS,		122 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv6_gtpu_ipv6_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* Ethernet 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x86, 0xdd,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 14 */
-+	0x00, 0x4c, 0x11, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x08, 0x68, /* UDP 54 */
-+	0x00, 0x4c, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x3c, /* ICE_GTP Header 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* GTP_PDUSession_ExtensionHeader 74 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x60, 0x00, 0x00, 0x00, /* IPv6 82 */
-+	0x00, 0x08, 0x11, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* UDP 122 */
-+	0x00, 0x08, 0x00, 0x00,
-+
-+	0x00, 0x00, /* 2 bytes for 4 byte alignment */
-+};
-+
-+static const u8 dummy_ipv4_gtpu_ipv4_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x08, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x44, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x00, 0x40, 0x00,
-+	0x40, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x68, 0x08, 0x68, /* ICE_UDP_OF 34 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x34, 0xff, 0x00, 0x28, /* ICE_GTP 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x85,
-+
-+	0x02, 0x00, 0x00, 0x00, /* PDU Session extension header */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x45, 0x00, 0x00, 0x14, /* ICE_IPV4_IL 62 */
-+	0x00, 0x00, 0x40, 0x00,
-+	0x40, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00,
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv4_gtp_no_pay_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_GTP_NO_PAY,	42 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const
-+struct ice_dummy_pkt_offsets dummy_ipv6_gtp_no_pay_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_UDP_OF,		54 },
-+	{ ICE_GTP_NO_PAY,	62 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_ipv6_gtp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x86, 0xdd,
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_OFOS 14 */
-+	0x00, 0x6c, 0x11, 0x00, /* Next header UDP*/
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x68, 0x08, 0x68, /* ICE_UDP_OF 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x30, 0x00, 0x00, 0x28, /* ICE_GTP 62 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00,
-+};
-+
- #define ICE_SW_RULE_RX_TX_ETH_HDR_SIZE \
- 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr) + \
- 	 (DUMMY_ETH_HDR_LEN * \
-@@ -3830,7 +4319,9 @@ static const struct ice_prot_ext_tbl_entry ice_prot_ext[ICE_PROTOCOL_LAST] = {
- 	{ ICE_UDP_ILOS,		{ 0, 2 } },
- 	{ ICE_VXLAN,		{ 8, 10, 12, 14 } },
- 	{ ICE_GENEVE,		{ 8, 10, 12, 14 } },
--	{ ICE_NVGRE,            { 0, 2, 4, 6 } },
-+	{ ICE_NVGRE,		{ 0, 2, 4, 6 } },
-+	{ ICE_GTP,		{ 8, 10, 12, 14, 16, 18, 20, 22 } },
-+	{ ICE_GTP_NO_PAY,	{ 8, 10, 12, 14 } },
- };
- 
- static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
-@@ -3847,7 +4338,9 @@ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
- 	{ ICE_UDP_ILOS,		ICE_UDP_ILOS_HW },
- 	{ ICE_VXLAN,		ICE_UDP_OF_HW },
- 	{ ICE_GENEVE,		ICE_UDP_OF_HW },
--	{ ICE_NVGRE,            ICE_GRE_OF_HW },
-+	{ ICE_NVGRE,		ICE_GRE_OF_HW },
-+	{ ICE_GTP,		ICE_UDP_OF_HW },
-+	{ ICE_GTP_NO_PAY,	ICE_UDP_ILOS_HW },
- };
- 
- /**
-@@ -4517,6 +5010,8 @@ static bool ice_tun_type_match_word(enum ice_sw_tunnel_type tun_type, u16 *mask)
- 	case ICE_SW_TUN_GENEVE:
- 	case ICE_SW_TUN_VXLAN:
- 	case ICE_SW_TUN_NVGRE:
-+	case ICE_SW_TUN_GTPU:
-+	case ICE_SW_TUN_GTPC:
- 		*mask = ICE_TUN_FLAG_MASK;
- 		return true;
- 
-@@ -4582,6 +5077,12 @@ ice_get_compat_fv_bitmap(struct ice_hw *hw, struct ice_adv_rule_info *rinfo,
- 	case ICE_SW_TUN_NVGRE:
- 		prof_type = ICE_PROF_TUN_GRE;
- 		break;
-+	case ICE_SW_TUN_GTPU:
-+		prof_type = ICE_PROF_TUN_GTPU;
-+		break;
-+	case ICE_SW_TUN_GTPC:
-+		prof_type = ICE_PROF_TUN_GTPC;
-+		break;
- 	default:
- 		prof_type = ICE_PROF_ALL;
- 		break;
-@@ -4781,16 +5282,17 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		      const u8 **pkt, u16 *pkt_len,
- 		      const struct ice_dummy_pkt_offsets **offsets)
- {
--	bool tcp = false, udp = false, ipv6 = false, vlan = false;
-+	bool inner_tcp = false, inner_udp = false, outer_ipv6 = false;
-+	bool vlan = false, inner_ipv6 = false, gtp_no_pay = false;
- 	u16 i;
- 
- 	for (i = 0; i < lkups_cnt; i++) {
- 		if (lkups[i].type == ICE_UDP_ILOS)
--			udp = true;
-+			inner_udp = true;
- 		else if (lkups[i].type == ICE_TCP_IL)
--			tcp = true;
-+			inner_tcp = true;
- 		else if (lkups[i].type == ICE_IPV6_OFOS)
--			ipv6 = true;
-+			outer_ipv6 = true;
- 		else if (lkups[i].type == ICE_VLAN_OFOS)
- 			vlan = true;
- 		else if (lkups[i].type == ICE_ETYPE_OL &&
-@@ -4798,11 +5300,85 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
- 			 lkups[i].m_u.ethertype.ethtype_id ==
- 					cpu_to_be16(0xFFFF))
--			ipv6 = true;
-+			outer_ipv6 = true;
-+		else if (lkups[i].type == ICE_IPV6_IL)
-+			inner_ipv6 = true;
-+		else if (lkups[i].type == ICE_GTP_NO_PAY)
-+			gtp_no_pay = true;
-+	}
-+
-+	if (tun_type == ICE_SW_TUN_GTPU) {
-+		if (outer_ipv6) {
-+			if (gtp_no_pay) {
-+				*pkt = dummy_ipv6_gtp_packet;
-+				*pkt_len = sizeof(dummy_ipv6_gtp_packet);
-+				*offsets = dummy_ipv6_gtp_no_pay_packet_offsets;
-+			} else if (inner_ipv6) {
-+				if (inner_udp) {
-+					*pkt = dummy_ipv6_gtpu_ipv6_udp_packet;
-+					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv6_udp_packet);
-+					*offsets = dummy_ipv6_gtpu_ipv6_udp_packet_offsets;
-+				} else {
-+					*pkt = dummy_ipv6_gtpu_ipv6_tcp_packet;
-+					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv6_tcp_packet);
-+					*offsets = dummy_ipv6_gtpu_ipv6_tcp_packet_offsets;
-+				}
-+			} else {
-+				if (inner_udp) {
-+					*pkt = dummy_ipv6_gtpu_ipv4_udp_packet;
-+					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv4_udp_packet);
-+					*offsets = dummy_ipv6_gtpu_ipv4_udp_packet_offsets;
-+				} else {
-+					*pkt = dummy_ipv6_gtpu_ipv4_tcp_packet;
-+					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv4_tcp_packet);
-+					*offsets = dummy_ipv6_gtpu_ipv4_tcp_packet_offsets;
-+				}
-+			}
-+		} else {
-+			if (gtp_no_pay) {
-+				*pkt = dummy_ipv4_gtpu_ipv4_packet;
-+				*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_packet);
-+				*offsets = dummy_ipv4_gtp_no_pay_packet_offsets;
-+			} else if (inner_ipv6) {
-+				if (inner_udp) {
-+					*pkt = dummy_ipv4_gtpu_ipv6_udp_packet;
-+					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv6_udp_packet);
-+					*offsets = dummy_ipv4_gtpu_ipv6_udp_packet_offsets;
-+				} else {
-+					*pkt = dummy_ipv4_gtpu_ipv6_tcp_packet;
-+					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv6_tcp_packet);
-+					*offsets = dummy_ipv4_gtpu_ipv6_tcp_packet_offsets;
-+				}
-+			} else {
-+				if (inner_udp) {
-+					*pkt = dummy_ipv4_gtpu_ipv4_udp_packet;
-+					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_udp_packet);
-+					*offsets = dummy_ipv4_gtpu_ipv4_udp_packet_offsets;
-+				} else {
-+					*pkt = dummy_ipv4_gtpu_ipv4_tcp_packet;
-+					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_tcp_packet);
-+					*offsets = dummy_ipv4_gtpu_ipv4_tcp_packet_offsets;
-+				}
-+			}
-+		}
-+		return;
-+	}
-+
-+	if (tun_type == ICE_SW_TUN_GTPC) {
-+		if (outer_ipv6) {
-+			*pkt = dummy_ipv6_gtp_packet;
-+			*pkt_len = sizeof(dummy_ipv6_gtp_packet);
-+			*offsets = dummy_ipv6_gtp_no_pay_packet_offsets;
-+		} else {
-+			*pkt = dummy_ipv4_gtpu_ipv4_packet;
-+			*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_packet);
-+			*offsets = dummy_ipv4_gtp_no_pay_packet_offsets;
-+		}
-+		return;
- 	}
- 
- 	if (tun_type == ICE_SW_TUN_NVGRE) {
--		if (tcp) {
-+		if (inner_tcp) {
- 			*pkt = dummy_gre_tcp_packet;
- 			*pkt_len = sizeof(dummy_gre_tcp_packet);
- 			*offsets = dummy_gre_tcp_packet_offsets;
-@@ -4817,7 +5393,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 
- 	if (tun_type == ICE_SW_TUN_VXLAN ||
- 	    tun_type == ICE_SW_TUN_GENEVE) {
--		if (tcp) {
-+		if (inner_tcp) {
- 			*pkt = dummy_udp_tun_tcp_packet;
- 			*pkt_len = sizeof(dummy_udp_tun_tcp_packet);
- 			*offsets = dummy_udp_tun_tcp_packet_offsets;
-@@ -4830,7 +5406,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		return;
- 	}
- 
--	if (udp && !ipv6) {
-+	if (inner_udp && !outer_ipv6) {
- 		if (vlan) {
- 			*pkt = dummy_vlan_udp_packet;
- 			*pkt_len = sizeof(dummy_vlan_udp_packet);
-@@ -4841,7 +5417,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		*pkt_len = sizeof(dummy_udp_packet);
- 		*offsets = dummy_udp_packet_offsets;
- 		return;
--	} else if (udp && ipv6) {
-+	} else if (inner_udp && outer_ipv6) {
- 		if (vlan) {
- 			*pkt = dummy_vlan_udp_ipv6_packet;
- 			*pkt_len = sizeof(dummy_vlan_udp_ipv6_packet);
-@@ -4852,7 +5428,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		*pkt_len = sizeof(dummy_udp_ipv6_packet);
- 		*offsets = dummy_udp_ipv6_packet_offsets;
- 		return;
--	} else if ((tcp && ipv6) || ipv6) {
-+	} else if ((inner_tcp && outer_ipv6) || outer_ipv6) {
- 		if (vlan) {
- 			*pkt = dummy_vlan_tcp_ipv6_packet;
- 			*pkt_len = sizeof(dummy_vlan_tcp_ipv6_packet);
-@@ -4957,6 +5533,10 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		case ICE_GENEVE:
- 			len = sizeof(struct ice_udp_tnl_hdr);
- 			break;
-+		case ICE_GTP_NO_PAY:
-+		case ICE_GTP:
-+			len = sizeof(struct ice_udp_gtp_hdr);
-+			break;
- 		default:
- 			return -EINVAL;
- 		}
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 7b42c51a3eb0..ed3d1d03befa 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -14,6 +14,15 @@
- #define ICE_VSI_INVAL_ID 0xffff
- #define ICE_INVAL_Q_HANDLE 0xFFFF
- 
-+/* Switch Profile IDs for Profile related switch rules */
-+#define ICE_PROFID_IPV4_GTPC_TEID			41
-+#define ICE_PROFID_IPV4_GTPC_NO_TEID			42
-+#define ICE_PROFID_IPV4_GTPU_TEID			43
-+#define ICE_PROFID_IPV6_GTPC_TEID			44
-+#define ICE_PROFID_IPV6_GTPC_NO_TEID			45
-+#define ICE_PROFID_IPV6_GTPU_TEID			46
-+#define ICE_PROFID_IPV6_GTPU_IPV6_TCP_INNER		70
-+
- #define ICE_SW_RULE_RX_TX_NO_HDR_SIZE \
- 	(offsetof(struct ice_aqc_sw_rules_elem, pdata.lkup_tx_rx.hdr))
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index e8aab664270a..eb34db29cc08 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -24,6 +24,9 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
- 	if (flags & ICE_TC_FLWR_FIELD_TENANT_ID)
- 		lkups_cnt++;
- 
-+	if (flags & ICE_TC_FLWR_FIELD_ENC_OPTS)
-+		lkups_cnt++;
-+
- 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
- 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4 |
- 		     ICE_TC_FLWR_FIELD_ENC_SRC_IPV6 |
-@@ -96,6 +99,11 @@ ice_proto_type_from_tunnel(enum ice_tunnel_type type)
- 		return ICE_GENEVE;
- 	case TNL_GRETAP:
- 		return ICE_NVGRE;
-+	case TNL_GTPU:
-+		/* NO_PAY profiles will not work with GTP-U */
-+		return ICE_GTP;
-+	case TNL_GTPC:
-+		return ICE_GTP_NO_PAY;
- 	default:
- 		return 0;
- 	}
-@@ -111,6 +119,10 @@ ice_sw_type_from_tunnel(enum ice_tunnel_type type)
- 		return ICE_SW_TUN_GENEVE;
- 	case TNL_GRETAP:
- 		return ICE_SW_TUN_NVGRE;
-+	case TNL_GTPU:
-+		return ICE_SW_TUN_GTPU;
-+	case TNL_GTPC:
-+		return ICE_SW_TUN_GTPC;
- 	default:
- 		return ICE_NON_TUN;
- 	}
-@@ -137,7 +149,15 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
- 			break;
- 		case TNL_GRETAP:
- 			list[i].h_u.nvgre_hdr.tni_flow = fltr->tenant_id;
--			memcpy(&list[i].m_u.nvgre_hdr.tni_flow, "\xff\xff\xff\xff", 4);
-+			memcpy(&list[i].m_u.nvgre_hdr.tni_flow,
-+			       "\xff\xff\xff\xff", 4);
-+			i++;
-+			break;
-+		case TNL_GTPC:
-+		case TNL_GTPU:
-+			list[i].h_u.gtp_hdr.teid = fltr->tenant_id;
-+			memcpy(&list[i].m_u.gtp_hdr.teid,
-+			       "\xff\xff\xff\xff", 4);
- 			i++;
- 			break;
- 		default:
-@@ -145,6 +165,24 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
- 		}
- 	}
- 
-+	if (flags & ICE_TC_FLWR_FIELD_ENC_OPTS &&
-+	    (fltr->tunnel_type == TNL_GTPU || fltr->tunnel_type == TNL_GTPC)) {
-+		list[i].type = ice_proto_type_from_tunnel(fltr->tunnel_type);
-+
-+		if (fltr->gtp_pdu_info_masks.pdu_type) {
-+			list[i].h_u.gtp_hdr.pdu_type =
-+				fltr->gtp_pdu_info_keys.pdu_type << 4;
-+			memcpy(&list[i].m_u.gtp_hdr.pdu_type, "\xf0", 1);
-+		}
-+
-+		if (fltr->gtp_pdu_info_masks.qfi) {
-+			list[i].h_u.gtp_hdr.qfi = fltr->gtp_pdu_info_keys.qfi;
-+			memcpy(&list[i].m_u.gtp_hdr.qfi, "\x3f", 1);
-+		}
-+
-+		i++;
-+	}
-+
- 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
- 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4)) {
- 		list[i].type = ice_proto_type_from_ipv4(false);
-@@ -344,6 +382,12 @@ static int ice_tc_tun_get_type(struct net_device *tunnel_dev)
- 	if (netif_is_gretap(tunnel_dev) ||
- 	    netif_is_ip6gretap(tunnel_dev))
- 		return TNL_GRETAP;
-+
-+	/* Assume GTP-U by default in case of GTP netdev.
-+	 * GTP-C may be selected later, based on enc_dst_port.
-+	 */
-+	if (netif_is_gtp(tunnel_dev))
-+		return TNL_GTPU;
- 	return TNL_LAST;
- }
- 
-@@ -743,6 +787,40 @@ ice_get_tunnel_device(struct net_device *dev, struct flow_rule *rule)
- 	return NULL;
- }
- 
-+/**
-+ * ice_parse_gtp_type - Sets GTP tunnel type to GTP-U or GTP-C
-+ * @match: Flow match structure
-+ * @fltr: Pointer to filter structure
-+ *
-+ * GTP-C/GTP-U is selected based on destination port number (enc_dst_port).
-+ * Before calling this funtcion, fltr->tunnel_type should be set to TNL_GTPU,
-+ * therefore making GTP-U the default choice (when destination port number is
-+ * not specified).
-+ */
-+static int
-+ice_parse_gtp_type(struct flow_match_ports match,
-+		   struct ice_tc_flower_fltr *fltr)
-+{
-+	u16 dst_port;
-+
-+	if (match.key->dst) {
-+		dst_port = be16_to_cpu(match.key->dst);
-+
-+		switch (dst_port) {
-+		case 2152:
-+			break;
-+		case 2123:
-+			fltr->tunnel_type = TNL_GTPC;
-+			break;
-+		default:
-+			NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported GTP port number");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static int
- ice_parse_tunnel_attr(struct net_device *dev, struct flow_rule *rule,
- 		      struct ice_tc_flower_fltr *fltr)
-@@ -798,8 +876,28 @@ ice_parse_tunnel_attr(struct net_device *dev, struct flow_rule *rule,
- 		struct flow_match_ports match;
- 
- 		flow_rule_match_enc_ports(rule, &match);
--		if (ice_tc_set_port(match, fltr, headers, true))
--			return -EINVAL;
-+
-+		if (fltr->tunnel_type != TNL_GTPU) {
-+			if (ice_tc_set_port(match, fltr, headers, true))
-+				return -EINVAL;
-+		} else {
-+			if (ice_parse_gtp_type(match, fltr))
-+				return -EINVAL;
-+		}
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_OPTS)) {
-+		struct flow_match_enc_opts match;
-+
-+		flow_rule_match_enc_opts(rule, &match);
-+
-+		memcpy(&fltr->gtp_pdu_info_keys, &match.key->data[0],
-+		       sizeof(struct gtp_pdu_session_info));
-+
-+		memcpy(&fltr->gtp_pdu_info_masks, &match.mask->data[0],
-+		       sizeof(struct gtp_pdu_session_info));
-+
-+		fltr->flags |= ICE_TC_FLWR_FIELD_ENC_OPTS;
- 	}
- 
- 	return 0;
-@@ -837,6 +935,7 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
- 	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
- 	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
- 	      BIT(FLOW_DISSECTOR_KEY_ENC_PORTS) |
-+	      BIT(FLOW_DISSECTOR_KEY_ENC_OPTS) |
- 	      BIT(FLOW_DISSECTOR_KEY_ENC_IP) |
- 	      BIT(FLOW_DISSECTOR_KEY_PORTS))) {
- 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported key used");
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.h b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
-index 319049477959..e25e958f4396 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
-@@ -22,6 +22,7 @@
- #define ICE_TC_FLWR_FIELD_ENC_SRC_L4_PORT	BIT(15)
- #define ICE_TC_FLWR_FIELD_ENC_DST_MAC		BIT(16)
- #define ICE_TC_FLWR_FIELD_ETH_TYPE_ID		BIT(17)
-+#define ICE_TC_FLWR_FIELD_ENC_OPTS		BIT(18)
- 
- #define ICE_TC_FLOWER_MASK_32   0xFFFFFFFF
- 
-@@ -119,6 +120,8 @@ struct ice_tc_flower_fltr {
- 	struct ice_tc_flower_lyr_2_4_hdrs inner_headers;
- 	struct ice_vsi *src_vsi;
- 	__be32 tenant_id;
-+	struct gtp_pdu_session_info gtp_pdu_info_keys;
-+	struct gtp_pdu_session_info gtp_pdu_info_masks;
- 	u32 flags;
- 	u8 tunnel_type;
- 	struct ice_tc_flower_action	action;
--- 
-2.35.1
+for you to fetch changes up to 42404d8f1c01861b22ccfa1d70f950242720ae57:
 
+  net: mv643xx_eth: process retval from of_get_mac_address (2022-02-24 10:05:08 -0800)
+
+----------------------------------------------------------------
+Networking fixes for 5.17-rc6, including fixes from bpf and netfilter.
+
+Current release - regressions:
+
+ - bpf: fix crash due to out of bounds access into reg2btf_ids
+
+ - mvpp2: always set port pcs ops, avoid null-deref
+
+ - eth: marvell: fix driver load from initrd
+
+ - eth: intel: revert "Fix reset bw limit when DCB enabled with 1 TC"
+
+Current release - new code bugs:
+
+ - mptcp: fix race in overlapping signal events
+
+Previous releases - regressions:
+
+ - xen-netback: revert hotplug-status changes causing devices to
+   not be configured
+
+ - dsa:
+   - avoid call to __dev_set_promiscuity() while rtnl_mutex isn't held
+   - fix panic when removing unoffloaded port from bridge
+
+ - dsa: microchip: fix bridging with more than two member ports
+
+Previous releases - always broken:
+
+ - bpf:
+  - fix crash due to incorrect copy_map_value when both spin lock
+    and timer are present in a single value
+  - fix a bpf_timer initialization issue with clang
+  - do not try bpf_msg_push_data with len 0
+  - add schedule points in batch ops
+
+ - nf_tables:
+   - unregister flowtable hooks on netns exit
+   - correct flow offload action array size
+   - fix a couple of memory leaks
+
+ - vsock: don't check owner in vhost_vsock_stop() while releasing
+
+ - gso: do not skip outer ip header in case of ipip and net_failover
+
+ - smc: use a mutex for locking "struct smc_pnettable"
+
+ - openvswitch: fix setting ipv6 fields causing hw csum failure
+
+ - mptcp: fix race in incoming ADD_ADDR option processing
+
+ - sysfs: add check for netdevice being present to speed_show
+
+ - sched: act_ct: fix flow table lookup after ct clear or switching
+   zones
+
+ - eth: intel: fixes for SR-IOV forwarding offloads
+
+ - eth: broadcom: fixes for selftests and error recovery
+
+ - eth: mellanox: flow steering and SR-IOV forwarding fixes
+
+Misc:
+
+ - make __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor
+   friends not report freed skbs as drops
+
+ - force inlining of checksum functions in net/checksum.h
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Alexei Starovoitov (2):
+      Merge branch 'Fix for crash due to overwrite in copy_map_value'
+      Merge branch 'bpf: fix a bpf_timer initialization issue'
+
+Alvin Šipraga (2):
+      net: dsa: fix panic when removing unoffloaded port from bridge
+      MAINTAINERS: add myself as co-maintainer for Realtek DSA switch drivers
+
+Ariel Levkovich (1):
+      net/mlx5: Fix wrong limitation of metadata match on ecpf
+
+Baruch Siach (1):
+      net: mdio-ipq4019: add delay after clock enable
+
+Chris Mi (1):
+      net/mlx5: Fix tc max supported prio for nic mode
+
+Christophe JAILLET (1):
+      nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
+
+Christophe Leroy (1):
+      net: Force inlining of checksum functions in net/checksum.h
+
+Dan Carpenter (2):
+      udp_tunnel: Fix end of loop test in udp_tunnel_nic_unregister()
+      tipc: Fix end of loop tests for list_for_each_entry()
+
+David S. Miller (5):
+      Merge branch 'mptcp-fixes'
+      Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+      Merge branch 'bnxt_en-fixes'
+      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
+      Merge branch 'ftgmac100-fixes'
+
+Duoming Zhou (1):
+      drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
+
+Eric Dumazet (3):
+      bpf: Add schedule points in batch ops
+      net-timestamp: convert sk->sk_tskey to atomic_t
+      net: __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor friends
+
+Fabio M. De Francesco (1):
+      net/smc: Use a mutex for locking "struct smc_pnettable"
+
+Felix Maurer (2):
+      bpf: Do not try bpf_msg_push_data with len 0
+      selftests: bpf: Check bpf_msg_push_data return value
+
+Florian Westphal (2):
+      netfilter: nft_limit: fix stateful object memory leak
+      netfilter: nf_tables: fix memory leak during stateful obj update
+
+Gal Pressman (2):
+      net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
+      net/mlx5e: Fix VF min/max rate parameters interchange mistake
+
+Heyi Guo (3):
+      drivers/net/ftgmac100: refactor ftgmac100_reset_task to enable direct function call
+      drivers/net/ftgmac100: adjust code place for function call dependency
+      drivers/net/ftgmac100: fix DHCP potential failure with systemd
+
+Jacob Keller (1):
+      ice: fix concurrent reset and removal of VFs
+
+Jakub Kicinski (2):
+      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+      Merge tag 'mlx5-fixes-2022-02-23' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+
+Jeremy Linton (1):
+      net: mvpp2: always set port pcs ops
+
+Kalesh AP (2):
+      bnxt_en: Restore the resets_reliable flag in bnxt_open()
+      bnxt_en: Fix devlink fw_activate
+
+Kumar Kartikeya Dwivedi (3):
+      bpf: Fix crash due to incorrect copy_map_value
+      selftests/bpf: Add test for bpf_timer overwriting crash
+      bpf: Fix crash due to out of bounds access into reg2btf_ids.
+
+Lama Kayal (2):
+      net/mlx5e: Add feature check for set fec counters
+      net/mlx5e: Add missing increment of count
+
+Maher Sanalla (1):
+      net/mlx5: Update log_max_qp value to be 17 at most
+
+Manish Chopra (1):
+      bnx2x: fix driver load from initrd
+
+Maor Dickman (2):
+      net/mlx5e: Fix MPLSoUDP encap to use MPLS action information
+      net/mlx5e: MPLSoUDP decap, fix check for unsupported matches
+
+Maor Gottlieb (1):
+      net/mlx5: Fix possible deadlock on rule deletion
+
+Marek Marczykowski-Górecki (2):
+      Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+      Revert "xen-netback: Check for hotplug-status existence before watching"
+
+Mateusz Palczewski (1):
+      Revert "i40e: Fix reset bw limit when DCB enabled with 1 TC"
+
+Mauri Sandberg (1):
+      net: mv643xx_eth: process retval from of_get_mac_address
+
+Meir Lichtinger (1):
+      net/mlx5: Update the list of the PCI supported devices
+
+Michael Chan (3):
+      bnxt_en: Fix offline ethtool selftest with RDMA enabled
+      bnxt_en: Fix occasional ethtool -t loopback test failures
+      bnxt_en: Increase firmware message response DMA wait time
+
+Michal Swiatkowski (1):
+      ice: fix setting l4 port flag when adding filter
+
+Niels Dossche (1):
+      ipv6: prevent a possible race condition with lifetimes
+
+Oliver Neukum (1):
+      sr9700: sanity check for packet length
+
+Pablo Neira Ayuso (3):
+      netfilter: xt_socket: missing ifdef CONFIG_IP6_NF_IPTABLES dependency
+      netfilter: nf_tables_offload: incorrect flow offload action array size
+      netfilter: nf_tables: unregister flowtable hooks on netns exit
+
+Paolo Abeni (7):
+      selftests: mptcp: fix diag instability
+      selftests: mptcp: improve 'fair usage on close' stability
+      mptcp: fix race in overlapping signal events
+      mptcp: fix race in incoming ADD_ADDR option processing
+      mptcp: add mibs counter for ignored incoming options
+      selftests: mptcp: more robust signal race test
+      selftests: mptcp: be more conservative with cookie MPJ limits
+
+Paul Blakey (2):
+      net/sched: act_ct: Fix flow table lookup after ct clear or switching zones
+      openvswitch: Fix setting ipv6 fields causing hw csum failure
+
+Pavan Chebbi (1):
+      bnxt_en: Fix incorrect multicast rx mask setting when not requested
+
+Roi Dayan (3):
+      net/mlx5e: TC, Reject rules with drop and modify hdr action
+      net/mlx5e: TC, Reject rules with forward and drop actions
+      net/mlx5e: TC, Skip redundant ct clear actions
+
+Somnath Kotur (1):
+      bnxt_en: Fix active FEC reporting to ethtool
+
+Stefano Garzarella (1):
+      vhost/vsock: don't check owner in vhost_vsock_stop() while releasing
+
+Subash Abhinov Kasiviswanathan (1):
+      MAINTAINERS: rmnet: Update email addresses
+
+Sukadev Bhattiprolu (1):
+      ibmvnic: schedule failover only if vioctl fails
+
+Svenning Sørensen (1):
+      net: dsa: microchip: fix bridging with more than two member ports
+
+Tao Liu (1):
+      gso: do not skip outer ip header in case of ipip and net_failover
+
+Tariq Toukan (1):
+      net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
+
+Tom Rix (2):
+      ice: check the return of ice_ptp_gettimex64
+      ice: initialize local variable 'tlv'
+
+Vladimir Oltean (1):
+      net: dsa: avoid call to __dev_set_promiscuity() while rtnl_mutex isn't held
+
+Wan Jiabing (1):
+      net: sched: avoid newline at end of message in NL_SET_ERR_MSG_MOD
+
+Wojciech Drewek (1):
+      ice: Match on all profiles in slow-path
+
+Xiaoke Wang (1):
+      net: ll_temac: check the return value of devm_kmalloc()
+
+Xin Long (1):
+      ping: remove pr_err from ping_lookup
+
+Yevgeny Kliteynik (4):
+      net/mlx5: DR, Cache STE shadow memory
+      net/mlx5: DR, Fix slab-out-of-bounds in mlx5_cmd_dr_create_fte
+      net/mlx5: DR, Don't allow match on IP w/o matching on full ethertype/ip_version
+      net/mlx5: DR, Fix the threshold that defines when pool sync is initiated
+
+Yonghong Song (2):
+      bpf: Emit bpf_timer in vmlinux BTF
+      bpf: Fix a bpf_timer initialization issue
+
+suresh kumar (1):
+      net-sysfs: add check for netdevice being present to speed_show
+
+ MAINTAINERS                                        |   5 +-
+ drivers/net/dsa/microchip/ksz_common.c             |  26 ++-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   |   3 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |  47 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h          |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  39 +++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  |  17 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c     |  12 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h     |   2 +-
+ drivers/net/ethernet/faraday/ftgmac100.c           | 243 +++++++++++----------
+ drivers/net/ethernet/ibm/ibmvnic.c                 |   6 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  12 +-
+ drivers/net/ethernet/intel/ice/ice.h               |   1 -
+ drivers/net/ethernet/intel/ice/ice_common.c        |   2 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.c       |   1 +
+ drivers/net/ethernet/intel/ice/ice_main.c          |   2 +
+ drivers/net/ethernet/intel/ice/ice_protocol_type.h |   1 +
+ drivers/net/ethernet/intel/ice/ice_ptp.c           |   5 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c        |   4 +-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c        |   4 +-
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c   |  42 ++--
+ drivers/net/ethernet/marvell/mv643xx_eth.c         |  24 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   6 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.h    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c |   7 +
+ .../ethernet/mellanox/mlx5/core/en/tc/act/mirred.c |   6 +
+ .../ethernet/mellanox/mlx5/core/en/tc/act/mpls.c   |  11 +
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |   1 +
+ .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  |   3 +
+ .../mellanox/mlx5/core/en/tc_tun_mplsoudp.c        |  33 ++-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   8 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_selftest.c  |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  12 +
+ drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   4 -
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   2 +
+ .../ethernet/mellanox/mlx5/core/lib/fs_chains.c    |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   4 +-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      | 120 ++++++----
+ .../mellanox/mlx5/core/steering/dr_matcher.c       |  20 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  32 ++-
+ .../mellanox/mlx5/core/steering/dr_types.h         |  10 +
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  33 ++-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   5 +
+ .../ethernet/netronome/nfp/flower/tunnel_conf.c    |   4 +-
+ drivers/net/ethernet/xilinx/ll_temac_main.c        |   2 +
+ drivers/net/hamradio/6pack.c                       |   4 +-
+ drivers/net/mdio/mdio-ipq4019.c                    |   6 +-
+ drivers/net/usb/sr9700.c                           |   2 +-
+ drivers/net/xen-netback/xenbus.c                   |  14 +-
+ drivers/vhost/vsock.c                              |  21 +-
+ include/linux/bpf.h                                |   9 +-
+ include/net/checksum.h                             |  52 +++--
+ include/net/netfilter/nf_tables.h                  |   2 +-
+ include/net/netfilter/nf_tables_offload.h          |   2 -
+ include/net/sock.h                                 |   4 +-
+ kernel/bpf/btf.c                                   |   5 +-
+ kernel/bpf/helpers.c                               |   2 +
+ kernel/bpf/syscall.c                               |   3 +
+ net/can/j1939/transport.c                          |   2 +-
+ net/core/filter.c                                  |   3 +
+ net/core/net-sysfs.c                               |   2 +-
+ net/core/skbuff.c                                  |   6 +-
+ net/core/sock.c                                    |   4 +-
+ net/dsa/master.c                                   |   7 +-
+ net/dsa/port.c                                     |  29 ++-
+ net/ipv4/af_inet.c                                 |   5 +-
+ net/ipv4/ip_output.c                               |   2 +-
+ net/ipv4/ping.c                                    |   1 -
+ net/ipv4/udp_tunnel_nic.c                          |   2 +-
+ net/ipv6/addrconf.c                                |   2 +
+ net/ipv6/ip6_offload.c                             |   2 +
+ net/ipv6/ip6_output.c                              |   2 +-
+ net/mptcp/mib.c                                    |   2 +
+ net/mptcp/mib.h                                    |   2 +
+ net/mptcp/pm.c                                     |   8 +-
+ net/mptcp/pm_netlink.c                             |  29 ++-
+ net/netfilter/nf_tables_api.c                      |  16 +-
+ net/netfilter/nf_tables_offload.c                  |   3 +-
+ net/netfilter/nft_dup_netdev.c                     |   6 +
+ net/netfilter/nft_fwd_netdev.c                     |   6 +
+ net/netfilter/nft_immediate.c                      |  12 +-
+ net/netfilter/nft_limit.c                          |  18 ++
+ net/netfilter/xt_socket.c                          |   2 +
+ net/openvswitch/actions.c                          |  46 +++-
+ net/sched/act_api.c                                |   2 +-
+ net/sched/act_ct.c                                 |   5 -
+ net/smc/smc_pnet.c                                 |  42 ++--
+ net/smc/smc_pnet.h                                 |   2 +-
+ net/tipc/name_table.c                              |   2 +-
+ net/tipc/socket.c                                  |   2 +-
+ .../testing/selftests/bpf/prog_tests/timer_crash.c |  32 +++
+ .../selftests/bpf/progs/test_sockmap_kern.h        |  26 ++-
+ tools/testing/selftests/bpf/progs/timer_crash.c    |  54 +++++
+ tools/testing/selftests/net/mptcp/diag.sh          |  44 +++-
+ tools/testing/selftests/net/mptcp/mptcp_join.sh    |  32 ++-
+ 99 files changed, 990 insertions(+), 439 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/timer_crash.c
+ create mode 100644 tools/testing/selftests/bpf/progs/timer_crash.c
