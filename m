@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4DC4C2260
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 04:28:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3E84C226F
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 04:36:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229450AbiBXDY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 22:24:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
+        id S229527AbiBXDel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 22:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiBXDYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 22:24:25 -0500
+        with ESMTP id S229447AbiBXDek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 22:34:40 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BAA71A128C
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 19:23:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A37722A281
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 19:34:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645673034;
+        s=mimecast20190719; t=1645673651;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CLYmPytNi8Y5ncMBx5Mf9J1ouptftAJw22Im2XIZ2e8=;
-        b=dQwsX+nUkBoh+lBm+N288BpyN7Msk4h7U5pxME9bEyQeS+QmTTL6fGcgBT5zXrel26UbYp
-        eNbusDUbQKOF0K6gGOLqI3rUrgNoqPxR9fgy9HcStDgJ/+e1xaZ6paL46PkRhAkqc3X4Mc
-        HxxLeTPKo8d9pfu00TbHZdmr8CgwnqE=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=dRVV6TmPyQlUU8AVGLAcBRDwJHwTdqvbfx7jgBXGTKI=;
+        b=hImqZutijLMVBa40aK/yN/92Lvedl58ALTHoYS6Ccw/jl1jbaDN6/oq9W81labi+Tsuoql
+        U8IUmVpNkx7YVG67ATKVMtnPrj9oSvCbcfnIghUkGz2/mopzZuirD50hCiy+OgZ0GcCIxF
+        dtSYV3PLYamBMxfm3cWoIDU/x/zm+Ak=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-256-pFknz_mqPGOhsGPzG9Rr9Q-1; Wed, 23 Feb 2022 22:23:53 -0500
-X-MC-Unique: pFknz_mqPGOhsGPzG9Rr9Q-1
-Received: by mail-lj1-f200.google.com with SMTP id a5-20020a2eb545000000b002462b5eddb3so381695ljn.14
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 19:23:52 -0800 (PST)
+ us-mta-440-QXH3bRvPPPaWdJ5UpQJ8tg-1; Wed, 23 Feb 2022 22:34:09 -0500
+X-MC-Unique: QXH3bRvPPPaWdJ5UpQJ8tg-1
+Received: by mail-lj1-f198.google.com with SMTP id d23-20020a05651c089700b002463e31a5ffso413076ljq.3
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 19:34:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CLYmPytNi8Y5ncMBx5Mf9J1ouptftAJw22Im2XIZ2e8=;
-        b=IsAJsNsBUURAUwFeGx4O+9AsupkqDmWKjaHI4u7EdS/KKYuhFvYxCl0O7hdjNfZg0I
-         06HMfq1KgSzdaLBP+nlC8qFC26z4OseE+6EreChTISuURVtrveo3MEfjTyl9YLtSToG0
-         UOnWo/ngOtDTvHGkiUkiOCufyoy0BAqqAxnJ6S4UzktEeWZ5QYNAuFZ12nTJ1axrU6iS
-         Rb5FSe3EGjVDUbCM986UfniGD+0sPjrzSlqvXZNLaUys1nkuxnYZA9uAsE9Gm4IMpuEW
-         rBrTur3ugqWE2ZAtiRRgbxRSXIjsxNHFJQeMhgIGl/UIP6nhS+Uhl8l14IYn4laZ5Of3
-         Xm/A==
-X-Gm-Message-State: AOAM533yZwZ3/XMV9sqee+0CKt5uwUiRJbr7ynNitlpE7WmBw/UtBgpR
-        G6BsZmUQ5IZ6sqrWE7ijlGm9/GuuC8HFrswMiYOCfSp4lhIVvASautu8Q/urqEXMs0uc3UL1YE7
-        ka+j8GiyTik/PpiAEunFNk6isZKFB06Go
-X-Received: by 2002:a05:6512:3147:b0:443:323d:179d with SMTP id s7-20020a056512314700b00443323d179dmr579175lfi.98.1645673031405;
-        Wed, 23 Feb 2022 19:23:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzUe5dwgs4Zt8RJjJa9dYBCHoUjub4YEZ6koNq4tb1tfp+jvAlBT28t478zjTiwSykr/+BPx9EVwpRaN2ShvWA=
-X-Received: by 2002:a05:6512:3147:b0:443:323d:179d with SMTP id
- s7-20020a056512314700b00443323d179dmr579169lfi.98.1645673031202; Wed, 23 Feb
- 2022 19:23:51 -0800 (PST)
+        bh=dRVV6TmPyQlUU8AVGLAcBRDwJHwTdqvbfx7jgBXGTKI=;
+        b=YIXQDpYkSrTEigA6DNp3V7Wi8zm2ufKQ8hKdUZw/gvke5u4GHypR5TgdFaUcR2q7Is
+         xvwl4BmxTuUQWJ3kAGHqawPOp4v8FdFuJffpz/Awlju9uSRF9/B+GRZCOqBs8RJkHuRT
+         p4ypiLcdS+bD6nYcFE8SbdYCg6T2DbT16T/i1D51d+92KGT5FmdJcTCojp2eaY/ORayr
+         9VmANHiYaK0nGK8mNE77kkTwQeFSQLSe26U7H4NNOJ1gFMsFOz/p2O4vTjmaO/OiFhDI
+         HM6c7/edCu0zNnAO6QXol4KpmfFVjJISy7gucLjvEYqsL6bP0om3mIbhB7HfiALytoQY
+         zBIA==
+X-Gm-Message-State: AOAM533qXDH1FXJsgFJYJUjwxF4W5esmZHQACnRHhrIHzdkizvRbF6OE
+        hb8k1UbEWUq81vJDbtfaW5qVlHwsy31xcWTd+ELhuyoVyEpJulcd/eVBglmge9z7FnkwdtxSZnM
+        zTfRFd4GaZa51JRJiYrkI6NmMkjC0DB2R
+X-Received: by 2002:a05:651c:90b:b0:244:c4a4:d5d8 with SMTP id e11-20020a05651c090b00b00244c4a4d5d8mr505695ljq.97.1645673648369;
+        Wed, 23 Feb 2022 19:34:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzpmLs9g/U0Nam8IX5XUKO+vHZBxi+ea87oOifawu8S182lz+abrWGFM4Nuj1sMsYtNTba1YT9wi3dOmn1L1ts=
+X-Received: by 2002:a05:651c:90b:b0:244:c4a4:d5d8 with SMTP id
+ e11-20020a05651c090b00b00244c4a4d5d8mr505687ljq.97.1645673648154; Wed, 23 Feb
+ 2022 19:34:08 -0800 (PST)
 MIME-Version: 1.0
-References: <CAHJXk3b9WhMb7CDHbO3ixGg23G1u7Y+guoLQLWkARgX6Ssrpow@mail.gmail.com>
- <CAHJXk3bpBosy01XojpCd=LFC1Dwbms9GA7FOEudOa_mRgPz7qA@mail.gmail.com>
-In-Reply-To: <CAHJXk3bpBosy01XojpCd=LFC1Dwbms9GA7FOEudOa_mRgPz7qA@mail.gmail.com>
+References: <20220125084702.3636253-1-andrew@daynix.com> <20220125084702.3636253-2-andrew@daynix.com>
+ <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com> <CABcq3pH7HnH_-nCHcX7eet_ouqocQEptp6A9GCbs3=9guArhPA@mail.gmail.com>
+ <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com> <CAOEp5OeGNezTasp7zsvpFHGfjkM4bWRbbFY7WEWc7hRYVDSxdA@mail.gmail.com>
+In-Reply-To: <CAOEp5OeGNezTasp7zsvpFHGfjkM4bWRbbFY7WEWc7hRYVDSxdA@mail.gmail.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 24 Feb 2022 11:23:39 +0800
-Message-ID: <CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com>
-Subject: Re: Question about the sndbuf of the tap interface with vhost-net
-To:     Harold Huang <baymaxhuang@gmail.com>
-Cc:     users@dpdk.org, Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Chenbo Xia <chenbo.xia@intel.com>,
-        netdev <netdev@vger.kernel.org>
+Date:   Thu, 24 Feb 2022 11:33:56 +0800
+Message-ID: <CACGkMEvJj040VqzhaJkAZs-bLeGoWWUYtBguEZAqTqVBH7ShLg@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
+To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+Cc:     Andrew Melnichenko <andrew@daynix.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Yan Vugenfirer <yan@daynix.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -75,72 +81,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding netdev.
-
-On Wed, Feb 23, 2022 at 9:46 PM Harold Huang <baymaxhuang@gmail.com> wrote:
+On Wed, Feb 23, 2022 at 9:31 PM Yuri Benditovich
+<yuri.benditovich@daynix.com> wrote:
 >
->  Sorry. The performance tested by iperf is degraded from 4.5 Gbps to
-> 750Mbps per flow.
->
-> Harold Huang <baymaxhuang@gmail.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=8823=
-=E6=97=A5=E5=91=A8=E4=B8=89 21:13=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > I see in dpdk virtio-user driver, the TUNSETSNDBUF is initialized with
-> > INT_MAX, see: https://github.com/DPDK/dpdk/blob/main/drivers/net/virtio=
-/virtio_user/vhost_kernel_tap.c#L169
+> Hi Jason,
+> We agree that the same can be done also using the old way, i.e. try to
+> set specific offload - if failed, probably it is not supported.
+> We think this is a little not scalable and we suggest adding the ioctl
+> that will allow us to query allo the supported features in a single
+> call.
 
-Note that Linux use INT_MAX as default sndbuf for tuntap.
+Possibly but then you need some kind of probing. E.g we need endup
+with probing TUNGETSUPPORTEDOFFLOADS iotctl itself.
 
-> > It is ok because tap driver uses it to support tx baching, see this
-> > patch: https://github.com/torvalds/linux/commit/0a0be13b8fe2cac11da2063=
-fb03f0f39359b3069
-> >
-> > But in tun_xdp_one, napi is not supported and I want to user napi in
-> > tun_get_user to enable gro.
+> We think this will make QEMU code more simple also in future.
 
-NAPI is not enabled in this path, want to send a patch to do that?
+We can discuss this when qemu patches were sent.
 
-Btw, NAPI mode is used for kernel networking stack hardening at start,
-but it would be interesting to see if it helps for the performance.
+> Do I understand correctly that you suggest to skip this new ioctl and
+> use the old way of query for this (USO) feature and all future
+> extensions?
 
-> > As I result, I change the sndbuf to a
-> > value such as 212992 in /proc/sys/net/core/wmem_default.
-
-Can you describe your setup in detail? Where did you run the iperf
-server and client and where did you change the wmem_default?
-
-> > But the
-> > performance tested by iperf is greatly degraded, from 4.5 Gbps to
-> > 750Gbps per flow. I see the the iperf server consume 100% cpu core,
-> > which should be the bottleneck of the this test. The perf top result
-> > of iperf server cpu core is as follows:
-> >
-> > '''
-> > Samples: 72  of event 'cycles', 4000 Hz, Event count (approx.):
-> > 22685278 lost: 0/0 drop: 0/0
-> > Overhead  Shared O  Symbol
-> >   59.86%  [kernel]  [k] report_bug
-> >   20.66%  [kernel]  [k] module_find_bug
-> >    6.51%  [kernel]  [k] common_interrupt
-> >    2.82%  [kernel]  [k] __slab_free
-> >    1.48%  [kernel]  [k] copy_user_enhanced_fast_string
-> >    1.44%  [kernel]  [k] __skb_datagram_iter
-> >    1.42%  [kernel]  [k] notifier_call_chain
-> >    1.41%  [kernel]  [k] irq_work_run_list
-> >    1.41%  [kernel]  [k] update_irq_load_avg
-> >    1.41%  [kernel]  [k] task_tick_fair
-> >    1.41%  [kernel]  [k] cmp_ex_search
-> >    0.16%  [kernel]  [k] __ghes_peek_estatus.isra.12
-> >    0.02%  [kernel]  [k] acpi_os_read_memory
-> >    0.00%  [kernel]  [k] native_apic_mem_write
-> > '''
-> > I am not clear about the test result. Can we change the sndbuf size in
-> > dpdk? Is any way to enable vhost_net to use napi without changing the
-> > tun kernel driver?
-
-You can do this by not using INT_MAX as sndbuf.
+Yes, since it's not a must. And we can do the TUNGETSUPPORTEDOFFLOADS
+in a separate series.
 
 Thanks
 
+>
+> Thanks
+>
+>
+> On Wed, Feb 23, 2022 at 5:53 AM Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > On Tue, Feb 22, 2022 at 9:28 PM Andrew Melnichenko <andrew@daynix.com> =
+wrote:
+> > >
+> > > Hi all,
+> > >
+> > > On Wed, Feb 9, 2022 at 6:26 AM Jason Wang <jasowang@redhat.com> wrote=
+:
+> > > >
+> > > >
+> > > > =E5=9C=A8 2022/1/25 =E4=B8=8B=E5=8D=884:46, Andrew Melnychenko =E5=
+=86=99=E9=81=93:
+> > > > > Added TUNGETSUPPORTEDOFFLOADS that should allow
+> > > > > to get bits of supported offloads.
+> > > >
+> > > >
+> > > > So we don't use dedicated ioctls in the past, instead, we just prob=
+ing
+> > > > by checking the return value of TUNSETOFFLOADS.
+> > > >
+> > > > E.g qemu has the following codes:
+> > > >
+> > > > int tap_probe_has_ufo(int fd)
+> > > > {
+> > > >      unsigned offload;
+> > > >
+> > > >      offload =3D TUN_F_CSUM | TUN_F_UFO;
+> > > >
+> > > >      if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
+> > > >          return 0;
+> > > >
+> > > >      return 1;
+> > > > }
+> > > >
+> > > > Any reason we can't keep using that?
+> > > >
+> > > > Thanks
+> > > >
+> > >
+> > > Well, even in this example. To check the ufo feature, we trying to se=
+t it.
+> > > What if we don't need to "enable" UFO and/or do not change its state?
+> >
+> > So at least Qemu doesn't have such a requirement since during the
+> > probe the virtual networking backend is not even started.
+> >
+> > > I think it's a good idea to have the ability to get supported offload=
+s
+> > > without changing device behavior.
+> >
+> > Do you see a real user for this?
+> >
+> > Btw, we still need to probe this new ioctl anyway.
+> >
+> > Thanks
+> >
+> > >
+> > > >
+> > > > > Added 2 additional offlloads for USO(IPv4 & IPv6).
+> > > > > Separate offloads are required for Windows VM guests,
+> > > > > g.e. Windows may set USO rx only for IPv4.
+> > > > >
+> > > > > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> > > > > ---
+> > > > >   include/uapi/linux/if_tun.h | 3 +++
+> > > > >   1 file changed, 3 insertions(+)
+> > > > >
+> > > > > diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_=
+tun.h
+> > > > > index 454ae31b93c7..07680fae6e18 100644
+> > > > > --- a/include/uapi/linux/if_tun.h
+> > > > > +++ b/include/uapi/linux/if_tun.h
+> > > > > @@ -61,6 +61,7 @@
+> > > > >   #define TUNSETFILTEREBPF _IOR('T', 225, int)
+> > > > >   #define TUNSETCARRIER _IOW('T', 226, int)
+> > > > >   #define TUNGETDEVNETNS _IO('T', 227)
+> > > > > +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
+> > > > >
+> > > > >   /* TUNSETIFF ifr flags */
+> > > > >   #define IFF_TUN             0x0001
+> > > > > @@ -88,6 +89,8 @@
+> > > > >   #define TUN_F_TSO6  0x04    /* I can handle TSO for IPv6 packet=
+s */
+> > > > >   #define TUN_F_TSO_ECN       0x08    /* I can handle TSO with EC=
+N bits. */
+> > > > >   #define TUN_F_UFO   0x10    /* I can handle UFO packets */
+> > > > > +#define TUN_F_USO4   0x20    /* I can handle USO for IPv4 packet=
+s */
+> > > > > +#define TUN_F_USO6   0x40    /* I can handle USO for IPv6 packet=
+s */
+> > > > >
+> > > > >   /* Protocol info prepended to the packets (when IFF_NO_PI is no=
+t set) */
+> > > > >   #define TUN_PKT_STRIP       0x0001
+> > > >
+> > >
+> >
 >
 
