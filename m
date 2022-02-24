@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E39AE4C2176
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 03:02:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 957974C218E
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 03:10:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbiBXCBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 21:01:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
+        id S229920AbiBXCD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 21:03:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiBXCBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 21:01:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889FF6006E;
-        Wed, 23 Feb 2022 18:00:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FD88B82195;
-        Thu, 24 Feb 2022 02:00:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72EA2C340EF;
-        Thu, 24 Feb 2022 02:00:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645668029;
-        bh=bHfD1tT0ZlUND9FKfmd0S/BTbFuRax0UksZLHpXWCj8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Gxxfq/7kL4TuQqN34oOaaLfw2TSmwRF1/ak3CFbPLhqb0LTIFF4V/WMXk7GKXWSy9
-         HAsJ2q+qMS31MpLy+h2LJOwRxXAHnD92NhfnkJR4Bv6o06oZ5Wh2ni774fc6PribBL
-         CQZj67r5npCLMg7SHyR3xyeLJth60iiJ+Q/kpP+ueUBRz3DPs3hqJwI9eXpomN6OKD
-         Okx4ex6KK0o0mb72D4sVXXzUCBJ0FGJSbyW+m19tPvO5BxTuljUFCi3yyofXhbhQ7w
-         /D1zT/XpaXL/xetfnKKrMYrfWsNKOTe8JKWr6+40MgJeZTvEtTXvfUzJkdADO46oTD
-         UW60koaJUrW7g==
-Date:   Wed, 23 Feb 2022 18:00:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [mlx5-next 13/17] net/mlx5: Use mlx5_cmd_do() in core
- create_{cq,dct}
-Message-ID: <20220223180028.47f14132@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220223235702.ytu6fqi4shbk3rnk@sx1>
-References: <20220223050932.244668-1-saeed@kernel.org>
-        <20220223050932.244668-14-saeed@kernel.org>
-        <20220223152031.283993fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20220223235702.ytu6fqi4shbk3rnk@sx1>
+        with ESMTP id S229901AbiBXCD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 21:03:26 -0500
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D25652E6E;
+        Wed, 23 Feb 2022 18:02:56 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R221e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V5Li2Lc_1645668173;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V5Li2Lc_1645668173)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Feb 2022 10:02:54 +0800
+Date:   Thu, 24 Feb 2022 10:02:53 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>,
+        Hendrik Brueckner <brueckner@linux.ibm.com>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH] net/smc: Add autocork support
+Message-ID: <20220224020253.GF5443@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+ <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
+ <20220216152721.GB39286@linux.alibaba.com>
+ <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+ <20220217132200.GA5443@linux.alibaba.com>
+ <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
+ <20220218073327.GB5443@linux.alibaba.com>
+ <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
+ <20220218234232.GC5443@linux.alibaba.com>
+ <bc3252a3-5a84-63d4-dfc5-009f602a5bec@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bc3252a3-5a84-63d4-dfc5-009f602a5bec@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Feb 2022 15:57:02 -0800 Saeed Mahameed wrote:
-> On 23 Feb 15:20, Jakub Kicinski wrote:
-> >On Tue, 22 Feb 2022 21:09:28 -0800 Saeed Mahameed wrote:  
-> >> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> >> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>  
-> >
-> >nit: double-signed  
-> 
-> different emails, the patch was authored back then when i had the mellanox
-> email, If I want to keep the original author email, then i must sign with both
-> emails, once as author and once as submitter.
-> 
-> The other option is to override the author email with the new email, but
-> I don't like to mess around with history ;).. 
+On Wed, Feb 23, 2022 at 07:57:31PM +0100, Karsten Graul wrote:
+>On 19/02/2022 00:42, dust.li wrote:
+>> On Fri, Feb 18, 2022 at 05:03:56PM +0100, Karsten Graul wrote:
+>>> Right now for me it looks like there is no way to use netlink for container runtime
+>>> configuration, which is a pity.
+>>> We continue our discussions about this in the team, and also here on the list.
+>> 
+>> Many thanks for your time on this topic !
+>
+>We checked more specs (like Container Network Interface (CNI) Specification) 
+>but all we found uses sysctl at the end. There is lot of infrastructure 
+>to use sysctls in a container environment.
+>
+>Establishing netlink-like controls for containers is by far out of our scope, and
+>would take a long time until it would be available in the popular projects.
+>
+>So at the moment I see no alternative to an additional sysctl interface in the 
+>SMC module that provides controls which are useful in container environments.
 
-Ack, just an FYI, don't think the bots will actually catch this case.
+Got it, I will add sysctl interface and a switch with this function.
+
+Thank again !
