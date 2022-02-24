@@ -2,184 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE0B4C3928
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 23:50:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B27904C392E
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 23:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbiBXWuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 17:50:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S235686AbiBXWuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 17:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbiBXWug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 17:50:36 -0500
-X-Greylist: delayed 1803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 14:50:05 PST
-Received: from outgoing-stata.csail.mit.edu (outgoing-stata.csail.mit.edu [128.30.2.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3B51120F7D;
-        Thu, 24 Feb 2022 14:50:05 -0800 (PST)
-Received: from [128.177.79.46] (helo=[10.118.101.22])
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1nNMTe-000HJc-Fb; Thu, 24 Feb 2022 17:20:46 -0500
-Subject: [PATCH v5 3/3] MAINTAINERS: Mark VMware mailing list entries as email
- aliases
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-To:     jgross@suse.com, x86@kernel.org, pv-drivers@vmware.com,
-        tglx@linutronix.de, bp@alien8.de
-Cc:     Joe Perches <joe@perches.com>, Zack Rusin <zackr@vmware.com>,
-        Nadav Amit <namit@vmware.com>,
-        Vivek Thampi <vithampi@vmware.com>,
-        Vishal Bhakta <vbhakta@vmware.com>,
-        Ronak Doshi <doshir@vmware.com>,
-        linux-graphics-maintainer@vmware.com,
-        dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        linux-input@vger.kernel.org, sdeep@vmware.com, vithampi@vmware.com,
-        amakhalov@vmware.com, keerthanak@vmware.com, srivatsab@vmware.com,
-        anishs@vmware.com, linux-kernel@vger.kernel.org, namit@vmware.com,
-        joe@perches.com, kuba@kernel.org, rostedt@goodmis.org,
-        srivatsa@csail.mit.edu
-Date:   Thu, 24 Feb 2022 14:24:49 -0800
-Message-ID: <164574148378.654750.15832494349474144706.stgit@csail.mit.edu>
-In-Reply-To: <164574138686.654750.10250173565414769119.stgit@csail.mit.edu>
-References: <164574138686.654750.10250173565414769119.stgit@csail.mit.edu>
-User-Agent: StGit/1.4
+        with ESMTP id S235480AbiBXWum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 17:50:42 -0500
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A793D124C38
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 14:50:10 -0800 (PST)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1nNMw0-000i9m-5Q; Thu, 24 Feb 2022 23:50:04 +0100
+Received: from laforge by localhost.localdomain with local (Exim 4.95)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1nNMom-002eeF-7J;
+        Thu, 24 Feb 2022 23:42:36 +0100
+Date:   Thu, 24 Feb 2022 23:42:36 +0100
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Marcin Szycik <marcin.szycik@linux.intel.com>
+Cc:     netdev@vger.kernel.org, michal.swiatkowski@linux.intel.com,
+        wojciech.drewek@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pablo@netfilter.org, jiri@resnulli.us,
+        osmocom-net-gprs@lists.osmocom.org,
+        intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v9 3/7] gtp: Implement GTP echo request
+Message-ID: <YhgJ3JYKWtxMSPkQ@nataraja>
+References: <20220224185500.18384-1-marcin.szycik@linux.intel.com>
+ <20220224185500.18384-4-marcin.szycik@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224185500.18384-4-marcin.szycik@linux.intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Hi Wojciech,
 
-VMware mailing lists in the MAINTAINERS file are private lists meant
-for VMware-internal review/notification for patches to the respective
-subsystems. Anyone can post to these addresses, but there is no public
-read access like open mailing lists, which makes them more like email
-aliases instead (to reach out to reviewers).
+thanks again for your revision of the patches.
 
-So update all the VMware mailing list references in the MAINTAINERS
-file to mark them as such, using "R: email-alias@vmware.com".
+On Thu, Feb 24, 2022 at 07:54:56PM +0100, Marcin Szycik wrote:
+> When GTP echo response is detected, multicast message is
+> send to everyone in the gtp_genl_family. Message contains
+> GTP version, ms address and peer address.
 
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-Acked-by: Juergen Gross <jgross@suse.com>
-Acked-by: Joe Perches <joe@perches.com>
-Acked-by: Zack Rusin <zackr@vmware.com>
-Cc: Nadav Amit <namit@vmware.com>
-Cc: Vivek Thampi <vithampi@vmware.com>
-Cc: Vishal Bhakta <vbhakta@vmware.com>
-Cc: Ronak Doshi <doshir@vmware.com>
-Cc: pv-drivers@vmware.com
-Cc: linux-graphics-maintainer@vmware.com
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-rdma@vger.kernel.org
-Cc: linux-scsi@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-input@vger.kernel.org
----
+I think many will perceive this as rather odd, but I think it is the
+least bad thing we can do in this situation.
 
- MAINTAINERS |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> Suggested-by: Harald Welte <laforge@gnumonks.org>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 72771881f159..4041edba891d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6307,8 +6307,8 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
- F:	drivers/gpu/drm/vboxvideo/
- 
- DRM DRIVER FOR VMWARE VIRTUAL GPU
--M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
- M:	Zack Rusin <zackr@vmware.com>
-+R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
- L:	dri-devel@lists.freedesktop.org
- S:	Supported
- T:	git git://anongit.freedesktop.org/drm/drm-misc
-@@ -14611,7 +14611,7 @@ PARAVIRT_OPS INTERFACE
- M:	Juergen Gross <jgross@suse.com>
- M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
- R:	Alexey Makhalov <amakhalov@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
- L:	x86@kernel.org
- S:	Supported
-@@ -20642,7 +20642,7 @@ F:	tools/testing/vsock/
- 
- VMWARE BALLOON DRIVER
- M:	Nadav Amit <namit@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-kernel@vger.kernel.org
- S:	Maintained
- F:	drivers/misc/vmw_balloon.c
-@@ -20650,7 +20650,7 @@ F:	drivers/misc/vmw_balloon.c
- VMWARE HYPERVISOR INTERFACE
- M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
- M:	Alexey Makhalov <amakhalov@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
- L:	x86@kernel.org
- S:	Supported
-@@ -20661,14 +20661,14 @@ F:	arch/x86/kernel/cpu/vmware.c
- VMWARE PVRDMA DRIVER
- M:	Bryan Tan <bryantan@vmware.com>
- M:	Vishnu Dasa <vdasa@vmware.com>
--M:	VMware PV-Drivers <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-rdma@vger.kernel.org
- S:	Maintained
- F:	drivers/infiniband/hw/vmw_pvrdma/
- 
- VMware PVSCSI driver
- M:	Vishal Bhakta <vbhakta@vmware.com>
--M:	VMware PV-Drivers <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-scsi@vger.kernel.org
- S:	Maintained
- F:	drivers/scsi/vmw_pvscsi.c
-@@ -20676,7 +20676,7 @@ F:	drivers/scsi/vmw_pvscsi.h
- 
- VMWARE VIRTUAL PTP CLOCK DRIVER
- M:	Vivek Thampi <vithampi@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/ptp/ptp_vmw.c
-@@ -20684,15 +20684,15 @@ F:	drivers/ptp/ptp_vmw.c
- VMWARE VMCI DRIVER
- M:	Jorgen Hansen <jhansen@vmware.com>
- M:	Vishnu Dasa <vdasa@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-kernel@vger.kernel.org
--L:	pv-drivers@vmware.com (private)
- S:	Maintained
- F:	drivers/misc/vmw_vmci/
- 
- VMWARE VMMOUSE SUBDRIVER
- M:	Zack Rusin <zackr@vmware.com>
--M:	"VMware Graphics" <linux-graphics-maintainer@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+R:	VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	linux-input@vger.kernel.org
- S:	Maintained
- F:	drivers/input/mouse/vmmouse.c
-@@ -20700,7 +20700,7 @@ F:	drivers/input/mouse/vmmouse.h
- 
- VMWARE VMXNET3 ETHERNET DRIVER
- M:	Ronak Doshi <doshir@vmware.com>
--M:	pv-drivers@vmware.com
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/vmxnet3/
+Reviewed-by: Harald Welte <laforge@gnumonks.org>
 
-
+Regards,
+	Harald
+-- 
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
