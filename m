@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B96D4C2A40
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 12:05:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94D0A4C2A32
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 12:05:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233770AbiBXLEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233771AbiBXLEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 24 Feb 2022 06:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233754AbiBXLEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 06:04:43 -0500
+        with ESMTP id S232420AbiBXLEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 06:04:44 -0500
 Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D534428F972;
-        Thu, 24 Feb 2022 03:04:13 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V5O.G4g_1645700650;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V5O.G4g_1645700650)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D30728F97A;
+        Thu, 24 Feb 2022 03:04:14 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R511e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V5OACdw_1645700651;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V5OACdw_1645700651)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 24 Feb 2022 19:04:11 +0800
+          Thu, 24 Feb 2022 19:04:12 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -28,9 +28,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-Subject: [PATCH v2 7/9] virtio_ring: add api virtio_dma_map() for advance dma
-Date:   Thu, 24 Feb 2022 19:04:00 +0800
-Message-Id: <20220224110402.108161-8-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v2 8/9] virtio_ring: introduce virtqueue_add_outbuf_premapped()
+Date:   Thu, 24 Feb 2022 19:04:01 +0800
+Message-Id: <20220224110402.108161-9-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220224110402.108161-1-xuanzhuo@linux.alibaba.com>
 References: <20220224110402.108161-1-xuanzhuo@linux.alibaba.com>
@@ -47,114 +47,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added virtio_dma_map() to map DMA addresses for virtual memory in
-advance. The purpose of adding this function is to check
-vring_use_dma_api() for virtio dma operation and get vdev->dev.parent as
-the parameter of dma_map_page().
-
-Added virtio_dma_unmap() for unmap DMA address.
+Introduce virtqueue_add_outbuf_premapped() to submit premapped sgs.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 63 ++++++++++++++++++++++++++++++++++++
- include/linux/virtio.h       |  7 ++++
- 2 files changed, 70 insertions(+)
+ drivers/virtio/virtio_ring.c | 25 +++++++++++++++++++++++++
+ include/linux/virtio.h       |  5 +++++
+ 2 files changed, 30 insertions(+)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index c8d63cae8b33..6a1e0ef5498a 100644
+index 6a1e0ef5498a..a76615aca2fd 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -2508,4 +2508,67 @@ const struct vring *virtqueue_get_vring(struct virtqueue *vq)
+@@ -1910,6 +1910,31 @@ int virtqueue_add_outbuf(struct virtqueue *vq,
  }
- EXPORT_SYMBOL_GPL(virtqueue_get_vring);
+ EXPORT_SYMBOL_GPL(virtqueue_add_outbuf);
  
 +/**
-+ * virtio_dma_map - get the DMA addr of the memory for virtio device
-+ * @dev: virtio device
-+ * @addr: the addr to DMA
-+ * @length: memory length
-+ * @dir: DMA direction
++ * virtqueue_add_outbuf_premapped - expose output buffers to other end
++ * @vq: the struct virtqueue we're talking about.
++ * @sg: scatterlist (must be well-formed and terminated!)
++ * @num: the number of entries in @sg readable by other side
++ * @data: the token identifying the buffer.
++ * @gfp: how to do memory allocations (if necessary).
 + *
-+ * Returns the DMA addr.
-+ */
-+dma_addr_t virtio_dma_map(struct device *dev, void *addr, unsigned int length,
-+			  enum dma_data_direction dir)
-+{
-+	struct virtio_device *vdev = dev_to_virtio(dev);
-+	struct page *page;
-+	size_t offset;
-+
-+	page = virt_to_page(addr);
-+	offset = offset_in_page(addr);
-+
-+	if (!vring_use_dma_api(vdev))
-+		return page_to_phys(page) + offset;
-+
-+	return dma_map_page(vdev->dev.parent, page, offset, length, dir);
-+}
-+EXPORT_SYMBOL_GPL(virtio_dma_map);
-+
-+/**
-+ * virtio_dma_mapping_error - check dma address
-+ * @dev: virtio device
-+ * @addr: DMA address
++ * Caller must ensure we don't call this with other virtqueue operations
++ * at the same time (except where noted).
 + *
-+ * Returns 0 means dma valid. Other means invalid dma address.
++ * It is required that all addrs have completed DMA operations. And use
++ * sg->dma_address, sg->length to pass addr and length.
++ *
++ * Returns zero or a negative error (ie. ENOSPC, ENOMEM, EIO).
 + */
-+int virtio_dma_mapping_error(struct device *dev, dma_addr_t addr)
++int virtqueue_add_outbuf_premapped(struct virtqueue *vq,
++				   struct scatterlist *sg, unsigned int num,
++				   void *data,
++				   gfp_t gfp)
 +{
-+	struct virtio_device *vdev = dev_to_virtio(dev);
-+
-+	if (!vring_use_dma_api(vdev))
-+		return 0;
-+
-+	return dma_mapping_error(vdev->dev.parent, addr);
++	return virtqueue_add(vq, &sg, num, 1, 0, data, NULL, gfp, true);
 +}
-+EXPORT_SYMBOL_GPL(virtio_dma_mapping_error);
++EXPORT_SYMBOL_GPL(virtqueue_add_outbuf_premapped);
 +
-+/**
-+ * virtio_dma_unmap - unmap DMA addr
-+ * @dev: virtio device
-+ * @dma: DMA address
-+ * @length: memory length
-+ * @dir: DMA direction
-+ */
-+void virtio_dma_unmap(struct device *dev, dma_addr_t dma, unsigned int length,
-+		      enum dma_data_direction dir)
-+{
-+	struct virtio_device *vdev = dev_to_virtio(dev);
-+
-+	if (!vring_use_dma_api(vdev))
-+		return;
-+
-+	dma_unmap_page(vdev->dev.parent, dma, length, dir);
-+}
-+EXPORT_SYMBOL_GPL(virtio_dma_unmap);
-+
- MODULE_LICENSE("GPL");
+ /**
+  * virtqueue_add_inbuf - expose input buffers to other end
+  * @vq: the struct virtqueue we're talking about.
 diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index 72292a62cd90..e86ea3b1a124 100644
+index e86ea3b1a124..dbe5a5f8a1ff 100644
 --- a/include/linux/virtio.h
 +++ b/include/linux/virtio.h
-@@ -9,6 +9,7 @@
- #include <linux/device.h>
- #include <linux/mod_devicetable.h>
- #include <linux/gfp.h>
-+#include <linux/dma-mapping.h>
+@@ -40,6 +40,11 @@ int virtqueue_add_outbuf(struct virtqueue *vq,
+ 			 void *data,
+ 			 gfp_t gfp);
  
- /**
-  * virtqueue - a queue to register buffers for sending or receiving.
-@@ -196,4 +197,10 @@ void unregister_virtio_driver(struct virtio_driver *drv);
- #define module_virtio_driver(__virtio_driver) \
- 	module_driver(__virtio_driver, register_virtio_driver, \
- 			unregister_virtio_driver)
++int virtqueue_add_outbuf_premapped(struct virtqueue *vq,
++				   struct scatterlist *sg, unsigned int num,
++				   void *data,
++				   gfp_t gfp);
 +
-+dma_addr_t virtio_dma_map(struct device *dev, void *addr, unsigned int length,
-+			  enum dma_data_direction dir);
-+int virtio_dma_mapping_error(struct device *dev, dma_addr_t addr);
-+void virtio_dma_unmap(struct device *dev, dma_addr_t dma, unsigned int length,
-+		      enum dma_data_direction dir);
- #endif /* _LINUX_VIRTIO_H */
+ int virtqueue_add_inbuf(struct virtqueue *vq,
+ 			struct scatterlist sg[], unsigned int num,
+ 			void *data,
 -- 
 2.31.0
 
