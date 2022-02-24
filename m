@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D884C2F17
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:12:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FAE34C2F1F
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:13:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235838AbiBXPNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 10:13:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52564 "EHLO
+        id S235804AbiBXPN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 10:13:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235808AbiBXPNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:13:05 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2062.outbound.protection.outlook.com [40.107.95.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4341F208336;
-        Thu, 24 Feb 2022 07:12:35 -0800 (PST)
+        with ESMTP id S235719AbiBXPN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:13:26 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2079.outbound.protection.outlook.com [40.107.244.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D766120A389;
+        Thu, 24 Feb 2022 07:12:54 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UXKsM11txYjlENqefhIX6LoTCi+Ia0kMmYo/Uxz2xN7+HBSj5M0x51loR7WJ6xWHudOj5AhGVpOAZ6EKk6Ih7Ie3hL1YS34CBWkWljnTbR40vJXgWDZ8WdO4QGLvp6anrlMQBjnliC72WoYClnT7VEFxSz1/iXCpwAv2oG2eeuD9bO9GW+yBBeVIjx0vMDeoLrUc4aL1u/xdmpjSirHpPXXaUq0afVE1b3idMc0WiTLuajnWyiYDircxEuyTfLtC5kK1MvoA80RW0+BRzu28dTSeCkdw5cIiV6zCU6uPpjMrh4Os0KsGODVu6HBrhMUq+xjqrk/Pu0LliWFEYtTKiA==
+ b=e14olXQs7rlEBtSyNK3Narz1pdF803WdpWd/KrcbEIO86W+3KOP38rhru8Lh5IpQ5PTDvibBKdK+6Lg9qsNkk82bOV6X33OB2fgaByrsZif0Ps6qWRfemG77p/b1hP2iA7WNxo/Y3ZtEd7K25k8MRFFcQbfjgJdpUoGR0alJlCDZ9CU3ZsKLbzh2E9MSpJZsiAf6eW4mwpurvm2hdipVYWHJ/jgfMhzFL0gkabErO2q/dyM+vmhRCnAOGKLG6arjNzNgxHfHq3iyE/FCHT4ukz6h90BUH359VfHHSy8J0YtS0Pvjy0jFv39Qva09Wz5LUjdobBFi4yeSnCKWbPPfAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GzYDJQFTQ+bPA/fNPuLw+mpTN1oMl0HlOp87YmlWGR4=;
- b=V4aAMJCuWsZzF3Y35Y6aRRYdliw/mkHvBTnroZGVLKxcuPfc/bjDpc3ExttEZDmRxklrVcmj1ObS0YLMdo8r2pzwG62IfpQX6TV3Pq7qqlfqOXPZAJwOIev66PjNK1oxQ8XhFOCryASBFsMpnFdJgm1a7JwGVEVGvwuaYK1YaLHJZ5vb4IlOtEHu+jiXFE5wYcf6qEceOq+rk1oRe+ERTlHg/WRWvGDZHxOJtwyIPquE91mQTz8e8Ck639yxc+RxrmgwSVGwDC33REPRklBBkiX1Wvs6DoNQhd74MQEyNg/i4f7ZrnHka5huO2WSJZ6sZgp4tF5Fq3ZG4aCxtQh1eQ==
+ bh=u2OlLGZTGT0tFee9mqcOfWJKhyqE7cIBpoUeCvZspeY=;
+ b=Q3PxD27QE3BYDXdJWDkVp4Mj+mLmoo9tVTQeNB7wTvFjtu3a25Yyblhbzc3j6sYUjpSsyG/RxnIn+ZQ9mfehwFbRXPWe9OsxBNfVOnHGy9UKqk0oc45d1zgGNohf1HUiu9BPeMjsiLkitdJcNhRqjiqMMXXgijBQA1K6vhrcGERevEdupFGjmtwE3CHlKs/XLe/I9146t8IILBXKxylAwJaSUDj2zQ7X2Aaf2iDyXOyZrnlyCsvzwJpk+aTRDHW3SjMgBIbejohWq99v+CbH8V3t1n5W1Pvcv0w1R5gC3bJt3+Ipy95fYhQ8gsHrsqbYq+96ljx0IDYFFxHALJ1d7A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GzYDJQFTQ+bPA/fNPuLw+mpTN1oMl0HlOp87YmlWGR4=;
- b=QkbtlJ2m6KXR5bmvJumGA/api/LHkXP8t5XLF9DVUfiJ3gk5Wz6n1TroNzZbZ51cSc74SUb/s0kX2mOTTOjqZngo4UG+6Wln1Z9Sa8dc+bhczPaHrO2yIgOLFbhoLUOn/HVBDBvVYWwWUTcaxvysQszpXNpgnW814IGMo577wXvqPzzr9gAK0MgStpdq9BacfNvT0Mf86U9prgwI18Wo3fxeCq69cHWt6DD0J1oV1ZcpTiFjBe/xZ0JjD2Mg7/sAVjKKhnbbQ84rMO9s+f8WlRWCf96/tH1zB4mzgjt07z/pR6VtFmfHTcJmjqPChSsY8O5icVKkCYMbveOxEdZaww==
-Received: from CO2PR18CA0064.namprd18.prod.outlook.com (2603:10b6:104:2::32)
- by DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24) with
+ bh=u2OlLGZTGT0tFee9mqcOfWJKhyqE7cIBpoUeCvZspeY=;
+ b=nBMgsXfDbpvm5DdaHZJT10+1Y+d4JFYMc+ninM9Cy0l7bBmna7b4N6iHU8bDo0yd186LfIwSG3OWjj1iZzFS+zMkk4fLl2YtJ6y9bmbm+VwuTUz3yvCRv7eqkjKcx2liIvsOKB8W/BP/0BiBNGdzLYrr5dGG51hfdYSW7qelRp1wPaRg4CErDOnwLKUB3RU9nE5jsTpbWzxShtgcqq9NIwZqsZhwUosPwABazJskZUP6dpiVaNsNSs160mVqbQ3mVO7rCTBZpfqyupiwX651Si8zDkbxdoF1IQ5oMyjCejLeFbpxV6WdBffYLllysMCi77FrAbI3gVUy22aiXZB0IQ==
+Received: from BN9PR03CA0964.namprd03.prod.outlook.com (2603:10b6:408:109::9)
+ by BN9PR12MB5084.namprd12.prod.outlook.com (2603:10b6:408:135::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Thu, 24 Feb
- 2022 15:12:33 +0000
-Received: from CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
- (2603:10b6:104:2:cafe::7c) by CO2PR18CA0064.outlook.office365.com
- (2603:10b6:104:2::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19 via Frontend
- Transport; Thu, 24 Feb 2022 15:12:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Thu, 24 Feb
+ 2022 15:12:52 +0000
+Received: from BN8NAM11FT038.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:109:cafe::e9) by BN9PR03CA0964.outlook.office365.com
+ (2603:10b6:408:109::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22 via Frontend
+ Transport; Thu, 24 Feb 2022 15:12:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT058.mail.protection.outlook.com (10.13.174.164) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT038.mail.protection.outlook.com (10.13.176.246) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 15:12:32 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 24 Feb
- 2022 15:12:32 +0000
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 15:12:52 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 24 Feb
+ 2022 15:12:40 +0000
 Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
  (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Thu, 24 Feb 2022
- 07:12:31 -0800
+ 07:12:39 -0800
 Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.9)
  with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Thu, 24 Feb
- 2022 07:12:24 -0800
+ 2022 07:12:32 -0800
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
@@ -85,9 +85,9 @@ CC:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
         "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
         Florian Westphal <fw@strlen.de>,
         "Maxim Mikityanskiy" <maximmi@nvidia.com>
-Subject: [PATCH bpf-next v3 1/5] bpf: Use ipv6_only_sock in bpf_tcp_gen_syncookie
-Date:   Thu, 24 Feb 2022 17:11:41 +0200
-Message-ID: <20220224151145.355355-2-maximmi@nvidia.com>
+Subject: [PATCH bpf-next v3 2/5] bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
+Date:   Thu, 24 Feb 2022 17:11:42 +0200
+Message-ID: <20220224151145.355355-3-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220224151145.355355-1-maximmi@nvidia.com>
 References: <20220224151145.355355-1-maximmi@nvidia.com>
@@ -96,24 +96,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e3029334-861f-42cc-2b9e-08d9f7a8150b
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4403:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4403DC5F94FF55B07716A867DC3D9@DM6PR12MB4403.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 5b2aa44a-35b7-4771-7369-08d9f7a820cd
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5084:EE_
+X-Microsoft-Antispam-PRVS: <BN9PR12MB50843D03594D9200524CD47DDC3D9@BN9PR12MB5084.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5zGqYYpNd1rCyInuVdjYHWvjbN3+vG5zSr+HOPQUw0LzEvnvsGCgrw48Qytg0JCGupZrZ4jCuY4H+Iod5DYyjH7YRSAwbEUyqiOH9o1UCJeCEkCs+OTokTGfyQK53LcZFfjrV0TFJnVQtbBUbLQFJH1mffwyH6FyB8zbi69TRe5Q2RczoApugNo8hb7j6mZbj0EdD6mEwfByoH5aXYSWzeFcMx7DVn9NqqbFnkXvf1zo4WDqwQMWVmBHFPgu/xemHt2uY4DnftzPrzp7/gcrjaTtH2WR85NVRN6tdJbq7XdAQELKFBLY9NAeOy6ujgm2PNAPjXHcRv5F7nUOzvd3RpUzj8d1UvKLds1g6vYClGJlQQ3uPJHS5b1OMtbDcuNWu9zcdPyNAw8/XwwFuAMD/z/x+0PQqtVif0w2/zyQe2m92Oiu13OWiiAVuRg9FoEL5rtRMx7JWiSV3B+g4IY8EWg8twXh6J0vfCJv/ChjJ0uidJUSsjBPKUnRsYMdCXHX5Z6Ezo+XCiJZvuK3MBm/HPDJiSVr+shvd/gpuIwdVeA7JIXDLBB4P+O5a2bxbbtAroIPPfRykex0g5NJ0ud+iQ0NTbyNwWtkB0s45YC/LLCrJhbGsTg6j/39e1Fzn/GINSd7x4AZdHiry2lmscA6ZMJeVYQDkB6wMCw3MlrwrnhRxC1Cro8MRRSruIsVLk0jc8gdazy7vgMlfHj3+TSXjQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36860700001)(36756003)(54906003)(47076005)(81166007)(316002)(356005)(83380400001)(110136005)(26005)(426003)(336012)(6666004)(70206006)(7416002)(5660300002)(8936002)(7696005)(70586007)(4326008)(2906002)(8676002)(82310400004)(40460700003)(86362001)(1076003)(4744005)(2616005)(508600001)(186003)(107886003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: TqtNfr0wrqmTiiD+oFznsTAwYbsWM3QFrSgPpYnc5q7QY4P8V/lXPMaGW6m0N7v2zXw/KLwq+ZVozHA07Tgpk+yXAo5kdhmpE1CoExIr76u3RsIz+LHlWmirjLNpGHYRJhqhBPXaUxu6D6ch3rKKbGm8p2Yi1nSTGAmsCbWUJSYXkFo1RqMMvsAgqUdLR3VAPeQvLjK6vqXBmHjc7BNQmdDMf6/rtfu8Jev0ETSnmtq8Rj9Ri9kr+OZHTz0nKQ1rtop/5RbZfCCUYtz7vto7Jjq2dAS9NJf8xQMf61bywispCSZLRLlDsco10XHsbOeno8qI3EJ5GJV8eQONnPcoiiBuMc3aPZcjYxrGwmIo0ANoar5H7JnSRkPWlegSt1mnfpy4mwBjeARSO/VoIABYMckuVlYgT3xeQZnRmNa5njqQOkMu8fWPHFGP/a927Nq/rnBBdA4g8P7JSlg0XsgqQLl6FyR5UGT6rv87/12jOMCJ2zyiUANu/FGT2g8DChXSDfXfKMhDC6SYualoXn4/UISaAzFbpmMDiAZATZS33RXb5dCkQ4djX5n92BAbAq0sZCd0Iun59u8iAm0VXHPVuFAtOlYCJDZQoNEjoQjnSAh7tvvfxafcl0qg0YBQrjaI1sDsJDR6jQhkdhFKskn8FoV7fjeV3OjJhaAp/FrIleNAK2GgR/q/U23i+iMe25CHnujdJvyiXj0pbInRU5vUCg==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(186003)(110136005)(8676002)(70206006)(4326008)(54906003)(26005)(70586007)(36860700001)(6666004)(7696005)(1076003)(8936002)(2616005)(82310400004)(316002)(36756003)(2906002)(86362001)(5660300002)(47076005)(426003)(336012)(356005)(81166007)(508600001)(107886003)(83380400001)(40460700003)(7416002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 15:12:32.8162
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 15:12:52.4975
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3029334-861f-42cc-2b9e-08d9f7a8150b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b2aa44a-35b7-4771-7369-08d9f7a820cd
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT038.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4403
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5084
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -124,31 +124,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of querying the sk_ipv6only field directly, use the dedicated
-ipv6_only_sock helper.
+bpf_tcp_gen_syncookie expects the full length of the TCP header (with
+all options), and bpf_tcp_check_syncookie accepts lengths bigger than
+sizeof(struct tcphdr). Fix the documentation that says these lengths
+should be exactly sizeof(struct tcphdr).
+
+While at it, fix a typo in the name of struct ipv6hdr.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Lorenz Bauer <lmb@cloudflare.com>
-Acked-by: Petar Penkov <ppenkov@google.com>
 ---
- net/core/filter.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/uapi/linux/bpf.h       | 10 ++++++----
+ tools/include/uapi/linux/bpf.h | 10 ++++++----
+ 2 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 65869fd510e8..0edbfdc8cb24 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7090,7 +7090,7 @@ BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
- 	 */
- 	switch (((struct iphdr *)iph)->version) {
- 	case 4:
--		if (sk->sk_family == AF_INET6 && sk->sk_ipv6only)
-+		if (sk->sk_family == AF_INET6 && ipv6_only_sock(sk))
- 			return -EINVAL;
- 
- 		mss = tcp_v4_get_syncookie(sk, iph, th, &cookie);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index afe3d0d7f5f2..1b933454bbb5 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3570,10 +3570,11 @@ union bpf_attr {
+  *
+  * 		*iph* points to the start of the IPv4 or IPv6 header, while
+  * 		*iph_len* contains **sizeof**\ (**struct iphdr**) or
+- * 		**sizeof**\ (**struct ip6hdr**).
++ * 		**sizeof**\ (**struct ipv6hdr**).
+  *
+  * 		*th* points to the start of the TCP header, while *th_len*
+- * 		contains **sizeof**\ (**struct tcphdr**).
++ *		contains the length of the TCP header (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  * 	Return
+  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
+  * 		error otherwise.
+@@ -3756,10 +3757,11 @@ union bpf_attr {
+  *
+  *		*iph* points to the start of the IPv4 or IPv6 header, while
+  *		*iph_len* contains **sizeof**\ (**struct iphdr**) or
+- *		**sizeof**\ (**struct ip6hdr**).
++ *		**sizeof**\ (**struct ipv6hdr**).
+  *
+  *		*th* points to the start of the TCP header, while *th_len*
+- *		contains the length of the TCP header.
++ *		contains the length of the TCP header with options (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  *	Return
+  *		On success, lower 32 bits hold the generated SYN cookie in
+  *		followed by 16 bits which hold the MSS value for that cookie,
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index afe3d0d7f5f2..1b933454bbb5 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3570,10 +3570,11 @@ union bpf_attr {
+  *
+  * 		*iph* points to the start of the IPv4 or IPv6 header, while
+  * 		*iph_len* contains **sizeof**\ (**struct iphdr**) or
+- * 		**sizeof**\ (**struct ip6hdr**).
++ * 		**sizeof**\ (**struct ipv6hdr**).
+  *
+  * 		*th* points to the start of the TCP header, while *th_len*
+- * 		contains **sizeof**\ (**struct tcphdr**).
++ *		contains the length of the TCP header (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  * 	Return
+  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
+  * 		error otherwise.
+@@ -3756,10 +3757,11 @@ union bpf_attr {
+  *
+  *		*iph* points to the start of the IPv4 or IPv6 header, while
+  *		*iph_len* contains **sizeof**\ (**struct iphdr**) or
+- *		**sizeof**\ (**struct ip6hdr**).
++ *		**sizeof**\ (**struct ipv6hdr**).
+  *
+  *		*th* points to the start of the TCP header, while *th_len*
+- *		contains the length of the TCP header.
++ *		contains the length of the TCP header with options (at least
++ *		**sizeof**\ (**struct tcphdr**)).
+  *	Return
+  *		On success, lower 32 bits hold the generated SYN cookie in
+  *		followed by 16 bits which hold the MSS value for that cookie,
 -- 
 2.30.2
 
