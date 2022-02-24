@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F434C2543
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 09:12:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04DB84C2545
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 09:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbiBXILl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 03:11:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37352 "EHLO
+        id S231580AbiBXILm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 03:11:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbiBXILk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 03:11:40 -0500
+        with ESMTP id S230041AbiBXILl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 03:11:41 -0500
 Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5F520B387;
-        Thu, 24 Feb 2022 00:11:08 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=34;SR=0;TI=SMTPD_---0V5NDo4w_1645690262;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V5NDo4w_1645690262)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96A820B388;
+        Thu, 24 Feb 2022 00:11:10 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=34;SR=0;TI=SMTPD_---0V5NWzDi_1645690264;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V5NWzDi_1645690264)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 24 Feb 2022 16:11:03 +0800
+          Thu, 24 Feb 2022 16:11:05 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
@@ -48,10 +48,12 @@ Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
         linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v6 00/26] virtio pci support VIRTIO_F_RING_RESET
-Date:   Thu, 24 Feb 2022 16:10:36 +0800
-Message-Id: <20220224081102.80224-1-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v6 01/26] virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
+Date:   Thu, 24 Feb 2022 16:10:37 +0800
+Message-Id: <20220224081102.80224-2-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220224081102.80224-1-xuanzhuo@linux.alibaba.com>
+References: <20220224081102.80224-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
 X-Git-Hash: bd1c915e263f
 Content-Transfer-Encoding: 8bit
@@ -65,112 +67,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The virtio spec already supports the virtio queue reset function. This patch set
-is to add this function to the kernel. The relevant virtio spec information is
-here:
+Add queue_notify_data in struct virtio_pci_common_cfg, which comes from
+here https://github.com/oasis-tcs/virtio-spec/issues/89
 
-    https://github.com/oasis-tcs/virtio-spec/issues/124
+For not breaks uABI, add a new struct virtio_pci_common_cfg_notify.
 
-Also regarding MMIO support for queue reset, I plan to support it after this
-patch is passed.
+Since I want to add queue_reset after queue_notify_data, I submitted
+this patch first.
 
-Performing reset on a queue is divided into four steps:
-     1. virtio_reset_vq()              - notify the device to reset the queue
-     2. virtqueue_detach_unused_buf()  - recycle the buffer submitted
-     3. virtqueue_reset_vring()        - reset the vring (may re-alloc)
-     4. virtio_enable_resetq()         - mmap vring to device, and enable the queue
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ include/uapi/linux/virtio_pci.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-The first part 1-17 of this patch set implements virtio pci's support and API
-for queue reset. The latter part is to make virtio-net support set_ringparam. Do
-these things for this feature:
-
-      1. virtio-net support rx,tx reset
-      2. find_vqs() support to special the max size of each vq
-      3. virtio-net support set_ringparam
-
-#1 -#3 :       prepare
-#4 -#12:       virtio ring support reset vring of the vq
-#13-#14:       add helper
-#15-#17:       virtio pci support reset queue and re-enable
-#18-#21:       find_vqs() support sizes to special the max size of each vq
-#23-#24:       virtio-net support rx, tx reset
-#22, #25, #26: virtio-net support set ringparam
-
-Please review. Thanks.
-
-v6:
-  1. virtio_pci: use synchronize_irq(irq) to sync the irq callbacks
-  2. Introduce virtqueue_reset_vring() to implement the reset of vring during
-     the reset process. May use the old vring if num of the vq not change.
-  3. find_vqs() support sizes to special the max size of each vq
-
-v5:
-  1. add virtio-net support set_ringparam
-
-v4:
-  1. just the code of virtio, without virtio-net
-  2. Performing reset on a queue is divided into these steps:
-    1. reset_vq: reset one vq
-    2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-    3. release the ring of the vq by vring_release_virtqueue()
-    4. enable_reset_vq: re-enable the reset queue
-  3. Simplify the parameters of enable_reset_vq()
-  4. add container structures for virtio_pci_common_cfg
-
-v3:
-  1. keep vq, irq unreleased
-
-Xuan Zhuo (26):
-  virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-  virtio: queue_reset: add VIRTIO_F_RING_RESET
-  virtio: add helper virtqueue_get_vring_max_size()
-  virtio_ring: split: extract the logic of creating vring
-  virtio_ring: split: extract the logic of init vq and attach vring
-  virtio_ring: packed: extrace the logic of creating vring
-  virtio_ring: packed: extract the logic of init vq and attach vring
-  virtio_ring: extract the logic of freeing vring
-  virtio_ring: split: implement virtqueue_reset_vring_split()
-  virtio_ring: packed: implement virtqueue_reset_vring_packed()
-  virtio_ring: introduce virtqueue_reset_vring()
-  virtio_ring: update the document of the virtqueue_detach_unused_buf
-    for queue reset
-  virtio: queue_reset: struct virtio_config_ops add callbacks for
-    queue_reset
-  virtio: add helper for queue reset
-  virtio_pci: queue_reset: update struct virtio_pci_common_cfg and
-    option functions
-  virtio_pci: queue_reset: extract the logic of active vq for modern pci
-  virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
-  virtio: find_vqs() add arg sizes
-  virtio_pci: support the arg sizes of find_vqs()
-  virtio_mmio: support the arg sizes of find_vqs()
-  virtio: add helper virtio_find_vqs_ctx_size()
-  virtio_net: get ringparam by virtqueue_get_vring_max_size()
-  virtio_net: split free_unused_bufs()
-  virtio_net: support rx/tx queue reset
-  virtio_net: set the default max ring size by find_vqs()
-  virtio_net: support set_ringparam
-
- arch/um/drivers/virtio_uml.c             |   2 +-
- drivers/net/virtio_net.c                 | 257 ++++++++--
- drivers/platform/mellanox/mlxbf-tmfifo.c |   3 +-
- drivers/remoteproc/remoteproc_virtio.c   |   2 +-
- drivers/s390/virtio/virtio_ccw.c         |   2 +-
- drivers/virtio/virtio_mmio.c             |  12 +-
- drivers/virtio/virtio_pci_common.c       |  28 +-
- drivers/virtio/virtio_pci_common.h       |   3 +-
- drivers/virtio/virtio_pci_legacy.c       |   8 +-
- drivers/virtio/virtio_pci_modern.c       | 146 +++++-
- drivers/virtio/virtio_pci_modern_dev.c   |  36 ++
- drivers/virtio/virtio_ring.c             | 584 +++++++++++++++++------
- drivers/virtio/virtio_vdpa.c             |   2 +-
- include/linux/virtio.h                   |  12 +
- include/linux/virtio_config.h            |  74 ++-
- include/linux/virtio_pci_modern.h        |   2 +
- include/uapi/linux/virtio_config.h       |   7 +-
- include/uapi/linux/virtio_pci.h          |  14 +
- 18 files changed, 979 insertions(+), 215 deletions(-)
-
---
+diff --git a/include/uapi/linux/virtio_pci.h b/include/uapi/linux/virtio_pci.h
+index 3a86f36d7e3d..22bec9bd0dfc 100644
+--- a/include/uapi/linux/virtio_pci.h
++++ b/include/uapi/linux/virtio_pci.h
+@@ -166,6 +166,13 @@ struct virtio_pci_common_cfg {
+ 	__le32 queue_used_hi;		/* read-write */
+ };
+ 
++struct virtio_pci_common_cfg_notify {
++	struct virtio_pci_common_cfg cfg;
++
++	__le16 queue_notify_data;	/* read-write */
++	__le16 padding;
++};
++
+ /* Fields in VIRTIO_PCI_CAP_PCI_CFG: */
+ struct virtio_pci_cfg_cap {
+ 	struct virtio_pci_cap cap;
+-- 
 2.31.0
 
