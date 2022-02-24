@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E54794C2A6F
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 12:09:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE294C2A7D
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 12:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233592AbiBXLKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 06:10:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
+        id S233850AbiBXLKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 06:10:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbiBXLKJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 06:10:09 -0500
+        with ESMTP id S233848AbiBXLKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 06:10:19 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DB3114F2B0
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 03:09:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F95B14FBDB
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 03:09:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645700979;
+        s=mimecast20190719; t=1645700985;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4xV2lmIzjMYY4MLS/LARIvSo701YdKE1gxInO7k6PmQ=;
-        b=dm2usxyeiNDimHLqXlreBnTixbnqXKdNQltDEusPcS9Et8lPyKC9CKXqJTJshRgYM/5Gn0
-        DkFhUIXcATbqh6GJzJ2QRNbeZ3jc1RBAffw3xjK2MtGnKJS89HeUj7MNMHOfhsct57m9sB
-        maMCVZSNooK8N2OjlaWp1Ru872teSlk=
+        bh=4A1fWlnBebac/KzDK39/KFbG0TBuCQPRorVPRC/e3BU=;
+        b=NgLBpEtknTC1JaRXBk2zix3iyOlcAXtyJQGhJEherAMf0zud9qCZBQy0R3TQYzk4ED+S7a
+        5HbtMC2WdiyHtjUSaNSYCH3/lwpjN7OmQWBQidRaUGDr1q9+k8RjSVWgCJ0XSjTARdGPE3
+        I2jUZykqQX29icGQlB7IIzn4MMSr6Mg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-507-NF33J5o-OI60gJ1uevKL0w-1; Thu, 24 Feb 2022 06:09:35 -0500
-X-MC-Unique: NF33J5o-OI60gJ1uevKL0w-1
+ us-mta-369-OevdC6KlNraNSZBlY0Wmog-1; Thu, 24 Feb 2022 06:09:40 -0500
+X-MC-Unique: OevdC6KlNraNSZBlY0Wmog-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72DF3800496;
-        Thu, 24 Feb 2022 11:09:33 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6CE4824FA6;
+        Thu, 24 Feb 2022 11:09:37 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.194.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BB50C79A22;
-        Thu, 24 Feb 2022 11:09:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CDFBE79A22;
+        Thu, 24 Feb 2022 11:09:33 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Jiri Kosina <jikos@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -53,9 +53,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v1 4/6] HID: bpf: add new BPF type to trigger commands from userspace
-Date:   Thu, 24 Feb 2022 12:08:26 +0100
-Message-Id: <20220224110828.2168231-5-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v1 5/6] HID: bpf: tests: rely on uhid event to know if a test device is ready
+Date:   Thu, 24 Feb 2022 12:08:27 +0100
+Message-Id: <20220224110828.2168231-6-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
 References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -72,379 +72,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given that we can not call bpf_hid_raw_request() from within an IRQ,
-userspace needs to have a way to communicate with the device when
-it needs.
-
-Implement a new type that the caller can run at will without being in
-an IRQ context.
+We need this for 2 reasons:
+- first we remove the ugly sleeps
+- then when we try to communicate with the device, we need to have another
+  thread that handles that communication and simulate a real device
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 ---
- include/linux/bpf-hid.h                      |   3 +
- include/uapi/linux/bpf.h                     |   1 +
- include/uapi/linux/bpf_hid.h                 |   9 ++
- kernel/bpf/hid.c                             | 117 +++++++++++++++++++
- kernel/bpf/syscall.c                         |   2 +
- tools/include/uapi/linux/bpf.h               |   1 +
- tools/lib/bpf/libbpf.c                       |   1 +
- tools/testing/selftests/bpf/prog_tests/hid.c |  56 +++++++++
- tools/testing/selftests/bpf/progs/hid.c      |  10 ++
- 9 files changed, 200 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/hid.c | 126 ++++++++++++++++++-
+ 1 file changed, 120 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/bpf-hid.h b/include/linux/bpf-hid.h
-index 07cbd5cf595c..00ac4555aa5b 100644
---- a/include/linux/bpf-hid.h
-+++ b/include/linux/bpf-hid.h
-@@ -15,6 +15,7 @@ enum bpf_hid_attach_type {
- 	BPF_HID_ATTACH_INVALID = -1,
- 	BPF_HID_ATTACH_DEVICE_EVENT = 0,
- 	BPF_HID_ATTACH_RDESC_FIXUP,
-+	BPF_HID_ATTACH_USER_EVENT,
- 	MAX_BPF_HID_ATTACH_TYPE
- };
- 
-@@ -34,6 +35,8 @@ to_bpf_hid_attach_type(enum bpf_attach_type attach_type)
- 		return BPF_HID_ATTACH_DEVICE_EVENT;
- 	case BPF_HID_RDESC_FIXUP:
- 		return BPF_HID_ATTACH_RDESC_FIXUP;
-+	case BPF_HID_USER_EVENT:
-+		return BPF_HID_ATTACH_USER_EVENT;
- 	default:
- 		return BPF_HID_ATTACH_INVALID;
- 	}
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 0571d9b954c9..a374cc4aade6 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1000,6 +1000,7 @@ enum bpf_attach_type {
- 	BPF_PERF_EVENT,
- 	BPF_HID_DEVICE_EVENT,
- 	BPF_HID_RDESC_FIXUP,
-+	BPF_HID_USER_EVENT,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-diff --git a/include/uapi/linux/bpf_hid.h b/include/uapi/linux/bpf_hid.h
-index c0801d7174c3..7a263568e132 100644
---- a/include/uapi/linux/bpf_hid.h
-+++ b/include/uapi/linux/bpf_hid.h
-@@ -19,6 +19,7 @@ enum hid_bpf_event {
- 	HID_BPF_UNDEF = 0,
- 	HID_BPF_DEVICE_EVENT,
- 	HID_BPF_RDESC_FIXUP,
-+	HID_BPF_USER_EVENT,
- };
- 
- /* type is HID_BPF_DEVICE_EVENT */
-@@ -33,6 +34,13 @@ struct hid_bpf_ctx_rdesc_fixup {
- 	unsigned long size;
- };
- 
-+/* type is HID_BPF_USER_EVENT */
-+struct hid_bpf_ctx_user_event {
-+	__u8 data[HID_BPF_MAX_BUFFER_SIZE];
-+	unsigned long size;
-+	int retval;
-+};
-+
- struct hid_bpf_ctx {
- 	enum hid_bpf_event type;
- 	struct hid_device *hdev;
-@@ -40,6 +48,7 @@ struct hid_bpf_ctx {
- 	union {
- 		struct hid_bpf_ctx_device_event device;
- 		struct hid_bpf_ctx_rdesc_fixup rdesc;
-+		struct hid_bpf_ctx_user_event user;
- 	} u;
- };
- 
-diff --git a/kernel/bpf/hid.c b/kernel/bpf/hid.c
-index 9eb7bd6ac6c8..3714413e1eb6 100644
---- a/kernel/bpf/hid.c
-+++ b/kernel/bpf/hid.c
-@@ -52,6 +52,9 @@ BPF_CALL_3(bpf_hid_get_data, void*, ctx, u64, offset, u8, n)
- 	case HID_BPF_RDESC_FIXUP:
- 		buf = bpf_ctx->u.rdesc.data;
- 		break;
-+	case HID_BPF_USER_EVENT:
-+		buf = bpf_ctx->u.user.data;
-+		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -83,6 +86,9 @@ BPF_CALL_4(bpf_hid_set_data, void*, ctx, u64, offset, u8, n, u32, data)
- 	case HID_BPF_RDESC_FIXUP:
- 		buf = bpf_ctx->u.rdesc.data;
- 		break;
-+	case HID_BPF_USER_EVENT:
-+		buf = bpf_ctx->u.user.data;
-+		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -385,6 +391,8 @@ static int bpf_hid_max_progs(enum bpf_hid_attach_type type)
- 		return 64;
- 	case BPF_HID_ATTACH_RDESC_FIXUP:
- 		return 1;
-+	case BPF_HID_ATTACH_USER_EVENT:
-+		return 64;
- 	default:
- 		return 0;
- 	}
-@@ -479,7 +487,116 @@ int bpf_hid_link_create(const union bpf_attr *attr, struct bpf_prog *prog)
- 	return bpf_link_settle(&link_primer);
- }
- 
-+static int hid_bpf_prog_test_run(struct bpf_prog *prog,
-+				 const union bpf_attr *attr,
-+				 union bpf_attr __user *uattr)
-+{
-+	struct hid_device *hdev = NULL;
-+	struct bpf_prog_array *progs;
-+	struct hid_bpf_ctx *ctx = NULL;
-+	bool valid_prog = false;
-+	int i;
-+	int target_fd, ret;
-+	void __user *data_out = u64_to_user_ptr(attr->test.data_out);
-+	void __user *data_in = u64_to_user_ptr(attr->test.data_in);
-+	u32 user_size = attr->test.data_size_in;
-+
-+	if (!hid_hooks.hdev_from_fd)
-+		return -EOPNOTSUPP;
-+
-+	if (attr->test.ctx_size_in != sizeof(int))
-+		return -EINVAL;
-+
-+	if (copy_from_user(&target_fd, (void *)attr->test.ctx_in, attr->test.ctx_size_in))
-+		return -EFAULT;
-+
-+	hdev = hid_hooks.hdev_from_fd(target_fd);
-+	if (IS_ERR(hdev))
-+		return PTR_ERR(hdev);
-+
-+	ret = mutex_lock_interruptible(&bpf_hid_mutex);
-+	if (ret)
-+		return ret;
-+
-+	/* check if the given program is of correct type and registered */
-+	progs = rcu_dereference_protected(hdev->bpf.run_array[BPF_HID_ATTACH_USER_EVENT],
-+					  lockdep_is_held(&bpf_hid_mutex));
-+	if (!progs) {
-+		ret = -EFAULT;
-+		goto unlock;
-+	}
-+
-+	for (i = 0; i < bpf_prog_array_length(progs); i++) {
-+		if (progs->items[i].prog == prog) {
-+			valid_prog = true;
-+			break;
-+		}
-+	}
-+
-+	if (!valid_prog) {
-+		ret = -EINVAL;
-+		goto unlock;
-+	}
-+
-+	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx) {
-+		ret = -ENOMEM;
-+		goto unlock;
-+	}
-+
-+	ctx->hdev = hdev;
-+	ctx->type = HID_BPF_USER_EVENT;
-+
-+	/* copy data_in from userspace */
-+	if (user_size) {
-+		if (user_size > HID_BPF_MAX_BUFFER_SIZE)
-+			user_size = HID_BPF_MAX_BUFFER_SIZE;
-+
-+		if (copy_from_user(ctx->u.user.data, data_in, user_size)) {
-+			ret = -EFAULT;
-+			goto unlock;
-+		}
-+
-+		ctx->u.user.size = user_size;
-+	}
-+
-+	migrate_disable();
-+
-+	ret = bpf_prog_run(prog, ctx);
-+
-+	migrate_enable();
-+
-+	user_size = attr->test.data_size_out;
-+
-+	if (user_size && data_out) {
-+		if (user_size > ctx->u.user.size)
-+			user_size = ctx->u.user.size;
-+
-+		if (copy_to_user(data_out, ctx->u.user.data, user_size)) {
-+			ret = -EFAULT;
-+			goto unlock;
-+		}
-+
-+		if (copy_to_user(&uattr->test.data_size_out, &user_size, sizeof(user_size))) {
-+			ret = -EFAULT;
-+			goto unlock;
-+		}
-+	}
-+
-+	if (copy_to_user(&uattr->test.retval, &ctx->u.user.retval, sizeof(ctx->u.user.retval))) {
-+		ret = -EFAULT;
-+		goto unlock;
-+	}
-+
-+unlock:
-+	kfree(ctx);
-+
-+	mutex_unlock(&bpf_hid_mutex);
-+	return ret;
-+}
-+
- const struct bpf_prog_ops hid_prog_ops = {
-+	.test_run = hid_bpf_prog_test_run,
- };
- 
- int bpf_hid_init(struct hid_device *hdev)
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 62889cc71a02..0a6d08dabe59 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3192,6 +3192,7 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
- 		return BPF_PROG_TYPE_XDP;
- 	case BPF_HID_DEVICE_EVENT:
- 	case BPF_HID_RDESC_FIXUP:
-+	case BPF_HID_USER_EVENT:
- 		return BPF_PROG_TYPE_HID;
- 	default:
- 		return BPF_PROG_TYPE_UNSPEC;
-@@ -3338,6 +3339,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
- 		return sock_map_bpf_prog_query(attr, uattr);
- 	case BPF_HID_DEVICE_EVENT:
- 	case BPF_HID_RDESC_FIXUP:
-+	case BPF_HID_USER_EVENT:
- 		return bpf_hid_prog_query(attr, uattr);
- 	default:
- 		return -EINVAL;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 0571d9b954c9..a374cc4aade6 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1000,6 +1000,7 @@ enum bpf_attach_type {
- 	BPF_PERF_EVENT,
- 	BPF_HID_DEVICE_EVENT,
- 	BPF_HID_RDESC_FIXUP,
-+	BPF_HID_USER_EVENT,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index b7af873116fb..290864d2f865 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8678,6 +8678,7 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("sk_lookup",		SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
- 	SEC_DEF("hid/device_event",	HID, BPF_HID_DEVICE_EVENT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
- 	SEC_DEF("hid/rdesc_fixup",	HID, BPF_HID_RDESC_FIXUP, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
-+	SEC_DEF("hid/user_event",	HID, BPF_HID_USER_EVENT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
- };
- 
- #define MAX_TYPE_NAME_SIZE 32
 diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-index 7d4f740a0a08..d297a571e910 100644
+index d297a571e910..b0cf615b0d0f 100644
 --- a/tools/testing/selftests/bpf/prog_tests/hid.c
 +++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-@@ -336,6 +336,59 @@ static int test_hid_set_get_data(struct hid *hid_skel, int uhid_fd, int sysfs_fd
- 	return ret;
+@@ -67,6 +67,12 @@ static unsigned char rdesc[] = {
+ 	0xc0,			/* END_COLLECTION */
+ };
+ 
++static pthread_mutex_t uhid_started_mtx = PTHREAD_MUTEX_INITIALIZER;
++static pthread_cond_t uhid_started = PTHREAD_COND_INITIALIZER;
++
++/* no need to protect uhid_stopped, only one thread accesses it */
++static bool uhid_stopped;
++
+ static int uhid_write(int fd, const struct uhid_event *ev)
+ {
+ 	ssize_t ret;
+@@ -118,6 +124,104 @@ static void destroy(int fd)
+ 	uhid_write(fd, &ev);
  }
  
-+/*
-+ * Attach hid_user to the given uhid device,
-+ * call the bpf program from userspace
-+ * check that the program is called and does the expected.
-+ */
-+static int test_hid_user_call(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
++static int event(int fd)
 +{
-+	int err, prog_fd;
-+	u8 buf[10] = {0};
-+	int ret = -1;
++	struct uhid_event ev;
++	ssize_t ret;
 +
-+	LIBBPF_OPTS(bpf_test_run_opts, run_attrs,
-+		    .repeat = 1,
-+		    .ctx_in = &sysfs_fd,
-+		    .ctx_size_in = sizeof(sysfs_fd),
-+		    .data_in = buf,
-+		    .data_size_in = sizeof(buf),
-+		    .data_out = buf,
-+		    .data_size_out = sizeof(buf),
-+	);
++	memset(&ev, 0, sizeof(ev));
++	ret = read(fd, &ev, sizeof(ev));
++	if (ret == 0) {
++		fprintf(stderr, "Read HUP on uhid-cdev\n");
++		return -EFAULT;
++	} else if (ret < 0) {
++		fprintf(stderr, "Cannot read uhid-cdev: %m\n");
++		return -errno;
++	} else if (ret != sizeof(ev)) {
++		fprintf(stderr, "Invalid size read from uhid-dev: %zd != %zu\n",
++			ret, sizeof(ev));
++		return -EFAULT;
++	}
 +
-+	/* attach hid_user program */
-+	hid_skel->links.hid_user = bpf_program__attach_hid(hid_skel->progs.hid_user, sysfs_fd);
-+	if (!ASSERT_OK_PTR(hid_skel->links.hid_user,
-+			   "attach_hid(hid_user)"))
-+		return PTR_ERR(hid_skel->links.hid_user);
++	switch (ev.type) {
++	case UHID_START:
++		pthread_mutex_lock(&uhid_started_mtx);
++		pthread_cond_signal(&uhid_started);
++		pthread_mutex_unlock(&uhid_started_mtx);
 +
-+	buf[0] = 39;
++		fprintf(stderr, "UHID_START from uhid-dev\n");
++		break;
++	case UHID_STOP:
++		uhid_stopped = true;
 +
-+	prog_fd = bpf_program__fd(hid_skel->progs.hid_user);
-+
-+	err = bpf_prog_test_run_opts(prog_fd, &run_attrs);
-+	if (!ASSERT_EQ(err, 0, "bpf_prog_test_run_xattr"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(run_attrs.retval, 72, "bpf_prog_test_run_xattr_retval"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[1], 42, "hid_user_check_in"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(buf[2], 4, "hid_user_check_static_out"))
-+		goto cleanup;
-+
-+	ret = 0;
-+
-+cleanup:
-+
-+	hid__detach(hid_skel);
-+
-+	return ret;
-+}
-+
- /*
-  * Attach hid_rdesc_fixup to the given uhid device,
-  * retrieve and open the matching hidraw node,
-@@ -437,6 +490,9 @@ void serial_test_hid_bpf(void)
- 	err = test_hid_set_get_data(hid_skel, uhid_fd, sysfs_fd);
- 	ASSERT_OK(err, "hid_set_get_data");
- 
-+	err = test_hid_user_call(hid_skel, uhid_fd, sysfs_fd);
-+	ASSERT_OK(err, "hid_user");
-+
- 	err = test_rdesc_fixup(hid_skel, uhid_fd, sysfs_fd);
- 	ASSERT_OK(err, "hid_rdesc_fixup");
- 
-diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-index 01d9c556a3a1..b2db809b3367 100644
---- a/tools/testing/selftests/bpf/progs/hid.c
-+++ b/tools/testing/selftests/bpf/progs/hid.c
-@@ -80,3 +80,13 @@ int hid_set_get_data(struct hid_bpf_ctx *ctx)
- 
- 	return 0;
- }
-+
-+SEC("hid/user_event")
-+int hid_user(struct hid_bpf_ctx *ctx)
-+{
-+	ctx->u.user.data[1] = ctx->u.user.data[0] + 3;
-+	ctx->u.user.data[2] = 4;
-+	ctx->u.user.retval = 72;
++		fprintf(stderr, "UHID_STOP from uhid-dev\n");
++		break;
++	case UHID_OPEN:
++		fprintf(stderr, "UHID_OPEN from uhid-dev\n");
++		break;
++	case UHID_CLOSE:
++		fprintf(stderr, "UHID_CLOSE from uhid-dev\n");
++		break;
++	case UHID_OUTPUT:
++		fprintf(stderr, "UHID_OUTPUT from uhid-dev\n");
++		break;
++	case UHID_GET_REPORT:
++		fprintf(stderr, "UHID_GET_REPORT from uhid-dev\n");
++		break;
++	case UHID_SET_REPORT:
++		fprintf(stderr, "UHID_SET_REPORT from uhid-dev\n");
++		break;
++	default:
++		fprintf(stderr, "Invalid event from uhid-dev: %u\n", ev.type);
++	}
 +
 +	return 0;
 +}
++
++static void *read_uhid_events_thread(void *arg)
++{
++	int fd = *(int *)arg;
++	struct pollfd pfds[1];
++	int ret = 0;
++
++	pfds[0].fd = fd;
++	pfds[0].events = POLLIN;
++
++	uhid_stopped = false;
++
++	while (!uhid_stopped) {
++		ret = poll(pfds, 1, 100);
++		if (ret < 0) {
++			fprintf(stderr, "Cannot poll for fds: %m\n");
++			break;
++		}
++		if (pfds[0].revents & POLLIN) {
++			ret = event(fd);
++			if (ret)
++				break;
++		}
++	}
++
++	return (void *)(long)ret;
++}
++
++static int uhid_start_listener(pthread_t *tid, int uhid_fd)
++{
++	int fd = uhid_fd;
++
++	pthread_mutex_lock(&uhid_started_mtx);
++	if (CHECK_FAIL(pthread_create(tid, NULL, read_uhid_events_thread,
++				      (void *)&fd))) {
++		pthread_mutex_unlock(&uhid_started_mtx);
++		close(fd);
++		return -EIO;
++	}
++	pthread_cond_wait(&uhid_started, &uhid_started_mtx);
++	pthread_mutex_unlock(&uhid_started_mtx);
++
++	return 0;
++}
++
+ static int send_event(int fd, u8 *buf, size_t size)
+ {
+ 	struct uhid_event ev;
+@@ -399,7 +503,9 @@ static int test_rdesc_fixup(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
+ 	struct hidraw_report_descriptor rpt_desc = {0};
+ 	int err, desc_size, hidraw_ino, hidraw_fd = -1;
+ 	char hidraw_path[64] = {0};
++	void *uhid_err;
+ 	int ret = -1;
++	pthread_t tid;
+ 
+ 	/* attach the program */
+ 	hid_skel->links.hid_rdesc_fixup =
+@@ -408,9 +514,8 @@ static int test_rdesc_fixup(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
+ 			   "attach_hid(hid_rdesc_fixup)"))
+ 		return PTR_ERR(hid_skel->links.hid_rdesc_fixup);
+ 
+-	/* give a little bit of time for the device to appear */
+-	/* TODO: check on uhid events */
+-	usleep(1000);
++	err = uhid_start_listener(&tid, uhid_fd);
++	ASSERT_OK(err, "uhid_start_listener");
+ 
+ 	hidraw_ino = get_hidraw(hid_skel->links.hid_rdesc_fixup);
+ 	if (!ASSERT_GE(hidraw_ino, 0, "get_hidraw"))
+@@ -451,6 +556,10 @@ static int test_rdesc_fixup(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
+ 
+ 	hid__detach(hid_skel);
+ 
++	pthread_join(tid, &uhid_err);
++	err = (int)(long)uhid_err;
++	CHECK_FAIL(err);
++
+ 	return ret;
+ }
+ 
+@@ -458,7 +567,9 @@ void serial_test_hid_bpf(void)
+ {
+ 	struct hid *hid_skel = NULL;
+ 	int err, uhid_fd, sysfs_fd;
++	void *uhid_err;
+ 	time_t t;
++	pthread_t tid;
+ 	int rand_nb;
+ 
+ 	/* initialize random number generator */
+@@ -470,9 +581,8 @@ void serial_test_hid_bpf(void)
+ 	if (!ASSERT_GE(uhid_fd, 0, "setup uhid"))
+ 		return;
+ 
+-	/* give a little bit of time for the device to appear */
+-	/* TODO: check on uhid events */
+-	usleep(1000);
++	err = uhid_start_listener(&tid, uhid_fd);
++	ASSERT_OK(err, "uhid_start_listener");
+ 
+ 	/* locate the uevent file of the created device */
+ 	sysfs_fd = get_sysfs_fd(rand_nb);
+@@ -499,4 +609,8 @@ void serial_test_hid_bpf(void)
+ cleanup:
+ 	hid__destroy(hid_skel);
+ 	destroy(uhid_fd);
++
++	pthread_join(tid, &uhid_err);
++	err = (int)(long)uhid_err;
++	CHECK_FAIL(err);
+ }
 -- 
 2.35.1
 
