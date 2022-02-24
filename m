@@ -2,82 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FAE04C2DB9
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED35F4C2DD4
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:04:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233859AbiBXN7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 08:59:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
+        id S235326AbiBXOEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 09:04:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiBXN7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 08:59:44 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EB61CF0BC
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:59:13 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id v28so2957763ljv.9
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:59:13 -0800 (PST)
+        with ESMTP id S235320AbiBXOEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 09:04:35 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180E720DB1D
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 06:04:02 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id d3so3670765qvb.5
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 06:04:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=Hx8qcrUpKwD3ZMmHTneVz1r8yqruW/VfpRM/Y8XRyGY=;
-        b=B9Cps+y643AFbXupKs1kO8QeclwRqGVmvGQMdYhyChkLb36sepYdR5GTGUdtsfjkIE
-         vDpWy4Yg02v+xlFxXe6jmrek0p74Mwx9P/szS+XAAc3shTqhZ9c4mlfrTIyKMXnIR1Bd
-         pVljyleLy6/s7oPDvcpvAynOjavIip6odrtM5YHOHv3LrtHAPZtP0R0IUmox7dJ9m8pN
-         Xe6esRN3gpU9ajcG1UDyez8pmMHKGnGBcR7E97yUcHfXvaFCVviHXbRO/JDq51XKokpN
-         rPpFQwyVosCtnHfSwzV9y7l/By7p6qxzgTtZ3bWpvMw70Xej+ZfwxQIo1ehuENKyU8Nl
-         /vpg==
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1J9QuuECw8l9XYBFc+hTDlCcdTttwd1QyTxrc8My5Mc=;
+        b=eE9z+QnJjmryr7iHS18252LzAY3KZHui2IO8G2M2OQR1+ze+Eh5101kkmZgBE96g2R
+         doEJBiu7zyPD6XIZLAavp8NN0hkJhyhWwIIXakpHWX5kSNiVd7EOcQj4Y2GHugvvwB4w
+         mLGCB+LlDNUDN/xkS8l9qgEikPLiHDS6Tul6k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Hx8qcrUpKwD3ZMmHTneVz1r8yqruW/VfpRM/Y8XRyGY=;
-        b=CRtmX85Ta64V1ey1fPYksWN3Me0aazqBllkXnlaQbYDy5D+HUhYIl2Hf5YbX2rAPRz
-         /gTKpWO9ctW6TGV++dy+M1/laleu3SQ7sidVaaJ0Wn3+E3IC7wnIFsD8UIrkzhvTW7P/
-         iqEwchnG2ULj2PrQ0Bn/x3JsLakp+5CJ1zuscoKhjvGeA1qhcEo9raQvAmyRBCZkls6I
-         gBlKlCrPx2FyNbY5wZ88eCFXlQpBOLXvn/5gmlqQIs7Gv711V2NjKiqj3K7r/CNqCWh+
-         GnKCxJYI4w2I6jVSPJMHqNtVsTjhcH0pR+vqu/FSkeMReQZt/Xan5i2EmUIwvXBcbN5L
-         odlg==
-X-Gm-Message-State: AOAM533qWc3e8RgXVDfEUlfw6uZe59GPhoy857UB0AiFJpY1MVeCJKqy
-        hv2EExNgo6bBk0i+S2CuCqU=
-X-Google-Smtp-Source: ABdhPJyqgZcP9z6Ev993YWy5NQ27h09wuNq69NzIkB/AEV1mhu1CQr21J29r1vA03MeIXE52g/kRhw==
-X-Received: by 2002:a05:651c:10b:b0:246:280:c7 with SMTP id a11-20020a05651c010b00b00246028000c7mr2006127ljb.126.1645711152150;
-        Thu, 24 Feb 2022 05:59:12 -0800 (PST)
-Received: from wbg (a124.broadband3.quicknet.se. [46.17.184.124])
-        by smtp.gmail.com with ESMTPSA id w12sm213430lfl.131.2022.02.24.05.59.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 05:59:11 -0800 (PST)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Roopa Prabhu <roopa@nvidia.com>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH 1/1 net-next] net: bridge: add support for host l2 mdb entries
-In-Reply-To: <66dc205f-9f57-61c1-35d9-8712e8d9fe3a@blackwall.org>
-References: <20220223172407.175865-1-troglobit@gmail.com> <66dc205f-9f57-61c1-35d9-8712e8d9fe3a@blackwall.org>
-Date:   Thu, 24 Feb 2022 14:59:10 +0100
-Message-ID: <878ru0qsb5.fsf@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1J9QuuECw8l9XYBFc+hTDlCcdTttwd1QyTxrc8My5Mc=;
+        b=Au2WeVGKON927cOBL8ZgmZjUdf5uk3wHHQGlxbMg9b21Ed8qTcy9oUxwqLoFz1hm22
+         PrQnnQJx/p1g41onoNLsJW9anE/BgNYB+nHdqs8Y6/ZmCOAgoRDod2rGlCyiUzbVFuKI
+         tkBmivpi69ED2uhvzKjWUm2e5tY+nFCnRUi4OiwUF2t8Rj8HbnL6KvZQba6nzmSGxhJn
+         THIGwcB8owq4A90ltnYA1ZjXnITlGX2AMDpDI6rOy5gQB42a/hlMI+ttHnEM5OSXxI9C
+         OZjrjdgNa66oGwPh2h93eWpPvR7tnxnRWfAOPxbuaOTHRiP+X8Q0cyELH7HrCGfVbKrC
+         IzAA==
+X-Gm-Message-State: AOAM531vSoDcuVl77jOVgusYkm1rVeo8PpjP4FsDPepCcSSM09N2ORpT
+        PflGr/GrcmOwMw01Ky1GniWQIQ==
+X-Google-Smtp-Source: ABdhPJykifWw99WUN3OfZ23Vq6YPYP6skQILQaAbVzWzMizPf/5KHeXWIqFK7expcvzniDuaH9x44A==
+X-Received: by 2002:ac8:5ace:0:b0:2c9:f9d2:146 with SMTP id d14-20020ac85ace000000b002c9f9d20146mr2513097qtd.216.1645711441204;
+        Thu, 24 Feb 2022 06:04:01 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id t19sm1682306qtx.68.2022.02.24.06.03.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 06:04:00 -0800 (PST)
+Message-ID: <2c768b0f-316f-7227-6d87-2d1e875fcaaf@ieee.org>
+Date:   Thu, 24 Feb 2022 08:03:59 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: linux-next: Tree for Feb 23 (drivers/net/ipa/ipa_power.o)
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>, broonie@kernel.org,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alex Elder <elder@kernel.org>
+References: <20220224014440.1397777-1-broonie@kernel.org>
+ <23f9d46a-4b33-6918-9c62-f417c624585c@infradead.org>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <23f9d46a-4b33-6918-9c62-f417c624585c@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 13:26, Nikolay Aleksandrov <razor@blackwall.org> wrote:
-> On 23/02/2022 19:24, Joachim Wiberg wrote:
->> This patch expands on the earlier work on layer-2 mdb entries by adding
->> support for host entries.
-> It would be nice to add a selftest for L2 entries. You can send it as a follow-up.
+On 2/24/22 12:28 AM, Randy Dunlap wrote:
+> 
+> 
+> On 2/23/22 17:44, broonie@kernel.org wrote:
+>> Hi all,
+>>
+>> Note that today's -next again does not include the akpm tree since it's
+>> been a long day and the conflicts especially with the mm code seemed
+>> more than it was wise for me to attempt.  I'll have another go tomorrow
+>> but no guarantees, I got further today.
+>>
+>> Changes since 20220222
 
-OK, will do!  It's on my immediate backlog.
+Thanks, I'll investigate.	-Alex
 
-Thanks
- /Joachim
- 
+> 
+> on i386:
+> 
+> ld: drivers/net/ipa/ipa_power.o: in function `ipa_power_retention':
+> ipa_power.c:(.text+0x57d): undefined reference to `qmp_send'
+> ld: ipa_power.c:(.text+0x5d1): undefined reference to `qmp_send'
+> ld: drivers/net/ipa/ipa_power.o: in function `ipa_power_init':
+> ipa_power.c:(.text+0x823): undefined reference to `qmp_get'
+> ld: drivers/net/ipa/ipa_power.o: in function `ipa_power_exit':
+> ipa_power.c:(.text+0x954): undefined reference to `qmp_put'
+> 
+> 
+> Full randconfig file is attached.
+> 
+
