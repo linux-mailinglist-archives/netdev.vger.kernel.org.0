@@ -2,101 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 369414C2FE9
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9BD4C3003
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:39:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236428AbiBXPgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 10:36:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
+        id S236237AbiBXPi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 10:38:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234926AbiBXPf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:35:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712E720A94A;
-        Thu, 24 Feb 2022 07:35:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23B74B826DF;
-        Thu, 24 Feb 2022 15:35:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9CE1C340E9;
-        Thu, 24 Feb 2022 15:35:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645716925;
-        bh=xuHQRrAoDb/VVH82gAa2RaQTr5wBd7B/nPTDQnPfdTk=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=jmlK609LeDES/o7jfPCY/auDpAUs+Tc5Q0iM0KqAn76wD/ETKzdD+VxSyMxgEzBEX
-         i8xzFfC0v6WaDQLnzo6qHnTsh1qIN+y2Y5zVO9hxce3vCjik8SwECIReyYd5xTocsv
-         muI57CDMEo5VV/BlEQbFFjSwmPP/zpmtekcwAgLSjtdLXYqXFgpxC9D4XX6TBEQiBB
-         ZLLsx2HbZVZrs86vz1wvchVFO3lK521PHlFxZ6iaUwpCX0Aqs6gXr9ddmUtl4GqyAF
-         xxw9yhcR8bwdcmm+Xtx264X9pVdieR9y2/12jvpgMHUW25f4W/6PGYN+gifEc34y4S
-         8aytQtbn3hgog==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S236134AbiBXPiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:38:54 -0500
+X-Greylist: delayed 154540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 07:38:22 PST
+Received: from mail.tintel.eu (mail.tintel.eu [IPv6:2001:41d0:a:6e77:0:ff:fe5c:6a54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446611BE4CF;
+        Thu, 24 Feb 2022 07:38:22 -0800 (PST)
+Received: from localhost (localhost [IPv6:::1])
+        by mail.tintel.eu (Postfix) with ESMTP id 29FBA424DC5A;
+        Thu, 24 Feb 2022 16:38:20 +0100 (CET)
+Received: from mail.tintel.eu ([IPv6:::1])
+        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10032)
+        with ESMTP id Eu0qMrATjC32; Thu, 24 Feb 2022 16:38:19 +0100 (CET)
+Received: from localhost (localhost [IPv6:::1])
+        by mail.tintel.eu (Postfix) with ESMTP id 67D1842A43DC;
+        Thu, 24 Feb 2022 16:38:19 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.tintel.eu 67D1842A43DC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux-ipv6.be;
+        s=502B7754-045F-11E5-BBC5-64595FD46BE8; t=1645717099;
+        bh=fHTcMK2fjry/ZwLUwGR9VTL4Aj2hsXiagbddnpv2XGo=;
+        h=Message-ID:Date:MIME-Version:From:To;
+        b=FO8WdDV8uji5PVkWOA5cQGMJlBitplUUfCXWUHxvPuPDokv3IdAK6TgZSLCWVxsq7
+         iUKErd5VtF9S3tSY8EfsYfQT/vHN3GkwY0AKkvtOlqzO0GFSiN7rq5xxfnM/Ei4Jde
+         j1Wg/+G6RYUxzlP9AK5O5XN7B7Ge2+CU/cJfErtk=
+X-Virus-Scanned: amavisd-new at mail.tintel.eu
+Received: from mail.tintel.eu ([IPv6:::1])
+        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10026)
+        with ESMTP id qHjvbEqDfLeW; Thu, 24 Feb 2022 16:38:19 +0100 (CET)
+Received: from [IPV6:2001:67c:21bc:20::10] (unknown [IPv6:2001:67c:21bc:20::10])
+        (Authenticated sender: stijn@tintel.eu)
+        by mail.tintel.eu (Postfix) with ESMTPSA id 98ADF424DC5A;
+        Thu, 24 Feb 2022 16:38:18 +0100 (CET)
+Message-ID: <0f1fb86b-f8df-b209-9a89-512cbc142e04@linux-ipv6.be>
+Date:   Thu, 24 Feb 2022 17:38:17 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
+Content-Language: en-GB
+From:   Stijn Tintel <stijn@linux-ipv6.be>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Song Liu <song@kernel.org>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+References: <20220222204236.2192513-1-stijn@linux-ipv6.be>
+ <CAPhsuW6WgjL_atKCivbk5iMNBFHuSGcjAC0tdZYag2fOesUBKA@mail.gmail.com>
+ <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
+ <ac624e07-5310-438a-dce3-d2edb01e8031@linux-ipv6.be>
+In-Reply-To: <ac624e07-5310-438a-dce3-d2edb01e8031@linux-ipv6.be>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 2/2] wireless: Initial driver submission for pureLiFi STA
- devices
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20211031131122.275386-3-srini.raju@purelifi.com>
-References: <20211031131122.275386-3-srini.raju@purelifi.com>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     mostafa.afgani@purelifi.com,
-        Srinivasan Raju <srini.raju@purelifi.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org (open list),
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164571691946.20059.3084416025465167444.kvalo@kernel.org>
-Date:   Thu, 24 Feb 2022 15:35:23 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,NICE_REPLY_A,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> wrote:
+On 24/02/2022 12:08, Stijn Tintel wrote:
+> On 24/02/2022 01:15, Andrii Nakryiko wrote:
+>> On Tue, Feb 22, 2022 at 6:37 PM Song Liu <song@kernel.org> wrote:
+>>> On Tue, Feb 22, 2022 at 12:51 PM Stijn Tintel <stijn@linux-ipv6.be> wrote:
+>>>> When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
+>>>> max_entries parameter set, this parameter will be set to the number of
+>>>> possible CPUs. Due to this, the map_is_reuse_compat function will return
+>>>> false, causing the following error when trying to reuse the map:
+>>>>
+>>>> libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter mismatch
+>>>>
+>>>> Fix this by checking against the number of possible CPUs if the
+>>>> max_entries parameter is not set in the map definition.
+>>>>
+>>>> Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
+>>>> Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+>>> Acked-by: Song Liu <songliubraving@fb.com>
+>>>
+>>> I think the following fix would be more future proof, but the patch
+>>> as-is is better for
+>>> stable backport? How about we add a follow up patch on top of current
+>>> patch to fix
+>>> def->max_entries once for all?
+>> Keeping special logic for PERF_EVENT_ARRAY in one place is
+>> preferrable. With this, the changes in map_is_reuse_compat() shouldn't
+>> be necessary at all. Stijn, can you please send v2 with Song's
+>> proposed changes?
+>>
+> Will do!
 
-> This driver implementation has been based on the zd1211rw driver
-> 
-> Driver is based on 802.11 softMAC Architecture and uses
-> native 802.11 for configuration and management
-> 
-> The driver is compiled and tested in ARM, x86 architectures and
-> compiled in powerpc architecture
-> 
-> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
+Unfortunately that doesn't work. In bpf_object__create_maps, we call
+bpf_object__reuse_map and map_is_reuse_compat before
+bpf_object__create_map, so we check map_info.max_entries ==
+map->def.max_entries before the latter is being overwritten.
 
-I was about to take this to wireless-next but found few issues still:
+So I propose to send a v2 based on my initial submission, but use __u32
+for def_max_entries instead of int, unless someone has another suggestion?
 
-o rename these to include plfxlc_ prefix:
-
-int download_fpga(struct usb_interface *intf)
-int download_xl_firmware(struct usb_interface *intf)
-int plf_usb_wreq(void *buffer, int buffer_len,
-void tx_urb_complete(struct urb *urb)
-struct firmware_file {
-#define urb_dev(urb) (&(urb)->dev->dev)
-int plf_usb_wreq_async(struct plfxlc_usb *usb, const u8 *buffer,
-int plf_usb_wreq(void *buffer, int buffer_len,
-
-* non-const global variable in usb.c, doesn't that prevent supporting multiple
-  devices on the same host? It should be stored into a dynamically allocated
-  location like struct plfxlc_usb.
-
-struct usb_interface *ez_usb_interface;
-
-* unused workqueue:
-
-static struct workqueue_struct *plfxlc_workqueue;
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211031131122.275386-3-srini.raju@purelifi.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks,
+Stijn
 
