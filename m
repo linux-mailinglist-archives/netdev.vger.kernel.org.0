@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0AF14C2DF0
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:11:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10BFC4C2E02
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235353AbiBXOML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 09:12:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
+        id S235374AbiBXOQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 09:16:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235345AbiBXOMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 09:12:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35A471139
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 06:11:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645711890;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QcE0EVUjCg6X/xa4J/ZeUVoMtNaV/sF9sKuaRTVThoM=;
-        b=DsN2F64DB5SUrY+y1OVBqFXf1hUrifC5BFgVOHKhyafJMFxQHmvre7sgxsntFukvNp+Eyt
-        lUW2t7087z0q32TmK6HP/Hncg2FvRqY9rmm+OkqQQCXjNdhOB3h1Is1HmnPlAT0MFeEgA5
-        8xvZoXz8hkf8i86968aqKzK/MFF3y7s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-446-1e0tpTSFOiWgY-PtsWJlVw-1; Thu, 24 Feb 2022 09:11:27 -0500
-X-MC-Unique: 1e0tpTSFOiWgY-PtsWJlVw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C8FB1006AA7;
-        Thu, 24 Feb 2022 14:11:22 +0000 (UTC)
-Received: from localhost (ovpn-13-73.pek2.redhat.com [10.72.13.73])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9FC2684008;
-        Thu, 24 Feb 2022 14:11:19 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 22:11:17 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, cl@linux.com, 42.hyeyoo@gmail.com,
-        penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
-        vbabka@suse.cz, David.Laight@aculab.com, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: Re: [PATCH 1/2] dma-mapping: check dma_mask for streaming mapping
- allocs
-Message-ID: <YheSBTJY216m6izG@MiWiFi-R3L-srv>
-References: <20220219005221.634-22-bhe@redhat.com>
- <20220219071730.GG26711@lst.de>
- <20220220084044.GC93179@MiWiFi-R3L-srv>
- <20220222084530.GA6210@lst.de>
- <YhSpaGfiQV8Nmxr+@MiWiFi-R3L-srv>
- <20220222131120.GB10093@lst.de>
- <YhToFzlSufrliUsi@MiWiFi-R3L-srv>
- <20220222155904.GA13323@lst.de>
- <YhV/nabDa5zdNL/4@MiWiFi-R3L-srv>
- <20220223142555.GA5986@lst.de>
+        with ESMTP id S233212AbiBXOQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 09:16:13 -0500
+Received: from smtp-8fad.mail.infomaniak.ch (smtp-8fad.mail.infomaniak.ch [IPv6:2001:1600:3:17::8fad])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA81D294FE6
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 06:15:42 -0800 (PST)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K4FLN1yDQzMqKMX;
+        Thu, 24 Feb 2022 15:15:40 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4K4FLM689RzlhMBm;
+        Thu, 24 Feb 2022 15:15:39 +0100 (CET)
+Message-ID: <ffedc3d8-a193-b8d1-ddf2-9bd4824f4942@digikod.net>
+Date:   Thu, 24 Feb 2022 15:15:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223142555.GA5986@lst.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
+ <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
+ <a95b208c-5377-cf5c-0b4d-ce6b4e4b1b05@huawei.com>
+ <b29b2049-a61b-31a0-c4b5-fc0e55ad7bf1@digikod.net>
+ <7a538eb0-00e6-7b15-8409-a09165f72049@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
+In-Reply-To: <7a538eb0-00e6-7b15-8409-a09165f72049@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/23/22 at 03:25pm, Christoph Hellwig wrote:
-> On Wed, Feb 23, 2022 at 08:28:13AM +0800, Baoquan He wrote:
-> > Could you tell more why this is wrong? According to
-> > Documentation/core-api/dma-api.rst and DMA code, __dma_alloc_pages() is
-> > the core function of dma_alloc_pages()/dma_alloc_noncoherent() which are
-> > obviously streaming mapping,
+
+On 24/02/2022 13:03, Konstantin Meskhidze wrote:
 > 
-> Why are they "obviously" streaming mappings?
-
-Because they are obviously not coherent mapping?
-
-With my understanding, there are two kinds of DMA mapping, coherent
-mapping (which is also persistent mapping), and streaming mapping. The
-coherent mapping will be handled during driver init, and released during
-driver de-init. While streaming mapping will be done when needed at any
-time, and released after usage.
-
-Are we going to add another kind of mapping? It's not streaming mapping,
-but use dev->coherent_dma_mask, just because it uses dma_alloc_xxx()
-api.
-
 > 
-> > why do we need to check
-> > dev->coherent_dma_mask here? Because dev->coherent_dma_mask is the subset
-> > of dev->dma_mask, it's safer to use dev->coherent_dma_mask in these
-> > places? This is confusing, I talked to Hyeonggon in private mail, he has
-> > the same feeling.
+> 2/24/2022 12:55 PM, Mickaël Salaün пишет:
+>>
+>> On 24/02/2022 04:18, Konstantin Meskhidze wrote:
+>>>
+>>>
+>>> 2/1/2022 9:31 PM, Mickaël Salaün пишет:
+>>>>
+>>>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
+>>>>> Support 4 tests for bind and connect networks actions:
+>>>>
+>>>> Good to see such tests!
+>>>>
+>>>>
+>>>>> 1. bind() a socket with no landlock restrictions.
+>>>>> 2. bind() sockets with landllock restrictions.
+>>>>
+>>>> You can leverage the FIXTURE_VARIANT helpers to factor out this kind 
+>>>> of tests (see ptrace_test.c).
+>>>>
+>>>>
+>>>>> 3. connect() a socket to listening one with no landlock restricitons.
+>>>>> 4. connect() sockets with landlock restrictions.
+>>>>
+>>>> Same here, you can factor out code. I guess you could create helpers 
+>>>> for client and server parts.
+>>>>
+>>>> We also need to test with IPv4, IPv6 and the AF_UNSPEC tricks.
+>>>>
+>>>> Please provide the kernel test coverage and explain why the 
+>>>> uncovered code cannot be covered: 
+>>>> https://www.kernel.org/doc/html/latest/dev-tools/gcov.html
+>>>
+>>>   Hi Mickaёl!
+>>>   Could you please provide the example of your test coverage build
+>>>   process? Cause as I undersatand there is no need to get coverage data
+>>>   for the entire kernel, just for landlock files.
+>>
+>> You just need to follow the documentation:
+>> - start the VM with the kernel appropriately configured for coverage;
+>> - run all the Landlock tests;
+>> - gather the coverage and shutdown the VM;
+>> - use lcov and genhtml to create the web pages;
+>> - look at the coverage for security/landlock/
+
+It would be interesting to know the coverage for security/landlock/ 
+before and after your changes, and also specifically for 
+security/landlock.net.c
+
+>>
+>     Thank you so much!
 > 
-> Think of th coherent_dma_mask as dma_alloc_mask.  It is the mask for the
-> DMA memory allocator.  dma_mask is the mask for the dma_map_* routines.
+>     One more questuoin - Is it possible to run Landlock tests in QEMU and
+>     and gather coverage info or I need to change kernel for the whole VM?
 
-I will check code further. While this may need be noted in doc, e.g
-dma_api.rst or dma-api-howto.rst.
-
-If you have guide, I can try to add some words to make clear this. Or
-leave this to people who knows this clearly. I believe it will be very
-helpful to understand DMA api.
-
+You need to gather the coverage info on the same system that ran the 
+tests, so with the same kernel supporting both Landlock and gcov. You 
+can then generate the web pages elsewhere.
