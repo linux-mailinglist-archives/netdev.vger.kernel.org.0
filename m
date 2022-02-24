@@ -2,107 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E2474C28E6
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 11:09:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA02A4C293E
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 11:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233230AbiBXKJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 05:09:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
+        id S232591AbiBXKXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 05:23:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233227AbiBXKJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 05:09:40 -0500
-Received: from mail.tintel.eu (mail.tintel.eu [51.83.127.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223D128AD96;
-        Thu, 24 Feb 2022 02:09:05 -0800 (PST)
-Received: from localhost (localhost [IPv6:::1])
-        by mail.tintel.eu (Postfix) with ESMTP id 50C8C434FC4A;
-        Thu, 24 Feb 2022 11:09:02 +0100 (CET)
-Received: from mail.tintel.eu ([IPv6:::1])
-        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10032)
-        with ESMTP id SFVhmd4-Hbc4; Thu, 24 Feb 2022 11:09:01 +0100 (CET)
-Received: from localhost (localhost [IPv6:::1])
-        by mail.tintel.eu (Postfix) with ESMTP id BBDAB434FC4B;
-        Thu, 24 Feb 2022 11:09:01 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.tintel.eu BBDAB434FC4B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux-ipv6.be;
-        s=502B7754-045F-11E5-BBC5-64595FD46BE8; t=1645697341;
-        bh=NsEziSD8zXGAxjibXFGFRrDDNKL9BST7ZKyzNe6aCCc=;
-        h=Message-ID:Date:MIME-Version:To:From;
-        b=cjdelavZb9bpnlZ24Xu1lGiiftDZaQ9y9quF0qr572LG3GfZefKKt9dUqmP7bjiLj
-         R1a8lWip6pBHta8VooDEz3xgPmIt8MdklEls7mtZKSqClTrUKqLM5TJBk0v+8Siyyx
-         keJo3orc3JNB7CeA95rH4x8IBQDcFtW6jFtaYZlc=
-X-Virus-Scanned: amavisd-new at mail.tintel.eu
-Received: from mail.tintel.eu ([IPv6:::1])
-        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10026)
-        with ESMTP id 0BgzWEgqgmxJ; Thu, 24 Feb 2022 11:09:01 +0100 (CET)
-Received: from [IPV6:2001:67c:21bc:20::10] (unknown [IPv6:2001:67c:21bc:20::10])
-        (Authenticated sender: stijn@tintel.eu)
-        by mail.tintel.eu (Postfix) with ESMTPSA id E115A434FC4A;
-        Thu, 24 Feb 2022 11:09:00 +0100 (CET)
-Message-ID: <ac624e07-5310-438a-dce3-d2edb01e8031@linux-ipv6.be>
-Date:   Thu, 24 Feb 2022 12:08:59 +0200
+        with ESMTP id S232152AbiBXKXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 05:23:44 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1939D16BFA4;
+        Thu, 24 Feb 2022 02:23:13 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 8027220533;
+        Thu, 24 Feb 2022 11:23:10 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xobbXqXTnjQx; Thu, 24 Feb 2022 11:23:09 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E574A20504;
+        Thu, 24 Feb 2022 11:23:09 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id DF56380004A;
+        Thu, 24 Feb 2022 11:23:09 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Thu, 24 Feb 2022 11:23:09 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 24 Feb
+ 2022 11:23:09 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 23B393182EF0; Thu, 24 Feb 2022 11:23:09 +0100 (CET)
+Date:   Thu, 24 Feb 2022 11:23:09 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Lina Wang <lina.wang@mediatek.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David Ahern" <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2] xfrm: fix tunnel model fragmentation behavior
+Message-ID: <20220224102309.GN1223722@gauss3.secunet.de>
+References: <20220224060931.30404-1-lina.wang@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
-Content-Language: en-GB
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Song Liu <song@kernel.org>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-References: <20220222204236.2192513-1-stijn@linux-ipv6.be>
- <CAPhsuW6WgjL_atKCivbk5iMNBFHuSGcjAC0tdZYag2fOesUBKA@mail.gmail.com>
- <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
-From:   Stijn Tintel <stijn@linux-ipv6.be>
-In-Reply-To: <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,NICE_REPLY_A,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220224060931.30404-1-lina.wang@mediatek.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/02/2022 01:15, Andrii Nakryiko wrote:
-> On Tue, Feb 22, 2022 at 6:37 PM Song Liu <song@kernel.org> wrote:
->> On Tue, Feb 22, 2022 at 12:51 PM Stijn Tintel <stijn@linux-ipv6.be> wrote:
->>> When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
->>> max_entries parameter set, this parameter will be set to the number of
->>> possible CPUs. Due to this, the map_is_reuse_compat function will return
->>> false, causing the following error when trying to reuse the map:
->>>
->>> libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter mismatch
->>>
->>> Fix this by checking against the number of possible CPUs if the
->>> max_entries parameter is not set in the map definition.
->>>
->>> Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
->>> Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
->> Acked-by: Song Liu <songliubraving@fb.com>
->>
->> I think the following fix would be more future proof, but the patch
->> as-is is better for
->> stable backport? How about we add a follow up patch on top of current
->> patch to fix
->> def->max_entries once for all?
-> Keeping special logic for PERF_EVENT_ARRAY in one place is
-> preferrable. With this, the changes in map_is_reuse_compat() shouldn't
-> be necessary at all. Stijn, can you please send v2 with Song's
-> proposed changes?
->
-Will do!
+On Thu, Feb 24, 2022 at 02:09:31PM +0800, Lina Wang wrote:
+> In tunnel mode, if outer interface(ipv4) is less, it is easily to let 
+> inner IPV6 mtu be less than 1280. If so, a Packet Too Big ICMPV6 message 
+> is received. When send again, packets are fragmentized with 1280, they
+> are still rejected with ICMPV6(Packet Too Big) by xfrmi_xmit2().
+> 
+> According to RFC4213 Section3.2.2:
+>          if (IPv4 path MTU - 20) is less than 1280
+>                  if packet is larger than 1280 bytes
+>                          Send ICMPv6 "packet too big" with MTU = 1280.
+>                          Drop packet.
+>                  else
+>                          Encapsulate but do not set the Don't Fragment
+>                          flag in the IPv4 header.  The resulting IPv4
+>                          packet might be fragmented by the IPv4 layer
+>                          on the encapsulator or by some router along
+>                          the IPv4 path.
+>                  endif
+>          else
+>                  if packet is larger than (IPv4 path MTU - 20)
+>                          Send ICMPv6 "packet too big" with
+>                          MTU = (IPv4 path MTU - 20).
+>                          Drop packet.
+>                  else
+>                          Encapsulate and set the Don't Fragment flag
+>                          in the IPv4 header.
+>                  endif
+>          endif
+> Packets should be fragmentized with ipv4 outer interface, so change it.
+> 
+> After it is fragemtized with ipv4, there will be double fragmenation.
+> No.48 & No.51 are ipv6 fragment packets, No.48 is double fragmentized, 
+> then tunneled with IPv4(No.49& No.50), which obey spec. And received peer
+> cannot decrypt it rightly.
+> 
+> 48              2002::10	2002::11 1296(length) IPv6 fragment (off=0 more=y ident=0xa20da5bc nxt=50) 
+> 49   0x0000 (0) 2002::10	2002::11 1304	      IPv6 fragment (off=0 more=y ident=0x7448042c nxt=44)
+> 50   0x0000 (0)	2002::10	2002::11 200	      ESP (SPI=0x00035000) 
+> 51		2002::10	2002::11 180	      Echo (ping) request 
+> 52   0x56dc     2002::10	2002::11 248	      IPv6 fragment (off=1232 more=n ident=0xa20da5bc nxt=50)
+> 
+> esp_noneed_fragment has fixed above issues. Finally, it acted like below:
+> 1   0x6206 192.168.1.138   192.168.1.1 1316 Fragmented IP protocol (proto=Encap Security Payload 50, off=0, ID=6206) [Reassembled in #2]
+> 2   0x6206 2002::10	   2002::11    88   IPv6 fragment (off=0 more=y ident=0x1f440778 nxt=50)
+> 3   0x0000 2002::10	   2002::11    248  ICMPv6    Echo (ping) request 
+> 
+> Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
 
-Thanks,
-Stijn
+Your patch does not apply, it is not in plain text format.
+
+> ---
+>  net/ipv6/xfrm6_output.c   | 16 ++++++++++++++++
+>  net/xfrm/xfrm_interface.c |  5 ++++-
+>  2 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
+> index d0d280077721..1ee643f8f5d5 100644
+> --- a/net/ipv6/xfrm6_output.c
+> +++ b/net/ipv6/xfrm6_output.c
+> @@ -45,6 +45,19 @@ static int __xfrm6_output_finish(struct net *net, struct sock *sk, struct sk_buf
+>  	return xfrm_output(sk, skb);
+>  }
+>  
+> +static int esp_noneed_fragment(struct sk_buff *skb)
+> +{
+> +	struct frag_hdr *fh;
+> +	u8 prevhdr = ipv6_hdr(skb)->nexthdr;
+> +
+> +	if (prevhdr != NEXTHDR_FRAGMENT)
+> +		return 0;
+> +	fh = (struct frag_hdr *)(skb->data + sizeof(struct ipv6hdr));
+> +	if (fh->nexthdr == NEXTHDR_ESP || fh->nexthdr == NEXTHDR_AUTH)
+> +		return 1;
+> +	return 0;
+> +}
+
+While at it, this is not an ESP speciffic function. Please rename to
+xfrm_noneed_fragment.
 
