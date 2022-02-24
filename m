@@ -2,268 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 382C84C2EC5
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:58:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 772D54C2EDA
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbiBXO6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 09:58:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
+        id S235706AbiBXPCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 10:02:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235517AbiBXO6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 09:58:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 245EC13D92E
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 06:58:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645714690;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sLi8/HvPywrlQR06d5solHIr81MCizce1jnEJh+4CEI=;
-        b=PqbYDrpxX9FbRAdR78l7ytIOdKp0Tq8r82icdaRKr2aHBFZ/hHlaBiwPxVSYGsBB23BZNS
-        j0PRJPcueIsoXYFYJj4AXKa8z5otzDJD7jAySMpd01AL5AQW7ES16xxwa276G5KOFksz0Q
-        0RREuyQysN1vLkTktHznIYlNZacQkV0=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-516-x278Iae0Oya5XGz7TM2VYg-1; Thu, 24 Feb 2022 09:58:07 -0500
-X-MC-Unique: x278Iae0Oya5XGz7TM2VYg-1
-Received: by mail-ej1-f69.google.com with SMTP id nb1-20020a1709071c8100b006d03c250b6fso1326752ejc.11
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 06:58:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sLi8/HvPywrlQR06d5solHIr81MCizce1jnEJh+4CEI=;
-        b=wDgdnWNJoxFC6/T0Vmi7BNj81lCmJ5iZM1i5PaIQoJ6xxD9j+yI2KbcuqG1dtGlbrP
-         3ydr6pC++19v+azI+/BDwKT0byf8hZQTkXSvoWKG4W2DtaT1GeychenCZqCEa/F1CJG7
-         NZg3Yva87mcQudagMR3sACtKEhZus1XR3zwiC7MG2k6mopJL7XNU4/u1gWcUsbH1prlW
-         f+xLqE6t5tiAMh2ivZJ5HJ+QPZqYP6+jG56yumZEp3pWGyVx2rzzlJyEVLoRANm31ww+
-         rNHZZ9xw2P8e65eXkU4EHocHTNHWzq8a7oNmjCPhiVbGfAfzO/OnILSXhn5B4asrV1Nn
-         /HbA==
-X-Gm-Message-State: AOAM530a9TtTJfdJ71juBBiJBw1E9DphtC2dq0DVqbtW35qtCUNd0K9g
-        1mBRMN/3rZp3o9dJYFUf4YJerNfp87NOw+i01fw7dTAC1kOGKB1oCHeHJoLlremAWGFqsKc0Ay6
-        XYG5ERtQlFwG6gBIx
-X-Received: by 2002:a17:906:5e13:b0:6cf:42c:56b7 with SMTP id n19-20020a1709065e1300b006cf042c56b7mr2560138eju.725.1645714685916;
-        Thu, 24 Feb 2022 06:58:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw1Fdaq03ebBOuTkF573q/U+4yxiSEURppdkHQu9XOUVTFWcqiUT2dyz/fPEeDzFPgVjBWYIg==
-X-Received: by 2002:a17:906:5e13:b0:6cf:42c:56b7 with SMTP id n19-20020a1709065e1300b006cf042c56b7mr2560114eju.725.1645714685629;
-        Thu, 24 Feb 2022 06:58:05 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id s1sm1466186edd.100.2022.02.24.06.58.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 06:58:05 -0800 (PST)
-Message-ID: <2d3278ef-0126-7b93-319b-543b17bccdc2@redhat.com>
-Date:   Thu, 24 Feb 2022 15:58:04 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S235692AbiBXPCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:02:35 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFCFA94C1;
+        Thu, 24 Feb 2022 07:02:04 -0800 (PST)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21OCYY1E016893;
+        Thu, 24 Feb 2022 15:01:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
+ bh=KFk7YYN3/CO7VhAJPl6bpO5cj2MiTv2Y21AibOF9lyA=;
+ b=LpB75/N3H1yk6HPMpoN5wx2u842fZUedw9ie4MbYgEk2Pb+QScUsXfPtDL9m3hXjUfY7
+ mFn3WtOpYX7rEJniT/BIPXfOzI4DgTD7q27G4wSDSfeoZlhfD0Hqm+2a+XEOSaFv4SkB
+ jByVhQDgB8W9rZSG0Qq/a2jBwFmvIa0tPt42X+xlKkUy6akBAWE/kn7LEuDoFM4T2qcg
+ CgnKrjK+h01vVg+mTkB/cRNSKw3mjW1KyGTDVqbN18cGckTnXYsJIPxy/FPG0ZzEzxmW
+ 9ugtGr7mXUbb1LymOCHI/z01Mz2Y5VjeeOJsI2J4lJX/a87La7bABiu89bdc9SDZ9Jyc Aw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ect3cqeqm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 15:01:47 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21OF1g7P180557;
+        Thu, 24 Feb 2022 15:01:45 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2170.outbound.protection.outlook.com [104.47.73.170])
+        by userp3030.oracle.com with ESMTP id 3eannxk106-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 15:01:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LtkJtrDFpT/LRfY2tkHdkOzT1pR6SdRudb3KXTr1IOIKnNDRyAiAKFvUsrbQZd3AQK6P7v8cOKsRmRlibfS3PlPjEflXHvKGI09MiFsbnHRr9XlxczV+hTPd0iZOrPwOgcIi7XWuqwN9BW+7GcUBkSEWS4ItA3p47n1VFm48319qT0QMBWGrXSQHOLgkuNBFTrdeEEsh6vZGzEz5PJGk0aIzzRr0ExViSDdqbt95o8qK88ihvEWldyTXfPpChEKtm31MItk0Gy+GJPFtgPmayi5iE0fhwRZsndvcHZ6f0Jf0iPu0SlgPcy3BsLmxYxt4sez460akf/l8j4Oa4o+l3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KFk7YYN3/CO7VhAJPl6bpO5cj2MiTv2Y21AibOF9lyA=;
+ b=luHiohdVUAve+z+aeb8ntIbRvbRGXCE0OKJzgwUk7XUr7k7bzjPgdgXPmPpzPIw9jSv3M97zszWXeJzO9GOihluF36mt6W9Fle4k7DHnP6HldjhZkBlm2+eSkrBfpscIYQp2byChdwL2iFpXgQo6nfAfTB1Y4Z38Iimvs4ACp1+n8TEXMjfkqCx1XlhNdPzFuS35gS7mzGckcGABdvjNphCYfP7RAMX1qFVxkMk1kRH2bbJVIMgoQMTfFKv9Qss5BrHrW0GebOsLW2Mhvwx8GvLuhdu+GUI9X/nM+jwl45l8T/jPbHPE7KZuruK+BFmX+Xs3nLxQymhRn3/DQ/3PPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KFk7YYN3/CO7VhAJPl6bpO5cj2MiTv2Y21AibOF9lyA=;
+ b=AadbWmeB7SvonWDzkowV7QtJ4T8/KdOG31MRAcCAitSvPCI9ugJ2uyTmsmIE9vfwMyc8Ijbjua2qEyh6cBtCeJHG4uYxebDvrQ1yNomvnGvbzuYVjtHPYzQqiIdTOA54Y+eN9I2ff1m66Z3D6XfrU0UUOEymJyszS6Kzso7oYEU=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BN6PR10MB1250.namprd10.prod.outlook.com
+ (2603:10b6:405:11::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Thu, 24 Feb
+ 2022 15:01:42 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.4995.027; Thu, 24 Feb 2022
+ 15:01:42 +0000
+Date:   Thu, 24 Feb 2022 18:01:30 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220224154040.2633a4e4@fixe.home>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220224154040.2633a4e4@fixe.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH] netfilter: nf_tables: fix error code in nf_tables_updobj()
+Message-ID: <20220224150130.GA6856@kili>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: ZR0P278CA0070.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:21::21) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cb55d314-79fa-4595-2a95-08d9f7a6913e
+X-MS-TrafficTypeDiagnostic: BN6PR10MB1250:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR10MB1250352E602364398F95E2308E3D9@BN6PR10MB1250.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: v4c/679se3DFP2EOLIy1+i1tj/kXlA29RniEygDa3CO5KV0NzqID19KQYHJzGBdl/cUH5jMbvKtuPjOxd/d3gFe790YfSfu1hbEpii5ph987DiOzhM33J5FvQ+MvYud7VzsyP9LujWSZPkyqPegSzRGDV9W8JZ39S70nvJCizhDOH2VGF/anuK/hbkScrybtSMNRQ7twdQXt3u9PoH15N59wysCcmQgiMNbb66BB//IHIDyRDcwX01Gs2IJ6mn6fQKxVUoe9DMhsHPCbNW+0AS5HR4/8M0HtVe0oWqCK4n0u755rFf0QOKssZltEqjEfyylYEa4iJkrpGhU8rJ44SwkLSmPoDOUywmRVapJ0d8eUmfjCo+YOUaFh1ih6aWwFk9ahboZEU74GPDieN5m7IW1HUeIh2odp2wuGdcZUsielHb8B0NUQdjSwcXuBbHwohAV3uEN3XE9D18HwPS5V4/lFZG8FO8qc4hkUh5Oyyc+1kei3aAnlIQJ+qiNyDBi/UIyFUz98IfsXV1sw1fWGrIjqZNssyrB52X+AXWiAbPacqQbquMUb+xWgu6gG5DxF8+G0Pa1vX/+ZZpEkPb2UURgEfdaasQz3NLIMyNJpCukYSpWFvuKvuycgVISJvlYsnOgDffuc/F1bkekYgxSSAePdnFMt4SjkLMhC0syoz25nwFQiL3wOGPPW1uadPetHUgAQjfxAWvU5HE8Qi1It+Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(33656002)(1076003)(4326008)(66946007)(66476007)(8676002)(66556008)(110136005)(26005)(54906003)(6512007)(6506007)(186003)(6666004)(83380400001)(33716001)(2906002)(52116002)(9686003)(44832011)(6486002)(38350700002)(38100700002)(5660300002)(508600001)(86362001)(8936002)(4744005)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lkd4Sl5ow7zgzQrf+mgGXpzKZyzBQCr8w9bE0dCMw+crHTWXVQxnFA7HW+E2?=
+ =?us-ascii?Q?W0c8DdJPf0pEOnIusBFXJB20L73Ud5ti9ctg7ZwCdaAgy6dZbD2d1Qa3IU8r?=
+ =?us-ascii?Q?Z+4onBIpm7BnXjQ4sipRJc+RVLKqFQkd83zEP09613AhEk3y//9mX4XhYqgE?=
+ =?us-ascii?Q?A9kFmO6SJZtPB9daM/V69QHMu65dk1tU4eIkX7fTlXeViN76HUTmZFBO9luQ?=
+ =?us-ascii?Q?Jxavi9IexZda57nNViXftS79MyndBGVMAj98U54VVtgyl4tNsn3E7OjHItAE?=
+ =?us-ascii?Q?SoPqw/kSdiiPtoKNXFTMz+B94uu0zb2M9rOSEtj9il7QPahpEZUN6NV3SZY6?=
+ =?us-ascii?Q?ETXf6tXkh29y4zjK3tW2H6hrnGpYbQpQ5BSGAvxye0GVYJlTRNfFN4YicK7Y?=
+ =?us-ascii?Q?l1yMj/Yg2KhkjntbmfNAjqY1XYgPfNO1yK2gC0huWMw1vEdNEUcm6W5tNLYS?=
+ =?us-ascii?Q?ZuZXMrxWB1xQ55WsF/iefFmsWMW8uaqSnnBssY9Av7MMIQkEc2867MjJLwe1?=
+ =?us-ascii?Q?F6yjZQn3zMElPcmmG+wW7pL0gkeBydwcRN+ahfyHIOU3aPetX+1GZU0vAo1K?=
+ =?us-ascii?Q?QAJwsbk/r9ele8xM4wqN28JEzUNOJ+55Imc2dfcig4jwaj9v1kkozlE5dZjO?=
+ =?us-ascii?Q?kAKOel4KgTiBz9x7vGVmoe5luy/DtnlXftaCOdLFaAfCtdG2CBloFWW1K5es?=
+ =?us-ascii?Q?pVJvOBHBXe0wVI6ble89EdOURTG8quwojA5svaCu+4C9eLG4pZHqVc4eSjO4?=
+ =?us-ascii?Q?pWB2/0g2tePFIIigaktxxTt7+HJcUj1Jmsj10YbK6qfKa8vC/fDOnzzt7/vS?=
+ =?us-ascii?Q?XZaFlFwBt0xeSrp/5d369vzq7zkXoj611VVLKwlR1eVNC+qo7hmaiGz+NpYn?=
+ =?us-ascii?Q?gcKhLMNMqKJW57DP/AoviWup3NhC7+J531FwMT3Mx8QYgCx1o8cVC05NzBXd?=
+ =?us-ascii?Q?JQD6RfHsoojk5ODoUyYVDPLhyWFvCU0efQa4LFb1yQTeD5MAxfP+qbN1D2Uk?=
+ =?us-ascii?Q?YxfnKBGf1w12ak/F9ZSR6OuYnni2lC3TIkxOajArHRNyNMFAhShw/ifIcTtZ?=
+ =?us-ascii?Q?TAPbNGKCnGU5potvYViGAHlqZPTk0i/ypY4xY7hE0Lw9O3/DGenXFfV1G8su?=
+ =?us-ascii?Q?KiiG8MT0IME4UOXXSx7aQo8uXXQRKADjXLK8YrKrq2cof+4z6O+ZD5qr8yW0?=
+ =?us-ascii?Q?34MDa9/SFdG+t8jmCqyMbA/neP/rS5CuGiD0WDDMx39qRuu9Sb+0RdpwfX1k?=
+ =?us-ascii?Q?ZjA6PcpigQ8EETp/VBgWpE3ogbZXq9RgqNHirjcf7memAR8GZribXp/M2LgI?=
+ =?us-ascii?Q?VlUZDs1HqQbd/rRJdaMcGgZaimLfmC9SKxQlkA3YSWDkuybuYpiLV1ln1aly?=
+ =?us-ascii?Q?3oPuVJKxVM7Fgfh0gwQdkuPK1qbWkirpXxKNcYFPG1pgmF1vve1b+R2Ph1Y8?=
+ =?us-ascii?Q?9NVOUkuGL/LjrDZAF+0Ufz9cH3LrVw07GV5d5/piPZDPxJb1XZduARfF4Myd?=
+ =?us-ascii?Q?WnVv9zlJru6UkU88eqVU+5KulwugmiuqP0ya6RQsTbv6JhuV91x0Cm2wNK+L?=
+ =?us-ascii?Q?ls0Fdo4cct3TE6yssSV+8vAM0U8s3+Jiqb1lG+YjXgjEBDhfPQCtAQak+d1z?=
+ =?us-ascii?Q?tRxTo81QltxZPnDwRB8WOJc/PhIX/izmEED3TBS1tfeOdLD068DsGIaSor0e?=
+ =?us-ascii?Q?nHy2sw=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb55d314-79fa-4595-2a95-08d9f7a6913e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 15:01:42.4912
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8DsPjpuPoddHigmg+jMZewBd7lnvK9z9iwRe4uDqG1Hyb1svDPhn+tNgUvduslf74R2tKOvzpaCI6ux6/eNaTXHBOiXFttNoTtSR1AAiMLY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR10MB1250
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10267 signatures=681306
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 adultscore=0
+ malwarescore=0 phishscore=0 mlxlogscore=999 mlxscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202240090
+X-Proofpoint-ORIG-GUID: lNHusckupJSTSQZPucjHvUhFMJ5E2_0f
+X-Proofpoint-GUID: lNHusckupJSTSQZPucjHvUhFMJ5E2_0f
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Clément,
+Set the error code to -ENOMEM instead of leaving it uninitialized.
 
-On 2/24/22 15:40, Clément Léger wrote:
-> Hi,
-> 
-> As stated at the beginning of the cover letter, the PCIe card I'm
-> working on uses a lan9662 SoC. This card is meant to be used an
-> ethernet switch with 2 x RJ45 ports and 2 x 10G SFPs. The lan966x SoCs
-> can be used in two different ways:
-> 
->  - It can run Linux by itself, on ARM64 cores included in the SoC. This
->    use-case of the lan966x is currently being upstreamed, using a
->    traditional Device Tree representation of the lan996x HW blocks [1]
->    A number of drivers for the different IPs of the SoC have already
->    been merged in upstream Linux.
-> 
->  - It can be used as a PCIe endpoint, connected to a separate platform
->    that acts as the PCIe root complex. In this case, all the devices
->    that are embedded on this SoC are exposed through PCIe BARs and the
->    ARM64 cores of the SoC are not used. Since this is a PCIe card, it
->    can be plugged on any platform, of any architecture supporting PCIe.
-> 
-> The goal of this effort is to enable this second use-case, while
-> allowing the re-use of the existing drivers for the different devices
-> part of the SoC.
-> 
-> Following a first round of discussion, here are some clarifications on
-> what problem this series is trying to solve and what are the possible
-> choices to support this use-case.
-> 
-> Here is the list of devices that are exposed and needed to make this
-> card work as an ethernet switch:
->  - lan966x-switch
->  - reset-microchip-sparx5
->  - lan966x_serdes
->  - reset-microchip-lan966x-phy
->  - mdio-mscc-miim
->  - pinctrl-lan966x
->  - atmel-flexcom
->  - i2c-at91
->  - i2c-mux
->  - i2c-mux-pinctrl
->  - sfp
->  - clk-lan966x
-> 
-> All the devices on this card are "self-contained" and do not require
-> cross-links with devices that are on the host (except to demux IRQ but
-> this is something easy to do). These drivers already exists and are
-> using of_* API to register controllers, get properties and so on.
-> 
-> The challenge we're trying to solve is how can the PCI driver for this
-> card re-use the existing drivers, and using which hardware
-> representation to instantiate all those drivers.
-> 
-> Although this series only contained the modifications for the I2C
-> subsystem all the subsystems that are used or needed by the previously
-> listed driver have also been modified to have support for fwnode. This
-> includes the following subsystems:
-> - reset
-> - clk
-> - pinctrl
-> - syscon
-> - gpio
-> - pinctrl
-> - phy
-> - mdio
-> - i2c
-> 
-> The first feedback on this series does not seems to reach a consensus
-> (to say the least) on how to do it cleanly so here is a recap of the
-> possible solutions, either brought by this series or mentioned by
-> contributors:
-> 
-> 1) Describe the card statically using swnode
-> 
-> This is the approach that was taken by this series. The devices are
-> described using the MFD subsystem with mfd_cells. These cells are
-> attached with a swnode which will be used as a primary node in place of
-> ACPI or OF description. This means that the device description
-> (properties and references) is conveyed entirely in the swnode. In order
-> to make these swnode usable with existing OF based subsystems, the
-> fwnode API can be used in needed subsystems.
-> 
-> Pros:
->  - Self-contained in the driver.
->  - Will work on all platforms no matter the firmware description.
->  - Makes the subsystems less OF-centric.
-> 
-> Cons:
->  - Modifications are required in subsystems to support fwnode
->    (mitigated by the fact it makes to subsystems less OF-centric).
->  - swnode are not meant to be used entirely as primary nodes.
->  - Specifications for both ACPI and OF must be handled if using fwnode
->    API.
-> 
-> 2) Use SSDT overlays
-> 
-> Andy mentioned that SSDT overlays could be used. This overlay should
-> match the exact configuration that is used (ie correct PCIe bus/port
-> etc). It requires the user to write/modify/compile a .asl file and load
-> it using either EFI vars, custom initrd or via configfs. The existing
-> drivers would also need more modifications to work with ACPI. Some of
-> them might even be harder (if not possible) to use since there is no
-> ACPI support for the subsystems they are using .
-> 
-> Pros:
->  - Can't really find any for this one
-> 
-> Cons:
->  - Not all needed subsystems have appropriate ACPI bindings/support
->    (reset, clk, pinctrl, syscon).
->  - Difficult to setup for the user (modify/compile/load .aml file).
->  - Not portable between machines, as the SSDT overlay need to be
->    different depending on how the PCI device is connected to the
->    platform.
-> 
-> 3) Use device-tree overlays
-> 
-> This solution was proposed by Andrew and could potentially allows to
-> keep all the existing device-tree infrastructure and helpers. A
-> device-tree overlay could be loaded by the driver and applied using
-> of_overlay_fdt_apply(). There is some glue to make this work but it
-> could potentially be possible. Mark have raised some warnings about
-> using such device-tree overlays on an ACPI enabled platform.
-> 
-> Pros:
->  - Reuse all the existing OF infrastructure, no modifications at all on
->    drivers and subsystems.
->  - Could potentially lead to designing a generic driver for PCI devices
->    that uses a composition of other drivers.
-> 
-> Cons:
->  - Might not the best idea to mix it with ACPI.
->  - Needs CONFIG_OF, which typically isn't enabled today on most x86
->    platforms.
->  - Loading DT overlays on non-DT platforms is not currently working. It
->    can be addressed, but it's not necessarily immediate.
-> 
-> My preferred solutions would be swnode or device-tree overlays but
-> since there to is no consensus on how to add this support, how
-> can we go on with this series ?
+Fixes: 33170d18fd2c ("netfilter: nf_tables: fix memory leak during stateful obj update")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+This presumably goes through the netfilter tree.
 
-FWIW I think that the convert subsystems + drivers to use the fwnode
-abstraction layer + use swnode-s approach makes sense. For a bunch of
-x86/ACPI stuff like Type-C muxing/controllers/routing but also MIPI
-cameras we have already been moving in that direction since sometimes
-a bunch of info seems to be hardcoded in Windows drivers rather then
-"spelled out" in the ACPI tables so from the x86 side we are seeing
-a need to have platform glue code which replaces the hardcoding on
-the Windows side and we have been using the fwnode abstraction +
-swnodes for this, so that we can keep using the standard Linux
-abstractions/subsystems for this.
+ net/netfilter/nf_tables_api.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-As Mark already mentioned the regulator subsystem has shown to
-be a bit problematic here, but you don't seem to need that?
-
-Your i2c subsys patches looked reasonable to me. IMHO an important
-thing missing to give you some advice whether to try 1. or 3. first
-is how well / clean the move to the fwnode abstractions would work
-for the other subsystems.
-
-Have you already converted other subsystems and if yes, can you
-give us a pointer to a branch somewhere with the conversion for
-other subsystems ?
-
-Regards,
-
-Hans
-
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 49060f281342..d0d2339e7c89 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -6558,8 +6558,10 @@ static int nf_tables_updobj(const struct nft_ctx *ctx,
+ 
+ 	trans = nft_trans_alloc(ctx, NFT_MSG_NEWOBJ,
+ 				sizeof(struct nft_trans_obj));
+-	if (!trans)
++	if (!trans) {
++		err = -ENOMEM;
+ 		goto err_trans;
++	}
+ 
+ 	newobj = nft_obj_init(ctx, type, attr);
+ 	if (IS_ERR(newobj)) {
+-- 
+2.20.1
 
