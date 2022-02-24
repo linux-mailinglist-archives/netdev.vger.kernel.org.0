@@ -2,91 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60CD04C385F
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 23:06:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E50564C38A3
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 23:15:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235193AbiBXWHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 17:07:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47594 "EHLO
+        id S235330AbiBXWP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 17:15:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiBXWHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 17:07:12 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE4B201A5;
-        Thu, 24 Feb 2022 14:06:42 -0800 (PST)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21OLhwnA024950;
-        Thu, 24 Feb 2022 22:06:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=1VsRgpEKCbxHkiLbBhtBVJFb41p7/UP8dbpAPc9Xgr4=;
- b=hCydhYIpdP4SSfmO6HLkAHQBHGimNRvQO/ydCPnWafhwt1uAGqfv6JyAM9r+kWXsLVkE
- 9XGK2U+grqoDjpKFRfh4jaTpVptTPkOiX4TDgmht93932XoFY+vyXvSfJMR06dY1a5S9
- z38TvY3WTHMoSQZ7TxKwYXbmk/825ira9enCQ5KRHLfScVEQgVw1ROJBVNtLAm/il7Jc
- aQAZUepl6HlHVHVP0UzZf6sT+hlVwPo1fPaDuWsvn1vNNJJvN3x16GhAT9WJ+G/VIpnN
- e8PTPMoCMvnpsGpIwX20/xU0PjKXp6fbxJugSnyfKm2qXBNf6xhjsQM09Pt4WP+w40qt iQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edq0k4m57-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 22:06:35 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21OM4YCn032764;
-        Thu, 24 Feb 2022 22:06:35 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edq0k4m4e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 22:06:35 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21OM3XQg029360;
-        Thu, 24 Feb 2022 22:06:33 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03fra.de.ibm.com with ESMTP id 3ear69jjnn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 22:06:32 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21OM6Ugx38207758
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Feb 2022 22:06:30 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 49C18A4055;
-        Thu, 24 Feb 2022 22:06:30 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D6C5FA4053;
-        Thu, 24 Feb 2022 22:06:29 +0000 (GMT)
-Received: from [9.171.91.202] (unknown [9.171.91.202])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 24 Feb 2022 22:06:29 +0000 (GMT)
-Message-ID: <a5a037f9-9b33-a330-02b8-9b157c2addda@linux.ibm.com>
-Date:   Thu, 24 Feb 2022 23:06:45 +0100
+        with ESMTP id S235311AbiBXWP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 17:15:57 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA2129DD04;
+        Thu, 24 Feb 2022 14:15:27 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id d28so1763113wra.4;
+        Thu, 24 Feb 2022 14:15:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=23uPqqlxtmnZRHLs9v3vgksA5KeOpFw/ThnhTpkf+2w=;
+        b=S6nCprqxh0JglbBAqwKJDoHoVIjtj4T6nsOoxoor9OqZxzcWSmesnc8rh8G+UcJWwk
+         mc13iC3iU8uKZp4mj0CgARdJtp+90Ud9bgn5xxixO3CyqpAeGCn0AN3oF1cX3oJB8QHI
+         8UDrUzs36GYtOFY6uAjLWQanpjCWTIYlFlqjK+5LUI+xyxfWFQ6tVS0z0hiVKS+6d/0p
+         uDzEg8pnt+wxr4pKPMoXM/zFFnEQk9VlaKv2+C5Vd2mQ7edNv+t4RTkX4Sr9Xtq8hNMz
+         ujeMJtqjfqPyaAiw66xkhG8E57AyVTyOdWffuxDtoxuEQE1wiizAlDyCwHPUFQtj1pHX
+         q82g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=23uPqqlxtmnZRHLs9v3vgksA5KeOpFw/ThnhTpkf+2w=;
+        b=w2hc+VyG5yjyra+NFXy2ClKUEgfH2tdF0yiGVRlyQOkYVDFSHp2xuOLFEwPQozVg8J
+         gttDbdi5tVcMCyRElPVA5hgc2+TO07lv5ecf/E2o/DQs8yYyLdsW/FMZ3UCKQ/diycsz
+         mtxO+r/WNk7wbunAncECtjIK3lxJyQjP4jaCk0n7RYljPXavfd3SUmz45EZlYtDay4UV
+         qUd1T18AwZgljoXNo7emjcXFF18MEcX7WKhMVyiHinpGbUeLPbHK/HBr4T/mzj3Bc0zT
+         BgjiAE6lo4a/tX4dqIuV6GEaCSQ99sD4Vkf59/orkq2mvSXppLBTvhrn0d9nCJmOWPcT
+         qvYg==
+X-Gm-Message-State: AOAM533Clabvnq1Pcxc8xb27lp+u42Bch0sFmvGADyvJApkxlLm3r1O0
+        va+xS3Yk2yYsRoGkD/zNee4=
+X-Google-Smtp-Source: ABdhPJwAm/jUbae804Iirsh2TE+k/iRCYA06xF1rFmTlmPTvYCNCE4wR20beM9tBYDQ6CUCuGmHO7g==
+X-Received: by 2002:a05:6000:1789:b0:1ea:7bb7:312c with SMTP id e9-20020a056000178900b001ea7bb7312cmr3861415wrg.660.1645740926020;
+        Thu, 24 Feb 2022 14:15:26 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id r15-20020a05600c35cf00b003808165fbc2sm584330wmq.25.2022.02.24.14.15.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 14:15:25 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] net/mlx5e: Fix return of a kfree'd object instead of NULL
+Date:   Thu, 24 Feb 2022 22:15:24 +0000
+Message-Id: <20220224221525.147744-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH net] net/smc: fix connection leak
-Content-Language: en-US
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1645716379-30924-1-git-send-email-alibuda@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <1645716379-30924-1-git-send-email-alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: zMFXMy-hY_q12jAvdaf6LgEqL9nmNs9d
-X-Proofpoint-GUID: 44g8YazxQ3BLRlav5KJm_B8lO03nlZZn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-24_06,2022-02-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- priorityscore=1501 phishscore=0 adultscore=0 lowpriorityscore=0
- malwarescore=0 bulkscore=0 clxscore=1015 mlxscore=0 impostorscore=0
- spamscore=0 mlxlogscore=924 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202240121
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,13 +75,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/02/2022 16:26, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> There's a potential leak issue under following execution sequence :
-> 
+Currently in the case where parse_attr fails to be allocated the memory
+pointed to by attr2 is kfree'd but the non-null pointer attr2 is returned
+and a potential use of a kfree'd object can occur.  Fix this by returning
+NULL to indicate a memory allocation error.
 
-Thank you!
+Addresses issue found by clang-scan:
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:3401:3: warning: Use of
+memory after it is freed [unix.Malloc]
 
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Fixes: 8300f225268b ("net/mlx5e: Create new flow attr for multi table actions")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 76a015dfc5fc..c0776a4a3845 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -3398,7 +3398,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
+ 	if (!attr2 || !parse_attr) {
+ 		kvfree(parse_attr);
+ 		kfree(attr2);
+-		return attr2;
++		return NULL;
+ 	}
+ 
+ 	memcpy(attr2, attr, attr_sz);
+-- 
+2.34.1
 
