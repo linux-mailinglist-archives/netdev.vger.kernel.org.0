@@ -2,530 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9894C2242
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 04:23:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E4DC4C2260
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 04:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229486AbiBXDTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 22:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
+        id S229450AbiBXDY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 22:24:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiBXDTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 22:19:10 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C356D19E0BB;
-        Wed, 23 Feb 2022 19:18:38 -0800 (PST)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K3yl02zr2z67Dqh;
-        Thu, 24 Feb 2022 11:17:32 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Thu, 24 Feb 2022 04:18:35 +0100
-Message-ID: <a95b208c-5377-cf5c-0b4d-ce6b4e4b1b05@huawei.com>
-Date:   Thu, 24 Feb 2022 06:18:34 +0300
+        with ESMTP id S229441AbiBXDYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 22:24:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BAA71A128C
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 19:23:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645673034;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CLYmPytNi8Y5ncMBx5Mf9J1ouptftAJw22Im2XIZ2e8=;
+        b=dQwsX+nUkBoh+lBm+N288BpyN7Msk4h7U5pxME9bEyQeS+QmTTL6fGcgBT5zXrel26UbYp
+        eNbusDUbQKOF0K6gGOLqI3rUrgNoqPxR9fgy9HcStDgJ/+e1xaZ6paL46PkRhAkqc3X4Mc
+        HxxLeTPKo8d9pfu00TbHZdmr8CgwnqE=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-256-pFknz_mqPGOhsGPzG9Rr9Q-1; Wed, 23 Feb 2022 22:23:53 -0500
+X-MC-Unique: pFknz_mqPGOhsGPzG9Rr9Q-1
+Received: by mail-lj1-f200.google.com with SMTP id a5-20020a2eb545000000b002462b5eddb3so381695ljn.14
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 19:23:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CLYmPytNi8Y5ncMBx5Mf9J1ouptftAJw22Im2XIZ2e8=;
+        b=IsAJsNsBUURAUwFeGx4O+9AsupkqDmWKjaHI4u7EdS/KKYuhFvYxCl0O7hdjNfZg0I
+         06HMfq1KgSzdaLBP+nlC8qFC26z4OseE+6EreChTISuURVtrveo3MEfjTyl9YLtSToG0
+         UOnWo/ngOtDTvHGkiUkiOCufyoy0BAqqAxnJ6S4UzktEeWZ5QYNAuFZ12nTJ1axrU6iS
+         Rb5FSe3EGjVDUbCM986UfniGD+0sPjrzSlqvXZNLaUys1nkuxnYZA9uAsE9Gm4IMpuEW
+         rBrTur3ugqWE2ZAtiRRgbxRSXIjsxNHFJQeMhgIGl/UIP6nhS+Uhl8l14IYn4laZ5Of3
+         Xm/A==
+X-Gm-Message-State: AOAM533yZwZ3/XMV9sqee+0CKt5uwUiRJbr7ynNitlpE7WmBw/UtBgpR
+        G6BsZmUQ5IZ6sqrWE7ijlGm9/GuuC8HFrswMiYOCfSp4lhIVvASautu8Q/urqEXMs0uc3UL1YE7
+        ka+j8GiyTik/PpiAEunFNk6isZKFB06Go
+X-Received: by 2002:a05:6512:3147:b0:443:323d:179d with SMTP id s7-20020a056512314700b00443323d179dmr579175lfi.98.1645673031405;
+        Wed, 23 Feb 2022 19:23:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzUe5dwgs4Zt8RJjJa9dYBCHoUjub4YEZ6koNq4tb1tfp+jvAlBT28t478zjTiwSykr/+BPx9EVwpRaN2ShvWA=
+X-Received: by 2002:a05:6512:3147:b0:443:323d:179d with SMTP id
+ s7-20020a056512314700b00443323d179dmr579169lfi.98.1645673031202; Wed, 23 Feb
+ 2022 19:23:51 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
- <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
- <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <CAHJXk3b9WhMb7CDHbO3ixGg23G1u7Y+guoLQLWkARgX6Ssrpow@mail.gmail.com>
+ <CAHJXk3bpBosy01XojpCd=LFC1Dwbms9GA7FOEudOa_mRgPz7qA@mail.gmail.com>
+In-Reply-To: <CAHJXk3bpBosy01XojpCd=LFC1Dwbms9GA7FOEudOa_mRgPz7qA@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 24 Feb 2022 11:23:39 +0800
+Message-ID: <CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com>
+Subject: Re: Question about the sndbuf of the tap interface with vhost-net
+To:     Harold Huang <baymaxhuang@gmail.com>
+Cc:     users@dpdk.org, Maxime Coquelin <maxime.coquelin@redhat.com>,
+        Chenbo Xia <chenbo.xia@intel.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Adding netdev.
 
+On Wed, Feb 23, 2022 at 9:46 PM Harold Huang <baymaxhuang@gmail.com> wrote:
+>
+>  Sorry. The performance tested by iperf is degraded from 4.5 Gbps to
+> 750Mbps per flow.
+>
+> Harold Huang <baymaxhuang@gmail.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=8823=
+=E6=97=A5=E5=91=A8=E4=B8=89 21:13=E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > I see in dpdk virtio-user driver, the TUNSETSNDBUF is initialized with
+> > INT_MAX, see: https://github.com/DPDK/dpdk/blob/main/drivers/net/virtio=
+/virtio_user/vhost_kernel_tap.c#L169
 
-2/1/2022 9:31 PM, Mickaël Salaün пишет:
-> 
-> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
->> Support 4 tests for bind and connect networks actions:
-> 
-> Good to see such tests!
-> 
-> 
->> 1. bind() a socket with no landlock restrictions.
->> 2. bind() sockets with landllock restrictions.
-> 
-> You can leverage the FIXTURE_VARIANT helpers to factor out this kind of 
-> tests (see ptrace_test.c).
-> 
-> 
->> 3. connect() a socket to listening one with no landlock restricitons.
->> 4. connect() sockets with landlock restrictions.
-> 
-> Same here, you can factor out code. I guess you could create helpers for 
-> client and server parts.
-> 
-> We also need to test with IPv4, IPv6 and the AF_UNSPEC tricks.
-> 
-> Please provide the kernel test coverage and explain why the uncovered 
-> code cannot be covered: 
-> https://www.kernel.org/doc/html/latest/dev-tools/gcov.html
+Note that Linux use INT_MAX as default sndbuf for tuntap.
 
-  Hi Mickaёl!
-  Could you please provide the example of your test coverage build
-  process? Cause as I undersatand there is no need to get coverage data
-  for the entire kernel, just for landlock files.
-> 
-> You'll probably see that there are a multiple parts of the kernel that 
-> are not covered. For instance, it is important to test different 
-> combinations of layered network rules (see layout1/ruleset_overlap, 
-> layer_rule_unions, non_overlapping_accesses, 
-> interleaved_masked_accesses… in fs_test.c). Tests in fs_test.c are more 
-> complex because handling file system rules is more complex, but you can 
-> get some inspiration in it, especially the edge cases.
-> 
-> We also need to test invalid user space supplied data (see layout1/inval 
-> test in fs_test.c).
-> 
-> 
->>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->>   .../testing/selftests/landlock/network_test.c | 346 ++++++++++++++++++
->>   1 file changed, 346 insertions(+)
->>   create mode 100644 tools/testing/selftests/landlock/network_test.c
->>
->> diff --git a/tools/testing/selftests/landlock/network_test.c 
->> b/tools/testing/selftests/landlock/network_test.c
->> new file mode 100644
->> index 000000000000..9dfe37a2fb20
->> --- /dev/null
->> +++ b/tools/testing/selftests/landlock/network_test.c
->> @@ -0,0 +1,346 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Landlock tests - Common user space base
->> + *
->> + * Copyright © 2017-2020 Mickaël Salaün <mic@digikod.net>
->> + * Copyright © 2019-2020 ANSSI
-> 
-> You need to update this header with an appropriate description and the 
-> copyright holder (your employer).
-> 
-> 
->> + */
->> +
->> +#define _GNU_SOURCE
->> +#include <errno.h>
->> +#include <fcntl.h>
->> +#include <linux/landlock.h>
->> +#include <string.h>
->> +#include <sys/prctl.h>
->> +#include <sys/socket.h>
->> +#include <sys/types.h>
->> +#include <netinet/in.h>
->> +#include <arpa/inet.h>
-> 
-> To make it determinisitic (and ease patching/diff/merging), you should 
-> sort all the included files (in tests and in the kernel code).
-> 
-> 
->> +
->> +#include "common.h"
->> +
->> +#define SOCK_PORT_1 3470
->> +#define SOCK_PORT_2 3480
->> +#define SOCK_PORT_3 3490
-> 
-> To avoid port collision and create a clean and stable test environement 
-> (to avoid flaky tests), you should create a network namespace with 
-> FIXTURE_SETUP, test with TEST_F_FORK (to not polute the parent process, 
-> and which works with test variants), and use the set_cap and clear_cap 
-> helpers (see fs_test.c).
-> 
-> 
->> +
->> +#define IP_ADDRESS "127.0.0.1"
->> +
->> +/* Number pending connections queue tobe hold */
->> +#define BACKLOG 10
->> +
->> +TEST(socket_bind_no_restrictions) {
->> +
->> +    int sockfd;
->> +    struct sockaddr_in addr;
->> +    const int one = 1;
->> +
->> +    /* Create a socket */
->> +    sockfd = socket(AF_INET, SOCK_STREAM, 0);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
-> 
-> With a dedicated namespace, SO_REUSEADDR should not be required.
-> 
-> 
->> +
->> +    /* Set socket address parameters */
->> +    addr.sin_family = AF_INET;
->> +    addr.sin_port = htons(SOCK_PORT_1);
->> +    addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr.sin_zero), '\0', 8);
->> +
->> +    /* Bind the socket to IP address */
->> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)));
->> +}
->> +
->> +TEST(sockets_bind_with_restrictions) {
->> +
->> +    int sockfd_1, sockfd_2, sockfd_3;
->> +    struct sockaddr_in addr_1, addr_2, addr_3;
->> +    const int one = 1;
->> +
->> +    struct landlock_ruleset_attr ruleset_attr = {
->> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +    };
->> +    struct landlock_net_service_attr net_service_1 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = SOCK_PORT_1,
->> +    };
->> +    struct landlock_net_service_attr net_service_2 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = SOCK_PORT_2,
->> +    };
->> +    struct landlock_net_service_attr net_service_3 = {
->> +        .allowed_access = 0,
->> +        .port = SOCK_PORT_3,
->> +    };
-> 
-> Good to have these three different rules!
-> 
-> 
->> +
->> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
->> +            sizeof(ruleset_attr), 0);
->> +    ASSERT_LE(0, ruleset_fd);
->> +
->> +    /* Allow connect and bind operations to the SOCK_PORT_1 socket 
->> "object" */
-> 
-> You can omit "object" but use full sentences at the third person 
-> (because it explains what do the next lines).
-> 
-> 
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_1, 0));
->> +    /* Allow connect and deny bind operations to the SOCK_PORT_2 
->> socket "object" */
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_2, 0));
->> +    /* Empty allowed_access (i.e. deny rules) are ignored in network 
->> actions
->> +     * for SOCK_PORT_3 socket "object"
->> +     */
->> +    ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_3, 0));
->> +    ASSERT_EQ(ENOMSG, errno);
->> +
->> +    /* Enforces the ruleset. */
->> +    ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
->> +    ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
->> +    ASSERT_EQ(0, close(ruleset_fd));
->> +
->> +    /* Create a socket 1 */
->> +    sockfd_1 = socket(AF_INET, SOCK_STREAM, 0);
-> 
-> Please create all FD with SOCK_CLOEXEC and also close them when not 
-> needed. This could also reduce the number of FD.
-> 
-> 
->> +    ASSERT_LE(0, sockfd_1);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd_1, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
->> +
->> +    /* Set socket 1 address parameters */
->> +    addr_1.sin_family = AF_INET;
->> +    addr_1.sin_port = htons(SOCK_PORT_1);
->> +    addr_1.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr_1.sin_zero), '\0', 8);
->> +    /* Bind the socket 1 to IP address */
->> +    ASSERT_EQ(0, bind(sockfd_1, (struct sockaddr  *)&addr_1, 
->> sizeof(addr_1)));
->> +
->> +    /* Create a socket 2 */
->> +    sockfd_2 = socket(AF_INET, SOCK_STREAM, 0);
->> +    ASSERT_LE(0, sockfd_2);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd_2, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
->> +
->> +    /* Set socket 2 address parameters */
->> +    addr_2.sin_family = AF_INET;
->> +    addr_2.sin_port = htons(SOCK_PORT_2);
->> +    addr_2.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr_2.sin_zero), '\0', 8);
-> 
-> These part could be factored out with helpers or/and test variants.
-> 
-> 
->> +    /* Bind the socket 2 to IP address */
->> +    ASSERT_EQ(-1, bind(sockfd_2, (struct sockaddr *)&addr_2, 
->> sizeof(addr_2)));
->> +    ASSERT_EQ(EACCES, errno);
->> +
->> +    /* Create a socket 3 */
->> +    sockfd_3 = socket(AF_INET, SOCK_STREAM, 0);
->> +    ASSERT_LE(0, sockfd_3);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd_3, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
->> +
->> +    /* Set socket 3 address parameters */
->> +    addr_3.sin_family = AF_INET;
->> +    addr_3.sin_port = htons(SOCK_PORT_3);
->> +    addr_3.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr_3.sin_zero), '\0', 8);
->> +    /* Bind the socket 3 to IP address */
->> +    ASSERT_EQ(0, bind(sockfd_3, (struct sockaddr *)&addr_3, 
->> sizeof(addr_3)));
-> 
-> Why is it allowed to bind to SOCK_PORT_3 whereas net_service_3 forbids it?
-> 
-> 
->> +}
->> +
->> +TEST(socket_connect_no_restrictions) {
->> +
->> +    int sockfd, new_fd;
->> +    struct sockaddr_in addr;
->> +    pid_t child;
->> +    int status;
->> +    const int one = 1;
->> +
->> +    /* Create a server socket */
->> +    sockfd = socket(AF_INET, SOCK_STREAM, 0);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
->> +
->> +    /* Set socket address parameters */
->> +    addr.sin_family = AF_INET;
->> +    addr.sin_port = htons(SOCK_PORT_1);
->> +    addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr.sin_zero), '\0', 8);
->> +
->> +    /* Bind the socket to IP address */
->> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)));
->> +
->> +    /* Make listening socket */
->> +    ASSERT_EQ(0, listen(sockfd, BACKLOG));
->> +
->> +    child = fork();
->> +    ASSERT_LE(0, child);
->> +    if (child == 0) {
->> +        int child_sockfd;
->> +        struct sockaddr_in connect_addr;
->> +
->> +        /* Close listening socket for the child */
->> +        ASSERT_EQ(0, close(sockfd));
->> +        /* Create a stream client socket */
->> +        child_sockfd = socket(AF_INET, SOCK_STREAM, 0);
->> +        ASSERT_LE(0, child_sockfd);
->> +
->> +        /* Set server's socket address parameters*/
->> +        connect_addr.sin_family = AF_INET;
->> +        connect_addr.sin_port = htons(SOCK_PORT_1);
->> +        connect_addr.sin_addr.s_addr = htonl(INADDR_ANY);
->> +        memset(&(connect_addr.sin_zero), '\0', 8);
->> +
->> +        /* Make connection to the listening socket */
->> +        ASSERT_EQ(0, connect(child_sockfd, (struct sockaddr 
->> *)&connect_addr,
->> +                       sizeof(struct sockaddr)));
->> +        _exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
->> +        return;
->> +    }
->> +    /* Accept connection from the child */
->> +    new_fd = accept(sockfd, NULL, 0);
->> +    ASSERT_LE(0, new_fd);
->> +
->> +    /* Close connection */
->> +    ASSERT_EQ(0, close(new_fd));
->> +
->> +    ASSERT_EQ(child, waitpid(child, &status, 0));
->> +    ASSERT_EQ(1, WIFEXITED(status));
->> +    ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
->> +}
->> +
->> +TEST(sockets_connect_with_restrictions) {
->> +
->> +    int new_fd;
->> +    int sockfd_1, sockfd_2;
->> +    struct sockaddr_in addr_1, addr_2;
->> +    pid_t child_1, child_2;
->> +    int status;
->> +    const int one = 1;
->> +
->> +    struct landlock_ruleset_attr ruleset_attr = {
->> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +    };
->> +    struct landlock_net_service_attr net_service_1 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = SOCK_PORT_1,
->> +    };
->> +    struct landlock_net_service_attr net_service_2 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
->> +        .port = SOCK_PORT_2,
->> +    };
->> +
->> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
->> +            sizeof(ruleset_attr), 0);
->> +    ASSERT_LE(0, ruleset_fd);
->> +
->> +    /* Allow connect and bind operations to the SOCK_PORT_1 socket 
->> "object" */
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_1, 0));
->> +    /* Allow connect and deny bind operations to the SOCK_PORT_2 
->> socket "object" */
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_2, 0));
->> +
->> +    /* Enforces the ruleset. */
->> +    ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
->> +    ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
->> +    ASSERT_EQ(0, close(ruleset_fd));
->> +
->> +    /* Create a server socket 1 */
->> +    sockfd_1 = socket(AF_INET, SOCK_STREAM, 0);
->> +    ASSERT_LE(0, sockfd_1);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd_1, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
->> +
->> +    /* Set socket 1 address parameters */
->> +    addr_1.sin_family = AF_INET;
->> +    addr_1.sin_port = htons(SOCK_PORT_1);
->> +    addr_1.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr_1.sin_zero), '\0', 8);
->> +
->> +    /* Bind the socket 1 to IP address */
->> +    ASSERT_EQ(0, bind(sockfd_1, (struct sockaddr *)&addr_1, 
->> sizeof(addr_1)));
->> +
->> +    /* Make listening socket 1 */
->> +    ASSERT_EQ(0, listen(sockfd_1, BACKLOG));
->> +
->> +    child_1 = fork();
->> +    ASSERT_LE(0, child_1);
->> +    if (child_1 == 0) {
->> +        int child_sockfd;
->> +        struct sockaddr_in connect_addr;
->> +
->> +        /* Close listening socket for the child */
->> +        ASSERT_EQ(0, close(sockfd_1));
->> +        /* Create a stream client socket */
->> +        child_sockfd = socket(AF_INET, SOCK_STREAM, 0);
->> +        ASSERT_LE(0, child_sockfd);
->> +
->> +        /* Set server's socket 1 address parameters*/
->> +        connect_addr.sin_family = AF_INET;
->> +        connect_addr.sin_port = htons(SOCK_PORT_1);
->> +        connect_addr.sin_addr.s_addr = htonl(INADDR_ANY);
->> +        memset(&(connect_addr.sin_zero), '\0', 8);
->> +
->> +        /* Make connection to the listening socket 1 */
->> +        ASSERT_EQ(0, connect(child_sockfd, (struct sockaddr 
->> *)&connect_addr,
->> +                       sizeof(struct sockaddr)));
->> +        _exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
->> +        return;
->> +    }
->> +    /* Accept connection from the child 1 */
->> +    new_fd = accept(sockfd_1, NULL, 0);
->> +    ASSERT_LE(0, new_fd);
->> +
->> +    /* Close connection */
->> +    ASSERT_EQ(0, close(new_fd));
->> +
->> +    ASSERT_EQ(child_1, waitpid(child_1, &status, 0));
->> +    ASSERT_EQ(1, WIFEXITED(status));
->> +    ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
->> +
->> +    /* Create a server socket 2 */
->> +    sockfd_2 = socket(AF_INET, SOCK_STREAM, 0);
->> +    ASSERT_LE(0, sockfd_2);
->> +    /* Allow reuse of local addresses */
->> +    ASSERT_EQ(0, setsockopt(sockfd_2, SOL_SOCKET, SO_REUSEADDR, &one, 
->> sizeof(one)));
->> +
->> +    /* Set socket 2 address parameters */
->> +    addr_2.sin_family = AF_INET;
->> +    addr_2.sin_port = htons(SOCK_PORT_2);
->> +    addr_2.sin_addr.s_addr = inet_addr(IP_ADDRESS);
->> +    memset(&(addr_2.sin_zero), '\0', 8);
->> +
->> +    /* Bind the socket 2 to IP address */
->> +    ASSERT_EQ(0, bind(sockfd_2, (struct sockaddr *)&addr_2, 
->> sizeof(addr_2)));
->> +
->> +    /* Make listening socket 2 */
->> +    ASSERT_EQ(0, listen(sockfd_2, BACKLOG));
->> +
->> +    child_2 = fork();
->> +    ASSERT_LE(0, child_2);
->> +    if (child_2 == 0) {
->> +        int child_sockfd;
->> +        struct sockaddr_in connect_addr;
->> +
->> +        /* Close listening socket for the child */
->> +        ASSERT_EQ(0, close(sockfd_2));
->> +        /* Create a stream client socket */
->> +        child_sockfd = socket(AF_INET, SOCK_STREAM, 0);
->> +        ASSERT_LE(0, child_sockfd);
->> +
->> +        /* Set server's socket address parameters*/
->> +        connect_addr.sin_family = AF_INET;
->> +        connect_addr.sin_port = htons(SOCK_PORT_2);
->> +        connect_addr.sin_addr.s_addr = htonl(INADDR_ANY);
->> +        memset(&(connect_addr.sin_zero), '\0', 8);
->> +
->> +        /* Make connection to the listening socket */
->> +        ASSERT_EQ(-1, connect(child_sockfd, (struct sockaddr 
->> *)&connect_addr,
->> +                       sizeof(struct sockaddr)));
->> +        ASSERT_EQ(EACCES, errno);
->> +        _exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
->> +        return;
->> +    }
->> +
->> +    ASSERT_EQ(child_2, waitpid(child_2, &status, 0));
->> +    ASSERT_EQ(1, WIFEXITED(status));
->> +    ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
->> +}
->> +
->> +TEST_HARNESS_MAIN
-> .
+> > It is ok because tap driver uses it to support tx baching, see this
+> > patch: https://github.com/torvalds/linux/commit/0a0be13b8fe2cac11da2063=
+fb03f0f39359b3069
+> >
+> > But in tun_xdp_one, napi is not supported and I want to user napi in
+> > tun_get_user to enable gro.
+
+NAPI is not enabled in this path, want to send a patch to do that?
+
+Btw, NAPI mode is used for kernel networking stack hardening at start,
+but it would be interesting to see if it helps for the performance.
+
+> > As I result, I change the sndbuf to a
+> > value such as 212992 in /proc/sys/net/core/wmem_default.
+
+Can you describe your setup in detail? Where did you run the iperf
+server and client and where did you change the wmem_default?
+
+> > But the
+> > performance tested by iperf is greatly degraded, from 4.5 Gbps to
+> > 750Gbps per flow. I see the the iperf server consume 100% cpu core,
+> > which should be the bottleneck of the this test. The perf top result
+> > of iperf server cpu core is as follows:
+> >
+> > '''
+> > Samples: 72  of event 'cycles', 4000 Hz, Event count (approx.):
+> > 22685278 lost: 0/0 drop: 0/0
+> > Overhead  Shared O  Symbol
+> >   59.86%  [kernel]  [k] report_bug
+> >   20.66%  [kernel]  [k] module_find_bug
+> >    6.51%  [kernel]  [k] common_interrupt
+> >    2.82%  [kernel]  [k] __slab_free
+> >    1.48%  [kernel]  [k] copy_user_enhanced_fast_string
+> >    1.44%  [kernel]  [k] __skb_datagram_iter
+> >    1.42%  [kernel]  [k] notifier_call_chain
+> >    1.41%  [kernel]  [k] irq_work_run_list
+> >    1.41%  [kernel]  [k] update_irq_load_avg
+> >    1.41%  [kernel]  [k] task_tick_fair
+> >    1.41%  [kernel]  [k] cmp_ex_search
+> >    0.16%  [kernel]  [k] __ghes_peek_estatus.isra.12
+> >    0.02%  [kernel]  [k] acpi_os_read_memory
+> >    0.00%  [kernel]  [k] native_apic_mem_write
+> > '''
+> > I am not clear about the test result. Can we change the sndbuf size in
+> > dpdk? Is any way to enable vhost_net to use napi without changing the
+> > tun kernel driver?
+
+You can do this by not using INT_MAX as sndbuf.
+
+Thanks
+
+>
+
