@@ -2,64 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F06554C2F70
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:23:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 189E54C2F99
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 16:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236174AbiBXPXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 10:23:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
+        id S236269AbiBXP1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 10:27:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236499AbiBXPXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:23:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D129D1B65F6
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 07:22:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645716093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cs1X/g4/VcYdFDurBVvxcC8xvB0VJR+m/I4hc1Nnw5k=;
-        b=fGr5fmcajyJUlpo28yZvNjRtJfJYqP6Y26eB9WBouOVArDut1LQ3DnkOf6mS0rQKJzJC3B
-        nxu4WNAwHM+ubLDPqnD3nkyRBz/H06pA6G+3iekzJIBzVlT1YWilKE3HRL2gYyHbeQN/8A
-        TVvGFPSReAbl/Y/4UWjCBq6GVliCstE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-G9s_fX5xOzSkQbi3ed5iGw-1; Thu, 24 Feb 2022 10:21:28 -0500
-X-MC-Unique: G9s_fX5xOzSkQbi3ed5iGw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 34AB11091DA0;
-        Thu, 24 Feb 2022 15:21:26 +0000 (UTC)
-Received: from localhost (unknown [10.39.195.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D44657C049;
-        Thu, 24 Feb 2022 15:21:12 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
-        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com
-Cc:     linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
-        maorg@nvidia.com, ashok.raj@intel.com, kevin.tian@intel.com,
-        shameerali.kolothum.thodi@huawei.com
-Subject: Re: [PATCH V9 mlx5-next 10/15] vfio: Extend the device migration
- protocol with RUNNING_P2P
-In-Reply-To: <20220224142024.147653-11-yishaih@nvidia.com>
-Organization: Red Hat GmbH
-References: <20220224142024.147653-1-yishaih@nvidia.com>
- <20220224142024.147653-11-yishaih@nvidia.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Thu, 24 Feb 2022 16:21:11 +0100
-Message-ID: <87fso870k8.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        with ESMTP id S236366AbiBXP1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 10:27:06 -0500
+Received: from out199-10.us.a.mail.aliyun.com (out199-10.us.a.mail.aliyun.com [47.90.199.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556991BE4DD;
+        Thu, 24 Feb 2022 07:26:23 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V5OWGQA_1645716379;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V5OWGQA_1645716379)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Feb 2022 23:26:19 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net] net/smc: fix connection leak
+Date:   Thu, 24 Feb 2022 23:26:19 +0800
+Message-Id: <1645716379-30924-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,54 +36,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 22ed358c04c5..26a66f68371d 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -1011,10 +1011,16 @@ struct vfio_device_feature {
->   *
->   * VFIO_MIGRATION_STOP_COPY means that STOP, STOP_COPY and
->   * RESUMING are supported.
-> + *
-> + * VFIO_MIGRATION_STOP_COPY | VFIO_MIGRATION_P2P means that RUNNING_P2P
-> + * is supported in addition to the STOP_COPY states.
-> + *
-> + * Other combinations of flags have behavior to be defined in the future.
->   */
->  struct vfio_device_feature_migration {
->  	__aligned_u64 flags;
->  #define VFIO_MIGRATION_STOP_COPY	(1 << 0)
-> +#define VFIO_MIGRATION_P2P		(1 << 1)
->  };
+There's a potential leak issue under following execution sequence :
 
-Coming back to my argument (for the previous series) that this should
-rather be "at least one of the flags below must be set". If we operate
-under the general assumption that each flag indicates that a certain
-functionality (including some states) is supported, and that flags may
-depend on other flags, we might have a future flag that defines a
-different behaviour, but does not depend on STOP_COPY, but rather
-conflicts with it. We should not create the impression that STOP_COPY
-will neccessarily be mandatory for all time.
+smc_release  				smc_connect_work
+if (sk->sk_state == SMC_INIT)
+					send_clc_confirim
+	tcp_abort();
+					...
+					sk.sk_state = SMC_ACTIVE
+smc_close_active
+switch(sk->sk_state) {
+...
+case SMC_ACTIVE:
+	smc_close_final()
+	// then wait peer closed
 
-So, if we use my suggestion from the last round, what about making the
-new addition
+Unfortunately, tcp_abort() may discard CLC CONFIRM messages that are
+still in the tcp send buffer, in which case our connection token cannot
+be delivered to the server side, which means that we cannot get a
+passive close message at all. Therefore, it is impossible for the to be
+disconnected at all.
 
-"VFIO_MIGRATION_P2P means that RUNNING_P2P is supported in addition to
-the STOP_COPY states. It depends on VFIO_MIGRATION_STOP_COPY."
+This patch tries a very simple way to avoid this issue, once the state
+has changed to SMC_ACTIVE after tcp_abort(), we can actively abort the
+smc connection, considering that the state is SMC_INIT before
+tcp_abort(), abandoning the complete disconnection process should not
+cause too much problem.
 
-Maybe we could also use the additional clarification
+In fact, this problem may exist as long as the CLC CONFIRM message is
+not received by the server. Whether a timer should be added after
+smc_close_final() needs to be discussed in the future. But even so, this
+patch provides a faster release for connection in above case, it should
+also be valuable.
 
-"at least one of the flags below must be set, and flags may depend on or
-conflict with each other."
+Fixes: 39f41f367b08 ("net/smc: common release code for non-accepted sockets")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+---
+ net/smc/af_smc.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-That implies that VFIO_MIGRATION_STOP_COPY is mandatory with the current
-set of defined flags. I would not really object to adding "This flag is
-currently mandatory", but I do not like singling it out in the general
-description of how the flags work.
-
-Sorry if that sounds nitpicky, but I think we really need to make it
-clear that we have some nice possible flexibility with how the flags
-work.
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 0b13bb2..3a590de 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -269,7 +269,7 @@ static int smc_release(struct socket *sock)
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct smc_sock *smc;
+-	int rc = 0;
++	int old_state, rc = 0;
+ 
+ 	if (!sk)
+ 		goto out;
+@@ -277,8 +277,10 @@ static int smc_release(struct socket *sock)
+ 	sock_hold(sk); /* sock_put below */
+ 	smc = smc_sk(sk);
+ 
++	old_state = sk->sk_state;
++
+ 	/* cleanup for a dangling non-blocking connect */
+-	if (smc->connect_nonblock && sk->sk_state == SMC_INIT)
++	if (smc->connect_nonblock && old_state == SMC_INIT)
+ 		tcp_abort(smc->clcsock->sk, ECONNABORTED);
+ 
+ 	if (cancel_work_sync(&smc->connect_work))
+@@ -292,6 +294,10 @@ static int smc_release(struct socket *sock)
+ 	else
+ 		lock_sock(sk);
+ 
++	if (old_state == SMC_INIT && sk->sk_state == SMC_ACTIVE &&
++	    !smc->use_fallback)
++		smc_close_active_abort(smc);
++
+ 	rc = __smc_release(smc);
+ 
+ 	/* detach socket */
+-- 
+1.8.3.1
 
