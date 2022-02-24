@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F494C2D2D
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 14:35:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D8ED4C2D39
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 14:35:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235054AbiBXNfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 08:35:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
+        id S235059AbiBXNfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 08:35:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235055AbiBXNfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 08:35:14 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFB4178688
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:34:44 -0800 (PST)
+        with ESMTP id S235055AbiBXNfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 08:35:19 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2050.outbound.protection.outlook.com [40.107.243.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2028178688
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:34:49 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Eg8lf2qG0x2+j7kGa2Ooy6aBC4BouKze3+gjp+SObOeeZUAvJuovlA+S1Hb2H8M9sfnDql1BhsuPM9JlvEQFTHWH3CYZVcgAAPo2Up5A++ICMwuoIeASq1MKnZmdBtjoJNVHNtBcFQZFoV9HfyDefVVZ0Ck/FoJ8oIZkTVaNU9DBWu0+w6ZLNuXQZaMjC6i9+PMFetid4PEGnSiKPI5ALfiFCybhQtR/wLujFSdq86Of1hpRM2GC+awpp9iDMXwirZxGl1/dW162IhaQ49OUGqAShM8eoiA2rXJBkji/oax1A0qMH/6E4bmgkpi6iezGflEanzFGMI3W565KJ8+d+g==
+ b=jaLvxgBqThUeYdB16UnvITrdD0yJpeCkz2FEEOodTIYIKJpkZZwKMvEkDj5M8UgsWkhllSR3NCki9Ve4QuXZy08nudebhMJc636EUqgGnYEzbpEl2dx/a3vbxfpJBkQugg8tkQNZgGm8ibF+LFHwv45SnUOEnWoKH8SU9LKriNGPlggiKwmfaDEPJi4L38y/HW6siJbCMuahf25dNOufqjOGG+bzu2OeyUFKhZQNMi8pHtG4xtMhmdMeK5bWtlfWgQ/HGHOTiqKN4LCO9o7ja9v8qZQmcmrYVRJVa9cG4wMgzfP8GCn0FqBbTutwWrHNP4DGRyLDZipn18sqyvgZcQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HAV0Sjmcd4zbz7mcI2rRw5Za0gX9CO9tI58mKhmdKfk=;
- b=WrfSy2t2kZIxi1oI89fO2vncqtaGsUtLmeIr3h8wSxW2cOIK/4q/MtRhGpeZKikHIhPvLc+5razQ6xTS0iD8yhk9G/wJgdobpfJKB6vb8al+J+RSEvL8ARnguYfLDjOcKJMrEB0CVqvU05KfRaVN1F9IjHCBV/Ti7gi3/OG4/hWcGPC3KoZs36rEHTJ13vDpGcPOULVyPpHNiRgS0a0Sav/EpcluepCsGXfdDytiTZAxrpsVmEaqmrhQHKOChGhciOEDHOuufON4YD55rCx3H+arY13Aq45l6v2+fOch13WnFgXohTVL4DBYcIu3oqsz7R6zWxzXz0GLII/E1ZDxXA==
+ bh=/cHomSklHzgxGHSRsDMTob4Bt9ldVipCfUVKjkmAS0s=;
+ b=bMHDRLb9eJmGcGGoOi/BNrDYo3KNY8GpHak5jWfIxv6fhCjuitKFMfU6hoQC85l8lk4Y2Vg0WSC8TBpkUDdSRepXpI/btHc1fUTcdOQtM3PTUbTT3iARlK9gFNqAhAtk+ADKEEyVGRz5lHpM5vpHZLj4thYDJ4D/xlnBfZYp6ZDVadBJuJ1yynVbgxOn8ESDFo624jsENBitDi2WV9grQaXGfzj5Sxlealp5ca6lMdrIAg4rr/ql8wJ3Oj5J+Vtz3TeQ4zn4MoBVLZQNq8mMfTcWTKwsVtrynfQKIxSwPiOoRW98WCIXZW5g0/+BkwcIt68vgD7DS0j9MMhO0sZv6w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HAV0Sjmcd4zbz7mcI2rRw5Za0gX9CO9tI58mKhmdKfk=;
- b=MY9KsxLHYL752CDDBjvuqACq7JXiX+wEjK7ylUiW7NrhagXmdiFqO4PHSbQuV8SR1uVTVsEK6qMAvJuYK54hxB4gTdxeD4V9xqYQj2D+Ir9PjiikvFVXacikqAqxGjoWKNHjCx50Pn6dam6Qf2Mvtzd6WL1rx8i93pxf0otFY2m72zLMo3MwAfQbpL61NXJBNPp1lkkIQFS/GMUjgZIFamX7hvFYswooZROqy0MgLqZDYrHO2C76MmZ/X/IlzAg8+f2/63+zsCkqSu4LGnA/38HavugCmz+371UFy6nAP1114CkiLNwUrwx8xa/zf1HZGI75wZ7kthr4A6FvzrLX2g==
+ bh=/cHomSklHzgxGHSRsDMTob4Bt9ldVipCfUVKjkmAS0s=;
+ b=hWHQpLb6M3ILenVn3nLFDPTLPgAEcgB8BV9va+5/JFO/I6ZB0f9mN+6A0uGAzBi4fZgL06NbhXn8/Zdhna2Ax5ExG9R45VvOjOGGBl+t2OIb1mK26XK3+SxDsf0xKieWyZu4X7THK14t0GblZZaByt6X3a+MppBBxE5Wvsd2LT1RkLWzdxpLWlcsTCXtKgrUyefcgppQ9XiREgdhsHJ9cxAboacszwDIuYnk44ci/pA15G7UuYSW/2KAxc6OV1VSwnI19IMPaS8fFLHOXrzVZvaJ1CTeAfbxVfpoM+nmP9dPoQ19L/J0aUGHvvEhq3TzWipyN2tl/tFh4vRceQDHTQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
  by DS7PR12MB6008.namprd12.prod.outlook.com (2603:10b6:8:7f::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Thu, 24 Feb
- 2022 13:34:43 +0000
+ 2022 13:34:48 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::95a1:8c7f:10ef:2581]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::95a1:8c7f:10ef:2581%7]) with mapi id 15.20.5017.025; Thu, 24 Feb 2022
- 13:34:43 +0000
+ 13:34:48 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         jiri@nvidia.com, razor@blackwall.org, roopa@nvidia.com,
         dsahern@gmail.com, andrew@lunn.ch, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 07/14] net: rtnetlink: Add UAPI for obtaining L3 offload xstats
-Date:   Thu, 24 Feb 2022 15:33:28 +0200
-Message-Id: <20220224133335.599529-8-idosch@nvidia.com>
+Subject: [PATCH net-next 08/14] net: rtnetlink: Add RTM_SETSTATS
+Date:   Thu, 24 Feb 2022 15:33:29 +0200
+Message-Id: <20220224133335.599529-9-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220224133335.599529-1-idosch@nvidia.com>
 References: <20220224133335.599529-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR06CA0142.eurprd06.prod.outlook.com
- (2603:10a6:803:a0::35) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR07CA0228.eurprd07.prod.outlook.com
+ (2603:10a6:802:58::31) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e9df8241-f45b-404d-449a-08d9f79a6a33
+X-MS-Office365-Filtering-Correlation-Id: cda6cc51-ec5b-4bc8-714e-08d9f79a6d8c
 X-MS-TrafficTypeDiagnostic: DS7PR12MB6008:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR12MB600811CC8C6405B66641B4BFB23D9@DS7PR12MB6008.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DS7PR12MB6008C237B8D4745D3A7124A6B23D9@DS7PR12MB6008.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pnDHoQngcswOmUNjo1KETMBAltbk3bjdR7fRG1UnX/uuEoVI8s64N+ZF8uE0WcHamU8ZNYBJalYw0nz7y1o9ud/zBDwFgjHa2dTTVC/wPmiK/EqWFZl6wHZoVEKA4x0OI2253YvqkUKi0KYNUaaR4glbJH/hhPzkz5wh6HtVsak+axb9GwWdRuwXHu9Pw3vep9+Qwtd3YUnBezSefdtxL1HIOHt/vtcKl2E8y7U8+PAXKQvcYBwtKyp1P99mBO/CwaOvvaYv1w4aHHU34aMyleRrj3zrai5pQwbFuInadStDvG6Tmy08wjiGduF+VHgZc8yzDK0sGlXTzEU0etCMRTDJ8IrhSPz4ex8Ym4v6+gbmLpRdvmj8pzu9d1YbhRwKFfcaxGfE3r57O89PF7rDe1l5rotPQV7fjfFAOIkfHFLEDNw7jR4DtMqdxryKRdHOzjR/YgWX5/NmNSo3UIHnbn667Yd1Gdjo9gIVeObwJY/qpSB8TzgkwxFl07q9DsrYkjnTHTi8JJocS9RZeA9qp+wc7zOm6s+Kjpv7tiI7U32QEVoTtAORfxaqjPCoZvyiJ8/7zGu7FY45WqHb+cRhDp0k9oYWewNikoUWMLqHTN6/otmJt1D59aDQjVg0a3yN3zkNR+QpJNf2RUV/29Onxw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(2616005)(66476007)(66946007)(316002)(38100700002)(186003)(6916009)(4326008)(8676002)(86362001)(66556008)(36756003)(6512007)(1076003)(107886003)(5660300002)(83380400001)(508600001)(66574015)(6666004)(2906002)(8936002)(6486002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: NydymS2oWEh6jdo65bfUZ96K9lvPYpcnCkML+fI+XmHVdiYINvOQX4b9A1Pf5SQMxR4PNjRcnUjzpxmo7BPsQxbZK5Vwrc75s2HtROt4DGgKIyMKuQZTbbNyZm7qa0zvdZ8sGFFFhK8I6KFucxrKLCccL5plNu5OwnGhCOww+2RSP5i+s3XXMNEmAbz9sEUkfi/jDyZwt8b3d4vw6Hub7TV2izmo3WSacqYzdqwuCSasOYTr/Hfpsj+ZcLo7wea1HHnou1xgBp1sEpwN+FghBrvLNzrLQFDVzHZOZ6m3gIT528ZuWtVtt6aBdFukHVXUmTqAqxqfDlRDnLxSAyCFfZQu6lwUrI0EdbLWwB1X6SLIms9VRMpbj5jfVK6wiMMIGyqxb+2H3J6aIRxrLyJgr16aUsALWARW9Tn4O7A95nzgfDtDKozO7EJYyYOIVIdzsHrhkO7bYjM+hE8cEQ1nUd7bmqZTO77wPTt5fTs6vwhBMU6Tbm90i1iIW2dWuJLtMvvtH96oxD5waiU6y/QR/FTVaW8O1sO+n4mYhxniIjdqrMA1AUnQzHKUtPuuo+pazYHflSblgYPCrR7oy7XgdBqndExMKAT34zGbZhdmwxDW+rboMTK5/Gv57/eEBPADEWJf5XOxlsoy3bctKuk1AA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(2616005)(66476007)(66946007)(316002)(38100700002)(186003)(6916009)(4326008)(8676002)(86362001)(66556008)(36756003)(6512007)(1076003)(107886003)(5660300002)(83380400001)(508600001)(6666004)(2906002)(8936002)(6486002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6Ydik2aMH67T6Fz59E6mHZKTIQb8L+DvfhlHl39Yp1b89vs590mfLKCOcXpt?=
- =?us-ascii?Q?1DsRBLydsy1p8+opunT74LSDoDY8A7CBdQyz8+LlrDLS9CZbOTOCZA+regcC?=
- =?us-ascii?Q?0lRMbbsl9N+9Xe9xhZwSRac4PhnK4EjXCLazieA9aok3uuActYOycPd4UyRq?=
- =?us-ascii?Q?Pmqs05PQR34mv3yNvY7gEABl6DLacZI4zXrJFnZLXC1CFAP8d8+9yIbwcs72?=
- =?us-ascii?Q?f3mL2bRA7Dt+iybi0KVEwgPlIdc8LxFvmWa2w1PahnxPaqcpKR8lA0xUJh7K?=
- =?us-ascii?Q?vZXkTDEtjiWN/Rve5wg53YYiupeAY9E7ruO1wc/1aItjcDttse/E2kFA21Ed?=
- =?us-ascii?Q?mLXljn5lMI53SxUex+fThRdDZMyL0mqQQxyAZWvKxx2StDA85rAREleuMQtP?=
- =?us-ascii?Q?YNxMvqr0sbr07eIO+J1Z+RQytJAuRXdNzvlrKg4GHZuxMHOLByLjDNdvAOjy?=
- =?us-ascii?Q?SAd0N66zHSucekR4vyRWeqJddmQGUACWG7BXYn10FmU//ungi1gUZU9SPoAv?=
- =?us-ascii?Q?wT1QqSYQmteBFehmCtV+njmqDPqJ/xlcwhKhOs/2paf4lZC0+nlrsHlweHJw?=
- =?us-ascii?Q?OUZ4FBWK1mIGe2XUjYyYhAUf29X5cQT7kFYvQCgFuyvh8rwRxVN+vNlliapp?=
- =?us-ascii?Q?m98b4e60yWiu7ZJis6l6y7wuYi7ava55D3aINNNkTurR6Wub4+F1lKjBhdIU?=
- =?us-ascii?Q?BijIu0SNh85fVwCRCSmg16fHeY26n86sx1u6WhQK1L/u6bmhiSMMWh6y40j3?=
- =?us-ascii?Q?bfc9DP/24lLiK18xoj1u9MR5mnQxvDsgYp16wATFGQcMt1SI3VveKVNOGfF6?=
- =?us-ascii?Q?Bs9oto1+s3qFHtTwIEyMhoIzuuQFamxYhof4+Eu+NPOdChTNLum5vW5Wa44u?=
- =?us-ascii?Q?sK+cuv6fiddUI9H6oVQYxobFLXG4ZzJM7OwZKitfhwWfwQ5dswxrOanyRMKl?=
- =?us-ascii?Q?4COMw4Kt2ap5O6ofcclotC5Qs5pPYO6lKzwj8W/ar3k4mBdeYpaILGvKkKFj?=
- =?us-ascii?Q?r6aVteEnDQFM0j6VDwB8AqY4K/20MmUq1JX49De8rjIkLq0mSmbrnPk4sdTO?=
- =?us-ascii?Q?kmr15EMOe8PGvc0UvvrxpUNaJ9P4N5UBnGLjGmqmB2AFLGIPXOKExIfPXQ4P?=
- =?us-ascii?Q?b6ANRxIP7Ovl72NSTVPNaLic+RSsMyV+th6bkRNboHyya1rrmVEYfVr5CWpG?=
- =?us-ascii?Q?0q67t4V+3UyMOhncCNxBbJmqIIENY0dB+rIHcUGvl1PUcpDJ3tIOWz6eHVWm?=
- =?us-ascii?Q?X4TbC9xeuyXaLaTLAhZjVGpEHxKIcWfKdJ+/T/5mi7MB72a4NLXNjJlAf5h/?=
- =?us-ascii?Q?LxOpYN8SH6FGZ2L1jEFUmi3ItEifj0nPEnXTTerKO6uWjdj3DtvJ572KJm5w?=
- =?us-ascii?Q?4tH/p/76zEuq2/ilA/gbHbS2uME5zzA8Zm1picKhia7shln6WEbKQ9aTwG0u?=
- =?us-ascii?Q?SyrUftPt9Fl1Qa2wiyGHaAR/4PJqt/G+cBFlKTzDxvMET5+YzXIp1xZV1+Td?=
- =?us-ascii?Q?b5hmH8S86WLgAVhJxxZjHhHyXV5A+F7bdXQhMTz5b9ceSIxN4bXjVk2zTNBI?=
- =?us-ascii?Q?xuIUiPGnEwdfIxTXugfg2GC6e50pHhJiLTrs2l4Zzv/AFVbCJE/RSfBu0fEg?=
- =?us-ascii?Q?nBf0Pp0ColGJXacKp8OI9xs=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BxuLTizMp4toLaiDI9FTy+RRftpw0jPWora7gSpxZ9EA/tE1S6Cv/GeWwG1v?=
+ =?us-ascii?Q?ccBntrBuna5n2W9OIzUO903Qw9gZIZZ0V/ERC3lUSErkJVVPMs7mVvzb9zMp?=
+ =?us-ascii?Q?nP38DTYHGmJMDqKKgT0whhVLcckK8bTx0M/6RQK87ReVQdoZrkivpAdx2kV1?=
+ =?us-ascii?Q?9RZ5zwSNlrWLIfVFCs3KuArsd5nMvz+sEp1YPwuzhSjHPYA93V8fF3kDWnN2?=
+ =?us-ascii?Q?Q5zF1mWmp445WAJjVAqaJrf0D0nRcxPBEAEMBjCUgrCKHvAa5tttf/dJSX9k?=
+ =?us-ascii?Q?kO0tABJDdizbErmlQmeKybRY0ZazabtJxhTxC7odQ5C0idUJhqx5KzW34sGP?=
+ =?us-ascii?Q?G5Ebf02EdJjM9oNOFoz1lMfXesCmFFG9HIjOo+vL5hAfD9D0PndhxaMHxxkO?=
+ =?us-ascii?Q?qP5g32OIl5DxZNeH5ZwRkBbjVQNltXy0c9QCGHjYQ0ixZXebvbuaxtYTRlyN?=
+ =?us-ascii?Q?zRqyHZBg4I8FMzsxJrK6pDinjPrBsYDd6yB9zVRQOatw5YIsMAS/YL1/1rdT?=
+ =?us-ascii?Q?AYhpUfAW0c7KdgD18MVtckzXNUNQy/YjKKBKjTjuC4AKGhhrCN+7mb94GoQ5?=
+ =?us-ascii?Q?/Pl7s2ezy43SpdWeH8EtJVs977DnKzKkCzYvpTOmp9am3lR6+ub26OA7scPw?=
+ =?us-ascii?Q?iKWLSs3Arr1dG5Q1DdaBf7MBfXgqFepc0Kwg8bDhjnun1lu7J9WAbCOiJw+j?=
+ =?us-ascii?Q?EJkz4Cc97G63KEuLW37wggQc2MMrLkU42dsx2fTzANqN74Ugpja+W5SsojyD?=
+ =?us-ascii?Q?KWRHsz8FuWhWkI2nIQCpRvGKKvhltOxqDKpqBs8sXUiPmiVSXOjQAkv1RBOW?=
+ =?us-ascii?Q?HdrN4kArjwBo5lP2IxJ1Et8gQcgyU5ZBX0pJLs23fKVQJBl/+Sz6AKZxaNrd?=
+ =?us-ascii?Q?dIiZrZMr9ttov9Ta6ZrFuJ3sliMv8hkpRDov/WboB7vGrzoZwmk7wdossEYV?=
+ =?us-ascii?Q?TMvnqW0QIIjXpd/9tD+5wP9VAPoe7MpdNg5ukyPlmTs9MLtIPZsD+SU2xM6C?=
+ =?us-ascii?Q?6qLxJU1Le58yyKZmTfSiigZ9k+0dOVsRqkLZ9lLIN9PtIx+hsVhNauh44nAR?=
+ =?us-ascii?Q?NFc4qiGJ5AkWBuPSz0fKFllN0FL4rR3tcYKcCnG7rklPQXGinO0vhK9HW5yo?=
+ =?us-ascii?Q?O/Lp5UQF69lCJ5PL/GfxmzZaNEkyJwy+f8G9csR2YmOZLbWA0Ft4qg+taFbz?=
+ =?us-ascii?Q?nl+C2+64x+xcVW8ejFWKpEknVXJRJvsa5rcCinBXEaM8S02YsDKFAzLAEoiZ?=
+ =?us-ascii?Q?uBE8FWPrisGZpXDJTifaskyqkGwIHiFJ4zFzFp4gDTFXvBUM/mgcykwU4icV?=
+ =?us-ascii?Q?GVNyR+A3FMNJc9RkmCL10yHpZxRNZKTYB3xFo776EB4EwNcRnxlC2y3vA7uF?=
+ =?us-ascii?Q?Mofds+Rz1DKiJVzMtPa2pxsM6h0eF8+K0XZC3blK2OLadGygw96Q18QAJqGb?=
+ =?us-ascii?Q?EiGfZZoFZz0F6krX0UEA8PTcRerDwugELO5masl4+DLNIZSI5Xl0j5SUrF0T?=
+ =?us-ascii?Q?1fyt7xPD0ZcizzzVbwsuKD6Cm7ey3pQI5Rf1aVEcFqB9WIbsCygTmhs71Uus?=
+ =?us-ascii?Q?uDxckk1ZAsnTNc4grpiko+Oz6IvlH0TsJCPn7qtTM+vl2aKwaC1IJnsSqdq9?=
+ =?us-ascii?Q?c+5+Kv+OPvuzcGDMOqxTf88=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9df8241-f45b-404d-449a-08d9f79a6a33
+X-MS-Exchange-CrossTenant-Network-Message-Id: cda6cc51-ec5b-4bc8-714e-08d9f79a6d8c
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 13:34:42.9342
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 13:34:48.5674
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CI8zATMBafQx2SYwjDV1mn8LNKvt24/a4YkD+2w1VakAjzZfhkEBGVTGPDEPBi3Kp4uFzbivIUpymgGsj5Hvhg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: WZyBAUVMIz/U8AHj+jTGsWUqa/RrLrz7Fk3utswQLqR69sW5Dwpyk4ph14e4w2XPPzabaP/u+lnvetUrOhThRw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6008
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -119,273 +119,134 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-Add a new IFLA_STATS_LINK_OFFLOAD_XSTATS child attribute,
-IFLA_OFFLOAD_XSTATS_L3_STATS, to carry statistics for traffic that takes
-place in a HW router.
-
 The offloaded HW stats are designed to allow per-netdevice enablement and
-disablement. Additionally, as a netdevice is configured, it may become or
-cease being suitable for binding of a HW counter. Both of these aspects
-need to be communicated to the userspace. To that end, add another child
-attribute, IFLA_OFFLOAD_XSTATS_HW_S_INFO:
-
-    - attr nest IFLA_OFFLOAD_XSTATS_HW_S_INFO
-	- attr nest IFLA_OFFLOAD_XSTATS_L3_STATS
- 	    - attr IFLA_OFFLOAD_XSTATS_HW_S_INFO_REQUEST
-	      - {0,1} as u8
- 	    - attr IFLA_OFFLOAD_XSTATS_HW_S_INFO_USED
-	      - {0,1} as u8
-
-Thus this one attribute is a nest that can be used to carry information
-about various types of HW statistics, and indexing is very simply done by
-wrapping the information for a given statistics suite into the attribute
-that carries the suite is the RTM_GETSTATS query. At the same time, because
-_HW_S_INFO is nested directly below IFLA_STATS_LINK_OFFLOAD_XSTATS, it is
-possible through filtering to request only the metadata about individual
-statistics suites, without having to hit the HW to get the actual counters.
+disablement. These stats are only accessible through RTM_GETSTATS, and
+therefore should be toggled by a RTM_SETSTATS message. Add it, and the
+necessary skeleton handler.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- include/uapi/linux/if_link.h |  11 +++
- net/core/rtnetlink.c         | 170 +++++++++++++++++++++++++++++++++++
- 2 files changed, 181 insertions(+)
+ include/uapi/linux/rtnetlink.h |  2 +
+ net/core/rtnetlink.c           | 67 ++++++++++++++++++++++++++++++++++
+ security/selinux/nlmsgtab.c    |  1 +
+ 3 files changed, 70 insertions(+)
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index f5d88a7b1c36..704e32bbf160 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -1186,10 +1186,21 @@ enum {
- enum {
- 	IFLA_OFFLOAD_XSTATS_UNSPEC,
- 	IFLA_OFFLOAD_XSTATS_CPU_HIT, /* struct rtnl_link_stats64 */
-+	IFLA_OFFLOAD_XSTATS_HW_S_INFO,	/* HW stats info. A nest */
-+	IFLA_OFFLOAD_XSTATS_L3_STATS,	/* struct rtnl_link_stats64 */
- 	__IFLA_OFFLOAD_XSTATS_MAX
- };
- #define IFLA_OFFLOAD_XSTATS_MAX (__IFLA_OFFLOAD_XSTATS_MAX - 1)
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 93d934cc4613..d6615b78f5d9 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -146,6 +146,8 @@ enum {
+ #define RTM_NEWSTATS RTM_NEWSTATS
+ 	RTM_GETSTATS = 94,
+ #define RTM_GETSTATS RTM_GETSTATS
++	RTM_SETSTATS,
++#define RTM_SETSTATS RTM_SETSTATS
  
-+enum {
-+	IFLA_OFFLOAD_XSTATS_HW_S_INFO_UNSPEC,
-+	IFLA_OFFLOAD_XSTATS_HW_S_INFO_REQUEST,		/* u8 */
-+	IFLA_OFFLOAD_XSTATS_HW_S_INFO_USED,		/* u8 */
-+	__IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX,
-+};
-+#define IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX \
-+	(__IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX - 1)
-+
- /* XDP section */
- 
- #define XDP_FLAGS_UPDATE_IF_NOEXIST	(1U << 0)
+ 	RTM_NEWCACHEREPORT = 96,
+ #define RTM_NEWCACHEREPORT RTM_NEWCACHEREPORT
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index d79e2c26b494..0db745cc3f11 100644
+index 0db745cc3f11..daab2d246e90 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -5091,10 +5091,110 @@ rtnl_offload_xstats_fill_ndo(struct net_device *dev, int attr_id,
- 	return 0;
- }
+@@ -5565,6 +5565,11 @@ rtnl_stats_get_policy_filters[IFLA_STATS_MAX + 1] = {
+ 			NLA_POLICY_BITFIELD32(RTNL_STATS_OFFLOAD_XSTATS_VALID),
+ };
  
-+static unsigned int
-+rtnl_offload_xstats_get_size_stats(const struct net_device *dev,
-+				   enum netdev_offload_xstats_type type)
-+{
-+	bool enabled = netdev_offload_xstats_enabled(dev, type);
-+
-+	return enabled ? sizeof(struct rtnl_link_stats64) : 0;
-+}
-+
-+struct rtnl_offload_xstats_request_used {
-+	bool request;
-+	bool used;
++static const struct nla_policy
++ifla_stats_set_policy[IFLA_STATS_GETSET_MAX + 1] = {
++	[IFLA_STATS_GETSET_UNSPEC] = { .strict_start_type = 1 },
 +};
 +
-+static int
-+rtnl_offload_xstats_get_stats(struct net_device *dev,
-+			      enum netdev_offload_xstats_type type,
-+			      struct rtnl_offload_xstats_request_used *ru,
-+			      struct rtnl_link_stats64 *stats,
-+			      struct netlink_ext_ack *extack)
-+{
-+	bool request;
-+	bool used;
-+	int err;
-+
-+	request = netdev_offload_xstats_enabled(dev, type);
-+	if (!request) {
-+		used = false;
-+		goto out;
-+	}
-+
-+	err = netdev_offload_xstats_get(dev, type, stats, &used, extack);
-+	if (err)
-+		return err;
-+
-+out:
-+	if (ru) {
-+		ru->request = request;
-+		ru->used = used;
-+	}
-+	return 0;
-+}
-+
-+static int
-+rtnl_offload_xstats_fill_hw_s_info_one(struct sk_buff *skb, int attr_id,
-+				       struct rtnl_offload_xstats_request_used *ru)
-+{
-+	struct nlattr *nest;
-+
-+	nest = nla_nest_start(skb, attr_id);
-+	if (!nest)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(skb, IFLA_OFFLOAD_XSTATS_HW_S_INFO_REQUEST, ru->request))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u8(skb, IFLA_OFFLOAD_XSTATS_HW_S_INFO_USED, ru->used))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(skb, nest);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, nest);
-+	return -EMSGSIZE;
-+}
-+
-+static int
-+rtnl_offload_xstats_fill_hw_s_info(struct sk_buff *skb, struct net_device *dev,
-+				   struct netlink_ext_ack *extack)
-+{
-+	enum netdev_offload_xstats_type t_l3 = NETDEV_OFFLOAD_XSTATS_TYPE_L3;
-+	struct rtnl_offload_xstats_request_used ru_l3;
-+	struct nlattr *nest;
-+	int err;
-+
-+	err = rtnl_offload_xstats_get_stats(dev, t_l3, &ru_l3, NULL, extack);
-+	if (err)
-+		return err;
-+
-+	nest = nla_nest_start(skb, IFLA_OFFLOAD_XSTATS_HW_S_INFO);
-+	if (!nest)
-+		return -EMSGSIZE;
-+
-+	if (rtnl_offload_xstats_fill_hw_s_info_one(skb,
-+						   IFLA_OFFLOAD_XSTATS_L3_STATS,
-+						   &ru_l3))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(skb, nest);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, nest);
-+	return -EMSGSIZE;
-+}
-+
- static int rtnl_offload_xstats_fill(struct sk_buff *skb, struct net_device *dev,
- 				    int *prividx, u32 off_filter_mask,
- 				    struct netlink_ext_ack *extack)
- {
-+	enum netdev_offload_xstats_type t_l3 = NETDEV_OFFLOAD_XSTATS_TYPE_L3;
-+	int attr_id_hw_s_info = IFLA_OFFLOAD_XSTATS_HW_S_INFO;
-+	int attr_id_l3_stats = IFLA_OFFLOAD_XSTATS_L3_STATS;
- 	int attr_id_cpu_hit = IFLA_OFFLOAD_XSTATS_CPU_HIT;
- 	bool have_data = false;
- 	int err;
-@@ -5111,6 +5211,40 @@ static int rtnl_offload_xstats_fill(struct sk_buff *skb, struct net_device *dev,
- 		}
- 	}
- 
-+	if (*prividx <= attr_id_hw_s_info &&
-+	    (off_filter_mask & IFLA_STATS_FILTER_BIT(attr_id_hw_s_info))) {
-+		*prividx = attr_id_hw_s_info;
-+
-+		err = rtnl_offload_xstats_fill_hw_s_info(skb, dev, extack);
-+		if (err)
-+			return err;
-+
-+		have_data = true;
-+		*prividx = 0;
-+	}
-+
-+	if (*prividx <= attr_id_l3_stats &&
-+	    (off_filter_mask & IFLA_STATS_FILTER_BIT(attr_id_l3_stats))) {
-+		unsigned int size_l3;
-+		struct nlattr *attr;
-+
-+		*prividx = attr_id_l3_stats;
-+
-+		size_l3 = rtnl_offload_xstats_get_size_stats(dev, t_l3);
-+		attr = nla_reserve_64bit(skb, attr_id_l3_stats, size_l3,
-+					 IFLA_OFFLOAD_XSTATS_UNSPEC);
-+		if (!attr)
-+			return -EMSGSIZE;
-+
-+		err = rtnl_offload_xstats_get_stats(dev, t_l3, NULL,
-+						    nla_data(attr), extack);
-+		if (err)
-+			return err;
-+
-+		have_data = true;
-+		*prividx = 0;
-+	}
-+
- 	if (!have_data)
- 		return -ENODATA;
- 
-@@ -5118,9 +5252,35 @@ static int rtnl_offload_xstats_fill(struct sk_buff *skb, struct net_device *dev,
- 	return 0;
+ static int rtnl_stats_get_parse_filters(struct nlattr *ifla_filters,
+ 					struct rtnl_stats_dump_filters *filters,
+ 					struct netlink_ext_ack *extack)
+@@ -5770,6 +5775,67 @@ static int rtnl_stats_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 	return skb->len;
  }
  
-+static unsigned int
-+rtnl_offload_xstats_get_size_hw_s_info_one(const struct net_device *dev,
-+					   enum netdev_offload_xstats_type type)
++static int rtnl_stats_set(struct sk_buff *skb, struct nlmsghdr *nlh,
++			  struct netlink_ext_ack *extack)
 +{
-+	bool enabled = netdev_offload_xstats_enabled(dev, type);
++	struct rtnl_stats_dump_filters response_filters = {};
++	struct nlattr *tb[IFLA_STATS_GETSET_MAX + 1];
++	struct net *net = sock_net(skb->sk);
++	struct net_device *dev = NULL;
++	int idxattr = 0, prividx = 0;
++	struct if_stats_msg *ifsm;
++	struct sk_buff *nskb;
++	int err;
 +
-+	return nla_total_size(0) +
-+		/* IFLA_OFFLOAD_XSTATS_HW_S_INFO_REQUEST */
-+		nla_total_size(sizeof(u8)) +
-+		/* IFLA_OFFLOAD_XSTATS_HW_S_INFO_USED */
-+		(enabled ? nla_total_size(sizeof(u8)) : 0) +
-+		0;
-+}
++	err = rtnl_valid_stats_req(nlh, netlink_strict_get_check(skb),
++				   false, extack);
++	if (err)
++		return err;
 +
-+static unsigned int
-+rtnl_offload_xstats_get_size_hw_s_info(const struct net_device *dev)
-+{
-+	enum netdev_offload_xstats_type t_l3 = NETDEV_OFFLOAD_XSTATS_TYPE_L3;
-+
-+	return nla_total_size(0) +
-+		/* IFLA_OFFLOAD_XSTATS_L3_STATS */
-+		rtnl_offload_xstats_get_size_hw_s_info_one(dev, t_l3) +
-+		0;
-+}
-+
- static int rtnl_offload_xstats_get_size(const struct net_device *dev,
- 					u32 off_filter_mask)
- {
-+	enum netdev_offload_xstats_type t_l3 = NETDEV_OFFLOAD_XSTATS_TYPE_L3;
- 	int attr_id_cpu_hit = IFLA_OFFLOAD_XSTATS_CPU_HIT;
- 	int nla_size = 0;
- 	int size;
-@@ -5131,6 +5291,16 @@ static int rtnl_offload_xstats_get_size(const struct net_device *dev,
- 		nla_size += nla_total_size_64bit(size);
- 	}
- 
-+	if (off_filter_mask &
-+	    IFLA_STATS_FILTER_BIT(IFLA_OFFLOAD_XSTATS_HW_S_INFO))
-+		nla_size += rtnl_offload_xstats_get_size_hw_s_info(dev);
-+
-+	if (off_filter_mask &
-+	    IFLA_STATS_FILTER_BIT(IFLA_OFFLOAD_XSTATS_L3_STATS)) {
-+		size = rtnl_offload_xstats_get_size_stats(dev, t_l3);
-+		nla_size += nla_total_size_64bit(size);
++	ifsm = nlmsg_data(nlh);
++	if (ifsm->family != AF_UNSPEC) {
++		NL_SET_ERR_MSG(extack, "Address family should be AF_UNSPEC");
++		return -EINVAL;
 +	}
 +
- 	if (nla_size != 0)
- 		nla_size += nla_total_size(0);
++	if (ifsm->ifindex > 0)
++		dev = __dev_get_by_index(net, ifsm->ifindex);
++	else
++		return -EINVAL;
++
++	if (!dev)
++		return -ENODEV;
++
++	if (ifsm->filter_mask) {
++		NL_SET_ERR_MSG(extack, "Filter mask must be 0 for stats set");
++		return -EINVAL;
++	}
++
++	err = nlmsg_parse(nlh, sizeof(*ifsm), tb, IFLA_STATS_GETSET_MAX,
++			  ifla_stats_set_policy, extack);
++	if (err < 0)
++		return err;
++
++	nskb = nlmsg_new(if_nlmsg_stats_size(dev, &response_filters),
++			 GFP_KERNEL);
++	if (!nskb)
++		return -ENOBUFS;
++
++	err = rtnl_fill_statsinfo(nskb, dev, RTM_NEWSTATS,
++				  NETLINK_CB(skb).portid, nlh->nlmsg_seq, 0,
++				  0, &response_filters, &idxattr, &prividx,
++				  extack);
++	if (err < 0) {
++		/* -EMSGSIZE implies BUG in if_nlmsg_stats_size */
++		WARN_ON(err == -EMSGSIZE);
++		kfree_skb(nskb);
++	} else {
++		err = rtnl_unicast(nskb, net, NETLINK_CB(skb).portid);
++	}
++
++	return err;
++}
++
+ /* Process one rtnetlink message. */
  
+ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+@@ -5995,4 +6061,5 @@ void __init rtnetlink_init(void)
+ 
+ 	rtnl_register(PF_UNSPEC, RTM_GETSTATS, rtnl_stats_get, rtnl_stats_dump,
+ 		      0);
++	rtnl_register(PF_UNSPEC, RTM_SETSTATS, rtnl_stats_set, NULL, 0);
+ }
+diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
+index 94ea2a8b2bb7..2a7e6e188094 100644
+--- a/security/selinux/nlmsgtab.c
++++ b/security/selinux/nlmsgtab.c
+@@ -76,6 +76,7 @@ static const struct nlmsg_perm nlmsg_route_perms[] =
+ 	{ RTM_GETNSID,		NETLINK_ROUTE_SOCKET__NLMSG_READ  },
+ 	{ RTM_NEWSTATS,		NETLINK_ROUTE_SOCKET__NLMSG_READ },
+ 	{ RTM_GETSTATS,		NETLINK_ROUTE_SOCKET__NLMSG_READ  },
++	{ RTM_SETSTATS,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_NEWCACHEREPORT,	NETLINK_ROUTE_SOCKET__NLMSG_READ },
+ 	{ RTM_NEWCHAIN,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_DELCHAIN,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
 -- 
 2.33.1
 
