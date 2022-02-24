@@ -2,183 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8503F4C2C31
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 13:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8CA4C2CE3
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 14:23:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234595AbiBXMy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 07:54:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58930 "EHLO
+        id S233867AbiBXNXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 08:23:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234594AbiBXMy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 07:54:27 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B6D20E796;
-        Thu, 24 Feb 2022 04:53:56 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 3504F1F44A;
-        Thu, 24 Feb 2022 12:53:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1645707235; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2G7Q4/SbY0/u6FJFyQ5u7ok3xEUfxBWHs/wk8cUfVjo=;
-        b=UPAiUuz+WH8h7pPxSNNG6Dpza+Qb+DM5ZsIxaWxc1kG25pDybpqYRQX9kVy96n/KQltFxM
-        vCZj0mVEeW3p5oSQ+Rdkp5XuV/rGPiV4X0Q4CY3EpPGaEBOzTiQGkDt8cbMTH188U9lC2M
-        4/y8+BgA/LqcXC5UeGyUaGQEyyqilIo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1645707235;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2G7Q4/SbY0/u6FJFyQ5u7ok3xEUfxBWHs/wk8cUfVjo=;
-        b=PIqZ3B1fxD+QIGOx68q/WUrx7rRxAgTPIf32nkK4Qbync3bJbDpyVAY9lHUo4LrfE3UD9a
-        22Slgo4cEHRrhsBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5311B13AD9;
-        Thu, 24 Feb 2022 12:53:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id d5/wEOJ/F2IoEgAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Thu, 24 Feb 2022 12:53:54 +0000
-Message-ID: <f62148d7-6f7a-3557-e3ca-3a261b61ac9d@suse.de>
-Date:   Thu, 24 Feb 2022 15:53:33 +0300
+        with ESMTP id S231263AbiBXNXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 08:23:09 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CD7128640
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:22:39 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 1DAA658023D;
+        Thu, 24 Feb 2022 08:22:37 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 24 Feb 2022 08:22:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=mVYKUdExDVBx8hnKG
+        59CK5Smsath/7gScBAqvRz6zaw=; b=NeQUBmSPGYJXqyH47mUtSmGL2Pt6+8mH9
+        nl5YML5d5ckYFwHdcclBA0rpo/flqdMIKSzNXNOlWhDSktWJM6FBjyEcgmPg3qd+
+        vkoVg/BXBURiQc5poxDk5gGKEh54cksxd9FZYRrkcbmXB2dnR8zzoNDUbDKZd9HV
+        5r8kT4YB3+vuqryMlfbitlw1FYVWL9JzVDe6YkDAR6almNOhNV373lHv55ODs5bd
+        wSxsx4NsVeNKVl4kbxwGWp8YYEqcOnRVq8ytUDu8nADf7THQ1INB+tPTid53CVIK
+        52maMu+FCSGuPahF7YKRdjra0hWLqPZ+OhtHVSs4/nQ/1LsTfJWNQ==
+X-ME-Sender: <xms:nIYXYnb9fgBv4olAvMVFJn89v8rzlaOHBDoNTTKkKJLmik3oDFkJ3A>
+    <xme:nIYXYmYLiJKO_t5Hge8ASBlNlOYViP4ujMOLog1WihUH86H1bjwW91KqqM9y3uWaX
+    guyErNb6_EzFwY>
+X-ME-Received: <xmr:nIYXYp_WkovsIZVfjsrE0JWjNKUVgX_SAGGf9XBxBaBxyEO8PgRjwsbFNM4FngTEbdcDZkSyvw7ewj0sdMTRkF7Q5uY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrledvgdehtdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhephefhtdfhudeuhefgkeekhfehuddtvdevfeetheetkeelvefggeetveeuleehkeeu
+    necuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:nIYXYtqnz1vrnLsTD_cS7buOQ6kqLOZ1GA8Ia-cIEqBpY6oTy_x0HQ>
+    <xmx:nIYXYioYdK3xCk6MN_7vVh5gffqTsuufJbVWiSEH5pvqpDqXKWVlew>
+    <xmx:nIYXYjSiwlupOnkt7uDU2ord23swMC73S4hETUY3MwtdrMQEeN-RaA>
+    <xmx:nYYXYh1z5tpIAi4y3vQXt3_xXPJ-p42wo6ldsIJ2wNybhonBBPbKtg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 24 Feb 2022 08:22:35 -0500 (EST)
+Date:   Thu, 24 Feb 2022 15:22:31 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: Re: [RFC PATCH v2 net-next 05/17] net: bridge: implement unicast
+ filtering for the bridge device
+Message-ID: <YheGlwjp849dhcpq@shredder>
+References: <20210224114350.2791260-1-olteanv@gmail.com>
+ <20210224114350.2791260-6-olteanv@gmail.com>
+ <YD0GyJfbhqpPjhVd@shredder.lan>
+ <CA+h21hrtnXr11VXsRXokkZHQ3AQ8nNCLsWTC4ztoLMmNmQoxxg@mail.gmail.com>
+ <YhUVNc58trg+r3V9@shredder>
+ <20220222171810.bpoddx7op3rivenm@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2] net: stmmac: only enable DMA interrupts when ready
-Content-Language: ru
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     kernel@axis.com, Lars Persson <larper@axis.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220224113829.1092859-1-vincent.whitchurch@axis.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-In-Reply-To: <20220224113829.1092859-1-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222171810.bpoddx7op3rivenm@skbuf>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Feb 22, 2022 at 07:18:10PM +0200, Vladimir Oltean wrote:
+> On Tue, Feb 22, 2022 at 06:54:13PM +0200, Ido Schimmel wrote:
+> > On Tue, Feb 22, 2022 at 01:21:53PM +0200, Vladimir Oltean wrote:
+> > > Hi Ido,
+> > > 
+> > > On Mon, 1 Mar 2021 at 17:22, Ido Schimmel <idosch@idosch.org> wrote:
+> > > >
+> > > > On Wed, Feb 24, 2021 at 01:43:38PM +0200, Vladimir Oltean wrote:
+> > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > > >
+> > > > > The bridge device currently goes into promiscuous mode when it has an
+> > > > > upper with a different MAC address than itself. But it could do better:
+> > > > > it could sync the MAC addresses of its uppers to the software FDB, as
+> > > > > local entries pointing to the bridge itself. This is compatible with
+> > > > > switchdev, since drivers are now instructed to trap these MAC addresses
+> > > > > to the CPU.
+> > > > >
+> > > > > Note that the dev_uc_add API does not propagate VLAN ID, so this only
+> > > > > works for VLAN-unaware bridges.
+> > > >
+> > > > IOW, it breaks VLAN-aware bridges...
+> > > >
+> > > > I understand that you do not want to track bridge uppers, but once you
+> > > > look beyond L2 you will need to do it anyway.
+> > > >
+> > > > Currently, you only care about getting packets with specific DMACs to
+> > > > the CPU. With L3 offload you will need to send these packets to your
+> > > > router block instead and track other attributes of these uppers such as
+> > > > their MTU so that the hardware will know to generate MTU exceptions. In
+> > > > addition, the hardware needs to know the MAC addresses of these uppers
+> > > > so that it will rewrite the SMAC of forwarded packets.
+> > > 
+> > > Ok, let's say I want to track bridge uppers. How can I track the changes to
+> > > those interfaces' secondary addresses, in a way that keeps the association
+> > > with their VLAN ID, if those uppers are VLAN interfaces?
+> > 
+> > Hi,
+> > 
+> > I'm not sure what you mean by "secondary addresses", but the canonical
+> > way that I'm familiar with of adding MAC addresses to a netdev is to use
+> > macvlan uppers. For example:
+> > 
+> > # ip link add name br0 up type bridge vlan_filtering 1
+> > # ip link add link br0 name br0.10 type vlan id 10
+> > # ip link add link br0.10 name br0.10-v address 00:11:22:33:44:55 type macvlan mode private
+> > 
+> > keepalived uses it in VRRP virtual MAC mode (for example):
+> > https://github.com/acassen/keepalived/blob/master/doc/NOTE_vrrp_vmac.txt
+> > 
+> > In the software data path, this will result in br0 transitioning to
+> > promisc mode and passing all the packets to upper devices that will
+> > filter them.
+> > 
+> > In the hardware data path, you can apply promisc mode by flooding to
+> > your CPU port (I believe this is what you are trying to avoid) or
+> > install an FDB entry <00:11:22:33:44:55,10> that points to your CPU
+> > port.
+> 
+> Maybe the terminology is not the best, but by secondary addresses I mean
+> struct net_device :: uc and mc. To my knowledge, the MAC address of
+> vlan/macvlan uppers is not the only way in which these lists can be
+> populated. There is also AF_PACKET UAPI for PACKET_MR_MULTICAST and
+> PACKET_MR_UNICAST, and this ends up calling dev_mc_add() and
+> dev_uc_add(). User space may use this API to add a secondary address to
+> a VLAN upper interface of a bridge.
 
+OK, I see the problem... So you want the bridge to support
+'IFF_UNICAST_FLT' by installing local FDB entries? I see two potential
+problems:
 
-2/24/22 14:38, Vincent Whitchurch пишет:
-> In this driver's ->ndo_open() callback, it enables DMA interrupts,
-> starts the DMA channels, then requests interrupts with request_irq(),
-> and then finally enables napi.
+1. For VLAN-unaware bridges this is trivial as VLAN information is of no
+use. For VLAN-aware bridges we either need to communicate VLAN
+information from upper layers or install a local FDB entry per each
+configured VLAN (wasteful...). Note that VLAN information will not
+always be available (in PACKET_MR_UNICAST, for example), in which case a
+local FDB entry will need to be configured per each existing VLAN in
+order to maintain existing behavior. Which lead to me think about the
+second problem...
+
+2. The bigger problem that I see is that if the bridge starts supporting
+'IFF_UNICAST_FLT' by installing local FDB entries, then packets that
+were previously locally received and flooded will only be locally
+received. Only locally receiving them makes sense, but I don't know what
+will break if we change the existing behavior... Maybe this needs to be
+guarded by a new bridge option?
+
 > 
-> If RX DMA interrupts are received before napi is enabled, no processing
-> is done because napi_schedule_prep() will return false.  If the network
-> has a lot of broadcast/multicast traffic, then the RX ring could fill up
-> completely before napi is enabled.  When this happens, no further RX
-> interrupts will be delivered, and the driver will fail to receive any
-> packets.
+> The question was how can the bridge get notified of changes to those 2
+> lists of its upper interfaces?
 > 
-> Fix this by only enabling DMA interrupts after all other initialization
-> is complete.
+> If it monitors NETDEV_CHANGEUPPER it has access to those lists only when
+> an upper joins or leaves.
+> If it monitors NETDEV_CHANGEADDR, it gets notified only to changes on
+> the primary addresses of the uppers (dev_addr and dev_addrs).
+> If it implements ndo_set_rx_mode (this patch), it has all the addresses
+> synced to it, but they lack a VLAN ID, because every address lacks
+> further information about which device added it.
 > 
-> Fixes: 523f11b5d4fd72efb ("net: stmmac: move hardware setup for stmmac_open to new function")
-> Reported-by: Lars Persson <larper@axis.com>
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
->   .../net/ethernet/stmicro/stmmac/stmmac_main.c | 28 +++++++++++++++++--
->   1 file changed, 26 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 6708ca2aa4f7..43978558d6c0 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -2260,6 +2260,23 @@ static void stmmac_stop_tx_dma(struct stmmac_priv *priv, u32 chan)
->   	stmmac_stop_tx(priv, priv->ioaddr, chan);
->   }
->   
-> +static void stmmac_enable_all_dma_irq(struct stmmac_priv *priv)
-> +{
-> +	u32 rx_channels_count = priv->plat->rx_queues_to_use;
-> +	u32 tx_channels_count = priv->plat->tx_queues_to_use;
-> +	u32 dma_csr_ch = max(rx_channels_count, tx_channels_count);
-> +	u32 chan;
-> +
-> +	for (chan = 0; chan < dma_csr_ch; chan++) {
-> +		struct stmmac_channel *ch = &priv->channel[chan];
-> +		unsigned long flags;
-> +
-> +		spin_lock_irqsave(&ch->lock, flags);
-> +		stmmac_enable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-> +		spin_unlock_irqrestore(&ch->lock, flags);
-> +	}
-> +}
-> +
->   /**
->    * stmmac_start_all_dma - start all RX and TX DMA channels
->    * @priv: driver private structure
-> @@ -2902,8 +2919,10 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
->   		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
->   
->   	/* DMA CSR Channel configuration */
-> -	for (chan = 0; chan < dma_csr_ch; chan++)
-> +	for (chan = 0; chan < dma_csr_ch; chan++) {
->   		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
-Did you miss to take a channel lock?
-> +		stmmac_disable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-> +	}
->   
->   	/* DMA RX Channel Configuration */
->   	for (chan = 0; chan < rx_channels_count; chan++) {
-> @@ -3759,6 +3778,7 @@ static int stmmac_open(struct net_device *dev)
->   
->   	stmmac_enable_all_queues(priv);
->   	netif_tx_start_all_queues(priv->dev);
-> +	stmmac_enable_all_dma_irq(priv);
->   
->   	return 0;
->   
-> @@ -6508,8 +6528,10 @@ int stmmac_xdp_open(struct net_device *dev)
->   	}
->   
->   	/* DMA CSR Channel configuration */
-> -	for (chan = 0; chan < dma_csr_ch; chan++)
-> +	for (chan = 0; chan < dma_csr_ch; chan++) {
->   		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
-> +		stmmac_disable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-> +	}
->   
->   	/* Adjust Split header */
->   	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
-> @@ -6570,6 +6592,7 @@ int stmmac_xdp_open(struct net_device *dev)
->   	stmmac_enable_all_queues(priv);
->   	netif_carrier_on(dev);
->   	netif_tx_start_all_queues(dev);
-> +	stmmac_enable_all_dma_irq(priv);
->   
->   	return 0;
->   
-> @@ -7447,6 +7470,7 @@ int stmmac_resume(struct device *dev)
->   	stmmac_restore_hw_vlan_rx_fltr(priv, ndev, priv->hw);
->   
->   	stmmac_enable_all_queues(priv);
-> +	stmmac_enable_all_dma_irq(priv);
->   
->   	mutex_unlock(&priv->lock);
->   	rtnl_unlock();
+> If there's logic in the mlxsw driver that does this, unfortunately I
+> haven't found it.
