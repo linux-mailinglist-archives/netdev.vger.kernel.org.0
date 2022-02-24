@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 179414C3261
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 17:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 155204C3338
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 18:09:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiBXQ6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 11:58:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        id S229830AbiBXRJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 12:09:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiBXQ63 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 11:58:29 -0500
+        with ESMTP id S229587AbiBXRJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 12:09:08 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA347433B1;
-        Thu, 24 Feb 2022 08:57:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676A017582E;
+        Thu, 24 Feb 2022 09:08:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FFAB619E2;
-        Thu, 24 Feb 2022 16:57:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89985C340FF;
-        Thu, 24 Feb 2022 16:57:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0473461A94;
+        Thu, 24 Feb 2022 17:08:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0580FC340EC;
+        Thu, 24 Feb 2022 17:08:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645721875;
-        bh=VsHRTV7aICRI+ROp0zh53/L5aAom3s0dMx0t31Au44Q=;
+        s=k20201202; t=1645722517;
+        bh=aFqQ6+V1wY3k12+W5FPWC2KQtgr102npBDs1j4mV2s4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KlYyN74PS4i7EISHuML/k0Zk+ppdJ3eAsKx8rwkPNlscoqLFOgYtFAS3uiBVifmPu
-         1B07YVArtVJ+TjDxrqesKE68KHah4PIXSQTQF0V1DBSC4y7mJyujoLxW5DFzz2BhxU
-         wFDQozxSCgnTi4da+vcOUxd4h+ufRHSX4QM+2NYaAK5smNPVeCDxnwuEA8HjqEGzde
-         OaHXTZdDnoYSdN6EP9SYh+MQg2NNdVJ/LQTVFzNNVRqlLWm+IhtP6uADttsc1bDw9h
-         zARSISmgmsFwtm8mgR2KYvIhIx9yWZlp+9ge7qR6zrgHX5gJVomAhe2XCA2X2s58YR
-         cwh5pu8aLmI2g==
-Date:   Thu, 24 Feb 2022 08:57:54 -0800
+        b=G3s8XvBs/7DoZAOA9Zn2NeMlBeV+da45TFWRffLQEaKPBpF2QgW8WiN9zjFw72EWO
+         c/r1+19w6VNj1r2JQIqL+d6ljs9VAIPTe8OgT9IbE0NjA7kum8pCHSE018p/ayjfaJ
+         HsFV7FJwsN5rs+StK/a5uQ5iWzBQTF+OofyOhtZcEB630/cELnJYvPdA51Y+03YaOY
+         abc03s1dfBDZd0BE/SpZU6aYmRDXl4x3cS5UH+bqd2pooXFMkzxtdIymZKa3am3XZB
+         nE/J8uNMNMRNnFhbX4JpkecDL3uzj9Jn/ZBqz9iWnyVcvxxuBzC4U15tdNzxguofTF
+         DJXKJKzBbxkog==
+Date:   Thu, 24 Feb 2022 09:08:35 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Mauri Sandberg <maukka@ext.kapsi.fi>, Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2] net: mv643xx_eth: process retval from
- of_get_mac_address
-Message-ID: <20220224085754.703860a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220223142337.41757-1-maukka@ext.kapsi.fi>
-References: <20220221062441.2685-1-maukka@ext.kapsi.fi>
-        <20220223142337.41757-1-maukka@ext.kapsi.fi>
+To:     "lena.wang" <lena.wang@mediatek.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     <davem@davemloft.net>, <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wsd_upstream@mediatek.com>, <hao.lin@mediatek.com>
+Subject: Re: [PATCH] net:fix up skbs delta_truesize in UDP GRO frag_list
+Message-ID: <20220224090835.147010b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <647050777c64ce48788602d61280e8923477b331.camel@mediatek.com>
+References: <647050777c64ce48788602d61280e8923477b331.camel@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,18 +55,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Feb 2022 16:23:37 +0200 Mauri Sandberg wrote:
-> Obtaining a MAC address may be deferred in cases when the MAC is stored
-> in an NVMEM block, for example, and it may not be ready upon the first
-> retrieval attempt and return EPROBE_DEFER.
+On Wed, 23 Feb 2022 18:08:47 +0800 lena.wang wrote:
+> The truesize for a UDP GRO packet is added by main skb and skbs in main
+> skb's frag_list:
+> skb_gro_receive_list
+>         p->truesize += skb->truesize;
 > 
-> It is also possible that a port that does not rely on NVMEM has been
-> already created when getting the defer request. Thus, also the resources
-> allocated previously must be freed when doing a roll-back.
+> When uncloning skb, it will call pskb_expand_head and trusesize for
+> frag_list skbs may increase. This can occur when allocators uses
+> __netdev_alloc_skb and not jump into __alloc_skb. This flow does not
+> use ksize(len) to calculate truesize while pskb_expand_head uses.
+> skb_segment_list
+> err = skb_unclone(nskb, GFP_ATOMIC);
+> pskb_expand_head
+>         if (!skb->sk || skb->destructor == sock_edemux)
+>                 skb->truesize += size - osize;
 > 
-> Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
-> Cc: Andrew Lunn <andrew@lunn.ch>
+> If we uses increased truesize adding as delta_truesize, it will be
+> larger than before and even larger than previous total truesize value
+> if skbs in frag_list are abundant. The main skb truesize will become
+> smaller and even a minus value or a huge value for an unsigned int
+> parameter. Then the following memory check will drop this abnormal skb.
+> 
+> To avoid this error we should use the original truesize to segment the
+> main skb.
+> 
+> Signed-off-by: lena wang <lena.wang@mediatek.com>
 
-While we wait for Andrew's ack, is this the correct fixes tag?
+CC: Eric
 
-Fixes: 76723bca2802 ("net: mv643xx_eth: add DT parsing support")
+
