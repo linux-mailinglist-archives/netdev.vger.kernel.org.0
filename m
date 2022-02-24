@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB08D4C3149
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 17:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B24684C3151
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 17:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbiBXQaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 11:30:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
+        id S229630AbiBXQa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 11:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiBXQaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 11:30:10 -0500
+        with ESMTP id S229621AbiBXQaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 11:30:24 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480A91CF093
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 08:29:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC361F83E7
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 08:29:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=S5tFpMBn7q4wB1bBtr+yCbfAwXZ4FWcZxjQUA27fyKs=; b=SUsH2Rl8yoFkagN88msHx43Xrb
-        m83i9q+GsvEn2v8n0EjtWTbM6bJtbqu72AQMN3E6wEtvSkHZgqkJXg/QsvFzkxHD4X9Lj9y9LZJic
-        9myq3Of78luGoEg3vs8o3nPz0axFqH31yImKL4mCAo3m59NrAWdEBoQbnNQUfKaDbP0rQHZvcxgJm
-        zezmaC/W/ZKD9JGn+re4PzzJcW0cqZ0KBFKaJHqO8vrFGmcTF42EXDEqbz1eVNP5V1PLmG/kHwJB6
-        skrVOspRp5AvUTEEJEfpncjLEpW4u2Rr1Rocee5CUpn3y1SvWeT3IE13UJ6F5dYdfYlZ85qTtTbK1
-        TVu4c0jQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57464)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lIY6XpFN6DHXZxJ3h/lyIVZFaJkNxeJQjru2eCe7kOs=; b=oZ90EN2ioNDkkzGs/YVFGai3Gu
+        pzC69jRgRZ2lAGcl6cNuk3yyoJQOloUWNsa9c4rvPasv/7b2hwnIL1716y+YeNdlZCZh5bqatc1vS
+        bvL5EiGMgr7IiMdNuypnJNx+7LMfNammvkkhvZpuxPZHsVaSWYgceIBhTduItsGQdzgomM8QkqiPh
+        b0AtfGs3kI7MHRCI6fEWZE5NyiFoR1vzPOJ8LngQID2BJES9ARYhLM6sB6mx3+1qqsEx3NNJ0p9ZI
+        U0mYcjMuVMczXm1l0Wu5iWGLcQXGfOc9Rjb1bIo4mJ9U0hcI0891uajKheSq44e4aij2LYQPr8F1G
+        mxolV8uw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:39178 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nNGle-0004Bq-66; Thu, 24 Feb 2022 16:14:58 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nNGlc-0002CO-Bk; Thu, 24 Feb 2022 16:14:56 +0000
-Date:   Thu, 24 Feb 2022 16:14:56 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1nNGlw-0004C0-LE; Thu, 24 Feb 2022 16:15:16 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1nNGlv-00AOid-Vd; Thu, 24 Feb 2022 16:15:16 +0000
+In-Reply-To: <YhevAJyU87bfCzfs@shell.armlinux.org.uk>
+References: <YhevAJyU87bfCzfs@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     Marek Beh__n <kabel@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH RFC net-next 0/6] net: dsa: sja1105: phylink updates
-Message-ID: <YhevAJyU87bfCzfs@shell.armlinux.org.uk>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH RFC net-next 1/6] net: dsa: sja1105: populate
+ supported_interfaces
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1nNGlv-00AOid-Vd@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Thu, 24 Feb 2022 16:15:15 +0000
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -58,73 +61,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Populate the supported interfaces bitmap for the SJA1105 DSA switch.
 
-This series updates the phylink implementation in sja1105 to use the
-supported_interfaces bitmap, convert to the mac_select_pcs() interface,
-mark as non-legacy, and get rid of the validation method.
+This switch only supports a static model of configuration, so we
+restrict the interface modes to the configured setting.
 
-As a final step, enable switching between SGMII and 2500BASE-X as it
-is a feature that Vladimir desires.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/dsa/sja1105/sja1105_main.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Specifically, the patches in this series:
-
-1. Populates the supported_interfaces bitmap.
-2. As a result of the supported_interfaces bitmap being populated,
-   sja1105 no longer needs to check the interface mode as phylink
-   will do this.
-3. Switch away from using phylink_set_pcs(), using the mac_select_pcs()
-   method instead.
-4. Mark the driver as not-legacy
-5. Fill in mac_capabilities using _exactly_ the same conditions as is
-   currently used to decide which link modes to support, and convert
-   to use phylink_generic_validate()
-6. Add brand new support to permit switching between SGMII and
-   2500BASE-X modes of operation as per Vladimir's single patch that
-   performs steps 1, 2, 5 and 6 in one go.
-
-There are some additional changes in Vladimir's single patch that I
-have not included:
-
-* validation of priv->phy_mode[] in sja1105_phylink_get_caps(). The
-  driver has already validated the phy_mode for each port in
-  sja1105_init_mii_settings(), and a failure here will prevent the
-  driver reaching sja1105_phylink_get_caps().
-
-* Changing the decisions on which mac_capabilities to set. Vladimir's
-  patch always sets MAC_10FD | MAC_100FD | MAC_1000FD despite the
-  current code clearly making the 1G speed conditional on the
-  xmii_mode for the port. The change in decision making may be
-  visible when in PHY_INTERFACE_MODE_INTERNAL mode, for which
-  the phylink_generic_validate() will pass through all the MAC
-  capabilities as ethtool link modes.
-
-  Hence, if we have PHY_INTERFACE_MODE_INTERNAL but supports_rgmii[]
-  or supports_sgmii[] is non-zero, currently we do not get 1G speeds.
-  With Vladimir's additional change, we will get 1G speeds.
-
-  While it is not clear whether that can happen, I feel changing the
-  decision making should be a separate patch.
-
-* The decision for MAC_2500FD is made differently -
-  sja1105_init_mii_settings() allows PHY_INTERFACE_MODE_2500BASEX
-  when supports_2500basex[] is non-zero, and is not based on any other
-  condition such as supports_sgmii[] or supports_rgmii[]. Vladimir's
-  patch makes it additionally conditional on those supports_.gmii[]
-  settings, which is a functional change that should be made in a
-  separate patch - and if desired, then sja1105_init_mii_settings()
-  should also be updated at the same time.
-
-Consequently, I believe that my previous objections to Vladimir's
-single patch approach are well founded and justified, even through
-Vladimir is the maintainer of this driver. I have no objection to
-the additional changes, I just don't think they should all be wrapped
-up into a single patch that converts the way validation is done _and_
-also makes a bunch of other functional changes.
-
- drivers/net/dsa/sja1105/sja1105_main.c | 101 ++++++++++++++-------------------
- 1 file changed, 43 insertions(+), 58 deletions(-)
-
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index b513713be610..90e73a982faf 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1412,6 +1412,18 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
+ 	sja1105_inhibit_tx(priv, BIT(port), false);
+ }
+ 
++static void sja1105_phylink_get_caps(struct dsa_switch *ds, int port,
++				     struct phylink_config *config)
++{
++	struct sja1105_private *priv = ds->priv;
++
++	/* The SJA1105 MAC programming model is through the static config
++	 * (the xMII Mode table cannot be dynamically reconfigured), and
++	 * we have to program that early.
++	 */
++	__set_bit(priv->phy_mode[port], config->supported_interfaces);
++}
++
+ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+ 				     unsigned long *supported,
+ 				     struct phylink_link_state *state)
+@@ -3152,6 +3164,7 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.set_ageing_time	= sja1105_set_ageing_time,
+ 	.port_change_mtu	= sja1105_change_mtu,
+ 	.port_max_mtu		= sja1105_get_max_mtu,
++	.phylink_get_caps	= sja1105_phylink_get_caps,
+ 	.phylink_validate	= sja1105_phylink_validate,
+ 	.phylink_mac_config	= sja1105_mac_config,
+ 	.phylink_mac_link_up	= sja1105_mac_link_up,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
