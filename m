@@ -2,106 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C67F4C2AE3
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 12:27:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 362244C2AF9
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 12:35:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234088AbiBXL05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 06:26:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        id S232327AbiBXLbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 06:31:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233971AbiBXL04 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 06:26:56 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB62929A57E
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 03:26:25 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id cm8so2363881edb.3
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 03:26:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0njhmFMB7YGM1lxXw8lv8Du+QtFIF36U2sCeO/sbrqc=;
-        b=4cOto6GTLyrG1vHzK/XU21unLBboPvpGxq/9dOU9VzTvXqGmm7w/90Jaql6sz6XvpV
-         KJhq3pSsDkQWkpQLpKwh0oz80v4yPqTpPj+IHBsTmYt/KsKOF2OHKyi2in/lFldM/e6A
-         L+rLaJSSQZC2UypDSzRDo4l7ZRxXvD7ZxAGqf1Tzc7RmsiXOvJ+lR942gefInlGGgGr3
-         KrilYlhlQYDxpkuFsswaJbsS0pXH1Htz4B9ASN32Xyhqlv89x1ISg6U+jjYmw39E6M6R
-         1LYpioTnmWuCqGsXm6qyq8fd0VWYs9J8dSYUCah2sNarP3mhc7qQkFAMZSvzaHGr3diS
-         oRqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0njhmFMB7YGM1lxXw8lv8Du+QtFIF36U2sCeO/sbrqc=;
-        b=3vfB9MvmA1CJxu5U7c4TVUCoL+fXCHgGJuYp3HoSGP/36bjLptVvMeNAT1o6MSbaop
-         uZo4KulOA1zqjlJyTW1SUMV8Zvq6NxmHH46D3cEK7aHZ4Xe/hXCYuu1PitmCpu8SgFmp
-         sEZ8Pg1h8jMHYOnyW/WrMTYM6AUMlTdfsyfViR83Yw2hR4VlFCzJoevUtnXNHsNcKNpu
-         Plskg7NnbiuMMqdPSL09EZL3R14b245JZrGjslButQ2gmdv2wQO1Nd9ZTm9JcMRczo5j
-         vgI7qqP7oxnrjG05VvKZJOGdTy0E40Tt8o4/MaTE97qLirzzsZFgk68g4XEtDW38wI5q
-         RGkA==
-X-Gm-Message-State: AOAM5312BpUH0DGKAt9pJ40bXCInHe4RUMKzzzttOoKLdhieJ/TDixf6
-        ACcWJBbaJq++PHH6XKS+TDW+QdGqMrBVxZm8
-X-Google-Smtp-Source: ABdhPJzzX65huOzpn9V2Rt2En85LVpCl2fy7WzIH+sMUEgIVZllXml9NcgRj2gEARhKzt825lGWeyw==
-X-Received: by 2002:a05:6402:50cb:b0:412:ab6d:c807 with SMTP id h11-20020a05640250cb00b00412ab6dc807mr1829651edb.382.1645701984402;
-        Thu, 24 Feb 2022 03:26:24 -0800 (PST)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id q12sm1165991edv.99.2022.02.24.03.26.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 03:26:23 -0800 (PST)
-Message-ID: <66dc205f-9f57-61c1-35d9-8712e8d9fe3a@blackwall.org>
-Date:   Thu, 24 Feb 2022 13:26:22 +0200
+        with ESMTP id S229525AbiBXLbs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 06:31:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B12294FE6;
+        Thu, 24 Feb 2022 03:31:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E1A761775;
+        Thu, 24 Feb 2022 11:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0122CC340E9;
+        Thu, 24 Feb 2022 11:31:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645702277;
+        bh=ROyzaggUh4Lbnoq0CGgj+rVYyRl1j3Fnbe8TafmpJ44=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jfoGSXm4DHLAdWImMth3fgtl+ZDXpjUUDAQcNaWzPrpWhan6LYiC7gNyK6lx5tkoX
+         5/hl3dR90OiswNILwYBjPLE6JTEd/GwFNV4S1nA6MvAQJJzfPAedYPHoE3uOllaL6v
+         9iJ16hwV2vbvtyVRjES5rZUi7rMheKTKckzfCKbs=
+Date:   Thu, 24 Feb 2022 12:31:14 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next v1 0/6] Introduce eBPF support for HID devices
+Message-ID: <YhdsgokMMSEQ0Yc8@kroah.com>
+References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/1 net-next] net: bridge: add support for host l2 mdb
- entries
-Content-Language: en-US
-To:     Joachim Wiberg <troglobit@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220223172407.175865-1-troglobit@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220223172407.175865-1-troglobit@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/02/2022 19:24, Joachim Wiberg wrote:
-> This patch expands on the earlier work on layer-2 mdb entries by adding
-> support for host entries.  Due to the fact that host joined entries do
-> not have any flag field, we infer the permanent flag when reporting the
-> entries to userspace, which otherwise would be listed as 'temp'.
+On Thu, Feb 24, 2022 at 12:08:22PM +0100, Benjamin Tissoires wrote:
+> Hi there,
 > 
-> Before patch:
+> This series introduces support of eBPF for HID devices.
 > 
->     ~# bridge mdb add dev br0 port br0 grp 01:00:00:c0:ff:ee permanent
->     Error: bridge: Flags are not allowed for host groups.
->     ~# bridge mdb add dev br0 port br0 grp 01:00:00:c0:ff:ee
->     Error: bridge: Only permanent L2 entries allowed.
+> I have several use cases where eBPF could be interesting for those
+> input devices:
 > 
-> After patch:
+> - simple fixup of report descriptor:
 > 
->     ~# bridge mdb add dev br0 port br0 grp 01:00:00:c0:ff:ee permanent
->     ~# bridge mdb show
->     dev br0 port br0 grp 01:00:00:c0:ff:ee permanent vid 1
-> 
-> Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
-> ---
->  net/bridge/br_mdb.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
+> In the HID tree, we have half of the drivers that are "simple" and
+> that just fix one key or one byte in the report descriptor.
+> Currently, for users of such devices, the process of fixing them
+> is long and painful.
+> With eBPF, we could externalize those fixups in one external repo,
+> ship various CoRe bpf programs and have those programs loaded at boot
+> time without having to install a new kernel (and wait 6 months for the
+> fix to land in the distro kernel)
 
-It would be nice to add a selftest for L2 entries. You can send it as a follow-up.
-The patch looks good to me.
+Why would a distro update such an external repo faster than they update
+the kernel?  Many sane distros update their kernel faster than other
+packages already, how about fixing your distro?  :)
 
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+I'm all for the idea of using ebpf for HID devices, but now we have to
+keep track of multiple packages to be in sync here.  Is this making
+things harder overall?
 
+> - Universal Stylus Interface (or any other new fancy feature that
+>   requires a new kernel API)
+> 
+> See [0].
+> Basically, USI pens are requiring a new kernel API because there are
+> some channels of communication our HID and input stack are not capable
+> of. Instead of using hidraw or creating new sysfs or ioctls, we can rely
+> on eBPF to have the kernel API controlled by the consumer and to not
+> impact the performances by waking up userspace every time there is an
+> event.
+
+How is userspace supposed to interact with these devices in a unified
+way then?  This would allow random new interfaces to be created, one
+each for each device, and again, be a pain to track for a distro to keep
+in sync.  And how are you going to keep the ebpf interface these
+provides in sync with the userspace program?
+
+> - Surface Dial
+> 
+> This device is a "puck" from Microsoft, basically a rotary dial with a
+> push button. The kernel already exports it as such but doesn't handle
+> the haptic feedback we can get out of it.
+> Furthermore, that device is not recognized by userspace and so it's a
+> nice paperwight in the end.
+> 
+> With eBPF, we can morph that device into a mouse, and convert the dial
+> events into wheel events.
+
+Why can't we do this in the kernel today?
+
+> Also, we can set/unset the haptic feedback
+> from userspace. The convenient part of BPF makes it that the kernel
+> doesn't make any choice that would need to be reverted because that
+> specific userspace doesn't handle it properly or because that other
+> one expects it to be different.
+
+Again, what would the new api for the haptic device be?  Who is going to
+mantain that on the userspace side?  What library is going to use this?
+Is libinput going to now be responsible for interacting this way with
+the kernel?
+
+> - firewall
+> 
+> What if we want to prevent other users to access a specific feature of a
+> device? (think a possibly bonker firmware update entry popint)
+> With eBPF, we can intercept any HID command emitted to the device and
+> validate it or not.
+
+This I like.
+
+> This also allows to sync the state between the userspace and the
+> kernel/bpf program because we can intercept any incoming command.
+> 
+> - tracing
+> 
+> The last usage I have in mind is tracing events and all the fun we can
+> do we BPF to summarize and analyze events.
+> Right now, tracing relies on hidraw. It works well except for a couple
+> of issues:
+>  1. if the driver doesn't export a hidraw node, we can't trace anything
+>     (eBPF will be a "god-mode" there, so it might raise some eyebrows)
+>  2. hidraw doesn't catch the other process requests to the device, which
+>     means that we have cases where we need to add printks to the kernel
+>     to understand what is happening.
+
+Tracing is also nice, I like this too.
+
+Anyway, I like the idea, I'm just worried we are pushing complexity out
+into userspace which would make it "someone else's problem."  The job of
+a kernel is to provide a way to abstract devices in a standard way.  To
+force userspace to write a "new program per input device" would be a
+total mess and a step backwards.
+
+thanks,
+
+greg k-h
