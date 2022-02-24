@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA924C3669
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 21:00:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CF2A4C366B
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 21:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234125AbiBXUAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 15:00:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
+        id S234138AbiBXUBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 15:01:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232224AbiBXUAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 15:00:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE102763F9
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 12:00:13 -0800 (PST)
+        with ESMTP id S232224AbiBXUBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 15:01:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE472763F9;
+        Thu, 24 Feb 2022 12:00:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF5F2B8292D
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 20:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 50EEEC340EF;
-        Thu, 24 Feb 2022 20:00:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3B91B82684;
+        Thu, 24 Feb 2022 20:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6924C340E9;
+        Thu, 24 Feb 2022 20:00:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645732810;
-        bh=Z+T0ZoAZiDSNnVD8TlEip33rQZ8SiODw6H5z0do/14Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TYfcpEGAYTSE2jjL2chEM5flrA5xM8dDSjHh7viqhR2D7FL50rC2mf/PRB7QpAmsQ
-         MGHqWJ+04/1IFs7azb6y8AzWrw0Sz45bkiZZ0B5ANhTVDcXtt/XiwvAZeauxckffbk
-         xuTKrbPbnrG4TApm07iVnO1adpLkLJ6pOuRB9XQdPDRQm+LFdAEEVAvGVN7SaVVw3F
-         EkwLZD/Lf9GWXcVzy1qBK4WZQLWxQDBryLsYUKsELV6PRJiOOUj8xWNXj4XyTke0aF
-         xqmt3CVzvljusJ7jEFw2Pjek1nm47bCs3/hmHWPkG6Y5MjrEh8MTKeIs33GCRv8XXb
-         42lnMWeFgp3Jg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2BFE2EAC09A;
-        Thu, 24 Feb 2022 20:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1645732840;
+        bh=SQaeb0Kta1h/s7fQ+4T22hNjVzetgs4lJusjv4G1iW0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aax4l6Htvnug8mbTTCX0X2rLTjQUq6JeR+ueffcTenNILwwCX0flGWbvC3gLcJ6tA
+         LIh0hvw+Bbd4wOD+R8WWkcXInjD/9/0jYzDDCJgngg0AP70xSThZhi+xoRqNk2k57S
+         CZRuK6sIXueEnpj9OiYbnawB7IF086gcluUXoeYhoLInJcsG3QP8kljM56vsMmO0nL
+         /YS4U7y0DFUMJwrxWivKuA85OBpeIBAp3XuUSCNqMoGWt7d6xBjNGn0zesXPqr7gIX
+         eMs+OPAknzWIlasB15qWJ+spE8ujhHQYTziWSeHJ7iJl0ihM5++9OEaRHnYQt8UNyK
+         pgum76xmSyGAg==
+Date:   Thu, 24 Feb 2022 14:08:39 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 4/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array member in struct wmi_connect_event
+Message-ID: <20220224200839.GA1292927@embeddedor>
+References: <cover.1645583264.git.gustavoars@kernel.org>
+ <8a0e347615a3516980fd8b6ad2dc4864a880613b.1645583264.git.gustavoars@kernel.org>
+ <6106494b-a1b3-6b57-8b44-b9528127533b@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2][pull request] 10GbE Intel Wired LAN Driver
- Updates 2022-02-23
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164573281017.27321.16168476427077439398.git-patchwork-notify@kernel.org>
-Date:   Thu, 24 Feb 2022 20:00:10 +0000
-References: <20220223185424.2129067-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220223185424.2129067-1-anthony.l.nguyen@intel.com>
-To:     Nguyen@ci.codeaurora.org, Anthony L <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6106494b-a1b3-6b57-8b44-b9528127533b@quicinc.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,34 +59,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
-
-On Wed, 23 Feb 2022 10:54:22 -0800 you wrote:
-> This series contains updates to ixgbe and ixgbevf drivers.
+On Wed, Feb 23, 2022 at 04:50:18PM -0800, Jeff Johnson wrote:
+> On 2/22/2022 6:38 PM, Gustavo A. R. Silva wrote:
+> > Replace one-element array with flexible-array member in struct
+> > wmi_connect_event.
+> > 
+> > It's also worth noting that due to the flexible array transformation,
+> > the size of struct wmi_connect_event changed (now the size is 1 byte
+> > smaller), and in order to preserve the logic of before the transformation,
+> > the following change is needed:
+> > 
+> > 	-       if (len < sizeof(struct wmi_connect_event))
+> > 	+       if (len <= sizeof(struct wmi_connect_event))
+> > 
+> > This issue was found with the help of Coccinelle and audited and fixed,
+> > manually.
+> > 
+> > Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> > Link: https://github.com/KSPP/linux/issues/79
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> > ---
+> > Hi!
+> > 
+> > It'd be great if someone can confirm or comment on the following
+> > changes described in the changelog text:
+> > 
+> >          -       if (len < sizeof(struct wmi_connect_event))
+> >          +       if (len <= sizeof(struct wmi_connect_event))
+> > 
+> > Thanks
+> > 
+> >   drivers/net/wireless/ath/ath6kl/wmi.c | 2 +-
+> >   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+> >   2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+> > index 049d75f31f3c..ccdccead688e 100644
+> > --- a/drivers/net/wireless/ath/ath6kl/wmi.c
+> > +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+> > @@ -857,7 +857,7 @@ static int ath6kl_wmi_connect_event_rx(struct wmi *wmi, u8 *datap, int len,
+> >   	struct wmi_connect_event *ev;
+> >   	u8 *pie, *peie;
+> > -	if (len < sizeof(struct wmi_connect_event))
+> > +	if (len <= sizeof(struct wmi_connect_event))
 > 
-> Yang Li fixes incorrect indenting as reported by smatch for ixgbevf.
-> 
-> Piotr removes non-inclusive language from ixgbe driver.
-> 
-> The following are changes since commit 6ce71687d4f4105350ddbc92aa12e6bc9839f103:
->   Merge branch 'locked-bridge-ports'
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
-> 
-> [...]
+> this is another case where IMO the original code can remain since all it is
+> really checking is to see if the entire "fixed" portion is present. in
+> reality if there was just one byte of assoc_info the response would actually
+> be invalid.
 
-Here is the summary with links:
-  - [net-next,1/2] ixgbevf: clean up some inconsistent indenting
-    https://git.kernel.org/netdev/net-next/c/c6fbfdcbcef9
-  - [net-next,2/2] ixgbe: Remove non-inclusive language
-    https://git.kernel.org/netdev/net-next/c/93b067f154b3
+I see; that's actually what I needed to be clarified. I wasn't sure if
+a channel list with no channels was valid and expected. Now I see it is. :)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> what is missing is logic that verifies len is large enough to hold the
+> payload that is advertised via the beacon_ie_len, assoc_req_len, &
+> assoc_resp_len members. without this even if you change the initial len
+> check you can have a condition where len says there is one u8 in assoc_info
+> (and pass the initial test) but the other three members indicate that much
+> more data is present.
+> 
+> but that is a pre-existing shortcoming that should be handled with a
+> separate patch.
 
+Yeah; I'll consider extending this series to include a patch for that.
+
+> >   		return -EINVAL;
+> >   	ev = (struct wmi_connect_event *) datap;
+> > diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+> > index 432e4f428a4a..6b064e669d87 100644
+> > --- a/drivers/net/wireless/ath/ath6kl/wmi.h
+> > +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+> > @@ -1545,7 +1545,7 @@ struct wmi_connect_event {
+> >   	u8 beacon_ie_len;
+> >   	u8 assoc_req_len;
+> >   	u8 assoc_resp_len;
+> > -	u8 assoc_info[1];
+> > +	u8 assoc_info[];
+> >   } __packed;
+> >   /* Disconnect Event */
+> 
+> whether or not you modify the length check consider this:
+> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+
+Great. :)
+
+Thanks a lot for the feedback!
+--
+Gustavo
 
