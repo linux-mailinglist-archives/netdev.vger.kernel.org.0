@@ -2,206 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0729D4C267D
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 09:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3204C26DD
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 10:00:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbiBXIoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 03:44:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54908 "EHLO
+        id S232157AbiBXIyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 03:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbiBXIn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 03:43:56 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119E4546A0;
-        Thu, 24 Feb 2022 00:43:26 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id d187so1242565pfa.10;
-        Thu, 24 Feb 2022 00:43:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DGXjlcc+X0sRfKyRVlLE2UGPc34DxTor0AEsPttBRek=;
-        b=D+PLMxcc8lINE6mpuwuY1VfenkvrJfJnOaAujRcYieS/rOtaxJ3jb1cRjPfYTPY/4y
-         KMpoUKix63+bVmTBzzpfx/Fm3fPFJs3iw8eC8cOzVdmaRFW9NwWVovZ9IzuYhLUxqopv
-         3TazpJjWh5jJin7dAvajs3POa1Xqquy6uXljMZzCSKL8ELB2JB6FNwMYmpDI92TLF7AI
-         Jm/FXzeh7kFA8/eG+e8MAYyzryptjB2JQjdAJQJtAdHaRbhFYnwkEBqHN+qo3VEDSEhN
-         HeewN0OjZV84MZsyBw43npT7OmHY18+u5O43j9i1uk1+taDbgRohdz0WsBzhDVvq2+7U
-         xIYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DGXjlcc+X0sRfKyRVlLE2UGPc34DxTor0AEsPttBRek=;
-        b=75W8qZqZDhCWwtDmhD57KiWbTaVFeksNHbFZ6tC/05oLXDrRrNlVQeklXI/EkSkb1E
-         s1dAn/UaykEGGVkS5QITJPoC5bAdj8QdmzIOuGUeb06VOHTBPOWhP1H/ILsJpvQpOIp0
-         SC479XhHC9eCAubH5kyd2ccg7fU9FQM7S9JtKKQ5HeMJTGeSU8HMfU1QW8aY4Ak7SEhg
-         jpdVpvDXVvubFAraY4+k8b8AEQ6oE9P7nZqouZ/xf77xEPTSbxPgFNF+fXCPYkxsIGLu
-         GcMRH7uDF3LGKagtvAlyeZqI25+VQomtamgaJBzorA75PCoeP+lpp/sS9Vuxs6hvZSAO
-         lIIQ==
-X-Gm-Message-State: AOAM531NWhJGLbVjn5VmC//M/VxC3DEf9Y+3VE8/AQYy4hwaREuM7oXo
-        XgSF74+AnPNObuCFHgl8BBE=
-X-Google-Smtp-Source: ABdhPJy3utqnYppxVF8zQ3qjoHKCNxlEqERdaX/VdiVHrzuJvrihVrYzj8EoMG1dG+Kv4S0G6Qtqcg==
-X-Received: by 2002:a65:64d1:0:b0:374:9f3f:d8f5 with SMTP id t17-20020a6564d1000000b003749f3fd8f5mr1482527pgv.186.1645692205360;
-        Thu, 24 Feb 2022 00:43:25 -0800 (PST)
-Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id o3sm2580462pfu.50.2022.02.24.00.43.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 00:43:25 -0800 (PST)
-Date:   Thu, 24 Feb 2022 14:13:22 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 04/15] bpf: Allow storing referenced
- PTR_TO_BTF_ID in map
-Message-ID: <20220224084322.vmyvusyukanc6z45@apollo.legion>
-References: <20220220134813.3411982-1-memxor@gmail.com>
- <20220220134813.3411982-5-memxor@gmail.com>
- <20220222065349.ladxy5cqfpdklk3a@ast-mbp.dhcp.thefacebook.com>
- <20220222071026.fqdjmd5fhjbl56xl@apollo.legion>
- <CAADnVQLba_X7fZczY774+1GGrGcC5sopD5pzMaDK_O8P+Aeyig@mail.gmail.com>
- <20220223030447.ugwjlfjiqynntbgj@apollo.legion>
- <CAADnVQ+vKtE7_RHAMcc73aL+6XZMir_3tcCOxGaz_0sWiRQiOA@mail.gmail.com>
+        with ESMTP id S232142AbiBXIyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 03:54:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B4A5162020
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 00:53:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645692824;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=thrYYz9q4DcC0rOHSVDRqBTRDM3HEZ49oAwiCU0vtIA=;
+        b=XHFcKxq3HjKYkfe724sAVLTbwSG+7nf/iJTFBAXnUG5J3SkNRVIzjINqBsmeXP6lvz7EEb
+        /U/h/lfubNzelj5p3WyGyLyf2vKvpIsQvxZhpeVJxpCJMJATLEjBYBl+yfgemfAKjcmEfn
+        2FNW2jCL/Hvmh1vIOWew5kW5vGdCUqw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-503-2e81YYi9MyyiXnp89lNAuQ-1; Thu, 24 Feb 2022 03:53:41 -0500
+X-MC-Unique: 2e81YYi9MyyiXnp89lNAuQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 41803800496;
+        Thu, 24 Feb 2022 08:53:39 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CA567607CB;
+        Thu, 24 Feb 2022 08:53:32 +0000 (UTC)
+Date:   Thu, 24 Feb 2022 08:53:31 +0000
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
+        kvm@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
+        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] vhost/vsock: don't check owner in vhost_vsock_stop()
+ while releasing
+Message-ID: <YhdHi4wHLjUfD3WN@stefanha-x1.localdomain>
+References: <20220222094742.16359-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="eMHA10fN330j9lI9"
 Content-Disposition: inline
-In-Reply-To: <CAADnVQ+vKtE7_RHAMcc73aL+6XZMir_3tcCOxGaz_0sWiRQiOA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220222094742.16359-1-sgarzare@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:22:43AM IST, Alexei Starovoitov wrote:
-> On Tue, Feb 22, 2022 at 7:04 PM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
-> > On Tue, Feb 22, 2022 at 09:50:00PM IST, Alexei Starovoitov wrote:
-> > > On Mon, Feb 21, 2022 at 11:10 PM Kumar Kartikeya Dwivedi
-> > > <memxor@gmail.com> wrote:
-> > > >
-> > > > On Tue, Feb 22, 2022 at 12:23:49PM IST, Alexei Starovoitov wrote:
-> > > > > On Sun, Feb 20, 2022 at 07:18:02PM +0530, Kumar Kartikeya Dwivedi wrote:
-> > > > > >  static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regno,
-> > > > > >                         int off, int bpf_size, enum bpf_access_type t,
-> > > > > > -                       int value_regno, bool strict_alignment_once)
-> > > > > > +                       int value_regno, bool strict_alignment_once,
-> > > > > > +                       struct bpf_reg_state *atomic_load_reg)
-> > > > >
-> > > > > No new side effects please.
-> > > > > value_regno is not pretty already.
-> > > > > At least its known ugliness that we need to clean up one day.
-> > > > >
-> > > > > >  static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_insn *insn)
-> > > > > >  {
-> > > > > > +   struct bpf_reg_state atomic_load_reg;
-> > > > > >     int load_reg;
-> > > > > >     int err;
-> > > > > >
-> > > > > > +   __mark_reg_unknown(env, &atomic_load_reg);
-> > > > > > +
-> > > > > >     switch (insn->imm) {
-> > > > > >     case BPF_ADD:
-> > > > > >     case BPF_ADD | BPF_FETCH:
-> > > > > > @@ -4813,6 +4894,7 @@ static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_i
-> > > > > >             else
-> > > > > >                     load_reg = insn->src_reg;
-> > > > > >
-> > > > > > +           atomic_load_reg = *reg_state(env, load_reg);
-> > > > > >             /* check and record load of old value */
-> > > > > >             err = check_reg_arg(env, load_reg, DST_OP);
-> > > > > >             if (err)
-> > > > > > @@ -4825,20 +4907,21 @@ static int check_atomic(struct bpf_verifier_env *env, int insn_idx, struct bpf_i
-> > > > > >     }
-> > > > > >
-> > > > > >     /* Check whether we can read the memory, with second call for fetch
-> > > > > > -    * case to simulate the register fill.
-> > > > > > +    * case to simulate the register fill, which also triggers checks
-> > > > > > +    * for manipulation of BTF ID pointers embedded in BPF maps.
-> > > > > >      */
-> > > > > >     err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
-> > > > > > -                          BPF_SIZE(insn->code), BPF_READ, -1, true);
-> > > > > > +                          BPF_SIZE(insn->code), BPF_READ, -1, true, NULL);
-> > > > > >     if (!err && load_reg >= 0)
-> > > > > >             err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
-> > > > > >                                    BPF_SIZE(insn->code), BPF_READ, load_reg,
-> > > > > > -                                  true);
-> > > > > > +                                  true, load_reg >= 0 ? &atomic_load_reg : NULL);
-> > > > >
-> > > > > Special xchg logic should be down outside of check_mem_access()
-> > > > > instead of hidden by layers of calls.
-> > > >
-> > > > Right, it's ugly, but if we don't capture the reg state before that
-> > > > check_reg_arg(env, load_reg, DST_OP), it's not possible to see the actual
-> > > > PTR_TO_BTF_ID being moved into the map, since check_reg_arg will do a
-> > > > mark_reg_unknown for value_regno. Any other ideas on what I can do?
-> > > >
-> > > > 37086bfdc737 ("bpf: Propagate stack bounds to registers in atomics w/ BPF_FETCH")
-> > > > changed the order of check_mem_access and DST_OP check_reg_arg.
-> > >
-> > > That highlights my point that side effects are bad.
-> > > That commit tries to work around that behavior and makes things
-> > > harder to extend like you found out with xchg logic.
-> > > Another option would be to add bpf_kptr_xchg() helper
-> > > instead of dealing with insn. It will be tiny bit slower,
-> > > but it will work on all architectures. While xchg bpf jit is
-> > > on x86,s390,mips so far.
-> >
-> > Right, but kfunc is currently limited to x86, which is required to obtain a
-> > refcounted PTR_TO_BTF_ID that you can move into the map, so it wouldn't make
-> > much of a difference.
->
-> Well the patches to add trampoline support to powerpc were already posted.
->
-> > > We need to think more on how to refactor check_mem_acess without
-> > > digging ourselves into an even bigger hole.
-> >
-> > So I'm ok with working on untangling check_mem_access as a follow up, but for
-> > now should we go forward with how it is? Just looking at it yesterday makes me
-> > think it's going to require a fair amount of refactoring and discussion.
-> >
-> > Also, do you have any ideas on how to change it? Do you want it to work like how
-> > is_valid_access callbacks work? So passing something like a bpf_insn_access_aux
-> > into the call, where it sets how it'd like to update the register, and then
-> > actual updates take place in caller context?
->
-> I don't like callbacks in general.
-> They're fine for walk_the_tree, for_each_elem accessors,
-> but passing a callback into check_mem_access is not great.
 
-I didn't mean passing a callback, I meant passing a struct like you mentioned in
-a previous comment to another patch (btf_field_info) where we can set state that
-must be updated for the register, and then updates are done by the caller, to
-separate the 'side effects' from the other checks. is_valid_access verifier
-callback receive a similar bpf_insn_access_aux parameter which is then used to
-update register state.
+--eMHA10fN330j9lI9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Do you mind going with a bpf_kptr_xchg() helper for now
-> and optimizing into direct xchg insn later?
+On Tue, Feb 22, 2022 at 10:47:42AM +0100, Stefano Garzarella wrote:
+> vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+> ownership. It expects current->mm to be valid.
+>=20
+> vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+> the user has not done close(), so when we are in do_exit(). In this
+> case current->mm is invalid and we're releasing the device, so we
+> should clean it anyway.
+>=20
+> Let's check the owner only when vhost_vsock_stop() is called
+> by an ioctl.
+>=20
+> When invoked from release we can not fail so we don't check return
+> code of vhost_vsock_stop(). We need to stop vsock even if it's not
+> the owner.
+>=20
+> Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+> Cc: stable@vger.kernel.org
+> Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+> Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail=
+=2Ecom
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+> v2:
+> - initialized `ret` in vhost_vsock_stop [Dan]
+> - added comment about vhost_vsock_stop() calling in the code and an expla=
+nation
+>   in the commit message [MST]
+>=20
+> v1: https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarza=
+re@redhat.com
+> ---
+>  drivers/vhost/vsock.c | 21 ++++++++++++++-------
+>  1 file changed, 14 insertions(+), 7 deletions(-)
 
-I don't have a problem with that. I just didn't see any advantages (except the
-wider architecture support that you pointed out). We still have to special case
-some places in check_helper_call (since it needs to transfer R1's btf_id to R0,
-and work with all PTR_TO_BTF_ID, not just 1), so the implementation is similar.
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-I guess for most usecases it wouldn't matter much.
+--eMHA10fN330j9lI9
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> It's not clear whether it's going to be faster to be noticeable.
+-----BEGIN PGP SIGNATURE-----
 
-Just for curiosity, I measured a loop of 5000 xchg ops, one with bpf_xchg, one
-with bpf_kptr_xchg. This is the simple case (uncontended, raw cost of both
-operations) xchg insn is at ~4 nsecs, bpf_kptr_xchg is at ~8 nsecs (single
-socket 8 core Intel i5 @ 2.5GHz). I'm guessing in a complicated case spill/fill
-of caller saved regs will also come into play for the helper case.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmIXR4oACgkQnKSrs4Gr
+c8i0LQf/bGGbSYckr30SGrkHytT/rZHQYzSD8L7Mcj6YDjh7rV/lE31ATrVY9JY4
+qZ/hJTMlfAx8gqVYEmZrUh9xM09BjRAdSjGy92sdpbVYhWbr1D0HmDS+hQvFQjXs
+HHpjWQeHtKjAfw8nz6HfgcH3329t+oVH5V4RQ5pOeLNq0Tm58uYdhmf7IqIrb9TI
+LySJlzqTqsRzI8URPo6u9i+PqNhTnbjYTSBP2/WnAZeSrHUDXlOmeJ5cXGweinGe
+CiH+66Eay0ga1M/Xym1xsota2L8lfQlO9HF1XkTJiYEeQDYthIJUc7wuZvnftCgh
+ZND4ieEesa+iV+Lyaxno7s+gT0fLHw==
+=f2iv
+-----END PGP SIGNATURE-----
 
---
-Kartikeya
+--eMHA10fN330j9lI9--
+
