@@ -2,107 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E50564C38A3
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 23:15:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5858E4C392A
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 23:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235330AbiBXWP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 17:15:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
+        id S235780AbiBXWui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 17:50:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235311AbiBXWP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 17:15:57 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA2129DD04;
-        Thu, 24 Feb 2022 14:15:27 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id d28so1763113wra.4;
-        Thu, 24 Feb 2022 14:15:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=23uPqqlxtmnZRHLs9v3vgksA5KeOpFw/ThnhTpkf+2w=;
-        b=S6nCprqxh0JglbBAqwKJDoHoVIjtj4T6nsOoxoor9OqZxzcWSmesnc8rh8G+UcJWwk
-         mc13iC3iU8uKZp4mj0CgARdJtp+90Ud9bgn5xxixO3CyqpAeGCn0AN3oF1cX3oJB8QHI
-         8UDrUzs36GYtOFY6uAjLWQanpjCWTIYlFlqjK+5LUI+xyxfWFQ6tVS0z0hiVKS+6d/0p
-         uDzEg8pnt+wxr4pKPMoXM/zFFnEQk9VlaKv2+C5Vd2mQ7edNv+t4RTkX4Sr9Xtq8hNMz
-         ujeMJtqjfqPyaAiw66xkhG8E57AyVTyOdWffuxDtoxuEQE1wiizAlDyCwHPUFQtj1pHX
-         q82g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=23uPqqlxtmnZRHLs9v3vgksA5KeOpFw/ThnhTpkf+2w=;
-        b=w2hc+VyG5yjyra+NFXy2ClKUEgfH2tdF0yiGVRlyQOkYVDFSHp2xuOLFEwPQozVg8J
-         gttDbdi5tVcMCyRElPVA5hgc2+TO07lv5ecf/E2o/DQs8yYyLdsW/FMZ3UCKQ/diycsz
-         mtxO+r/WNk7wbunAncECtjIK3lxJyQjP4jaCk0n7RYljPXavfd3SUmz45EZlYtDay4UV
-         qUd1T18AwZgljoXNo7emjcXFF18MEcX7WKhMVyiHinpGbUeLPbHK/HBr4T/mzj3Bc0zT
-         BgjiAE6lo4a/tX4dqIuV6GEaCSQ99sD4Vkf59/orkq2mvSXppLBTvhrn0d9nCJmOWPcT
-         qvYg==
-X-Gm-Message-State: AOAM533Clabvnq1Pcxc8xb27lp+u42Bch0sFmvGADyvJApkxlLm3r1O0
-        va+xS3Yk2yYsRoGkD/zNee4=
-X-Google-Smtp-Source: ABdhPJwAm/jUbae804Iirsh2TE+k/iRCYA06xF1rFmTlmPTvYCNCE4wR20beM9tBYDQ6CUCuGmHO7g==
-X-Received: by 2002:a05:6000:1789:b0:1ea:7bb7:312c with SMTP id e9-20020a056000178900b001ea7bb7312cmr3861415wrg.660.1645740926020;
-        Thu, 24 Feb 2022 14:15:26 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id r15-20020a05600c35cf00b003808165fbc2sm584330wmq.25.2022.02.24.14.15.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 14:15:25 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] net/mlx5e: Fix return of a kfree'd object instead of NULL
-Date:   Thu, 24 Feb 2022 22:15:24 +0000
-Message-Id: <20220224221525.147744-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S235480AbiBXWui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 17:50:38 -0500
+Received: from outgoing-stata.csail.mit.edu (outgoing-stata.csail.mit.edu [128.30.2.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2AA3120F7D;
+        Thu, 24 Feb 2022 14:50:07 -0800 (PST)
+Received: from [128.177.79.46] (helo=[10.118.101.22])
+        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.82)
+        (envelope-from <srivatsa@csail.mit.edu>)
+        id 1nNMSg-000HH6-Ik; Thu, 24 Feb 2022 17:19:46 -0500
+Subject: [PATCH v5 0/3] Update VMware maintainer entries
+From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+To:     jgross@suse.com, x86@kernel.org, pv-drivers@vmware.com,
+        tglx@linutronix.de, bp@alien8.de
+Cc:     linux-graphics-maintainer@vmware.com, Deep Shah <sdeep@vmware.com>,
+        Joe Perches <joe@perches.com>, linux-rdma@vger.kernel.org,
+        Ronak Doshi <doshir@vmware.com>, Nadav Amit <namit@vmware.com>,
+        Alexey Makhalov <amakhalov@vmware.com>,
+        Zack Rusin <zackr@vmware.com>, linux-input@vger.kernel.org,
+        Vivek Thampi <vithampi@vmware.com>, linux-scsi@vger.kernel.org,
+        Vishal Bhakta <vbhakta@vmware.com>, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, sdeep@vmware.com,
+        vithampi@vmware.com, amakhalov@vmware.com, keerthanak@vmware.com,
+        srivatsab@vmware.com, anishs@vmware.com,
+        linux-kernel@vger.kernel.org, namit@vmware.com, joe@perches.com,
+        kuba@kernel.org, rostedt@goodmis.org, srivatsa@csail.mit.edu
+Date:   Thu, 24 Feb 2022 14:23:48 -0800
+Message-ID: <164574138686.654750.10250173565414769119.stgit@csail.mit.edu>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently in the case where parse_attr fails to be allocated the memory
-pointed to by attr2 is kfree'd but the non-null pointer attr2 is returned
-and a potential use of a kfree'd object can occur.  Fix this by returning
-NULL to indicate a memory allocation error.
+This series updates a few maintainer entries for VMware-maintained
+subsystems and cleans up references to VMware's private mailing lists
+to make it clear that they are effectively email-aliases to reach out
+to reviewers.
 
-Addresses issue found by clang-scan:
-drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:3401:3: warning: Use of
-memory after it is freed [unix.Malloc]
+Changes from v4->v5:
+- Add Alexey as reviewer for paravirt ops.
 
-Fixes: 8300f225268b ("net/mlx5e: Create new flow attr for multi table actions")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Changes from v3->v4:
+- Remove Cc: stable@vger.kernel.org from patches 1 and 2.
+
+Changes from v1->v3:
+- Add Zack as the named maintainer for vmmouse driver
+- Use R: to denote email-aliases for VMware reviewers
+
+Regards,
+Srivatsa
+VMware Photon OS
+
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 76a015dfc5fc..c0776a4a3845 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3398,7 +3398,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
- 	if (!attr2 || !parse_attr) {
- 		kvfree(parse_attr);
- 		kfree(attr2);
--		return attr2;
-+		return NULL;
- 	}
- 
- 	memcpy(attr2, attr, attr_sz);
--- 
-2.34.1
+Srivatsa S. Bhat (VMware) (3):
+      MAINTAINERS: Update maintainers for paravirt ops and VMware hypervisor interface
+      MAINTAINERS: Add Zack as maintainer of vmmouse driver
+      MAINTAINERS: Mark VMware mailing list entries as email aliases
+
+
+ MAINTAINERS | 31 ++++++++++++++++++-------------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
 
