@@ -2,112 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5517A4C22D8
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 05:04:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02DDB4C22E3
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 05:07:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiBXEEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 23:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S229673AbiBXEHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 23:07:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbiBXEEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 23:04:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A3925A32C
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 20:04:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E880E616F5
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 04:04:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0523BC340E9;
-        Thu, 24 Feb 2022 04:04:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645675454;
-        bh=1bL2wDFvGt56N8HXcbLC1MpS6N/CsaqpssXEUVFpKUA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d1NxQoNcZizpv/rkjNGEZhgx7xwQOubi/z9bVTZ6+c1DRUfgnqwxeGJ0rIuXUgFFL
-         z2HsTjkaU737SruCSHro8a1AoWRuhIAZ2d5CiJp3DYXhcj37fEMLDrYjGWzOW9EwlV
-         nESLUgLK0qQGEvCRvMrieiE5aLF1u1XZY6GkJiUl7DHbK/7BteJa9id5kyAjfjzgW6
-         WRFQcwH/fIod6mLpNF2GTg1PSQDbStkwZ4v8zhYq9V8tj+DaFuJ913nKN2vtEO1jcR
-         021blCXBmfi8yBzS7EGyuIDKCPtG9qsE3WISFijp6if22MpyfD7ciKgvYchT47vzOX
-         eE09BKnVumFlg==
-Date:   Wed, 23 Feb 2022 20:04:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <stephen@networkplumber.org>, <nikolay@cumulusnetworks.com>,
-        <idosch@nvidia.com>, <dsahern@gmail.com>, <bpoirier@nvidia.com>
-Subject: Re: [PATCH net-next v2 09/12] vxlan: vni filtering support on
- collect metadata device
-Message-ID: <20220223200413.6fd5e491@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220222025230.2119189-10-roopa@nvidia.com>
-References: <20220222025230.2119189-1-roopa@nvidia.com>
-        <20220222025230.2119189-10-roopa@nvidia.com>
+        with ESMTP id S229515AbiBXEHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 23:07:31 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4D99FF2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 20:07:01 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id l25-20020a9d7a99000000b005af173a2875so517330otn.2
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 20:07:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=/WC7HTRELV/OnLen1c2rD72XeE/g93MkRb1iUbcoOPo=;
+        b=S9yHies20Gv8cQ7ZLv5OkdnvQhOMXJkWF/afW2my0H6lpwhLaxxmi6ymehhqxsXDis
+         Bx0RIUPhkLAs8ujrvzWNpGyP7/9nAOu60CDWdHzyrQdsQEX7hFDVJcEPKSbVGg9Fobt+
+         E7ADdhoC6V7oaIrmdBPBjS5GIjE8pZFFL6vz3LilgREPza9KNFucBaeKxyp2EMhBdRqQ
+         dcblVkysqJo4KBwdYx6Af+NLl7dtRu5tFyFayRwhLlzvlyRpESxMF5AUJWeQl0aDF1vv
+         7Eq2+fjA3c+c0x3TAWNSJUsqEH/Rx9GkmAy8qJs5jYaePQICbC/8IdRTIWAcWqTHkgQF
+         oIFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=/WC7HTRELV/OnLen1c2rD72XeE/g93MkRb1iUbcoOPo=;
+        b=J7C02aGHv+7T0P9ouD3djdOzQ+EQHcGzD3gCi2qfplUo02Ku4zbFXpHtoJT7QYd1bj
+         Po5XwV63egWTTLY9Oqes8ac2PMWfPGdgjJwzGBeDZf5vW1mSAgvwoLrVZM2h6vBKSLhf
+         rT+UDYvb3JEhOsMYFYoZ6YYmV1TkrIDtZYHboBHNgBUOBkQud+bP8gP/3XtpBnmrNJ7m
+         epwnXS/cbRb8KzGi3BpQptKqUvJcmA8Kj/woSdGyWPdQlrZfps3o2Q0Gl0VRaEpF0uk/
+         94XLRbbCrRXi/z1KX1H8dGu4Al/2bkQZKHw3wmy7D2JyIvpTbEcv31fHJHJTqooJ0h/W
+         duJQ==
+X-Gm-Message-State: AOAM530kG+xAQfFJM013QV6wQHFbpUidoVnUzY57X6rJ6Caki8N2Fx5k
+        54d0WMBsaJptY55GWiExbfgSnjASKwYRV/gkvAI=
+X-Google-Smtp-Source: ABdhPJxcxoR8Ep8kuBIcd3djrUe7tk6LZk7kf9ruWuKkk8JQOy1L2Bz7jCRtV0W+7TApFwbKpOU8nRDOGCsqylneo24=
+X-Received: by 2002:a05:6830:5:b0:5af:7ed5:8f64 with SMTP id
+ c5-20020a056830000500b005af7ed58f64mr273491otp.257.1645675621232; Wed, 23 Feb
+ 2022 20:07:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a8a:354:0:0:0:0:0 with HTTP; Wed, 23 Feb 2022 20:07:00 -0800 (PST)
+Reply-To: j33ciss@hotmail.com
+From:   Justin Cisse <ays028a@gmail.com>
+Date:   Thu, 24 Feb 2022 05:07:00 +0100
+Message-ID: <CAGQvKQE35QWRy0s1NG0G9TYt7PSi+04hoPdfNHmye8GOqnwEJQ@mail.gmail.com>
+Subject: TT:
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.3 required=5.0 tests=BAYES_20,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Feb 2022 02:52:27 +0000 Roopa Prabhu wrote:
-> diff --git a/drivers/net/vxlan/vxlan_private.h b/drivers/net/vxlan/vxlan_private.h
-> index 7a946010a204..d697d6c51cb5 100644
-> --- a/drivers/net/vxlan/vxlan_private.h
-> +++ b/drivers/net/vxlan/vxlan_private.h
-> @@ -7,6 +7,8 @@
->  #ifndef _VXLAN_PRIVATE_H
->  #define _VXLAN_PRIVATE_H
->  
-> +#include <linux/rhashtable.h>
-> +
->  extern unsigned int vxlan_net_id;
->  extern const u8 all_zeros_mac[ETH_ALEN + 2];
->  
-> @@ -92,6 +94,38 @@ bool vxlan_addr_equal(const union vxlan_addr *a, const union vxlan_addr *b)
->  
->  #endif
->  
-> +static inline int vxlan_vni_cmp(struct rhashtable_compare_arg *arg,
-> +				const void *ptr)
-> +{
-> +	const struct vxlan_vni_node *vnode = ptr;
-> +	__be32 vni = *(__be32 *)arg->key;
-> +
-> +	return vnode->vni != vni;
-> +}
+-- 
+I seek your partnership in a transaction business which will benefit
+both of us, detail will be disclosed to you upon response.
 
-This one is called thru a pointer so can as well move to a C source
-with the struct, see below.
-
-> +static const struct rhashtable_params vxlan_vni_rht_params = {
-> +	.head_offset = offsetof(struct vxlan_vni_node, vnode),
-> +	.key_offset = offsetof(struct vxlan_vni_node, vni),
-> +	.key_len = sizeof(__be32),
-> +	.nelem_hint = 3,
-> +	.max_size = VXLAN_N_VID,
-> +	.obj_cmpfn = vxlan_vni_cmp,
-> +	.automatic_shrinking = true,
-> +};
-
-struct definition in the header? Shouldn't it be an extern and
-definition in a C file?
-
-> +static inline struct vxlan_vni_node *
-> +vxlan_vnifilter_lookup(struct vxlan_dev *vxlan, __be32 vni)
-> +{
-> +	struct vxlan_vni_group *vg;
-> +
-> +	vg = rcu_dereference_rtnl(vxlan->vnigrp);
-> +	if (!vg)
-> +		return NULL;
-> +
-> +	return rhashtable_lookup_fast(&vg->vni_hash, &vni,
-> +				      vxlan_vni_rht_params);
-> +}
+Best regards
+Mr. Justin.
