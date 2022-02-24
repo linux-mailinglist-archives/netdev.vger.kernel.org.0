@@ -2,335 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 075274C3180
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 17:34:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 845684C3191
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 17:36:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiBXQdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 11:33:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
+        id S230163AbiBXQgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 11:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiBXQds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 11:33:48 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC322150416;
-        Thu, 24 Feb 2022 08:33:15 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id z2so2183481plg.8;
-        Thu, 24 Feb 2022 08:33:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=St3DkxwrtpDynxdKgulzwMdbf/rIv6teB1kfRG4Yz44=;
-        b=oGZn/YxcnOlfTimMstWcs4/msrkCux3tRuNscLqfK6y+LyO+zLsjUbZ4em0nkehv/7
-         EHD2LMHsnKopw76Dr8EnuyceZozBQaLzwjX0iPl3Sjl54vx3n+uGdbHgyyo7Nx+m65K4
-         x/u6WWOvuPlBTU02avd+5vS+/N39+EJV/oISXGcAFCDy1yNPuleBf+yx5pjCN8svYwt5
-         lu9BXca78W91DWW9WKFbEWClCa3uQlAYlzAfTfhx91N79/a3ffVDwGVrjzf2osAIBPVb
-         ozasDJIEua9jqAmzYFBMa+SHBF7PVRVMeC0mPwT9IDm9aUsu7W2jyF3mzHlHJAtDAUnS
-         jyEw==
+        with ESMTP id S230258AbiBXQgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 11:36:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F9D21D67D6
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 08:35:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645720546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wDDjkZB1tN7WoLrZnPw7rnKpZboHjUd6rhzXRyovb+E=;
+        b=Sm4yayM/8K7coi7u5KWl7JmzZR070e+Hq6YuIVJcfL/sGVtjn4m3SaFCEfW4CX2ouRkp5w
+        r8XFrCZUWh6+MGmDVCGe9AZ9NkWK0juQ5vX6u6HAPDbixKDLFPMphBLdlVpDEbAL8YzqQL
+        dNaVyIkFkDfv3WZizYbvZ7LmjTqmEYQ=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-653-bufhYI9hPNeh3dPruoI5LQ-1; Thu, 24 Feb 2022 11:35:45 -0500
+X-MC-Unique: bufhYI9hPNeh3dPruoI5LQ-1
+Received: by mail-ot1-f69.google.com with SMTP id z23-20020a0568301db700b005af4caeadddso1751129oti.15
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 08:35:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=St3DkxwrtpDynxdKgulzwMdbf/rIv6teB1kfRG4Yz44=;
-        b=jsyoB5fhIOmHqssmP3eAgMvMPxCoFxO//V2FP6u8mumjWNQxqP7qGAXRmmI6sRHSPF
-         G4F11ktP87/g+uo8d3RrArohoTzLzNLd33XnefsjEjpwvrfMbEnRLgy78OwFGbjSeJxs
-         oIKIdLRQZGjlbA+5znNeHepbeyIWFfvZRedHd9Sa4F5idf9vzMMa/PabD33Rlau6z98u
-         D/noO2TdCAbfrYDH5F3cIa3kX7Mrz458LuE6rQ1JAuNRenNVPZhsuQReU5wK6D+qOlbz
-         y0bziLhaIyyfrLZwSWCK8K87y9y2Vm8ojbj2iUQ5yxfAI/TeqKo9NpIswXQl83wP6Ur6
-         b+fg==
-X-Gm-Message-State: AOAM533XxLm9OGhbcVa3zkcG9kq/xyCM6Ox9MMnWl97osSzXK2Fin3ii
-        vQsioyBCYDHp6euUCsfaOthlbV0MiOa/nFqel5U=
-X-Google-Smtp-Source: ABdhPJwI3aZH12V49BN2JsmpMd4cgi7c9wKR8xp8CjJw2at3kGkAQ06NkTDgZv1XOy5bEbgo0PJr7YVrpPolFvX/prA=
-X-Received: by 2002:a17:902:ecc1:b0:14f:1c91:7e65 with SMTP id
- a1-20020a170902ecc100b0014f1c917e65mr3434069plh.142.1645720395224; Thu, 24
- Feb 2022 08:33:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=wDDjkZB1tN7WoLrZnPw7rnKpZboHjUd6rhzXRyovb+E=;
+        b=ecGEuI3RIQbd//241/k0TTMOXUH4wycDTBF4Dy7Ylq3ryRLbGp3NTVOLXEsqFAYB/b
+         6G5e/hLx4R8Gr2z4F6PVZSjUo6vSYkXHWSzJQ3IFm+foWtz2cO7aMH1XiKbbZa+o9rlT
+         Y29gXQah9Zf41Ju9/uJkkv6EEJUpPomD5059c/yRWNq887anaSw4qOd35tVMboIU6vNV
+         EaYybjXn3R3d/c0RoNpvaeQqlwfkG9hCsAUOFyBziQVUFwSFbcYpODXP9FFK/NZRmNz3
+         alaHdDMhC9h1zFjZRoLz4inTWcAUg7ug0t2if83Q9TMZMZxQgRZq46dPNZz6SjI9YIGn
+         ScYw==
+X-Gm-Message-State: AOAM530cEc4wkneanhm82Df72gN7I9BN6A6j/LOXZmBoG6iS1ckr0PD4
+        NiPZhyD7sAHivwNKdDl+ywRnQvggsC15chS/bVzWT1tchmzZgf/TELrEJzNm38QE1sMBb9PHVxb
+        cc65qAANO91ZPDLXf
+X-Received: by 2002:a05:6870:a889:b0:d3:65d:8458 with SMTP id eb9-20020a056870a88900b000d3065d8458mr1597112oab.134.1645720544379;
+        Thu, 24 Feb 2022 08:35:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy/y7+3NJXgg5lD+7GP2KChmz8Ar5HPa014BSEX6g7UQrG9HxFNfIr0FmEi+t5Ag7Gx/SnUuw==
+X-Received: by 2002:a05:6870:a889:b0:d3:65d:8458 with SMTP id eb9-20020a056870a88900b000d3065d8458mr1597089oab.134.1645720544111;
+        Thu, 24 Feb 2022 08:35:44 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id w6sm1235344oop.32.2022.02.24.08.35.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:35:43 -0800 (PST)
+Date:   Thu, 24 Feb 2022 09:35:42 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH V9 mlx5-next 10/15] vfio: Extend the device migration
+ protocol with RUNNING_P2P
+Message-ID: <20220224093542.3730bb24.alex.williamson@redhat.com>
+In-Reply-To: <20220224161330.GA19295@nvidia.com>
+References: <20220224142024.147653-1-yishaih@nvidia.com>
+        <20220224142024.147653-11-yishaih@nvidia.com>
+        <87fso870k8.fsf@redhat.com>
+        <20220224083042.3f5ad059.alex.williamson@redhat.com>
+        <20220224161330.GA19295@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <20220222094347.6010-1-magnus.karlsson@gmail.com> <Yhex9EuXMVS+wZhq@boxer>
-In-Reply-To: <Yhex9EuXMVS+wZhq@boxer>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 24 Feb 2022 17:33:03 +0100
-Message-ID: <CAJ8uoz1avYrq=EreCi_N4HLC2ugO3XxNvdP53cE0dJKHnwfzrg@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: fix race at socket teardown
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Elza Mathew <elza.mathew@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 5:27 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Tue, Feb 22, 2022 at 10:43:47AM +0100, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Fix a race in the xsk socket teardown code that can lead to a null
-> > pointer dereference splat. The current xsk unbind code in
-> > xsk_unbind_dev() starts by setting xs->state to XSK_UNBOUND, sets
-> > xs->dev to NULL and then waits for any NAPI processing to terminate
-> > using synchronize_net(). After that, the release code starts to tear
-> > down the socket state and free allocated memory.
-> >
-> > BUG: kernel NULL pointer dereference, address: 00000000000000c0
-> > PGD 8000000932469067 P4D 8000000932469067 PUD 0
-> > Oops: 0000 [#1] PREEMPT SMP PTI
-> > CPU: 25 PID: 69132 Comm: grpcpp_sync_ser Tainted: G          I       5.16.0+ #2
-> > Hardware name: Dell Inc. PowerEdge R730/0599V5, BIOS 1.2.10 03/09/2015
-> > RIP: 0010:__xsk_sendmsg+0x2c/0x690
-> > Code: 44 00 00 55 48 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 38 65 48 8b 04 25 28 00 00 00 48 89 45 d0 31 c0 48 8b 87 08 03 00 00 <f6> 80 c0 00 00 00 01 >
-> > RSP: 0018:ffffa2348bd13d50 EFLAGS: 00010246
-> > RAX: 0000000000000000 RBX: 0000000000000040 RCX: ffff8d5fc632d258
-> > RDX: 0000000000400000 RSI: ffffa2348bd13e10 RDI: ffff8d5fc5489800
-> > RBP: ffffa2348bd13db0 R08: 0000000000000000 R09: 00007ffffffff000
-> > R10: 0000000000000000 R11: 0000000000000000 R12: ffff8d5fc5489800
-> > R13: ffff8d5fcb0f5140 R14: ffff8d5fcb0f5140 R15: 0000000000000000
-> > FS:  00007f991cff9400(0000) GS:ffff8d6f1f700000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00000000000000c0 CR3: 0000000114888005 CR4: 00000000001706e0
-> > Call Trace:
-> > <TASK>
-> > ? aa_sk_perm+0x43/0x1b0
-> > xsk_sendmsg+0xf0/0x110
-> > sock_sendmsg+0x65/0x70
-> > __sys_sendto+0x113/0x190
-> > ? debug_smp_processor_id+0x17/0x20
-> > ? fpregs_assert_state_consistent+0x23/0x50
-> > ? exit_to_user_mode_prepare+0xa5/0x1d0
-> > __x64_sys_sendto+0x29/0x30
-> > do_syscall_64+0x3b/0xc0
-> > entry_SYSCALL_64_after_hwframe+0x44/0xae
-> >
-> > There are two problems with the current code. First, setting xs->dev
-> > to NULL before waiting for all users to stop using the socket is not
-> > correct. The entry to the data plane functions xsk_poll(),
-> > xsk_sendmsg(), and xsk_recvmsg() are all guarded by a test that
-> > xs->state is in the state XSK_BOUND and if not, it returns right
-> > away. But one process might have passed this test but still have not
-> > gotten to the point in which it uses xs->dev in the code. In this
-> > interim, a second process executing xsk_unbind_dev() might have set
-> > xs->dev to NULL which will lead to a crash for the first process. The
-> > solution here is just to get rid of this NULL assignment since it is
-> > not used anymore. Before commit 42fddcc7c64b ("xsk: use state member
-> > for socket synchronization"), xs->dev was the gatekeeper to admit
-> > processes into the data plane functions, but it was replaced with the
-> > state variable xs->state in the aforementioned commit.
-> >
-> > The second problem is that synchronize_net() does not wait for any
-> > process in xsk_poll(), xsk_sendmsg(), or xsk_recvmsg() to complete,
-> > which means that the state they rely on might be cleaned up
-> > prematurely. This can happen when the notifier gets called (at driver
-> > unload for example) as it uses xsk_unbind_dev(). Solve this by
-> > extending the RCU critical region from just the ndo_xsk_wakeup to the
-> > whole functions mentioned above, so that both the test of xs->state ==
-> > XSK_BOUND and the last use of any member of xs is covered by the RCU
-> > critical section. This will guarantee that when synchronize_net()
-> > completes, there will be no processes left executing xsk_poll(),
-> > xsk_sendmsg(), or xsk_recvmsg() and state can be cleaned up
-> > safely. Note that we need to drop the RCU lock for the SKB xmit path
-> > as it uses functions that might sleep. Due to this, we have to retest
-> > the xs->state after we grab the mutex that protects the SKB xmit code
-> > from, among a number of things, an xsk_unbind_dev() being executed
-> > from the notifier at the same time.
-> >
-> > Fixes: 42fddcc7c64b ("xsk: use state member for socket synchronization")
-> > Reported-by: Elza Mathew <elza.mathew@intel.com>
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  net/xdp/xsk.c | 75 ++++++++++++++++++++++++++++++++++++---------------
-> >  1 file changed, 53 insertions(+), 22 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 28ef3f4465ae..e506635b1981 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -400,21 +400,11 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
-> >  }
-> >  EXPORT_SYMBOL(xsk_tx_peek_release_desc_batch);
-> >
-> > -static int xsk_wakeup(struct xdp_sock *xs, u8 flags)
-> > +static int xsk_zc_xmit(struct xdp_sock *xs, u8 flags)
-> >  {
-> >       struct net_device *dev = xs->dev;
-> > -     int err;
-> > -
-> > -     rcu_read_lock();
-> > -     err = dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, flags);
-> > -     rcu_read_unlock();
-> > -
-> > -     return err;
-> > -}
-> >
-> > -static int xsk_zc_xmit(struct xdp_sock *xs)
-> > -{
-> > -     return xsk_wakeup(xs, XDP_WAKEUP_TX);
-> > +     return dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id, flags);
-> >  }
-> >
-> >  static void xsk_destruct_skb(struct sk_buff *skb)
-> > @@ -533,6 +523,12 @@ static int xsk_generic_xmit(struct sock *sk)
-> >
-> >       mutex_lock(&xs->mutex);
-> >
-> > +     /* Since we dropped the RCU read lock, the socket state might have changed. */
-> > +     if (unlikely(!xsk_is_bound(xs))) {
-> > +             err = -ENXIO;
-> > +             goto out;
-> > +     }
-> > +
-> >       if (xs->queue_id >= xs->dev->real_num_tx_queues)
-> >               goto out;
-> >
-> > @@ -596,16 +592,26 @@ static int xsk_generic_xmit(struct sock *sk)
-> >       return err;
-> >  }
-> >
-> > -static int __xsk_sendmsg(struct sock *sk)
-> > +static int xsk_xmit(struct sock *sk)
-> >  {
-> >       struct xdp_sock *xs = xdp_sk(sk);
-> > +     int ret;
-> >
-> >       if (unlikely(!(xs->dev->flags & IFF_UP)))
-> >               return -ENETDOWN;
-> >       if (unlikely(!xs->tx))
-> >               return -ENOBUFS;
-> >
-> > -     return xs->zc ? xsk_zc_xmit(xs) : xsk_generic_xmit(sk);
-> > +     if (xs->zc)
-> > +             return xsk_zc_xmit(xs, XDP_WAKEUP_TX);
-> > +
-> > +     /* Drop the RCU lock since the SKB path might sleep. */
-> > +     rcu_read_unlock();
-> > +     ret = xsk_generic_xmit(sk);
-> > +     /* Reaquire RCU lock before going into common code. */
-> > +     rcu_read_lock();
-> > +
-> > +     return ret;
-> >  }
-> >
-> >  static bool xsk_no_wakeup(struct sock *sk)
-> > @@ -619,7 +625,7 @@ static bool xsk_no_wakeup(struct sock *sk)
-> >  #endif
-> >  }
-> >
-> > -static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-> > +static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-> >  {
-> >       bool need_wait = !(m->msg_flags & MSG_DONTWAIT);
-> >       struct sock *sk = sock->sk;
-> > @@ -639,11 +645,22 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-> >
-> >       pool = xs->pool;
-> >       if (pool->cached_need_wakeup & XDP_WAKEUP_TX)
-> > -             return __xsk_sendmsg(sk);
-> > +             return xsk_xmit(sk);
-> >       return 0;
-> >  }
-> >
-> > -static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
-> > +static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-> > +{
-> > +     int ret;
-> > +
-> > +     rcu_read_lock();
-> > +     ret = __xsk_sendmsg(sock, m, total_len);
-> > +     rcu_read_unlock();
-> > +
-> > +     return ret;
-> > +}
-> > +
-> > +static int __xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
-> >  {
-> >       bool need_wait = !(flags & MSG_DONTWAIT);
-> >       struct sock *sk = sock->sk;
-> > @@ -665,10 +682,21 @@ static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int fl
-> >               return 0;
-> >
-> >       if (xs->pool->cached_need_wakeup & XDP_WAKEUP_RX && xs->zc)
-> > -             return xsk_wakeup(xs, XDP_WAKEUP_RX);
-> > +             return xsk_zc_xmit(xs, XDP_WAKEUP_RX);
->
-> Feels a bit contradictory to have xmit func with rx flag, no?
-> Could we keep it as xsk_wakeup instead?
+On Thu, 24 Feb 2022 12:13:30 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Agree with that, but on the other hand I thought it was good that the
-functions are called xsk_zc_xmit and xsk_generic_xmit. It tells me
-that they are doing the same thing but one is for the zero-copy path
-and the other one for the generic/skb path. But yes, I can change it
-or try to find a better name. Xmit and RX in the same name/function is
-kind of confusing.
+> On Thu, Feb 24, 2022 at 08:30:42AM -0700, Alex Williamson wrote:
+> > On Thu, 24 Feb 2022 16:21:11 +0100
+> > Cornelia Huck <cohuck@redhat.com> wrote:
+> >   
+> > > On Thu, Feb 24 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
+> > >   
+> > > > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> > > > index 22ed358c04c5..26a66f68371d 100644
+> > > > +++ b/include/uapi/linux/vfio.h
+> > > > @@ -1011,10 +1011,16 @@ struct vfio_device_feature {
+> > > >   *
+> > > >   * VFIO_MIGRATION_STOP_COPY means that STOP, STOP_COPY and
+> > > >   * RESUMING are supported.
+> > > > + *
+> > > > + * VFIO_MIGRATION_STOP_COPY | VFIO_MIGRATION_P2P means that RUNNING_P2P
+> > > > + * is supported in addition to the STOP_COPY states.
+> > > > + *
+> > > > + * Other combinations of flags have behavior to be defined in the future.
+> > > >   */
+> > > >  struct vfio_device_feature_migration {
+> > > >  	__aligned_u64 flags;
+> > > >  #define VFIO_MIGRATION_STOP_COPY	(1 << 0)
+> > > > +#define VFIO_MIGRATION_P2P		(1 << 1)
+> > > >  };    
+> > > 
+> > > Coming back to my argument (for the previous series) that this should
+> > > rather be "at least one of the flags below must be set". If we operate
+> > > under the general assumption that each flag indicates that a certain
+> > > functionality (including some states) is supported, and that flags may
+> > > depend on other flags, we might have a future flag that defines a
+> > > different behaviour, but does not depend on STOP_COPY, but rather
+> > > conflicts with it. We should not create the impression that STOP_COPY
+> > > will neccessarily be mandatory for all time.  
+> > 
+> > This sounds more like an enum than a bitfield.   
+> 
+> It is kind of working in both ways.
+> 
+> The comment enumerates all the valid tests of the flags. This is not
+> really a mandatory/optional scheme.
+> 
+> If userspace wants to check support for what is described by
+> VFIO_MIGRATION_STOP_COPY | VFIO_MIGRATION_P2P then it must test both
+> bits exactly as the comment says.
+> 
+> In this way the universe of valid tests is limited, and it acts sort
+> of like an enumeration.
+> 
+> Using a bit test, not an equality, allows better options for future
+> expansion.
 
-> >       return 0;
-> >  }
-> >
-> > +static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int flags)
-> > +{
-> > +     int ret;
-> > +
-> > +     rcu_read_lock();
-> > +     ret = __xsk_recvmsg(sock, m, len, flags);
-> > +     rcu_read_unlock();
-> > +
-> > +     return ret;
-> > +}
-> > +
-> >  static __poll_t xsk_poll(struct file *file, struct socket *sock,
-> >                            struct poll_table_struct *wait)
-> >  {
-> > @@ -679,17 +707,20 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
-> >
-> >       sock_poll_wait(file, sock, wait);
-> >
-> > -     if (unlikely(!xsk_is_bound(xs)))
-> > +     rcu_read_lock();
-> > +     if (unlikely(!xsk_is_bound(xs))) {
-> > +             rcu_read_unlock();
-> >               return mask;
-> > +     }
-> >
-> >       pool = xs->pool;
-> >
-> >       if (pool->cached_need_wakeup) {
-> >               if (xs->zc)
-> > -                     xsk_wakeup(xs, pool->cached_need_wakeup);
-> > +                     xsk_zc_xmit(xs, pool->cached_need_wakeup);
-> >               else
-> >                       /* Poll needs to drive Tx also in copy mode */
-> > -                     __xsk_sendmsg(sk);
-> > +                     xsk_xmit(sk);
-> >       }
-> >
-> >       if (xs->rx && !xskq_prod_is_empty(xs->rx))
-> > @@ -697,6 +728,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
-> >       if (xs->tx && xsk_tx_writeable(xs))
-> >               mask |= EPOLLOUT | EPOLLWRNORM;
-> >
-> > +     rcu_read_unlock();
-> >       return mask;
-> >  }
-> >
-> > @@ -728,7 +760,6 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
-> >
-> >       /* Wait for driver to stop using the xdp socket. */
-> >       xp_del_xsk(xs->pool, xs);
-> > -     xs->dev = NULL;
-> >       synchronize_net();
-> >       dev_put(dev);
-> >  }
-> >
-> > base-commit: 8940e6b669ca1196ce0a0549c819078096390f76
-> > --
-> > 2.34.1
-> >
+Yes.
+ 
+> The key takeaway is that userspace cannot test bit combinations that
+> are not defined in the comment and expect anything - which is exactly
+> what the comment says:
+> 
+> > * Other combinations of flags have behavior to be defined in the future.  
+> 
+> 
+> > > conflicts with it. We should not create the impression that STOP_COPY
+> > > will neccessarily be mandatory for all time.  
+> 
+> We really *should* create that impression because a userspace that
+> does not test STOP_COPY in the cases required above is *broken* and
+> must be strongly discouraged from existing.
+> 
+> The purpose of this comment is to inform the userspace implementator,
+> not to muse about possible future expansion options for kernel
+> developers. We all agree this expansion path exists and is valid, we
+> need to keep that option open by helping userspace implement
+> correctly.
+
+Chatting with Connie offline, I think the clarification that might help
+is something alone the lines that the combination of bits must support
+migration, which currently requires the STOP_COPY and RESUMING states.
+The VFIO_MIGRATION_P2P flag alone does not provide these states.  The
+only flag in the current specification to provide these states is
+VFIO_MIGRATION_STOP_COPY.  I don't think we want to preclude that some
+future flag might provide variants of STOP_COPY and RESUMING, so it's
+not so much that VFIO_MIGRATION_STOP_COPY is mandatory, but it is
+currently the only flag which provides the base degree of migration
+support.
+
+How or if that translates to an actual documentation update, I'm not
+sure.  As it stands, we're not speculating about future support, we're
+only stating these two combinations are valid.  Future combinations may
+or may not include VFIO_MIGRATION_STOP_COPY.  As the existing proposed
+comment indicates, other combinations are TBD.  Connie?  Thanks,
+
+Alex
+
