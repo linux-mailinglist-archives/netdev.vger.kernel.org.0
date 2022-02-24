@@ -2,142 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E8E4C2E80
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:34:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8B34C2E96
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 15:43:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235561AbiBXOei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 09:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S235594AbiBXOmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 09:42:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiBXOeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 09:34:37 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4FC17C42D;
-        Thu, 24 Feb 2022 06:34:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645713241; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=a2yP1eGWHJyFYuvvR0QzdSal/MWDJJaJuTeqB4usNG8KbWwSK3Ct+FrnBqOYyycZpd9AtYjEa9e7CGf4xS1Y8sUHgpCi2bA/RVBOy5y+ZsqbqpzXztCW40eA8s45jpAkeomqbCfYiwWdogNqVUtFHUcic/zjJ79wpU6ouzmw1b0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645713241; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=IDDq3qUkg76DaAOYUNIA+BRPtQ+rE1rKtDNhQGp2Sho=; 
-        b=TlT6rVhNaBCWNuFc5frijsLy8KJpXUsjD+flFfekqShtQkTDZm4vFvilUjpcjtZ1QS6Twux2SB13xrvP2WOKmPU2rhxRkv9ZElOgnstfBvwaDe44UGqIXxfT0hauwAiuUWl52yvj0NlUmBpfW2fviPAgfVDmj+WRVH147hFwkIg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645713241;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Transfer-Encoding;
-        bh=IDDq3qUkg76DaAOYUNIA+BRPtQ+rE1rKtDNhQGp2Sho=;
-        b=g0XUBmmFZAMBq42bbuQ7x6iIJcsDynd5M2tIbn0bXfQtMyw+9FltNYuejiEP1R7b
-        lWd1MC44to+x2CTPmuNs4pYFMAucmdpSesGYCsBO3B/rG9ElRyqUe/JYV6xeWn28vz4
-        lrWux5nhh3OPAcnNnQTryzkOarTdjprLeL/eTvgw=
-Received: from localhost.localdomain (49.207.201.56 [49.207.201.56]) by mx.zohomail.com
-        with SMTPS id 1645713237614465.3614118955155; Thu, 24 Feb 2022 06:33:57 -0800 (PST)
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     mail@anirudhrb.com,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] vhost: fix hung thread due to erroneous iotlb entries
-Date:   Thu, 24 Feb 2022 20:03:20 +0530
-Message-Id: <20220224143320.3751-1-mail@anirudhrb.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S234594AbiBXOmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 09:42:40 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224BE3B28A;
+        Thu, 24 Feb 2022 06:42:06 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2183010000B;
+        Thu, 24 Feb 2022 14:41:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645713722;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sNoHiIq/LUmsFS78HSg7zcwPRlYAqtoPyM+2X+83TE4=;
+        b=kulEb06OhHb7WlgmmbMxnFynO6AQWPrh5d5U5TT4gfR8tp2Nx/nYXhBHFouR+pboJL83wc
+        DqLug2hMzkDnFmgztq0c2b27OKD0tiKf3Q/mExOtpC4ud5k7N35A67Tz86965BoFuajbOB
+        JV/ZKg2+RICEd8X1ydrqYQQ6lw9g+3rvJvnniUDsrGnO/Ex4hJBWfBPyCeWcM8ufphCHZp
+        5GvfwGpBW8FPtrgdhuiQQyoFnABnw98ZH4g24jNSK6xWWko9HQ3Lu048v3Mgr7npquq/0H
+        ePG9j91ahLsi3wdtuzFu0spX5fA3hxFA1pdTWaXvs47N8upSYF+/QlWF91fk2g==
+Date:   Thu, 24 Feb 2022 15:40:40 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <20220224154040.2633a4e4@fixe.home>
+In-Reply-To: <20220221162652.103834-1-clement.leger@bootlin.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In vhost_iotlb_add_range_ctx(), range size can overflow to 0 when
-start is 0 and last is ULONG_MAX. One instance where it can happen
-is when userspace sends an IOTLB message with iova=size=uaddr=0
-(vhost_process_iotlb_msg). So, an entry with size = 0, start = 0,
-last = ULONG_MAX ends up in the iotlb. Next time a packet is sent,
-iotlb_access_ok() loops indefinitely due to that erroneous entry.
+Hi,
 
-	Call Trace:
-	 <TASK>
-	 iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-	 vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-	 vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-	 vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-	 kthread+0x2e9/0x3a0 kernel/kthread.c:377
-	 ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-	 </TASK>
+As stated at the beginning of the cover letter, the PCIe card I'm
+working on uses a lan9662 SoC. This card is meant to be used an
+ethernet switch with 2 x RJ45 ports and 2 x 10G SFPs. The lan966x SoCs
+can be used in two different ways:
 
-Reported by syzbot at:
-	https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+ - It can run Linux by itself, on ARM64 cores included in the SoC. This
+   use-case of the lan966x is currently being upstreamed, using a
+   traditional Device Tree representation of the lan996x HW blocks [1]
+   A number of drivers for the different IPs of the SoC have already
+   been merged in upstream Linux.
 
-To fix this, do two things:
+ - It can be used as a PCIe endpoint, connected to a separate platform
+   that acts as the PCIe root complex. In this case, all the devices
+   that are embedded on this SoC are exposed through PCIe BARs and the
+   ARM64 cores of the SoC are not used. Since this is a PCIe card, it
+   can be plugged on any platform, of any architecture supporting PCIe.
 
-1. Return -EINVAL in vhost_chr_write_iter() when userspace asks to map
-   a range with size 0.
-2. Fix vhost_iotlb_add_range_ctx() to handle the range [0, ULONG_MAX]
-   by splitting it into two entries.
+The goal of this effort is to enable this second use-case, while
+allowing the re-use of the existing drivers for the different devices
+part of the SoC.
 
-Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
----
+Following a first round of discussion, here are some clarifications on
+what problem this series is trying to solve and what are the possible
+choices to support this use-case.
 
-Changes in v2:
-1. Don't reject range [0, ULONG_MAX], split it instead.
-2. Validate msg.size in vhost_chr_write_iter().
+Here is the list of devices that are exposed and needed to make this
+card work as an ethernet switch:
+ - lan966x-switch
+ - reset-microchip-sparx5
+ - lan966x_serdes
+ - reset-microchip-lan966x-phy
+ - mdio-mscc-miim
+ - pinctrl-lan966x
+ - atmel-flexcom
+ - i2c-at91
+ - i2c-mux
+ - i2c-mux-pinctrl
+ - sfp
+ - clk-lan966x
 
-v1: https://lore.kernel.org/lkml/20220221195303.13560-1-mail@anirudhrb.com/
+All the devices on this card are "self-contained" and do not require
+cross-links with devices that are on the host (except to demux IRQ but
+this is something easy to do). These drivers already exists and are
+using of_* API to register controllers, get properties and so on.
 
----
- drivers/vhost/iotlb.c | 10 ++++++++++
- drivers/vhost/vhost.c |  5 +++++
- 2 files changed, 15 insertions(+)
+The challenge we're trying to solve is how can the PCI driver for this
+card re-use the existing drivers, and using which hardware
+representation to instantiate all those drivers.
 
-diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-index 670d56c879e5..a7e126db34d9 100644
---- a/drivers/vhost/iotlb.c
-+++ b/drivers/vhost/iotlb.c
-@@ -57,6 +57,16 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
- 	if (last < start)
- 		return -EFAULT;
- 
-+	/* If the range being mapped is [0, ULONG_MAX], split it into two entries
-+	 * otherwise its size would overflow u64.
-+	 */
-+	if (start == 0 && last == ULONG_MAX) {
-+		u64 mid = last / 2;
-+		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
-+		addr += mid - start + 1;
-+		start = mid + 1;
-+	}
-+
- 	if (iotlb->limit &&
- 	    iotlb->nmaps == iotlb->limit &&
- 	    iotlb->flags & VHOST_IOTLB_FLAG_RETIRE) {
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 59edb5a1ffe2..55475fd59fb7 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1170,6 +1170,11 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 		goto done;
- 	}
- 
-+	if (msg.size == 0) {
-+		ret = -EINVAL;
-+		goto done;
-+	}
-+
- 	if (dev->msg_handler)
- 		ret = dev->msg_handler(dev, &msg);
- 	else
--- 
-2.35.1
+Although this series only contained the modifications for the I2C
+subsystem all the subsystems that are used or needed by the previously
+listed driver have also been modified to have support for fwnode. This
+includes the following subsystems:
+- reset
+- clk
+- pinctrl
+- syscon
+- gpio
+- pinctrl
+- phy
+- mdio
+- i2c
 
+The first feedback on this series does not seems to reach a consensus
+(to say the least) on how to do it cleanly so here is a recap of the
+possible solutions, either brought by this series or mentioned by
+contributors:
+
+1) Describe the card statically using swnode
+
+This is the approach that was taken by this series. The devices are
+described using the MFD subsystem with mfd_cells. These cells are
+attached with a swnode which will be used as a primary node in place of
+ACPI or OF description. This means that the device description
+(properties and references) is conveyed entirely in the swnode. In order
+to make these swnode usable with existing OF based subsystems, the
+fwnode API can be used in needed subsystems.
+
+Pros:
+ - Self-contained in the driver.
+ - Will work on all platforms no matter the firmware description.
+ - Makes the subsystems less OF-centric.
+
+Cons:
+ - Modifications are required in subsystems to support fwnode
+   (mitigated by the fact it makes to subsystems less OF-centric).
+ - swnode are not meant to be used entirely as primary nodes.
+ - Specifications for both ACPI and OF must be handled if using fwnode
+   API.
+
+2) Use SSDT overlays
+
+Andy mentioned that SSDT overlays could be used. This overlay should
+match the exact configuration that is used (ie correct PCIe bus/port
+etc). It requires the user to write/modify/compile a .asl file and load
+it using either EFI vars, custom initrd or via configfs. The existing
+drivers would also need more modifications to work with ACPI. Some of
+them might even be harder (if not possible) to use since there is no
+ACPI support for the subsystems they are using .
+
+Pros:
+ - Can't really find any for this one
+
+Cons:
+ - Not all needed subsystems have appropriate ACPI bindings/support
+   (reset, clk, pinctrl, syscon).
+ - Difficult to setup for the user (modify/compile/load .aml file).
+ - Not portable between machines, as the SSDT overlay need to be
+   different depending on how the PCI device is connected to the
+   platform.
+
+3) Use device-tree overlays
+
+This solution was proposed by Andrew and could potentially allows to
+keep all the existing device-tree infrastructure and helpers. A
+device-tree overlay could be loaded by the driver and applied using
+of_overlay_fdt_apply(). There is some glue to make this work but it
+could potentially be possible. Mark have raised some warnings about
+using such device-tree overlays on an ACPI enabled platform.
+
+Pros:
+ - Reuse all the existing OF infrastructure, no modifications at all on
+   drivers and subsystems.
+ - Could potentially lead to designing a generic driver for PCI devices
+   that uses a composition of other drivers.
+
+Cons:
+ - Might not the best idea to mix it with ACPI.
+ - Needs CONFIG_OF, which typically isn't enabled today on most x86
+   platforms.
+ - Loading DT overlays on non-DT platforms is not currently working. It
+   can be addressed, but it's not necessarily immediate.
+
+My preferred solutions would be swnode or device-tree overlays but
+since there to is no consensus on how to add this support, how
+can we go on with this series ?
+
+Thanks,
+
+[1]
+https://lore.kernel.org/linux-arm-kernel/20220210123704.477826-1-michael@wa=
+lle.cc/
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
