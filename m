@@ -2,174 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F34A4C22FA
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 05:19:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FA9B4C2300
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 05:26:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiBXET5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Feb 2022 23:19:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
+        id S229789AbiBXEZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Feb 2022 23:25:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiBXET4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 23:19:56 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA687246341
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 20:19:24 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id x18so798363pfh.5
-        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 20:19:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Id4tOxrDjuC1uJrI9Qp+04QHVf8riOijHXfmuhtgLwM=;
-        b=APh+P3szYThioap/zSAcFek51NqDwZUaLPQwSSL1etjzYfTPMtxBLb+/X/Sz9P7cb0
-         TIIAPdyArn2tZxLO22R/N9A7F5FI6fBgPuGPukLRQSjDglnJK2G5rdjLB3YvGI8Rpghs
-         7X/P24UVqOr42rzzLrErjmpGd7X85JV74LxqlpcaOSyGVFjr7yVMzKr2AV/raGK0xjGq
-         Zo2sLI3WKiiCyMN1spMnKAF6CKGj6evADGkFebFsKCF6NMX24dE3A7uxPRY6UzIglOfO
-         in9hXlrxh5BDV3ceHUh4rKbeMc/L0u5/YNH4u/9BY+mpd1T1q+9346Do4CjWMJpwXmcC
-         A7vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Id4tOxrDjuC1uJrI9Qp+04QHVf8riOijHXfmuhtgLwM=;
-        b=uyiyWbiqFKiaU3ScBaMDKei/v5SxevSiJVsUjwMZQJgGRzl0C6suSGHTSzrUmFzJz6
-         /K4qr01FTjwxCLijJu6mm7xkvwFnlCg+jbdmIihrcbpo8GSmf0kXe9xNtzQ4BvFnOLgR
-         63s4aZWgO3q9jnpESIntndn2boy/NrwbQ/6frjdLtc4C2TW/9VClSzXl860mlEqZKcct
-         pYwp1pxcdq0EnjuscU7/HflvxPADwsZgZCIoldGOaq+p/wb7B416Cl5wgDTExp3s/zFg
-         SaPT1HXQnY5+TzQOFyHg/79PLolNYzWsWuBG+AvPzo+/UKejys9WKcJYthFW7xI817Ph
-         yimQ==
-X-Gm-Message-State: AOAM532HiVEHMUXbU5B2DjU2vyn/QN7EiuOAWIL7Y5HJAWvmEsOLXtf1
-        L6Ci7Abuq812+184+qN0flDM8gaAVvZBcuE/Yo0=
-X-Google-Smtp-Source: ABdhPJy1hVJJ6IogUkMIB0MTql3ox0iJBInJqfj8aKs8I/GNlkdjdocKD8jn/obMSLi/8ApzXeFK7tF02Kh41q5TOQo=
-X-Received: by 2002:a05:6a00:1704:b0:4cc:c8d7:e54a with SMTP id
- h4-20020a056a00170400b004ccc8d7e54amr1011151pfc.16.1645676364223; Wed, 23 Feb
- 2022 20:19:24 -0800 (PST)
+        with ESMTP id S229710AbiBXEZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Feb 2022 23:25:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75A7252923
+        for <netdev@vger.kernel.org>; Wed, 23 Feb 2022 20:25:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61BBC61764
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 04:25:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72AFCC340E9;
+        Thu, 24 Feb 2022 04:25:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645676710;
+        bh=NgDc7vnSCQ4QRGN3aB4C4KhquurYo8j0AYt76pAJcRE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rRGLOS8gzBpWmPFwtC+4A1OkkUDClC3cD3Sq3wp3n6WkZV1qQBbTLDwNE0X+1HUEg
+         Ik3rP7uDq3nO7zA0sCnyfFD1UvGyULYsbgth4D9iXsF0zU2Bo8v5AIPUF/4C+2NoQH
+         66B20yZKOZpwEmAm+ih3MOybVDoS2HmpeKrlMLmOL/b+EDqpKzKZsNvAF1BSqP2wvI
+         rcwuAyXop3GP/LaDJJecnQeWzLKHcTJ3tPkGHdedztNOPgXShiPa+txVTDA05gdcuN
+         ZTN8P11SLvKUlAA1vrkXioRdnT7s3Nh1SSBUvLdx1Tdb1mPWSuGqF5vMHRq5/dYzPu
+         518Zyksmf1A4Q==
+Date:   Wed, 23 Feb 2022 20:25:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Roopa Prabhu <roopa@nvidia.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <stephen@networkplumber.org>, <nikolay@cumulusnetworks.com>,
+        <idosch@nvidia.com>, <dsahern@gmail.com>, <bpoirier@nvidia.com>
+Subject: Re: [PATCH net-next v2 09/12] vxlan: vni filtering support on
+ collect metadata device
+Message-ID: <20220223202509.439b9c6b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220222025230.2119189-10-roopa@nvidia.com>
+References: <20220222025230.2119189-1-roopa@nvidia.com>
+        <20220222025230.2119189-10-roopa@nvidia.com>
 MIME-Version: 1.0
-References: <CAHJXk3b9WhMb7CDHbO3ixGg23G1u7Y+guoLQLWkARgX6Ssrpow@mail.gmail.com>
- <CAHJXk3bpBosy01XojpCd=LFC1Dwbms9GA7FOEudOa_mRgPz7qA@mail.gmail.com> <CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com>
-In-Reply-To: <CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com>
-From:   Harold Huang <baymaxhuang@gmail.com>
-Date:   Thu, 24 Feb 2022 12:19:12 +0800
-Message-ID: <CAHJXk3bvyfNMDQCzSB2tfzW4PMAx=PRHL9CFBKt1jXgNUH2DkA@mail.gmail.com>
-Subject: Re: Question about the sndbuf of the tap interface with vhost-net
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     users@dpdk.org, Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Chenbo Xia <chenbo.xia@intel.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for Jason's comments.
+On Tue, 22 Feb 2022 02:52:27 +0000 Roopa Prabhu wrote:
+> +static int vxlan_vni_add(struct vxlan_dev *vxlan,
+> +			 struct vxlan_vni_group *vg,
+> +			 u32 vni, union vxlan_addr *group,
+> +			 struct netlink_ext_ack *extack)
+> +{
+> +	struct vxlan_vni_node *vninode;
+> +	__be32 v = cpu_to_be32(vni);
+> +	bool changed = false;
+> +	int err = 0;
+> +
+> +	if (vxlan_vnifilter_lookup(vxlan, v))
+> +		return vxlan_vni_update(vxlan, vg, v, group, &changed, extack);
+> +
+> +	err = vxlan_vni_in_use(vxlan->net, vxlan, &vxlan->cfg, v);
+> +	if (err) {
+> +		NL_SET_ERR_MSG(extack, "VNI in use");
+> +		return err;
+> +	}
+> +
+> +	vninode = vxlan_vni_alloc(vxlan, v);
+> +	if (!vninode)
+> +		return -ENOMEM;
+> +
+> +	err = rhashtable_lookup_insert_fast(&vg->vni_hash,
+> +					    &vninode->vnode,
+> +					    vxlan_vni_rht_params);
+> +	if (err)
 
-Jason Wang <jasowang@redhat.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=8824=E6=97=
-=A5=E5=91=A8=E5=9B=9B 11:23=E5=86=99=E9=81=93=EF=BC=9A
->
-> Adding netdev.
->
-> On Wed, Feb 23, 2022 at 9:46 PM Harold Huang <baymaxhuang@gmail.com> wrot=
-e:
-> >
-> >  Sorry. The performance tested by iperf is degraded from 4.5 Gbps to
-> > 750Mbps per flow.
-> >
-> > Harold Huang <baymaxhuang@gmail.com> =E4=BA=8E2022=E5=B9=B42=E6=9C=8823=
-=E6=97=A5=E5=91=A8=E4=B8=89 21:13=E5=86=99=E9=81=93=EF=BC=9A
-> > >
-> > > I see in dpdk virtio-user driver, the TUNSETSNDBUF is initialized wit=
-h
-> > > INT_MAX, see: https://github.com/DPDK/dpdk/blob/main/drivers/net/virt=
-io/virtio_user/vhost_kernel_tap.c#L169
->
-> Note that Linux use INT_MAX as default sndbuf for tuntap.
->
-> > > It is ok because tap driver uses it to support tx baching, see this
-> > > patch: https://github.com/torvalds/linux/commit/0a0be13b8fe2cac11da20=
-63fb03f0f39359b3069
-> > >
-> > > But in tun_xdp_one, napi is not supported and I want to user napi in
-> > > tun_get_user to enable gro.
->
-> NAPI is not enabled in this path, want to send a patch to do that?
+leak ?
 
-Yes, I have a patch in this path to enable NAPI and it greatly
-improves TCP stream performance, from 4.5Gbsp to 9.2 Gbps per flow. I
-will send it later for comments.
+> +		return err;
+> +
+> +	__vxlan_vni_add_list(vg, vninode);
+> +
+> +	if (vxlan->dev->flags & IFF_UP)
+> +		vxlan_vs_add_del_vninode(vxlan, vninode, false);
+> +
+> +	err = vxlan_vni_update_group(vxlan, vninode, group, true, &changed,
+> +				     extack);
+> +
+> +	if (changed)
+> +		vxlan_vnifilter_notify(vxlan, vninode, RTM_NEWTUNNEL);
+> +
+> +	return err;
+> +}
+> +
+> +static void vxlan_vni_node_rcu_free(struct rcu_head *rcu)
+> +{
+> +	struct vxlan_vni_node *v;
+> +
+> +	v = container_of(rcu, struct vxlan_vni_node, rcu);
+> +	kfree(v);
+> +}
 
->
-> Btw, NAPI mode is used for kernel networking stack hardening at start,
-> but it would be interesting to see if it helps for the performance.
->
-> > > As I result, I change the sndbuf to a
-> > > value such as 212992 in /proc/sys/net/core/wmem_default.
->
-> Can you describe your setup in detail? Where did you run the iperf
-> server and client and where did you change the wmem_default?
+kfree_rcu()?
 
-I use dpdk-testpmd to test the vhost-net performance, such as:
-dpdk-testpmd -l 0-9  -n 4
---vdev=3Dvirtio_user0,path=3D/dev/vhost-net,queue_size=3D1024,mac=3D00:00:0=
-a:00:00:02
--a 0000:06:00.1 -- -i  --txd=3D1024 --rxd=3D1024
+> +static int vxlan_vni_del(struct vxlan_dev *vxlan,
+> +			 struct vxlan_vni_group *vg,
+> +			 u32 vni, struct netlink_ext_ack *extack)
+> +{
+> +	struct vxlan_vni_node *vninode;
+> +	__be32 v = cpu_to_be32(vni);
+> +	int err = 0;
+> +
+> +	vg = rtnl_dereference(vxlan->vnigrp);
+> +
+> +	vninode = rhashtable_lookup_fast(&vg->vni_hash, &v,
+> +					 vxlan_vni_rht_params);
+> +	if (!vninode) {
+> +		err = -ENOENT;
+> +		goto out;
+> +	}
+> +
+> +	vxlan_vni_delete_group(vxlan, vninode);
+> +
+> +	err = rhashtable_remove_fast(&vg->vni_hash,
+> +				     &vninode->vnode,
+> +				     vxlan_vni_rht_params);
+> +	if (err)
+> +		goto out;
+> +
+> +	__vxlan_vni_del_list(vg, vninode);
+> +
+> +	vxlan_vnifilter_notify(vxlan, vninode, RTM_DELTUNNEL);
+> +
+> +	if (vxlan->dev->flags & IFF_UP)
+> +		vxlan_vs_add_del_vninode(vxlan, vninode, true);
+> +
+> +	call_rcu(&vninode->rcu, vxlan_vni_node_rcu_free);
+> +
+> +	return 0;
+> +out:
+> +	return err;
+> +}
+> +
+> +static int vxlan_vni_add_del(struct vxlan_dev *vxlan, __u32 start_vni,
+> +			     __u32 end_vni, union vxlan_addr *group,
+> +			     int cmd, struct netlink_ext_ack *extack)
+> +{
+> +	struct vxlan_vni_group *vg;
+> +	int v, err = 0;
+> +
+> +	vg = rtnl_dereference(vxlan->vnigrp);
+> +
+> +	for (v = start_vni; v <= end_vni; v++) {
+> +		switch (cmd) {
+> +		case RTM_NEWTUNNEL:
+> +			err = vxlan_vni_add(vxlan, vg, v, group, extack);
+> +			break;
+> +		case RTM_DELTUNNEL:
+> +			err = vxlan_vni_del(vxlan, vg, v, extack);
+> +			break;
+> +		default:
+> +			err = -EOPNOTSUPP;
+> +			break;
+> +		}
+> +		if (err)
+> +			goto out;
+> +	}
+> +
+> +	return 0;
+> +out:
+> +	return err;
+> +}
+> +
+> +static int vxlan_process_vni_filter(struct vxlan_dev *vxlan,
+> +				    struct nlattr *nlvnifilter,
+> +				    int cmd, struct netlink_ext_ack *extack)
+> +{
+> +	struct nlattr *vattrs[VXLAN_VNIFILTER_ENTRY_MAX + 1];
+> +	u32 vni_start = 0, vni_end = 0;
+> +	union vxlan_addr group;
+> +	int err = 0;
 
-And I have changed the sndbuf in
-https://github.com/DPDK/dpdk/blob/main/drivers/net/virtio/virtio_user/vhost=
-_kernel_tap.c#L169
-to 212992, which is not INT_MAX anymore. I also enable NAPI in the tun
-module.  The iperf server ran in the tap interface on the kernel side,
-which would receive TCP stream from dpdk-testpmd. But the performance
-is greatly degraded,  from 4.5 Gbps to 750Mbps. I am confused about
-the perf result of the cpu core where iperf server ran, which has a
-serious bottleneck: 59.86% cpu on the report_bug and  20.66% on the
-module_find_bug. I use centos 8.2 with a native 4.18.0-193.el8.x86_64
-kernel to test.
+unnecessary init
 
->
-> > > But the
-> > > performance tested by iperf is greatly degraded, from 4.5 Gbps to
-> > > 750Gbps per flow. I see the the iperf server consume 100% cpu core,
-> > > which should be the bottleneck of the this test. The perf top result
-> > > of iperf server cpu core is as follows:
-> > >
-> > > '''
-> > > Samples: 72  of event 'cycles', 4000 Hz, Event count (approx.):
-> > > 22685278 lost: 0/0 drop: 0/0
-> > > Overhead  Shared O  Symbol
-> > >   59.86%  [kernel]  [k] report_bug
-> > >   20.66%  [kernel]  [k] module_find_bug
-> > >    6.51%  [kernel]  [k] common_interrupt
-> > >    2.82%  [kernel]  [k] __slab_free
-> > >    1.48%  [kernel]  [k] copy_user_enhanced_fast_string
-> > >    1.44%  [kernel]  [k] __skb_datagram_iter
-> > >    1.42%  [kernel]  [k] notifier_call_chain
-> > >    1.41%  [kernel]  [k] irq_work_run_list
-> > >    1.41%  [kernel]  [k] update_irq_load_avg
-> > >    1.41%  [kernel]  [k] task_tick_fair
-> > >    1.41%  [kernel]  [k] cmp_ex_search
-> > >    0.16%  [kernel]  [k] __ghes_peek_estatus.isra.12
-> > >    0.02%  [kernel]  [k] acpi_os_read_memory
-> > >    0.00%  [kernel]  [k] native_apic_mem_write
-> > > '''
-> > > I am not clear about the test result. Can we change the sndbuf size i=
-n
-> > > dpdk? Is any way to enable vhost_net to use napi without changing the
-> > > tun kernel driver?
->
-> You can do this by not using INT_MAX as sndbuf.
+> +	err = nla_parse_nested(vattrs,
+> +			       VXLAN_VNIFILTER_ENTRY_MAX,
+> +			       nlvnifilter, vni_filter_entry_policy,
+> +			       extack);
+> +	if (err)
+> +		return err;
+> +
+> +	if (vattrs[VXLAN_VNIFILTER_ENTRY_START]) {
+> +		vni_start = nla_get_u32(vattrs[VXLAN_VNIFILTER_ENTRY_START]);
+> +		vni_end = vni_start;
+> +	}
+> +
+> +	if (vattrs[VXLAN_VNIFILTER_ENTRY_END])
+> +		vni_end = nla_get_u32(vattrs[VXLAN_VNIFILTER_ENTRY_END]);
+> +
+> +	if (!vni_start && !vni_end) {
+> +		NL_SET_ERR_MSG_ATTR(extack, nlvnifilter,
+> +				    "vni start nor end found in vni entry");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (vattrs[VXLAN_VNIFILTER_ENTRY_GROUP]) {
+> +		group.sin.sin_addr.s_addr =
+> +			nla_get_in_addr(vattrs[VXLAN_VNIFILTER_ENTRY_GROUP]);
+> +		group.sa.sa_family = AF_INET;
+> +	} else if (vattrs[VXLAN_VNIFILTER_ENTRY_GROUP6]) {
+> +		group.sin6.sin6_addr =
+> +			nla_get_in6_addr(vattrs[VXLAN_VNIFILTER_ENTRY_GROUP6]);
+> +		group.sa.sa_family = AF_INET6;
+> +	} else {
+> +		memset(&group, 0, sizeof(group));
+> +	}
+> +
+> +	err = vxlan_vni_add_del(vxlan, vni_start, vni_end, &group, cmd,
+> +				extack);
+> +	if (err)
+> +		return err;
+> +
+> +	return 0;
+> +}
+> +
+> +void vxlan_vnigroup_uninit(struct vxlan_dev *vxlan)
+> +{
+> +	struct vxlan_vni_node *v, *tmp;
+> +	struct vxlan_vni_group *vg;
+> +
+> +	vg = rtnl_dereference(vxlan->vnigrp);
+> +	list_for_each_entry_safe(v, tmp, &vg->vni_list, vlist) {
+> +		rhashtable_remove_fast(&vg->vni_hash, &v->vnode,
+> +				       vxlan_vni_rht_params);
+> +		hlist_del_init_rcu(&v->hlist4.hlist);
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +		hlist_del_init_rcu(&v->hlist6.hlist);
+> +#endif
 
-Just mentioned above, I change the sndbuf value and I met a serious
-performance degradation.
+no need to generate the notifications here?
 
->
-> Thanks
->
-> >
->
+> +		__vxlan_vni_del_list(vg, v);
+> +		call_rcu(&v->rcu, vxlan_vni_node_rcu_free);
+> +	}
+> +	rhashtable_destroy(&vg->vni_hash);
+> +	kfree(vg);
+> +}
+> +
+> +int vxlan_vnigroup_init(struct vxlan_dev *vxlan)
+> +{
+> +	struct vxlan_vni_group *vg;
+> +	int ret = -ENOMEM;
+> +
+> +	vg = kzalloc(sizeof(*vg), GFP_KERNEL);
+> +	if (!vg)
+> +		goto out;
+
+return -ENOMEM; 
+the jumping dance is really not worth it here
+
+> +	ret = rhashtable_init(&vg->vni_hash, &vxlan_vni_rht_params);
+> +	if (ret)
+> +		goto err_rhtbl;
+> +	INIT_LIST_HEAD(&vg->vni_list);
+> +	rcu_assign_pointer(vxlan->vnigrp, vg);
+> +
+> +	return 0;
+> +
+> +out:
+> +	return ret;
+> +
+> +err_rhtbl:
+> +	kfree(vg);
+> +
+> +	goto out;
+> +}
+> +
+> +static int vxlan_vnifilter_process(struct sk_buff *skb, struct nlmsghdr *nlh,
+> +				   struct netlink_ext_ack *extack)
+> +{
+> +	struct net *net = sock_net(skb->sk);
+> +	struct tunnel_msg *tmsg;
+> +	struct vxlan_dev *vxlan;
+> +	struct net_device *dev;
+> +	struct nlattr *attr;
+> +	int err, vnis = 0;
+> +	int rem;
+> +
+> +	/* this should validate the header and check for remaining bytes */
+> +	err = nlmsg_parse(nlh, sizeof(*tmsg), NULL, VXLAN_VNIFILTER_MAX, NULL,
+> +			  extack);
+
+Could be useful to provide a policy here, even if it only points to
+single type (entry which is nested). Otherwise we will not reject
+UNSPEC, and validate if ENTRY has NLA_F_NESTED set, no?
+
+> +	if (err < 0)
+> +		return err;
+> +
+> +	tmsg = nlmsg_data(nlh);
+> +	dev = __dev_get_by_index(net, tmsg->ifindex);
+> +	if (!dev)
+> +		return -ENODEV;
+> +
+> +	if (!netif_is_vxlan(dev)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "The device is not a vxlan device");
+> +		return -EINVAL;
+> +	}
+> +
+> +	vxlan = netdev_priv(dev);
+> +
+> +	if (!(vxlan->cfg.flags & VXLAN_F_VNIFILTER))
+> +		return -EOPNOTSUPP;
+> +
+> +	nlmsg_for_each_attr(attr, nlh, sizeof(*tmsg), rem) {
+> +		switch (nla_type(attr)) {
+> +		case VXLAN_VNIFILTER_ENTRY:
+> +			err = vxlan_process_vni_filter(vxlan, attr,
+> +						       nlh->nlmsg_type, extack);
+> +			break;
+> +		default:
+> +			continue;
+> +		}
+> +		vnis++;
+> +		if (err)
+> +			break;
+> +	}
+> +
+> +	if (!vnis) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No vnis found to process");
+> +		err = -EINVAL;
+> +	}
+> +
+> +	return err;
+> +}
