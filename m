@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C1C4C2D35
+	by mail.lfdr.de (Postfix) with ESMTP id 87D0C4C2D34
 	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 14:35:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235065AbiBXNfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 08:35:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
+        id S235064AbiBXNfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 08:35:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235066AbiBXNfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 08:35:44 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2062.outbound.protection.outlook.com [40.107.243.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C80F1786AD
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:35:14 -0800 (PST)
+        with ESMTP id S234625AbiBXNfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 08:35:54 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2082.outbound.protection.outlook.com [40.107.243.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59211786BA
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 05:35:20 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hB/3Rkvzhf9fs6GChh7R78uVN5gzjWKs+6aMLbbsNBuG2gVbmhlgdgOLe2tVKWlr8UE9QJmruhseFOVMKwTsvDP4tVx1I62qdizpVxQkLc+WRMwO9XYvOyknOlTUQ+3Tnltsf/9A/xoYWgL6J/H/E0cNjSVm4s2JE4B2Em3XZAQmOVJvRamyIfQ9W/H3FyecbMJ9jKmNGlSsxqy+eCk2Z+eUbbnD/Oq/7RTX8hx0iyzMkSMPuvDq8sacWdSgau7n519//xTE62Q1eHp/iKRmiREP2FsPMr4q00eew2YCMtFL8ZgJYUJnSjBubIGLs8tECaEkH5FKo6NGopu8GePsJQ==
+ b=mwct4dvoCkAPrqmIRu1LVY54XhGk+u43V7Aca1/6Iw1AhqWCP6NZXl9IM3vhsQm6pI88HaG8PwjgIzrtrSAecuXAzqpS0Xg66g9Q8hCRHn5v3tgr0Q9jDcGOa+o8E3FtHHKlNyMbDRr1D1JimootakUki836G40GoNC8yF59Pa4pStRi0uHr0516HyOIWgVjRlBx3M/HYdAAcoyoODsoQaF0Gakl16DsMUKbBvJVKlCWt7HM8GYK7w6e4uC+NGLwS8WBsQmOwiC3v/h7rfUjDFWNFsWTQ06kTFUgSadl50dXSRB0Mi8rHZE843QPRgEQfVf50ua5t5R7CmY9E33aeA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ba52Y8UsqBq5t6xftkEOKhp3rZxCpaTjAN9biOb6TuI=;
- b=V+teabDxnzqh4aD9iJre2tfRiUXWVUnJw775DjYQ1k96Ob9Gb5pQe+k3ffyBt9c40maDZLtpPew39/6d9HEK2OB/K/uuCSGZcZO6WIdrti8+dn6EuOTf52BprCwCVYRjKRJUGKtRxW7NKpGWV61mJTfcIZWW5VUGoi86ckMwENLwPlPD8ru+4BkvNQP5Z0IK+G0YijrnCcnYn9NrSOf7dG1CbQBI5rrsoqCo9AWRxRg2B/y5AwT2Zb7/r3n6f1hQnRxFhdy1GTsreJua37eEB3ELxlndYTP1Rh0gM9ljffsAudyzW4bRX6nEeqPHWZrTOo/omOR/c305stTr4+zmmQ==
+ bh=6ztyjqZXvTtUmK4yYGG2kSf1S0gk5n1/V/POIb5YTmc=;
+ b=iNG1TTGXnllvncShJTIYANy6VcOzxYalgfabnYsph9xhFCUaKfZMFM0AjR1MAwQs2zLqQrkMj5OP1ROP3zJhdtKHyGoMENT43hQ0WAK+SF/+GoakCmd4nfip479bOzRipvazMgThn/8ud4P9MLli7i0+bfKVcBSoanGtdibyeJTYUrBsZdN2duddvsNCR/EHSNc2WTVU6Hs3WZM4KW8eMYJ2iZbVld/y7Vkv08usInvok0ToCU8/zCCLBj+qyV8VpvuUwCYpIoEeKTgloduGqv8TnXq6wFNgAXFFD9bgBp1Fc2r/8T165t6keXD6oa7YbZNqb9L63aMN7pW/DcOtZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ba52Y8UsqBq5t6xftkEOKhp3rZxCpaTjAN9biOb6TuI=;
- b=BlG1P7q8ceeMSTwLHg89pKL5Kv8iYmdcdC8ZWrdtv2vrHIOr0bNymrtieA6TZn4ZQHFlxtx7XxW4dNbPf1jg1P4CITjnT05JWFfrhATSWw2CS3fIMqdt5s1lnWmlO3MghscwGoMj7weZQl9oJxcAs9nmjj0Uoz0EM/Kg3pGbyaSh4QlqpzWL9EinAMQ4mlEjCH7RflEFdTxrDWsRDEUIXRbbyNALPQWIYfXMlLDKQ17G/jiSwvdYoukUQixVXh+VNlCNJr2JO48KviWfo5jmpddWaw1kpm3rYadfnlj+qhW8nPEAOsSUn71FSyLZI+kGRr7HTzr+vghqMqJRgQV+bQ==
+ bh=6ztyjqZXvTtUmK4yYGG2kSf1S0gk5n1/V/POIb5YTmc=;
+ b=VfwTmZp52iSBtCxroSS4fcTAvLOM+JycpVHZuTnLv+rjjwcrTmgxSrCTjWJlXXAvqlkgghWPsc2DBFKSeaTuSEId29wCEZDGqrqJBIhnn7SgSqFAT+WfgPGAvXU4aI6jmSXzG7wMiWMAx2VDD87p+TOA95lce9xGyYx37Gp+wRctn06odHip44llVNzDLvIbbzxn4SiarC61F38nN8VLRO+yYrZXO8Ykqh4Bg8EkaYXc5Rcg3lWPFw6y0qAOEPJEzXyJ4EvozPyDW/ISD5cGwaX5Yy/tH49U7vqsrhmb+Ik1zS/dZ6lve7HRWqf+LZm6aglKnqUuJqpg26gmevC18w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
  by DS7PR12MB6008.namprd12.prod.outlook.com (2603:10b6:8:7f::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Thu, 24 Feb
- 2022 13:35:13 +0000
+ 2022 13:35:19 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::95a1:8c7f:10ef:2581]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::95a1:8c7f:10ef:2581%7]) with mapi id 15.20.5017.025; Thu, 24 Feb 2022
- 13:35:13 +0000
+ 13:35:19 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         jiri@nvidia.com, razor@blackwall.org, roopa@nvidia.com,
         dsahern@gmail.com, andrew@lunn.ch, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 12/14] mlxsw: Extract classification of router-related events to a helper
-Date:   Thu, 24 Feb 2022 15:33:33 +0200
-Message-Id: <20220224133335.599529-13-idosch@nvidia.com>
+Subject: [PATCH net-next 13/14] mlxsw: Add support for IFLA_OFFLOAD_XSTATS_L3_STATS
+Date:   Thu, 24 Feb 2022 15:33:34 +0200
+Message-Id: <20220224133335.599529-14-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220224133335.599529-1-idosch@nvidia.com>
 References: <20220224133335.599529-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0801CA0079.eurprd08.prod.outlook.com
- (2603:10a6:800:7d::23) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1P193CA0004.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:800:bd::14) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f35113b8-2cc9-4725-652f-08d9f79a7c44
+X-MS-Office365-Filtering-Correlation-Id: be64157f-7c8e-473a-3abe-08d9f79a7fd1
 X-MS-TrafficTypeDiagnostic: DS7PR12MB6008:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR12MB6008FA4819EFFDA01E5F130DB23D9@DS7PR12MB6008.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DS7PR12MB60087307D2A874F9CE5CA270B23D9@DS7PR12MB6008.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AOtaZDMM6uWCXUpPtx0A7e5coz+mU7Rnu8YlTPLcI6SbaFs62PfUX22kvhEiyyxgzibULR0ckYsAetzo0Qs3XLv4eN2/NHKl1hdySAuh7mASN/hdOT39tZACbCfT9Ce7LhkSCkclqZVJaO0u8hxxtP1DCfevBQEFLzEO2dVpjiFFk1z3Jg/iNPYlwfvOsAH0L0f1VVtFOK0lS9CUsxBQEXwyp7epuN4+3Z43pFXNdR9GhCnCySQQBXTkMw3pcVQzv2vStSRt4WzBYSiM4gxu/vg85l7ZGs8PKC5e2j0pgyP/Mj1WjJiRNPfi+/0C315BF6wyN0pUzaU55lYa/P71+CLGgYK0/DC+hYaFHZ5p2MT2TK4pwggFJidtS6KsvS/hKAjM+FjcbSlAFyk2b87tK/4UMUJvw/5RV7Mm4RyLRkci133ksWQjtziKGWAPhSNFxmTMCvChsofc+L17H/p8gcRMjfv3+1xS+z1O+qipohrTlK6KODlf8W8k1szHC+Ja8aIKh9x0LIuLwJmAgZ7oryc/Zl96sEZpzgy7egI5xBAmr3+pejWPc8mWluDPi775M1XhTdirN6djRvIP/sJmIxVNAoFFeFRP4jlFMD8lActi3MzsxBHC7OH2icDLGlRJrdpdy/L3DYd1Bfp+aWBz9A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(2616005)(66476007)(66946007)(316002)(38100700002)(186003)(6916009)(4326008)(8676002)(86362001)(66556008)(36756003)(6512007)(1076003)(107886003)(5660300002)(83380400001)(508600001)(66574015)(6666004)(2906002)(8936002)(6486002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: sh9ny7ebO+b6XWrjjJf6gxqXYSugxogUBpJ9zO+VZXGUCKsZ9J8k7skQEhvHfF5xFPUJ93n7qVx7sLxfTjr9pYjNH19mQSFWKTidmXlmBd/19PrCaggKQPZiJPb8Lla9geyEVdPB7UMj669NbnNYxYVyd355c7aPQBHFLrpJ4V91RhStTPHudg7uBNys1TlmffMOk6pmEXLeO3fRfPnkLtm8Nh0rGkHCRddbTJpaZg9jEjSDgF7YN4HYrRawlePcVuEVelSR3a/N2wBXJBiDuR5t+oA1arn9a1rZO+gLeclFNGDDXHuX4P/+8NdIEkEouEGCEnPIJHhUG8O0uOtdk/CYuJuAC3yFMj2RfmPlsP/oaPzmrssxbM27IHFs71v0X1SX51woHlHuL3dILtvCneVbMxbe8rSxIR1buCaGVAeJRqZj+v/aHnWVORg6qx1gNM3LG3ddjfbzlVSf/aEJUHR46UzLnb14qZfCV71dxKAT7BSmgRJRSHUi5RbOQaHM/zd0jcNLFaJ7l8AZbD8WJ1R6Zo2WJrqr5kq3w9mlwi5D3OB+bduTDoAoDjM9ppTFvVQUbgs5WDWNLp/Va2CxBx3K7uvKhNqhHTGCvmUz0AwulvIZn4efjiqSodJ6PvfUHIdyQ0Csxp53+PY9oZIeOg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(2616005)(66476007)(66946007)(316002)(38100700002)(186003)(6916009)(4326008)(8676002)(86362001)(66556008)(36756003)(6512007)(1076003)(107886003)(5660300002)(83380400001)(508600001)(66574015)(6666004)(2906002)(30864003)(8936002)(6486002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yuYEa5bBN9ocC/WFsR39pX9b/e+fyTopZZJI0Pq5yhfSO7exX3Ys7P+QFV3B?=
- =?us-ascii?Q?iEN0yQLndtI52EixKnYP0bwotgKFjyEPhqONP89EyouKidrCKYopw065iY5u?=
- =?us-ascii?Q?VK5I6NDSnHHl0wDi8/8qFA3I7BAKdRiAJGX+4ue+4Cuc8bZApab5MdJxmA9M?=
- =?us-ascii?Q?eEGUmu5sLjWahkvVeOZqH4la3bYUYfZY7/cMx/x6932fXxiIAPD1A+iEs6k9?=
- =?us-ascii?Q?tDedNdMjmdBfvJDFi11jpnbmmzzSxs3zRg39O/b8tE+XECpqLYA3MypeU9GV?=
- =?us-ascii?Q?HPHtnz4VUnLxo3x8ReJn58YX9tPjYZ9foxGtQGVldtF/0pQ5cga9R9/rbuv4?=
- =?us-ascii?Q?nyznIEBosFpfQV/PnmAocApqlQcpyUlp1Zz5WS35zVpvYvATF63xT2eKGJkt?=
- =?us-ascii?Q?T5tolPahY5Ulscp/qzLVfzIzAdu7mHllL2F8luW/JcXWVjVQOHPXl5MGKSg4?=
- =?us-ascii?Q?65orcGLaoDuohhlWKT+BarRMT8q+BLV8QvGUgijzXLgNFvGkN9G1dVr85Usu?=
- =?us-ascii?Q?hh31KYAgGuT1WLqeko7ej5WA0qEv5pvR0yk/SE+Z5r1cgqJHkUT4C9Ts8SbP?=
- =?us-ascii?Q?Ydh2jILBHLjkOKrQ91fPKskmco/efYqUjIFvKKfN6/uapH9DyNZufmNhFJn/?=
- =?us-ascii?Q?Ew4Uiw7N/fS6AxLf0U/dVyDJCX8yu4rITIjtIIHTTLB4A/skWAyfnAcaa50l?=
- =?us-ascii?Q?I+ylKEOEkN4PmktobcGXYOgaUFWtinb3Fb38llV1YifsTVjIkyFyYr8fGJAm?=
- =?us-ascii?Q?SpJ8dDjTqL1rZ7175h339N671UiRAo5fgSbkNvPu/ZoXLtH1D+vLuvG9bCPl?=
- =?us-ascii?Q?CWVz2LXhjtXLH6S62NgoJ2Y6fL0yVUk0cXNf8zpPabrMis8YacrXOUJgNzNW?=
- =?us-ascii?Q?g02r4Ij+i8u+2Rr+7t6kWERh+W7mpaWG8reqDZIO4ft/piKIDPHUfG+KnQb8?=
- =?us-ascii?Q?N23i8z6G2kKgohrMw4u0zhPznZFS6L9u4pxIkasnlo/18b5GvjzPpuckwx9Z?=
- =?us-ascii?Q?pv53OPUisHyVEje13fxOKKfWvGzRswgSPN7sqQr5nFwHUmOrjRNfhvJleI6u?=
- =?us-ascii?Q?13EVh06Olpp1dXyIoDevuH3upYzNpWH0rekAxWnxJg7MfO/rhBYDdHmkRwFM?=
- =?us-ascii?Q?MvzwJfIML8/dInCkuJe2ZApWIX55hBgGB3CMu8w3JYlwu/BzGw+pzPrZDJ9R?=
- =?us-ascii?Q?91HbSX6WO+V8J+vxgcwAJtrmgtzyphC4Y+A+s6N6d+uFW18vML6NkJJepxAM?=
- =?us-ascii?Q?Rd6sMqkzkofALtjDRm8t2qPEG5B1tlj+ugPX653e4ZCQw7hXjlmA8A8qh9zl?=
- =?us-ascii?Q?mJjQWlaT0KJth2FykuMXzMfoB3WerieU4QNWeFGAl1gygbbw9ScH6y9MeGQm?=
- =?us-ascii?Q?E+XfL8AiFLENlFnYo1b4FeMa8jnRYu9bUahhizPqIv6y0Xe1+R3s+ufmBizm?=
- =?us-ascii?Q?TIz6X0qqkgjNRr8snM3VJgOSg0406urIdZZTy0oawtskFqjNxzMB6+H6b9AO?=
- =?us-ascii?Q?C1IxhHYmLT+bcfzQAMIDA1m2wlEU6A6QTUaaqA0ifTfj/zfffiCeORsG+o7R?=
- =?us-ascii?Q?D5N0UbTVIJySJokc1yGHhcfOXQ1Kltrj5eFmUwpPNTVNtCNUHHcXXUngFYg0?=
- =?us-ascii?Q?2wnBNaiOtuUj5jHOqVkLpds=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lvyv63o8xW5Nk0R7aa9En+5uI7jeiSWX7N+woU6uWxcaMsc9ij5QV+Touixv?=
+ =?us-ascii?Q?XtyWoea3vkPLb5wMIhc+sTWLn3eDTfq7X/HeXe8YX/9/ejIEdxt0jKo91vS7?=
+ =?us-ascii?Q?tirgLh2FlZBrV0MGlieSw/Ux+YmF7CiPSxpcFqbYspRNBmCfIkY6wSnYSv8g?=
+ =?us-ascii?Q?GjQMW1KnXRpLUE0KB4VEsyxnZyCx3QpR4LZsYw9mcjcns4T4QbvrT1pGhVOd?=
+ =?us-ascii?Q?PXwviwtOYJaz2AXnJSKtOmHYj/oM2KcKhNuCPZcG0rmGv2sfjQzIsDhNz09h?=
+ =?us-ascii?Q?E80RL0fxoFH2znpjVAD3VYTXSQdzt8hUxrkOBLTTuODOWbhKC0nu+p2FuDaX?=
+ =?us-ascii?Q?ih8H57r9HfR7uhS+diyBUi0x0cAvma+bQ146cPVR2CD4bdM8S7/K+o0ACvWy?=
+ =?us-ascii?Q?eRM1b+JTU8gMSTFSDnRh+O8UVBAjdt1JuPs//E7x/Q0Jo/K5ers3c3Dcjhlq?=
+ =?us-ascii?Q?WzAcdXzDx0lgViqLLHhg05qF9W8GMHG9LL7+EetI7myzIZ77FdmQqBw5LaYG?=
+ =?us-ascii?Q?JNg/Dwn4R7tTBUyfMSxEtXxu6pxPdiUp4DgTeAa32GValkiYacKW8AgewXD8?=
+ =?us-ascii?Q?/ej24CMN+ZQMFeZLKZ7N4XR5+rFuKNnJxZh/6STwHqpB/9eflDDvpVZFuFSF?=
+ =?us-ascii?Q?lHkDtFagUplqOpQmGzmEVhNqIB/mYyE0drXuS9HzayUEJ9o0hMyKNAGFwzGK?=
+ =?us-ascii?Q?FY0uHIPg1sEYJmSyIftwK6eN45QGF0MdbBu1vq56305ZA1kQ/yIDHn9zOned?=
+ =?us-ascii?Q?QWlA2F0JVlPFIrsYjHPnIqYBd7QURA1e1uJuuxCMw/8KgW+xB4zZSx2kUM9K?=
+ =?us-ascii?Q?zkKNvNUEMUHGjzaefSHO3pTq28Duuj9yZ9zL/3DFbge8LsETuhFsmVLHb6Ro?=
+ =?us-ascii?Q?L2xDDk+f7oDGtRnuLnP2L5MrD/yA2H30UetQqd6QbjAfeb1y1yR1zZLXG7lW?=
+ =?us-ascii?Q?gVC9k90uYxwgpSiHkYkkGIyd4/PotJbqHW8Ddbha9DYVBo8xialqNYxspm1z?=
+ =?us-ascii?Q?fETSXU8i0tMbdXJm62UA1LnfKCrz3rFyerxY9vuIZaULzABndlqa0fID7DRV?=
+ =?us-ascii?Q?cLY+dVYKCs9Ib7MwBdzcP91LVoEhDh3/is3YTxSTQILehhsWReiOXDQMw9LL?=
+ =?us-ascii?Q?lrkoq1Lj8dPGCijDWoBJnIywR64MF7zS1EW+H2qfy5HgLByk/EqnUNNFX6lV?=
+ =?us-ascii?Q?fz7D70ptr6e0gX2P9mKrs0yLxydOD5skMNzB19LnGsYeHV95UFxXlHdczAOR?=
+ =?us-ascii?Q?ja839gjePCnYIeEncppVlUb72+5k46RaHrO9ew/AWERiH6FsgWFBhvXNf9vw?=
+ =?us-ascii?Q?+xSnhST0JFUhnb5lh6Hj0dGcdFP7NfpSVQVWj6AB4z/WbFwGKoti28jFeRmU?=
+ =?us-ascii?Q?MZT2jMEB5XeTj32BGYHBsQhy0wju61uGSIKCHXlz3Xt7aWA1u/JSGCIfYuCE?=
+ =?us-ascii?Q?DTWMUS8BbPUypa/wgrEnOF/J0aA+2FFVzWeUmQehChX3rii18/6Vyih07I98?=
+ =?us-ascii?Q?887jj1H5xsu3CXAzPfZfacByoTXsmItlpNTqu/Yovx2ZlkVPuTiciz0IhJoq?=
+ =?us-ascii?Q?NcenhOpY+nT1mX7e2KrWPnHAJsuPC3Bs7+AoSJTqgNQqwUIp1wt25/WNO9a0?=
+ =?us-ascii?Q?Xoz8Xfmw2RVl4/oHBYoHGMw=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f35113b8-2cc9-4725-652f-08d9f79a7c44
+X-MS-Exchange-CrossTenant-Network-Message-Id: be64157f-7c8e-473a-3abe-08d9f79a7fd1
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 13:35:13.2454
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 13:35:19.3109
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ILYwdWsGXwyBEofCI5CigX0PymhxG33oY+JtrHStu4GEPhDfZJ9ufqKP4ZheTw36rPkaGniHq20cl1/iospftQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: /DsPYiBPAip9Cu+i0VsTJ40z0bRDMH6QLFiyTokP2S3vy8E65+H0ZBB64SA72Sa7Pm0phthtZstWavQ2Qmc+bw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6008
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -119,49 +119,397 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-Several more events are coming in the following patches, and extending the
-if statement is getting awkward. Instead, convert it to a switch.
+Spectrum machines support L3 stats by binding a counter to a RIF, a
+hardware object representing a router interface. Recognize the netdevice
+notifier events, NETDEV_OFFLOAD_XSTATS_*, to support enablement,
+disablement, and reporting back to core.
+
+As a netdevice gains a RIF, if L3 stats are enabled, install the counters,
+and ping the core so that a userspace notification can be emitted.
+
+Similarly, as a netdevice loses a RIF, push the as-yet-unreported
+statistics to the core, so that they are not lost, and ping the core to
+emit userspace notification.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   4 +
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 291 +++++++++++++++++-
+ 2 files changed, 293 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 4880521b11a7..10f32deea158 100644
+index 10f32deea158..7b7b17183d10 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4823,6 +4823,18 @@ static int mlxsw_sp_netdevice_vxlan_event(struct mlxsw_sp *mlxsw_sp,
+@@ -4829,6 +4829,10 @@ static bool mlxsw_sp_netdevice_event_is_router(unsigned long event)
+ 	case NETDEV_PRE_CHANGEADDR:
+ 	case NETDEV_CHANGEADDR:
+ 	case NETDEV_CHANGEMTU:
++	case NETDEV_OFFLOAD_XSTATS_ENABLE:
++	case NETDEV_OFFLOAD_XSTATS_DISABLE:
++	case NETDEV_OFFLOAD_XSTATS_REPORT_USED:
++	case NETDEV_OFFLOAD_XSTATS_REPORT_DELTA:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 2b21fea3b37d..7ccf1c6f4643 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -225,6 +225,64 @@ int mlxsw_sp_rif_counter_value_get(struct mlxsw_sp *mlxsw_sp,
  	return 0;
  }
  
-+static bool mlxsw_sp_netdevice_event_is_router(unsigned long event)
++struct mlxsw_sp_rif_counter_set_basic {
++	u64 good_unicast_packets;
++	u64 good_multicast_packets;
++	u64 good_broadcast_packets;
++	u64 good_unicast_bytes;
++	u64 good_multicast_bytes;
++	u64 good_broadcast_bytes;
++	u64 error_packets;
++	u64 discard_packets;
++	u64 error_bytes;
++	u64 discard_bytes;
++};
++
++static int
++mlxsw_sp_rif_counter_fetch_clear(struct mlxsw_sp_rif *rif,
++				 enum mlxsw_sp_rif_counter_dir dir,
++				 struct mlxsw_sp_rif_counter_set_basic *set)
 +{
-+	switch (event) {
-+	case NETDEV_PRE_CHANGEADDR:
-+	case NETDEV_CHANGEADDR:
-+	case NETDEV_CHANGEMTU:
-+		return true;
-+	default:
-+		return false;
-+	}
++	struct mlxsw_sp *mlxsw_sp = rif->mlxsw_sp;
++	char ricnt_pl[MLXSW_REG_RICNT_LEN];
++	unsigned int *p_counter_index;
++	int err;
++
++	if (!mlxsw_sp_rif_counter_valid_get(rif, dir))
++		return -EINVAL;
++
++	p_counter_index = mlxsw_sp_rif_p_counter_get(rif, dir);
++	if (!p_counter_index)
++		return -EINVAL;
++
++	mlxsw_reg_ricnt_pack(ricnt_pl, *p_counter_index,
++			     MLXSW_REG_RICNT_OPCODE_CLEAR);
++	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ricnt), ricnt_pl);
++	if (err)
++		return err;
++
++	if (!set)
++		return 0;
++
++#define MLXSW_SP_RIF_COUNTER_EXTRACT(NAME)				\
++		(set->NAME = mlxsw_reg_ricnt_ ## NAME ## _get(ricnt_pl))
++
++	MLXSW_SP_RIF_COUNTER_EXTRACT(good_unicast_packets);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(good_multicast_packets);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(good_broadcast_packets);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(good_unicast_bytes);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(good_multicast_bytes);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(good_broadcast_bytes);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(error_packets);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(discard_packets);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(error_bytes);
++	MLXSW_SP_RIF_COUNTER_EXTRACT(discard_bytes);
++
++#undef MLXSW_SP_RIF_COUNTER_EXTRACT
++
++	return 0;
 +}
 +
- static int mlxsw_sp_netdevice_event(struct notifier_block *nb,
- 				    unsigned long event, void *ptr)
+ static int mlxsw_sp_rif_counter_clear(struct mlxsw_sp *mlxsw_sp,
+ 				      unsigned int counter_index)
  {
-@@ -4847,9 +4859,7 @@ static int mlxsw_sp_netdevice_event(struct notifier_block *nb,
- 	else if (mlxsw_sp_netdev_is_ipip_ul(mlxsw_sp, dev))
- 		err = mlxsw_sp_netdevice_ipip_ul_event(mlxsw_sp, dev,
- 						       event, ptr);
--	else if (event == NETDEV_PRE_CHANGEADDR ||
--		 event == NETDEV_CHANGEADDR ||
--		 event == NETDEV_CHANGEMTU)
-+	else if (mlxsw_sp_netdevice_event_is_router(event))
- 		err = mlxsw_sp_netdevice_router_port_event(dev, event, ptr);
- 	else if (mlxsw_sp_is_vrf_event(event, ptr))
- 		err = mlxsw_sp_netdevice_vrf_event(dev, event, ptr);
+@@ -242,9 +300,13 @@ int mlxsw_sp_rif_counter_alloc(struct mlxsw_sp_rif *rif,
+ 	unsigned int *p_counter_index;
+ 	int err;
+ 
++	if (mlxsw_sp_rif_counter_valid_get(rif, dir))
++		return 0;
++
+ 	p_counter_index = mlxsw_sp_rif_p_counter_get(rif, dir);
+ 	if (!p_counter_index)
+ 		return -EINVAL;
++
+ 	err = mlxsw_sp_counter_alloc(mlxsw_sp, MLXSW_SP_COUNTER_SUB_POOL_RIF,
+ 				     p_counter_index);
+ 	if (err)
+@@ -8146,6 +8208,166 @@ u16 mlxsw_sp_ipip_lb_ul_rif_id(const struct mlxsw_sp_rif_ipip_lb *lb_rif)
+ 	return lb_rif->ul_rif_id;
+ }
+ 
++static bool
++mlxsw_sp_router_port_l3_stats_enabled(struct mlxsw_sp_rif *rif)
++{
++	return mlxsw_sp_rif_counter_valid_get(rif,
++					      MLXSW_SP_RIF_COUNTER_EGRESS) &&
++	       mlxsw_sp_rif_counter_valid_get(rif,
++					      MLXSW_SP_RIF_COUNTER_INGRESS);
++}
++
++static int
++mlxsw_sp_router_port_l3_stats_enable(struct mlxsw_sp_rif *rif)
++{
++	int err;
++
++	err = mlxsw_sp_rif_counter_alloc(rif, MLXSW_SP_RIF_COUNTER_INGRESS);
++	if (err)
++		return err;
++
++	/* Clear stale data. */
++	err = mlxsw_sp_rif_counter_fetch_clear(rif,
++					       MLXSW_SP_RIF_COUNTER_INGRESS,
++					       NULL);
++	if (err)
++		goto err_clear_ingress;
++
++	err = mlxsw_sp_rif_counter_alloc(rif, MLXSW_SP_RIF_COUNTER_EGRESS);
++	if (err)
++		goto err_alloc_egress;
++
++	/* Clear stale data. */
++	err = mlxsw_sp_rif_counter_fetch_clear(rif,
++					       MLXSW_SP_RIF_COUNTER_EGRESS,
++					       NULL);
++	if (err)
++		goto err_clear_egress;
++
++	return 0;
++
++err_clear_egress:
++	mlxsw_sp_rif_counter_free(rif, MLXSW_SP_RIF_COUNTER_EGRESS);
++err_alloc_egress:
++err_clear_ingress:
++	mlxsw_sp_rif_counter_free(rif, MLXSW_SP_RIF_COUNTER_INGRESS);
++	return err;
++}
++
++static void
++mlxsw_sp_router_port_l3_stats_disable(struct mlxsw_sp_rif *rif)
++{
++	mlxsw_sp_rif_counter_free(rif, MLXSW_SP_RIF_COUNTER_EGRESS);
++	mlxsw_sp_rif_counter_free(rif, MLXSW_SP_RIF_COUNTER_INGRESS);
++}
++
++static void
++mlxsw_sp_router_port_l3_stats_report_used(struct mlxsw_sp_rif *rif,
++					  struct netdev_notifier_offload_xstats_info *info)
++{
++	if (!mlxsw_sp_router_port_l3_stats_enabled(rif))
++		return;
++	netdev_offload_xstats_report_used(info->report_used);
++}
++
++static int
++mlxsw_sp_router_port_l3_stats_fetch(struct mlxsw_sp_rif *rif,
++				    struct rtnl_link_stats64 *p_stats)
++{
++	struct mlxsw_sp_rif_counter_set_basic ingress;
++	struct mlxsw_sp_rif_counter_set_basic egress;
++	int err;
++
++	err = mlxsw_sp_rif_counter_fetch_clear(rif,
++					       MLXSW_SP_RIF_COUNTER_INGRESS,
++					       &ingress);
++	if (err)
++		return err;
++
++	err = mlxsw_sp_rif_counter_fetch_clear(rif,
++					       MLXSW_SP_RIF_COUNTER_EGRESS,
++					       &egress);
++	if (err)
++		return err;
++
++#define MLXSW_SP_ROUTER_ALL_GOOD(SET, SFX)		\
++		((SET.good_unicast_ ## SFX) +		\
++		 (SET.good_multicast_ ## SFX) +		\
++		 (SET.good_broadcast_ ## SFX))
++
++	p_stats->rx_packets = MLXSW_SP_ROUTER_ALL_GOOD(ingress, packets);
++	p_stats->tx_packets = MLXSW_SP_ROUTER_ALL_GOOD(egress, packets);
++	p_stats->rx_bytes = MLXSW_SP_ROUTER_ALL_GOOD(ingress, bytes);
++	p_stats->tx_bytes = MLXSW_SP_ROUTER_ALL_GOOD(egress, bytes);
++	p_stats->rx_errors = ingress.error_packets;
++	p_stats->tx_errors = egress.error_packets;
++	p_stats->rx_dropped = ingress.discard_packets;
++	p_stats->tx_dropped = egress.discard_packets;
++	p_stats->multicast = ingress.good_multicast_packets +
++			     ingress.good_broadcast_packets;
++
++#undef MLXSW_SP_ROUTER_ALL_GOOD
++
++	return 0;
++}
++
++static int
++mlxsw_sp_router_port_l3_stats_report_delta(struct mlxsw_sp_rif *rif,
++					   struct netdev_notifier_offload_xstats_info *info)
++{
++	struct rtnl_link_stats64 stats = {};
++	int err;
++
++	if (!mlxsw_sp_router_port_l3_stats_enabled(rif))
++		return 0;
++
++	err = mlxsw_sp_router_port_l3_stats_fetch(rif, &stats);
++	if (err)
++		return err;
++
++	netdev_offload_xstats_report_delta(info->report_delta, &stats);
++	return 0;
++}
++
++struct mlxsw_sp_router_hwstats_notify_work {
++	struct work_struct work;
++	struct net_device *dev;
++};
++
++static void mlxsw_sp_router_hwstats_notify_work(struct work_struct *work)
++{
++	struct mlxsw_sp_router_hwstats_notify_work *hws_work =
++		container_of(work, struct mlxsw_sp_router_hwstats_notify_work,
++			     work);
++
++	rtnl_lock();
++	rtnl_offload_xstats_notify(hws_work->dev);
++	rtnl_unlock();
++	dev_put(hws_work->dev);
++	kfree(hws_work);
++}
++
++static void
++mlxsw_sp_router_hwstats_notify_schedule(struct net_device *dev)
++{
++	struct mlxsw_sp_router_hwstats_notify_work *hws_work;
++
++	/* To collect notification payload, the core ends up sending another
++	 * notifier block message, which would deadlock on the attempt to
++	 * acquire the router lock again. Just postpone the notification until
++	 * later.
++	 */
++
++	hws_work = kzalloc(sizeof(*hws_work), GFP_KERNEL);
++	if (!hws_work)
++		return;
++
++	INIT_WORK(&hws_work->work, mlxsw_sp_router_hwstats_notify_work);
++	dev_hold(dev);
++	hws_work->dev = dev;
++	mlxsw_core_schedule_work(&hws_work->work);
++}
++
+ int mlxsw_sp_rif_dev_ifindex(const struct mlxsw_sp_rif *rif)
+ {
+ 	return rif->dev->ifindex;
+@@ -8156,6 +8378,16 @@ const struct net_device *mlxsw_sp_rif_dev(const struct mlxsw_sp_rif *rif)
+ 	return rif->dev;
+ }
+ 
++static void mlxsw_sp_rif_push_l3_stats(struct mlxsw_sp_rif *rif)
++{
++	struct rtnl_link_stats64 stats = {};
++
++	if (!mlxsw_sp_router_port_l3_stats_fetch(rif, &stats))
++		netdev_offload_xstats_push_delta(rif->dev,
++						 NETDEV_OFFLOAD_XSTATS_TYPE_L3,
++						 &stats);
++}
++
+ static struct mlxsw_sp_rif *
+ mlxsw_sp_rif_create(struct mlxsw_sp *mlxsw_sp,
+ 		    const struct mlxsw_sp_rif_params *params,
+@@ -8216,10 +8448,19 @@ mlxsw_sp_rif_create(struct mlxsw_sp *mlxsw_sp,
+ 			goto err_mr_rif_add;
+ 	}
+ 
+-	mlxsw_sp_rif_counters_alloc(rif);
++	if (netdev_offload_xstats_enabled(rif->dev,
++					  NETDEV_OFFLOAD_XSTATS_TYPE_L3)) {
++		err = mlxsw_sp_router_port_l3_stats_enable(rif);
++		if (err)
++			goto err_stats_enable;
++		mlxsw_sp_router_hwstats_notify_schedule(rif->dev);
++	} else {
++		mlxsw_sp_rif_counters_alloc(rif);
++	}
+ 
+ 	return rif;
+ 
++err_stats_enable:
+ err_mr_rif_add:
+ 	for (i--; i >= 0; i--)
+ 		mlxsw_sp_mr_rif_del(vr->mr_table[i], rif);
+@@ -8249,7 +8490,15 @@ static void mlxsw_sp_rif_destroy(struct mlxsw_sp_rif *rif)
+ 	mlxsw_sp_router_rif_gone_sync(mlxsw_sp, rif);
+ 	vr = &mlxsw_sp->router->vrs[rif->vr_id];
+ 
+-	mlxsw_sp_rif_counters_free(rif);
++	if (netdev_offload_xstats_enabled(rif->dev,
++					  NETDEV_OFFLOAD_XSTATS_TYPE_L3)) {
++		mlxsw_sp_rif_push_l3_stats(rif);
++		mlxsw_sp_router_port_l3_stats_disable(rif);
++		mlxsw_sp_router_hwstats_notify_schedule(rif->dev);
++	} else {
++		mlxsw_sp_rif_counters_free(rif);
++	}
++
+ 	for (i = 0; i < MLXSW_SP_L3_PROTO_MAX; i++)
+ 		mlxsw_sp_mr_rif_del(vr->mr_table[i], rif);
+ 	ops->deconfigure(rif);
+@@ -9126,6 +9375,35 @@ static int mlxsw_sp_router_port_pre_changeaddr_event(struct mlxsw_sp_rif *rif,
+ 	return -ENOBUFS;
+ }
+ 
++static int
++mlxsw_sp_router_port_offload_xstats_cmd(struct mlxsw_sp_rif *rif,
++					unsigned long event,
++					struct netdev_notifier_offload_xstats_info *info)
++{
++	switch (info->type) {
++	case NETDEV_OFFLOAD_XSTATS_TYPE_L3:
++		break;
++	default:
++		return 0;
++	}
++
++	switch (event) {
++	case NETDEV_OFFLOAD_XSTATS_ENABLE:
++		return mlxsw_sp_router_port_l3_stats_enable(rif);
++	case NETDEV_OFFLOAD_XSTATS_DISABLE:
++		mlxsw_sp_router_port_l3_stats_disable(rif);
++		return 0;
++	case NETDEV_OFFLOAD_XSTATS_REPORT_USED:
++		mlxsw_sp_router_port_l3_stats_report_used(rif, info);
++		return 0;
++	case NETDEV_OFFLOAD_XSTATS_REPORT_DELTA:
++		return mlxsw_sp_router_port_l3_stats_report_delta(rif, info);
++	}
++
++	WARN_ON_ONCE(1);
++	return 0;
++}
++
+ int mlxsw_sp_netdevice_router_port_event(struct net_device *dev,
+ 					 unsigned long event, void *ptr)
+ {
+@@ -9151,6 +9429,15 @@ int mlxsw_sp_netdevice_router_port_event(struct net_device *dev,
+ 	case NETDEV_PRE_CHANGEADDR:
+ 		err = mlxsw_sp_router_port_pre_changeaddr_event(rif, ptr);
+ 		break;
++	case NETDEV_OFFLOAD_XSTATS_ENABLE:
++	case NETDEV_OFFLOAD_XSTATS_DISABLE:
++	case NETDEV_OFFLOAD_XSTATS_REPORT_USED:
++	case NETDEV_OFFLOAD_XSTATS_REPORT_DELTA:
++		err = mlxsw_sp_router_port_offload_xstats_cmd(rif, event, ptr);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		break;
+ 	}
+ 
+ out:
 -- 
 2.33.1
 
