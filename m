@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F334C37CD
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 22:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E2AA4C37D5
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 22:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234845AbiBXV3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 16:29:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54768 "EHLO
+        id S234964AbiBXVaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 16:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiBXV3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 16:29:48 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2051.outbound.protection.outlook.com [40.107.95.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B6D1A8054;
-        Thu, 24 Feb 2022 13:29:04 -0800 (PST)
+        with ESMTP id S234972AbiBXVaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 16:30:13 -0500
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2085.outbound.protection.outlook.com [40.107.95.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2627D1BE4EF;
+        Thu, 24 Feb 2022 13:29:21 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BebUuaRHxd4EeADd6QI8HIpxEDA5NMbpw/HVgE5QbOR1pfI1Mwl5oSDnYfl7TICDo9s22NYKuwpCwFe9mUqmj82V7pljhnPOa+XhkFfqno956ZPn4c24t73hObAbd5FPNIXdP0WQNyBcjsy8f35/3ZnhjuNDHZxKWhk8R+YnXHUwANCMD3WZFWHpdVqiJvD+CuBopddA0yXaGtOo4sB8hjTnYxgZpwb0A1ukmarAVBVqZ5xvLUSlDNvgGey+y+b96yQKK4opZCJy/Jf5JPpckOiIZ/kX2zBcwAzANohcLS+Cg+uRZTvFzEeL+/ZxbV3MEud5pPwHVZykaUwGLleyrQ==
+ b=AqQ1CJLNGCYwaNNrochh1LbK2KCcSph99+93axdMjXcmgtVUnU7vZzayqW0vMldHdsxsoWl+XbNDiUFPo/Mp8AALc5Xr/Rgg1YP5ImZ8jwE52oiOkzTOCbyPP6ra2lt6alzn1uTSujN70rcPoAWT2lzzlBfjozrs+H6JZCmdOOiBAfjnOANV5+UWWEvX7AdxYRkwebBSGoFgR4B0OhOLz2FxzolDC3NCpV+Rbjz5GzS9o75AFZ5agi4QpsHRGyo40SPHKptjEpVL+F6npGdvxZi5RV19eUFEPDt0fV5XoZuG3sBSZOuPOzon0h09EP1PBjANfAAbGxrjoU7Hiq1kJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZG5lz7A209qwT9pKY34E8+DEFd4STbJrexWdlQRfO/8=;
- b=NCreAmai5suiT6mEsy2/u0laF+ogCF2h4SDooY12uEJgE+zIXuAJqexcSaOat+MG0Xo/STBow1pUop2Yv4+gdeALuOfkrIHD4kZB+pjEFZrfT6vlvQDn7g+Z9kqiEf8W6yeRXWJ11Ko+R9SWsgW81jcE9Kpe8nqLSt6qWtTh+60dB/xH6xXxUNBWL9B7ons1w7hJmSS8uSk48/nZdQgpNaVQveZ0JzaFyoI1HvKZC57Fo6LrN/snB4xVIboPIUqg4sZKPRNeB0zrKS1gnu0vENVIaKh2CAy1Y1GFmbya/9wFoOK5CIj0MR4FZujdCrFgLF94voFgHrlvxoQZg6oq3g==
+ bh=WknOEB46P6HUrolnkHi7vdGXd7mgQc+akfqSibPSMt8=;
+ b=Mc7jTe2gU3oEbo1mLrRtkbWQaXCnFJRe3AKZW54by0xF/XI4gKJdr+ySKZR8zUU/g/0M0vk7wfcIPEXy2k4vQEaP7MGZ6HtTX0dZykn2e/nD8oAhJRKNakzwx09DnoGzXi3MERnpbiqlUXIl65hp3F1xH+fs1S8o1YyI31Fz8NkesDVYP3y5lycOIJNEQJa4TQN15fwBn8iufiIH2Nv9ASa6agB2gcuKI58MpEWKtvXcknEwuFz2eai2dIS010k1haKi+6QjOi0TCxgqPpg/9y4rRoKvOXuEDCHOUBk452OVOF9lnJ92WWHdFhZkhvBncLswUQDhvDx4+9npxcIFGQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -28,34 +28,35 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZG5lz7A209qwT9pKY34E8+DEFd4STbJrexWdlQRfO/8=;
- b=fcLKEgy9tBsF4aZt/d9YqrxDc+6l7C8DGMsQBnnJ4VO0ZHUYRv8GQHBc42RpibNsx0zvDisFHJv60qGqctuawUj1oGKfkyzo/BmxGsQhIfPVB7/yIm+Q8c2gwYuq+A+3h0kYx5AV6+bi/M6hcqYp4NwLnyg0kWtXri1kxos9XLo=
-Received: from DS7PR05CA0038.namprd05.prod.outlook.com (2603:10b6:8:2f::23) by
- BN7PR02MB4146.namprd02.prod.outlook.com (2603:10b6:406:f2::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5017.21; Thu, 24 Feb 2022 21:29:01 +0000
-Received: from DM3NAM02FT050.eop-nam02.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::9c) by DS7PR05CA0038.outlook.office365.com
- (2603:10b6:8:2f::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.9 via Frontend
- Transport; Thu, 24 Feb 2022 21:29:01 +0000
+ bh=WknOEB46P6HUrolnkHi7vdGXd7mgQc+akfqSibPSMt8=;
+ b=p7UqLyAt3dB9zNdPJVuHJn8luahTjKq0cwcL89GT9U3WuyUzR1ma+Ht5KSFtl0V4KQJOF/7y90i4b5d/VyHF+1E/FBtOb8L5rD4y3o6CMGsB1nI+OupVSgIud2hYB3LgxL+V4gz7czHE5jbPLNXjMUt4SSI/bZctr+/DHDTXz/k=
+Received: from DM6PR02CA0164.namprd02.prod.outlook.com (2603:10b6:5:332::31)
+ by MWHPR02MB2864.namprd02.prod.outlook.com (2603:10b6:300:108::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Thu, 24 Feb
+ 2022 21:29:18 +0000
+Received: from DM3NAM02FT028.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::30) by DM6PR02CA0164.outlook.office365.com
+ (2603:10b6:5:332::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21 via Frontend
+ Transport; Thu, 24 Feb 2022 21:29:18 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT050.mail.protection.outlook.com (10.13.5.53) with Microsoft SMTP
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT028.mail.protection.outlook.com (10.13.4.161) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:29:01 +0000
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:29:18 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 24 Feb 2022 13:28:45 -0800
+ 15.1.2176.14; Thu, 24 Feb 2022 13:29:04 -0800
 Received: from smtp.xilinx.com (172.19.127.95) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:28:45 -0800
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:29:04 -0800
 Envelope-to: eperezma@redhat.com,
  jasowang@redhat.com,
  mst@redhat.com,
@@ -73,7 +74,7 @@ Envelope-to: eperezma@redhat.com,
 Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <gautam.dawar@xilinx.com>)
-        id 1nNLfJ-00095B-C9; Thu, 24 Feb 2022 13:28:45 -0800
+        id 1nNLfc-00095B-7l; Thu, 24 Feb 2022 13:29:04 -0800
 From:   Gautam Dawar <gautam.dawar@xilinx.com>
 CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
         <tanujk@xilinx.com>, <eperezma@redhat.com>,
@@ -89,9 +90,9 @@ CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
         <virtualization@lists.linux-foundation.org>,
         <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
         <netdev@vger.kernel.org>
-Subject: [RFC PATCH v2 17/19] vdpa_sim: factor out buffer completion logic
-Date:   Fri, 25 Feb 2022 02:52:57 +0530
-Message-ID: <20220224212314.1326-18-gdawar@xilinx.com>
+Subject: [RFC PATCH v2 18/19] vdpa_sim: filter destination mac address
+Date:   Fri, 25 Feb 2022 02:52:58 +0530
+Message-ID: <20220224212314.1326-19-gdawar@xilinx.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
 References: <20201216064818.48239-1-jasowang@redhat.com>
@@ -101,24 +102,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 504567af-61d0-457c-b15a-08d9f7dcacb7
-X-MS-TrafficTypeDiagnostic: BN7PR02MB4146:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR02MB4146177B68D2C0537EE40BE9B13D9@BN7PR02MB4146.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 95ebf148-603b-430c-0b77-08d9f7dcb6f3
+X-MS-TrafficTypeDiagnostic: MWHPR02MB2864:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR02MB28649B0B78F7B95C19E814CEB13D9@MWHPR02MB2864.namprd02.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hkRym34rLuRB1TSNNLoBw/CoHyfYEPnBekGcrMDgEiANxsa7cPGeHQh73hhqSZ6NRIVBMupdlKmRBNra5QsYn4lWfva2jiOqDf+nFHP75FQCwppCCCgUcEbLI9e09Un7gS8umCq2ph8MOHhMWG6vI5dj7wtUS9pcxcIkqgiWOTyG7a8VehvGe/b8ldzTerjmDab2G3AkkfVegjvI/dp5NUUUydx1W6vlXQbRtCzf2c0L+M6hAIAyNOqkuKFz+Rsz1U3tlOOw92R376vblgYGr4xS7VxeNmzfByIXkCZH2+fD2Dv3IC3xv5ZrOTd8gX2PsefGTpOmOUoNzAiw3/E06UiXzSK7GgABWMdDQ/uaACdPNP5pkroVQaf8QnhUT9FlRZSqDdfsGvkuU3wYe/NMdEXXOOOeDgJdP1xtv+Q64oBtJQ8DfRq5RFIAs//MRNJt0NB3911I/b0A1Z35tdIxhYBMV5F530hVYi9qpru0EiTQB+aDzb4BkmNOiQ3cFP8X3QdBI8w+Bd6j8FKnezOlw1Z2E/fpsWjx+mVL9RvVqz4bua/q9n8z0svThWP0CsQDRfu7futy0HIv15jCEKkeUbjFx7+SLhfrT2psvYDJXMMf/5YEV/JE+uzVyTJHbwoQJN2X9que7VHyAmT6dylZpP1uSEcjkG2udlk87pXTu7okpxH46X0br1W7BcR+n5nyH42gWc5g2SPAriYGBwVwJw==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(7416002)(47076005)(4326008)(8676002)(82310400004)(8936002)(5660300002)(508600001)(7636003)(54906003)(356005)(1076003)(2616005)(9786002)(70586007)(36756003)(70206006)(7696005)(316002)(26005)(186003)(6666004)(83380400001)(2906002)(36860700001)(336012)(426003)(44832011)(109986005)(102446001)(266003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 7jkNOtryP3HLO0cDMpDUxuPwk4g6v48ECBbcecC6DCupr9cBo+wF2l4mjQ0CcBNNu4lQZDiOgIPUONPi77T0S0DOTB2o0/c/pfUSDszjdiTnP28cvgsj7OqpUAOCdh2iWngPaJHpH/+XML+Qilz4fzSdjoAL+Cib7AFn8GFq2u+f43ks9gHrEe/aMDU5OuaHPfv6TRdimGkdVU03eX5b/WswUxSD9hH1Z1HJPGatdbr645X3cwlPFrDbZJVCmobHgiu6aVyMbMeBVelHIODk8wWyZ0dJR0UQ2t+wZnoJJA0TtIbaxBNbeo0v7NgDsnbMfSRU9DaX7Q/aTOcKLgGv3mo5rHtAOrAlUhZ40J0uk/y5lJJnRRL3h230KZ6IV8NCsKebMVQXyMM4JjPlvDNlZMzLTGT+qf0jlmVU9oNdeHWPOU073+yNYuVDaK3RNQFNy9Dx8jBOiHgZdqruxFa3m6pCiHhaeAsyFkobTqlB0tF7gxOB6QZVxhg6WKj9wZ8a5l8tQo3pyCR0gu473su+oFeeai1QEQHWYgctZ3q7NxGCX9+riC7i/l0bi6Qzw/X5kqgz7XrsDGYYdDBWxfyxLt0h1sZXWSrTx6owztlkbSaus/daonTjweAo2VK3Mc4cyMRGwqJbhmwVh79DAdUVPmYdPSHbh3XiZaPKJq7y92xWbsqi0kzs9NvjNPfGLcUWcFd1T00CCxaA8rtzbpE+4SfzkdUjWXXNrc2ugtfZzJk=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(356005)(6666004)(7636003)(44832011)(7696005)(9786002)(2906002)(186003)(40460700003)(26005)(8936002)(109986005)(54906003)(47076005)(336012)(8676002)(83380400001)(82310400004)(2616005)(508600001)(70586007)(70206006)(4326008)(316002)(1076003)(7416002)(36860700001)(36756003)(5660300002)(426003)(102446001)(266003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:29:01.1283
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:29:18.3101
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 504567af-61d0-457c-b15a-08d9f7dcacb7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95ebf148-603b-430c-0b77-08d9f7dcb6f3
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT050.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT028.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR02MB4146
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR02MB2864
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -129,62 +130,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wrap up common buffer completion logic in to vdpasim_net_complete
+This patch implements a simple unicast filter for vDPA simulator.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 33 +++++++++++++++-------------
- 1 file changed, 18 insertions(+), 15 deletions(-)
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 49 ++++++++++++++++++----------
+ 1 file changed, 31 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-index ff22cc56f40b..05d552cb7f94 100644
+index 05d552cb7f94..ed5ade4ae570 100644
 --- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
 +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-@@ -31,6 +31,22 @@
+@@ -47,13 +47,28 @@ static void vdpasim_net_complete(struct vdpasim_virtqueue *vq, size_t len)
+ 	local_bh_enable();
+ }
  
- #define VDPASIM_NET_VQ_NUM	2
- 
-+static void vdpasim_net_complete(struct vdpasim_virtqueue *vq, size_t len)
++static bool receive_filter(struct vdpasim *vdpasim, size_t len)
 +{
-+	/* Make sure data is wrote before advancing index */
-+	smp_wmb();
++	bool modern = vdpasim->features & (1ULL << VIRTIO_F_VERSION_1);
++	size_t hdr_len = modern ? sizeof(struct virtio_net_hdr_v1) :
++				  sizeof(struct virtio_net_hdr);
 +
-+	vringh_complete_iotlb(&vq->vring, vq->head, len);
++	if (len < ETH_ALEN + hdr_len)
++		return false;
 +
-+	/* Make sure used is visible before rasing the interrupt. */
-+	smp_wmb();
++	if (!strncmp(vdpasim->buffer + hdr_len,
++		     vdpasim->config.mac, ETH_ALEN))
++		return true;
 +
-+	local_bh_disable();
-+	if (vringh_need_notify_iotlb(&vq->vring) > 0)
-+		vringh_notify(&vq->vring);
-+	local_bh_enable();
++	return false;
 +}
 +
  static void vdpasim_net_work(struct work_struct *work)
  {
  	struct vdpasim *vdpasim = container_of(work, struct vdpasim, work);
-@@ -78,21 +94,8 @@ static void vdpasim_net_work(struct work_struct *work)
- 			total_write += write;
+ 	struct vdpasim_virtqueue *txq = &vdpasim->vqs[1];
+ 	struct vdpasim_virtqueue *rxq = &vdpasim->vqs[0];
+ 	ssize_t read, write;
+-	size_t total_write;
+ 	int pkts = 0;
+ 	int err;
+ 
+@@ -66,36 +81,34 @@ static void vdpasim_net_work(struct work_struct *work)
+ 		goto out;
+ 
+ 	while (true) {
+-		total_write = 0;
+ 		err = vringh_getdesc_iotlb(&txq->vring, &txq->out_iov, NULL,
+ 					   &txq->head, GFP_ATOMIC);
+ 		if (err <= 0)
+ 			break;
+ 
++		read = vringh_iov_pull_iotlb(&txq->vring, &txq->out_iov,
++					     vdpasim->buffer,
++					     PAGE_SIZE);
++
++		if (!receive_filter(vdpasim, read)) {
++			vdpasim_complete(txq, 0);
++			continue;
++		}
++
+ 		err = vringh_getdesc_iotlb(&rxq->vring, NULL, &rxq->in_iov,
+ 					   &rxq->head, GFP_ATOMIC);
+ 		if (err <= 0) {
+-			vringh_complete_iotlb(&txq->vring, txq->head, 0);
++			vdpasim_net_complete(txq, 0);
+ 			break;
  		}
  
--		/* Make sure data is wrote before advancing index */
--		smp_wmb();
+-		while (true) {
+-			read = vringh_iov_pull_iotlb(&txq->vring, &txq->out_iov,
+-						     vdpasim->buffer,
+-						     PAGE_SIZE);
+-			if (read <= 0)
+-				break;
 -
--		vringh_complete_iotlb(&txq->vring, txq->head, 0);
--		vringh_complete_iotlb(&rxq->vring, rxq->head, total_write);
+-			write = vringh_iov_push_iotlb(&rxq->vring, &rxq->in_iov,
+-						      vdpasim->buffer, read);
+-			if (write <= 0)
+-				break;
 -
--		/* Make sure used is visible before rasing the interrupt. */
--		smp_wmb();
--
--		local_bh_disable();
--		if (vringh_need_notify_iotlb(&txq->vring) > 0)
--			vringh_notify(&txq->vring);
--		if (vringh_need_notify_iotlb(&rxq->vring) > 0)
--			vringh_notify(&rxq->vring);
--		local_bh_enable();
-+		vdpasim_net_complete(txq, 0);
-+		vdpasim_net_complete(rxq, total_write);
+-			total_write += write;
+-		}
++		write = vringh_iov_push_iotlb(&rxq->vring, &rxq->in_iov,
++					      vdpasim->buffer, read);
++		if (write <= 0)
++			break;
+ 
+ 		vdpasim_net_complete(txq, 0);
+-		vdpasim_net_complete(rxq, total_write);
++		vdpasim_net_complete(rxq, write);
  
  		if (++pkts > 4) {
  			schedule_work(&vdpasim->work);
