@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83FB24C3787
-	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 22:23:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FBBB4C3789
+	for <lists+netdev@lfdr.de>; Thu, 24 Feb 2022 22:23:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234629AbiBXVX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 16:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
+        id S234687AbiBXVYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 16:24:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231464AbiBXVX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 16:23:57 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B12158DB6;
-        Thu, 24 Feb 2022 13:23:25 -0800 (PST)
+        with ESMTP id S234661AbiBXVYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 16:24:13 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2056.outbound.protection.outlook.com [40.107.243.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AF8199E26;
+        Thu, 24 Feb 2022 13:23:42 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OUWpJRcEAj+mZPxdQAu7jPfMbur7odARG3ygkqfQeO9RBK8xcSRxL1KiJ6y4MXBir2MbyO0FSR+zQdMpvV0uXfDANBr/cUh8tLrVB4ze2AZUhzHvaYfSS2BzLZPZDWt1cqKtVLbSqAOe3uaPemPXuUF8d5YEaCdsMzHB7OZfMFb0copt5/zYNy9XiPwEXSmnAHj8aiX3FEW/kmqNHz98EKh8+scRszSCFfkUv+NkS2ceQ4pRpsdtIcP2OSxMIhQsnGZliiHXuH7wG9qXZHZrGiajlC6tC9txwQJul7bkvsiT/9nkwrJw4gST8QQiJRYtPwcw563U6bjjxPV1MOaX4A==
+ b=GC6vtxZg7KaqPki4lbz+z4EPGv4DSH2CvjeiB3/Qax94wOxR6biAs50sEOi5x6RGc8bFhRvqdHf9Hc7PIgnOaKQtbHeqmf0DRxALxQV0mOBhSj/9ht4clzRU/wTwb1OohQswxGOPR5p9JMk1dQC00AVGt8EeRj9aBWpSeoE3gFtovAqxirZ7hQMamkqZ8TbihtWGvjrN3LEk2ubp+rxjQ3F9wezug2QLuv8RkAbPVT6BStqsKmrjUCu0T5q5GGq5SizuutDi7Fn+DkGLDabaiCU6H6Nnd8qEGu0qQ1oP4vXD4p3gg7AYfNdX6LnXVcb38MmgFbGgXNUO2PV2xHK7oA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mL2St3CLEm5G9/8a999sggz0g6fdbQcwsjbuzahvB1U=;
- b=fdItSWH8XDrPYHzCmyjjjj5SuF8wY5sW80OrVTOLNxWgrKsCuJrm6MUAB73CDYoP9jhFfpv0lEuckiq98xhVc//EqTfSaphpaRHDEpRAqVpftwYcG1tCe6BHY879lRkviJHe9BAGWioiSU14QZW/sRpSHYNZI8PMg5mn0NMaiTckO1W/pt1s8cP1jIK4/1UafB1aT2YYRC4X/JdIqsuZXoh45YT5WoKhREd9ddkbPUy54xVY6laO9MliefsajOn0fQcA9StjXrjwBM8ePjDgPTBN6hcG1HG5/SC0EUnpKncPizXw+YMPFlw6sOmGZ7fscPrAPaH2IuUBzNVWoOAOkw==
+ bh=MrP/sb71w7FsTtptDQPu5syiA7OiYWzzUM1QutLuIdk=;
+ b=exTPRjj4szVw55fBSSTMUyXVt8GLYL6gmlHFNPUAxcuQf5J89hQI7Cn6Bgvb1r0m/b0F0L2+lnfBT2FISDufhFzZNi2YU8MW/fY84/atBnHjjiDAWJIMYYCvXsD3h7UeF2CT5R2wdJt0tMuruzdgDc7qV9tmWI1L5kSxBGZmY4xvOii0k6ChG0F3q36c9jXt0O3/CEiQfHbv7zoi9QfTwfStcHLuhbIDFfir4w8V2x3XCScO5/dCqikcS+DW7vpL9uyFV8lG4Y53M89/WDfrpZmn4+wg3SRpumG+g/t0V9LhPnQavVvTqozFzflq8Vx2FqR5pqilGl+9SgkhHuF5UA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -28,38 +28,37 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mL2St3CLEm5G9/8a999sggz0g6fdbQcwsjbuzahvB1U=;
- b=FUg4QJ7C+c7mQxCtUqU6atwBb9plSrt027EPq+vlPuieGBr03C3bGgOwu4iPvCYpgKeSnnrD/AJvGyLACiNBZPlce8A6NXq5UfHTNoAZOVqnUT7pARwy/9iLWO53hZ4pIy09QSXjq2ogvc7ipSfIL1D1UKxKTB5j+GxdWA7USLY=
-Received: from DM3PR14CA0140.namprd14.prod.outlook.com (2603:10b6:0:53::24) by
- BL3PR02MB7955.namprd02.prod.outlook.com (2603:10b6:208:356::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Thu, 24 Feb
- 2022 21:23:23 +0000
-Received: from DM3NAM02FT058.eop-nam02.prod.protection.outlook.com
- (2603:10b6:0:53:cafe::63) by DM3PR14CA0140.outlook.office365.com
- (2603:10b6:0:53::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.23 via Frontend
- Transport; Thu, 24 Feb 2022 21:23:23 +0000
+ bh=MrP/sb71w7FsTtptDQPu5syiA7OiYWzzUM1QutLuIdk=;
+ b=nCSx9kOuK5QzpxWV5Q0k/x3V4gOSVxczifAfrwz47Xmj5CMF+tMLU7tniKBtH66yOhU3Zbct+O7x47Ifj7KV8qz1i4AFC8l+05OHis4gyVc2L3WcSD6yW5ZL6gWbG5RfwKwzt1Elznf5renyemW8/2ow2wPkMdBa/zffld5mZeY=
+Received: from DM5PR21CA0025.namprd21.prod.outlook.com (2603:10b6:3:ed::11) by
+ BN8PR02MB5858.namprd02.prod.outlook.com (2603:10b6:408:bc::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5017.22; Thu, 24 Feb 2022 21:23:40 +0000
+Received: from DM3NAM02FT023.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:3:ed:cafe::b6) by DM5PR21CA0025.outlook.office365.com
+ (2603:10b6:3:ed::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.9 via Frontend
+ Transport; Thu, 24 Feb 2022 21:23:40 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT058.mail.protection.outlook.com (10.13.5.42) with Microsoft SMTP
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT023.mail.protection.outlook.com (10.13.5.127) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:23:22 +0000
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:23:40 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 24 Feb 2022 13:23:21 -0800
+ 15.1.2176.14; Thu, 24 Feb 2022 13:23:39 -0800
 Received: from smtp.xilinx.com (172.19.127.95) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:23:21 -0800
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:23:39 -0800
 Envelope-to: eperezma@redhat.com,
- mst@redhat.com,
  jasowang@redhat.com,
+ mst@redhat.com,
  lingshan.zhu@intel.com,
  sgarzare@redhat.com,
  xieyongji@bytedance.com,
@@ -74,12 +73,12 @@ Envelope-to: eperezma@redhat.com,
 Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <gautam.dawar@xilinx.com>)
-        id 1nNLa4-00095B-GJ; Thu, 24 Feb 2022 13:23:21 -0800
+        id 1nNLaN-00095B-9q; Thu, 24 Feb 2022 13:23:39 -0800
 From:   Gautam Dawar <gautam.dawar@xilinx.com>
 CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
         <tanujk@xilinx.com>, <eperezma@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Zhu Lingshan <lingshan.zhu@intel.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
         Xie Yongji <xieyongji@bytedance.com>,
@@ -90,35 +89,36 @@ CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
         <virtualization@lists.linux-foundation.org>,
         <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
         <netdev@vger.kernel.org>
-Subject: [RFC PATCH v2 00/19] Control VQ support in vDPA
-Date:   Fri, 25 Feb 2022 02:52:40 +0530
-Message-ID: <20220224212314.1326-1-gdawar@xilinx.com>
+Subject: [RFC PATCH v2 01/19] vhost: move the backend feature bits to vhost_types.h
+Date:   Fri, 25 Feb 2022 02:52:41 +0530
+Message-ID: <20220224212314.1326-2-gdawar@xilinx.com>
 X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20201216064818.48239-1-jasowang@redhat.com>
+In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
 References: <20201216064818.48239-1-jasowang@redhat.com>
+ <20220224212314.1326-1-gdawar@xilinx.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d9ea84de-a45b-42d3-a4d8-08d9f7dbe31c
-X-MS-TrafficTypeDiagnostic: BL3PR02MB7955:EE_
-X-Microsoft-Antispam-PRVS: <BL3PR02MB795538E34B2E191119CCB656B13D9@BL3PR02MB7955.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 58cbde5b-8e7a-4754-b5ea-08d9f7dbed8c
+X-MS-TrafficTypeDiagnostic: BN8PR02MB5858:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR02MB58587722F6FE0D2C57E79CEAB13D9@BN8PR02MB5858.namprd02.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: b2ahp0hco8qnk4s0ExzoTB8drSmKloa6OUhuFZHHOVCLiQWFckWJs870cmFy0KfnFe47QFHW0jDfpFRSHdv5s6n1wA6ERUtd3BB8p4CxWA39uqivv1XB7Ld1vQQ+Zb9kcpwBTWhQZ1hfc6Mo6oAmM54o/UJLXAxSunGJEZdZ1bYLcQK4hD7WmHGsUnNu8B62duuTDWpPPmc6vZPCndQo594RotfmqB7BzE7NFpVblfZKYcstpoCUlojR07uw7KwQgjhiJQPXbbXJHPt4mvAb3AyAQIlkahW5bIr6sxgVKIR4AKDn/nuHbhGL8uFBAnYS6uIr+5yKjaDuau+qBvN4iGXInS4ncc0Ni6PJMNaYRjLVhuJWzod20FIvAXVWKlVNOvLrC2xmL+i4OAloSFK+SvFKs6VTO6FgeOTE33U+NxVP+89MlD1BJsawlZUoavZC3AEJ8WV+UzaYY3I0bYjuQyOQcLCKRPbTuVQYUuyQxjoSbXsYRtxm8/ZJY2LL60DijvcL+GiomVp7GhJpzhP1dq6joMbwcqK9DaeshnKTDS9EndomKTI2Iau8XWCB9Ta4BE/2VvhdTyyIwYh0oFucm1rLPm16zEmVRiN1djCoTuRJIseACWwROChqmu3vxa3ZeHDBMs4g/Vi1xOJRh4G5Bk0m91fc1ogNmENXfgF2Hpe86suNGp3AVkevjjRQ4cPEII0NHe0IJTO+zcMMEqHxc8tj2MOpBY8ekaP0MOs3jOUe11qCDeB9C1xtxhRKQLL6cjK/orjTTyP+V8e4a2sAUEFigX7E7eYJYmi4qrToGOy5lgUd+a3KAR16jXF+qjG844zKFp3MBCnnZddtfuJNFJd9cY6bgomMKX+oK1tjf90=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(44832011)(36756003)(54906003)(316002)(186003)(26005)(83380400001)(47076005)(356005)(7416002)(7696005)(6666004)(7636003)(1076003)(5660300002)(336012)(426003)(109986005)(40460700003)(2906002)(2616005)(70586007)(70206006)(8676002)(4326008)(508600001)(82310400004)(84970400001)(36860700001)(8936002)(9786002)(102446001)(266003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: yVWhzG+z/gxCel4nSSiuZs+eHnlPiSWv/IVjNy7Thq6IqDzglaA68VwenrhzHWYyfG6nWqfJQzZ2dKEtShr/k0BEr4uumKf0DODObEJuxzGw/DTpD90AjWUGx+IpY820SIsBMI/HyhzR613SeoietuAKTGfgsmG2ffmbbT556pboOqdLImlvvr7IlsoQRZkVlZGGskjP8EQTi72akWzh8JMXS8eoEV0G66jCUIYx1cE3uWw+/UbnM6fA45xS9LIDS1HY7BukexSntcDu+V6TEjKlIMnOxfrscSXWm3nXgUHQKg3AGM1+wcdkKOkAjn0mg6DHKrt2nnaEhOkEy3QXBBy4CW8BehD3YoaMhoL1Nh0lKuaiPjTafOzmxjMi6bv8VobsPdRQc1YU8SAb+P3tnnhDMgtL4XfIbjDOHKD0F4QZ6s0QGWoO4buEcn1bxp64wJtRpqpV4+73VbERFZjj4aIPCHxOUweBcZofIjG7JLc5KDKgDy0C2OFprDZE8bIRw5YlNSXXx3GRouCDV/g5Tnjg/SxSujFzluUxOT3DYeAmDgI0MQA/+H9tvgYg9RY3p5tg9BcGCe7vu0bOBhNM7KfIDHNF053LLazqAbxT+UpS7N8r9MD4+mPNIU25Xjczh1OPGVXseKA2Ckx5X8h4VvjzJXAOOYzpo/uDu6W8IKdz8eKKSHQmwdRwnfcBDSZD7hs4msLMGc30hUxk29dFwQ==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(36756003)(2616005)(26005)(186003)(82310400004)(70206006)(70586007)(356005)(7636003)(109986005)(1076003)(4326008)(8676002)(2906002)(336012)(426003)(54906003)(316002)(47076005)(83380400001)(9786002)(8936002)(7696005)(7416002)(36860700001)(44832011)(508600001)(6666004)(5660300002)(102446001)(266003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:23:22.8902
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:23:40.4018
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9ea84de-a45b-42d3-a4d8-08d9f7dbe31c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58cbde5b-8e7a-4754-b5ea-08d9f7dbed8c
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT058.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT023.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR02MB7955
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR02MB5858
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -129,140 +129,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All:
+We should store feature bits in vhost_types.h as what has been done
+for e.g VHOST_F_LOG_ALL.
 
-This series tries to add the support for control virtqueue in vDPA.
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+---
+ include/uapi/linux/vhost.h       | 5 -----
+ include/uapi/linux/vhost_types.h | 5 +++++
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Control virtqueue is used by networking device for accepting various
-commands from the driver. It's a must to support multiqueue and other
-configurations.
-
-When used by vhost-vDPA bus driver for VM, the control virtqueue
-should be shadowed via userspace VMM (Qemu) instead of being assigned
-directly to Guest. This is because Qemu needs to know the device state
-in order to start and stop device correctly (e.g for Live Migration).
-
-This requies to isolate the memory mapping for control virtqueue
-presented by vhost-vDPA to prevent guest from accessing it directly.
-
-To achieve this, vDPA introduce two new abstractions:
-
-- address space: identified through address space id (ASID) and a set
-                 of memory mapping in maintained
-- virtqueue group: the minimal set of virtqueues that must share an
-                 address space
-
-Device needs to advertise the following attributes to vDPA:
-
-- the number of address spaces supported in the device
-- the number of virtqueue groups supported in the device
-- the mappings from a specific virtqueue to its virtqueue groups
-
-The mappings from virtqueue to virtqueue groups is fixed and defined
-by vDPA device driver. E.g:
-
-- For the device that has hardware ASID support, it can simply
-  advertise a per virtqueue virtqueue group.
-- For the device that does not have hardware ASID support, it can
-  simply advertise a single virtqueue group that contains all
-  virtqueues. Or if it wants a software emulated control virtqueue, it
-  can advertise two virtqueue groups, one is for cvq, another is for
-  the rest virtqueues.
-
-vDPA also allow to change the association between virtqueue group and
-address space. So in the case of control virtqueue, userspace
-VMM(Qemu) may use a dedicated address space for the control virtqueue
-group to isolate the memory mapping.
-
-The vhost/vhost-vDPA is also extend for the userspace to:
-
-- query the number of virtqueue groups and address spaces supported by
-  the device
-- query the virtqueue group for a specific virtqueue
-- assocaite a virtqueue group with an address space
-- send ASID based IOTLB commands
-
-This will help userspace VMM(Qemu) to detect whether the control vq
-could be supported and isolate memory mappings of control virtqueue
-from the others.
-
-To demonstrate the usage, vDPA simulator is extended to support
-setting MAC address via a emulated control virtqueue.
-
-Please review.
-
-Changes since v1:
-
-- Rebased the v1 patch series on vhost branch of MST vhost git repo
-  git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/log/?h=vhost
-- Updates to accommodate vdpa_sim changes from monolithic module in
-  kernel used v1 patch series to current modularized class (net, block)
-  based approach.
-- Added new attributes (ngroups and nas) to "vdpasim_dev_attr" and
-  propagated them from vdpa_sim_net to vdpa_sim
-- Widened the data-type for "asid" member of vhost_msg_v2 to __u32
-  to accommodate PASID
-- Fixed the buildbot warnings
-- Resolved all checkpatch.pl errors and warnings
-- Tested both control and datapath with Xilinx Smartnic SN1000 series
-  device using QEMU implementing the Shadow virtqueue and support for
-  VQ groups and ASID available at:
-  github.com/eugpermar/qemu/releases/tag/vdpa_sw_live_migration.d%2F
-  asid_groups-v1.d%2F00
-
-Changes since RFC:
-
-- tweak vhost uAPI documentation
-- switch to use device specific IOTLB really in patch 4
-- tweak the commit log
-- fix that ASID in vhost is claimed to be 32 actually but 16bit
-  actually
-- fix use after free when using ASID with IOTLB batching requests
-- switch to use Stefano's patch for having separated iov
-- remove unused "used_as" variable
-- fix the iotlb/asid checking in vhost_vdpa_unmap()
-
-Thanks
-
-Gautam Dawar (19):
-  vhost: move the backend feature bits to vhost_types.h
-  virtio-vdpa: don't set callback if virtio doesn't need it
-  vhost-vdpa: passing iotlb to IOMMU mapping helpers
-  vhost-vdpa: switch to use vhost-vdpa specific IOTLB
-  vdpa: introduce virtqueue groups
-  vdpa: multiple address spaces support
-  vdpa: introduce config operations for associating ASID to a virtqueue
-    group
-  vhost_iotlb: split out IOTLB initialization
-  vhost: support ASID in IOTLB API
-  vhost-vdpa: introduce asid based IOTLB
-  vhost-vdpa: introduce uAPI to get the number of virtqueue groups
-  vhost-vdpa: introduce uAPI to get the number of address spaces
-  vhost-vdpa: uAPI to get virtqueue group id
-  vhost-vdpa: introduce uAPI to set group ASID
-  vhost-vdpa: support ASID based IOTLB API
-  vdpa_sim: advertise VIRTIO_NET_F_MTU
-  vdpa_sim: factor out buffer completion logic
-  vdpa_sim: filter destination mac address
-  vdpasim: control virtqueue support
-
- drivers/vdpa/ifcvf/ifcvf_main.c      |   8 +-
- drivers/vdpa/mlx5/net/mlx5_vnet.c    |  11 +-
- drivers/vdpa/vdpa.c                  |   5 +
- drivers/vdpa/vdpa_sim/vdpa_sim.c     | 100 ++++++++--
- drivers/vdpa/vdpa_sim/vdpa_sim.h     |   3 +
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 169 +++++++++++++----
- drivers/vhost/iotlb.c                |  23 ++-
- drivers/vhost/vdpa.c                 | 272 +++++++++++++++++++++------
- drivers/vhost/vhost.c                |  23 ++-
- drivers/vhost/vhost.h                |   4 +-
- drivers/virtio/virtio_vdpa.c         |   2 +-
- include/linux/vdpa.h                 |  46 ++++-
- include/linux/vhost_iotlb.h          |   2 +
- include/uapi/linux/vhost.h           |  25 ++-
- include/uapi/linux/vhost_types.h     |  11 +-
- 15 files changed, 566 insertions(+), 138 deletions(-)
-
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index c998860d7bbc..59c6c0fbaba1 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -89,11 +89,6 @@
+ 
+ /* Set or get vhost backend capability */
+ 
+-/* Use message type V2 */
+-#define VHOST_BACKEND_F_IOTLB_MSG_V2 0x1
+-/* IOTLB can accept batching hints */
+-#define VHOST_BACKEND_F_IOTLB_BATCH  0x2
+-
+ #define VHOST_SET_BACKEND_FEATURES _IOW(VHOST_VIRTIO, 0x25, __u64)
+ #define VHOST_GET_BACKEND_FEATURES _IOR(VHOST_VIRTIO, 0x26, __u64)
+ 
+diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
+index f7f6a3a28977..76ee7016c501 100644
+--- a/include/uapi/linux/vhost_types.h
++++ b/include/uapi/linux/vhost_types.h
+@@ -153,4 +153,9 @@ struct vhost_vdpa_iova_range {
+ /* vhost-net should add virtio_net_hdr for RX, and strip for TX packets. */
+ #define VHOST_NET_F_VIRTIO_NET_HDR 27
+ 
++/* Use message type V2 */
++#define VHOST_BACKEND_F_IOTLB_MSG_V2 0x1
++/* IOTLB can accept batching hints */
++#define VHOST_BACKEND_F_IOTLB_BATCH  0x2
++
+ #endif
 -- 
 2.25.0
 
