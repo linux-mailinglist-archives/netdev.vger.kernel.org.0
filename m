@@ -2,123 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 202734C47C7
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 15:39:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D76864C47E6
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 15:52:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235539AbiBYOic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 09:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
+        id S241792AbiBYOwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 09:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239747AbiBYOib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 09:38:31 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A26186472
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:37:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+10PHnZwlMCuEjX0z4v6J0Xiy1/D1rYx69ZfCW/9l8s=; b=csDFu7dppUPi6U/PhtQ6ky6rnv
-        73c2SYesp0KRiVOQsCRlRd8zsELXTgB+M/K62KsIhJwcp7vUcbD0z5N/FRixinrMgA/mxA75n0KIP
-        9uO9JXhj5Ocq6hFuC5z+m39UXfnqm9rNnT+wSfIznAuvI7QFU/PPrfDbh4/0MjK3BCuRC++KxW5zu
-        UCRFW0eprMZyY2JNN9tb7AM6Riuk/MxbSVyu/B6FnxwXei+/7/gmXpmGap69fwCApfOwaE+TuRFiP
-        idpF6AkX9FGsj98tddPl9H/uezJwjTi6idAsUvFHPv8+yn/tB/QmTGv6k/g/Y6LcJumyO+sqRoOCo
-        7h0sSHug==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57494)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nNbjE-0005Xh-E6; Fri, 25 Feb 2022 14:37:52 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nNbjC-00038x-Bk; Fri, 25 Feb 2022 14:37:50 +0000
-Date:   Fri, 25 Feb 2022 14:37:50 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S232351AbiBYOwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 09:52:43 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD0D7DAA4
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:52:10 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id x15so4892082wrg.8
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:52:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kWNJFv+kMEnE9Dxh62unLUJ0LcsDnY4dVicW9EOH0i4=;
+        b=iZMhV5/QELmvIeOH2Qgx9n3aAlYGyRzw6kaLem4I7NHZibnbQNWq7ekm7teCLFhyEM
+         QWiyDMzasNIuIgPd7K54xumaEiLiXTQKy3aNY+WH6slTE2JtvOaPIaZ3rgig/mLPTz6K
+         oonmLPYnZkjUtjqzJbhBymwlMj/tYaGikGLwsGWPEAJgmoNxJ8WMiCtE2Wnth+uUx4A4
+         1xM2UN22xJljXMsS1gTkYfmx8U8pXo5PnF+4QaDMCCarCqGs02IZN1kK10pCyoRUEQpe
+         NcluEC/zbQV1cbGqxbMcKTVSzcuUjngBjnkNZBxucYUgKczwtOO5TqFnJWCdLWCRJqFm
+         QzZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kWNJFv+kMEnE9Dxh62unLUJ0LcsDnY4dVicW9EOH0i4=;
+        b=J0bTMLytTz8LGwwp96YscJ9ekmmJjULK5wAox2kueNwFyMSDXA0Too8BwrQTLkN1RQ
+         wppRtXnTOXNWwci6ZXf1iZanNxzIt9Z9TvRg5D0IPm66C2PqtwjiTiXrdx3DnGiMQk8l
+         aojGaV16FaeKzhcizXsdyOZmsBERqVpeZtwwWcixZPfpYYtfZHNK0VgWs3FrGIagr7pG
+         Fc1iOD5d8VviWtbZSWwccpL48FaN3vzzMMn9j80sAf+n5jaFuVdhLW06BnUQ/h4YzwnL
+         HIXJ1cy0HZdsW5Cqj3kcgrNVStHW5JB8qmQ7EzoHSzHyC2LXKaLfRRAKUQzhR67R0xv6
+         kaDQ==
+X-Gm-Message-State: AOAM530lzxhFLW8AnUltvPE+WVANNGMCQM1qreTKhX13Umdt0LYJCtw8
+        D5tlDDnYN6w2lTY3Nj4dtdIstg==
+X-Google-Smtp-Source: ABdhPJzBkXlOmGJJ9f+XilDRbI4gd1rN8x8QBewSSUpIv1rpNiD1PWlxhirrYPz94vUXUi4e5N6MQw==
+X-Received: by 2002:a5d:5889:0:b0:1e3:3ef9:213 with SMTP id n9-20020a5d5889000000b001e33ef90213mr6392019wrf.324.1645800728589;
+        Fri, 25 Feb 2022 06:52:08 -0800 (PST)
+Received: from localhost.localdomain ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id b15-20020adfc74f000000b001e888b871a0sm2527700wrh.87.2022.02.25.06.52.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 06:52:08 -0800 (PST)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Dmitry Safonov <dima@arista.com>,
+        Mobashshera Rasool <mobash.rasool.linux@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 2/4] net: dsa: ocelot: remove interface
- checks
-Message-ID: <Yhjpvn1BIdtLOsMH@shell.armlinux.org.uk>
-References: <Yhjo4nwmEZJ/RsJ/@shell.armlinux.org.uk>
- <E1nNbgn-00Akik-MJ@rmk-PC.armlinux.org.uk>
+Subject: [PATCH net-next v2] net/ip6mr: Fix build with !CONFIG_IPV6_PIMSM_V2
+Date:   Fri, 25 Feb 2022 14:52:06 +0000
+Message-Id: <20220225145206.561409-1-dima@arista.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1nNbgn-00Akik-MJ@rmk-PC.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 02:35:21PM +0000, Russell King (Oracle) wrote:
-> When the supported interfaces bitmap is populated, phylink will itself
-> check that the interface mode is present in this bitmap. Drivers no
-> longer need to perform this check themselves. Remove these checks.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+The following build-error on my config:
+net/ipv6/ip6mr.c: In function ‘ip6_mroute_setsockopt’:
+net/ipv6/ip6mr.c:1656:14: error: unused variable ‘do_wrmifwhole’ [-Werror=unused-variable]
+ 1656 |         bool do_wrmifwhole;
+      |              ^
 
-Sorry, just realised I should've deleted "ocelot_port" here as well, for
-some reason my build testing didn't find that. Please assume that I've
-deleted it (I've updated the patch locally.) Thanks.
+Cc: Mobashshera Rasool <mobash.rasool.linux@gmail.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Fixes: 4b340a5a726d
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+v2: move the (v == MRT6MSG_WRMIFWHOLE) check under if (v != mrt->mroute_do_pim)
 
-> ---
->  drivers/net/dsa/ocelot/felix_vsc9959.c   | 6 ------
->  drivers/net/dsa/ocelot/seville_vsc9953.c | 6 ------
->  2 files changed, 12 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> index a1be0e91dde6..4c635c46705e 100644
-> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> @@ -956,12 +956,6 @@ static void vsc9959_phylink_validate(struct ocelot *ocelot, int port,
->  	struct ocelot_port *ocelot_port = ocelot->ports[port];
->  	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
->  
-> -	if (state->interface != PHY_INTERFACE_MODE_NA &&
-> -	    state->interface != ocelot_port->phy_mode) {
-> -		linkmode_zero(supported);
-> -		return;
-> -	}
-> -
->  	phylink_set_port_modes(mask);
->  	phylink_set(mask, Autoneg);
->  	phylink_set(mask, Pause);
-> diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> index 2db51494b1a9..0ae8424c47e2 100644
-> --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-> +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-> @@ -929,12 +929,6 @@ static void vsc9953_phylink_validate(struct ocelot *ocelot, int port,
->  	struct ocelot_port *ocelot_port = ocelot->ports[port];
->  	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
->  
-> -	if (state->interface != PHY_INTERFACE_MODE_NA &&
-> -	    state->interface != ocelot_port->phy_mode) {
-> -		linkmode_zero(supported);
-> -		return;
-> -	}
-> -
->  	phylink_set_port_modes(mask);
->  	phylink_set(mask, Autoneg);
->  	phylink_set(mask, Pause);
-> -- 
-> 2.30.2
-> 
-> 
+ net/ipv6/ip6mr.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index a9775c830194..9292f067c829 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -1653,7 +1653,6 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
+ 	mifi_t mifi;
+ 	struct net *net = sock_net(sk);
+ 	struct mr_table *mrt;
+-	bool do_wrmifwhole;
+ 
+ 	if (sk->sk_type != SOCK_RAW ||
+ 	    inet_sk(sk)->inet_num != IPPROTO_ICMPV6)
+@@ -1761,6 +1760,7 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
+ #ifdef CONFIG_IPV6_PIMSM_V2
+ 	case MRT6_PIM:
+ 	{
++		bool do_pim;
+ 		int v;
+ 
+ 		if (optlen != sizeof(v))
+@@ -1768,14 +1768,14 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
+ 		if (copy_from_sockptr(&v, optval, sizeof(v)))
+ 			return -EFAULT;
+ 
+-		do_wrmifwhole = (v == MRT6MSG_WRMIFWHOLE);
+-		v = !!v;
++		do_pim = !!v;
++
+ 		rtnl_lock();
+ 		ret = 0;
+-		if (v != mrt->mroute_do_pim) {
+-			mrt->mroute_do_pim = v;
+-			mrt->mroute_do_assert = v;
+-			mrt->mroute_do_wrvifwhole = do_wrmifwhole;
++		if (do_pim != mrt->mroute_do_pim) {
++			mrt->mroute_do_pim = do_pim;
++			mrt->mroute_do_assert = do_pim;
++			mrt->mroute_do_wrvifwhole = (v == MRT6MSG_WRMIFWHOLE);
+ 		}
+ 		rtnl_unlock();
+ 		return ret;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.35.1
+
