@@ -2,60 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FA8A4C4BE0
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 18:17:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E91ED4C4BEE
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 18:21:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243548AbiBYRRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 12:17:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
+        id S243595AbiBYRVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 12:21:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243547AbiBYRRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 12:17:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E49C21DF0C
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 09:17:02 -0800 (PST)
+        with ESMTP id S230497AbiBYRVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 12:21:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965FB21EBBE
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 09:21:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D74C7B832CD
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 17:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2073FC340F0;
-        Fri, 25 Feb 2022 17:16:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32D4A61DA4
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 17:21:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E1AAC340E7;
+        Fri, 25 Feb 2022 17:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645809419;
-        bh=RreXA7Bmc/8VakrqfoJQ1wIYxg3wtjQYYacft2GxCCk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bqAgH5sluJchauddxOusKfTJi83h2L7pbN6gWGvUdM0rzhjAmIUYS3PDUu9Qba1Zy
-         xA0U+7OdGJ8WyK4AXwqK/61bNBYPSw55UerDEgTFIQ9WaosyNjyDbNM9RvYhskTdOi
-         k4341Lrmg/KZ7Xvvpi2U5pFVcbfu2vj3jK035gqEi7wCcVjhMGU8ScAOuOBuIfeNVS
-         1jfSX8ebXyvgSZqzq0hXbr9hsLsdvzJq8BX+6ucFyRyfADNRKffNWdWlO9ONJOjyoc
-         IqFTB1GYzCtNf5qw9JX/3T1y272cahpSA23IXuVjmpCoZ7N9eZ39SeSoFxx0CXgy/5
-         jY39wm+22m27Q==
-Date:   Fri, 25 Feb 2022 18:16:53 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/4] net: dsa: ocelot: populate
- supported_interfaces
-Message-ID: <20220225181653.00708f13@thinkpad>
-In-Reply-To: <YhkEeENNuIXRkCD7@shell.armlinux.org.uk>
-References: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
-        <E1nNdJV-00AsoS-Qi@rmk-PC.armlinux.org.uk>
-        <20220225162530.cnt4da7zpo6gxl4z@skbuf>
-        <YhkEeENNuIXRkCD7@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1645809664;
+        bh=18vq3NSLYJyru5g92a4jOWvDxM99YxzbW2EzZr3HN1s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jD5QGiD6s55FTDqVk/8yxLzj3Z0Bb06WwPZOzMcq7YTG84Wy0t2VNRHpVMBEkweuG
+         CyTnfgh/5bJ6jqWAhxcYzWXOiImDHPi7JWrwci83GtSP6nJExxTlFmarXKVqhWKEdZ
+         CHBd2aeczJwsDXbHrpVSYoX8buiTWXQIk6Y/L3VygD7ZqOnve3gA7l88grc+Zp6+d7
+         i5X95T9a1XyvurqGkTJLFU2H67r+ZG44MxxbbKMzEmg6CrX/wlAieCyGnOQ5zaLKG9
+         LrHDT5E+QhP4QNoAm6SiwffG8/crehkrC6M7cw9TqjvwDNEcrJ9hEoKAWjmHjwzuc5
+         EPNp4JXFY6ICQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79845E6D453;
+        Fri, 25 Feb 2022 17:21:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: sxgbe: fix return value of __setup handler
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164580966449.15608.3388758055550072899.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Feb 2022 17:21:04 +0000
+References: <20220224033528.24640-1-rdunlap@infradead.org>
+In-Reply-To: <20220224033528.24640-1-rdunlap@infradead.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, patches@lists.linux.dev,
+        i.zhbanov@omprussia.ru, siva.kallam@samsung.com,
+        ks.giri@samsung.com, bh74.an@samsung.com, davem@davemloft.net,
+        kuba@kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,31 +58,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Feb 2022 16:31:52 +0000
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+Hello:
 
-> On Fri, Feb 25, 2022 at 04:25:30PM +0000, Vladimir Oltean wrote:
-> > On Fri, Feb 25, 2022 at 04:19:25PM +0000, Russell King (Oracle) wrote: =
-=20
-> > > Populate the supported interfaces bitmap for the Ocelot DSA switches.
-> > >=20
-> > > Since all sub-drivers only support a single interface mode, defined by
-> > > ocelot_port->phy_mode, we can handle this in the main driver code
-> > > without reference to the sub-driver.
-> > >=20
-> > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > > --- =20
-> >=20
-> > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com> =20
->=20
-> Brilliant, thanks.
->=20
-> This is the final driver in net-next that was making use of
-> phylink_set_pcs(), so once this series is merged, that function will
-> only be used by phylink internally. The next patch I have in the queue
-> is to remove that function.
->=20
-> Marek Beh=C3=BAn will be very happy to see phylink_set_pcs() gone.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Yes, finally we can convert mv88e6xxx fully :)
+On Wed, 23 Feb 2022 19:35:28 -0800 you wrote:
+> __setup() handlers should return 1 on success, i.e., the parameter
+> has been handled. A return of 0 causes the "option=value" string to be
+> added to init's environment strings, polluting it.
+> 
+> Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
+> Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+> Cc: Siva Reddy <siva.kallam@samsung.com>
+> Cc: Girish K S <ks.giri@samsung.com>
+> Cc: Byungho An <bh74.an@samsung.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> 
+> [...]
+
+Here is the summary with links:
+  - net: sxgbe: fix return value of __setup handler
+    https://git.kernel.org/netdev/net/c/50e06ddceeea
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
