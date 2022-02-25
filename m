@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 861314C43D7
+	by mail.lfdr.de (Postfix) with ESMTP id 3A6044C43D6
 	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 12:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240141AbiBYLqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 06:46:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        id S240241AbiBYLqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 06:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235981AbiBYLqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 06:46:48 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E8B1E149B;
-        Fri, 25 Feb 2022 03:46:16 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id d23so8906772lfv.13;
-        Fri, 25 Feb 2022 03:46:16 -0800 (PST)
+        with ESMTP id S240232AbiBYLqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 06:46:51 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1791E4827;
+        Fri, 25 Feb 2022 03:46:19 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id p20so7103157ljo.0;
+        Fri, 25 Feb 2022 03:46:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=7bAU6OW5WZdNkadr0RsuhVpr6+vDWzdc54BoxnojpCk=;
-        b=WnNnH2bNBx0UFGX9fwWjbhEHj3Q4ximEgZDZQqSJcGAUti2ZlGfn8S6G/ceffJxqVQ
-         u3SMfefDopDk1kQaY/hbmm3ZjLkN71GKnfBqDBiO8lANOsEfdmCKPKdNlN0nOxTXRjlc
-         nVUaoEKgYKPNjUGhIhu5MnbiXM08FLw64PeXmX/wJ/13BEljXfkSQmg8VWjqpXazrs6M
-         kHNrdrObIuGYmE8nTZiizDEG9iVUNA4GRF9wv47leIrx2zE+NgbD5yZeLO98t4+IEoQM
-         NXm/QtTw6BIafaMqRIJeC5iAiXqaWiHB6id0INibrc9jXZi2sBnXXkWeDqbckCgqkLor
-         HJTg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=xXj2/f+qvoC8XO/wzynFMId5J1aWTkWLoQHGmpvRGhE=;
+        b=hmM+xtnQ1cHBDLM3D5uqmEKqhbv/H1Y4SldYiitjnQmqXgvL0OQuoAMytslMeHutSC
+         NdSfwDvD+PIpJh7G+HuiLmSJxeDiRcmpmOZbWdhjnIAjKN06KDaZoYi0E8nydRiDguZw
+         bQImBqHnaJB1l6WoBkBxYzdiJGiQMu1UZeYw8N/PRpaFSfK6JtDAJkoLvkyIPxJilIgW
+         qaCBgCM3Lt7qPfns+UQvxtSNLSzBMmpIC75vp9lwEnP3kOMbq7aCuOY8tnDDXW1bs7Vo
+         hAnKmeJg/kFw14nyxA+rZF6wpvIGAd01j4J2ApGbJMSg230Z+yjRAmoAAQ6ddAMnKx20
+         sZAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=7bAU6OW5WZdNkadr0RsuhVpr6+vDWzdc54BoxnojpCk=;
-        b=MUUxjDHU4sRvfckESRR2sWFa+jl3ytI1rRxFkBKHDv+9dSC94G9NbImwaNld8NCNkF
-         5iO2gzu60xfU8HwojhxUyrWp9YaJjuaosAvP71Ah1eGhYIpaKfXY3LiOXSylggBLsqmH
-         Ox8X6vOpW8uKBovocZjLRPt1JWuRRARU3d64Ldd3IUwZeLTZ24WPftwh2Hnl9n7RMowL
-         nwjixWjy4F4JezF7LmoIYfMZvhTRPj57sj04pT+Qck4h+D8NGH3OcL9HWAZ8u6z1ynAu
-         rhmgDiP5DNcLpVdFX5Br1iJ+I3Ftej0EMO07PIZPp3ka69Irus4u4+764ujCmgH32Cyu
-         4AqQ==
-X-Gm-Message-State: AOAM532MZmzQl9FQKICceqIDohb52pdu2hDq7BXsv2kcm/4mvyV4pJSG
-        P/u4NAFYUNq/OlU0wkCDH/dvl0TBUwTXSKB0
-X-Google-Smtp-Source: ABdhPJytaNv527bU1A5HJWtn+Q6koaojjpqaa6Q8UpXacLfroBuMI0B4S1i33usmNwuWZ2Ui2d3ijw==
-X-Received: by 2002:a05:6512:304a:b0:445:9d7:dad4 with SMTP id b10-20020a056512304a00b0044509d7dad4mr4685783lfb.261.1645789574426;
-        Fri, 25 Feb 2022 03:46:14 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=xXj2/f+qvoC8XO/wzynFMId5J1aWTkWLoQHGmpvRGhE=;
+        b=rr9+sHbjP58saHW1gRAQZ/BR2hKvhtoVToKn70XNqdjVRvS3pf9lYHHn4cZkfbWaus
+         YZkUWagXQj6tGRTYB4GsAkbzUxSG8AWjiKw4ESFvuaSn/3Y74N+rWDwchwdyZ/RAcOY2
+         qHMKXb7LWU2lNHKnnHkw7CCVtopPXbr5y5L+9Pfyru2LAV8QB6W0zK06r4jwPISU/trV
+         19m4POBeSDeicImidrAdt7MxsPL59Rml367EYwxiO+sW63QL/DQVPKejYgMBtKqDdOcX
+         TYQ7GvFkV2MZKGyb3mFYD2bRuhdR6hVf9ut31BLc3gouURRnsXgWu86rTCdFggak6hLM
+         a4Rw==
+X-Gm-Message-State: AOAM531zAehytA/x4J4T5h8Wx8FC1EXksn7IdhG/awoLpJBa3p1MY7XQ
+        yznA9/Vhn0r50rQ5EPxVJVo=
+X-Google-Smtp-Source: ABdhPJxQIhriQeTviQnzV2RibNwzzp851tEln7cRsRGIQkuUZwTDushz+trV0NXeHv55KNbKlj+Iyw==
+X-Received: by 2002:a05:651c:202:b0:244:c45d:102 with SMTP id y2-20020a05651c020200b00244c45d0102mr5009751ljn.29.1645789577595;
+        Fri, 25 Feb 2022 03:46:17 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id g7-20020a19e047000000b0044395c894d2sm184177lfj.163.2022.02.25.03.46.13
+        by smtp.gmail.com with ESMTPSA id g7-20020a19e047000000b0044395c894d2sm184177lfj.163.2022.02.25.03.46.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 03:46:13 -0800 (PST)
+        Fri, 25 Feb 2022 03:46:17 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
         Hans Schultz <schultz.hans+netdev@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH iproute2-next 0/1] Add support for locked bridge ports (for 802.1X)
-Date:   Fri, 25 Feb 2022 12:44:56 +0100
-Message-Id: <20220225114457.2386149-1-schultz.hans+netdev@gmail.com>
+Subject: [PATCH iproute2-next 1/1] bridge: link: Add command to set port in locked mode
+Date:   Fri, 25 Feb 2022 12:44:57 +0100
+Message-Id: <20220225114457.2386149-2-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220225114457.2386149-1-schultz.hans+netdev@gmail.com>
+References: <20220225114457.2386149-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
@@ -70,26 +72,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set is to complement the kernel locked port patches, such
-that iproute2 can be used to lock/unlock a port and check if a port
-is locked or not. To lock or unlock a port use the command:
+Add support for setting a bridge port in locked mode to use with 802.1X,
+so that only authorized clients are allowed access through the port.
 
-bridge link set dev DEV locked {on | off}
+Syntax: bridge link set dev DEV locked {on, off}
 
-
-To show the detailed setting of a port, including if the locked flag is
-enabled for the port(s), use the command:
-
-bridge -d link show [dev DEV]
-
-
-Hans Schultz (1):
-  bridge: link: Add command to set port in locked mode
-
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+---
  bridge/link.c                | 13 +++++++++++++
  include/uapi/linux/if_link.h |  1 +
  2 files changed, 14 insertions(+)
 
+diff --git a/bridge/link.c b/bridge/link.c
+index 205a2fe7..bb4f0b2d 100644
+--- a/bridge/link.c
++++ b/bridge/link.c
+@@ -175,6 +175,9 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
+ 		if (prtb[IFLA_BRPORT_ISOLATED])
+ 			print_on_off(PRINT_ANY, "isolated", "isolated %s ",
+ 				     rta_getattr_u8(prtb[IFLA_BRPORT_ISOLATED]));
++		if (prtb[IFLA_BRPORT_LOCKED])
++			print_on_off(PRINT_ANY, "locked", "locked %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_LOCKED]));
+ 	} else
+ 		print_stp_state(rta_getattr_u8(attr));
+ }
+@@ -275,6 +278,7 @@ static void usage(void)
+ 		"                               [ neigh_suppress {on | off} ]\n"
+ 		"                               [ vlan_tunnel {on | off} ]\n"
+ 		"                               [ isolated {on | off} ]\n"
++		"                               [ locked {on | off} ]\n"
+ 		"                               [ hwmode {vepa | veb} ]\n"
+ 		"                               [ backup_port DEVICE ] [ nobackup_port ]\n"
+ 		"                               [ self ] [ master ]\n"
+@@ -303,6 +307,7 @@ static int brlink_modify(int argc, char **argv)
+ 	__s8 vlan_tunnel = -1;
+ 	__s8 mcast_flood = -1;
+ 	__s8 mcast_to_unicast = -1;
++	__s8 locked = -1;
+ 	__s8 isolated = -1;
+ 	__s8 hairpin = -1;
+ 	__s8 bpdu_guard = -1;
+@@ -415,6 +420,11 @@ static int brlink_modify(int argc, char **argv)
+ 			isolated = parse_on_off("isolated", *argv, &ret);
+ 			if (ret)
+ 				return ret;
++		} else if (strcmp(*argv, "locked") == 0) {
++			NEXT_ARG();
++			locked = parse_on_off("locked", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "backup_port") == 0) {
+ 			NEXT_ARG();
+ 			backup_port_idx = ll_name_to_index(*argv);
+@@ -489,6 +499,9 @@ static int brlink_modify(int argc, char **argv)
+ 	if (isolated != -1)
+ 		addattr8(&req.n, sizeof(req), IFLA_BRPORT_ISOLATED, isolated);
+ 
++	if (locked >= 0)
++		addattr8(&req.n, sizeof(req), IFLA_BRPORT_LOCKED, locked);
++
+ 	if (backup_port_idx != -1)
+ 		addattr32(&req.n, sizeof(req), IFLA_BRPORT_BACKUP_PORT,
+ 			  backup_port_idx);
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 1d4ed60b..637623bb 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -534,6 +534,7 @@ enum {
+ 	IFLA_BRPORT_MRP_IN_OPEN,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
++	IFLA_BRPORT_LOCKED,
+ 	__IFLA_BRPORT_MAX
+ };
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
 -- 
 2.30.2
 
