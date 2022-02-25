@@ -2,115 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D00974C4A77
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 17:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A66CC4C4A68
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 17:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242810AbiBYQTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 11:19:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S242830AbiBYQTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 11:19:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242808AbiBYQTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 11:19:31 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B14751304;
-        Fri, 25 Feb 2022 08:18:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645805939; x=1677341939;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=UOqNqD/MT+/w14sDOPUpIK1Y7//wu5zD395g6NWsff0=;
-  b=m59XO8WBvvS1k/oD3FhFY+Xqy5FEbpfPJeY7gcvq22SWsaRWhMkF3JLv
-   naekavYm/K8sMoiJLePlnFu7/okanjsNghFecB2tWS7wTpfiJW/p/svlV
-   KfAFhAYfIlsjNr3uwLE3eEZxV3teWRLPzwNf5uojxbIme/4aPcS+fUOVV
-   xZDqEXqpZ/EMCQWaVdXs1tyQx9vdGTjG+gb/wB11N1B0/k11PSG796Qd4
-   cvDFcyQpJVPX2vsftQdO2xEZ9a1WW2EYKY4duEBssqcrYhL5oMT/55Y5c
-   dkdlcNrfM/Vr2rj1L/Cl02jrgngyqzlS5hRQy/IZwEqhpi6M88atwCjrC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252720875"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="252720875"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:18:40 -0800
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="549317156"
-Received: from glieseu-mobl1.ger.corp.intel.com ([10.252.48.77])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:18:34 -0800
-Date:   Fri, 25 Feb 2022 18:18:32 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= 
-        <ilpo.johannes.jarvinen@intel.com>, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        madhusmita.sahu@intel.com
-Subject: Re: [PATCH net-next v5 07/13] net: wwan: t7xx: Data path HW layer
-In-Reply-To: <20220223223326.28021-8-ricardo.martinez@linux.intel.com>
-Message-ID: <b4ca941a-e75b-3d9c-fa5c-f2496bb8f047@linux.intel.com>
-References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-8-ricardo.martinez@linux.intel.com>
+        with ESMTP id S240344AbiBYQTk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 11:19:40 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44404D252
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 08:19:06 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id z4so5032741pgh.12
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 08:19:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CkORx6feTWcIVb/+J3IGkD/JXSP6RbiMUz2u262N/4s=;
+        b=KuWNlQwSiSNR/B4DiD4iHvuAsy7Mv7JEWPMF4X5zzr6HDsnlZ19L5mrnFhtfEoHa0w
+         VHIMoPMBTnIV3sN78ez1Le3jn7m1xJxTzS9o124W+0WEdnvgMZOm7ucbXfdkZpF/rUYV
+         Vr3DrN/M9nY9UAEVzHiB2IioxcVBoWXWs7qwBIp6LHUDRiyiaza47N0of2Xv4T18mSi5
+         8hQqDIiEMQPyfOev4jQjf4XxePM9Kpnl5GY5W21whi19phbefLcAriCm4IkkPr/2ELl1
+         t55co4KIIeKWXBhTSMrs94xIotpNFsr3vpGYASiFw9XEhRPwyfkeMr2rqFhVJEvYUFe2
+         m7fQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CkORx6feTWcIVb/+J3IGkD/JXSP6RbiMUz2u262N/4s=;
+        b=3/WQVYEXeT2J3orSyeLfqdEKu2xO/+eGut+V+0hX1+sBo/9plhOF1Og/uzSV4FYatw
+         OipbY3c2PmW3r7J35fe2aP0MH4PYQlQOH8VnSubRHcaHhNF/v/+Qq0zL/h5ULRT1JUXY
+         nz3Bg0ZIBF5csNL2NV9Yd8uSm8AdmJ55AGl0Yqoxw3WmVUaGaRW/L7nEW/6nYOCLcLhA
+         GJE/fVLYOVu5vgxwAy+Uv/aFZCBlrEF/bMZ89dHZcIE5QHMrANOocoPMUdWh+ZROIp8u
+         5ztkq+d9AgzTMZorm/lUgyE5vvQwP/6B4T8Po5O36jckKU2M3bV6cdKYUf3XnIui0IRL
+         0+wQ==
+X-Gm-Message-State: AOAM531eAL2xqTjGMIVxyxodMh1MSWgKlPOoTUK4gsH12R2v1jMc1G0Z
+        paY0rThSRFEcsAzvlXoYGUAm0BA35/4=
+X-Google-Smtp-Source: ABdhPJzm/HkPXpQCn+UNMSafc5IkDqZ8CfdApZ+Bq3GsB3mrJ7DHz5RV2BC6w9fnaic3evQEaG6jKA==
+X-Received: by 2002:a63:3d81:0:b0:373:b34e:7d5e with SMTP id k123-20020a633d81000000b00373b34e7d5emr6739973pga.397.1645805946144;
+        Fri, 25 Feb 2022 08:19:06 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:a16e:cb94:cb11:b5e])
+        by smtp.gmail.com with ESMTPSA id k7-20020a63ff07000000b00372dc67e854sm3183094pgi.14.2022.02.25.08.19.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 08:19:05 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] net/sysctl: avoid two synchronize_rcu() calls
+Date:   Fri, 25 Feb 2022 08:18:55 -0800
+Message-Id: <20220225161855.489923-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Feb 2022, Ricardo Martinez wrote:
+From: Eric Dumazet <edumazet@google.com>
 
-> From: Haijun Liu <haijun.liu@mediatek.com>
-> 
-> Data Path Modem AP Interface (DPMAIF) HW layer provides HW abstraction
-> for the upper layer (DPMAIF HIF). It implements functions to do the HW
-> configuration, TX/RX control and interrupt handling.
-> 
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> 
-> >From a WWAN framework perspective:
-> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
+Both rps_sock_flow_sysctl() and flow_limit_cpu_sysctl()
+are using synchronize_rcu() right before freeing memory
+either by vfree() or kfree()
 
+They can switch to kvfree_rcu(ptr) and kfree_rcu(ptr) to benefit
+from asynchronous mode, instead of blocking the current thread.
 
-> +static void t7xx_dpmaif_dl_set_ao_bat_rsv_length(struct dpmaif_hw_info *hw_info)
-> +{
-> +	unsigned int value;
-> +
-> +	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
-> +	value &= ~DPMAIF_BAT_RSV_LEN_MSK;
-> +	value |= DPMAIF_HW_BAT_RSVLEN & DPMAIF_BAT_RSV_LEN_MSK;
+Note that kvfree_rcu(ptr) and kfree_rcu(ptr) eventually can
+have to use synchronize_rcu() in some memory pressure cases.
 
-Drop & DPMAIF_BAT_RSV_LEN_MSK
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/sysctl_net_core.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> +static void t7xx_dpmaif_dl_set_ao_frg_check_thres(struct dpmaif_hw_info *hw_info)
-> +{
-> +	unsigned int value;
-> +
-> +	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
-> +	value &= ~DPMAIF_FRG_CHECK_THRES_MSK;
-> +	value |= (DPMAIF_HW_CHK_FRG_NUM & DPMAIF_FRG_CHECK_THRES_MSK);
-
-Ditto.
-
-> +	value |= DPMAIF_DL_PIT_SEQ_VALUE & DPMAIF_DL_PIT_SEQ_MSK;
-
-Ditto.
-
-
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index dbeb8ecbcd98f0aa6c02c650f925b05faf23ecad..7123fe7feeac634023d4e73247db0a20e3fcc383 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -103,8 +103,7 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
+ 			if (orig_sock_table) {
+ 				static_branch_dec(&rps_needed);
+ 				static_branch_dec(&rfs_needed);
+-				synchronize_rcu();
+-				vfree(orig_sock_table);
++				kvfree_rcu(orig_sock_table);
+ 			}
+ 		}
+ 	}
+@@ -142,8 +141,7 @@ static int flow_limit_cpu_sysctl(struct ctl_table *table, int write,
+ 				     lockdep_is_held(&flow_limit_update_mutex));
+ 			if (cur && !cpumask_test_cpu(i, mask)) {
+ 				RCU_INIT_POINTER(sd->flow_limit, NULL);
+-				synchronize_rcu();
+-				kfree(cur);
++				kfree_rcu(cur);
+ 			} else if (!cur && cpumask_test_cpu(i, mask)) {
+ 				cur = kzalloc_node(len, GFP_KERNEL,
+ 						   cpu_to_node(i));
 -- 
- i.
+2.35.1.574.g5d30c73bfb-goog
 
