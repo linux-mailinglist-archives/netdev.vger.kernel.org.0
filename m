@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB35B4C3C17
+	by mail.lfdr.de (Postfix) with ESMTP id 6F7424C3C16
 	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 04:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236890AbiBYDAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 22:00:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        id S236904AbiBYDAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 22:00:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236879AbiBYC7s (ORCPT
+        with ESMTP id S236881AbiBYC7s (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 21:59:48 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BC11EC255
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:15 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id d15so309780pjg.1
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:15 -0800 (PST)
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5312F270275
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:17 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id 139so3443316pge.1
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fungible.com; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=rtUbSSQ7CdcCSJCuKtEPcOqykTnLJzDKxf7oTKII0hg=;
-        b=bFw+brn6Er9pvsQGegOvUZomQ9aH1+bk3YITl/yAKxAU1Hr/o7MLct8G8FSMprO2gg
-         RgcfbY9RAz8iOI2HV9mSRO3J5rat4IvjtJraOZy7+7umAsLHQqoLkxKKZlvW9IdrRRLG
-         ErlMNPlKFXALS9fvSCRUnntmD9LIb7tm42da8=
+        bh=5I2I4QRgD9PZD6PuRpn3Z5CzlFeiiXqfRvCUuOGPT9o=;
+        b=e5C04MW48sJ0YP4uG+dcyE7UDfgq5gvSTZ5C2EW5jicz/biFedOWasrORsR/RymtAC
+         HaKVop6rj/U44yvq5ziq7VX2S/yDN6MR7Kch2mzj6hZTE6mhG87DAMhjXI7OuBTa6g01
+         rWTCj8naR0LjBWxz4fYfmiOeEpVb19gC2NULk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rtUbSSQ7CdcCSJCuKtEPcOqykTnLJzDKxf7oTKII0hg=;
-        b=hJMzAPE4iw11981hJsyWt8aojlBm91gdcNRvR3ILHEI5cPz2fVGS93xDQZQKWgUN+K
-         VtEh8ZLDZm+dx0Vm1k2sPnkN/IcC/dsKxNdJsmwusepaS1rrqLjsGSLqYMQ+FrqdGpT2
-         otTVG3VPmm8s5VtY0noEbl4oxgce6fhCsjHezCdfcKoxK5fU6O7+pJ8KZmQWxIhMbR8P
-         M7qQr82hcjLzIjIozXH3wDkp4s9Xt58B6Flnnwq+qjhM5o68AtJ7V3Hwg/kX49IOXA54
-         +nvsZ3X5t5sFlOPz0AGNTCIeknQEJT5VrzkWhacusRLPMYXlh3GpEAz0+g/9iUKhEfWj
-         c7Xw==
-X-Gm-Message-State: AOAM533px7ZQsfYQqTRAg1LutTToxCZyrIEluwjtC+iZ9EQ7qNNcNEIO
-        VkNKfo92OrFh3cEYAMOopvrWxQ==
-X-Google-Smtp-Source: ABdhPJxlDAODaPkTxgglnA+ZXmbAW8Y29Sp4O1giOjWCnbZAgXUcePr5UY9BfciNSUUcQETzq0sRSg==
-X-Received: by 2002:a17:90a:24f:b0:1bc:ba37:ae4 with SMTP id t15-20020a17090a024f00b001bcba370ae4mr1118965pje.30.1645757955351;
-        Thu, 24 Feb 2022 18:59:15 -0800 (PST)
+        bh=5I2I4QRgD9PZD6PuRpn3Z5CzlFeiiXqfRvCUuOGPT9o=;
+        b=sTWYFtl/2A+Sb3Mr3fSjvFp6piFdj7PopZjsSo1x8u2t2XeH3ltVq2BCIuxUu9R02e
+         XpVHSzJ2W2df1djSgLutVYo7naK0MEF9NUZNjRBS+BPyANtSoq19V6M11TXYT0gGQGzV
+         9LV5obouUxQUKjO/n7zYTxuIP2UZNjjEjZqGowqrEz3hh2LdwnoXxbeWmIFhDLwttdHS
+         /WsYhT6zaxhg3VK65hb5tAlxbYW52mjBmuvoZG9fg9wno8KSN/n7V19qQTH/4VPetTwE
+         JoIBcOd9xoK2Zo2th5ww0pxjX9oFWwlnL30MPy/5o1QfmPyPC0AIWykLY9qayBOjOGwK
+         DmIg==
+X-Gm-Message-State: AOAM532UVjkH+6ex0EUQK6wtDduUmCcm+bMbgc1ZQZx5yBNmv6b+RHQL
+        tkGXRd6qxR/qaPyDMXfp/wvnHPsNmWHFzQ==
+X-Google-Smtp-Source: ABdhPJyzKI89uaG1H86sL7khPLELT1Gg/lJs2nPn4wmU23Nlt6LqdJM1ijrXPy9H4Y0OQPfbcul+PQ==
+X-Received: by 2002:a05:6a00:de:b0:4e0:ca1a:9f07 with SMTP id e30-20020a056a0000de00b004e0ca1a9f07mr5684918pfj.11.1645757956830;
+        Thu, 24 Feb 2022 18:59:16 -0800 (PST)
 Received: from cab09-qa-09.fungible.local ([12.190.10.11])
-        by smtp.gmail.com with ESMTPSA id q93-20020a17090a4fe600b001b9ba2a1dc3sm7397526pjh.25.2022.02.24.18.59.14
+        by smtp.gmail.com with ESMTPSA id q93-20020a17090a4fe600b001b9ba2a1dc3sm7397526pjh.25.2022.02.24.18.59.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 18:59:14 -0800 (PST)
+        Thu, 24 Feb 2022 18:59:16 -0800 (PST)
 From:   Dimitris Michailidis <d.michailidis@fungible.com>
 X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         andrew@lunn.ch, d.michailidis@fungible.com
-Subject: [PATCH net-next v8 7/8] net/funeth: add kTLS TX control part
-Date:   Thu, 24 Feb 2022 18:59:01 -0800
-Message-Id: <20220225025902.40167-8-dmichail@fungible.com>
+Subject: [PATCH net-next v8 8/8] net/fungible: Kconfig, Makefiles, and MAINTAINERS
+Date:   Thu, 24 Feb 2022 18:59:02 -0800
+Message-Id: <20220225025902.40167-9-dmichail@fungible.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220225025902.40167-1-dmichail@fungible.com>
 References: <20220225025902.40167-1-dmichail@fungible.com>
@@ -66,215 +66,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This provides the control pieces for kTLS Tx offload, implementinng the
-offload operations.
+Hook up the new driver to configuration and build.
 
 Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
 ---
- .../ethernet/fungible/funeth/funeth_ktls.c    | 155 ++++++++++++++++++
- .../ethernet/fungible/funeth/funeth_ktls.h    |  31 ++++
- 2 files changed, 186 insertions(+)
- create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ktls.c
- create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ktls.h
+ MAINTAINERS                                   |  6 +++++
+ drivers/net/ethernet/Kconfig                  |  1 +
+ drivers/net/ethernet/Makefile                 |  1 +
+ drivers/net/ethernet/fungible/Kconfig         | 27 +++++++++++++++++++
+ drivers/net/ethernet/fungible/Makefile        |  7 +++++
+ drivers/net/ethernet/fungible/funeth/Kconfig  | 17 ++++++++++++
+ drivers/net/ethernet/fungible/funeth/Makefile | 10 +++++++
+ 7 files changed, 69 insertions(+)
+ create mode 100644 drivers/net/ethernet/fungible/Kconfig
+ create mode 100644 drivers/net/ethernet/fungible/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funeth/Kconfig
+ create mode 100644 drivers/net/ethernet/fungible/funeth/Makefile
 
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_ktls.c b/drivers/net/ethernet/fungible/funeth/funeth_ktls.c
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 65f5043ae48d..6d09a1855276 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7936,6 +7936,12 @@ L:	platform-driver-x86@vger.kernel.org
+ S:	Maintained
+ F:	drivers/platform/x86/fujitsu-tablet.c
+ 
++FUNGIBLE ETHERNET DRIVERS
++M:	Dimitris Michailidis <dmichail@fungible.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++F:	drivers/net/ethernet/fungible/
++
+ FUSE: FILESYSTEM IN USERSPACE
+ M:	Miklos Szeredi <miklos@szeredi.hu>
+ L:	linux-fsdevel@vger.kernel.org
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index db3ec4768159..bd4cb9d7c35d 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -78,6 +78,7 @@ source "drivers/net/ethernet/ezchip/Kconfig"
+ source "drivers/net/ethernet/faraday/Kconfig"
+ source "drivers/net/ethernet/freescale/Kconfig"
+ source "drivers/net/ethernet/fujitsu/Kconfig"
++source "drivers/net/ethernet/fungible/Kconfig"
+ source "drivers/net/ethernet/google/Kconfig"
+ source "drivers/net/ethernet/hisilicon/Kconfig"
+ source "drivers/net/ethernet/huawei/Kconfig"
+diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+index 8a87c1083d1d..8ef43e0c33c0 100644
+--- a/drivers/net/ethernet/Makefile
++++ b/drivers/net/ethernet/Makefile
+@@ -41,6 +41,7 @@ obj-$(CONFIG_NET_VENDOR_EZCHIP) += ezchip/
+ obj-$(CONFIG_NET_VENDOR_FARADAY) += faraday/
+ obj-$(CONFIG_NET_VENDOR_FREESCALE) += freescale/
+ obj-$(CONFIG_NET_VENDOR_FUJITSU) += fujitsu/
++obj-$(CONFIG_NET_VENDOR_FUNGIBLE) += fungible/
+ obj-$(CONFIG_NET_VENDOR_GOOGLE) += google/
+ obj-$(CONFIG_NET_VENDOR_HISILICON) += hisilicon/
+ obj-$(CONFIG_NET_VENDOR_HUAWEI) += huawei/
+diff --git a/drivers/net/ethernet/fungible/Kconfig b/drivers/net/ethernet/fungible/Kconfig
 new file mode 100644
-index 000000000000..f871def70d70
+index 000000000000..2ff5138d0448
 --- /dev/null
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_ktls.c
-@@ -0,0 +1,155 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
++++ b/drivers/net/ethernet/fungible/Kconfig
+@@ -0,0 +1,27 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Fungible network driver configuration
++#
 +
-+#include "funeth.h"
-+#include "funeth_ktls.h"
++config NET_VENDOR_FUNGIBLE
++	bool "Fungible devices"
++	default y
++	help
++	  If you have a Fungible network device, say Y.
 +
-+static int fun_admin_ktls_create(struct funeth_priv *fp, unsigned int id)
-+{
-+	struct fun_admin_ktls_create_req req = {
-+		.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_KTLS,
-+						     sizeof(req)),
-+		.subop = FUN_ADMIN_SUBOP_CREATE,
-+		.id = cpu_to_be32(id),
-+	};
++	  Note that the answer to this question doesn't directly affect the
++	  kernel: saying N will just cause the configurator to skip all
++	  the questions about Fungible cards. If you say Y, you will be asked
++	  for your specific card in the following questions.
 +
-+	return fun_submit_admin_sync_cmd(fp->fdev, &req.common, NULL, 0, 0);
-+}
++if NET_VENDOR_FUNGIBLE
 +
-+static int fun_ktls_add(struct net_device *netdev, struct sock *sk,
-+			enum tls_offload_ctx_dir direction,
-+			struct tls_crypto_info *crypto_info,
-+			u32 start_offload_tcp_sn)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct fun_admin_ktls_modify_req req = {
-+		.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_KTLS,
-+						     sizeof(req)),
-+		.subop = FUN_ADMIN_SUBOP_MODIFY,
-+		.id = cpu_to_be32(fp->ktls_id),
-+		.tcp_seq = cpu_to_be32(start_offload_tcp_sn),
-+	};
-+	struct fun_admin_ktls_modify_rsp rsp;
-+	struct fun_ktls_tx_ctx *tx_ctx;
-+	int rc;
++config FUN_CORE
++	tristate
++	help
++	  A service module offering basic common services to Fungible
++	  device drivers.
 +
-+	if (direction != TLS_OFFLOAD_CTX_DIR_TX)
-+		return -EOPNOTSUPP;
++source "drivers/net/ethernet/fungible/funeth/Kconfig"
 +
-+	if (crypto_info->version == TLS_1_2_VERSION)
-+		req.version = FUN_KTLS_TLSV2;
-+	else
-+		return -EOPNOTSUPP;
-+
-+	switch (crypto_info->cipher_type) {
-+	case TLS_CIPHER_AES_GCM_128: {
-+		struct tls12_crypto_info_aes_gcm_128 *c = (void *)crypto_info;
-+
-+		req.cipher = FUN_KTLS_CIPHER_AES_GCM_128;
-+		memcpy(req.key, c->key, sizeof(c->key));
-+		memcpy(req.iv, c->iv, sizeof(c->iv));
-+		memcpy(req.salt, c->salt, sizeof(c->salt));
-+		memcpy(req.record_seq, c->rec_seq, sizeof(c->rec_seq));
-+		break;
-+	}
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &req.common, &rsp,
-+				       sizeof(rsp), 0);
-+	memzero_explicit(&req, sizeof(req));
-+	if (rc)
-+		return rc;
-+
-+	tx_ctx = tls_driver_ctx(sk, direction);
-+	tx_ctx->tlsid = rsp.tlsid;
-+	tx_ctx->next_seq = start_offload_tcp_sn;
-+	atomic64_inc(&fp->tx_tls_add);
-+	return 0;
-+}
-+
-+static void fun_ktls_del(struct net_device *netdev,
-+			 struct tls_context *tls_ctx,
-+			 enum tls_offload_ctx_dir direction)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct fun_admin_ktls_modify_req req;
-+	struct fun_ktls_tx_ctx *tx_ctx;
-+
-+	if (direction != TLS_OFFLOAD_CTX_DIR_TX)
-+		return;
-+
-+	tx_ctx = __tls_driver_ctx(tls_ctx, direction);
-+
-+	req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_KTLS,
-+			offsetof(struct fun_admin_ktls_modify_req, tcp_seq));
-+	req.subop = FUN_ADMIN_SUBOP_MODIFY;
-+	req.flags = cpu_to_be16(FUN_KTLS_MODIFY_REMOVE);
-+	req.id = cpu_to_be32(fp->ktls_id);
-+	req.tlsid = tx_ctx->tlsid;
-+
-+	fun_submit_admin_sync_cmd(fp->fdev, &req.common, NULL, 0, 0);
-+	atomic64_inc(&fp->tx_tls_del);
-+}
-+
-+static int fun_ktls_resync(struct net_device *netdev, struct sock *sk, u32 seq,
-+			   u8 *rcd_sn, enum tls_offload_ctx_dir direction)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct fun_admin_ktls_modify_req req;
-+	struct fun_ktls_tx_ctx *tx_ctx;
-+	int rc;
-+
-+	if (direction != TLS_OFFLOAD_CTX_DIR_TX)
-+		return -EOPNOTSUPP;
-+
-+	tx_ctx = tls_driver_ctx(sk, direction);
-+
-+	req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_KTLS,
-+			offsetof(struct fun_admin_ktls_modify_req, key));
-+	req.subop = FUN_ADMIN_SUBOP_MODIFY;
-+	req.flags = 0;
-+	req.id = cpu_to_be32(fp->ktls_id);
-+	req.tlsid = tx_ctx->tlsid;
-+	req.tcp_seq = cpu_to_be32(seq);
-+	req.version = 0;
-+	req.cipher = 0;
-+	memcpy(req.record_seq, rcd_sn, sizeof(req.record_seq));
-+
-+	atomic64_inc(&fp->tx_tls_resync);
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &req.common, NULL, 0, 0);
-+	if (!rc)
-+		tx_ctx->next_seq = seq;
-+	return rc;
-+}
-+
-+static const struct tlsdev_ops fun_ktls_ops = {
-+	.tls_dev_add = fun_ktls_add,
-+	.tls_dev_del = fun_ktls_del,
-+	.tls_dev_resync = fun_ktls_resync,
-+};
-+
-+int fun_ktls_init(struct net_device *netdev)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	int rc;
-+
-+	rc = fun_admin_ktls_create(fp, netdev->dev_port);
-+	if (rc)
-+		return rc;
-+
-+	fp->ktls_id = netdev->dev_port;
-+	netdev->tlsdev_ops = &fun_ktls_ops;
-+	netdev->hw_features |= NETIF_F_HW_TLS_TX;
-+	netdev->features |= NETIF_F_HW_TLS_TX;
-+	return 0;
-+}
-+
-+void fun_ktls_cleanup(struct funeth_priv *fp)
-+{
-+	if (fp->ktls_id == FUN_HCI_ID_INVALID)
-+		return;
-+
-+	fun_res_destroy(fp->fdev, FUN_ADMIN_OP_KTLS, 0, fp->ktls_id);
-+	fp->ktls_id = FUN_HCI_ID_INVALID;
-+}
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_ktls.h b/drivers/net/ethernet/fungible/funeth/funeth_ktls.h
++endif # NET_VENDOR_FUNGIBLE
+diff --git a/drivers/net/ethernet/fungible/Makefile b/drivers/net/ethernet/fungible/Makefile
 new file mode 100644
-index 000000000000..1b21cccf1278
+index 000000000000..df759f1585a1
 --- /dev/null
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_ktls.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
++++ b/drivers/net/ethernet/fungible/Makefile
+@@ -0,0 +1,7 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
++#
++# Makefile for the Fungible network device drivers.
++#
 +
-+#ifndef _FUN_KTLS_H
-+#define _FUN_KTLS_H
++obj-$(CONFIG_FUN_CORE) += funcore/
++obj-$(CONFIG_FUN_ETH) += funeth/
+diff --git a/drivers/net/ethernet/fungible/funeth/Kconfig b/drivers/net/ethernet/fungible/funeth/Kconfig
+new file mode 100644
+index 000000000000..c72ad9386400
+--- /dev/null
++++ b/drivers/net/ethernet/fungible/funeth/Kconfig
+@@ -0,0 +1,17 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Fungible Ethernet driver configuration
++#
 +
-+struct net_device;
-+struct funeth_priv;
++config FUN_ETH
++	tristate "Fungible Ethernet device driver"
++	depends on PCI && PCI_MSI
++	depends on TLS && TLS_DEVICE || TLS_DEVICE=n
++	select NET_DEVLINK
++	select FUN_CORE
++	help
++	  This driver supports the Ethernet functionality of Fungible adapters.
++	  It works with both physical and virtual functions.
 +
-+#ifdef CONFIG_TLS_DEVICE
-+#include <net/tls.h>
++	  To compile this driver as a module, choose M here. The module
++          will be called funeth.
+diff --git a/drivers/net/ethernet/fungible/funeth/Makefile b/drivers/net/ethernet/fungible/funeth/Makefile
+new file mode 100644
+index 000000000000..646d69595b4f
+--- /dev/null
++++ b/drivers/net/ethernet/fungible/funeth/Makefile
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +
-+struct fun_ktls_tx_ctx {
-+	__be64 tlsid;
-+	u32 next_seq;
-+};
++ccflags-y += -I$(srctree)/$(src)/../funcore -I$(srctree)/$(src)
 +
-+int fun_ktls_init(struct net_device *netdev);
-+void fun_ktls_cleanup(struct funeth_priv *fp);
++obj-$(CONFIG_FUN_ETH) += funeth.o
 +
-+#else
++funeth-y := funeth_main.o funeth_rx.o funeth_tx.o funeth_devlink.o \
++	    funeth_ethtool.o
 +
-+static inline void fun_ktls_init(struct net_device *netdev)
-+{
-+}
-+
-+static inline void fun_ktls_cleanup(struct funeth_priv *fp)
-+{
-+}
-+#endif
-+
-+#endif /* _FUN_KTLS_H */
++funeth-$(CONFIG_TLS_DEVICE) += funeth_ktls.o
 -- 
 2.25.1
 
