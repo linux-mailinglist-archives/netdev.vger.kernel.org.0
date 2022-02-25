@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1FF44C3E4B
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:16:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 283D84C3E4C
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:16:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237099AbiBYGQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 01:16:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
+        id S237774AbiBYGQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 01:16:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231455AbiBYGQ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:16:26 -0500
+        with ESMTP id S237766AbiBYGQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:16:38 -0500
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E337A1BE0CC;
-        Thu, 24 Feb 2022 22:15:54 -0800 (PST)
-X-UUID: a7a8b131539842bca737a24b184177a0-20220225
-X-UUID: a7a8b131539842bca737a24b184177a0-20220225
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BE61C6EF3;
+        Thu, 24 Feb 2022 22:16:06 -0800 (PST)
+X-UUID: 0d2856bb4180414badd3a37ee335b04f-20220225
+X-UUID: 0d2856bb4180414badd3a37ee335b04f-20220225
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
         (envelope-from <lena.wang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1936239832; Fri, 25 Feb 2022 14:15:12 +0800
+        with ESMTP id 809528167; Fri, 25 Feb 2022 14:15:20 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 25 Feb 2022 14:15:11 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 25 Feb 2022 14:15:19 +0800
 Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 25 Feb 2022 14:15:11 +0800
+ Transport; Fri, 25 Feb 2022 14:15:19 +0800
 From:   Lena Wang <lena.wang@mediatek.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <matthias.bgg@gmail.com>
 CC:     <wsd_upstream@mediatek.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <lena.wang@mediatek.com>,
         <hao.lin@mediatek.com>
 Subject: [PATCH] net:fix up skbs delta_truesize in UDP GRO frag_list
-Date:   Fri, 25 Feb 2022 14:09:12 +0800
-Message-ID: <1645769353-7171-1-git-send-email-lena.wang@mediatek.com>
+Date:   Fri, 25 Feb 2022 14:09:13 +0800
+Message-ID: <1645769353-7171-2-git-send-email-lena.wang@mediatek.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1645769353-7171-1-git-send-email-lena.wang@mediatek.com>
+References: <1645769353-7171-1-git-send-email-lena.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
