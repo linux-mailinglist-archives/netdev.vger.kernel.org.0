@@ -2,98 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D92294C3F34
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 868564C3F42
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:48:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238217AbiBYHmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 02:42:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
+        id S238246AbiBYHsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 02:48:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236678AbiBYHme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:42:34 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184FA1AA491;
-        Thu, 24 Feb 2022 23:42:02 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id bt3so1740016qtb.0;
-        Thu, 24 Feb 2022 23:42:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WB2UJiGQQxiDi2Mxv6dyEHAg8UeTsSc7+1pqPfX8yFE=;
-        b=VUCwRvbs2awdPoNnKnLqLr7KCxDcgpZ8/Ilak4tfVc1xLDoAyywZNz676eigbUVtgf
-         Iyl+CbynMVnbMFw7VXjVxGK+LvUC9bCyr8oFEncwxpRaYOKSSM+pI2/ol0gQeKcc3eRJ
-         9KOg/G3svYXaZPwkUNnqNlquPMrtolkCHgnHZxMg2jc6ureY639A3rI6pugLFw78xe/x
-         Ok+h2TdNyCvXFtbGQnEKxOyN7QYqcEnmXe5N/+wjgrW9ceOLbS/HhH0Xw+jcn0CfyixY
-         oyJzvbA2a2F0uwe1UZfrHZp751sDw3G4JkdLe5TtH5bkVjIJC4k3BOb41CewV7IXn6tv
-         2fRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WB2UJiGQQxiDi2Mxv6dyEHAg8UeTsSc7+1pqPfX8yFE=;
-        b=mjhj2nNrP3GkyYe8ltYZUS3saDzeYbEwysZ6O+U9z/j86QdXflDzaFMgDT7ye6ihmp
-         8pPIcwxIZdfVWWCbqdPnbiYLQq5Tt8fNU/naSjT7oN5cuwQ65EKuhyijX5/NPeTW9f0P
-         inpQLxn+cfTTbFVc6yh5KY0+jSuceN8lI2PcpabRAxx6f28l1OgH/D2Vi4y2CTET2LCM
-         NCHHDcmd4Q6riAcmbzjSbWDU9zeRGleGdUmJ2DsFfRoamj+VDPvfuygp4JeC6ulOVFlT
-         zORnb3lxDlz8b70ZB+79yOz8ZQU9KPUmqh3uLBRGpfg+dGxg+mj9UGq6a0eHVEFoOSQM
-         miKg==
-X-Gm-Message-State: AOAM530PsPVX/NqF+hrr24PweufhzHeuaS7frQlhDjjLGFdYLagu2KiU
-        pAHGSQ/lM9M6piHIlxISvlE=
-X-Google-Smtp-Source: ABdhPJxjqnhaU9ZhDG0v+hpfHVSdL81T+h8tnNNbR5dn9I8Val+zYcI4zqcJTbHvP9qn8SFDfI7T9Q==
-X-Received: by 2002:ac8:58c7:0:b0:2dd:1a1:191d with SMTP id u7-20020ac858c7000000b002dd01a1191dmr5758070qta.334.1645774921290;
-        Thu, 24 Feb 2022 23:42:01 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id bq42-20020a05620a46aa00b006494fb49246sm864853qkb.86.2022.02.24.23.41.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 23:42:00 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net/bluetooth: use memset avoid memory leaks
-Date:   Fri, 25 Feb 2022 07:41:52 +0000
-Message-Id: <20220225074152.2039466-1-chi.minghao@zte.com.cn>
+        with ESMTP id S238230AbiBYHsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:48:13 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CBD18CC38
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 23:47:41 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id D6B682056D;
+        Fri, 25 Feb 2022 08:47:37 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id UXjs6Do9npPQ; Fri, 25 Feb 2022 08:47:37 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 5EA2A2049A;
+        Fri, 25 Feb 2022 08:47:37 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 504A680004A;
+        Fri, 25 Feb 2022 08:47:37 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Fri, 25 Feb 2022 08:47:37 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
+ 2022 08:47:36 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 9E4553182ECA; Fri, 25 Feb 2022 08:47:36 +0100 (CET)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net): ipsec 2022-02-25
+Date:   Fri, 25 Feb 2022 08:47:27 +0100
+Message-ID: <20220225074733.118664-1-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+1) Fix PMTU for IPv6 if the reported MTU minus the ESP overhead is
+   smaller than 1280. From Jiri Bohac.
 
-Use memset to initialize structs to prevent memory leaks
-in l2cap_ecred_connect
+2) Fix xfrm interface ID and inter address family tunneling when
+   migrating xfrm states. From Yan Yan.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- net/bluetooth/l2cap_core.c | 1 +
- 1 file changed, 1 insertion(+)
+3) Add missing xfrm intrerface ID initialization on xfrmi_changelink.
+   From Antony Antony.
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index e817ff0607a0..8df99c07f272 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1436,6 +1436,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
- 
- 	l2cap_ecred_init(chan, 0);
- 
-+	memset(&data, 0, sizeof(data));
- 	data.pdu.req.psm     = chan->psm;
- 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
- 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
--- 
-2.25.1
+4) Enforce validity of xfrm offload input flags so that userspace can't
+   send undefined flags to the offload driver.
+   From Leon Romanovsky.
 
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit de8a820df2acd02eac1d98a99dd447634226d653:
+
+  net: stmmac: remove unused members in struct stmmac_priv (2022-01-24 13:31:45 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git master
+
+for you to fetch changes up to 7c76ecd9c99b6e9a771d813ab1aa7fa428b3ade1:
+
+  xfrm: enforce validity of offload input flags (2022-02-09 09:00:40 +0100)
+
+----------------------------------------------------------------
+Antony Antony (1):
+      xfrm: fix the if_id check in changelink
+
+Jiri Bohac (2):
+      xfrm: fix MTU regression
+      Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
+
+Leon Romanovsky (1):
+      xfrm: enforce validity of offload input flags
+
+Yan Yan (2):
+      xfrm: Check if_id in xfrm_migrate
+      xfrm: Fix xfrm migrate issues when address family changes
+
+ include/net/xfrm.h        |  6 +++---
+ include/uapi/linux/xfrm.h |  6 ++++++
+ net/ipv4/esp4.c           |  2 +-
+ net/ipv6/esp6.c           |  2 +-
+ net/ipv6/ip6_output.c     | 11 +++++++----
+ net/key/af_key.c          |  2 +-
+ net/xfrm/xfrm_device.c    |  6 +++++-
+ net/xfrm/xfrm_interface.c |  2 +-
+ net/xfrm/xfrm_policy.c    | 14 ++++++++------
+ net/xfrm/xfrm_state.c     | 29 +++++++++++++----------------
+ net/xfrm/xfrm_user.c      |  6 +++++-
+ 11 files changed, 51 insertions(+), 35 deletions(-)
