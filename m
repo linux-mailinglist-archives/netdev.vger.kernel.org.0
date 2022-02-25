@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE294C3EE3
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6332A4C3F08
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:30:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238091AbiBYHTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 02:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
+        id S233444AbiBYHbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 02:31:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238076AbiBYHTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:19:46 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629D82556C0;
-        Thu, 24 Feb 2022 23:19:15 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id ay5so1244789plb.1;
-        Thu, 24 Feb 2022 23:19:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=E0+eJj0NPmwxnSMx1LXVXrNLUrIv19z+ZDO3nRYWhjc=;
-        b=k/pEWWW6X/hqR9vnSIx3bzWbSddiohoBL5Z9bYLhbkMAEaOZCaeLYuPXM7JTemYGBp
-         KK8t3lLu7nPAEMe8vez0Q6DfQyHAsLWD6lYrFfb3ixt2+Yh8pyjMVZa8SdNf0YGw6iDr
-         7q91IehIq+agA/FMKGdm+7mZUM4wfkwWPtTXj+7DprGCKl7YhCKAgXvvN0cI2SDj5U7k
-         BEE7trsIvpkOGWuoWcuqZIJMWQjKmYd4p7VO7hnAkhhQk3TRNr+54+XQUm3MKF6clJWe
-         DrBH92PXaYmgeFOwK0UjSk5YBalKm6ULRS4XAUmjOv/NpnAy2+ZDet8KbrCfcSBIm5Lh
-         +mmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=E0+eJj0NPmwxnSMx1LXVXrNLUrIv19z+ZDO3nRYWhjc=;
-        b=eIhJByzknzv3lFMdJ/LjE4T6NAroitMndfMIJuXL8bq2cHTlP78pv01QoLHYVcMOnW
-         WVXiKMxBls3srfAccxx9lXVBZGwB6JQfJxY5NsjJ8o8jDTyLuW8FKhQVrHWjajZH8QaT
-         201E+j8TfXC2HtKD40zqb1RK4PaxypDGItB2R68YWedYbundLXDekRJmKuyonYm13Rj8
-         hL6E3q9w8zWAG9JXYGuQIbRr/lcKSIsGs/FlsrkFDq+N+rDtGUj7rRapscSTMqJteNoF
-         uyKKfDnSKQls7FmwXyebUUUlB6ADXmo/L1oeV3NqtDnYgWwMRA6uCeN47dJJRRgV5Ips
-         VL/w==
-X-Gm-Message-State: AOAM532H5cDTZh4EFTDYorHeMq/Vllxx6Udvc9ZRz80PcHSEyXHhPryA
-        04usHnoNdsfGNSLih8VDu9o=
-X-Google-Smtp-Source: ABdhPJx/GspNgT1HedneD8W+NwDS4/Mqz7t7PINI35XqkIYVCY0t4kSNPeGXkbyCq36t20SQt48Juw==
-X-Received: by 2002:a17:90b:4394:b0:1bc:e369:1f2b with SMTP id in20-20020a17090b439400b001bce3691f2bmr1912128pjb.92.1645773554889;
-        Thu, 24 Feb 2022 23:19:14 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.110])
-        by smtp.gmail.com with ESMTPSA id k20-20020a056a00135400b004ecc81067b8sm1970825pfu.144.2022.02.24.23.19.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 23:19:14 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, imagedong@tencent.com,
-        edumazet@google.com, alobakin@pm.me, cong.wang@bytedance.com,
-        paulb@nvidia.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net: neigh: add skb drop reasons to arp_error_report()
-Date:   Fri, 25 Feb 2022 15:17:39 +0800
-Message-Id: <20220225071739.1956657-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220225071739.1956657-1-imagedong@tencent.com>
-References: <20220225071739.1956657-1-imagedong@tencent.com>
+        with ESMTP id S231272AbiBYHbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:31:23 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6603125D6F3
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 23:30:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=TW1rKp98oDuAFK8/qGf7txal58CzOCUTs7rIVVOnDvk=; b=jVJv2a7hPlGdIz5LLA7+99IJoN
+        phIRJTk2LgNcv9jkKqPu4kM9BUMvEFNY4givK5BfFUhaSdgs/gsmJjxlHcZzwS3T8FxLinq9byvSi
+        ffHGChmjTIHz5h1TvvawO2qpm8Su+pIJq5fNv0/CqIXOp6BBb9KF4Pyg6Ismn0iENmuMwEbGeVE3r
+        JTAkxN/ZLEYwX3ZGPK0dLHmYCki8xFzcgAALxtMxW/HnV9xzFb9EU2Mqjd0CMmm9mnyEYZeTlb3/O
+        ZKzyGD+G99k2bLRmuN74aPY8faQj41IQPXmH5a0kwI4yYcgCOD1MUemZwKGP/MShqh6v2/XTRgCDy
+        CN0K0/8Q==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNV3v-005Zpl-NS; Fri, 25 Feb 2022 07:30:47 +0000
+Message-ID: <d397d64f-8ae6-2713-d71c-465ae71baebe@infradead.org>
+Date:   Thu, 24 Feb 2022 23:30:42 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] net: sxgbe: fix return value of __setup handler
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, patches@lists.linux.dev,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Siva Reddy <siva.kallam@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        Byungho An <bh74.an@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220224033528.24640-1-rdunlap@infradead.org>
+ <20220224214302.4262c26f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220224214302.4262c26f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
 
-When neighbour become invalid or destroyed, neigh_invalidate() will be
-called. neigh->ops->error_report() will be called if the neighbour's
-state is NUD_FAILED, and seems here is the only use of error_report().
-So we can tell that the reason of skb drops in arp_error_report() is
-SKB_DROP_REASON_NEIGH_FAILED.
 
-Replace kfree_skb() used in arp_error_report() with kfree_skb_reason().
+On 2/24/22 21:43, Jakub Kicinski wrote:
+> On Wed, 23 Feb 2022 19:35:28 -0800 Randy Dunlap wrote:
+>> __setup() handlers should return 1 on success, i.e., the parameter
+>> has been handled. A return of 0 causes the "option=value" string to be
+>> added to init's environment strings, polluting it.
+> 
+> Meaning early_param_on_off() also returns the wrong thing?
+> Or that's different?
 
-Reviewed-by: Mengen Sun <mengensun@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
----
- net/ipv4/arp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+early_param() and its varieties are different -- 0 for success, else error.
 
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 4db0325f6e1a..8e4ca4738c43 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -293,7 +293,7 @@ static int arp_constructor(struct neighbour *neigh)
- static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
- {
- 	dst_link_failure(skb);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- }
- 
- /* Create and send an arp packet. */
+>> Fixes: acc18c147b22 ("net: sxgbe: add EEE(Energy Efficient Ethernet) for Samsung sxgbe")
+>> Fixes: 1edb9ca69e8a ("net: sxgbe: add basic framework for Samsung 10Gb ethernet driver")
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+>> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+>>
+>> --- linux-next-20220223.orig/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+>> +++ linux-next-20220223/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+>> @@ -2285,18 +2285,18 @@ static int __init sxgbe_cmdline_opt(char
+>>  	char *opt;
+>>  
+>>  	if (!str || !*str)
+>> -		return -EINVAL;
+>> +		return 1;
+>>  	while ((opt = strsep(&str, ",")) != NULL) {
+>>  		if (!strncmp(opt, "eee_timer:", 10)) {
+>>  			if (kstrtoint(opt + 10, 0, &eee_timer))
+>>  				goto err;
+>>  		}
+>>  	}
+>> -	return 0;
+>> +	return 1;
+>>  
+>>  err:
+>>  	pr_err("%s: ERROR broken module parameter conversion\n", __func__);
+>> -	return -EINVAL;
+>> +	return 1;
+>>  }
+>>  
+>>  __setup("sxgbeeth=", sxgbe_cmdline_opt);
+> 
+> Was the option of making __setup() return void considered?
+> Sounds like we always want to return 1 so what's the point?
+
+Well, AFAIK __setup() has been around forever (at least 22 years), so No,
+I don't think anyone has considered making it void.
+
+Returning 1 or 0 gives kernel parameter writers the option of how error
+input is handled, although 0 is usually wrong. :)
+
 -- 
-2.35.1
-
+~Randy
