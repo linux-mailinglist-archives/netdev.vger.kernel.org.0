@@ -2,140 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A194C4296
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 11:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F8B34C42A0
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 11:41:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239683AbiBYKjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 05:39:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
+        id S239720AbiBYKko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 05:40:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236775AbiBYKjt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 05:39:49 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0981CABE9
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 02:39:16 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id x5so6752511edd.11
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 02:39:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RECIZe9k17V+L+zC2QJKOfLhHN5EkB2j1Jlu/WlSYhE=;
-        b=iCizq9bM3iHkrzn0TzIBqrrE/aTKI4/Rjb2qwusMp5feZiNO3T2dSHh7GKwAg22/13
-         jK0YtJJweQIwbbZZMHu40iCms8YdL8Zb9InmMxRbh0LjJB6jpttT48Hzvg2I1t6gyFYj
-         23hQfLyBKmFt0OQQ0ld5KLzpLgM010lE2YubxHk9ScLAIywqSfGULlJsE+RnBo8zGtZh
-         gxhUleaQbfRBx1/XRNUw37c6j9Kofccm0KXNUav2MN7h4Gyj7nPdKrDeRalyLJIGuDQL
-         3PPWz8sAcgQ3+EGKq4s2Jqr8EkqQiSsazJvi9SslJKfIyyXjwJSrMRJUQAzJbaptHrIp
-         ipCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RECIZe9k17V+L+zC2QJKOfLhHN5EkB2j1Jlu/WlSYhE=;
-        b=0q002t4jqTcQJ6ptUO3i/SzQGEov8OGO69ljHWokj0+C8S1Hd1Cpbw72xGTW+WfoSE
-         AZD8CqisKti9EJ/wvcuukSb+NvJCEJjHOj16ICkG9+N4FIjpiMYy9cUvcfiIkeBqlNl5
-         URowrT60RActS5oC2c2reJyVyLyGUgOHOrRkBz/SOcztRRYFpoG3Ah8TZs87JJiEWV5k
-         H4BBTZHip4DjPhulLwLz0KAvzAro1O54kOIZS85DjwYhT7jOZ9MsbUtSUC7+/WHN0tYI
-         8pde0YzJXwpb+l4TI7aBta0hdQGmWjQFbG8CaAbMkJV4xP8z0YcSIIWpwV0urEUY4G7H
-         uk4Q==
-X-Gm-Message-State: AOAM531UlA5m11xp3/QNA4XyGiuodifNuA9GFKxlacq2/+1wnfntPT07
-        bXtyZEL8WABoZKJ7HMhasSM=
-X-Google-Smtp-Source: ABdhPJybDYb9MyPVJgtcerbT5bH0ZLun3V0cSo3kaGqw3hIk2ha0GY/8kzQPpf6oZJ4vGMIlyMSplg==
-X-Received: by 2002:aa7:c948:0:b0:413:2bed:e82e with SMTP id h8-20020aa7c948000000b004132bede82emr6534050edt.394.1645785555294;
-        Fri, 25 Feb 2022 02:39:15 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id bx1-20020a0564020b4100b00410f01a91f0sm1164999edb.73.2022.02.25.02.39.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 02:39:14 -0800 (PST)
-Date:   Fri, 25 Feb 2022 12:39:13 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Marek Beh__n <kabel@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 3/6] net: dsa: sja1105: use
- .mac_select_pcs() interface
-Message-ID: <20220225103913.abn4pc57ow6dy2m6@skbuf>
-References: <YhevAJyU87bfCzfs@shell.armlinux.org.uk>
- <E1nNGm6-00AOip-6r@rmk-PC.armlinux.org.uk>
+        with ESMTP id S239709AbiBYKkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 05:40:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCB568F8F;
+        Fri, 25 Feb 2022 02:40:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A6CE6171B;
+        Fri, 25 Feb 2022 10:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AEFA2C340F2;
+        Fri, 25 Feb 2022 10:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645785610;
+        bh=1Bj4E8jna9gv+7NmgSy2dvDNmaH/RWmUnYnExJ1EXXU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=naGEzD/RpkgtsDTe3JbpvxClxahzdvbXym5agxbwVk/p1LYOffGh3xFaC33lapix+
+         oUNVFd5208INQsRMIzfwZmVb3gw7bbFvQqQzeWTKQsvSkrXuNmNlYe7TWushWj5fPx
+         Afg6Iv4HP44YZcoF6kC5Je/Ulflv37WObaf7eDeB/l8LXdD8JJ4FjTCEj8Dwq9lJx8
+         APRLCfXLb76SCcK4WDQnRnxgnjd6aIgn+BhaxqAZaB5NkK8QO7nzfsblMaRYPVD+H6
+         ZWOkUzcizcAW2nYprgaEAc0qz/R+IWzSSHef4XdTTzAjF24WPbTxDC9bTSh+J8DpQn
+         7/tIvebdXOV+w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E526EAC09B;
+        Fri, 25 Feb 2022 10:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1nNGm6-00AOip-6r@rmk-PC.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] xen/netfront: destroy queues before real_num_tx_queues is
+ zeroed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164578561057.13834.5994173770160348500.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Feb 2022 10:40:10 +0000
+References: <20220223211954.2506824-1-marmarek@invisiblethingslab.com>
+In-Reply-To: <20220223211954.2506824-1-marmarek@invisiblethingslab.com>
+To:     =?utf-8?q?Marek_Marczykowski-G=C3=B3recki_=3Cmarmarek=40invisiblethingslab?=@ci.codeaurora.org,
+        =?utf-8?q?=2Ecom=3E?=@ci.codeaurora.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        atenart@kernel.org, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 04:15:26PM +0000, Russell King (Oracle) wrote:
-> Convert the PCS selection to use mac_select_pcs, which allows the PCS
-> to perform any validation it needs, and removes the need to set the PCS
-> in the mac_config() callback, delving into the higher DSA levels to do
-> so.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 23 Feb 2022 22:19:54 +0100 you wrote:
+> xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
+> delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
+> ("net-sysfs: update the queue counts in the unregistration path"),
+> unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
+> facts together means, that xennet_destroy_queues() called from
+> xennet_remove() cannot do its job, because it's called after
+> unregister_netdev(). This results in kfree-ing queues that are still
+> linked in napi, which ultimately crashes:
 > 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
+> [...]
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Here is the summary with links:
+  - [v2] xen/netfront: destroy queues before real_num_tx_queues is zeroed
+    https://git.kernel.org/netdev/net/c/dcf4ff7a48e7
 
->  drivers/net/dsa/sja1105/sja1105_main.c | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index e278bd86e3c6..b5c36f808df1 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -1358,18 +1358,16 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
->  	return sja1105_clocking_setup_port(priv, port);
->  }
->  
-> -static void sja1105_mac_config(struct dsa_switch *ds, int port,
-> -			       unsigned int mode,
-> -			       const struct phylink_link_state *state)
-> +static struct phylink_pcs *
-> +sja1105_mac_select_pcs(struct dsa_switch *ds, int port, phy_interface_t iface)
->  {
-> -	struct dsa_port *dp = dsa_to_port(ds, port);
->  	struct sja1105_private *priv = ds->priv;
-> -	struct dw_xpcs *xpcs;
-> -
-> -	xpcs = priv->xpcs[port];
-> +	struct dw_xpcs *xpcs = priv->xpcs[port];
->  
->  	if (xpcs)
-> -		phylink_set_pcs(dp->pl, &xpcs->pcs);
-> +		return &xpcs->pcs;
-> +
-> +	return NULL;
->  }
->  
->  static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
-> @@ -3137,7 +3135,7 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
->  	.port_max_mtu		= sja1105_get_max_mtu,
->  	.phylink_get_caps	= sja1105_phylink_get_caps,
->  	.phylink_validate	= sja1105_phylink_validate,
-> -	.phylink_mac_config	= sja1105_mac_config,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Deleting sja1105_mac_config() here is safe not because
-phylink_mac_config() stops calling pl->mac_ops->mac_config(), but
-because dsa_port_phylink_mac_config() first checks whether
-ds->ops->phylink_mac_config is implemented, and that is purely an
-artefact of providing a phylib-style ds->ops->adjust_link, right?
-
-Maybe it's worth mentioning.
-
-> +	.phylink_mac_select_pcs	= sja1105_mac_select_pcs,
->  	.phylink_mac_link_up	= sja1105_mac_link_up,
->  	.phylink_mac_link_down	= sja1105_mac_link_down,
->  	.get_strings		= sja1105_get_strings,
-> -- 
-> 2.30.2
-> 
 
