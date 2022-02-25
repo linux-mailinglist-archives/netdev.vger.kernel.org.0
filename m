@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F534C3C11
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 03:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E64F64C3C0F
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 03:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236882AbiBYC7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 21:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        id S236878AbiBYC7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 21:59:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236875AbiBYC7p (ORCPT
+        with ESMTP id S236874AbiBYC7p (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 21:59:45 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F005B1EC255
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:10 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id x18so3540293pfh.5
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:10 -0800 (PST)
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F5F23533A
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:11 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id bx9-20020a17090af48900b001bc64ee7d3cso3611624pjb.4
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 18:59:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fungible.com; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=4ss++ka4hCsiSLDJzVDMuSCR1ilRsX00aJck3mDzgFo=;
-        b=dm3ZH0y/bsy/LXmxhbl6R3vkSgfo/PH4s13NONokoZUr/EtFKst+1dhJjBbYa9zAc4
-         SjTdrgB/yW4ANKH7v3+5YXIwZ4unioA1DdWOvQRdlIHRUS/RgMQdYtcIYsEk7mzMCtjr
-         KtX/8zSpzLRFUnIGOUIOC/PrkQd0/no72ZeCw=
+        bh=D0C2cZAX45rvrCPU9tpjxwvr+mS8N/LR6keuc00ImN4=;
+        b=ET9p5fpd71btZLTvN408cIj24n+7mwkTlbr1Z7EWV0S4vZRY4Nx8ufBHsQh8g8k4ln
+         iNpP2+3+oo8ma2rSuew6k2SQPi1BgqdJHNXall1R2EW7x/+5eYb2PX/clg49PJfrnmYI
+         0yqryK6GsdcskpHlNOrvN7wsZC6cZez6pq1rE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4ss++ka4hCsiSLDJzVDMuSCR1ilRsX00aJck3mDzgFo=;
-        b=3OWKTDiG5vUQhU+LHRy/WKL7rMgXheDVsIaZgSqe7bafq735y4dRB4fT0ftdq7ognx
-         NuJbWiP4avfcuct7frK489gzxxHnnBr5bD0woKrk9iym71vn9nSIMDvJnNHYupck7e2I
-         gHA8nYAsuQL7GB2ASGZHev+SLEC33LejRi7OSXvWZ3thrG9lE/QmRpsdOVEhbSmkc6B8
-         YP4vrWMORyNHnokVxU1pWxmqHYkQN5ndBy5azLeZ5gpytjZ4PhDMpGmxc25nADfmr9dc
-         dbukLe0PIbcP7lj2Om66TBenwlHwzHHQ1NFcFrwCi6QPt2xghGcIeShEc0eL0CPj/Sfo
-         mQUw==
-X-Gm-Message-State: AOAM530FC6riRyDT3eSLKG6RBkfOS5yNaC7rXsug3zi+H5NUWncYW6JI
-        pLscJdKOWdpdbrf28sVmwjlvcg==
-X-Google-Smtp-Source: ABdhPJwuwG0zYBlENjnWgKk2YS5AfcFdYygC9uy7BGIn2/w/OO41a1Pn/lrsyjn0nac3SFD2s2IgzQ==
-X-Received: by 2002:a63:4e14:0:b0:374:4a37:4966 with SMTP id c20-20020a634e14000000b003744a374966mr4526424pgb.118.1645757949906;
-        Thu, 24 Feb 2022 18:59:09 -0800 (PST)
+        bh=D0C2cZAX45rvrCPU9tpjxwvr+mS8N/LR6keuc00ImN4=;
+        b=UupNrkwd0UTCR3kILLWWomnKJNR9oTHvo2kJGIIoFcVKkgF58KBkpOYVqFY3RAgW9p
+         PBmV5c9qZG2gxFxrW0lBNXxPoEiCQjNkf5ysPakCsRKwM6DFjmApyM075G50TzlphppF
+         DBzWk9fFS3J7cU3k6qZ8wK7oh49OdXz6mSaxCLaDx45aXleDSakmFIaujjeq6akxwyxC
+         wCMvcie2xYzBnBpQgOZxBNgcLiU1o6AMw1EGSy+mRYqhrS9wqdi2yeSN7Z0lFo0xjHgZ
+         +1YWzZnwrAJSgsnPxuuZyiJ/5gUgoZayJeGCeEVGrmhDw0Ij/E6klv5ZwYAN6SXZp2kO
+         k1cA==
+X-Gm-Message-State: AOAM530d2L5ReiBIlXY/TwgwBFJ1BCgB0p+2m3GuI3TxPKpDcbPjaS9F
+        LzBUH9R3mYjnlQPXQ/irmupyHA==
+X-Google-Smtp-Source: ABdhPJzhxKSi1ZbGZFJVdxiHW8ulwUCDbVzKW7Oi37mDl2t7ZXTqix85TdA9D8wpXZwfu5nlfqbKzQ==
+X-Received: by 2002:a17:902:6b47:b0:150:80de:5d49 with SMTP id g7-20020a1709026b4700b0015080de5d49mr972131plt.77.1645757951275;
+        Thu, 24 Feb 2022 18:59:11 -0800 (PST)
 Received: from cab09-qa-09.fungible.local ([12.190.10.11])
-        by smtp.gmail.com with ESMTPSA id q93-20020a17090a4fe600b001b9ba2a1dc3sm7397526pjh.25.2022.02.24.18.59.08
+        by smtp.gmail.com with ESMTPSA id q93-20020a17090a4fe600b001b9ba2a1dc3sm7397526pjh.25.2022.02.24.18.59.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 18:59:09 -0800 (PST)
+        Thu, 24 Feb 2022 18:59:10 -0800 (PST)
 From:   Dimitris Michailidis <d.michailidis@fungible.com>
 X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         andrew@lunn.ch, d.michailidis@fungible.com
-Subject: [PATCH net-next v8 3/8] net/funeth: probing and netdev ops
-Date:   Thu, 24 Feb 2022 18:58:57 -0800
-Message-Id: <20220225025902.40167-4-dmichail@fungible.com>
+Subject: [PATCH net-next v8 4/8] net/funeth: ethtool operations
+Date:   Thu, 24 Feb 2022 18:58:58 -0800
+Message-Id: <20220225025902.40167-5-dmichail@fungible.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220225025902.40167-1-dmichail@fungible.com>
 References: <20220225025902.40167-1-dmichail@fungible.com>
@@ -66,2291 +66,1288 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the first part of the Fungible ethernet driver. It deals with
-device probing, net_device creation, and netdev ops.
+Add ethtool operations, primarily related to queues and ports, as well
+as device statistics.
 
 Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
 ---
- drivers/net/ethernet/fungible/funeth/funeth.h |  171 ++
- .../ethernet/fungible/funeth/funeth_main.c    | 2091 +++++++++++++++++
- 2 files changed, 2262 insertions(+)
- create mode 100644 drivers/net/ethernet/fungible/funeth/funeth.h
- create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_main.c
+ .../net/ethernet/fungible/funeth/fun_port.h   |   97 ++
+ .../ethernet/fungible/funeth/funeth_ethtool.c | 1162 +++++++++++++++++
+ 2 files changed, 1259 insertions(+)
+ create mode 100644 drivers/net/ethernet/fungible/funeth/fun_port.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
 
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth.h b/drivers/net/ethernet/fungible/funeth/funeth.h
+diff --git a/drivers/net/ethernet/fungible/funeth/fun_port.h b/drivers/net/ethernet/fungible/funeth/fun_port.h
 new file mode 100644
-index 000000000000..1250e10d21db
+index 000000000000..0f9da44e3786
 --- /dev/null
-+++ b/drivers/net/ethernet/fungible/funeth/funeth.h
-@@ -0,0 +1,171 @@
++++ b/drivers/net/ethernet/fungible/funeth/fun_port.h
+@@ -0,0 +1,97 @@
 +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
 +
-+#ifndef _FUNETH_H
-+#define _FUNETH_H
++#ifndef _FUN_PORT_H
++#define _FUN_PORT_H
 +
-+#include <uapi/linux/if_ether.h>
-+#include <uapi/linux/net_tstamp.h>
-+#include <linux/mutex.h>
-+#include <linux/seqlock.h>
-+#include <linux/xarray.h>
-+#include <net/devlink.h>
-+#include "fun_dev.h"
-+
-+#define ADMIN_SQE_SIZE SZ_128
-+#define ADMIN_CQE_SIZE SZ_64
-+#define ADMIN_RSP_MAX_LEN (ADMIN_CQE_SIZE - sizeof(struct fun_cqe_info))
-+
-+#define FUN_MAX_MTU 9024
-+
-+#define SQ_DEPTH 512U
-+#define CQ_DEPTH 1024U
-+#define RQ_DEPTH (512U / (PAGE_SIZE / 4096))
-+
-+#define CQ_INTCOAL_USEC 10
-+#define CQ_INTCOAL_NPKT 16
-+#define SQ_INTCOAL_USEC 10
-+#define SQ_INTCOAL_NPKT 16
-+
-+#define INVALID_LPORT 0xffff
-+
-+#define FUN_PORT_CAP_PAUSE_MASK (FUN_PORT_CAP_TX_PAUSE | FUN_PORT_CAP_RX_PAUSE)
-+
-+struct fun_vport_info {
-+	u8 mac[ETH_ALEN];
-+	u16 vlan;
-+	__be16 vlan_proto;
-+	u8 qos;
-+	u8 spoofchk:1;
-+	u8 trusted:1;
-+	unsigned int max_rate;
++enum port_mac_rx_stats {
++	PORT_MAC_RX_etherStatsOctets = 0x0,
++	PORT_MAC_RX_OctetsReceivedOK = 0x1,
++	PORT_MAC_RX_aAlignmentErrors = 0x2,
++	PORT_MAC_RX_aPAUSEMACCtrlFramesReceived = 0x3,
++	PORT_MAC_RX_aFrameTooLongErrors = 0x4,
++	PORT_MAC_RX_aInRangeLengthErrors = 0x5,
++	PORT_MAC_RX_aFramesReceivedOK = 0x6,
++	PORT_MAC_RX_aFrameCheckSequenceErrors = 0x7,
++	PORT_MAC_RX_VLANReceivedOK = 0x8,
++	PORT_MAC_RX_ifInErrors = 0x9,
++	PORT_MAC_RX_ifInUcastPkts = 0xa,
++	PORT_MAC_RX_ifInMulticastPkts = 0xb,
++	PORT_MAC_RX_ifInBroadcastPkts = 0xc,
++	PORT_MAC_RX_etherStatsDropEvents = 0xd,
++	PORT_MAC_RX_etherStatsPkts = 0xe,
++	PORT_MAC_RX_etherStatsUndersizePkts = 0xf,
++	PORT_MAC_RX_etherStatsPkts64Octets = 0x10,
++	PORT_MAC_RX_etherStatsPkts65to127Octets = 0x11,
++	PORT_MAC_RX_etherStatsPkts128to255Octets = 0x12,
++	PORT_MAC_RX_etherStatsPkts256to511Octets = 0x13,
++	PORT_MAC_RX_etherStatsPkts512to1023Octets = 0x14,
++	PORT_MAC_RX_etherStatsPkts1024to1518Octets = 0x15,
++	PORT_MAC_RX_etherStatsPkts1519toMaxOctets = 0x16,
++	PORT_MAC_RX_etherStatsOversizePkts = 0x17,
++	PORT_MAC_RX_etherStatsJabbers = 0x18,
++	PORT_MAC_RX_etherStatsFragments = 0x19,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_0 = 0x1a,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_1 = 0x1b,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_2 = 0x1c,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_3 = 0x1d,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_4 = 0x1e,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_5 = 0x1f,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_6 = 0x20,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_7 = 0x21,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_8 = 0x22,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_9 = 0x23,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_10 = 0x24,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_11 = 0x25,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_12 = 0x26,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_13 = 0x27,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_14 = 0x28,
++	PORT_MAC_RX_CBFCPAUSEFramesReceived_15 = 0x29,
++	PORT_MAC_RX_MACControlFramesReceived = 0x2a,
++	PORT_MAC_RX_STATS_MAX = 0x2b,
 +};
 +
-+/* "subclass" of fun_dev for Ethernet functions */
-+struct fun_ethdev {
-+	struct fun_dev fdev;
-+
-+	/* the function's network ports */
-+	struct net_device **netdevs;
-+	unsigned int num_ports;
-+
-+	/* configuration for the function's virtual ports */
-+	unsigned int num_vports;
-+	struct fun_vport_info *vport_info;
-+
-+	struct mutex state_mutex; /* nests inside RTNL if both taken */
-+
-+	unsigned int nsqs_per_port;
++enum port_mac_tx_stats {
++	PORT_MAC_TX_etherStatsOctets = 0x0,
++	PORT_MAC_TX_OctetsTransmittedOK = 0x1,
++	PORT_MAC_TX_aPAUSEMACCtrlFramesTransmitted = 0x2,
++	PORT_MAC_TX_aFramesTransmittedOK = 0x3,
++	PORT_MAC_TX_VLANTransmittedOK = 0x4,
++	PORT_MAC_TX_ifOutErrors = 0x5,
++	PORT_MAC_TX_ifOutUcastPkts = 0x6,
++	PORT_MAC_TX_ifOutMulticastPkts = 0x7,
++	PORT_MAC_TX_ifOutBroadcastPkts = 0x8,
++	PORT_MAC_TX_etherStatsPkts64Octets = 0x9,
++	PORT_MAC_TX_etherStatsPkts65to127Octets = 0xa,
++	PORT_MAC_TX_etherStatsPkts128to255Octets = 0xb,
++	PORT_MAC_TX_etherStatsPkts256to511Octets = 0xc,
++	PORT_MAC_TX_etherStatsPkts512to1023Octets = 0xd,
++	PORT_MAC_TX_etherStatsPkts1024to1518Octets = 0xe,
++	PORT_MAC_TX_etherStatsPkts1519toMaxOctets = 0xf,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_0 = 0x10,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_1 = 0x11,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_2 = 0x12,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_3 = 0x13,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_4 = 0x14,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_5 = 0x15,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_6 = 0x16,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_7 = 0x17,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_8 = 0x18,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_9 = 0x19,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_10 = 0x1a,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_11 = 0x1b,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_12 = 0x1c,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_13 = 0x1d,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_14 = 0x1e,
++	PORT_MAC_TX_CBFCPAUSEFramesTransmitted_15 = 0x1f,
++	PORT_MAC_TX_MACControlFramesTransmitted = 0x20,
++	PORT_MAC_TX_etherStatsPkts = 0x21,
++	PORT_MAC_TX_STATS_MAX = 0x22,
 +};
 +
-+static inline struct fun_ethdev *to_fun_ethdev(struct fun_dev *p)
-+{
-+	return container_of(p, struct fun_ethdev, fdev);
-+}
-+
-+struct fun_qset {
-+	struct funeth_rxq **rxqs;
-+	struct funeth_txq **txqs;
-+	struct funeth_txq **xdpqs;
-+	unsigned int nrxqs;
-+	unsigned int ntxqs;
-+	unsigned int nxdpqs;
-+	unsigned int rxq_start;
-+	unsigned int txq_start;
-+	unsigned int xdpq_start;
-+	unsigned int cq_depth;
-+	unsigned int rq_depth;
-+	unsigned int sq_depth;
-+	int state;
++enum port_mac_fec_stats {
++	PORT_MAC_FEC_Correctable = 0x0,
++	PORT_MAC_FEC_Uncorrectable = 0x1,
++	PORT_MAC_FEC_STATS_MAX = 0x2,
 +};
 +
-+/* Per netdevice driver state, i.e., netdev_priv. */
-+struct funeth_priv {
-+	struct fun_dev *fdev;
-+	struct pci_dev *pdev;
-+	struct net_device *netdev;
-+
-+	struct funeth_rxq * __rcu *rxqs;
-+	struct funeth_txq **txqs;
-+	struct funeth_txq * __rcu *xdpqs;
-+
-+	struct xarray irqs;
-+	unsigned int num_tx_irqs;
-+	unsigned int num_rx_irqs;
-+	unsigned int rx_irq_ofst;
-+
-+	unsigned int lane_attrs;
-+	u16 lport;
-+
-+	/* link settings */
-+	u64 port_caps;
-+	u64 advertising;
-+	u64 lp_advertising;
-+	unsigned int link_speed;
-+	u8 xcvr_type;
-+	u8 active_fc;
-+	u8 active_fec;
-+	u8 link_down_reason;
-+	seqcount_t link_seq;
-+
-+	u32 msg_enable;
-+
-+	unsigned int num_xdpqs;
-+
-+	/* ethtool, etc. config parameters */
-+	unsigned int sq_depth;
-+	unsigned int rq_depth;
-+	unsigned int cq_depth;
-+	unsigned int cq_irq_db;
-+	u8 tx_coal_usec;
-+	u8 tx_coal_count;
-+	u8 rx_coal_usec;
-+	u8 rx_coal_count;
-+
-+	struct hwtstamp_config hwtstamp_cfg;
-+
-+	/* cumulative queue stats from earlier queue instances */
-+	u64 tx_packets;
-+	u64 tx_bytes;
-+	u64 tx_dropped;
-+	u64 rx_packets;
-+	u64 rx_bytes;
-+	u64 rx_dropped;
-+
-+	/* RSS */
-+	unsigned int rss_hw_id;
-+	enum fun_eth_hash_alg hash_algo;
-+	u8 rss_key[FUN_ETH_RSS_MAX_KEY_SIZE];
-+	unsigned int indir_table_nentries;
-+	u32 indir_table[FUN_ETH_RSS_MAX_INDIR_ENT];
-+	dma_addr_t rss_dma_addr;
-+	void *rss_cfg;
-+
-+	/* DMA area for port stats */
-+	dma_addr_t stats_dma_addr;
-+	__be64 *stats;
-+
-+	struct bpf_prog *xdp_prog;
-+
-+	struct devlink_port dl_port;
-+
-+	/* kTLS state */
-+	unsigned int ktls_id;
-+	atomic64_t tx_tls_add;
-+	atomic64_t tx_tls_del;
-+	atomic64_t tx_tls_resync;
-+};
-+
-+void fun_set_ethtool_ops(struct net_device *netdev);
-+int fun_port_write_cmd(struct funeth_priv *fp, int key, u64 data);
-+int fun_port_read_cmd(struct funeth_priv *fp, int key, u64 *data);
-+int fun_create_and_bind_tx(struct funeth_priv *fp, u32 sqid);
-+int fun_replace_queues(struct net_device *dev, struct fun_qset *newqs,
-+		       struct netlink_ext_ack *extack);
-+int fun_change_num_queues(struct net_device *dev, unsigned int ntx,
-+			  unsigned int nrx);
-+void fun_set_ring_count(struct net_device *netdev, unsigned int ntx,
-+			unsigned int nrx);
-+int fun_config_rss(struct net_device *dev, int algo, const u8 *key,
-+		   const u32 *qtable, u8 op);
-+
-+#endif /* _FUNETH_H */
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
++#endif /* _FUN_PORT_H */
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c b/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
 new file mode 100644
-index 000000000000..c58b10c216ef
+index 000000000000..d081168c95fa
 --- /dev/null
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-@@ -0,0 +1,2091 @@
++++ b/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
+@@ -0,0 +1,1162 @@
 +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 +
-+#include <linux/bpf.h>
-+#include <linux/crash_dump.h>
-+#include <linux/etherdevice.h>
 +#include <linux/ethtool.h>
-+#include <linux/filter.h>
-+#include <linux/idr.h>
-+#include <linux/if_vlan.h>
-+#include <linux/module.h>
++#include <linux/linkmode.h>
 +#include <linux/netdevice.h>
++#include <linux/nvme.h>
++#include <linux/io.h>
++#include <linux/io-64-nonatomic-lo-hi.h>
 +#include <linux/pci.h>
 +#include <linux/rtnetlink.h>
-+#include <linux/inetdevice.h>
-+
 +#include "funeth.h"
-+#include "funeth_devlink.h"
-+#include "funeth_ktls.h"
 +#include "fun_port.h"
-+#include "fun_queue.h"
 +#include "funeth_txrx.h"
 +
-+#define ADMIN_SQ_DEPTH 32
-+#define ADMIN_CQ_DEPTH 64
-+#define ADMIN_RQ_DEPTH 16
++/* Min queue depth. The smallest power-of-2 supporting jumbo frames with 4K
++ * pages is 8. Require it for all types of queues though some could work with
++ * fewer entries.
++ */
++#define FUNETH_MIN_QDEPTH 8
 +
-+/* Default number of Tx/Rx queues. */
-+#define FUN_DFLT_QUEUES 16U
-+
-+enum {
-+	FUN_SERV_RES_CHANGE = FUN_SERV_FIRST_AVAIL,
-+	FUN_SERV_DEL_PORTS,
++static const char mac_tx_stat_names[][ETH_GSTRING_LEN] = {
++	"mac_tx_octets_total",
++	"mac_tx_frames_total",
++	"mac_tx_vlan_frames_ok",
++	"mac_tx_unicast_frames",
++	"mac_tx_multicast_frames",
++	"mac_tx_broadcast_frames",
++	"mac_tx_errors",
++	"mac_tx_CBFCPAUSE0",
++	"mac_tx_CBFCPAUSE1",
++	"mac_tx_CBFCPAUSE2",
++	"mac_tx_CBFCPAUSE3",
++	"mac_tx_CBFCPAUSE4",
++	"mac_tx_CBFCPAUSE5",
++	"mac_tx_CBFCPAUSE6",
++	"mac_tx_CBFCPAUSE7",
++	"mac_tx_CBFCPAUSE8",
++	"mac_tx_CBFCPAUSE9",
++	"mac_tx_CBFCPAUSE10",
++	"mac_tx_CBFCPAUSE11",
++	"mac_tx_CBFCPAUSE12",
++	"mac_tx_CBFCPAUSE13",
++	"mac_tx_CBFCPAUSE14",
++	"mac_tx_CBFCPAUSE15",
 +};
 +
-+static const struct pci_device_id funeth_id_table[] = {
-+	{ PCI_VDEVICE(FUNGIBLE, 0x0101) },
-+	{ PCI_VDEVICE(FUNGIBLE, 0x0181) },
-+	{ 0, }
++static const char mac_rx_stat_names[][ETH_GSTRING_LEN] = {
++	"mac_rx_octets_total",
++	"mac_rx_frames_total",
++	"mac_rx_VLAN_frames_ok",
++	"mac_rx_unicast_frames",
++	"mac_rx_multicast_frames",
++	"mac_rx_broadcast_frames",
++	"mac_rx_drop_events",
++	"mac_rx_errors",
++	"mac_rx_alignment_errors",
++	"mac_rx_CBFCPAUSE0",
++	"mac_rx_CBFCPAUSE1",
++	"mac_rx_CBFCPAUSE2",
++	"mac_rx_CBFCPAUSE3",
++	"mac_rx_CBFCPAUSE4",
++	"mac_rx_CBFCPAUSE5",
++	"mac_rx_CBFCPAUSE6",
++	"mac_rx_CBFCPAUSE7",
++	"mac_rx_CBFCPAUSE8",
++	"mac_rx_CBFCPAUSE9",
++	"mac_rx_CBFCPAUSE10",
++	"mac_rx_CBFCPAUSE11",
++	"mac_rx_CBFCPAUSE12",
++	"mac_rx_CBFCPAUSE13",
++	"mac_rx_CBFCPAUSE14",
++	"mac_rx_CBFCPAUSE15",
 +};
 +
-+/* Issue a port write admin command with @n key/value pairs. */
-+static int fun_port_write_cmds(struct funeth_priv *fp, unsigned int n,
-+			       const int *keys, const u64 *data)
++static const char * const txq_stat_names[] = {
++	"tx_pkts",
++	"tx_bytes",
++	"tx_cso",
++	"tx_tso",
++	"tx_encapsulated_tso",
++	"tx_more",
++	"tx_queue_stops",
++	"tx_queue_restarts",
++	"tx_mapping_errors",
++	"tx_tls_encrypted_packets",
++	"tx_tls_encrypted_bytes",
++	"tx_tls_ooo",
++	"tx_tls_drop_no_sync_data",
++};
++
++static const char * const xdpq_stat_names[] = {
++	"tx_xdp_pkts",
++	"tx_xdp_bytes",
++	"tx_xdp_full",
++	"tx_xdp_mapping_errors",
++};
++
++static const char * const rxq_stat_names[] = {
++	"rx_pkts",
++	"rx_bytes",
++	"rx_cso",
++	"gro_pkts",
++	"gro_merged",
++	"rx_xdp_tx",
++	"rx_xdp_redir",
++	"rx_xdp_drops",
++	"rx_buffers",
++	"rx_page_allocs",
++	"rx_drops",
++	"rx_budget_exhausted",
++	"rx_mapping_errors",
++};
++
++static const char * const tls_stat_names[] = {
++	"tx_tls_ctx",
++	"tx_tls_del",
++	"tx_tls_resync",
++};
++
++static void fun_link_modes_to_ethtool(u64 modes,
++				      unsigned long *ethtool_modes_map)
 +{
-+	unsigned int cmd_size, i;
-+	union {
-+		struct fun_admin_port_req req;
-+		struct fun_admin_port_rsp rsp;
-+		u8 v[ADMIN_SQE_SIZE];
-+	} cmd;
++#define ADD_LINK_MODE(mode) \
++	__set_bit(ETHTOOL_LINK_MODE_ ## mode ## _BIT, ethtool_modes_map)
 +
-+	cmd_size = offsetof(struct fun_admin_port_req, u.write.write48) +
-+		n * sizeof(struct fun_admin_write48_req);
-+	if (cmd_size > sizeof(cmd) || cmd_size > ADMIN_RSP_MAX_LEN)
-+		return -EINVAL;
-+
-+	cmd.req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_PORT,
-+						    cmd_size);
-+	cmd.req.u.write =
-+		FUN_ADMIN_PORT_WRITE_REQ_INIT(FUN_ADMIN_SUBOP_WRITE, 0,
-+					      fp->netdev->dev_port);
-+	for (i = 0; i < n; i++)
-+		cmd.req.u.write.write48[i] =
-+			FUN_ADMIN_WRITE48_REQ_INIT(keys[i], data[i]);
-+
-+	return fun_submit_admin_sync_cmd(fp->fdev, &cmd.req.common,
-+					 &cmd.rsp, cmd_size, 0);
-+}
-+
-+int fun_port_write_cmd(struct funeth_priv *fp, int key, u64 data)
-+{
-+	return fun_port_write_cmds(fp, 1, &key, &data);
-+}
-+
-+/* Issue a port read admin command with @n key/value pairs. */
-+static int fun_port_read_cmds(struct funeth_priv *fp, unsigned int n,
-+			      const int *keys, u64 *data)
-+{
-+	const struct fun_admin_read48_rsp *r48rsp;
-+	unsigned int cmd_size, i;
-+	int rc;
-+	union {
-+		struct fun_admin_port_req req;
-+		struct fun_admin_port_rsp rsp;
-+		u8 v[ADMIN_SQE_SIZE];
-+	} cmd;
-+
-+	cmd_size = offsetof(struct fun_admin_port_req, u.read.read48) +
-+		n * sizeof(struct fun_admin_read48_req);
-+	if (cmd_size > sizeof(cmd) || cmd_size > ADMIN_RSP_MAX_LEN)
-+		return -EINVAL;
-+
-+	cmd.req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_PORT,
-+						    cmd_size);
-+	cmd.req.u.read =
-+		FUN_ADMIN_PORT_READ_REQ_INIT(FUN_ADMIN_SUBOP_READ, 0,
-+					     fp->netdev->dev_port);
-+	for (i = 0; i < n; i++)
-+		cmd.req.u.read.read48[i] = FUN_ADMIN_READ48_REQ_INIT(keys[i]);
-+
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &cmd.req.common,
-+				       &cmd.rsp, cmd_size, 0);
-+	if (rc)
-+		return rc;
-+
-+	for (r48rsp = cmd.rsp.u.read.read48, i = 0; i < n; i++, r48rsp++) {
-+		data[i] = FUN_ADMIN_READ48_RSP_DATA_G(r48rsp->key_to_data);
-+		dev_dbg(fp->fdev->dev,
-+			"port_read_rsp lport=%u (key_to_data=0x%llx) key=%d data:%lld retval:%lld",
-+			fp->lport, r48rsp->key_to_data, keys[i], data[i],
-+			FUN_ADMIN_READ48_RSP_RET_G(r48rsp->key_to_data));
++	if (modes & FUN_PORT_CAP_AUTONEG)
++		ADD_LINK_MODE(Autoneg);
++	if (modes & FUN_PORT_CAP_1000_X)
++		ADD_LINK_MODE(1000baseX_Full);
++	if (modes & FUN_PORT_CAP_10G_R) {
++		ADD_LINK_MODE(10000baseCR_Full);
++		ADD_LINK_MODE(10000baseSR_Full);
++		ADD_LINK_MODE(10000baseLR_Full);
++		ADD_LINK_MODE(10000baseER_Full);
 +	}
-+	return 0;
++	if (modes & FUN_PORT_CAP_25G_R) {
++		ADD_LINK_MODE(25000baseCR_Full);
++		ADD_LINK_MODE(25000baseSR_Full);
++	}
++	if (modes & FUN_PORT_CAP_40G_R4) {
++		ADD_LINK_MODE(40000baseCR4_Full);
++		ADD_LINK_MODE(40000baseSR4_Full);
++		ADD_LINK_MODE(40000baseLR4_Full);
++	}
++	if (modes & FUN_PORT_CAP_50G_R2) {
++		ADD_LINK_MODE(50000baseCR2_Full);
++		ADD_LINK_MODE(50000baseSR2_Full);
++	}
++	if (modes & FUN_PORT_CAP_50G_R) {
++		ADD_LINK_MODE(50000baseCR_Full);
++		ADD_LINK_MODE(50000baseSR_Full);
++		ADD_LINK_MODE(50000baseLR_ER_FR_Full);
++	}
++	if (modes & FUN_PORT_CAP_100G_R4) {
++		ADD_LINK_MODE(100000baseCR4_Full);
++		ADD_LINK_MODE(100000baseSR4_Full);
++		ADD_LINK_MODE(100000baseLR4_ER4_Full);
++	}
++	if (modes & FUN_PORT_CAP_100G_R2) {
++		ADD_LINK_MODE(100000baseCR2_Full);
++		ADD_LINK_MODE(100000baseSR2_Full);
++		ADD_LINK_MODE(100000baseLR2_ER2_FR2_Full);
++	}
++	if (modes & FUN_PORT_CAP_FEC_NONE)
++		ADD_LINK_MODE(FEC_NONE);
++	if (modes & FUN_PORT_CAP_FEC_FC)
++		ADD_LINK_MODE(FEC_BASER);
++	if (modes & FUN_PORT_CAP_FEC_RS)
++		ADD_LINK_MODE(FEC_RS);
++	if (modes & FUN_PORT_CAP_RX_PAUSE)
++		ADD_LINK_MODE(Pause);
++
++#undef ADD_LINK_MODE
 +}
 +
-+int fun_port_read_cmd(struct funeth_priv *fp, int key, u64 *data)
++static void set_asym_pause(u64 advertising, struct ethtool_link_ksettings *ks)
 +{
-+	return fun_port_read_cmds(fp, 1, &key, data);
++	bool rx_pause, tx_pause;
++
++	rx_pause = advertising & FUN_PORT_CAP_RX_PAUSE;
++	tx_pause = advertising & FUN_PORT_CAP_TX_PAUSE;
++	if (tx_pause ^ rx_pause)
++		ethtool_link_ksettings_add_link_mode(ks, advertising,
++						     Asym_Pause);
 +}
 +
-+static void fun_report_link(struct net_device *netdev)
++static unsigned int fun_port_type(unsigned int xcvr)
 +{
-+	if (netif_carrier_ok(netdev)) {
-+		const struct funeth_priv *fp = netdev_priv(netdev);
-+		const char *fec = "", *pause = "";
-+		int speed = fp->link_speed;
-+		char unit = 'M';
++	if (!xcvr)
++		return PORT_NONE;
 +
-+		if (fp->link_speed >= SPEED_1000) {
-+			speed /= 1000;
-+			unit = 'G';
-+		}
++	switch (xcvr & 7) {
++	case FUN_XCVR_BASET:
++		return PORT_TP;
++	case FUN_XCVR_CU:
++		return PORT_DA;
++	default:
++		return PORT_FIBRE;
++	}
++}
 +
-+		if (fp->active_fec & FUN_PORT_FEC_RS)
-+			fec = ", RS-FEC";
-+		else if (fp->active_fec & FUN_PORT_FEC_FC)
-+			fec = ", BASER-FEC";
++static int fun_get_link_ksettings(struct net_device *netdev,
++				  struct ethtool_link_ksettings *ks)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++	unsigned int seq, speed, xcvr;
++	u64 lp_advertising;
++	bool link_up;
 +
-+		if ((fp->active_fc & FUN_PORT_CAP_PAUSE_MASK) == FUN_PORT_CAP_PAUSE_MASK)
-+			pause = ", Tx/Rx PAUSE";
-+		else if (fp->active_fc & FUN_PORT_CAP_RX_PAUSE)
-+			pause = ", Rx PAUSE";
-+		else if (fp->active_fc & FUN_PORT_CAP_TX_PAUSE)
-+			pause = ", Tx PAUSE";
++	ethtool_link_ksettings_zero_link_mode(ks, supported);
++	ethtool_link_ksettings_zero_link_mode(ks, advertising);
++	ethtool_link_ksettings_zero_link_mode(ks, lp_advertising);
 +
-+		netdev_info(netdev, "Link up at %d %cb/s full-duplex%s%s\n",
-+			    speed, unit, pause, fec);
++	/* Link settings change asynchronously, take a consistent snapshot */
++	do {
++		seq = read_seqcount_begin(&fp->link_seq);
++		link_up = netif_carrier_ok(netdev);
++		speed = fp->link_speed;
++		xcvr = fp->xcvr_type;
++		lp_advertising = fp->lp_advertising;
++	} while (read_seqcount_retry(&fp->link_seq, seq));
++
++	if (link_up) {
++		ks->base.speed = speed;
++		ks->base.duplex = DUPLEX_FULL;
++		fun_link_modes_to_ethtool(lp_advertising,
++					  ks->link_modes.lp_advertising);
 +	} else {
-+		netdev_info(netdev, "Link down\n");
++		ks->base.speed = SPEED_UNKNOWN;
++		ks->base.duplex = DUPLEX_UNKNOWN;
++	}
++
++	ks->base.autoneg = (fp->advertising & FUN_PORT_CAP_AUTONEG) ?
++			   AUTONEG_ENABLE : AUTONEG_DISABLE;
++	ks->base.port = fun_port_type(xcvr);
++
++	fun_link_modes_to_ethtool(fp->port_caps, ks->link_modes.supported);
++	if (fp->port_caps & (FUN_PORT_CAP_RX_PAUSE | FUN_PORT_CAP_TX_PAUSE))
++		ethtool_link_ksettings_add_link_mode(ks, supported, Asym_Pause);
++
++	fun_link_modes_to_ethtool(fp->advertising, ks->link_modes.advertising);
++	set_asym_pause(fp->advertising, ks);
++	return 0;
++}
++
++static u64 fun_advert_modes(const struct ethtool_link_ksettings *ks)
++{
++	u64 modes = 0;
++
++#define HAS_MODE(mode) \
++	ethtool_link_ksettings_test_link_mode(ks, advertising, mode)
++
++	if (HAS_MODE(1000baseX_Full))
++		modes |= FUN_PORT_CAP_1000_X;
++	if (HAS_MODE(10000baseCR_Full) || HAS_MODE(10000baseSR_Full) ||
++	    HAS_MODE(10000baseLR_Full) || HAS_MODE(10000baseER_Full))
++		modes |= FUN_PORT_CAP_10G_R;
++	if (HAS_MODE(25000baseCR_Full) || HAS_MODE(25000baseSR_Full))
++		modes |= FUN_PORT_CAP_25G_R;
++	if (HAS_MODE(40000baseCR4_Full) || HAS_MODE(40000baseSR4_Full) ||
++	    HAS_MODE(40000baseLR4_Full))
++		modes |= FUN_PORT_CAP_40G_R4;
++	if (HAS_MODE(50000baseCR2_Full) || HAS_MODE(50000baseSR2_Full))
++		modes |= FUN_PORT_CAP_50G_R2;
++	if (HAS_MODE(50000baseCR_Full) || HAS_MODE(50000baseSR_Full) ||
++	    HAS_MODE(50000baseLR_ER_FR_Full))
++		modes |= FUN_PORT_CAP_50G_R;
++	if (HAS_MODE(100000baseCR4_Full) || HAS_MODE(100000baseSR4_Full) ||
++	    HAS_MODE(100000baseLR4_ER4_Full))
++		modes |= FUN_PORT_CAP_100G_R4;
++	if (HAS_MODE(100000baseCR2_Full) || HAS_MODE(100000baseSR2_Full) ||
++	    HAS_MODE(100000baseLR2_ER2_FR2_Full))
++		modes |= FUN_PORT_CAP_100G_R2;
++
++	return modes;
++#undef HAS_MODE
++}
++
++static u64 fun_speed_to_link_mode(unsigned int speed)
++{
++	switch (speed) {
++	case SPEED_100000:
++		return FUN_PORT_CAP_100G_R4 | FUN_PORT_CAP_100G_R2;
++	case SPEED_50000:
++		return FUN_PORT_CAP_50G_R | FUN_PORT_CAP_50G_R2;
++	case SPEED_40000:
++		return FUN_PORT_CAP_40G_R4;
++	case SPEED_25000:
++		return FUN_PORT_CAP_25G_R;
++	case SPEED_10000:
++		return FUN_PORT_CAP_10G_R;
++	case SPEED_1000:
++		return FUN_PORT_CAP_1000_X;
++	default:
++		return 0;
 +	}
 +}
 +
-+static int fun_adi_write(struct fun_dev *fdev, enum fun_admin_adi_attr attr,
-+			 unsigned int adi_id, const struct fun_adi_param *param)
++static int fun_change_advert(struct funeth_priv *fp, u64 new_advert)
 +{
-+	struct fun_admin_adi_req req = {
-+		.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_ADI,
-+						     sizeof(req)),
-+		.u.write.subop = FUN_ADMIN_SUBOP_WRITE,
-+		.u.write.attribute = attr,
-+		.u.write.id = cpu_to_be32(adi_id),
-+		.u.write.param = *param
-+	};
++	int err;
 +
-+	return fun_submit_admin_sync_cmd(fdev, &req.common, NULL, 0, 0);
++	if (new_advert == fp->advertising)
++		return 0;
++
++	err = fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_ADVERT, new_advert);
++	if (!err)
++		fp->advertising = new_advert;
++	return err;
 +}
 +
-+/* Configure RSS for the given port. @op determines whether a new RSS context
-+ * is to be created or whether an existing one should be reconfigured. The
-+ * remaining parameters specify the hashing algorithm, key, and indirection
-+ * table.
-+ *
-+ * This initiates packet delivery to the Rx queues set in the indirection
-+ * table.
-+ */
-+int fun_config_rss(struct net_device *dev, int algo, const u8 *key,
-+		   const u32 *qtable, u8 op)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	unsigned int table_len = fp->indir_table_nentries;
-+	unsigned int len = FUN_ETH_RSS_MAX_KEY_SIZE + sizeof(u32) * table_len;
-+	struct funeth_rxq **rxqs = rtnl_dereference(fp->rxqs);
-+	union {
-+		struct {
-+			struct fun_admin_rss_req req;
-+			struct fun_dataop_gl gl;
-+		};
-+		struct fun_admin_generic_create_rsp rsp;
-+	} cmd;
-+	__be32 *indir_tab;
-+	u16 flags;
-+	int rc;
++#define FUN_PORT_CAP_FEC_MASK \
++	(FUN_PORT_CAP_FEC_NONE | FUN_PORT_CAP_FEC_FC | FUN_PORT_CAP_FEC_RS)
 +
-+	if (op != FUN_ADMIN_SUBOP_CREATE && fp->rss_hw_id == FUN_HCI_ID_INVALID)
++static int fun_set_link_ksettings(struct net_device *netdev,
++				  const struct ethtool_link_ksettings *ks)
++{
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported) = {};
++	struct funeth_priv *fp = netdev_priv(netdev);
++	u64 new_advert;
++
++	/* eswitch ports don't support mode changes */
++	if (fp->port_caps & FUN_PORT_CAP_VPORT)
++		return -EOPNOTSUPP;
++
++	if (ks->base.duplex == DUPLEX_HALF)
++		return -EINVAL;
++	if (ks->base.autoneg == AUTONEG_ENABLE &&
++	    !(fp->port_caps & FUN_PORT_CAP_AUTONEG))
 +		return -EINVAL;
 +
-+	flags = op == FUN_ADMIN_SUBOP_CREATE ?
-+			FUN_ADMIN_RES_CREATE_FLAG_ALLOCATOR : 0;
-+	cmd.req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_RSS,
-+						    sizeof(cmd));
-+	cmd.req.u.create =
-+		FUN_ADMIN_RSS_CREATE_REQ_INIT(op, flags, fp->rss_hw_id,
-+					      dev->dev_port, algo,
-+					      FUN_ETH_RSS_MAX_KEY_SIZE,
-+					      table_len, 0,
-+					      FUN_ETH_RSS_MAX_KEY_SIZE);
-+	cmd.req.u.create.dataop = FUN_DATAOP_HDR_INIT(1, 0, 1, 0, len);
-+	fun_dataop_gl_init(&cmd.gl, 0, 0, len, fp->rss_dma_addr);
++	if (ks->base.autoneg == AUTONEG_ENABLE) {
++		if (linkmode_empty(ks->link_modes.advertising))
++			return -EINVAL;
 +
-+	/* write the key and indirection table into the RSS DMA area */
-+	memcpy(fp->rss_cfg, key, FUN_ETH_RSS_MAX_KEY_SIZE);
-+	indir_tab = fp->rss_cfg + FUN_ETH_RSS_MAX_KEY_SIZE;
-+	for (rc = 0; rc < table_len; rc++)
-+		*indir_tab++ = cpu_to_be32(rxqs[*qtable++]->hw_cqid);
++		fun_link_modes_to_ethtool(fp->port_caps, supported);
++		if (!linkmode_subset(ks->link_modes.advertising, supported))
++			return -EINVAL;
 +
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &cmd.req.common,
-+				       &cmd.rsp, sizeof(cmd.rsp), 0);
-+	if (!rc && op == FUN_ADMIN_SUBOP_CREATE)
-+		fp->rss_hw_id = be32_to_cpu(cmd.rsp.id);
-+	return rc;
-+}
-+
-+/* Destroy the HW RSS conntext associated with the given port. This also stops
-+ * all packet delivery to our Rx queues.
-+ */
-+static void fun_destroy_rss(struct funeth_priv *fp)
-+{
-+	if (fp->rss_hw_id != FUN_HCI_ID_INVALID) {
-+		fun_res_destroy(fp->fdev, FUN_ADMIN_OP_RSS, 0, fp->rss_hw_id);
-+		fp->rss_hw_id = FUN_HCI_ID_INVALID;
++		new_advert = fun_advert_modes(ks) | FUN_PORT_CAP_AUTONEG;
++	} else {
++		new_advert = fun_speed_to_link_mode(ks->base.speed);
++		new_advert &= fp->port_caps;
++		if (!new_advert)
++			return -EINVAL;
 +	}
++	new_advert |= fp->advertising &
++		      (FUN_PORT_CAP_PAUSE_MASK | FUN_PORT_CAP_FEC_MASK);
++
++	return fun_change_advert(fp, new_advert);
 +}
 +
-+static void fun_irq_aff_notify(struct irq_affinity_notify *notify,
-+			       const cpumask_t *mask)
++static void fun_get_pauseparam(struct net_device *netdev,
++			       struct ethtool_pauseparam *pause)
 +{
-+	struct fun_irq *p = container_of(notify, struct fun_irq, aff_notify);
++	const struct funeth_priv *fp = netdev_priv(netdev);
++	u8 active_pause = fp->active_fc;
 +
-+	cpumask_copy(&p->affinity_mask, mask);
++	pause->rx_pause = !!(active_pause & FUN_PORT_CAP_RX_PAUSE);
++	pause->tx_pause = !!(active_pause & FUN_PORT_CAP_TX_PAUSE);
++	pause->autoneg = !!(fp->advertising & FUN_PORT_CAP_AUTONEG);
 +}
 +
-+static void fun_irq_aff_release(struct kref __always_unused *ref)
-+{
-+}
-+
-+/* Allocate an IRQ structure, assign an MSI-X index and initial affinity to it,
-+ * and add it to the IRQ XArray.
-+ */
-+static struct fun_irq *fun_alloc_qirq(struct funeth_priv *fp, unsigned int idx,
-+				      int node, unsigned int xa_idx_offset)
-+{
-+	struct fun_irq *irq;
-+	int cpu, res;
-+
-+	cpu = cpumask_local_spread(idx, node);
-+	node = local_memory_node(cpu_to_node(cpu));
-+
-+	irq = kzalloc_node(sizeof(*irq), GFP_KERNEL, node);
-+	if (!irq)
-+		return ERR_PTR(-ENOMEM);
-+
-+	res = fun_reserve_irqs(fp->fdev, 1, &irq->irq_idx);
-+	if (res != 1)
-+		goto free_irq;
-+
-+	res = xa_insert(&fp->irqs, idx + xa_idx_offset, irq, GFP_KERNEL);
-+	if (res)
-+		goto release_irq;
-+
-+	irq->irq = pci_irq_vector(fp->pdev, irq->irq_idx);
-+	cpumask_set_cpu(cpu, &irq->affinity_mask);
-+	irq->aff_notify.notify = fun_irq_aff_notify;
-+	irq->aff_notify.release = fun_irq_aff_release;
-+	irq->state = FUN_IRQ_INIT;
-+	return irq;
-+
-+release_irq:
-+	fun_release_irqs(fp->fdev, 1, &irq->irq_idx);
-+free_irq:
-+	kfree(irq);
-+	return ERR_PTR(res);
-+}
-+
-+static void fun_free_qirq(struct funeth_priv *fp, struct fun_irq *irq)
-+{
-+	netif_napi_del(&irq->napi);
-+	fun_release_irqs(fp->fdev, 1, &irq->irq_idx);
-+	kfree(irq);
-+}
-+
-+/* Release the IRQs reserved for Tx/Rx queues that aren't being used. */
-+static void fun_prune_queue_irqs(struct net_device *dev)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	unsigned int nreleased = 0;
-+	struct fun_irq *irq;
-+	unsigned long idx;
-+
-+	xa_for_each(&fp->irqs, idx, irq) {
-+		if (irq->txq || irq->rxq)  /* skip those in use */
-+			continue;
-+
-+		xa_erase(&fp->irqs, idx);
-+		fun_free_qirq(fp, irq);
-+		nreleased++;
-+		if (idx < fp->rx_irq_ofst)
-+			fp->num_tx_irqs--;
-+		else
-+			fp->num_rx_irqs--;
-+	}
-+	netif_info(fp, intr, dev, "Released %u queue IRQs\n", nreleased);
-+}
-+
-+/* Reserve IRQs, one per queue, to acommodate the requested queue numbers @ntx
-+ * and @nrx. IRQs are added incrementally to those we already have.
-+ * We hold on to allocated IRQs until garbage collection of unused IRQs is
-+ * separately requested.
-+ */
-+static int fun_alloc_queue_irqs(struct net_device *dev, unsigned int ntx,
-+				unsigned int nrx)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	int node = dev_to_node(&fp->pdev->dev);
-+	struct fun_irq *irq;
-+	unsigned int i;
-+
-+	for (i = fp->num_tx_irqs; i < ntx; i++) {
-+		irq = fun_alloc_qirq(fp, i, node, 0);
-+		if (IS_ERR(irq))
-+			return PTR_ERR(irq);
-+
-+		fp->num_tx_irqs++;
-+		netif_tx_napi_add(dev, &irq->napi, fun_txq_napi_poll,
-+				  NAPI_POLL_WEIGHT);
-+	}
-+
-+	for (i = fp->num_rx_irqs; i < nrx; i++) {
-+		irq = fun_alloc_qirq(fp, i, node, fp->rx_irq_ofst);
-+		if (IS_ERR(irq))
-+			return PTR_ERR(irq);
-+
-+		fp->num_rx_irqs++;
-+		netif_napi_add(dev, &irq->napi, fun_rxq_napi_poll,
-+			       NAPI_POLL_WEIGHT);
-+	}
-+
-+	netif_info(fp, intr, dev, "Reserved %u/%u IRQs for Tx/Rx queues\n",
-+		   ntx, nrx);
-+	return 0;
-+}
-+
-+static void free_txqs(struct funeth_txq **txqs, unsigned int nqs,
-+		      unsigned int start, int state)
-+{
-+	unsigned int i;
-+
-+	for (i = start; i < nqs && txqs[i]; i++)
-+		txqs[i] = funeth_txq_free(txqs[i], state);
-+}
-+
-+static int alloc_txqs(struct net_device *dev, struct funeth_txq **txqs,
-+		      unsigned int nqs, unsigned int depth, unsigned int start,
-+		      int state)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	unsigned int i;
-+	int err;
-+
-+	for (i = start; i < nqs; i++) {
-+		err = funeth_txq_create(dev, i, depth, xa_load(&fp->irqs, i),
-+					state, &txqs[i]);
-+		if (err) {
-+			free_txqs(txqs, nqs, start, FUN_QSTATE_DESTROYED);
-+			return err;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static void free_rxqs(struct funeth_rxq **rxqs, unsigned int nqs,
-+		      unsigned int start, int state)
-+{
-+	unsigned int i;
-+
-+	for (i = start; i < nqs && rxqs[i]; i++)
-+		rxqs[i] = funeth_rxq_free(rxqs[i], state);
-+}
-+
-+static int alloc_rxqs(struct net_device *dev, struct funeth_rxq **rxqs,
-+		      unsigned int nqs, unsigned int ncqe, unsigned int nrqe,
-+		      unsigned int start, int state)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	unsigned int i;
-+	int err;
-+
-+	for (i = start; i < nqs; i++) {
-+		err = funeth_rxq_create(dev, i, ncqe, nrqe,
-+					xa_load(&fp->irqs, i + fp->rx_irq_ofst),
-+					state, &rxqs[i]);
-+		if (err) {
-+			free_rxqs(rxqs, nqs, start, FUN_QSTATE_DESTROYED);
-+			return err;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static void free_xdpqs(struct funeth_txq **xdpqs, unsigned int nqs,
-+		       unsigned int start, int state)
-+{
-+	unsigned int i;
-+
-+	for (i = start; i < nqs && xdpqs[i]; i++)
-+		xdpqs[i] = funeth_txq_free(xdpqs[i], state);
-+
-+	if (state == FUN_QSTATE_DESTROYED)
-+		kfree(xdpqs);
-+}
-+
-+static struct funeth_txq **alloc_xdpqs(struct net_device *dev, unsigned int nqs,
-+				       unsigned int depth, unsigned int start,
-+				       int state)
-+{
-+	struct funeth_txq **xdpqs;
-+	unsigned int i;
-+	int err;
-+
-+	xdpqs = kcalloc(nqs, sizeof(*xdpqs), GFP_KERNEL);
-+	if (!xdpqs)
-+		return ERR_PTR(-ENOMEM);
-+
-+	for (i = start; i < nqs; i++) {
-+		err = funeth_txq_create(dev, i, depth, NULL, state, &xdpqs[i]);
-+		if (err) {
-+			free_xdpqs(xdpqs, nqs, start, FUN_QSTATE_DESTROYED);
-+			return ERR_PTR(err);
-+		}
-+	}
-+	return xdpqs;
-+}
-+
-+static void fun_free_rings(struct net_device *netdev, struct fun_qset *qset)
++static int fun_set_pauseparam(struct net_device *netdev,
++			      struct ethtool_pauseparam *pause)
 +{
 +	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct funeth_txq **xdpqs = qset->xdpqs;
-+	struct funeth_rxq **rxqs = qset->rxqs;
++	u64 new_advert;
 +
-+	/* qset may not specify any queues to operate on. In that case the
-+	 * currently installed queues are implied.
-+	 */
-+	if (!rxqs) {
-+		rxqs = rtnl_dereference(fp->rxqs);
-+		xdpqs = rtnl_dereference(fp->xdpqs);
-+		qset->txqs = fp->txqs;
-+		qset->nrxqs = netdev->real_num_rx_queues;
-+		qset->ntxqs = netdev->real_num_tx_queues;
-+		qset->nxdpqs = fp->num_xdpqs;
-+	}
-+	if (!rxqs)
-+		return;
++	if (fp->port_caps & FUN_PORT_CAP_VPORT)
++		return -EOPNOTSUPP;
++	/* Forcing PAUSE settings with AN enabled is unsupported. */
++	if (!pause->autoneg && (fp->advertising & FUN_PORT_CAP_AUTONEG))
++		return -EOPNOTSUPP;
++	if (pause->autoneg && !(fp->advertising & FUN_PORT_CAP_AUTONEG))
++		return -EINVAL;
++	if (pause->tx_pause && !(fp->port_caps & FUN_PORT_CAP_TX_PAUSE))
++		return -EINVAL;
++	if (pause->rx_pause && !(fp->port_caps & FUN_PORT_CAP_RX_PAUSE))
++		return -EINVAL;
 +
-+	if (rxqs == rtnl_dereference(fp->rxqs)) {
-+		rcu_assign_pointer(fp->rxqs, NULL);
-+		rcu_assign_pointer(fp->xdpqs, NULL);
-+		synchronize_net();
-+		fp->txqs = NULL;
-+	}
++	new_advert = fp->advertising & ~FUN_PORT_CAP_PAUSE_MASK;
++	if (pause->tx_pause)
++		new_advert |= FUN_PORT_CAP_TX_PAUSE;
++	if (pause->rx_pause)
++		new_advert |= FUN_PORT_CAP_RX_PAUSE;
 +
-+	free_rxqs(rxqs, qset->nrxqs, qset->rxq_start, qset->state);
-+	free_txqs(qset->txqs, qset->ntxqs, qset->txq_start, qset->state);
-+	free_xdpqs(xdpqs, qset->nxdpqs, qset->xdpq_start, qset->state);
-+	if (qset->state == FUN_QSTATE_DESTROYED)
-+		kfree(rxqs);
-+
-+	/* Tell the caller which queues were operated on. */
-+	qset->rxqs = rxqs;
-+	qset->xdpqs = xdpqs;
++	return fun_change_advert(fp, new_advert);
 +}
 +
-+static int fun_alloc_rings(struct net_device *netdev, struct fun_qset *qset)
++static int fun_restart_an(struct net_device *netdev)
 +{
-+	struct funeth_txq **xdpqs = NULL, **txqs;
++	struct funeth_priv *fp = netdev_priv(netdev);
++
++	if (!(fp->advertising & FUN_PORT_CAP_AUTONEG))
++		return -EOPNOTSUPP;
++
++	return fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_ADVERT,
++				  FUN_PORT_CAP_AUTONEG);
++}
++
++static int fun_set_phys_id(struct net_device *netdev,
++			   enum ethtool_phys_id_state state)
++{
++	struct funeth_priv *fp = netdev_priv(netdev);
++	unsigned int beacon;
++
++	if (fp->port_caps & FUN_PORT_CAP_VPORT)
++		return -EOPNOTSUPP;
++	if (state != ETHTOOL_ID_ACTIVE && state != ETHTOOL_ID_INACTIVE)
++		return -EOPNOTSUPP;
++
++	beacon = state == ETHTOOL_ID_ACTIVE ? FUN_PORT_LED_BEACON_ON :
++					      FUN_PORT_LED_BEACON_OFF;
++	return fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_LED, beacon);
++}
++
++static void fun_get_drvinfo(struct net_device *netdev,
++			    struct ethtool_drvinfo *info)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
++	strscpy(info->bus_info, pci_name(fp->pdev), sizeof(info->bus_info));
++}
++
++static u32 fun_get_msglevel(struct net_device *netdev)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	return fp->msg_enable;
++}
++
++static void fun_set_msglevel(struct net_device *netdev, u32 value)
++{
++	struct funeth_priv *fp = netdev_priv(netdev);
++
++	fp->msg_enable = value;
++}
++
++static int fun_get_regs_len(struct net_device *dev)
++{
++	return NVME_REG_ACQ + sizeof(u64);
++}
++
++static void fun_get_regs(struct net_device *dev, struct ethtool_regs *regs,
++			 void *buf)
++{
++	const struct funeth_priv *fp = netdev_priv(dev);
++	void __iomem *bar = fp->fdev->bar;
++
++	regs->version = 0;
++	*(u64 *)(buf + NVME_REG_CAP)   = readq(bar + NVME_REG_CAP);
++	*(u32 *)(buf + NVME_REG_VS)    = readl(bar + NVME_REG_VS);
++	*(u32 *)(buf + NVME_REG_INTMS) = readl(bar + NVME_REG_INTMS);
++	*(u32 *)(buf + NVME_REG_INTMC) = readl(bar + NVME_REG_INTMC);
++	*(u32 *)(buf + NVME_REG_CC)    = readl(bar + NVME_REG_CC);
++	*(u32 *)(buf + NVME_REG_CSTS)  = readl(bar + NVME_REG_CSTS);
++	*(u32 *)(buf + NVME_REG_AQA)   = readl(bar + NVME_REG_AQA);
++	*(u64 *)(buf + NVME_REG_ASQ)   = readq(bar + NVME_REG_ASQ);
++	*(u64 *)(buf + NVME_REG_ACQ)   = readq(bar + NVME_REG_ACQ);
++}
++
++static int fun_get_coalesce(struct net_device *netdev,
++			    struct ethtool_coalesce *coal,
++			    struct kernel_ethtool_coalesce *kcoal,
++			    struct netlink_ext_ack *ext_ack)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	coal->rx_coalesce_usecs        = fp->rx_coal_usec;
++	coal->rx_max_coalesced_frames  = fp->rx_coal_count;
++	coal->use_adaptive_rx_coalesce = !fp->cq_irq_db;
++	coal->tx_coalesce_usecs        = fp->tx_coal_usec;
++	coal->tx_max_coalesced_frames  = fp->tx_coal_count;
++	return 0;
++}
++
++static int fun_set_coalesce(struct net_device *netdev,
++			    struct ethtool_coalesce *coal,
++			    struct kernel_ethtool_coalesce *kcoal,
++			    struct netlink_ext_ack *ext_ack)
++{
++	struct funeth_priv *fp = netdev_priv(netdev);
 +	struct funeth_rxq **rxqs;
-+	int err;
++	unsigned int i, db_val;
 +
-+	err = fun_alloc_queue_irqs(netdev, qset->ntxqs, qset->nrxqs);
-+	if (err)
-+		return err;
++	if (coal->rx_coalesce_usecs > FUN_DB_INTCOAL_USEC_M ||
++	    coal->rx_max_coalesced_frames > FUN_DB_INTCOAL_ENTRIES_M ||
++	    (coal->rx_coalesce_usecs | coal->rx_max_coalesced_frames) == 0 ||
++	    coal->tx_coalesce_usecs > FUN_DB_INTCOAL_USEC_M ||
++	    coal->tx_max_coalesced_frames > FUN_DB_INTCOAL_ENTRIES_M ||
++	    (coal->tx_coalesce_usecs | coal->tx_max_coalesced_frames) == 0)
++		return -EINVAL;
 +
-+	rxqs = kcalloc(qset->ntxqs + qset->nrxqs, sizeof(*rxqs), GFP_KERNEL);
++	/* a timer is required if there's any coalescing */
++	if ((coal->rx_max_coalesced_frames > 1 && !coal->rx_coalesce_usecs) ||
++	    (coal->tx_max_coalesced_frames > 1 && !coal->tx_coalesce_usecs))
++		return -EINVAL;
++
++	fp->rx_coal_usec  = coal->rx_coalesce_usecs;
++	fp->rx_coal_count = coal->rx_max_coalesced_frames;
++	fp->tx_coal_usec  = coal->tx_coalesce_usecs;
++	fp->tx_coal_count = coal->tx_max_coalesced_frames;
++
++	db_val = FUN_IRQ_CQ_DB(fp->rx_coal_usec, fp->rx_coal_count);
++	WRITE_ONCE(fp->cq_irq_db, db_val);
++
++	rxqs = rtnl_dereference(fp->rxqs);
 +	if (!rxqs)
-+		return -ENOMEM;
-+
-+	if (qset->nxdpqs) {
-+		xdpqs = alloc_xdpqs(netdev, qset->nxdpqs, qset->sq_depth,
-+				    qset->xdpq_start, qset->state);
-+		if (IS_ERR(xdpqs)) {
-+			err = PTR_ERR(xdpqs);
-+			goto free_qvec;
-+		}
-+	}
-+
-+	txqs = (struct funeth_txq **)&rxqs[qset->nrxqs];
-+	err = alloc_txqs(netdev, txqs, qset->ntxqs, qset->sq_depth,
-+			 qset->txq_start, qset->state);
-+	if (err)
-+		goto free_xdpqs;
-+
-+	err = alloc_rxqs(netdev, rxqs, qset->nrxqs, qset->cq_depth,
-+			 qset->rq_depth, qset->rxq_start, qset->state);
-+	if (err)
-+		goto free_txqs;
-+
-+	qset->rxqs = rxqs;
-+	qset->txqs = txqs;
-+	qset->xdpqs = xdpqs;
-+	return 0;
-+
-+free_txqs:
-+	free_txqs(txqs, qset->ntxqs, qset->txq_start, FUN_QSTATE_DESTROYED);
-+free_xdpqs:
-+	free_xdpqs(xdpqs, qset->nxdpqs, qset->xdpq_start, FUN_QSTATE_DESTROYED);
-+free_qvec:
-+	kfree(rxqs);
-+	return err;
-+}
-+
-+/* Take queues to the next level. Presently this means creating them on the
-+ * device.
-+ */
-+static int fun_advance_ring_state(struct net_device *dev, struct fun_qset *qset)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	int i, err;
-+
-+	for (i = 0; i < qset->nrxqs; i++) {
-+		err = fun_rxq_create_dev(qset->rxqs[i],
-+					 xa_load(&fp->irqs,
-+						 i + fp->rx_irq_ofst));
-+		if (err)
-+			goto out;
-+	}
-+
-+	for (i = 0; i < qset->ntxqs; i++) {
-+		err = fun_txq_create_dev(qset->txqs[i], xa_load(&fp->irqs, i));
-+		if (err)
-+			goto out;
-+	}
-+
-+	for (i = 0; i < qset->nxdpqs; i++) {
-+		err = fun_txq_create_dev(qset->xdpqs[i], NULL);
-+		if (err)
-+			goto out;
-+	}
-+
-+	return 0;
-+
-+out:
-+	fun_free_rings(dev, qset);
-+	return err;
-+}
-+
-+static int fun_port_create(struct net_device *netdev)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	union {
-+		struct fun_admin_port_req req;
-+		struct fun_admin_port_rsp rsp;
-+	} cmd;
-+	int rc;
-+
-+	if (fp->lport != INVALID_LPORT)
 +		return 0;
 +
-+	cmd.req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_PORT,
-+						    sizeof(cmd.req));
-+	cmd.req.u.create =
-+		FUN_ADMIN_PORT_CREATE_REQ_INIT(FUN_ADMIN_SUBOP_CREATE, 0,
-+					       netdev->dev_port);
++	for (i = 0; i < netdev->real_num_rx_queues; i++)
++		WRITE_ONCE(rxqs[i]->irq_db_val, db_val);
 +
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &cmd.req.common, &cmd.rsp,
-+				       sizeof(cmd.rsp), 0);
-+
-+	if (!rc)
-+		fp->lport = be16_to_cpu(cmd.rsp.u.create.lport);
-+	return rc;
-+}
-+
-+static int fun_port_destroy(struct net_device *netdev)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+
-+	if (fp->lport == INVALID_LPORT)
-+		return 0;
-+
-+	fp->lport = INVALID_LPORT;
-+	return fun_res_destroy(fp->fdev, FUN_ADMIN_OP_PORT, 0,
-+			       netdev->dev_port);
-+}
-+
-+static int fun_eth_create(struct funeth_priv *fp)
-+{
-+	union {
-+		struct fun_admin_eth_req req;
-+		struct fun_admin_generic_create_rsp rsp;
-+	} cmd;
-+	int rc;
-+
-+	cmd.req.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_ETH,
-+						    sizeof(cmd.req));
-+	cmd.req.u.create = FUN_ADMIN_ETH_CREATE_REQ_INIT(
-+				FUN_ADMIN_SUBOP_CREATE,
-+				FUN_ADMIN_RES_CREATE_FLAG_ALLOCATOR,
-+				0, fp->netdev->dev_port);
-+
-+	rc = fun_submit_admin_sync_cmd(fp->fdev, &cmd.req.common, &cmd.rsp,
-+				       sizeof(cmd.rsp), 0);
-+	return rc ? rc : be32_to_cpu(cmd.rsp.id);
-+}
-+
-+static int fun_vi_create(struct funeth_priv *fp)
-+{
-+	struct fun_admin_vi_req req = {
-+		.common = FUN_ADMIN_REQ_COMMON_INIT2(FUN_ADMIN_OP_VI,
-+						     sizeof(req)),
-+		.u.create = FUN_ADMIN_VI_CREATE_REQ_INIT(FUN_ADMIN_SUBOP_CREATE,
-+							 0,
-+							 fp->netdev->dev_port,
-+							 fp->netdev->dev_port)
-+	};
-+
-+	return fun_submit_admin_sync_cmd(fp->fdev, &req.common, NULL, 0, 0);
-+}
-+
-+/* Helper to create an ETH flow and bind an SQ to it.
-+ * Returns the ETH id (>= 0) on success or a negative error.
-+ */
-+int fun_create_and_bind_tx(struct funeth_priv *fp, u32 sqid)
-+{
-+	int rc, ethid;
-+
-+	ethid = fun_eth_create(fp);
-+	if (ethid >= 0) {
-+		rc = fun_bind(fp->fdev, FUN_ADMIN_BIND_TYPE_EPSQ, sqid,
-+			      FUN_ADMIN_BIND_TYPE_ETH, ethid);
-+		if (rc) {
-+			fun_res_destroy(fp->fdev, FUN_ADMIN_OP_ETH, 0, ethid);
-+			ethid = rc;
-+		}
-+	}
-+	return ethid;
-+}
-+
-+static irqreturn_t fun_queue_irq_handler(int irq, void *data)
-+{
-+	struct fun_irq *p = data;
-+
-+	if (p->rxq) {
-+		prefetch(p->rxq->next_cqe_info);
-+		p->rxq->irq_cnt++;
-+	}
-+	napi_schedule_irqoff(&p->napi);
-+	return IRQ_HANDLED;
-+}
-+
-+static int fun_enable_irqs(struct net_device *dev)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	unsigned long idx, last;
-+	unsigned int qidx;
-+	struct fun_irq *p;
-+	const char *qtype;
-+	int err;
-+
-+	xa_for_each(&fp->irqs, idx, p) {
-+		if (p->txq) {
-+			qtype = "tx";
-+			qidx = p->txq->qidx;
-+		} else if (p->rxq) {
-+			qtype = "rx";
-+			qidx = p->rxq->qidx;
-+		} else {
-+			continue;
-+		}
-+
-+		if (p->state != FUN_IRQ_INIT)
-+			continue;
-+
-+		snprintf(p->name, sizeof(p->name) - 1, "%s-%s-%u", dev->name,
-+			 qtype, qidx);
-+		err = request_irq(p->irq, fun_queue_irq_handler, 0, p->name, p);
-+		if (err) {
-+			netdev_err(dev, "Failed to allocate IRQ %u, err %d\n",
-+				   p->irq, err);
-+			goto unroll;
-+		}
-+		p->state = FUN_IRQ_REQUESTED;
-+	}
-+
-+	xa_for_each(&fp->irqs, idx, p) {
-+		if (p->state != FUN_IRQ_REQUESTED)
-+			continue;
-+		irq_set_affinity_notifier(p->irq, &p->aff_notify);
-+		irq_set_affinity_and_hint(p->irq, &p->affinity_mask);
-+		napi_enable(&p->napi);
-+		p->state = FUN_IRQ_ENABLED;
-+	}
++	db_val = FUN_IRQ_SQ_DB(fp->tx_coal_usec, fp->tx_coal_count);
++	for (i = 0; i < netdev->real_num_tx_queues; i++)
++		WRITE_ONCE(fp->txqs[i]->irq_db_val, db_val);
 +
 +	return 0;
-+
-+unroll:
-+	last = idx - 1;
-+	xa_for_each_range(&fp->irqs, idx, p, 0, last)
-+		if (p->state == FUN_IRQ_REQUESTED) {
-+			free_irq(p->irq, p);
-+			p->state = FUN_IRQ_INIT;
-+		}
-+
-+	return err;
 +}
 +
-+static void fun_disable_one_irq(struct fun_irq *irq)
++static void fun_get_channels(struct net_device *netdev,
++			     struct ethtool_channels *chan)
 +{
-+	napi_disable(&irq->napi);
-+	irq_set_affinity_notifier(irq->irq, NULL);
-+	irq_update_affinity_hint(irq->irq, NULL);
-+	free_irq(irq->irq, irq);
-+	irq->state = FUN_IRQ_INIT;
++	chan->max_rx   = netdev->num_rx_queues;
++	chan->rx_count = netdev->real_num_rx_queues;
++
++	chan->max_tx   = netdev->num_tx_queues;
++	chan->tx_count = netdev->real_num_tx_queues;
 +}
 +
-+static void fun_disable_irqs(struct net_device *dev)
++static int fun_set_channels(struct net_device *netdev,
++			    struct ethtool_channels *chan)
 +{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct fun_irq *p;
-+	unsigned long idx;
++	if (!chan->tx_count || !chan->rx_count)
++		return -EINVAL;
 +
-+	xa_for_each(&fp->irqs, idx, p)
-+		if (p->state == FUN_IRQ_ENABLED)
-+			fun_disable_one_irq(p);
++	if (chan->tx_count == netdev->real_num_tx_queues &&
++	    chan->rx_count == netdev->real_num_rx_queues)
++		return 0;
++
++	if (netif_running(netdev))
++		return fun_change_num_queues(netdev, chan->tx_count,
++					     chan->rx_count);
++
++	fun_set_ring_count(netdev, chan->tx_count, chan->rx_count);
++	return 0;
 +}
 +
-+static void fun_down(struct net_device *dev, struct fun_qset *qset)
++static void fun_get_ringparam(struct net_device *netdev,
++			      struct ethtool_ringparam *ring,
++			      struct kernel_ethtool_ringparam *kring,
++			      struct netlink_ext_ack *extack)
 +{
-+	struct funeth_priv *fp = netdev_priv(dev);
++	const struct funeth_priv *fp = netdev_priv(netdev);
++	unsigned int max_depth = fp->fdev->q_depth;
 +
-+	/* If we don't have queues the data path is already down.
-+	 * Note netif_running(dev) may be true.
++	/* We size CQs to be twice the RQ depth so max RQ depth is half the
++	 * max queue depth.
 +	 */
-+	if (!rcu_access_pointer(fp->rxqs))
-+		return;
++	ring->rx_max_pending = max_depth / 2;
++	ring->tx_max_pending = max_depth;
 +
-+	/* It is also down if the queues aren't on the device. */
-+	if (fp->txqs[0]->init_state >= FUN_QSTATE_INIT_FULL) {
-+		netif_info(fp, ifdown, dev,
-+			   "Tearing down data path on device\n");
-+		fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_DISABLE, 0);
++	ring->rx_pending = fp->rq_depth;
++	ring->tx_pending = fp->sq_depth;
 +
-+		netif_carrier_off(dev);
-+		netif_tx_disable(dev);
-+
-+		fun_destroy_rss(fp);
-+		fun_res_destroy(fp->fdev, FUN_ADMIN_OP_VI, 0, dev->dev_port);
-+		fun_disable_irqs(dev);
-+	}
-+
-+	fun_free_rings(dev, qset);
++	kring->rx_buf_len = PAGE_SIZE;
++	kring->cqe_size = FUNETH_CQE_SIZE;
 +}
 +
-+static int fun_up(struct net_device *dev, struct fun_qset *qset)
-+{
-+	static const int port_keys[] = {
-+		FUN_ADMIN_PORT_KEY_STATS_DMA_LOW,
-+		FUN_ADMIN_PORT_KEY_STATS_DMA_HIGH,
-+		FUN_ADMIN_PORT_KEY_ENABLE
-+	};
-+
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	u64 vals[] = {
-+		lower_32_bits(fp->stats_dma_addr),
-+		upper_32_bits(fp->stats_dma_addr),
-+		FUN_PORT_FLAG_ENABLE_NOTIFY
-+	};
-+	int err;
-+
-+	netif_info(fp, ifup, dev, "Setting up data path on device\n");
-+
-+	if (qset->rxqs[0]->init_state < FUN_QSTATE_INIT_FULL) {
-+		err = fun_advance_ring_state(dev, qset);
-+		if (err)
-+			return err;
-+	}
-+
-+	err = fun_vi_create(fp);
-+	if (err)
-+		goto free_queues;
-+
-+	fp->txqs = qset->txqs;
-+	rcu_assign_pointer(fp->rxqs, qset->rxqs);
-+	rcu_assign_pointer(fp->xdpqs, qset->xdpqs);
-+
-+	err = fun_enable_irqs(dev);
-+	if (err)
-+		goto destroy_vi;
-+
-+	if (fp->rss_cfg) {
-+		err = fun_config_rss(dev, fp->hash_algo, fp->rss_key,
-+				     fp->indir_table, FUN_ADMIN_SUBOP_CREATE);
-+	} else {
-+		/* The non-RSS case has only 1 queue. */
-+		err = fun_bind(fp->fdev, FUN_ADMIN_BIND_TYPE_VI, dev->dev_port,
-+			       FUN_ADMIN_BIND_TYPE_EPCQ,
-+			       qset->rxqs[0]->hw_cqid);
-+	}
-+	if (err)
-+		goto disable_irqs;
-+
-+	err = fun_port_write_cmds(fp, 3, port_keys, vals);
-+	if (err)
-+		goto free_rss;
-+
-+	netif_tx_start_all_queues(dev);
-+	return 0;
-+
-+free_rss:
-+	fun_destroy_rss(fp);
-+disable_irqs:
-+	fun_disable_irqs(dev);
-+destroy_vi:
-+	fun_res_destroy(fp->fdev, FUN_ADMIN_OP_VI, 0, dev->dev_port);
-+free_queues:
-+	fun_free_rings(dev, qset);
-+	return err;
-+}
-+
-+static int funeth_open(struct net_device *netdev)
++static int fun_set_ringparam(struct net_device *netdev,
++			     struct ethtool_ringparam *ring,
++			     struct kernel_ethtool_ringparam *kring,
++			     struct netlink_ext_ack *extack)
 +{
 +	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct fun_qset qset = {
-+		.nrxqs = netdev->real_num_rx_queues,
-+		.ntxqs = netdev->real_num_tx_queues,
-+		.nxdpqs = fp->num_xdpqs,
-+		.cq_depth = fp->cq_depth,
-+		.rq_depth = fp->rq_depth,
-+		.sq_depth = fp->sq_depth,
-+		.state = FUN_QSTATE_INIT_FULL,
-+	};
 +	int rc;
 +
-+	rc = fun_alloc_rings(netdev, &qset);
-+	if (rc)
-+		return rc;
++	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
++		return -EINVAL;
 +
-+	rc = fun_up(netdev, &qset);
-+	if (rc) {
-+		qset.state = FUN_QSTATE_DESTROYED;
-+		fun_free_rings(netdev, &qset);
++	/* queue depths must be powers-of-2 */
++	if (!is_power_of_2(ring->rx_pending) ||
++	    !is_power_of_2(ring->tx_pending))
++		return -EINVAL;
++
++	if (ring->rx_pending < FUNETH_MIN_QDEPTH ||
++	    ring->tx_pending < FUNETH_MIN_QDEPTH)
++		return -EINVAL;
++
++	if (fp->sq_depth == ring->tx_pending &&
++	    fp->rq_depth == ring->rx_pending)
++		return 0;
++
++	if (netif_running(netdev)) {
++		struct fun_qset req = {
++			.cq_depth = 2 * ring->rx_pending,
++			.rq_depth = ring->rx_pending,
++			.sq_depth = ring->tx_pending
++		};
++
++		rc = fun_replace_queues(netdev, &req, extack);
++		if (rc)
++			return rc;
 +	}
 +
-+	return rc;
-+}
-+
-+static int funeth_close(struct net_device *netdev)
-+{
-+	struct fun_qset qset = { .state = FUN_QSTATE_DESTROYED };
-+
-+	fun_down(netdev, &qset);
++	fp->sq_depth = ring->tx_pending;
++	fp->rq_depth = ring->rx_pending;
++	fp->cq_depth = 2 * fp->rq_depth;
 +	return 0;
 +}
 +
-+static void fun_get_stats64(struct net_device *netdev,
-+			    struct rtnl_link_stats64 *stats)
++static int fun_get_sset_count(struct net_device *dev, int sset)
 +{
-+	struct funeth_priv *fp = netdev_priv(netdev);
++	const struct funeth_priv *fp = netdev_priv(dev);
++	int n;
++
++	switch (sset) {
++	case ETH_SS_STATS:
++		n = (dev->real_num_tx_queues + 1) * ARRAY_SIZE(txq_stat_names) +
++		    (dev->real_num_rx_queues + 1) * ARRAY_SIZE(rxq_stat_names) +
++		    (fp->num_xdpqs + 1) * ARRAY_SIZE(xdpq_stat_names) +
++		    ARRAY_SIZE(tls_stat_names);
++		if (fp->port_caps & FUN_PORT_CAP_STATS) {
++			n += ARRAY_SIZE(mac_tx_stat_names) +
++			     ARRAY_SIZE(mac_rx_stat_names);
++		}
++		return n;
++	default:
++		break;
++	}
++	return 0;
++}
++
++static void fun_get_strings(struct net_device *netdev, u32 sset, u8 *data)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++	unsigned int i, j;
++	u8 *p = data;
++
++	switch (sset) {
++	case ETH_SS_STATS:
++		if (fp->port_caps & FUN_PORT_CAP_STATS) {
++			memcpy(p, mac_tx_stat_names, sizeof(mac_tx_stat_names));
++			p += sizeof(mac_tx_stat_names);
++			memcpy(p, mac_rx_stat_names, sizeof(mac_rx_stat_names));
++			p += sizeof(mac_rx_stat_names);
++		}
++
++		for (i = 0; i < netdev->real_num_tx_queues; i++) {
++			for (j = 0; j < ARRAY_SIZE(txq_stat_names); j++)
++				ethtool_sprintf(&p, "%s[%u]", txq_stat_names[j],
++						i);
++		}
++		for (j = 0; j < ARRAY_SIZE(txq_stat_names); j++)
++			ethtool_sprintf(&p, txq_stat_names[j]);
++
++		for (i = 0; i < fp->num_xdpqs; i++) {
++			for (j = 0; j < ARRAY_SIZE(xdpq_stat_names); j++)
++				ethtool_sprintf(&p, "%s[%u]",
++						xdpq_stat_names[j], i);
++		}
++		for (j = 0; j < ARRAY_SIZE(xdpq_stat_names); j++)
++			ethtool_sprintf(&p, xdpq_stat_names[j]);
++
++		for (i = 0; i < netdev->real_num_rx_queues; i++) {
++			for (j = 0; j < ARRAY_SIZE(rxq_stat_names); j++)
++				ethtool_sprintf(&p, "%s[%u]", rxq_stat_names[j],
++						i);
++		}
++		for (j = 0; j < ARRAY_SIZE(rxq_stat_names); j++)
++			ethtool_sprintf(&p, rxq_stat_names[j]);
++
++		for (j = 0; j < ARRAY_SIZE(tls_stat_names); j++)
++			ethtool_sprintf(&p, tls_stat_names[j]);
++		break;
++	default:
++		break;
++	}
++}
++
++static u64 *get_mac_stats(const struct funeth_priv *fp, u64 *data)
++{
++#define TX_STAT(s) \
++	*data++ = be64_to_cpu(fp->stats[PORT_MAC_RX_STATS_MAX + PORT_MAC_TX_##s])
++
++	TX_STAT(etherStatsOctets);
++	TX_STAT(etherStatsPkts);
++	TX_STAT(VLANTransmittedOK);
++	TX_STAT(ifOutUcastPkts);
++	TX_STAT(ifOutMulticastPkts);
++	TX_STAT(ifOutBroadcastPkts);
++	TX_STAT(ifOutErrors);
++	TX_STAT(CBFCPAUSEFramesTransmitted_0);
++	TX_STAT(CBFCPAUSEFramesTransmitted_1);
++	TX_STAT(CBFCPAUSEFramesTransmitted_2);
++	TX_STAT(CBFCPAUSEFramesTransmitted_3);
++	TX_STAT(CBFCPAUSEFramesTransmitted_4);
++	TX_STAT(CBFCPAUSEFramesTransmitted_5);
++	TX_STAT(CBFCPAUSEFramesTransmitted_6);
++	TX_STAT(CBFCPAUSEFramesTransmitted_7);
++	TX_STAT(CBFCPAUSEFramesTransmitted_8);
++	TX_STAT(CBFCPAUSEFramesTransmitted_9);
++	TX_STAT(CBFCPAUSEFramesTransmitted_10);
++	TX_STAT(CBFCPAUSEFramesTransmitted_11);
++	TX_STAT(CBFCPAUSEFramesTransmitted_12);
++	TX_STAT(CBFCPAUSEFramesTransmitted_13);
++	TX_STAT(CBFCPAUSEFramesTransmitted_14);
++	TX_STAT(CBFCPAUSEFramesTransmitted_15);
++
++#define RX_STAT(s) *data++ = be64_to_cpu(fp->stats[PORT_MAC_RX_##s])
++
++	RX_STAT(etherStatsOctets);
++	RX_STAT(etherStatsPkts);
++	RX_STAT(VLANReceivedOK);
++	RX_STAT(ifInUcastPkts);
++	RX_STAT(ifInMulticastPkts);
++	RX_STAT(ifInBroadcastPkts);
++	RX_STAT(etherStatsDropEvents);
++	RX_STAT(ifInErrors);
++	RX_STAT(aAlignmentErrors);
++	RX_STAT(CBFCPAUSEFramesReceived_0);
++	RX_STAT(CBFCPAUSEFramesReceived_1);
++	RX_STAT(CBFCPAUSEFramesReceived_2);
++	RX_STAT(CBFCPAUSEFramesReceived_3);
++	RX_STAT(CBFCPAUSEFramesReceived_4);
++	RX_STAT(CBFCPAUSEFramesReceived_5);
++	RX_STAT(CBFCPAUSEFramesReceived_6);
++	RX_STAT(CBFCPAUSEFramesReceived_7);
++	RX_STAT(CBFCPAUSEFramesReceived_8);
++	RX_STAT(CBFCPAUSEFramesReceived_9);
++	RX_STAT(CBFCPAUSEFramesReceived_10);
++	RX_STAT(CBFCPAUSEFramesReceived_11);
++	RX_STAT(CBFCPAUSEFramesReceived_12);
++	RX_STAT(CBFCPAUSEFramesReceived_13);
++	RX_STAT(CBFCPAUSEFramesReceived_14);
++	RX_STAT(CBFCPAUSEFramesReceived_15);
++
++	return data;
++
++#undef TX_STAT
++#undef RX_STAT
++}
++
++static void fun_get_ethtool_stats(struct net_device *netdev,
++				  struct ethtool_stats *stats, u64 *data)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++	struct funeth_txq_stats txs;
++	struct funeth_rxq_stats rxs;
 +	struct funeth_txq **xdpqs;
 +	struct funeth_rxq **rxqs;
 +	unsigned int i, start;
++	u64 *totals, *tot;
 +
-+	stats->tx_packets = fp->tx_packets;
-+	stats->tx_bytes   = fp->tx_bytes;
-+	stats->tx_dropped = fp->tx_dropped;
++	if (fp->port_caps & FUN_PORT_CAP_STATS)
++		data = get_mac_stats(fp, data);
 +
-+	stats->rx_packets = fp->rx_packets;
-+	stats->rx_bytes   = fp->rx_bytes;
-+	stats->rx_dropped = fp->rx_dropped;
-+
-+	rcu_read_lock();
-+	rxqs = rcu_dereference(fp->rxqs);
++	rxqs = rtnl_dereference(fp->rxqs);
 +	if (!rxqs)
-+		goto unlock;
++		return;
++
++#define ADD_STAT(cnt) do { \
++	*data = (cnt); *tot++ += *data++; \
++} while (0)
++
++	/* Tx queues */
++	totals = data + netdev->real_num_tx_queues * ARRAY_SIZE(txq_stat_names);
 +
 +	for (i = 0; i < netdev->real_num_tx_queues; i++) {
-+		struct funeth_txq_stats txs;
++		tot = totals;
 +
 +		FUN_QSTAT_READ(fp->txqs[i], start, txs);
-+		stats->tx_packets += txs.tx_pkts;
-+		stats->tx_bytes   += txs.tx_bytes;
-+		stats->tx_dropped += txs.tx_map_err;
++
++		ADD_STAT(txs.tx_pkts);
++		ADD_STAT(txs.tx_bytes);
++		ADD_STAT(txs.tx_cso);
++		ADD_STAT(txs.tx_tso);
++		ADD_STAT(txs.tx_encap_tso);
++		ADD_STAT(txs.tx_more);
++		ADD_STAT(txs.tx_nstops);
++		ADD_STAT(txs.tx_nrestarts);
++		ADD_STAT(txs.tx_map_err);
++		ADD_STAT(txs.tx_tls_pkts);
++		ADD_STAT(txs.tx_tls_bytes);
++		ADD_STAT(txs.tx_tls_fallback);
++		ADD_STAT(txs.tx_tls_drops);
 +	}
++	data += ARRAY_SIZE(txq_stat_names);
 +
-+	for (i = 0; i < netdev->real_num_rx_queues; i++) {
-+		struct funeth_rxq_stats rxs;
-+
-+		FUN_QSTAT_READ(rxqs[i], start, rxs);
-+		stats->rx_packets += rxs.rx_pkts;
-+		stats->rx_bytes   += rxs.rx_bytes;
-+		stats->rx_dropped += rxs.rx_map_err + rxs.rx_mem_drops;
-+	}
-+
-+	xdpqs = rcu_dereference(fp->xdpqs);
-+	if (!xdpqs)
-+		goto unlock;
++	/* XDP Tx queues */
++	xdpqs = rtnl_dereference(fp->xdpqs);
++	totals = data + fp->num_xdpqs * ARRAY_SIZE(xdpq_stat_names);
 +
 +	for (i = 0; i < fp->num_xdpqs; i++) {
-+		struct funeth_txq_stats txs;
++		tot = totals;
 +
 +		FUN_QSTAT_READ(xdpqs[i], start, txs);
-+		stats->tx_packets += txs.tx_pkts;
-+		stats->tx_bytes   += txs.tx_bytes;
++
++		ADD_STAT(txs.tx_pkts);
++		ADD_STAT(txs.tx_bytes);
++		ADD_STAT(txs.tx_xdp_full);
++		ADD_STAT(txs.tx_map_err);
 +	}
-+unlock:
-+	rcu_read_unlock();
-+}
++	data += ARRAY_SIZE(xdpq_stat_names);
 +
-+static int fun_change_mtu(struct net_device *netdev, int new_mtu)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	int rc;
++	/* Rx queues */
++	totals = data + netdev->real_num_rx_queues * ARRAY_SIZE(rxq_stat_names);
 +
-+	rc = fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_MTU, new_mtu);
-+	if (!rc)
-+		netdev->mtu = new_mtu;
-+	return rc;
-+}
++	for (i = 0; i < netdev->real_num_rx_queues; i++) {
++		tot = totals;
 +
-+static int fun_set_macaddr(struct net_device *netdev, void *addr)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct sockaddr *saddr = addr;
-+	int rc;
++		FUN_QSTAT_READ(rxqs[i], start, rxs);
 +
-+	if (!is_valid_ether_addr(saddr->sa_data))
-+		return -EADDRNOTAVAIL;
-+
-+	if (ether_addr_equal(netdev->dev_addr, saddr->sa_data))
-+		return 0;
-+
-+	rc = fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_MACADDR,
-+				ether_addr_to_u64(saddr->sa_data));
-+	if (!rc)
-+		eth_hw_addr_set(netdev, saddr->sa_data);
-+	return rc;
-+}
-+
-+static int fun_get_port_attributes(struct net_device *netdev)
-+{
-+	static const int keys[] = {
-+		FUN_ADMIN_PORT_KEY_MACADDR, FUN_ADMIN_PORT_KEY_CAPABILITIES,
-+		FUN_ADMIN_PORT_KEY_ADVERT, FUN_ADMIN_PORT_KEY_MTU
-+	};
-+	static const int phys_keys[] = {
-+		FUN_ADMIN_PORT_KEY_LANE_ATTRS,
-+	};
-+
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+	u64 data[ARRAY_SIZE(keys)];
-+	u8 mac[ETH_ALEN];
-+	int i, rc;
-+
-+	rc = fun_port_read_cmds(fp, ARRAY_SIZE(keys), keys, data);
-+	if (rc)
-+		return rc;
-+
-+	for (i = 0; i < ARRAY_SIZE(keys); i++) {
-+		switch (keys[i]) {
-+		case FUN_ADMIN_PORT_KEY_MACADDR:
-+			u64_to_ether_addr(data[i], mac);
-+			if (is_zero_ether_addr(mac)) {
-+				eth_hw_addr_random(netdev);
-+			} else if (is_valid_ether_addr(mac)) {
-+				eth_hw_addr_set(netdev, mac);
-+			} else {
-+				netdev_err(netdev,
-+					   "device provided a bad MAC address %pM\n",
-+					   mac);
-+				return -EINVAL;
-+			}
-+			break;
-+
-+		case FUN_ADMIN_PORT_KEY_CAPABILITIES:
-+			fp->port_caps = data[i];
-+			break;
-+
-+		case FUN_ADMIN_PORT_KEY_ADVERT:
-+			fp->advertising = data[i];
-+			break;
-+
-+		case FUN_ADMIN_PORT_KEY_MTU:
-+			netdev->mtu = data[i];
-+			break;
-+		}
++		ADD_STAT(rxs.rx_pkts);
++		ADD_STAT(rxs.rx_bytes);
++		ADD_STAT(rxs.rx_cso);
++		ADD_STAT(rxs.gro_pkts);
++		ADD_STAT(rxs.gro_merged);
++		ADD_STAT(rxs.xdp_tx);
++		ADD_STAT(rxs.xdp_redir);
++		ADD_STAT(rxs.xdp_drops);
++		ADD_STAT(rxs.rx_bufs);
++		ADD_STAT(rxs.rx_page_alloc);
++		ADD_STAT(rxs.rx_mem_drops + rxs.xdp_err);
++		ADD_STAT(rxs.rx_budget);
++		ADD_STAT(rxs.rx_map_err);
 +	}
++	data += ARRAY_SIZE(rxq_stat_names);
++#undef ADD_STAT
 +
-+	if (!(fp->port_caps & FUN_PORT_CAP_VPORT)) {
-+		rc = fun_port_read_cmds(fp, ARRAY_SIZE(phys_keys), phys_keys,
-+					data);
-+		if (rc)
-+			return rc;
-+
-+		fp->lane_attrs = data[0];
-+	}
-+
-+	if (netdev->addr_assign_type == NET_ADDR_RANDOM)
-+		return fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_MACADDR,
-+					  ether_addr_to_u64(netdev->dev_addr));
-+	return 0;
++	*data++ = atomic64_read(&fp->tx_tls_add);
++	*data++ = atomic64_read(&fp->tx_tls_del);
++	*data++ = atomic64_read(&fp->tx_tls_resync);
 +}
 +
-+static int fun_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
++#define RX_STAT(fp, s) be64_to_cpu((fp)->stats[PORT_MAC_RX_##s])
++#define TX_STAT(fp, s) \
++	be64_to_cpu((fp)->stats[PORT_MAC_RX_STATS_MAX + PORT_MAC_TX_##s])
++#define FEC_STAT(fp, s) \
++	be64_to_cpu((fp)->stats[PORT_MAC_RX_STATS_MAX + \
++				PORT_MAC_TX_STATS_MAX + PORT_MAC_FEC_##s])
++
++static void fun_get_pause_stats(struct net_device *netdev,
++				struct ethtool_pause_stats *stats)
 +{
-+	const struct funeth_priv *fp = netdev_priv(dev);
-+
-+	return copy_to_user(ifr->ifr_data, &fp->hwtstamp_cfg,
-+			    sizeof(fp->hwtstamp_cfg)) ? -EFAULT : 0;
-+}
-+
-+static int fun_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct hwtstamp_config cfg;
-+
-+	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-+		return -EFAULT;
-+
-+	/* no TX HW timestamps */
-+	cfg.tx_type = HWTSTAMP_TX_OFF;
-+
-+	switch (cfg.rx_filter) {
-+	case HWTSTAMP_FILTER_NONE:
-+		break;
-+	case HWTSTAMP_FILTER_ALL:
-+	case HWTSTAMP_FILTER_SOME:
-+	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-+	case HWTSTAMP_FILTER_NTP_ALL:
-+		cfg.rx_filter = HWTSTAMP_FILTER_ALL;
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	fp->hwtstamp_cfg = cfg;
-+	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-+}
-+
-+static int fun_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+{
-+	switch (cmd) {
-+	case SIOCSHWTSTAMP:
-+		return fun_hwtstamp_set(dev, ifr);
-+	case SIOCGHWTSTAMP:
-+		return fun_hwtstamp_get(dev, ifr);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+/* Prepare the queues for XDP. */
-+static int fun_enter_xdp(struct net_device *dev, struct bpf_prog *prog)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	unsigned int i, nqs = num_online_cpus();
-+	struct funeth_txq **xdpqs;
-+	struct funeth_rxq **rxqs;
-+	int err;
-+
-+	xdpqs = alloc_xdpqs(dev, nqs, fp->sq_depth, 0, FUN_QSTATE_INIT_FULL);
-+	if (IS_ERR(xdpqs))
-+		return PTR_ERR(xdpqs);
-+
-+	rxqs = rtnl_dereference(fp->rxqs);
-+	for (i = 0; i < dev->real_num_rx_queues; i++) {
-+		err = fun_rxq_set_bpf(rxqs[i], prog);
-+		if (err)
-+			goto out;
-+	}
-+
-+	fp->num_xdpqs = nqs;
-+	rcu_assign_pointer(fp->xdpqs, xdpqs);
-+	return 0;
-+out:
-+	while (i--)
-+		fun_rxq_set_bpf(rxqs[i], NULL);
-+
-+	free_xdpqs(xdpqs, nqs, 0, FUN_QSTATE_DESTROYED);
-+	return err;
-+}
-+
-+/* Set the queues for non-XDP operation. */
-+static void fun_end_xdp(struct net_device *dev)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct funeth_txq **xdpqs;
-+	struct funeth_rxq **rxqs;
-+	unsigned int i;
-+
-+	xdpqs = rtnl_dereference(fp->xdpqs);
-+	rcu_assign_pointer(fp->xdpqs, NULL);
-+	synchronize_net();
-+	/* at this point both Rx and Tx XDP processing has ended */
-+
-+	free_xdpqs(xdpqs, fp->num_xdpqs, 0, FUN_QSTATE_DESTROYED);
-+	fp->num_xdpqs = 0;
-+
-+	rxqs = rtnl_dereference(fp->rxqs);
-+	for (i = 0; i < dev->real_num_rx_queues; i++)
-+		fun_rxq_set_bpf(rxqs[i], NULL);
-+}
-+
-+#define XDP_MAX_MTU \
-+	(PAGE_SIZE - FUN_XDP_HEADROOM - VLAN_ETH_HLEN - FUN_RX_TAILROOM)
-+
-+static int fun_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
-+{
-+	struct bpf_prog *old_prog, *prog = xdp->prog;
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	int i, err;
-+
-+	/* XDP uses at most one buffer */
-+	if (prog && dev->mtu > XDP_MAX_MTU) {
-+		netdev_err(dev, "device MTU %u too large for XDP\n", dev->mtu);
-+		NL_SET_ERR_MSG_MOD(xdp->extack,
-+				   "Device MTU too large for XDP");
-+		return -EINVAL;
-+	}
-+
-+	if (!netif_running(dev)) {
-+		fp->num_xdpqs = prog ? num_online_cpus() : 0;
-+	} else if (prog && !fp->xdp_prog) {
-+		err = fun_enter_xdp(dev, prog);
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(xdp->extack,
-+					   "Failed to set queues for XDP.");
-+			return err;
-+		}
-+	} else if (!prog && fp->xdp_prog) {
-+		fun_end_xdp(dev);
-+	} else {
-+		struct funeth_rxq **rxqs = rtnl_dereference(fp->rxqs);
-+
-+		for (i = 0; i < dev->real_num_rx_queues; i++)
-+			WRITE_ONCE(rxqs[i]->xdp_prog, prog);
-+	}
-+
-+	dev->max_mtu = prog ? XDP_MAX_MTU : FUN_MAX_MTU;
-+	old_prog = xchg(&fp->xdp_prog, prog);
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
-+
-+	return 0;
-+}
-+
-+static int fun_xdp(struct net_device *dev, struct netdev_bpf *xdp)
-+{
-+	switch (xdp->command) {
-+	case XDP_SETUP_PROG:
-+		return fun_xdp_setup(dev, xdp);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static struct devlink_port *fun_get_devlink_port(struct net_device *netdev)
-+{
-+	struct funeth_priv *fp = netdev_priv(netdev);
-+
-+	return &fp->dl_port;
-+}
-+
-+static int fun_init_vports(struct fun_ethdev *ed, unsigned int n)
-+{
-+	if (ed->num_vports)
-+		return -EINVAL;
-+
-+	ed->vport_info = kvcalloc(n, sizeof(*ed->vport_info), GFP_KERNEL);
-+	if (!ed->vport_info)
-+		return -ENOMEM;
-+	ed->num_vports = n;
-+	return 0;
-+}
-+
-+static void fun_free_vports(struct fun_ethdev *ed)
-+{
-+	kvfree(ed->vport_info);
-+	ed->vport_info = NULL;
-+	ed->num_vports = 0;
-+}
-+
-+static struct fun_vport_info *fun_get_vport(struct fun_ethdev *ed,
-+					    unsigned int vport)
-+{
-+	if (!ed->vport_info || vport >= ed->num_vports)
-+		return NULL;
-+
-+	return ed->vport_info + vport;
-+}
-+
-+static int fun_set_vf_mac(struct net_device *dev, int vf, u8 *mac)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct fun_adi_param mac_param = {};
-+	struct fun_dev *fdev = fp->fdev;
-+	struct fun_ethdev *ed = to_fun_ethdev(fdev);
-+	struct fun_vport_info *vi;
-+	int rc = -EINVAL;
-+
-+	if (is_multicast_ether_addr(mac))
-+		return -EINVAL;
-+
-+	mutex_lock(&ed->state_mutex);
-+	vi = fun_get_vport(ed, vf);
-+	if (!vi)
-+		goto unlock;
-+
-+	mac_param.u.mac = FUN_ADI_MAC_INIT(ether_addr_to_u64(mac));
-+	rc = fun_adi_write(fdev, FUN_ADMIN_ADI_ATTR_MACADDR, vf + 1,
-+			   &mac_param);
-+	if (!rc)
-+		ether_addr_copy(vi->mac, mac);
-+unlock:
-+	mutex_unlock(&ed->state_mutex);
-+	return rc;
-+}
-+
-+static int fun_set_vf_vlan(struct net_device *dev, int vf, u16 vlan, u8 qos,
-+			   __be16 vlan_proto)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct fun_adi_param vlan_param = {};
-+	struct fun_dev *fdev = fp->fdev;
-+	struct fun_ethdev *ed = to_fun_ethdev(fdev);
-+	struct fun_vport_info *vi;
-+	int rc = -EINVAL;
-+
-+	if (vlan > 4095 || qos > 7)
-+		return -EINVAL;
-+	if (vlan_proto && vlan_proto != htons(ETH_P_8021Q) &&
-+	    vlan_proto != htons(ETH_P_8021AD))
-+		return -EINVAL;
-+
-+	mutex_lock(&ed->state_mutex);
-+	vi = fun_get_vport(ed, vf);
-+	if (!vi)
-+		goto unlock;
-+
-+	vlan_param.u.vlan = FUN_ADI_VLAN_INIT(be16_to_cpu(vlan_proto),
-+					      ((u16)qos << VLAN_PRIO_SHIFT) | vlan);
-+	rc = fun_adi_write(fdev, FUN_ADMIN_ADI_ATTR_VLAN, vf + 1, &vlan_param);
-+	if (!rc) {
-+		vi->vlan = vlan;
-+		vi->qos = qos;
-+		vi->vlan_proto = vlan_proto;
-+	}
-+unlock:
-+	mutex_unlock(&ed->state_mutex);
-+	return rc;
-+}
-+
-+static int fun_set_vf_rate(struct net_device *dev, int vf, int min_tx_rate,
-+			   int max_tx_rate)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct fun_adi_param rate_param = {};
-+	struct fun_dev *fdev = fp->fdev;
-+	struct fun_ethdev *ed = to_fun_ethdev(fdev);
-+	struct fun_vport_info *vi;
-+	int rc = -EINVAL;
-+
-+	if (min_tx_rate)
-+		return -EINVAL;
-+
-+	mutex_lock(&ed->state_mutex);
-+	vi = fun_get_vport(ed, vf);
-+	if (!vi)
-+		goto unlock;
-+
-+	rate_param.u.rate = FUN_ADI_RATE_INIT(max_tx_rate);
-+	rc = fun_adi_write(fdev, FUN_ADMIN_ADI_ATTR_RATE, vf + 1, &rate_param);
-+	if (!rc)
-+		vi->max_rate = max_tx_rate;
-+unlock:
-+	mutex_unlock(&ed->state_mutex);
-+	return rc;
-+}
-+
-+static int fun_get_vf_config(struct net_device *dev, int vf,
-+			     struct ifla_vf_info *ivi)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct fun_ethdev *ed = to_fun_ethdev(fp->fdev);
-+	const struct fun_vport_info *vi;
-+
-+	mutex_lock(&ed->state_mutex);
-+	vi = fun_get_vport(ed, vf);
-+	if (!vi)
-+		goto unlock;
-+
-+	memset(ivi, 0, sizeof(*ivi));
-+	ivi->vf = vf;
-+	ether_addr_copy(ivi->mac, vi->mac);
-+	ivi->vlan = vi->vlan;
-+	ivi->qos = vi->qos;
-+	ivi->vlan_proto = vi->vlan_proto;
-+	ivi->max_tx_rate = vi->max_rate;
-+	ivi->spoofchk = vi->spoofchk;
-+unlock:
-+	mutex_unlock(&ed->state_mutex);
-+	return vi ? 0 : -EINVAL;
-+}
-+
-+static void fun_uninit(struct net_device *dev)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+
-+	fun_prune_queue_irqs(dev);
-+	xa_destroy(&fp->irqs);
-+}
-+
-+static const struct net_device_ops fun_netdev_ops = {
-+	.ndo_open		= funeth_open,
-+	.ndo_stop		= funeth_close,
-+	.ndo_start_xmit		= fun_start_xmit,
-+	.ndo_get_stats64	= fun_get_stats64,
-+	.ndo_change_mtu		= fun_change_mtu,
-+	.ndo_set_mac_address	= fun_set_macaddr,
-+	.ndo_validate_addr	= eth_validate_addr,
-+	.ndo_eth_ioctl		= fun_ioctl,
-+	.ndo_uninit		= fun_uninit,
-+	.ndo_bpf		= fun_xdp,
-+	.ndo_xdp_xmit		= fun_xdp_xmit_frames,
-+	.ndo_set_vf_mac		= fun_set_vf_mac,
-+	.ndo_set_vf_vlan	= fun_set_vf_vlan,
-+	.ndo_set_vf_rate	= fun_set_vf_rate,
-+	.ndo_get_vf_config	= fun_get_vf_config,
-+	.ndo_get_devlink_port	= fun_get_devlink_port,
-+};
-+
-+#define GSO_ENCAP_FLAGS (NETIF_F_GSO_GRE | NETIF_F_GSO_IPXIP4 | \
-+			 NETIF_F_GSO_IPXIP6 | NETIF_F_GSO_UDP_TUNNEL | \
-+			 NETIF_F_GSO_UDP_TUNNEL_CSUM)
-+#define TSO_FLAGS (NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN)
-+#define VLAN_FEAT (NETIF_F_SG | NETIF_F_HW_CSUM | TSO_FLAGS | \
-+		   GSO_ENCAP_FLAGS | NETIF_F_HIGHDMA)
-+
-+static void fun_dflt_rss_indir(struct funeth_priv *fp, unsigned int nrx)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < fp->indir_table_nentries; i++)
-+		fp->indir_table[i] = ethtool_rxfh_indir_default(i, nrx);
-+}
-+
-+/* Reset the RSS indirection table to equal distribution across the current
-+ * number of Rx queues. Called at init time and whenever the number of Rx
-+ * queues changes subsequently. Note that this may also resize the indirection
-+ * table.
-+ */
-+static void fun_reset_rss_indir(struct net_device *dev, unsigned int nrx)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+
-+	if (!fp->rss_cfg)
-+		return;
-+
-+	/* Set the table size to the max possible that allows an equal number
-+	 * of occurrences of each CQ.
-+	 */
-+	fp->indir_table_nentries = rounddown(FUN_ETH_RSS_MAX_INDIR_ENT, nrx);
-+	fun_dflt_rss_indir(fp, nrx);
-+}
-+
-+/* Update the RSS LUT to contain only queues in [0, nrx). Normally this will
-+ * update the LUT to an equal distribution among nrx queues, If @only_if_needed
-+ * is set the LUT is left unchanged if it already does not reference any queues
-+ * >= nrx.
-+ */
-+static int fun_rss_set_qnum(struct net_device *dev, unsigned int nrx,
-+			    bool only_if_needed)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	u32 old_lut[FUN_ETH_RSS_MAX_INDIR_ENT];
-+	unsigned int i, oldsz;
-+	int err;
-+
-+	if (!fp->rss_cfg)
-+		return 0;
-+
-+	if (only_if_needed) {
-+		for (i = 0; i < fp->indir_table_nentries; i++)
-+			if (fp->indir_table[i] >= nrx)
-+				break;
-+
-+		if (i >= fp->indir_table_nentries)
-+			return 0;
-+	}
-+
-+	memcpy(old_lut, fp->indir_table, sizeof(old_lut));
-+	oldsz = fp->indir_table_nentries;
-+	fun_reset_rss_indir(dev, nrx);
-+
-+	err = fun_config_rss(dev, fp->hash_algo, fp->rss_key,
-+			     fp->indir_table, FUN_ADMIN_SUBOP_MODIFY);
-+	if (!err)
-+		return 0;
-+
-+	memcpy(fp->indir_table, old_lut, sizeof(old_lut));
-+	fp->indir_table_nentries = oldsz;
-+	return err;
-+}
-+
-+/* Allocate the DMA area for the RSS configuration commands to the device, and
-+ * initialize the hash, hash key, indirection table size and its entries to
-+ * their defaults. The indirection table defaults to equal distribution across
-+ * the Rx queues.
-+ */
-+static int fun_init_rss(struct net_device *dev)
-+{
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	size_t size = sizeof(fp->rss_key) + sizeof(fp->indir_table);
-+
-+	fp->rss_hw_id = FUN_HCI_ID_INVALID;
-+	if (!(fp->port_caps & FUN_PORT_CAP_OFFLOADS))
-+		return 0;
-+
-+	fp->rss_cfg = dma_alloc_coherent(&fp->pdev->dev, size,
-+					 &fp->rss_dma_addr, GFP_KERNEL);
-+	if (!fp->rss_cfg)
-+		return -ENOMEM;
-+
-+	fp->hash_algo = FUN_ETH_RSS_ALG_TOEPLITZ;
-+	netdev_rss_key_fill(fp->rss_key, sizeof(fp->rss_key));
-+	fun_reset_rss_indir(dev, dev->real_num_rx_queues);
-+	return 0;
-+}
-+
-+static void fun_free_rss(struct funeth_priv *fp)
-+{
-+	if (fp->rss_cfg) {
-+		dma_free_coherent(&fp->pdev->dev,
-+				  sizeof(fp->rss_key) + sizeof(fp->indir_table),
-+				  fp->rss_cfg, fp->rss_dma_addr);
-+		fp->rss_cfg = NULL;
-+	}
-+}
-+
-+void fun_set_ring_count(struct net_device *netdev, unsigned int ntx,
-+			unsigned int nrx)
-+{
-+	netif_set_real_num_tx_queues(netdev, ntx);
-+	if (nrx != netdev->real_num_rx_queues) {
-+		netif_set_real_num_rx_queues(netdev, nrx);
-+		fun_reset_rss_indir(netdev, nrx);
-+	}
-+}
-+
-+static int fun_init_stats_area(struct funeth_priv *fp)
-+{
-+	unsigned int nstats;
++	const struct funeth_priv *fp = netdev_priv(netdev);
 +
 +	if (!(fp->port_caps & FUN_PORT_CAP_STATS))
++		return;
++
++	stats->tx_pause_frames = TX_STAT(fp, aPAUSEMACCtrlFramesTransmitted);
++	stats->rx_pause_frames = RX_STAT(fp, aPAUSEMACCtrlFramesReceived);
++}
++
++static void fun_get_802_3_stats(struct net_device *netdev,
++				struct ethtool_eth_mac_stats *stats)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	if (!(fp->port_caps & FUN_PORT_CAP_STATS))
++		return;
++
++	stats->FramesTransmittedOK = TX_STAT(fp, aFramesTransmittedOK);
++	stats->FramesReceivedOK = RX_STAT(fp, aFramesReceivedOK);
++	stats->FrameCheckSequenceErrors = RX_STAT(fp, aFrameCheckSequenceErrors);
++	stats->OctetsTransmittedOK = TX_STAT(fp, OctetsTransmittedOK);
++	stats->OctetsReceivedOK = RX_STAT(fp, OctetsReceivedOK);
++	stats->InRangeLengthErrors = RX_STAT(fp, aInRangeLengthErrors);
++	stats->FrameTooLongErrors = RX_STAT(fp, aFrameTooLongErrors);
++}
++
++static void fun_get_802_3_ctrl_stats(struct net_device *netdev,
++				     struct ethtool_eth_ctrl_stats *stats)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	if (!(fp->port_caps & FUN_PORT_CAP_STATS))
++		return;
++
++	stats->MACControlFramesTransmitted = TX_STAT(fp, MACControlFramesTransmitted);
++	stats->MACControlFramesReceived = RX_STAT(fp, MACControlFramesReceived);
++}
++
++static void fun_get_rmon_stats(struct net_device *netdev,
++			       struct ethtool_rmon_stats *stats,
++			       const struct ethtool_rmon_hist_range **ranges)
++{
++	static const struct ethtool_rmon_hist_range rmon_ranges[] = {
++		{   64,    64 },
++		{   65,   127 },
++		{  128,   255 },
++		{  256,   511 },
++		{  512,  1023 },
++		{ 1024,  1518 },
++		{ 1519, 32767 },
++		{}
++	};
++
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	if (!(fp->port_caps & FUN_PORT_CAP_STATS))
++		return;
++
++	stats->undersize_pkts = RX_STAT(fp, etherStatsUndersizePkts);
++	stats->oversize_pkts = RX_STAT(fp, etherStatsOversizePkts);
++	stats->fragments = RX_STAT(fp, etherStatsFragments);
++	stats->jabbers = RX_STAT(fp, etherStatsJabbers);
++
++	stats->hist[0] = RX_STAT(fp, etherStatsPkts64Octets);
++	stats->hist[1] = RX_STAT(fp, etherStatsPkts65to127Octets);
++	stats->hist[2] = RX_STAT(fp, etherStatsPkts128to255Octets);
++	stats->hist[3] = RX_STAT(fp, etherStatsPkts256to511Octets);
++	stats->hist[4] = RX_STAT(fp, etherStatsPkts512to1023Octets);
++	stats->hist[5] = RX_STAT(fp, etherStatsPkts1024to1518Octets);
++	stats->hist[6] = RX_STAT(fp, etherStatsPkts1519toMaxOctets);
++
++	stats->hist_tx[0] = TX_STAT(fp, etherStatsPkts64Octets);
++	stats->hist_tx[1] = TX_STAT(fp, etherStatsPkts65to127Octets);
++	stats->hist_tx[2] = TX_STAT(fp, etherStatsPkts128to255Octets);
++	stats->hist_tx[3] = TX_STAT(fp, etherStatsPkts256to511Octets);
++	stats->hist_tx[4] = TX_STAT(fp, etherStatsPkts512to1023Octets);
++	stats->hist_tx[5] = TX_STAT(fp, etherStatsPkts1024to1518Octets);
++	stats->hist_tx[6] = TX_STAT(fp, etherStatsPkts1519toMaxOctets);
++
++	*ranges = rmon_ranges;
++}
++
++static void fun_get_fec_stats(struct net_device *netdev,
++			      struct ethtool_fec_stats *stats)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	if (!(fp->port_caps & FUN_PORT_CAP_STATS))
++		return;
++
++	stats->corrected_blocks.total = FEC_STAT(fp, Correctable);
++	stats->uncorrectable_blocks.total = FEC_STAT(fp, Uncorrectable);
++}
++
++#undef RX_STAT
++#undef TX_STAT
++#undef FEC_STAT
++
++static int fun_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
++			 u32 *rule_locs)
++{
++	switch (cmd->cmd) {
++	case ETHTOOL_GRXRINGS:
++		cmd->data = netdev->real_num_rx_queues;
 +		return 0;
++	default:
++		break;
++	}
++	return -EOPNOTSUPP;
++}
 +
-+	nstats = PORT_MAC_RX_STATS_MAX + PORT_MAC_TX_STATS_MAX +
-+		 PORT_MAC_FEC_STATS_MAX;
-+
-+	fp->stats = dma_alloc_coherent(&fp->pdev->dev, nstats * sizeof(u64),
-+				       &fp->stats_dma_addr, GFP_KERNEL);
-+	if (!fp->stats)
-+		return -ENOMEM;
++static int fun_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info)
++{
 +	return 0;
 +}
 +
-+static void fun_free_stats_area(struct funeth_priv *fp)
++static u32 fun_get_rxfh_indir_size(struct net_device *netdev)
 +{
-+	unsigned int nstats;
++	const struct funeth_priv *fp = netdev_priv(netdev);
 +
-+	if (fp->stats) {
-+		nstats = PORT_MAC_RX_STATS_MAX + PORT_MAC_TX_STATS_MAX;
-+		dma_free_coherent(&fp->pdev->dev, nstats * sizeof(u64),
-+				  fp->stats, fp->stats_dma_addr);
-+		fp->stats = NULL;
-+	}
++	return fp->indir_table_nentries;
 +}
 +
-+static int fun_dl_port_register(struct net_device *netdev)
++static u32 fun_get_rxfh_key_size(struct net_device *netdev)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	return sizeof(fp->rss_key);
++}
++
++static int fun_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
++			u8 *hfunc)
++{
++	const struct funeth_priv *fp = netdev_priv(netdev);
++
++	if (!fp->rss_cfg)
++		return -EOPNOTSUPP;
++
++	if (indir)
++		memcpy(indir, fp->indir_table,
++		       sizeof(u32) * fp->indir_table_nentries);
++
++	if (key)
++		memcpy(key, fp->rss_key, sizeof(fp->rss_key));
++
++	if (hfunc)
++		*hfunc = fp->hash_algo == FUN_ETH_RSS_ALG_TOEPLITZ ?
++				ETH_RSS_HASH_TOP : ETH_RSS_HASH_CRC32;
++
++	return 0;
++}
++
++static int fun_set_rxfh(struct net_device *netdev, const u32 *indir,
++			const u8 *key, const u8 hfunc)
 +{
 +	struct funeth_priv *fp = netdev_priv(netdev);
-+	struct devlink *dl = priv_to_devlink(fp->fdev);
-+	struct devlink_port_attrs attrs = {};
-+	unsigned int idx;
++	const u32 *rss_indir = indir ? indir : fp->indir_table;
++	const u8 *rss_key = key ? key : fp->rss_key;
++	enum fun_eth_hash_alg algo;
 +
-+	if (fp->port_caps & FUN_PORT_CAP_VPORT) {
-+		attrs.flavour = DEVLINK_PORT_FLAVOUR_VIRTUAL;
-+		idx = fp->lport;
-+	} else {
-+		idx = netdev->dev_port;
-+		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
-+		attrs.lanes = fp->lane_attrs & 7;
-+		if (fp->lane_attrs & FUN_PORT_LANE_SPLIT) {
-+			attrs.split = 1;
-+			attrs.phys.port_number = fp->lport & ~3;
-+			attrs.phys.split_subport_number = fp->lport & 3;
-+		} else {
-+			attrs.phys.port_number = fp->lport;
-+		}
-+	}
++	if (!fp->rss_cfg)
++		return -EOPNOTSUPP;
 +
-+	devlink_port_attrs_set(&fp->dl_port, &attrs);
++	if (hfunc == ETH_RSS_HASH_NO_CHANGE)
++		algo = fp->hash_algo;
++	else if (hfunc == ETH_RSS_HASH_CRC32)
++		algo = FUN_ETH_RSS_ALG_CRC32;
++	else if (hfunc == ETH_RSS_HASH_TOP)
++		algo = FUN_ETH_RSS_ALG_TOEPLITZ;
++	else
++		return -EINVAL;
 +
-+	return devlink_port_register(dl, &fp->dl_port, idx);
-+}
-+
-+/* Determine the max Tx/Rx queues for a port. */
-+static int fun_max_qs(struct fun_ethdev *ed, unsigned int *ntx,
-+		      unsigned int *nrx)
-+{
-+	int neth;
-+
-+	if (ed->num_ports > 1 || is_kdump_kernel()) {
-+		*ntx = 1;
-+		*nrx = 1;
-+		return 0;
-+	}
-+
-+	neth = fun_get_res_count(&ed->fdev, FUN_ADMIN_OP_ETH);
-+	if (neth < 0)
-+		return neth;
-+
-+	/* We determine the max number of queues based on the CPU
-+	 * cores, device interrupts and queues, RSS size, and device Tx flows.
-+	 *
-+	 * - At least 1 Rx and 1 Tx queues.
-+	 * - At most 1 Rx/Tx queue per core.
-+	 * - Each Rx/Tx queue needs 1 SQ.
++	/* If the port is enabled try to reconfigure RSS and keep the new
++	 * settings if successful. If it is down we update the RSS settings
++	 * and apply them at the next UP time.
 +	 */
-+	*ntx = min(ed->nsqs_per_port - 1, num_online_cpus());
-+	*nrx = *ntx;
-+	if (*ntx > neth)
-+		*ntx = neth;
-+	if (*nrx > FUN_ETH_RSS_MAX_INDIR_ENT)
-+		*nrx = FUN_ETH_RSS_MAX_INDIR_ENT;
++	if (netif_running(netdev)) {
++		int rc = fun_config_rss(netdev, algo, rss_key, rss_indir,
++					FUN_ADMIN_SUBOP_MODIFY);
++		if (rc)
++			return rc;
++	}
++
++	fp->hash_algo = algo;
++	if (key)
++		memcpy(fp->rss_key, key, sizeof(fp->rss_key));
++	if (indir)
++		memcpy(fp->indir_table, indir,
++		       sizeof(u32) * fp->indir_table_nentries);
 +	return 0;
 +}
 +
-+static void fun_queue_defaults(struct net_device *dev, unsigned int nsqs)
++static int fun_get_ts_info(struct net_device *netdev,
++			   struct ethtool_ts_info *info)
 +{
-+	unsigned int ntx, nrx;
-+
-+	ntx = min(dev->num_tx_queues, FUN_DFLT_QUEUES);
-+	nrx = min(dev->num_rx_queues, FUN_DFLT_QUEUES);
-+	if (ntx <= nrx) {
-+		ntx = min(ntx, nsqs / 2);
-+		nrx = min(nrx, nsqs - ntx);
-+	} else {
-+		nrx = min(nrx, nsqs / 2);
-+		ntx = min(ntx, nsqs - nrx);
-+	}
-+
-+	netif_set_real_num_tx_queues(dev, ntx);
-+	netif_set_real_num_rx_queues(dev, nrx);
-+}
-+
-+/* Replace the existing Rx/Tx/XDP queues with equal number of queues with
-+ * different settings, e.g. depth. This is a disruptive replacement that
-+ * temporarily shuts down the data path and should be limited to changes that
-+ * can't be applied to live queues. The old queues are always discarded.
-+ */
-+int fun_replace_queues(struct net_device *dev, struct fun_qset *newqs,
-+		       struct netlink_ext_ack *extack)
-+{
-+	struct fun_qset oldqs = { .state = FUN_QSTATE_DESTROYED };
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	int err;
-+
-+	newqs->nrxqs = dev->real_num_rx_queues;
-+	newqs->ntxqs = dev->real_num_tx_queues;
-+	newqs->nxdpqs = fp->num_xdpqs;
-+	newqs->state = FUN_QSTATE_INIT_SW;
-+	err = fun_alloc_rings(dev, newqs);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Unable to allocate memory for new queues, keeping current settings");
-+		return err;
-+	}
-+
-+	fun_down(dev, &oldqs);
-+
-+	err = fun_up(dev, newqs);
-+	if (!err)
-+		return 0;
-+
-+	/* The new queues couldn't be installed. We do not retry the old queues
-+	 * as they are the same to the device as the new queues and would
-+	 * similarly fail.
-+	 */
-+	newqs->state = FUN_QSTATE_DESTROYED;
-+	fun_free_rings(dev, newqs);
-+	NL_SET_ERR_MSG_MOD(extack, "Unable to restore the data path with the new queues.");
-+	return err;
-+}
-+
-+/* Change the number of Rx/Tx queues of a device while it is up. This is done
-+ * by incrementally adding/removing queues to meet the new requirements while
-+ * handling ongoing traffic.
-+ */
-+int fun_change_num_queues(struct net_device *dev, unsigned int ntx,
-+			  unsigned int nrx)
-+{
-+	unsigned int keep_tx = min(dev->real_num_tx_queues, ntx);
-+	unsigned int keep_rx = min(dev->real_num_rx_queues, nrx);
-+	struct funeth_priv *fp = netdev_priv(dev);
-+	struct fun_qset oldqs = {
-+		.rxqs = rtnl_dereference(fp->rxqs),
-+		.txqs = fp->txqs,
-+		.nrxqs = dev->real_num_rx_queues,
-+		.ntxqs = dev->real_num_tx_queues,
-+		.rxq_start = keep_rx,
-+		.txq_start = keep_tx,
-+		.state = FUN_QSTATE_DESTROYED
-+	};
-+	struct fun_qset newqs = {
-+		.nrxqs = nrx,
-+		.ntxqs = ntx,
-+		.rxq_start = keep_rx,
-+		.txq_start = keep_tx,
-+		.cq_depth = fp->cq_depth,
-+		.rq_depth = fp->rq_depth,
-+		.sq_depth = fp->sq_depth,
-+		.state = FUN_QSTATE_INIT_FULL
-+	};
-+	int i, err;
-+
-+	err = fun_alloc_rings(dev, &newqs);
-+	if (err)
-+		goto free_irqs;
-+
-+	err = fun_enable_irqs(dev); /* of any newly added queues */
-+	if (err)
-+		goto free_rings;
-+
-+	/* copy the queues we are keeping to the new set */
-+	memcpy(newqs.rxqs, oldqs.rxqs, keep_rx * sizeof(*oldqs.rxqs));
-+	memcpy(newqs.txqs, fp->txqs, keep_tx * sizeof(*fp->txqs));
-+
-+	if (nrx < dev->real_num_rx_queues) {
-+		err = fun_rss_set_qnum(dev, nrx, true);
-+		if (err)
-+			goto disable_tx_irqs;
-+
-+		for (i = nrx; i < dev->real_num_rx_queues; i++)
-+			fun_disable_one_irq(container_of(oldqs.rxqs[i]->napi,
-+							 struct fun_irq, napi));
-+
-+		netif_set_real_num_rx_queues(dev, nrx);
-+	}
-+
-+	if (ntx < dev->real_num_tx_queues)
-+		netif_set_real_num_tx_queues(dev, ntx);
-+
-+	rcu_assign_pointer(fp->rxqs, newqs.rxqs);
-+	fp->txqs = newqs.txqs;
-+	synchronize_net();
-+
-+	if (ntx > dev->real_num_tx_queues)
-+		netif_set_real_num_tx_queues(dev, ntx);
-+
-+	if (nrx > dev->real_num_rx_queues) {
-+		netif_set_real_num_rx_queues(dev, nrx);
-+		fun_rss_set_qnum(dev, nrx, false);
-+	}
-+
-+	/* disable interrupts of any excess Tx queues */
-+	for (i = keep_tx; i < oldqs.ntxqs; i++)
-+		fun_disable_one_irq(oldqs.txqs[i]->irq);
-+
-+	fun_free_rings(dev, &oldqs);
-+	fun_prune_queue_irqs(dev);
++	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_HARDWARE |
++				SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE |
++				SOF_TIMESTAMPING_RAW_HARDWARE;
++	info->phc_index = -1;
++	info->tx_types = BIT(HWTSTAMP_TX_OFF);
++	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) | BIT(HWTSTAMP_FILTER_ALL);
 +	return 0;
-+
-+disable_tx_irqs:
-+	for (i = oldqs.ntxqs; i < ntx; i++)
-+		fun_disable_one_irq(newqs.txqs[i]->irq);
-+free_rings:
-+	newqs.state = FUN_QSTATE_DESTROYED;
-+	fun_free_rings(dev, &newqs);
-+free_irqs:
-+	fun_prune_queue_irqs(dev);
-+	return err;
 +}
 +
-+static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
++static unsigned int to_ethtool_fec(unsigned int fun_fec)
 +{
-+	struct fun_dev *fdev = &ed->fdev;
-+	struct net_device *netdev;
-+	struct funeth_priv *fp;
-+	unsigned int ntx, nrx;
++	unsigned int fec = 0;
++
++	if (fun_fec == FUN_PORT_FEC_NA)
++		fec |= ETHTOOL_FEC_NONE;
++	if (fun_fec & FUN_PORT_FEC_OFF)
++		fec |= ETHTOOL_FEC_OFF;
++	if (fun_fec & FUN_PORT_FEC_RS)
++		fec |= ETHTOOL_FEC_RS;
++	if (fun_fec & FUN_PORT_FEC_FC)
++		fec |= ETHTOOL_FEC_BASER;
++	if (fun_fec & FUN_PORT_FEC_AUTO)
++		fec |= ETHTOOL_FEC_AUTO;
++	return fec;
++}
++
++static int fun_get_fecparam(struct net_device *netdev,
++			    struct ethtool_fecparam *fec)
++{
++	struct funeth_priv *fp = netdev_priv(netdev);
++	u64 fec_data;
 +	int rc;
 +
-+	rc = fun_max_qs(ed, &ntx, &nrx);
++	rc = fun_port_read_cmd(fp, FUN_ADMIN_PORT_KEY_FEC, &fec_data);
 +	if (rc)
 +		return rc;
 +
-+	netdev = alloc_etherdev_mqs(sizeof(*fp), ntx, nrx);
-+	if (!netdev) {
-+		rc = -ENOMEM;
-+		goto done;
-+	}
-+
-+	netdev->dev_port = portid;
-+	fun_queue_defaults(netdev, ed->nsqs_per_port);
-+
-+	fp = netdev_priv(netdev);
-+	fp->fdev = fdev;
-+	fp->pdev = to_pci_dev(fdev->dev);
-+	fp->netdev = netdev;
-+	xa_init(&fp->irqs);
-+	fp->rx_irq_ofst = ntx;
-+	seqcount_init(&fp->link_seq);
-+
-+	fp->lport = INVALID_LPORT;
-+	rc = fun_port_create(netdev);
-+	if (rc)
-+		goto free_netdev;
-+
-+	/* bind port to admin CQ for async events */
-+	rc = fun_bind(fdev, FUN_ADMIN_BIND_TYPE_PORT, portid,
-+		      FUN_ADMIN_BIND_TYPE_EPCQ, 0);
-+	if (rc)
-+		goto destroy_port;
-+
-+	rc = fun_get_port_attributes(netdev);
-+	if (rc)
-+		goto destroy_port;
-+
-+	rc = fun_init_rss(netdev);
-+	if (rc)
-+		goto destroy_port;
-+
-+	rc = fun_init_stats_area(fp);
-+	if (rc)
-+		goto free_rss;
-+
-+	SET_NETDEV_DEV(netdev, fdev->dev);
-+	netdev->netdev_ops = &fun_netdev_ops;
-+
-+	netdev->hw_features = NETIF_F_SG | NETIF_F_RXHASH | NETIF_F_RXCSUM;
-+	if (fp->port_caps & FUN_PORT_CAP_OFFLOADS)
-+		netdev->hw_features |= NETIF_F_HW_CSUM | TSO_FLAGS;
-+	if (fp->port_caps & FUN_PORT_CAP_ENCAP_OFFLOADS)
-+		netdev->hw_features |= GSO_ENCAP_FLAGS;
-+
-+	netdev->features |= netdev->hw_features | NETIF_F_HIGHDMA;
-+	netdev->vlan_features = netdev->features & VLAN_FEAT;
-+	netdev->mpls_features = netdev->vlan_features;
-+	netdev->hw_enc_features = netdev->hw_features;
-+
-+	netdev->min_mtu = ETH_MIN_MTU;
-+	netdev->max_mtu = FUN_MAX_MTU;
-+
-+	fun_set_ethtool_ops(netdev);
-+
-+	/* configurable parameters */
-+	fp->sq_depth = min(SQ_DEPTH, fdev->q_depth);
-+	fp->cq_depth = min(CQ_DEPTH, fdev->q_depth);
-+	fp->rq_depth = min_t(unsigned int, RQ_DEPTH, fdev->q_depth);
-+	fp->rx_coal_usec  = CQ_INTCOAL_USEC;
-+	fp->rx_coal_count = CQ_INTCOAL_NPKT;
-+	fp->tx_coal_usec  = SQ_INTCOAL_USEC;
-+	fp->tx_coal_count = SQ_INTCOAL_NPKT;
-+	fp->cq_irq_db = FUN_IRQ_CQ_DB(fp->rx_coal_usec, fp->rx_coal_count);
-+
-+	rc = fun_dl_port_register(netdev);
-+	if (rc)
-+		goto free_stats;
-+
-+	fp->ktls_id = FUN_HCI_ID_INVALID;
-+	fun_ktls_init(netdev);            /* optional, failure OK */
-+
-+	netif_carrier_off(netdev);
-+	ed->netdevs[portid] = netdev;
-+	rc = register_netdev(netdev);
-+	if (rc)
-+		goto unreg_devlink;
-+
-+	if (fp->dl_port.devlink)
-+		devlink_port_type_eth_set(&fp->dl_port, netdev);
-+
++	fec->active_fec = to_ethtool_fec(fec_data & 0xff);
++	fec->fec = to_ethtool_fec(fec_data >> 8);
 +	return 0;
-+
-+unreg_devlink:
-+	ed->netdevs[portid] = NULL;
-+	fun_ktls_cleanup(fp);
-+	if (fp->dl_port.devlink)
-+		devlink_port_unregister(&fp->dl_port);
-+free_stats:
-+	fun_free_stats_area(fp);
-+free_rss:
-+	fun_free_rss(fp);
-+destroy_port:
-+	fun_port_destroy(netdev);
-+free_netdev:
-+	free_netdev(netdev);
-+done:
-+	dev_err(fdev->dev, "couldn't allocate port %u, error %d", portid, rc);
-+	return rc;
 +}
 +
-+static void fun_destroy_netdev(struct net_device *netdev)
++static int fun_set_fecparam(struct net_device *netdev,
++			    struct ethtool_fecparam *fec)
 +{
-+	struct funeth_priv *fp;
++	struct funeth_priv *fp = netdev_priv(netdev);
++	u64 fec_mode;
 +
-+	fp = netdev_priv(netdev);
-+	if (fp->dl_port.devlink) {
-+		devlink_port_type_clear(&fp->dl_port);
-+		devlink_port_unregister(&fp->dl_port);
-+	}
-+	unregister_netdev(netdev);
-+	fun_ktls_cleanup(fp);
-+	fun_free_stats_area(fp);
-+	fun_free_rss(fp);
-+	fun_port_destroy(netdev);
-+	free_netdev(netdev);
-+}
-+
-+static int fun_create_ports(struct fun_ethdev *ed, unsigned int nports)
-+{
-+	struct fun_dev *fd = &ed->fdev;
-+	int i, rc;
-+
-+	/* The admin queue takes 1 IRQ and 2 SQs. */
-+	ed->nsqs_per_port = min(fd->num_irqs - 1,
-+				fd->kern_end_qid - 2) / nports;
-+	if (ed->nsqs_per_port < 2) {
-+		dev_err(fd->dev, "Too few SQs for %u ports", nports);
++	switch (fec->fec) {
++	case ETHTOOL_FEC_AUTO:
++		fec_mode = FUN_PORT_FEC_AUTO;
++		break;
++	case ETHTOOL_FEC_OFF:
++		if (!(fp->port_caps & FUN_PORT_CAP_FEC_NONE))
++			return -EINVAL;
++		fec_mode = FUN_PORT_FEC_OFF;
++		break;
++	case ETHTOOL_FEC_BASER:
++		if (!(fp->port_caps & FUN_PORT_CAP_FEC_FC))
++			return -EINVAL;
++		fec_mode = FUN_PORT_FEC_FC;
++		break;
++	case ETHTOOL_FEC_RS:
++		if (!(fp->port_caps & FUN_PORT_CAP_FEC_RS))
++			return -EINVAL;
++		fec_mode = FUN_PORT_FEC_RS;
++		break;
++	default:
 +		return -EINVAL;
 +	}
 +
-+	ed->netdevs = kcalloc(nports, sizeof(*ed->netdevs), GFP_KERNEL);
-+	if (!ed->netdevs)
-+		return -ENOMEM;
-+
-+	ed->num_ports = nports;
-+	for (i = 0; i < nports; i++) {
-+		rc = fun_create_netdev(ed, i);
-+		if (rc)
-+			goto free_netdevs;
-+	}
-+
-+	return 0;
-+
-+free_netdevs:
-+	while (i)
-+		fun_destroy_netdev(ed->netdevs[--i]);
-+	kfree(ed->netdevs);
-+	ed->netdevs = NULL;
-+	ed->num_ports = 0;
-+	return rc;
++	return fun_port_write_cmd(fp, FUN_ADMIN_PORT_KEY_FEC, fec_mode);
 +}
 +
-+static void fun_destroy_ports(struct fun_ethdev *ed)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < ed->num_ports; i++)
-+		fun_destroy_netdev(ed->netdevs[i]);
-+
-+	kfree(ed->netdevs);
-+	ed->netdevs = NULL;
-+	ed->num_ports = 0;
-+}
-+
-+static void fun_update_link_state(const struct fun_ethdev *ed,
-+				  const struct fun_admin_port_notif *notif)
-+{
-+	unsigned int port_idx = be16_to_cpu(notif->id);
-+	struct net_device *netdev;
-+	struct funeth_priv *fp;
-+
-+	if (port_idx >= ed->num_ports)
-+		return;
-+
-+	netdev = ed->netdevs[port_idx];
-+	fp = netdev_priv(netdev);
-+
-+	write_seqcount_begin(&fp->link_seq);
-+	fp->link_speed = be32_to_cpu(notif->speed) * 10;  /* 10 Mbps->Mbps */
-+	fp->active_fc = notif->flow_ctrl;
-+	fp->active_fec = notif->fec;
-+	fp->xcvr_type = notif->xcvr_type;
-+	fp->link_down_reason = notif->link_down_reason;
-+	fp->lp_advertising = be64_to_cpu(notif->lp_advertising);
-+
-+	if ((notif->link_state | notif->missed_events) & FUN_PORT_FLAG_MAC_DOWN)
-+		netif_carrier_off(netdev);
-+	if (notif->link_state & FUN_PORT_FLAG_MAC_UP)
-+		netif_carrier_on(netdev);
-+
-+	write_seqcount_end(&fp->link_seq);
-+	fun_report_link(netdev);
-+}
-+
-+/* handler for async events delivered through the admin CQ */
-+static void fun_event_cb(struct fun_dev *fdev, void *entry)
-+{
-+	u8 op = ((struct fun_admin_rsp_common *)entry)->op;
-+
-+	if (op == FUN_ADMIN_OP_PORT) {
-+		const struct fun_admin_port_notif *rsp = entry;
-+
-+		if (rsp->subop == FUN_ADMIN_SUBOP_NOTIFY) {
-+			fun_update_link_state(to_fun_ethdev(fdev), rsp);
-+		} else if (rsp->subop == FUN_ADMIN_SUBOP_RES_COUNT) {
-+			const struct fun_admin_res_count_rsp *r = entry;
-+
-+			if (r->count.data)
-+				set_bit(FUN_SERV_RES_CHANGE, &fdev->service_flags);
-+			else
-+				set_bit(FUN_SERV_DEL_PORTS, &fdev->service_flags);
-+			fun_serv_sched(fdev);
-+		} else {
-+			dev_info(fdev->dev, "adminq event unexpected op %u subop %u",
-+				 op, rsp->subop);
-+		}
-+	} else {
-+		dev_info(fdev->dev, "adminq event unexpected op %u", op);
-+	}
-+}
-+
-+/* handler for pending work managed by the service task */
-+static void fun_service_cb(struct fun_dev *fdev)
-+{
-+	struct fun_ethdev *ed = to_fun_ethdev(fdev);
-+	int rc;
-+
-+	if (test_and_clear_bit(FUN_SERV_DEL_PORTS, &fdev->service_flags))
-+		fun_destroy_ports(ed);
-+
-+	if (!test_and_clear_bit(FUN_SERV_RES_CHANGE, &fdev->service_flags))
-+		return;
-+
-+	rc = fun_get_res_count(fdev, FUN_ADMIN_OP_PORT);
-+	if (rc < 0 || rc == ed->num_ports)
-+		return;
-+
-+	if (ed->num_ports)
-+		fun_destroy_ports(ed);
-+	if (rc)
-+		fun_create_ports(ed, rc);
-+}
-+
-+static int funeth_sriov_configure(struct pci_dev *pdev, int nvfs)
-+{
-+	struct fun_dev *fdev = pci_get_drvdata(pdev);
-+	struct fun_ethdev *ed = to_fun_ethdev(fdev);
-+	int rc;
-+
-+	if (nvfs == 0) {
-+		if (pci_vfs_assigned(pdev)) {
-+			dev_warn(&pdev->dev,
-+				 "Cannot disable SR-IOV while VFs are assigned\n");
-+			return -EPERM;
-+		}
-+
-+		mutex_lock(&ed->state_mutex);
-+		fun_free_vports(ed);
-+		mutex_unlock(&ed->state_mutex);
-+		pci_disable_sriov(pdev);
-+		return 0;
-+	}
-+
-+	rc = pci_enable_sriov(pdev, nvfs);
-+	if (rc)
-+		return rc;
-+
-+	mutex_lock(&ed->state_mutex);
-+	rc = fun_init_vports(ed, nvfs);
-+	mutex_unlock(&ed->state_mutex);
-+	if (rc) {
-+		pci_disable_sriov(pdev);
-+		return rc;
-+	}
-+
-+	return nvfs;
-+}
-+
-+static int funeth_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct fun_dev_params aqreq = {
-+		.cqe_size_log2 = ilog2(ADMIN_CQE_SIZE),
-+		.sqe_size_log2 = ilog2(ADMIN_SQE_SIZE),
-+		.cq_depth      = ADMIN_CQ_DEPTH,
-+		.sq_depth      = ADMIN_SQ_DEPTH,
-+		.rq_depth      = ADMIN_RQ_DEPTH,
-+		.min_msix      = 2,              /* 1 Rx + 1 Tx */
-+		.event_cb      = fun_event_cb,
-+		.serv_cb       = fun_service_cb,
-+	};
-+	struct devlink *devlink;
-+	struct fun_ethdev *ed;
-+	struct fun_dev *fdev;
-+	int rc;
-+
-+	devlink = fun_devlink_alloc(&pdev->dev);
-+	if (!devlink) {
-+		dev_err(&pdev->dev, "devlink alloc failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	ed = devlink_priv(devlink);
-+	mutex_init(&ed->state_mutex);
-+
-+	fdev = &ed->fdev;
-+	rc = fun_dev_enable(fdev, pdev, &aqreq, KBUILD_MODNAME);
-+	if (rc)
-+		goto free_devlink;
-+
-+	rc = fun_get_res_count(fdev, FUN_ADMIN_OP_PORT);
-+	if (rc > 0)
-+		rc = fun_create_ports(ed, rc);
-+	if (rc < 0)
-+		goto disable_dev;
-+
-+	fun_serv_restart(fdev);
-+	fun_devlink_register(devlink);
-+	return 0;
-+
-+disable_dev:
-+	fun_dev_disable(fdev);
-+free_devlink:
-+	mutex_destroy(&ed->state_mutex);
-+	fun_devlink_free(devlink);
-+	return rc;
-+}
-+
-+static void funeth_remove(struct pci_dev *pdev)
-+{
-+	struct fun_dev *fdev = pci_get_drvdata(pdev);
-+	struct devlink *devlink;
-+	struct fun_ethdev *ed;
-+
-+	ed = to_fun_ethdev(fdev);
-+	devlink = priv_to_devlink(ed);
-+	fun_devlink_unregister(devlink);
-+
-+#ifdef CONFIG_PCI_IOV
-+	funeth_sriov_configure(pdev, 0);
-+#endif
-+
-+	fun_serv_stop(fdev);
-+	fun_destroy_ports(ed);
-+	fun_dev_disable(fdev);
-+	mutex_destroy(&ed->state_mutex);
-+
-+	fun_devlink_free(devlink);
-+}
-+
-+static struct pci_driver funeth_driver = {
-+	.name		 = KBUILD_MODNAME,
-+	.id_table	 = funeth_id_table,
-+	.probe		 = funeth_probe,
-+	.remove		 = funeth_remove,
-+	.shutdown	 = funeth_remove,
-+	.sriov_configure = funeth_sriov_configure,
++static const struct ethtool_ops fun_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
++				     ETHTOOL_COALESCE_MAX_FRAMES,
++	.get_link_ksettings  = fun_get_link_ksettings,
++	.set_link_ksettings  = fun_set_link_ksettings,
++	.set_phys_id         = fun_set_phys_id,
++	.get_drvinfo         = fun_get_drvinfo,
++	.get_msglevel        = fun_get_msglevel,
++	.set_msglevel        = fun_set_msglevel,
++	.get_regs_len        = fun_get_regs_len,
++	.get_regs            = fun_get_regs,
++	.get_link	     = ethtool_op_get_link,
++	.get_coalesce        = fun_get_coalesce,
++	.set_coalesce        = fun_set_coalesce,
++	.get_ts_info         = fun_get_ts_info,
++	.get_ringparam       = fun_get_ringparam,
++	.set_ringparam       = fun_set_ringparam,
++	.get_sset_count      = fun_get_sset_count,
++	.get_strings         = fun_get_strings,
++	.get_ethtool_stats   = fun_get_ethtool_stats,
++	.get_rxnfc	     = fun_get_rxnfc,
++	.set_rxnfc           = fun_set_rxnfc,
++	.get_rxfh_indir_size = fun_get_rxfh_indir_size,
++	.get_rxfh_key_size   = fun_get_rxfh_key_size,
++	.get_rxfh            = fun_get_rxfh,
++	.set_rxfh            = fun_set_rxfh,
++	.get_channels        = fun_get_channels,
++	.set_channels        = fun_set_channels,
++	.get_fecparam	     = fun_get_fecparam,
++	.set_fecparam	     = fun_set_fecparam,
++	.get_pauseparam      = fun_get_pauseparam,
++	.set_pauseparam      = fun_set_pauseparam,
++	.nway_reset          = fun_restart_an,
++	.get_pause_stats     = fun_get_pause_stats,
++	.get_fec_stats       = fun_get_fec_stats,
++	.get_eth_mac_stats   = fun_get_802_3_stats,
++	.get_eth_ctrl_stats  = fun_get_802_3_ctrl_stats,
++	.get_rmon_stats      = fun_get_rmon_stats,
 +};
 +
-+module_pci_driver(funeth_driver);
-+
-+MODULE_AUTHOR("Dimitris Michailidis <dmichail@fungible.com>");
-+MODULE_DESCRIPTION("Fungible Ethernet Network Driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-+MODULE_DEVICE_TABLE(pci, funeth_id_table);
++void fun_set_ethtool_ops(struct net_device *netdev)
++{
++	netdev->ethtool_ops = &fun_ethtool_ops;
++}
 -- 
 2.25.1
 
