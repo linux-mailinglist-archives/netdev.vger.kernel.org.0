@@ -2,144 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 684464C4174
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:30:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C75784C40DD
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbiBYJa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 04:30:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
+        id S238756AbiBYJD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 04:03:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238185AbiBYJaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:30:25 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2056.outbound.protection.outlook.com [40.107.237.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18511965E5
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 01:29:53 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HkVkZxeftG/8TgvDsLAQ7c2acuMSl+HF3LvJLoxGojb88+q49vTuUlr2IiuyiUGB4MTST15/wZAtZ19g2qrpzioOp8lt5IAGU4Y8JXx63H/rU/C/bWgmnxGvYRnnMfaXFWwfn+k/0LgYN/Y5+povTlre1l87g2LB5jE8VaLBC5NdUH8JCmPeXGKVTiGq3KkPwbRIfaNla1h7yaNG//+umpPVMBzccPsDv8HrscGZ6wql6kC4IhM6fqH/AW7FWo64eyQBJBb9iRIJChGOPyyiscwK9YIjyot9OuwgNsYXKeq2UN0Mgguk05/BFCiaW+O42vF2SpUy09qtAUG0hyz9RA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9GJQJwOa9AcqQeg2mgEA1Vq8jDcziFeNA35x5pmC8Mc=;
- b=mQC/y97xq47vw6qvZJ/qMI4GvR1pQsqi3MPNEOWe361U3gf++/reWBaoDRx/PFi6oy0ZYk+FzAZBmVknU/4vGkOGb9WTQeqCOgBURudSmwXdo4SFDikCQUnLI613FvJ5O9Mgt+OEBjCEZcQCcRZCpdR6NynzRu8DhSpm9S6A8fU/7k9UXgMedQRWa4tbqzwSLL6GDKavtkfGIxI6KD/TrtVHRkwEBAWST0X6JwV9L5jn4uaF9di7H9FaaxSxrVaaw0zgPJ87BQkwAfNfXx7XbVfmz3kZgntjgFXWl6jeQwIzBiKdpD6Cbdx3xGn/4J7Mp1/fRyv1xAju5jKNRT0v0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9GJQJwOa9AcqQeg2mgEA1Vq8jDcziFeNA35x5pmC8Mc=;
- b=mQZYOWxc44fEBDXqYPdnVIlXSEBbdyBv4SVEEUwFDiVQ1Q3o9f/u9jHFxnJ1JFeXA/aSTvB78vEcZo03wpEw2jADFnPyn8sh4QYIDWEWyTEs6IpcSoIVxZwEqPaTAIESRxJLzeh9SyQHxStZi29zwcgl6AaUJq+4A7j/XYx3M58DmOaXI+hFfoPbinAmSpgD4F6a7u++tqxJu6AAunwZrrYyDYynxoWa3K/+Tosn4FW6wfzNxRc7KgZcZyHVVCUuzLtY0b0v+2Ofj5wTRhEGZbXm0WSCXH1D1/oIv3sPRZ9kvLUO2+XFvzaZ3a0W2Rk6+XtoH2XV0PbiJoF9L47J2A==
-Received: from BN6PR13CA0028.namprd13.prod.outlook.com (2603:10b6:404:13e::14)
- by BN6PR1201MB2546.namprd12.prod.outlook.com (2603:10b6:404:b0::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Fri, 25 Feb
- 2022 09:29:51 +0000
-Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:13e:cafe::a8) by BN6PR13CA0028.outlook.office365.com
- (2603:10b6:404:13e::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.9 via Frontend
- Transport; Fri, 25 Feb 2022 09:29:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 09:29:50 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 25 Feb
- 2022 09:29:49 +0000
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Fri, 25 Feb 2022
- 01:29:46 -0800
-References: <20220224133335.599529-1-idosch@nvidia.com>
- <20220224133335.599529-7-idosch@nvidia.com>
- <20220224222244.0dfadb8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-agent: mu4e 1.6.6; emacs 27.2
-From:   Petr Machata <petrm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Ido Schimmel <idosch@nvidia.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <petrm@nvidia.com>, <jiri@nvidia.com>,
-        <razor@blackwall.org>, <roopa@nvidia.com>, <dsahern@gmail.com>,
-        <andrew@lunn.ch>, <mlxsw@nvidia.com>
-Subject: Re: [PATCH net-next 06/14] net: dev: Add hardware stats support
-Date:   Fri, 25 Feb 2022 09:31:23 +0100
-In-Reply-To: <20220224222244.0dfadb8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Message-ID: <8735k7fg53.fsf@nvidia.com>
+        with ESMTP id S229805AbiBYJD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:03:26 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B021B8CDB5;
+        Fri, 25 Feb 2022 01:02:54 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id bx9-20020a17090af48900b001bc64ee7d3cso4244962pjb.4;
+        Fri, 25 Feb 2022 01:02:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ducc7JXZKPilbiGQb9maeoCw4VcQthlM/33tFBDDEXY=;
+        b=LXxI6oEAqREMBDL8LgEQdui6E2TZcGhmYxgWhOkc6Tozq2/M+EEAiDVhrbhLwLrRbo
+         kuzQdUX+yM8MDIdMaesD0zLI0Y5PdQopdzQOyJAESekaamPrTOgwlJsh8foVRiOqRpWk
+         7eDKJg4b97CSTKGZkZ2u6fC8+2GZrMsIdUJlb8bjiOspJAMfhVaZJDLz/IXKDrL0lEwA
+         12+udt6Isx4rIyzg8BBY6kUaHDZ3WVNqjrzsfKK05FTGOx/VaQSHbsb+zng+7HIsoN1J
+         fZTD7E1fiwoKOtvUJ5a2WJHNI4lbqJ31n5OGDQX4S/uBAMk2g4wxAhwbFOffoQSAV7ym
+         2dqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Ducc7JXZKPilbiGQb9maeoCw4VcQthlM/33tFBDDEXY=;
+        b=ppCx2hpqXobdvFbRZlAESdfwYklfjNEYlDwHwyNwX0L5hYMT0Ktx8mgvf9YtYH2bvu
+         nC7s953UiRmlFzAh5afHnENZOe7bWae/xDt6BHKyCVMq903SAUOxORmQpMf3xXdyq1rs
+         1aDFEcOjdE3314EHn6GXHJh0xGf05ygrdoN9DehDl/z5xxMZUerfuEggRHrFanfdfCf4
+         T6fU0MNMG8xAMwJPzvgxcAyS9yVeEU9fXhcmJOWIxkwolvrCNvVLJOB0ElgRG6UuYvWj
+         wnRJQdqsaYSLckkUTuo8BbUUDey+SDqqxO+iLYiYEmoit82Gp7F//shRmCXyY6c2Ii6v
+         Ko+Q==
+X-Gm-Message-State: AOAM533+xL1ay6jsWkteNUPkcY6ohR+j15Z8gVyv8gYnDGGfsBHoTPVT
+        FXvZQJ8gwpwYBVxQqBQt+VcryDOsc12idXqi
+X-Google-Smtp-Source: ABdhPJylz7bTsGKWA+YqwJVquOZ29LPKyAFu7GqCfzGA8fDlTPSCwefNlBPiXAIqtgZZmbbPXw3W9w==
+X-Received: by 2002:a17:90a:8a14:b0:1bc:1d5e:d852 with SMTP id w20-20020a17090a8a1400b001bc1d5ed852mr2234799pjn.76.1645779774010;
+        Fri, 25 Feb 2022 01:02:54 -0800 (PST)
+Received: from localhost.localdomain ([157.255.44.217])
+        by smtp.gmail.com with ESMTPSA id p1-20020a056a000b4100b004e13df16962sm2406744pfo.217.2022.02.25.01.02.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 01:02:53 -0800 (PST)
+From:   Harold Huang <baymaxhuang@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     jasowang@redhat.com, pabeni@redhat.com,
+        Harold Huang <baymaxhuang@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kernel@vger.kernel.org (open list),
+        bpf@vger.kernel.org (open list:XDP (eXpress Data Path))
+Subject: [PATCH net-next v2] tun: support NAPI for packets received from batched XDP buffs
+Date:   Fri, 25 Feb 2022 17:02:23 +0800
+Message-Id: <20220225090223.636877-1-baymaxhuang@gmail.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220224103852.311369-1-baymaxhuang@gmail.com>
+References: <20220224103852.311369-1-baymaxhuang@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f7a06626-196b-45c7-0796-08d9f8415f8b
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB2546:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR1201MB25464E4264E8187EBEA835E5D63E9@BN6PR1201MB2546.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: v0B7cpr/LUAnhPkbjm2c/TUQflEWgr6x4GCqDZRb2Bk1THPIpB2BrkxYaqag06Y9eweIBYcwWZjsagNTPc9LW8k38l0SEa2t12lMp3IgEnbZVJwQ8JHja41HA7udLbl11kajU8a1uFSZSH9wyzpKogUJPmKI6krut3XfKSWSVvJbFGT15izDYlHjGdw+o00gTh6avWdAmMDC1tXPbQNY9iBU3Mr7Rk6ATjfL1PJCO1lIsazLSXCAc9uhRQNAbgkJc/TA2OJPA5JUliutGQ2HzFrV/erD48ornhwvdyG9A/upW+IQQsvgOJ4sAytpR72nN4xk7bkT8+5ohMLhYSNPiRhMsI5GYFUcbplwJvF8gIbbYbZ/Coka/T1nrHnBiq2n5s/6NbPhy8KSjUzI3/fII0s+lnEKYl3BClMUdcIkguixBkeZFV+8gt98Te4SuyVZZ5cFr8Cj6lkrlsm80KRlAHXCqnuJMuLf5XiYYyf7cGxRAMK35FMipS8GtOZXcCGhwnRG4AprzVseZl55XPWGQUcmmPccmbEcTp9ompVqm6Q+zTN4Iv3rNCrH4wOiLCKW42WTR5Cbd6GrzPEl2xPOTfNyD/KUHlVZMd/HalfbocIAhnVJK+PwlDWsJlyGCkg5kyGDywhlTfapgrc7UY2M+fYWDMMy3K1+lFeBlx2SvZpLGmcTL/Py5fwS+ktXfaZFICVr2Q/ODv8+LSCt9OfyJQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(16526019)(86362001)(70206006)(36860700001)(40460700003)(316002)(6916009)(186003)(4326008)(8676002)(70586007)(508600001)(54906003)(26005)(47076005)(107886003)(6666004)(2616005)(36756003)(336012)(8936002)(81166007)(2906002)(82310400004)(426003)(5660300002)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 09:29:50.7270
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7a06626-196b-45c7-0796-08d9f8415f8b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2546
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In tun, NAPI is supported and we can also use NAPI in the path of
+batched XDP buffs to accelerate packet processing. What is more, after
+we use NAPI, GRO is also supported. The iperf shows that the throughput of
+single stream could be improved from 4.5Gbps to 9.2Gbps. Additionally, 9.2
+Gbps nearly reachs the line speed of the phy nic and there is still about
+15% idle cpu core remaining on the vhost thread.
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Test topology:
 
-> On Thu, 24 Feb 2022 15:33:27 +0200 Ido Schimmel wrote:
->> From: Petr Machata <petrm@nvidia.com>
->> 
->> Offloading switch device drivers may be able to collect statistics of the
->> traffic taking place in the HW datapath that pertains to a certain soft
->> netdevice, such as VLAN. Add the necessary infrastructure to allow exposing
->> these statistics to the offloaded netdevice in question. The API was shaped
->> by the following considerations:
->> 
->> - Collection of HW statistics is not free: there may be a finite number of
->>   counters, and the act of counting may have a performance impact. It is
->>   therefore necessary to allow toggling whether HW counting should be done
->>   for any particular SW netdevice.
->> 
->> - As the drivers are loaded and removed, a particular device may get
->>   offloaded and unoffloaded again. At the same time, the statistics values
->>   need to stay monotonous (modulo the eventual 64-bit wraparound),
->
-> monotonic
+[iperf server]<--->tap<--->dpdk testpmd<--->phy nic<--->[iperf client]
 
-OK.
+Iperf stream:
 
->>   increasing only to reflect traffic measured in the device.
->
->> +	struct rtnl_link_stats64 *offload_xstats_l3;
->
-> Does it make sense to stick to rtnl_link_stats64 for this?
-> There's a lot of.. historical baggage in that struct.
+Before:
+...
+[  5]   5.00-6.00   sec   558 MBytes  4.68 Gbits/sec    0   1.50 MBytes
+[  5]   6.00-7.00   sec   556 MBytes  4.67 Gbits/sec    1   1.35 MBytes
+[  5]   7.00-8.00   sec   556 MBytes  4.67 Gbits/sec    2   1.18 MBytes
+[  5]   8.00-9.00   sec   559 MBytes  4.69 Gbits/sec    0   1.48 MBytes
+[  5]   9.00-10.00  sec   556 MBytes  4.67 Gbits/sec    1   1.33 MBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  5.39 GBytes  4.63 Gbits/sec   72          sender
+[  5]   0.00-10.04  sec  5.39 GBytes  4.61 Gbits/sec               receiver
 
-It seemed like a reasonable default that every tool already understands.
+After:
+...
+[  5]   5.00-6.00   sec  1.07 GBytes  9.19 Gbits/sec    0   1.55 MBytes
+[  5]   6.00-7.00   sec  1.08 GBytes  9.30 Gbits/sec    0   1.63 MBytes
+[  5]   7.00-8.00   sec  1.08 GBytes  9.25 Gbits/sec    0   1.72 MBytes
+[  5]   8.00-9.00   sec  1.08 GBytes  9.25 Gbits/sec   77   1.31 MBytes
+[  5]   9.00-10.00  sec  1.08 GBytes  9.24 Gbits/sec    0   1.48 MBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  10.8 GBytes  9.28 Gbits/sec  166          sender
+[  5]   0.00-10.04  sec  10.8 GBytes  9.24 Gbits/sec               receiver
+....
 
-Was there a discussion in the past about what a cross-vendor stats suite
-should look like? It seems like one of those things that can be bikeshed
-forever...
+Reported-at: https://lore.kernel.org/all/CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com
+Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
+---
+v1 -> v2
+ - fix commit messages
+ - add queued flag to avoid void unnecessary napi suggested by Jason
+
+ drivers/net/tun.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index fed85447701a..c7d8b7c821d8 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2379,7 +2379,7 @@ static void tun_put_page(struct tun_page *tpage)
+ }
+ 
+ static int tun_xdp_one(struct tun_struct *tun,
+-		       struct tun_file *tfile,
++		       struct tun_file *tfile, int *queued,
+ 		       struct xdp_buff *xdp, int *flush,
+ 		       struct tun_page *tpage)
+ {
+@@ -2388,6 +2388,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 	struct virtio_net_hdr *gso = &hdr->gso;
+ 	struct bpf_prog *xdp_prog;
+ 	struct sk_buff *skb = NULL;
++	struct sk_buff_head *queue;
+ 	u32 rxhash = 0, act;
+ 	int buflen = hdr->buflen;
+ 	int err = 0;
+@@ -2464,7 +2465,15 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 	    !tfile->detached)
+ 		rxhash = __skb_get_hash_symmetric(skb);
+ 
+-	netif_receive_skb(skb);
++	if (tfile->napi_enabled) {
++		queue = &tfile->sk.sk_write_queue;
++		spin_lock(&queue->lock);
++		__skb_queue_tail(queue, skb);
++		spin_unlock(&queue->lock);
++		(*queued)++;
++	} else {
++		netif_receive_skb(skb);
++	}
+ 
+ 	/* No need to disable preemption here since this function is
+ 	 * always called with bh disabled
+@@ -2492,7 +2501,7 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 	if (ctl && (ctl->type == TUN_MSG_PTR)) {
+ 		struct tun_page tpage;
+ 		int n = ctl->num;
+-		int flush = 0;
++		int flush = 0, queued = 0;
+ 
+ 		memset(&tpage, 0, sizeof(tpage));
+ 
+@@ -2501,12 +2510,15 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 
+ 		for (i = 0; i < n; i++) {
+ 			xdp = &((struct xdp_buff *)ctl->ptr)[i];
+-			tun_xdp_one(tun, tfile, xdp, &flush, &tpage);
++			tun_xdp_one(tun, tfile, &queued, xdp, &flush, &tpage);
+ 		}
+ 
+ 		if (flush)
+ 			xdp_do_flush();
+ 
++		if (tfile->napi_enabled && queued > 0)
++			napi_schedule(&tfile->napi);
++
+ 		rcu_read_unlock();
+ 		local_bh_enable();
+ 
+-- 
+2.27.0
+
