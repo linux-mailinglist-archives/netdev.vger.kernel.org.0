@@ -2,131 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E5A4C3F40
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3F234C3F7A
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238252AbiBYHsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 02:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
+        id S238282AbiBYHwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 02:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238239AbiBYHsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:48:14 -0500
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4321AA484
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 23:47:41 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 059122059C;
-        Fri, 25 Feb 2022 08:47:40 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 5eNGFlFF8PvL; Fri, 25 Feb 2022 08:47:39 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 36B6F20581;
-        Fri, 25 Feb 2022 08:47:38 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 3190780004A;
-        Fri, 25 Feb 2022 08:47:38 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 25 Feb 2022 08:47:38 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
- 2022 08:47:37 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id BA67A3182F91; Fri, 25 Feb 2022 08:47:36 +0100 (CET)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 6/6] xfrm: enforce validity of offload input flags
-Date:   Fri, 25 Feb 2022 08:47:33 +0100
-Message-ID: <20220225074733.118664-7-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220225074733.118664-1-steffen.klassert@secunet.com>
-References: <20220225074733.118664-1-steffen.klassert@secunet.com>
+        with ESMTP id S238279AbiBYHwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:52:42 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB60F4BBAC
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 23:52:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=yoX1eoFXR6koQBiw+7bPyW6Wds1G5QswMrdNXzAJPp4=; b=nVOUxOFRd7iyICOushjCLFg08M
+        XVaLcz+M3dzPBhTvo3NOeAO9nqxFRvDNl2Dh2N0eGfSsxAerp24mdVmYcQoPM2fpmAv+Xaov2tuyb
+        zD2Be6oWWNrXftsprGqgtQTPZK8NDQsyG6AaRs3nEWVyoU754gIa9rmyTdDB+QwsbxCg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nNVOV-0086Gi-CM; Fri, 25 Feb 2022 08:52:03 +0100
+Date:   Fri, 25 Feb 2022 08:52:03 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dimitris Michailidis <d.michailidis@fungible.com>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v7 4/8] net/funeth: ethtool operations
+Message-ID: <YhiKo8FBHZfeHNXw@lunn.ch>
+References: <20220218234536.9810-1-dmichail@fungible.com>
+ <20220218234536.9810-5-dmichail@fungible.com>
+ <Yhfq1N7ce/adhmN9@lunn.ch>
+ <CAOkoqZmTc6y=qn8WeFmcupPOncCmSSEMgbXPUtR80zyRhn=qdA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOkoqZmTc6y=qn8WeFmcupPOncCmSSEMgbXPUtR80zyRhn=qdA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Feb 24, 2022 at 04:57:36PM -0800, Dimitris Michailidis wrote:
+> On Thu, Feb 24, 2022 at 12:30 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > +static void fun_link_modes_to_ethtool(u64 modes,
+> > > +                                   unsigned long *ethtool_modes_map)
+> > > +{
+> > > +#define ADD_LINK_MODE(mode) \
+> > > +     __set_bit(ETHTOOL_LINK_MODE_ ## mode ## _BIT, ethtool_modes_map)
+> > > +
+> > > +     if (modes & FUN_PORT_CAP_AUTONEG)
+> > > +             ADD_LINK_MODE(Autoneg);
+> > > +     if (modes & FUN_PORT_CAP_1000_X)
+> > > +             ADD_LINK_MODE(1000baseX_Full);
+> > > +     if (modes & FUN_PORT_CAP_10G_R) {
+> > > +             ADD_LINK_MODE(10000baseCR_Full);
+> > > +             ADD_LINK_MODE(10000baseSR_Full);
+> > > +             ADD_LINK_MODE(10000baseLR_Full);
+> > > +             ADD_LINK_MODE(10000baseER_Full);
+> > > +     }
+> >
+> > > +static unsigned int fun_port_type(unsigned int xcvr)
+> > > +{
+> > > +     if (!xcvr)
+> > > +             return PORT_NONE;
+> > > +
+> > > +     switch (xcvr & 7) {
+> > > +     case FUN_XCVR_BASET:
+> > > +             return PORT_TP;
+> >
+> > You support twisted pair, so should you also have the BaseT_FULL link
+> > modes above?
+> 
+> I agree with that but FW currently doesn't report BASE-T speeds in its
+> port capabilities and the link modes are based on them. Looks simple to fix
+> but needs future FW.
 
-struct xfrm_user_offload has flags variable that received user input,
-but kernel didn't check if valid bits were provided. It caused a situation
-where not sanitized input was forwarded directly to the drivers.
+Maybe you should drop PORT_TP until you do have the firmware fixed?
 
-For example, XFRM_OFFLOAD_IPV6 define that was exposed, was used by
-strongswan, but not implemented in the kernel at all.
+> > > +static int fun_set_pauseparam(struct net_device *netdev,
+> > > +                           struct ethtool_pauseparam *pause)
+> > > +{
+> > > +     struct funeth_priv *fp = netdev_priv(netdev);
+> > > +     u64 new_advert;
+> > > +
+> > > +     if (fp->port_caps & FUN_PORT_CAP_VPORT)
+> > > +             return -EOPNOTSUPP;
+> > > +     /* Forcing PAUSE settings with AN enabled is unsupported. */
+> > > +     if (!pause->autoneg && (fp->advertising & FUN_PORT_CAP_AUTONEG))
+> > > +             return -EOPNOTSUPP;
+> >
+> > This seems wrong. You don't advertise you cannot advertise. You simply
+> > don't advertise. It could just be you have a bad variable name here?
+> 
+> advertising & FUN_PORT_CAP_AUTONEG means that AN is enabled, and
+> when this bit is off AN is disabled.
 
-As a solution, check and sanitize input flags to forward
-XFRM_OFFLOAD_INBOUND to the drivers.
+So, i was correct, the name of the variable is not so good. Maybe
+fp->advertising need splitting into two, fp->cap_enabled for
+capabilities of the firmware that are enabled, and fp->advertising for
+what is actually been advertised to the link partner?
 
-Fixes: d77e38e612a0 ("xfrm: Add an IPsec hardware offloading API")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- include/uapi/linux/xfrm.h | 6 ++++++
- net/xfrm/xfrm_device.c    | 6 +++++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index 4e29d7851890..65e13a099b1a 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -511,6 +511,12 @@ struct xfrm_user_offload {
- 	int				ifindex;
- 	__u8				flags;
- };
-+/* This flag was exposed without any kernel code that supporting it.
-+ * Unfortunately, strongswan has the code that uses sets this flag,
-+ * which makes impossible to reuse this bit.
-+ *
-+ * So leave it here to make sure that it won't be reused by mistake.
-+ */
- #define XFRM_OFFLOAD_IPV6	1
- #define XFRM_OFFLOAD_INBOUND	2
- 
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 3fa066419d37..39bce5d764de 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -223,6 +223,9 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
- 	if (x->encap || x->tfcpad)
- 		return -EINVAL;
- 
-+	if (xuo->flags & ~(XFRM_OFFLOAD_IPV6 | XFRM_OFFLOAD_INBOUND))
-+		return -EINVAL;
-+
- 	dev = dev_get_by_index(net, xuo->ifindex);
- 	if (!dev) {
- 		if (!(xuo->flags & XFRM_OFFLOAD_INBOUND)) {
-@@ -262,7 +265,8 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
- 	netdev_tracker_alloc(dev, &xso->dev_tracker, GFP_ATOMIC);
- 	xso->real_dev = dev;
- 	xso->num_exthdrs = 1;
--	xso->flags = xuo->flags;
-+	/* Don't forward bit that is not implemented */
-+	xso->flags = xuo->flags & ~XFRM_OFFLOAD_IPV6;
- 
- 	err = dev->xfrmdev_ops->xdo_dev_state_add(x);
- 	if (err) {
--- 
-2.25.1
-
+     Andrew
