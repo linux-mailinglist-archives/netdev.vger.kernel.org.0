@@ -2,106 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 108D54C3BB7
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 03:27:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3593B4C3BE0
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 03:44:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235390AbiBYC1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 21:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55104 "EHLO
+        id S236835AbiBYCos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 21:44:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231263AbiBYC1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 21:27:41 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3E040912;
-        Thu, 24 Feb 2022 18:27:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645756029; x=1677292029;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pGMxtqj6fQbBiqvL8b0jEE020+1PJHR6Ska29JmSylg=;
-  b=ZwtE9RVNVEyFNPwaYM1RxUMkTNN56BilkbjHQQ248kMvPsNFcStVG+pu
-   xm/J2TbbU2yyOaSzB3udNFdOvG0vfXM7AADMdmrE1dKpj054gkkm6/WUE
-   MMF84VE7Kzk23xUUQL239f08zQkFpywAfBJnzEi08WwLkjYmx1A1teBaQ
-   DMKDVS2/A+lIWVWL5vg9so/zlT7wwG/WEFb82rPZ52dYVrhspPF6wCi3U
-   uRCvLQGVPndy7e+zmXyE9Ny4ev7aSyh8G27z8N+k6MZTSqNSo4hg/H9fL
-   ZjTnbPFw77CaqDzQVSTheXPAtEXbzu3idBZl7kO8cNqwdEPP6iOemq8+M
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252132192"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="252132192"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 18:27:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="509107432"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga006.jf.intel.com with ESMTP; 24 Feb 2022 18:27:09 -0800
-Received: from P12HL01TMIN.png.intel.com (P12HL01TMIN.png.intel.com [10.158.65.75])
-        by linux.intel.com (Postfix) with ESMTP id CC0B5580A6C;
-        Thu, 24 Feb 2022 18:27:06 -0800 (PST)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/1] stmmac: intel: Enable 2.5Gbps for Intel AlderLake-S
-Date:   Fri, 25 Feb 2022 10:33:25 +0800
-Message-Id: <20220225023325.474242-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230028AbiBYCon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 21:44:43 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818832692DD;
+        Thu, 24 Feb 2022 18:44:10 -0800 (PST)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K4Yx02n6mz67y1X;
+        Fri, 25 Feb 2022 10:43:16 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 03:44:07 +0100
+Message-ID: <99c767ce-9725-6675-ca8b-a303aa939e42@huawei.com>
+Date:   Fri, 25 Feb 2022 05:44:06 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
+ <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
+ <4d54e3a9-8a26-d393-3c81-b01389f76f09@digikod.net>
+ <a95b208c-5377-cf5c-0b4d-ce6b4e4b1b05@huawei.com>
+ <b29b2049-a61b-31a0-c4b5-fc0e55ad7bf1@digikod.net>
+ <7a538eb0-00e6-7b15-8409-a09165f72049@huawei.com>
+ <ffedc3d8-a193-b8d1-ddf2-9bd4824f4942@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <ffedc3d8-a193-b8d1-ddf2-9bd4824f4942@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.3 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Intel AlderLake-S platform is capable of running on 2.5GBps link speed.
 
-This patch enables 2.5Gbps link speed on AlderLake-S platform.
 
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+2/24/2022 5:15 PM, Mickaël Salaün пишет:
+> 
+> On 24/02/2022 13:03, Konstantin Meskhidze wrote:
+>>
+>>
+>> 2/24/2022 12:55 PM, Mickaël Salaün пишет:
+>>>
+>>> On 24/02/2022 04:18, Konstantin Meskhidze wrote:
+>>>>
+>>>>
+>>>> 2/1/2022 9:31 PM, Mickaël Salaün пишет:
+>>>>>
+>>>>> On 24/01/2022 09:02, Konstantin Meskhidze wrote:
+>>>>>> Support 4 tests for bind and connect networks actions:
+>>>>>
+>>>>> Good to see such tests!
+>>>>>
+>>>>>
+>>>>>> 1. bind() a socket with no landlock restrictions.
+>>>>>> 2. bind() sockets with landllock restrictions.
+>>>>>
+>>>>> You can leverage the FIXTURE_VARIANT helpers to factor out this 
+>>>>> kind of tests (see ptrace_test.c).
+>>>>>
+>>>>>
+>>>>>> 3. connect() a socket to listening one with no landlock restricitons.
+>>>>>> 4. connect() sockets with landlock restrictions.
+>>>>>
+>>>>> Same here, you can factor out code. I guess you could create 
+>>>>> helpers for client and server parts.
+>>>>>
+>>>>> We also need to test with IPv4, IPv6 and the AF_UNSPEC tricks.
+>>>>>
+>>>>> Please provide the kernel test coverage and explain why the 
+>>>>> uncovered code cannot be covered: 
+>>>>> https://www.kernel.org/doc/html/latest/dev-tools/gcov.html
+>>>>
+>>>>   Hi Mickaёl!
+>>>>   Could you please provide the example of your test coverage build
+>>>>   process? Cause as I undersatand there is no need to get coverage data
+>>>>   for the entire kernel, just for landlock files.
+>>>
+>>> You just need to follow the documentation:
+>>> - start the VM with the kernel appropriately configured for coverage;
+>>> - run all the Landlock tests;
+>>> - gather the coverage and shutdown the VM;
+>>> - use lcov and genhtml to create the web pages;
+>>> - look at the coverage for security/landlock/
+> 
+> It would be interesting to know the coverage for security/landlock/ 
+> before and after your changes, and also specifically for 
+> security/landlock.net.c
+> 
+   I agree! I'm working on it!
+>>>
+>>     Thank you so much!
+>>
+>>     One more questuoin - Is it possible to run Landlock tests in QEMU and
+>>     and gather coverage info or I need to change kernel for the whole VM?
+> 
+> You need to gather the coverage info on the same system that ran the 
+> tests, so with the same kernel supporting both Landlock and gcov. You 
+> can then generate the web pages elsewhere.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 5943ff9f21c2..32ef3df4e266 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -721,6 +721,7 @@ static int tgl_common_data(struct pci_dev *pdev,
- 	plat->rx_queues_to_use = 6;
- 	plat->tx_queues_to_use = 4;
- 	plat->clk_ptp_rate = 200000000;
-+	plat->speed_mode_2500 = intel_speed_mode_2500;
- 
- 	plat->safety_feat_cfg->tsoee = 1;
- 	plat->safety_feat_cfg->mrxpee = 0;
-@@ -740,7 +741,6 @@ static int tgl_sgmii_phy0_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 1;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
--	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return tgl_common_data(pdev, plat);
-@@ -755,7 +755,6 @@ static int tgl_sgmii_phy1_data(struct pci_dev *pdev,
- {
- 	plat->bus_id = 2;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
--	plat->speed_mode_2500 = intel_speed_mode_2500;
- 	plat->serdes_powerup = intel_serdes_powerup;
- 	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return tgl_common_data(pdev, plat);
--- 
-2.25.1
-
+   Thanks again.
+> .
