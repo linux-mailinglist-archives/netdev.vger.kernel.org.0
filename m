@@ -2,112 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F234C3F7A
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 08:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D644C3FD1
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 09:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238282AbiBYHwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 02:52:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S238393AbiBYIM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 03:12:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238279AbiBYHwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 02:52:42 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB60F4BBAC
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 23:52:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=yoX1eoFXR6koQBiw+7bPyW6Wds1G5QswMrdNXzAJPp4=; b=nVOUxOFRd7iyICOushjCLFg08M
-        XVaLcz+M3dzPBhTvo3NOeAO9nqxFRvDNl2Dh2N0eGfSsxAerp24mdVmYcQoPM2fpmAv+Xaov2tuyb
-        zD2Be6oWWNrXftsprGqgtQTPZK8NDQsyG6AaRs3nEWVyoU754gIa9rmyTdDB+QwsbxCg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nNVOV-0086Gi-CM; Fri, 25 Feb 2022 08:52:03 +0100
-Date:   Fri, 25 Feb 2022 08:52:03 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v7 4/8] net/funeth: ethtool operations
-Message-ID: <YhiKo8FBHZfeHNXw@lunn.ch>
-References: <20220218234536.9810-1-dmichail@fungible.com>
- <20220218234536.9810-5-dmichail@fungible.com>
- <Yhfq1N7ce/adhmN9@lunn.ch>
- <CAOkoqZmTc6y=qn8WeFmcupPOncCmSSEMgbXPUtR80zyRhn=qdA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOkoqZmTc6y=qn8WeFmcupPOncCmSSEMgbXPUtR80zyRhn=qdA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S238396AbiBYIMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 03:12:25 -0500
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937DC3A199;
+        Fri, 25 Feb 2022 00:11:51 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V5SAjji_1645776708;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V5SAjji_1645776708)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Feb 2022 16:11:49 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error
+Date:   Fri, 25 Feb 2022 16:11:48 +0800
+Message-Id: <1645776708-66113-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 04:57:36PM -0800, Dimitris Michailidis wrote:
-> On Thu, Feb 24, 2022 at 12:30 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > +static void fun_link_modes_to_ethtool(u64 modes,
-> > > +                                   unsigned long *ethtool_modes_map)
-> > > +{
-> > > +#define ADD_LINK_MODE(mode) \
-> > > +     __set_bit(ETHTOOL_LINK_MODE_ ## mode ## _BIT, ethtool_modes_map)
-> > > +
-> > > +     if (modes & FUN_PORT_CAP_AUTONEG)
-> > > +             ADD_LINK_MODE(Autoneg);
-> > > +     if (modes & FUN_PORT_CAP_1000_X)
-> > > +             ADD_LINK_MODE(1000baseX_Full);
-> > > +     if (modes & FUN_PORT_CAP_10G_R) {
-> > > +             ADD_LINK_MODE(10000baseCR_Full);
-> > > +             ADD_LINK_MODE(10000baseSR_Full);
-> > > +             ADD_LINK_MODE(10000baseLR_Full);
-> > > +             ADD_LINK_MODE(10000baseER_Full);
-> > > +     }
-> >
-> > > +static unsigned int fun_port_type(unsigned int xcvr)
-> > > +{
-> > > +     if (!xcvr)
-> > > +             return PORT_NONE;
-> > > +
-> > > +     switch (xcvr & 7) {
-> > > +     case FUN_XCVR_BASET:
-> > > +             return PORT_TP;
-> >
-> > You support twisted pair, so should you also have the BaseT_FULL link
-> > modes above?
-> 
-> I agree with that but FW currently doesn't report BASE-T speeds in its
-> port capabilities and the link modes are based on them. Looks simple to fix
-> but needs future FW.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Maybe you should drop PORT_TP until you do have the firmware fixed?
+Remove connections from link group is not synchronous with handling
+SMC_LLC_DELETE_RKEY, which means that even the number of connections is
+less that SMC_RMBS_PER_LGR_MAX, it does not mean that the connection can
+register rtoken successfully later, in other words, the rtoken entry may
+have not been released. This will cause an unexpected
+SMC_CLC_DECL_ERR_REGRMB to be reported, and then ths smc connection have
+to fallback to TCP.
 
-> > > +static int fun_set_pauseparam(struct net_device *netdev,
-> > > +                           struct ethtool_pauseparam *pause)
-> > > +{
-> > > +     struct funeth_priv *fp = netdev_priv(netdev);
-> > > +     u64 new_advert;
-> > > +
-> > > +     if (fp->port_caps & FUN_PORT_CAP_VPORT)
-> > > +             return -EOPNOTSUPP;
-> > > +     /* Forcing PAUSE settings with AN enabled is unsupported. */
-> > > +     if (!pause->autoneg && (fp->advertising & FUN_PORT_CAP_AUTONEG))
-> > > +             return -EOPNOTSUPP;
-> >
-> > This seems wrong. You don't advertise you cannot advertise. You simply
-> > don't advertise. It could just be you have a bad variable name here?
-> 
-> advertising & FUN_PORT_CAP_AUTONEG means that AN is enabled, and
-> when this bit is off AN is disabled.
+Therefore, we need to judge according to the number of idle rtoken
+entry.
 
-So, i was correct, the name of the variable is not so good. Maybe
-fp->advertising need splitting into two, fp->cap_enabled for
-capabilities of the firmware that are enabled, and fp->advertising for
-what is actually been advertised to the link partner?
+Fixes: cd6851f30386 ("smc: remote memory buffers (RMBs)")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+---
+ net/smc/smc_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-     Andrew
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 29525d0..24ef0af 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1864,7 +1864,8 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 		    (ini->smcd_version == SMC_V2 ||
+ 		     lgr->vlan_id == ini->vlan_id) &&
+ 		    (role == SMC_CLNT || ini->is_smcd ||
+-		     lgr->conns_num < SMC_RMBS_PER_LGR_MAX)) {
++		     lgr->conns_num < SMC_RMBS_PER_LGR_MAX -
++		     bitmap_weight(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX))) {
+ 			/* link group found */
+ 			ini->first_contact_local = 0;
+ 			conn->lgr = lgr;
+-- 
+1.8.3.1
+
