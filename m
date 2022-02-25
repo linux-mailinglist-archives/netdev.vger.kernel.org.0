@@ -2,105 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0FD4C4D67
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 19:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E554C4DF8
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 19:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiBYSMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 13:12:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46372 "EHLO
+        id S232596AbiBYSmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 13:42:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231182AbiBYSM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 13:12:29 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A09E1D6CA6
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 10:11:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Dj2jcqipJCECW6kk37htHrvlk7NA1+PMDe6aZz9lpd0=; b=lFn++ljEguPYnVPTRjl20hxKrS
-        /8YTyahr8wJU6gN4SfdQRREHESMarZz4w/A3QLGKg4IQHfdJmkufuzFzcyoabjZL1pUkQWYzJ4NBX
-        OYaI30L+lQXoc1tlwiaFgdh1+bwhs5y+LXbdkq5p/OPMMBjkgHLgC19acUtyGvZfUkR6Vngr9wmZL
-        O2bAaSZdqYorM7Eoh2YVD+D5gLaEBnCdEjudLhpzw7RcCrN9n2lphCsaR+yg66ogAjtyCizMPNLiC
-        Zzdms0CsqaFL7CTbWeJhad9xJ+czH64T146xrzd1GN8uybzq85uvWcN/MiMamW5YaB8MZRQqEZWAx
-        /Mvx1Veg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57508)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nNf4E-0005xC-8l; Fri, 25 Feb 2022 18:11:46 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nNf4C-0003Iy-BL; Fri, 25 Feb 2022 18:11:44 +0000
-Date:   Fri, 25 Feb 2022 18:11:44 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Further phylink changes (was: [PATCH net-next 1/4] net: dsa:
- ocelot: populate supported_interfaces)
-Message-ID: <Yhkb4Ll/oOpEceY5@shell.armlinux.org.uk>
-References: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
- <E1nNdJV-00AsoS-Qi@rmk-PC.armlinux.org.uk>
- <20220225162530.cnt4da7zpo6gxl4z@skbuf>
- <YhkEeENNuIXRkCD7@shell.armlinux.org.uk>
- <20220225181653.00708f13@thinkpad>
- <YhkUidpCbLjrdMAE@shell.armlinux.org.uk>
- <YhkYjTQfHT8MSyCe@lunn.ch>
+        with ESMTP id S232626AbiBYSmG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 13:42:06 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC1E5F4E6
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 10:41:33 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id s25so8605084lji.5
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 10:41:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=djk2iSPkU6bce+rQdTLcInAqOwqRlRJpCDbVsqFpZFI=;
+        b=OzYxTD4CmL0ePnPhaXDmhUlRKz/q3hczlwtWXey3Ywb/lJZoVE5GfzM4uSCCbDmMWA
+         NwxFqCPoqipQvBPpd2OPlElu5j3iFmfjrO6ZHjqlpDTZUklMBYpjGvyGPnI1NNlzH7Yn
+         4zBOSKYtHBP5fZZT6LwMVKPOUSPNKH5lIhD/o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=djk2iSPkU6bce+rQdTLcInAqOwqRlRJpCDbVsqFpZFI=;
+        b=Dz+jhJmiFqavjtRRaG0Tsw5iHzJrkHGWGulJIubYx6WAY7oKETzVIl5MnyIl5IZd1V
+         Eb19mjrZJbTEjhksAWCebgHrOONcMnbplT+mhkeX/E5l1UsWvEyLZVWgFYfaQH1pOq3x
+         22pXEL1XeS+qrADJeq5y5+vmiI2QcRW4nXY8YYdLDGUr8/Vm71GQDldYcsya7iv2tC+j
+         HEYtE3TrKXOqbkFYdPUqy2hcLqRyOOBFf8D9joZ63rBosPbp837ENUczH6l1XuQX+CUT
+         olDbj8iGzmkJfyE9zL0m/BTgG08/dLyJsGx3Pi4ZATILATBvvj6r7p3KZLO1gIxs05gY
+         sFDA==
+X-Gm-Message-State: AOAM5315Ib4vA46azz/xYXKkglNHt+XanivAFdZxL+BA03OugJlV9zEG
+        SWb/63Kw55uDD/DoVNOHtaLINA==
+X-Google-Smtp-Source: ABdhPJwDhbrlUo20U7aTV9+LwebiAho+uzwmqOxcAv5U2zPC/Cy+UJxk39eaUameA/Oev6yrbo5jyQ==
+X-Received: by 2002:a2e:9b4d:0:b0:244:da30:84c2 with SMTP id o13-20020a2e9b4d000000b00244da3084c2mr6110335ljj.359.1645814491478;
+        Fri, 25 Feb 2022 10:41:31 -0800 (PST)
+Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id w8-20020a2e9588000000b002461a53f351sm335351ljh.25.2022.02.25.10.41.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 10:41:31 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        kernel-team@cloudflare.com
+Subject: [PATCH bpf-next] selftests/bpf: Fix error reporting from sock_fields programs
+Date:   Fri, 25 Feb 2022 19:41:30 +0100
+Message-Id: <20220225184130.483208-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhkYjTQfHT8MSyCe@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 06:57:33PM +0100, Andrew Lunn wrote:
-> > ... changing the subject line to show we've drifted off topic ...
-> > 
-> > Yes, once we've worked out what the PCS interface should look like in
-> > order to deal with the 88E6393 errata workaround that needs to be run
-> > each time the interface changes or whenever we "power up" the PCS.
-> 
-> Hi Russell
-> 
-> The erratas are not limited to 6393. For the 6390 there is an errata
-> where you need to "power up" the PCS before you change cmode,
-> otherwise TX works, but RX just drops frames rather than pass them to
-> the MAC.
-> 
-> I've not looked at the details of your proposal, and maybe it is a
-> none issue, i just wanted to make sure you are aware of this.
+The helper macro that records an error in BPF programs that exercise sock
+fields access has been indavertedly broken by adaptation work that happened
+in commit b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel
+and global variables").
 
-Thanks - Marek has been keeping me on the straight and narrow with
-these issues, but it's good to know that it's not necessary for the
-other Marvell variants. That's been at the back of my mind a bit as
-we're getting closer to the point that we need to sort this out.
+BPF_NOEXIST flag cannot be used to update BPF_MAP_TYPE_ARRAY. The operation
+always fails with -EEXIST, which in turn means the error never gets
+recorded, and the checks for errors always pass.
 
-I should also mention - once the mt7530 and mv88e6xxx drivers are
-sorted, I believe we will then be in a position to kill off all the
-"legacy_pre_march2020" stuff in DSA since DSA will no longer need the
-legacy phylink behaviour.
+Revert the change in update flags.
 
-Sadly, though, that doesn't mean "legacy_pre_march2020" can be removed,
-we still have mtk_eth_soc reliant on the old behaviour.
+Fixes: b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel and global variables")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ tools/testing/selftests/bpf/progs/test_sock_fields.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+index 246f1f001813..3e2e3ee51cc9 100644
+--- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
++++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+@@ -114,7 +114,7 @@ static void tpcpy(struct bpf_tcp_sock *dst,
+ 
+ #define RET_LOG() ({						\
+ 	linum = __LINE__;					\
+-	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_NOEXIST);	\
++	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_ANY);	\
+ 	return CG_OK;						\
+ })
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.35.1
+
