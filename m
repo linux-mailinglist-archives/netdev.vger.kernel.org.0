@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 219794C4BDB
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 18:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FA8A4C4BE0
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 18:17:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241236AbiBYRRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 12:17:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
+        id S243548AbiBYRRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 12:17:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238844AbiBYRRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 12:17:08 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FE721D081
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 09:16:36 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id z2so5353812plg.8
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 09:16:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=W2jNNrY5/QqqeiRWH7nZnuZClY2AmttMrv8jp57V4/w=;
-        b=KStzUTa2nhcNnQj5yjs2/k71YK/9mG2flXhCnJhmn6n4mHwoqtVFz+3XcUeImMnyfc
-         QU2r4CaLVeBTS6q7cOTmBs01/kvs6XzHftE6l3hxQTLyfIU10mHgy5JT732DauK4YeNY
-         XYxj0lCujJUkrc83F7EuNAW5mrk22SGPgKJEc0vNAGjiZk39PDZpkgEHb6l/2DW69rx9
-         qnGUIhTp2cNrT04O4VFoTA/MnANjc8FiUOJ8zwPXEp7ab39hVWIXqykz1GKOZD8VEabA
-         zuSTZbSqiW91mcx5Ig3o6yq0fOVCscCgzthjm3lxwGoTAxQsBMLm0YgRiznE/4DzUfp+
-         ZjJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=W2jNNrY5/QqqeiRWH7nZnuZClY2AmttMrv8jp57V4/w=;
-        b=YL6rdOZhvPofCdN6RHuEE1dHgZBEkuKBFBEf2pafBVfQKis8T/IZNgHS/fWUz7SwbX
-         o8aKLsMWucnf5sq6u9oNqsUYEM+wDJnxDCT+OwYfQ8cckslP2XSzhDsSf9jRysW+gdWg
-         bNUZdMUQBJ/IZCYSAqQYqhB0emT4yjZkY4uFcNoC+yZ+QvirPemY4IMLdRG/gZJ0AW73
-         QtT8rpOzXAYdHLsFwfdbP0CEd5m1AiEmk/EV0tTXZ9PUz1VRCxISlw+jXwhh1KAw7y4x
-         iIcnj9BZwZL3dHVd3p1+uUOYVnTS28eLsbz4ZZ3yNDndoQuBTukOrXubOQVwPs3GEte3
-         6AJg==
-X-Gm-Message-State: AOAM5314ut7p8a8FDnVE4JUNw9YOcHg7k1q69UHjPGXt+EdKuj5gLjr6
-        O4hRQyXNGHeVMEayYwDuW9+vfTp6KU2IPQ==
-X-Google-Smtp-Source: ABdhPJypxEuh6WtA5VNZqtbYlP5EeN0s1JDPmZ24cEAD3aEaGr0L94pHRh2Xsl2kM8SPQAbBmMs6sw==
-X-Received: by 2002:a17:902:d4c5:b0:150:20c7:78bd with SMTP id o5-20020a170902d4c500b0015020c778bdmr6095138plg.25.1645809395246;
-        Fri, 25 Feb 2022 09:16:35 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id l71-20020a63914a000000b0036c4233875dsm3160287pge.64.2022.02.25.09.16.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 09:16:34 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next] ionic: no transition while stopping
-Date:   Fri, 25 Feb 2022 09:16:18 -0800
-Message-Id: <20220225171618.31733-1-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S243547AbiBYRRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 12:17:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E49C21DF0C
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 09:17:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D74C7B832CD
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 17:17:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2073FC340F0;
+        Fri, 25 Feb 2022 17:16:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645809419;
+        bh=RreXA7Bmc/8VakrqfoJQ1wIYxg3wtjQYYacft2GxCCk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bqAgH5sluJchauddxOusKfTJi83h2L7pbN6gWGvUdM0rzhjAmIUYS3PDUu9Qba1Zy
+         xA0U+7OdGJ8WyK4AXwqK/61bNBYPSw55UerDEgTFIQ9WaosyNjyDbNM9RvYhskTdOi
+         k4341Lrmg/KZ7Xvvpi2U5pFVcbfu2vj3jK035gqEi7wCcVjhMGU8ScAOuOBuIfeNVS
+         1jfSX8ebXyvgSZqzq0hXbr9hsLsdvzJq8BX+6ucFyRyfADNRKffNWdWlO9ONJOjyoc
+         IqFTB1GYzCtNf5qw9JX/3T1y272cahpSA23IXuVjmpCoZ7N9eZ39SeSoFxx0CXgy/5
+         jY39wm+22m27Q==
+Date:   Fri, 25 Feb 2022 18:16:53 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/4] net: dsa: ocelot: populate
+ supported_interfaces
+Message-ID: <20220225181653.00708f13@thinkpad>
+In-Reply-To: <YhkEeENNuIXRkCD7@shell.armlinux.org.uk>
+References: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
+        <E1nNdJV-00AsoS-Qi@rmk-PC.armlinux.org.uk>
+        <20220225162530.cnt4da7zpo6gxl4z@skbuf>
+        <YhkEeENNuIXRkCD7@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure we don't try to transition the fw_status_ready
-while we're still in the FW_STOPPING state, else we can
-get stuck in limbo waiting on a transition that already
-happened.
+On Fri, 25 Feb 2022 16:31:52 +0000
+"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 
-While we're here we can remove a superfluous check on
-the lif pointer.
+> On Fri, Feb 25, 2022 at 04:25:30PM +0000, Vladimir Oltean wrote:
+> > On Fri, Feb 25, 2022 at 04:19:25PM +0000, Russell King (Oracle) wrote: =
+=20
+> > > Populate the supported interfaces bitmap for the Ocelot DSA switches.
+> > >=20
+> > > Since all sub-drivers only support a single interface mode, defined by
+> > > ocelot_port->phy_mode, we can handle this in the main driver code
+> > > without reference to the sub-driver.
+> > >=20
+> > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > > --- =20
+> >=20
+> > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com> =20
+>=20
+> Brilliant, thanks.
+>=20
+> This is the final driver in net-next that was making use of
+> phylink_set_pcs(), so once this series is merged, that function will
+> only be used by phylink internally. The next patch I have in the queue
+> is to remove that function.
+>=20
+> Marek Beh=C3=BAn will be very happy to see phylink_set_pcs() gone.
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_dev.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index faeedc8db6f4..9d0514cfeb5c 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -202,21 +202,25 @@ int ionic_heartbeat_check(struct ionic *ionic)
- 		}
- 	}
- 
-+	dev_dbg(ionic->dev, "fw_status 0x%02x ready %d idev->ready %d last_hb 0x%x state 0x%02lx\n",
-+		fw_status, fw_status_ready, idev->fw_status_ready,
-+		idev->last_fw_hb, lif->state[0]);
-+
- 	/* is this a transition? */
--	if (fw_status_ready != idev->fw_status_ready) {
-+	if (fw_status_ready != idev->fw_status_ready &&
-+	    !test_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
- 		bool trigger = false;
- 
- 		idev->fw_status_ready = fw_status_ready;
- 
--		if (!fw_status_ready && lif &&
-+		if (!fw_status_ready &&
- 		    !test_bit(IONIC_LIF_F_FW_RESET, lif->state) &&
- 		    !test_and_set_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
- 			dev_info(ionic->dev, "FW stopped 0x%02x\n", fw_status);
- 			trigger = true;
- 
--		} else if (fw_status_ready && lif &&
--			   test_bit(IONIC_LIF_F_FW_RESET, lif->state) &&
--			   !test_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
-+		} else if (fw_status_ready &&
-+			   test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
- 			dev_info(ionic->dev, "FW running 0x%02x\n", fw_status);
- 			trigger = true;
- 		}
--- 
-2.17.1
-
+Yes, finally we can convert mv88e6xxx fully :)
