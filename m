@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7726D4C3E25
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 088C64C3E26
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237694AbiBYGAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 01:00:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S237698AbiBYGAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 01:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236251AbiBYGAq (ORCPT
+        with ESMTP id S237381AbiBYGAq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:00:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73FC1FE54A
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 22:00:13 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3AC1FE54E;
+        Thu, 24 Feb 2022 22:00:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D0A3618FE
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C58CFC340F0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C70DB82B2D;
+        Fri, 25 Feb 2022 06:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D2B7EC340F2;
         Fri, 25 Feb 2022 06:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645768812;
-        bh=9D358hSOkU2u5ujTs4L7LZFUfrD5iw+aWcMdw2+3j9U=;
+        bh=INUQnBa4ByNJSY2dB4LhyAy5Am/Vtks8Yp1vfK/0skQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WtOjFMZ4wG+Y37qJiLYoPBYDnf/H+75koSSvVFNWZaOcl3LxIIMFJyK6OPOK6Rf9A
-         iAmWjXikis6J7FvGI4CLun9Y732KhyMe1k6YhDCSaA3i/8midpp3HGj9AukATGIOjD
-         +VqRikg/kX5bFBHoMgPVyDhNYsK5QAK5WNlU4sf7DQIqfC9i/KqQtmc9m8Yi5bD/w2
-         0u6vovGTqpDNpe5lE0XemWD7YkH4AwTNNrMC7rbSNGYuvhJV2dGf3zdxDEu769TVHv
-         r+HzEVawb8azbnmnR+hL1ZUR8a9cq5R2sbOZusTxRI8zCm4fpCtJKsMA1dsXOD30eX
-         HTlnzxtx8akOw==
+        b=oZ2IDEKWV4/7BT9xe8+cCB/fW3BvRpLFZIwRbiED7YhvNcX7G2AEgNEa2XhUU2xdb
+         oK45GQ5pBbLHQFk+gmf3L1WYUI275XbCA0GRBmBiKT7j8XwdY/gf6Tb8Sn4HlPA5mo
+         h7kqOXGLVlB6x8Kk6BB99digU3Ycvv+lmydy7o/rslOibJVstR9623QGSGhNsVV5U1
+         t/+9goFd1rGmbqx3FdaUqZjO0XhWG3zUfkjM9AJyUq5ZKmxQ0XdoWkT8Dz7HEmuaR7
+         LkZSZ05tXr7RGkB1rZg9i5Elr58K3kQMxqGfoexfXIz4LMbRVtBnnm1r8nzpIO5nol
+         F0ij7Ym04jr5Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8775E6D453;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B4300EAC09C;
         Fri, 25 Feb 2022 06:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/6] nfp: flow-independent tc action hardware
- offload
+Subject: Re: [PATCH v3] net/tcp: Merge TCP-MD5 inbound callbacks
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164576881268.21574.10432407891464572702.git-patchwork-notify@kernel.org>
+Message-Id: <164576881273.21574.2254886562472065645.git-patchwork-notify@kernel.org>
 Date:   Fri, 25 Feb 2022 06:00:12 +0000
-References: <20220223162302.97609-1-simon.horman@corigine.com>
-In-Reply-To: <20220223162302.97609-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, baowen.zheng@corigine.com,
-        louis.peens@corigine.com, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
+References: <20220223175740.452397-1-dima@arista.com>
+In-Reply-To: <20220223175740.452397-1-dima@arista.com>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org, 0x7f454c46@gmail.com,
+        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,34 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 23 Feb 2022 17:22:56 +0100 you wrote:
-> Baowen Zheng says:
-> 
-> Allow nfp NIC to offload tc actions independent of flows.
-> 
-> The motivation for this work is to offload tc actions independent of flows
-> for nfp NIC. We allow nfp driver to provide hardware offload of OVS
-> metering feature - which calls for policers that may be used by multiple
-> flows and whose lifecycle is independent of any flows that use them.
+On Wed, 23 Feb 2022 17:57:40 +0000 you wrote:
+> The functions do essentially the same work to verify TCP-MD5 sign.
+> Code can be merged into one family-independent function in order to
+> reduce copy'n'paste and generated code.
+> Later with TCP-AO option added, this will allow to create one function
+> that's responsible for segment verification, that will have all the
+> different checks for MD5/AO/non-signed packets, which in turn will help
+> to see checks for all corner-cases in one function, rather than spread
+> around different families and functions.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/6] nfp: refactor policer config to support ingress/egress meter
-    https://git.kernel.org/netdev/net-next/c/bbab5f9332ee
-  - [net-next,v2,2/6] nfp: add support to offload tc action to hardware
-    https://git.kernel.org/netdev/net-next/c/59080da09038
-  - [net-next,v2,3/6] nfp: add hash table to store meter table
-    https://git.kernel.org/netdev/net-next/c/26ff98d7dd20
-  - [net-next,v2,4/6] nfp: add process to get action stats from hardware
-    https://git.kernel.org/netdev/net-next/c/776178a5cc67
-  - [net-next,v2,5/6] nfp: add support to offload police action from flower table
-    https://git.kernel.org/netdev/net-next/c/147747ec664e
-  - [net-next,v2,6/6] nfp: add NFP_FL_FEATS_QOS_METER to host features to enable meter offload
-    https://git.kernel.org/netdev/net-next/c/5e98743cfad0
+  - [v3] net/tcp: Merge TCP-MD5 inbound callbacks
+    https://git.kernel.org/netdev/net-next/c/7bbb765b7349
 
 You are awesome, thank you!
 -- 
