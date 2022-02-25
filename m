@@ -2,169 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57AE54C4CCF
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 18:43:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 783A54C4CDC
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 18:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243963AbiBYRn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 12:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        id S229541AbiBYRt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 12:49:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243961AbiBYRnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 12:43:24 -0500
-Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6C34FC4B;
-        Fri, 25 Feb 2022 09:42:48 -0800 (PST)
-Received: by mail-oo1-f53.google.com with SMTP id x6-20020a4a4106000000b003193022319cso7223207ooa.4;
-        Fri, 25 Feb 2022 09:42:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=zHQ0Pr3ifNQPSPFr8KGHQ/qHkoEyzMsgPR4CglaYpXU=;
-        b=0bLOIaEnlhdOIdh5OUtHD7NbLvvs9tc0qXnjzV7pjjf5niZV6+3xwOmuz39ov9XW/F
-         RryJx6uzW1+r4eRxTnDheqBwyZDfC/4jFCh9hFfPHjqGbUX2+Mhi5QPTwd4gtc945xJz
-         GinO3mpPkLeOKd+w6eDUjawbvVCmG2QcVI36Wg7Q5U6w1IT7JgaI+GkhvyHWE5Y1Ntsg
-         VAK8ePNTetR/qIUvP/xyXFMABqCAlZVAgUjN5QXykdf9NYSRaHaUIK0pxU3PxqFLpqAv
-         3NVpJyFBDBNNm88o11QOJ9c1cD1osmSJ8KRhY1E2NQSDskVWoN0ptYanW5G0xTnzNkMJ
-         C1ig==
-X-Gm-Message-State: AOAM530YYk8qqdPJzmLojgRMNTJtZ9xDt+cS4HBQF/XubMWcnHnf9Sgw
-        0S/vbSgbjXS25Yk55oca6w==
-X-Google-Smtp-Source: ABdhPJxcxi7bzi6JWztEBIq03YPFnl9xa7CKDKpnb04VO1SXCHU9g6PQWVwcn1U+65MvBQ29q/k5zQ==
-X-Received: by 2002:a05:6870:b69a:b0:d6:d137:2734 with SMTP id cy26-20020a056870b69a00b000d6d1372734mr1735368oab.199.1645810967932;
-        Fri, 25 Feb 2022 09:42:47 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id dy16-20020a056870c79000b000d273fb9e95sm1466344oab.7.2022.02.25.09.42.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 09:42:47 -0800 (PST)
-Received: (nullmailer pid 1144497 invoked by uid 1000);
-        Fri, 25 Feb 2022 17:42:45 -0000
-Date:   Fri, 25 Feb 2022 11:42:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     EVS Hardware Dpt <hardware.evs@gmail.com>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] net/fsl: fman: Allow fm_max_frame_sz &
- rx_extra_headroom config from devicetree.
-Message-ID: <YhkVFdTMcX4+TOiQ@robh.at.kernel.org>
-References: <20220217160528.2662513-1-hardware.evs@gmail.com>
- <AM6PR04MB39761CAFB51985AFC203C535EC379@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <CAEDiaShTrWgA75e8x2deHMHF-53LFiusrVHTxP_Jy4gvaLg_9A@mail.gmail.com>
- <AM6PR04MB397692A930803C5CB6B1D568EC379@AM6PR04MB3976.eurprd04.prod.outlook.com>
- <CAEDiaSg8SZWyoiX6jJYCX4HncZks5O8dyyVLOchYD4idGf4rCg@mail.gmail.com>
+        with ESMTP id S229532AbiBYRt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 12:49:56 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2071.outbound.protection.outlook.com [40.107.100.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADE02177F8
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 09:49:22 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KJGqdKrY/nHZVWrxIseQPXwYLTX1oe9QDHRGj2sTtFEiNldiTwIANDdrRjCxJyECFH5nwI9rP9Cw6dD2eqtxTidfQsrlNgejHukMhxASjyXNApi6lX8uJkSwOK+ttKkXJiV+isMM5ZVB2Vi1hFXOYZ2YnbgsW2LSHfFSXiZM7/0GUhVvk0VSRdW3LGnUNzLin6NuhglTjmKGFcXZsqwti5L+ypRTZtU1KBKTxmUIvR7BhcxpTtEY0hnL+N7743MFy7bVZwejamUa/Kpc7EoRVgSXD1Ev4SpDzu9zxeJhlorEeH1bmDBU20lpgWdD6/KCTCxOUJkZ2p4iVxavhueipw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ORL3q1S1bFvocqP9eO0oaIol2Pqikb9oGtRHF1pfups=;
+ b=DZdUP3OdkkwZ7K3+/8DXBDEo/blgDmYZa5j3iHIgN6daHiz5SidjEeuPI/mDmLLO5QeaXEk3A8oDjxXWJD9A7FFlBR0WomHdQYez2pbKefJ7xuVmHkKvFbnZtV68rKw88WXwdNiDICeYuzxd62AyiqIQf+tnzJghQmJH6qZuhc887VE7UdOKZDL5AHcHr2oP4pHgTXpXdTDAdlpuGzyZN8n6qs3Z8az2PkCFkOnSA5EKPNtrjaouIxzqneJoMZKeW/H3eSrsswCsCw3TwmXBVcnCFSmAkCiGuhfQWBv/W+JImxpb5v69RJcbHjnF2uvz9fHz0cpUSgC2g8Cf2ThIqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ORL3q1S1bFvocqP9eO0oaIol2Pqikb9oGtRHF1pfups=;
+ b=Whn6E0g7fZQIC8feATUsPkfDnWfsz683Iel7nCWIVB3OrVdJPv6Rs28DAVbE8hr8z2QoERccWCXLqnV7PKGQFuEoagL/I2sWVBZZbR50zzwdDn4XKffv5bNvgs2cEx0xlJfgQQtE4zolOULaAQ8M2mi6TeDcfgRhQSpTDBx4TgObquLqMqK3FgkOwDzGloHvn2/2bhnF7Wfhz/5zf0hlyfSplUUP8n7qXegKU6UeIwPBj4WCWXSyPohNi9DikaPZm+gZxSBh9pTZhRJQzeqomrikgl8yk8Tb7tDfSjw/KsI51Klkx3NjfOOIx508llM87PniEl5GgbtLASxigsSMuQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ0PR12MB5504.namprd12.prod.outlook.com (2603:10b6:a03:3ad::24)
+ by CH0PR12MB5268.namprd12.prod.outlook.com (2603:10b6:610:d3::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Fri, 25 Feb
+ 2022 17:49:20 +0000
+Received: from SJ0PR12MB5504.namprd12.prod.outlook.com
+ ([fe80::9cc:9f51:a623:30c6]) by SJ0PR12MB5504.namprd12.prod.outlook.com
+ ([fe80::9cc:9f51:a623:30c6%7]) with mapi id 15.20.5017.026; Fri, 25 Feb 2022
+ 17:49:20 +0000
+Message-ID: <79eed237-4659-7e86-ed26-93f70b1d47bc@nvidia.com>
+Date:   Fri, 25 Feb 2022 09:49:20 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v2 11/12] drivers: vxlan: vnifilter: per vni
+ stats
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        stephen@networkplumber.org, nikolay@cumulusnetworks.com,
+        idosch@nvidia.com, dsahern@gmail.com, bpoirier@nvidia.com
+References: <20220222025230.2119189-1-roopa@nvidia.com>
+ <20220222025230.2119189-12-roopa@nvidia.com>
+ <20220223200206.20169386@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Roopa Prabhu <roopa@nvidia.com>
+In-Reply-To: <20220223200206.20169386@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0037.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::14) To SJ0PR12MB5504.namprd12.prod.outlook.com
+ (2603:10b6:a03:3ad::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEDiaSg8SZWyoiX6jJYCX4HncZks5O8dyyVLOchYD4idGf4rCg@mail.gmail.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 572ceff2-6ee4-4775-1a2d-08d9f88726c4
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5268:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5268A00D51F5913069DDAECECB3E9@CH0PR12MB5268.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gOAcxQcJMVsneADTkdLJ7Zr/LLjs71/EDpHtYyptE/I9PekVeKIlIkA8KQYJGSmp4Dr5/ZHTvNemlUWZJObV24GIzKbT64xLK4/06cj5pd5aD7NS7O1oi/eKmEtyBYUpq3jbd7dKXsx++4nRff/Dy2xhhuxhnmsIfwhBXHpqN/im9obK45edC/J/O8lPRDxCJ5FKT2vwzarJp0C+uf/bUGPPS/KZPybx72NKTksK6SVS1QpFqJFlNLbIj8ncaHjTTLDusH9UD0eqx6iLk2ZDyq/jhdS7qZP9slWA/e1R6YqpKR4kylaCQ+GuYKGDwGMM0Le9wZb/ri7bMPiik82+0ytuAz3PdJdZ+PwjfM8AwT4+0cc8dDma5NMvqH3s4pbufaKgeTA+fsGPlsBwbbCbWaiCrAcEaORv2/U32/gJxXrPqJrHWOvOuDzNZJVw8bgKT99tc750WyUbg7H+bKRCX9/qkXW2JM+qxno6T9LrknbTfOkcrOdjUBlOari+SeSnUSXqmYJPj5V9z5d6y7rnxHg2t8Ev4RN3aatl+CvZ3dSNkYOSmWStx/PJhFSEZXUkCgUXNwmF3cljp+AknqUB0t2TnhMdOdy3e60Dq/7yu2h2L4a4ZToTkzoK8biaBNzQ0J0gZ4AIGZ8c4iid0WLqO19UaCXK3UyFg6o+4efnwQiZ3kEMi7LMLRSuGEkdeOEZcvxXRyocd98zaNU6nI3BAthKjF37VCbJBrR9fvabFpZThc3/z7PquHRoFjTFRHwt
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR12MB5504.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(31696002)(31686004)(6486002)(316002)(36756003)(6916009)(508600001)(8676002)(2906002)(2616005)(107886003)(6506007)(4326008)(53546011)(86362001)(66476007)(186003)(66946007)(66556008)(38100700002)(5660300002)(4744005)(6512007)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MDlUZEhMams4RmpSUHd2cFkrS1lQWU5BN0RPRWZLUDh1TVdPTGhPNjZObHNI?=
+ =?utf-8?B?aGozYlFsOXp1TjM4MW9qRHFnN0x2b0ErU1FCdTlJMG1VUSs2SW1XNGtVS3Jr?=
+ =?utf-8?B?bUgvd2duVU5lRHNMNXRqODBwRkRPQXlyZVdYNVUzNDdvdldmUEdEYWJ3cmVX?=
+ =?utf-8?B?cXFsOGNveWhyaHEwVGxieXUrbnVNNWMvc1lxZ3ZNZmdublVHZHJ5aXh1d09H?=
+ =?utf-8?B?YkFsanFSYXJJUnNqeTdxMDhjVUx5MncyNlc1YzRoRjlpeElvMitNZFV4TlFn?=
+ =?utf-8?B?WWZ2cjVBeW9hYThoZWZtZjRaZDE4djBMM0MvYXJyakx0ZFRXV0tVQmdWc0Uw?=
+ =?utf-8?B?dHdCRkptdXBnSTl0Y0VuZ0xTV01PMXR2SHY1L0ExbW5WbGRDalpsOFBLYVNQ?=
+ =?utf-8?B?eStnNlNtdGd0K2lXd2JVNmlvb2o2UEplNldQOHJwMWlsa09UUjhuYXJRaks1?=
+ =?utf-8?B?bkpFNVRXMFR2NXQ1OFVGNm52TGNXN2tGQXNRZ0g2TytYcjEzZG82SUJ3aWlS?=
+ =?utf-8?B?d29PZEZxM2hmZndFZzlvcXZyTVp4ZTNCRnBob2NtMTJaNnV3dHAzazY0bWl1?=
+ =?utf-8?B?cmNud005cW5ad0RqbURBK29UL21YZ29VTy9TWmdydnpkSVRmUllqNkJDSDBL?=
+ =?utf-8?B?RHZRSVZFbnlDMTdTR3JJK0EzU1E0MHlQT1hkTXdSMmhwNFBtY1dld2dsZXVi?=
+ =?utf-8?B?ZVJESUVhN0o5T0srZHdSbnZKSWpyR3U5cmFtUXBGeWtOQnFVdUtrUWVreHps?=
+ =?utf-8?B?azZ1QXI3VURWN1RhblVjS2s1ZkV1UTQ3RU5RWDdQMHRTRGJRbk0zSk9ITlh2?=
+ =?utf-8?B?anpVK1FCcFQ4R2g2OXo4elpNQ2FhM1ZMeDVNbTYrYW1RM3h1RXVkTWVSK1d4?=
+ =?utf-8?B?OVNCS2d2Sm8yeDY0eDZZZVFURnJtWXY5bk1EanFtMWd2QzBiVXZVVWEwb1d4?=
+ =?utf-8?B?akNCcG1WUUVBNXJOQ29tTnpXeVk0WFhCZSt5UTZQT29jc25Ea3ROcWFOOWQ3?=
+ =?utf-8?B?OG1OeFk1MEg2S28zRWk3VHZ4ektRNnNISk9UdXFVd2RPZzY3ZmMvYVRMMnZ6?=
+ =?utf-8?B?Q3dQd0IxdENjeHpLYVlkN0p5STQ3UThhUllOWUVJWk1EQnNNTysrK1lLQkFQ?=
+ =?utf-8?B?cjJvczExUlFjUjR0THoyQWVrbTF0cW55cVpWbVFLS0hZem1tNWttSVlvYncy?=
+ =?utf-8?B?N0dKV3RyTThid3RkUzhtZzlIVVFNNXZDMjlKOGtqVDRxVTFEa2hITmhSTVRF?=
+ =?utf-8?B?cSs5Z1kvY2FZWFc4TG93cTVFMCt0ekVlNmkwNFBTUmFQVU9lYks5RTZDTExu?=
+ =?utf-8?B?UmMrTk41d2FidkRCcHY0N3A0MWt4VGJvdHliWFZpYTBXNnZveVhGZi9welpa?=
+ =?utf-8?B?V2NoWDNLZHcrYm82bEFUSnFHOWFhZXpWV3UrSmNGdTdHNnBWeTZ2QVZ5NVpz?=
+ =?utf-8?B?Skc1WEZHK0ZWczk3cHpraWFiRE9rNE41MnBUOExNa0FKanBpSUcwdmxkU1NZ?=
+ =?utf-8?B?OU04TUs2YzZLVUNkMVMrUHVTMWZyYldlZERKaExpMVZVSkJzWFlYalBnb2F6?=
+ =?utf-8?B?dmVQYkVxN1FlN0hTZXlUY2NNa2lqcjVFY0c0TDNuTnpTQVhxbTBFM04vR0VP?=
+ =?utf-8?B?clFleFFiallFeGVOS3JMbVQ5VGNaSzR1OVZtei9wY3Q5d0pSalFMSXM4b2ZF?=
+ =?utf-8?B?SW1FN2kyYW41QXRyazEzUkRQL3NWQy9EZVlVdHpCNnNZVmRmU1JUWVR1eEpq?=
+ =?utf-8?B?d0ZwVVFkMXVOa3V6dWN6NmNzb1VYY1pia0FOMUh5b0RlZnpJbzRzZ2dOZDE5?=
+ =?utf-8?B?WVF6Y21PSGlseWFGUnRnRVFzQ0JxMDNHZW1PaGpvbnNYOVdpdXZJb3IxZmpQ?=
+ =?utf-8?B?eDJwbHo4SUFmY0hkVU82enNRaDJPOUNWdERwdUxvaUxsMTVkTnFMcUtBMlM0?=
+ =?utf-8?B?NTV6bXM5WlpvLy9ydGFQQ1NmL0ZSdnVaRzdQNzcyTFFTTGZMR2R0R1BCTWp1?=
+ =?utf-8?B?cVdGcVNpTTllSFYxYTZkalZDRDZETkc5ZjNJejlGOExzeG1vVzI2SWFPczNO?=
+ =?utf-8?B?RE1hK2ZtTGZnWFp6dTlqQStDVkE2aXp3eVgvY3lrcU41ZjVoRWtZZDdhVlJG?=
+ =?utf-8?B?UElOTlpQYURLM1EvS2FMNUMrTDhRL1BOMUNyZUZPWDZVWE44OVhnQ0ptK0Mw?=
+ =?utf-8?B?U0dUQlBtU3VrZjRMeTcxaWxMeFdTNE8rb1ZyZXdzdnJrQUd2djJWYWxTYXNi?=
+ =?utf-8?Q?Okiw3Is9ngvHzpVMXT7GCob5VqHi2C5zqgC0kdKOKc=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 572ceff2-6ee4-4775-1a2d-08d9f88726c4
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR12MB5504.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 17:49:20.6950
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1GrDrN80we5MNlYIuOCzxi7UKOy9aVWsscPoO6vIiciFmg4ZOhQ9zRtkcgxzglEhnnW9B61Ka7/knGcTHhNGOA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5268
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 01:28:00PM +0100, EVS Hardware Dpt wrote:
-> Hi Madalin, Guys,
 
-Please don't top post on maillists.
+On 2/23/22 20:02, Jakub Kicinski wrote:
+> On Tue, 22 Feb 2022 02:52:29 +0000 Roopa Prabhu wrote:
+>> @@ -164,7 +166,6 @@ int vxlan_vnilist_update_group(struct vxlan_dev *vxlan,
+>>   			       union vxlan_addr *new_remote_ip,
+>>   			       struct netlink_ext_ack *extack);
+>>   
+>> -
+> spurious
+>
+>>   /* vxlan_multicast.c */
+>>   int vxlan_multicast_join(struct vxlan_dev *vxlan);
+>>   int vxlan_multicast_leave(struct vxlan_dev *vxlan);
+>> +void vxlan_vnifilter_count(struct vxlan_dev *vxlan, __be32 vni,
+>> +			   int type, unsigned int len)
+>> +{
+>> +	struct vxlan_vni_node *vninode;
+>> +
+>> +	if (!(vxlan->cfg.flags & VXLAN_F_VNIFILTER))
+>> +		return;
+>> +
+>> +	vninode = vxlan_vnifilter_lookup(vxlan, vni);
+>> +	if (!vninode)
+>> +		return;
+> Don't we end up calling vxlan_vnifilter_lookup() multiple times for
+> every packet? Can't we remember the vninode from vxlan_vs_find_vni()?
+>
+you are right, its done this way to not propagate vninode into vxlan_rcv.
 
-> 
-> I didn't have that historical part in mind. So, even if I still think there
-> are a lot of examples super close to what I'm proposing everywhere in
-> dts files, devicetree is out of equation.
-> 
-> Could I change the patchset to allow configuration of those two parameters
-> from config ? I won't remove configuration using module parameters,
-> just adding (what I think to be) an easier way of configuration.
-> 
-> What do you think?
+let me see what we can do here.thanks
 
-Config in DT is okay, but it depends on the type of config, who is 
-doing the config, and when. Think of DT config like BIOS configuration, 
-but without a UI to change it.
 
-MTU configuration has been around forever and is common to lots of h/w. 
-If we wanted to configure that in DT, it would already be a standard 
-property.
-
-Rob
-
-> 
-> Regards,
-> Fred.
-> 
-> Le ven. 18 févr. 2022 à 12:33, Madalin Bucur <madalin.bucur@nxp.com> a écrit :
-> >
-> > > -----Original Message-----
-> > > From: EVS Hardware Dpt <hardware.evs@gmail.com>
-> > > Subject: Re: [PATCH 1/2] net/fsl: fman: Allow fm_max_frame_sz &
-> > > rx_extra_headroom config from devicetree.
-> > >
-> > > Hi Madalin, Guys
-> > >
-> > > I know, but it's somewhat difficult to use those parameters on kernel's
-> > > command line.
-> > > I don't think it's wrong to also add that in devicetree.
-> > > No removal, just an added feature.
-> > >
-> > > For ethernet node in devicetree, there are a lot of configuration stuff
-> > > like
-> > > max-frame-size to allow configuration of MTU
-> > > (and so potentially enable jumbo) and it's regarded as fine.
-> > >
-> > > It's also the goal of this patch. Allow an easy configuration of
-> > > fsl_fm_max_frm from a dts. I added rx_extra_headroom for the sake of
-> > > completeness.
-> > >
-> > > So I plead for this addition because I don't think it's wrong to do that
-> > > and
-> > > I consider it's nicer to add an optional devicetree property rather than
-> > > adding a lot of obscure stuff on kernel's command line.
-> > >
-> > > Hope you'll share my point of view.
-> > >
-> > > Have a nice weekend Madalin, Guys,
-> > > Fred.
-> >
-> > Hi, Fred,
-> >
-> > I understand your concerns in regards to usability but the device trees, as
-> > explained earlier by Jakub, have a different role - they describe the HW,
-> > rather than configure the SW on it. Removal of such config entries from the
-> > device tree was one item on a long list to get the DPAA drivers upstreamed.
-> >
-> > > Le ven. 18 févr. 2022 à 08:23, Madalin Bucur <madalin.bucur@nxp.com> a
-> > > écrit :
-> > > >
-> > > > > -----Original Message-----
-> > > > > From: Fred Lefranc <hardware.evs@gmail.com>
-> > > > > Subject: [PATCH 1/2] net/fsl: fman: Allow fm_max_frame_sz &
-> > > > > rx_extra_headroom config from devicetree.
-> > > > >
-> > > > > Allow modification of two additional Frame Manager parameters :
-> > > > > - FM Max Frame Size : Can be changed to a value other than 1522
-> > > > >   (ie support Jumbo Frames)
-> > > > > - RX Extra Headroom
-> > > > >
-> > > > > Signed-off-by: Fred Lefranc <hardware.evs@gmail.com>
-> > > >
-> > > > Hi, Fred,
-> > > >
-> > > > there are module params already for both, look into
-> > > >
-> > > > drivers/net/ethernet/freescale/fman/fman.c
-> > > >
-> > > > for fsl_fm_rx_extra_headroom and fsl_fm_max_frm.
-> > > >
-> > > > Regards,
-> > > > Madalin
-> 
