@@ -2,94 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D16324C431C
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 12:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 280EB4C431D
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 12:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239938AbiBYLKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 06:10:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
+        id S239941AbiBYLLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 06:11:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239934AbiBYLKr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 06:10:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB4E23931C
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 03:10:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 749AA61828
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 11:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C96ACC340EF;
-        Fri, 25 Feb 2022 11:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645787413;
-        bh=IrrBCyaV2f8kI4T7odQKwtdEh0a+r8Dzq5VEBcwCBks=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lIny9ByuBA4mpmQTrS5flDxVaInp/ZWvItuPmZKh8RhkGNOhc+1qrh37tBMBTXP3h
-         6w6mJEo/p3+oyE5uTRWmMDWTaSc+BCWQqHGw6i+3bdUml56vmnbFhDrbsCPbB86Kr9
-         HsRCloWl5EfFAfq7eEEN30atkj3izG2sx/CcYzEINCVlUv16p2JMCre2VUePb10KGL
-         Kzj5lHaPLM5KNpDJF7m4XC4Cu7RYMzhVjiFtk6VtU4DWgsXmSOxFkAEE3E8ka0KW6I
-         ZhDEcVcevQVjn0lb6jioh1/lgGa6HKfkrMa2XQxziczcCq8RyYWr48wskAGP3nc6sT
-         u/FRXUIj2189A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ABF92E6D453;
-        Fri, 25 Feb 2022 11:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S238967AbiBYLLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 06:11:03 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C743197B51;
+        Fri, 25 Feb 2022 03:10:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645787432; x=1677323432;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Tm075Fx16DfjHBtJEGna7CmW+o40n6UD+/Aw9R+hYBk=;
+  b=UmtdF7B3JQZRQAEe8BuC+b0vcK41zJBDXqtQv0uhJUMHQDgn2Qc4+26r
+   Gad/4TGMr8QJJv0M3vSczPTDaOtAGsQq3JDE8+/5ZglAeaouyA0zXYvQ4
+   KhYVkmc9A3jK1FN5pSoYAqtZAiqGQs263feXxrCgswvtOFkdbYBvz95q4
+   0/ox/KIH0xeZGEOruRUz5ZQMVFhBe9kBkMnA1h3ju0tmiME6SliPXIAwb
+   A4iEyC1h4fPJJSUQxxNCgU3LqCBl6oW+Lv2S8kHbnwyrUS6nzHQK8zrh+
+   PqSHFjV+fDtl8FH6FjdzUcfTQ0ymzsk6nQu29eonhWYeHJSAuHJioAZ6r
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252672301"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="252672301"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 03:10:32 -0800
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="549223077"
+Received: from grossi-mobl.ger.corp.intel.com ([10.252.47.60])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 03:10:24 -0800
+Date:   Fri, 25 Feb 2022 13:10:22 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
+Subject: Re: [PATCH net-next v5 03/13] net: wwan: t7xx: Add core components
+In-Reply-To: <20220223223326.28021-4-ricardo.martinez@linux.intel.com>
+Message-ID: <d5e3d2c-998b-58aa-9e71-43210f33e6f@linux.intel.com>
+References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-4-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull request (net): ipsec 2022-02-25
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164578741370.30964.9050783997599737730.git-patchwork-notify@kernel.org>
-Date:   Fri, 25 Feb 2022 11:10:13 +0000
-References: <20220225074733.118664-1-steffen.klassert@secunet.com>
-In-Reply-To: <20220225074733.118664-1-steffen.klassert@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, 23 Feb 2022, Ricardo Martinez wrote:
 
-This pull request was applied to netdev/net.git (master)
-by Steffen Klassert <steffen.klassert@secunet.com>:
-
-On Fri, 25 Feb 2022 08:47:27 +0100 you wrote:
-> 1) Fix PMTU for IPv6 if the reported MTU minus the ESP overhead is
->    smaller than 1280. From Jiri Bohac.
+> From: Haijun Liu <haijun.liu@mediatek.com>
 > 
-> 2) Fix xfrm interface ID and inter address family tunneling when
->    migrating xfrm states. From Yan Yan.
+> Registers the t7xx device driver with the kernel. Setup all the core
+> components: PCIe layer, Modem Host Cross Core Interface (MHCCIF),
+> modem control operations, modem state machine, and build
+> infrastructure.
 > 
-> 3) Add missing xfrm intrerface ID initialization on xfrmi_changelink.
->    From Antony Antony.
+> * PCIe layer code implements driver probe and removal.
+> * MHCCIF provides interrupt channels to communicate events
+>   such as handshake, PM and port enumeration.
+> * Modem control implements the entry point for modem init,
+>   reset and exit.
+> * The modem status monitor is a state machine used by modem control
+>   to complete initialization and stop. It is used also to propagate
+>   exception events reported by other components.
 > 
-> [...]
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> 
+> >From a WWAN framework perspective:
+> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+> ---
 
-Here is the summary with links:
-  - pull request (net): ipsec 2022-02-25
-    https://git.kernel.org/netdev/net/c/31372fe9668e
-  - [2/6] xfrm: Check if_id in xfrm_migrate
-    https://git.kernel.org/netdev/net/c/c1aca3080e38
-  - [3/6] xfrm: Fix xfrm migrate issues when address family changes
-    https://git.kernel.org/netdev/net/c/e03c3bba351f
-  - [4/6] Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
-    https://git.kernel.org/netdev/net/c/a6d95c5a628a
-  - [5/6] xfrm: fix the if_id check in changelink
-    https://git.kernel.org/netdev/net/c/6d0d95a1c2b0
-  - [6/6] xfrm: enforce validity of offload input flags
-    https://git.kernel.org/netdev/net/c/7c76ecd9c99b
+> +	/* IPs enable interrupts when ready */
+> +	for (i = 0; i < EXT_INT_NUM; i++)
+> +		t7xx_pcie_mac_clear_int(t7xx_dev, i);
 
-You are awesome, thank you!
+In v4, PCIE_MAC_MSIX_MSK_SET() wrote to IMASK_HOST_MSIX_SET_GRP0_0.
+In v5, t7xx_pcie_mac_clear_int() writes to IMASK_HOST_MSIX_CLR_GRP0_0.
+
+t7xx_pcie_mac_set_int() would write to IMASK_HOST_MSIX_SET_GRP0_0
+matching to what v4 did. So you probably want to call 
+t7xx_pcie_mac_set_int() instead of t7xx_pcie_mac_clear_int()?
+
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+ i.
 
