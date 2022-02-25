@@ -2,141 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 585C24C3C9E
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 04:47:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DACE4C3CA2
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 04:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236757AbiBYDrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 22:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
+        id S237113AbiBYDss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 22:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiBYDre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 22:47:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1F4FFFF8B
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 19:47:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645760821;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AN+RljBQxYbf73CPkJoQu7uYGtkkLK4GI8ktS0B03lM=;
-        b=SMrxj9uXZhGR77Dw5QYwiWI+QjK+HLD1eSdstm9febDsouOA4HRXH7pht92TdZ3+Yx96kT
-        r4pnE+RYkfUpaE3wVW/ykVVyQ8y5ypEWEONCIN7ga7t2r/09l0o6Z0i5iNjv/H7hiAOFvf
-        aAFuXYwcp1xAS3j5awUIN3e5t0KVf5A=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-224-Y96RLXYuNVyIpygB1Q3jBg-1; Thu, 24 Feb 2022 22:46:57 -0500
-X-MC-Unique: Y96RLXYuNVyIpygB1Q3jBg-1
-Received: by mail-lf1-f69.google.com with SMTP id m13-20020a19520d000000b00443423ff116so510213lfb.11
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 19:46:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AN+RljBQxYbf73CPkJoQu7uYGtkkLK4GI8ktS0B03lM=;
-        b=NnGQrlQbfR2kNBErb7+IfbsIT7NBlyNW8E58Dy4yF0wQe7Y0Aup4AI6viBnr6rcA8L
-         L+xSCdoVFlx/2Hsidb7IEvstTiuWSqL+phzZKKCgY7yqLORa6RKt3hVY2iAUF9xoWbuQ
-         gZ09XK8OHqsnUrdfpMIZpFgh0Rt4vnJ+cuh0V0N/V8aoBF8kYIHMC9+js7DxAMR3T7nx
-         A4BI0EVYa6eo7fa7bJFMoc2ydo3sI+3gIHAl9uVRrUBE58lvMJ4Je3F9wG7UB53XqsdA
-         srBikTmg96vs2Q9OoJCdc/2/Wp/7IYFW24PsbdTecadlojZpextAFCBVMA2FhrToQMFg
-         FO5w==
-X-Gm-Message-State: AOAM532WLtiwyjveJfhP8yKu8QJ0pS+Sq+AKDcVv9zVq8cwYzSa75/bv
-        4CPwmUyM2pX3Voy75wsqklbfIjJQsxQrxLk04UNZCDvPvJdOMVM7K+XTbR5ryEhhkeBRYISupXj
-        /a1GEKJKDTf//V46iksckYjYYCNzs/Von
-X-Received: by 2002:a05:651c:90b:b0:244:c4a4:d5d8 with SMTP id e11-20020a05651c090b00b00244c4a4d5d8mr3844434ljq.97.1645760815510;
-        Thu, 24 Feb 2022 19:46:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxlrEucrNT6Oj6btH3jTMQAiAovp8Jt2RzWw1pbp7kHf2Vjr1JlUtNCdzQbn394fIhctnnrdKC8drdPLMw44d8=
-X-Received: by 2002:a05:651c:90b:b0:244:c4a4:d5d8 with SMTP id
- e11-20020a05651c090b00b00244c4a4d5d8mr3844424ljq.97.1645760815306; Thu, 24
- Feb 2022 19:46:55 -0800 (PST)
+        with ESMTP id S233278AbiBYDsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 22:48:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673BF100740;
+        Thu, 24 Feb 2022 19:48:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20B1BB82AB8;
+        Fri, 25 Feb 2022 03:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECC2C36AE7;
+        Fri, 25 Feb 2022 03:48:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645760893;
+        bh=XbIdx5w3wAprKXy+9pfHp8DmIKHPkFnU3GHbmyvUfIA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PTsKY8KvrAMKpjcPQRV+T71bV3SdCbVYzuBinz9JIyrKnj45DxpR6nXk92NW7MEBk
+         0CzovK3Z9cIrJWuF26NvBKI1n8GE5rkNDfW3qbgcJj2OOGfjEX9sfDDfxUsO3RI/qk
+         81TCenbM7mVCaHgcS4u8i3BjwvgjvkdCL6OZOvmSQm+FkaB8Vlqx7cEQ5jvDIrJznQ
+         E9C5egYT1iyhLt4FH+P65Mo9UcMdz3B1rdt0pFV6AU1s34Po9HOkXaOUI9qnt458Qg
+         gj5zO2TOehM53nvUnqLoSWkupD9tuf+gffOyhXWP57O2/hHTSXVuqlqCQ3L5xubj82
+         ASsxGYl45Ludg==
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2d310db3812so20384727b3.3;
+        Thu, 24 Feb 2022 19:48:13 -0800 (PST)
+X-Gm-Message-State: AOAM533/B59SyY+9o7VwzTGVV6oU/sYRZJIl5qPP8YX41ttjXhJNHyh1
+        /RxZ+Sj1mCEJu8mZvqTirjHPKF5XEKgnIl72FNM=
+X-Google-Smtp-Source: ABdhPJwQM86r4Sixnh1yTXwfI63TPAC3DtPXFZhtEmQogtSq7YSAXfVhJCZfIHNuyz9fM+4qGsiTz/p+00srd/ZEsVQ=
+X-Received: by 2002:a0d:fb45:0:b0:2d0:d09a:576c with SMTP id
+ l66-20020a0dfb45000000b002d0d09a576cmr5794606ywf.447.1645760892770; Thu, 24
+ Feb 2022 19:48:12 -0800 (PST)
 MIME-Version: 1.0
-References: <20220224103852.311369-1-baymaxhuang@gmail.com>
-In-Reply-To: <20220224103852.311369-1-baymaxhuang@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 25 Feb 2022 11:46:43 +0800
-Message-ID: <CACGkMEtR+e00Nyb=oytq4vHavwXZ7oFun7iNdRFBx3gDghRa_g@mail.gmail.com>
-Subject: Re: [PATCH] tun: support NAPI to accelerate packet processing
-To:     Harold Huang <baymaxhuang@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20220222204236.2192513-1-stijn@linux-ipv6.be> <CAPhsuW6WgjL_atKCivbk5iMNBFHuSGcjAC0tdZYag2fOesUBKA@mail.gmail.com>
+ <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
+ <ac624e07-5310-438a-dce3-d2edb01e8031@linux-ipv6.be> <0f1fb86b-f8df-b209-9a89-512cbc142e04@linux-ipv6.be>
+In-Reply-To: <0f1fb86b-f8df-b209-9a89-512cbc142e04@linux-ipv6.be>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 24 Feb 2022 19:48:01 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW42TC=uM4P-+35zZ7d-s7FigOA4_1+-QneYGW9JmnF0sA@mail.gmail.com>
+Message-ID: <CAPhsuW42TC=uM4P-+35zZ7d-s7FigOA4_1+-QneYGW9JmnF0sA@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
+To:     Stijn Tintel <stijn@linux-ipv6.be>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 6:39 PM Harold Huang <baymaxhuang@gmail.com> wrote:
+On Thu, Feb 24, 2022 at 7:38 AM Stijn Tintel <stijn@linux-ipv6.be> wrote:
 >
-> In tun, NAPI is supported and we can also use NAPI in the path of
-> batched XDP buffs to accelerate packet processing. What is more, after
-> we use NPAI, GRO is also supported. The iperf shows that the throughput
-> could be improved from 4.5Gbsp to 9.2Gbps per stream.
+> On 24/02/2022 12:08, Stijn Tintel wrote:
+> > On 24/02/2022 01:15, Andrii Nakryiko wrote:
+> >> On Tue, Feb 22, 2022 at 6:37 PM Song Liu <song@kernel.org> wrote:
+> >>> On Tue, Feb 22, 2022 at 12:51 PM Stijn Tintel <stijn@linux-ipv6.be> wrote:
+> >>>> When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
+> >>>> max_entries parameter set, this parameter will be set to the number of
+> >>>> possible CPUs. Due to this, the map_is_reuse_compat function will return
+> >>>> false, causing the following error when trying to reuse the map:
+> >>>>
+> >>>> libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter mismatch
+> >>>>
+> >>>> Fix this by checking against the number of possible CPUs if the
+> >>>> max_entries parameter is not set in the map definition.
+> >>>>
+> >>>> Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
+> >>>> Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+> >>> Acked-by: Song Liu <songliubraving@fb.com>
+> >>>
+> >>> I think the following fix would be more future proof, but the patch
+> >>> as-is is better for
+> >>> stable backport? How about we add a follow up patch on top of current
+> >>> patch to fix
+> >>> def->max_entries once for all?
+> >> Keeping special logic for PERF_EVENT_ARRAY in one place is
+> >> preferrable. With this, the changes in map_is_reuse_compat() shouldn't
+> >> be necessary at all. Stijn, can you please send v2 with Song's
+> >> proposed changes?
+> >>
+> > Will do!
+>
+> Unfortunately that doesn't work. In bpf_object__create_maps, we call
+> bpf_object__reuse_map and map_is_reuse_compat before
+> bpf_object__create_map, so we check map_info.max_entries ==
+> map->def.max_entries before the latter is being overwritten.
+>
+> So I propose to send a v2 based on my initial submission, but use __u32
+> for def_max_entries instead of int, unless someone has another suggestion?
 
-It's better to describe the setup in the testing.
+How about we move
 
-And we need to tweak the title as NAPI is supported in some paths,
-something like "support NAPI for packets received from msg_control"?
+if (def->type == BPF_MAP_TYPE_PERF_EVENT_ARRAY && !def->max_entries) {
+  ...
+}
 
->
-> Reported-at: https://lore.kernel.org/netdev/CAHJXk3Y9_Fh04sakMMbcAkef7kOTEc-kf84Ne3DtWD7EAp13cg@mail.gmail.com/T/#t
-> Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
-> ---
->  drivers/net/tun.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index fed85447701a..4e1cea659b42 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -2388,6 +2388,7 @@ static int tun_xdp_one(struct tun_struct *tun,
->         struct virtio_net_hdr *gso = &hdr->gso;
->         struct bpf_prog *xdp_prog;
->         struct sk_buff *skb = NULL;
-> +       struct sk_buff_head *queue;
->         u32 rxhash = 0, act;
->         int buflen = hdr->buflen;
->         int err = 0;
-> @@ -2464,7 +2465,14 @@ static int tun_xdp_one(struct tun_struct *tun,
->             !tfile->detached)
->                 rxhash = __skb_get_hash_symmetric(skb);
->
-> -       netif_receive_skb(skb);
-> +       if (tfile->napi_enabled) {
-> +               queue = &tfile->sk.sk_write_queue;
-> +               spin_lock(&queue->lock);
-> +               __skb_queue_tail(queue, skb);
-> +               spin_unlock(&queue->lock);
-> +       } else {
-> +               netif_receive_skb(skb);
-> +       }
->
->         /* No need to disable preemption here since this function is
->          * always called with bh disabled
-> @@ -2507,6 +2515,9 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
->                 if (flush)
->                         xdp_do_flush();
->
-> +               if (tfile->napi_enabled)
-> +                       napi_schedule(&tfile->napi);
+to bpf_object__create_maps() before bpf_object__reuse_map(). And maybe add
+a helper function with it?
 
-It's better to check whether we've queued anything to avoid unnecessary napi.
-
-Thanks
-
-> +
->                 rcu_read_unlock();
->                 local_bh_enable();
->
-> --
-> 2.27.0
->
-
+Thanks,
+Song
