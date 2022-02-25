@@ -2,105 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D30FD4C4F5F
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 21:15:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2E34C4F88
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 21:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236017AbiBYUQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 15:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S236273AbiBYUUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 15:20:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236024AbiBYUQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 15:16:10 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A8A20239F
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 12:15:35 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id y5so5155523ill.13
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 12:15:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vj/W5XS6HVqNQijF0TxsmTuehT9DxzRkoqLx906rHIM=;
-        b=Mxn8YgkVkM1NAMOHsI5/Evv7qtSJv6/K7jCFjq4seUaGTlzuQsVRcHPdmGB90sClDz
-         S3hPrn1jRtmjDHaRqn2rMgvvfQFI8Qdy06vvH/1v0jfktxZrf8X4ssMZdmrD+L3oavnG
-         i5tCmh7uJk1pBSq52eS98VuFujt1yOgFtOF+9EyZzFpwUdvVd3i/aN5UnqhToVQBnCRB
-         2IH09cJ6FYGqJ7LH6tIUlgAoGZhZMI8jaDp+fMyebZV1pK2zsZSes2p4hovnrzMU4rJ0
-         tPbwIFQEUXcco+DkbN6NQ+YQ67zspnMsrrn00FEG+gf0K8UOUQQS6sOzy9+bE5UB3UkD
-         iCxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vj/W5XS6HVqNQijF0TxsmTuehT9DxzRkoqLx906rHIM=;
-        b=R8nhgegVv2N90/7SoF7XXMBfoLQTkOGlif4aBg2h1Hc1MDDoBbIK4RGkTR2eCfA2ku
-         qOLqnUVZv3bGQeIj9T4PcG7wvoSVHh8JG4jZ3zOHW8OVKd/wxpwpFNn+LKTBQHWV4FV3
-         3KjMsuRFLmTspzYjKl9wSmXs2CDRg57cvgFM/oCxZ7Ac8Wjxd6vMy0yOBhIdoiNaFs0z
-         jiAxZoLbGPSIF8pU1TioyD7hq9eit9Y/wqp64AslfUHtZGRcIScz/KWKMB1zmPV3BKDj
-         Sn/tmYs/7XnK09aTCkoPc3jZ+CddzcwDGNvufaD4FsHHUfZ2VhuPgqrik6mUH1i/XFW6
-         bTKQ==
-X-Gm-Message-State: AOAM532AJqnX8Jm2xyD2HW3U9bTkPPpJ/mQHNciNojIkbYObo4C20vsQ
-        Wv1CzHQuexqlfD+bkI+tRuaizg==
-X-Google-Smtp-Source: ABdhPJy8DFOwVj/VbIrrBosIJ3nw4eHyrvgZRJn5JpQwpU8L0+W+sYtDdyHjhCx6tiNJqBmUNXTikA==
-X-Received: by 2002:a92:c990:0:b0:2be:4192:79d8 with SMTP id y16-20020a92c990000000b002be419279d8mr7140965iln.29.1645820134605;
-        Fri, 25 Feb 2022 12:15:34 -0800 (PST)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id v17-20020a927a11000000b002c29e9b5186sm2241799ilc.43.2022.02.25.12.15.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 12:15:33 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     rdunlap@infradead.org, bjorn.andersson@linaro.org,
-        mka@chromium.org, evgreen@chromium.org, cpratapa@codeaurora.org,
-        avuyyuru@codeaurora.org, jponduru@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: ipa: fix a build dependency
-Date:   Fri, 25 Feb 2022 14:15:30 -0600
-Message-Id: <20220225201530.182085-1-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        with ESMTP id S235385AbiBYUT6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 15:19:58 -0500
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC701DAC68;
+        Fri, 25 Feb 2022 12:19:25 -0800 (PST)
+Received: from g550jk.localnet (ip-213-127-118-180.ip.prioritytelecom.net [213.127.118.180])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 92CA5C85F5;
+        Fri, 25 Feb 2022 20:19:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1645820363; bh=GnyUUiNHpUn3QnisFNkFdrmk5sr7MjhAKDiPsbgu4M8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=ib18iXolVkkvwEM7reE5uHeb8mdqqho5kueaWEP+Fx99qfBhb9c1ShwqpbLdj/L82
+         08o12yhNliPUJI/QNTj0hRei2PgjVYOYm8RMORMKEpHODc9cby5wY2SqwKM/ZlRh1F
+         NCWtlGERvfPkQvR2ApvKaLIEGWSXtzZ2yO8zrBD8=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH 0/5] Wifi & Bluetooth on LG G Watch R
+Date:   Fri, 25 Feb 2022 21:19:23 +0100
+Message-ID: <4379033.LvFx2qVVIh@g550jk>
+In-Reply-To: <YhcGSmd5M3W+fI6c@builder.lan>
+References: <20220216212433.1373903-1-luca@z3ntu.xyz> <YhcGSmd5M3W+fI6c@builder.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        PDS_OTHER_BAD_TLD,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An IPA build problem arose in the linux-next tree the other day.
-The problem is that a recent commit adds a new dependency on some
-code, and the Kconfig file for IPA doesn't reflect that dependency.
-As a result, some configurations can fail to build (particularly
-when COMPILE_TEST is enabled).
+Hi Bjorn
 
-The recent patch adds calls to qmp_get(), qmp_put(), and qmp_send(),
-and those are built based on the QCOM_AOSS_QMP config option.  If
-that symbol is not defined, stubs are defined, so we just need to
-ensure QCOM_AOSS_QMP is compatible with QCOM_IPA, or it's not
-defined.
+On Donnerstag, 24. Februar 2022 05:15:06 CET Bjorn Andersson wrote:
+> On Wed 16 Feb 15:24 CST 2022, Luca Weiss wrote:
+> > This series adds the BCM43430A0 chip providing Bluetooth & Wifi on the
+> > LG G Watch R.
+> 
+> I picked the dts changes, but would prefer that the other two changes
+> goes through the BT tree. I see that you haven't copied Marcel on the
+> dt-binding change though, so please resubmit those two patches together.
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: 34a081761e4e3 ("net: ipa: request IPA register values be retained")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Thank you, will resubmit the first two!
 
-diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-index d037682fb7adb..e0164a55c1e66 100644
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -3,6 +3,7 @@ config QCOM_IPA
- 	depends on NET && QCOM_SMEM
- 	depends on ARCH_QCOM || COMPILE_TEST
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
-+	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select QCOM_MDT_LOADER if ARCH_QCOM
- 	select QCOM_SCM
- 	select QCOM_QMI_HELPERS
--- 
-2.32.0
+Just to be clear, as far as I understand each patch gets sent based on its own 
+get_maintainer.pl, and the cover letter gets sent to the superset of all 
+individual patch recipients?
+I'm using this script that's largely based on something I found online a while 
+ago
+https://github.com/z3ntu/dotfiles/blob/master/scripts/usr/local/bin/cocci_cc
+
+Also just checked and Marcel isn't listed as maintainer of the relevant dt 
+bindings in MAINTAINERS, maybe they should get added there?
+
+(also CCed Marcel on this email)
+
+Regards
+Luca
+
+> 
+> Thanks,
+> Bjorn
+> 
+> > Luca Weiss (5):
+> >   dt-bindings: bluetooth: broadcom: add BCM43430A0
+> >   Bluetooth: hci_bcm: add BCM43430A0
+> >   ARM: dts: qcom: msm8226: Add pinctrl for sdhci nodes
+> >   ARM: dts: qcom: apq8026-lg-lenok: Add Wifi
+> >   ARM: dts: qcom: apq8026-lg-lenok: Add Bluetooth
+> >  
+> >  .../bindings/net/broadcom-bluetooth.yaml      |  1 +
+> >  arch/arm/boot/dts/qcom-apq8026-lg-lenok.dts   | 98 ++++++++++++++++---
+> >  arch/arm/boot/dts/qcom-msm8226.dtsi           | 57 +++++++++++
+> >  drivers/bluetooth/hci_bcm.c                   |  1 +
+> >  4 files changed, 144 insertions(+), 13 deletions(-)
+
+
+
 
