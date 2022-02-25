@@ -2,45 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CC584C3E09
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 06:52:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23F494C3E0A
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 06:52:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237628AbiBYFvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 00:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55662 "EHLO
+        id S237623AbiBYFus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 00:50:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiBYFvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 00:51:31 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809C318CC00;
-        Thu, 24 Feb 2022 21:50:55 -0800 (PST)
-X-UUID: 2bdedc9e77ba4527b98b5d2572434774-20220225
-X-UUID: 2bdedc9e77ba4527b98b5d2572434774-20220225
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <lena.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1505745696; Fri, 25 Feb 2022 13:50:48 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 25 Feb 2022 13:50:47 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 25 Feb 2022 13:50:46 +0800
-From:   Lena Wang <lena.wang@mediatek.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <wsd_upstream@mediatek.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lena.wang@mediatek.com>,
-        <hao.lin@mediatek.com>
-Subject: [PATCH] net:fix up skbs delta_truesize in UDP GRO frag_list
-Date:   Fri, 25 Feb 2022 13:43:43 +0800
-Message-ID: <1645767824-6899-1-git-send-email-lena.wang@mediatek.com>
-X-Mailer: git-send-email 1.9.1
+        with ESMTP id S230100AbiBYFur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 00:50:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DDFB820E
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 21:50:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D026DB82B43
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 05:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B8F0C340E8;
+        Fri, 25 Feb 2022 05:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645768213;
+        bh=80Po2n9ApP12RROLetizT0+ctJekA+Yt7UdfUizkk58=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XKRZLzQRev73Z1nNSvg5db2WOJxgxf4TDFfChmvwKgHxMXBRYKrOuKRcyxI28KcMT
+         qWEsXGkMS9LYRWPFdt/yRO9YalGLYWxI5SSrkb+Ex3sRiulNFUeM3Ua0OoYtU0uFR/
+         eWswMb8PND8nvgFxohOclB1nwDjkS8ejciJ7mQA1LT0FoAJwvww4Gv/aUYYx9qW5rx
+         sWr2md3blKk8mftSkk6jDsGJGhrx+lEpD8NpD1VIbZHnRSbpUckk0+c9FvCYFbR9Mf
+         b7eWIPuxyXbz4z9bgxD2OJnpcWmH6iBAoIn9uT7FohcNPch8V5mtniK2zBMkK95/CD
+         bAuUMTq8XfGdw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5F4BBE6D4BB;
+        Fri, 25 Feb 2022 05:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 00/11] FDB entries on DSA LAG interfaces
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164576821338.17067.9276747625667386675.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Feb 2022 05:50:13 +0000
+References: <20220223140054.3379617-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220223140054.3379617-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, ansuelsmth@gmail.com, tobias@waldekranz.com,
+        dqfext@gmail.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        jiri@resnulli.us, ivecera@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,57 +60,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: lena wang <lena.wang@mediatek.com>
+Hello:
 
-The truesize for a UDP GRO packet is added by main skb and skbs in main
-skb's frag_list:
-skb_gro_receive_list
-        p->truesize += skb->truesize;
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-When uncloning skb, it will call pskb_expand_head and trusesize for
-frag_list skbs may increase. This can occur when allocators uses
-__netdev_alloc_skb and not jump into __alloc_skb. This flow does not
-use ksize(len) to calculate truesize while pskb_expand_head uses.
-skb_segment_list
-err = skb_unclone(nskb, GFP_ATOMIC);
-pskb_expand_head
-        if (!skb->sk || skb->destructor == sock_edemux)
-                skb->truesize += size - osize;
+On Wed, 23 Feb 2022 16:00:43 +0200 you wrote:
+> v4->v5:
+> - resent v4, which was marked as non applicable in patchwork (due to
+>   other patches getting accepted in the meanwhile, the offsets of some
+>   hunks changed a little, no other changes)
+> v3->v4:
+> - avoid NULL pointer dereference in dsa_port_lag_leave() when the LAG is
+>   not offloaded (thanks to Alvin Šipraga)
+> - remove the "void *ctx" left over in struct dsa_switchdev_event_work
+> - make sure the dp->lag assignment is last in dsa_port_lag_create()
+> v2->v3:
+> - Move the complexity of iterating over DSA slave interfaces that are
+>   members of the LAG bridge port from dsa_slave_fdb_event() to
+>   switchdev_handle_fdb_event_to_device().
+> 
+> [...]
 
-If we uses increased truesize adding as delta_truesize, it will be
-larger than before and even larger than previous total truesize value
-if skbs in frag_list are abundant. The main skb truesize will become
-smaller and even a minus value or a huge value for an unsigned int
-parameter. Then the following memory check will drop this abnormal skb.
+Here is the summary with links:
+  - [v5,net-next,01/11] net: dsa: rename references to "lag" as "lag_dev"
+    https://git.kernel.org/netdev/net-next/c/46a76724e4c9
+  - [v5,net-next,02/11] net: dsa: mv88e6xxx: rename references to "lag" as "lag_dev"
+    https://git.kernel.org/netdev/net-next/c/e23eba722861
+  - [v5,net-next,03/11] net: dsa: qca8k: rename references to "lag" as "lag_dev"
+    https://git.kernel.org/netdev/net-next/c/066ce9779c7a
+  - [v5,net-next,04/11] net: dsa: make LAG IDs one-based
+    https://git.kernel.org/netdev/net-next/c/3d4a0a2a46ab
+  - [v5,net-next,05/11] net: dsa: mv88e6xxx: use dsa_switch_for_each_port in mv88e6xxx_lag_sync_masks
+    https://git.kernel.org/netdev/net-next/c/b99dbdf00bc1
+  - [v5,net-next,06/11] net: dsa: create a dsa_lag structure
+    https://git.kernel.org/netdev/net-next/c/dedd6a009f41
+  - [v5,net-next,07/11] net: switchdev: remove lag_mod_cb from switchdev_handle_fdb_event_to_device
+    https://git.kernel.org/netdev/net-next/c/ec638740fce9
+  - [v5,net-next,08/11] net: dsa: remove "ds" and "port" from struct dsa_switchdev_event_work
+    https://git.kernel.org/netdev/net-next/c/e35f12e993d4
+  - [v5,net-next,09/11] net: dsa: call SWITCHDEV_FDB_OFFLOADED for the orig_dev
+    https://git.kernel.org/netdev/net-next/c/93c798230af5
+  - [v5,net-next,10/11] net: dsa: support FDB events on offloaded LAG interfaces
+    https://git.kernel.org/netdev/net-next/c/e212fa7c5418
+  - [v5,net-next,11/11] net: dsa: felix: support FDB entries on offloaded LAG interfaces
+    https://git.kernel.org/netdev/net-next/c/961d8b699070
 
-To avoid this error we should use the original truesize to segment the
-main skb.
-
-Signed-off-by: lena wang <lena.wang@mediatek.com>
----
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 9d0388be..8b7356c 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3876,6 +3876,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		list_skb = list_skb->next;
- 
- 		err = 0;
-+		delta_truesize += nskb->truesize;
- 		if (skb_shared(nskb)) {
- 			tmp = skb_clone(nskb, GFP_ATOMIC);
- 			if (tmp) {
-@@ -3900,7 +3901,6 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		tail = nskb;
- 
- 		delta_len += nskb->len;
--		delta_truesize += nskb->truesize;
- 
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
+You are awesome, thank you!
 -- 
-1.9.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
