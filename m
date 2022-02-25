@@ -2,88 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7963B4C495E
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 16:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 093734C4973
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 16:45:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242256AbiBYPna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 10:43:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40736 "EHLO
+        id S234769AbiBYPqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 10:46:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242259AbiBYPn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 10:43:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589421FEDA8;
-        Fri, 25 Feb 2022 07:42:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1132FB8325D;
-        Fri, 25 Feb 2022 15:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6EE7C340E7;
-        Fri, 25 Feb 2022 15:42:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645803774;
-        bh=rG0AcVeKtn6Er71mQXjGdAsXPiigDD36j/6q1LCtrHY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=E5tkRkYLTogDI8uVkWLYEWNS+OizruaLyBLOkuIRXaCAHCejmIyl11vuty3csmPzz
-         plLrA4h9wcslVR7++vs7JrFHNcAKId9jVVEjFTxHIPzxj8EXlqA5xp+Y/GhJshZxhR
-         +6iQcKus3COda19T6ttXheB2lzkZvpcxgF8wV1unMi9zEaaVz7KfI0jgIL0GydVfSh
-         rlDOp64kTRZXN4iX2iEUcd0SuDs60IypWA1J+tmfgsaI8V3qVDHNmOfUIHmpavA8RR
-         PQG3cTwFgqOflWXVmYxWdh2USZbKxThH1jtp77S6udiH2LHXHDn9Uiu+CijZEA9lAC
-         GbTDCXeFYV6/Q==
-Message-ID: <d5be0cf8-0607-5448-e235-183980f8f44a@kernel.org>
-Date:   Fri, 25 Feb 2022 08:42:51 -0700
+        with ESMTP id S233995AbiBYPqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 10:46:17 -0500
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F0C1FCC1
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 07:45:45 -0800 (PST)
+Received: by mail-vs1-xe32.google.com with SMTP id e26so5935496vso.3
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 07:45:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=fdfT2wmX6I3eiOMf3I725AzEmghga9jY9v24+ko7O4E=;
+        b=hRNzQxbyriy/mQP8ZA5NUicdT7iV8frqHoQAdn7JhcXEdnCzAE+160Znlc7pP2dnLu
+         UFUGgQz5eMw0DLwS3/r589k8mXFviRMhqgqU+34L8AJqKpYIW7FVQGzDhcyZ7gjOT2BZ
+         A/Oc1zgt+Bf966VFglvzCKGwQ3p9bcsAsoqG3OZFB6rByTaymzeT2J8GCJzSjQlf/B31
+         KDZaEmjpsd1JkVRu8YHxDJlnWa2DuCS7BkgbG1sDFpKIur1MVZPA3FeEG2pJZPuiwvoD
+         kWX0M2N6GIlSusYSBA5hqfpWSA4tbSUhHzBVQWUn8+h9hNaRJf2u5N5oEjdjNqBfDKVk
+         gwcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=fdfT2wmX6I3eiOMf3I725AzEmghga9jY9v24+ko7O4E=;
+        b=s5ZwxSlYOLeXIXNycevDeB0fVoSDn35eZZU/2ByPBnK10HnVqjzLguNpvO6DXkNPHm
+         /bE858G2ZZ9iVxml4WeQC+paDxuexFIPSvqaWc9E4weSLRfWCtl8CS6AtdqAHb7/L8hG
+         B4HGjlfO5V8eCVCAQmXy8fV90iAnWV2+lGPc1qvJ+8T1iPoaR4UIxFGDwPOcBxep23z0
+         4/JS/H8We0cMkXm3apRMyDThrAdWDRDTtrrE2aW+vIBZek6k7niKMduHbp7rARHOv48g
+         A0iPFAT2cQZ5A5GHkCFWFwa/bxiF805p7ts0MFVlv9Oi1+Zx9NaAenvQ0izOt5UYa/63
+         awNw==
+X-Gm-Message-State: AOAM531xgNNwnM8ywXNbQIp9W3+0uWR7zSgwCdUXMbXL8pLn0Y4Zbg7k
+        I2s80dG/CngJWJDCfIn+iP0EO/TrjchXpkvREhA=
+X-Google-Smtp-Source: ABdhPJy/y9Sp/iYuT4UqBQBQBcNqGMS5uMb+C7z+V9mUxirPynhTOjJvwGn1vnL3+xuQ50EGvDDyHmisA0m9Fd5+sok=
+X-Received: by 2002:a05:6102:418a:b0:31a:1d33:6803 with SMTP id
+ cd10-20020a056102418a00b0031a1d336803mr3540768vsb.40.1645803943908; Fri, 25
+ Feb 2022 07:45:43 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next v2 1/3] net: ip: add skb drop reasons for ip
- egress path
-Content-Language: en-US
-To:     menglong8.dong@gmail.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, imagedong@tencent.com,
-        edumazet@google.com, alobakin@pm.me, cong.wang@bytedance.com,
-        paulb@nvidia.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20220225071739.1956657-1-imagedong@tencent.com>
- <20220225071739.1956657-2-imagedong@tencent.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220225071739.1956657-2-imagedong@tencent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a59:b6c8:0:b0:296:75c6:73cc with HTTP; Fri, 25 Feb 2022
+ 07:45:43 -0800 (PST)
+From:   Heggins Kate <hegginskate7@gmail.com>
+Date:   Fri, 25 Feb 2022 15:45:43 +0000
+Message-ID: <CAEAJ=VySBbFpt+oHUAt-Wigzg=Cm+3Zp6_PzRVgUrm5n=JOKjQ@mail.gmail.com>
+Subject: Hallo
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/25/22 12:17 AM, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
-> 
-> Replace kfree_skb() which is used in the packet egress path of IP layer
-> with kfree_skb_reason(). Functions that are involved include:
-> 
-> __ip_queue_xmit()
-> ip_finish_output()
-> ip_mc_finish_output()
-> ip6_output()
-> ip6_finish_output()
-> ip6_finish_output2()
-> 
-> Following new drop reasons are introduced:
-> 
-> SKB_DROP_REASON_IP_OUTNOROUTES
-> SKB_DROP_REASON_BPF_CGROUP_EGRESS
-> SKB_DROP_REASON_IPV6DSIABLED
-
-A new version is needed to fix the typo Roman noticed; logic wise:
-
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
+TWVyaGFiYSB1bWFyxLFtIG1lc2FqxLFtxLEgYWxtxLHFn3PEsW7EsXpkxLFyLg0KaMSxemzEsSB0
+ZXBraWxlcmUgaWh0aXlhY8SxbSB2YXINCg0KVGXFn2Vra8O8cmxlci4NCkthdGllDQo=
