@@ -2,97 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB5564C470F
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 15:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5F8F4C4779
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 15:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241635AbiBYOD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 09:03:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        id S241728AbiBYOa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 09:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241533AbiBYODv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 09:03:51 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6391AA056
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:03:19 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id h15so7569294edv.7
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:03:19 -0800 (PST)
+        with ESMTP id S239129AbiBYOa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 09:30:26 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A54234015
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:29:55 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id c9so4997916pll.0
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:29:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Qwa34n1xX547UDRROeteqbZyf3bNGYmzcwY9FotaJnE=;
-        b=Xdz6v0R2CfNCrV1tMFKpbzJWVvJSIZyNYMzG7OfaMQLxBApw/F2L2P3Fdl5UzNui2O
-         +DToqyVsyxT2HEN/fGLrcb1D3WjtPNhAVSf7UQNAJIWCsV+tJWOkSQ10vHRjCYmFrDiv
-         eRKfvD+zsuFrf8N4nwcKi9MhaeU32kLG4jwwPRdBBCKRR1NcPDyPPvOaxsa/bSF4bGbA
-         GrSbAuUJBPOokZOvlbTwdW03uOZA4MFThPmtMnktUi9BGJ1hTaGuzH6KUtqPcJPwswu0
-         Hz0401J7vFMX8wleYXALZtQ3b6kL4vg5YJgIABVoQYLTSbM1bK2cnJQC7CMrxTxWi031
-         /JYQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=xLb3TQx9KxuMxtf3xcCBiCwA8sPGsTzld99AYCOXRKI=;
+        b=jyvLrsZegr0dP7J1CpMlz7XiaDbxpU4dDMqEkzLWsIdyLnLe0SXvIVMOf8I+vQU4do
+         5angoNhc5qDt7CE6pRmgwW7Y+pbfjJhK3mv0LvYsdIjdE2oGiEeAMJWluXPMM+1zLWnZ
+         v1VpyVvkzXED0eWStw1PNn4/5JqORT6ZnQ2kfEy19lk3/HP1q+2RkhQhsGpZHRq+9UUn
+         z8ZQj8WMgED5mPvtF0tyZKOTneDAsUemrSY21yD1GPeMdZu768SxE2H0LOlUFaihpRdU
+         rgyC9RPPxZN6X4dTuFxGN56KVN2emgP4wNZ1XcPR/Mr6izyrFxLXx8qBQ23eA5ohk2Rc
+         4wpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=Qwa34n1xX547UDRROeteqbZyf3bNGYmzcwY9FotaJnE=;
-        b=PYGfGu8H07fx1dH9sSp5uVWFGn1VQEv91ji0cPhmvoujsvMA7OwwwyGms2GGHTvu0M
-         nddA7IWA4Q/RgKItx5kyw8OyLh+0oMYJC2hafWH2pHJyg8hDAZ3S3lshhRaJtCXPawa6
-         IVenyauXXTmKDuCoVkgh36vOZcvzWfKNZzInxh2vLfGp6ks5DxKIaDQA73FrWOcRpUDW
-         jWyQXCbajv8le8pU+SsijrNFpKW9N5Mv2Xveh4QI/t3N7u6z8vIjpXoseDaBl23hJasN
-         vfkoI5obCtman87yKsNIx0wEpHD8ysiCFjHYqFSrVhuRkdsXd44TZvWNc4KVvHRlDrEN
-         u5bw==
-X-Gm-Message-State: AOAM532ODvCS1n9LbPUUz2XSXWyFFOFDYZhbQAyQYtlACkw+ROoOUZzE
-        vxx3cn9Tu34YUy8KJbnk82qlQA==
-X-Google-Smtp-Source: ABdhPJwZ2+6dirl+7TqqywrZ4TSyEYZzI1JXxX1OmXk62tAXcNh+oKliqHkUM08cnsHa275YSgjbgg==
-X-Received: by 2002:a50:ef09:0:b0:412:e8d5:5c9d with SMTP id m9-20020a50ef09000000b00412e8d55c9dmr7253184eds.57.1645797797515;
-        Fri, 25 Feb 2022 06:03:17 -0800 (PST)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id gb25-20020a170907961900b006ce423d43e1sm1033147ejc.13.2022.02.25.06.03.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 06:03:17 -0800 (PST)
-Message-ID: <cc0a9ec0-66b0-9c02-3adb-ea8ed19b6923@blackwall.org>
-Date:   Fri, 25 Feb 2022 16:03:15 +0200
+        bh=xLb3TQx9KxuMxtf3xcCBiCwA8sPGsTzld99AYCOXRKI=;
+        b=0kQD0wNK6liqnzC6AVydTuFSmx5LRTYduT2wBO4ahk6FMyjJECA2yAM+dVcygLqf1Y
+         KWUQMDqqwcAOX2fqQaaHG5iXrF/q1Wq+AHM6E3G/+NsJCve81J9q2UF0osXYiZv3g6RG
+         mwxsQcssGk500YpZ1rbwvlQBQ+7ENiB9w+TeY7qdXQ13CJSOVTP1+3iZRLEwa2/8ZUta
+         F1XEErtLFaaNHGtRikWB7Yv2OexjrNzkCTxk3sjzrQrC2VyevBVhs/nMGEuCg1/WuAmj
+         1EbV/9YIKpJA+xBjR9cLAZwNwKq2WV0eOaIU3oZ3qwBpMrn9+g67N3QaJo4aCTDuFQOD
+         1aPQ==
+X-Gm-Message-State: AOAM531j3hJubks4j3pJfMgeq0Tf2+s5nVI5F7VXsuOOATxOiTybDzFV
+        JauyGcSPScB7Zj1CLVvuDZ9qx0gOrSays3YIzNg=
+X-Google-Smtp-Source: ABdhPJxo15HVrHpHhH8aBqDpxn/iwCppdVxcQq+rALzH1h8Kqms34it6e8CC5PRDsYPf5IhsI/4H2NYgiWXHdJ30hT0=
+X-Received: by 2002:a17:903:18d:b0:150:b6d:64cd with SMTP id
+ z13-20020a170903018d00b001500b6d64cdmr7692719plg.123.1645799394616; Fri, 25
+ Feb 2022 06:29:54 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH iproute2-next 1/1] bridge: link: Add command to set port
- in locked mode
-Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <20220225114457.2386149-1-schultz.hans+netdev@gmail.com>
- <20220225114457.2386149-2-schultz.hans+netdev@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220225114457.2386149-2-schultz.hans+netdev@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6a10:a489:0:0:0:0 with HTTP; Fri, 25 Feb 2022 06:29:54
+ -0800 (PST)
+From:   Miss Reacheal <alhousseyniibrahim13@gmail.com>
+Date:   Fri, 25 Feb 2022 14:29:54 +0000
+Message-ID: <CAB+7_+5=RWBWDfzFCFfaDAYpJyqKK0dvuP6sYLkyEpw_4xYgkw@mail.gmail.com>
+Subject: Re: Hallo ihr Lieben, wie geht es euch?
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/02/2022 13:44, Hans Schultz wrote:
-> Add support for setting a bridge port in locked mode to use with 802.1X,
-> so that only authorized clients are allowed access through the port.
-> 
-> Syntax: bridge link set dev DEV locked {on, off}
-> 
-> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> ---
->  bridge/link.c                | 13 +++++++++++++
->  include/uapi/linux/if_link.h |  1 +
->  2 files changed, 14 insertions(+)
-> 
+Hallo,
 
-You should add man page documentation and update iplink_bridge_slave.c
-with the new option as well.
+Sie haben meine vorherige Nachricht erhalten? Ich habe Sie schon
+einmal kontaktiert, aber die Nachricht ist fehlgeschlagen, also habe
+ich beschlossen, noch einmal zu schreiben. Bitte best=C3=A4tigen Sie, ob
+Sie dies erhalten, damit ich fortfahren kann.
 
-Cheers,
- Nik
+warte auf deine Antwort.
 
-
+Gr=C3=BC=C3=9Fe,
+Fr=C3=A4ulein Reachal
