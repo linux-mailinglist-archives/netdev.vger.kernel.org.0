@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 190F04C4141
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C9424C4150
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:24:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239011AbiBYJXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 04:23:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
+        id S239014AbiBYJXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 04:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238989AbiBYJXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:23:39 -0500
+        with ESMTP id S239004AbiBYJXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:23:41 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70078.outbound.protection.outlook.com [40.107.7.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841E31A7D9C
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 01:23:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E711E1A8C95
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 01:23:08 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=himisrzc7bsDIgQBTK6G1sqFCD2a1BxiFboeFpXUzSo3C70KZ5AZgh1YQ6HgmhXimJfkUhu1qZ+3Wz7gepzoWptt95nEhvc4PcwZAM9fJFhI5i5LtjLVc0coJQvgFS76wxlt5yaHSXHAdBXKqH8EXMH4QIZvuKt5ZTp0j78b8Mr+N1JlaaAeUUWGgZb6/uWzkCIcQOIhpsSZBWxJxdsmBC2Hzs8UuXbQL9PWsl2JskBGvCGymc/ECYYao6uMGsP8minbgiKYslJmnRALHU3jucOwzhZItWDAWdKJfqvRLMjghYqpAo1AnJi5Lo7GHOv5qYoLqsgOeWD1PH2axkfvWg==
+ b=O4JxjOrCIbsS9rrDaWvhOB5R3lihSFUbBVIiVBF6iF2ZUoJ9FbWMkM6/YrW5p2WxejOmReLSKMzvHCNVJJ3YxyggmOV5QrX8tZg8DJnCdmydqo9abNfqs+AnK8JuahZESkHFKfq/gmICgvYKmAByqVTJs6LlLpdW9H5WDCigTQQ7lVitDreukt9M+qcHbtJDWk7CYG8TwGAVWa/Vb7k2+0AJyWQ86OuQfItWeQAgoABQ/axW4S+kTMjcO6JvSZb/JWdhbadIobzVN3A14mV6p/XvnWhf3i7C+pTU4UIY4ifP0EsF1fJYV2LaViv8xCTpFcvPPai11d8hMqDqK16ASg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E+sSeC3GVxo1lCIdXIei1D7d4/wQe9GMvF9alIHL0SI=;
- b=G5nX0uH0rv+Yfn7/bQtjYauijgK0fqHsKgNbiGzLH4UmiZCv3l6FaOVrRJyK7JvDVOK+JfXJ7unTdwAp95D2V3V+3o/95TGfsma+uw3VwbOyJy3htkQ99B2ydv0eg/dhG7/fImtbiaQ4sM9HhyGOMo2xHRwvIEm013HxOmbChHbsDwyvlCj61jE1swjBLwYBXN5aDJb2yxStm4Ajv/BgE2mLpoZH/Y2ZoE3sgVVcp00NNknMNehOIYKub70isvKiSE6ppgzrw/pBODC+TbWbupYCdjdnuQawBReFepQLpsY0FpCFPBJz5vtgzouh3r6LSEL+VAdq3gykNGatOKnS0w==
+ bh=wJuL5fE9ijbCT8XWpvMOIjWBI6p8pseAE2dyCUqyjn0=;
+ b=IRb4xYpuqONNYS3/E/2+YmZoGDyH6HE6FnDLApW/9H04YhYq9UAzfONRvQdrzL7cFc2ZsOk6EP313HAX8pWtcDlwog6Ckwfr0C8rv82vWgj9smfTOxq8W8P3Rm42PqODBM7LUgJfV3SrGlCo2j9tuhF65HTXUahkVp3+JXcoC7jwYiRj1zbqXKA2+WzuRaxj/2+xPCsojauMGZxcXs1zViuA5Xu81KIHuN+HNb7x15820zjd2iaFoUieH5BbR0rjuUaxt/NVmrjw1z5kOJmv18xCgu4j7Z3fNNtOp3+sYn5vbUj8Y2D3f1amGfnoILD86Km0iOB7z8ExYrQ4hzZ9Ww==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E+sSeC3GVxo1lCIdXIei1D7d4/wQe9GMvF9alIHL0SI=;
- b=XQnqH9PDOQAJH+3djaK473fD0I8rFu3g8SdNkyfolNcPBkxhTyCSjepn4AWZ6J4ysp8fZk/BT4BwamCrKRkv9vTUBsrLAa5ruW6bZalzVODTQdvtJT/vFFg56I3Bka6zURC0vP2/dmt+0y4BE9VENE8QkcWjqWAwfQGQciYJ5oo=
+ bh=wJuL5fE9ijbCT8XWpvMOIjWBI6p8pseAE2dyCUqyjn0=;
+ b=sXeYRZoXbesJl0axj2lGNGH9OwsCskDaAFvTKhNZP7J/ZWRYxBX43jiE1spcnF1WNR/m3ofeKDUY5HU48OgGW5SKPLvicX7mAOUGIqqq9AOKKbB/ArXvjjhXc4dmlV+41fLwPj1RNq05LfPaXWyRZSHaXyndj/FL7GjUlZW6PxE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DBBPR04MB7658.eurprd04.prod.outlook.com (2603:10a6:10:20d::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Fri, 25 Feb
- 2022 09:23:04 +0000
+ 2022 09:23:05 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Fri, 25 Feb 2022
- 09:23:03 +0000
+ 09:23:05 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -57,9 +57,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH v2 net-next 03/10] docs: net: dsa: sja1105: document limitations of tc-flower rule VLAN awareness
-Date:   Fri, 25 Feb 2022 11:22:18 +0200
-Message-Id: <20220225092225.594851-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 04/10] net: dsa: felix: delete workarounds present due to SVL tag_8021q bridging
+Date:   Fri, 25 Feb 2022 11:22:19 +0200
+Message-Id: <20220225092225.594851-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220225092225.594851-1-vladimir.oltean@nxp.com>
 References: <20220225092225.594851-1-vladimir.oltean@nxp.com>
@@ -70,53 +70,53 @@ X-ClientProxiedBy: VI1PR02CA0065.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a1d3ea30-f42f-4b05-e6e8-08d9f8406cc3
+X-MS-Office365-Filtering-Correlation-Id: 3d4763eb-dd67-4a54-b607-08d9f8406d57
 X-MS-TrafficTypeDiagnostic: DBBPR04MB7658:EE_
-X-Microsoft-Antispam-PRVS: <DBBPR04MB7658DDF15F6152C3B81AE38EE03E9@DBBPR04MB7658.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DBBPR04MB76580A76266D24DB9218A559E03E9@DBBPR04MB7658.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eMPT461jQsmI7eMwpKizKI3ATnreuLytF0nwmai5D+9Gw7RbMMEA1UQS/8hNmLPstDTQJw/F3vdhn3BN8Fzs7FXB28Q+IXSTkKwP0O7l/Q+NIbmmp7NyUVteE9VDE5LQ0MfJEn5lisPt0zzTWgs/+0dwbqfQVGi5Z5OxYGC+2hK+Ra0STMlt1dw150XVD+DH76mf/RieXhD8PxvQYO05MzlTEsWzlzjqrngkfRjp3BWJCD9XUpNH8VMSQVbN+ZJzvXYHzgRCKPHXNSBvZCEIDFofl7DATvpwzrjD5I1x0IDMWqfZnjQoogby059BbSzfYGKtXiBGzSAMxDN6pAiowtUjBBjgl6/TCHISGF1Dsy2heylHwylD66UQSDpUIj3jcSQ8OnY1JmfjXmR7WEb2W+2WMI7oYbgPc7IYLFKVJDK1qgUvOxvNyRtmfwOFLEetgH1bFVIlcLXAOkysAhOdGJeBrGNivyNqbS+ZLWINzw6bobCHuUzhZL2joIZWGX3JCiKwOw0L7KDmkZtKDYudZhNbYBubBvZz/QUqaScb84QZC/VSRouc8Nz98buuY+YHMCRuFX6nd+3KCgmdr/Yxx0hS7z2xJE3BaxqEyFsHUwuOvVtrd8vVvZtxI+e4IX9zyoUZ+HHQN6s2aAcpXsVYCBrNUtmk5TkhvKRfahkG2AFJGhueAXOoTPi5Nn5hgASG5l4DpcstzFRKxygWA1heiQ==
+X-Microsoft-Antispam-Message-Info: rE2hHn91PCZcrAaYnt5DCwn6Ei6DBLFoEyfxif30JeqjJM/v17jRJKIen0Owu+47rNrAlmQ5bHIejd4WUxAJEfNuajQMWgtF8Ue+JlkBKHw+S4w/M0j51PHw4YyEPL/A5a2HqsBsAPrJ2rTK3JGFVCEIQbbtHl6kz/yHCpogfKHPcfO3fA2EK5gokdNvk8/WbMHVedYgk0fXcl0tQgSXQQvonL0sGSKOOFXpwtDMmiJNkN3rt1b7xBTIrRYSWOo+1Jd+Cdu7wqVhM46JCnn3UkAl2wRBuBqSq1n9UO5z5vpZs7VRMLy+wnodRqdh3Ieaq2vnxYgqG9OepS6EkqIqU3WAxwjNzrxgBhovKJvbouKXpsZdpJi501JejSEyQ01Ov5dnoBROfE7xkG+KUx7i6TOVjbZmF/C2EbHsVejrERtXkfZC57CvlkoxJTIA620Kq5VHEUir21/HBx+0foep6ASu1sq/2XKvnWIwMkbXaRckp+Irjq1tzAw9S8d6owXgp97wbOViI2uR1RsXYrkAEamfvSLVGbBDGkd9iSWLgqlDZx0BU2JxvlGSUML04w3wA0LEPHyngDWz0zM+mohvP1HrOh/F8JTr9W/gIHZbbHsEBnBWWg9lQXRuUn821kTbEVSfWg2sjxtdiYQi5x/o/jFDnYNg5AytJl+13V1qMl2m374qwloB4dUEi6tb2b/YdGw1dkZHQbYHt02omR7D7g==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(54906003)(4326008)(316002)(38100700002)(8676002)(110136005)(6486002)(6666004)(38350700002)(86362001)(8936002)(6506007)(52116002)(36756003)(66946007)(7416002)(26005)(186003)(66556008)(66476007)(1076003)(6512007)(44832011)(83380400001)(5660300002)(2906002)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h8KGKt5LqgpJsAM/q819EJpVdyp8OC0GJyaVuYLVVTSnN5qF1vf9SIhqMOjj?=
- =?us-ascii?Q?ED90DAhkJafvZLtj/fWeqC0QAb24iov5eDCz1oGkJzacXLhfdhIbRTv2ND+R?=
- =?us-ascii?Q?FddJE41Yxk/KkMOdKcn8YT5GVdQdtrxymq0IinNOeV1gS9IKuzz/Ajky0zdW?=
- =?us-ascii?Q?f9XIOoLNW7MVXViGQTuPNObQp0D0PtBxF77nvhn6idKcMBQOL3p8/lPjoleB?=
- =?us-ascii?Q?oqqz7OfyurXu097vQd4VfNc9tcg500FZZPFRevJIXto0eZlZ3fIUw0jMnCs0?=
- =?us-ascii?Q?AksRR7SqdTkaZycGdu2SbDcYM//F9h0H3gh+Q2l7y3VyGoYXnFBWYrPTKGVH?=
- =?us-ascii?Q?nDVVhwnNfucKCXkcyaK5l3pfS+PhbQKidYgTrdc92gM1mbZJPkWU9cURe78+?=
- =?us-ascii?Q?U4RDcfHuzvSqIGYTldIL5EfXUo3HPitb9k/mGbrgeVJlUq36iaO+UolWnW8W?=
- =?us-ascii?Q?MyxMBxYPSYnpIt7CMINeF7WhGkFbggAQvHgQ3l256IgPc+Tx2VuGzxpB5dtb?=
- =?us-ascii?Q?6JKhmIhinulqKojn7M+4IWtN/RjBdkMUnkF4fqR6TU1H1OcnaYg3OrN6aGrS?=
- =?us-ascii?Q?OWB7Q7eXCVymcHTEZEgfbd0OT6K1tOCYQuTbXJcMoYIxXcQmRlG1ToxfBTKw?=
- =?us-ascii?Q?HJUK6TdZnqgeoUJgkao/Jnc9QgZR9JqtdXt3MmWOkZW02aOR+3bz7H2tf5CI?=
- =?us-ascii?Q?LemfaAKXIDLrJYmGrIgyY2uD1cNGS5jLoJiQ+3g/3RVlSnXX1jE/RPJIx/C0?=
- =?us-ascii?Q?qS4FqWNRkRmAjrUUwZ13TjSgPHYFzHKkFh6nCxNFyy+O0QDo8Gd6c1fgsOCE?=
- =?us-ascii?Q?IWEtRJO2XVAv3/Sk3WB/mPVIzRqNPKPDz9J7PGVcjy4QzYOUqNuUFtCJ8+FX?=
- =?us-ascii?Q?Mt4/cLTlJKCZmrauJXY01SldwigZBfkWcDlzRsZ6j2WYxcpV6G/YHQJLuoRa?=
- =?us-ascii?Q?f9TAbGBORATvfOdh2GRG+z6lfwW4rzEOiI/h+kBScuV2AlD2a56PudYHr9Im?=
- =?us-ascii?Q?znFMnoSQxfdqoryPT6p2oglB5a0xElqxS7IxEX7FneY1VdQm9ezT+ds+6WfJ?=
- =?us-ascii?Q?QDXk7L6/NMpyvipoDoLvJqMHYiSC1sRu0lTp20Uj6yKOvFcwcfiRPH9QyjU4?=
- =?us-ascii?Q?CxlualgwaVyeFimU1fdOxM+tdwSvUJWYCxcGp+3XtogYlX+SLLT/dpMb2lP6?=
- =?us-ascii?Q?xxeq9MAs7wRHgnFVfhewseqtfcEBaLXRJPoMyZesNVRBGsYbV5uIzZt3MFmE?=
- =?us-ascii?Q?YeXpomWbdeOZzwHitHl9nXTpyWgTj3dmF3XIZAr84yzXzWSmYc36bCJwbO8M?=
- =?us-ascii?Q?Rl/TE1O/GYyJjVpWXxAUoYW0iDBKMfqzVQ650ffPo2DIx2DCu3ZFPyPe7d53?=
- =?us-ascii?Q?YC1pb0mTsp81WxnuAsKVl1x0ieXldewlvEyrx05BwAQiZQiyG6e0DsPKBLxA?=
- =?us-ascii?Q?K5s+7f8w7q0eXbb6a9cn4CdfUrhXe/3SJTR9+HIL/c6LaNewcQLl8D2QY9Bh?=
- =?us-ascii?Q?w/xE9MIiMKoE73ul/E3eksCcM2ASEOq9GnbJWgx9d1EyNYfDfGh4zTB9GyZM?=
- =?us-ascii?Q?CtFVZr84YBIj8EoNJfOpyNelkJBcQjVH28t+bQ0s1ORvLe/esTr+7yufTP61?=
- =?us-ascii?Q?MqUWCaOXGZu37Ch3HSPOlpU=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AVy5+PQ5fiUz+cToC+425YBazWj3uOpouq9+ZyXqB2YFrGj7CkfCMLjAie/L?=
+ =?us-ascii?Q?U78NdT82l5x502qy0WNqwzAYf9uX8jeYsug5weAUXyPwnxKHXl/RU9v+CW3a?=
+ =?us-ascii?Q?Rphwub9Cc4qz5Smk/IaEmqxn2KO2wpLD/DOLkBbmiA/jlR2i3rzBYPDAfjPZ?=
+ =?us-ascii?Q?mTk5o20MK4+9H80Lic7yEoa0Gab9xcgjpQk7ztHBM9dIdHxFE7y7IiOy+iZW?=
+ =?us-ascii?Q?RZWqcCocO3wYEpq31C7hDmUo9SdzykAa3GvAaocJzJIw1T3jzbJn9wE8vVsO?=
+ =?us-ascii?Q?JsAErvymGpZB6rHUwSG+IlpTG+zIGBlXyRCShFzxU3XiVGQnhnz/PHACZiOD?=
+ =?us-ascii?Q?7xE0uFyeW+yyO+kHLDRUiMu/D6ZfHjPuKMUiXMvchMPAO13llLx5MKoLQhOM?=
+ =?us-ascii?Q?c/FpQm3BleYYAO6HUeNhu+W58rCqbi5bRhNQk4WXNVgKVZ4qytB8+32tgIKw?=
+ =?us-ascii?Q?wEX0OfMOpQX6PcJfRYur1mNyejudUx0nM8Cyihg5dPFHRbs4Qtfcek5GVV3Y?=
+ =?us-ascii?Q?yZ9vI/tkyyjQbXXcj5t5tFt8oq7Jw7VPthcRM/G4ecwgC+eC/7nv09PKYtdc?=
+ =?us-ascii?Q?5HEisv2Y9I47o9IKIErhKPWuDdZ3dueIdSvj3B/qHIa3UEiXSAxiCXnXIVuM?=
+ =?us-ascii?Q?nZnL933BR1iwPZOYY4OWnOlQ+7K6D86aoIjSN0xjlmh4iCqmoKuyR7gV7/MK?=
+ =?us-ascii?Q?H2GVArwEcWfKLqY2fqMY3dAsehztQX+7Jeb8eWOe71funPil1z6qplV7TOvd?=
+ =?us-ascii?Q?keqM8PjXeFxohL8Zm8zSw27X1Y0k1hSAfxtViemx01q7aZYg23HK8hCDnKVv?=
+ =?us-ascii?Q?+olOc2sQq1/JUIZqPmP5kuBWIniJh25nhWdJL/3LibKYx+ILdfvGb5w2wV9A?=
+ =?us-ascii?Q?qv58meXnAmLQfFLWN40blIzU8kNLICB7Rykfbh2ebmIihHIc67/6wbDVEzLo?=
+ =?us-ascii?Q?k2nsRAGH8WaAszYc1RfWGyJiz//H5lKMKxoJQ9hDzNuFg+sdvDISQTmqSbci?=
+ =?us-ascii?Q?Kf/+FWyJ5BuJf5RCk1JPNizEGqzE3PCgoHUGi1UjT9Ft18ozUnJELhVV7ydg?=
+ =?us-ascii?Q?D7AWC92+Vk8uyO/xGiLVmwS6HbrUsUL9YgGZ09/leomjOjJpBAkPC71B+5zM?=
+ =?us-ascii?Q?apth+NpDP1unxAx0WWwnct/3DWPOObTHX/96cKpweHj7oYVA+SyJ5iXjevas?=
+ =?us-ascii?Q?U1A77FPInlBNPQMfH+BMiEjmQ/9FEy0bXIIpPdx6yrmu0X+Hz4M2AFXDNtjt?=
+ =?us-ascii?Q?jmsyC3nj3zIiDJP6pFGtcDQ7A4vaOjIbXZbA1d6eelQyGf88FYHsQPMQQUSh?=
+ =?us-ascii?Q?9ktxOv+MxnxYuEUpnoKRplOorHlDqPQAf7PKPNmR8TCzBZQBe9rW4JxEQJye?=
+ =?us-ascii?Q?aAuJBArMUn6s00EmGaQ9n9SjI5xa1mkwgeCLkt550XVJD6zLfr7P2ed9FWKf?=
+ =?us-ascii?Q?krVCZ2tVjBSjJZJ8LhrmYnDNCGZWjSd9VZ9BZ9mAure7f1IZMzHuPxK5+W4H?=
+ =?us-ascii?Q?T+VicfnFuErCgv6wcIp4JXhOkxkkFwULH2LgU3nSznZprzbGOmtaBFvXDNPd?=
+ =?us-ascii?Q?OWcpkGeXoF2Z7nrgyVrIu3d2hWaiuEY/oB08QBrAiq9sXpAE2+edrw+rFAm7?=
+ =?us-ascii?Q?3ylZM4a/L429y08aseZonO4=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1d3ea30-f42f-4b05-e6e8-08d9f8406cc3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d4763eb-dd67-4a54-b607-08d9f8406d57
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 09:23:03.7884
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 09:23:04.7258
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wfzzLVCSgi2Z1P14rvAe8gRPLhIr7rhDX1IUFQEtGFFGl3lggbQsyy/UasMMmhNY1WgfN3D0Y+qRTjetWoXGVw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ikSFpszT56TfP3r2BoxVocETv2wl8hPc+dcMs/LG63EL/zOu+8nhnTpLvWb39sIzsQZ/E6DPW/AxBphqohrRAA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7658
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -128,86 +128,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After change "net: dsa: tag_8021q: replace the SVL bridging with
-VLAN-unaware IVL bridging", tag_8021q enforces two different pvids on a
-port, depending on whether it is standalone or in a VLAN-unaware bridge.
+The felix driver, which also has a tagging protocol implementation based
+on tag_8021q, does not care about adding the RX VLAN that is pvid on one
+port on the other ports that are in the same bridge with it. It simply
+doesn't need that, because in its implementation, the RX VLAN that is
+pvid of a port is only used to install a TCAM rule that pushes that VLAN
+ID towards the CPU port.
 
-Up until now, there was a single pvid, represented by
-dsa_tag_8021q_rx_vid(), and that was used as the VLAN for VLAN-unaware
-virtual link rules, regardless of whether the port was bridged or
-standalone.
-
-To keep VLAN-unaware virtual links working, we need to follow whether
-the port is in a bridge or not, and update the VLAN ID from those rules.
-
-In fact we can't fully do that. Depending on whether the switch is
-VLAN-aware or not, we can accept Virtual Link rules with just the MAC
-DA, or with a MAC DA and a VID. So we already deny changes to the VLAN
-awareness of the switch. But the VLAN awareness may also change as a
-result of joining or leaving a bridge.
-
-One might say we could just allow the following: a port may leave a
-VLAN-unaware bridge while it has VLAN-unaware VL (tc-flower) rules, and
-the driver will update those with the new tag_8021q pvid for standalone
-mode, but the driver won't accept joining a bridge at all while VL rules
-were installed in standalone mode. This is sort of a compromise made
-because leaving a bridge is an operation that cannot be vetoed.
-But this sort of setup change is not fully supported, either: as
-mentioned, VLAN filtering changes can also be triggered by leaving a
-bridge, therefore, the existing veto we have in place for turning VLAN
-filtering off with VLAN-aware VL rules active still isn't fully
-effective.
-
-I really don't know how to deal with this in a way that produces
-predictable behavior for user space. Since at the moment, keeping this
-feature fully functional on constellation changes (not changing the
-tag_8021q port pvid when joining a bridge) is blocking progress for the
-DSA FDB isolation, I'd rather document it as a (potentially temporary)
-limitation and go on without it.
+Now that tag_8021q no longer performs Shared VLAN Learning based
+forwarding, the RX VLANs are actually segregated into two types:
+standalone VLANs and VLAN-unaware bridging VLANs. Since you actually
+have to call dsa_tag_8021q_bridge_join() to get a bridging VLAN from
+tag_8021q, and felix does not do that because it doesn't need it, it
+means that it only gets standalone port VLANs from tag_8021q. Which is
+perfect because this means it can drop its workarounds that avoid the
+VLANs it does not need.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/dsa/sja1105.rst | 27 ++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/net/dsa/ocelot/felix.c | 19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
 
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index 29b1bae0cf00..e0219c1452ab 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -293,6 +293,33 @@ of dropped frames, which is a sum of frames dropped due to timing violations,
- lack of destination ports and MTU enforcement checks). Byte-level counters are
- not available.
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 9959407fede8..39ff5d201262 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -33,13 +33,6 @@ static int felix_tag_8021q_rxvlan_add(struct felix *felix, int port, u16 vid,
+ 	struct dsa_switch *ds = felix->ds;
+ 	int key_length, upstream, err;
  
-+Limitations
-+===========
-+
-+The SJA1105 switch family always performs VLAN processing. When configured as
-+VLAN-unaware, frames carry a different VLAN tag internally, depending on
-+whether the port is standalone or under a VLAN-unaware bridge.
-+
-+The virtual link keys are always fixed at {MAC DA, VLAN ID, VLAN PCP}, but the
-+driver asks for the VLAN ID and VLAN PCP when the port is under a VLAN-aware
-+bridge. Otherwise, it fills in the VLAN ID and PCP automatically, based on
-+whether the port is standalone or in a VLAN-unaware bridge, and accepts only
-+"VLAN-unaware" tc-flower keys (MAC DA).
-+
-+The existing tc-flower keys that are offloaded using virtual links are no
-+longer operational after one of the following happens:
-+
-+- port was standalone and joins a bridge (VLAN-aware or VLAN-unaware)
-+- port is part of a bridge whose VLAN awareness state changes
-+- port was part of a bridge and becomes standalone
-+- port was standalone, but another port joins a VLAN-aware bridge and this
-+  changes the global VLAN awareness state of the bridge
-+
-+The driver cannot veto all these operations, and it cannot update/remove the
-+existing tc-flower filters either. So for proper operation, the tc-flower
-+filters should be installed only after the forwarding configuration of the port
-+has been made, and removed by user space before making any changes to it.
-+
- Device Tree bindings and board design
- =====================================
+-	/* We don't need to install the rxvlan into the other ports' filtering
+-	 * tables, because we're just pushing the rxvlan when sending towards
+-	 * the CPU
+-	 */
+-	if (!pvid)
+-		return 0;
+-
+ 	key_length = ocelot->vcap[VCAP_ES0].keys[VCAP_ES0_IGR_PORT].length;
+ 	upstream = dsa_upstream_port(ds, port);
  
+@@ -170,16 +163,8 @@ static int felix_tag_8021q_rxvlan_del(struct felix *felix, int port, u16 vid)
+ 
+ 	outer_tagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_es0,
+ 								 port, false);
+-	/* In rxvlan_add, we had the "if (!pvid) return 0" logic to avoid
+-	 * installing outer tagging ES0 rules where they weren't needed.
+-	 * But in rxvlan_del, the API doesn't give us the "flags" anymore,
+-	 * so that forces us to be slightly sloppy here, and just assume that
+-	 * if we didn't find an outer_tagging_rule it means that there was
+-	 * none in the first place, i.e. rxvlan_del is called on a non-pvid
+-	 * port. This is most probably true though.
+-	 */
+ 	if (!outer_tagging_rule)
+-		return 0;
++		return -ENOENT;
+ 
+ 	return ocelot_vcap_filter_del(ocelot, outer_tagging_rule);
+ }
+@@ -201,7 +186,7 @@ static int felix_tag_8021q_txvlan_del(struct felix *felix, int port, u16 vid)
+ 	untagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is1,
+ 							     port, false);
+ 	if (!untagging_rule)
+-		return 0;
++		return -ENOENT;
+ 
+ 	err = ocelot_vcap_filter_del(ocelot, untagging_rule);
+ 	if (err)
 -- 
 2.25.1
 
