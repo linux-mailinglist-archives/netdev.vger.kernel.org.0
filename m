@@ -2,116 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FF474C4D25
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 19:01:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3BC14C4D5C
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 19:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbiBYSCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 13:02:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54512 "EHLO
+        id S232691AbiBYSL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 13:11:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiBYSCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 13:02:18 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFCE25A329
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 10:01:43 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id f2so4916703ilq.1
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 10:01:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jmPNe5w2igTeTdG9i+t0C+LJ8u5o2P/TYchcIcjneOM=;
-        b=UAtesJgznmZkD5fCGtm7cVlSmUmJT0RNZpejtSXRc54OGmXFBgYOWb/Wup7KhHpZKC
-         6KWhHF8W1G1Ar4MY86dZ37zqxQGpS7toDNK1lTeVdbPXk6nEldKmki8uV/GjOhMvxQXK
-         Iv7jJ7uL0UjIyqHbsp9eAtA8Hy4HY5ToJCNJo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jmPNe5w2igTeTdG9i+t0C+LJ8u5o2P/TYchcIcjneOM=;
-        b=5LAAdbs1F2a//BAMz9/mfgDu6PN48tBOR9ugT/IxnNmovymgyk8tbkaO96O8RQ0BeA
-         4B/MXdu+tOfJp3eDI7ya0gbEdtsF3jCIXW9YwGWJb4vj93btYCY3Ir8ZMoEzslUHT+iJ
-         eUE7PkipborO0LqL8Gt8UUVOjGURgKNVtt6ENytyl/tBzd+lvNFIWAkVoaiTxkZfvnlx
-         AksT91FeR/Ynpqec/sNHihMnn/2MGuu1i8I4fbINQSGIo5H7F/HAZhUcBuqnfWDpNckx
-         hcqMImWJrZ9IiSxPBkCcmx2IVCsqJx4s9UoYiHwAxzV3Avk0i56gprC2fsB0UHoW3Cfv
-         HK4g==
-X-Gm-Message-State: AOAM532+MmHl7szxB6s6OhV/5yacoBHnwxmiRCTPFQNl9xvQiEPqqPaK
-        G885SCSUx793PQsJIP1hzCq/ig==
-X-Google-Smtp-Source: ABdhPJyeoCYCoIZbD+oRa0e576ynpqdPVl3oq4IN0xpZ37BARybE4JvNHHYpQXh+IBx1zozXaExyNA==
-X-Received: by 2002:a05:6e02:178b:b0:2c2:81f5:3cbb with SMTP id y11-20020a056e02178b00b002c281f53cbbmr7469031ilu.296.1645812102498;
-        Fri, 25 Feb 2022 10:01:42 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id a2-20020a056e02120200b002c21a18437csm1932389ilq.40.2022.02.25.10.01.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 10:01:42 -0800 (PST)
-Subject: Re: [PATCH V2] selftests: Fix build when $(O) points to a relative
- path
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     kernel@collabora.com, kernelci@groups.io,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220216223817.1386745-1-usama.anjum@collabora.com>
- <46489cd9-fb7a-5a4b-7f36-1c9f6566bd93@collabora.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <63870982-62ba-97f2-5ee2-d4457a7a5cdb@linuxfoundation.org>
-Date:   Fri, 25 Feb 2022 11:01:41 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S231182AbiBYSLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 13:11:25 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA621D6CA6;
+        Fri, 25 Feb 2022 10:10:50 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PGtWDa023888;
+        Fri, 25 Feb 2022 18:10:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=61BM7ilbHdY41DX4NxPizFOYioL+vFqBRklTl7njE+U=;
+ b=CUU9ktTd6a88KWwqTlVE+K9Jlmdp5mKN0OtbfpziEY06lx6230AC91raCY5wMC6RKlHK
+ srNxaomuq2P0V/uSNci1K/odMr76kBQdOoYwMajyBeHfPe77G3bUHe4NZVfnTarW6n2h
+ oaxmjgV4/UI2/dFuSCGbwvkFqTxasbkE6v4LN9bgFDVvB4GEUj3yW01qX/dGRRx2/Xks
+ gsGwOLA4QOSbw/Vs5wuMw3paUMxGcSDHVIB12MJZnulOmNsM+frrKM1TOzCt2ClKxQh/
+ 2+h/xLKPmKDSXtGpX1n+3dWqvYqsxa/f1YacE/x1uPpUWkus5AeOoA5t2X5Fphs5ThXp mw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ef0p65yjm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 18:10:47 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21PHh3Ai031914;
+        Fri, 25 Feb 2022 18:10:47 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ef0p65yj1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 18:10:46 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PI8J50027951;
+        Fri, 25 Feb 2022 18:10:44 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3eeg2s60n4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 18:10:44 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PIAfPR57999804
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Feb 2022 18:10:41 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 404AAA4059;
+        Fri, 25 Feb 2022 18:10:41 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BAA94A4051;
+        Fri, 25 Feb 2022 18:10:40 +0000 (GMT)
+Received: from [9.171.32.81] (unknown [9.171.32.81])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 25 Feb 2022 18:10:40 +0000 (GMT)
+Message-ID: <f2afb775-a156-2c32-a49a-225545dc2bf7@linux.ibm.com>
+Date:   Fri, 25 Feb 2022 19:10:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <46489cd9-fb7a-5a4b-7f36-1c9f6566bd93@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] net/smc: Add autocork support
 Content-Language: en-US
+To:     dust.li@linux.alibaba.com,
+        Hendrik Brueckner <brueckner@linux.ibm.com>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20220216034903.20173-1-dust.li@linux.alibaba.com>
+ <68e9534b-7ff5-5a65-9017-124dbae0c74b@linux.ibm.com>
+ <20220216152721.GB39286@linux.alibaba.com>
+ <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+ <20220217132200.GA5443@linux.alibaba.com> <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
+ <20220218073327.GB5443@linux.alibaba.com>
+ <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
+ <20220218234232.GC5443@linux.alibaba.com>
+ <bc3252a3-5a84-63d4-dfc5-009f602a5bec@linux.ibm.com>
+ <20220224020253.GF5443@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220224020253.GF5443@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: skg6BhqZDUbQHmjM1dW9jLR7TLWE9_S8
+X-Proofpoint-ORIG-GUID: Dk2ZOabE8R8NupNi9xscmP9BkLaw1d_B
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-25_09,2022-02-25_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ priorityscore=1501 mlxlogscore=999 spamscore=0 lowpriorityscore=0
+ malwarescore=0 impostorscore=0 clxscore=1015 phishscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202250102
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/25/22 10:22 AM, Muhammad Usama Anjum wrote:
-> Any thoughts about it?
+On 24/02/2022 03:02, dust.li wrote:
+> On Wed, Feb 23, 2022 at 07:57:31PM +0100, Karsten Graul wrote:
+>> On 19/02/2022 00:42, dust.li wrote:
+>>> On Fri, Feb 18, 2022 at 05:03:56PM +0100, Karsten Graul wrote:
+>>>> Right now for me it looks like there is no way to use netlink for container runtime
+>>>> configuration, which is a pity.
+>>>> We continue our discussions about this in the team, and also here on the list.
+>>>
+>>> Many thanks for your time on this topic !
+>>
+>> We checked more specs (like Container Network Interface (CNI) Specification) 
+>> but all we found uses sysctl at the end. There is lot of infrastructure 
+>> to use sysctls in a container environment.
+>>
+>> Establishing netlink-like controls for containers is by far out of our scope, and
+>> would take a long time until it would be available in the popular projects.
+>>
+>> So at the moment I see no alternative to an additional sysctl interface in the 
+>> SMC module that provides controls which are useful in container environments.
 > 
+> Got it, I will add sysctl interface and a switch with this function.
+> 
+> Thank again !
 
-No to post please.
-
-> On 2/17/22 3:38 AM, Muhammad Usama Anjum wrote:
->> Build of bpf and tc-testing selftests fails when the relative path of
->> the build directory is specified.
->>
->> make -C tools/testing/selftests O=build0
->> make[1]: Entering directory '/linux_mainline/tools/testing/selftests/bpf'
->> ../../../scripts/Makefile.include:4: *** O=build0 does not exist.  Stop.
->> make[1]: Entering directory '/linux_mainline/tools/testing/selftests/tc-testing'
->> ../../../scripts/Makefile.include:4: *** O=build0 does not exist.  Stop.
->>
->> Makefiles of bpf and tc-testing include scripts/Makefile.include file.
->> This file has sanity checking inside it which checks the output path.
->> The output path is not relative to the bpf or tc-testing. The sanity
->> check fails. Expand the output path to get rid of this error. The fix is
->> the same as mentioned in commit 150a27328b68 ("bpf, preload: Fix build
->> when $(O) points to a relative path").
->>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->> Changes in V2:
->> Add more explaination to the commit message.
->> Support make install as well.
-
-Looks god to me. I can pull this in for Linux 5.18-rc1
-
-thanks,
--- Shuah
+Can you explain again why this auto_cork needs a switch to disable it?
+My understanding is that this auto_cork makes always sense and is triggered
+when there are not enough resources.
