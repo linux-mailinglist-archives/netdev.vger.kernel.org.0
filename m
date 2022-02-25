@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D641B4C3A88
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 01:54:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C26A54C3A85
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 01:54:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236169AbiBYAxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 19:53:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46374 "EHLO
+        id S236182AbiBYAxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 19:53:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230285AbiBYAxh (ORCPT
+        with ESMTP id S236168AbiBYAxh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 19:53:37 -0500
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438B910A7F0
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 16:53:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1896E10BBF7
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 16:53:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645750386; x=1677286386;
+  t=1645750387; x=1677286387;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jppViAbtrq9fvgOH1K0JJZbz2wwEgWwtbwzSeFNMgyo=;
-  b=GDRgg6ihwR+L/kAtr6+5aZmD0ls8X4Z+m/lOUMySmND3KmSctJ139VKL
-   EBSiSJWZk0WmgzwaeMLruudXTLlf7dEVXFRyJwVDkU5vU06LO0F64hY4a
-   UB5XEzirulZPR1bSmtlo7j8pep5a1Sur1Ev4MMKpZR/P1GFR3OW5oMwal
-   SUo2+0QZzQhGcbEEarvchSYZimhRdPjy3t50LIvjiqg1bVltz7oIdkjB8
-   kehXUKZp2fw6Rfps7cqsEK749rQ759EIdrOiV5dePmYXl3TTvA0IF5nYg
-   jb1Nrz8lLuG+e28TeeuGm1gPYonD4UTpqW4/L+52zQTiHcm0m1L6pOYph
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="313105743"
+  bh=oKM2fvwOsoxNYiRY2TPnQn4Ts4UIqfnrnhTuR2TshaM=;
+  b=MR7bAccaytiK4fIP9yDyym+ldWKJssXEZubWKcUcutorzZRvTMKmpsdB
+   fgEizsKNHt3xKGuRob3m0WQ69Criehd8kEOxNnmgKoJa8NrzEsV2LjqhV
+   4HeryUaA/oJILpbChKezgn/8iD7+lcdcZ1M5xe9rMizLGroIf+6CFUw1H
+   rW4LTjKZuNZ2oRTzCL+i3GKPdOWwKXHzeWQh8IvPLQGg99QF/HpKzCpFQ
+   y7yr4lq5wTN2l0G4ackgsy6yhtTwrgjXi3sWp5Tkonr0pOLoxEr9hRscf
+   e3+dASRezGGjQGVkQgGjc/pflCEBmyggqtbwNyW2tnLXrrOpX6Vdl6bJx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="313105744"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="313105743"
+   d="scan'208";a="313105744"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 16:53:05 -0800
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="638050198"
+   d="scan'208";a="638050200"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.28.67])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 16:53:04 -0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 16:53:05 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net, fw@strlen.de,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 1/3] mptcp: accurate SIOCOUTQ for fallback socket
-Date:   Thu, 24 Feb 2022 16:52:57 -0800
-Message-Id: <20220225005259.318898-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 2/3] selftests: mptcp: do complete cleanup at exit
+Date:   Thu, 24 Feb 2022 16:52:58 -0800
+Message-Id: <20220225005259.318898-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220225005259.318898-1-mathew.j.martineau@linux.intel.com>
 References: <20220225005259.318898-1-mathew.j.martineau@linux.intel.com>
@@ -62,48 +62,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-The MPTCP SIOCOUTQ implementation is not very accurate in
-case of fallback: it only measures the data in the MPTCP-level
-write queue, but it does not take in account the subflow
-write queue utilization. In case of fallback the first can be
-empty, while the latter is not.
+After commit 05be5e273c84 ("selftests: mptcp: add disconnect tests")
+the mptcp selftests leave behind a couple of tmp files after
+each run. run_tests_disconnect() misnames a few variables used to
+track them. Address the issue setting the appropriate global variables
 
-The above produces sporadic self-tests issues and can foul
-legit user-space application.
-
-Fix the issue additionally querying the subflow in case of fallback.
-
-Fixes: 644807e3e462 ("mptcp: add SIOCINQ, OUTQ and OUTQNSD ioctls")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/260
-Reported-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Fixes: 05be5e273c84 ("selftests: mptcp: add disconnect tests")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index f60f01b14fac..12bb28c5007e 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -3294,6 +3294,17 @@ static int mptcp_ioctl_outq(const struct mptcp_sock *msk, u64 v)
- 		return 0;
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index cb5809b89081..f0f4ab96b8f3 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -763,8 +763,8 @@ run_tests_disconnect()
+ 	run_tests_lo "$ns1" "$ns1" dead:beef:1::1 1 "-I 3 -i $old_cin"
  
- 	delta = msk->write_seq - v;
-+	if (__mptcp_check_fallback(msk) && msk->first) {
-+		struct tcp_sock *tp = tcp_sk(msk->first);
-+
-+		/* the first subflow is disconnected after close - see
-+		 * __mptcp_close_ssk(). tcp_disconnect() moves the write_seq
-+		 * so ignore that status, too.
-+		 */
-+		if (!((1 << msk->first->sk_state) &
-+		      (TCPF_SYN_SENT | TCPF_SYN_RECV | TCPF_CLOSE)))
-+			delta += READ_ONCE(tp->write_seq) - tp->snd_una;
-+	}
- 	if (delta > INT_MAX)
- 		delta = INT_MAX;
- 
+ 	# restore previous status
+-	cout=$old_cout
+-	cout_disconnect="$cout".disconnect
++	sin=$old_sin
++	sin_disconnect="$cout".disconnect
+ 	cin=$old_cin
+ 	cin_disconnect="$cin".disconnect
+ 	connect_per_transfer=1
 -- 
 2.35.1
 
