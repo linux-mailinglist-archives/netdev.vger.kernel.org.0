@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47ED04C40EE
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739D74C40F4
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:09:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238874AbiBYJH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 04:07:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S238903AbiBYJKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 04:10:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiBYJH5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:07:57 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540C97DA8B;
-        Fri, 25 Feb 2022 01:07:24 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id o6so6507890ljp.3;
-        Fri, 25 Feb 2022 01:07:24 -0800 (PST)
+        with ESMTP id S238893AbiBYJJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:09:58 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFAA251E70;
+        Fri, 25 Feb 2022 01:09:25 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id bn33so6506055ljb.6;
+        Fri, 25 Feb 2022 01:09:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:to:cc:references
          :from:in-reply-to:content-transfer-encoding;
-        bh=fn5NcQdFGV/AZHgQDeYIwdp5G2hT9QR6G0E+BTlLLmM=;
-        b=N4g2+9yHMZqtwmQBiD8FqkUqq7CN1X/YvuxhJtdC2yuzcykeqaWPcVsnE4q042Y1UM
-         TOstBjOfrs2dQGVhhVqEvZU5oGfGhNtdkzNl4sLRAWoTOlLB3I0ckBen1AD2h+dXW2gO
-         8dO+oN62JifG2yLMMzik0ruT0F2/q53F1ywRyatSUKcFj0kaBg6fPA9JTtUIi6BN9SRZ
-         zFPuBV7RWF1QCfP4uUGx5GaXb+4oL6ZjinYGnIA1HcvzFhA/GMrOy4EHOQ5zy9JXgN3Z
-         zODn0JQq0F4ayIEO7RqUY4WStUFENzoQERU5bRWuOSq9x0UuPVzo5bmueMq19oEeOrD9
-         Wh7w==
+        bh=y04zq2uTKXLAwh7HStFPmnBzlgo0aDK3doeC+yWV3Lg=;
+        b=ihcltXRbo3ARDVrZE1J9s3WjRL1HNRDcBaPnM606Uc5Fo79TwO7Yr2tR1m/ueRAqTG
+         DF8xpFGmTcji8zcIPgm4fScAyHZcLNiLw1GhXfVvv8fLK1VV2jcZygmmLPV0zS0oSFFh
+         aeONEmzSz819SpNryPowiF4K+8Nqn51WOX18iK86foWWMpVPJF5sloziuyCuGMMLLFCc
+         TDB7Z0aJjgdkvMefUUWew8hRdZtnsd2WSeY0vR1Me8Humlfds8SZPfsb1JzCmUEd60SQ
+         2KnbFlelJSMXtFxG0zk+ByYaj7sDLJPA9iSWGjBIBoF49nso16SAF2SrSWaSdbRlh2Vf
+         O4+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fn5NcQdFGV/AZHgQDeYIwdp5G2hT9QR6G0E+BTlLLmM=;
-        b=o7ovbyaUc9Hqo7IUyatzUQpaKP4Z/VDe9eGoW4ErWY/f/G7+pgbbt0ng1kzbxHi/qH
-         wO9a8o73b3RZjQDJldDroQM1OqU+auGFnZnqA5hrCxz83JO1rqgUfh8cNmujxx+MYmFp
-         4OEmMVtEu/a6xg8QVr0agwkakR/IlmGJVA+PD25zEVCPFwLbzvK/C/B7ftXrUxbaA1PL
-         vinyoYAUIM4VaW5QxVGrHDjNWAnoWBUhrn2SHd8S8fpmC6RXQSwYqRW3p2I/+bzHJuHB
-         XAQcl8sxvuT2LetZkO3/ziCZ5bBqfNcFjOY+AQPylbD9Xwy894L9v1D7mJZZ5DM83UDN
-         HHPA==
-X-Gm-Message-State: AOAM533Ke8nGThg9Nu7GcieZJjUjSULeGSIEOVi0IBCKjfYOCCbdHtmE
-        GAr9vJNCxV9JTEx0E78pbeY=
-X-Google-Smtp-Source: ABdhPJyRoQba/jYURANAI4qY0Lq8l8uQgYFjt5ERV9t62ofrEn4pz2Xf8hUUah9/wcUDX+4xRslvZA==
-X-Received: by 2002:a2e:9919:0:b0:244:b934:aa36 with SMTP id v25-20020a2e9919000000b00244b934aa36mr4658632lji.388.1645780042456;
-        Fri, 25 Feb 2022 01:07:22 -0800 (PST)
+        bh=y04zq2uTKXLAwh7HStFPmnBzlgo0aDK3doeC+yWV3Lg=;
+        b=pzRUeY6l/V80QgDvt3oySDl4bs4ekKV2g0lY2shzPra8Mm1Kk9Rf+fHDUzsN5C8BuF
+         MzbAfgG2XMKI+GGZLTq+lkrobUZmC/OO1N1UyCPxYOaBhI/+VmzdiUmwAyp9EEXH1ke7
+         tkpXMzt69jtZvZl/o/XHPCzkvv7dghQL3EQlJNO7DoeRnvHHVZZz+Zaxz4FJjot3ZM0V
+         rliutQz/3Z9cGxp1bxmLS4Slj2NUCQZ49px6zcq/GA6vo86tQeZNYVlenFnbnR81Jclt
+         SzY/B7wvgqe/JlL15Q9tCgMIk9aO8Lq4RxJr4t6vMCUOGPwhFUgeOeD6HhnkRjpE3Bgq
+         zcag==
+X-Gm-Message-State: AOAM533F/iwEUKbhJ8njUfiD+ybqu1L5xFLv9f7kbij6tUeovWdS+/i6
+        gPhfSMOWWCNbjwKX1OgUsfCy34qyqgc=
+X-Google-Smtp-Source: ABdhPJxXr05gW0m8wN/bE8X5kn1638dMFPV6myXvvmQ1FgMW6sY5p7ksCcM0ZqeBC+yllrcx3z/uxQ==
+X-Received: by 2002:a2e:5714:0:b0:246:4196:9c0b with SMTP id l20-20020a2e5714000000b0024641969c0bmr4779846ljb.473.1645780164007;
+        Fri, 25 Feb 2022 01:09:24 -0800 (PST)
 Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id a5-20020ac25e65000000b00443c375b7a7sm149342lfr.20.2022.02.25.01.07.20
+        by smtp.googlemail.com with ESMTPSA id f18-20020ac25332000000b00442e9987b7fsm146645lfh.106.2022.02.25.01.09.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 01:07:21 -0800 (PST)
-Message-ID: <e1458f39-a2fe-36bf-af8d-ef2162f7c514@gmail.com>
-Date:   Fri, 25 Feb 2022 10:07:20 +0100
+        Fri, 25 Feb 2022 01:09:23 -0800 (PST)
+Message-ID: <4871749f-4c1d-07a2-ff2e-793c967c1f32@gmail.com>
+Date:   Fri, 25 Feb 2022 10:09:22 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
  Thunderbird/96.0
 Subject: Re: [PATCH REBASED 2/2] dt-bindings: nvmem: cells: add MAC address
  cell
-To:     Michael Walle <michael@walle.cc>, Rob Herring <robh@kernel.org>
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>, Michael Walle <michael@walle.cc>
 Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -68,15 +69,14 @@ Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+        Hauke Mehrtens <hauke@hauke-m.de>
 References: <20220125180114.12286-1-zajec5@gmail.com>
  <20220126070745.32305-1-zajec5@gmail.com>
  <20220126070745.32305-2-zajec5@gmail.com>
  <YflX6kxWTD6qMnhJ@robh.at.kernel.org>
- <0b7b8f7ea6569f79524aea1a3d783665@walle.cc>
+ <1dd3522d9c7cfcb40f4f8198d4d35118@milecki.pl>
 From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <0b7b8f7ea6569f79524aea1a3d783665@walle.cc>
+In-Reply-To: <1dd3522d9c7cfcb40f4f8198d4d35118@milecki.pl>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -89,8 +89,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1.02.2022 18:01, Michael Walle wrote:
-> Am 2022-02-01 16:55, schrieb Rob Herring:
+On 1.02.2022 17:49, Rafał Miłecki wrote:
+> On 2022-02-01 16:55, Rob Herring wrote:
 >> On Wed, Jan 26, 2022 at 08:07:45AM +0100, Rafał Miłecki wrote:
 >>> From: Rafał Miłecki <rafal@milecki.pl>
 >>>
@@ -162,38 +162,128 @@ On 1.02.2022 18:01, Michael Walle wrote:
 >> new property and the end result is something not well designed. A unique
 >> compatible string, "#nvmem-cell-cells" and code to interpret the data is
 >> more flexible.
+>>
+>> For something like this to fly, I need some level of confidence this is
+>> enough for everyone for some time (IOW, find all the previous attempts
+>> and get those people's buy-in). You have found at least 3 cases, but I
+>> seem to recall more.
 > 
-> I actually like having a unique compatible for anything but the basic
-> operations. For example, the sl28 vpd area also has a checksum, which
-> could be handled if there is an own compatible. I don't think this is
-> possible with this proposal. Also there is a version field, what if
-> we change the layout of that thing? Am I supposed to change the
-> device tree? The more I think about Rob's proposal to have a compatible
-> the more I like it.
+> For base address I thought of dealing with base + offset only. I'm not
+> sure what are other cases.
+> 
+> I read few old threads:
+> https://lore.kernel.org/lkml/20211228142549.1275412-1-michael@walle.cc/T/
+> https://lore.kernel.org/linux-devicetree/20211123134425.3875656-1-michael@walle.cc/
+> https://lore.kernel.org/all/20210414152657.12097-2-michael@walle.cc/
+> https://lore.kernel.org/linux-devicetree/362f1c6a8b0ec191b285ac6a604500da@walle.cc/
+> 
+> but didn't find other required /transformations/ except for offset and
+> format. Even "reversed-bytes" wasn't widely discussed (or I missed that)
+> and I just came with it on my own.
+> 
+> If anyone knows other cases: please share so we have a complete view.
+> 
+> 
+> I tried to Cc all previously invovled people but it seems only me and
+> Michael remained active in this subject. If anyone knows other
+> interested please Cc them and let us know.
+> 
+> 
+> Rob: instead of me and Michael sending patch after patch let me try to
+> gather solutions I can think of / I recall. Please kindly review them
+> and let us know what do you find the cleanest.
+> 
+> 
+> 1. NVMEM specific "compatible" string
+> 
+> Example:
+> 
+> partition@f00000 {
+>      compatible = "brcm,foo-cells", "nvmem-cells";
+>      label = "calibration";
+>      reg = <0xf00000 0x100000>;
+>      ranges = <0 0xf00000 0x100000>;
+>      #address-cells = <1>;
+>      #size-cells = <1>;
+> 
+>      mac@100 {
+>          reg = <0x100 0x6>;
+>          [optional: #nvmem-cell-cells = <1>;]
+>      };
+> };
+> 
+> A minimalistic binding proposed by Michael. DT doesn't carry any
+> information on NVMEM cell format. Specific drivers (e.g. one handling
+> "brcm,foo-cells") have to know how to handle specific cell.
+> 
+> Cell handling conditional code can depend on cell node name ("mac" in
+> above case) OR on value of "nvmem-cell-names" in cell consumer (e.g.
+> nvmem-cell-names = "mac-address").
+> 
+> 
+> 2. NVMEM specific "compatible" string + cells "compatible"s
+> 
+> Example:
+> 
+> partition@f00000 {
+>      compatible = "brcm,foo-cells", "nvmem-cells";
+>      label = "calibration";
+>      reg = <0xf00000 0x100000>;
+>      ranges = <0 0xf00000 0x100000>;
+>      #address-cells = <1>;
+>      #size-cells = <1>;
+> 
+>      mac@100 {
+>          compatible = "mac-address";
+>          reg = <0x100 0x6>;
+>          [optional: #nvmem-cell-cells = <1>;]
+>      };
+> };
+> 
+> Similar to the first case but cells that require special handling are
+> marked with NVMEM device specific "compatible" values. Details of handling
+> cells are still hardcoded in NVMEM driver. Different cells with
+> compatible = "mac-address";
+> may be handled differencly - depending on parent NVMEM device.
+> 
+> 
+> 3. Flexible properties in NVMEM cells
+> 
+> Example:
+> 
+> partition@f00000 {
+>      compatible = "brcm,foo-cells", "nvmem-cells";
+>      label = "calibration";
+>      reg = <0xf00000 0x100000>;
+>      ranges = <0 0xf00000 0x100000>;
+>      #address-cells = <1>;
+>      #size-cells = <1>;
+> 
+>      mac@100 {
+>          compatible = "mac-address";
+>          reg = <0x100 0x6>;
+>          [optional: #nvmem-cell-cells = <1>;]
+>      };
+> 
+>      mac@200 {
+>          compatible = "mac-address";
+>          reg = <0x200 0x6>;
+>          reversed-bytes;
+>          [optional: #nvmem-cell-cells = <1>;]
+>      };
+> 
+>      mac@300 {
+>          compatible = "mac-address";
+>          reg = <0x300 0x11>;
+>          format = "ascii";
+>          [optional: #nvmem-cell-cells = <1>;]
+>      };
+> };
+> 
+> This moves details into DT and requires more shared properties. It helps
+> avoiding duplicated code for common cases (like base MAC address).
+> 
+> It's what I proposed in the
+> [PATCH 0/2] dt-bindings: nvmem: support describing cells
 
-Having more detailed binding for cells doesn't stop you from using NVMEM
-device specific binding.
-
-You could have e.g.
-
-partition@f00000 {
-      compatible = "foo,foo-cells", "nvmem-cells";
-      (...)
-
-      mac@100 {
-          compatible = "mac-address";
-          reg = <0x100 0x6>;
-      };
-
-      OR
-
-      mac@100 {
-          compatible = "mac-address";
-          reg = <0x100 0x11>;
-          format = "ascii";
-      };
-};
-
-Then you can have "foo,foo-cells" driver handling checksum.
-
-I'm not saying we have to use this solution, just saying it's possible.
+Rob: could you review for us 3 above examples, please?
