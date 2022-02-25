@@ -2,148 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E309B4C4E60
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 20:11:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6B94C4E64
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 20:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234151AbiBYTMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 14:12:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35342 "EHLO
+        id S234263AbiBYTMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 14:12:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234172AbiBYTMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 14:12:08 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA0220B16E;
-        Fri, 25 Feb 2022 11:11:35 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PIAvE7022087;
-        Fri, 25 Feb 2022 19:11:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=CpqI9s94/ZaBQwuEXHNCmNODLi1kbCVr7kYFsCziWCs=;
- b=jvURaCa0RFihWulzf3+hXVcQl/gRARpmLKmYnmnfGbqUwJ4Vg6GNCtmfKRDcNMbuMVmG
- LGwymcHYjxQqUxSFa1D193Pk2hfiHj3PbL4qHsqEH7Xzeb0Y0+FBYYc4R0q76O4KVIAX
- MidpcpZSB/bjBLBFJCOhtRRpTdedOAmRL5lUebDQmFVh5Z1UyvlzS1jERcu0jJsNU+6W
- AcMq+EKSmCFwKQRrOc8uZ1n8a4UOWuid2AmVy2hckzFSTUNSlvhdBRKaHOmJiP+In2sn
- E6eyNvwRi3r39tvJZOdZmnYKcEuuuQuwDiJWHWVRbk4FEldVjCYeXbiLLaL+Jrxpcfut wg== 
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eeyc09nv7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 19:11:11 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PJ8rjl017157;
-        Fri, 25 Feb 2022 19:11:09 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3ear69r2q3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 19:11:09 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PJB6bI37224894
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Feb 2022 19:11:06 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CF8E44C050;
-        Fri, 25 Feb 2022 19:11:06 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2270D4C04E;
-        Fri, 25 Feb 2022 19:11:05 +0000 (GMT)
-Received: from sig-9-65-82-248.ibm.com (unknown [9.65.82.248])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 25 Feb 2022 19:11:05 +0000 (GMT)
-Message-ID: <223d9eedc03f68cfa4f1624c4673e844e29da7d5.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 0/6] bpf-lsm: Extend interoperability with IMA
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "revest@chromium.org" <revest@chromium.org>
-Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Fri, 25 Feb 2022 14:11:04 -0500
-In-Reply-To: <5117c79227ce4b9d97e193fd8fb59ba2@huawei.com>
-References: <20220215124042.186506-1-roberto.sassu@huawei.com>
-         <408a96085814b2578486b2859e63ff906f5e5876.camel@linux.ibm.com>
-         <5117c79227ce4b9d97e193fd8fb59ba2@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: m8Gn1OTAgrRrKytse14FiMc1nHsNS195
-X-Proofpoint-GUID: m8Gn1OTAgrRrKytse14FiMc1nHsNS195
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S234344AbiBYTMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 14:12:23 -0500
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48E420D537;
+        Fri, 25 Feb 2022 11:11:50 -0800 (PST)
+Received: by mail-oo1-f47.google.com with SMTP id x6-20020a4a4106000000b003193022319cso7626859ooa.4;
+        Fri, 25 Feb 2022 11:11:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ptG46z6H5ifEKTx2dBnfEYgkcUc6HPFhRtrAbm9h2S0=;
+        b=S8siLbfa+uUxbstKleeGY35T4+KCDWGjThdtV2DNSH16L3ct5xGs18RsoEecyu9dke
+         3lTLGCE2Vyhy+kuS11S6uvkhzmW+yLzhQLiEPfSzwwMVLeHg8ZuZo6fcKu5bZUNFkfj4
+         MQKP43FgWnEcr1FmfVolZyoICX3F4sCoFPEGmwPNiXln4Mm6XJ/zXEkycABMMuWL2AHR
+         rQX6fseW+Y4kI9id/39CF4WkxpMUXIyyt92N8PYg6xO2WPrJGvbEl0+US7Rcx3LhibwR
+         e1vo2nrXdbWSH1paDh3rCyEr8G+1aA3JF+oyAkUC/cZBa8UkI0ACh1NazyUAKIUncpFi
+         wNdQ==
+X-Gm-Message-State: AOAM533TTQrWrefv/kbsfLG5s5DCxWc7/9YPaEAA5J/DIjoE2bXSfH+F
+        2a8j1sPzzxZuOaVVuqH/j67ZTBOTXg==
+X-Google-Smtp-Source: ABdhPJzWcs65ePV5falZWYBKART4XIExLG7Jl4rNz0RlRKlhWRGox/P8effT9Lz52v++C+k7FNY9wQ==
+X-Received: by 2002:a05:6870:70a8:b0:d3:e21:8545 with SMTP id v40-20020a05687070a800b000d30e218545mr2101513oae.321.1645816310209;
+        Fri, 25 Feb 2022 11:11:50 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u12-20020a056808114c00b002d72b6e5676sm1887530oiu.29.2022.02.25.11.11.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 11:11:49 -0800 (PST)
+Received: (nullmailer pid 1267526 invoked by uid 1000);
+        Fri, 25 Feb 2022 19:11:48 -0000
+Date:   Fri, 25 Feb 2022 13:11:48 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Baruch Siach <baruch.siach@siklu.com>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 2/2] arm64: dts: qcom: ipq6018: Add mdio bus description
+Message-ID: <Yhkp9CH0SpBKKlzZ@robh.at.kernel.org>
+References: <a4b1ad7b15c13f368b637efdb903da143b830a88.1645454002.git.baruch@tkos.co.il>
+ <5e7e06e0cb189bab4586646470894bbda572785d.1645454002.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-25_10,2022-02-25_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 bulkscore=0 phishscore=0 suspectscore=0 priorityscore=1501
- impostorscore=0 clxscore=1011 mlxlogscore=999 spamscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202250109
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5e7e06e0cb189bab4586646470894bbda572785d.1645454002.git.baruch@tkos.co.il>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-02-25 at 08:41 +0000, Roberto Sassu wrote:
-> > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
-> > Sent: Friday, February 25, 2022 1:22 AM
-> > Hi Roberto,
-> > 
-> > On Tue, 2022-02-15 at 13:40 +0100, Roberto Sassu wrote:
-> > > Extend the interoperability with IMA, to give wider flexibility for the
-> > > implementation of integrity-focused LSMs based on eBPF.
-> > 
-> > I've previously requested adding eBPF module measurements and signature
-> > verification support in IMA.  There seemed to be some interest, but
-> > nothing has been posted.
+On Mon, Feb 21, 2022 at 04:33:22PM +0200, Baruch Siach wrote:
+> From: Baruch Siach <baruch.siach@siklu.com>
 > 
-> Hi Mimi
+> The IPQ60xx has the same MDIO bug block as IPQ4019. Add IO range and
+> clock resources description.
 > 
-> for my use case, DIGLIM eBPF, IMA integrity verification is
-> needed until the binary carrying the eBPF program is executed
-> as the init process. I've been thinking to use an appended
-> signature to overcome the limitation of lack of xattrs in the
-> initial ram disk.
-
-I would still like to see xattrs supported in the initial ram disk. 
-Assuming you're still interested in pursuing it, someone would need to
-review and upstream it.  Greg?
-
+> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+> ---
+>  arch/arm64/boot/dts/qcom/ipq6018.dtsi | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> At that point, the LSM is attached and it can enforce an
-> execution policy, allowing or denying execution and mmap
-> of files depending on the digest lists (reference values) read
-> by the user space side.
+> diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> index 5eb7dc9cc231..093011d18ca6 100644
+> --- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> @@ -635,6 +635,16 @@ qrtr_requests {
+>  			};
+>  		};
+>  
+> +		mdio: mdio@90000 {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			compatible = "qcom,ipq6018-mdio", "qcom,ipq4019-mdio";
+
+This looks correct with the fallback based on your description, but it
+doesn't match the schema.
+
+You tested this with the schemas, right? That's why we have them.
+
+> +			reg = <0x0 0x90000 0x0 0x64>;
+> +			clocks = <&gcc GCC_MDIO_AHB_CLK>;
+> +			clock-names = "gcc_mdio_ahb_clk";
+> +			status = "disabled";
+> +		};
+> +
+>  		qusb_phy_1: qusb@59000 {
+>  			compatible = "qcom,ipq6018-qusb2-phy";
+>  			reg = <0x0 0x059000 0x0 0x180>;
+> -- 
+> 2.34.1
 > 
-> After the LSM is attached, IMA's job would be just to calculate
-> the file digests (currently, I'm using an audit policy to ensure
-> that the digest is available when the eBPF program calls
-> bpf_ima_inode_hash()).
 > 
-> The main benefit of this patch set is that the audit policy
-> would not be required and digests are calculated only when
-> requested by the eBPF program.
-
-Roberto, there's an existing eBPF integrity gap that needs to be
-closed, perhaps not for your usecase, but in general.  Is that
-something you can look into?
-
-thanks,
-
-Mimi
-
