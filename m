@@ -2,110 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9914C45E9
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 14:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C2F74C4621
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 14:23:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241103AbiBYNUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 08:20:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
+        id S241157AbiBYNWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 08:22:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235620AbiBYNUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 08:20:02 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAD027C224;
-        Fri, 25 Feb 2022 05:19:30 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PBMjR4029361;
-        Fri, 25 Feb 2022 13:19:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : cc :
- subject : in-reply-to : in-reply-to : date : message-id : mime-version :
- content-type; s=pp1; bh=O0Xj/BZppjXxOPhFAwSiE1XvJJ1R4pVra9+KEFRoASw=;
- b=Bb+YRQU8R3upuPRzTD/K0HDKveVdRoVOz5kTjosFF0juuB8CML+A0Fcq6kbF9DKuAL1q
- 4syLg8JJbpQNH7BMIIXt7Cpu36ru8BIoKEDcHqD9xoP6K4IMki0qJvKzWKLDINO6Oxax
- Ejc9tdiertBY5W3+IRjqZqjq6RTWJre324KpUmLPSNVOKuSw/OCE/Tcq/6pL1J7246EE
- nj2MatvpYokE4PfDYbVvMSKOMtkVMA47joK454TBPUD0KuUWIhoYN8REUOpqgm7y3FdL
- fPiGPf49xIBLaHmWse0JUPHoO+9gImKQmkQ9jeYMhnggfUGU0mKugdw89LMQg2P7HEaC Gw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edwkfe46p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 13:19:12 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21PCu0LD011047;
-        Fri, 25 Feb 2022 13:19:11 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edwkfe459-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 13:19:11 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PD8PQ2025194;
-        Fri, 25 Feb 2022 13:19:09 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma05fra.de.ibm.com with ESMTP id 3ear69xan9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 13:19:09 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PD8MGm50987422
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Feb 2022 13:08:22 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 80BEBA4060;
-        Fri, 25 Feb 2022 13:19:06 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5EF54A405C;
-        Fri, 25 Feb 2022 13:19:06 +0000 (GMT)
-Received: from localhost (unknown [9.171.60.182])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 25 Feb 2022 13:19:06 +0000 (GMT)
-From:   Alexander Egorenkov <egorenar@linux.ibm.com>
-To:     jolsa@redhat.com
-Cc:     andrii.nakryiko@gmail.com, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com
-Subject: Re: [RFC bpf-next 0/2] bpf: Fix BTF data for modules
-In-Reply-To: <YY4WfQrExICZ6jI+@krava>
-In-Reply-To: 
-Date:   Fri, 25 Feb 2022 14:19:06 +0100
-Message-ID: <878rtz84ol.fsf@oc8242746057.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: hO5DsCw_CV9bRmbYLBIxBlnVtT46M5h9
-X-Proofpoint-ORIG-GUID: M-JtoAGusO7akDLuUd2RjsVppHkAx3kb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-25_07,2022-02-25_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1011
- mlxscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 suspectscore=0
- bulkscore=0 mlxlogscore=572 priorityscore=1501 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202250074
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S235630AbiBYNW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 08:22:29 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3083B2AF;
+        Fri, 25 Feb 2022 05:21:57 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id j22so4450257wrb.13;
+        Fri, 25 Feb 2022 05:21:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=xxLQvH7l9/0cKevN7857HHaPU2QEO0vmmvdQp+hIn0M=;
+        b=lxpFQr/yL6LhCuD1oWiTdQMRDrZCimHRh6Lz+Og91CzD8pbg8dvp5IZms56qzhY7rj
+         WqpScDjLfH0St0tAGZLaWroGxSJuyRz6ltraESaNG7LNPTKz/nPdhbjgL5nS0UyJSH8s
+         qNFcXZDL/FE8n6rYYqjJs8++mgTz13MmLLg97EeED/pmUZKLKpbN8BM306go2TWFp8kq
+         THUCTz8DEMctZ+WiXZ22rVb1t7yVBnF+rTBq2S6S5xAGegJWsCuXtUICNvBorcuLrVZv
+         DoBOj/F/8iQnmFVebMCFaFUIU4h/TNrJkCj0ZcE4rUePWqHaftbnlxx0Jy/MU7ftzs2c
+         tzUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=xxLQvH7l9/0cKevN7857HHaPU2QEO0vmmvdQp+hIn0M=;
+        b=llyIc4QMXKkT/dyW0B2ohs6GRmI7mv23tqKCR6nEoUwC8eDod68Ugz5MKllgonfTEx
+         g3V6yrfNOa9DGVjVt5IdAhDFlp9sGOgy5zz4Zypvu7+QYXY2rrzYJ88uZRIdYYijyJFq
+         paLe21Vd21Yq08KiMsZAKbeD6E6gnHyWY5IqJ+rMlLMFrHLTITQo4l50YPmEGSL+IkPj
+         qyXXLygS8cfe2S3+GBZ5TedxJGQjP5LtXbfZD8f4XhWiJCyepWspnVU6HFKthyxbJ0IE
+         9yHk2tvJozBCvbUNyByKp9GNoHGHu4DLqx7lqyxoE920Icdr8NU061a6r7F57Aa1k22T
+         ElAg==
+X-Gm-Message-State: AOAM530YTOTtqlmg2/BqkbBizGofSMrZfcIy0vyK2md2A2p8qmMN7/T5
+        DglCP73AkNYh+BKN1dwp71U=
+X-Google-Smtp-Source: ABdhPJxuFRFEkt9oa8I0BpqmlhLWobFn8UrM+o3nK0tidXODXRPT9ZJy8lVFXW/vqXykToLpoXfvNg==
+X-Received: by 2002:a05:6000:1547:b0:1ea:7d56:83e8 with SMTP id 7-20020a056000154700b001ea7d5683e8mr6343712wry.404.1645795316353;
+        Fri, 25 Feb 2022 05:21:56 -0800 (PST)
+Received: from localhost.localdomain ([64.64.123.58])
+        by smtp.gmail.com with ESMTPSA id o15-20020adf8b8f000000b001ea9c18b793sm2272715wra.114.2022.02.25.05.21.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 05:21:55 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        shawn.guo@linaro.org, gustavoars@kernel.org, len.baker@gmx.com
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] brcmfmac: check the return value of devm_kzalloc() in brcmf_of_probe()
+Date:   Fri, 25 Feb 2022 05:21:38 -0800
+Message-Id: <20220225132138.27722-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The function devm_kzalloc() in brcmf_of_probe() can fail, so its return
+value should be checked.
 
-Hi Jiri and Andrii,
+Fixes: 29e354ebeeec ("brcmfmac: Transform compatible string for FW loading")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-we also have discovered this problem recently on Fedora 35 and linux-next.
-Is there any status update here ?
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index 513c7e6421b2..535e8ddeab8d 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -80,6 +80,8 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 		/* get rid of '/' in the compatible string to be able to find the FW */
+ 		len = strlen(tmp) + 1;
+ 		board_type = devm_kzalloc(dev, len, GFP_KERNEL);
++		if (!board_type)
++			return;
+ 		strscpy(board_type, tmp, len);
+ 		for (i = 0; i < board_type[i]; i++) {
+ 			if (board_type[i] == '/')
+-- 
+2.17.1
 
-@Jiri
-Is the increase of total kernel modules size by 20MB really a big deal
-on s390x ? We would like to have it enabled on our architecture
-again ;-) And 20MB seems okay or am i missing something maybe ?
-
-Another question i have wrt to BTF is why is it necessary to have e.g.
-_struct module_ be present within kernel module BTF if it is already
-present within vmlinux's one ? Can't the one from vmlinux be reused for
-kernel modules as well, they should be identical, right ?
-
-Thanks
-Regards
-Alex
