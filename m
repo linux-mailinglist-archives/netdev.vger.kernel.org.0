@@ -2,85 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 088C64C3E26
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 541604C3E29
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:00:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237698AbiBYGAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 01:00:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
+        id S237707AbiBYGBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 01:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237381AbiBYGAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:00:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3AC1FE54E;
-        Thu, 24 Feb 2022 22:00:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C70DB82B2D;
-        Fri, 25 Feb 2022 06:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D2B7EC340F2;
-        Fri, 25 Feb 2022 06:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645768812;
-        bh=INUQnBa4ByNJSY2dB4LhyAy5Am/Vtks8Yp1vfK/0skQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oZ2IDEKWV4/7BT9xe8+cCB/fW3BvRpLFZIwRbiED7YhvNcX7G2AEgNEa2XhUU2xdb
-         oK45GQ5pBbLHQFk+gmf3L1WYUI275XbCA0GRBmBiKT7j8XwdY/gf6Tb8Sn4HlPA5mo
-         h7kqOXGLVlB6x8Kk6BB99digU3Ycvv+lmydy7o/rslOibJVstR9623QGSGhNsVV5U1
-         t/+9goFd1rGmbqx3FdaUqZjO0XhWG3zUfkjM9AJyUq5ZKmxQ0XdoWkT8Dz7HEmuaR7
-         LkZSZ05tXr7RGkB1rZg9i5Elr58K3kQMxqGfoexfXIz4LMbRVtBnnm1r8nzpIO5nol
-         F0ij7Ym04jr5Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B4300EAC09C;
-        Fri, 25 Feb 2022 06:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237381AbiBYGBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:01:06 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC501FE57C;
+        Thu, 24 Feb 2022 22:00:33 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id o26so3087974pgb.8;
+        Thu, 24 Feb 2022 22:00:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=715+iHDIteBSVf+EcibgL15UYpQnPyaHRHADoqHckY0=;
+        b=CIC5CFvUXwBODJfkqpuPVIhYaZoMjAxsqXxnQFNVJeieuYuEFLck1KxZ4sVAiWgp7O
+         tZmaJ7DSMuxb42TAfX+uyhmIGPJnbwy+Zpye5HkzYL5E5y/I2PbgTUtVdNCHR8Vfr1vB
+         klqt9q/conYHnUkLWqXj1OHb3tLuwL27DfQqpHUACt3GnOqT7qjfOipLI5WBFx1jwhRM
+         xThIaepJQ5Z2hxBNcQNFBJd2R2GJ2fwfdijKx1iavn3nFnapjxN5YZN/FoGnhaB/M36Q
+         8HiqGhAhDvB4EKSUEhvrHeRBGqAtyIY9Ap9A8XkWLt7waF91lUOEZJlfMj6fgnWmPRpS
+         +vqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=715+iHDIteBSVf+EcibgL15UYpQnPyaHRHADoqHckY0=;
+        b=PyJHlxJ0TKOdDiVpxcZbGWJncmuiQ9GGN1KQFFYcRiQDEMq3t2JdSKqWnWWmmG9Wtc
+         VzW9+7r50HGyiO0ZDGnjpVcK9/bmJev0Cl4yOBX0W+1Sbsq3rcvSHQxIJ2a/thfd87Bj
+         afusqA+6QWRxqbJ3eJU4oel1Maj8K7bHHpqLkEwIHZUcGzzv2SArmDodQGBegG/38LXQ
+         heERMX9cUZSmsBaZ8uMaPisAxuHAXqH0NLaQmCe28hYG56lY+OcxZj72WTcipan8txcd
+         VUK8MjAZjZpZYa0nCT0fe3o8tubdg7bHdMYA7BM+lr0BTBDK8eHKtUS0ERu00vrHsg+t
+         VsNQ==
+X-Gm-Message-State: AOAM533FvfSgbERWoBFqQGrvjpuAmdF/wfBu5Ie5X/gEK6U+7i8feJsr
+        0jxYZRB8qzI0YksfpZUTxxY=
+X-Google-Smtp-Source: ABdhPJwph3GsQFyYTh10yHH7GfFNpJCAOAPLzALMHANKlri7mkftQ6gNyti2OTw2bbrv/eXGlBDklA==
+X-Received: by 2002:a05:6a00:1aca:b0:4e1:a2b6:5b9 with SMTP id f10-20020a056a001aca00b004e1a2b605b9mr6202235pfv.4.1645768833303;
+        Thu, 24 Feb 2022 22:00:33 -0800 (PST)
+Received: from slim.das-security.cn ([103.84.139.54])
+        by smtp.gmail.com with ESMTPSA id d14-20020a056a0024ce00b004f3c87df62bsm1491120pfv.81.2022.02.24.22.00.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 22:00:32 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
+        paskripkin@gmail.com, thunder.leizhen@huawei.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] can: usb: fix a possible memory leak in esd_usb2_start_xmit
+Date:   Fri, 25 Feb 2022 14:00:19 +0800
+Message-Id: <20220225060019.21220-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net/tcp: Merge TCP-MD5 inbound callbacks
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164576881273.21574.2254886562472065645.git-patchwork-notify@kernel.org>
-Date:   Fri, 25 Feb 2022 06:00:12 +0000
-References: <20220223175740.452397-1-dima@arista.com>
-In-Reply-To: <20220223175740.452397-1-dima@arista.com>
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org, 0x7f454c46@gmail.com,
-        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+As in case of ems_usb_start_xmit, dev_kfree_skb needs to be called when
+usb_submit_urb fails to avoid possible refcount leaks.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ drivers/net/can/usb/esd_usb2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Wed, 23 Feb 2022 17:57:40 +0000 you wrote:
-> The functions do essentially the same work to verify TCP-MD5 sign.
-> Code can be merged into one family-independent function in order to
-> reduce copy'n'paste and generated code.
-> Later with TCP-AO option added, this will allow to create one function
-> that's responsible for segment verification, that will have all the
-> different checks for MD5/AO/non-signed packets, which in turn will help
-> to see checks for all corner-cases in one function, rather than spread
-> around different families and functions.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3] net/tcp: Merge TCP-MD5 inbound callbacks
-    https://git.kernel.org/netdev/net-next/c/7bbb765b7349
-
-You are awesome, thank you!
+diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb2.c
+index 286daaaea0b8..7b5e6c250d00 100644
+--- a/drivers/net/can/usb/esd_usb2.c
++++ b/drivers/net/can/usb/esd_usb2.c
+@@ -810,7 +810,7 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
+ 		usb_unanchor_urb(urb);
+ 
+ 		stats->tx_dropped++;
+-
++		dev_kfree_skb(skb);
+ 		if (err == -ENODEV)
+ 			netif_device_detach(netdev);
+ 		else
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
