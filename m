@@ -2,183 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6A24C3E3F
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 825F84C3E48
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:15:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236951AbiBYGLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 01:11:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
+        id S236845AbiBYGPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 01:15:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbiBYGL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:11:29 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B5B73062
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 22:10:58 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id c9so3980216pll.0
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 22:10:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=G+8HoqTrDljCcIRzGjz+DRsOPNvwTX/KQYweK0U9SqE=;
-        b=fF9346aHqcQxuzOssy2heNJkDNfCmKz5dzeRCfaN41sAqAWFAzOltR78Ba2+2xkcy9
-         R0Xmoywbj57tqtA2Zr92FuuDPh1p+FW53KZjENp+vHMf9rwz7BFt8i5jecdbUYD0jeMn
-         MJqr/mDjiiD6Oh7tQwcATsCgcD8PriyGgVUUEf1kUUvZb2c0qOtbdKfEcMKeWDwv9tIj
-         Xa+wWzwIJ5w2kECGMiCTB/IxfqWBVmdrrkmShhXIwNwpVQALwefRi55mY9u8HXVFNNTH
-         g9xwqYjMAhVeUTMWt+0+g2MRInfPLMkH/SX4G8pVeuydWUq2BiY42+87C4wW6tNy5d3h
-         kNhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=G+8HoqTrDljCcIRzGjz+DRsOPNvwTX/KQYweK0U9SqE=;
-        b=1bbASGrZx/t2qufm9stJ+k24gAWok6l0SNCm7HQUkwOsEBcr878vewD89mov7YXP3m
-         Rh1FO3CJTcc68mSIpD/bpLBZIZ1lBknr1YXS4weZ5GvAkb82wnvfXrJeApmn6rFAr4os
-         s6kJeNekYrEnMWXRKcTSW2TDdEBibKtwvGyEwRPMZYW/BXeQBfwh/99j8aP5XSaWwTK9
-         HNHlELM6NC4FD5RwnQmB3chYco0U7IKi26ZaNE4RT4DeNf1eablxNLx8hfxvcFhJb2J3
-         +jRrQWs15TtdYnmAOy6uHx+2PMntoHCR76vAk0HCFLYTOWgaWCB/mSr0G12v1/yFTvqw
-         dESA==
-X-Gm-Message-State: AOAM530TdzoQIeDgcmKHdFUHYSuKbGKfrPp56GH0YuH5AKisjaEgy0ts
-        9ld02iq2zAhuv09ck5ocu+cb4G6KknpZnv1ulMxu7DVX1AFC6A==
-X-Google-Smtp-Source: ABdhPJyE0/AGs3K3kB1WUFLs617OpgX1ve3OMtc0in1nx5BDj8ifRMaLPAJHwFxVfWKBrHA72xhLq+zT5YGesw6Fy6A=
-X-Received: by 2002:a17:902:9690:b0:14f:fc09:fd02 with SMTP id
- n16-20020a170902969000b0014ffc09fd02mr5946486plp.66.1645769457555; Thu, 24
- Feb 2022 22:10:57 -0800 (PST)
+        with ESMTP id S231455AbiBYGPW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:15:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6321BBF5D
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 22:14:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F43961A4F
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:14:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59E12C340E7;
+        Fri, 25 Feb 2022 06:14:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645769689;
+        bh=SnqDvWOZGiVjRgMTIPLenHCMpaXCWJQ1QvUVeWO7J3M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SeuqE2ThDKlNXbvjIhLcJdJVFKX6dHIQk00vQE2ebUBRQTDF1v2YBEydz31toqeKh
+         z1D5sueMcWU3oXdg4vd7aoLT1cWGwtW6Wc25wU6GbzOFf8RaqB1Tm06LYYtk1Hv7+R
+         kzkZ75c091ykfWotoQ11G8TuV/fmEOV4/uIaPsB6l4oEzIwEp3r3ye8PK3emsGw5Y9
+         SShktAFYLRWPIJUXy/k8ZWy/O6sasI5VHdqMkEpsa0jpGZikKPxR2v4eb+Bpcckk0H
+         uub1vHj8n8t+xpFVflclfyiJ8L9su/XLWxUjKB9WAf/f3n6aWyCesg7SciczzTWlpn
+         uJ24SXPbcdZkw==
+Date:   Thu, 24 Feb 2022 22:14:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
+        jiri@nvidia.com, razor@blackwall.org, roopa@nvidia.com,
+        dsahern@gmail.com, andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 03/14] net: rtnetlink: RTM_GETSTATS: Allow
+ filtering inside nests
+Message-ID: <20220224221447.6c7fa95d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220224133335.599529-4-idosch@nvidia.com>
+References: <20220224133335.599529-1-idosch@nvidia.com>
+        <20220224133335.599529-4-idosch@nvidia.com>
 MIME-Version: 1.0
-References: <20220222224758.11324-1-luizluca@gmail.com> <20220222224758.11324-2-luizluca@gmail.com>
- <20220224000423.6cb33jf47pl4e36h@skbuf>
-In-Reply-To: <20220224000423.6cb33jf47pl4e36h@skbuf>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Fri, 25 Feb 2022 03:10:46 -0300
-Message-ID: <CAJq09z4EXxRr-H3TkoFOA2hNiFqdwA_w-dOgUqHaVogNP0n_KQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/2] net: dsa: tag_rtl8_4: add rtl8_4t
- trailing variant
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em qua., 23 de fev. de 2022 =C3=A0s 21:04, Vladimir Oltean
-<olteanv@gmail.com> escreveu:
->
-> On Tue, Feb 22, 2022 at 07:47:57PM -0300, Luiz Angelo Daros de Luca wrote=
-:
-> > diff --git a/net/dsa/tag_rtl8_4.c b/net/dsa/tag_rtl8_4.c
-> > index 02686ad4045d..2e81ab49d928 100644
-> > --- a/net/dsa/tag_rtl8_4.c
-> > +++ b/net/dsa/tag_rtl8_4.c
-> > @@ -9,11 +9,6 @@
-> >   *
-> >   * This tag header has the following format:
-> >   *
-> > - *  -------------------------------------------
-> > - *  | MAC DA | MAC SA | 8 byte tag | Type | ...
-> > - *  -------------------------------------------
-> > - *     _______________/            \__________________________________=
-____
-> > - *    /                                                               =
-    \
-> >   *  0                                  7|8                            =
-     15
-> >   *  |-----------------------------------+-----------------------------=
-------|---
-> >   *  |                               (16-bit)                          =
-      | ^
-> > @@ -58,6 +53,28 @@
-> >   *    TX/RX      | TX (switch->CPU): port number the packet was receiv=
-ed on
-> >   *               | RX (CPU->switch): forwarding port mask (if ALLOW=3D=
-0)
-> >   *               |                   allowance port mask (if ALLOW=3D1=
-)
-> > + *
-> > + * The tag can be positioned before Ethertype, using tag "rtl8_4":
-> > + *
-> > + *  +--------+--------+------------+------+-----
-> > + *  | MAC DA | MAC SA | 8 byte tag | Type | ...
-> > + *  +--------+--------+------------+------+-----
-> > + *
-> > + * If checksum offload is enabled for CPU port device, it might break =
-if the
-> > + * driver does not use csum_start/csum_offset.
->
-> Please. This is true of any DSA header. If you feel you have something
-> to add on this topic please do so in Documentation/networking/dsa/dsa.rst
-> under "Switch tagging protocols".
+On Thu, 24 Feb 2022 15:33:24 +0200 Ido Schimmel wrote:
+> From: Petr Machata <petrm@nvidia.com>
+> 
+> The filter_mask field of RTM_GETSTATS header determines which top-level
+> attributes should be included in the netlink response. This saves
+> processing time by only including the bits that the user cares about
+> instead of always dumping everything. This is doubly important for
+> HW-backed statistics that would typically require a trip to the device to
+> fetch the stats.
+> 
+> So far there was only one HW-backed stat suite per attribute. However,
+> IFLA_STATS_LINK_OFFLOAD_XSTATS is a nest, and will gain a new stat suite in
+> the following patches. It would therefore be advantageous to be able to
+> filter within that nest, and select just one or the other HW-backed
+> statistics suite.
+> 
+> Extend rtnetlink so that RTM_GETSTATS permits attributes in the payload.
+> The scheme is as follows:
+> 
+>     - RTM_GETSTATS
+> 	- struct if_stats_msg
+> 	- attr nest IFLA_STATS_GET_FILTERS
+> 	    - attr IFLA_STATS_LINK_OFFLOAD_XSTATS
+> 		- struct nla_bitfield32 filter_mask
+> 
+> This scheme reuses the existing enumerators by nesting them in a dedicated
+> context attribute. This is covered by policies as usual, therefore a
+> gradual opt-in is possible. Currently only IFLA_STATS_LINK_OFFLOAD_XSTATS
+> nest has filtering enabled, because for the SW counters the issue does not
+> seem to be that important.
+> 
+> rtnl_offload_xstats_get_size() and _fill() are extended to observe the
+> requested filters.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 
-OK. I'll remove it from this series and add that info to docs in an
-independent commit.
+> @@ -5319,8 +5339,12 @@ static size_t if_nlmsg_stats_size(const struct net_device *dev,
+>  		}
+>  	}
+>  
+> -	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_OFFLOAD_XSTATS, 0))
+> -		size += rtnl_offload_xstats_get_size(dev);
+> +	if (stats_attr_valid(filter_mask, IFLA_STATS_LINK_OFFLOAD_XSTATS, 0)) {
+> +		u32 off_filter_mask;
+> +
+> +		off_filter_mask = filters->mask[IFLA_STATS_LINK_OFFLOAD_XSTATS];
+> +		size += rtnl_offload_xstats_get_size(dev, off_filter_mask);
+> +	}
+>  
+>  	if (stats_attr_valid(filter_mask, IFLA_STATS_AF_SPEC, 0)) {
+>  		struct rtnl_af_ops *af_ops;
+> @@ -5344,6 +5368,75 @@ static size_t if_nlmsg_stats_size(const struct net_device *dev,
+>  	return size;
+>  }
+>  
+> +static const struct nla_policy
+> +rtnl_stats_get_policy[IFLA_STATS_GETSET_MAX + 1] = {
+> +	[IFLA_STATS_GETSET_UNSPEC] = { .strict_start_type = 1 },
 
-> Also, s/CPU port device/DSA master/.
->
-> > + *
-> > + * The tag can also appear between the end of the payload and before t=
-he CRC,
-> > + * using tag "rtl8_4t":
-> > + *
-> > + * +--------+--------+------+-----+---------+------------+-----+
-> > + * | MAC DA | MAC SA | TYPE | ... | payload | 8-byte tag | CRC |
-> > + * +--------+--------+------+-----+---------+------------+-----+
-> > + *
-> > + * The added bytes after the payload will break most checksums, either=
- in
-> > + * software or hardware. To avoid this issue, if the checksum is still=
- pending,
-> > + * this tagger checksum the packet before adding the tag, rendering an=
-y
->
-> s/checksum/checksums/
->
-> > + * checksum offload useless.
->
-> If you're adding a tail tagging driver to work around checksum offload
-> issues, this solution is about as bad as it gets. You're literally not
-> gaining anything in performance over fixing your DSA master driver to
-> turn off checksum offloading for unrecognized DSA tagging protocols.
+I don't think we need the .strict_start_type if the policy is not used
+in parse calls with a _deprecated() suffix, no?
 
-I wasn't adding it as a way to disable offload but as an alternative
-to keep the hardware offload enabled. However, in the end, if the HW
-already does not understand the tag, adding a tag after the payload
-will not only break checksum offload but the software checksum as
-well.
+> +	[IFLA_STATS_GET_FILTERS] = { .type = NLA_NESTED },
 
-> And on top of that, you're requiring your users to be aware of this
-> issue and make changes to their configuration, for something that can be
-> done automatically.
+NLA_POLICY_NESTED()? Maybe one day we'll have policy dumping 
+for rtnetlink and it'll be useful to have policies linked up.
 
-I don't see how we could automatically detect that in an unspecific
-Ethernet driver. No driver expects to have some bytes after the
-payload it should ignore. Not even the software checksum functions
-consider that case. And we should not adapt all Ethernet drivers for
-DSA. The easier solution is to calculate the checksum before the tag
-was added, even if that prevents checksum offload for a possible
-compatible HW. After the tag was added, it is already too late for the
-driver to make a decision (with existing Linux code).
+> +};
+> +
+> +#define RTNL_STATS_OFFLOAD_XSTATS_VALID ((1 << __IFLA_OFFLOAD_XSTATS_MAX) - 1)
+> +
+> +static const struct nla_policy
+> +rtnl_stats_get_policy_filters[IFLA_STATS_MAX + 1] = {
+> +	[IFLA_STATS_UNSPEC] = { .strict_start_type = 1 },
+> +	[IFLA_STATS_LINK_OFFLOAD_XSTATS] =
+> +			NLA_POLICY_BITFIELD32(RTNL_STATS_OFFLOAD_XSTATS_VALID),
+> +};
+> +
+> +static int rtnl_stats_get_parse_filters(struct nlattr *ifla_filters,
+> +					struct rtnl_stats_dump_filters *filters,
+> +					struct netlink_ext_ack *extack)
+> +{
+> +	struct nlattr *tb[IFLA_STATS_MAX + 1];
+> +	int err;
+> +	int at;
+> +
+> +	err = nla_parse_nested(tb, IFLA_STATS_MAX, ifla_filters,
+> +			       rtnl_stats_get_policy_filters, extack);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	for (at = 1; at <= IFLA_STATS_MAX; at++) {
+> +		if (tb[at]) {
+> +			if (!(filters->mask[0] & IFLA_STATS_FILTER_BIT(at))) {
+> +				NL_SET_ERR_MSG(extack, "Filtered attribute not enabled in filter_mask");
+> +				return -EINVAL;
+> +			}
+> +			filters->mask[at] = nla_get_bitfield32(tb[at]).value;
 
-> Do you have another use case as well?
+Why use bitfield if we only use the .value, a u32 would do?
 
-Allowing the user to change the tag position is a nice tool to detect
-compatible problems. I got the checksum offload but it could also help
-with stacking incompatible switches, when the switch does not like the
-added Ethertype DSA tag.
-
-Regards,
-
-Luiz
+> +		}
+> +	}
