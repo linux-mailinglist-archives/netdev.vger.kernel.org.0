@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 926B24C5196
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 23:34:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C47B4C519F
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 23:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238470AbiBYWfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 17:35:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S238397AbiBYWiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 17:38:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238275AbiBYWfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 17:35:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258461BE0DA
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 14:34:35 -0800 (PST)
+        with ESMTP id S236215AbiBYWiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 17:38:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6BF75225
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 14:37:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E9B4B82AC0
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 22:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C28C0C340E7;
-        Fri, 25 Feb 2022 22:34:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BBD5B82AC0
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 22:37:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A169C340E7;
+        Fri, 25 Feb 2022 22:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645828473;
-        bh=P7OMAbtw6ZINLFBGNi+0YkYeZqrWRLuLOtpxpGZZ5iA=;
+        s=k20201202; t=1645828650;
+        bh=mooCU/XOg2DKjvVczJRtQMQ5x375iql2x/BkWM0XyD8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vBsz7PsyW2m635ZK/SPuof2c2fPMcfVbpBwsT6bxDT/a6CqZlF5YYaqN8+8JU0vFa
-         UU4TJxPoMqUSUxd7n8ggHsNGN1b5/+vlREpnVqnNu6apg7/8Px3mEWy2McgBiaH434
-         zO5drCDDIu88enhyokj5aA3D/6OjT9feft3cx6Ho4k7+xaUY/bBmWQMQVPKOVDORex
-         PJZMl2YYrSS7pVEADzGOBGhJIFU77aOYCxIUvvLTf71AVc/mPjRdG86peln1el6FZx
-         7vG/TlMFB8HTReezGtttkluqQQEy/imbgQ0lRovpMpCw7/RXh6PsHIxAK7ESZ/xm7P
-         A8uu7CHXnEjWA==
-Date:   Fri, 25 Feb 2022 14:34:31 -0800
+        b=MUvoNYslYZ0ldlnxex059m/1u89tD8PmuBEQiEhBm4DCcrpuHQLBQk2GOtT3LWyhz
+         4e49fJYy0YCe2+t3dK1jQsfCmgBobBTMddgrWOVmf7k7asg/FUDm8wqEFZ/3kl31F7
+         byJeR0v8nYifu5cibcjp+Jg/I/h0ATgW223eMZ4upQ4iZnDlA+UcVDViR/rQJVw/4k
+         6QKN74t0e1R4BAnj42FVzqzkIlQKGWx/m6OfkatBSq8wh2Ljq8ogKTA3LazXagFsTf
+         VnNBRYoAbYJun4MO+kGVy3GnJMhhRKOUlMRRr5iJZAXwxhCuUw4X6i4sFI0eXOT6L3
+         +ILUql4h5eedQ==
+Date:   Fri, 25 Feb 2022 14:37:28 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        stephen@networkplumber.org, nikolay@cumulusnetworks.com,
-        idosch@nvidia.com, dsahern@gmail.com, bpoirier@nvidia.com
-Subject: Re: [PATCH net-next v2 11/12] drivers: vxlan: vnifilter: per vni
- stats
-Message-ID: <20220225143431.716256c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <79eed237-4659-7e86-ed26-93f70b1d47bc@nvidia.com>
-References: <20220222025230.2119189-1-roopa@nvidia.com>
-        <20220222025230.2119189-12-roopa@nvidia.com>
-        <20220223200206.20169386@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <79eed237-4659-7e86-ed26-93f70b1d47bc@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>, <roopa@nvidia.com>
+Cc:     Ido Schimmel <idosch@nvidia.com>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <jiri@nvidia.com>, <razor@blackwall.org>,
+        <dsahern@gmail.com>, <andrew@lunn.ch>, <mlxsw@nvidia.com>
+Subject: Re: [PATCH net-next 06/14] net: dev: Add hardware stats support
+Message-ID: <20220225143728.0e90e482@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <87wnhid7l8.fsf@nvidia.com>
+References: <20220224133335.599529-1-idosch@nvidia.com>
+        <20220224133335.599529-7-idosch@nvidia.com>
+        <20220224222244.0dfadb8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8735k7fg53.fsf@nvidia.com>
+        <20220225081212.4b1825f2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <874k4meuoj.fsf@nvidia.com>
+        <20220225095645.547a79f0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <87wnhid7l8.fsf@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,30 +61,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Feb 2022 09:49:20 -0800 Roopa Prabhu wrote:
-> On 2/23/22 20:02, Jakub Kicinski wrote:
-> > On Tue, 22 Feb 2022 02:52:29 +0000 Roopa Prabhu wrote:  
-> >>   /* vxlan_multicast.c */
-> >>   int vxlan_multicast_join(struct vxlan_dev *vxlan);
-> >>   int vxlan_multicast_leave(struct vxlan_dev *vxlan);
-> >> +void vxlan_vnifilter_count(struct vxlan_dev *vxlan, __be32 vni,
-> >> +			   int type, unsigned int len)
-> >> +{
-> >> +	struct vxlan_vni_node *vninode;
-> >> +
-> >> +	if (!(vxlan->cfg.flags & VXLAN_F_VNIFILTER))
-> >> +		return;
-> >> +
-> >> +	vninode = vxlan_vnifilter_lookup(vxlan, vni);
-> >> +	if (!vninode)
-> >> +		return;  
-> > Don't we end up calling vxlan_vnifilter_lookup() multiple times for
-> > every packet? Can't we remember the vninode from vxlan_vs_find_vni()?
-> >  
-> you are right, its done this way to not propagate vninode into vxlan_rcv.
+On Fri, 25 Feb 2022 21:01:53 +0100 Petr Machata wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> > Yeah, if I'm counting right we're reusing like 38% of the fields, only.
+> > We're better off with a new structure.  
 > 
-> let me see what we can do here.thanks
+> OK.
 
-Thanks for making the changes, BTW there was also a transient warning
-here about vxlan_vnifilter_stats_get() being defined but not used.
-Maybe move it to the next patch?
+Thanks, BTW I noticed that what Roopa has is very close (just missing
+multicast):
+
+https://lore.kernel.org/all/20220222025230.2119189-12-roopa@nvidia.com/
+
+There are other structures (grep include/ for rx_bytes) already in tree
+but none as close.
+
+That's if you wanted to push for reuse (I presume you may prefer not
+to), just an FYI..
