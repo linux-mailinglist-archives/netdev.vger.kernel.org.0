@@ -2,119 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6234C3A89
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 01:54:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE39A4C3A9A
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 01:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236173AbiBYAxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Feb 2022 19:53:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
+        id S236115AbiBYA6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Feb 2022 19:58:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236170AbiBYAxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 19:53:38 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4350810A7F0
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 16:53:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645750387; x=1677286387;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fqTt+niSLwVwwDItw0GZA8ZDW7BieBIv0e/LtMJlhfQ=;
-  b=AMx3MIobEUiI0een3kKYIn8UgmOgbW2PpuJ+GzrRL62SxhZSDszkRqaF
-   ndNXU/sRGzxDY3PCbzcYQvVaJGfj7sOHr0JsdKY1neoqpqqLAYlgqrH/3
-   byRHWMhl9T8ZKaLX87D8JFGdAtbTZP0D6ZBKeipI68n5T6JGaBdnl/z+9
-   nFUiqhEspRrfuBvUEovmM7Y9UF87ZpqGBq0lCGFzpLjt3tS0b9mZkBK4U
-   5jpeLrIViAbv/29Sp7T0Zd+wOeiR3wdg6DsPi591b+bkbTTpYkPvHkC4r
-   UBuQEZsnRLuT70/dQDtXcnSBVmwjatUnxH8JMaYN/f474gWdO8Fhp5H/Z
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="313105746"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="313105746"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 16:53:05 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="638050202"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.28.67])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 16:53:05 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net 3/3] mptcp: Correctly set DATA_FIN timeout when number of retransmits is large
-Date:   Thu, 24 Feb 2022 16:52:59 -0800
-Message-Id: <20220225005259.318898-4-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220225005259.318898-1-mathew.j.martineau@linux.intel.com>
-References: <20220225005259.318898-1-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S231271AbiBYA6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Feb 2022 19:58:20 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA7518C79D
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 16:57:49 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id j7so6779418lfu.6
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 16:57:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fungible.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w76VyCLNjCNjgyDe2C/fhnjmx1UCmS0n3lxCwRttFPA=;
+        b=VwTElvDPyYA5LrjoWodLnDLFdZKSA6sRUdSxjwcvpbHogB1pED2nIRh/gIABUsupaK
+         ebAwMAxIWr9SYNQtoESuDEM+zbUHZgDnOF3gcNXeW7X0ubApEQl9PKsitDs4f5VmCOF2
+         Q8/KHvt26KAveqZ7BTCDKiEPHB/cvRy2QUiBc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w76VyCLNjCNjgyDe2C/fhnjmx1UCmS0n3lxCwRttFPA=;
+        b=orLmRY3lZGChPWTsg1932xP3omotcwP4JiCIlNXWtAAyKJYDoInN5YwdvAylgFo/JJ
+         er1E6vKlI8vp9D5WriE/Vl785vX33Os4q4xxsH/zbtJbx6HpdfTUBpV0xaE9Eff5qfu5
+         MHWMjlyYeAVqWmdbbOu4kLVl8QmLbjGJiBgQd7cffN/wLUM66Q8DpfBZYARciNwQPpaQ
+         Jx974HsTCqt6sP7M9Cci8E+CMRsBh143kDySojexr++U/YufP/m3eCU4QsB3idNg5Y3N
+         kPZ/e0HXxnGVy3YF76hBOFGuOElf9lkn1imUUWm7ifmGuS0gA5enH3zW9wZhWHJVwj6X
+         IuUA==
+X-Gm-Message-State: AOAM531xF6pYBhoQ9iMu2ab41WJKZhfb8FDlCWjJWd8UXnfqwUwBNxxA
+        NwvtzxCAn2CSo4vNB1T2b7lcvOVNBHoO7hY9wAp1Dg==
+X-Google-Smtp-Source: ABdhPJxU2kKUusLSIMTHq0QV+2ABUUmfQO6RVCH0H0SZsHcJzpV6rdbUs/5rDFYl8ov/yb8fImEDTGOW+ni1rP84ixg=
+X-Received: by 2002:a05:6512:692:b0:437:9580:9ab5 with SMTP id
+ t18-20020a056512069200b0043795809ab5mr3364075lfe.689.1645750667679; Thu, 24
+ Feb 2022 16:57:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220218234536.9810-1-dmichail@fungible.com> <20220218234536.9810-5-dmichail@fungible.com>
+ <Yhfq1N7ce/adhmN9@lunn.ch>
+In-Reply-To: <Yhfq1N7ce/adhmN9@lunn.ch>
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+Date:   Thu, 24 Feb 2022 16:57:36 -0800
+Message-ID: <CAOkoqZmTc6y=qn8WeFmcupPOncCmSSEMgbXPUtR80zyRhn=qdA@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 4/8] net/funeth: ethtool operations
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller with UBSAN uncovered a scenario where a large number of
-DATA_FIN retransmits caused a shift-out-of-bounds in the DATA_FIN
-timeout calculation:
+On Thu, Feb 24, 2022 at 12:30 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > +static void fun_link_modes_to_ethtool(u64 modes,
+> > +                                   unsigned long *ethtool_modes_map)
+> > +{
+> > +#define ADD_LINK_MODE(mode) \
+> > +     __set_bit(ETHTOOL_LINK_MODE_ ## mode ## _BIT, ethtool_modes_map)
+> > +
+> > +     if (modes & FUN_PORT_CAP_AUTONEG)
+> > +             ADD_LINK_MODE(Autoneg);
+> > +     if (modes & FUN_PORT_CAP_1000_X)
+> > +             ADD_LINK_MODE(1000baseX_Full);
+> > +     if (modes & FUN_PORT_CAP_10G_R) {
+> > +             ADD_LINK_MODE(10000baseCR_Full);
+> > +             ADD_LINK_MODE(10000baseSR_Full);
+> > +             ADD_LINK_MODE(10000baseLR_Full);
+> > +             ADD_LINK_MODE(10000baseER_Full);
+> > +     }
+>
+> > +static unsigned int fun_port_type(unsigned int xcvr)
+> > +{
+> > +     if (!xcvr)
+> > +             return PORT_NONE;
+> > +
+> > +     switch (xcvr & 7) {
+> > +     case FUN_XCVR_BASET:
+> > +             return PORT_TP;
+>
+> You support twisted pair, so should you also have the BaseT_FULL link
+> modes above?
 
-================================================================================
-UBSAN: shift-out-of-bounds in net/mptcp/protocol.c:470:29
-shift exponent 32 is too large for 32-bit type 'unsigned int'
-CPU: 1 PID: 13059 Comm: kworker/1:0 Not tainted 5.17.0-rc2-00630-g5fbf21c90c60 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-Workqueue: events mptcp_worker
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:151
- __ubsan_handle_shift_out_of_bounds.cold+0xb2/0x20e lib/ubsan.c:330
- mptcp_set_datafin_timeout net/mptcp/protocol.c:470 [inline]
- __mptcp_retrans.cold+0x72/0x77 net/mptcp/protocol.c:2445
- mptcp_worker+0x58a/0xa70 net/mptcp/protocol.c:2528
- process_one_work+0x9df/0x16d0 kernel/workqueue.c:2307
- worker_thread+0x95/0xe10 kernel/workqueue.c:2454
- kthread+0x2f4/0x3b0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-================================================================================
+I agree with that but FW currently doesn't report BASE-T speeds in its
+port capabilities and the link modes are based on them. Looks simple to fix
+but needs future FW.
 
-This change limits the maximum timeout by limiting the size of the
-shift, which keeps all intermediate values in-bounds.
+> > +static void fun_get_pauseparam(struct net_device *netdev,
+> > +                            struct ethtool_pauseparam *pause)
+> > +{
+> > +     const struct funeth_priv *fp = netdev_priv(netdev);
+> > +     u8 active_pause = fp->active_fc;
+> > +
+> > +     pause->rx_pause = !!(active_pause & FUN_PORT_CAP_RX_PAUSE);
+> > +     pause->tx_pause = !!(active_pause & FUN_PORT_CAP_TX_PAUSE);
+> > +     pause->autoneg = !!(fp->advertising & FUN_PORT_CAP_AUTONEG);
+>
+> pause->autoneg is if you are negotiating pause via autneg, not if you
+> are doing autoneg in general. The user can set pause autoneg to false, via
 
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/259
-Fixes: 6477dd39e62c ("mptcp: Retransmit DATA_FIN")
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/protocol.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Indeed, overall AN and pause AN are separate controls. But because of current
+FW limitation they need to have the same value and pause AN == overall AN.
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 12bb28c5007e..1c72f25f083e 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -466,9 +466,12 @@ static bool mptcp_pending_data_fin(struct sock *sk, u64 *seq)
- static void mptcp_set_datafin_timeout(const struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-+	u32 retransmits;
- 
--	mptcp_sk(sk)->timer_ival = min(TCP_RTO_MAX,
--				       TCP_RTO_MIN << icsk->icsk_retransmits);
-+	retransmits = min_t(u32, icsk->icsk_retransmits,
-+			    ilog2(TCP_RTO_MAX / TCP_RTO_MIN));
-+
-+	mptcp_sk(sk)->timer_ival = TCP_RTO_MIN << retransmits;
- }
- 
- static void __mptcp_set_timeout(struct sock *sk, long tout)
--- 
-2.35.1
+> ethtool -A|--pause devname [autoneg on|off]
+>
+> but the link can still negotiate speed, duplex etc. But then it gets
+> more confusing with the following code:
+>
+> > +}
+> > +
+> > +static int fun_set_pauseparam(struct net_device *netdev,
+> > +                           struct ethtool_pauseparam *pause)
+> > +{
+> > +     struct funeth_priv *fp = netdev_priv(netdev);
+> > +     u64 new_advert;
+> > +
+> > +     if (fp->port_caps & FUN_PORT_CAP_VPORT)
+> > +             return -EOPNOTSUPP;
+> > +     /* Forcing PAUSE settings with AN enabled is unsupported. */
+> > +     if (!pause->autoneg && (fp->advertising & FUN_PORT_CAP_AUTONEG))
+> > +             return -EOPNOTSUPP;
+>
+> This seems wrong. You don't advertise you cannot advertise. You simply
+> don't advertise. It could just be you have a bad variable name here?
 
+advertising & FUN_PORT_CAP_AUTONEG means that AN is enabled, and
+when this bit is off AN is disabled.
+When AN is enabled FW doesn't allow forcing pause hence this combination is
+rejected. I changed it to be this way after the discussion we had last time.
+
+> > +     if (pause->autoneg && !(fp->advertising & FUN_PORT_CAP_AUTONEG))
+> > +             return -EINVAL;
+>
+> So it should be, you have the capability to advertise pause, not that
+> you have the ability to advertise advertising. And it sounds like the
+> ability to advertise pause is hard coded on.
+
+It's just the AN on/off state, it's not trying to advertise
+advertising. When it's on
+pause AN is indeed forced on.
+
+> > +static void fun_get_ethtool_stats(struct net_device *netdev,
+> > +                               struct ethtool_stats *stats, u64 *data)
+> > +{
+> > +     const struct funeth_priv *fp = netdev_priv(netdev);
+> > +     struct funeth_txq_stats txs;
+> > +     struct funeth_rxq_stats rxs;
+> > +     struct funeth_txq **xdpqs;
+> > +     struct funeth_rxq **rxqs;
+> > +     unsigned int i, start;
+> > +     u64 *totals, *tot;
+> > +
+> > +     if (!netif_running(netdev))
+> > +             return;
+>
+> Why this limitation? I don't expect the counters to increment, but
+> they should still indicate the state when the interface was configured
+> down.
+
+Most of the counters are queue counters and the queues are deleted when the
+net device is down. That was there to prevent attempting to walk non-existing
+queues. It's not needed, the condition is handled by another if further down.
+I've removed this, at least you get the last MAC stats now.
+
+>
+>         Andrew
