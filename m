@@ -2,95 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A10F4C4A70
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 17:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E124C4A8E
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 17:22:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242785AbiBYQU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 11:20:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        id S242931AbiBYQWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 11:22:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242854AbiBYQUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 11:20:18 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7B75D194
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 08:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=P2sdrSNwVLun+8XYsG5yPSykv+FwuVMcEC5UoiWlXq8=; b=UqSJQb5gZZ2w0BzKtKF+QJI33h
-        vGhwoRT4M+z2lJrYh5ltcOUXqzd/o0Q5bIO8pZNkjrAHPH018XM6gAwWYRerOx922aZwHFBpvEyZR
-        w35SNVXuqnQONsVB323Ei8VmxuLlxIP1PTK6jyU8bvG2MP+jklV1Rs4whFKBIMsKPgAHErylj2dhx
-        f/ZQ81zkUFhNwJqCngUCNMryyWBes6ce/JzK9meLMKlmqIoGtppuAVjvjAUkdr7EqYVjUK8THwYL7
-        iizD84POhu7oRr+qJyo4iPbzoJPJDptlxXsytTfVnK2EasBSFQbuYFbwPC1/xn+ZM8lOFlv9N4GPh
-        x7AjyAqA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:47606 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1nNdJl-0005hy-Nj; Fri, 25 Feb 2022 16:19:41 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nNdJl-00Asok-4n; Fri, 25 Feb 2022 16:19:41 +0000
-In-Reply-To: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
-References: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next 4/4] net: dsa: ocelot: mark as non-legacy
+        with ESMTP id S239145AbiBYQWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 11:22:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7C3186442;
+        Fri, 25 Feb 2022 08:21:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9D60B83281;
+        Fri, 25 Feb 2022 16:21:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74395C340E7;
+        Fri, 25 Feb 2022 16:21:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645806108;
+        bh=5qCpPhBzCG6EzwR24kqTZdJuF47gyfzZc+1BXmKEf6M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pwM1Xt6gJz0gy6cniVfgiIJmJRbym2PDFc7fvMhX7O78a9KimPFkL1OlSiMRznl2v
+         43t+J1tF1dp6drJ9uHzOSFsQwjcLNrvxCTTpAp3RdEkoCeRZAG09vk+ilKDGahSdav
+         1dR6n4cxuaKBLu+rDv0brby5moN8WaD1cLgadAZw=
+Date:   Fri, 25 Feb 2022 17:19:53 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Yonghong Song <yhs@fb.com>, Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Peter Hutterer <peter.hutterer@redhat.com>
+Subject: Re: [PATCH bpf-next v1 0/6] Introduce eBPF support for HID devices
+Message-ID: <YhkBqTWts97lS3jW@kroah.com>
+References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
+ <YhdsgokMMSEQ0Yc8@kroah.com>
+ <CAO-hwJJcepWJaU9Ytuwe_TiuZUGTq_ivKknX8x8Ws=zBFUp0SQ@mail.gmail.com>
+ <ed97e5e8-f2b8-569f-5319-36cd3d2b79b3@fb.com>
+ <CAO-hwJ+CJkPqdOE+OpZHOscMk3HHZb4qVtXjF-bkOweU0QjppA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nNdJl-00Asok-4n@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Fri, 25 Feb 2022 16:19:41 +0000
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAO-hwJ+CJkPqdOE+OpZHOscMk3HHZb4qVtXjF-bkOweU0QjppA@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ocelot DSA driver does not make use of the speed, duplex, pause or
-advertisement in its phylink_mac_config() implementation, so it can be
-marked as a non-legacy driver.
+On Fri, Feb 25, 2022 at 05:06:32PM +0100, Benjamin Tissoires wrote:
+> On Thu, Feb 24, 2022 at 6:21 PM Yonghong Song <yhs@fb.com> wrote:
+> >
+> >
+> >
+> > On 2/24/22 5:49 AM, Benjamin Tissoires wrote:
+> > > Hi Greg,
+> > >
+> > > Thanks for the quick answer :)
+> > >
+> > > On Thu, Feb 24, 2022 at 12:31 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >>
+> > >> On Thu, Feb 24, 2022 at 12:08:22PM +0100, Benjamin Tissoires wrote:
+> > >>> Hi there,
+> > >>>
+> > >>> This series introduces support of eBPF for HID devices.
+> > >>>
+> > >>> I have several use cases where eBPF could be interesting for those
+> > >>> input devices:
+> > >>>
+> > >>> - simple fixup of report descriptor:
+> > >>>
+> > >>> In the HID tree, we have half of the drivers that are "simple" and
+> > >>> that just fix one key or one byte in the report descriptor.
+> > >>> Currently, for users of such devices, the process of fixing them
+> > >>> is long and painful.
+> > >>> With eBPF, we could externalize those fixups in one external repo,
+> > >>> ship various CoRe bpf programs and have those programs loaded at boot
+> > >>> time without having to install a new kernel (and wait 6 months for the
+> > >>> fix to land in the distro kernel)
+> > >>
+> > >> Why would a distro update such an external repo faster than they update
+> > >> the kernel?  Many sane distros update their kernel faster than other
+> > >> packages already, how about fixing your distro?  :)
+> > >
+> > > Heh, I'm going to try to dodge the incoming rhel bullet :)
+> > >
+> > > It's true that thanks to the work of the stable folks we don't have to
+> > > wait 6 months for a fix to come in. However, I think having a single
+> > > file to drop in a directory would be easier for development/testing
+> > > (and distribution of that file between developers/testers) than
+> > > requiring people to recompile their kernel.
+> > >
+> > > Brain fart: is there any chance we could keep the validated bpf
+> > > programs in the kernel tree?
+> >
+> > Yes, see kernel/bpf/preload/iterators/iterators.bpf.c.
+> 
+> Thanks. This is indeed interesting.
+> I am not sure the exact usage of it though :)
+> 
+> One thing I wonder too while we are on this topic, is it possible to
+> load a bpf program from the kernel directly, in the same way we can
+> request firmwares?
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/ocelot/felix.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+We used to be able to do that, putting bpf programs inside a module.
+But that might have gotten removed because no one actually used it.  I
+thought it was a nice idea.
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index bfc756c35a2b..1d7c5d7970bd 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -783,6 +783,12 @@ static void felix_phylink_get_caps(struct dsa_switch *ds, int port,
- {
- 	struct ocelot *ocelot = ds->priv;
- 
-+	/* This driver does not make use of the speed, duplex, pause or the
-+	 * advertisement in its mac_config, so it is safe to mark this driver
-+	 * as non-legacy.
-+	 */
-+	config->legacy_pre_march2020 = false;
-+
- 	__set_bit(ocelot->ports[port]->phy_mode,
- 		  config->supported_interfaces);
- }
--- 
-2.30.2
+> Because if we can do that, in my HID use case we could replace simple
+> drivers with bpf programs entirely and reduce the development cycle to
+> a bare minimum.
 
+How would the development cycle change?  You could get rid of many
+in-kernel hid drivers and replace them with bpf code perhaps?  Maybe
+that's a good use case :)
+
+thanks,
+
+greg k-h
