@@ -2,44 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 226C84C4B78
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 17:56:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC5914C4B7F
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 17:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242748AbiBYQ5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 11:57:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
+        id S243381AbiBYQ5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 11:57:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243358AbiBYQ46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 11:56:58 -0500
+        with ESMTP id S243292AbiBYQ5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 11:57:01 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7B31EE9D8
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 08:56:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A97F1EE9D7
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 08:56:28 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nNdtI-0004DU-KQ
-        for netdev@vger.kernel.org; Fri, 25 Feb 2022 17:56:24 +0100
+        id 1nNdtK-0004F6-Kt
+        for netdev@vger.kernel.org; Fri, 25 Feb 2022 17:56:26 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 972253D879
+        by bjornoya.blackshift.org (Postfix) with SMTP id D9AEF3D88A
         for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 16:56:23 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 5CE8D3D86C;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 64A063D86D;
         Fri, 25 Feb 2022 16:56:23 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c16792c5;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id cc6e965c;
         Fri, 25 Feb 2022 16:56:23 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH net 0/3] pull-request: can 2022-02-25
-Date:   Fri, 25 Feb 2022 17:56:19 +0100
-Message-Id: <20220225165622.3231809-1-mkl@pengutronix.de>
+        kernel@pengutronix.de,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net 1/3] can: etas_es58x: change opened_channel_cnt's type from atomic_t to u8
+Date:   Fri, 25 Feb 2022 17:56:20 +0100
+Message-Id: <20220225165622.3231809-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220225165622.3231809-1-mkl@pengutronix.de>
+References: <20220225165622.3231809-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -55,49 +60,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-this is a pull request of 3 patches for net/master.
+The driver uses an atomic_t variable: struct
+es58x_device::opened_channel_cnt to keep track of the number of opened
+channels in order to only allocate memory for the URBs when this count
+changes from zero to one.
 
-The first 2 patches are by Vincent Mailhol and fix the error handling
-of the ndo_open callbacks of the etas_es58x and the gs_usb CAN USB
-drivers.
+While the intent was to prevent race conditions, the choice of an
+atomic_t turns out to be a bad idea for several reasons:
 
-The last patch is by Lad Prabhakar and fixes a small race condition in
-the rcar_canfd's rcar_canfd_channel_probe() function.
+- implementation is incorrect and fails to decrement
+  opened_channel_cnt when the URB allocation fails as reported in
+  [1].
 
-regards,
-Marc
+- even if opened_channel_cnt were to be correctly decremented,
+  atomic_t is insufficient to cover edge cases: there can be a race
+  condition in which 1/ a first process fails to allocate URBs
+  memory 2/ a second process enters es58x_open() before the first
+  process does its cleanup and decrements opened_channed_cnt. In
+  which case, the second process would successfully return despite
+  the URBs memory not being allocated.
 
+- actually, any kind of locking mechanism was useless here because
+  it is redundant with the network stack big kernel lock
+  (a.k.a. rtnl_lock) which is being hold by all the callers of
+  net_device_ops:ndo_open() and net_device_ops:ndo_close(). c.f. the
+  ASSERST_RTNL() calls in __dev_open() [2] and __dev_close_many()
+  [3].
+
+The atmomic_t is thus replaced by a simple u8 type and the logic to
+increment and decrement es58x_device:opened_channel_cnt is simplified
+accordingly fixing the bug reported in [1]. We do not check again for
+ASSERST_RTNL() as this is already done by the callers.
+
+[1] https://lore.kernel.org/linux-can/20220201140351.GA2548@kili/T/#u
+[2] https://elixir.bootlin.com/linux/v5.16/source/net/core/dev.c#L1463
+[3] https://elixir.bootlin.com/linux/v5.16/source/net/core/dev.c#L1541
+
+Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+Link: https://lore.kernel.org/all/20220212112713.577957-1-mailhol.vincent@wanadoo.fr
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 9 +++++----
+ drivers/net/can/usb/etas_es58x/es58x_core.h | 8 +++++---
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
-The following changes since commit a6df953f0178c8a11fb2de95327643b622077018:
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 2ed2370a3166..2d73ebbf3836 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -1787,7 +1787,7 @@ static int es58x_open(struct net_device *netdev)
+ 	struct es58x_device *es58x_dev = es58x_priv(netdev)->es58x_dev;
+ 	int ret;
+ 
+-	if (atomic_inc_return(&es58x_dev->opened_channel_cnt) == 1) {
++	if (!es58x_dev->opened_channel_cnt) {
+ 		ret = es58x_alloc_rx_urbs(es58x_dev);
+ 		if (ret)
+ 			return ret;
+@@ -1805,12 +1805,13 @@ static int es58x_open(struct net_device *netdev)
+ 	if (ret)
+ 		goto free_urbs;
+ 
++	es58x_dev->opened_channel_cnt++;
+ 	netif_start_queue(netdev);
+ 
+ 	return ret;
+ 
+  free_urbs:
+-	if (atomic_dec_and_test(&es58x_dev->opened_channel_cnt))
++	if (!es58x_dev->opened_channel_cnt)
+ 		es58x_free_urbs(es58x_dev);
+ 	netdev_err(netdev, "%s: Could not open the network device: %pe\n",
+ 		   __func__, ERR_PTR(ret));
+@@ -1845,7 +1846,8 @@ static int es58x_stop(struct net_device *netdev)
+ 
+ 	es58x_flush_pending_tx_msg(netdev);
+ 
+-	if (atomic_dec_and_test(&es58x_dev->opened_channel_cnt))
++	es58x_dev->opened_channel_cnt--;
++	if (!es58x_dev->opened_channel_cnt)
+ 		es58x_free_urbs(es58x_dev);
+ 
+ 	return 0;
+@@ -2215,7 +2217,6 @@ static struct es58x_device *es58x_init_es58x_dev(struct usb_interface *intf,
+ 	init_usb_anchor(&es58x_dev->tx_urbs_idle);
+ 	init_usb_anchor(&es58x_dev->tx_urbs_busy);
+ 	atomic_set(&es58x_dev->tx_urbs_idle_cnt, 0);
+-	atomic_set(&es58x_dev->opened_channel_cnt, 0);
+ 	usb_set_intfdata(intf, es58x_dev);
+ 
+ 	es58x_dev->rx_pipe = usb_rcvbulkpipe(es58x_dev->udev,
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.h b/drivers/net/can/usb/etas_es58x/es58x_core.h
+index 826a15871573..e5033cb5e695 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.h
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.h
+@@ -373,8 +373,6 @@ struct es58x_operators {
+  *	queue wake/stop logic should prevent this URB from getting
+  *	empty. Please refer to es58x_get_tx_urb() for more details.
+  * @tx_urbs_idle_cnt: number of urbs in @tx_urbs_idle.
+- * @opened_channel_cnt: number of channels opened (c.f. es58x_open()
+- *	and es58x_stop()).
+  * @ktime_req_ns: kernel timestamp when es58x_set_realtime_diff_ns()
+  *	was called.
+  * @realtime_diff_ns: difference in nanoseconds between the clocks of
+@@ -384,6 +382,10 @@ struct es58x_operators {
+  *	in RX branches.
+  * @rx_max_packet_size: Maximum length of bulk-in URB.
+  * @num_can_ch: Number of CAN channel (i.e. number of elements of @netdev).
++ * @opened_channel_cnt: number of channels opened. Free of race
++ *	conditions because its two users (net_device_ops:ndo_open()
++ *	and net_device_ops:ndo_close()) guarantee that the network
++ *	stack big kernel lock (a.k.a. rtnl_mutex) is being hold.
+  * @rx_cmd_buf_len: Length of @rx_cmd_buf.
+  * @rx_cmd_buf: The device might split the URB commands in an
+  *	arbitrary amount of pieces. This buffer is used to concatenate
+@@ -406,7 +408,6 @@ struct es58x_device {
+ 	struct usb_anchor tx_urbs_busy;
+ 	struct usb_anchor tx_urbs_idle;
+ 	atomic_t tx_urbs_idle_cnt;
+-	atomic_t opened_channel_cnt;
+ 
+ 	u64 ktime_req_ns;
+ 	s64 realtime_diff_ns;
+@@ -415,6 +416,7 @@ struct es58x_device {
+ 
+ 	u16 rx_max_packet_size;
+ 	u8 num_can_ch;
++	u8 opened_channel_cnt;
+ 
+ 	u16 rx_cmd_buf_len;
+ 	union es58x_urb_cmd rx_cmd_buf;
 
-  Merge branch 'mptcp-fixes-for-5-17' (2022-02-24 21:54:57 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.17-20220225
-
-for you to fetch changes up to c5048a7b2c23ab589f3476a783bd586b663eda5b:
-
-  can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready (2022-02-25 17:46:54 +0100)
-
-----------------------------------------------------------------
-linux-can-fixes-for-5.17-20220225
-
-----------------------------------------------------------------
-Lad Prabhakar (1):
-      can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-
-Vincent Mailhol (2):
-      can: etas_es58x: change opened_channel_cnt's type from atomic_t to u8
-      can: gs_usb: change active_channels's type from atomic_t to u8
-
- drivers/net/can/rcar/rcar_canfd.c           |  6 +++---
- drivers/net/can/usb/etas_es58x/es58x_core.c |  9 +++++----
- drivers/net/can/usb/etas_es58x/es58x_core.h |  8 +++++---
- drivers/net/can/usb/gs_usb.c                | 10 +++++-----
- 4 files changed, 18 insertions(+), 15 deletions(-)
+base-commit: a6df953f0178c8a11fb2de95327643b622077018
+-- 
+2.34.1
 
 
