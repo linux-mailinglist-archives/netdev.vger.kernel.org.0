@@ -2,161 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E174C42D9
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 11:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9364D4C42F4
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 11:58:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238401AbiBYKzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 05:55:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
+        id S238839AbiBYK6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 05:58:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231725AbiBYKzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 05:55:35 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1D91DAC41;
-        Fri, 25 Feb 2022 02:55:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645786503; x=1677322503;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=4BpIOZPWBrtG9hTwo7JJcscMEu5Srr7gWO3cK+sXB6U=;
-  b=fh8eueheOgxAV/iO4EJ8HNmrCy3RVMfVpPYXt6ObxipMpo+pdRRY/H28
-   OEHlILmoSnQArG/FVdSlL8rE5v3gcUXdmeiMrpJXOwpifKB+iCCm8Gjda
-   XM21QkFPq2T7Bwq1H3meYfO2W8NXQ9cW0knzZw5I6cgh/u6NJ0R3md72T
-   BJ4QzzAhMB0tEm7ABnkYLP/t1uMRyOWRYXTvoTBZLu8IVV07ozIWD//tA
-   /O3n8b3w7WTgWbJgaq+cAx7681rtYwa6Yt5GMwubZllT8lHLBPqlCN6Nt
-   yJjXAqEm3lLUiCs4R5o3rnB7n9vVVw/2H/AcdD3yOBAwzCKlO/csZ8aRl
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="233099807"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="233099807"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 02:55:03 -0800
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="549219039"
-Received: from grossi-mobl.ger.corp.intel.com ([10.252.47.60])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 02:54:33 -0800
-Date:   Fri, 25 Feb 2022 12:54:26 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
-Subject: Re: [PATCH net-next v5 02/13] net: wwan: t7xx: Add control DMA
- interface
-In-Reply-To: <20220223223326.28021-3-ricardo.martinez@linux.intel.com>
-Message-ID: <3867a1ee-9ff2-9afd-faf-ca5c31c0151d@linux.intel.com>
-References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-3-ricardo.martinez@linux.intel.com>
+        with ESMTP id S236771AbiBYK6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 05:58:20 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FCD197B47
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 02:57:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=hMGbU3Vkj5WK+JmlrMWQYsksGK4/IrXnet4jcvWIigw=; b=PLtxBaiiLbTzRZ2KGN0n7/bBiB
+        UW5pS3VVOP01KMjlzmItcrUew9yJGjT2/j9bWqrjeHQRx0L9AydORDkyjav4WUfEKHfTnDE/2aK+o
+        J679mFf+KQD1oOpbaJgqkoWVqejRlvAjTBeN5HWzEtKEw68b91P4G9HRDpelWsh+VeUQGqh4431BE
+        9rauuV+xr5KK+7x+A9lS84k92rl+R1UfyA9Dki3LIU6L02ANIfd3I0aAty49rEnKD2EX1TwSPh2RE
+        84VoS2E6JvseIGGFQQZ0QeeI4eCf4BebcYER2yH5Jn5LcDvQ1XbOKftP9Q9v8rZK6B2/O06/paSYF
+        pjh139rA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57474)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nNYIB-0005Co-64; Fri, 25 Feb 2022 10:57:43 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nNYI9-0002zK-0D; Fri, 25 Feb 2022 10:57:41 +0000
+Date:   Fri, 25 Feb 2022 10:57:40 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Marek Beh__n <kabel@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 3/6] net: dsa: sja1105: use
+ .mac_select_pcs() interface
+Message-ID: <Yhi2JHfZ+QI95J9V@shell.armlinux.org.uk>
+References: <YhevAJyU87bfCzfs@shell.armlinux.org.uk>
+ <E1nNGm6-00AOip-6r@rmk-PC.armlinux.org.uk>
+ <20220225103913.abn4pc57ow6dy2m6@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-1743277692-1645717735=:1706"
-Content-ID: <fffaf13d-b3bd-605f-9e3-ae1f3b4e2b11@linux.intel.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225103913.abn4pc57ow6dy2m6@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1743277692-1645717735=:1706
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <12195994-9fef-c5e-88bc-4aadde8255dd@linux.intel.com>
-
-On Wed, 23 Feb 2022, Ricardo Martinez wrote:
-
-> From: Haijun Liu <haijun.liu@mediatek.com>
+On Fri, Feb 25, 2022 at 12:39:13PM +0200, Vladimir Oltean wrote:
+> On Thu, Feb 24, 2022 at 04:15:26PM +0000, Russell King (Oracle) wrote:
+> > Convert the PCS selection to use mac_select_pcs, which allows the PCS
+> > to perform any validation it needs, and removes the need to set the PCS
+> > in the mac_config() callback, delving into the higher DSA levels to do
+> > so.
+> > 
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
 > 
-> Cross Layer DMA (CLDMA) Hardware interface (HIF) enables the control
-> path of Host-Modem data transfers. CLDMA HIF layer provides a common
-> interface to the Port Layer.
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Thanks.
+
+> > -	.phylink_mac_config	= sja1105_mac_config,
 > 
-> CLDMA manages 8 independent RX/TX physical channels with data flow
-> control in HW queues. CLDMA uses ring buffers of General Packet
-> Descriptors (GPD) for TX/RX. GPDs can represent multiple or single
-> data buffers (DB).
-> 
-> CLDMA HIF initializes GPD rings, registers ISR handlers for CLDMA
-> interrupts, and initializes CLDMA HW registers.
-> 
-> CLDMA TX flow:
-> 1. Port Layer write
-> 2. Get DB address
-> 3. Configure GPD
-> 4. Triggering processing via HW register write
-> 
-> CLDMA RX flow:
-> 1. CLDMA HW sends a RX "done" to host
-> 2. Driver starts thread to safely read GPD
-> 3. DB is sent to Port layer
-> 4. Create a new buffer for GPD ring
-> 
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> 
-> >From a WWAN framework perspective:
-> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
+> Deleting sja1105_mac_config() here is safe not because
+> phylink_mac_config() stops calling pl->mac_ops->mac_config(), but
+> because dsa_port_phylink_mac_config() first checks whether
+> ds->ops->phylink_mac_config is implemented, and that is purely an
+> artefact of providing a phylib-style ds->ops->adjust_link, right?
 
-Since t7xx_pcie_mac_set_int and t7xx_pcie_mac_clear_int are
-still not here, please note in your commit message there are
-these dependencies between patches 02 and 03 (and I don't
-promise somebody else wouldn't oppose).
+Yes and no.
 
-> +{
-...
-> +	for (i = 0; i < ring->length; i++) {
-...
-> +		gpd = req->gpd;
-...
-> +	}
-> +
-> +	list_for_each_entry(req, &ring->gpd_ring, entry) {
-> +		t7xx_cldma_rgpd_set_next_ptr(gpd, req->gpd_addr);
-> +		gpd = req->gpd;
+We already have a several DSA drivers that have NULL phylink_mac_config
+and that don't provide an adjust_link function. Even if adjust_link was
+eventually killed off, the test in dsa_port_phylink_mac_config() would
+still be necessary unless all these DSA drivers are updated with a stub
+function for it.
 
-Despite being correct, this is bit of a trick. I'd add a comment
-between the loops to help the reader to track where gpd points to.
+Consequently, I view phylink_mac_config in DSA as entirely optional and
+that optionality is already very much a part of the DSA interface, even
+though that is not the case with the corresponding phylink_mac_ops
+.mac_config method.
 
-> +/**
-> + * t7xx_cldma_send_skb() - Send control data to modem.
-> + * @md_ctrl: CLDMA context structure.
-> + * @qno: Queue number.
-> + * @skb: Socket buffer.
-> + *
-> + * Return:
-...
-> + * * -EBUSY	- Resource lock failure.
+Moreover, this optionality is a common theme in DSA switch operations
+methods.
 
-Leftover?
+> Maybe it's worth mentioning.
 
-
-...with those addressed
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-
-And kudos for rx_not_done -> pending_rx_int change. It was a minor
-thing for me but the logic is so much easier to understand now with
-that better name :-).
-
-Some other nice cleanups compared with v4 also noted.
-
+Given that .phylink_mac_config is already established as being optional
+in DSA, does the addition of one more instance need to be explicitly
+mentioned?
 
 -- 
- i.
---8323329-1743277692-1645717735=:1706--
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
