@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 991634C413E
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:24:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D49F54C414D
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 10:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239009AbiBYJXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 04:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
+        id S239013AbiBYJXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 04:23:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235990AbiBYJXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:23:38 -0500
+        with ESMTP id S234461AbiBYJXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 04:23:39 -0500
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2086.outbound.protection.outlook.com [40.107.22.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6631A6F8B
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 01:23:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD751A8049
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 01:23:08 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RTKSn8vgypq9K4FOPImz3FZAPPptQCWg8bt5QSL7NYm+gnkPUZv5rEnIvjb9o16B5B4YqucCU1vo2Xu4CNvOqOhVsajoKmwSg39IJYBVYvc08EVmXhWPbASMywdD5jLpzhnjzLyBgTY2zXni6IYXE0IYkLjSRRIKgPWyZsNkhSi5ErPjMdZSVR4HsHuMW1e7Fiu8opVGV4Ro5qWtycJTEHhjWJl7GHbEGQd/akKlrdZSNEqTBg5nwxmC5MjtWQ6um0L1WK72PdrSlVUhlfjjRNTafL0R5omu+3FCUTO0+YbazUCgTm0zGQVmIv7RpWpUj3IGUqXzy5ERIYfWv0sTMg==
+ b=PZvgMV5oG56wCwR9HwTo5jGCA8lVdDS274HNkihRmHET8N5XTvUS244hFZkPquzVWn8kGp4OTdJ0oiYkNHhOZdl8xDSy3rYLzVFiS3V4VMaUj2+KZoacpqJ5Q5fmEVHpqmVLDvk95kNXx13r4KlFiRVNuQ+GeKV1L4KUScw7sKfrjLNYP8P4r8Un3SyZ+6zNCXBRBEGzv5oV78L9j6QFS3tYNMMl88kgp6KwPUzG5j6Y5a7IjwqsUZVkjAA/7nAyJ3w5WD6CjPOOb1L7W9AqvRQlSWyUIqsfAruZtabERnnYARv7I8jO7nHTg0MNgWMVKS0QTQiffCEa3C5lGjaXxQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QPDCfTqlePqpxRweQSSuP0wibJNlcqo/DbxdkafEA54=;
- b=atI3bUefTB/VnO5BgJ4/Eq6s5T5a097Zw370HQf76GmuqpRZ2gBuD4Xg1LccDtSH3n/WMNnGqigmRYZneXSq17ikzSehEwX38w/+2/mRxowqcv9YXx2TIlgckiPScGD7y325gnU9G0lWHhYaUC+YlgXYrpT1jagUmGZeqQ0QJ0AZNy66xZylUWzw2O17pVJ4khCN0nGB7pvtXRxZnamaNvT987I+RXQE9X8N9ujRlDU0S2xtTE9d0LEqiqKD8HutnTen91WHVYAySmzWA8Mcf76DbWtm22fB/8h/rXsM5oSBy9KxayEV0sgATZjr5yG0Ed3zhj25Em4NOrlgmW1BnQ==
+ bh=ECj2C4myhJ3OIg+gZyVldxvj+ugczFeLwyBOtQi7Yk0=;
+ b=H0MDB0W8BfCzui+q/sXUCTrcIMWVh9ZaKa/bilvOyIZFc2PzQIoCFTExH3WVpjvgz5gy8GTrILrXCm7a37MXclcOAKn4Z/QmivCq5dnIfZ0PwbM1NeMfikpLjvXSxntP5Bs06TqhPEm901oAyuu53dytKKRJyuTapDvSpTuAnWg4A1Qbrl5jGvK+CnAC7VjQ2Lptx6sApCzpknFHnBA8qd50Xa2INW4DshpbGWFQJOLKDplLMttd3R4+Ek8KIMrP8EGOEjZO5WPaZNXBK2RRabER0+FPKf5Ii3dYvOkuTOneD5Wpjw8VE+jpfRxxdgoeIKMIWztQHYQMYM7+1dT+MA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QPDCfTqlePqpxRweQSSuP0wibJNlcqo/DbxdkafEA54=;
- b=X6weodkq5HDlR9xhzs69GmUHHeJBKfRoXd7jdUo6JREwDO6wDh4fCp1NHr2r54qpWi2zZl2VQRPjA9sM4xUlkTc/ozUw1KvFd1G8JsT7jy43zLhJya9VS6BsXvwFP+CzQTMb7gxOJR6DJQB0w8VfPujHsJaDWCnLdJATNkfjGhY=
+ bh=ECj2C4myhJ3OIg+gZyVldxvj+ugczFeLwyBOtQi7Yk0=;
+ b=nASRW4tHJ959hbebyxSq1XTAB9CUe6VK8y/T9bLw3pwOg3TwK3Ghv7eHrqHulupCbBM6qxvUiMYkS3EjjO2y4PVK9bZDI1uIqhvnJr8eWsfhqOsgKNYLpXxy27vYzmaV7iSVcpfRJ1gbw++KRFt7axK44PvGvM4ddRz85qAGUwA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -57,9 +57,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH v2 net-next 01/10] net: dsa: tag_8021q: replace the SVL bridging with VLAN-unaware IVL bridging
-Date:   Fri, 25 Feb 2022 11:22:16 +0200
-Message-Id: <20220225092225.594851-2-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 02/10] net: dsa: tag_8021q: add support for imprecise RX based on the VBID
+Date:   Fri, 25 Feb 2022 11:22:17 +0200
+Message-Id: <20220225092225.594851-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220225092225.594851-1-vladimir.oltean@nxp.com>
 References: <20220225092225.594851-1-vladimir.oltean@nxp.com>
@@ -70,53 +70,53 @@ X-ClientProxiedBy: VI1PR02CA0065.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f7916c38-b1c0-4eda-48b3-08d9f8406b9c
+X-MS-Office365-Filtering-Correlation-Id: 5e2c4341-10cd-4799-5336-08d9f8406c2b
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5008:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB50083BFBADEA7F184EFC255EE03E9@VI1PR04MB5008.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR04MB50083BCA3755C17A9E197C1FE03E9@VI1PR04MB5008.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FNNQ9eVqx8Cg50sSe+djqxhV/etGoM034UK+XS987vnMVQ4Rl4Giqn3RzuxqPR4tW+wUSJPxQbHxl5Jv9Xajexp3tW90UZi90lF0ZPfqh+3PZ8hzGgxZfoB+BV6SgHhMxtAzUMtoQmXM2eoN9VC7gkx3Eea+XnxNUXV8Xmj1fMTFlcqPVs+7BIKsYIossv9H3nVJtLc8wEj/iyC8mrlIJtzaGPDY2wA3Ol0xVmbvBt5zZxXeAALF4O1Qlc3K2rrwt5PVsg4z+DQehIc8JXfy2xzBT+fwuZQEgnH9tEo2nnQ3rWS1q2m+rUEQvUsE91C7eP73mF2nnwXgF+j18IPLVPiomCUB4Ikpn03ldG78GZJ+guwm/ZO8aZFn7QBlQzQ644N/n9fYWrLV3AgcgCctQWjQVsLLULnVfxQL9dj4/2b9csoYGu/Ic9pWQh2EO+Xz9r/DDJAFexlxBAk7bgSR9+WtBiVv8XIWw/SNyxssPkGlyybkSpRpukiB3ZOJj4jh0fY9uGukeXRXGWICAA1uWPeIdLHu4UvdfYKxhqsXzA0Dfc+uYvdZByW+12CISeJEUhBPmQSq3ybjx322nVOfexg1KrlyOM9wuNg9n7sYmSY86VwLgmrRiyVbnrI9ppGeDS2/eeFWLO7JzbrAJryay7x8Ze+3wv8+Y3sVToPnSnirMnm1B6Urs5eY0F9y3t8svtcOzN6gfnfCCNgzZStAbQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(6666004)(38350700002)(38100700002)(54906003)(83380400001)(508600001)(6486002)(110136005)(30864003)(36756003)(5660300002)(52116002)(6512007)(7416002)(6506007)(8936002)(44832011)(316002)(2906002)(2616005)(1076003)(26005)(186003)(86362001)(66946007)(8676002)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: RA856zvcXQRQTsYBYEaQEQTWLovHZ0wbRnewurUIchFj4e1Wbhv4CdknHfRjhzMZher8S0MQdSxr3RNR8YSCOSjpyl0zYArZvk+HTRav2yAcB8enP7wuwcghJ0rOM8LZ4uFnWhDE2IEq1J28pNIInlVupL/XEY08z8RW1CQDYaUv8VfCyKOIiSRExtdUjaFkspKUralHRfRsS5IFldiorf/z5xhSuWs2E8KDA13XxKIeDkLr6kC0bTG4ZCoAbwuX/1lXS3uAKbZMUgbo7c2mCVLiQC4Dv9zK9lWR21OfVXM8vI2Ihw+s1iyZlgnaLeY94JgjPC8WgHzr071Aor3ep20ymf49Fw7cN9YoIlfvlDBf7n+KtQOYVS5+yTWpriAjBji/S92Wu5j3lXIkBj2uO238PPQc39scmPdBtwK0kMwU8IF7uO3JVgIUcv6FLgCTps2jsxHKK58QfgmbaAu4kcJ0P5qWpReQGshmt4l+vwOmIPG3aQK/1izk1ezK4T5+WFWhODQdycKljRxMFOu3cpNrzEZykK9aoqjErDOBdulOXE3klK/M52TPNh/H942+iNR5azv4266Sy2dlnmbNqrKHsYY1GqSx4iM3LBsXYj1KeIusR2A3XRz7t2Xr6GYPc4IzDlecKKeKtMtMXQaW2ljXbwscpG+ZLn8UzO7I094kF0eKX4abGjbUpMSVM6Uc9ARD7Z7zSki5IsKIxkPQhw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(6666004)(38350700002)(38100700002)(54906003)(83380400001)(508600001)(6486002)(110136005)(36756003)(5660300002)(52116002)(6512007)(7416002)(6506007)(8936002)(44832011)(316002)(2906002)(2616005)(1076003)(26005)(186003)(86362001)(66946007)(8676002)(66556008)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VGos1nRVISE4RzWQWBZB8AbFjgohFMx2TFRq6Ty4+BErkOjc2J0cAzOWygIs?=
- =?us-ascii?Q?s8/OMuSmeI+riPn+n6Y6C6ZEpZ39VpwGPP4S+VXyX/ngZ4rt3djyt1I0cAws?=
- =?us-ascii?Q?MdPf7Cqve56HScZbr8Y8MF7FuIMqiSacHhWuK28NGbRdWRQbLJGY21gSlwLF?=
- =?us-ascii?Q?ok1sKt3Bm7mAGN/PgbSgtEyFpz9+xo8HHL6AcC94HdeQc2Bc0GHzTWPoAoDN?=
- =?us-ascii?Q?1kQRX3kKUFl137v+QV7W11fGUHzZECTs573/gKIrVQXjVyjl3bM4JbLkRDAH?=
- =?us-ascii?Q?zgmIAJhm17BDe9Mvj4Vh7sfQi6od+y14/zi7wCPzILuBse1gOW3GqWZ3zZqs?=
- =?us-ascii?Q?NOiQCL8xMhQyu4gk+iWFM7CF97xBBBw8ll6mTWU04CNsTHl6FHG51VoB7ukZ?=
- =?us-ascii?Q?EfmMYkqRSBa+83oJoR0WBmshwVxOuzKNojlkNZnfJ2aGEcsTT6XdxgPlFi6Q?=
- =?us-ascii?Q?Q47eBaN55rew5qjbRNxCRvgP0VklLbGqtl9IdKp7wPsY1w3yzPeerX6dIuxB?=
- =?us-ascii?Q?n0qvwRlPdkyVNJzSXiSSpsMEx1jkSqMa2mIFVyvrMV6BUxsGnMJaQ0dpMaYY?=
- =?us-ascii?Q?CgUIGUa+BYB8yrJEefrqDuojorEqugiW49gJmeCSwIh/CEHulW8BrPognr0k?=
- =?us-ascii?Q?n5AnRPImtm8XCdoJFc5DeAvlWSy28Umk8wi5g8nVWpcN9HOfjVJL1jMBEJBM?=
- =?us-ascii?Q?82krMnbirPrtrQJUj2fmWwLxy1GG6K81BzkY/e1GawtJ3s3doZikrfVoXihy?=
- =?us-ascii?Q?JXhsOPfhmZl6zGX4utTLjhOwBzPEpEpdwODwaYthIjy4od5CXPw1qVU/Un5X?=
- =?us-ascii?Q?VGNwPFFyFHmZJE1DCOi7NWcR9bKYDfkCJEo4bbOevW9Rw7ISmyPFCogewsqF?=
- =?us-ascii?Q?n3wVs9pN50JX3kJx3guwua1A9IiXe2g6H5AQmM28h+QALPNgY0wjwKooNd2G?=
- =?us-ascii?Q?+3HSfFMsT4xsleQHeYEYxrkR/xcKlLAXJIWdy+kP5jc+4BlpbgaWJjWW+Nn1?=
- =?us-ascii?Q?EZ6HugUDCWjbEnvhG69UWriEy1/8bngrAGrYhkWTYH+nD9nObLXU/W5UMekI?=
- =?us-ascii?Q?u3DtbHfoHjxXJT1lPdVdJE9DTgD16URmodCUXtr+ig/la6RWvTggE9zZuFGY?=
- =?us-ascii?Q?4nIYH0t3hSMBVJafkpJ2LeyMERO4omMANpBqWXLXeRTIaYpa+OMgDteg0kKA?=
- =?us-ascii?Q?3CyJBmJhMVjX6/rHrpBjZkh0kkqi7Hl8v873OHTLCwmpTtO6uoJIlrTbtSkf?=
- =?us-ascii?Q?Ekr6spB8iB3eGwf9YI7emZxp4IjkXfhvhNsdip0UfsEhOq57uLYjJCjKq8sD?=
- =?us-ascii?Q?4qAd+QQdFcdknV+35ZRY6VvlC7KgMiVk2CDC5yL2CP5L2H5UXGhGkldaOYFu?=
- =?us-ascii?Q?kqT+rTnwQQtLEfQ6VEpY4AV95F2oKd+YfjtQR9oIJyknqPZ2xRzeaDc9yfkJ?=
- =?us-ascii?Q?hnf99fdSBXZahu6BEbL1X8JQH+RnG3j+ZUesIvNkud5CKFGvZADzRBOhuBF5?=
- =?us-ascii?Q?ssMhUkCS46+PZdg/G34NpSFhzAGO9khGofEaLONxu86lL0W8TLTYNcmHlDzW?=
- =?us-ascii?Q?+HgKtlu1SQ0rocTPNUGOstyb2flDatCfWp+9JlByKCgUq53RBpEJZg6MbPcd?=
- =?us-ascii?Q?O8PVNJGFrPf7q4IjoBCPqVo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?g+vgzaQDiN1ZKgXcW6ZNLRm2ciyu57DtBC6EFwo3jCfObg3sSvr7mpGCOWd0?=
+ =?us-ascii?Q?Kq+UGoWpvj/ydsjOWYCkHUE8KVUpjsJis/FnZVU1ytdD9TI2a37RGv1uWCux?=
+ =?us-ascii?Q?2VpU5PEeOMoYllNYtZmSLhewpODRy9dYeezh+Z9f+u/mTXcdO62+hr9UIKGK?=
+ =?us-ascii?Q?uTTXoQZRpK679FJNrx8pzGEMKabCn4OOYM2y3kPI66BaAuojG+3BYpTO7zIS?=
+ =?us-ascii?Q?T3Cch571a+Q54Fm12QhiNiaYMQVZmbyJ6qHQFubqLSTqy2roU1dTAjx+Jj/m?=
+ =?us-ascii?Q?i3fcPIIyQWZUCumzZ7hXfYYqZRGwdy1LWgKbuf+62bsXCLNpEUekyPt/hl4t?=
+ =?us-ascii?Q?RriS0Dgol+HaOBy3GiUJrbDBASYC7eCYM0WRDGzUF26HgbfqP73qzOdkT/jh?=
+ =?us-ascii?Q?t8tCalEoEZKKN8okfoaDo3XEqJ4ughlVhJekvge5eKpveybyw2Z1h2yammhN?=
+ =?us-ascii?Q?gDvHFwThnJnP5Z29QbYmo+yeHuS0smMhOJoFJD5g8iNf0OUFVgl8j7thh3Oq?=
+ =?us-ascii?Q?CKY/L006QUVHTutINpr76bwYbevCsvllg1/T050gn4MGoE8XTbzEYvoIfI1j?=
+ =?us-ascii?Q?PNkoxUbQrInTDahm4nq6layao2q8KyW0poMdT9j0mnk/3OPuwv0R/GoJuBPr?=
+ =?us-ascii?Q?/vg4V33SFDraxWzoatlssS1zqAM6rtT4f3MCOYoirl2pLfzgm514L1sRY4Bf?=
+ =?us-ascii?Q?nrsBJEIqitfHT02l/kNQgw7XV0nslFqZQpw6PqbS+aW+/uc2D4ASEMM28c2Q?=
+ =?us-ascii?Q?Apdzem0YGGla8pWxjodfKV+QhpRb0Y5EEBe/szPKRdxP8uJ+kd6M2TDcVKvt?=
+ =?us-ascii?Q?gxB+kwyrn/hvXkV0tpwMYqKYDz5TxsG3nO1RCiOJYLSIeXnmia/gRxXaPVFR?=
+ =?us-ascii?Q?oHcSHmS4FA7N0G0b8/nAx/yS1Dic8J4EXLN6gJTLD6JN+MAXD/ljqIx/fA94?=
+ =?us-ascii?Q?fZKU+Ly9Ei/bK63L4bbi5ezQNEpun6ncNEWro1dJxSCOF3kLgQNTvNe3KSSc?=
+ =?us-ascii?Q?NjJdTtB7qjI48Uc+M6jcSXAFS4sd6I9uHSxYMAw8VhmGT3ZqCSg1pPOHSPxD?=
+ =?us-ascii?Q?rCrejXk3wXeQumlptEeKDYeuz7WWQSZs0U7oA/y8YUnxV7vlA1HI6pY+8RR9?=
+ =?us-ascii?Q?zzg1lrMhAXTGq+RTMzXjl4YvUOHunJ2ny5QSGyOapUEMoPDjybKsHQbc4Ok3?=
+ =?us-ascii?Q?0+Xnc65SSPTqpEBjiRjIbWXMVekm10ImhAgMGhJAWzQUcNjjxvsJSeuFe1Bj?=
+ =?us-ascii?Q?vZVJNghYbyiyIh7qHZRPeejPEN/xIInl81AneL7r+H0CNgfrHrJk9LbsCR+O?=
+ =?us-ascii?Q?GaAjyIcW6xqjhUrHw9k37fY4uZm85Eo+2gdqYqDlSwIB+Ip35PttCDGajljW?=
+ =?us-ascii?Q?2b4FhATuuUqnlEv6YvJNa0UmiL+oU8pURJOa8xg8vb4WE2qGKWQDrsn9D5np?=
+ =?us-ascii?Q?vWtvSRqKv6S+R/1FAfJhmTSxjCYvhW1FfPGtUqtbypXU5A9An5Qs3o89LK99?=
+ =?us-ascii?Q?CjmhA0p7/Oztmnxn5EuPOVzBb1qxwOA+AR+AHEDbwIj+AQsKDCFRb6XJ1E4K?=
+ =?us-ascii?Q?YTmvftyEby0JEAY/pDBMJggDWdr42T4Qvf88YZ821nGH32gM3TXSHojXxiw3?=
+ =?us-ascii?Q?LEyTQnbeR1l9AoLuSQZwsso=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7916c38-b1c0-4eda-48b3-08d9f8406b9c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e2c4341-10cd-4799-5336-08d9f8406c2b
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 09:23:01.8354
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 09:23:02.7728
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: szDT8gVrFWKvwEd55fGKv6qBkUwd2Az6+0XIIMSSezZquyMDhudlCEh3frQ8XvMy9p2NYdkmLmMc0RCrlsK1kQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: aln1On9BAZLNgYiS/wTiy/Z3WBM9RZjQIkpXOIR5HfkrC9omThKLqjUwepIZOGwayQHAcd2Y3G+4O5lIXOyUSw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5008
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -128,361 +128,191 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For VLAN-unaware bridging, tag_8021q uses something perhaps a bit too
-tied with the sja1105 switch: each port uses the same pvid which is also
-used for standalone operation (a unique one from which the source port
-and device ID can be retrieved when packets from that port are forwarded
-to the CPU). Since each port has a unique pvid when performing
-autonomous forwarding, the switch must be configured for Shared VLAN
-Learning (SVL) such that the VLAN ID itself is ignored when performing
-FDB lookups. Without SVL, packets would always be flooded, since FDB
-lookup in the source port's VLAN would never find any entry.
+The sja1105 switch can't populate the PORT field of the tag_8021q header
+when sending a frame to the CPU with a non-zero VBID.
 
-First of all, to make tag_8021q more palatable to switches which might
-not support Shared VLAN Learning, let's just use a common VLAN for all
-ports that are under the same bridge.
-
-Secondly, using Shared VLAN Learning means that FDB isolation can never
-be enforced. But if all ports under the same VLAN-unaware bridge share
-the same VLAN ID, it can.
-
-The disadvantage is that the CPU port can no longer perform precise
-source port identification for these packets. But at least we have a
-mechanism which has proven to be adequate for that situation: imprecise
-RX (dsa_find_designated_bridge_port_by_vid), which is what we use for
-termination on VLAN-aware bridges.
-
-The VLAN ID that VLAN-unaware bridges will use with tag_8021q is the
-same one as we were previously using for imprecise TX (bridge TX
-forwarding offload). It is already allocated, it is just a matter of
-using it.
-
-Note that because now all ports under the same bridge share the same
-VLAN, the complexity of performing a tag_8021q bridge join decreases
-dramatically. We no longer have to install the RX VLAN of a newly
-joining port into the port membership of the existing bridge ports.
-The newly joining port just becomes a member of the VLAN corresponding
-to that bridge, and the other ports are already members of it from when
-they joined the bridge themselves. So forwarding works properly.
-
-This means that we can unhook dsa_tag_8021q_bridge_{join,leave} from the
-cross-chip notifier level dsa_switch_bridge_{join,leave}. We can put
-these calls directly into the sja1105 driver.
-
-With this new mode of operation, a port controlled by tag_8021q can have
-two pvids whereas before it could only have one. The pvid for standalone
-operation is different from the pvid used for VLAN-unaware bridging.
-This is done, again, so that FDB isolation can be enforced.
-Let tag_8021q manage this by deleting the standalone pvid when a port
-joins a bridge, and restoring it when it leaves it.
+Similar to dsa_find_designated_bridge_port_by_vid() which performs
+imprecise RX for VLAN-aware bridges, let's introduce a helper in
+tag_8021q for performing imprecise RX based on the VLAN that it has
+allocated for a VLAN-unaware bridge.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c |   4 +-
- drivers/net/dsa/sja1105/sja1105_vl.c   |  15 ++-
- include/linux/dsa/8021q.h              |  12 +--
- net/dsa/dsa_priv.h                     |   4 -
- net/dsa/switch.c                       |   4 +-
- net/dsa/tag_8021q.c                    | 132 +++++++++----------------
- 6 files changed, 70 insertions(+), 101 deletions(-)
+ include/linux/dsa/8021q.h  |  6 +++++-
+ net/dsa/tag_8021q.c        | 38 ++++++++++++++++++++++++++++++++++++--
+ net/dsa/tag_ocelot_8021q.c |  2 +-
+ net/dsa/tag_sja1105.c      | 22 +++++++++++++---------
+ 4 files changed, 55 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index b513713be610..1e43a7ef0f2e 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2083,7 +2083,7 @@ static int sja1105_bridge_join(struct dsa_switch *ds, int port,
- 	if (rc)
- 		return rc;
- 
--	rc = dsa_tag_8021q_bridge_tx_fwd_offload(ds, port, bridge);
-+	rc = dsa_tag_8021q_bridge_join(ds, port, bridge);
- 	if (rc) {
- 		sja1105_bridge_member(ds, port, bridge, false);
- 		return rc;
-@@ -2097,7 +2097,7 @@ static int sja1105_bridge_join(struct dsa_switch *ds, int port,
- static void sja1105_bridge_leave(struct dsa_switch *ds, int port,
- 				 struct dsa_bridge bridge)
- {
--	dsa_tag_8021q_bridge_tx_fwd_unoffload(ds, port, bridge);
-+	dsa_tag_8021q_bridge_leave(ds, port, bridge);
- 	sja1105_bridge_member(ds, port, bridge, false);
- }
- 
-diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
-index f5dca6a9b0f9..14e6dd7fb103 100644
---- a/drivers/net/dsa/sja1105/sja1105_vl.c
-+++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-@@ -296,6 +296,19 @@ static bool sja1105_vl_key_lower(struct sja1105_vl_lookup_entry *a,
- 	return false;
- }
- 
-+/* FIXME: this should change when the bridge upper of the port changes. */
-+static u16 sja1105_port_get_tag_8021q_vid(struct dsa_port *dp)
-+{
-+	unsigned long bridge_num;
-+
-+	if (!dp->bridge)
-+		return dsa_tag_8021q_rx_vid(dp);
-+
-+	bridge_num = dsa_port_bridge_num_get(dp);
-+
-+	return dsa_8021q_bridge_tx_fwd_offload_vid(bridge_num);
-+}
-+
- static int sja1105_init_virtual_links(struct sja1105_private *priv,
- 				      struct netlink_ext_ack *extack)
- {
-@@ -395,7 +408,7 @@ static int sja1105_init_virtual_links(struct sja1105_private *priv,
- 				vl_lookup[k].vlanprior = rule->key.vl.pcp;
- 			} else {
- 				struct dsa_port *dp = dsa_to_port(priv->ds, port);
--				u16 vid = dsa_tag_8021q_rx_vid(dp);
-+				u16 vid = sja1105_port_get_tag_8021q_vid(dp);
- 
- 				vl_lookup[k].vlanid = vid;
- 				vl_lookup[k].vlanprior = 0;
 diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
-index 939a1beaddf7..f47f227baa27 100644
+index f47f227baa27..92f5243b841e 100644
 --- a/include/linux/dsa/8021q.h
 +++ b/include/linux/dsa/8021q.h
-@@ -32,17 +32,17 @@ int dsa_tag_8021q_register(struct dsa_switch *ds, __be16 proto);
- 
- void dsa_tag_8021q_unregister(struct dsa_switch *ds);
- 
-+int dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,
-+			      struct dsa_bridge bridge);
-+
-+void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
-+				struct dsa_bridge bridge);
-+
+@@ -41,7 +41,11 @@ void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
  struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
  			       u16 tpid, u16 tci);
  
- void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id);
+-void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id);
++void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id,
++		   int *vbid);
++
++struct net_device *dsa_tag_8021q_find_port_by_vbid(struct net_device *master,
++						   int vbid);
  
--int dsa_tag_8021q_bridge_tx_fwd_offload(struct dsa_switch *ds, int port,
--					struct dsa_bridge bridge);
--
--void dsa_tag_8021q_bridge_tx_fwd_unoffload(struct dsa_switch *ds, int port,
--					   struct dsa_bridge bridge);
--
  u16 dsa_8021q_bridge_tx_fwd_offload_vid(unsigned int bridge_num);
  
- u16 dsa_tag_8021q_tx_vid(const struct dsa_port *dp);
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 1ba93afdc874..7a1c98581f53 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -522,10 +522,6 @@ struct dsa_bridge *dsa_tree_bridge_find(struct dsa_switch_tree *dst,
- 					const struct net_device *br);
- 
- /* tag_8021q.c */
--int dsa_tag_8021q_bridge_join(struct dsa_switch *ds,
--			      struct dsa_notifier_bridge_info *info);
--int dsa_tag_8021q_bridge_leave(struct dsa_switch *ds,
--			       struct dsa_notifier_bridge_info *info);
- int dsa_switch_tag_8021q_vlan_add(struct dsa_switch *ds,
- 				  struct dsa_notifier_tag_8021q_vlan_info *info);
- int dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 0c2961cbc105..eb38beb10147 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -110,7 +110,7 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 			return err;
- 	}
- 
--	return dsa_tag_8021q_bridge_join(ds, info);
-+	return 0;
- }
- 
- static int dsa_switch_sync_vlan_filtering(struct dsa_switch *ds,
-@@ -186,7 +186,7 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 			return err;
- 	}
- 
--	return dsa_tag_8021q_bridge_leave(ds, info);
-+	return 0;
- }
- 
- /* Matches for all upstream-facing ports (the CPU port and all upstream-facing
 diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 114f663332d0..c6555003f5df 100644
+index c6555003f5df..1cf245a6f18e 100644
 --- a/net/dsa/tag_8021q.c
 +++ b/net/dsa/tag_8021q.c
-@@ -110,6 +110,15 @@ int dsa_8021q_rx_source_port(u16 vid)
+@@ -32,7 +32,7 @@
+  * VBID - { VID[9], VID[5:4] }:
+  *	Virtual bridge ID. If between 1 and 7, packet targets the broadcast
+  *	domain of a bridge. If transmitted as zero, packet targets a single
+- *	port. Field only valid on transmit, must be ignored on receive.
++ *	port.
+  *
+  * PORT - VID[3:0]:
+  *	Index of switch port. Must be between 0 and 15.
+@@ -533,7 +533,37 @@ struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
  }
- EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
+ EXPORT_SYMBOL_GPL(dsa_8021q_xmit);
  
-+/* Returns the decoded VBID from the RX VID. */
-+static int dsa_tag_8021q_rx_vbid(u16 vid)
+-void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id)
++struct net_device *dsa_tag_8021q_find_port_by_vbid(struct net_device *master,
++						   int vbid)
 +{
-+	u16 vbid_hi = (vid & DSA_8021Q_VBID_HI_MASK) >> DSA_8021Q_VBID_HI_SHIFT;
-+	u16 vbid_lo = (vid & DSA_8021Q_VBID_LO_MASK) >> DSA_8021Q_VBID_LO_SHIFT;
++	struct dsa_port *cpu_dp = master->dsa_ptr;
++	struct dsa_switch_tree *dst = cpu_dp->dst;
++	struct dsa_port *dp;
 +
-+	return (vbid_hi << 2) | vbid_lo;
++	if (WARN_ON(!vbid))
++		return NULL;
++
++	dsa_tree_for_each_user_port(dp, dst) {
++		if (!dp->bridge)
++			continue;
++
++		if (dp->stp_state != BR_STATE_LEARNING &&
++		    dp->stp_state != BR_STATE_FORWARDING)
++			continue;
++
++		if (dp->cpu_dp != cpu_dp)
++			continue;
++
++		if (dsa_port_bridge_num_get(dp) == vbid)
++			return dp->slave;
++	}
++
++	return NULL;
 +}
++EXPORT_SYMBOL_GPL(dsa_tag_8021q_find_port_by_vbid);
 +
- bool vid_is_dsa_8021q_rxvlan(u16 vid)
++void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id,
++		   int *vbid)
  {
- 	return (vid & DSA_8021Q_DIR_MASK) == DSA_8021Q_DIR_RX;
-@@ -244,11 +253,17 @@ int dsa_switch_tag_8021q_vlan_add(struct dsa_switch *ds,
- 			if (dsa_port_is_user(dp))
- 				flags |= BRIDGE_VLAN_INFO_UNTAGGED;
+ 	u16 vid, tci;
  
-+			/* Standalone VLANs are PVIDs */
- 			if (vid_is_dsa_8021q_rxvlan(info->vid) &&
- 			    dsa_8021q_rx_switch_id(info->vid) == ds->index &&
- 			    dsa_8021q_rx_source_port(info->vid) == dp->index)
- 				flags |= BRIDGE_VLAN_INFO_PVID;
+@@ -550,6 +580,10 @@ void dsa_8021q_rcv(struct sk_buff *skb, int *source_port, int *switch_id)
  
-+			/* And bridging VLANs are PVIDs too on user ports */
-+			if (dsa_tag_8021q_rx_vbid(info->vid) &&
-+			    dsa_port_is_user(dp))
-+				flags |= BRIDGE_VLAN_INFO_PVID;
+ 	*source_port = dsa_8021q_rx_source_port(vid);
+ 	*switch_id = dsa_8021q_rx_switch_id(vid);
 +
- 			err = dsa_port_do_tag_8021q_vlan_add(dp, info->vid,
- 							     flags);
- 			if (err)
-@@ -326,107 +341,52 @@ int dsa_switch_tag_8021q_vlan_del(struct dsa_switch *ds,
-  * +-+-----+-+-----+-+-----+-+-----+-+    +-+-----+-+-----+-+-----+-+-----+-+
-  *   swp0    swp1    swp2    swp3           swp0    swp1    swp2    swp3
-  */
--static bool
--dsa_port_tag_8021q_bridge_match(struct dsa_port *dp,
--				struct dsa_notifier_bridge_info *info)
-+int dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,
-+			      struct dsa_bridge bridge)
- {
--	/* Don't match on self */
--	if (dp->ds->dst->index == info->tree_index &&
--	    dp->ds->index == info->sw_index &&
--	    dp->index == info->port)
--		return false;
--
--	if (dsa_port_is_user(dp))
--		return dsa_port_offloads_bridge(dp, &info->bridge);
--
--	return false;
--}
--
--int dsa_tag_8021q_bridge_join(struct dsa_switch *ds,
--			      struct dsa_notifier_bridge_info *info)
--{
--	struct dsa_switch *targeted_ds;
--	struct dsa_port *targeted_dp;
--	struct dsa_port *dp;
--	u16 targeted_rx_vid;
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	u16 standalone_vid, bridge_vid;
- 	int err;
- 
--	if (!ds->tag_8021q_ctx)
--		return 0;
--
--	targeted_ds = dsa_switch_find(info->tree_index, info->sw_index);
--	targeted_dp = dsa_to_port(targeted_ds, info->port);
--	targeted_rx_vid = dsa_tag_8021q_rx_vid(targeted_dp);
--
--	dsa_switch_for_each_port(dp, ds) {
--		u16 rx_vid = dsa_tag_8021q_rx_vid(dp);
--
--		if (!dsa_port_tag_8021q_bridge_match(dp, info))
--			continue;
-+	/* Delete the standalone VLAN of the port and replace it with a
-+	 * bridging VLAN
-+	 */
-+	standalone_vid = dsa_tag_8021q_rx_vid(dp);
-+	bridge_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge.num);
- 
--		/* Install the RX VID of the targeted port in our VLAN table */
--		err = dsa_port_tag_8021q_vlan_add(dp, targeted_rx_vid, true);
--		if (err)
--			return err;
-+	err = dsa_port_tag_8021q_vlan_add(dp, bridge_vid, true);
-+	if (err)
-+		return err;
- 
--		/* Install our RX VID into the targeted port's VLAN table */
--		err = dsa_port_tag_8021q_vlan_add(targeted_dp, rx_vid, true);
--		if (err)
--			return err;
--	}
-+	dsa_port_tag_8021q_vlan_del(dp, standalone_vid, false);
- 
- 	return 0;
++	if (vbid)
++		*vbid = dsa_tag_8021q_rx_vbid(vid);
++
+ 	skb->priority = (tci & VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;
  }
-+EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_join);
- 
--int dsa_tag_8021q_bridge_leave(struct dsa_switch *ds,
--			       struct dsa_notifier_bridge_info *info)
-+void dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,
-+				struct dsa_bridge bridge)
+ EXPORT_SYMBOL_GPL(dsa_8021q_rcv);
+diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
+index bd6f1d0e5372..1144a87ad0db 100644
+--- a/net/dsa/tag_ocelot_8021q.c
++++ b/net/dsa/tag_ocelot_8021q.c
+@@ -77,7 +77,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
  {
--	struct dsa_switch *targeted_ds;
--	struct dsa_port *targeted_dp;
--	struct dsa_port *dp;
--	u16 targeted_rx_vid;
--
--	if (!ds->tag_8021q_ctx)
--		return 0;
--
--	targeted_ds = dsa_switch_find(info->tree_index, info->sw_index);
--	targeted_dp = dsa_to_port(targeted_ds, info->port);
--	targeted_rx_vid = dsa_tag_8021q_rx_vid(targeted_dp);
--
--	dsa_switch_for_each_port(dp, ds) {
--		u16 rx_vid = dsa_tag_8021q_rx_vid(dp);
--
--		if (!dsa_port_tag_8021q_bridge_match(dp, info))
--			continue;
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	u16 standalone_vid, bridge_vid;
-+	int err;
+ 	int src_port, switch_id;
  
--		/* Remove the RX VID of the targeted port from our VLAN table */
--		dsa_port_tag_8021q_vlan_del(dp, targeted_rx_vid, true);
-+	/* Delete the bridging VLAN of the port and replace it with a
-+	 * standalone VLAN
-+	 */
-+	standalone_vid = dsa_tag_8021q_rx_vid(dp);
-+	bridge_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge.num);
+-	dsa_8021q_rcv(skb, &src_port, &switch_id);
++	dsa_8021q_rcv(skb, &src_port, &switch_id, NULL);
  
--		/* Remove our RX VID from the targeted port's VLAN table */
--		dsa_port_tag_8021q_vlan_del(targeted_dp, rx_vid, true);
-+	err = dsa_port_tag_8021q_vlan_add(dp, standalone_vid, false);
-+	if (err) {
-+		dev_err(ds->dev,
-+			"Failed to delete tag_8021q standalone VLAN %d from port %d: %pe\n",
-+			standalone_vid, port, ERR_PTR(err));
+ 	skb->dev = dsa_master_find_slave(netdev, switch_id, src_port);
+ 	if (!skb->dev)
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 72d5e0ef8dcf..9c5c00980b06 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -509,7 +509,7 @@ static bool sja1110_skb_has_inband_control_extension(const struct sk_buff *skb)
+  * packet.
+  */
+ static void sja1105_vlan_rcv(struct sk_buff *skb, int *source_port,
+-			     int *switch_id, u16 *vid)
++			     int *switch_id, int *vbid, u16 *vid)
+ {
+ 	struct vlan_ethhdr *hdr = (struct vlan_ethhdr *)skb_mac_header(skb);
+ 	u16 vlan_tci;
+@@ -519,8 +519,8 @@ static void sja1105_vlan_rcv(struct sk_buff *skb, int *source_port,
+ 	else
+ 		vlan_tci = ntohs(hdr->h_vlan_TCI);
+ 
+-	if (vid_is_dsa_8021q_rxvlan(vlan_tci & VLAN_VID_MASK))
+-		return dsa_8021q_rcv(skb, source_port, switch_id);
++	if (vid_is_dsa_8021q(vlan_tci & VLAN_VID_MASK))
++		return dsa_8021q_rcv(skb, source_port, switch_id, vbid);
+ 
+ 	/* Try our best with imprecise RX */
+ 	*vid = vlan_tci & VLAN_VID_MASK;
+@@ -529,7 +529,7 @@ static void sja1105_vlan_rcv(struct sk_buff *skb, int *source_port,
+ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 				   struct net_device *netdev)
+ {
+-	int source_port = -1, switch_id = -1;
++	int source_port = -1, switch_id = -1, vbid = -1;
+ 	struct sja1105_meta meta = {0};
+ 	struct ethhdr *hdr;
+ 	bool is_link_local;
+@@ -542,7 +542,7 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 
+ 	if (sja1105_skb_has_tag_8021q(skb)) {
+ 		/* Normal traffic path. */
+-		sja1105_vlan_rcv(skb, &source_port, &switch_id, &vid);
++		sja1105_vlan_rcv(skb, &source_port, &switch_id, &vbid, &vid);
+ 	} else if (is_link_local) {
+ 		/* Management traffic path. Switch embeds the switch ID and
+ 		 * port ID into bytes of the destination MAC, courtesy of
+@@ -561,7 +561,9 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 		return NULL;
  	}
  
--	return 0;
--}
--
--int dsa_tag_8021q_bridge_tx_fwd_offload(struct dsa_switch *ds, int port,
--					struct dsa_bridge bridge)
--{
--	u16 tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge.num);
--
--	return dsa_port_tag_8021q_vlan_add(dsa_to_port(ds, port), tx_vid,
--					   true);
--}
--EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_tx_fwd_offload);
--
--void dsa_tag_8021q_bridge_tx_fwd_unoffload(struct dsa_switch *ds, int port,
--					   struct dsa_bridge bridge)
--{
--	u16 tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge.num);
--
--	dsa_port_tag_8021q_vlan_del(dsa_to_port(ds, port), tx_vid, true);
-+	dsa_port_tag_8021q_vlan_del(dp, bridge_vid, true);
- }
--EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_tx_fwd_unoffload);
-+EXPORT_SYMBOL_GPL(dsa_tag_8021q_bridge_leave);
+-	if (source_port == -1 || switch_id == -1)
++	if (vbid >= 1)
++		skb->dev = dsa_tag_8021q_find_port_by_vbid(netdev, vbid);
++	else if (source_port == -1 || switch_id == -1)
+ 		skb->dev = dsa_find_designated_bridge_port_by_vid(netdev, vid);
+ 	else
+ 		skb->dev = dsa_master_find_slave(netdev, switch_id, source_port);
+@@ -686,7 +688,7 @@ static struct sk_buff *sja1110_rcv_inband_control_extension(struct sk_buff *skb,
+ static struct sk_buff *sja1110_rcv(struct sk_buff *skb,
+ 				   struct net_device *netdev)
+ {
+-	int source_port = -1, switch_id = -1;
++	int source_port = -1, switch_id = -1, vbid = -1;
+ 	bool host_only = false;
+ 	u16 vid = 0;
  
- /* Set up a port's tag_8021q RX and TX VLAN for standalone mode operation */
- static int dsa_tag_8021q_port_setup(struct dsa_switch *ds, int port)
+@@ -700,9 +702,11 @@ static struct sk_buff *sja1110_rcv(struct sk_buff *skb,
+ 
+ 	/* Packets with in-band control extensions might still have RX VLANs */
+ 	if (likely(sja1105_skb_has_tag_8021q(skb)))
+-		sja1105_vlan_rcv(skb, &source_port, &switch_id, &vid);
++		sja1105_vlan_rcv(skb, &source_port, &switch_id, &vbid, &vid);
+ 
+-	if (source_port == -1 || switch_id == -1)
++	if (vbid >= 1)
++		skb->dev = dsa_tag_8021q_find_port_by_vbid(netdev, vbid);
++	else if (source_port == -1 || switch_id == -1)
+ 		skb->dev = dsa_find_designated_bridge_port_by_vid(netdev, vid);
+ 	else
+ 		skb->dev = dsa_master_find_slave(netdev, switch_id, source_port);
 -- 
 2.25.1
 
