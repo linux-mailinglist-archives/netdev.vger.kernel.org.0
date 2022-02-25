@@ -2,88 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 900F84C51F0
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 00:10:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2A284C5220
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 00:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231830AbiBYXKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 18:10:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
+        id S233934AbiBYXmu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 18:42:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiBYXKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 18:10:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B00A1D2B78;
-        Fri, 25 Feb 2022 15:10:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96CDA61CF4;
-        Fri, 25 Feb 2022 23:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EADE5C340E8;
-        Fri, 25 Feb 2022 23:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645830611;
-        bh=5bixtJmcdqWFbLnn9WzL9G3H37OpVlKkSC4XpWjBuOU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NhfQGG8gaJr66jJsbGvzZcxoc+RU4ay1407pHsk6FPRz/euX3mfLPCibwmo0KIJ2R
-         TAtfkIVVWZom7hA8Zy81Jfzm2pc7s5OYRkb0dwqbr6Tw4Vj2yMBj7hcpPRzlpXYth5
-         tuPRA4ecuCWuLkCL8bi6Xvg20oQHfgS+Dphxn7V/qli0Jsu9eqax1mktepFmIgjdgy
-         6J8m8FAckykMLvskJBCdLn9LVjhaPbQllYxkBK74GAL8aS+YKn9HxMIN391lk5aunY
-         Yzl1M7MnlE297mi8FaoIzRn2IZhOx6BIZbkQOpMN/n99gmcBAccuTYXHMFXdwNrmr4
-         qLNCuqH4xMMFQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CEBBDEAC09A;
-        Fri, 25 Feb 2022 23:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230190AbiBYXmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 18:42:49 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABC81F038B;
+        Fri, 25 Feb 2022 15:42:15 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R441e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V5Uzc0U_1645832532;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V5Uzc0U_1645832532)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 26 Feb 2022 07:42:12 +0800
+Date:   Sat, 26 Feb 2022 07:42:11 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>,
+        Hendrik Brueckner <brueckner@linux.ibm.com>
+Cc:     Stefan Raspl <raspl@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH] net/smc: Add autocork support
+Message-ID: <20220225234211.GA5282@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20220216152721.GB39286@linux.alibaba.com>
+ <454b5efd-e611-2dfb-e462-e7ceaee0da4d@linux.ibm.com>
+ <20220217132200.GA5443@linux.alibaba.com>
+ <Yg6Q2kIDJrhvNVz7@linux.ibm.com>
+ <20220218073327.GB5443@linux.alibaba.com>
+ <d4ce4674-3ced-da34-a8a4-30d74cbe24bb@linux.ibm.com>
+ <20220218234232.GC5443@linux.alibaba.com>
+ <bc3252a3-5a84-63d4-dfc5-009f602a5bec@linux.ibm.com>
+ <20220224020253.GF5443@linux.alibaba.com>
+ <f2afb775-a156-2c32-a49a-225545dc2bf7@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/3] can: etas_es58x: change opened_channel_cnt's type
- from atomic_t to u8
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164583061084.3517.5069364779371997975.git-patchwork-notify@kernel.org>
-Date:   Fri, 25 Feb 2022 23:10:10 +0000
-References: <20220225165622.3231809-2-mkl@pengutronix.de>
-In-Reply-To: <20220225165622.3231809-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        mailhol.vincent@wanadoo.fr, dan.carpenter@oracle.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f2afb775-a156-2c32-a49a-225545dc2bf7@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Feb 25, 2022 at 07:10:40PM +0100, Karsten Graul wrote:
+>On 24/02/2022 03:02, dust.li wrote:
+>> On Wed, Feb 23, 2022 at 07:57:31PM +0100, Karsten Graul wrote:
+>>> On 19/02/2022 00:42, dust.li wrote:
+>>>> On Fri, Feb 18, 2022 at 05:03:56PM +0100, Karsten Graul wrote:
+>>>>> Right now for me it looks like there is no way to use netlink for container runtime
+>>>>> configuration, which is a pity.
+>>>>> We continue our discussions about this in the team, and also here on the list.
+>>>>
+>>>> Many thanks for your time on this topic !
+>>>
+>>> We checked more specs (like Container Network Interface (CNI) Specification) 
+>>> but all we found uses sysctl at the end. There is lot of infrastructure 
+>>> to use sysctls in a container environment.
+>>>
+>>> Establishing netlink-like controls for containers is by far out of our scope, and
+>>> would take a long time until it would be available in the popular projects.
+>>>
+>>> So at the moment I see no alternative to an additional sysctl interface in the 
+>>> SMC module that provides controls which are useful in container environments.
+>> 
+>> Got it, I will add sysctl interface and a switch with this function.
+>> 
+>> Thank again !
+>
+>Can you explain again why this auto_cork needs a switch to disable it?
+>My understanding is that this auto_cork makes always sense and is triggered
+>when there are not enough resources.
 
-This series was applied to netdev/net.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+My initial intention to provide a switch is to be like TCP to let user
+to disable it. For user cases like debug and workaround bugs if it is
+associated with auto cork, or compare performance like I did (But this
+should not be a real world case in production environment).
 
-On Fri, 25 Feb 2022 17:56:20 +0100 you wrote:
-> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> 
-> The driver uses an atomic_t variable: struct
-> es58x_device::opened_channel_cnt to keep track of the number of opened
-> channels in order to only allocate memory for the URBs when this count
-> changes from zero to one.
-> 
-> [...]
+But after Stefan suggested that we make the auto corked size turnable,
+I realized that we can only need one sysctl switch: which tunes the auto
+corked bytes size. Disable auto cork can be archived by setting this to 0.
 
-Here is the summary with links:
-  - [net,1/3] can: etas_es58x: change opened_channel_cnt's type from atomic_t to u8
-    https://git.kernel.org/netdev/net/c/f4896248e902
-  - [net,2/3] can: gs_usb: change active_channels's type from atomic_t to u8
-    https://git.kernel.org/netdev/net/c/035b0fcf0270
-  - [net,3/3] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-    https://git.kernel.org/netdev/net/c/c5048a7b2c23
+Something like this bellow:
+static bool smc_should_autocork(struct smc_sock *smc)
+{
+        struct smc_connection *conn = &smc->conn;
+        int corking_size;
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+        corking_size = min(sock_net(&smc->sk)->smc.sysctl_autocorking_size,
+                           conn->sndbuf_desc->len >> 1);
 
+        if (atomic_read(&conn->cdc_pend_tx_wr) == 0 ||
+            smc_tx_prepared_sends(conn) > corking_size)
+                return false;
+        return true;
+}
 
+Thanks.
