@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 062014C3E59
-	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:25:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 037F64C3E53
+	for <lists+netdev@lfdr.de>; Fri, 25 Feb 2022 07:25:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237807AbiBYGZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 01:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        id S237809AbiBYGZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Feb 2022 01:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237809AbiBYGY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:24:57 -0500
+        with ESMTP id S237811AbiBYGY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 01:24:58 -0500
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267F3268373
-        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 22:24:26 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21P6GLlt027182
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:25 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BEFD269289
+        for <netdev@vger.kernel.org>; Thu, 24 Feb 2022 22:24:27 -0800 (PST)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21P583vQ017846
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:26 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=VBjydXoLjnr4ETBn2pX0Ir7mOIe15GU+sxsSxoQLweI=;
- b=br2ldqQEFkLEoiWWKiSnB6Y8dQ+oVOPpAOgJnbNJ4L9Tjk/4eYxxSRtrFHlG5rs6lUWu
- NQCQYmwr/2az3tbq7mFc8Kwf6lKxaK6q/SejqeqK7shGvlSbQT/9pc+6OWNwTJhItrSi
- /9HrqQrCT+gAqu6Y8q1l8N0cJ5VosOxUytlyf1e8jp7XRldqC/fbyJWxpZTYpanZE6u8
- wR/mBJvfRCZxDrXeJciwIueB0D9Mr8BkFILbVtQYAat1kSwchGe64b0mQZh2grTgGU1q
- zX/0xpcjEuQ0hRba4C1aR71GNtmzHEZHNhB+NXYmxr5JtKQUWIYMK1XHqKQ662WIKgVQ 5g== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edx1xgm7s-1
+ bh=jtoyEZE9lb3neNqMaShON1uZ5qMjSJe7fnH55o3W/w0=;
+ b=iC7h0ucqZQtdL1fGvNHsZFWiTRbQtG8uhLltIPUTsQv9gxU5NyJcZeOf+IaXxQRDQ6wX
+ T9E3kWiIloMJ3u7y2WrdK1aA4nI2u2B3Pdl9NoRyFQPUjlpVsj1Uz8f3Wnku5dtOmloK
+ shKWwsbKoMHvXSP0kJ/sxP1sc8/Y9Bw5wRpvr+Ni+2Gpl7AqOS3n4+iwy+Kw+y1xPxEN
+ yQ6K1vPIRAS72xwEuE0iJ3xfZG08j+0Vun68f46eN5OOmbIHOvpSEb2Higqk0LgHjfsd
+ bcebE25cfEDF2gBK4W37uQX+q1/6eifR40sxQutEI9YBRyhQ8Yzk0XlMKOykRz4vANxC IQ== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3edpjvy2ed-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:26 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21P6MX3e005032
+        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:25 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma01dal.us.ibm.com with ESMTP id 3ed22f18av-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
         for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:25 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21P6Ma7L010225
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:24 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma04dal.us.ibm.com with ESMTP id 3ear6ceqah-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 25 Feb 2022 06:24:24 +0000
 Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21P6OMwQ37486978
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21P6ONtA26477036
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Feb 2022 06:24:22 GMT
+        Fri, 25 Feb 2022 06:24:23 GMT
 Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1EDC313604F;
+        by IMSVA (Postfix) with ESMTP id BB0E613604F;
+        Fri, 25 Feb 2022 06:24:23 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6D099136065;
         Fri, 25 Feb 2022 06:24:22 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 027A213605E;
-        Fri, 25 Feb 2022 06:24:21 +0000 (GMT)
 Received: from suka-w540.ibmuc.com (unknown [9.65.204.104])
         by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 25 Feb 2022 06:24:20 +0000 (GMT)
+        Fri, 25 Feb 2022 06:24:22 +0000 (GMT)
 From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Brian King <brking@linux.ibm.com>, Dany Madden <drt@linux.ibm.com>,
         Rick Lindsley <ricklind@linux.ibm.com>
-Subject: [PATCH net 7/8] ibmvnic: clear fop when retrying probe
-Date:   Thu, 24 Feb 2022 22:23:57 -0800
-Message-Id: <20220225062358.1435652-8-sukadev@linux.ibm.com>
+Subject: [PATCH net 8/8] ibmvnic: Allow queueing resets during probe
+Date:   Thu, 24 Feb 2022 22:23:58 -0800
+Message-Id: <20220225062358.1435652-9-sukadev@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220225062358.1435652-1-sukadev@linux.ibm.com>
 References: <20220225062358.1435652-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: jyjZqdYAZ7_N-x0xHF-GcZgQQuViztzr
-X-Proofpoint-GUID: jyjZqdYAZ7_N-x0xHF-GcZgQQuViztzr
+X-Proofpoint-ORIG-GUID: l5sPQZu6DgY7oArH8FjfgLaOIMTITEfd
+X-Proofpoint-GUID: l5sPQZu6DgY7oArH8FjfgLaOIMTITEfd
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-02-25_05,2022-02-24_01,2022-02-23_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 adultscore=0 mlxscore=0 suspectscore=0 spamscore=0
- lowpriorityscore=0 impostorscore=0 clxscore=1015 mlxlogscore=999
- bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202250030
+ lowpriorityscore=0 suspectscore=0 adultscore=0 clxscore=1015 mlxscore=0
+ malwarescore=0 bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=999
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202250028
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -83,38 +83,266 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clear ->failover_pending flag that may have been set in the previous
-pass of registering CRQ. If we don't clear, a subsequent ibmvnic_open()
-call would be misled into thinking a failover is pending and assuming
-that the reset worker thread would open the adapter. If this pass of
-registering the CRQ succeeds (i.e there is no transport event), there
-wouldn't be a reset worker thread.
+We currently don't allow queuing resets when adapter is in VNIC_PROBING
+state - instead we throw away the reset and return EBUSY. The reasoning
+is probably that during ibmvnic_probe() the ibmvnic_adapter itself is
+being initialized so performing a reset during this time can lead us to
+accessing fields in the ibmvnic_adapter that are not fully initialized.
+A review of the code shows that all the adapter state neede to process a
+reset is initialized before registering the CRQ so that should no longer
+be a concern.
 
-This would leave the adapter unconfigured and require manual intervention
-to bring it up during boot.
+Further the expectation is that if we do get a reset (transport event)
+during probe, the do..while() loop in ibmvnic_probe() will handle this
+by reinitializing the CRQ.
 
-Fixes: 5a18e1e0c193 ("ibmvnic: Fix failover case for non-redundant configuration")
+While that is true to some extent, it is possible that the reset might
+occur _after_ the CRQ is registered and CRQ_INIT message was exchanged
+but _before_ the adapter state is set to VNIC_PROBED. As mentioned above,
+such a reset will be thrown away. While the client assumes that the
+adapter is functional, the vnic server will wait for the client to reinit
+the adapter. This disconnect between the two leaves the adapter down
+needing manual intervention.
+
+Because ibmvnic_probe() has other work to do after initializing the CRQ
+(such as registering the netdev at a minimum) and because the reset event
+can occur at any instant after the CRQ is initialized, there will always
+be a window between initializing the CRQ and considering the adapter
+ready for resets (ie state == PROBED).
+
+So rather than discarding resets during this window, allow queueing them
+- but only process them after the adapter is fully initialized.
+
+To do this, introduce a new completion state ->probe_done and have the
+reset worker thread wait on this before processing resets.
+
+This change brings up two new situations in or just after ibmvnic_probe().
+First after one or more resets were queued, we encounter an error and
+decide to retry the initialization.  At that point the queued resets are
+no longer relevant since we could be talking to a new vnic server. So we
+must purge/flush the queued resets before restarting the initialization.
+As a side note, since we are still in the probing stage and we have not
+registered the netdev, it will not be CHANGE_PARAM reset.
+
+Second this change opens up a potential race between the worker thread
+in __ibmvnic_reset(), the tasklet and the ibmvnic_open() due to the
+following sequence of events:
+
+	1. Register CRQ
+	2. Get transport event before CRQ_INIT completes.
+	3. Tasklet schedules reset:
+		a) add rwi to list
+		b) schedule_work() to start worker thread which runs
+		   and waits for ->probe_done.
+	4. ibmvnic_probe() decides to retry, purges rwi_list
+	5. Re-register crq and this time rest of probe succeeds - register
+	   netdev and complete(->probe_done).
+	6. Worker thread resumes in __ibmvnic_reset() from 3b.
+	7. Worker thread sets ->resetting bit
+	8. ibmvnic_open() comes in, notices ->resetting bit, sets state
+	   to IBMVNIC_OPEN and returns early expecting worker thread to
+	   finish the open.
+	9. Worker thread finds rwi_list empty and returns without
+	   opening the interface.
+
+If this happens, the ->ndo_open() call is effectively lost and the
+interface remains down. To address this, ensure that ->rwi_list is
+not empty before setting the ->resetting  bit. See also comments in
+__ibmvnic_reset().
+
+Fixes: 6a2fb0e99f9c ("ibmvnic: driver initialization for kdump/kexec")
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/ibm/ibmvnic.c | 107 ++++++++++++++++++++++++++---
+ drivers/net/ethernet/ibm/ibmvnic.h |   1 +
+ 2 files changed, 98 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 936a94eaed5e..85ccef7cd292 100644
+index 85ccef7cd292..7afd1b072db3 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5807,6 +5807,11 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	do {
- 		reinit_init_done(adapter);
+@@ -2618,23 +2618,82 @@ static int do_passive_init(struct ibmvnic_adapter *adapter)
+ static void __ibmvnic_reset(struct work_struct *work)
+ {
+ 	struct ibmvnic_adapter *adapter;
+-	bool saved_state = false;
++	unsigned int timeout = 5000;
+ 	struct ibmvnic_rwi *tmprwi;
++	bool saved_state = false;
+ 	struct ibmvnic_rwi *rwi;
+ 	unsigned long flags;
+-	u32 reset_state;
++	struct device *dev;
++	bool need_reset;
+ 	int num_fails = 0;
++	u32 reset_state;
+ 	int rc = 0;
  
-+		/* clear any failovers we got in the previous pass
-+		 * since we are reinitializing the CRQ
+ 	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
++		dev = &adapter->vdev->dev;
+ 
+-	if (test_and_set_bit_lock(0, &adapter->resetting)) {
++	/* Wait for ibmvnic_probe() to complete. If probe is taking too long
++	 * or if another reset is in progress, defer work for now. If probe
++	 * eventually fails it will flush and terminate our work.
++	 *
++	 * Three possibilities here:
++	 * 1. Adpater being removed  - just return
++	 * 2. Timed out on probe or another reset in progress - delay the work
++	 * 3. Completed probe - perform any resets in queue
++	 */
++	if (adapter->state == VNIC_PROBING &&
++	    !wait_for_completion_timeout(&adapter->probe_done, timeout)) {
++		dev_err(dev, "Reset thread timed out on probe");
+ 		queue_delayed_work(system_long_wq,
+ 				   &adapter->ibmvnic_delayed_reset,
+ 				   IBMVNIC_RESET_DELAY);
+ 		return;
+ 	}
+ 
++	/* adapter is done with probe (i.e state is never VNIC_PROBING now) */
++	if (adapter->state == VNIC_REMOVING)
++		return;
++
++	/* ->rwi_list is stable now (no one else is removing entries) */
++
++	/* ibmvnic_probe() may have purged the reset queue after we were
++	 * scheduled to process a reset so there maybe no resets to process.
++	 * Before setting the ->resetting bit though, we have to make sure
++	 * that there is infact a reset to process. Otherwise we may race
++	 * with ibmvnic_open() and end up leaving the vnic down:
++	 *
++	 *	__ibmvnic_reset()	    ibmvnic_open()
++	 *	-----------------	    --------------
++	 *
++	 *  set ->resetting bit
++	 *  				find ->resetting bit is set
++	 *  				set ->state to IBMVNIC_OPEN (i.e
++	 *  				assume reset will open device)
++	 *  				return
++	 *  find reset queue empty
++	 *  return
++	 *
++	 *  	Neither performed vnic login/open and vnic stays down
++	 *
++	 * If we hold the lock and conditionally set the bit, either we
++	 * or ibmvnic_open() will complete the open.
++	 */
++	need_reset = false;
++	spin_lock(&adapter->rwi_lock);
++	if (!list_empty(&adapter->rwi_list)) {
++		if (test_and_set_bit_lock(0, &adapter->resetting)) {
++			queue_delayed_work(system_long_wq,
++					   &adapter->ibmvnic_delayed_reset,
++					   IBMVNIC_RESET_DELAY);
++		} else {
++			need_reset = true;
++		}
++	}
++	spin_unlock(&adapter->rwi_lock);
++
++	if (!need_reset)
++		return;
++
+ 	rwi = get_next_rwi(adapter);
+ 	while (rwi) {
+ 		spin_lock_irqsave(&adapter->state_lock, flags);
+@@ -2786,13 +2845,6 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
+ 		goto err;
+ 	}
+ 
+-	if (adapter->state == VNIC_PROBING) {
+-		netdev_warn(netdev, "Adapter reset during probe\n");
+-		adapter->init_done_rc = -EAGAIN;
+-		ret = EAGAIN;
+-		goto err;
+-	}
+-
+ 	list_for_each_entry(tmp, &adapter->rwi_list, list) {
+ 		if (tmp->reset_reason == reason) {
+ 			netdev_dbg(netdev, "Skipping matching reset, reason=%s\n",
+@@ -5751,6 +5803,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	struct ibmvnic_adapter *adapter;
+ 	struct net_device *netdev;
+ 	unsigned char *mac_addr_p;
++	unsigned long flags;
+ 	bool init_success;
+ 	int rc;
+ 
+@@ -5795,6 +5848,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	spin_lock_init(&adapter->rwi_lock);
+ 	spin_lock_init(&adapter->state_lock);
+ 	mutex_init(&adapter->fw_lock);
++	init_completion(&adapter->probe_done);
+ 	init_completion(&adapter->init_done);
+ 	init_completion(&adapter->fw_done);
+ 	init_completion(&adapter->reset_done);
+@@ -5812,6 +5866,26 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 		 */
+ 		adapter->failover_pending = false;
+ 
++		/* If we had already initialized CRQ, we may have one or
++		 * more resets queued already. Discard those and release
++		 * the CRQ before initializing the CRQ again.
 +		 */
-+		adapter->failover_pending = false;
++		release_crq_queue(adapter);
++
++		/* Since we are still in PROBING state, __ibmvnic_reset()
++		 * will not access the ->rwi_list and since we released CRQ,
++		 * we won't get _new_ transport events. But there maybe an
++		 * ongoing ibmvnic_reset() call. So serialize access to
++		 * rwi_list. If we win the race, ibvmnic_reset() could add
++		 * a reset after we purged but thats ok - we just may end
++		 * up with an extra reset (i.e similar to having two or more
++		 * resets in the queue at once).
++		 * CHECK.
++		 */
++		spin_lock_irqsave(&adapter->rwi_lock, flags);
++		flush_reset_queue(adapter);
++		spin_unlock_irqrestore(&adapter->rwi_lock, flags);
 +
  		rc = init_crq_queue(adapter);
  		if (rc) {
  			dev_err(&dev->dev, "Couldn't initialize crq. rc=%d\n",
+@@ -5863,6 +5937,8 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	}
+ 	dev_info(&dev->dev, "ibmvnic registered\n");
+ 
++	complete(&adapter->probe_done);
++
+ 	return 0;
+ 
+ ibmvnic_register_fail:
+@@ -5877,6 +5953,17 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ ibmvnic_init_fail:
+ 	release_sub_crqs(adapter, 1);
+ 	release_crq_queue(adapter);
++
++	/* cleanup worker thread after releasing CRQ so we don't get
++	 * transport events (i.e new work items for the worker thread).
++	 */
++	adapter->state = VNIC_REMOVING;
++	complete(&adapter->probe_done);
++	flush_work(&adapter->ibmvnic_reset);
++	flush_delayed_work(&adapter->ibmvnic_delayed_reset);
++
++	flush_reset_queue(adapter);
++
+ 	mutex_destroy(&adapter->fw_lock);
+ 	free_netdev(netdev);
+ 
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index 4a7a56ff74ce..fa2d607a7b1b 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -930,6 +930,7 @@ struct ibmvnic_adapter {
+ 
+ 	struct ibmvnic_tx_pool *tx_pool;
+ 	struct ibmvnic_tx_pool *tso_pool;
++	struct completion probe_done;
+ 	struct completion init_done;
+ 	int init_done_rc;
+ 
 -- 
 2.27.0
 
