@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 729C44C5601
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 14:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A040E4C55FE
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 14:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbiBZNAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 08:00:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
+        id S231744AbiBZNAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 08:00:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiBZNAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 08:00:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C21C266D99
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 05:00:12 -0800 (PST)
+        with ESMTP id S230121AbiBZNAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 08:00:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58640266D99
+        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 05:00:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B3816092A
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 13:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 95ECFC340F1;
-        Sat, 26 Feb 2022 13:00:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5ACB80757
+        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 13:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F505C340F4;
+        Sat, 26 Feb 2022 13:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645880411;
-        bh=EhnHpXOIli+jY8evit/zKNvbREnF875tl0gX2MNMO5U=;
+        s=k20201202; t=1645880412;
+        bh=4728MBDU0Nk3qYBidPpP8inmdGSI44PXxdlKIz273tw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AIvza2kjZafbhZ19uztWwAqcZXskgIBhWWMjpSHAE4J77cnF0rariqgX1l45oRHOw
-         L8URpJHxqFD1WvSWvw/wLgnPyqxtg6o0iVJmPiL+hXn8vCpLvJkhXl+yuxPsxPSUF8
-         9nu7g8ECvwK2pKhBh4QbUILpgV6+wpSqhuxhrx/zWP8dHGzBqtnKY8W41Djm+dXafL
-         D9YWBRhpbA0ShsXjMFArSWCukK9VDa30ZPVwFQQxG1kbdMIJNAoL55zyzZ3zYQVud5
-         GoIY+WsRrTzwcDFw/z45xQKIQIy3kHTtBLC6zK3PpVcSLpvTp6eLCq9u6RnwyKbBRN
-         OZFNzXHbjRNQQ==
+        b=fHyWGEEWyown9LdQ3EDIdYsgOLkGUxJXekGUY/fPbvzVKQw9rfdDPg7Itkhu3fYwW
+         d9D5T1azBs1Tu7EkzGSevXzu6gERmxPmFFSeXEK7MIg5nguT847zOp4+hQcKv0HmpQ
+         Ck1HI31bR3yqOr7mQFJnvVLEWlamnL71vMZDq1MA6RLYClO+IX9LH0by7FsL1mQwhw
+         JV/gaVIjQxv6XW3KHLW2gqm5cGNvemqg3QA9/49bD70tPZe6WRu6yar/ZSrRIQkY5F
+         T26dQu94eH04R99cyPO1qTcv+ZKhx35ZtROTmVG+lNIexxcb1GAi7WJEINumQdtIXr
+         MndjSCc6zlQJQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7356AEAC095;
-        Sat, 26 Feb 2022 13:00:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 89B9FE6D3DE;
+        Sat, 26 Feb 2022 13:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/8][pull request] Intel Wired LAN Driver Updates
- 2022-02-25
+Subject: Re: [PATCH net-next v2 0/4] net: dsa: ocelot: phylink updates
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164588041146.8718.9913656272536439293.git-patchwork-notify@kernel.org>
-Date:   Sat, 26 Feb 2022 13:00:11 +0000
-References: <20220225194614.136571-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220225194614.136571-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Message-Id: <164588041256.8718.13645463941585617063.git-patchwork-notify@kernel.org>
+Date:   Sat, 26 Feb 2022 13:00:12 +0000
+References: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
+In-Reply-To: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
+To:     Russell King (Oracle) <linux@armlinux.org.uk>
+Cc:     alexandre.belloni@bootlin.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, andrew@lunn.ch, davem@davemloft.net,
+        f.fainelli@gmail.com, kuba@kernel.org, kabel@kernel.org,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,39 +61,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Fri, 25 Feb 2022 11:46:06 -0800 you wrote:
-> This series contains updates to iavf driver only.
+On Fri, 25 Feb 2022 16:19:10 +0000 you wrote:
+> Hi,
 > 
-> Slawomir fixes stability issues that can be seen when stressing the
-> driver using a large number of VFs with a multitude of operations.
-> Among the fixes are reworking mutexes to provide more effective locking,
-> ensuring initialization is complete before teardown, preventing
-> operations which could race while removing the driver, stopping certain
-> tasks from being queued when the device is down, and adding a missing
-> mutex unlock.
+> This series updates the Ocelot DSA driver for some of the recent
+> phylink changes. Specifically, we fill in the supported_interfaces
+> fields, convert to mac_select_pcs and mark the driver as non-legacy.
+> We do not convert to phylink_generic_validate() as Ocelot has
+> special support for its rate adapting PCS which makes the generic
+> validate method unsuitable for this driver.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/8] iavf: Rework mutexes for better synchronisation
-    https://git.kernel.org/netdev/net/c/fc2e6b3b132a
-  - [net,2/8] iavf: Add waiting so the port is initialized in remove
-    https://git.kernel.org/netdev/net/c/974578017fc1
-  - [net,3/8] iavf: Fix init state closure on remove
-    https://git.kernel.org/netdev/net/c/3ccd54ef44eb
-  - [net,4/8] iavf: Fix locking for VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS
-    https://git.kernel.org/netdev/net/c/0579fafd37fb
-  - [net,5/8] iavf: Fix race in init state
-    https://git.kernel.org/netdev/net/c/a472eb5cbaeb
-  - [net,6/8] iavf: Fix deadlock in iavf_reset_task
-    https://git.kernel.org/netdev/net/c/e85ff9c631e1
-  - [net,7/8] iavf: Fix missing check for running netdev
-    https://git.kernel.org/netdev/net/c/d2c0f45fcceb
-  - [net,8/8] iavf: Fix __IAVF_RESETTING state usage
-    https://git.kernel.org/netdev/net/c/14756b2ae265
+  - [net-next,1/4] net: dsa: ocelot: populate supported_interfaces
+    https://git.kernel.org/netdev/net-next/c/79fda660bdbb
+  - [net-next,2/4] net: dsa: ocelot: remove interface checks
+    https://git.kernel.org/netdev/net-next/c/e57a15401e82
+  - [net-next,3/4] net: dsa: ocelot: convert to mac_select_pcs()
+    https://git.kernel.org/netdev/net-next/c/864ba485ac52
+  - [net-next,4/4] net: dsa: ocelot: mark as non-legacy
+    https://git.kernel.org/netdev/net-next/c/f6f04c02047c
 
 You are awesome, thank you!
 -- 
