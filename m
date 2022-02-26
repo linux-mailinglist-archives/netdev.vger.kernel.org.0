@@ -2,123 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9792A4C545C
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 08:23:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F8C4C5460
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 08:25:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbiBZHYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 02:24:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
+        id S230132AbiBZH0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 02:26:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbiBZHYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 02:24:08 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8E114A6F0;
-        Fri, 25 Feb 2022 23:23:34 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id b22so6588930pls.7;
-        Fri, 25 Feb 2022 23:23:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vmKathGK6mfgAHLPLOY5TXssiRrWVPGkmG385lwzvBE=;
-        b=T3RjDHOa513Nwxhzbj+/Zrz982LT0OyqV0K2hCl3b5wt5pR1sM4KjzxwmWg7KF9GA9
-         2G0nadY6nW9MB5sARr/01cFMPxFAzUrL+rygYksFjY7Eg5+YLFvnVNTK30LcZtyhhIam
-         XGyRtZWyg3MUqPFdSRQcOZNjbZoh4bS8lyhybab2FypZk434pwVMeqn/lK6AJ56ot6Nn
-         t0eAeqEeOGK2wOw4FaqMljvWyXTrLjQ7pefQI/r2KW6pyEeveUCHje/CeZToMGbfoQC+
-         orG3s2ZfIkg7ESY3qV59HtEr44FjqcS0d5JiXMmrViBAMKJuHhsVUon0DtVDBqNver0Q
-         ce+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vmKathGK6mfgAHLPLOY5TXssiRrWVPGkmG385lwzvBE=;
-        b=rwPETCUjODtHmx5guWiSzOhrI91AvMfh4ylqrMngYmQva9YRj9G1qZLHkRgciIqC9N
-         6CirqAu5eRzHyT2x8EG6QTqG3RvUoxZi67+vZlRJgLI7CMKuBbhZSmKvbLkDFXeIk5R1
-         EhN0CPu+xqflwAJo6Pv5mOAJcHnrerKTN3Mt2EUIqMuPif5fa2EluPnnQUbPvQEw2c+2
-         L4LACc2LigZFlELbNQIHEXIaLpCKZlcUFHaXfHy7SxT9tsgDtPhy+zMCp//ilWRLluw1
-         jsY2+0me3Yy18WaAI4QXyv2Dta1PGOsP3QlpNPIIt307XbSeAOrN/Nvfz09PEmac6VJc
-         dN9A==
-X-Gm-Message-State: AOAM533xpdJLxvqk2DDamClCAJlADKvFWdFh08iFgZ6a+gH4xIyFfQrO
-        cClRm0mQPZAOaywXSYrmEqw=
-X-Google-Smtp-Source: ABdhPJxIHC6vdgLY4plb4nLRWbHxo6QegFm8ozZ64RRk2jUixv2U5fsd+oUXOlJBi3jRMN0hsP1Uhw==
-X-Received: by 2002:a17:902:f64d:b0:14f:fb63:f1a with SMTP id m13-20020a170902f64d00b0014ffb630f1amr11144031plg.159.1645860213759;
-        Fri, 25 Feb 2022 23:23:33 -0800 (PST)
-Received: from localhost ([2405:201:2003:b021:6001:8ce1:3e29:705e])
-        by smtp.gmail.com with ESMTPSA id p10-20020a056a000b4a00b004e12fd48035sm5757150pfo.96.2022.02.25.23.23.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Feb 2022 23:23:33 -0800 (PST)
-Date:   Sat, 26 Feb 2022 12:53:27 +0530
-From:   Raag Jadav <raagjadav@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <20220226072327.GA6830@localhost>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <YhdimdT1qLdGqPAW@shell.armlinux.org.uk>
+        with ESMTP id S229984AbiBZHZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 02:25:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A1D28E20;
+        Fri, 25 Feb 2022 23:25:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D8260E92;
+        Sat, 26 Feb 2022 07:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4499BC340E8;
+        Sat, 26 Feb 2022 07:25:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645860325;
+        bh=7Iwbbh2kgpifHB0Q/0bsXLw+x6HHzHpfdsbkd0Huexs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gCgdGwRtwVyHZuBlTLpCGWUBjiK9K74mQKUg6qGEW9GQX0EWSaMqKbBKeqK1NNJ0R
+         sFpgHk+vjolUOXuYNdWXUQIdnruLl2+bUutzJi1+t567V2CW/ORshry1yfXqBNSZ+s
+         1aSFxqYluV2IynT5WpB5Pg48eUK2vQxbS5KaW5C9f4ZiucNZxzqCOAbo6iz2RF4nw2
+         2HSO2e5iDhU4pWnNOv4iv5Slw39LN4dtuwgJ3TMnVg0A4KsBshwYukqYGjtNZLWTwh
+         spCecjD0WhcH7ju1Lw9qz6IkT+FJ4IG9gJ8bBIY6VW8YYi5DITX/otqiQGCB0Um6U5
+         Rxe4730uN39SA==
+Received: by mail-yb1-f173.google.com with SMTP id w63so10142863ybe.10;
+        Fri, 25 Feb 2022 23:25:25 -0800 (PST)
+X-Gm-Message-State: AOAM531wMvIBgDKlfW4dMtFWT3aPjpJLUsqBJWu91TT/IM0A0g1B7iRe
+        674wCRjOUMy/MlVYoZNNYwYteD635PuXnYoFgAA=
+X-Google-Smtp-Source: ABdhPJxMkP9CP4xO3yaRfTliCI3OPA5jSWLXhFbpX1hH1vIgXH7hpCbNdnbf+waXj+CbPFaujtTfnwl8QVR4opEGrp4=
+X-Received: by 2002:a25:da87:0:b0:611:aa55:c37c with SMTP id
+ n129-20020a25da87000000b00611aa55c37cmr10431925ybf.9.1645860324334; Fri, 25
+ Feb 2022 23:25:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhdimdT1qLdGqPAW@shell.armlinux.org.uk>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com> <20220224110828.2168231-3-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220224110828.2168231-3-benjamin.tissoires@redhat.com>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 25 Feb 2022 23:25:13 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW6m-HpfKLke1b7ni1j5Je3b3J0fa+MfJNnq2C9baOry1A@mail.gmail.com>
+Message-ID: <CAPhsuW6m-HpfKLke1b7ni1j5Je3b3J0fa+MfJNnq2C9baOry1A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 2/6] HID: bpf: allow to change the report
+ descriptor from an eBPF program
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-input@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:48:57AM +0000, Russell King (Oracle) wrote:
-> Sorry for the late comment on this patch.
-> 
-> On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
-> > +static int vsc85xx_config_inband_aneg(struct phy_device *phydev, bool enabled)
-> > +{
-> > +	int rc;
-> > +	u16 reg_val = 0;
-> > +
-> > +	if (enabled)
-> > +		reg_val = MSCC_PHY_SERDES_ANEG;
-> > +
-> > +	mutex_lock(&phydev->lock);
-> > +
-> > +	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_3,
-> > +			      MSCC_PHY_SERDES_PCS_CTRL, MSCC_PHY_SERDES_ANEG,
-> > +			      reg_val);
-> > +
-> > +	mutex_unlock(&phydev->lock);
-> 
-> What is the reason for the locking here?
-> 
-> phy_modify_paged() itself is safe due to the MDIO bus lock, so you
-> shouldn't need locking around it.
-> 
+On Thu, Feb 24, 2022 at 3:09 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> The report descriptor is the dictionary of the HID protocol specific
+> to the given device.
+> Changing it is a common habit in the HID world, and making that feature
+> accessible from eBPF allows to fix devices without having to install a
+> new kernel.
+>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-True.
+[...]
 
-My initial thought was to have serialized access at PHY level,
-as we have multiple ports to work with.
-But I guess MDIO bus lock could do the job as well.
+> diff --git a/include/linux/hid.h b/include/linux/hid.h
+> index 8fd79011f461..66d949d10b78 100644
+> --- a/include/linux/hid.h
+> +++ b/include/linux/hid.h
+> @@ -1213,10 +1213,16 @@ do {                                                                    \
+>
+>  #ifdef CONFIG_BPF
+>  u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size);
+> +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size);
+>  int hid_bpf_module_init(void);
+>  void hid_bpf_module_exit(void);
+>  #else
+>  static inline u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size) { return rd; }
+> +static inline u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
+> +                                      unsigned int *size)
+> +{
+> +       return kmemdup(rdesc, *size, GFP_KERNEL);
+> +}
+>  static inline int hid_bpf_module_init(void) { return 0; }
+>  static inline void hid_bpf_module_exit(void) {}
+>  #endif
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 5978b92cacd3..a7a8d9cfcf24 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -999,6 +999,7 @@ enum bpf_attach_type {
+>         BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+>         BPF_PERF_EVENT,
+>         BPF_HID_DEVICE_EVENT,
+> +       BPF_HID_RDESC_FIXUP,
+>         __MAX_BPF_ATTACH_TYPE
+>  };
+>
+> diff --git a/include/uapi/linux/bpf_hid.h b/include/uapi/linux/bpf_hid.h
+> index 243ac45a253f..c0801d7174c3 100644
+> --- a/include/uapi/linux/bpf_hid.h
+> +++ b/include/uapi/linux/bpf_hid.h
+> @@ -18,6 +18,7 @@ struct hid_device;
+>  enum hid_bpf_event {
+>         HID_BPF_UNDEF = 0,
+>         HID_BPF_DEVICE_EVENT,
+> +       HID_BPF_RDESC_FIXUP,
+>  };
+>
+>  /* type is HID_BPF_DEVICE_EVENT */
+> @@ -26,12 +27,19 @@ struct hid_bpf_ctx_device_event {
+>         unsigned long size;
+>  };
+>
+> +/* type is HID_BPF_RDESC_FIXUP */
+> +struct hid_bpf_ctx_rdesc_fixup {
+> +       __u8 data[HID_BPF_MAX_BUFFER_SIZE];
+> +       unsigned long size;
+> +};
 
-Will fix it in v2 if required.
+This looks same as HID_BPF_DEVICE_EVENT, do we really need to
+separate the two?
 
-I've gone through Vladimir's patches and they look more promising
-than this approach.
-Let me know if I could be of any help.
-
-Cheers,
-Raag
-
-> Thanks.
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+Song
