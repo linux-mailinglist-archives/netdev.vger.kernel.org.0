@@ -2,97 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8033C4C546F
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 08:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4E04C5486
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 08:54:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbiBZHhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 02:37:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
+        id S230141AbiBZHzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 02:55:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbiBZHha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 02:37:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1931C2F42;
-        Fri, 25 Feb 2022 23:36:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7894B80E98;
-        Sat, 26 Feb 2022 07:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5DFC36AE7;
-        Sat, 26 Feb 2022 07:36:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645861014;
-        bh=g94fQTRsmkDzxnFwqKlncZPJPFMXOEaR80ZqGPrByjc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BKrZ5Fqviw0iFMpM01VIUcmpW/MVTbwhsLlgMmtftkUChjkXIEWjnQlwMbyMkhFZf
-         r4xKaVjKczryTxS1NXpDQoyc6cEsRL+t1jxb95eo2u5pxJM7vQsVBE3dHevpmdkagi
-         SPdvNom8xPg11LoqK1ZAit9yZimTuPAFJ5ND2Guwvg911wK9KvhvcTGwodYFY86p+x
-         VBbEXnfZlOpM4B9fvoTgN2N9MXD8UAFc7R8JPtmrk7ksz/Ot+PqI6ayK3U/xpesDFP
-         iQBe6B5+qinDC9cxes0OFinXC6m1tiNLknx9Hn5U5riXoSLYyJnjaPmIKhGsdLV/i7
-         Q+rBY7myb5DBA==
-Received: by mail-yb1-f178.google.com with SMTP id e140so10173613ybh.9;
-        Fri, 25 Feb 2022 23:36:54 -0800 (PST)
-X-Gm-Message-State: AOAM530vVQ7l0ppoHtI7WPh1G7lyaUvFpNA9x8wdgxZ9Xo4VwqrIyq9l
-        hCGppAdj4mZq0PP4nPaHZiRtfQXhAR34f+ZCM9M=
-X-Google-Smtp-Source: ABdhPJzAmXByR1myE0ItnK4PftEWDzsmIRtPeFSBUgNcKmDiy1PgZacAOHLh9+8uyvSI9uptig1XbM65jBZTTq7tuPM=
-X-Received: by 2002:a25:c89:0:b0:61d:a1e8:fd14 with SMTP id
- 131-20020a250c89000000b0061da1e8fd14mr10531412ybm.322.1645861013601; Fri, 25
- Feb 2022 23:36:53 -0800 (PST)
+        with ESMTP id S229877AbiBZHzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 02:55:19 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534D4211EF9;
+        Fri, 25 Feb 2022 23:54:40 -0800 (PST)
+X-UUID: 7fe525cb70794b97a8de588fc81ca9fa-20220226
+X-UUID: 7fe525cb70794b97a8de588fc81ca9fa-20220226
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2134131386; Sat, 26 Feb 2022 15:54:32 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Sat, 26 Feb 2022 15:54:31 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 26 Feb
+ 2022 15:54:31 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 26 Feb 2022 15:54:30 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: [PATCH v3] xfrm: fix tunnel model fragmentation behavior
+Date:   Sat, 26 Feb 2022 15:48:01 +0800
+Message-ID: <20220226074801.16550-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
- <YhdsgokMMSEQ0Yc8@kroah.com> <CAO-hwJJcepWJaU9Ytuwe_TiuZUGTq_ivKknX8x8Ws=zBFUp0SQ@mail.gmail.com>
- <YhjbzxxgxtSxFLe/@kroah.com> <CAO-hwJJpJf-GHzU7-9bhMz7OydNPCucTtrm=-GeOf-Ee5-aKrw@mail.gmail.com>
- <YhkEqpF6QSYeoMQn@kroah.com>
-In-Reply-To: <YhkEqpF6QSYeoMQn@kroah.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 25 Feb 2022 23:36:42 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4F6pMNYwstQOy68pyU2xrtd8c3k8q2GrNKY9fj46TMdg@mail.gmail.com>
-Message-ID: <CAPhsuW4F6pMNYwstQOy68pyU2xrtd8c3k8q2GrNKY9fj46TMdg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 0/6] Introduce eBPF support for HID devices
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Peter Hutterer <peter.hutterer@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,MAY_BE_FORGED,
+        SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 8:32 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-[...]
->
-> One comment about the patch series.  You might want to break the patches
-> up a bit smaller, having the example code in a separate commit from the
-> "add this feature" commit, as it was hard to pick out what was kernel
-> changes, and what was test changes from it.  That way I can complain
-> about the example code and tests without having to worry about the
-> kernel patches.
+in tunnel mode, if outer interface(ipv4) is less, it is easily to let
+inner IPV6 mtu be less than 1280. If so, a Packet Too Big ICMPV6 message
+is received. When send again, packets are fragmentized with 1280, they
+are still rejected with ICMPV6(Packet Too Big) by xfrmi_xmit2().
 
-Echo on this part.  Please organize kernel changes, libbpf changes,
-maybe also bpftool changes, selftests, and samples into separate patches.
-This would help folks without HID experience understand the design.
+According to RFC4213 Section3.2.2:
+if (IPv4 path MTU - 20) is less than 1280
+	if packet is larger than 1280 bytes
+		Send ICMPv6 "packet too big" with MTU=1280
+                Drop packet
+        else
+		Encapsulate but do not set the Don't Fragment
+                flag in the IPv4 header.  The resulting IPv4
+                packet might be fragmented by the IPv4 layer
+                on the encapsulator or by some router along
+                the IPv4 path.
+	endif
+else
+	if packet is larger than (IPv4 path MTU - 20)
+        	Send ICMPv6 "packet too big" with
+                MTU = (IPv4 path MTU - 20).
+                Drop packet.
+        else
+                Encapsulate and set the Don't Fragment flag
+                in the IPv4 header.
+        endif
+endif
+Packets should be fragmentized with ipv4 outer interface, so change it.
 
-Thanks,
-Song
+After it is fragemtized with ipv4, there will be double fragmenation.
+No.48 & No.51 are ipv6 fragment packets, No.48 is double fragmentized,
+then tunneled with IPv4(No.49& No.50), which obey spec. And received peer
+cannot decrypt it rightly.
+
+48              2002::10        2002::11 1296(length) IPv6 fragment (off=0 more=y ident=0xa20da5bc nxt=50)
+49   0x0000 (0) 2002::10        2002::11 1304         IPv6 fragment (off=0 more=y ident=0x7448042c nxt=44)
+50   0x0000 (0) 2002::10        2002::11 200          ESP (SPI=0x00035000)
+51              2002::10        2002::11 180          Echo (ping) request
+52   0x56dc     2002::10        2002::11 248          IPv6 fragment (off=1232 more=n ident=0xa20da5bc nxt=50)
+
+xfrm6_noneed_fragment has fixed above issues. Finally, it acted like below:
+1   0x6206 192.168.1.138   192.168.1.1 1316 Fragmented IP protocol (proto=Encap Security Payload 50, off=0, ID=6206) [Reassembled in #2]
+2   0x6206 2002::10        2002::11    88   IPv6 fragment (off=0 more=y ident=0x1f440778 nxt=50)
+3   0x0000 2002::10        2002::11    248  ICMPv6    Echo (ping) request
+
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+---
+ net/ipv6/xfrm6_output.c   | 16 ++++++++++++++++
+ net/xfrm/xfrm_interface.c |  5 ++++-
+ 2 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
+index d0d280077721..ad07904642ca 100644
+--- a/net/ipv6/xfrm6_output.c
++++ b/net/ipv6/xfrm6_output.c
+@@ -45,6 +45,19 @@ static int __xfrm6_output_finish(struct net *net, struct sock *sk, struct sk_buf
+ 	return xfrm_output(sk, skb);
+ }
+ 
++static int xfrm6_noneed_fragment(struct sk_buff *skb)
++{
++	struct frag_hdr *fh;
++	u8 prevhdr = ipv6_hdr(skb)->nexthdr;
++
++	if (prevhdr != NEXTHDR_FRAGMENT)
++		return 0;
++	fh = (struct frag_hdr *)(skb->data + sizeof(struct ipv6hdr));
++	if (fh->nexthdr == NEXTHDR_ESP || fh->nexthdr == NEXTHDR_AUTH)
++		return 1;
++	return 0;
++}
++
+ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct dst_entry *dst = skb_dst(skb);
+@@ -73,6 +86,9 @@ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 		xfrm6_local_rxpmtu(skb, mtu);
+ 		kfree_skb(skb);
+ 		return -EMSGSIZE;
++	} else if (toobig && xfrm6_noneed_fragment(skb)) {
++		skb->ignore_df = 1;
++		goto skip_frag;
+ 	} else if (!skb->ignore_df && toobig && skb->sk) {
+ 		xfrm_local_error(skb, mtu);
+ 		kfree_skb(skb);
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 57448fc519fc..242351fffdeb 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -304,7 +304,10 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+ 			if (mtu < IPV6_MIN_MTU)
+ 				mtu = IPV6_MIN_MTU;
+ 
+-			icmpv6_ndo_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
++			if (skb->len > 1280)
++				icmpv6_ndo_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
++			else
++				goto xmit;
+ 		} else {
+ 			if (!(ip_hdr(skb)->frag_off & htons(IP_DF)))
+ 				goto xmit;
+-- 
+2.18.0
+
