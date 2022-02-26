@@ -2,63 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CAA4C5468
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 08:32:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8033C4C546F
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 08:37:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbiBZHdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 02:33:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
+        id S230186AbiBZHhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 02:37:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiBZHdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 02:33:16 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5D5E29;
-        Fri, 25 Feb 2022 23:32:33 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 9BF0D1F467EE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645860752;
-        bh=pkiELR9DhTQvRNgxhSnFGTRWf9t9Px/bkmVM9uFDx0s=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=Xn9QwQfM2sX+J9TBkV0MJldNdwZS66ytIF0Nhk7uimN7o/Bvde6mkwbgKDD5vRAO5
-         jxFz4Iok+PElmZTYbj/S98NUJ1JKBV6xbUPDpqyFRFCp7c2E7o6qsZ4uPpuNLQjcFk
-         xAPgftBpgOa/kFXKLHdZzRJ5T31xPBIvH1DfwkEPjmVZUnkGYJ+dPaT3aOVqBc58rQ
-         tLLDWhma7wbGPF238K3kwrVKI9Rvm7cDu9KWhKMNEMSZ4wEEJQ+GB+OV2p+Bq+6uG9
-         mnK0P8mk2WvJsKgRNRqt8a38Aqox1Q0wYhRWlLSN1BDSeyHdtAnuFxh46Nuc4R7l3v
-         5w2XnRAG5F3rw==
-Message-ID: <ddb52ffe-5016-cc5a-3af4-a0a8e7b3e119@collabora.com>
-Date:   Sat, 26 Feb 2022 12:32:23 +0500
+        with ESMTP id S230180AbiBZHha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 02:37:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1931C2F42;
+        Fri, 25 Feb 2022 23:36:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7894B80E98;
+        Sat, 26 Feb 2022 07:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5DFC36AE7;
+        Sat, 26 Feb 2022 07:36:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645861014;
+        bh=g94fQTRsmkDzxnFwqKlncZPJPFMXOEaR80ZqGPrByjc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BKrZ5Fqviw0iFMpM01VIUcmpW/MVTbwhsLlgMmtftkUChjkXIEWjnQlwMbyMkhFZf
+         r4xKaVjKczryTxS1NXpDQoyc6cEsRL+t1jxb95eo2u5pxJM7vQsVBE3dHevpmdkagi
+         SPdvNom8xPg11LoqK1ZAit9yZimTuPAFJ5ND2Guwvg911wK9KvhvcTGwodYFY86p+x
+         VBbEXnfZlOpM4B9fvoTgN2N9MXD8UAFc7R8JPtmrk7ksz/Ot+PqI6ayK3U/xpesDFP
+         iQBe6B5+qinDC9cxes0OFinXC6m1tiNLknx9Hn5U5riXoSLYyJnjaPmIKhGsdLV/i7
+         Q+rBY7myb5DBA==
+Received: by mail-yb1-f178.google.com with SMTP id e140so10173613ybh.9;
+        Fri, 25 Feb 2022 23:36:54 -0800 (PST)
+X-Gm-Message-State: AOAM530vVQ7l0ppoHtI7WPh1G7lyaUvFpNA9x8wdgxZ9Xo4VwqrIyq9l
+        hCGppAdj4mZq0PP4nPaHZiRtfQXhAR34f+ZCM9M=
+X-Google-Smtp-Source: ABdhPJzAmXByR1myE0ItnK4PftEWDzsmIRtPeFSBUgNcKmDiy1PgZacAOHLh9+8uyvSI9uptig1XbM65jBZTTq7tuPM=
+X-Received: by 2002:a25:c89:0:b0:61d:a1e8:fd14 with SMTP id
+ 131-20020a250c89000000b0061da1e8fd14mr10531412ybm.322.1645861013601; Fri, 25
+ Feb 2022 23:36:53 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Cc:     usama.anjum@collabora.com, kernel@collabora.com,
-        kernelci@groups.io, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH V2] selftests: Fix build when $(O) points to a relative
- path
-Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Shuah Khan <shuah@kernel.org>,
+References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
+ <YhdsgokMMSEQ0Yc8@kroah.com> <CAO-hwJJcepWJaU9Ytuwe_TiuZUGTq_ivKknX8x8Ws=zBFUp0SQ@mail.gmail.com>
+ <YhjbzxxgxtSxFLe/@kroah.com> <CAO-hwJJpJf-GHzU7-9bhMz7OydNPCucTtrm=-GeOf-Ee5-aKrw@mail.gmail.com>
+ <YhkEqpF6QSYeoMQn@kroah.com>
+In-Reply-To: <YhkEqpF6QSYeoMQn@kroah.com>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 25 Feb 2022 23:36:42 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4F6pMNYwstQOy68pyU2xrtd8c3k8q2GrNKY9fj46TMdg@mail.gmail.com>
+Message-ID: <CAPhsuW4F6pMNYwstQOy68pyU2xrtd8c3k8q2GrNKY9fj46TMdg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 0/6] Introduce eBPF support for HID devices
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-References: <20220216223817.1386745-1-usama.anjum@collabora.com>
- <46489cd9-fb7a-5a4b-7f36-1c9f6566bd93@collabora.com>
- <63870982-62ba-97f2-5ee2-d4457a7a5cdb@linuxfoundation.org>
- <9a643612-ea85-7b28-a792-770927836d43@linuxfoundation.org>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <9a643612-ea85-7b28-a792-770927836d43@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Peter Hutterer <peter.hutterer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,60 +79,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/26/22 2:13 AM, Shuah Khan wrote:
-> On 2/25/22 11:01 AM, Shuah Khan wrote:
->> On 2/25/22 10:22 AM, Muhammad Usama Anjum wrote:
->>> Any thoughts about it?
->>>
->>
->> No to post please.
->>
->>> On 2/17/22 3:38 AM, Muhammad Usama Anjum wrote:
->>>> Build of bpf and tc-testing selftests fails when the relative path of
->>>> the build directory is specified.
->>>>
->>>> make -C tools/testing/selftests O=build0
->>>> make[1]: Entering directory
->>>> '/linux_mainline/tools/testing/selftests/bpf'
->>>> ../../../scripts/Makefile.include:4: *** O=build0 does not exist. 
->>>> Stop.
->>>> make[1]: Entering directory
->>>> '/linux_mainline/tools/testing/selftests/tc-testing'
->>>> ../../../scripts/Makefile.include:4: *** O=build0 does not exist. 
->>>> Stop.
->>>>
->>>> Makefiles of bpf and tc-testing include scripts/Makefile.include file.
->>>> This file has sanity checking inside it which checks the output path.
->>>> The output path is not relative to the bpf or tc-testing. The sanity
->>>> check fails. Expand the output path to get rid of this error. The
->>>> fix is
->>>> the same as mentioned in commit 150a27328b68 ("bpf, preload: Fix build
->>>> when $(O) points to a relative path").
->>>>
->>>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->>>> ---
->>>> Changes in V2:
->>>> Add more explaination to the commit message.
->>>> Support make install as well.
->>
-> 
-> Does the same happen when you use make kselftest-all?
-No, this problem doesn't appear when using make kselftest-all.
+On Fri, Feb 25, 2022 at 8:32 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+[...]
+>
+> One comment about the patch series.  You might want to break the patches
+> up a bit smaller, having the example code in a separate commit from the
+> "add this feature" commit, as it was hard to pick out what was kernel
+> changes, and what was test changes from it.  That way I can complain
+> about the example code and tests without having to worry about the
+> kernel patches.
 
-As separate output directory build was broken in kernel's top most
-Makefile i.e., make kselftest-all O=dir. (I've sent separate patch to
-fix this:
-https://lore.kernel.org/lkml/20220223191016.1658728-1-usama.anjum@collabora.com/)
-So people must have been using kselftest's internal Makefile directly to
-keep object files in separate directory i.e., make -C
-tools/testing/selftests O=dir and in this way the build of these tests
-(bpf, tc-testing) fail. This patch is fixing those build errors.
+Echo on this part.  Please organize kernel changes, libbpf changes,
+maybe also bpftool changes, selftests, and samples into separate patches.
+This would help folks without HID experience understand the design.
 
-> 
-> I am unable to reproduce what you are seeing?
-make -C tools/testing/selftests O=dir should reproduce this problem.
-
-> 
-> thanks,
-> -- Shuah
-> 
+Thanks,
+Song
