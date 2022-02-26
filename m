@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADBC04C55F6
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 13:56:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 729C44C5601
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 14:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbiBZM5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 07:57:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52136 "EHLO
+        id S231197AbiBZNAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 08:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231137AbiBZM5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 07:57:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F20B249136;
-        Sat, 26 Feb 2022 04:56:48 -0800 (PST)
+        with ESMTP id S230121AbiBZNAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 08:00:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C21C266D99
+        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 05:00:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAB31611C1;
-        Sat, 26 Feb 2022 12:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C2FC340E8;
-        Sat, 26 Feb 2022 12:56:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645880207;
-        bh=ErmV24WkvOMnp37HiuWsv2j69OgPJxdDVLKwg5mrsoM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1uocR33JVqwcXl9YbOUGIC7f3c2haGv8tdCN6Yhmjza30QGo7BuduXRvmVDVYmpFr
-         IT6KDvp7EgwCM0sBjNjl4rpEe2ZDlGPqYmUAmjvXq19n3p25ks8MbvalhgRWYkxDN5
-         XO5gi4kFAmFjJcgGDpey3yAIxeBlrDf/G7mTWFt8=
-Date:   Sat, 26 Feb 2022 13:56:44 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v10 0/1] wfx: get out from the staging area
-Message-ID: <YhojjHGp4EfsTpnG@kroah.com>
-References: <20220226092142.10164-1-Jerome.Pouiller@silabs.com>
- <871qzpucyi.fsf@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B3816092A
+        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 13:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 95ECFC340F1;
+        Sat, 26 Feb 2022 13:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645880411;
+        bh=EhnHpXOIli+jY8evit/zKNvbREnF875tl0gX2MNMO5U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AIvza2kjZafbhZ19uztWwAqcZXskgIBhWWMjpSHAE4J77cnF0rariqgX1l45oRHOw
+         L8URpJHxqFD1WvSWvw/wLgnPyqxtg6o0iVJmPiL+hXn8vCpLvJkhXl+yuxPsxPSUF8
+         9nu7g8ECvwK2pKhBh4QbUILpgV6+wpSqhuxhrx/zWP8dHGzBqtnKY8W41Djm+dXafL
+         D9YWBRhpbA0ShsXjMFArSWCukK9VDa30ZPVwFQQxG1kbdMIJNAoL55zyzZ3zYQVud5
+         GoIY+WsRrTzwcDFw/z45xQKIQIy3kHTtBLC6zK3PpVcSLpvTp6eLCq9u6RnwyKbBRN
+         OZFNzXHbjRNQQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7356AEAC095;
+        Sat, 26 Feb 2022 13:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871qzpucyi.fsf@kernel.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/8][pull request] Intel Wired LAN Driver Updates
+ 2022-02-25
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164588041146.8718.9913656272536439293.git-patchwork-notify@kernel.org>
+Date:   Sat, 26 Feb 2022 13:00:11 +0000
+References: <20220225194614.136571-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220225194614.136571-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -54,35 +57,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 12:41:41PM +0200, Kalle Valo wrote:
-> + jakub
+Hello:
+
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
+
+On Fri, 25 Feb 2022 11:46:06 -0800 you wrote:
+> This series contains updates to iavf driver only.
 > 
-> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
-> 
-> > The firmware and the PDS files (= antenna configurations) are now a part of
-> > the linux-firmware repository.
-> >
-> > All the issues have been fixed in staging tree. I think we are ready to get
-> > out from the staging tree for the kernel 5.18.
+> Slawomir fixes stability issues that can be seen when stressing the
+> driver using a large number of VFs with a multitude of operations.
+> Among the fixes are reworking mutexes to provide more effective locking,
+> ensuring initialization is complete before teardown, preventing
+> operations which could race while removing the driver, stopping certain
+> tasks from being queued when the device is down, and adding a missing
+> mutex unlock.
 > 
 > [...]
-> 
-> >  rename Documentation/devicetree/bindings/{staging => }/net/wireless/silabs,wfx.yaml (98%)
-> 
-> I lost track, is this file acked by the DT maintainers now?
-> 
-> What I suggest is that we queue this for v5.19. After v5.18-rc1 is
-> released I could create an immutable branch containing this one commit.
-> Then I would merge the branch to wireless-next and Greg could merge it
-> to the staging tree, that way we would minimise the chance of conflicts
-> between trees.
-> 
-> Greg, what do you think? Would this work for you? IIRC we did the same
-> with wilc1000 back in 2020 and I recall it went without hiccups.
 
-That sounds great to me, let's plan on that happening after 5.18-rc1 is
-out.
+Here is the summary with links:
+  - [net,1/8] iavf: Rework mutexes for better synchronisation
+    https://git.kernel.org/netdev/net/c/fc2e6b3b132a
+  - [net,2/8] iavf: Add waiting so the port is initialized in remove
+    https://git.kernel.org/netdev/net/c/974578017fc1
+  - [net,3/8] iavf: Fix init state closure on remove
+    https://git.kernel.org/netdev/net/c/3ccd54ef44eb
+  - [net,4/8] iavf: Fix locking for VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS
+    https://git.kernel.org/netdev/net/c/0579fafd37fb
+  - [net,5/8] iavf: Fix race in init state
+    https://git.kernel.org/netdev/net/c/a472eb5cbaeb
+  - [net,6/8] iavf: Fix deadlock in iavf_reset_task
+    https://git.kernel.org/netdev/net/c/e85ff9c631e1
+  - [net,7/8] iavf: Fix missing check for running netdev
+    https://git.kernel.org/netdev/net/c/d2c0f45fcceb
+  - [net,8/8] iavf: Fix __IAVF_RESETTING state usage
+    https://git.kernel.org/netdev/net/c/14756b2ae265
 
-thanks,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-greg k-h
+
