@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A040E4C55FE
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 14:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 537124C5610
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 14:16:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231744AbiBZNAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 08:00:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39558 "EHLO
+        id S231782AbiBZNQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 08:16:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiBZNAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 08:00:49 -0500
+        with ESMTP id S230477AbiBZNQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 08:16:16 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58640266D99
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 05:00:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABB911166;
+        Sat, 26 Feb 2022 05:15:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5ACB80757
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 13:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F505C340F4;
-        Sat, 26 Feb 2022 13:00:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D6B9B8074E;
+        Sat, 26 Feb 2022 13:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72BB7C340E8;
+        Sat, 26 Feb 2022 13:15:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645880412;
-        bh=4728MBDU0Nk3qYBidPpP8inmdGSI44PXxdlKIz273tw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fHyWGEEWyown9LdQ3EDIdYsgOLkGUxJXekGUY/fPbvzVKQw9rfdDPg7Itkhu3fYwW
-         d9D5T1azBs1Tu7EkzGSevXzu6gERmxPmFFSeXEK7MIg5nguT847zOp4+hQcKv0HmpQ
-         Ck1HI31bR3yqOr7mQFJnvVLEWlamnL71vMZDq1MA6RLYClO+IX9LH0by7FsL1mQwhw
-         JV/gaVIjQxv6XW3KHLW2gqm5cGNvemqg3QA9/49bD70tPZe6WRu6yar/ZSrRIQkY5F
-         T26dQu94eH04R99cyPO1qTcv+ZKhx35ZtROTmVG+lNIexxcb1GAi7WJEINumQdtIXr
-         MndjSCc6zlQJQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 89B9FE6D3DE;
-        Sat, 26 Feb 2022 13:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1645881339;
+        bh=uoWuQtBGh3SA2ol8YPcbLuIujWZ7Ewkv25Ryxbm2lvQ=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=I224m5GxLSmJJWPByfKulokgaPWKHOt8GiWaxjO8Dj7BBOFzPFjUoX5fcJhdXG7eO
+         vZWLDY+Itq8RQxCXki+ung0Jgg8Y/VqJhUcoOcbzLyQlwN4E9TVkPv3CUIz7NiOylo
+         4BsXl+fu8woQC3M6e3qrfjT+VUPzd4A+XCv5Hr9xgOKkxIT6zbHcuOosQ3SFMZyh4H
+         stdDgDtOvE8B6Zwj5pyzaGeKL5zXMpfc62Zg1aIUKQxL4D4IAb0ickaFtw37pQqvve
+         BCaTgKZOTuaKSxZo36m/Xe5S7FkO5bxL0MpNGVhgfCt9T/sy4oZ7SjS2ahRRp/GPg9
+         IPezdstL0DrqQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v10 0/1] wfx: get out from the staging area
+References: <20220226092142.10164-1-Jerome.Pouiller@silabs.com>
+        <871qzpucyi.fsf@kernel.org> <YhojjHGp4EfsTpnG@kroah.com>
+Date:   Sat, 26 Feb 2022 15:15:33 +0200
+In-Reply-To: <YhojjHGp4EfsTpnG@kroah.com> (Greg Kroah-Hartman's message of
+        "Sat, 26 Feb 2022 13:56:44 +0100")
+Message-ID: <87wnhhsr9m.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/4] net: dsa: ocelot: phylink updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164588041256.8718.13645463941585617063.git-patchwork-notify@kernel.org>
-Date:   Sat, 26 Feb 2022 13:00:12 +0000
-References: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
-In-Reply-To: <YhkBfuRJkOG9gVZR@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <linux@armlinux.org.uk>
-Cc:     alexandre.belloni@bootlin.com, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, andrew@lunn.ch, davem@davemloft.net,
-        f.fainelli@gmail.com, kuba@kernel.org, kabel@kernel.org,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com
+Content-Type: text/plain
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,36 +58,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+> On Sat, Feb 26, 2022 at 12:41:41PM +0200, Kalle Valo wrote:
+>> + jakub
+>> 
+>> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+>> 
+>> > The firmware and the PDS files (= antenna configurations) are now a part of
+>> > the linux-firmware repository.
+>> >
+>> > All the issues have been fixed in staging tree. I think we are ready to get
+>> > out from the staging tree for the kernel 5.18.
+>> 
+>> [...]
+>> 
+>> >  rename Documentation/devicetree/bindings/{staging =>
+>> > }/net/wireless/silabs,wfx.yaml (98%)
+>> 
+>> I lost track, is this file acked by the DT maintainers now?
+>> 
+>> What I suggest is that we queue this for v5.19. After v5.18-rc1 is
+>> released I could create an immutable branch containing this one commit.
+>> Then I would merge the branch to wireless-next and Greg could merge it
+>> to the staging tree, that way we would minimise the chance of conflicts
+>> between trees.
+>> 
+>> Greg, what do you think? Would this work for you? IIRC we did the same
+>> with wilc1000 back in 2020 and I recall it went without hiccups.
+>
+> That sounds great to me, let's plan on that happening after 5.18-rc1 is
+> out.
 
-On Fri, 25 Feb 2022 16:19:10 +0000 you wrote:
-> Hi,
-> 
-> This series updates the Ocelot DSA driver for some of the recent
-> phylink changes. Specifically, we fill in the supported_interfaces
-> fields, convert to mac_select_pcs and mark the driver as non-legacy.
-> We do not convert to phylink_generic_validate() as Ocelot has
-> special support for its rate adapting PCS which makes the generic
-> validate method unsuitable for this driver.
-> 
-> [...]
+Very good, we have a plan then. I marked the patch as deferred in
+patchwork:
 
-Here is the summary with links:
-  - [net-next,1/4] net: dsa: ocelot: populate supported_interfaces
-    https://git.kernel.org/netdev/net-next/c/79fda660bdbb
-  - [net-next,2/4] net: dsa: ocelot: remove interface checks
-    https://git.kernel.org/netdev/net-next/c/e57a15401e82
-  - [net-next,3/4] net: dsa: ocelot: convert to mac_select_pcs()
-    https://git.kernel.org/netdev/net-next/c/864ba485ac52
-  - [net-next,4/4] net: dsa: ocelot: mark as non-legacy
-    https://git.kernel.org/netdev/net-next/c/f6f04c02047c
+https://patchwork.kernel.org/project/linux-wireless/patch/20220226092142.10164-2-Jerome.Pouiller@silabs.com/
 
-You are awesome, thank you!
+Jerome, feel free to remind me about this after v5.18-rc1 is released.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
