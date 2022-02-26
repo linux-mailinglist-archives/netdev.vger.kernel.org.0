@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 193D84C53AA
-	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 05:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99FE14C5415
+	for <lists+netdev@lfdr.de>; Sat, 26 Feb 2022 07:09:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbiBZEUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Feb 2022 23:20:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S229805AbiBZGJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 01:09:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiBZEUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Feb 2022 23:20:20 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940E222011A;
-        Fri, 25 Feb 2022 20:19:46 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id u16so6389049pfg.12;
-        Fri, 25 Feb 2022 20:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=E0+eJj0NPmwxnSMx1LXVXrNLUrIv19z+ZDO3nRYWhjc=;
-        b=oI1ZrcyJTTa6Nsp+GTnXBkoaItgt5KmP8JGfnhwj1ltlFXvp+0b+ADel2Sz5KmTRpO
-         6D8+HH7LlBoivftVgjHlA+7cyUE866z/MiQ0lF3NpbslKh0olBH54i0ZNaJBxCdQcCGm
-         jHjrLn5vrrUyBsg6nMBQnq+q7y84nyCq/daaTKXkqRO8mNxuEeGF83MXPtnWveWM1+E6
-         62R6cr3hJ5VMX2tiN27mw7nUbhVQkPdFeQIOvtozo1KdRfMbucLrjcfTfqozV1o+R4WI
-         04tOAr0I/3q125ARozgG01uRLZES7u/0+ViwWhV6GWiLPrqkjbX+yfQz1dWJeBhd+mrl
-         ibKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=E0+eJj0NPmwxnSMx1LXVXrNLUrIv19z+ZDO3nRYWhjc=;
-        b=HdWV9i9y8uGEqrFgiIG4qbAPlMIezYpKCO9gJSNI4DbuLHftC3Xp/nkgkaC7EEjeNl
-         sYbDtvAQ+Dn1BRDNpj4XaWVA3Kon8eVmb04cGs/n+0dLKxnGrzad2bP7gMgdC1dp+mqL
-         Y072aXLGpRzHCED6EmhMph5+02OSqhPHzHgz6f31UzWySULnWZtbf3MHvHF/369myUyu
-         uHaFmtVMVWAuHeD00KaddN2XjF1fNBmQeN4wG6J+xv0uuqAiPbgEiiyiePkV0/ld3ElM
-         kKy4eJ99N3MGMOntYxPmDRdgwk3cSW7jM4coCONiZc27kDddY9yRVRFj/1liDw1ueIin
-         Cigg==
-X-Gm-Message-State: AOAM5336GS6oMaR+qMi8uUWqDNaOSt4n/wh9yOthJgUBuJTZmmA1c7yV
-        N68N7pIqlKsisI1HgD3Rp8s=
-X-Google-Smtp-Source: ABdhPJwuBBwQtLfdsMQxH7b6WoLbDmCiZjOVW9m3/Tik/YGwbxhMycXlzRIpTusE4+vqx0W+vGdWnQ==
-X-Received: by 2002:a63:e01:0:b0:374:2525:7690 with SMTP id d1-20020a630e01000000b0037425257690mr8838609pgl.37.1645849186064;
-        Fri, 25 Feb 2022 20:19:46 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id k22-20020aa788d6000000b004f1335c8889sm4896193pff.7.2022.02.25.20.19.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 20:19:45 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, imagedong@tencent.com,
-        edumazet@google.com, alobakin@pm.me, cong.wang@bytedance.com,
-        paulb@nvidia.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 3/3] net: neigh: add skb drop reasons to arp_error_report()
-Date:   Sat, 26 Feb 2022 12:18:31 +0800
-Message-Id: <20220226041831.2058437-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220226041831.2058437-1-imagedong@tencent.com>
-References: <20220226041831.2058437-1-imagedong@tencent.com>
+        with ESMTP id S229539AbiBZGJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 01:09:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0786D114FD2;
+        Fri, 25 Feb 2022 22:09:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96E8160C11;
+        Sat, 26 Feb 2022 06:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF5C1C340F2;
+        Sat, 26 Feb 2022 06:09:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645855763;
+        bh=heJPHUn7XfYzu7DFZYuil9Qqj8KTMzMdMdnl3ERx3n0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pUfEb1A++U1BmqJ2LV6MbiUF0ATv17WQnB/udPZJCSqnaSR50nbMeURXuqJySyR2X
+         +ei5GXwJDYt2K2SMs0ve81dq5UF0RtDhFDhK8miihluN6x5w11fxmTeICmXy7uNW+j
+         rbv1PEpdyD1FOZlPVGqGOa5estNLUvpuh/RzprNDqehAqTeMa5285LHrp3FSnZXILV
+         WtLvUNO1hs0r+kXIv/PS4W+9Abll/TU4wEpNHuVQA9mTjWC+C5dZX0U9rfuwkDHzKl
+         W0bdsl9lqDOTHpCUFz2XMkfNRa4B8+NwV1uOhmcVTHEPDRrCed5SLINbj8ewGlTRKG
+         WAUPsATln/FxQ==
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2d07ae0b1c0so55394387b3.2;
+        Fri, 25 Feb 2022 22:09:22 -0800 (PST)
+X-Gm-Message-State: AOAM5309VeP4oxyvlOIKcSoPwjM84SFNUn3wnRVrdbl01eIr8SgQaKlt
+        NB3GmshSqVYXzTN2diSasHLoIZecTc3SYOLDG9E=
+X-Google-Smtp-Source: ABdhPJwEJSBx1AuAkbwrgaXvQ5OpPdVFQ+dHsTQ1QI4eAoqz4maw3zf4pXv2cWgNzYR1XD+ZLqVYF89SjSDFeZm6fbc=
+X-Received: by 2002:a81:83d6:0:b0:2ca:93ad:e4d6 with SMTP id
+ t205-20020a8183d6000000b002ca93ade4d6mr10756915ywf.472.1645855761917; Fri, 25
+ Feb 2022 22:09:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220225161507.470763-1-ytcoode@gmail.com>
+In-Reply-To: <20220225161507.470763-1-ytcoode@gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 25 Feb 2022 22:09:10 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5=mAv4Oa++kSxz4j5imvoGM70Vtk+qqCU3dY2Osf0gYA@mail.gmail.com>
+Message-ID: <CAPhsuW5=mAv4Oa++kSxz4j5imvoGM70Vtk+qqCU3dY2Osf0gYA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpftool: Remove redundant slashes
+To:     Yuntao Wang <ytcoode@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,37 +71,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Fri, Feb 25, 2022 at 8:15 AM Yuntao Wang <ytcoode@gmail.com> wrote:
+>
+> Since the _OUTPUT variable holds a value ending with a trailing slash,
 
-When neighbour become invalid or destroyed, neigh_invalidate() will be
-called. neigh->ops->error_report() will be called if the neighbour's
-state is NUD_FAILED, and seems here is the only use of error_report().
-So we can tell that the reason of skb drops in arp_error_report() is
-SKB_DROP_REASON_NEIGH_FAILED.
+While the change makes sense, I think the description here is not accurate.
+Currently, we require OUTPUT to end with trailing slash. However, if
+OUTPUT is not defined, _OUTPUT will not hold a trailing slash. Adding
+trailing slash to _OUTPUT is one part of this patch, so I think we should not
+say that's the reason of this change.
 
-Replace kfree_skb() used in arp_error_report() with kfree_skb_reason().
+Thanks,
+Song
 
-Reviewed-by: Mengen Sun <mengensun@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
----
- net/ipv4/arp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 4db0325f6e1a..8e4ca4738c43 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -293,7 +293,7 @@ static int arp_constructor(struct neighbour *neigh)
- static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
- {
- 	dst_link_failure(skb);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- }
- 
- /* Create and send an arp packet. */
--- 
-2.35.1
-
+> there is no need to add another one when defining BOOTSTRAP_OUTPUT and
+> LIBBPF_OUTPUT variables.
+>
+> When defining LIBBPF_INCLUDE and LIBBPF_BOOTSTRAP_INCLUDE, we shouldn't
+> add an extra slash either for the same reason.
+>
+> When building libbpf, the value of the DESTDIR argument should also not
+> end with a trailing slash.
+>
+> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+> ---
+>  tools/bpf/bpftool/Makefile | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>
+> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> index ba647aede0d6..9800f966fd51 100644
+> --- a/tools/bpf/bpftool/Makefile
+> +++ b/tools/bpf/bpftool/Makefile
+> @@ -18,19 +18,19 @@ BPF_DIR = $(srctree)/tools/lib/bpf
+>  ifneq ($(OUTPUT),)
+>    _OUTPUT := $(OUTPUT)
+>  else
+> -  _OUTPUT := $(CURDIR)
+> +  _OUTPUT := $(CURDIR)/
+>  endif
+> -BOOTSTRAP_OUTPUT := $(_OUTPUT)/bootstrap/
+> +BOOTSTRAP_OUTPUT := $(_OUTPUT)bootstrap/
+>
+> -LIBBPF_OUTPUT := $(_OUTPUT)/libbpf/
+> +LIBBPF_OUTPUT := $(_OUTPUT)libbpf/
+>  LIBBPF_DESTDIR := $(LIBBPF_OUTPUT)
+> -LIBBPF_INCLUDE := $(LIBBPF_DESTDIR)/include
+> +LIBBPF_INCLUDE := $(LIBBPF_DESTDIR)include
+>  LIBBPF_HDRS_DIR := $(LIBBPF_INCLUDE)/bpf
+>  LIBBPF := $(LIBBPF_OUTPUT)libbpf.a
+>
+>  LIBBPF_BOOTSTRAP_OUTPUT := $(BOOTSTRAP_OUTPUT)libbpf/
+>  LIBBPF_BOOTSTRAP_DESTDIR := $(LIBBPF_BOOTSTRAP_OUTPUT)
+> -LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)/include
+> +LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)include
+>  LIBBPF_BOOTSTRAP_HDRS_DIR := $(LIBBPF_BOOTSTRAP_INCLUDE)/bpf
+>  LIBBPF_BOOTSTRAP := $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
+>
+> @@ -44,7 +44,7 @@ $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT) $(LIBBPF_BOOTSTRAP_OUTPUT) $(LIBBPF_HDRS_DI
+>
+>  $(LIBBPF): $(wildcard $(BPF_DIR)/*.[ch] $(BPF_DIR)/Makefile) | $(LIBBPF_OUTPUT)
+>         $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) \
+> -               DESTDIR=$(LIBBPF_DESTDIR) prefix= $(LIBBPF) install_headers
+> +               DESTDIR=$(LIBBPF_DESTDIR:/=) prefix= $(LIBBPF) install_headers
+>
+>  $(LIBBPF_INTERNAL_HDRS): $(LIBBPF_HDRS_DIR)/%.h: $(BPF_DIR)/%.h | $(LIBBPF_HDRS_DIR)
+>         $(call QUIET_INSTALL, $@)
+> @@ -52,7 +52,7 @@ $(LIBBPF_INTERNAL_HDRS): $(LIBBPF_HDRS_DIR)/%.h: $(BPF_DIR)/%.h | $(LIBBPF_HDRS_
+>
+>  $(LIBBPF_BOOTSTRAP): $(wildcard $(BPF_DIR)/*.[ch] $(BPF_DIR)/Makefile) | $(LIBBPF_BOOTSTRAP_OUTPUT)
+>         $(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_BOOTSTRAP_OUTPUT) \
+> -               DESTDIR=$(LIBBPF_BOOTSTRAP_DESTDIR) prefix= \
+> +               DESTDIR=$(LIBBPF_BOOTSTRAP_DESTDIR:/=) prefix= \
+>                 ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD) $@ install_headers
+>
+>  $(LIBBPF_BOOTSTRAP_INTERNAL_HDRS): $(LIBBPF_BOOTSTRAP_HDRS_DIR)/%.h: $(BPF_DIR)/%.h | $(LIBBPF_BOOTSTRAP_HDRS_DIR)
+> --
+> 2.35.1
+>
