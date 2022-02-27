@@ -2,56 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F74A4C5A98
+	by mail.lfdr.de (Postfix) with ESMTP id E473E4C5A99
 	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 12:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbiB0LK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 06:10:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
+        id S230196AbiB0LKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 06:10:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiB0LKy (ORCPT
+        with ESMTP id S229489AbiB0LKy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 06:10:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B14A5B3C7
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2189C5B3C6
         for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 03:10:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67BC7B80B96
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9614DB80B99
         for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 11:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 052CDC340F0;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1FB16C340F3;
         Sun, 27 Feb 2022 11:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645960215;
-        bh=FEIYGSY6saJixV62WvyP9QBLDnN+5NPx6a3gdCGVNEw=;
+        bh=qxADYOxjuqm/Xh0hS1JlEz2ehKIBPj98/lmFwf0jIdg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sl8h2avioUn2MaPzuXTjVKoCPN/3J5ZYob/qhVj7OhBnt/n2pu3G0sLReF4pdOhJg
-         oVYUxZQvkQSIJwPzteHFf95eW6YwIvCv3XSERBKExVXqqClki5Nc3Hz3pxTOQytEjI
-         ao/ZeV+1umib/aL8PXK/Aog86pgQl2ynEN0rTGJZ+vkeCW1t9rzqdikA9QM6jynuf7
-         cqFjfjN8bwzjV/bBAzsxlya/CJi5HgHUq4DkZrf9xIL5w2QIebNfmBkcV0pfO+4NTn
-         hYDVVhyP8rBVcbMUBh4JxZa/CjU7KxEFi55HuXR2isHd7kfUhnSthEHtxsepIblvq9
-         TLr9KKCZfYzUw==
+        b=AoyZ78wn9FTpssZwsnB5um+C4mkDQmq4r+hQDozY10N5gMRAz5kQnagVShqy64UH5
+         oK+5ojNVUPkLYGcVtrglivuI6KNUIkBzMCg+6nP7p94HT6dZmfTCZqhZsJ6s9UnTbC
+         39JyRgQxWF+Q52vizIARtH3QSbDgXNlWHKJ2zGIOVGe1GWJKWYUp5yES0UY2Qp6Tx1
+         /lbCJgQtO2v9rFB0RVLprQXCkgNUuL6RgW4tj5lQbd+57dSXCZUmj9VUeeunsmAzwt
+         ifg9CPWYHVOdXwOtuC8R3z0obLCL+rp34IF8Y1FrQoEh/YFEozPYOFzYZSDBtFjkDL
+         H4fpHNKc3f1xA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DDBCAEAC081;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F3B4CEAC095;
         Sun, 27 Feb 2022 11:10:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 00/10] DSA FDB isolation
+Subject: Re: [PATCH net-next v8 0/8] new Fungible Ethernet driver
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164596021490.1414.6291195308160851459.git-patchwork-notify@kernel.org>
+Message-Id: <164596021499.1414.9086192213854184539.git-patchwork-notify@kernel.org>
 Date:   Sun, 27 Feb 2022 11:10:14 +0000
-References: <20220225092225.594851-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220225092225.594851-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, kurt@linutronix.de, hauke@hauke-m.de,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        sean.wang@mediatek.com, Landen.Chao@mediatek.com, dqfext@gmail.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        linus.walleij@linaro.org, alsi@bang-olufsen.dk,
-        george.mccollister@gmail.com
+References: <20220225025902.40167-1-dmichail@fungible.com>
+In-Reply-To: <20220225025902.40167-1-dmichail@fungible.com>
+To:     Dimitris Michailidis <d.michailidis@fungible.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        andrew@lunn.ch
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -67,40 +61,37 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 25 Feb 2022 11:22:15 +0200 you wrote:
-> There are use cases which need FDB isolation between standalone ports
-> and bridged ports, as well as isolation between ports of different
-> bridges. Most of these use cases are a result of the fact that packets
-> can now be partially forwarded by the software bridge, so one port might
-> need to send a packet to the CPU but its FDB lookup will see that it can
-> forward it directly to a bridge port where that packet was autonomously
-> learned. So the source port will attempt to shortcircuit the CPU and
-> forward autonomously, which it can't due to the forwarding isolation we
-> have in place. So we will have packet drops instead of proper operation.
+On Thu, 24 Feb 2022 18:58:54 -0800 you wrote:
+> This patch series contains a new network driver for the Ethernet
+> functionality of Fungible cards.
+> 
+> It contains two modules. The first one in patch 2 is a library module
+> that implements some of the device setup, queue managenent, and support
+> for operating an admin queue. These are placed in a separate module
+> because the cards provide a number of PCI functions handled by different
+> types of drivers and all use the same common means to interact with the
+> device. Each of the drivers will be relying on this library module for
+> them.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net-next,01/10] net: dsa: tag_8021q: replace the SVL bridging with VLAN-unaware IVL bridging
-    https://git.kernel.org/netdev/net-next/c/91495f21fcec
-  - [v2,net-next,02/10] net: dsa: tag_8021q: add support for imprecise RX based on the VBID
-    https://git.kernel.org/netdev/net-next/c/d7f9787a763f
-  - [v2,net-next,03/10] docs: net: dsa: sja1105: document limitations of tc-flower rule VLAN awareness
-    https://git.kernel.org/netdev/net-next/c/d27656d02d85
-  - [v2,net-next,04/10] net: dsa: felix: delete workarounds present due to SVL tag_8021q bridging
-    https://git.kernel.org/netdev/net-next/c/08f44db3abe6
-  - [v2,net-next,05/10] net: dsa: tag_8021q: merge RX and TX VLANs
-    https://git.kernel.org/netdev/net-next/c/04b67e18ce5b
-  - [v2,net-next,06/10] net: dsa: tag_8021q: rename dsa_8021q_bridge_tx_fwd_offload_vid
-    https://git.kernel.org/netdev/net-next/c/b6362bdf750b
-  - [v2,net-next,07/10] net: dsa: request drivers to perform FDB isolation
-    https://git.kernel.org/netdev/net-next/c/c26933639b54
-  - [v2,net-next,08/10] net: dsa: pass extack to .port_bridge_join driver methods
-    https://git.kernel.org/netdev/net-next/c/06b9cce42634
-  - [v2,net-next,09/10] net: dsa: sja1105: enforce FDB isolation
-    https://git.kernel.org/netdev/net-next/c/219827ef92f8
-  - [v2,net-next,10/10] net: mscc: ocelot: enforce FDB isolation when VLAN-unaware
-    https://git.kernel.org/netdev/net-next/c/54c319846086
+  - [net-next,v8,1/8] PCI: Add Fungible Vendor ID to pci_ids.h
+    https://git.kernel.org/netdev/net-next/c/e8eb9e32999d
+  - [net-next,v8,2/8] net/fungible: Add service module for Fungible drivers
+    https://git.kernel.org/netdev/net-next/c/e1ffcc66818f
+  - [net-next,v8,3/8] net/funeth: probing and netdev ops
+    https://git.kernel.org/netdev/net-next/c/ee6373ddf3a9
+  - [net-next,v8,4/8] net/funeth: ethtool operations
+    https://git.kernel.org/netdev/net-next/c/21c5ea95da9e
+  - [net-next,v8,5/8] net/funeth: devlink support
+    https://git.kernel.org/netdev/net-next/c/d1d899f24428
+  - [net-next,v8,6/8] net/funeth: add the data path
+    https://git.kernel.org/netdev/net-next/c/db37bc177dae
+  - [net-next,v8,7/8] net/funeth: add kTLS TX control part
+    https://git.kernel.org/netdev/net-next/c/a3662007a12e
+  - [net-next,v8,8/8] net/fungible: Kconfig, Makefiles, and MAINTAINERS
+    https://git.kernel.org/netdev/net-next/c/749efb1e6d73
 
 You are awesome, thank you!
 -- 
