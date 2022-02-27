@@ -2,72 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C65C4C59EC
-	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 08:53:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4B74C59F3
+	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 09:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbiB0Hxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 02:53:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47188 "EHLO
+        id S230125AbiB0IAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 03:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbiB0Hxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 02:53:49 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657844757A
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 23:53:13 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id o10-20020a92d4ca000000b002c27571073fso6700760ilm.10
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 23:53:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=8x4prQR53xKdTVGUoxh3U1NM4w8xxnpghylkDWISnKI=;
-        b=QODTG0rgNKvLPM0kX4ME6R9vpowL/VAzfFyVVx4mHW/46+3NmOnv3n9HBXYGILHWTC
-         Uj0xyDEI0QgNgfiTtMBvLAKO9ZLZ7EBpAvSMVNcsWTfnQ0av2h3J+gKe+PLiDP9PEBWb
-         RAqV7HdLp2GsA4CYxqTrf+G4ZQouhrrCM758PY1swh8srqtmi1t/kVzndJ3Kh8BMMYSt
-         ho3KFdA4VVcWH60arZ8Di98CHIsXHVcVIvfyy2gyhctSQeGAMRw6TB2heZEDVY1MziCn
-         W38dLDN54e17uLtoNvYB9Jl4VEVlurEu8wLXA4jqppkyY36aQ9AiMBW6NzDy9/bSyKey
-         +Y4w==
-X-Gm-Message-State: AOAM5302DqWrB/n5/N7D31nTHTnl4RWVwKalIoAjBJJ/QZLAsM4Vjswq
-        TdQ89/rfJu+TMUtbXodkeJ8AAG15ueZbml8cKr35jg7t0dcy
-X-Google-Smtp-Source: ABdhPJwnM//x289HcGWdyw6/MGcyPjreaVsnsQEtDClJ29ZCA4H62iYtHU111CI/dde+EtOVB0pSCgrO2DM1+90IGs0rgaCC8QmS
+        with ESMTP id S229769AbiB0IAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 03:00:48 -0500
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940552BB0F
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 00:00:10 -0800 (PST)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1nOETN-00432p-2x; Sun, 27 Feb 2022 09:00:05 +0100
+Received: from laforge by localhost.localdomain with local (Exim 4.95)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1nOEPH-00389W-A2;
+        Sun, 27 Feb 2022 08:55:51 +0100
+Date:   Sun, 27 Feb 2022 08:55:51 +0100
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
+        netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org
+Subject: Re: [PATCH iproute2-next v3 1/2] ip: GTP support in ip link
+Message-ID: <YhsuhzsncG9s1KtX@nataraja>
+References: <20220211182902.11542-1-wojciech.drewek@intel.com>
+ <20220211182902.11542-2-wojciech.drewek@intel.com>
+ <a651c26e-24e7-560e-544d-24b4e0a9ae6a@norrbonn.se>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:3409:b0:641:a051:df23 with SMTP id
- n9-20020a056602340900b00641a051df23mr11607999ioz.98.1645948392694; Sat, 26
- Feb 2022 23:53:12 -0800 (PST)
-Date:   Sat, 26 Feb 2022 23:53:12 -0800
-In-Reply-To: <20220227074046.2963-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000043e8b805d8fb398c@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Write in sco_sock_timeout
-From:   syzbot <syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com>
-To:     desmondcheongzx@gmail.com, hdanton@sina.com,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,FROM_FMBLA_NEWDOM,
-        FROM_LOCAL_HEX,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a651c26e-24e7-560e-544d-24b4e0a9ae6a@norrbonn.se>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Dear Jonas,
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+On Sun, Feb 27, 2022 at 07:57:02AM +0100, Jonas Bonn wrote:
+> On 11/02/2022 19:29, Wojciech Drewek wrote:
+> > Support for creating GTP devices through ip link. Two arguments
+> > can be specified by the user when adding device of the GTP type.
+> >   - role (sgsn or ggsn) - indicates whether we are on the GGSN or SGSN
+> 
+> It would be really nice to modernize these names before exposing this API.
 
-Reported-and-tested-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
+I am very skeptical about this.  The features were implemented with this use
+case in mind, and as you know, they only match rather partially to the requirements
+of later generation technology (4G/LTE/EPC) due to their lack of support for
+dedicated bearers / TFTs.
 
-Tested on:
+> When I added the role property to the driver, it was largely to complement
+> the behaviour of the OpenGGSN library, who was essentially the only user of
+> this module at the time.  However, even at that time the choice of name was
+> awkward because we were well into the 4G era so SGSN/GGSN was already
+> somewhat legacy terminology; today, these terms are starting to raise some
+> eyebrows amongst younger developers who may be well versed in 4G/5G, but for
+> whom 3G is somewhat ancient history.
 
-commit:         922ea87f ionic: use vmalloc include
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3f802340579dda19
-dashboard link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=134f85da700000
+The fact that some later generation of technology _also_ is using parts of older
+generations of technology does not mean that the older terminology is in any way
+superseded.  A SGSN remains a SGSN even today, likewise a GGSN.  And those network
+elements are used in production, very much so even in 2022.
 
-Note: testing is done by a robot and is best-effort only.
+> 3GPP has a well-accepted definition of "uplink" and "downlink" which is
+> probably what we should be using instead.  So sgsn becomes "uplink" and ggsn
+> becomes "downlink", with the distinction here being whether packets are
+> routed by source or destination IP address.
+
+Could you please provide a 3GPP spec reference for this?  I am working
+every day in the 3GPP world for something like 15+ years now, and I
+would be _seriously_ surprised if such terminology was adopted for the
+use case you describe. I have not come across it so far in that way.
+
+"uplink" and "downlink" to me
+a) define a direction, and not a network element / function.
+b) are very general terms which depend on the point of view.
+
+This is why directions, in 3GPP, traditionally, are called
+"mobile-originated" and "mobile-terminated".  This has an unambiguous
+meaning as to which direction is used.
+
+But in any case, here we want to name logical network elements or
+functions within such elements, and not directions.
+
+Those elements / functions have new names in each generation of mobile
+technology, so you have SGSN or S-GW on the one hand side, and GGSN or
+P-GW on the other side.  The P-GW has then optionally been decomposed
+into the UPF and SMF.  And then you have a variety of other use cases
+(interfaces) where the GTPv1U protocol was later introduced, such as the
+use between eNB and S-GW.
+
+So you cannot use S-GW and P-GW as names for the roles of the GTP tunnel
+driver, as S-GW actually performs both "roles": You can think of it as
+decapsulationg the traffic on the eNB-SGW interface and as encapsulating
+the traffic on the SGW-PGW side.
+
+I'm not fundamentally opposed to any renaming, but any such renaming
+must have a unambiguous definition.
+
+In the context of TS 29.060, there are a number of references to uplink
+and downlink.  However, they - as far as I can tell -
+
+* specify a direction (like the QoS Parameters like AMBR for uplink / downlink)
+
+* are used within the context of TEIDs.  So there is an "uplink tunnel
+  endpoint identifier" which is chosen by the GGSN, and which is used by
+  the SGSN to send data.  So again it is used to signify a direction.
+
+If we look at 3GPP TS 29.281, there are one mention of 'uplink' and
+'downlink', and both are also again referring to a direction of traffic.
+
+Regards,
+	Harald
+
+-- 
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
