@@ -2,97 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F7414C5E88
-	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 21:20:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 435E04C5E93
+	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 21:28:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbiB0UV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 15:21:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
+        id S231356AbiB0U2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 15:28:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbiB0UV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 15:21:28 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D261955755;
-        Sun, 27 Feb 2022 12:20:49 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K6FJD30xyz4xcZ;
-        Mon, 28 Feb 2022 07:20:43 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1645993244;
-        bh=bj4kQe2ga8DdybKfRKNaqFOjWtocJLyBV0Y3f+6szJc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fvDMSZE9l2gjzHY7ZxHfhbPz0tTliKc3uLxm7/3z1mmt7Ol0f2IHwMUxDsvUCq188
-         u+WpcvTtB2ciiE4PPwsUHUaTB6QOZwzq6tbxplKENWMtVoEzvSHbFPZMYm65pxdqxO
-         N4hNnnvoxvI0FY7w490vsfYDpwpDPW6MnP/UHKs9cm1ahsdOW5PSSlLX/pWTN13nOP
-         z2acZh3RweGxsovhQt9lnMJvl8FLB/z3JzT79ips2/bLMs4MMcarrelhp7hQcLcba7
-         FQlLnHcVl1vlyjgnV5WyIcyDgMS86Qxyu3ZOpjW4iVsrYmkEGRXOsuL41kKfIai45G
-         v9PzOsFEiLfDA==
-Date:   Mon, 28 Feb 2022 07:20:42 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20220228072042.5314e22b@canb.auug.org.au>
+        with ESMTP id S230404AbiB0U2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 15:28:37 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D423ED3E
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 12:28:00 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id d23so18015750lfv.13
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 12:28:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B29fexB9ZTCKi7CISL13JlGHaQZbWyBbVpInY3I/6NY=;
+        b=n2rDCDUhGA35dCXCp8qHKaMdSSUe2zvsERiPeW4R9DiGwFSaDGFbnuwd9ekhMpnjNP
+         AF03weEkGiJ/MHjtpiFRl6/I2i20jBGTZCpzxHDU8fUBnfOMwbB+/mr+QQ8m0ff41dwV
+         rmrDiw1gGFNPRzLDZmJhoPlktQMBlkP6i+Zjo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B29fexB9ZTCKi7CISL13JlGHaQZbWyBbVpInY3I/6NY=;
+        b=sopefzgMcPJ3+JGKmaz+n/FfvDt+kIouM1cB/NP2OeoIal3rK5hINc3nxHR080VKQl
+         KqlO0TML3Ey7/ayFkCDU4DokJCgst9WjHA9mvpTUPkiKUcnv08Kdm6TXN66joQsHbpXK
+         xcO8AZdtS0PrUpSPkfTrIksvJQznR9nr1xHnlU47ebhFCvt5L/UdrGddIJRFX9Fy36yU
+         jGPVjZemq1d9yMNExzKfnCodZlk5PclRcZsAEW3wTFNCrYYzk9NDzEacGlI4Z0XHThKo
+         AVTi0HPubCWpITIEWl9Sm4eOdf94LJlimr7vcdCat0j73/ORnlzU2kG/0XDsZOcw/hOf
+         54tA==
+X-Gm-Message-State: AOAM531EHAQvXw91+iiGRPEzg272pJG1e0in2Iq0SPQjICAGLjOzL8ek
+        cc+cG1Cgu9aEKPGapRqtLL6fcw==
+X-Google-Smtp-Source: ABdhPJxlN4WNaX+29tnCm2jCGZTJgPE6bCkxzfBp4SamcnaKzfaofey1Y+xHU7XF1oX06uMaRm83Pg==
+X-Received: by 2002:ac2:4c1c:0:b0:443:5db3:4748 with SMTP id t28-20020ac24c1c000000b004435db34748mr10696549lfq.643.1645993678329;
+        Sun, 27 Feb 2022 12:27:58 -0800 (PST)
+Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id f8-20020a2e3808000000b002468b8ca6d1sm216008lja.27.2022.02.27.12.27.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Feb 2022 12:27:58 -0800 (PST)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com, Martin KaFai Lau <kafai@fb.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH bpf-next v2 0/3] Fixes for sock_fields selftests
+Date:   Sun, 27 Feb 2022 21:27:54 +0100
+Message-Id: <20220227202757.519015-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/C7ouye5q8627jOdzauxjfu7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/C7ouye5q8627jOdzauxjfu7
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This is a respin of a fix for error reporting in sock_fields test.
 
-Hi all,
+Fixing the error reporting has uncovered bugs in the recently added test for
+sk->dst_port access. Series now includes patches that address the broken test.
 
-In commit
+The series has been tested on x86_64 and s390.
 
-  765559b10ce5 ("ibmvnic: initialize rc before completing wait")
+v1 -> v2:
+- Limit read_sk_dst_port only to client traffic (patch 2)
+- Make read_sk_dst_port pass on litte- and big-endian (patch 3)
 
-Fixes tag
+v1: https://lore.kernel.org/bpf/20220225184130.483208-1-jakub@cloudflare.com/
 
-  Fixes: 6b278c0cb378 ("ibmvnic delay complete()")
+Jakub Sitnicki (3):
+  selftests/bpf: Fix error reporting from sock_fields programs
+  selftests/bpf: Check dst_port only on the client socket
+  selftests/bpf: Fix test for 4-byte load from dst_port on big-endian
 
-has these problem(s):
+ .../selftests/bpf/progs/test_sock_fields.c    | 30 ++++++++++++++++---
+ 1 file changed, 26 insertions(+), 4 deletions(-)
 
-  - Subject does not match target commit subject
-    Just use
-	git log -1 --format=3D'Fixes: %h ("%s")'
+-- 
+2.35.1
 
-So
-
-Fixes: 6b278c0cb378 ("ibmvnic: delay complete()")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/C7ouye5q8627jOdzauxjfu7
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIb3RoACgkQAVBC80lX
-0Gyfmgf+L3yqbcnI6avxhcU+ivOnkGKhZfuy0IzwqVG4WghKtXRvfhsYs9c+1Bml
-IVfT3OyeGRns/9du8i7mVJWdOS7p+ITgDjdQXl5OHG7nXkRgRx/WJUo/bja/VzfC
-EjgoZt5kc+Y1QM1tFbdG/t6xQPK2y/kIe37KBZyqXs22vliNgkSzOu+SDAoirsbV
-sgfovsasGl2Xn/+QsEhwb4/W66MIsq8l7rOUlThFcfZWO119hhysN5C2Vg6289ke
-OGIno95mxafmZtg6ByKWX8i0FYmbj6I/1PdAnquQHSUbIBQ74dS3EfJdNGkdn/qE
-qu6VdBKE4l7J/PolMp0jtO5d6L+OCw==
-=eBrp
------END PGP SIGNATURE-----
-
---Sig_/C7ouye5q8627jOdzauxjfu7--
