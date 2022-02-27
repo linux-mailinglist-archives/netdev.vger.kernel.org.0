@@ -2,66 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 465454C5917
-	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 04:09:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12C1F4C591D
+	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 04:25:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbiB0DJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Feb 2022 22:09:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
+        id S229796AbiB0D0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Feb 2022 22:26:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiB0DJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 22:09:33 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18462067DA;
-        Sat, 26 Feb 2022 19:08:58 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id v4so8156989pjh.2;
-        Sat, 26 Feb 2022 19:08:58 -0800 (PST)
+        with ESMTP id S229533AbiB0DZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Feb 2022 22:25:59 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFEB3DA42;
+        Sat, 26 Feb 2022 19:25:24 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id z4so8420184pgh.12;
+        Sat, 26 Feb 2022 19:25:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=giHWKE8EoWJJI1S11W7iOOUvnVnZvXZu5hWofARFx2Y=;
-        b=j6cT5EnZe/7B6jMRmWcxOE2JWOvjuZt+gEBQf814P9BAGv9WMXpAeYl5I4Wy/qCqF8
-         7dl3Kw1TfGbnRpU3y9uVaLcxvrJoaNXBOuC997NBJj9bdaqqqWNA/OmD3EdJfAquXz7v
-         T4MLgZRfomCEX6vuowCWQqS/zb3Xj+TTnY/nbWB1cBS4LMaFr2D+V5xviTdexUN3rvjx
-         Pv0TRbVQxijF1wlvwjlEPu9ip1CUbifXz3uaSAefeFBLYwHygZmUZ/zsuEfeecQhc5e5
-         WJMdbNdzwaqxTn346ivdTvz2oTml8IIN9iNPf0y8RRw8ftIQZDC3mDXESW+xkIxbAnxH
-         OWsA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Kv83Ky//M61kMW3XVbVTaEo0StiQOL3eN+TkygAnhs0=;
+        b=Pe+S9oIU9PsIcNQHUoOJBZW3IB7VzE68V3KXYdG+S2R/Nyr7yQL/1hIyFpz5VYEalb
+         iofoAOQMJnfoBVGuZMVRa6muJFSf9f/vQuljTAM7msYXvcoA1S5VJgPn9uTt+6uxpL5X
+         rfvkOQcXMSyPnDf7PI9V0oOJ2PX+3uq6bsb3GzgDn6Iyx1G3iEklXyZyPe996OuKchJn
+         PsvlkMN+1JOuDcWGIM8Vl0dbat0576IInhJSAnohyNID8iMDdG9rPP6GKTW59DIz8BSL
+         3QpgF741du/Oez0t86Lla1+lBSl9tjjrz5hqfQVnTSov4f2J4D8dZ9DAL62U/BygVsMm
+         xMkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=giHWKE8EoWJJI1S11W7iOOUvnVnZvXZu5hWofARFx2Y=;
-        b=GRe7QDgF5Hu+PY72NHYG+rC5CA5HXR3wnNbZOe87FZgkGitjiZtuLu+XTXoEC1eR3Y
-         S9lbIMUYvY/8XH6jBtPtr1zp0SFwcbuw7M5YQuzEJ9uEp96Y0WBYIwvUyC6EFMS6uo7S
-         D7rKtde/iQIa6Ml9ZNebrPE1+bP19LljlrAe0UArq9VaYZmbe6w+gwrEmM5nz9Kd6Z5G
-         hEXBJDpIRxqFeyhQ/rQMCyfYW4blowwNo2ghvGliSM9dffQBHBwwYcO3lCHTQvCE7/0j
-         FE79AThNBnLKT+wrtLjlV2LVGN+fhJhjqSJJb0ZWsv58Ma+by8aJNgjKZhZVuK7QHViH
-         VhHw==
-X-Gm-Message-State: AOAM5325FIR1FM0XXg/wIOQSrksQZPHxO11NiwvONLA8byVi9CG1O0KI
-        FYTXRq4rB4+p1LZ+C+CdvGF74ntm8AVRyBKiURs=
-X-Google-Smtp-Source: ABdhPJykP3VSUiwfYWVT7Lr+E/M8eGbSawuOMKCkxunCtEhAHbAxbDIRC8/gydxyzU33n6N/McxnBRi0WW7xbK2Zcgs=
-X-Received: by 2002:a17:903:32c1:b0:14f:8ba2:2326 with SMTP id
- i1-20020a17090332c100b0014f8ba22326mr14487381plr.34.1645931338097; Sat, 26
- Feb 2022 19:08:58 -0800 (PST)
-MIME-Version: 1.0
-References: <20220214111337.3539-1-houtao1@huawei.com> <20220217035041.axk46atz7j4svi2k@ast-mbp.dhcp.thefacebook.com>
- <3b968224-c086-a8b6-159a-55db7ec46011@huawei.com> <CAADnVQ+z75P0sryoGhgUwrHRMr2Jw=eFO4eCRe0Ume554si9Zg@mail.gmail.com>
- <ecc04a70-0b57-62ef-ab52-e7169845d789@huawei.com>
-In-Reply-To: <ecc04a70-0b57-62ef-ab52-e7169845d789@huawei.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Kv83Ky//M61kMW3XVbVTaEo0StiQOL3eN+TkygAnhs0=;
+        b=xKc/7kS+K3R0fKAY9LeY5vEN9Qqd1OigFaeiEnRdBlxajTNQh8kTta11zA2vr1zX9H
+         GrgndWQhPDgSzXMw+alO9boXwQF6QW8t27CatucL25imeR7tClwgTBLUHn5KfVhAIh1M
+         vJORLpsAE8OUXEHOiP1CI4HElmR7Vs5K/nndiBKQ/FnoUy5kSCMVZl2+xhEnMAl9e+7t
+         ldxC0bC8MKWxK36Bo3LvbLS/E4xJMJU3i/6AVc0zZ9T1dgp/QHUfy9oQGJxio7ba0SkZ
+         VcPobKqaNZSlFECMB7tvurNGp9NVme1Rng5xRIXda5hNfed2Sq80Ywb6+yh6rd40KA1+
+         KMHw==
+X-Gm-Message-State: AOAM532ez/mEGe3YhnRjRe+3oxm6NoUU1AJmSO1HCQK7vsrlVYqwDBz/
+        61veLzls+T2vFvKYqWzS14tKyxnW1Y4=
+X-Google-Smtp-Source: ABdhPJyxnZbJWwP8oJDjlUVrX3sPYjVHSW2MhOTlli5PUBb2ZLfnmQriVY6w48a5YxlU/dNCVEtgMg==
+X-Received: by 2002:a65:6210:0:b0:374:ba5:aacc with SMTP id d16-20020a656210000000b003740ba5aaccmr12149961pgv.8.1645932323644;
+        Sat, 26 Feb 2022 19:25:23 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:6566])
+        by smtp.gmail.com with ESMTPSA id r15-20020a63ce4f000000b00341c40f913esm6617475pgi.87.2022.02.26.19.25.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Feb 2022 19:25:23 -0800 (PST)
+Date:   Sat, 26 Feb 2022 19:25:19 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 26 Feb 2022 19:08:47 -0800
-Message-ID: <CAADnVQJUJp3YBcpESwR3Q1U6GS1mBM=Vp-qYuQX7eZOaoLjdUA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next v2 0/3] bpf: support string key in htab
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Joanne Koong <joannekoong@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petar Penkov <ppenkov@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        linux-kselftest@vger.kernel.org,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH bpf-next v3 4/5] bpf: Add helpers to issue and check SYN
+ cookies in XDP
+Message-ID: <20220227032519.2pgbfassbxbkxjsn@ast-mbp.dhcp.thefacebook.com>
+References: <20220224151145.355355-1-maximmi@nvidia.com>
+ <20220224151145.355355-5-maximmi@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224151145.355355-5-maximmi@nvidia.com>
 X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FROM_FMBLA_NEWDOM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,41 +94,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 4:16 AM Hou Tao <houtao1@huawei.com> wrote:
->
-> For now, our case is a write-once case, so only lookup is considered.
-> When data set is bigger than 128KB, hash table has better lookup performance as
-> show below:
->
-> | lookup all elem (ms) | 4K  | 16K  | 64K  | 128K  | 256K  | 512K  | 1M     | 2M     | 4M      | 7M      |
-> | -------------------- | --- | ---- | ---- | ----- | ----- | ----- | ------ | ------ | ------- | ------- |
-> | hash                 | 3.3 | 12.7 | 47   | 90.6  | 185.9 | 382.3 | 788.5  | 1622.4 | 3296    | 6248.7  |
-> | tries                | 2   | 10   | 45.9 | 111.6 | 274.6 | 688.9 | 1747.2 | 4394.5 | 11229.8 | 27148.8 |
-> | tst                  | 3.8 | 16.4 | 61.3 | 139.1 | 313.9 | 707.3 | 1641.3 | 3856.1 | 9002.3  | 19793.8 |
+On Thu, Feb 24, 2022 at 05:11:44PM +0200, Maxim Mikityanskiy wrote:
+> @@ -7798,6 +7916,14 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  		return &bpf_tcp_check_syncookie_proto;
+>  	case BPF_FUNC_tcp_gen_syncookie:
+>  		return &bpf_tcp_gen_syncookie_proto;
+> +	case BPF_FUNC_tcp_raw_gen_syncookie_ipv4:
+> +		return &bpf_tcp_raw_gen_syncookie_ipv4_proto;
+> +	case BPF_FUNC_tcp_raw_gen_syncookie_ipv6:
+> +		return &bpf_tcp_raw_gen_syncookie_ipv6_proto;
+> +	case BPF_FUNC_tcp_raw_check_syncookie_ipv4:
+> +		return &bpf_tcp_raw_check_syncookie_ipv4_proto;
+> +	case BPF_FUNC_tcp_raw_check_syncookie_ipv6:
+> +		return &bpf_tcp_raw_check_syncookie_ipv6_proto;
+>  #endif
 
-Yeah. It's hard to beat hash lookup when it's hitting a good case of O(1),
-but what are the chances that it stays this way?
-Are you saying you can size up the table and populate to good % just once?
-
-If so it's probably better to replace all strings with something
-like a good hash.
-7M elements is not a lot. A hash producing 8 or 16 bytes will have close
-to zero false positives.
-And in case of "populate the table once" the hash seed can be
-precomputed and adjusted, so you can guarantee zero collisions
-for 7M strings. While lookup part can still have 0.001% chance
-of a false positive there could be a way to deal with it after lookup.
-
-> Ternary search tree always has better memory usage:
->
-> | memory usage (MB) | 4K  | 16K | 64K  | 128K | 256K | 512K | 1M   | 2M    | 4M    | 7M     |
-> | ----------------- | --- | --- | ---- | ---- | ---- | ---- | ---- | ----- | ----- | ------ |
-> | hash              | 2.2 | 8.9 | 35.5 | 71   | 142  | 284  | 568  | 1136  | 2272  | 4302.5 |
-> | tries             | 2.1 | 8.5 | 34   | 68   | 136  | 272  | 544  | 1088  | 2176  | 4106.9 |
-> | tst               | 0.5 | 1.6 | 5.6  | 10.6 | 20.3 | 38.6 | 73.1 | 138.6 | 264.6 | 479.5  |
->
-
-Ternary search tree looks amazing.
-Since you have a prototype can you wrap it into a new type of bpf map
-and post the patches?
-I wonder what data structures look like to achieve such memory efficiency.
+I understand that the main use case for new helpers is XDP specific,
+but why limit them to XDP?
+The feature looks generic and applicable to skb too.
