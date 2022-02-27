@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4431B4C5E97
-	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 21:28:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A94C4C5E99
+	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 21:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231667AbiB0U2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 15:28:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        id S231652AbiB0U2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 15:28:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbiB0U2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 15:28:39 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4123ED3E
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 12:28:01 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id l12so2857471ljh.12
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 12:28:01 -0800 (PST)
+        with ESMTP id S230394AbiB0U2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 15:28:40 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC49545515
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 12:28:02 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id y24so18106603lfg.1
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 12:28:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HcX6QIHBexFnM7/ZWxha4rDjE47zmHJGP0UcfZC2560=;
-        b=gQM/q0fzcSYIYJwkT6qKUzrvOnhj6iEMs1hQslqLe2dTX9YJYPMnRWZGmTAOC81AY4
-         P8uUQeg8i3ZJB+sbbE2MzJTBW6VaLFR0ENEo7NIIokXgXSZtdXOnyzCZWwfUkCXEa2jZ
-         TCT82eigO2QEJ6IfY4RJowpGjORFLNEivi6n0=
+        bh=8zVHv/5X9Y6MXMK9tQyqtUsITKzj6rXRl92iXL6AqQ4=;
+        b=s5u2K6lsRN6HqtnlQkDcwnc5DiTw+2CzBEGwj8yiyCAv80seyb3Hz+SZ5qdB9/Grmh
+         umbF77DDVfQebCjsblX4uvb0T/bE5bROlUZjEyAR8XA1lQfk6hdZwkL1atTUc7fLjy13
+         OPUie4vvQ62ROcAaaZAnct/yLWv5GIYx3J/DA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HcX6QIHBexFnM7/ZWxha4rDjE47zmHJGP0UcfZC2560=;
-        b=KuN5nM+FPNslwIYZUFrXFLwWWhO0dICVMlzOnj6RK0JEtxNmOlwUxWjSltFzv/3ceG
-         iCXqTWwxVIYTFi2tHDn58p45Wc99+HQ+VZ5To3bO55DYYfmQTgCs6iLlTQr/E/49AU4O
-         zbb3G9hUZ4zds3BFzozmLrw3Cdsait/R+QmlOvi8XT+iBNTzsHMz/j34qyHhkNhRpyvX
-         aB+ICQJdhqTdoBvpZ/nMQtvKWP8BMSsXa+ATt6ul5aDAGC4OrMOrDJ4XFFgXSpMGtACf
-         t58YqfD/nFCzOPsd/ufjwVWQ/HZIQw5U+OIjqbSLoUUVxANvnU75j2NfO1/Dev/j4v9e
-         8uSg==
-X-Gm-Message-State: AOAM533UYBUV2VbSDeTRJ16RhwZaBqxgLk4cvidJwhpYe2uvUkglSNpy
-        mwczE7RGO6MljuKZVYTo3HMeFw==
-X-Google-Smtp-Source: ABdhPJx1y59iwtFIH2K6sqVTbgJgt53EYQL4uaLHm0VMbPbdlpoOAOwVJdKfcgDCC5773pUt00AnKg==
-X-Received: by 2002:a2e:94c:0:b0:246:3922:7bec with SMTP id 73-20020a2e094c000000b0024639227becmr12247514ljj.430.1645993680246;
-        Sun, 27 Feb 2022 12:28:00 -0800 (PST)
+        bh=8zVHv/5X9Y6MXMK9tQyqtUsITKzj6rXRl92iXL6AqQ4=;
+        b=3jMi9qkjvde+1O33UPYqQFl/Nss1hEtW5KxMJyxswRS1Yc0Qnq18OhCfJh7ZJAhI4B
+         rZ/8X5LtSD5ZLt23c9BmGeL7Vg4vqCUGpkPBqvjFH73PiQ6l8nECVMXyOzFOaPfsDYQ4
+         OZCG3ddibeKmrs9U8Lx+ZBfBps2pjC48RQT7UXj7TW1afp0cLEN2NmCTiRquBzjOxDmv
+         owXUB7KWvz69CvphDPtb8KCc6z2x8HNYaTg22g/kR7HGEShKew1+UwYVplhWa5FpZE8O
+         3GFuz6n6oJRbJ5dfbfa5/3AYf45bkQp+brAO4t9SNRJ6sATWzsCfJ/NO30GC1OXmsKrY
+         wnXg==
+X-Gm-Message-State: AOAM533NMKJLyNIZ488cjk9WQ+CrxxgzT7VipP9P8hK1Pmfw78RWOQkv
+        XDE3LYIaOr7gSVrVoHgnKa07C7WpuOMuQg==
+X-Google-Smtp-Source: ABdhPJx/EiKXwyh5Rfmi4LFfeySH8NWbyZFSf5hpTvxAn6ICm4V3FpLGfApoo4U3WaqUNrQtDU1Z7Q==
+X-Received: by 2002:a05:6512:a8b:b0:43c:81fb:8b26 with SMTP id m11-20020a0565120a8b00b0043c81fb8b26mr10822124lfu.479.1645993681129;
+        Sun, 27 Feb 2022 12:28:01 -0800 (PST)
 Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id 22-20020a05651c009600b002447ce4b34esm1034472ljq.116.2022.02.27.12.27.59
+        by smtp.gmail.com with ESMTPSA id v9-20020a2e9909000000b00245f269061esm1040422lji.33.2022.02.27.12.28.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 12:27:59 -0800 (PST)
+        Sun, 27 Feb 2022 12:28:00 -0800 (PST)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
@@ -51,9 +51,9 @@ Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         kernel-team@cloudflare.com, Martin KaFai Lau <kafai@fb.com>,
         Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH bpf-next v2 2/3] selftests/bpf: Check dst_port only on the client socket
-Date:   Sun, 27 Feb 2022 21:27:56 +0100
-Message-Id: <20220227202757.519015-3-jakub@cloudflare.com>
+Subject: [PATCH bpf-next v2 3/3] selftests/bpf: Fix test for 4-byte load from dst_port on big-endian
+Date:   Sun, 27 Feb 2022 21:27:57 +0100
+Message-Id: <20220227202757.519015-4-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220227202757.519015-1-jakub@cloudflare.com>
 References: <20220227202757.519015-1-jakub@cloudflare.com>
@@ -69,69 +69,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cgroup_skb/egress programs which sock_fields test installs process packets
-flying in both directions, from the client to the server, and in reverse
-direction.
+The check for 4-byte load from dst_port offset into bpf_sock is failing on
+big-endian architecture - s390. The bpf access converter rewrites the
+4-byte load to a 2-byte load from sock_common at skc_dport offset, as shown
+below.
 
-Recently added dst_port check relies on the fact that destination
-port (remote peer port) of the socket which sends the packet is known ahead
-of time. This holds true only for the client socket, which connects to the
-known server port.
+  * s390 / llvm-objdump -S --no-show-raw-insn
 
-Filter out any traffic that is not bound to be egressing from the client
-socket in the test program for reading the dst_port.
+  00000000000002a0 <sk_dst_port__load_word>:
+        84:       r1 = *(u32 *)(r1 + 48)
+        85:       w0 = 1
+        86:       if w1 == 51966 goto +1 <LBB5_2>
+        87:       w0 = 0
+  00000000000002c0 <LBB5_2>:
+        88:       exit
+
+  * s390 / bpftool prog dump xlated
+
+  _Bool sk_dst_port__load_word(struct bpf_sock * sk):
+    35: (69) r1 = *(u16 *)(r1 +12)
+    36: (bc) w1 = w1
+    37: (b4) w0 = 1
+    38: (16) if w1 == 0xcafe goto pc+1
+    39: (b4) w0 = 0
+    40: (95) exit
+
+  * s390 / llvm-objdump -S --no-show-raw-insn
+
+  00000000000002a0 <sk_dst_port__load_word>:
+        84:       r1 = *(u32 *)(r1 + 48)
+        85:       w0 = 1
+        86:       if w1 == 65226 goto +1 <LBB5_2>
+        87:       w0 = 0
+  00000000000002c0 <LBB5_2>:
+        88:       exit
+
+  * x86_64 / bpftool prog dump xlated
+
+  _Bool sk_dst_port__load_word(struct bpf_sock * sk):
+    33: (69) r1 = *(u16 *)(r1 +12)
+    34: (b4) w0 = 1
+    35: (16) if w1 == 0xfeca goto pc+1
+    36: (b4) w0 = 0
+    37: (95) exit
+
+This leads to surprisings results. On big-endian platforms, the loaded
+value is as expected. The user observes no difference between a 4-byte load
+and 2-byte load. However, on little-endian platforms, the access conversion
+is not what would be expected, that is the result is left shifted after
+converting the value to the native byte order.
+
+That said, 4-byte loads in BPF from sk->dst_port are not a use case we
+expect to see, now that the dst_port field is clearly declared as a u16.
+
+Account for the quirky behavior of the access converter in the test case,
+so that the check passes on both endian variants.
 
 Fixes: 8f50f16ff39d ("selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads")
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- .../testing/selftests/bpf/progs/test_sock_fields.c  | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ .../selftests/bpf/progs/test_sock_fields.c        | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
-index 3e2e3ee51cc9..186fed1deaab 100644
+index 186fed1deaab..3dddc173070c 100644
 --- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
 +++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
-@@ -42,6 +42,11 @@ struct {
- 	__type(value, struct bpf_spinlock_cnt);
- } sk_pkt_out_cnt10 SEC(".maps");
+@@ -256,10 +256,23 @@ int ingress_read_sock_fields(struct __sk_buff *skb)
+ 	return CG_OK;
+ }
  
-+enum {
-+	TCP_SYN_SENT = 2,
-+	TCP_LISTEN = 10,
-+};
-+
- struct bpf_tcp_sock listen_tp = {};
- struct sockaddr_in6 srv_sa6 = {};
- struct bpf_tcp_sock cli_tp = {};
-@@ -138,7 +143,7 @@ int egress_read_sock_fields(struct __sk_buff *skb)
- 	 * TCP_LISTEN (10) socket will be copied at the ingress side.
- 	 */
- 	if (sk->family != AF_INET6 || !is_loopback6(sk->src_ip6) ||
--	    sk->state == 10)
-+	    sk->state == TCP_LISTEN)
- 		return CG_OK;
++/*
++ * NOTE: 4-byte load from bpf_sock at dst_port offset is quirky. The
++ * result is left shifted on little-endian architectures because the
++ * access is converted to a 2-byte load. The quirky behavior is kept
++ * for backward compatibility.
++ */
+ static __noinline bool sk_dst_port__load_word(struct bpf_sock *sk)
+ {
++#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
++	const __u8 SHIFT = 16;
++#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++	const __u8 SHIFT = 0;
++#else
++#error "Unrecognized __BYTE_ORDER__"
++#endif
+ 	__u32 *word = (__u32 *)&sk->dst_port;
+-	return word[0] == bpf_htonl(0xcafe0000);
++	return word[0] == bpf_htonl(0xcafe << SHIFT);
+ }
  
- 	if (sk->src_port == bpf_ntohs(srv_sa6.sin6_port)) {
-@@ -233,7 +238,7 @@ int ingress_read_sock_fields(struct __sk_buff *skb)
- 		return CG_OK;
- 
- 	/* Only interested in TCP_LISTEN */
--	if (sk->state != 10)
-+	if (sk->state != TCP_LISTEN)
- 		return CG_OK;
- 
- 	/* It must be a fullsock for cgroup_skb/ingress prog */
-@@ -281,6 +286,10 @@ int read_sk_dst_port(struct __sk_buff *skb)
- 	if (!sk)
- 		RET_LOG();
- 
-+	/* Ignore everything but the SYN from the client socket */
-+	if (sk->state != TCP_SYN_SENT)
-+		return CG_OK;
-+
- 	if (!sk_dst_port__load_word(sk))
- 		RET_LOG();
- 	if (!sk_dst_port__load_half(sk))
+ static __noinline bool sk_dst_port__load_half(struct bpf_sock *sk)
 -- 
 2.35.1
 
