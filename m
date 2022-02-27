@@ -2,69 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29CFC4C5CD0
-	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 17:18:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3D94C5DE0
+	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 18:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbiB0QSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 11:18:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
+        id S229929AbiB0Rry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 12:47:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiB0QSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 11:18:32 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA80FDF6F
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 08:17:54 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id p20so14284534ljo.0
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 08:17:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=gf3YuKO0H7NtVxX02stte8OIS+WixFn0tC6EKCIyFQQ=;
-        b=x3F1LTRtxREVlptXqFbCZpUgWRYOvhqlr/vA+/5AdtGhtMsSGNMm5ENeLoYIXXrT/5
-         p8BcxO3aeNIQP2HiJY4uiXw9vvvLBe6N1Nsl+eWeNbNQlsYFLY3mqn1we4B0SmceZnRS
-         LJJtnXF4ws1AttvXXxISH6x3KGpzB8pnq845c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=gf3YuKO0H7NtVxX02stte8OIS+WixFn0tC6EKCIyFQQ=;
-        b=jX6A6LSqpfofuS1Bsnrx1R7LH8bG9CheSJFxc+fVbAl/H0I8sTY4Oq3+oqteaBvCe0
-         m8jzXbfPEcdQTQs+CLg2cMcUe87AqSFXiwfz1IZF71URJ3w4Bnx2H6EtYcnznlzLxVWl
-         3c1x88Dvb3+8IUqColuwMrJOevVyJGrAEbRiQk/A9fqLhZ/y3+WBT03OeAlHkVDTaisU
-         xmqNEmyNSX9cWNJTAU1IXL06SpjqjR01ZzvX9W4c9ICuhif75E5KbSJD9h3cj8ofZjdf
-         wG5c7Llyc2iEv0ILvmEuLFnaQKuAnZ+BTujUmbV4X91UkNBPlfiB0KV7rE6irrZ6hEBA
-         aOyw==
-X-Gm-Message-State: AOAM533fFxFsWcopjbQiPFr8gzvoplBisKTQp3c/+lss+UlfyLzu3fbT
-        H3M5YGRo362sTzFiT2/YA9S7Pg==
-X-Google-Smtp-Source: ABdhPJwWBznGKdQmf2x6V10XI/zOWherdqfJDlgHF2hhrl1Y5euUeXPxQZVJSeLPmOdAWYt6vpRlxA==
-X-Received: by 2002:a05:651c:1a29:b0:246:40e7:6360 with SMTP id by41-20020a05651c1a2900b0024640e76360mr11860529ljb.61.1645978672694;
-        Sun, 27 Feb 2022 08:17:52 -0800 (PST)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id v11-20020a2e924b000000b0024649082c0dsm958781ljg.118.2022.02.27.08.17.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 08:17:52 -0800 (PST)
-References: <20220225184130.483208-1-jakub@cloudflare.com>
- <20220225201357.anwrlqkzlztprujr@kafai-mbp>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix error reporting from
- sock_fields programs
-Date:   Sun, 27 Feb 2022 17:16:24 +0100
-In-reply-to: <20220225201357.anwrlqkzlztprujr@kafai-mbp>
-Message-ID: <8735k4jnbk.fsf@cloudflare.com>
+        with ESMTP id S229932AbiB0Rrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 12:47:52 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF1D192B8;
+        Sun, 27 Feb 2022 09:47:15 -0800 (PST)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RFhvWH024416;
+        Sun, 27 Feb 2022 17:46:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=1QT+MIO5sQ0+JqoR5oSJ3DCQEEiRdGdRmp8VLGdPWfY=;
+ b=TXdyGagn3Hf+0Sh+VqIUC5zyVVR6UFq80qAi/s4LALIjFggi5sMFOqzMYL94MPrUgQlr
+ 6uBPZXhdOEI1/A9z+raQTshHas3+aFpHrZspt621RTAAGadagwavc69TQKeNrN7dDLnY
+ 3qfclnz64nk69u8hVnHNvz4mAZsRHAylUhunkb0DNdee/xhuIwTFexSd9xZ++NvoYcHm
+ l2es5TZJHzvxfdIuvUpKqilRWIPAbo5V2emias6B44l4MU2cvjgy/rKLbsn7SPb0yRdW
+ wJAKIEApKK+3xzmkBTZqhKbY1/qPFGfH9ZgtezTp28Mz2YTZWPJfRFK9YGeM9ZkMiqcr zg== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3egc6u9ffy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 27 Feb 2022 17:46:55 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21RHgqKh008397;
+        Sun, 27 Feb 2022 17:46:53 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3efbu8vr5q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 27 Feb 2022 17:46:53 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21RHkpUP45220184
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 27 Feb 2022 17:46:51 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E491811C05B;
+        Sun, 27 Feb 2022 17:46:50 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA03411C050;
+        Sun, 27 Feb 2022 17:46:48 +0000 (GMT)
+Received: from sig-9-65-89-64.ibm.com (unknown [9.65.89.64])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sun, 27 Feb 2022 17:46:48 +0000 (GMT)
+Message-ID: <8b140d740ccb813a3fabacd928a5dc3499f145db.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 0/6] bpf-lsm: Extend interoperability with IMA
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Roberto Sassu <roberto.sassu@huawei.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "revest@chromium.org" <revest@chromium.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Sun, 27 Feb 2022 12:46:48 -0500
+In-Reply-To: <YhnfzipoU1NbkjQQ@kroah.com>
+References: <20220215124042.186506-1-roberto.sassu@huawei.com>
+         <408a96085814b2578486b2859e63ff906f5e5876.camel@linux.ibm.com>
+         <5117c79227ce4b9d97e193fd8fb59ba2@huawei.com>
+         <223d9eedc03f68cfa4f1624c4673e844e29da7d5.camel@linux.ibm.com>
+         <YhnfzipoU1NbkjQQ@kroah.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: E-5Jt3XnaWTAon6wvc8bbVIw6kQEakXm
+X-Proofpoint-GUID: E-5Jt3XnaWTAon6wvc8bbVIw6kQEakXm
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-27_07,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ adultscore=0 suspectscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ spamscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202270122
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,40 +101,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 2022-02-26 at 09:07 +0100, Greg Kroah-Hartman wrote:
+> On Fri, Feb 25, 2022 at 02:11:04PM -0500, Mimi Zohar wrote:
+> > On Fri, 2022-02-25 at 08:41 +0000, Roberto Sassu wrote:
+> > > > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
+> > > > Sent: Friday, February 25, 2022 1:22 AM
+> > > > Hi Roberto,
+> > > > 
+> > > > On Tue, 2022-02-15 at 13:40 +0100, Roberto Sassu wrote:
+> > > > > Extend the interoperability with IMA, to give wider flexibility for the
+> > > > > implementation of integrity-focused LSMs based on eBPF.
+> > > > 
+> > > > I've previously requested adding eBPF module measurements and signature
+> > > > verification support in IMA.  There seemed to be some interest, but
+> > > > nothing has been posted.
+> > > 
+> > > Hi Mimi
+> > > 
+> > > for my use case, DIGLIM eBPF, IMA integrity verification is
+> > > needed until the binary carrying the eBPF program is executed
+> > > as the init process. I've been thinking to use an appended
+> > > signature to overcome the limitation of lack of xattrs in the
+> > > initial ram disk.
+> > 
+> > I would still like to see xattrs supported in the initial ram disk. 
+> > Assuming you're still interested in pursuing it, someone would need to
+> > review and upstream it.  Greg?
+> 
+> Me?  How about the filesystem maintainers and developers?  :)
+> 
+> There's a reason we never added xattrs support to ram disks, but I can't
+> remember why...
 
-On Fri, Feb 25, 2022 at 12:13 PM -08, Martin KaFai Lau wrote:
-> On Fri, Feb 25, 2022 at 07:41:30PM +0100, Jakub Sitnicki wrote:
->> The helper macro that records an error in BPF programs that exercise sock
->> fields access has been indavertedly broken by adaptation work that happened
->> in commit b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel
->> and global variables").
->> 
->> BPF_NOEXIST flag cannot be used to update BPF_MAP_TYPE_ARRAY. The operation
->> always fails with -EEXIST, which in turn means the error never gets
->> recorded, and the checks for errors always pass.
->> 
->> Revert the change in update flags.
->> 
->> Fixes: b18c1f0aa477 ("bpf: selftest: Adapt sock_fields test to use skel and global variables")
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->>  tools/testing/selftests/bpf/progs/test_sock_fields.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->> 
->> diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
->> index 246f1f001813..3e2e3ee51cc9 100644
->> --- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
->> +++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
->> @@ -114,7 +114,7 @@ static void tpcpy(struct bpf_tcp_sock *dst,
->>  
->>  #define RET_LOG() ({						\
->>  	linum = __LINE__;					\
->> -	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_NOEXIST);	\
->> +	bpf_map_update_elem(&linum_map, &linum_idx, &linum, BPF_ANY);	\
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
+CPIO 'newc' format doesn't support xattrs.
 
-Thanks for the quick review.
+thanks,
 
-I need to follow up with a v2. Was too quick to send this patch out by
-itself. Now that the error reporting works, the test sock_fields tests
-are failing on little- and big-endian.
+Mimi
+
