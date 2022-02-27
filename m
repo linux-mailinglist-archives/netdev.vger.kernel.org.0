@@ -2,247 +2,351 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 643E84C59D2
-	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 07:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00DAD4C59D9
+	for <lists+netdev@lfdr.de>; Sun, 27 Feb 2022 08:00:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbiB0GUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 01:20:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56910 "EHLO
+        id S230022AbiB0G5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 01:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230053AbiB0GUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 01:20:45 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2CEB852
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 22:20:08 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id o10-20020a92d4ca000000b002c27571073fso6566089ilm.10
-        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 22:20:08 -0800 (PST)
+        with ESMTP id S229531AbiB0G5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 01:57:43 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34056397
+        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 22:57:06 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id u7so13052031ljk.13
+        for <netdev@vger.kernel.org>; Sat, 26 Feb 2022 22:57:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=norrbonn-se.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oAf2oWNhW9qEB7vdcPVk5Qwf1RwFzDCA+/Fg2kDsT3Y=;
+        b=YUmISEjT2zvulXQI11CH2zjmkTgyRfcuUGbf1dfEfrkDz0+0Og3d8UwEZ7U9uiL57S
+         7mxc4nqBBMJW/ICeQrPFA/bxPT41rX8cE9+eOX02DkokFMHbz8G1agdm53Z6KEb3ycNb
+         yOpayTVwKKNOywR9LEmnWRnDbCECzSgHbZEi6CW6Hqzb7BEFVCDE2gVgctUHGwWIFsAe
+         YEqb8Z1S5nJDlh6yWNd5ntBgeS6tWdvnlob0fqW99DbXP5gdAPs7xcuaFItchc4JIoPI
+         7lKwhKHXijBhFrbV4k9OPH01xNS+LJkyaaO8n4W0pLFGtbt3aDIfH75688VT361wzFfV
+         /msg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=tEAUwkc1+1EVNiMgtrncZnB4tXaWfbfFUyH7fcGOHFA=;
-        b=va8fSlG+7QR2I4ey/iXXisIsSkm77nTytWpq8MTwV3Z5Y0c+xiKzyspDmp5ui0J0pG
-         WeBC5aa9xhNtgeYxQ8jRuhou3i7LP+ea4Yh0KaqqGrWKAGbP57jz2NbqSkctRuR+Tva3
-         JWnM2brQhTRXyKR9FK1BqtDHjt72S4MkzzVH1fa6UBSDiMMp1MkLEnjNqpLXLxN6NwO6
-         JY7Io6PTLZHYy3YihvrtYAcs3oLtGaY/cAgjJGQHlnuqqdbEfyRUBJ76jcWjDiLmeewm
-         bXAuunJwVXMVQdsw4BhUhQy82Y0Frmu3aXO9HAuAatgmo5TbVjTRk+kYt6P/ZOOa8EdE
-         hmcA==
-X-Gm-Message-State: AOAM532sc2Zs4ydDICNc+OOfy8bV9sdjdSBQz9cX5d6ENswnQ61eK3t8
-        AOhKSN7uFQ/Xsa8s4/j9kPPPD/6Gy9wDrJBJbaOup/1H8bvE
-X-Google-Smtp-Source: ABdhPJzDaYk8BlOBF5Q5n8hODm4a87NUSx4RsBWq1NnW495kIX37qlAaN7OaoJN0XNiZtTM3Nd8QaqvfKm6zxmHcDn9mWufaYiDr
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oAf2oWNhW9qEB7vdcPVk5Qwf1RwFzDCA+/Fg2kDsT3Y=;
+        b=gwQugp73tq6W1XrGjQ9vYoXDQ4b6JiVLsSQO3e0tbyH7rK9eevtH5XUaX4aTS4PX6h
+         QjmO4aeMEmd1jx+RQMD06u+EWBz76ylSWqJnPvbNOAtORJiHAlMRNrELwJpMkNJ3JoV5
+         2AD3K1g4UVYsc35AVMfyCVYTjOtlXKVs9uLXrrlQPjL6aPijUVcPdUz1Nr/PlP6u5pSo
+         hS6Fg1ZrixObmZpDJ9Qxr74vdTXN7MsPRDn7o8fkJLEBSszn5+4oc0UYlgmr8jkSl04O
+         mGaYmjLbSnJQzOfv7sxy/x9IVCteRAJp05VmZ1Cbq4rLF7nQ6JL/TtaB/s1i+30JTp2V
+         Tkqw==
+X-Gm-Message-State: AOAM5316KNyZGozRDLOiaK5OnNbXmLy2Tmj+fRuluh85goFjqCoBhaUM
+        D/MkbK781Cm5mIhxpogMJkV38cvfqzoWsg==
+X-Google-Smtp-Source: ABdhPJxWcK5XlCgdThDLdxMA23fa2sCOw4qT6G9A/ch4dg7JcJ+dmA1urv3HddV8xbzqYIdzIshaNQ==
+X-Received: by 2002:a2e:6804:0:b0:244:b354:1c99 with SMTP id c4-20020a2e6804000000b00244b3541c99mr10535090lja.79.1645945024644;
+        Sat, 26 Feb 2022 22:57:04 -0800 (PST)
+Received: from [10.8.100.128] (h-98-128-230-58.NA.cust.bahnhof.se. [98.128.230.58])
+        by smtp.gmail.com with ESMTPSA id n16-20020a0565120ad000b004439844469fsm605191lfu.206.2022.02.26.22.57.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Feb 2022 22:57:04 -0800 (PST)
+Message-ID: <a651c26e-24e7-560e-544d-24b4e0a9ae6a@norrbonn.se>
+Date:   Sun, 27 Feb 2022 07:57:02 +0100
 MIME-Version: 1.0
-X-Received: by 2002:a02:5184:0:b0:30f:5c44:fd8a with SMTP id
- s126-20020a025184000000b0030f5c44fd8amr11956758jaa.203.1645942807820; Sat, 26
- Feb 2022 22:20:07 -0800 (PST)
-Date:   Sat, 26 Feb 2022 22:20:07 -0800
-In-Reply-To: <20220227060827.2844-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000617faa05d8f9ec29@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Write in sco_sock_timeout
-From:   syzbot <syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com>
-To:     desmondcheongzx@gmail.com, hdanton@sina.com,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,FROM_FMBLA_NEWDOM,
-        FROM_LOCAL_HEX,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH iproute2-next v3 1/2] ip: GTP support in ip link
+Content-Language: en-US
+To:     Wojciech Drewek <wojciech.drewek@intel.com>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, laforge@gnumonks.org
+References: <20220211182902.11542-1-wojciech.drewek@intel.com>
+ <20220211182902.11542-2-wojciech.drewek@intel.com>
+From:   Jonas Bonn <jonas@norrbonn.se>
+In-Reply-To: <20220211182902.11542-2-wojciech.drewek@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-KASAN: use-after-free Write in sco_sock_timeout
+On 11/02/2022 19:29, Wojciech Drewek wrote:
+> Support for creating GTP devices through ip link. Two arguments
+> can be specified by the user when adding device of the GTP type.
+>   - role (sgsn or ggsn) - indicates whether we are on the GGSN or SGSN
 
-==================================================================
-BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
-BUG: KASAN: use-after-free in atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
-BUG: KASAN: use-after-free in __refcount_add include/linux/refcount.h:193 [inline]
-BUG: KASAN: use-after-free in __refcount_inc include/linux/refcount.h:250 [inline]
-BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:267 [inline]
-BUG: KASAN: use-after-free in sock_hold include/net/sock.h:726 [inline]
-BUG: KASAN: use-after-free in sco_sock_timeout+0x64/0x290 net/bluetooth/sco.c:89
-Write of size 4 at addr ffff88801d165080 by task kworker/0:1/8
+It would be really nice to modernize these names before exposing this API.
 
-CPU: 0 PID: 8 Comm: kworker/0:1 Not tainted 5.17.0-rc4-syzkaller-01424-g922ea87ff6f2-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events sco_sock_timeout
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
- atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
- __refcount_add include/linux/refcount.h:193 [inline]
- __refcount_inc include/linux/refcount.h:250 [inline]
- refcount_inc include/linux/refcount.h:267 [inline]
- sock_hold include/net/sock.h:726 [inline]
- sco_sock_timeout+0x64/0x290 net/bluetooth/sco.c:89
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- worker_thread+0x657/0x1110 kernel/workqueue.c:2454
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
+When I added the role property to the driver, it was largely to 
+complement the behaviour of the OpenGGSN library, who was essentially 
+the only user of this module at the time.  However, even at that time 
+the choice of name was awkward because we were well into the 4G era so 
+SGSN/GGSN was already somewhat legacy terminology; today, these terms 
+are starting to raise some eyebrows amongst younger developers who may 
+be well versed in 4G/5G, but for whom 3G is somewhat ancient history.
 
-Allocated by task 4059:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc include/linux/slab.h:586 [inline]
- sk_prot_alloc+0x110/0x290 net/core/sock.c:1936
- sk_alloc+0x32/0xa80 net/core/sock.c:1989
- sco_sock_alloc.constprop.0+0x31/0x330 net/bluetooth/sco.c:484
- sco_sock_create+0xd5/0x1b0 net/bluetooth/sco.c:523
- bt_sock_create+0x17c/0x340 net/bluetooth/af_bluetooth.c:130
- __sock_create+0x353/0x790 net/socket.c:1468
- sock_create net/socket.c:1519 [inline]
- __sys_socket+0xef/0x200 net/socket.c:1561
- __do_sys_socket net/socket.c:1570 [inline]
- __se_sys_socket net/socket.c:1568 [inline]
- __x64_sys_socket+0x6f/0xb0 net/socket.c:1568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+3GPP has a well-accepted definition of "uplink" and "downlink" which is 
+probably what we should be using instead.  So sgsn becomes "uplink" and 
+ggsn becomes "downlink", with the distinction here being whether packets 
+are routed by source or destination IP address.
 
-Freed by task 4060:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0x126/0x160 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:236 [inline]
- slab_free_hook mm/slub.c:1728 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
- slab_free mm/slub.c:3509 [inline]
- kfree+0xd0/0x390 mm/slub.c:4562
- sk_prot_free net/core/sock.c:1972 [inline]
- __sk_destruct+0x6c0/0x920 net/core/sock.c:2058
- sk_destruct+0x131/0x180 net/core/sock.c:2076
- __sk_free+0xef/0x3d0 net/core/sock.c:2087
- sk_free+0x78/0xa0 net/core/sock.c:2098
- sock_put include/net/sock.h:1926 [inline]
- sco_sock_kill+0x18d/0x1b0 net/bluetooth/sco.c:403
- sco_sock_release+0x162/0x2d0 net/bluetooth/sco.c:1260
- __sock_release+0xcd/0x280 net/socket.c:650
- sock_close+0x18/0x20 net/socket.c:1318
- __fput+0x286/0x9f0 fs/file_table.c:317
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- get_signal+0x1de2/0x2490 kernel/signal.c:2631
- arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
- handle_signal_work kernel/entry/common.c:148 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
- exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
- __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Last potentially related work creation:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:3026 [inline]
- call_rcu+0xb1/0x740 kernel/rcu/tree.c:3106
- netlink_release+0xf08/0x1db0 net/netlink/af_netlink.c:813
- __sock_release+0xcd/0x280 net/socket.c:650
- sock_close+0x18/0x20 net/socket.c:1318
- __fput+0x286/0x9f0 fs/file_table.c:317
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
- exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
- __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
- __call_rcu kernel/rcu/tree.c:3026 [inline]
- call_rcu+0xb1/0x740 kernel/rcu/tree.c:3106
- netlink_release+0xf08/0x1db0 net/netlink/af_netlink.c:813
- __sock_release+0xcd/0x280 net/socket.c:650
- sock_close+0x18/0x20 net/socket.c:1318
- __fput+0x286/0x9f0 fs/file_table.c:317
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
- exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
- __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The buggy address belongs to the object at ffff88801d165000
- which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 128 bytes inside of
- 2048-byte region [ffff88801d165000, ffff88801d165800)
-The buggy address belongs to the page:
-page:ffffea0000745800 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1d160
-head:ffffea0000745800 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 ffffea000070c000 dead000000000002 ffff888010c42000
-raw: 0000000000000000 0000000000080008 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 54, ts 8464675040, free_ts 0
- prep_new_page mm/page_alloc.c:2434 [inline]
- get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
- alloc_slab_page mm/slub.c:1799 [inline]
- allocate_slab+0x27f/0x3c0 mm/slub.c:1944
- new_slab mm/slub.c:2004 [inline]
- ___slab_alloc+0xbe1/0x12b0 mm/slub.c:3018
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
- slab_alloc_node mm/slub.c:3196 [inline]
- slab_alloc mm/slub.c:3238 [inline]
- __kmalloc+0x372/0x450 mm/slub.c:4420
- kmalloc include/linux/slab.h:586 [inline]
- kzalloc include/linux/slab.h:715 [inline]
- scsi_alloc_target+0x132/0xc60 drivers/scsi/scsi_scan.c:498
- __scsi_scan_target+0x13a/0xdb0 drivers/scsi/scsi_scan.c:1632
- scsi_scan_channel drivers/scsi/scsi_scan.c:1737 [inline]
- scsi_scan_channel+0x148/0x1e0 drivers/scsi/scsi_scan.c:1713
- scsi_scan_host_selected+0x2df/0x3b0 drivers/scsi/scsi_scan.c:1766
- do_scsi_scan_host+0x1e8/0x260 drivers/scsi/scsi_scan.c:1905
- do_scan_async+0x3e/0x500 drivers/scsi/scsi_scan.c:1915
- async_run_entry_fn+0x9d/0x550 kernel/async.c:127
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- worker_thread+0x657/0x1110 kernel/workqueue.c:2454
-page_owner free stack trace missing
-
-Memory state around the buggy address:
- ffff88801d164f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801d165000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88801d165080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff88801d165100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88801d165180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+/Jonas
 
 
-Tested on:
 
-commit:         922ea87f ionic: use vmalloc include
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
-console output: https://syzkaller.appspot.com/x/log.txt?x=144f85da700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d63ad23bb09039e8
-dashboard link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=16e9136c700000
+
+>   - hsize - indicates the size of the hash table where PDP sessions
+>     are stored
+> 
+> IFLA_GTP_FD0 and IFLA_GTP_FD1 arguments would not be provided. Those
+> are file descriptores to the sockets created in the userspace. Since
+> we are not going to create sockets in ip link, we don't have to
+> provide them.
+> 
+> Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+> ---
+> v2: use SPDX tag, use strcmp() instead of matches(), parse
+>      IFLA_GTP_RESTART_COUNT arg
+> v3: IFLA_GTP_CREATE_SOCKETS attribute introduced, fix options
+>      alpha order
+> ---
+>   include/uapi/linux/if_link.h |   2 +
+>   ip/Makefile                  |   2 +-
+>   ip/iplink.c                  |   2 +-
+>   ip/iplink_gtp.c              | 128 +++++++++++++++++++++++++++++++++++
+>   man/man8/ip-link.8.in        |  29 +++++++-
+>   5 files changed, 160 insertions(+), 3 deletions(-)
+>   create mode 100644 ip/iplink_gtp.c
+> 
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 41708e26a3c9..c8ed41ee4efd 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -820,6 +820,8 @@ enum {
+>   	IFLA_GTP_FD1,
+>   	IFLA_GTP_PDP_HASHSIZE,
+>   	IFLA_GTP_ROLE,
+> +	IFLA_GTP_CREATE_SOCKETS,
+> +	IFLA_GTP_RESTART_COUNT,
+>   	__IFLA_GTP_MAX,
+>   };
+>   #define IFLA_GTP_MAX (__IFLA_GTP_MAX - 1)
+> diff --git a/ip/Makefile b/ip/Makefile
+> index 2a7a51c313c6..06ba60b341af 100644
+> --- a/ip/Makefile
+> +++ b/ip/Makefile
+> @@ -12,7 +12,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+>       iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+>       ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+>       ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o \
+> -    iplink_amt.o
+> +    iplink_amt.o iplink_gtp.o
+>   
+>   RTMONOBJ=rtmon.o
+>   
+> diff --git a/ip/iplink.c b/ip/iplink.c
+> index c0a3a9ad3e62..1fe163794d35 100644
+> --- a/ip/iplink.c
+> +++ b/ip/iplink.c
+> @@ -51,7 +51,7 @@ void iplink_types_usage(void)
+>   	/* Remember to add new entry here if new type is added. */
+>   	fprintf(stderr,
+>   		"TYPE := { amt | bareudp | bond | bond_slave | bridge | bridge_slave |\n"
+> -		"          dummy | erspan | geneve | gre | gretap | ifb |\n"
+> +		"          dummy | erspan | geneve | gre | gretap | gtp | ifb |\n"
+>   		"          ip6erspan | ip6gre | ip6gretap | ip6tnl |\n"
+>   		"          ipip | ipoib | ipvlan | ipvtap |\n"
+>   		"          macsec | macvlan | macvtap |\n"
+> diff --git a/ip/iplink_gtp.c b/ip/iplink_gtp.c
+> new file mode 100644
+> index 000000000000..6ba684876a66
+> --- /dev/null
+> +++ b/ip/iplink_gtp.c
+> @@ -0,0 +1,128 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +
+> +#include <stdio.h>
+> +
+> +#include "rt_names.h"
+> +#include "utils.h"
+> +#include "ip_common.h"
+> +
+> +#define GTP_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
+> +
+> +static void print_explain(FILE *f)
+> +{
+> +	fprintf(f,
+> +		"Usage: ... gtp role ROLE\n"
+> +		"		[ hsize HSIZE ]\n"
+> +		"		[ restart_count RESTART_COUNT ]\n"
+> +		"\n"
+> +		"Where:	ROLE		:= { sgsn | ggsn }\n"
+> +		"	HSIZE		:= 1-131071\n"
+> +		"	RESTART_COUNT	:= 0-255\n"
+> +	);
+> +}
+> +
+> +static void check_duparg(__u32 *attrs, int type, const char *key,
+> +			 const char *argv)
+> +{
+> +	if (!GTP_ATTRSET(*attrs, type)) {
+> +		*attrs |= (1L << type);
+> +		return;
+> +	}
+> +	duparg2(key, argv);
+> +}
+> +
+> +static int gtp_parse_opt(struct link_util *lu, int argc, char **argv,
+> +			 struct nlmsghdr *n)
+> +{
+> +	__u32 attrs = 0;
+> +
+> +	/* When creating GTP device through ip link,
+> +	 * this flag has to be set.
+> +	 */
+> +	addattr8(n, 1024, IFLA_GTP_CREATE_SOCKETS, true);
+> +
+> +	while (argc > 0) {
+> +		if (!strcmp(*argv, "role")) {
+> +			NEXT_ARG();
+> +			check_duparg(&attrs, IFLA_GTP_ROLE, "role", *argv);
+> +			if (!strcmp(*argv, "sgsn"))
+> +				addattr32(n, 1024, IFLA_GTP_ROLE, GTP_ROLE_SGSN);
+> +			else if (!strcmp(*argv, "ggsn"))
+> +				addattr32(n, 1024, IFLA_GTP_ROLE, GTP_ROLE_GGSN);
+> +			else
+> +				invarg("invalid role, use sgsn or ggsn", *argv);
+> +		} else if (!strcmp(*argv, "hsize")) {
+> +			__u32 hsize;
+> +
+> +			NEXT_ARG();
+> +			check_duparg(&attrs, IFLA_GTP_PDP_HASHSIZE, "hsize", *argv);
+> +
+> +			if (get_u32(&hsize, *argv, 0))
+> +				invarg("invalid PDP hash size", *argv);
+> +			if (hsize >= 1u << 17)
+> +				invarg("PDP hash size too big", *argv);
+> +			addattr32(n, 1024, IFLA_GTP_PDP_HASHSIZE, hsize);
+> +		} else if (!strcmp(*argv, "restart_count")) {
+> +			__u8 restart_count;
+> +
+> +			NEXT_ARG();
+> +			check_duparg(&attrs, IFLA_GTP_RESTART_COUNT, "restart_count", *argv);
+> +
+> +			if (get_u8(&restart_count, *argv, 10))
+> +				invarg("invalid restart_count", *argv);
+> +			addattr8(n, 1024, IFLA_GTP_RESTART_COUNT, restart_count);
+> +		} else if (!strcmp(*argv, "help")) {
+> +			print_explain(stderr);
+> +			return -1;
+> +		}
+> +		argc--, argv++;
+> +	}
+> +
+> +	if (!GTP_ATTRSET(attrs, IFLA_GTP_ROLE)) {
+> +		fprintf(stderr, "gtp: role of the gtp device was not specified\n");
+> +		return -1;
+> +	}
+> +
+> +	if (!GTP_ATTRSET(attrs, IFLA_GTP_PDP_HASHSIZE))
+> +		addattr32(n, 1024, IFLA_GTP_PDP_HASHSIZE, 1024);
+> +
+> +	return 0;
+> +}
+> +
+> +static void gtp_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+> +{
+> +
+> +	if (tb[IFLA_GTP_ROLE]) {
+> +		__u32 role = rta_getattr_u32(tb[IFLA_GTP_ROLE]);
+> +
+> +		print_string(PRINT_ANY, "role", "role %s ",
+> +			     role == GTP_ROLE_SGSN ? "sgsn" : "ggsn");
+> +	}
+> +
+> +	if (tb[IFLA_GTP_PDP_HASHSIZE]) {
+> +		__u32 hsize = rta_getattr_u32(tb[IFLA_GTP_PDP_HASHSIZE]);
+> +
+> +		print_uint(PRINT_ANY, "hsize", "hsize %u ", hsize);
+> +	}
+> +
+> +	if (tb[IFLA_GTP_RESTART_COUNT]) {
+> +		__u8 restart_count = rta_getattr_u8(tb[IFLA_GTP_RESTART_COUNT]);
+> +
+> +		print_uint(PRINT_ANY, "restart_count",
+> +			   "restart_count %u ", restart_count);
+> +	}
+> +}
+> +
+> +static void gtp_print_help(struct link_util *lu, int argc, char **argv,
+> +			   FILE *f)
+> +{
+> +	print_explain(f);
+> +}
+> +
+> +struct link_util gtp_link_util = {
+> +	.id		= "gtp",
+> +	.maxattr	= IFLA_GTP_MAX,
+> +	.parse_opt	= gtp_parse_opt,
+> +	.print_opt	= gtp_print_opt,
+> +	.print_help	= gtp_print_help,
+> +};
+> diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+> index 5f5b835cb2e3..56b8c7b2917e 100644
+> --- a/man/man8/ip-link.8.in
+> +++ b/man/man8/ip-link.8.in
+> @@ -243,7 +243,8 @@ ip-link \- network device configuration
+>   .BR macsec " |"
+>   .BR netdevsim " |"
+>   .BR rmnet " |"
+> -.BR xfrm " ]"
+> +.BR xfrm " |"
+> +.BR gtp " ]"
+>   
+>   .ti -8
+>   .IR ETYPE " := [ " TYPE " |"
+> @@ -392,6 +393,9 @@ Link types:
+>   .sp
+>   .BR xfrm
+>   - Virtual xfrm interface
+> +.sp
+> +.BR gtp
+> +- GPRS Tunneling Protocol
+>   .in -8
+>   
+>   .TP
+> @@ -1941,6 +1945,29 @@ policies. Policies must be configured with the same key. If not set, the key def
+>   
+>   .in -8
+>   
+> +.TP
+> +GTP Type Support
+> +For a link of type
+> +.I GTP
+> +the following additional arguments are supported:
+> +
+> +.BI "ip link add " DEVICE " type gtp role " ROLE " hsize " HSIZE
+> +
+> +.in +8
+> +.sp
+> +.BI role " ROLE "
+> +- specifies the role of the GTP device, either sgsn or ggsn
+> +
+> +.sp
+> +.BI hsize " HSIZE "
+> +- specifies size of the hashtable which stores PDP contexts
+> +
+> +.sp
+> +.BI restart_count " RESTART_COUNT "
+> +- GTP instance restart counter
+> +
+> +.in -8
+> +
+>   .SS ip link delete - delete virtual link
+>   
+>   .TP
 
