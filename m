@@ -2,138 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B9C4C657F
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 10:12:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4AF04C6587
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 10:17:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234192AbiB1JNX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Feb 2022 04:13:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
+        id S232804AbiB1JRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 04:17:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234095AbiB1JNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 04:13:20 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A09C14;
-        Mon, 28 Feb 2022 01:12:38 -0800 (PST)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K6ZQn290Zz67yhf;
-        Mon, 28 Feb 2022 17:12:33 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Feb 2022 10:12:35 +0100
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2308.021;
- Mon, 28 Feb 2022 10:12:35 +0100
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Mimi Zohar <zohar@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "revest@chromium.org" <revest@chromium.org>
-CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 0/6] bpf-lsm: Extend interoperability with IMA
-Thread-Topic: [PATCH v2 0/6] bpf-lsm: Extend interoperability with IMA
-Thread-Index: AQHYImlgJM6Z1962JUm5hvc+dgM0dqyjZeaAgACU/jCAAKZjAIAEHfiwgAAByqA=
-Date:   Mon, 28 Feb 2022 09:12:35 +0000
-Message-ID: <6a838878fdb3430b8e1d3e47aab7f22b@huawei.com>
-References: <20220215124042.186506-1-roberto.sassu@huawei.com>
-         <408a96085814b2578486b2859e63ff906f5e5876.camel@linux.ibm.com>
-         <5117c79227ce4b9d97e193fd8fb59ba2@huawei.com>
- <223d9eedc03f68cfa4f1624c4673e844e29da7d5.camel@linux.ibm.com> 
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.204.63.33]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229627AbiB1JRg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 04:17:36 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2056.outbound.protection.outlook.com [40.107.96.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1B645ADD;
+        Mon, 28 Feb 2022 01:16:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vo9i5bKekdSa53q4L4qgNf2TVJph84JcLbCr2aD05Xf1LeoRttQ9cDfAqQrE1pTPaVBYIjbitdkbhw/1HS6Yy2APIB+k6WXbryp9/k67XVfZgB+b63Y6pn+YKCBzIDWujfUr+PXR3sUyQCLtWWh22wByhJrwfRSTQw9Re5q9P1dZ2+KHY0fKgTJsa4o9geNhSnHLLrclxiS+MIyQ2gIDrAV35H9PhzHA7i1JsrDwcrN1RzJTJxY1dHak4Pwkdd+C8lz6prDvWpscxM+2GAl+qgqIWh4LBc93qat10zv0u3qR9vKWjvASbyxKnrpJZVXyXQ7NEotKVQfY5OPjRRbV4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Bi2aFOEfKQHhtGhnefFet49Nn+2HdyILh9zxHt1vico=;
+ b=mOiqLl2HlVd5yR5kI9SjZRKyzVufh2PrObY5IijNZt31XXIOKjD9rmqKPhkUpQvf2uCqYEY6WKlHKAV36KxbeOkz0ECam7a1Wt7xFmLdTWQuA9uSGYhCKUcrqe+y2tN4Mv1I+3MHsOZSK7X7ZgVB8jM9vcG1o6cx3mMZN1QejBIx0wjMTsLgF8heeFaJwSlbO1pzTQnNjWB7h1DSi/5TPxDKs6o/X18MLHsP/DuGmPOfHpA6XpS6Wd5UcyskyPbU+n+yHz2NR1RQUqifs6CosoFsJwLKsmGkItd33sKheUzzRS1R/G87+SniNH5rzecEn9JYxhE2S6HMKCl6g4q3DA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bi2aFOEfKQHhtGhnefFet49Nn+2HdyILh9zxHt1vico=;
+ b=Bo8W3EQ3sBEFF6BARMFyPNMQp96o2f9/Jji5I7KiTC1UyhM6jply0UC9LDl+2+vrlunTwN1fBAJgYsqafM4g1qfL7JQ1tvcDDxXRICRSpGzbB9N3fL0PBAFaygyfe0Tq4SH15o0ZABmrWZHgauqb+Vw+g/AmbXnugVFhaSarZe+ulUxLAs41HbkYhFRjbbXe02PjlUNfelTYHrO7THKPi8FBP8r6plPGxXhNi9JCdWatv9RMJ911CwksLpnWmbiVG7ijpp5lqqkOaz/qcroTxInaRDaHMkMA0mzINA1lNd2+BSVLkrZ+rsAGFiHm3csvTR1RVZjTcx8gpbD6fN+GwQ==
+Received: from MW4PR03CA0015.namprd03.prod.outlook.com (2603:10b6:303:8f::20)
+ by SN6PR12MB4750.namprd12.prod.outlook.com (2603:10b6:805:e3::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Mon, 28 Feb
+ 2022 09:16:56 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8f:cafe::9f) by MW4PR03CA0015.outlook.office365.com
+ (2603:10b6:303:8f::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21 via Frontend
+ Transport; Mon, 28 Feb 2022 09:16:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5017.22 via Frontend Transport; Mon, 28 Feb 2022 09:16:55 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 28 Feb
+ 2022 09:16:55 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Mon, 28 Feb 2022
+ 01:16:53 -0800
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (10.127.8.11) by
+ mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.9 via
+ Frontend Transport; Mon, 28 Feb 2022 01:16:50 -0800
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>, <dev@openvswitch.org>,
+        <netdev@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        <davem@davemloft.net>, Jiri Pirko <jiri@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+CC:     Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Ariel Levkovich <lariel@nvidia.com>, <coreteam@netfilter.org>
+Subject: [PATCH net v3 1/1] net/sched: act_ct: Fix flow table lookup failure with no originating ifindex
+Date:   Mon, 28 Feb 2022 11:16:46 +0200
+Message-ID: <20220228091646.3059-1-paulb@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c2b90dc2-a93a-4992-34aa-08d9fa9b10c5
+X-MS-TrafficTypeDiagnostic: SN6PR12MB4750:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB4750AE1EC6FFFFD87EC25225C2019@SN6PR12MB4750.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dbeFBgFIjWDoVWxaQCJtmQlJ+dXgh9g6dFQRf8hycAej/tUfTjIxNECWSdMd/5wrIsYRv1bJJ3eU08bJlhTF36Wuxh/TtUHB4N9xVLzxm/AZCcJ695gzc836qA0cqhhgpFrmNnHjhtj6YCcrve9V0wWnNhq4bnD8mJMkrH1xgv1sNuYoEMf4Xxhj06dBPD4sYiYHGxmKcruQpqzZrAMDrKAM6rZfG2GbErhGoamZtCo3PAHY4u2dY4yX48ybTf66Z8iArACOx9nlqFyPywavKVQTp4QmpMPvVvB5bCRZR3kYF6qRZJetI7A+RyleJU3OM0IhjQgbMXNOlcTPiwTW1Kpx2GJHdGIM1IcuWARV1uY25Bdnj2p2vzN+uHf7Q3vbwo6BG1v1QjiJz0eNbG1nhStmLdHNF9yW1BdAtklZMDdVyUuE5AW/M17r8rviiKy81RGaIRJFkzSdyhQv0gn4gOXAs1sDS39giiAXJXN3hbKV7DWDYywRjagRhWau/IAu0GTxs2AH16Ky+caOfDpz7tqtu9XEVPE9dE/IGL9jzPtBBEgm029+XJe1LPAreSV0EN8M13p0g97HKmmOhabw/zBwx6QGS2TAS0qvkb5kGfuXEmkoXKYq0xZNEGbDTgNq7gIJADCCgbmjVQB5qAdRwCxDDTGd8PyIfoaHR6U+bN9SlH741RG1eJVaGyKOuqU6DFD1dAzKGwqhqltH2gcbn6CMq1pGsHbUmEkZATjCCK4=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(8936002)(86362001)(36860700001)(47076005)(54906003)(508600001)(82310400004)(110136005)(70206006)(6666004)(70586007)(40460700003)(4326008)(8676002)(316002)(26005)(186003)(1076003)(426003)(336012)(81166007)(356005)(921005)(5660300002)(7416002)(2906002)(2616005)(83380400001)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 09:16:55.6776
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2b90dc2-a93a-4992-34aa-08d9fa9b10c5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4750
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Roberto Sassu
-> Sent: Monday, February 28, 2022 10:08 AM
-> > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
-> > Sent: Friday, February 25, 2022 8:11 PM
-> > On Fri, 2022-02-25 at 08:41 +0000, Roberto Sassu wrote:
-> > > > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
-> > > > Sent: Friday, February 25, 2022 1:22 AM
-> > > > Hi Roberto,
-> > > >
-> > > > On Tue, 2022-02-15 at 13:40 +0100, Roberto Sassu wrote:
-> > > > > Extend the interoperability with IMA, to give wider flexibility for the
-> > > > > implementation of integrity-focused LSMs based on eBPF.
-> > > >
-> > > > I've previously requested adding eBPF module measurements and signature
-> > > > verification support in IMA.  There seemed to be some interest, but
-> > > > nothing has been posted.
-> > >
-> > > Hi Mimi
-> > >
-> > > for my use case, DIGLIM eBPF, IMA integrity verification is
-> > > needed until the binary carrying the eBPF program is executed
-> > > as the init process. I've been thinking to use an appended
-> > > signature to overcome the limitation of lack of xattrs in the
-> > > initial ram disk.
-> >
-> > I would still like to see xattrs supported in the initial ram disk.
-> > Assuming you're still interested in pursuing it, someone would need to
-> > review and upstream it.  Greg?
-> 
-> I could revise this work. However, since appended signatures
-> would work too, I would propose to extend this appraisal
-> mode to executables, if it is fine for you.
+After cited commit optimizted hw insertion, flow table entries are
+populated with ifindex information which was intended to only be used
+for HW offload. This tuple ifindex is hashed in the flow table key, so
+it must be filled for lookup to be successful. But tuple ifindex is only
+relevant for the netfilter flowtables (nft), so it's not filled in
+act_ct flow table lookup, resulting in lookup failure, and no SW
+offload and no offload teardown for TCP connection FIN/RST packets.
 
-Regarding this patch set, I kindly ask if you could accept it,
-after I make the changes suggested.
+To fix this, remove ifindex from hash, and allow lookup without
+the ifindex. Act ct will lookup without the ifindex filled.
 
-The changes are simple, and waiting another kernel cycle
-seems too long.
+Fixes: 9795ded7f924 ("net/sched: act_ct: Fill offloading tuple iifidx")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+---
+Changelog:
+   v2->v3:
+     As suggested by pablo, moved tc specific hardware offload related ifindex
+     to a tc specific field, so wont be part of hash/lookup.
+   v1->v2:
+     Replaced flag withdx being zero at lookup().
+     Fixed commit msg Fixes header subject
 
-Thanks
+ include/net/netfilter/nf_flow_table.h | 3 +--
+ net/netfilter/nf_flow_table_core.c    | 3 +++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-Roberto
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index a3647fadf1cc..61dc5e833557 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -114,8 +114,6 @@ struct flow_offload_tuple {
+ 		__be16			dst_port;
+ 	};
+ 
+-	int				iifidx;
+-
+ 	u8				l3proto;
+ 	u8				l4proto;
+ 	struct {
+@@ -126,6 +124,7 @@ struct flow_offload_tuple {
+ 	/* All members above are keys for lookups, see flow_offload_hash(). */
+ 	struct { }			__hash;
+ 
++	int				iifidx;
+ 	u8				dir:2,
+ 					xmit_type:2,
+ 					encap_num:2,
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index b90eca7a2f22..01d32f08a1fd 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -257,6 +257,9 @@ static int flow_offload_hash_cmp(struct rhashtable_compare_arg *arg,
+ 	const struct flow_offload_tuple *tuple = arg->key;
+ 	const struct flow_offload_tuple_rhash *x = ptr;
+ 
++	if (tuple->iifidx && tuple->iifidx != x->tuple.iifidx)
++		return 1;
++
+ 	if (memcmp(&x->tuple, tuple, offsetof(struct flow_offload_tuple, __hash)))
+ 		return 1;
+ 
+-- 
+2.30.1
 
-HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
-Managing Director: Li Peng, Zhong Ronghua
-
-> > > At that point, the LSM is attached and it can enforce an
-> > > execution policy, allowing or denying execution and mmap
-> > > of files depending on the digest lists (reference values) read
-> > > by the user space side.
-> > >
-> > > After the LSM is attached, IMA's job would be just to calculate
-> > > the file digests (currently, I'm using an audit policy to ensure
-> > > that the digest is available when the eBPF program calls
-> > > bpf_ima_inode_hash()).
-> > >
-> > > The main benefit of this patch set is that the audit policy
-> > > would not be required and digests are calculated only when
-> > > requested by the eBPF program.
-> >
-> > Roberto, there's an existing eBPF integrity gap that needs to be
-> > closed, perhaps not for your usecase, but in general.  Is that
-> > something you can look into?
-> 
-> It could be possible I look into it.
-> 
-> Roberto
-> 
-> HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
-> Managing Director: Li Peng, Zhong Ronghua
