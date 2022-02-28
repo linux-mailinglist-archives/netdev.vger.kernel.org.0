@@ -2,67 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D9B4C6B66
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:57:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 513AD4C6B72
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 13:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236051AbiB1L6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 06:58:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
+        id S236077AbiB1MA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 07:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236046AbiB1L6V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:58:21 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 563DBE6D;
-        Mon, 28 Feb 2022 03:57:40 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 752C7ED1;
-        Mon, 28 Feb 2022 03:57:40 -0800 (PST)
-Received: from [10.1.39.130] (e127744.cambridge.arm.com [10.1.39.130])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A90BD3F73D;
-        Mon, 28 Feb 2022 03:57:37 -0800 (PST)
-Subject: Re: [PATCH] perf test: Add perf_event_attr tests for the arm_spe
- event
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, James Clark <james.clark@arm.com>
-References: <20220126160710.32983-1-german.gomez@arm.com>
- <20220205081013.GA391033@leoy-ThinkPad-X240s>
- <37a1a2f9-2c94-664f-19fb-8337029b8fe5@arm.com>
- <20220207110325.GA73277@leoy-ThinkPad-X240s>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <08166ea7-243b-b662-0913-6edf6abcd458@arm.com>
-Date:   Mon, 28 Feb 2022 11:56:46 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S232330AbiB1MAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 07:00:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D606661E
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 04:00:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48861B81110
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EC23BC340F3;
+        Mon, 28 Feb 2022 12:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646049611;
+        bh=hkLRt9JbJ0EUJfif3jjqWRiRglHtQ/OYjXfQkPH2beo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eD5gPrdz4jfSzFqPf2eFXAg51NV9VX+tM/nLVRW9YZQ5KMUuvjv+ELqyvICr1M/G9
+         mAZDKpWSwAT5ikRRvmgPr36jDuT02C3mXvHkJaEL4fnAiyk3XllaHqZpYht/UfdHwd
+         st8tiet0cc84HEsVzqT+zLuRMsubWtlGl+7U4nckcRN9T75zl5S0Q4W5d2BGHNrkKr
+         a4icIR0s/+2ESkLTyTIXlXo0PK8PzWxe3ZPIEHGPJ7SL3MtFnAd5ltUD/9mN86+4ZA
+         VdknY1m9IGPNUd0fHch4ZxvA+r1EE5DhSbPsifw7OxnM36Zazmb940FKE+zFYQuflu
+         Th0FyM1GDt+Bg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3AF7E6D4BB;
+        Mon, 28 Feb 2022 12:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220207110325.GA73277@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: phylink: remove phylink_set_pcs()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164604961086.22318.12233193981507469033.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 12:00:10 +0000
+References: <E1nNyUg-00B1aX-Ft@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1nNyUg-00B1aX-Ft@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 07/02/2022 11:03, Leo Yan wrote:
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Sat, 26 Feb 2022 14:56:22 +0000 you wrote:
+> As all users of phylink_set_pcs() have now been updated to use the
+> mac_select_pcs() method, it can be removed from the phylink kernel
+> API and its functionality moved into phylink_major_config().
+> 
+> Removing phylink_set_pcs() gives us a single approach for attaching
+> a PCS within phylink.
+> 
 > [...]
-> Thanks for confirmation, German.
->
-> You could add my testing tag for this patch:
->
-> Tested-by: Leo Yan <leo.yan@linaro.org>
 
-Thanks Leo
+Here is the summary with links:
+  - [net-next] net: phylink: remove phylink_set_pcs()
+    https://git.kernel.org/netdev/net-next/c/a5081bad2eac
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
