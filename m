@@ -2,89 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB9A4C7E83
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 00:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED9284C7E8A
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 00:41:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiB1Xkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 18:40:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
+        id S231158AbiB1Xm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 18:42:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiB1Xkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 18:40:52 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8912EB53;
-        Mon, 28 Feb 2022 15:40:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8DD70CE18F6;
-        Mon, 28 Feb 2022 23:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B6C7FC340F1;
-        Mon, 28 Feb 2022 23:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646091609;
-        bh=KYjxY1UtUlxytahQl/GTKs0PeixkvM2dMA2VBn6Njs4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CJaMj+8yhGv/MiJCpbsIA0PEPU143DuKLYBiOBvBw6W7ygfiIOGcg3zUXdwM9HZkp
-         jpvhWXtIq8zEVOopE+XV99fdy97RA8/UAtBFEFnIgbKT7tVYkM10MxehrzKZPFQgX4
-         7dlzMOTzrIn/KETe2dO/BNBx1vedSFT+AR1AYT3ci3WHplqtwgHtm9Srm6IsjTWDVt
-         ZqvfdjM4AlQ+R7aYZdtrDCfvqgtgOIPFvtA7SS4ouChaGYS7cfu/8xpTBSHHJcRq8e
-         S4QmxIuk7hqZyvDcKd+GkPsq3YtFC3BEIETOM/va5L0z8OHsc5GxF/xPZMfVWo1d9I
-         E9ted5EXslHiQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 962D6E6D4BB;
-        Mon, 28 Feb 2022 23:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231127AbiB1Xm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 18:42:29 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04916EBAFB;
+        Mon, 28 Feb 2022 15:41:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=EB9oE9Oa7EmtoZ1Lx803QHV2N2v7wotOXn74UfZHS+0=; b=cB9s1pIx16Y4LGAgwHkxzEhBJ/
+        4fHVywdn15fIhMBTlSwjxeP6GAqFfbYARgdvSGkTTc13RV+1Gxvv4OojrS0KGNJSroguP3Uc0uuWb
+        CKTPLVm/Yopu+qCmVQ0SAkVz2N9w7L4nzZKB/eGIlxvpdgD7IZQpNQjZ++FHjxk2XjX0fYtHRwNQe
+        vXQdIKj4wmRnKIi7tPUGI1mPKhTLFLdKSodWM/jhZf9d/SXDiuzAXhq6s0enVmPneQ7GgI/E1hsy2
+        OPA4p0oHWRDSu9Tfu9HsrdgL0ygWhpDI3BqaKoApeBMdz6/zM1K591v17H2r74LEmjAShj3dCeY3t
+        ZXdAUydw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOpe8-00EQ0Q-40; Mon, 28 Feb 2022 23:41:40 +0000
+Date:   Mon, 28 Feb 2022 15:41:40 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Yan Zhu <zhuyan34@huawei.com>, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        keescook@chromium.org, kpsingh@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liucheng32@huawei.com, netdev@vger.kernel.org,
+        nixiaoming@huawei.com, songliubraving@fb.com,
+        xiechengliang1@huawei.com, yhs@fb.com, yzaikin@google.com,
+        zengweilin@huawei.com
+Subject: Re: [PATCH v2 sysctl-next] bpf: move the bpf syscall sysctl table to
+ bpf module
+Message-ID: <Yh1dtBTeRtjD0eGp@bombadil.infradead.org>
+References: <YhWQ+0qPorcJ/Z8l@bombadil.infradead.org>
+ <20220223102808.80846-1-zhuyan34@huawei.com>
+ <df1146a2-c718-fa6c-ec35-de75ff27484f@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v3 0/2] Modify BPF_JIT_ALWAYS_ON and
- BPF_JIT_DEFAULT_ON
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164609160961.29256.14375573252999533886.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 23:40:09 +0000
-References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        lixuefeng@loongson.cn, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <df1146a2-c718-fa6c-ec35-de75ff27484f@iogearbox.net>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Tue, 22 Feb 2022 17:57:04 +0800 you wrote:
-> v3:
->   -- Use "return failure" instead of "return in failure".
->   -- Use "Enable BPF JIT by default" for config BPF_JIT_DEFAULT_ON.
+On Mon, Feb 28, 2022 at 04:53:44PM +0100, Daniel Borkmann wrote:
+> Hi Yan,
 > 
-> v2:
->   -- Use the full path /proc/sys/net/core/bpf_jit_enable in the help text.
->   -- Update the commit message to make it clear in patch #2.
+> On 2/23/22 11:28 AM, Yan Zhu wrote:
+> > Aggregating the code of the feature in the code file of the feature
+> > itself can improve readability and reduce merge conflicts. So move
+> > the bpf syscall sysctl table to kernel/bpf/syscall.c
+> > 
+> > Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
+> > 
+> > ---
+> > v1->v2:
+> >    1.Added patch branch identifier sysctl-next.
+> >    2.Re-describe the reason for the patch submission.
 > 
-> [...]
+> I'm not applying it given there is very little value in this change, see also what
+> has been said earlier:
+> 
+> https://lore.kernel.org/bpf/CAADnVQKmBoQEG1+nmrCg2ePVncn9rZJX9R4eucP9ULiY=xVGjQ@mail.gmail.com/
 
-Here is the summary with links:
-  - [bpf-next,v3,1/2] bpf: Add some description about BPF_JIT_ALWAYS_ON in Kconfig
-    https://git.kernel.org/bpf/bpf-next/c/b664e255ba3c
-  - [bpf-next,v3,2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable in Kconfig
-    (no matching commit)
+Daniel,
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+sorry folk are seing you patches with crap commit logs. The
+justification should be made clearer: we're moving sysctls out of
+kernel/sysctl.c as its a mess. I already moved all filesystem sysctls
+out. And with time the goal is to move all sysctls out to their own
+susbsystem/actual user.
 
+kernel/sysctl.c has grown to an insane mess and its easy to run
+into conflicts with it. The effort to move them out is part of this.
 
+The commit logs should not suck though...
+
+  Luis
