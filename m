@@ -2,54 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0064C6B45
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92B3A4C6B47
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:50:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236025AbiB1Luy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 06:50:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42768 "EHLO
+        id S236034AbiB1Lu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 06:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234423AbiB1Luv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:50:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9D6593A9;
-        Mon, 28 Feb 2022 03:50:11 -0800 (PST)
+        with ESMTP id S236018AbiB1Luw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:50:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC0971C8A
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 03:50:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AB14610A3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CC03B81101
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 11:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 322E8C340FC;
         Mon, 28 Feb 2022 11:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 640F4C340F8;
-        Mon, 28 Feb 2022 11:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646049010;
-        bh=BmsfSKcZuGovauzItirHH1LKDVWGBOyN50g10SbtrMY=;
+        s=k20201202; t=1646049011;
+        bh=jGIWcegPuqpaPfc+0XPK2N8i9Vs/qv2l7irEQCvGpEY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Yir59Ls9c7Yoy/NaGYlRFLpUCKvumUNoW1gSeUcB3+Gkz0K+iSQKHzTouS9OnLcI8
-         ohKRrkW4fDZoVUUzyKvT++iWiJtpjpuCEDiKw+B6dO+BPH9I71b1BLULhxQa62zS/q
-         e5y72dMD6HmUG6JonMbSESNGsi3O3DlxLlTIEtOA/Fzpg2HfwX/2MwwtiPf/JmQOfe
-         TrhQ/d0WBZvOy7ur5O4Oz11G3LbbibLlEn5dNZtvYM+wGvitsQmElvQ7RUag2B8/fk
-         PY5QzgwVY3e+HC4Zb0tAyVOkEWSKO2rfLjsBRD21lnZblkBEyr3GhmdCtFvAQmMZqu
-         Wt20PebZalNBg==
+        b=M6dSdlJUYyfczM3Wc6wRhdGJk7Dc20DLAdpp23CN/5ydTheHV6YLwj12hIVM/06Dk
+         s8U5dAzvh20nSijHWz20kqtj4YDjhVC6OzP8VVFlWc92lHFgmk3GBeRLzc/RDUZw1Z
+         t+UBntw7dU/eSetS5C20xYS+gB26rzLV2B3TCt048JrujLvJJYtGbQayiHM2kJrOjF
+         cQhR0LtliYxX/FObAxs8wBpSVSsjS8CuLZ50BADSoPXOw0oGq4aoUavci39sLTZb8H
+         MHzQECxfWSUOQGJnF+Fgv5HLxo4z979n1YZxC4ban5Ldr0RnBvHHlISjG32+IXvrzd
+         5m9DUuh4eq6tQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4B010EAC09E;
-        Mon, 28 Feb 2022 11:50:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1E756F0383B;
+        Mon, 28 Feb 2022 11:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ipa: fix a build dependency
+Subject: Re: [PATCH net-next] ionic: no transition while stopping
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164604901029.16787.14124027324200684971.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 11:50:10 +0000
-References: <20220225201530.182085-1-elder@linaro.org>
-In-Reply-To: <20220225201530.182085-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, rdunlap@infradead.org,
-        bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, avuyyuru@codeaurora.org,
-        jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <164604901111.16787.5829156287907062203.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 11:50:11 +0000
+References: <20220225171618.31733-1-snelson@pensando.io>
+In-Reply-To: <20220225171618.31733-1-snelson@pensando.io>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        drivers@pensando.io
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,27 +58,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 25 Feb 2022 14:15:30 -0600 you wrote:
-> An IPA build problem arose in the linux-next tree the other day.
-> The problem is that a recent commit adds a new dependency on some
-> code, and the Kconfig file for IPA doesn't reflect that dependency.
-> As a result, some configurations can fail to build (particularly
-> when COMPILE_TEST is enabled).
+On Fri, 25 Feb 2022 09:16:18 -0800 you wrote:
+> Make sure we don't try to transition the fw_status_ready
+> while we're still in the FW_STOPPING state, else we can
+> get stuck in limbo waiting on a transition that already
+> happened.
 > 
-> The recent patch adds calls to qmp_get(), qmp_put(), and qmp_send(),
-> and those are built based on the QCOM_AOSS_QMP config option.  If
-> that symbol is not defined, stubs are defined, so we just need to
-> ensure QCOM_AOSS_QMP is compatible with QCOM_IPA, or it's not
-> defined.
+> While we're here we can remove a superfluous check on
+> the lif pointer.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: ipa: fix a build dependency
-    https://git.kernel.org/netdev/net/c/caef14b7530c
+  - [net-next] ionic: no transition while stopping
+    https://git.kernel.org/netdev/net-next/c/688a5efe0ced
 
 You are awesome, thank you!
 -- 
