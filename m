@@ -2,150 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8574C7BB3
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 22:19:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B2E44C7BCA
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 22:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbiB1VTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 16:19:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        id S230207AbiB1VWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 16:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbiB1VTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 16:19:47 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D54EF0A4;
-        Mon, 28 Feb 2022 13:19:07 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id v5-20020a17090ac90500b001bc40b548f9so336908pjt.0;
-        Mon, 28 Feb 2022 13:19:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=pX3FOaQ5tpG+krWAy5EzbawK39YqA5YwRZTg6hddt4E=;
-        b=JpEWCU5sl0Tb/FD34RSH61Ey9dRKreZqOQa3CJ02luf0uqIT78+8GWNevF0TXmNO1k
-         V82hjNGseb3oWLNgnnFwXHAFmfIF+pTCtPsXm95pt2iCzBmJFwg04njU2K1WfIC8K4PQ
-         JYTCrkA4ACMCh2biL4u47uoOFfhnbmO/1jCCSOx3OESfK5+oDGNitg9s7NqsmIU5fVsE
-         xsR4ABTTJUTksMDshckaPyVLHegSArBm3erCaRT01IEJkH2S1g98XNdRHKV6JZW5AanM
-         gI9+nSzlxhKCRaqGLAQjGqwME5o9/K6faQyfblLD265MKP0MWlgdnuFxCRxjUTwlasET
-         Zo4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=pX3FOaQ5tpG+krWAy5EzbawK39YqA5YwRZTg6hddt4E=;
-        b=Ko2q8+/6PEwR0VrAV6h+RSAB96UwzbTdlCl4tV/4WPgEJoF2e5qKA4v8mBfiOzqyZ6
-         nTyB68vN8OhgwW3oPd1ADgqLL/4iPtyyuvzVgQyZfDb8O9/CLlFVuCrU52bK+wieyzAU
-         +p+dnIQ8XTlg6Z758varQBJGtq6QIys7hCKSTGYJJCxqgPmRvHs2mPTu94UyIBXEgoFl
-         uWYi+5nRvD6zyppikWJ0xUOHkjdnjXioM4apZ3DapID1z60zqZ/O0tTxoc7GYgzUDKd0
-         NjTM7mr1kqdSE/jz9SvhqmL8EXw//7pealHn4jxi5FIAKMxKByPt+hAu6e+ZOEAsQXLn
-         AZ2A==
-X-Gm-Message-State: AOAM532vQfsiXoNABePKooePP9squUxMt6sTKNrEfYFcjxUw4wjk1cyZ
-        +dyeYv2/tscfCc4sK4FJKmQ74Pd97eZGL+nXF2Q=
-X-Google-Smtp-Source: ABdhPJxYQDaw0FFWrTXZCk3OvnKpy6mSdQ8Z9qbCWYQ2FvSetamSp4Rz90y2uoGU7tjomvOtre1MYsL9s+rZuYttBVs=
-X-Received: by 2002:a17:902:ce8a:b0:14f:fd0e:e4a4 with SMTP id
- f10-20020a170902ce8a00b0014ffd0ee4a4mr22765912plg.47.1646083147399; Mon, 28
- Feb 2022 13:19:07 -0800 (PST)
+        with ESMTP id S229833AbiB1VWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 16:22:08 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF75106617;
+        Mon, 28 Feb 2022 13:21:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646083288; x=1677619288;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=L+K0+w+qqaYVOUmh5V0We/3a1wlUElkhhA2J8F+MrPM=;
+  b=NQZ1YAvVdGw4XrX+KG5kPdx5Ip0EDTWAB5NGLu8mjO5vLJO9UGN+jaIk
+   SpVrgdJHhUt8ZC0Ox5WNT9wKS4RzvJouNAh1wP/LVuVdczS0jGAmaJyP+
+   O2re4vbvvaHG2sqaR13dWI4e1xrShvFcDX7X79e28gQaDEDyJmmTuPeuZ
+   hx59RVleDMS6qywFNwvEIm+N81M7SjL93uJYZrD7IIfqg0vHwvbciM6Cn
+   YcONSDMrLYUGRmM6+pYe0XXQQpA7iWBt8zMNY+HDBRPMaf11DfWgD/Evu
+   hAoBsdLhpBn/rf56zHFACloHq1lgiM0fWiLaqw2/ScEgT9CIzGPowUmQv
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="277651809"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="277651809"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 13:21:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="593365560"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 28 Feb 2022 13:21:25 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOnSO-0007nq-Rz; Mon, 28 Feb 2022 21:21:24 +0000
+Date:   Tue, 1 Mar 2022 05:21:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     wudaemon <wudaemon@163.com>, davem@davemloft.net, kuba@kernel.org,
+        m.grzeschik@pengutronix.de, chenhao288@hisilicon.com, arnd@arndb.de
+Cc:     kbuild-all@lists.01.org, wudaemon@163.com, shenyang39@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: ksz884x: use time_before in netdev_open for
+ compatibility and remove static variable
+Message-ID: <202203010501.zwejOIJA-lkp@intel.com>
+References: <20220228162955.22819-1-wudaemon@163.com>
 MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
- <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com> <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
-In-Reply-To: <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
-Reply-To: noloader@gmail.com
-From:   Jeffrey Walton <noloader@gmail.com>
-Date:   Mon, 28 Feb 2022 16:18:56 -0500
-Message-ID: <CAH8yC8nwp8f3rANhCiiP_Oiw2cjfqCwAgZdTXY9OxtN9Tmm7HA@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228162955.22819-1-wudaemon@163.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 3:45 PM James Bottomley
-<James.Bottomley@hansenpartnership.com> wrote:
-> ...
-> > Just from skimming over the patches to change this and experience
-> > with the drivers/subsystems I help to maintain I think the primary
-> > pattern looks something like this:
-> >
-> > list_for_each_entry(entry, head, member) {
-> >      if (some_condition_checking(entry))
-> >          break;
-> > }
-> > do_something_with(entry);
->
->
-> Actually, we usually have a check to see if the loop found anything,
-> but in that case it should something like
->
-> if (list_entry_is_head(entry, head, member)) {
->     return with error;
-> }
-> do_somethin_with(entry);
+Hi wudaemon,
 
-Borrowing from c++, perhaps an explicit end should be used:
+Thank you for the patch! Yet something to improve:
 
-  if (list_entry_not_end(entry))
-    do_somethin_with(entry)
+[auto build test ERROR on net-next/master]
+[also build test ERROR on net/master soc/for-next linus/master v5.17-rc6 next-20220228]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-It is modelled after c++ and the 'while(begin != end) {}' pattern.
+url:    https://github.com/0day-ci/linux/commits/wudaemon/net-ksz884x-use-time_before-in-netdev_open-for-compatibility-and-remove-static-variable/20220301-003151
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b42a738e409b62f38a15ce7530e8290b00f823a4
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220301/202203010501.zwejOIJA-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/5db9da911f33045f8dd202d40c20530211b48af0
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review wudaemon/net-ksz884x-use-time_before-in-netdev_open-for-compatibility-and-remove-static-variable/20220301-003151
+        git checkout 5db9da911f33045f8dd202d40c20530211b48af0
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
 
-Jeff
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/ethernet/micrel/ksz884x.c: In function 'prepare_hardware':
+   drivers/net/ethernet/micrel/ksz884x.c:5363:23: warning: unused variable 'next_jiffies' [-Wunused-variable]
+    5363 |         unsigned long next_jiffies = 0;
+         |                       ^~~~~~~~~~~~
+   In file included from include/linux/bitops.h:7,
+                    from include/linux/kernel.h:22,
+                    from include/linux/interrupt.h:6,
+                    from drivers/net/ethernet/micrel/ksz884x.c:12:
+   drivers/net/ethernet/micrel/ksz884x.c: In function 'netdev_open':
+>> drivers/net/ethernet/micrel/ksz884x.c:5430:41: error: 'next_jiffies' undeclared (first use in this function)
+    5430 |                         if (time_before(next_jiffies, jiffies))
+         |                                         ^~~~~~~~~~~~
+   include/linux/typecheck.h:11:16: note: in definition of macro 'typecheck'
+      11 |         typeof(x) __dummy2; \
+         |                ^
+   include/linux/jiffies.h:108:33: note: in expansion of macro 'time_after'
+     108 | #define time_before(a,b)        time_after(b,a)
+         |                                 ^~~~~~~~~~
+   drivers/net/ethernet/micrel/ksz884x.c:5430:29: note: in expansion of macro 'time_before'
+    5430 |                         if (time_before(next_jiffies, jiffies))
+         |                             ^~~~~~~~~~~
+   drivers/net/ethernet/micrel/ksz884x.c:5430:41: note: each undeclared identifier is reported only once for each function it appears in
+    5430 |                         if (time_before(next_jiffies, jiffies))
+         |                                         ^~~~~~~~~~~~
+   include/linux/typecheck.h:11:16: note: in definition of macro 'typecheck'
+      11 |         typeof(x) __dummy2; \
+         |                ^
+   include/linux/jiffies.h:108:33: note: in expansion of macro 'time_after'
+     108 | #define time_before(a,b)        time_after(b,a)
+         |                                 ^~~~~~~~~~
+   drivers/net/ethernet/micrel/ksz884x.c:5430:29: note: in expansion of macro 'time_before'
+    5430 |                         if (time_before(next_jiffies, jiffies))
+         |                             ^~~~~~~~~~~
+   include/linux/typecheck.h:12:25: warning: comparison of distinct pointer types lacks a cast
+      12 |         (void)(&__dummy == &__dummy2); \
+         |                         ^~
+   include/linux/jiffies.h:106:10: note: in expansion of macro 'typecheck'
+     106 |          typecheck(unsigned long, b) && \
+         |          ^~~~~~~~~
+   include/linux/jiffies.h:108:33: note: in expansion of macro 'time_after'
+     108 | #define time_before(a,b)        time_after(b,a)
+         |                                 ^~~~~~~~~~
+   drivers/net/ethernet/micrel/ksz884x.c:5430:29: note: in expansion of macro 'time_before'
+    5430 |                         if (time_before(next_jiffies, jiffies))
+         |                             ^~~~~~~~~~~
+
+
+vim +/next_jiffies +5430 drivers/net/ethernet/micrel/ksz884x.c
+
+  5397	
+  5398	/**
+  5399	 * netdev_open - open network device
+  5400	 * @dev:	Network device.
+  5401	 *
+  5402	 * This function process the open operation of network device.  This is caused
+  5403	 * by the user command "ifconfig ethX up."
+  5404	 *
+  5405	 * Return 0 if successful; otherwise an error code indicating failure.
+  5406	 */
+  5407	static int netdev_open(struct net_device *dev)
+  5408	{
+  5409		struct dev_priv *priv = netdev_priv(dev);
+  5410		struct dev_info *hw_priv = priv->adapter;
+  5411		struct ksz_hw *hw = &hw_priv->hw;
+  5412		struct ksz_port *port = &priv->port;
+  5413		int i;
+  5414		int p;
+  5415		int rc = 0;
+  5416	
+  5417		priv->multicast = 0;
+  5418		priv->promiscuous = 0;
+  5419	
+  5420		/* Reset device statistics. */
+  5421		memset(&dev->stats, 0, sizeof(struct net_device_stats));
+  5422		memset((void *) port->counter, 0,
+  5423			(sizeof(u64) * OID_COUNTER_LAST));
+  5424	
+  5425		if (!(hw_priv->opened)) {
+  5426			rc = prepare_hardware(dev);
+  5427			if (rc)
+  5428				return rc;
+  5429			for (i = 0; i < hw->mib_port_cnt; i++) {
+> 5430				if (time_before(next_jiffies, jiffies))
+  5431					next_jiffies = jiffies + HZ * 2;
+  5432				else
+  5433					next_jiffies += HZ * 1;
+  5434				hw_priv->counter[i].time = next_jiffies;
+  5435				hw->port_mib[i].state = media_disconnected;
+  5436				port_init_cnt(hw, i);
+  5437			}
+  5438			if (hw->ksz_switch)
+  5439				hw->port_mib[HOST_PORT].state = media_connected;
+  5440			else {
+  5441				hw_add_wol_bcast(hw);
+  5442				hw_cfg_wol_pme(hw, 0);
+  5443				hw_clr_wol_pme_status(&hw_priv->hw);
+  5444			}
+  5445		}
+  5446		port_set_power_saving(port, false);
+  5447	
+  5448		for (i = 0, p = port->first_port; i < port->port_cnt; i++, p++) {
+  5449			/*
+  5450			 * Initialize to invalid value so that link detection
+  5451			 * is done.
+  5452			 */
+  5453			hw->port_info[p].partner = 0xFF;
+  5454			hw->port_info[p].state = media_disconnected;
+  5455		}
+  5456	
+  5457		/* Need to open the port in multiple device interfaces mode. */
+  5458		if (hw->dev_count > 1) {
+  5459			port_set_stp_state(hw, port->first_port, STP_STATE_SIMPLE);
+  5460			if (port->first_port > 0)
+  5461				hw_add_addr(hw, dev->dev_addr);
+  5462		}
+  5463	
+  5464		port_get_link_speed(port);
+  5465		if (port->force_link)
+  5466			port_force_link_speed(port);
+  5467		else
+  5468			port_set_link_speed(port);
+  5469	
+  5470		if (!(hw_priv->opened)) {
+  5471			hw_setup_intr(hw);
+  5472			hw_enable(hw);
+  5473			hw_ena_intr(hw);
+  5474	
+  5475			if (hw->mib_port_cnt)
+  5476				ksz_start_timer(&hw_priv->mib_timer_info,
+  5477					hw_priv->mib_timer_info.period);
+  5478		}
+  5479	
+  5480		hw_priv->opened++;
+  5481	
+  5482		ksz_start_timer(&priv->monitor_timer_info,
+  5483			priv->monitor_timer_info.period);
+  5484	
+  5485		priv->media_state = port->linked->state;
+  5486	
+  5487		set_media_state(dev, media_connected);
+  5488		netif_start_queue(dev);
+  5489	
+  5490		return 0;
+  5491	}
+  5492	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
