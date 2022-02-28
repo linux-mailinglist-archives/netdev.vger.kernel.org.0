@@ -2,83 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8A14C6E37
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 14:31:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9B94C6E56
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 14:37:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236238AbiB1Nbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 08:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S234616AbiB1Nhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 08:37:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236138AbiB1Nbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 08:31:41 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F717B558;
-        Mon, 28 Feb 2022 05:31:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 66FF4CE13E7;
-        Mon, 28 Feb 2022 13:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B7E4EC340F4;
-        Mon, 28 Feb 2022 13:30:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646055059;
-        bh=M2urn0XGj814OjvYuKIgslCugNSblEWs/ev+ePMuZcE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=p59+9DCc5R/53i9QR7cqv4svcUxoEl7usKpSaZkda7ouxI8mouMv8Vxndzg4YhMSE
-         +zfvWPebCQOY2wjLvDUdSjOqqUBa8CyX2CXe6W242LqCTa/gf5heaN4CAFL0c+Snt2
-         iRQtgFvPpStorbemhsFOqvdl0gBnhTwz7onjiSYkhi55WagqPz8adAjgEpqtP7BrWt
-         3Z7NK7J08zpEh0MbgZ9/QiZdIzY11KBuk+Izt5F8EAkwmMRPfynlVTBhTZ0sjfvAew
-         bYqEaWijoYpbBOSOlxhu7YG3lvK14aSeZOYiUp0zxm8V+jRzry5BoAOKg+PsASj9Qo
-         +AQ5XU7kKf8XQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A0428F0383B;
-        Mon, 28 Feb 2022 13:30:59 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: ethernet: sun: use time_is_before_jiffies() instead of
- open coding it
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164605505965.13902.2621872086940262274.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 13:30:59 +0000
-References: <1646017995-61083-1-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1646017995-61083-1-git-send-email-wangqing@vivo.com>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        with ESMTP id S235243AbiB1Nho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 08:37:44 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F8D7A9BC;
+        Mon, 28 Feb 2022 05:37:06 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id m14so21399520lfu.4;
+        Mon, 28 Feb 2022 05:37:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=ybYQe3xQ9S5Kw+QobqlTw6DrtwPzxToutzfXG54v3Ws=;
+        b=Ktwvg8Yzec6SCgspCgAtCNeyZaMmjOQ46tGIrmha3/VYC41lz8DPB4mivi3vUqSsEw
+         oeEUmmQpYXJqFVv9r42hKGR2oCuvn4AXFPpcl71mOt8itQY97F3SAhs7DbJib8U9BZ94
+         r6wGFLakuFTgA2mg29yyuB4hI2tklxskJncfskyOzNDqAwJTVXDC6NIxHI8d9u5CNxWi
+         syjwnzPaH3EDKhelG4ZXJYXwkdBg098WWsuTCcdKF5QBDLXyqKBh7WVVf29lluRWlBBc
+         42yWmHwP8KudzEkO2M99lXH6x+uukDnCa9MYNYIg5+fnL2jFwXeKyAUbNLWJRJP+mhtb
+         M4YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=ybYQe3xQ9S5Kw+QobqlTw6DrtwPzxToutzfXG54v3Ws=;
+        b=x2o94rp0YbkIx9IX/GUIP1DZYZps7Z2EYyCRGSqHLFSovJ51y5whcs2MS3RdC3ZIKU
+         AlRxg4G7XOjB+jfo/PI13ngpgWM+TI9z9zziFAzg6tNA/0rykqOf9DqMKpZmk5fAsGkI
+         +sY4l9v9W1MDAw68Eg994UB0D39e/nU7rpKx4C2VQngGRCkOs62kzYwSs49E9M9s2uiA
+         EryfPpAH6EH4Pv+JvIq7AMioGfVfp+FIje8gDTRd+U2qZdpk+nYuqgc9+kfkF8J8AN7w
+         H0J+nzLMmUNIojRKWawy/Ac1fvZJ/b3MPycA0ucs5bga7C6oTzrIFRiTn7SAf7/W3IFL
+         lOjA==
+X-Gm-Message-State: AOAM53319irHWCA2z37DQuvI6F/c3XLMYViyBPjauv7vGivPUgJOrqRF
+        c+Ag/AHaYy7gNtr3RWDMhQzUcXvcH+eK0Gpl
+X-Google-Smtp-Source: ABdhPJzxuNQT3KR9Xiwm1kYNxgPWclTDtSHQ9GVjCcpk/N+zn55E2612m5c9F+PMD0JWC1l9DWlfJA==
+X-Received: by 2002:a19:e302:0:b0:445:8acb:10db with SMTP id a2-20020a19e302000000b004458acb10dbmr7369063lfh.513.1646055424258;
+        Mon, 28 Feb 2022 05:37:04 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id i16-20020a2e5410000000b0024647722a4asm1326640ljb.29.2022.02.28.05.37.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 05:37:03 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
         linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: [PATCH iproute2-next V2 0/4] Add support for locked bridge ports (for 802.1X)
+Date:   Mon, 28 Feb 2022 14:36:46 +0100
+Message-Id: <20220228133650.31358-1-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch set is to complement the kernel locked port patches, such
+that iproute2 can be used to lock/unlock a port and check if a port
+is locked or not. To lock or unlock a port use the command:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+bridge link set dev DEV locked {on | off}
 
-On Sun, 27 Feb 2022 19:13:15 -0800 you wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> Use the helper function time_is_{before,after}_jiffies() to improve
-> code readability.
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
-> 
-> [...]
 
-Here is the summary with links:
-  - net: ethernet: sun: use time_is_before_jiffies() instead of open coding it
-    https://git.kernel.org/netdev/net-next/c/e0e8028cc0b8
+To show the detailed setting of a port, including if the locked flag is
+enabled for the port(s), use the command:
 
-You are awesome, thank you!
+bridge -d link show [dev DEV]
+
+
+Hans Schultz (4):
+  bridge: link: add command to set port in locked mode
+  ip: iplink_bridge_slave: add locked port flag support
+  man8/bridge.8: add locked port feature description and cmd syntax
+  man8/ip-link.8: add locked port feature description and cmd syntax
+
+ bridge/link.c                | 13 +++++++++++++
+ include/uapi/linux/if_link.h |  1 +
+ ip/iplink_bridge_slave.c     |  9 +++++++++
+ man/man8/bridge.8            | 11 +++++++++++
+ man/man8/ip-link.8.in        |  6 ++++++
+ 5 files changed, 40 insertions(+)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
