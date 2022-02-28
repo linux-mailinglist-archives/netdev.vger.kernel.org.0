@@ -2,125 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21FE44C6263
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 06:17:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3884C635B
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 07:49:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233040AbiB1FSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 00:18:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
+        id S233372AbiB1GuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 01:50:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiB1FSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 00:18:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 096D12982B
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 21:17:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646025457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qsxc2s292NsRQ4hzwanA8m9ycoHJFMMtSw79mLbnNdE=;
-        b=UObONYEQYdCVxKHA11OaBuo5CFL6IpX0AW0kcT2RJcfpvyOAolx9fCGshmUQkKTrjsovM+
-        mTyalHtmtm89fXcSUcOyosoF53MlLOPfgDekv0n0iCvIQGJcPcDMC+iTRnPGy6gYfsVurx
-        k9sH/0XUEQBrIu6oUoS7PLuE+aLuCX4=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-240-YTC4_tK-OKmgRVLL6-nupQ-1; Mon, 28 Feb 2022 00:17:35 -0500
-X-MC-Unique: YTC4_tK-OKmgRVLL6-nupQ-1
-Received: by mail-lf1-f70.google.com with SMTP id a5-20020ac25205000000b00443a34a9472so1475625lfl.15
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 21:17:34 -0800 (PST)
+        with ESMTP id S230255AbiB1GuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 01:50:22 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD7F4ECF0
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 22:49:44 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id z11so1492721pla.7
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 22:49:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:from:to:subject
+         :content-transfer-encoding;
+        bh=QCO1/HEd7WRwUqwTXMKOXf4ebpkv4RyC7DMyuYkxZzY=;
+        b=h9q6OUkqIuaZkHv423l/oU1M8TZvzcw46G2PbTRcHvTN0geQslHk27xwff05Seu9e0
+         Ky5azB98bIBRfod04XzPV+1ophsLu1BQhQT4VeZh8QSPe0vcwKuUZcY+gt1E58MJaONm
+         lztbmiXVvO9Y/hnZntX2qkRo1/6UlqvCUkOUSGIUWMRk8bMtsbGT5+7eHrzTSTAFws5d
+         AFXgdeR/d9o8+XZPYQAIve6q/QyG1+vdA9qGCtCJoNIU2+lvadLU2o4A8rTg4t+Qx48x
+         zZk4rTOvgiiKnXc1zGkqCBnyRcZ+oi6n+rs70qw2eGh7T0B+VTRfyiUwumzgCQIpkZRx
+         LTkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qsxc2s292NsRQ4hzwanA8m9ycoHJFMMtSw79mLbnNdE=;
-        b=2MiSe1B1lv2UnivU0vvCxdov8Ekz8qj2tInskaKL/wz44IgCKncG/peluobiS8Ni0r
-         oadTrgr6bd5pLiKLiJ5D5kWcV+/kFV6lTXlcEnO6URDDVJ0qLVjPuvQgKPTTmaFZDM6Z
-         bxIE6yZSvtxnbQg5rXv6dKIzZN/9b66X9V1TE2ptcT2s1dVn69KpTCJOCkDhmEw9pwaC
-         yeIgXwMUx8vlZRRKPs65KHB+cjJhavhS3k0opQqHCkGMDMsOIqNdFAibB5JSYtHA38eC
-         s8kDkAi0w/UXboHzRbZxrPKQzibe9/4vp3TpNOSsNXMYFjMN7tDTAe3SQiKL2PaYJYuG
-         k2yg==
-X-Gm-Message-State: AOAM530RlutRdGV5x63q1PKehA7N43FezNzLyXb5oVFeBIeH3JSJh6Oi
-        kcaVoiAO92UZRKDx08CIfBDg1UNJyzXkqyNKxMPX9WTJQVIbGCcbb6mTwKfqSOt7nP6FRMaG9Tq
-        1inOFDpDjslmxoImRkH1QLmrQLkyA9D/C
-X-Received: by 2002:ac2:4da1:0:b0:438:74be:5a88 with SMTP id h1-20020ac24da1000000b0043874be5a88mr11252855lfe.210.1646025453509;
-        Sun, 27 Feb 2022 21:17:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwtKdDAsYdevYlXM4KkIBT28shP4GL11Q2MrukJc3at1rmEfn7iLM6V1nQQyjtFS2b6NVGWoHh9y1pwXlQ0pNA=
-X-Received: by 2002:ac2:4da1:0:b0:438:74be:5a88 with SMTP id
- h1-20020ac24da1000000b0043874be5a88mr11252849lfe.210.1646025453345; Sun, 27
- Feb 2022 21:17:33 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:from:to:subject
+         :content-transfer-encoding;
+        bh=QCO1/HEd7WRwUqwTXMKOXf4ebpkv4RyC7DMyuYkxZzY=;
+        b=2pZPyi0eQWBe1V7hUxnaGHcyz1+ueLxYuIJ/8F0hNp4oFlqWUXnTz+KXdiP75DHn4G
+         Ct0y6jvBFLSQKsYKU78ovtINyvYVwlxCvVxb61/0cyLt5+DdARGzQLMCmYHYH1YU1wP+
+         VjQBblMTWKIuLSjyhOqaT3ma/xTBoj59HGtL9xvYeERjaVJVfHBboxWKdIyz03lG+ll6
+         Ee1mzPwRiQT9xlwwfKp0cMhkWRup0iYRtR+VAbVqSpjNIMrlWfoLg3nYRvgraDJdJdae
+         0YIzl/0naX5Nbr782KsxZmhbT6LRqRKuM/JIK/TtUfj99cgBWRGBBetk20jQ0xItHxht
+         EKfw==
+X-Gm-Message-State: AOAM5323WGhfipbsQoGnZFdSdAsUrZ2W8PaB41S590zi9OmVkXhNb075
+        /6Fw2uIadtx2ykXoA7B9NNlV600wv9s=
+X-Google-Smtp-Source: ABdhPJz4jTNLv19K7AX4XWP2BSZY1bQyxrKE+pabMCyuNW47oQfxESb6ixdp1DJRu0Od5/ArV4FNcg==
+X-Received: by 2002:a17:902:7403:b0:14f:9f55:f9e6 with SMTP id g3-20020a170902740300b0014f9f55f9e6mr19076217pll.21.1646030984152;
+        Sun, 27 Feb 2022 22:49:44 -0800 (PST)
+Received: from rsnbd ([103.108.60.140])
+        by smtp.gmail.com with ESMTPSA id y191-20020a6264c8000000b004e1bf2f580csm11595343pfb.78.2022.02.27.22.49.43
+        for <netdev@vger.kernel.org>
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Sun, 27 Feb 2022 22:49:43 -0800 (PST)
+Message-ID: <621c7087.1c69fb81.36942.dc9f@mx.google.com>
+Date:   Sun, 27 Feb 2022 22:49:43 -0800 (PST)
+X-Google-Original-Date: 28 Feb 2022 12:49:36 +0600
 MIME-Version: 1.0
-References: <20220224103852.311369-1-baymaxhuang@gmail.com>
- <20220225090223.636877-1-baymaxhuang@gmail.com> <c687e1d8-e36a-8f23-342a-22b2a1efb372@gmail.com>
- <CACGkMEtTdvbc1rk6sk=KE7J2L0=R2M-FMxK+DfJDUYMTPbPJGA@mail.gmail.com> <CANn89iKLhhwGnmEyfZuEKjtt7OwTbVyDYcFUMDYoRpdXjbMwiA@mail.gmail.com>
-In-Reply-To: <CANn89iKLhhwGnmEyfZuEKjtt7OwTbVyDYcFUMDYoRpdXjbMwiA@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 28 Feb 2022 13:17:22 +0800
-Message-ID: <CACGkMEuWLQ6fGXiew_1WGuLYsxEkT+vFequHpZW1KvH=3wcF-w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] tun: support NAPI for packets received from
- batched XDP buffs
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Harold Huang <baymaxhuang@gmail.com>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+From:   "Nancy Brown " <andrewrkopf@gmail.com>
+To:     netdev@vger.kernel.org
+Subject: looking for something?
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,PDS_OTHER_BAD_TLD,
+        RCVD_IN_DNSWL_NONE,SCC_BODY_URI_ONLY,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLACK autolearn=no autolearn_force=no
         version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 12:59 PM Eric Dumazet <edumazet@google.com> wrote:
->
->
->
-> On Sun, Feb 27, 2022 at 8:20 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On Mon, Feb 28, 2022 at 12:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->> > How big n can be ?
->> >
->> > BTW I could not find where m->msg_controllen was checked in tun_sendmsg().
->> >
->> > struct tun_msg_ctl *ctl = m->msg_control;
->> >
->> > if (ctl && (ctl->type == TUN_MSG_PTR)) {
->> >
->> >      int n = ctl->num;  // can be set to values in [0..65535]
->> >
->> >      for (i = 0; i < n; i++) {
->> >
->> >          xdp = &((struct xdp_buff *)ctl->ptr)[i];
->> >
->> >
->> > I really do not understand how we prevent malicious user space from
->> > crashing the kernel.
->>
->> It looks to me the only user for this is vhost-net which limits it to
->> 64, userspace can't use sendmsg() directly on tap.
->>
->
-> Ah right, thanks for the clarification.
->
-> (IMO, either remove the "msg.msg_controllen = sizeof(ctl);" from handle_tx_zerocopy(), or add sanity checks in tun_sendmsg())
->
->
-
-Right, Harold, want to do that?
-
-Thanks
+VGFrZSBhcyB5b3Ugd2lzaApEaXJlY3QgQ29udGFjdCB3d3cub2ZmZXIydS54eXo=
 
