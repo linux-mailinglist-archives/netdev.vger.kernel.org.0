@@ -2,131 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F164C725C
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 18:15:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE3A4C725E
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 18:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbiB1RQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 12:16:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
+        id S232523AbiB1RQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 12:16:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232441AbiB1RQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 12:16:22 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D3E74DC2
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 09:15:43 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id i1so11304944plr.2
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 09:15:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c3jES/MWXROupZlLhXD3/nZtFOtL9jKvxxOu5N/ZF2U=;
-        b=6bruvRBPzu5N+K8jNWZSzzyg0icNW1GmXwDlmkVwXez9VtCKvxGdvmHr/CH7/3mSkE
-         WwP0gauUNRFNJhpWDNwWC35ed/4lfHCLqFcxEzYQidb7vQnfOPr75AZndLxrRb2n4tjl
-         wkZEUtRMDzInbedJz24LrQzPpgwUpPGYxYXFncezzwkUSr1OIVzg1wxw4VXrh3HxWRXh
-         i+I9kDFqoW8OCrFuYfLK8dkHlvygbDepVp0TKKLJJ7aH5DFzi4dFtiyqNjtyCE2X40R0
-         6oo9CErRGGqH7Kb8UO3ka/lWkAc7/yEbM2PbrqhU0lqGATmtXsxM3czaQD4q5EtoW2vR
-         KuEw==
+        with ESMTP id S231156AbiB1RQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 12:16:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E4135F77
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 09:16:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646068566;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=cJLvJQ5lJE/eswpQWteUzeGG8Bsh/awLLnymfR8Bi2I=;
+        b=cCEbRatyNRyzl+3eT7AnMYmqQPzYNZ5H7Rht+Xw2r9T53fkpqT5FoaQbyOQV8TCjVXmyWo
+        p7soCnVSf+KmoLZdYdtoYn3aoJSi3S0iEwZgg2ZDaY/fPXExs/cE+ZoHluqOxxV71olm56
+        XbkFYBCAXNi+Kx7c67ODLYy9d+kbbmw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-146-o9ErCfIMNSOHxLu2IIJJkg-1; Mon, 28 Feb 2022 12:16:04 -0500
+X-MC-Unique: o9ErCfIMNSOHxLu2IIJJkg-1
+Received: by mail-wr1-f72.google.com with SMTP id x15-20020a5d6b4f000000b001ee6c0aa287so2352090wrw.9
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 09:16:04 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c3jES/MWXROupZlLhXD3/nZtFOtL9jKvxxOu5N/ZF2U=;
-        b=iHOJX1BNnw8KjCR03ksLtmMdex+YLVPJzwM6vyMRw1DIex8EZ/ekAvP5JZz9I0AkwI
-         CHQtnvfd+uwZ7RDwUZZ2EY1EaoI4MJvCXjRiUuQ6bOorU9zIGotfvY8bXQvfX+v1LzxY
-         vakHrFROFbnpBcVVNbBPgh8xysqAvGyiiBb7rwSaC6E7Y0KKBn4mRmZm/gDpTaOJC8iF
-         SobA1xJqUNPHf+0Tz1Pt7p2lkybIZI3RHtXoKxv58bxswqRVKCAshodih87xrvl68hl/
-         9UPjM72P7tgURIGH7LnDWy1T022ENO493ieLvzzIlMB+o/LQlzwApXADvUgwegJYAjU0
-         VUdg==
-X-Gm-Message-State: AOAM532PFJ1i1Ayv2Vj6/WxobeqYk7/EfbMw5tAyJBclvDzWohOAbh6w
-        KVocxlR1EDKZoD/CN+d9KV1fRQ==
-X-Google-Smtp-Source: ABdhPJyYJJcqGTqz8EuDk56BKYpIS/Xu45TRpGfUKMr2JtY0rlBNc7jaqn+NltNr+sa8o8Ig/t5gxA==
-X-Received: by 2002:a17:902:c286:b0:151:605c:fadd with SMTP id i6-20020a170902c28600b00151605cfaddmr7633678pld.100.1646068542622;
-        Mon, 28 Feb 2022 09:15:42 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id oc3-20020a17090b1c0300b001bce36844c7sm11588990pjb.17.2022.02.28.09.15.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=cJLvJQ5lJE/eswpQWteUzeGG8Bsh/awLLnymfR8Bi2I=;
+        b=EjTXmiXC/P+SxU3fZMVKY2OsPLJIRm4KOCVsIJ88f5kKzKAvZVHj+LAHTw3EohI2Ly
+         fjXkxe0k9TL55+TYiNooZ2qMeOVyHJa8Gl4vV4ieR0vUzIAaG+Rmhk3jbtyR4HjN3DSS
+         5XU3lGUecrvKNjy7IMwsby4G/uOCgDTWx7kO0fKqp7dVk2zJucKZWRL0+6bZnmUXsnfK
+         HIkDkWdA9VNtyTxVgrK08ZhgaEPHz9KmSKLlZD3kKx3KDvjzWInTsFSGcTvW+hI59gTh
+         5Dbp85pzoiyno+KQfQLhule5Y43JBcxy4wPrIIvoT0ZUoaWNBKtXAhLTED+3dp8i5NwQ
+         XAwQ==
+X-Gm-Message-State: AOAM53321kx89Ujn5du0cY/8psEB0fM9GaKL3GM9FQaqQqWiB8fCuME/
+        9Rx2J4ufAraXCVuq4V+dB71hgrPG1yNEaNgbLPfS4t9IPRnEgp8V3zRNgLKD9opMYpa98RC33ui
+        ntlY61CajXdH7oQaG
+X-Received: by 2002:a05:6000:1c16:b0:1ef:d315:8c58 with SMTP id ba22-20020a0560001c1600b001efd3158c58mr4150946wrb.504.1646068563454;
+        Mon, 28 Feb 2022 09:16:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxIO9p+cgwcxcbq9cOBjknwq2UwFXbO4gL2NTNVwcVZ8pGNEUnRyP54x+GUdb3/bWfUFov0qw==
+X-Received: by 2002:a05:6000:1c16:b0:1ef:d315:8c58 with SMTP id ba22-20020a0560001c1600b001efd3158c58mr4150934wrb.504.1646068563218;
+        Mon, 28 Feb 2022 09:16:03 -0800 (PST)
+Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
+        by smtp.gmail.com with ESMTPSA id c11-20020a05600c0a4b00b0037c91e085ddsm19600959wmq.40.2022.02.28.09.16.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 09:15:42 -0800 (PST)
-Date:   Mon, 28 Feb 2022 09:15:39 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Harold Huang <baymaxhuang@gmail.com>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
-Subject: Re: [PATCH net-next v3] tun: support NAPI for packets received from
- batched XDP buffs
-Message-ID: <20220228091539.057c80ef@hermes.local>
-In-Reply-To: <CACGkMEtFFe3mVkXYjYJZtGdU=tAB+T5TYCqySzSxR2N5e4UV1A@mail.gmail.com>
-References: <20220224103852.311369-1-baymaxhuang@gmail.com>
-        <20220228033805.1579435-1-baymaxhuang@gmail.com>
-        <CACGkMEtFFe3mVkXYjYJZtGdU=tAB+T5TYCqySzSxR2N5e4UV1A@mail.gmail.com>
+        Mon, 28 Feb 2022 09:16:02 -0800 (PST)
+Date:   Mon, 28 Feb 2022 18:16:01 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net] ipv4: fix route lookups when handling ICMP redirects and
+ PMTU updates
+Message-ID: <cffd245430d10fa2a14c32d1c768eef7cfeb8963.1646068241.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Feb 2022 15:46:56 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+The PMTU update and ICMP redirect helper functions initialise their fl4
+variable with either __build_flow_key() or build_sk_flow_key(). These
+initialisation functions always set ->flowi4_scope with
+RT_SCOPE_UNIVERSE and might set the ECN bits of ->flowi4_tos. This is
+not a problem when the route lookup is later done via
+ip_route_output_key_hash(), which properly clears the ECN bits from
+->flowi4_tos and initialises ->flowi4_scope based on the RTO_ONLINK
+flag. However, some helpers call fib_lookup() directly, without
+sanitising the tos and scope fields, so the route lookup can fail and,
+as a result, the ICMP redirect or PMTU update aren't taken into
+account.
 
-> On Mon, Feb 28, 2022 at 11:38 AM Harold Huang <baymaxhuang@gmail.com> wrote:
-> >
-> > In tun, NAPI is supported and we can also use NAPI in the path of
-> > batched XDP buffs to accelerate packet processing. What is more, after
-> > we use NAPI, GRO is also supported. The iperf shows that the throughput of
-> > single stream could be improved from 4.5Gbps to 9.2Gbps. Additionally, 9.2
-> > Gbps nearly reachs the line speed of the phy nic and there is still about
-> > 15% idle cpu core remaining on the vhost thread.
-> >
-> > Test topology:
-> > [iperf server]<--->tap<--->dpdk testpmd<--->phy nic<--->[iperf client]
-> >
-> > Iperf stream:
-> > iperf3 -c 10.0.0.2  -i 1 -t 10
-> >
-> > Before:
-> > ...
-> > [  5]   5.00-6.00   sec   558 MBytes  4.68 Gbits/sec    0   1.50 MBytes
-> > [  5]   6.00-7.00   sec   556 MBytes  4.67 Gbits/sec    1   1.35 MBytes
-> > [  5]   7.00-8.00   sec   556 MBytes  4.67 Gbits/sec    2   1.18 MBytes
-> > [  5]   8.00-9.00   sec   559 MBytes  4.69 Gbits/sec    0   1.48 MBytes
-> > [  5]   9.00-10.00  sec   556 MBytes  4.67 Gbits/sec    1   1.33 MBytes
-> > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > [ ID] Interval           Transfer     Bitrate         Retr
-> > [  5]   0.00-10.00  sec  5.39 GBytes  4.63 Gbits/sec   72          sender
-> > [  5]   0.00-10.04  sec  5.39 GBytes  4.61 Gbits/sec               receiver
-> >
-> > After:
-> > ...
-> > [  5]   5.00-6.00   sec  1.07 GBytes  9.19 Gbits/sec    0   1.55 MBytes
-> > [  5]   6.00-7.00   sec  1.08 GBytes  9.30 Gbits/sec    0   1.63 MBytes
-> > [  5]   7.00-8.00   sec  1.08 GBytes  9.25 Gbits/sec    0   1.72 MBytes
-> > [  5]   8.00-9.00   sec  1.08 GBytes  9.25 Gbits/sec   77   1.31 MBytes
-> > [  5]   9.00-10.00  sec  1.08 GBytes  9.24 Gbits/sec    0   1.48 MBytes
-> > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > [ ID] Interval           Transfer     Bitrate         Retr
-> > [  5]   0.00-10.00  sec  10.8 GBytes  9.28 Gbits/sec  166          sender
-> > [  5]   0.00-10.04  sec  10.8 GBytes  9.24 Gbits/sec               receiver
-> >
-> > Reported-at: https://lore.kernel.org/all/CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com
-> > Signed-off-by: Harold Huang <baymaxhuang@gmail.com>  
-> 
-> Acked-by: Jason Wang <jasowang@redhat.com>
+Fix this by extracting the ->flowi4_tos and ->flowi4_scope sanitisation
+code into ip_rt_fix_tos(), then use this function in handlers that call
+fib_lookup() directly.
 
-Would this help when using sendmmsg and recvmmsg on the TAP device?
-Asking because interested in speeding up another use of TAP device, and wondering
-if this would help.
+Note 1: we can't just let __build_flow_key() set sanitised values for
+tos and scope, because other functions use it and pass the flowi4
+structure to ip_route_output_key_hash(), which unconditionally resets
+the scope to RT_SCOPE_UNIVERSE if it doesn't see the RTO_ONLINK flag
+in ->flowi4_tos.
+
+Note 2: while wrongly initialised ->flowi4_tos could interfere with
+ICMP redirects and PMTU updates, setting ->flowi4_scope with
+RT_SCOPE_UNIVERSE instead of RT_SCOPE_LINK probably wasn't really a
+problem: sockets with SOCK_LOCALROUTE flag set (those that'd result in
+RTO_ONLINK being set) normally shouldn't receive redirects and PMTU
+updates.
+
+Fixes: d3a25c980fc2 ("ipv4: Fix nexthop exception hash computation.")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ net/ipv4/route.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index f33ad1f383b6..d5d058de3664 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -499,6 +499,15 @@ void __ip_select_ident(struct net *net, struct iphdr *iph, int segs)
+ }
+ EXPORT_SYMBOL(__ip_select_ident);
+ 
++static void ip_rt_fix_tos(struct flowi4 *fl4)
++{
++	__u8 tos = RT_FL_TOS(fl4);
++
++	fl4->flowi4_tos = tos & IPTOS_RT_MASK;
++	fl4->flowi4_scope = tos & RTO_ONLINK ?
++			    RT_SCOPE_LINK : RT_SCOPE_UNIVERSE;
++}
++
+ static void __build_flow_key(const struct net *net, struct flowi4 *fl4,
+ 			     const struct sock *sk,
+ 			     const struct iphdr *iph,
+@@ -824,6 +833,7 @@ static void ip_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_buf
+ 	rt = (struct rtable *) dst;
+ 
+ 	__build_flow_key(net, &fl4, sk, iph, oif, tos, prot, mark, 0);
++	ip_rt_fix_tos(&fl4);
+ 	__ip_do_redirect(rt, skb, &fl4, true);
+ }
+ 
+@@ -1048,6 +1058,7 @@ static void ip_rt_update_pmtu(struct dst_entry *dst, struct sock *sk,
+ 	struct flowi4 fl4;
+ 
+ 	ip_rt_build_flow_key(&fl4, sk, skb);
++	ip_rt_fix_tos(&fl4);
+ 
+ 	/* Don't make lookup fail for bridged encapsulations */
+ 	if (skb && netif_is_any_bridge_port(skb->dev))
+@@ -1122,6 +1133,8 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ 			goto out;
+ 
+ 		new = true;
++	} else {
++		ip_rt_fix_tos(&fl4);
+ 	}
+ 
+ 	__ip_rt_update_pmtu((struct rtable *)xfrm_dst_path(&rt->dst), &fl4, mtu);
+@@ -2603,7 +2616,6 @@ static struct rtable *__mkroute_output(const struct fib_result *res,
+ struct rtable *ip_route_output_key_hash(struct net *net, struct flowi4 *fl4,
+ 					const struct sk_buff *skb)
+ {
+-	__u8 tos = RT_FL_TOS(fl4);
+ 	struct fib_result res = {
+ 		.type		= RTN_UNSPEC,
+ 		.fi		= NULL,
+@@ -2613,9 +2625,7 @@ struct rtable *ip_route_output_key_hash(struct net *net, struct flowi4 *fl4,
+ 	struct rtable *rth;
+ 
+ 	fl4->flowi4_iif = LOOPBACK_IFINDEX;
+-	fl4->flowi4_tos = tos & IPTOS_RT_MASK;
+-	fl4->flowi4_scope = ((tos & RTO_ONLINK) ?
+-			 RT_SCOPE_LINK : RT_SCOPE_UNIVERSE);
++	ip_rt_fix_tos(fl4);
+ 
+ 	rcu_read_lock();
+ 	rth = ip_route_output_key_hash_rcu(net, fl4, &res, skb);
+-- 
+2.21.3
+
