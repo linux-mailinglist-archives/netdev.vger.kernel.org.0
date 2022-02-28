@@ -2,77 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A754C707E
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 16:22:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A5A84C70D0
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 16:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbiB1PXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 10:23:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54598 "EHLO
+        id S237277AbiB1PhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 10:37:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232172AbiB1PXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 10:23:03 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7B8E0EE
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 07:22:24 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id x5so18062940edd.11
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 07:22:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=JL31O1c434hLBaT9+uaQB/kbdracoLl+AsXqc6gXEzE=;
-        b=GaQnxUrZLZPF0Xe2XYeOjkUIQ5yf+c97pOUOe2IoJZjIky5juZRHWCMCFvr7xM+a9c
-         7Js0YGdsvkk39bf3ww73jYYf9n37vgyqFEgSF6HYnkDsc/5150bVJKlDjEtzKtFOU4lf
-         rq4HuzzOeWDVDgPxuEd2cRPoP9UtxIePX8WVGN3JAwAjT5XGEM64QSCIGs72QiKq8YS0
-         0jmIYRSiXjmaAASaYXBVnO7su7iEXzy5GHTiMBHgQ9bki6fZXwLB7IQetGxTUi9MkofR
-         P/eNFfVIwkMEd3J+0wt16bKALxdHCBe3TNI7zNig2NQ08cjqYOfPfvU6APKlQBc2Am7c
-         WegQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=JL31O1c434hLBaT9+uaQB/kbdracoLl+AsXqc6gXEzE=;
-        b=rWUrwOh0RfzQrhSJkxCBxAe8MX1VyayJUPplHVHgxJDuSIKnTr3h1wFR2yCAHAlteg
-         WkJk8rHQVzjCOBEDGJyxdzP424VTLbA+0jIk9E/V9gOAofXBP0Usvp24J+KczBfd+bCY
-         SoOPQw3nmMaThm+hKdoIRXlYUF3mNjSOSUYAndmd7u8ih9jiVxdl2Xj4xdhFwUGV0guW
-         7oxo2EyNj7hhqv63clPoFkSqH1sCgoUz0vQVz9EikCYt/lBDH4o5TTsyGRjIwo1EVpwz
-         Ggb7uu4LIBVu1/fC7GgdiD055D7IUAFbnFpSu3jVDV5b+Xji2pRelH1GrO2B81K/ZGF/
-         8rbQ==
-X-Gm-Message-State: AOAM531oRNPRAPxaj2H7MluiqALslVKKnCVLXAlVLu+7pB9bfMroMVgv
-        DssdqsvJwKgXmgjecJTBg636CsVjnoQ=
-X-Google-Smtp-Source: ABdhPJxvqNaLSXJUaVBlWU4jR8u888JdDKH74bwpxOfe0bjK27sSOOdO8+PDiP55LslUtdH6z2uR0Q==
-X-Received: by 2002:aa7:c446:0:b0:410:9a8e:9b85 with SMTP id n6-20020aa7c446000000b004109a8e9b85mr19536757edr.319.1646061742954;
-        Mon, 28 Feb 2022 07:22:22 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id ka6-20020a170907990600b006ce54c95e3csm4466485ejc.161.2022.02.28.07.22.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 07:22:22 -0800 (PST)
-Date:   Mon, 28 Feb 2022 17:22:21 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next v4 2/3] net: dsa: tag_rtl8_4: add rtl8_4t
- trailing variant
-Message-ID: <20220228152221.t4hpni66hav2ockb@skbuf>
-References: <20220227035920.19101-1-luizluca@gmail.com>
- <20220227035920.19101-3-luizluca@gmail.com>
- <87zgmbb34o.fsf@bang-olufsen.dk>
+        with ESMTP id S230080AbiB1PhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 10:37:06 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BD869CD3;
+        Mon, 28 Feb 2022 07:36:27 -0800 (PST)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nOi4P-000Ckj-AD; Mon, 28 Feb 2022 16:36:17 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nOi4O-000583-Sz; Mon, 28 Feb 2022 16:36:16 +0100
+Subject: Re: [PATCH bpf-next v4 0/4] bpf, arm64: support more atomic ops
+To:     Will Deacon <will@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Hou Tao <houtao1@huawei.com>
+Cc:     catalin.marinas@arm.com, kernel-team@android.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>, netdev@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+References: <20220217072232.1186625-1-houtao1@huawei.com>
+ <164556514968.1490345.10884104309048795776.b4-ty@kernel.org>
+ <20220222224211.GB16976@willie-the-truck>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <03278d8c-2b21-1fb0-1942-abea68c133ae@iogearbox.net>
+Date:   Mon, 28 Feb 2022 16:36:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87zgmbb34o.fsf@bang-olufsen.dk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+In-Reply-To: <20220222224211.GB16976@willie-the-truck>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26467/Mon Feb 28 10:24:05 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,21 +62,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 12:13:28PM +0000, Alvin Šipraga wrote:
-> Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
+On 2/22/22 11:42 PM, Will Deacon wrote:
+> On Tue, Feb 22, 2022 at 10:38:02PM +0000, Will Deacon wrote:
+>> On Thu, 17 Feb 2022 15:22:28 +0800, Hou Tao wrote:
+>>> Atomics support in bpf has already been done by "Atomics for eBPF"
+>>> patch series [1], but it only adds support for x86, and this patchset
+>>> adds support for arm64.
+>>>
+>>> Patch #1 & patch #2 are arm64 related. Patch #1 moves the common used
+>>> macro AARCH64_BREAK_FAULT into insn-def.h for insn.h. Patch #2 adds
+>>> necessary encoder helpers for atomic operations.
+>>>
+>>> [...]
+>>
+>> Applied to arm64 (for-next/insn), thanks!
+>>
+>> [1/4] arm64: move AARCH64_BREAK_FAULT into insn-def.h
+>>        https://git.kernel.org/arm64/c/97e58e395e9c
+>> [2/4] arm64: insn: add encoders for atomic operations
+>>        https://git.kernel.org/arm64/c/fa1114d9eba5
 > 
-> > Realtek switches supports the same tag both before ethertype or between
-> > payload and the CRC.
-> >
-> > Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> 
-> Hi Luiz,
-> 
-> Please note that you should normally put my Reviewed-by after your
-> S-o-b. After your v1 (and assuming you remembered your S-o-b) it should
-> be treated as append-only. Gives some chronology to the review process.
+> Daniel -- let's give this a day or so in -next, then if nothing catches
+> fire you're more than welcome to pull this branch as a base for the rest
+> of the series.
 
-I don't know if this is a hard and fast rule, but it is also how I do
-things, and how b4 applies the tags as well. But I've seen people do
-otherwise too.
+Thanks Will! Pulled and applied the rest to bpf-next, thanks everyone!
