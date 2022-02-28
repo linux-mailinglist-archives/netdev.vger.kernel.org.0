@@ -2,178 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E5594C69EE
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD6604C6A21
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:20:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbiB1LOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 06:14:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
+        id S235558AbiB1LUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 06:20:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233270AbiB1LNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:13:05 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71367710F3;
-        Mon, 28 Feb 2022 03:10:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646046605; x=1677582605;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pPM+/dJeHfzqF2MwScC0enTLh1mKtTcaV6SSL4S9rYU=;
-  b=SO6gfJgmLRTjC80MWQvROvwlmmqq015dS5cjNekgYmZJmvFNSutkr9E3
-   WGjs9xhTdJj6OqvbiownYD1PB5fdconUUePm2JpuFJS1aSSUqUc7ylQtK
-   GUV1RsCwSubrDp0FzUJbXXj+ykLkpWxWGLF3BnUmGe4QJD6gxPLA5jvbQ
-   Uc2ijL/as8b93GuwKW380ARlvtaqK72keAJ9YYdO4u0jVtJK4fMBJGzHG
-   QNCPh1jwH1fnmKLv5x8FzqAm9+bhnZst/1TOUwadi2b7NgaQ5lQKBbxND
-   ZTNZu4e8VYhyZ61Se+Qt7o/NHlmlHWTRarz4UP/Im5iHWhNGCImKgh2G/
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252588367"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="252588367"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 03:09:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="640854617"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga004.jf.intel.com with ESMTP; 28 Feb 2022 03:09:40 -0800
-Received: from P12HL01TMIN.png.intel.com (P12HL01TMIN.png.intel.com [10.158.65.75])
-        by linux.intel.com (Postfix) with ESMTP id 6D3E85805A3;
-        Mon, 28 Feb 2022 03:09:37 -0800 (PST)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
+        with ESMTP id S235316AbiB1LUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:20:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C2A381BD;
+        Mon, 28 Feb 2022 03:20:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B28EEB81088;
+        Mon, 28 Feb 2022 11:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 577DAC340E7;
+        Mon, 28 Feb 2022 11:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646047208;
+        bh=TZYI8CoLqZwdjhCp4FIqkyAKtFSpIqtbXR7Aczi5lHQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C57riiYnEjUdxOZhn04GGyA8PIVDUJ6DJKuCKjTYwuUmTfW6bVKDrs724kyxSBaKx
+         RgI2btjN0kChcFl20e7HpTgxlexOr2YrBREdqqTBvDVt/Whdw/5z0V77N814zObmo3
+         /EeMG4N6szzw6EaZ5Y2WBm3/aL7Ea4aeZYOpa8Fs=
+Date:   Mon, 28 Feb 2022 12:20:03 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergman <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nathan Chancellor <nathan@kernel.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        pei.lee.ling@intel.com
-Subject: [PATCH net 1/1] net: stmmac: Resolve poor line rate after switching from TSO off to TSO on
-Date:   Mon, 28 Feb 2022 19:15:58 +0800
-Message-Id: <20220228111558.3825974-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        linuxppc-dev@lists.ozlabs.org, linux-sgx@vger.kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com, linux-tegra@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, kvm@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        v9fs-developer@lists.sourceforge.net,
+        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <Yhyv42ONIxTj04mg@kroah.com>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228110822.491923-3-jakobkoschel@gmail.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ling Pei Lee <pei.lee.ling@intel.com>
+On Mon, Feb 28, 2022 at 12:08:18PM +0100, Jakob Koschel wrote:
+> If the list does not contain the expected element, the value of
+> list_for_each_entry() iterator will not point to a valid structure.
+> To avoid type confusion in such case, the list iterator
+> scope will be limited to list_for_each_entry() loop.
+> 
+> In preparation to limiting scope of a list iterator to the list traversal
+> loop, use a dedicated pointer to point to the found element.
+> Determining if an element was found is then simply checking if
+> the pointer is != NULL.
+> 
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> ---
+>  arch/x86/kernel/cpu/sgx/encl.c       |  6 +++--
+>  drivers/scsi/scsi_transport_sas.c    | 17 ++++++++-----
+>  drivers/thermal/thermal_core.c       | 38 ++++++++++++++++++----------
+>  drivers/usb/gadget/configfs.c        | 22 ++++++++++------
+>  drivers/usb/gadget/udc/max3420_udc.c | 11 +++++---
+>  drivers/usb/gadget/udc/tegra-xudc.c  | 11 +++++---
+>  drivers/usb/mtu3/mtu3_gadget.c       | 11 +++++---
+>  drivers/usb/musb/musb_gadget.c       | 11 +++++---
+>  drivers/vfio/mdev/mdev_core.c        | 11 +++++---
+>  9 files changed, 88 insertions(+), 50 deletions(-)
 
-Sequential execution of these steps:
-i) TSO ON – iperf3 execution,
-ii) TSO OFF – iperf3 execution,
-iii) TSO ON – iperf3 execution, it leads to iperf3 0 bytes transfer.
+The drivers/usb/ portion of this patch should be in patch 1/X, right?
 
-Example of mentioned Issue happened:
-root@TGLA:~# iperf3 -c 169.254.168.191
-Connecting to host 169.254.168.191, port 5201
-[  5] local 169.254.50.108 port 45846 connected to 169.254.168.191
-port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec   113 MBytes   947 Mbits/sec    0    378 KBytes
-[  5]   1.00-2.00   sec   111 MBytes   933 Mbits/sec    0    378 KBytes
-[  5]   2.00-3.00   sec   111 MBytes   933 Mbits/sec    0    378 KBytes
-[  5]   3.00-4.00   sec   111 MBytes   929 Mbits/sec    0    378 KBytes
-[  5]   4.00-5.00   sec   111 MBytes   934 Mbits/sec    0    378 KBytes
-[  5]   5.00-6.00   sec   111 MBytes   932 Mbits/sec    0    378 KBytes
-[  5]   6.00-7.00   sec   111 MBytes   932 Mbits/sec    0    378 KBytes
-[  5]   7.00-8.00   sec   111 MBytes   932 Mbits/sec    0    378 KBytes
-[  5]   8.00-9.00   sec   111 MBytes   931 Mbits/sec    0    378 KBytes
-[  5]   9.00-10.00  sec   111 MBytes   932 Mbits/sec    0    378 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  1.09 GBytes   933 Mbits/sec    0    sender
-[  5]   0.00-10.00  sec  1.09 GBytes   932 Mbits/sec         receiver
+Also, you will have to split these up per-subsystem so that the
+different subsystem maintainers can take these in their trees.
 
-iperf Done.
-root@TGLA:~# ethtool -K enp0s30f4 tso off
-root@TGLA:~# iperf3 -c 169.254.168.191
-Connecting to host 169.254.168.191, port 5201
-[  5] local 169.254.50.108 port 45854 connected to 169.254.168.191
-port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec   104 MBytes   870 Mbits/sec    0    352 KBytes
-[  5]   1.00-2.00   sec   101 MBytes   850 Mbits/sec    0    369 KBytes
-[  5]   2.00-3.00   sec   102 MBytes   860 Mbits/sec    0    369 KBytes
-[  5]   3.00-4.00   sec   102 MBytes   853 Mbits/sec    0    369 KBytes
-[  5]   4.00-5.00   sec   102 MBytes   855 Mbits/sec    0    369 KBytes
-[  5]   5.00-6.00   sec   101 MBytes   849 Mbits/sec    0    369 KBytes
-[  5]   6.00-7.00   sec   102 MBytes   860 Mbits/sec    0    369 KBytes
-[  5]   7.00-8.00   sec   102 MBytes   853 Mbits/sec    0    369 KBytes
-[  5]   8.00-9.00   sec   101 MBytes   851 Mbits/sec    0    369 KBytes
-[  5]   9.00-10.00  sec   102 MBytes   856 Mbits/sec    0    369 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  1020 MBytes   856 Mbits/sec    0    sender
-[  5]   0.00-10.00  sec  1019 MBytes   854 Mbits/sec         receiver
+thanks,
 
-iperf Done.
-root@TGLA:~# ethtool -K enp0s30f4 tso on
-root@TGLA:~# iperf3 -c 169.254.168.191
-Connecting to host 169.254.168.191, port 5201
-[  5] local 169.254.50.108 port 45860 connected to 169.254.168.191
-port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec   107 KBytes   879 Kbits/sec    0   1.41 KBytes
-[  5]   1.00-2.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-[  5]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-[  5]   3.00-4.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-[  5]   4.00-5.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-[  5]   5.00-6.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-[  5]   6.00-7.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-[  5]   7.00-8.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
-
-Clear mss in TDES and call stmmac_enable_tso() to indicate
-a new TSO transmission when it is enabled from TSO off using
-ethtool command
-
-Fixes: f748be531d70 ("stmmac: support new GMAC4")
-Signed-off-by: Ling Pei Lee <pei.lee.ling@intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index b745d624b2cb..9e2ea0e0bd68 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5460,6 +5460,8 @@ static netdev_features_t stmmac_fix_features(struct net_device *dev,
- 					     netdev_features_t features)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-+	u32 tx_cnt = priv->plat->tx_queues_to_use;
-+	u32 chan;
- 
- 	if (priv->plat->rx_coe == STMMAC_RX_COE_NONE)
- 		features &= ~NETIF_F_RXCSUM;
-@@ -5483,6 +5485,16 @@ static netdev_features_t stmmac_fix_features(struct net_device *dev,
- 			priv->tso = false;
- 	}
- 
-+	for (chan = 0; chan < tx_cnt; chan++) {
-+		struct stmmac_tx_queue *tx_q = &priv->tx_queue[chan];
-+
-+		/* TSO and TBS cannot co-exist */
-+		if (tx_q->tbs & STMMAC_TBS_AVAIL)
-+			continue;
-+
-+		tx_q->mss = 0;
-+		stmmac_enable_tso(priv, priv->ioaddr, priv->tso, chan);
-+	}
- 	return features;
- }
- 
--- 
-2.25.1
-
+greg k-h
