@@ -2,72 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DEF04C7AE6
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 21:48:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 912244C7ABE
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 21:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbiB1UsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 15:48:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
+        id S229767AbiB1Unl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 15:43:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiB1UsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 15:48:06 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0631A1116
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:47:27 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id b11so23427032lfb.12
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:47:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qhbC6eV8gO++7ErI4p8jtmcwHU0MP2/Ov9cpdMFArow=;
-        b=WVa5dIiqx38h7wrDwDC1XUsKJKiBFCag4a2cDDwm9PX3cUtT8qqZ7IT4jQUgf/P4m+
-         SFGMe+WsS02R4cGzO91FNZKGdT/lUA2soxV9cxmDWvmKG61T36jSK+GypeHu4wmj47J3
-         J2dEWo9WRu5EKgz1ZgjNDbSUreOeJ25KIOWY4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qhbC6eV8gO++7ErI4p8jtmcwHU0MP2/Ov9cpdMFArow=;
-        b=UtwlBgqcFMGkYyu3RFsmRer2G2W61M1OuHkg5FhN07b/cE9SieFSe/zQKYU6ZmiiQI
-         fogdbbTJG67dsXgfjboQCoOOJH6V5Ve/2tkXVgJHA60ULnwS3ZaphgZFe0/D0Xiqjpby
-         +6I8LeBzDLeW2S3B0rH5Mwrj8WNLypIM30CusNaTZSHk8QtIeB5K8gwwdL3Y4j+yuJbi
-         uM1sl7Lj0uJCotKkyZih5GlCc9C2JPfaHSXDeAj0DWeoon40TqErNj90zyAmXVAz1LD6
-         fdlh1HtPUvP7ThXv1GUxzDA52Qkt9nJxooTlgNzrvirkdMXEJJtD7BFgh7tzTvwvbZfc
-         gvUg==
-X-Gm-Message-State: AOAM532SF9pCKLGevXos9tsieJjt6aWyAlTJ++JBZDC00CXfOF/WIgSE
-        93yiHtVUQtK3sFHYQllHJZ7E6ScUX8vFohX6KtA=
-X-Google-Smtp-Source: ABdhPJyW6Xgjlesymv+vk82dPmElB82lLPpPS/7mWrmAOgfzc5iO8a4vl5iUoFKCcAaU2YwS53W1DA==
-X-Received: by 2002:ac2:4c10:0:b0:444:8c:e717 with SMTP id t16-20020ac24c10000000b00444008ce717mr13699779lfq.117.1646081245144;
-        Mon, 28 Feb 2022 12:47:25 -0800 (PST)
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com. [209.85.208.171])
-        by smtp.gmail.com with ESMTPSA id s28-20020ac2465c000000b00443ec4ac8f6sm1129899lfo.177.2022.02.28.12.47.24
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 12:47:24 -0800 (PST)
-Received: by mail-lj1-f171.google.com with SMTP id u7so19077503ljk.13
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:47:24 -0800 (PST)
-X-Received: by 2002:a05:6512:e8a:b0:443:7b8c:579a with SMTP id
- bi10-20020a0565120e8a00b004437b8c579amr13784522lfb.687.1646080877791; Mon, 28
- Feb 2022 12:41:17 -0800 (PST)
-MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
- <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
- <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
- <Yh0tl3Lni4weIMkl@casper.infradead.org> <e3bb7d0632f8ef60f18c19976d57330e1ef00584.camel@sipsolutions.net>
-In-Reply-To: <e3bb7d0632f8ef60f18c19976d57330e1ef00584.camel@sipsolutions.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Feb 2022 12:41:01 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjNgWNa9njuBJEoafc-cRV3SbzZfh3m5YfxcZxdCw3+XQ@mail.gmail.com>
-Message-ID: <CAHk-=wjNgWNa9njuBJEoafc-cRV3SbzZfh3m5YfxcZxdCw3+XQ@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
+        with ESMTP id S229644AbiB1Unj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 15:43:39 -0500
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31C1245A6
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:43:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1646080979;
+        bh=syYpb/xpUEM74XaWkn+xK6Z1vfQJZQo/NwVp9EVw5rs=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=ujxiIgy0T+0bXa5l/GTOdjcngh6b85JmDA0WyHri0Bbh2a93S9iJ0SxWyDfl/MyPo
+         LfSkwtJLqYe+MRa0ZrGntCtSGoW1hjohSGvPcqjksKBYaUrg8Aw3UwyQBazEu7CyPQ
+         sHqUpBIAmzvzOB+1XNyd+aN4TkXOB/egoLerum4w=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 3AAB11280D34;
+        Mon, 28 Feb 2022 15:42:59 -0500 (EST)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id gYw4LPjaIhFB; Mon, 28 Feb 2022 15:42:59 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1646080979;
+        bh=syYpb/xpUEM74XaWkn+xK6Z1vfQJZQo/NwVp9EVw5rs=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=ujxiIgy0T+0bXa5l/GTOdjcngh6b85JmDA0WyHri0Bbh2a93S9iJ0SxWyDfl/MyPo
+         LfSkwtJLqYe+MRa0ZrGntCtSGoW1hjohSGvPcqjksKBYaUrg8Aw3UwyQBazEu7CyPQ
+         sHqUpBIAmzvzOB+1XNyd+aN4TkXOB/egoLerum4w=
+Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::527])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id DDA6D12806A6;
+        Mon, 28 Feb 2022 15:42:54 -0500 (EST)
+Message-ID: <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop
+ body as a ptr
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
         linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
@@ -116,39 +95,103 @@ Cc:     Matthew Wilcox <willy@infradead.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
         Mike Rapoport <rppt@kernel.org>
+Date:   Mon, 28 Feb 2022 15:42:53 -0500
+In-Reply-To: <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+         <20220228110822.491923-3-jakobkoschel@gmail.com>
+         <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+         <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+         <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 12:29 PM Johannes Berg
-<johannes@sipsolutions.net> wrote:
->
-> If we're willing to change the API for the macro, we could do
->
->   list_for_each_entry(type, pos, head, member)
->
-> and then actually take advantage of -Wshadow?
+On Mon, 2022-02-28 at 21:07 +0100, Christian König wrote:
+> Am 28.02.22 um 20:56 schrieb Linus Torvalds:
+> > On Mon, Feb 28, 2022 at 4:19 AM Christian König
+> > <christian.koenig@amd.com> wrote:
+> > > I don't think that using the extra variable makes the code in any
+> > > way
+> > > more reliable or easier to read.
+> > So I think the next step is to do the attached patch (which
+> > requires
+> > that "-std=gnu11" that was discussed in the original thread).
+> > 
+> > That will guarantee that the 'pos' parameter of
+> > list_for_each_entry()
+> > is only updated INSIDE the for_each_list_entry() loop, and can
+> > never
+> > point to the (wrongly typed) head entry.
+> > 
+> > And I would actually hope that it should actually cause compiler
+> > warnings about possibly uninitialized variables if people then use
+> > the
+> > 'pos' pointer outside the loop. Except
+> > 
+> >   (a) that code in sgx/encl.c currently initializes 'tmp' to NULL
+> > for
+> > inexplicable reasons - possibly because it already expected this
+> > behavior
+> > 
+> >   (b) when I remove that NULL initializer, I still don't get a
+> > warning,
+> > because we've disabled -Wno-maybe-uninitialized since it results in
+> > so
+> > many false positives.
+> > 
+> > Oh well.
+> > 
+> > Anyway, give this patch a look, and at least if it's expanded to do
+> > "(pos) = NULL" in the entry statement for the for-loop, it will
+> > avoid the HEAD type confusion that Jakob is working on. And I think
+> > in a cleaner way than the horrid games he plays.
+> > 
+> > (But it won't avoid possible CPU speculation of such type
+> > confusion. That, in my opinion, is a completely different issue)
+> 
+> Yes, completely agree.
+> 
+> > I do wish we could actually poison the 'pos' value after the loop
+> > somehow - but clearly the "might be uninitialized" I was hoping for
+> > isn't the way to do it.
+> > 
+> > Anybody have any ideas?
+> 
+> I think we should look at the use cases why code is touching (pos)
+> after the loop.
+> 
+> Just from skimming over the patches to change this and experience
+> with the drivers/subsystems I help to maintain I think the primary
+> pattern looks something like this:
+> 
+> list_for_each_entry(entry, head, member) {
+>      if (some_condition_checking(entry))
+>          break;
+> }
+> do_something_with(entry);
 
-See my reply to Willy. There is no way -Wshadow will ever happen.
 
-I considered that (type, pos, head, member) kind of thing, to the
-point of trying it for one file, but it ends up as horrendous syntax.
-It turns out that declaring the type separately really helps, and
-avoids crazy long lines among other things.
+Actually, we usually have a check to see if the loop found anything,
+but in that case it should something like
 
-It would be unacceptable for another reason too - the amount of churn
-would just be immense. Every single use of that macro (and related
-macros) would change, even the ones that really don't need it or want
-it (ie the good kinds that already only use the variable inside the
-loop).
+if (list_entry_is_head(entry, head, member)) {
+    return with error;
+}
+do_somethin_with(entry);
 
-So "typeof(pos) pos" may be ugly - but it's a very localized ugly.
+Suffice?  The list_entry_is_head() macro is designed to cope with the
+bogus entry on head problem.
 
-                    Linus
+James
+
+
