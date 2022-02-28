@@ -2,173 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 480BF4C7984
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 21:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1AF14C7A2C
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 21:21:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiB1UIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 15:08:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
+        id S229937AbiB1USz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 15:18:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiB1UI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 15:08:29 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55AC5EDF8
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:07:43 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21SB9h9U013917;
-        Mon, 28 Feb 2022 12:07:35 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=CgIar8iD/MuDlCqa9COaz6vB2SRPoBSbBe3vkuaQuJg=;
- b=DHbXRrDwOiwvbvaInYSEp1famkVqWVtc6CaSi3zqaSwQbVXFLZS9vaxjmb/2ioIfHKwS
- awOzXMPrRdp0P/Fktg2TyMQ1M+0E75nKgcReug8vSAujLnxnyO4jKLpjTxlMz12/SoBW
- O6+0291f/Y3NMUj9miK5vk+mr5XxW2hhdl7Mi0+sj2OUv17Orz3aqbncDtKwbPb+U+LZ
- t+XmLsmczj7YYUpsdQVSDJviPO9G4XECPdCeQPTdD6GVXbqwWOc1ZQx9c0rL/m7uO/hP
- phR7GmWSuwuPsO72c7iEEVwOjzdvoQxsZwwd12e9QRB2vseB+nPNhHXUsjbRTMiDZzDy Xw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3egn96utnc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 28 Feb 2022 12:07:35 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 28 Feb
- 2022 12:07:33 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 28 Feb 2022 12:07:33 -0800
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id B0D6B3F704C;
-        Mon, 28 Feb 2022 12:07:33 -0800 (PST)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 21SK7UDA004353;
-        Mon, 28 Feb 2022 12:07:30 -0800
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 21SK7Plh004352;
-        Mon, 28 Feb 2022 12:07:25 -0800
-From:   Manish Chopra <manishc@marvell.com>
-To:     <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>, <palok@marvell.com>
-Subject: [PATCH net-next 2/2] qed: validate and restrict untrusted VFs vlan promisc mode
-Date:   Mon, 28 Feb 2022 12:07:08 -0800
-Message-ID: <20220228200708.4312-2-manishc@marvell.com>
-X-Mailer: git-send-email 2.12.0
-In-Reply-To: <20220228200708.4312-1-manishc@marvell.com>
-References: <20220228200708.4312-1-manishc@marvell.com>
+        with ESMTP id S229567AbiB1USs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 15:18:48 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BA150441
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:18:08 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id vz16so27270153ejb.0
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:18:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LeZ8UzRXrDw4d1M4BG6ctt9COK0EF5j9qtOsLWtMfJg=;
+        b=Jhdls+DdmLi+4DWS7o2GehQ/Yg8vWPth9HxY0ymuDsFhiEF5hlRLzgd1PV4wJ4dLVJ
+         JdRWd6PhVxu3cPtesSY0XREEgjw/sVhI1zgx2ECNJUHRlykk7MmbqhfMtkifVM/LmgYS
+         6chNfwYqW0eu75y5MSRY9nnHOEZnFkvhMXNYc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LeZ8UzRXrDw4d1M4BG6ctt9COK0EF5j9qtOsLWtMfJg=;
+        b=AuJz1SbsM/uMOkVaYkhJtK0I249rVjkMSWR1C0RxSVuTLbOxIVXsvjMat3beti06Oc
+         N4v+beUUUIZyY7WqGa9ld151fqCFuqQN0hc1++K3Mw/oEgMsTraZ2rQNBrD4Dm+wuGTU
+         St6Um/bedKjgezwNoksBZSVBsiBrbg+h1tO2uHjbqgwga2tbjWkgooRimdVnAEHLt58y
+         f12uPhF3F3aID9/xnD1IQSydNJdifi1MaLjfNKSr9H9/Nz+eFTy4CB2kQwagnPad9L0g
+         okSSveI+/9eMrYn2kKpvvtCwK4CAlDQAg3x4I9peZ3tncL7B59N9z9Qu8JcUtHT6Lq/X
+         ejUA==
+X-Gm-Message-State: AOAM5302wPF8/B5Pf/QuTmdbi0qhvNSqx+MA5uI63Ei6efFf7icg2hq8
+        gocKSg67Dl0KoKBNir9jvWC34trzzfLb0UaADs4=
+X-Google-Smtp-Source: ABdhPJwkaJKHnhIycP/gV+t4/HGpbUit2ZJ5uKxPTvSs9ELmM8c+si0xbMuxyy1mTgTGSBeG6xSrvw==
+X-Received: by 2002:a17:906:dd3:b0:698:3e07:dcee with SMTP id p19-20020a1709060dd300b006983e07dceemr16553722eji.487.1646079487116;
+        Mon, 28 Feb 2022 12:18:07 -0800 (PST)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id n13-20020a1709062bcd00b006cf71d46a1csm4611402ejg.136.2022.02.28.12.18.06
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 12:18:06 -0800 (PST)
+Received: by mail-wr1-f53.google.com with SMTP id b5so17280282wrr.2
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 12:18:06 -0800 (PST)
+X-Received: by 2002:ac2:4d91:0:b0:443:127b:558a with SMTP id
+ g17-20020ac24d91000000b00443127b558amr14027806lfe.542.1646079041191; Mon, 28
+ Feb 2022 12:10:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: o_dharzmcqXYQeYCmT24KE7Mc10c2jzG
-X-Proofpoint-ORIG-GUID: o_dharzmcqXYQeYCmT24KE7Mc10c2jzG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-28_09,2022-02-26_01,2022-02-23_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com> <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+In-Reply-To: <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 28 Feb 2022 12:10:24 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+Message-ID: <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
+Content-Type: multipart/mixed; boundary="0000000000008601b205d919a4ad"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Today when VFs are put in promiscuous mode, they can request PF
-to configure device for them to receive all VLANs traffic regardless
-of what vlan is configured by the PF (via ip link) and PF allows this
-config request regardless of whether VF is trusted or not.
+--0000000000008601b205d919a4ad
+Content-Type: text/plain; charset="UTF-8"
 
-From secuirty POV, when VLAN is configured for VF through PF (via ip link),
-honour such config requests from VF only when they are configured to be
-trusted, otherwise restrict such VFs vlan promisc mode config.
+On Mon, Feb 28, 2022 at 12:03 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Side note: we do need *some* way to do it.
 
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_sriov.c | 28 +++++++++++++++++++--
- drivers/net/ethernet/qlogic/qed/qed_sriov.h |  1 +
- 2 files changed, 27 insertions(+), 2 deletions(-)
+Ooh.
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index c5abfb28cf3f..34f9ad260fe8 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -2984,12 +2984,16 @@ static int qed_iov_pre_update_vport(struct qed_hwfn *hwfn,
- 	u8 mask = QED_ACCEPT_UCAST_UNMATCHED | QED_ACCEPT_MCAST_UNMATCHED;
- 	struct qed_filter_accept_flags *flags = &params->accept_flags;
- 	struct qed_public_vf_info *vf_info;
-+	u16 tlv_mask;
-+
-+	tlv_mask = BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM) | BIT(QED_IOV_VP_UPDATE_ACCEPT_ANY_VLAN);
-+
- 
- 	/* Untrusted VFs can't even be trusted to know that fact.
- 	 * Simply indicate everything is configured fine, and trace
- 	 * configuration 'behind their back'.
- 	 */
--	if (!(*tlvs & BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM)))
-+	if (!(*tlvs & tlv_mask))
- 		return 0;
- 
- 	vf_info = qed_iov_get_public_vf_info(hwfn, vfid, true);
-@@ -3006,6 +3010,13 @@ static int qed_iov_pre_update_vport(struct qed_hwfn *hwfn,
- 			flags->tx_accept_filter &= ~mask;
- 	}
- 
-+	if (params->update_accept_any_vlan_flg) {
-+		vf_info->accept_any_vlan = params->accept_any_vlan;
-+
-+		if (vf_info->forced_vlan && !vf_info->is_trusted_configured)
-+			params->accept_any_vlan = false;
-+	}
-+
- 	return 0;
- }
- 
-@@ -5146,6 +5157,12 @@ static void qed_iov_handle_trust_change(struct qed_hwfn *hwfn)
- 
- 		params.update_ctl_frame_check = 1;
- 		params.mac_chk_en = !vf_info->is_trusted_configured;
-+		params.update_accept_any_vlan_flg = 0;
-+
-+		if (vf_info->accept_any_vlan && vf_info->forced_vlan) {
-+			params.update_accept_any_vlan_flg = 1;
-+			params.accept_any_vlan = vf_info->accept_any_vlan;
-+		}
- 
- 		if (vf_info->rx_accept_mode & mask) {
- 			flags->update_rx_mode_config = 1;
-@@ -5161,13 +5178,20 @@ static void qed_iov_handle_trust_change(struct qed_hwfn *hwfn)
- 		if (!vf_info->is_trusted_configured) {
- 			flags->rx_accept_filter &= ~mask;
- 			flags->tx_accept_filter &= ~mask;
-+			params.accept_any_vlan = false;
- 		}
- 
- 		if (flags->update_rx_mode_config ||
- 		    flags->update_tx_mode_config ||
--		    params.update_ctl_frame_check)
-+		    params.update_ctl_frame_check ||
-+		    params.update_accept_any_vlan_flg) {
-+			DP_VERBOSE(hwfn, QED_MSG_IOV,
-+				   "vport update config for %s VF[abs 0x%x rel 0x%x]\n",
-+				   vf_info->is_trusted_configured ? "trusted" : "untrusted",
-+				   vf->abs_vf_id, vf->relative_vf_id);
- 			qed_sp_vport_update(hwfn, &params,
- 					    QED_SPQ_MODE_EBLOCK, NULL);
-+		}
- 	}
- }
- 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.h b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-index f448e3dd6c8b..6ee2493de164 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-@@ -62,6 +62,7 @@ struct qed_public_vf_info {
- 	bool is_trusted_request;
- 	u8 rx_accept_mode;
- 	u8 tx_accept_mode;
-+	bool accept_any_vlan;
- };
- 
- struct qed_iov_vf_init_params {
--- 
-2.35.1.273.ge6ebfd0
+This patch is a work of art.
 
+And I mean that in the worst possible way.
+
+We can do
+
+        typeof(pos) pos
+
+in the 'for ()' loop, and never use __iter at all.
+
+That means that inside the for-loop, we use a _different_ 'pos' than outside.
+
+And then the compiler will not see some "might be uninitialized", but
+the outer 'pos' *will* be uninitialized.
+
+Unless, of course, the outer 'pos' had that pointless explicit initializer.
+
+Here - can somebody poke holes in this "work of art" patch?
+
+                     Linus
+
+--0000000000008601b205d919a4ad
+Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
+Content-Disposition: attachment; filename="patch.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l074y7ca0>
+X-Attachment-Id: f_l074y7ca0
+
+IE1ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICB8IDIgKy0KIGFyY2gveDg2L2tlcm5lbC9j
+cHUvc2d4L2VuY2wuYyB8IDIgKy0KIGluY2x1ZGUvbGludXgvbGlzdC5oICAgICAgICAgICB8IDYg
+KysrLS0tCiAzIGZpbGVzIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkK
+CmRpZmYgLS1naXQgYS9NYWtlZmlsZSBiL01ha2VmaWxlCmluZGV4IGRhZWI1Yzg4YjUwYi4uY2M0
+YjBhMjY2YWYwIDEwMDY0NAotLS0gYS9NYWtlZmlsZQorKysgYi9NYWtlZmlsZQpAQCAtNTE1LDcg
+KzUxNSw3IEBAIEtCVUlMRF9DRkxBR1MgICA6PSAtV2FsbCAtV3VuZGVmIC1XZXJyb3I9c3RyaWN0
+LXByb3RvdHlwZXMgLVduby10cmlncmFwaHMgXAogCQkgICAtZm5vLXN0cmljdC1hbGlhc2luZyAt
+Zm5vLWNvbW1vbiAtZnNob3J0LXdjaGFyIC1mbm8tUElFIFwKIAkJICAgLVdlcnJvcj1pbXBsaWNp
+dC1mdW5jdGlvbi1kZWNsYXJhdGlvbiAtV2Vycm9yPWltcGxpY2l0LWludCBcCiAJCSAgIC1XZXJy
+b3I9cmV0dXJuLXR5cGUgLVduby1mb3JtYXQtc2VjdXJpdHkgXAotCQkgICAtc3RkPWdudTg5CisJ
+CSAgIC1zdGQ9Z251MTEKIEtCVUlMRF9DUFBGTEFHUyA6PSAtRF9fS0VSTkVMX18KIEtCVUlMRF9B
+RkxBR1NfS0VSTkVMIDo9CiBLQlVJTERfQ0ZMQUdTX0tFUk5FTCA6PQpkaWZmIC0tZ2l0IGEvYXJj
+aC94ODYva2VybmVsL2NwdS9zZ3gvZW5jbC5jIGIvYXJjaC94ODYva2VybmVsL2NwdS9zZ3gvZW5j
+bC5jCmluZGV4IDQ4YWZlOTZhZTBmMC4uODdkYjJmMzkzNmIwIDEwMDY0NAotLS0gYS9hcmNoL3g4
+Ni9rZXJuZWwvY3B1L3NneC9lbmNsLmMKKysrIGIvYXJjaC94ODYva2VybmVsL2NwdS9zZ3gvZW5j
+bC5jCkBAIC00NTAsNyArNDUwLDcgQEAgc3RhdGljIHZvaWQgc2d4X21tdV9ub3RpZmllcl9yZWxl
+YXNlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLAogCQkJCSAgICAgc3RydWN0IG1tX3N0cnVjdCAq
+bW0pCiB7CiAJc3RydWN0IHNneF9lbmNsX21tICplbmNsX21tID0gY29udGFpbmVyX29mKG1uLCBz
+dHJ1Y3Qgc2d4X2VuY2xfbW0sIG1tdV9ub3RpZmllcik7Ci0Jc3RydWN0IHNneF9lbmNsX21tICp0
+bXAgPSBOVUxMOworCXN0cnVjdCBzZ3hfZW5jbF9tbSAqdG1wOwogCiAJLyoKIAkgKiBUaGUgZW5j
+bGF2ZSBpdHNlbGYgY2FuIHJlbW92ZSBlbmNsX21tLiAgTm90ZSwgb2JqZWN0cyBjYW4ndCBiZSBt
+b3ZlZApkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9saXN0LmggYi9pbmNsdWRlL2xpbnV4L2xp
+c3QuaAppbmRleCBkZDZjMjA0MWQwOWMuLjcwODA3OGIyZjI0ZCAxMDA2NDQKLS0tIGEvaW5jbHVk
+ZS9saW51eC9saXN0LmgKKysrIGIvaW5jbHVkZS9saW51eC9saXN0LmgKQEAgLTYzNCw5ICs2MzQs
+OSBAQCBzdGF0aWMgaW5saW5lIHZvaWQgbGlzdF9zcGxpY2VfdGFpbF9pbml0KHN0cnVjdCBsaXN0
+X2hlYWQgKmxpc3QsCiAgKiBAaGVhZDoJdGhlIGhlYWQgZm9yIHlvdXIgbGlzdC4KICAqIEBtZW1i
+ZXI6CXRoZSBuYW1lIG9mIHRoZSBsaXN0X2hlYWQgd2l0aGluIHRoZSBzdHJ1Y3QuCiAgKi8KLSNk
+ZWZpbmUgbGlzdF9mb3JfZWFjaF9lbnRyeShwb3MsIGhlYWQsIG1lbWJlcikJCQkJXAotCWZvciAo
+cG9zID0gbGlzdF9maXJzdF9lbnRyeShoZWFkLCB0eXBlb2YoKnBvcyksIG1lbWJlcik7CVwKLQkg
+ICAgICFsaXN0X2VudHJ5X2lzX2hlYWQocG9zLCBoZWFkLCBtZW1iZXIpOwkJCVwKKyNkZWZpbmUg
+bGlzdF9mb3JfZWFjaF9lbnRyeShwb3MsIGhlYWQsIG1lbWJlcikJCQkJCVwKKwlmb3IgKHR5cGVv
+Zihwb3MpIHBvcyA9IGxpc3RfZmlyc3RfZW50cnkoaGVhZCwgdHlwZW9mKCpwb3MpLCBtZW1iZXIp
+OwlcCisJICAgICAhbGlzdF9lbnRyeV9pc19oZWFkKHBvcywgaGVhZCwgbWVtYmVyKTsJXAogCSAg
+ICAgcG9zID0gbGlzdF9uZXh0X2VudHJ5KHBvcywgbWVtYmVyKSkKIAogLyoqCg==
+--0000000000008601b205d919a4ad--
