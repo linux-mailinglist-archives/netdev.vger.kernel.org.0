@@ -2,128 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E445E4C60D5
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 03:13:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E42F94C6105
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 03:17:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbiB1COS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 21:14:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
+        id S231289AbiB1CRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 21:17:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbiB1COR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 21:14:17 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F137145510;
-        Sun, 27 Feb 2022 18:13:36 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id t14so7230471pgr.3;
-        Sun, 27 Feb 2022 18:13:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DtL7SWK21u+xZhbjnZFVcZx7PZjrMA1o1qQEXFS0MNU=;
-        b=BzKpTfnzjJcfZXPaely/HTimgea5Ajt9ht87rUYI2hbwr/Qp6Nkh9oY8eNOOr9o/lE
-         1GN5hMxgxkyV1QyWFP0FetciKJTWzxFucni7mW8mf/CNa7RaivOqfa5AFhFrRDc0MipG
-         dqmp/lLVJVD2hM5fCZpzkLjmmKD7X6uGSYQey3BDmcJCd1hKSHnC51pfOqLdt13VSgMm
-         N/9t/2TfNUTz9QsTOjjHhOtbdQ8zNzBb3/05LBxrGvwNSC0eidxj6D/HB0oAuIIsJ577
-         lyI4oxxFUtOkC8DteEbkKlzVwmRPRQdYDaAtRIJCSpLTC4DAXfowRhqDYy3UBG+79uuu
-         TvVA==
+        with ESMTP id S231304AbiB1CRn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 21:17:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA4646C1D6
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 18:16:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646014562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CNnWgfiQ5Q6Qh97dwmTTW8CSwF1BaMsz3d9uB0mZlfU=;
+        b=FfRshwVbt20L4NftCSMKH6sWyHlDjBMVUwIo4GuLMnWZWvDwq9qsD3U+yk2NqU5F6f1s2E
+        0jDnxR0RKkMq0SLicHqBwylgyNs2RqKl/tZIbQeBVlz+VS/9m1KdPMVG+vAOqcnFAV+vjp
+        ZkELG5PjSPqzJYmEZiyvK8m5x1cL5YE=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-220--wTW5RZMND2Yq84crpHnrA-1; Sun, 27 Feb 2022 21:16:01 -0500
+X-MC-Unique: -wTW5RZMND2Yq84crpHnrA-1
+Received: by mail-lj1-f197.google.com with SMTP id d23-20020a05651c089700b002463e31a5ffso4988177ljq.3
+        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 18:16:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DtL7SWK21u+xZhbjnZFVcZx7PZjrMA1o1qQEXFS0MNU=;
-        b=sdYXGvGnlIlQaiQubVu1i0qZKAsNgHF30gKL2F23bjPAH5UB1dLNagtyS87X8GG/5z
-         Ondnfoy+OXHUBn4ACYUtdcpkk4geX95gF7qsS6jd5mStVXN+TGhMPDynfGXrQopkOM5Y
-         JWoZ2DSTqhBtFRDVrV4LazZ5uxv5myoYf1ANqHqFhZvG6CMadwghaMQhsghiBrWILOxm
-         D5YRIpDLwlkdLPd3CtryxmzBJIX3FgVUF+m8gmmp1FfGc31mMTBGxjEH0v1gBdX1utqo
-         UtxAeV5dIVSL8RakDO12AN1lTGo0CO7zAsQTwuutQIIxHZy0Q/RZqJThe4B9cg5QHRhg
-         ZSFw==
-X-Gm-Message-State: AOAM532Aybco/7yUNrqTanOX/2BEPVY5Z2Z7Vh4J45vylDUGrysy8pJe
-        GwH8L5XHJYU7XYEKVE+5AdgQELVr/6Y=
-X-Google-Smtp-Source: ABdhPJxnFM6IXEA+rP8R+defBg6RvFrhktJtrIXjfp79gGeKIZ8Bl7ONFaaRIU1h9mpCtqTodplfrQ==
-X-Received: by 2002:a63:27c7:0:b0:343:984e:3428 with SMTP id n190-20020a6327c7000000b00343984e3428mr15538326pgn.528.1646014416397;
-        Sun, 27 Feb 2022 18:13:36 -0800 (PST)
-Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id m5-20020a056a00080500b004e174acd876sm11141056pfk.216.2022.02.27.18.13.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Feb 2022 18:13:35 -0800 (PST)
-Message-ID: <872e2596-4d7c-3b91-341c-0db3a3d7fd57@gmail.com>
-Date:   Sun, 27 Feb 2022 18:13:33 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CNnWgfiQ5Q6Qh97dwmTTW8CSwF1BaMsz3d9uB0mZlfU=;
+        b=dwXYyQcotY73edGBs2osrGOvlO0HluQt5wuSkXumh6olFQ4Yh9lmeslS6qN6NYUhH/
+         irLjzLmavOvnZQlWUwt/PNXq62U480jl1NAUh4naYm6FAyhBwhY493RYydqYYDHwPqC3
+         M/889OSn5veCXr3DhIrOCVve7oBYaEprkxlJa0PSCuyFAhDrtXAnNYn613u7flnWVudV
+         uhyNoBy/B/8vZwtNYj5qkOzAHaOSgROcw1Mm7P/0B54mt2cGWQEaO6XXZknOH4yKOKE+
+         C/OyqLWYBtR8he2h1yzL5vstU3UYJhy7kdhbZk7FIHnLSuGQeAJGPTkn5MXdcwjG4gRf
+         WL+A==
+X-Gm-Message-State: AOAM530jKJvWBL0jpfA9DE0EpmgA7DOKTe7s9uCuMHj2kk7+mW4gVPWP
+        UMzhEHjUVKpCFAKDE7fc1aAfqeLOGM0brhWY1ZoIMbA7uASLf9oE0UpJKWNhx0dedJ3r/pIdy9N
+        bxZWHvgRWzjF++gIrtPaMuEvd8Wz5xquD
+X-Received: by 2002:a05:651c:b12:b0:246:74cb:4a4 with SMTP id b18-20020a05651c0b1200b0024674cb04a4mr9044580ljr.492.1646014558591;
+        Sun, 27 Feb 2022 18:15:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz2IUEdlig5Qxrnulga+hl3unA9Ll/9S9C/ZsbSGHeENvGx+vqIAwaZpk161mttnlyBOJreuBl3ckcaf9f4JsU=
+X-Received: by 2002:a05:651c:b12:b0:246:74cb:4a4 with SMTP id
+ b18-20020a05651c0b1200b0024674cb04a4mr9044559ljr.492.1646014558307; Sun, 27
+ Feb 2022 18:15:58 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH net-next 18/32] netfilter: egress: avoid a lockdep splat
-Content-Language: en-US
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-References: <20220109231640.104123-1-pablo@netfilter.org>
- <20220109231640.104123-19-pablo@netfilter.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <20220109231640.104123-19-pablo@netfilter.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220224103852.311369-1-baymaxhuang@gmail.com> <20220225090223.636877-1-baymaxhuang@gmail.com>
+In-Reply-To: <20220225090223.636877-1-baymaxhuang@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 28 Feb 2022 10:15:47 +0800
+Message-ID: <CACGkMEvRxb02LgF9Tq9ypnAmfBmrw1iG1W8pB5hqNs3DROxmvw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] tun: support NAPI for packets received from
+ batched XDP buffs
+To:     Harold Huang <baymaxhuang@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 1/9/22 15:16, Pablo Neira Ayuso wrote:
-> From: Florian Westphal <fw@strlen.de>
+On Fri, Feb 25, 2022 at 5:03 PM Harold Huang <baymaxhuang@gmail.com> wrote:
 >
-> include/linux/netfilter_netdev.h:97 suspicious rcu_dereference_check() usage!
-> 2 locks held by sd-resolve/1100:
->   0: ..(rcu_read_lock_bh){1:3}, at: ip_finish_output2
->   1: ..(rcu_read_lock_bh){1:3}, at: __dev_queue_xmit
->   __dev_queue_xmit+0 ..
+> In tun, NAPI is supported and we can also use NAPI in the path of
+> batched XDP buffs to accelerate packet processing. What is more, after
+> we use NAPI, GRO is also supported. The iperf shows that the throughput of
+> single stream could be improved from 4.5Gbps to 9.2Gbps. Additionally, 9.2
+> Gbps nearly reachs the line speed of the phy nic and there is still about
+> 15% idle cpu core remaining on the vhost thread.
 >
-> The helper has two callers, one uses rcu_read_lock, the other
-> rcu_read_lock_bh().  Annotate the dereference to reflect this.
+> Test topology:
 >
-> Fixes: 42df6e1d221dd ("netfilter: Introduce egress hook")
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> [iperf server]<--->tap<--->dpdk testpmd<--->phy nic<--->[iperf client]
+>
+> Iperf stream:
+>
+> Before:
+> ...
+> [  5]   5.00-6.00   sec   558 MBytes  4.68 Gbits/sec    0   1.50 MBytes
+> [  5]   6.00-7.00   sec   556 MBytes  4.67 Gbits/sec    1   1.35 MBytes
+> [  5]   7.00-8.00   sec   556 MBytes  4.67 Gbits/sec    2   1.18 MBytes
+> [  5]   8.00-9.00   sec   559 MBytes  4.69 Gbits/sec    0   1.48 MBytes
+> [  5]   9.00-10.00  sec   556 MBytes  4.67 Gbits/sec    1   1.33 MBytes
+> - - - - - - - - - - - - - - - - - - - - - - - - -
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec  5.39 GBytes  4.63 Gbits/sec   72          sender
+> [  5]   0.00-10.04  sec  5.39 GBytes  4.61 Gbits/sec               receiver
+>
+> After:
+> ...
+> [  5]   5.00-6.00   sec  1.07 GBytes  9.19 Gbits/sec    0   1.55 MBytes
+> [  5]   6.00-7.00   sec  1.08 GBytes  9.30 Gbits/sec    0   1.63 MBytes
+> [  5]   7.00-8.00   sec  1.08 GBytes  9.25 Gbits/sec    0   1.72 MBytes
+> [  5]   8.00-9.00   sec  1.08 GBytes  9.25 Gbits/sec   77   1.31 MBytes
+> [  5]   9.00-10.00  sec  1.08 GBytes  9.24 Gbits/sec    0   1.48 MBytes
+> - - - - - - - - - - - - - - - - - - - - - - - - -
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec  10.8 GBytes  9.28 Gbits/sec  166          sender
+> [  5]   0.00-10.04  sec  10.8 GBytes  9.24 Gbits/sec               receiver
+> ....
+>
+> Reported-at: https://lore.kernel.org/all/CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com
+> Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
 > ---
->   include/linux/netfilter_netdev.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> v1 -> v2
+>  - fix commit messages
+>  - add queued flag to avoid void unnecessary napi suggested by Jason
 >
-> diff --git a/include/linux/netfilter_netdev.h b/include/linux/netfilter_netdev.h
-> index b71b57a83bb4..b4dd96e4dc8d 100644
-> --- a/include/linux/netfilter_netdev.h
-> +++ b/include/linux/netfilter_netdev.h
-> @@ -94,7 +94,7 @@ static inline struct sk_buff *nf_hook_egress(struct sk_buff *skb, int *rc,
->   		return skb;
->   #endif
->   
-> -	e = rcu_dereference(dev->nf_hooks_egress);
-> +	e = rcu_dereference_check(dev->nf_hooks_egress, rcu_read_lock_bh_held());
->   	if (!e)
->   		return skb;
->   
+>  drivers/net/tun.c | 20 ++++++++++++++++----
+>  1 file changed, 16 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index fed85447701a..c7d8b7c821d8 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2379,7 +2379,7 @@ static void tun_put_page(struct tun_page *tpage)
+>  }
+>
+>  static int tun_xdp_one(struct tun_struct *tun,
+> -                      struct tun_file *tfile,
+> +                      struct tun_file *tfile, int *queued,
+>                        struct xdp_buff *xdp, int *flush,
+>                        struct tun_page *tpage)
 
+Nit: how about simply returning the number of packets queued here?
 
-It seems other rcu_dereference() uses will also trigger lockdep splat.
+Thanks
 
-
-nft_do_chain()
-
-...
-
-if (genbit)
-
-     blob = rcu_dereference(chain->blob_gen_1);
-
-else
-
-    blob = rcu_dereference(chain->blob_gen_0);
-
-I wonder how many other places will need a fix ?
-
+>  {
+> @@ -2388,6 +2388,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+>         struct virtio_net_hdr *gso = &hdr->gso;
+>         struct bpf_prog *xdp_prog;
+>         struct sk_buff *skb = NULL;
+> +       struct sk_buff_head *queue;
+>         u32 rxhash = 0, act;
+>         int buflen = hdr->buflen;
+>         int err = 0;
+> @@ -2464,7 +2465,15 @@ static int tun_xdp_one(struct tun_struct *tun,
+>             !tfile->detached)
+>                 rxhash = __skb_get_hash_symmetric(skb);
+>
+> -       netif_receive_skb(skb);
+> +       if (tfile->napi_enabled) {
+> +               queue = &tfile->sk.sk_write_queue;
+> +               spin_lock(&queue->lock);
+> +               __skb_queue_tail(queue, skb);
+> +               spin_unlock(&queue->lock);
+> +               (*queued)++;
+> +       } else {
+> +               netif_receive_skb(skb);
+> +       }
+>
+>         /* No need to disable preemption here since this function is
+>          * always called with bh disabled
+> @@ -2492,7 +2501,7 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+>         if (ctl && (ctl->type == TUN_MSG_PTR)) {
+>                 struct tun_page tpage;
+>                 int n = ctl->num;
+> -               int flush = 0;
+> +               int flush = 0, queued = 0;
+>
+>                 memset(&tpage, 0, sizeof(tpage));
+>
+> @@ -2501,12 +2510,15 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+>
+>                 for (i = 0; i < n; i++) {
+>                         xdp = &((struct xdp_buff *)ctl->ptr)[i];
+> -                       tun_xdp_one(tun, tfile, xdp, &flush, &tpage);
+> +                       tun_xdp_one(tun, tfile, &queued, xdp, &flush, &tpage);
+>                 }
+>
+>                 if (flush)
+>                         xdp_do_flush();
+>
+> +               if (tfile->napi_enabled && queued > 0)
+> +                       napi_schedule(&tfile->napi);
+> +
+>                 rcu_read_unlock();
+>                 local_bh_enable();
+>
+> --
+> 2.27.0
+>
 
