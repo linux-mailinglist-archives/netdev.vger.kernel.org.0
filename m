@@ -2,60 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85DB74C6AE0
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD7B24C6AE4
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:40:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235939AbiB1Lkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 06:40:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
+        id S231758AbiB1Lk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 06:40:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiB1Lkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:40:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCE271C8B;
-        Mon, 28 Feb 2022 03:40:13 -0800 (PST)
+        with ESMTP id S233760AbiB1Lkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:40:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E286C71C88;
+        Mon, 28 Feb 2022 03:40:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC88C61011;
-        Mon, 28 Feb 2022 11:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F70CC340F7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93FA3B810C2;
+        Mon, 28 Feb 2022 11:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 21936C340F8;
         Mon, 28 Feb 2022 11:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646048412;
-        bh=IzGbTcTkn5OvqXsg1RVWTdhXpQHp9xW7OhzybEz8rpU=;
+        bh=HO5mukOsh1CQY6TQPZOqEsX7jfChMuGFDsi0dNfJMHY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e1gFUPQUj5F8Ws2RJTAXFNXtmCaDhftLa229YVLX5lNSzPulcT08lXnFoqCrgH9IE
-         xXtc6XhB+IbXJWLSkyRCaia5XQL9UOaG23tH/ALexH2oqJgal7i3toSFxrEIJccWS8
-         NQ5dNPCTTHyf5/LZgsnkCuHzLf+nLdh5/OU5V6VY9UkJTVsnydCkNpY9ex2UqTtaQx
-         EFtvnO6sOT2JtCDIhSgkykHAKWzULvKmKfh1HXg97L0HlZmE9E/YhhY5ehnmmlxRir
-         cNDHsg7L+Lw5m8Nd9IDl1yCxqhZqQpfu9QjTUFBvtf2Ix91l774ww/54eFZ23iV2K4
-         01V9V8ID1840A==
+        b=OUGY+rF5DWnGXspdM2HcFddZfGLrHumzRaKbypy7JLOdT0KB1kFQUwYOQcYtILJrT
+         kHEK0vBBmxUTcPjeJJJ4szqdUIFx75zJ1b9Ni7j3chsFbLyrUBpM2LGiI6EgqlRiZr
+         E+3/3Q23anEOrtjl18CeTghMZyeeb9CKuPlYYac1uvpBcH6/4bgectRIE1pck+8cmF
+         qIliVIOr90damhnxbwjwQIZALZSdQQYvCBQMgSkCoCWWNrvty3qz4Jsny06Uh3Gb9p
+         mnPRURznx6SfhqA63ZobE1gzUEMy5EXGC9BmyFputZIFSruRZreyHA8KwS9u7W2bt3
+         XgLmwGR3Zrpqw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ED73BE5D087;
-        Mon, 28 Feb 2022 11:40:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0546FF0383A;
+        Mon, 28 Feb 2022 11:40:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/2] flow_offload: add tc police parameters
+Subject: Re: [PATCH net-next] net/smc: Call trace_smc_tx_sendmsg when data corked
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164604841196.9255.14955309839209917682.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 11:40:11 +0000
-References: <20220224102908.5255-1-jianbol@nvidia.com>
-In-Reply-To: <20220224102908.5255-1-jianbol@nvidia.com>
-To:     Jianbo Liu <jianbol@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
-        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
-        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        simon.horman@corigine.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        baowen.zheng@corigine.com, louis.peens@netronome.com,
-        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
+Message-Id: <164604841201.9255.3198550734243809450.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 11:40:12 +0000
+References: <20220225073420.84025-1-tonylu@linux.alibaba.com>
+In-Reply-To: <20220225073420.84025-1-tonylu@linux.alibaba.com>
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     raspl@linux.ibm.com, kgraul@linux.ibm.com, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -68,26 +59,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 24 Feb 2022 10:29:06 +0000 you wrote:
-> As a preparation for more advanced police offload in mlx5 (e.g.,
-> jumping to another chain when bandwidth is not exceeded), extend the
-> flow offload API with more tc-police parameters. Adjust existing
-> drivers to reject unsupported configurations.
+On Fri, 25 Feb 2022 15:34:21 +0800 you wrote:
+> This also calls trace_smc_tx_sendmsg() even if data is corked. For ease
+> of understanding, if statements are not expanded here.
 > 
-> Changes since v2:
->   * Rename index to extval in exceed and notexceed acts.
->   * Add policer validate functions for all drivers.
+> Link: https://lore.kernel.org/all/f4166712-9a1e-51a0-409d-b7df25a66c52@linux.ibm.com/
+> Fixes: 139653bc6635 ("net/smc: Remove corked dealyed work")
+> Suggested-by: Stefan Raspl <raspl@linux.ibm.com>
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3,1/2] net: flow_offload: add tc police action parameters
-    https://git.kernel.org/netdev/net-next/c/b8cd5831c61c
-  - [net-next,v3,2/2] flow_offload: reject offload for all drivers with invalid police parameters
-    (no matching commit)
+  - [net-next] net/smc: Call trace_smc_tx_sendmsg when data corked
+    https://git.kernel.org/netdev/net-next/c/6900de507cd4
 
 You are awesome, thank you!
 -- 
