@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E30924C7E6C
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 00:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB9A4C7E83
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 00:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiB1Xbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 18:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
+        id S230490AbiB1Xkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 18:40:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiB1Xbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 18:31:41 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB371EEDA;
-        Mon, 28 Feb 2022 15:31:02 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id b20so4328756qkn.9;
-        Mon, 28 Feb 2022 15:31:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rqXBt8yzUjWrarVpoIHmOjmSMgjNVBuHKspHFnevxUA=;
-        b=cS1ycKAtfbn+XsNgoBE4DAXZtO7H2lZt5v+XcGll+qQ4wQE8eiouQ9y3BYrCnapRkM
-         XFpSNIeiYMc77L6JHAMIyeXIN7uV722UqhjGQWuV0hmVLxlfrwpoJ41VgqabrQVeVb63
-         FT3tWvJIdvTQztYHBlMNy1Fau4j82zcNIpzoY7MvU6RthdbPsYeTpGtxonsotF3tOK1H
-         mQP41z5/6O+CazPQgwyCFNevY/j1ZadJWAIZ1XrwaqhQaF2DI2sJJgzE6XRy2jbVFkI1
-         H6AECCJmQ7MrfYigvtxEcYL3tPX3S6kZ/hJvLwcGrue/srsPCxV3l+zTahQilk4LRngK
-         3TRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rqXBt8yzUjWrarVpoIHmOjmSMgjNVBuHKspHFnevxUA=;
-        b=fM7yhkJI4Ule+jQwggCipVZing5Le0kPupw+nkzLJV6WwzkWEVCwoXVqOb6P98arA4
-         ZqhxtJhOF1dykr41woxVy3iA6XFrcVrCi4BIArzdjzMnFZZPmTZUXXZyc29lCcu9h0/j
-         Hg7RkRc/6tM3GQHOt+yBvJlf3eaWEINKCmfUYDeWVn+HylOHCNDhQMMF9OdOiIQmwXPS
-         KKVyQ4Xr3M+PUCvXVnALnHRXh/buX4wr+t7/7o6vldU8LELY87gDrlbctZ1F81NpokcX
-         Hkns4PMZ/mswbwFGPST3bdJ5F0+xSsAp29tAiBZdhl0z8xF0ohCYPbgV2TqbNaw/42eh
-         7b0w==
-X-Gm-Message-State: AOAM532qphlQRVk0rfXvAkJXzM2PLonu4dIbnA8BRepv1Oqb4sdHncHj
-        fyi7zObzBAX2mGFJycT6xLU=
-X-Google-Smtp-Source: ABdhPJyyCW54RFkyJTyjxuy+jdYFhw6jgTumX6JBc2jenfOBm7AIbpEiCmpxMLb0sAl+zvnuGdAf9g==
-X-Received: by 2002:a37:687:0:b0:5f1:9134:8815 with SMTP id 129-20020a370687000000b005f191348815mr12442442qkg.255.1646091061288;
-        Mon, 28 Feb 2022 15:31:01 -0800 (PST)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id n1-20020a05622a11c100b002dff3364c6esm6164575qtk.19.2022.02.28.15.31.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 15:31:01 -0800 (PST)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-rockchip@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] net: phy: fix motorcomm module automatic loading
-Date:   Mon, 28 Feb 2022 18:30:57 -0500
-Message-Id: <20220228233057.1140817-1-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229557AbiB1Xkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 18:40:52 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8912EB53;
+        Mon, 28 Feb 2022 15:40:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8DD70CE18F6;
+        Mon, 28 Feb 2022 23:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B6C7FC340F1;
+        Mon, 28 Feb 2022 23:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646091609;
+        bh=KYjxY1UtUlxytahQl/GTKs0PeixkvM2dMA2VBn6Njs4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CJaMj+8yhGv/MiJCpbsIA0PEPU143DuKLYBiOBvBw6W7ygfiIOGcg3zUXdwM9HZkp
+         jpvhWXtIq8zEVOopE+XV99fdy97RA8/UAtBFEFnIgbKT7tVYkM10MxehrzKZPFQgX4
+         7dlzMOTzrIn/KETe2dO/BNBx1vedSFT+AR1AYT3ci3WHplqtwgHtm9Srm6IsjTWDVt
+         ZqvfdjM4AlQ+R7aYZdtrDCfvqgtgOIPFvtA7SS4ouChaGYS7cfu/8xpTBSHHJcRq8e
+         S4QmxIuk7hqZyvDcKd+GkPsq3YtFC3BEIETOM/va5L0z8OHsc5GxF/xPZMfVWo1d9I
+         E9ted5EXslHiQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 962D6E6D4BB;
+        Mon, 28 Feb 2022 23:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next v3 0/2] Modify BPF_JIT_ALWAYS_ON and
+ BPF_JIT_DEFAULT_ON
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164609160961.29256.14375573252999533886.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 23:40:09 +0000
+References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        lixuefeng@loongson.cn, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sentinel compatible entry whitespace causes automatic module loading
-to fail with certain userspace utilities. Fix this by removing the
-whitespace and sentinel comment, which is unnecessary.
+Hello:
 
-Fixes: 48e8c6f1612b ("net: phy: add driver for Motorcomm yt8511 phy")
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- drivers/net/phy/motorcomm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, 22 Feb 2022 17:57:04 +0800 you wrote:
+> v3:
+>   -- Use "return failure" instead of "return in failure".
+>   -- Use "Enable BPF JIT by default" for config BPF_JIT_DEFAULT_ON.
+> 
+> v2:
+>   -- Use the full path /proc/sys/net/core/bpf_jit_enable in the help text.
+>   -- Update the commit message to make it clear in patch #2.
+> 
+> [...]
 
-diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-index 7e6ac2c5e27e..1e3a4eed39bc 100644
---- a/drivers/net/phy/motorcomm.c
-+++ b/drivers/net/phy/motorcomm.c
-@@ -131,7 +131,7 @@ MODULE_LICENSE("GPL");
- 
- static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
--	{ /* sentinal */ }
-+	{}
- };
- 
- MODULE_DEVICE_TABLE(mdio, motorcomm_tbl);
+Here is the summary with links:
+  - [bpf-next,v3,1/2] bpf: Add some description about BPF_JIT_ALWAYS_ON in Kconfig
+    https://git.kernel.org/bpf/bpf-next/c/b664e255ba3c
+  - [bpf-next,v3,2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable in Kconfig
+    (no matching commit)
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
