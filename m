@@ -2,66 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B4524C61E8
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 04:43:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B5674C620E
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 05:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232967AbiB1DoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Feb 2022 22:44:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        id S232844AbiB1EGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Feb 2022 23:06:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232957AbiB1DoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 22:44:06 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC853A1AA
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 19:43:27 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so10142752pjw.5
-        for <netdev@vger.kernel.org>; Sun, 27 Feb 2022 19:43:27 -0800 (PST)
+        with ESMTP id S229671AbiB1EGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Feb 2022 23:06:44 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5543136C;
+        Sun, 27 Feb 2022 20:06:06 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id i1so9612367plr.2;
+        Sun, 27 Feb 2022 20:06:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TmIn0vl+wQIL0hn6QDnwHjOHMijLSEmLnqSYD60fvQY=;
-        b=Tda1OhespAbalOt0LRTu2xmmjqhAPe2CYmib/UzONmVjYDTOjuxuUtr59UCGVyeUFC
-         4XmjEyJUqOkVMvokcrTsePZO9sLBXuOYvuLdX6/PRZYg83cI+ofgDP+mo3djFP5GvoMg
-         bWw8Hi3jCTDRTObYLD2dZK3kROKOi76ztm/axB4vunZpyO3RKrESX0xuFCXcccVVEP1U
-         0cIh6zA5miSROBGtfB2Hg3hKDB+gS6g9tml9n5ws1yN5dNPAkP7veOayDGRARYyUh3hY
-         nm12YeDG4YwDr4PMFaO+Y7sLFngk+kNwt+/dghu0fNCZ2bWjojjmsU24Vsdi/v1GImUJ
-         fwlQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1iMjZs99yFvrTrdGptle5tGXSWiVgsIPGsP79v/GKgc=;
+        b=X4AD70sxK4FYMkTRKPnoA2kCchF3BsSFHu8SjsPT8crO4k0K4hHGEm1T33+Md5wx8w
+         9/PoXb/TNQc1nbzy9LdXZSV+HJpeHIOmNcJOLtK8gf5Rve0gDUL80lPQN81N+0S4oSG8
+         dTuAj/FyjOfOqUykx11xfjTE5azS5xqAI3LRr/o1xfKCj3twfDy74MMP+pPj86WtBHka
+         Q2vpjKbXdRZAxR0oSmWVtlSKgdnEFfNEGRtn4l5rPvnYur+qfmY1s/rLsQbaymL7PeQz
+         xR7hN4ZfDqPiwfGcxJXUhY1+bBpH+eHyyogr0h3RnK8bS2ydt+LAnqNK4u1IxC7WArZV
+         Ir1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TmIn0vl+wQIL0hn6QDnwHjOHMijLSEmLnqSYD60fvQY=;
-        b=sluKwexERHjQNdTr0FH9wcn0H8KAlAxOJ8qrPGg+CcqQIDunDE4XrDCEa3PHh/3q2l
-         Lu9sltpI/vo/r7xjgYYxKTRld4mpPcAjxT4Q2GrzPzP60ilL8Te+JFKtZqc0gb8DoOj7
-         O1uPNOfeu1VYsUG5Ak/3MhmxFweH/BYS7emjKLPShLPFsR2DxKIdudgtCWbub5JrfJHx
-         FD4I5iYkZ+IzBEBv7vlntOvbbEZ23IxLP1cAQxWcPnB7EkGc6wcz7RtzBGL07K3yF0v0
-         oalG0gT1QZs8e/Db2hdfz4eyL1jqstb/h2Xs7ZZCTZKFVataKQPL18rKOdA/3V9QMDTJ
-         QO/A==
-X-Gm-Message-State: AOAM5316qi/7QPzk1VIa7jGqh62gQFajBF7TuY0e3oOzMLk+O41CP2yt
-        So91oWv0wdJO/+MjK1yzrqnVlEhtL1FfVw==
-X-Google-Smtp-Source: ABdhPJy9KGqOapamTvbou/68CWrdgTTJPL+SgKGh8H1FK47cVxcGAVXcQglv5a1k8wzvUvJuggkxnw==
-X-Received: by 2002:a17:902:ab5e:b0:14f:f73c:821d with SMTP id ij30-20020a170902ab5e00b0014ff73c821dmr18193826plb.161.1646019806977;
-        Sun, 27 Feb 2022 19:43:26 -0800 (PST)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l5-20020a056a0016c500b004f140564a00sm11209077pfc.203.2022.02.27.19.43.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 19:43:26 -0800 (PST)
-Date:   Mon, 28 Feb 2022 11:43:21 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCHv2 iproute2-next] bond: add ns_ip6_target option
-Message-ID: <YhxE2fwJWHkNzR90@Laptop-X1>
-References: <20220221055458.18790-1-liuhangbin@gmail.com>
- <20220221055458.18790-7-liuhangbin@gmail.com>
- <243fb2a1-f8d5-c427-a0a7-44ac3d71af58@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1iMjZs99yFvrTrdGptle5tGXSWiVgsIPGsP79v/GKgc=;
+        b=gybVozPhZUOJ3/ChRSEnXORgRyrQiwROmPdbuz33Wf6MP+QuVEiiyQNvFOwlSjlr85
+         MI8bUy3WUhlEe0jaYtrfyzXhUNEoYdXGZdBNJIxBGzpU8mmLGUczmR0fRdux4zqBd/6j
+         aHCU80hA3Wc9OZ7cjAAqKjhyBXPIig59N/QBzr29WAFc15lcEd3HcvV7YGz/t5TXhz4h
+         WJegRyXOXSc3piXORsgV9AnZbNbhSYtuJ91PvsvJAU3iP/Kv++gpqwg503US76sN1KMv
+         HJpotxQ6AOCPxCBXPal5L596266nQnt395LhYEgK2YNWdIN3/Xii7zTlUAXojlqbsY9G
+         LgDg==
+X-Gm-Message-State: AOAM530B/AM+FkPOv54hk9ncFjsiQJ3wI/baVyai/z+e/mNp/8OBvJT5
+        SXusCXK67Lfcx+4KwoZR1eY=
+X-Google-Smtp-Source: ABdhPJzmuzTPTpfDAj3F94nER6rw4HVogjMbSRNHTtb/tUxsVPyyRvOYhvlQvKGNovOhYZy37qekxQ==
+X-Received: by 2002:a17:902:bf06:b0:14d:8c72:96c6 with SMTP id bi6-20020a170902bf0600b0014d8c7296c6mr19153920plb.156.1646021166026;
+        Sun, 27 Feb 2022 20:06:06 -0800 (PST)
+Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id k1-20020a056a00168100b004e0e45a39c6sm11172350pfc.181.2022.02.27.20.06.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Feb 2022 20:06:05 -0800 (PST)
+Message-ID: <c687e1d8-e36a-8f23-342a-22b2a1efb372@gmail.com>
+Date:   Sun, 27 Feb 2022 20:06:03 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <243fb2a1-f8d5-c427-a0a7-44ac3d71af58@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net-next v2] tun: support NAPI for packets received from
+ batched XDP buffs
+Content-Language: en-US
+To:     Harold Huang <baymaxhuang@gmail.com>, netdev@vger.kernel.org
+Cc:     jasowang@redhat.com, pabeni@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
+        edumazet@google.com
+References: <20220224103852.311369-1-baymaxhuang@gmail.com>
+ <20220225090223.636877-1-baymaxhuang@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220225090223.636877-1-baymaxhuang@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,26 +83,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 06:32:41PM -0700, David Ahern wrote:
-> On 2/20/22 10:54 PM, Hangbin Liu wrote:
-> > Similar with arp_ip_target, this option add bond IPv6 NS/NA monitor
-> > support. When IPv6 target was set, the ARP target will be disabled.
-> > 
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> > ---
-> > v2: define BOND_MAX_NS_TARGETS
-> > ---
-> >  ip/iplink_bond.c | 53 +++++++++++++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 52 insertions(+), 1 deletion(-)
-> > 
-> 
-> > +		} else if (matches(*argv, "ns_ip6_target") == 0) {
-> 
-> changed matches to strcmp and applied.
-> 
-> we are not accepting any more uses of matches.
 
-Oh, my bad. I forgot to change match to strcmp when copy/paste the
-arp_ip_target code...
+On 2/25/22 01:02, Harold Huang wrote:
+> In tun, NAPI is supported and we can also use NAPI in the path of
+> batched XDP buffs to accelerate packet processing. What is more, after
+> we use NAPI, GRO is also supported. The iperf shows that the throughput of
+> single stream could be improved from 4.5Gbps to 9.2Gbps. Additionally, 9.2
+> Gbps nearly reachs the line speed of the phy nic and there is still about
+> 15% idle cpu core remaining on the vhost thread.
+>
+> Test topology:
+>
+> [iperf server]<--->tap<--->dpdk testpmd<--->phy nic<--->[iperf client]
+>
+> Iperf stream:
+>
+> Before:
+> ...
+> [  5]   5.00-6.00   sec   558 MBytes  4.68 Gbits/sec    0   1.50 MBytes
+> [  5]   6.00-7.00   sec   556 MBytes  4.67 Gbits/sec    1   1.35 MBytes
+> [  5]   7.00-8.00   sec   556 MBytes  4.67 Gbits/sec    2   1.18 MBytes
+> [  5]   8.00-9.00   sec   559 MBytes  4.69 Gbits/sec    0   1.48 MBytes
+> [  5]   9.00-10.00  sec   556 MBytes  4.67 Gbits/sec    1   1.33 MBytes
+> - - - - - - - - - - - - - - - - - - - - - - - - -
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec  5.39 GBytes  4.63 Gbits/sec   72          sender
+> [  5]   0.00-10.04  sec  5.39 GBytes  4.61 Gbits/sec               receiver
+>
+> After:
+> ...
+> [  5]   5.00-6.00   sec  1.07 GBytes  9.19 Gbits/sec    0   1.55 MBytes
+> [  5]   6.00-7.00   sec  1.08 GBytes  9.30 Gbits/sec    0   1.63 MBytes
+> [  5]   7.00-8.00   sec  1.08 GBytes  9.25 Gbits/sec    0   1.72 MBytes
+> [  5]   8.00-9.00   sec  1.08 GBytes  9.25 Gbits/sec   77   1.31 MBytes
+> [  5]   9.00-10.00  sec  1.08 GBytes  9.24 Gbits/sec    0   1.48 MBytes
+> - - - - - - - - - - - - - - - - - - - - - - - - -
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec  10.8 GBytes  9.28 Gbits/sec  166          sender
+> [  5]   0.00-10.04  sec  10.8 GBytes  9.24 Gbits/sec               receiver
+> ....
+>
+> Reported-at: https://lore.kernel.org/all/CACGkMEvTLG0Ayg+TtbN4q4pPW-ycgCCs3sC3-TF8cuRTf7Pp1A@mail.gmail.com
+> Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
+> ---
+> v1 -> v2
+>   - fix commit messages
+>   - add queued flag to avoid void unnecessary napi suggested by Jason
+>
+>   drivers/net/tun.c | 20 ++++++++++++++++----
+>   1 file changed, 16 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index fed85447701a..c7d8b7c821d8 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2379,7 +2379,7 @@ static void tun_put_page(struct tun_page *tpage)
+>   }
+>   
+>   static int tun_xdp_one(struct tun_struct *tun,
+> -		       struct tun_file *tfile,
+> +		       struct tun_file *tfile, int *queued,
+>   		       struct xdp_buff *xdp, int *flush,
+>   		       struct tun_page *tpage)
+>   {
+> @@ -2388,6 +2388,7 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   	struct virtio_net_hdr *gso = &hdr->gso;
+>   	struct bpf_prog *xdp_prog;
+>   	struct sk_buff *skb = NULL;
+> +	struct sk_buff_head *queue;
+>   	u32 rxhash = 0, act;
+>   	int buflen = hdr->buflen;
+>   	int err = 0;
+> @@ -2464,7 +2465,15 @@ static int tun_xdp_one(struct tun_struct *tun,
+>   	    !tfile->detached)
+>   		rxhash = __skb_get_hash_symmetric(skb);
+>   
+> -	netif_receive_skb(skb);
+> +	if (tfile->napi_enabled) {
+> +		queue = &tfile->sk.sk_write_queue;
+> +		spin_lock(&queue->lock);
+> +		__skb_queue_tail(queue, skb);
+> +		spin_unlock(&queue->lock);
+> +		(*queued)++;
+> +	} else {
+> +		netif_receive_skb(skb);
+> +	}
+>   
+>   	/* No need to disable preemption here since this function is
+>   	 * always called with bh disabled
+> @@ -2492,7 +2501,7 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+>   	if (ctl && (ctl->type == TUN_MSG_PTR)) {
+>   		struct tun_page tpage;
+>   		int n = ctl->num;
+> -		int flush = 0;
+> +		int flush = 0, queued = 0;
+>   
+>   		memset(&tpage, 0, sizeof(tpage));
+>   
+> @@ -2501,12 +2510,15 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+>   
+>   		for (i = 0; i < n; i++) {
+>   			xdp = &((struct xdp_buff *)ctl->ptr)[i];
+> -			tun_xdp_one(tun, tfile, xdp, &flush, &tpage);
+> +			tun_xdp_one(tun, tfile, &queued, xdp, &flush, &tpage);
 
-Hangbin
+
+How big n can be ?
+
+BTW I could not find where m->msg_controllen was checked in tun_sendmsg().
+
+struct tun_msg_ctl *ctl = m->msg_control;
+
+if (ctl && (ctl->type == TUN_MSG_PTR)) {
+
+     int n = ctl->num;  // can be set to values in [0..65535]
+
+     for (i = 0; i < n; i++) {
+
+         xdp = &((struct xdp_buff *)ctl->ptr)[i];
+
+
+I really do not understand how we prevent malicious user space from 
+crashing the kernel.
+
+
+
+>   		}
+>   
+>   		if (flush)
+>   			xdp_do_flush();
+>   
+> +		if (tfile->napi_enabled && queued > 0)
+> +			napi_schedule(&tfile->napi);
+> +
+>   		rcu_read_unlock();
+>   		local_bh_enable();
+>   
