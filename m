@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CED314C7CBB
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 23:04:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2657F4C7CBC
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 23:04:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbiB1WEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 17:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S230252AbiB1WEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 17:04:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiB1WEn (ORCPT
+        with ESMTP id S230103AbiB1WEn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 17:04:43 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE28BC4B44
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAFAC4B59
         for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 14:04:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646085843; x=1677621843;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=AjQKAT8hlw1tMVnMxNr0LiIPkiMl15czXmuo6Lsr/Ks=;
-  b=P1TVctG6/UDAK3510AU7kf7SdW63QGWX68ehf54L50BK2+3r1mXDXUx5
-   BEPpxK++7jfgCWbDiqYnhM/XYOWNnBeqnysLKZOOsG9E+Yqz2GNB7xS8F
-   jD9D0Gko6jP50hq72DUTRr7IweJ/jAk73LUIINBVVTYNvgVr6HIQpmNq1
-   fyrgjB8Ea5tbMTCvyyZFa1sKyraHdExNlIq5r43K0xHeyb+S+jPRkhqc8
-   xYDsNm13S3OY13kGOd8lzZBmFH52r+RmDk1DsBf6PhVulxSkJXM7Zo6G2
-   W2/e5Ri7Cq1QrZIyoSIE/yeXySVilLfq6AfTlvT8wjAdY195nZLIT6Yum
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="236506448"
+  bh=PhNLCIVQy2ZVGj1MGX4JBDIa0mR+HVaezoumaPtKyzk=;
+  b=TGcO1nxnb9fv9XnKCJfcG7JX6d2i62wGs9gPngorb7sgctiFLn70bBDV
+   cOycFNhsfP59xbnSLSBJnvTkXENVhUaJaVAyRFMMotomi3mqpmZLvUniP
+   5DeYz+AAaeDQI9jCRCZ7uV8R1DxJH+5vy+5knb5IUdl5A6CNlZp5ocJUG
+   fgqpQna07ibaJbu0F+F7lNTKvJlyJqXUVAm0qxgVL0M0QWLsKzICYcAdz
+   IQnhO2YLDrELCIlgCr90nEKS0IORu+jvRbKJrNgxhp4MWBk6Fa3y2bxSH
+   8M2OmLhX0G4VHP/EeAac6pVF1roxfqkFj01w+qn7Nw0HXwsWuQtbUfYUU
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="236506449"
 X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="236506448"
+   d="scan'208";a="236506449"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 14:04:01 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="575476147"
+   d="scan'208";a="575476151"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga001.jf.intel.com with ESMTP; 28 Feb 2022 14:04:00 -0800
+  by orsmga001.jf.intel.com with ESMTP; 28 Feb 2022 14:04:01 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, vitaly.lifshits@intel.com,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Nir Efrati <nir.efrati@intel.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: [PATCH net v2 3/4] e1000e: Fix possible HW unit hang after an s0ix exit
-Date:   Mon, 28 Feb 2022 14:04:11 -0800
-Message-Id: <20220228220412.2129191-4-anthony.l.nguyen@intel.com>
+        Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+        Naama Meir <naamax.meir@linux.intel.com>
+Subject: [PATCH net v2 4/4] e1000e: Correct NVM checksum verification flow
+Date:   Mon, 28 Feb 2022 14:04:12 -0800
+Message-Id: <20220228220412.2129191-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220228220412.2129191-1-anthony.l.nguyen@intel.com>
 References: <20220228220412.2129191-1-anthony.l.nguyen@intel.com>
@@ -64,117 +63,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sasha Neftin <sasha.neftin@intel.com>
 
-Disable the OEM bit/Gig Disable/restart AN impact and disable the PHY
-LAN connected device (LCD) reset during power management flows. This
-fixes possible HW unit hangs on the s0ix exit on some corporate ADL
-platforms.
+Update MAC type check e1000_pch_tgp because for e1000_pch_cnp,
+NVM checksum update is still possible.
+Emit a more detailed warning message.
 
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Suggested-by: Nir Efrati <nir.efrati@intel.com>
+Bugzilla: https://bugzilla.opensuse.org/show_bug.cgi?id=1191663
+Fixes: 4051f68318ca ("e1000e: Do not take care about recovery NVM checksum")
+Reported-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/e1000e/hw.h      |  1 +
- drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 ++++
- drivers/net/ethernet/intel/e1000e/ich8lan.h |  1 +
- drivers/net/ethernet/intel/e1000e/netdev.c  | 26 +++++++++++++++++++++
- 4 files changed, 32 insertions(+)
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-index bcf680e83811..13382df2f2ef 100644
---- a/drivers/net/ethernet/intel/e1000e/hw.h
-+++ b/drivers/net/ethernet/intel/e1000e/hw.h
-@@ -630,6 +630,7 @@ struct e1000_phy_info {
- 	bool disable_polarity_correction;
- 	bool is_mdix;
- 	bool polarity_correction;
-+	bool reset_disable;
- 	bool speed_downgraded;
- 	bool autoneg_wait_to_complete;
- };
 diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index c908c84b86d2..e298da712758 100644
+index e298da712758..d60e2016d03c 100644
 --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -2050,6 +2050,10 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
- 	bool blocked = false;
- 	int i = 0;
+@@ -4140,9 +4140,9 @@ static s32 e1000_validate_nvm_checksum_ich8lan(struct e1000_hw *hw)
+ 		return ret_val;
  
-+	/* Check the PHY (LCD) reset flag */
-+	if (hw->phy.reset_disable)
-+		return true;
-+
- 	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
- 	       (i++ < 30))
- 		usleep_range(10000, 11000);
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-index 2504b11c3169..638a3ddd7ada 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-@@ -271,6 +271,7 @@
- #define I217_CGFREG_ENABLE_MTA_RESET	0x0002
- #define I217_MEMPWR			PHY_REG(772, 26)
- #define I217_MEMPWR_DISABLE_SMB_RELEASE	0x0010
-+#define I217_MEMPWR_MOEM		0x1000
+ 	if (!(data & valid_csum_mask)) {
+-		e_dbg("NVM Checksum Invalid\n");
++		e_dbg("NVM Checksum valid bit not set\n");
  
- /* Receive Address Initial CRC Calculation */
- #define E1000_PCH_RAICC(_n)	(0x05F50 + ((_n) * 4))
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index a42aeb555f34..c5bdef3ffe26 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6987,8 +6987,21 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct e1000_hw *hw = &adapter->hw;
-+	u16 phy_data;
- 	int rc;
- 
-+	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-+	    hw->mac.type >= e1000_pch_adp) {
-+		/* Mask OEM Bits / Gig Disable / Restart AN (772_26[12] = 1) */
-+		e1e_rphy(hw, I217_MEMPWR, &phy_data);
-+		phy_data |= I217_MEMPWR_MOEM;
-+		e1e_wphy(hw, I217_MEMPWR, phy_data);
-+
-+		/* Disable LCD reset */
-+		hw->phy.reset_disable = true;
-+	}
-+
- 	e1000e_flush_lpic(pdev);
- 
- 	e1000e_pm_freeze(dev);
-@@ -7010,6 +7023,8 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct e1000_hw *hw = &adapter->hw;
-+	u16 phy_data;
- 	int rc;
- 
- 	/* Introduce S0ix implementation */
-@@ -7020,6 +7035,17 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	if (rc)
- 		return rc;
- 
-+	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
-+	    hw->mac.type >= e1000_pch_adp) {
-+		/* Unmask OEM Bits / Gig Disable / Restart AN 772_26[12] = 0 */
-+		e1e_rphy(hw, I217_MEMPWR, &phy_data);
-+		phy_data &= ~I217_MEMPWR_MOEM;
-+		e1e_wphy(hw, I217_MEMPWR, phy_data);
-+
-+		/* Enable LCD reset */
-+		hw->phy.reset_disable = false;
-+	}
-+
- 	return e1000e_pm_thaw(dev);
- }
- 
+-		if (hw->mac.type < e1000_pch_cnp) {
++		if (hw->mac.type < e1000_pch_tgp) {
+ 			data |= valid_csum_mask;
+ 			ret_val = e1000_write_nvm(hw, word, 1, &data);
+ 			if (ret_val)
 -- 
 2.31.1
 
