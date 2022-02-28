@@ -2,103 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 032734C7E3D
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 00:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DBE74C7E63
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 00:29:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiB1XYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 18:24:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
+        id S230259AbiB1X1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 18:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiB1XYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 18:24:16 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7671C3311
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 15:23:35 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d81518795fso113011407b3.0
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 15:23:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Hl63cIacA+y8aLzzmyl5L8wBUuBQ1b/3yZnRLsIwylg=;
-        b=jAao/jq5jMxA2ELK6SgJRtpeoq77RDQVN5qgI/4Us4sP+jmjp40jD1IcRJsmh1EHgx
-         m9uinNqt+dCTNXJgv1g9mue+wlv2xsOmn2+hn/I+GKLGFjBSRF7mb4sZH3jN+qPE+Mou
-         wXqXDTkNDTuDftbBr11MTViCPhi8+SojdV8qj8PgIAzn2pPH3L4Pk5H62KzxUEzHu0nz
-         441hsoGUHQrt/4i3cJGuIsOFKvGXiGLq7SYLJ6H/rMgo7fj/BuUAGDZbiJkI0aceAEYT
-         EnNLRB+7T0ofLtJ/9wdtnqiW7cXoeOo1vd6+i+E+E6O07NDWW3a/OOIMUIghVBhV3o4f
-         uwBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Hl63cIacA+y8aLzzmyl5L8wBUuBQ1b/3yZnRLsIwylg=;
-        b=dgXDKmMJ1u8MRcqjBgtYW8WZCd1sn0GYMNWks4ugneDXWFaGn9c6bvZ7XFrue9Ky2w
-         pg/w4LX43XGllJ4/GGFzpmAMmpgnSWcH5GMpH+Cep9EL+ufqm8SmjeW+YBELKSvngOPN
-         A0c9SWpw/WpF9n1Ro5E/Aq48uW8fQjL9Ip57jaCOoCt2a2TCKLenjYxrytboqWUSk8XW
-         IlLuG3puBKkHmCizhEvAIKzMSlA/LpQxMAt3I51dH23wDVrt4nslX6E2fHPb7ZKUUDPp
-         nlSGe3j7WptKGH/kgZebXIVSD3Fh45oQSQ1UhsgqppR62/9j3kXun+lt6XiavWHYxkdg
-         o6bw==
-X-Gm-Message-State: AOAM532FUy5qnGYSZJLKaaqpKd4XCrJRrRjnzNgf4hU07YGumH6G2QyV
-        x7jWkvSfBKPjKMz2S/4NtBX6VKFmGysvUQA6f/8pNWYDGPHRs95Z/Lv0xwE2Ibc6yeqyNvTTnDe
-        AqnXTvwzt86vd3DANwcTUF2ZEKetTOqPWlsn9dOw03f15gk6/TfGC1A==
-X-Google-Smtp-Source: ABdhPJxkvsVPqRd5oHsNWX9wqjTUm1s4KG2y4Uox79pr8SwtrF8i4tR0F5IMf9kU59L2I+KVXzj+lKI=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:e0d9:4eba:c433:775d])
- (user=sdf job=sendgmr) by 2002:a25:296:0:b0:623:a267:ab94 with SMTP id
- 144-20020a250296000000b00623a267ab94mr21495769ybc.430.1646090615042; Mon, 28
- Feb 2022 15:23:35 -0800 (PST)
-Date:   Mon, 28 Feb 2022 15:23:32 -0800
-Message-Id: <20220228232332.458871-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH bpf-next] bpf: test_run: Fix overflow in xdp frags bpf_test_finish
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-10.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229961AbiB1X1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 18:27:45 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8CADE2C1;
+        Mon, 28 Feb 2022 15:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=kySnWHttTi8Odl1WzgGLjQ1pb3b/AWH5qnYZSwnte50=; b=nt03mWtTaEB9qwsFMTflxzDbvW
+        aPSsVBeLr8i8UFwA1l3fNavsuYE231uUwb0yDTUi43cd3zIwbEaMZqro2u+rXbOt0KZriPQpyGi5J
+        +pW6oqM84XOoVppIQh3QNnM4ANpt9aIP3ShEwC0IGa2NKI/m2xxapQAyHhJG42Bevn7SuMSAnyA27
+        7+3DFdmFFllbJzk1MHudhAJj7GPo/5RsA7npxrePVRbtGBQKbJeOUSye2chevgvDMrFkod2y0FmL7
+        JW29U+rs2LR5a0WX3s04bvbvXotX/UjRCpaaxaXPYROyoDfpDk5Wuy418QovroPX+qbpGelik5Tc/
+        I0FC9RZw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOpPe-0090gL-Ex; Mon, 28 Feb 2022 23:26:42 +0000
+Date:   Mon, 28 Feb 2022 23:26:42 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com>
+ <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+ <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+ <Yh0tl3Lni4weIMkl@casper.infradead.org>
+ <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports another issue:
-WARNING: CPU: 0 PID: 10775 at include/linux/thread_info.h:230
-check_copy_size include/linux/thread_info.h:230 [inline]
-WARNING: CPU: 0 PID: 10775 at include/linux/thread_info.h:230
-copy_to_user include/linux/uaccess.h:199 [inline]
-WARNING: CPU: 0 PID: 10775 at include/linux/thread_info.h:230
-bpf_test_finish.isra.0+0x4b2/0x680 net/bpf/test_run.c:171
+On Mon, Feb 28, 2022 at 12:37:15PM -0800, Linus Torvalds wrote:
+> On Mon, Feb 28, 2022 at 12:16 PM Matthew Wilcox <willy@infradead.org> wrote:
+> >
+> > Then we can never use -Wshadow ;-(  I'd love to be able to turn it on;
+> > it catches real bugs.
+> 
+> Oh, we already can never use -Wshadow regardless of things like this.
+> That bridge hasn't just been burned, it never existed in the first
+> place.
+> 
+> The whole '-Wshadow' thing simply cannot work with local variables in
+> macros - something that we've used since day 1.
+> 
+> Try this (as a "p.c" file):
+> 
+>         #define min(a,b) ({                     \
+>                 typeof(a) __a = (a);            \
+>                 typeof(b) __b = (b);            \
+>                 __a < __b ? __a : __b; })
+> 
+>         int min3(int a, int b, int c)
+>         {
+>                 return min(a,min(b,c));
+>         }
+> 
+> and now do "gcc -O2 -S t.c".
+> 
+> Then try it with -Wshadow.
 
-This can happen when the userspace buffer is smaller than head+frags.
-Return ENOSPC in this case.
+#define ___PASTE(a, b)	a##b
+#define __PASTE(a, b) ___PASTE(a, b)
+#define _min(a, b, u) ({         \
+        typeof(a) __PASTE(__a,u) = (a);            \
+        typeof(b) __PASTE(__b,u) = (b);            \
+        __PASTE(__a,u) < __PASTE(__b,u) ? __PASTE(__a,u) : __PASTE(__b,u); })
 
-Fixes: 7855e0db150a ("bpf: test_run: add xdp_shared_info pointer in bpf_test_finish signature")
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- net/bpf/test_run.c | 5 +++++
- 1 file changed, 5 insertions(+)
+#define min(a, b) _min(a, b, __COUNTER__)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index f08034500813..eb129e48f90b 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -150,6 +150,11 @@ static int bpf_test_finish(const union bpf_attr *kattr,
- 	if (data_out) {
- 		int len = sinfo ? copy_size - sinfo->xdp_frags_size : copy_size;
- 
-+		if (len < 0) {
-+			err = -ENOSPC;
-+			goto out;
-+		}
-+
- 		if (copy_to_user(data_out, data, len))
- 			goto out;
- 
--- 
-2.35.1.574.g5d30c73bfb-goog
+int min3(int a, int b, int c)
+{
+        return min(a,min(b,c));
+}
 
+(probably there's a more elegant way to do this)
