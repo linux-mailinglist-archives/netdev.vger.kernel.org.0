@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15EB64C64ED
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 09:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5F14C66D3
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 11:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231856AbiB1Ija (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 03:39:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
+        id S234585AbiB1KHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 05:07:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231608AbiB1Ij3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 03:39:29 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4685421E0F
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 00:38:50 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id r20so16355772ljj.1
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 00:38:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/T5/aA282OhZVpVeoBbgrirpqDFKv1amKtNobYkr1X8=;
-        b=Ah+Zqq9bbcAWpioCu+0OCxdSCd8+KOyLX+tNfAxlZSyHdVPgLc7E7UjQCqW90ZQoX7
-         BosMBDlvjOMk+IDFqrJYbwcCy/SH6t52zTSBC9pT08cnuo4Z6byhFc0aJO3cmlUwLJWY
-         6kH2mKBQ3+s4qPrX7gOWy04tvqPosHLj07ryI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/T5/aA282OhZVpVeoBbgrirpqDFKv1amKtNobYkr1X8=;
-        b=fH/E7q+3Ujt8tzoyRCeTnEhBagCoxoafNWzUzBuqEhse+y3QfSq6UtSYc1C+CzbwCZ
-         eEhj85yO7ITHSAT7QkUjhsxpvZupRWidRzTK75TlIHAz2D9v0wZbNLYx2RHjncUHre7S
-         wq665bGBsHQpBQMsDpRwelqrqq0+RWzBXLtj5bbnnIIoqIKj2l4jNp2neKqmuezyoL2o
-         WQ5NtfVoiasksXpuIxtl1FPqVY7/+yIIBZs2DjBQelHZkPFfgQd2hcunM7bMP45sgM3M
-         ibzPy6xr0r53dENYyJ4w6+jFT8a/Hh6gcmTmVbYGlfzqIy17k4ay3JjN6pt2WwCNOsNu
-         ONsA==
-X-Gm-Message-State: AOAM531zbJYhmXj0Ab6nUlHvzvcoyqGaKml4xy7a3+NxuRHvXrrAaBIr
-        94z3Ktz/qzezeoxTVx/TRnA7CDpDb/q/Pq3nQetF4mwEElfR8A==
-X-Google-Smtp-Source: ABdhPJzxOaiTA4oDqTQOe6lZp7zLMM4EZC1Lm5PfRrLjvPlOM2NO3fOCeaXN39p3Bh29uwhJ5UqONi8KMeDrFKJtqhA=
-X-Received: by 2002:a2e:90d6:0:b0:246:e44:bcf6 with SMTP id
- o22-20020a2e90d6000000b002460e44bcf6mr13799384ljg.501.1646037528631; Mon, 28
- Feb 2022 00:38:48 -0800 (PST)
+        with ESMTP id S234573AbiB1KHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 05:07:07 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70A82D1FB
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 02:06:29 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nOcv6-0001BA-IF; Mon, 28 Feb 2022 11:06:20 +0100
+Received: from pengutronix.de (unknown [90.153.54.255])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 07E333F02B;
+        Mon, 28 Feb 2022 08:55:36 +0000 (UTC)
+Date:   Mon, 28 Feb 2022 09:55:36 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
+        paskripkin@gmail.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: usb: delete a redundant dev_kfree_skb() in
+ ems_usb_start_xmit()
+Message-ID: <20220228085536.pa5wdq3w4ul5wqn5@pengutronix.de>
+References: <20220228083639.38183-1-hbh25y@gmail.com>
 MIME-Version: 1.0
-References: <1645810914-35485-1-git-send-email-jdamato@fastly.com>
- <1645810914-35485-5-git-send-email-jdamato@fastly.com> <453c24e6-f9b1-0b7d-3144-7b3db1d94944@redhat.com>
-In-Reply-To: <453c24e6-f9b1-0b7d-3144-7b3db1d94944@redhat.com>
-From:   Joe Damato <jdamato@fastly.com>
-Date:   Mon, 28 Feb 2022 00:38:37 -0800
-Message-ID: <CALALjgxS0q+Vbg8rgrqTZ+CSV=9tXOTdxE7S4VGGnvsbicLE3A@mail.gmail.com>
-Subject: Re: [net-next v7 4/4] mlx5: add support for page_pool_get_stats
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
-        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3b5jwxwlprqckkxj"
+Content-Disposition: inline
+In-Reply-To: <20220228083639.38183-1-hbh25y@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,49 +55,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 11:28 PM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
->
-> On 25/02/2022 18.41, Joe Damato wrote:
-> > +#ifdef CONFIG_PAGE_POOL_STATS
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_fast) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_slow) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_slow_high_order) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_empty) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_refill) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_waive) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_cached) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_cache_full) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_ring) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_ring_full) },
-> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_released_ref) },
-> > +#endif
->
-> The naming: "page_pool_rec_xxx".
-> What does the "rec" stand for?
 
-rec stands for recycle.
+--3b5jwxwlprqckkxj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ethtool strings have a limited size (ETH_GSTRING_LEN - 32 bytes) and
-the full word "recycle" didn't fit for some of the stats once the
-queue number is prepended elsewhere in the driver code.
+On 28.02.2022 16:36:39, Hangyu Hua wrote:
+> There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
+> can_put_echo_skb deletes original skb and can_free_echo_skb deletes the c=
+loned
+> skb.
+>=20
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 
-> Users of ethtool -S stats... will they know "rec" is "recycle" ?
+Thanks for the patch. Please add a Fixes tag, that points to the commit
+that introduced the problem, here it's:
 
-I am open to other names or adding documentation to the driver docs to
-explain the meaning.
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB i=
+nterface")
 
-> p.s. we need acks from driver maintainer(s).
+I've adjusted the subject a bit ("can: usb: ems_usb_start_xmit(): fix
+double dev_kfree_skb() in error path") and added stable on Cc.
 
-I've CC'd Tariq and Saaed; I hope they'll take a look when they have a
-chance and weigh in on the naming. I am happy to adjust the names as
-they wish and submit a v8, or take this code as-is and then iterate on
-the names in a separate change.
+Added patch to can/testing.
 
-I think the latter option would be easiest, but I am happy to do
-whatever you all prefer.
+regards,
+Marc
 
-Thanks,
-Joe
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--3b5jwxwlprqckkxj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIcjgUACgkQrX5LkNig
+011JaAgAgazwqrThdzTSMQPN3Jz7o80maSyjAnDnztQyxz7rmwW5gFoEHkXA61Hi
+ih20UirDRgWIFJJOkK+oKuvCEDAvrMMXi2oc5vM5lHdev5dPyNoEhw1c7dGpMA7v
+gbaArI3x0/qEBgwUIc0NUed1zPYHd86J6++4exGaVg5Ht915pFdznq8oHVrepgY/
+dEWiwQh4gjVgZwTHQ9xGouS+VV6egSz/K6GS5FUHHRm59C594vglVwYKbEwSRPSH
+fSM+FGC8c64/Jcmq9DzP8B19BC7czeEmim3cR6+oyZe99fKGAwJf015YbvGxLN1J
+pAmOrdGIsydoKimv4s6Tkf8aekXRXA==
+=HJiM
+-----END PGP SIGNATURE-----
+
+--3b5jwxwlprqckkxj--
