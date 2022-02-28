@@ -2,65 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 238C14C656D
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 10:07:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F2694C6589
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 10:17:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233805AbiB1JIU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Feb 2022 04:08:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S233153AbiB1JRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 04:17:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbiB1JIS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 04:08:18 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33559BC13;
-        Mon, 28 Feb 2022 01:07:35 -0800 (PST)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K6ZHg1qLBz67NYn;
-        Mon, 28 Feb 2022 17:06:23 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Feb 2022 10:07:33 +0100
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2308.021;
- Mon, 28 Feb 2022 10:07:33 +0100
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Mimi Zohar <zohar@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "revest@chromium.org" <revest@chromium.org>
-CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 0/6] bpf-lsm: Extend interoperability with IMA
-Thread-Topic: [PATCH v2 0/6] bpf-lsm: Extend interoperability with IMA
-Thread-Index: AQHYImlgJM6Z1962JUm5hvc+dgM0dqyjZeaAgACU/jCAAKZjAIAEHfiw
-Date:   Mon, 28 Feb 2022 09:07:33 +0000
-Message-ID: <8eeb74eea6564e3c819a2caca58b714a@huawei.com>
-References: <20220215124042.186506-1-roberto.sassu@huawei.com>
-         <408a96085814b2578486b2859e63ff906f5e5876.camel@linux.ibm.com>
-         <5117c79227ce4b9d97e193fd8fb59ba2@huawei.com>
- <223d9eedc03f68cfa4f1624c4673e844e29da7d5.camel@linux.ibm.com>
-In-Reply-To: <223d9eedc03f68cfa4f1624c4673e844e29da7d5.camel@linux.ibm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.204.63.33]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S232997AbiB1JRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 04:17:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BA6E506DC
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 01:17:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646039832;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xyoZS8R09K5R53F9xuxSDE0hn+q9/eWcNwXXBMh6nG0=;
+        b=jF80iH1KoRwFxBEOl4V18ZUrTuK0eQBrRKMU5TDKzRnAd7RCFZGeqUeZR1p1++Fu5HCivK
+        /Mj2RQloLos9Eu4EMswmMqg4WQwTttpASYlXYevgWquXpzJatyI2XpGpSm+vYz5NWO4bm2
+        RZrjGh1KHi0wafA9dDg7T2dGYs6DT/c=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-372-7p3UWPCCMK62MY_Ku9Ww0g-1; Mon, 28 Feb 2022 04:17:09 -0500
+X-MC-Unique: 7p3UWPCCMK62MY_Ku9Ww0g-1
+Received: by mail-ed1-f70.google.com with SMTP id r11-20020a508d8b000000b00410a4fa4768so5437729edh.9
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 01:17:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=xyoZS8R09K5R53F9xuxSDE0hn+q9/eWcNwXXBMh6nG0=;
+        b=5s5A9BngM96fwXcCz9OR36pknSG/0Ibi+dUuNpg7q//lGWLaewZtfiqMMzbjAtp4xv
+         CsoajJyfvKnxH68KbwrUCdLJQFcjpBZ6jcWeLthOmfb02zCEUqnvZS+S++Nx6SkQhgxA
+         VicfYKhFOc6xvHahyfE7QIgDpL+t0mgw/e+G9vHU0XFyVL841O+KwhjAbns6DtaQuADN
+         Dv8D2rF6hh/kBgFUP4kbu7IlchZvBN8g3UcZrDtfl2wo2XqU5oEdFnf3x3sQapCCUEqf
+         kEi20Bz9XNT2TfU3Plv0QSyGvRyP9Cff/IkSklmo7ZxinEnSUCk8Jyk2OTMbhUHrRKs7
+         SP+A==
+X-Gm-Message-State: AOAM5334ktKmmLNjFNeNdIf2xumlRhUGdUPAvaIrygc4TetujTuDbgsp
+        HpJ2Z3l6DS2vWmdZPMlbrWgrxepw7dlgqLybnDrjOKsJ2c02DuDxKjr0WnvZh4Z+NZQn63XOgjr
+        o+GqRdOIMD4SlVmRY
+X-Received: by 2002:a05:6402:268c:b0:411:e086:b7d1 with SMTP id w12-20020a056402268c00b00411e086b7d1mr18436329edd.111.1646039828409;
+        Mon, 28 Feb 2022 01:17:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx4k3lfxU3y0W6EYLg0D8NbUBDrOaRHbsOw1Nw53hmqO1B8mo2t7jPTO9wRmYPK0193RmQBmg==
+X-Received: by 2002:a05:6402:268c:b0:411:e086:b7d1 with SMTP id w12-20020a056402268c00b00411e086b7d1mr18436301edd.111.1646039828049;
+        Mon, 28 Feb 2022 01:17:08 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id w14-20020a509d8e000000b00412cf368b4csm5812029ede.53.2022.02.28.01.17.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 01:17:06 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C8C7713100F; Mon, 28 Feb 2022 10:08:46 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Joe Damato <jdamato@fastly.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
+        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com
+Subject: Re: [net-next v7 4/4] mlx5: add support for page_pool_get_stats
+In-Reply-To: <CALALjgxS0q+Vbg8rgrqTZ+CSV=9tXOTdxE7S4VGGnvsbicLE3A@mail.gmail.com>
+References: <1645810914-35485-1-git-send-email-jdamato@fastly.com>
+ <1645810914-35485-5-git-send-email-jdamato@fastly.com>
+ <453c24e6-f9b1-0b7d-3144-7b3db1d94944@redhat.com>
+ <CALALjgxS0q+Vbg8rgrqTZ+CSV=9tXOTdxE7S4VGGnvsbicLE3A@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 28 Feb 2022 10:08:46 +0100
+Message-ID: <87h78jxsrl.fsf@toke.dk>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,58 +82,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Mimi Zohar [mailto:zohar@linux.ibm.com]
-> Sent: Friday, February 25, 2022 8:11 PM
-> On Fri, 2022-02-25 at 08:41 +0000, Roberto Sassu wrote:
-> > > From: Mimi Zohar [mailto:zohar@linux.ibm.com]
-> > > Sent: Friday, February 25, 2022 1:22 AM
-> > > Hi Roberto,
-> > >
-> > > On Tue, 2022-02-15 at 13:40 +0100, Roberto Sassu wrote:
-> > > > Extend the interoperability with IMA, to give wider flexibility for the
-> > > > implementation of integrity-focused LSMs based on eBPF.
-> > >
-> > > I've previously requested adding eBPF module measurements and signature
-> > > verification support in IMA.  There seemed to be some interest, but
-> > > nothing has been posted.
-> >
-> > Hi Mimi
-> >
-> > for my use case, DIGLIM eBPF, IMA integrity verification is
-> > needed until the binary carrying the eBPF program is executed
-> > as the init process. I've been thinking to use an appended
-> > signature to overcome the limitation of lack of xattrs in the
-> > initial ram disk.
-> 
-> I would still like to see xattrs supported in the initial ram disk.
-> Assuming you're still interested in pursuing it, someone would need to
-> review and upstream it.  Greg?
+Joe Damato <jdamato@fastly.com> writes:
 
-I could revise this work. However, since appended signatures
-would work too, I would propose to extend this appraisal
-mode to executables, if it is fine for you.
+> On Sun, Feb 27, 2022 at 11:28 PM Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
+>>
+>>
+>>
+>> On 25/02/2022 18.41, Joe Damato wrote:
+>> > +#ifdef CONFIG_PAGE_POOL_STATS
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_fast) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_slow) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_slow_high_order) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_empty) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_refill) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_waive) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_cached) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_cache_full) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_ring) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_ring_full) },
+>> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_released_ref) },
+>> > +#endif
+>>
+>> The naming: "page_pool_rec_xxx".
+>> What does the "rec" stand for?
+>
+> rec stands for recycle.
+>
+> ethtool strings have a limited size (ETH_GSTRING_LEN - 32 bytes) and
+> the full word "recycle" didn't fit for some of the stats once the
+> queue number is prepended elsewhere in the driver code.
+>
+>> Users of ethtool -S stats... will they know "rec" is "recycle" ?
+>
+> I am open to other names or adding documentation to the driver docs to
+> explain the meaning.
 
-> > At that point, the LSM is attached and it can enforce an
-> > execution policy, allowing or denying execution and mmap
-> > of files depending on the digest lists (reference values) read
-> > by the user space side.
-> >
-> > After the LSM is attached, IMA's job would be just to calculate
-> > the file digests (currently, I'm using an audit policy to ensure
-> > that the digest is available when the eBPF program calls
-> > bpf_ima_inode_hash()).
-> >
-> > The main benefit of this patch set is that the audit policy
-> > would not be required and digests are calculated only when
-> > requested by the eBPF program.
-> 
-> Roberto, there's an existing eBPF integrity gap that needs to be
-> closed, perhaps not for your usecase, but in general.  Is that
-> something you can look into?
+You could shorten the 'page_pool_' prefix to 'ppool_' or even 'pp_' and
+gain some characters that way?
 
-It could be possible I look into it.
+-Toke
 
-Roberto
-
-HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
-Managing Director: Li Peng, Zhong Ronghua
