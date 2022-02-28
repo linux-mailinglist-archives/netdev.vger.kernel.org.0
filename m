@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A984C69AB
-	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:09:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C06684C69A7
+	for <lists+netdev@lfdr.de>; Mon, 28 Feb 2022 12:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235690AbiB1LKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 06:10:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50536 "EHLO
+        id S235684AbiB1LJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 06:09:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232125AbiB1LJf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:09:35 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D49E6AA4D;
-        Mon, 28 Feb 2022 03:08:56 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id qk11so24048117ejb.2;
-        Mon, 28 Feb 2022 03:08:56 -0800 (PST)
+        with ESMTP id S235423AbiB1LJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 06:09:39 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD16D6B09A;
+        Mon, 28 Feb 2022 03:08:57 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id qk11so24048273ejb.2;
+        Mon, 28 Feb 2022 03:08:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/EGi4mr40p3raaac66vU0+hvD5YB9qCu1pOgtbPKlNE=;
-        b=VH7eVEC8n4nRrOoErZmqRCmKK7V5zc3O3oKOvZo//InJ7XISRo4OXBvRXMfd2rUS1i
-         Z3McStXnEH5YC1rDBQByspf6SMehlrdIcvguNTspxofen/r+Ku9/5Zc6VDa43ZuI+L2p
-         ODGsjalHPfmdltJq4PehGBFpGUI5lnN4Jq/QY5horoOOjoTVfSDxXFEdAwVql0IqIAtS
-         7kgSGPGWQVceCqMCNEvvla+av+fJUYIE93j17d1iaJrIlF6Edh2jwNed9PrIimvbPII3
-         vwkIbcMNChpBfeEAd9IaH2Ydb6zZyuRdWphPE+E4m5NB1jeJOzq80m/tuCsGSREkl1bm
-         sUSg==
+        bh=sNYkGUT1b39g11ICdbmY5PrBerSJts/Bm2Fwecgn+7Q=;
+        b=SG7X651hZKMvfAijAjNUODidn7ro9rS5bzCj/5cDImBaS5a1Qtotnd0xvbaBDCL4jA
+         4xEzq95SKk90hMirwVISFDpnE1c+M6BGkBGYK/iCPR3I3GgeuxGBVATFL/mbvlw4g/oj
+         bO1MgjkGBLHU4lSziwM8CSSY6Rf7Go9XXWkOm7Wr/HOgKnPx8WpGK4RuoYvpaOrVauor
+         62cYY7x66WWO/1B7l5U8/t6d4bhYKpm9vGkEnowzG5LRT1I0tjFH2l5pQXcOBIFLcyDt
+         HIkOp6gurQ5ZB50JFtpyyHWF/V8dvxeQ1dAOOjgYayX1+s/xpsPtqJBQ0NDidsMDIrIl
+         46qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/EGi4mr40p3raaac66vU0+hvD5YB9qCu1pOgtbPKlNE=;
-        b=XzT5cIfQUNiXa9LHE/n1FLFouiRveWdQCGiB7AUzLINwWLSpX4TY3kULtZFkZiZdBU
-         5bOAC8kXDBndNeVeha3CPPq2AY0VCulDc0eNF7EWBRiOtziCkG4W7bMZVFsJVZ/UPIq8
-         b3uWSRZ2FrDAznQukGEs/UBevWGnOvjp6qXtAB6uT2Ho5OU66P4h5/qccxuWvO0nNH4F
-         d9lxSF73nkW4N1rfQI4cMYctP45wgHhn7y9unS15RnzVjrhoEJqn/ON+JWuC3NVQwXNU
-         I6L2F5PcOZXp5EvZGC2SEwLhmNMJOeQjJ4Atk3KR4Bco5SnvoiUGX8spVjn2yqff/nuo
-         daVA==
-X-Gm-Message-State: AOAM530pOMzEq9Td6ULZQSEND05cTbmhLLQhsa0fWBHtaiV+rue5BoMv
-        qYIXtcYO0CFesEsMk3ZWWoY=
-X-Google-Smtp-Source: ABdhPJxdOZxTrBRs3m8EHdN9xiZB1+7/ZwU5F9dTBO3q/FP0GLy97OxjFGh37oi6BNvQ+yLVOlfqsg==
-X-Received: by 2002:a17:907:3dab:b0:6d6:a9a8:be4b with SMTP id he43-20020a1709073dab00b006d6a9a8be4bmr4593604ejc.34.1646046534587;
-        Mon, 28 Feb 2022 03:08:54 -0800 (PST)
+        bh=sNYkGUT1b39g11ICdbmY5PrBerSJts/Bm2Fwecgn+7Q=;
+        b=LkWt8iNHrIZRbLTmh4e0PyF9kxnwkvzuOFfRoj0jmNqxJdlRo2E8Jh768OOoLqfEX1
+         0cVr5Pjpbm7AH4GqtV876VJ741BOUuOrGQYI0h8ljN0LxIFPD1mwdw5KSM4kE2FCj2Xf
+         6Rlf7MJE0weoD4k9pMjzbBC/vtXzTu4JG7jDtAh5YmT+TAA8v/E3liuHfDVajng5O2oz
+         ejWeMSQVb0mTNVeNiceqUI8gBvgXMYfecwO5iapRjeuc4fgpFZpL+CaGt2nGprwQaI7l
+         1wya1hCndF5+dPLVt4eSwCWk5jn6fYQH62Wj1+c5haMF334wEvxVZVyQqTMtqZrqfNon
+         ekvA==
+X-Gm-Message-State: AOAM5312/RIp8SwBbfDYijrykIl6dPxhRVDsyMlfaZc2IxvVbPSYwrHO
+        NBNOf+NQDXwRhS4QwH9mcp6X3hSTUISU7CgIlenS3g==
+X-Google-Smtp-Source: ABdhPJzb2IicnaS2bEVPvOWjl8uhSqTZxOfebaMPruujktD/AHD7IBcvO2+N0N5JDSsC/IlMBvCxrA==
+X-Received: by 2002:a17:906:264d:b0:6b1:13e0:9981 with SMTP id i13-20020a170906264d00b006b113e09981mr14248136ejc.611.1646046536214;
+        Mon, 28 Feb 2022 03:08:56 -0800 (PST)
 Received: from localhost.localdomain (dhcp-077-250-038-153.chello.nl. [77.250.38.153])
-        by smtp.googlemail.com with ESMTPSA id z22-20020a17090655d600b006d229436793sm4209049ejp.223.2022.02.28.03.08.53
+        by smtp.googlemail.com with ESMTPSA id z22-20020a17090655d600b006d229436793sm4209049ejp.223.2022.02.28.03.08.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 03:08:54 -0800 (PST)
+        Mon, 28 Feb 2022 03:08:55 -0800 (PST)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
@@ -86,9 +86,9 @@ Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
         kgdb-bugreport@lists.sourceforge.net,
         v9fs-developer@lists.sourceforge.net,
         tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
-Subject: [PATCH 1/6] drivers: usb: remove usage of list iterator past the loop body
-Date:   Mon, 28 Feb 2022 12:08:17 +0100
-Message-Id: <20220228110822.491923-2-jakobkoschel@gmail.com>
+Subject: [PATCH 2/6] treewide: remove using list iterator after loop body as a ptr
+Date:   Mon, 28 Feb 2022 12:08:18 +0100
+Message-Id: <20220228110822.491923-3-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220228110822.491923-1-jakobkoschel@gmail.com>
 References: <20220228110822.491923-1-jakobkoschel@gmail.com>
@@ -104,600 +104,394 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the list representing the request queue does not contain the expected
-request, the value of list_for_each_entry() iterator will not point to a
-valid structure. To avoid type confusion in such case, the list iterator
+If the list does not contain the expected element, the value of
+list_for_each_entry() iterator will not point to a valid structure.
+To avoid type confusion in such case, the list iterator
 scope will be limited to list_for_each_entry() loop.
 
 In preparation to limiting scope of a list iterator to the list traversal
-loop, use a dedicated pointer to point to the found request object.
+loop, use a dedicated pointer to point to the found element.
+Determining if an element was found is then simply checking if
+the pointer is != NULL.
 
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/usb/gadget/udc/aspeed-vhub/epn.c | 11 ++++++----
- drivers/usb/gadget/udc/at91_udc.c        | 26 ++++++++++++++----------
- drivers/usb/gadget/udc/atmel_usba_udc.c  | 11 ++++++----
- drivers/usb/gadget/udc/bdc/bdc_ep.c      | 11 +++++++---
- drivers/usb/gadget/udc/fsl_qe_udc.c      | 11 ++++++----
- drivers/usb/gadget/udc/fsl_udc_core.c    | 11 ++++++----
- drivers/usb/gadget/udc/goku_udc.c        | 11 ++++++----
- drivers/usb/gadget/udc/gr_udc.c          | 11 ++++++----
- drivers/usb/gadget/udc/lpc32xx_udc.c     | 11 ++++++----
- drivers/usb/gadget/udc/mv_u3d_core.c     | 11 ++++++----
- drivers/usb/gadget/udc/mv_udc_core.c     | 11 ++++++----
- drivers/usb/gadget/udc/net2272.c         | 12 ++++++-----
- drivers/usb/gadget/udc/net2280.c         | 11 ++++++----
- drivers/usb/gadget/udc/omap_udc.c        | 11 ++++++----
- drivers/usb/gadget/udc/pxa25x_udc.c      | 11 ++++++----
- drivers/usb/gadget/udc/s3c-hsudc.c       | 11 ++++++----
- drivers/usb/gadget/udc/udc-xilinx.c      | 11 ++++++----
- 17 files changed, 128 insertions(+), 75 deletions(-)
+ arch/x86/kernel/cpu/sgx/encl.c       |  6 +++--
+ drivers/scsi/scsi_transport_sas.c    | 17 ++++++++-----
+ drivers/thermal/thermal_core.c       | 38 ++++++++++++++++++----------
+ drivers/usb/gadget/configfs.c        | 22 ++++++++++------
+ drivers/usb/gadget/udc/max3420_udc.c | 11 +++++---
+ drivers/usb/gadget/udc/tegra-xudc.c  | 11 +++++---
+ drivers/usb/mtu3/mtu3_gadget.c       | 11 +++++---
+ drivers/usb/musb/musb_gadget.c       | 11 +++++---
+ drivers/vfio/mdev/mdev_core.c        | 11 +++++---
+ 9 files changed, 88 insertions(+), 50 deletions(-)
 
-diff --git a/drivers/usb/gadget/udc/aspeed-vhub/epn.c b/drivers/usb/gadget/udc/aspeed-vhub/epn.c
-index 917892ca8753..cad874ee4472 100644
---- a/drivers/usb/gadget/udc/aspeed-vhub/epn.c
-+++ b/drivers/usb/gadget/udc/aspeed-vhub/epn.c
-@@ -466,19 +466,22 @@ static int ast_vhub_epn_dequeue(struct usb_ep* u_ep, struct usb_request *u_req)
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 48afe96ae0f0..6c916416decc 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -450,7 +450,8 @@ static void sgx_mmu_notifier_release(struct mmu_notifier *mn,
+ 				     struct mm_struct *mm)
  {
- 	struct ast_vhub_ep *ep = to_ast_ep(u_ep);
- 	struct ast_vhub *vhub = ep->vhub;
--	struct ast_vhub_req *req;
-+	struct ast_vhub_req *req = NULL;
-+	struct ast_vhub_req *tmp;
- 	unsigned long flags;
- 	int rc = -EINVAL;
+ 	struct sgx_encl_mm *encl_mm = container_of(mn, struct sgx_encl_mm, mmu_notifier);
+-	struct sgx_encl_mm *tmp = NULL;
++	struct sgx_encl_mm *found_encl_mm = NULL;
++	struct sgx_encl_mm *tmp;
 
- 	spin_lock_irqsave(&vhub->lock, flags);
-
- 	/* Make sure it's actually queued on this endpoint */
--	list_for_each_entry (req, &ep->queue, queue) {
--		if (&req->req == u_req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == u_req) {
-+			req = tmp;
+ 	/*
+ 	 * The enclave itself can remove encl_mm.  Note, objects can't be moved
+@@ -460,12 +461,13 @@ static void sgx_mmu_notifier_release(struct mmu_notifier *mn,
+ 	list_for_each_entry(tmp, &encl_mm->encl->mm_list, list) {
+ 		if (tmp == encl_mm) {
+ 			list_del_rcu(&encl_mm->list);
++			found_encl_mm = tmp;
  			break;
-+		}
- 	}
-
--	if (&req->req == u_req) {
-+	if (req) {
- 		EPVDBG(ep, "dequeue req @%p active=%d\n",
- 		       req, req->active);
- 		if (req->active)
-diff --git a/drivers/usb/gadget/udc/at91_udc.c b/drivers/usb/gadget/udc/at91_udc.c
-index 9040a0561466..0fd0307bc07b 100644
---- a/drivers/usb/gadget/udc/at91_udc.c
-+++ b/drivers/usb/gadget/udc/at91_udc.c
-@@ -150,13 +150,14 @@ static void proc_ep_show(struct seq_file *s, struct at91_ep *ep)
- 	if (list_empty (&ep->queue))
- 		seq_printf(s, "\t(queue empty)\n");
-
--	else list_for_each_entry (req, &ep->queue, queue) {
--		unsigned	length = req->req.actual;
-+	else
-+		list_for_each_entry(req, &ep->queue, queue) {
-+			unsigned int	length = req->req.actual;
-
--		seq_printf(s, "\treq %p len %d/%d buf %p\n",
--				&req->req, length,
--				req->req.length, req->req.buf);
--	}
-+			seq_printf(s, "\treq %p len %d/%d buf %p\n",
-+					&req->req, length,
-+					req->req.length, req->req.buf);
-+		}
- 	spin_unlock_irqrestore(&udc->lock, flags);
- }
-
-@@ -226,7 +227,7 @@ static int proc_udc_show(struct seq_file *s, void *unused)
-
- 	if (udc->enabled && udc->vbus) {
- 		proc_ep_show(s, &udc->ep[0]);
--		list_for_each_entry (ep, &udc->gadget.ep_list, ep.ep_list) {
-+		list_for_each_entry(ep, &udc->gadget.ep_list, ep.ep_list) {
- 			if (ep->ep.desc)
- 				proc_ep_show(s, ep);
  		}
-@@ -704,7 +705,8 @@ static int at91_ep_queue(struct usb_ep *_ep,
- static int at91_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct at91_ep		*ep;
--	struct at91_request	*req;
-+	struct at91_request	*req = NULL;
-+	struct at91_request	*tmp;
- 	unsigned long		flags;
- 	struct at91_udc		*udc;
-
-@@ -717,11 +719,13 @@ static int at91_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&udc->lock, flags);
-
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry (req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
  	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&udc->lock, flags);
+ 	spin_unlock(&encl_mm->encl->mm_lock);
+
+-	if (tmp == encl_mm) {
++	if (found_encl_mm) {
+ 		synchronize_srcu(&encl_mm->encl->srcu);
+ 		mmu_notifier_put(mn);
+ 	}
+diff --git a/drivers/scsi/scsi_transport_sas.c b/drivers/scsi/scsi_transport_sas.c
+index 4ee578b181da..a8cbd90db9d2 100644
+--- a/drivers/scsi/scsi_transport_sas.c
++++ b/drivers/scsi/scsi_transport_sas.c
+@@ -1060,26 +1060,29 @@ EXPORT_SYMBOL(sas_port_get_phy);
+  * connected to a remote device is a port, so ports must be formed on
+  * all devices with phys if they're connected to anything.
+  */
+-void sas_port_add_phy(struct sas_port *port, struct sas_phy *phy)
++void sas_port_add_phy(struct sas_port *port, struct sas_phy *_phy)
+ {
+ 	mutex_lock(&port->phy_list_mutex);
+-	if (unlikely(!list_empty(&phy->port_siblings))) {
++	if (unlikely(!list_empty(&_phy->port_siblings))) {
+ 		/* make sure we're already on this port */
++		struct sas_phy *phy = NULL;
+ 		struct sas_phy *tmp;
+
+ 		list_for_each_entry(tmp, &port->phy_list, port_siblings)
+-			if (tmp == phy)
++			if (tmp == _phy) {
++				phy = tmp;
+ 				break;
++			}
+ 		/* If this trips, you added a phy that was already
+ 		 * part of a different port */
+-		if (unlikely(tmp != phy)) {
++		if (unlikely(!phy)) {
+ 			dev_printk(KERN_ERR, &port->dev, "trying to add phy %s fails: it's already part of another port\n",
+-				   dev_name(&phy->dev));
++				   dev_name(&_phy->dev));
+ 			BUG();
+ 		}
+ 	} else {
+-		sas_port_create_link(port, phy);
+-		list_add_tail(&phy->port_siblings, &port->phy_list);
++		sas_port_create_link(port, _phy);
++		list_add_tail(&_phy->port_siblings, &port->phy_list);
+ 		port->num_phys++;
+ 	}
+ 	mutex_unlock(&port->phy_list_mutex);
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index 82654dc8382b..97198543448b 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -625,24 +625,30 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
+ {
+ 	struct thermal_instance *dev;
+ 	struct thermal_instance *pos;
+-	struct thermal_zone_device *pos1;
+-	struct thermal_cooling_device *pos2;
++	struct thermal_zone_device *pos1 = NULL;
++	struct thermal_zone_device *tmp1;
++	struct thermal_cooling_device *pos2 = NULL;
++	struct thermal_cooling_device *tmp2;
+ 	unsigned long max_state;
+ 	int result, ret;
+
+ 	if (trip >= tz->trips || trip < 0)
  		return -EINVAL;
+
+-	list_for_each_entry(pos1, &thermal_tz_list, node) {
+-		if (pos1 == tz)
++	list_for_each_entry(tmp1, &thermal_tz_list, node) {
++		if (tmp1 == tz) {
++			pos1 = tmp1;
+ 			break;
++		}
  	}
-diff --git a/drivers/usb/gadget/udc/atmel_usba_udc.c b/drivers/usb/gadget/udc/atmel_usba_udc.c
-index 2b893bceea45..8e393e14f137 100644
---- a/drivers/usb/gadget/udc/atmel_usba_udc.c
-+++ b/drivers/usb/gadget/udc/atmel_usba_udc.c
-@@ -860,7 +860,8 @@ static int usba_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct usba_ep *ep = to_usba_ep(_ep);
- 	struct usba_udc *udc = ep->udc;
--	struct usba_request *req;
-+	struct usba_request *req = NULL;
-+	struct usba_request *tmp;
- 	unsigned long flags;
- 	u32 status;
-
-@@ -869,12 +870,14 @@ static int usba_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
-
- 	spin_lock_irqsave(&udc->lock, flags);
-
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
+-	list_for_each_entry(pos2, &thermal_cdev_list, node) {
+-		if (pos2 == cdev)
++	list_for_each_entry(tmp2, &thermal_cdev_list, node) {
++		if (tmp2 == cdev) {
++			pos2 = tmp2;
  			break;
 +		}
  	}
 
--	if (&req->req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&udc->lock, flags);
+-	if (tz != pos1 || cdev != pos2)
++	if (!pos1 || !pos2)
  		return -EINVAL;
- 	}
-diff --git a/drivers/usb/gadget/udc/bdc/bdc_ep.c b/drivers/usb/gadget/udc/bdc/bdc_ep.c
-index 8e2f20b12519..829e96791d0a 100644
---- a/drivers/usb/gadget/udc/bdc/bdc_ep.c
-+++ b/drivers/usb/gadget/udc/bdc/bdc_ep.c
-@@ -1757,6 +1757,7 @@ static int bdc_gadget_ep_dequeue(struct usb_ep *_ep,
- 				  struct usb_request *_req)
- {
- 	struct bdc_req *req;
-+	struct bdc_req *tmp;
- 	unsigned long flags;
- 	struct bdc_ep *ep;
- 	struct bdc *bdc;
-@@ -1771,12 +1772,16 @@ static int bdc_gadget_ep_dequeue(struct usb_ep *_ep,
- 	dev_dbg(bdc->dev, "%s ep:%s req:%p\n", __func__, ep->name, req);
- 	bdc_dbg_bd_list(bdc, ep);
- 	spin_lock_irqsave(&bdc->lock, flags);
-+
-+	req = NULL;
- 	/* make sure it's still queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->usb_req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->usb_req == _req) {
-+			req = tmp;
+
+ 	ret = cdev->ops->get_max_state(cdev, &max_state);
+@@ -1074,15 +1080,18 @@ void thermal_cooling_device_unregister(struct thermal_cooling_device *cdev)
+ 	const struct thermal_zone_params *tzp;
+ 	struct thermal_zone_device *tz;
+ 	struct thermal_cooling_device *pos = NULL;
++	struct thermal_cooling_device *tmp;
+
+ 	if (!cdev)
+ 		return;
+
+ 	mutex_lock(&thermal_list_lock);
+-	list_for_each_entry(pos, &thermal_cdev_list, node)
+-		if (pos == cdev)
++	list_for_each_entry(tmp, &thermal_cdev_list, node)
++		if (tmp == cdev) {
++			pos = tmp;
+ 			break;
+-	if (pos != cdev) {
++		}
++	if (!pos) {
+ 		/* thermal cooling device not found */
+ 		mutex_unlock(&thermal_list_lock);
+ 		return;
+@@ -1335,6 +1344,7 @@ void thermal_zone_device_unregister(struct thermal_zone_device *tz)
+ 	const struct thermal_zone_params *tzp;
+ 	struct thermal_cooling_device *cdev;
+ 	struct thermal_zone_device *pos = NULL;
++	struct thermal_zone_device *tmp;
+
+ 	if (!tz)
+ 		return;
+@@ -1343,10 +1353,12 @@ void thermal_zone_device_unregister(struct thermal_zone_device *tz)
+ 	tz_id = tz->id;
+
+ 	mutex_lock(&thermal_list_lock);
+-	list_for_each_entry(pos, &thermal_tz_list, node)
+-		if (pos == tz)
++	list_for_each_entry(tmp, &thermal_tz_list, node)
++		if (tmp == tz) {
++			pos = tmp;
+ 			break;
+-	if (pos != tz) {
++		}
++	if (!pos) {
+ 		/* thermal zone device not found */
+ 		mutex_unlock(&thermal_list_lock);
+ 		return;
+diff --git a/drivers/usb/gadget/configfs.c b/drivers/usb/gadget/configfs.c
+index d4a678c0806e..99f10cbd8878 100644
+--- a/drivers/usb/gadget/configfs.c
++++ b/drivers/usb/gadget/configfs.c
+@@ -418,7 +418,8 @@ static int config_usb_cfg_link(
+
+ 	struct usb_function_instance *fi =
+ 			to_usb_function_instance(usb_func_ci);
+-	struct usb_function_instance *a_fi;
++	struct usb_function_instance *a_fi = NULL;
++	struct usb_function_instance *tmp;
+ 	struct usb_function *f;
+ 	int ret;
+
+@@ -428,11 +429,13 @@ static int config_usb_cfg_link(
+ 	 * from another gadget or a random directory.
+ 	 * Also a function instance can only be linked once.
+ 	 */
+-	list_for_each_entry(a_fi, &gi->available_func, cfs_list) {
+-		if (a_fi == fi)
++	list_for_each_entry(tmp, &gi->available_func, cfs_list) {
++		if (tmp == fi) {
++			a_fi = tmp;
  			break;
 +		}
  	}
--	if (&req->usb_req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&bdc->lock, flags);
- 		dev_err(bdc->dev, "usb_req !=req n");
- 		return -EINVAL;
-diff --git a/drivers/usb/gadget/udc/fsl_qe_udc.c b/drivers/usb/gadget/udc/fsl_qe_udc.c
-index 15db7a3868fe..3979a2825e3c 100644
---- a/drivers/usb/gadget/udc/fsl_qe_udc.c
-+++ b/drivers/usb/gadget/udc/fsl_qe_udc.c
-@@ -1776,7 +1776,8 @@ static int qe_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
- static int qe_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct qe_ep *ep = container_of(_ep, struct qe_ep, ep);
--	struct qe_req *req;
-+	struct qe_req *req = NULL;
-+	struct qe_req *tmp;
- 	unsigned long flags;
-
- 	if (!_ep || !_req)
-@@ -1785,12 +1786,14 @@ static int qe_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&ep->udc->lock, flags);
-
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
-
--	if (&req->req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&ep->udc->lock, flags);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/usb/gadget/udc/fsl_udc_core.c b/drivers/usb/gadget/udc/fsl_udc_core.c
-index 29fcb9b461d7..23d670fae12c 100644
---- a/drivers/usb/gadget/udc/fsl_udc_core.c
-+++ b/drivers/usb/gadget/udc/fsl_udc_core.c
-@@ -918,7 +918,8 @@ fsl_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
- static int fsl_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct fsl_ep *ep = container_of(_ep, struct fsl_ep, ep);
--	struct fsl_req *req;
-+	struct fsl_req *req = NULL;
-+	struct fsl_req *tmp;
- 	unsigned long flags;
- 	int ep_num, stopped, ret = 0;
- 	u32 epctrl;
-@@ -940,11 +941,13 @@ static int fsl_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	fsl_writel(epctrl, &dr_regs->endptctrl[ep_num]);
-
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
--	if (&req->req != _req) {
-+	if (!req) {
+-	if (a_fi != fi) {
++	if (!a_fi) {
  		ret = -EINVAL;
  		goto out;
  	}
-diff --git a/drivers/usb/gadget/udc/goku_udc.c b/drivers/usb/gadget/udc/goku_udc.c
-index 3757a772a55e..62f0b7d794ec 100644
---- a/drivers/usb/gadget/udc/goku_udc.c
-+++ b/drivers/usb/gadget/udc/goku_udc.c
-@@ -809,7 +809,8 @@ static void nuke(struct goku_ep *ep, int status)
- /* dequeue JUST ONE request */
- static int goku_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
--	struct goku_request	*req;
-+	struct goku_request	*req = NULL;
-+	struct goku_request	*tmp;
- 	struct goku_ep		*ep;
- 	struct goku_udc		*dev;
- 	unsigned long		flags;
-@@ -833,11 +834,13 @@ static int goku_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&dev->lock, flags);
+@@ -882,15 +885,18 @@ static int os_desc_link(struct config_item *os_desc_ci,
+ 	struct gadget_info *gi = os_desc_item_to_gadget_info(os_desc_ci);
+ 	struct usb_composite_dev *cdev = &gi->cdev;
+ 	struct config_usb_cfg *c_target = to_config_usb_cfg(usb_cfg_ci);
+-	struct usb_configuration *c;
++	struct usb_configuration *c = NULL;
++	struct usb_configuration *tmp;
+ 	int ret;
 
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry (req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
+ 	mutex_lock(&gi->lock);
+-	list_for_each_entry(c, &cdev->configs, list) {
+-		if (c == &c_target->c)
++	list_for_each_entry(tmp, &cdev->configs, list) {
++		if (tmp == &c_target->c) {
++			c = tmp;
  			break;
 +		}
  	}
--	if (&req->req != _req) {
-+	if (req) {
- 		spin_unlock_irqrestore (&dev->lock, flags);
- 		return -EINVAL;
+-	if (c != &c_target->c) {
++	if (!c) {
+ 		ret = -EINVAL;
+ 		goto out;
  	}
-diff --git a/drivers/usb/gadget/udc/gr_udc.c b/drivers/usb/gadget/udc/gr_udc.c
-index 4b35739d3695..5d65d8ad5281 100644
---- a/drivers/usb/gadget/udc/gr_udc.c
-+++ b/drivers/usb/gadget/udc/gr_udc.c
-@@ -1690,7 +1690,8 @@ static int gr_queue_ext(struct usb_ep *_ep, struct usb_request *_req,
- /* Dequeue JUST ONE request */
- static int gr_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+diff --git a/drivers/usb/gadget/udc/max3420_udc.c b/drivers/usb/gadget/udc/max3420_udc.c
+index d2a2b20cc1ad..d1b010b5f4a0 100644
+--- a/drivers/usb/gadget/udc/max3420_udc.c
++++ b/drivers/usb/gadget/udc/max3420_udc.c
+@@ -1044,22 +1044,25 @@ static int max3420_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
+
+ static int max3420_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
  {
--	struct gr_request *req;
-+	struct gr_request *req = NULL;
-+	struct gr_request *tmp;
- 	struct gr_ep *ep;
- 	struct gr_udc *dev;
+-	struct max3420_req *t, *req = to_max3420_req(_req);
++	struct max3420_req *t = NULL;
++	struct max3420_req *req = to_max3420_req(_req);
++	struct max3420_req *tmp;
+ 	struct max3420_ep *ep = to_max3420_ep(_ep);
+ 	unsigned long flags;
+
+ 	spin_lock_irqsave(&ep->lock, flags);
+
+ 	/* Pluck the descriptor from queue */
+-	list_for_each_entry(t, &ep->queue, queue)
+-		if (t == req) {
++	list_for_each_entry(tmp, &ep->queue, queue)
++		if (tmp == req) {
+ 			list_del_init(&req->queue);
++			t = tmp;
+ 			break;
+ 		}
+
+ 	spin_unlock_irqrestore(&ep->lock, flags);
+
+-	if (t == req)
++	if (t)
+ 		max3420_req_done(req, -ECONNRESET);
+
+ 	return 0;
+diff --git a/drivers/usb/gadget/udc/tegra-xudc.c b/drivers/usb/gadget/udc/tegra-xudc.c
+index 43f1b0d461c1..c37e3148a208 100644
+--- a/drivers/usb/gadget/udc/tegra-xudc.c
++++ b/drivers/usb/gadget/udc/tegra-xudc.c
+@@ -1413,18 +1413,21 @@ __tegra_xudc_ep_dequeue(struct tegra_xudc_ep *ep,
+ 			struct tegra_xudc_request *req)
+ {
+ 	struct tegra_xudc *xudc = ep->xudc;
+-	struct tegra_xudc_request *r;
++	struct tegra_xudc_request *r = NULL;
++	struct tegra_xudc_request *tmp;
+ 	struct tegra_xudc_trb *deq_trb;
+ 	bool busy, kick_queue = false;
  	int ret = 0;
-@@ -1710,11 +1711,13 @@ static int gr_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&dev->lock, flags);
 
- 	/* Make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
+ 	/* Make sure the request is actually queued to this endpoint. */
+-	list_for_each_entry(r, &ep->queue, list) {
+-		if (r == req)
++	list_for_each_entry(tmp, &ep->queue, list) {
++		if (tmp == req) {
++			r = tmp;
  			break;
 +		}
  	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		ret = -EINVAL;
- 		goto out;
- 	}
-diff --git a/drivers/usb/gadget/udc/lpc32xx_udc.c b/drivers/usb/gadget/udc/lpc32xx_udc.c
-index a25d01c89564..024b646638fb 100644
---- a/drivers/usb/gadget/udc/lpc32xx_udc.c
-+++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
-@@ -1830,7 +1830,8 @@ static int lpc32xx_ep_queue(struct usb_ep *_ep,
- static int lpc32xx_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct lpc32xx_ep *ep;
--	struct lpc32xx_request *req;
-+	struct lpc32xx_request *req = NULL;
-+	struct lpc32xx_request *tmp;
- 	unsigned long flags;
 
- 	ep = container_of(_ep, struct lpc32xx_ep, ep);
-@@ -1840,11 +1841,13 @@ static int lpc32xx_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&ep->udc->lock, flags);
-
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&ep->udc->lock, flags);
+-	if (r != req)
++	if (!r)
  		return -EINVAL;
- 	}
-diff --git a/drivers/usb/gadget/udc/mv_u3d_core.c b/drivers/usb/gadget/udc/mv_u3d_core.c
-index a1057ddfbda3..39bd0aeb58d1 100644
---- a/drivers/usb/gadget/udc/mv_u3d_core.c
-+++ b/drivers/usb/gadget/udc/mv_u3d_core.c
-@@ -844,7 +844,8 @@ mv_u3d_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
- static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct mv_u3d_ep *ep;
--	struct mv_u3d_req *req;
-+	struct mv_u3d_req *req = NULL;
-+	struct mv_u3d_req *tmp;
- 	struct mv_u3d *u3d;
- 	struct mv_u3d_ep_context *ep_context;
- 	struct mv_u3d_req *next_req;
-@@ -861,11 +862,13 @@ static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&ep->u3d->lock, flags);
 
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		ret = -EINVAL;
- 		goto out;
- 	}
-diff --git a/drivers/usb/gadget/udc/mv_udc_core.c b/drivers/usb/gadget/udc/mv_udc_core.c
-index b6d34dda028b..9d708ce49c50 100644
---- a/drivers/usb/gadget/udc/mv_udc_core.c
-+++ b/drivers/usb/gadget/udc/mv_udc_core.c
-@@ -771,7 +771,8 @@ static void mv_prime_ep(struct mv_ep *ep, struct mv_req *req)
- static int mv_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ 	/* Request hasn't been queued in the transfer ring yet. */
+diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
+index 9977600616d7..2e4daaa081a0 100644
+--- a/drivers/usb/mtu3/mtu3_gadget.c
++++ b/drivers/usb/mtu3/mtu3_gadget.c
+@@ -323,7 +323,8 @@ static int mtu3_gadget_dequeue(struct usb_ep *ep, struct usb_request *req)
  {
- 	struct mv_ep *ep = container_of(_ep, struct mv_ep, ep);
--	struct mv_req *req;
-+	struct mv_req *req = NULL;
-+	struct mv_req *tmp;
- 	struct mv_udc *udc = ep->udc;
+ 	struct mtu3_ep *mep = to_mtu3_ep(ep);
+ 	struct mtu3_request *mreq = to_mtu3_request(req);
+-	struct mtu3_request *r;
++	struct mtu3_request *r = NULL;
++	struct mtu3_request *tmp;
+ 	struct mtu3 *mtu = mep->mtu;
  	unsigned long flags;
- 	int stopped, ret = 0;
-@@ -793,11 +794,13 @@ static int mv_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	writel(epctrlx, &udc->op_regs->epctrlx[ep->ep_num]);
+ 	int ret = 0;
+@@ -336,11 +337,13 @@ static int mtu3_gadget_dequeue(struct usb_ep *ep, struct usb_request *req)
 
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
+ 	spin_lock_irqsave(&mtu->lock, flags);
+
+-	list_for_each_entry(r, &mep->req_list, list) {
+-		if (r == mreq)
++	list_for_each_entry(tmp, &mep->req_list, list) {
++		if (tmp == mreq) {
++			r = tmp;
  			break;
 +		}
  	}
--	if (&req->req != _req) {
-+	if (!req) {
+-	if (r != mreq) {
++	if (!r) {
+ 		dev_dbg(mtu->dev, "req=%p not queued to %s\n", req, ep->name);
  		ret = -EINVAL;
- 		goto out;
- 	}
-diff --git a/drivers/usb/gadget/udc/net2272.c b/drivers/usb/gadget/udc/net2272.c
-index 7c38057dcb4a..bb59200f1596 100644
---- a/drivers/usb/gadget/udc/net2272.c
-+++ b/drivers/usb/gadget/udc/net2272.c
-@@ -926,7 +926,8 @@ static int
- net2272_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+ 		goto done;
+diff --git a/drivers/usb/musb/musb_gadget.c b/drivers/usb/musb/musb_gadget.c
+index 51274b87f46c..26b61ad7ab1b 100644
+--- a/drivers/usb/musb/musb_gadget.c
++++ b/drivers/usb/musb/musb_gadget.c
+@@ -1266,7 +1266,8 @@ static int musb_gadget_dequeue(struct usb_ep *ep, struct usb_request *request)
  {
- 	struct net2272_ep *ep;
--	struct net2272_request *req;
-+	struct net2272_request *req = NULL;
-+	struct net2272_request *tmp;
- 	unsigned long flags;
- 	int stopped;
-
-@@ -939,11 +940,13 @@ net2272_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	ep->stopped = 1;
-
- 	/* make sure it's still queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		ep->stopped = stopped;
- 		spin_unlock_irqrestore(&ep->dev->lock, flags);
- 		return -EINVAL;
-@@ -954,7 +957,6 @@ net2272_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 		dev_dbg(ep->dev->dev, "unlink (%s) pio\n", _ep->name);
- 		net2272_done(ep, req, -ECONNRESET);
- 	}
--	req = NULL;
- 	ep->stopped = stopped;
-
- 	spin_unlock_irqrestore(&ep->dev->lock, flags);
-diff --git a/drivers/usb/gadget/udc/net2280.c b/drivers/usb/gadget/udc/net2280.c
-index 16e7d2db6411..dbf5592dbcf0 100644
---- a/drivers/usb/gadget/udc/net2280.c
-+++ b/drivers/usb/gadget/udc/net2280.c
-@@ -1240,7 +1240,8 @@ static void nuke(struct net2280_ep *ep)
- static int net2280_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct net2280_ep	*ep;
--	struct net2280_request	*req;
-+	struct net2280_request	*req = NULL;
-+	struct net2280_request	*tmp;
+ 	struct musb_ep		*musb_ep = to_musb_ep(ep);
+ 	struct musb_request	*req = to_musb_request(request);
+-	struct musb_request	*r;
++	struct musb_request	*r = NULL;
++	struct musb_request	*tmp;
  	unsigned long		flags;
- 	u32			dmactl;
- 	int			stopped;
-@@ -1266,11 +1267,13 @@ static int net2280_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	}
+ 	int			status = 0;
+ 	struct musb		*musb = musb_ep->musb;
+@@ -1278,11 +1279,13 @@ static int musb_gadget_dequeue(struct usb_ep *ep, struct usb_request *request)
 
- 	/* make sure it's still queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
+ 	spin_lock_irqsave(&musb->lock, flags);
+
+-	list_for_each_entry(r, &musb_ep->req_list, list) {
+-		if (r == req)
++	list_for_each_entry(tmp, &musb_ep->req_list, list) {
++		if (tmp == req) {
++			r = tmp;
  			break;
 +		}
  	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		ep->stopped = stopped;
- 		spin_unlock_irqrestore(&ep->dev->lock, flags);
- 		ep_dbg(ep->dev, "%s: Request mismatch\n", __func__);
-diff --git a/drivers/usb/gadget/udc/omap_udc.c b/drivers/usb/gadget/udc/omap_udc.c
-index 494da00398d7..c0f6e066ccc2 100644
---- a/drivers/usb/gadget/udc/omap_udc.c
-+++ b/drivers/usb/gadget/udc/omap_udc.c
-@@ -1003,7 +1003,8 @@ omap_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
- static int omap_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
+-	if (r != req) {
++	if (!r) {
+ 		dev_err(musb->controller, "request %p not queued to %s\n",
+ 				request, ep->name);
+ 		status = -EINVAL;
+diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+index b314101237fe..52cfa44c24a7 100644
+--- a/drivers/vfio/mdev/mdev_core.c
++++ b/drivers/vfio/mdev/mdev_core.c
+@@ -337,16 +337,19 @@ int mdev_device_create(struct mdev_type *type, const guid_t *uuid)
+
+ int mdev_device_remove(struct mdev_device *mdev)
  {
- 	struct omap_ep	*ep = container_of(_ep, struct omap_ep, ep);
--	struct omap_req	*req;
-+	struct omap_req	*req = NULL;
-+	struct omap_req	*tmp;
- 	unsigned long	flags;
+-	struct mdev_device *tmp;
++	struct mdev_device *tmp = NULL;
++	struct mdev_device *iter;
+ 	struct mdev_parent *parent = mdev->type->parent;
 
- 	if (!_ep || !_req)
-@@ -1012,11 +1013,13 @@ static int omap_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	spin_lock_irqsave(&ep->udc->lock, flags);
-
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
+ 	mutex_lock(&mdev_list_lock);
+-	list_for_each_entry(tmp, &mdev_list, next) {
+-		if (tmp == mdev)
++	list_for_each_entry(iter, &mdev_list, next) {
++		if (iter == mdev) {
++			tmp = iter;
  			break;
 +		}
  	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&ep->udc->lock, flags);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/usb/gadget/udc/pxa25x_udc.c b/drivers/usb/gadget/udc/pxa25x_udc.c
-index b38747fd3bb0..889ea52bbe0a 100644
---- a/drivers/usb/gadget/udc/pxa25x_udc.c
-+++ b/drivers/usb/gadget/udc/pxa25x_udc.c
-@@ -966,7 +966,8 @@ static void nuke(struct pxa25x_ep *ep, int status)
- static int pxa25x_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct pxa25x_ep	*ep;
--	struct pxa25x_request	*req;
-+	struct pxa25x_request	*req = NULL;
-+	struct pxa25x_request	*tmp;
- 	unsigned long		flags;
 
- 	ep = container_of(_ep, struct pxa25x_ep, ep);
-@@ -976,11 +977,13 @@ static int pxa25x_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- 	local_irq_save(flags);
-
- 	/* make sure it's actually queued on this endpoint */
--	list_for_each_entry (req, &ep->queue, queue) {
--		if (&req->req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
--	if (&req->req != _req) {
-+	if (!req) {
- 		local_irq_restore(flags);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/usb/gadget/udc/s3c-hsudc.c b/drivers/usb/gadget/udc/s3c-hsudc.c
-index 89f1f8c9f02e..5006c9ebbac6 100644
---- a/drivers/usb/gadget/udc/s3c-hsudc.c
-+++ b/drivers/usb/gadget/udc/s3c-hsudc.c
-@@ -877,7 +877,8 @@ static int s3c_hsudc_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct s3c_hsudc_ep *hsep = our_ep(_ep);
- 	struct s3c_hsudc *hsudc = hsep->dev;
--	struct s3c_hsudc_req *hsreq;
-+	struct s3c_hsudc_req *hsreq = NULL;
-+	struct s3c_hsudc_req *tmp;
- 	unsigned long flags;
-
- 	hsep = our_ep(_ep);
-@@ -886,11 +887,13 @@ static int s3c_hsudc_dequeue(struct usb_ep *_ep, struct usb_request *_req)
-
- 	spin_lock_irqsave(&hsudc->lock, flags);
-
--	list_for_each_entry(hsreq, &hsep->queue, queue) {
--		if (&hsreq->req == _req)
-+	list_for_each_entry(tmp, &hsep->queue, queue) {
-+		if (&tmp->req == _req) {
-+			hsreq = tmp;
- 			break;
-+		}
- 	}
--	if (&hsreq->req != _req) {
-+	if (!hsreq) {
- 		spin_unlock_irqrestore(&hsudc->lock, flags);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/usb/gadget/udc/udc-xilinx.c b/drivers/usb/gadget/udc/udc-xilinx.c
-index 6ce886fb7bfe..6812824cc823 100644
---- a/drivers/usb/gadget/udc/udc-xilinx.c
-+++ b/drivers/usb/gadget/udc/udc-xilinx.c
-@@ -1136,17 +1136,20 @@ static int xudc_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
- static int xudc_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
- {
- 	struct xusb_ep *ep	= to_xusb_ep(_ep);
--	struct xusb_req *req	= to_xusb_req(_req);
-+	struct xusb_req *req	= NULL;
-+	struct xusb_req *tmp;
- 	struct xusb_udc *udc	= ep->udc;
- 	unsigned long flags;
-
- 	spin_lock_irqsave(&udc->lock, flags);
- 	/* Make sure it's actually queued on this endpoint */
--	list_for_each_entry(req, &ep->queue, queue) {
--		if (&req->usb_req == _req)
-+	list_for_each_entry(tmp, &ep->queue, queue) {
-+		if (&tmp->usb_req == _req) {
-+			req = tmp;
- 			break;
-+		}
- 	}
--	if (&req->usb_req != _req) {
-+	if (!req) {
- 		spin_unlock_irqrestore(&udc->lock, flags);
- 		return -EINVAL;
+-	if (tmp != mdev) {
++	if (!tmp) {
+ 		mutex_unlock(&mdev_list_lock);
+ 		return -ENODEV;
  	}
 --
 2.25.1
