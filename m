@@ -2,228 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC30D4C948A
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 20:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C431F4C949E
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 20:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237187AbiCATl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 14:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
+        id S237251AbiCATnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 14:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232810AbiCATl6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:41:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB54C65495
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 11:41:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646163676;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z8aoFAHDyCvrmmG3m5O00aIMo9cy+HOZ0s5XKRgwMVM=;
-        b=MKFx8n+ygk3Go0pZfK2BD9ij8EC5+ecWIcNxbcUeeHH1v7Mpi6hGzkd0JCUKkwl7+OPYGD
-        pR/5yb3o36jNXjpjOnecNZWeOYsEW/Sj9YD99eBkdOI5RmpliGwVx9m4Ddb06hhzXpatPJ
-        dLvz7E8NvqYt7ytl6U0RYOphqjTPpMY=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-673-lsUF7x-lNnufw4PDCdtRvA-1; Tue, 01 Mar 2022 14:41:14 -0500
-X-MC-Unique: lsUF7x-lNnufw4PDCdtRvA-1
-Received: by mail-oi1-f200.google.com with SMTP id s83-20020acaa956000000b002d41cfd2926so7989142oie.0
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 11:41:14 -0800 (PST)
+        with ESMTP id S237248AbiCATnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:43:40 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A6A369CF
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 11:42:57 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id h15so23434424edv.7
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 11:42:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PzY8tILS7/J5BzJfiKLdBDXy8/s4RAHqODI+UdY57jc=;
+        b=MSgmT6lRet0jPev3NhT8poLSNE2IuVKHhTmnMdindDPsxNrbDdzPrkBSaT4BauMeD+
+         LWq3ALR2NImH9IAbyg/9Mpz0DLX1H3V94a1gLKACC1HvSqM9EwtH2Km4ZUYlkqLoZgsQ
+         ZV7jqWBOB7cCGsim0JopuTtvt6tgng/ReKRwg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=z8aoFAHDyCvrmmG3m5O00aIMo9cy+HOZ0s5XKRgwMVM=;
-        b=K+6yJHBYGBuIio112VuqlC+rZ178Sd+BMKH37X3pSksGJVEW7t98yCXrlcStzgod/B
-         UQ36t9VAQFgfYCWg+sXxDNQiZbuUj+1JrPxLXMVtk5lG6G1CUNQFvcEa1iOmFKYwVI2S
-         UTS5z93/xZM8dlRse9ZWOafK8MZWdv56qj9IczUqRxtomAIZDr0lQhc5H+N2jgzNyGR9
-         kenSjRSnT3Mt7ZeLioTv191zL5jyyXtbWpshjCwxss4cq3YCBSxauaG7ncnBy4ubFMAz
-         j+CCAxbXfVkaP8UZcBzhPeL6F0rR8GgTxFOFBH7ziUW+gqVUnnxZXOscL1pR7ugG0cnU
-         gNPA==
-X-Gm-Message-State: AOAM533skPoSIizmvjLgXSX/i9911pTbOppvt0LIwxZNOEffum3zZAX8
-        LHisl+SJIRXrmy4liWxGbrnuf51E3Ilek1ilwbaEX+SQsjfH/KD6IGvDgKkwJJJd4AOvNgVsTTD
-        aD8lddyKeDRFyayFH
-X-Received: by 2002:aca:1306:0:b0:2d4:62a5:44a8 with SMTP id e6-20020aca1306000000b002d462a544a8mr14449848oii.38.1646163674209;
-        Tue, 01 Mar 2022 11:41:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzNiL70nrDv61YRdGiqJzXuVzW8jjuHCVlqM9f4meP7eGkVuTIW4KacN5FDKjwJRNplLIUkwg==
-X-Received: by 2002:aca:1306:0:b0:2d4:62a5:44a8 with SMTP id e6-20020aca1306000000b002d462a544a8mr14449833oii.38.1646163673952;
-        Tue, 01 Mar 2022 11:41:13 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id y19-20020a056830209300b005afb1e59e0fsm6701622otq.55.2022.03.01.11.41.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 11:41:13 -0800 (PST)
-Date:   Tue, 1 Mar 2022 12:41:12 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
-        cohuck@redhat.com, ashok.raj@intel.com, kevin.tian@intel.com,
-        shameerali.kolothum.thodi@huawei.com
-Subject: Re: [GIT PULL] Add mlx5 live migration driver and v2 migration
- protocol
-Message-ID: <20220301124112.477ab6fc.alex.williamson@redhat.com>
-In-Reply-To: <20220228123934.812807-1-leon@kernel.org>
-References: <20220228123934.812807-1-leon@kernel.org>
-Organization: Red Hat
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PzY8tILS7/J5BzJfiKLdBDXy8/s4RAHqODI+UdY57jc=;
+        b=ixOBL1/cr5BQ9kSc5o6EPDeRwvtKqBdxvN8kXI1x8go7dPFPuHNetiiQcfyOjnyHG9
+         tOsrVH5vQ3PDeVZwiAbfSUcGnEmlnWjK9zGpOpfF6A//f0epJMzpHMt81OyXrrtKQexg
+         u4NfW6ABFvFYU66jafXJPhNLum3cEhKld3a8/yAuxpaju+2J2wU2bw1S86PYA1GucFQA
+         0JRss6zLCdB2aewjNH6MiJnocsATXfgU1E9BJReL3VQm0l9PVN1dA3Eoqc/tnr+g2J7F
+         V8TzyD/0bxeiYTuYgRwR40n/MTh5B8Wgp+1A7uCBAxBR4NF0sNIgVNA3wg02Ne6e99cf
+         yZOw==
+X-Gm-Message-State: AOAM532/kdkqTucQbngq3zKC9YA1CK415WqyKIzW9KCDzg7wW8HIviMb
+        lEbaMZNneJ6DnJuXPoEGlTudi+LW7Y8LU8kuwAM=
+X-Google-Smtp-Source: ABdhPJybaGYEEFEg6hwagNHBPNefmGxKWOm/LB0HliDEt85dv8/WXoNYzUm56LtJgvEX+1i55BjTEg==
+X-Received: by 2002:a05:6402:1908:b0:412:ee38:4186 with SMTP id e8-20020a056402190800b00412ee384186mr25827920edz.221.1646163775548;
+        Tue, 01 Mar 2022 11:42:55 -0800 (PST)
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com. [209.85.218.52])
+        by smtp.gmail.com with ESMTPSA id l24-20020a170906231800b006d69a771a34sm3710497eja.93.2022.03.01.11.42.53
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 11:42:54 -0800 (PST)
+Received: by mail-ej1-f52.google.com with SMTP id gb39so33636730ejc.1
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 11:42:53 -0800 (PST)
+X-Received: by 2002:a2e:3013:0:b0:246:2ca9:365e with SMTP id
+ w19-20020a2e3013000000b002462ca9365emr17983151ljw.291.1646163763108; Tue, 01
+ Mar 2022 11:42:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com> <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
+ <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org> <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
+ <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
+In-Reply-To: <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 11:42:26 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wghQygmASNUWj=LZn5FR5wsce2osyR6EXcfEB_FaX_6Og@mail.gmail.com>
+Message-ID: <CAHk-=wghQygmASNUWj=LZn5FR5wsce2osyR6EXcfEB_FaX_6Og@mail.gmail.com>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+To:     James Bottomley <James.Bottomley@hansenpartnership.com>
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Feb 2022 14:39:34 +0200
-Leon Romanovsky <leon@kernel.org> wrote:
+On Tue, Mar 1, 2022 at 11:06 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> So instead of that simple "if (!entry)", we'd effectively have to
+> continue to use something that still works with the old world order
+> (ie that "if (list_entry_is_head())" model).
 
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Hi Alex,
-> 
-> This pull request contains the v9 version of recently submitted mlx5 live migration
-> driver from Yishai and Jason.
-> 
-> In addition to changes in VFIO, this series extended the ethernet part of mlx5 driver.
-> Such changes have all chances to create merge conflicts between VFIO, netdev and RDMA
-> subsystems, which are eliminated with this PR.
+Just to prove my point about how this is painful, that doesn't work at all.
 
-I know that Connie and perhaps others have spent a good deal of time
-reviewing this, so I'd at least like to give them an opportunity to
-chime in with their Reviewed-by before merging a PR.  For me please add
-my
+If the loop iterator at the end is NULL (good, in theory), we can't
+use "list_entry_is_head()" to check whether we ended. We'd have to use
+a new thing entirely, to handle the "list_for_each_entry() has the
+old/new semantics" cases.
 
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
+That's largely why I was pushing for the "let's make it impossible to
+use the loop iterator at all outside the loop". It avoids the
+confusing case, and the patches to move to that stricter semantic can
+be merged independently (and before) doing the actual semantic change.
 
-to patches 8-15 in Yishai's v9 posting.  If it's easier, I can adjust
-the commits from this PR manually, I see there are just a few minor
-commit log differences versus the v9 post.  Let's give this one more
-day to collect any further outstanding comments or reviews.  Thanks,
+I'm not saying my suggested approach is wonderful either. Honestly,
+it's painful that we have so nasty semantics for the end-of-loop case
+for list_for_each_entry().
 
-Alex
+The minimal patch would clearly be to keep those broken semantics, and
+just force everybody to use the list_entry_is_head() case. That's the
+"we know we messed up, we are too lazy to fix it, we'll just work
+around it and people need to be careful" approach.
 
-> ------------------------------------------------------------------------------------
-> 
-> The following changes since commit cfb92440ee71adcc2105b0890bb01ac3cddb8507:
-> 
->   Linux 5.17-rc5 (2022-02-20 13:07:20 -0800)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git tags/mlx5-vfio-v9
-> 
-> for you to fetch changes up to d18f3ba69448b8f68caf8592a9abb39e75c76e8d:
-> 
->   vfio/mlx5: Use its own PCI reset_done error handler (2022-02-27 11:44:00 +0200)
-> 
-> ----------------------------------------------------------------
-> Add mlx5 live migration driver and v2 migration protocol
-> 
-> This series adds mlx5 live migration driver for VFs that are migration
-> capable and includes the v2 migration protocol definition and mlx5
-> implementation.
-> 
-> The mlx5 driver uses the vfio_pci_core split to create a specific VFIO
-> PCI driver that matches the mlx5 virtual functions. The driver provides
-> the same experience as normal vfio-pci with the addition of migration
-> support.
-> 
-> In HW the migration is controlled by the PF function, using its
-> mlx5_core driver, and the VFIO PCI VF driver co-ordinates with the PF to
-> execute the migration actions.
-> 
-> The bulk of the v2 migration protocol is semantically the same v1,
-> however it has been recast into a FSM for the device_state and the
-> actual syscall interface uses normal ioctl(), read() and write() instead
-> of building a syscall interface using the region.
-> 
-> Several bits of infrastructure work are included here:
->  - pci_iov_vf_id() to help drivers like mlx5 figure out the VF index from
->    a BDF
->  - pci_iov_get_pf_drvdata() to clarify the tricky locking protocol when a
->    VF reaches into its PF's driver
->  - mlx5_core uses the normal SRIOV lifecycle and disables SRIOV before
->    driver remove, to be compatible with pci_iov_get_pf_drvdata()
->  - Lifting VFIO_DEVICE_FEATURE into core VFIO code
-> 
-> This series comes after alot of discussion. Some major points:
-> - v1 ABI compatible migration defined using the same FSM approach:
->    https://lore.kernel.org/all/0-v1-a4f7cab64938+3f-vfio_mig_states_jgg@nvidia.com/
-> - Attempts to clarify how the v1 API works:
->    Alex's:
->      https://lore.kernel.org/kvm/163909282574.728533.7460416142511440919.stgit@omen/
->    Jason's:
->      https://lore.kernel.org/all/0-v3-184b374ad0a8+24c-vfio_mig_doc_jgg@nvidia.com/
-> - Etherpad exploring the scope and questions of general VFIO migration:
->      https://lore.kernel.org/kvm/87mtm2loml.fsf@redhat.com/
-> 
-> NOTE: As this series touched mlx5_core parts we need to send this in a
-> pull request format to VFIO to avoid conflicts.
-> 
-> Matching qemu changes can be previewed here:
->  https://github.com/jgunthorpe/qemu/commits/vfio_migration_v2
-> 
-> Link: https://lore.kernel.org/all/20220224142024.147653-1-yishaih@nvidia.com
-> Signed-of-by: Leon Romanovsky <leonro@nvidia.com>
-> 
-> ----------------------------------------------------------------
-> Jason Gunthorpe (6):
->       PCI/IOV: Add pci_iov_vf_id() to get VF index
->       PCI/IOV: Add pci_iov_get_pf_drvdata() to allow VF reaching the drvdata of a PF
->       vfio: Have the core code decode the VFIO_DEVICE_FEATURE ioctl
->       vfio: Define device migration protocol v2
->       vfio: Extend the device migration protocol with RUNNING_P2P
->       vfio: Remove migration protocol v1 documentation
-> 
-> Leon Romanovsky (1):
->       net/mlx5: Reuse exported virtfn index function call
-> 
-> Yishai Hadas (8):
->       net/mlx5: Disable SRIOV before PF removal
->       net/mlx5: Expose APIs to get/put the mlx5 core device
->       net/mlx5: Introduce migration bits and structures
->       net/mlx5: Add migration commands definitions
->       vfio/mlx5: Expose migration commands over mlx5 device
->       vfio/mlx5: Implement vfio_pci driver for mlx5 devices
->       vfio/pci: Expose vfio_pci_core_aer_err_detected()
->       vfio/mlx5: Use its own PCI reset_done error handler
-> 
->  MAINTAINERS                                        |   6 +
->  drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  10 +
->  drivers/net/ethernet/mellanox/mlx5/core/main.c     |  45 ++
->  .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   1 +
->  drivers/net/ethernet/mellanox/mlx5/core/sriov.c    |  17 +-
->  drivers/pci/iov.c                                  |  43 ++
->  drivers/vfio/pci/Kconfig                           |   3 +
->  drivers/vfio/pci/Makefile                          |   2 +
->  drivers/vfio/pci/mlx5/Kconfig                      |  10 +
->  drivers/vfio/pci/mlx5/Makefile                     |   4 +
->  drivers/vfio/pci/mlx5/cmd.c                        | 259 ++++++++
->  drivers/vfio/pci/mlx5/cmd.h                        |  36 ++
->  drivers/vfio/pci/mlx5/main.c                       | 676 +++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci.c                        |   1 +
->  drivers/vfio/pci/vfio_pci_core.c                   | 101 ++-
->  drivers/vfio/vfio.c                                | 295 ++++++++-
->  include/linux/mlx5/driver.h                        |   3 +
->  include/linux/mlx5/mlx5_ifc.h                      | 147 ++++-
->  include/linux/pci.h                                |  15 +-
->  include/linux/vfio.h                               |  53 ++
->  include/linux/vfio_pci_core.h                      |   4 +
->  include/uapi/linux/vfio.h                          | 406 ++++++-------
->  22 files changed, 1846 insertions(+), 291 deletions(-)
->  create mode 100644 drivers/vfio/pci/mlx5/Kconfig
->  create mode 100644 drivers/vfio/pci/mlx5/Makefile
->  create mode 100644 drivers/vfio/pci/mlx5/cmd.c
->  create mode 100644 drivers/vfio/pci/mlx5/cmd.h
->  create mode 100644 drivers/vfio/pci/mlx5/main.c
-> 
+And laziness is a virtue. But bad semantics are bad semantics. So it's
+a question of balancing those two issues.
 
+               Linus
