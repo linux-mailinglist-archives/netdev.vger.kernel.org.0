@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9874C96BC
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C002C4C96A6
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238212AbiCAUZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 15:25:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
+        id S233641AbiCAUZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 15:25:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238736AbiCAUXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:23:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643BD8BE34;
-        Tue,  1 Mar 2022 12:21:06 -0800 (PST)
+        with ESMTP id S238888AbiCAUX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:23:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E0B8F981;
+        Tue,  1 Mar 2022 12:21:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2FB8B81D53;
-        Tue,  1 Mar 2022 20:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DC9BC340EE;
-        Tue,  1 Mar 2022 20:20:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59E9E60C1E;
+        Tue,  1 Mar 2022 20:21:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C7C9C340F1;
+        Tue,  1 Mar 2022 20:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166063;
-        bh=l84C/QPffxfY0WxGerFLUs5saCj88EYUETS/LDTx0Xo=;
+        s=k20201202; t=1646166071;
+        bh=RvXug01H9kluAEqabwUZGjwgNYTE/wBoZUtVrQZmwb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4IFbvvutnGZIgh4kJzQQqZaPPKikq0TZp6fO4IGXW9463q9WZEntl/bqwpMo8jFP
-         KcHzHlUhWhd/dz3LF2q+PVlfUWHc+5LkFulKcTpG5N+YIC9H0fJsO0z6BfSyvCGS9M
-         83+5Q+15lzvRwlWZBX7vneL2xkKhBg/nwdyFyPWM8wEbEJ3dSk4OI2Qoo3aOiyed8E
-         CtZVMxS285uQ8/itUo4OLNGX/NJMvZp2MrzIG//tOpB6cffXDTNcF7fQ54ShE/nFOG
-         2q34xWfAZ1Xn7rlOoTBh6UH7zYYFc0fwSYWWO2QnGdQBtFYRoMCC3Le4p36XHgCVtj
-         CEHmd34HCxD3g==
+        b=pd2p17hyUgQUU8QgN9hPriWSLOlFECl0x2q1QPw6jCtHIl6QkOS93cUHecaz9knO1
+         Z4sVFWwam78nkZAtUOx8LMY7RYKs3yqO4hS8Ue6pzZnrjZEwfuvDkLO92eCAm32bzM
+         k+mNS5ehK8gvKeh5kj+SkZFDS/OfXKU6376Uqmcteo4+4yDkacFv5IV7Xu+sOuU6KJ
+         K7qkomWjjXA9nDVn1pY4DwWCjyOuZt/qPpd5rapMMsyHIT9BALyeODRW+sBN4rK57/
+         n2onTDHJFuFvAmYG5H0ItQZ8U0ixVAx4LyiJpk3lv/n4eLoKhmPp4GAqAQxGmcNwYy
+         AliO66PVrC0qQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Grant Grundler <grundler@chromium.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        andrew@lunn.ch, arnd@arndb.de, linux-usb@vger.kernel.org,
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
+        davem@davemloft.net, xen-devel@lists.xenproject.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 2/7] sr9700: sanity check for packet length
-Date:   Tue,  1 Mar 2022 15:20:40 -0500
-Message-Id: <20220301202046.19220-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 4/7] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+Date:   Tue,  1 Mar 2022 15:20:42 -0500
+Message-Id: <20220301202046.19220-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301202046.19220-1-sashal@kernel.org>
 References: <20220301202046.19220-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,34 +60,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-[ Upstream commit e9da0b56fe27206b49f39805f7dcda8a89379062 ]
+[ Upstream commit 0f4558ae91870692ce7f509c31c9d6ee721d8cdc ]
 
-A malicious device can leak heap data to user space
-providing bogus frame lengths. Introduce a sanity check.
+This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reviewed-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The 'hotplug-status' node should not be removed as long as the vif
+device remains configured. Otherwise the xen-netback would wait for
+re-running the network script even if it was already called (in case of
+the frontent re-connecting). But also, it _should_ be removed when the
+vif device is destroyed (for example when unbinding the driver) -
+otherwise hotplug script would not configure the device whenever it
+re-appear.
+
+Moving removal of the 'hotplug-status' node was a workaround for nothing
+calling network script after xen-netback module is reloaded. But when
+vif interface is re-created (on xen-netback unbind/bind for example),
+the script should be called, regardless of who does that - currently
+this case is not handled by the toolstack, and requires manual
+script call. Keeping hotplug-status=connected to skip the call is wrong
+and leads to not configured interface.
+
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Link: https://lore.kernel.org/r/20220222001817.2264967-1-marmarek@invisiblethingslab.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/sr9700.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/xen-netback/xenbus.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/usb/sr9700.c b/drivers/net/usb/sr9700.c
-index 6ac232e52bf7c..83640628c47dd 100644
---- a/drivers/net/usb/sr9700.c
-+++ b/drivers/net/usb/sr9700.c
-@@ -410,7 +410,7 @@ static int sr9700_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 		/* ignore the CRC length */
- 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index 78c56149559ce..6b678ab0a31f7 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -499,6 +499,7 @@ static void backend_disconnect(struct backend_info *be)
+ 		unsigned int queue_index;
  
--		if (len > ETH_FRAME_LEN)
-+		if (len > ETH_FRAME_LEN || len > skb->len)
- 			return 0;
- 
- 		/* the last packet of current skb */
+ 		xen_unregister_watchers(vif);
++		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ #ifdef CONFIG_DEBUG_FS
+ 		xenvif_debugfs_delif(vif);
+ #endif /* CONFIG_DEBUG_FS */
 -- 
 2.34.1
 
