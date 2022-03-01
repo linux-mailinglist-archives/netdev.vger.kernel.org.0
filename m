@@ -2,101 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4679B4C8641
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 09:18:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE2E4C8649
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 09:19:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233329AbiCAITP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 03:19:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
+        id S233360AbiCAITh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 03:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231503AbiCAITO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 03:19:14 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418E611A10;
-        Tue,  1 Mar 2022 00:18:34 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id bt3so9299655qtb.0;
-        Tue, 01 Mar 2022 00:18:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IurrTkx6DCr4ulIznm4VdKXJFaHnNtzg1HfInKM99Es=;
-        b=RdKHfPZSb0l9CM4WDiZIUSrO3kj+w7FMPxcBoiSZv3Iu8JJw48grUEm5aeE4V4UBYh
-         SD0lrtG6hJIOBQFII5hnmnmFUqpeYD/QARF5xgeLmytrp4or6ZGaeztwcVZ35Qs5UpNP
-         M2CRiGYVVVhWJP2Zz3tLNT/0KpKhg02zSQtuy7g2KL9MDCsfITO0LRzsiKXS5v2oYigX
-         jYngmjIwOJ/mxOHToffx1UPitgcyhn2vs1COaAakaxSojPq7WodKGix5XXW5jZBULcL/
-         DWTZtSRO4BSiPXBt+Gzw/xrLLIWNG2rl+crGNc1TSxSDFThllCuIUMIZrx1gk5OSrAFr
-         YfFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IurrTkx6DCr4ulIznm4VdKXJFaHnNtzg1HfInKM99Es=;
-        b=1pS5KkZpsZmMQuT6Cescdfe3UaR9Pc+IvkXIgQyPN96JkxTPpPiC2xBTGojefwV9gJ
-         O7TsYzrbEeVXkftboVVTBILhI4zezB9164V1hOspTx5RwG1b0M1UUtZZVFcKpS2FEde8
-         NoQze1TF4dfAyblAC2/DR78b+Xgknzc6wDBZM/c53X7jWN5+SvdzGp2BafLPqoIvvJx5
-         gjclOiOB+nQvGOzIXnDoWZucR7ITfMx70L3et9tKC3HG4NIf9LsPb3bjzBGc3ZtssYV2
-         A210rM6xAlKvvWU1sG7DhrrbswKWDZkDEGvq0XEMgRF0K7Jc+odugjKTi9ZhG46JMC1M
-         opOA==
-X-Gm-Message-State: AOAM532KsDkloofW7K/g9jCkN6ujGHwk22QAtglUddzK83cDUXzvryr2
-        wsBpJWlI6acW67p1l5fYsxc=
-X-Google-Smtp-Source: ABdhPJzmePecP4wTNT1Yp38PAlSvaEYvpH/frASEeLMA5EmRDor4vO2MdS8CijBsh6exq5Snu11qVg==
-X-Received: by 2002:ac8:7d44:0:b0:2de:4d14:b6b9 with SMTP id h4-20020ac87d44000000b002de4d14b6b9mr19022794qtb.505.1646122713255;
-        Tue, 01 Mar 2022 00:18:33 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 3-20020ac85703000000b002dcea434fa4sm8713557qtw.18.2022.03.01.00.18.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 00:18:32 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     pablo@netfilter.org
-Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net/netfilter: use memset avoid infoleaks
-Date:   Tue,  1 Mar 2022 08:18:24 +0000
-Message-Id: <20220301081824.2053310-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231503AbiCAITf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 03:19:35 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D7B12609;
+        Tue,  1 Mar 2022 00:18:54 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6776A478;
+        Tue,  1 Mar 2022 09:18:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1646122732;
+        bh=GUeID2Un8vVSdeuDNIEpa8RZjMMEHoy9L8wSmXbuUy8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=miR5YmRNNJOlmDq2Yqs9dB5x+/XGsPj5xCWEd5d4QNz5EOGQpnsdmFZxXhyD4MKIk
+         rbf5ayN8604es0VCCAiQRs20sEQGYm4i485kkz8RqNa01HdgUMWxmhGcc7qoMO3hEb
+         q2nC3FtfDQ133CVtcapt7269jyXQ9M8016CxGHSY=
+Date:   Tue, 1 Mar 2022 10:18:42 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Another pass removing cases of 'allOf'
+ containing a '$ref'
+Message-ID: <Yh3W4r7rNSI60rVT@pendragon.ideasonboard.com>
+References: <20220228213802.1639658-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220228213802.1639658-1-robh@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+Hi Rob,
 
-Use memset to initialize structs to preventing infoleaks
-in __bpf_mt_check_bytecode
+Thank you for the patch.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- net/netfilter/xt_bpf.c | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, Feb 28, 2022 at 03:38:02PM -0600, Rob Herring wrote:
+> Another pass at removing unnecessary use of 'allOf' with a '$ref'.
+> 
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords.
+> 
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+> Cc: Richard Weinberger <richard@nod.at>
+> Cc: Vignesh Raghavendra <vigneshr@ti.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-mtd@lists.infradead.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-spi@vger.kernel.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-diff --git a/net/netfilter/xt_bpf.c b/net/netfilter/xt_bpf.c
-index 849ac552a154..5750a68a2a3f 100644
---- a/net/netfilter/xt_bpf.c
-+++ b/net/netfilter/xt_bpf.c
-@@ -29,6 +29,7 @@ static int __bpf_mt_check_bytecode(struct sock_filter *insns, __u16 len,
- 	if (len > XT_BPF_MAX_NUM_INSTR)
- 		return -EINVAL;
- 
-+	memset(&program, 0x0, sizeof(program));
- 	program.len = len;
- 	program.filter = insns;
- 
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+> ---
+>  .../bindings/connector/usb-connector.yaml         |  3 +--
+>  .../bindings/display/brcm,bcm2711-hdmi.yaml       |  3 +--
+>  .../bindings/display/bridge/adi,adv7511.yaml      |  5 ++---
+>  .../bindings/display/bridge/synopsys,dw-hdmi.yaml |  5 ++---
+>  .../bindings/display/panel/display-timings.yaml   |  3 +--
+>  .../devicetree/bindings/display/ste,mcde.yaml     |  4 ++--
+>  .../devicetree/bindings/input/adc-joystick.yaml   |  9 ++++-----
+>  .../bindings/leds/cznic,turris-omnia-leds.yaml    |  3 +--
+>  .../devicetree/bindings/leds/leds-lp50xx.yaml     |  3 +--
+>  .../devicetree/bindings/mfd/google,cros-ec.yaml   | 12 ++++--------
+>  .../devicetree/bindings/mtd/nand-controller.yaml  |  8 +++-----
+>  .../bindings/mtd/rockchip,nand-controller.yaml    |  3 +--
+>  .../devicetree/bindings/net/ti,cpsw-switch.yaml   |  3 +--
+>  .../bindings/phy/phy-stm32-usbphyc.yaml           |  3 +--
+>  .../bindings/power/supply/sbs,sbs-manager.yaml    |  4 +---
+>  .../bindings/remoteproc/ti,k3-r5f-rproc.yaml      |  3 +--
+>  .../devicetree/bindings/soc/ti/ti,pruss.yaml      | 15 +++------------
+>  .../devicetree/bindings/sound/st,stm32-sai.yaml   |  3 +--
+>  .../devicetree/bindings/sound/tlv320adcx140.yaml  | 13 ++++++-------
+>  .../devicetree/bindings/spi/spi-controller.yaml   |  4 +---
+>  .../devicetree/bindings/usb/st,stusb160x.yaml     |  4 +---
+>  21 files changed, 39 insertions(+), 74 deletions(-)
+
 -- 
-2.25.1
+Regards,
 
+Laurent Pinchart
