@@ -2,32 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E9704C884B
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 10:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 489E94C8845
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 10:44:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233908AbiCAJov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 04:44:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S233518AbiCAJou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 04:44:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232969AbiCAJot (ORCPT
+        with ESMTP id S232098AbiCAJot (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 04:44:49 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506543A188;
-        Tue,  1 Mar 2022 01:44:06 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V5wm1JI_1646127843;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V5wm1JI_1646127843)
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAA73B01E;
+        Tue,  1 Mar 2022 01:44:07 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V5vuqVq_1646127844;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V5vuqVq_1646127844)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 01 Mar 2022 17:44:03 +0800
+          Tue, 01 Mar 2022 17:44:05 +0800
 From:   Dust Li <dust.li@linux.alibaba.com>
 To:     Karsten Graul <kgraul@linux.ibm.com>,
         Tony Lu <tonylu@linux.alibaba.com>,
         Guangguan Wang <guangguan.wang@linux.alibaba.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net-next 0/7] net/smc: some datapath performance optimizations
-Date:   Tue,  1 Mar 2022 17:43:55 +0800
-Message-Id: <20220301094402.14992-1-dust.li@linux.alibaba.com>
+Subject: [PATCH net-next 1/7] net/smc: add sysctl interface for SMC
+Date:   Tue,  1 Mar 2022 17:43:56 +0800
+Message-Id: <20220301094402.14992-2-dust.li@linux.alibaba.com>
 X-Mailer: git-send-email 2.19.1.3.ge56e4f7
+In-Reply-To: <20220301094402.14992-1-dust.li@linux.alibaba.com>
+References: <20220301094402.14992-1-dust.li@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -40,116 +42,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi:
+This patch add sysctl interface to support container environment
+for SMC as we talk in the mail list.
 
-This series tries to improve the performance of SMC in datapath.
-
-- patch #1, add sysctl interface to support tuning the behaviour of
-  SMC in container environment.
-
-- patch #2/#3, add autocorking support which is very efficient for small
-  messages without trade-off for latency.
-
-- patch #4, send directly on setting TCP_NODELAY, without wake up the
-  TX worker, this make it consistent with clearing TCP_CORK.
-
-- patch #5, this correct the setting of RMB window update limit, so
-  we don't send CDC messages to update peer's RMB window too frequently
-  in some cases.
-
-- patch #6, implemented something like NAPI in SMC, decrease the number
-  of hardirq when busy.
-
-- patch #7, this moves TX work doing in the BH to the user context when
-  sock_lock is hold by user.
-
-
-With this patchset applied, we can get a good performance gain:
-- qperf tcp_bw test has shown a great improvement. Other benchmarks like
-  'netperf TCP_STREAM' or 'sockperf throughput' has similar result.
-- In my testing environment, running qperf tcp_bw and tcp_lat, SMC behaves
-  better then TCP in most all message size.
-
-Here are some test results with the following testing command:
-client: smc_run taskset -c 1 qperf smc-server -oo msg_size:1:64K:*2 \
-		-t 30 -vu tcp_{bw|lat}
-server: smc_run taskset -c 1 qperf
-
-==== Bandwidth ====
- MsgSize        Origin SMC              TCP                SMC with patches
-       1         0.578 MB/s      2.392 MB/s(313.57%)      2.561 MB/s(342.83%)
-       2         1.159 MB/s      4.780 MB/s(312.53%)      5.162 MB/s(345.46%)
-       4         2.283 MB/s     10.266 MB/s(349.77%)     10.122 MB/s(343.46%)
-       8         4.668 MB/s     19.040 MB/s(307.86%)     20.521 MB/s(339.59%)
-      16         9.147 MB/s     38.904 MB/s(325.31%)     40.823 MB/s(346.29%)
-      32        18.369 MB/s     79.587 MB/s(333.25%)     80.535 MB/s(338.42%)
-      64        36.562 MB/s    148.668 MB/s(306.61%)    158.170 MB/s(332.60%)
-     128        72.961 MB/s    274.913 MB/s(276.80%)    316.217 MB/s(333.41%)
-     256       144.705 MB/s    512.059 MB/s(253.86%)    626.019 MB/s(332.62%)
-     512       288.873 MB/s    884.977 MB/s(206.35%)   1221.596 MB/s(322.88%)
-    1024       574.180 MB/s   1337.736 MB/s(132.98%)   2203.156 MB/s(283.70%)
-    2048      1095.192 MB/s   1865.952 MB/s( 70.38%)   3036.448 MB/s(177.25%)
-    4096      2066.157 MB/s   2380.337 MB/s( 15.21%)   3834.271 MB/s( 85.58%)
-    8192      3717.198 MB/s   2733.073 MB/s(-26.47%)   4904.910 MB/s( 31.95%)
-   16384      4742.221 MB/s   2958.693 MB/s(-37.61%)   5220.272 MB/s( 10.08%)
-   32768      5349.550 MB/s   3061.285 MB/s(-42.77%)   5321.865 MB/s( -0.52%)
-   65536      5162.919 MB/s   3731.408 MB/s(-27.73%)   5245.021 MB/s(  1.59%)
-==== Latency ====
- MsgSize        Origin SMC              TCP                SMC with patches
-       1        10.540 us     11.938 us( 13.26%)         10.356 us( -1.75%)
-       2        10.996 us     11.992 us(  9.06%)         10.073 us( -8.39%)
-       4        10.229 us     11.687 us( 14.25%)          9.996 us( -2.28%)
-       8        10.203 us     11.653 us( 14.21%)         10.063 us( -1.37%)
-      16        10.530 us     11.313 us(  7.44%)         10.013 us( -4.91%)
-      32        10.241 us     11.586 us( 13.13%)         10.081 us( -1.56%)
-      64        10.693 us     11.652 us(  8.97%)          9.986 us( -6.61%)
-     128        10.597 us     11.579 us(  9.27%)         10.262 us( -3.16%)
-     256        10.409 us     11.957 us( 14.87%)         10.148 us( -2.51%)
-     512        11.088 us     12.505 us( 12.78%)         10.206 us( -7.95%)
-    1024        11.240 us     12.255 us(  9.03%)         10.631 us( -5.42%)
-    2048        11.485 us     16.970 us( 47.76%)         10.981 us( -4.39%)
-    4096        12.077 us     13.948 us( 15.49%)         11.847 us( -1.90%)
-    8192        13.683 us     16.693 us( 22.00%)         13.336 us( -2.54%)
-   16384        16.470 us     23.615 us( 43.38%)         16.519 us(  0.30%)
-   32768        22.540 us     40.966 us( 81.75%)         22.452 us( -0.39%)
-   65536        34.192 us     73.003 us(113.51%)         33.916 us( -0.81%)
-
-------------
-Test environment notes:
-1. Testing is run on 2 VMs within the same physical host
-2. The NIC is ConnectX-4Lx, using SRIOV, and passing through 2 VFs to the
-   2 VMs respectively.
-3. To decrease jitter, VM's vCPU are binded to each physical CPU, and those
-   physical CPUs are all isolated using boot parameter `isolcpus=xxx`
-4. The queue number are set to 1, and interrupt from the queue is binded to
-   CPU0 in the guest
-
-
-Dust Li (7):
-  net/smc: add sysctl interface for SMC
-  net/smc: add autocorking support
-  net/smc: add sysctl for autocorking
-  net/smc: send directly on setting TCP_NODELAY
-  net/smc: correct settings of RMB window update limit
-  net/smc: don't req_notify until all CQEs drained
-  net/smc: don't send in the BH context if sock_owned_by_user
-
- Documentation/networking/smc-sysctl.rst |  23 +++++
- include/net/netns/smc.h                 |   4 +
- net/smc/Makefile                        |   2 +-
- net/smc/af_smc.c                        |  30 ++++++-
- net/smc/smc.h                           |   6 ++
- net/smc/smc_cdc.c                       |  24 ++++--
- net/smc/smc_core.c                      |   2 +-
- net/smc/smc_sysctl.c                    |  80 ++++++++++++++++++
- net/smc/smc_sysctl.h                    |  32 +++++++
- net/smc/smc_tx.c                        | 107 +++++++++++++++++++++---
- net/smc/smc_wr.c                        |  49 ++++++-----
- 11 files changed, 317 insertions(+), 42 deletions(-)
- create mode 100644 Documentation/networking/smc-sysctl.rst
+Link: https://lore.kernel.org/netdev/20220224020253.GF5443@linux.alibaba.com
+Co-developed-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+---
+ include/net/netns/smc.h |  3 ++
+ net/smc/Makefile        |  2 +-
+ net/smc/af_smc.c        | 10 ++++++
+ net/smc/smc_sysctl.c    | 70 +++++++++++++++++++++++++++++++++++++++++
+ net/smc/smc_sysctl.h    | 32 +++++++++++++++++++
+ 5 files changed, 116 insertions(+), 1 deletion(-)
  create mode 100644 net/smc/smc_sysctl.c
  create mode 100644 net/smc/smc_sysctl.h
 
+diff --git a/include/net/netns/smc.h b/include/net/netns/smc.h
+index 47b166684fd8..1682eae50579 100644
+--- a/include/net/netns/smc.h
++++ b/include/net/netns/smc.h
+@@ -14,5 +14,8 @@ struct netns_smc {
+ 	struct smc_stats_rsn		*fback_rsn;
+ 
+ 	bool				limit_smc_hs;	/* constraint on handshake */
++#ifdef CONFIG_SYSCTL
++	struct ctl_table_header		*smc_hdr;
++#endif
+ };
+ #endif
+diff --git a/net/smc/Makefile b/net/smc/Makefile
+index 196fb6f01b14..640af9a39f9c 100644
+--- a/net/smc/Makefile
++++ b/net/smc/Makefile
+@@ -4,4 +4,4 @@ obj-$(CONFIG_SMC)	+= smc.o
+ obj-$(CONFIG_SMC_DIAG)	+= smc_diag.o
+ smc-y := af_smc.o smc_pnet.o smc_ib.o smc_clc.o smc_core.o smc_wr.o smc_llc.o
+ smc-y += smc_cdc.o smc_tx.o smc_rx.o smc_close.o smc_ism.o smc_netlink.o smc_stats.o
+-smc-y += smc_tracepoint.o
++smc-y += smc_tracepoint.o smc_sysctl.o
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 30acc31b2c45..19b3066cf7af 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -51,6 +51,7 @@
+ #include "smc_close.h"
+ #include "smc_stats.h"
+ #include "smc_tracepoint.h"
++#include "smc_sysctl.h"
+ 
+ static DEFINE_MUTEX(smc_server_lgr_pending);	/* serialize link group
+ 						 * creation on server
+@@ -3273,9 +3274,17 @@ static int __init smc_init(void)
+ 		goto out_sock;
+ 	}
+ 
++	rc = smc_sysctl_init();
++	if (rc) {
++		pr_err("%s: sysctl_init fails with %d\n", __func__, rc);
++		goto out_ulp;
++	}
++
+ 	static_branch_enable(&tcp_have_smc);
+ 	return 0;
+ 
++out_ulp:
++	tcp_unregister_ulp(&smc_ulp_ops);
+ out_sock:
+ 	sock_unregister(PF_SMC);
+ out_proto6:
+@@ -3303,6 +3312,7 @@ static int __init smc_init(void)
+ static void __exit smc_exit(void)
+ {
+ 	static_branch_disable(&tcp_have_smc);
++	smc_sysctl_exit();
+ 	tcp_unregister_ulp(&smc_ulp_ops);
+ 	sock_unregister(PF_SMC);
+ 	smc_core_exit();
+diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
+new file mode 100644
+index 000000000000..8a3a8e145976
+--- /dev/null
++++ b/net/smc/smc_sysctl.c
+@@ -0,0 +1,70 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ *  Shared Memory Communications over RDMA (SMC-R) and RoCE
++ *
++ *  smc_sysctl.c: sysctl interface to SMC subsystem.
++ *
++ *  Copyright (c) 2022, Alibaba Inc.
++ *
++ *  Author: Tony Lu <tonylu@linux.alibaba.com>
++ *
++ */
++
++#include <linux/init.h>
++#include <linux/sysctl.h>
++#include <net/net_namespace.h>
++
++#include "smc_sysctl.h"
++
++static struct ctl_table smc_table[] = {
++	{  }
++};
++
++static __net_init int smc_sysctl_init_net(struct net *net)
++{
++	struct ctl_table *table;
++
++	table = smc_table;
++	if (!net_eq(net, &init_net)) {
++		int i;
++
++		table = kmemdup(table, sizeof(smc_table), GFP_KERNEL);
++		if (!table)
++			goto err_alloc;
++
++		for (i = 0; i < ARRAY_SIZE(smc_table) - 1; i++)
++			table[i].data += (void *)net - (void *)&init_net;
++	}
++
++	net->smc.smc_hdr = register_net_sysctl(net, "net/smc", table);
++	if (!net->smc.smc_hdr)
++		goto err_reg;
++
++	return 0;
++
++err_reg:
++	if (!net_eq(net, &init_net))
++		kfree(table);
++err_alloc:
++	return -ENOMEM;
++}
++
++static __net_exit void smc_sysctl_exit_net(struct net *net)
++{
++	unregister_net_sysctl_table(net->smc.smc_hdr);
++}
++
++static struct pernet_operations smc_sysctl_ops __net_initdata = {
++	.init = smc_sysctl_init_net,
++	.exit = smc_sysctl_exit_net,
++};
++
++int __init smc_sysctl_init(void)
++{
++	return register_pernet_subsys(&smc_sysctl_ops);
++}
++
++void smc_sysctl_exit(void)
++{
++	unregister_pernet_subsys(&smc_sysctl_ops);
++}
+diff --git a/net/smc/smc_sysctl.h b/net/smc/smc_sysctl.h
+new file mode 100644
+index 000000000000..49553ac236b6
+--- /dev/null
++++ b/net/smc/smc_sysctl.h
+@@ -0,0 +1,32 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ *  Shared Memory Communications over RDMA (SMC-R) and RoCE
++ *
++ *  smc_sysctl.c: sysctl interface to SMC subsystem.
++ *
++ *  Copyright (c) 2022, Alibaba Inc.
++ *
++ *  Author: Tony Lu <tonylu@linux.alibaba.com>
++ *
++ */
++
++#ifndef _SMC_SYSCTL_H
++#define _SMC_SYSCTL_H
++
++#ifdef CONFIG_SYSCTL
++
++int smc_sysctl_init(void);
++void smc_sysctl_exit(void);
++
++#else
++
++int smc_sysctl_init(void)
++{
++	return 0;
++}
++
++void smc_sysctl_exit(void) { }
++
++#endif /* CONFIG_SYSCTL */
++
++#endif /* _SMC_SYSCTL_H */
 -- 
 2.19.1.3.ge56e4f7
 
