@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 686F14C8ADF
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 12:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7E24C8AFC
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 12:41:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiCALf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 06:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53830 "EHLO
+        id S234607AbiCALlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 06:41:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbiCALfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 06:35:25 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107D691AD4
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 03:34:45 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id x14so7178302ill.12
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 03:34:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cwyH7ZYCvlxkzfpPo5L0/LxHzysOdr2qf7q8v1soS3k=;
-        b=kIOl7bIGsVLFNMv/BXknkeQPTiy/gkcCOZJnBwFP8cxdutucakq9RYnfvYGFF08Ygc
-         RKgQMoo6nOE8nNOpjp7B3OHtLPI9Cmno3sB10VnViM0lv15TZFIJT7biuV6xfYVdiFnE
-         SofnK0R2GzmYOJDE0/uSI7/V3XZecKTaOjfIvKzI48pnjSX5pjb94dTk5V3bfQ+4x8bl
-         Lm1Raf7OCW0ZAUtMgXlOeu9+fnbrig9emesRvUcb01tCzDPTNq2CxOnlfHFwgybFEQu9
-         FWSeLoHcsNElxY7OoZgaEZVx+r9wGRMtHFhwChm7EdaSKjTQwUlkxdEXS6grHkIJzCzR
-         YLkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cwyH7ZYCvlxkzfpPo5L0/LxHzysOdr2qf7q8v1soS3k=;
-        b=Sf1Ir/8b3CxQ3/BIbxhBAnt45VjiT4gbFvkbnLO66ryUtSDlG8c0buNQ8TgSViQyqQ
-         DQ0ejOxCAOe/oSjMRU0FshAgz2yhgquSB6zdrb42k5SSeL8p+Pj4xgf8arQowdbL7CfP
-         wok2z2CD+H7cjgocxCbKesTXMl6tFuK0w1iZzAQ6epdlshYwNsASCeHBBGzAFdT3Hraw
-         XUgJeJAqgISw6dIF75M7Ct2cjYrpCQ/IzaOvnjxJp5DLdoLqtJf8zKkd0skqXDwp2oBJ
-         3o9balHxHA8rHojqQcsvqvrozjRqK0HwtEICdnOqGhqVzfd6sryXV7m+PPhY+OH5Im/m
-         1B/w==
-X-Gm-Message-State: AOAM532rgdQ1e/5pNCqLAfDJ157LmM94uY6Qe1v4S//WE8BvNL6erufI
-        pUj7hWcILkv3B65PUKixZmTFKQ==
-X-Google-Smtp-Source: ABdhPJx8yMOOHfptYCj2Jy1tgUKGNNI8YILty5etWM3S9F5gJUvU4HPXR4bEwhu1xTEYIoR+9Z8Isg==
-X-Received: by 2002:a05:6e02:17c9:b0:2c2:a5b3:36fc with SMTP id z9-20020a056e0217c900b002c2a5b336fcmr20967860ilu.303.1646134484337;
-        Tue, 01 Mar 2022 03:34:44 -0800 (PST)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a2-20020a056e02120200b002c21a18437csm7610374ilq.40.2022.03.01.03.34.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 03:34:43 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, avuyyuru@codeaurora.org,
-        jponduru@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        lkp@intel.com, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net: ipa: add an interconnect dependency
-Date:   Tue,  1 Mar 2022 05:34:40 -0600
-Message-Id: <20220301113440.257916-1-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        with ESMTP id S233728AbiCALlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 06:41:50 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1C8E939BA
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 03:41:09 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-37-mgVLvuYEMc62HB_eDoossw-1; Tue, 01 Mar 2022 11:41:07 +0000
+X-MC-Unique: mgVLvuYEMc62HB_eDoossw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Tue, 1 Mar 2022 11:41:06 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Tue, 1 Mar 2022 11:41:06 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        'Segher Boessenkool' <segher@kernel.crashing.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Subject: RE: [PATCH] net: Remove branch in csum_shift()
+Thread-Topic: [PATCH] net: Remove branch in csum_shift()
+Thread-Index: AQHYHyQqmTo4K/pb5UWdDmTfE7rfRayQxWFwgABxD4CAAIxicIAYqtUAgAAE/lCAAAowAIAABVwg
+Date:   Tue, 1 Mar 2022 11:41:06 +0000
+Message-ID: <10309fa64833418a980a8d950d037357@AcuMS.aculab.com>
+References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
+ <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
+ <20220213091619.GY614@gate.crashing.org>
+ <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
+ <de560db6-d29a-8565-857b-b42ae35f80f8@csgroup.eu>
+ <9cdb4a5243d342efb562bc61d0c1bfcb@AcuMS.aculab.com>
+ <c616f9a6-c9db-d3a7-1b23-f827732566bb@csgroup.eu>
+In-Reply-To: <c616f9a6-c9db-d3a7-1b23-f827732566bb@csgroup.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to function, the IPA driver very clearly requires the
-interconnect framework to be enabled in the kernel configuration.
-State that dependency in the Kconfig file.
-
-This became a problem when CONFIG_COMPILE_TEST support was added.
-Non-Qualcomm platforms won't necessarily enable CONFIG_INTERCONNECT.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 38a4066f593c5 ("net: ipa: support COMPILE_TEST")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-v2: Rebased as requested.
-
- drivers/net/ipa/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-index e0164a55c1e66..6782c2cbf542f 100644
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -2,6 +2,7 @@ config QCOM_IPA
- 	tristate "Qualcomm IPA support"
- 	depends on NET && QCOM_SMEM
- 	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on INTERCONNECT
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
- 	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select QCOM_MDT_LOADER if ARCH_QCOM
--- 
-2.32.0
+RnJvbTogQ2hyaXN0b3BoZSBMZXJveQ0KPiBTZW50OiAwMSBNYXJjaCAyMDIyIDExOjE1DQouLi4N
+Cj4gTG9va3MgbGlrZSBBUk0gYWxzbyBkb2VzIGJldHRlciBjb2RlIHdpdGggdGhlIGdlbmVyaWMg
+aW1wbGVtZW50YXRpb24gYXMNCj4gaXQgc2VlbXMgdG8gaGF2ZSBzb21lIGxvb2tpbmcgbGlrZSBj
+b25kaXRpb25hbCBpbnN0cnVjdGlvbnMgJ3Jvcm5lJyBhbmQNCj4gJ3N0cm5lJy4NCg0KSW4gYXJt
+MzIgKGFuZCBJIHRoaW5rIGFybTY0KSBldmVyeSBpbnN0cnVjdGlvbiBpcyBjb25kaXRpb25hbC4N
+Cg0KPiBzdGF0aWMgX19hbHdheXNfaW5saW5lIF9fd3N1bSBjc3VtX3NoaWZ0KF9fd3N1bSBzdW0s
+IGludCBvZmZzZXQpDQo+IHsNCj4gCS8qIHJvdGF0ZSBzdW0gdG8gYWxpZ24gaXQgd2l0aCBhIDE2
+YiBib3VuZGFyeSAqLw0KPiAJaWYgKG9mZnNldCAmIDEpDQo+ICAgICAgMWQyODoJZTIxMDIwMDEg
+CWFuZHMJcjIsIHIwLCAjMQ0KPiAgICAgIDFkMmM6CWU1OGQzMDA0IAlzdHIJcjMsIFtzcCwgIzRd
+DQo+ICAgKiBAd29yZDogdmFsdWUgdG8gcm90YXRlDQo+ICAgKiBAc2hpZnQ6IGJpdHMgdG8gcm9s
+bA0KPiAgICovDQo+IHN0YXRpYyBpbmxpbmUgX191MzIgcm9yMzIoX191MzIgd29yZCwgdW5zaWdu
+ZWQgaW50IHNoaWZ0KQ0KPiB7DQo+IAlyZXR1cm4gKHdvcmQgPj4gKHNoaWZ0ICYgMzEpKSB8ICh3
+b3JkIDw8ICgoLXNoaWZ0KSAmIDMxKSk7DQo+ICAgICAgMWQzMDoJMTFhMDM0NjMgCXJvcm5lCXIz
+LCByMywgIzgNCj4gICAgICAxZDM0OgkxNThkMzAwNCAJc3RybmUJcjMsIFtzcCwgIzRdDQo+IAlp
+ZiAodW5saWtlbHkoaW92X2l0ZXJfaXNfcGlwZShpKSkpDQoNClRoZXJlIGlzIGEgc3BhcmUgJ3N0
+cicgdGhhdCBhIG1pbm9yIGNvZGUgY2hhbmdlIHdvdWxkDQpwcm9iYWJseSByZW1vdmUuDQpMaWtl
+bHkgbm90IGhlbHBlZCBieSByZWdpc3RlcnMgYmVpbmcgc3BpbGxlZCB0byBzdGFjay4NCg0KSVNU
+UiBhcm0zMiBoYXZpbmcgYSByZWFzb25hYmxlIG51bWJlciBvZiByZWdpc3RlcnMgYW5kIHRoZW4N
+CmEgd2hvbGUgbG9hZCBvZiB0aGVtIGJlaW5nIHN0b2xlbiBieSB0aGUgaW1wbGVtZW50YXRpb24u
+DQooSSdtIHN1cmUgSSByZW1lbWJlciBzdGFjayBsaW1pdCBhbmQgdGhyZWFkIGJhc2UuLi4pDQpT
+byB0aGUgY29tcGlsZXIgZG9lc24ndCBnZXQgdGhhdCBtYW55IHRvIHBsYXkgd2l0aC4NCg0KTm90
+IHF1aXRlIGFzIGJhZCBhcyBuaW9zMiAtIHdoZXJlIHIyIGFuZCByMyBhcmUgJ3Jlc2VydmVkIGZv
+cg0KdGhlIGFzc2VtYmxlcicgKGFzIHRoZXkgcHJvYmFibHkgYXJlIG9uIE1JUFMpIGJ1dCB0aGUg
+bmlvczINCmFzc2VtYmxlciBkb2Vzbid0IGV2ZXIgbmVlZCB0byB1c2UgdGhlbSENCg0KPiAuLi4N
+Cj4gT2ssIHNvIHRoZSBzb2x1dGlvbiB3b3VsZCBiZSB0byBoYXZlIGFuIGFyY2ggc3BlY2lmaWMg
+dmVyc2lvbiBvZg0KPiBjc3VtX3NoaWZ0KCkgaW4gdGhlIHNhbWUgcHJpbmNpcGxlIGFzIGNzdW1f
+YWRkKCkuDQoNClByb2JhYmx5Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExh
+a2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQs
+IFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
