@@ -2,102 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 017CA4C954A
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 20:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1184C4C954D
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 20:59:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234240AbiCAT7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 14:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
+        id S234491AbiCAT7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 14:59:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbiCAT7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:59:40 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA81275DD
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 11:58:58 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id k1so4775874pfu.2
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 11:58:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=T8ZyvWAxfUKU8eszr8lGqQnbfIAMhJjBh1iZNFmklng=;
-        b=3dhV6Gv2HAHW50uFpT+nLwsWZZVGEbQKxnzMi5YoapTNs4P/rDnd2ib5ZkmoB4bW7J
-         dx3coNTm6UBKXshK0U2WFRSBOu/w5HkXi4U8f3VPeutmEirgTDOwq1Mf6LFXCSI5W0H0
-         YRhZpfbey5kCBwTgHywyrMlyMpAPejIt3AxWsHoorKuU3JJukjLyHUzp6mas3nlkd/43
-         Yh+Q+P0VFRnbwWZyWmsJgmNr6VVrHNiO+BTe0xdI0Mx0J77XecwqbIibMmeDfo8go2oM
-         SVJ1nc5z4rULDFpa46CqGvoe4cGZzpvEhDCrG7AGfzqLdXx8nq9Fwf3R2LBmnjYhW62q
-         H4Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T8ZyvWAxfUKU8eszr8lGqQnbfIAMhJjBh1iZNFmklng=;
-        b=MTdMXlbrtNbAqMIm18gEZg2RkcGA7ZsMhMWVvlqVfoO6HVh3DXlSysZAH+IPJOzCsw
-         +2aIPb1b9su7Z4Aewavsyxhh5Oz8HCd0C8R6Ygk/GqkU/PJ9XaSIPzY5vG89+15kGF+9
-         DuasaG/+c9snYuvipX5ZjI93/DKtG3Qgl7C0eYA13ZoTsEmrLwzjCYXtQaJRXt5EKAdC
-         b2X69jaxfHlZqdCT7gpDqIfAcqZ5+5Yt3oQ0akuDLh+K+rb6E967oFndQC/ki+7wWW4E
-         2Qkaw3nufW00a9IMIeNmP1yxrcViWHNKTpvX/bvBDdUjto3aX2wKW1ozkXua7v7flGez
-         VRZQ==
-X-Gm-Message-State: AOAM531mLPZ3Aa+M3YuOjoztTj2r3vkY0o+n3fOg9V6u0jtnT10QbQB7
-        Ak8ntOOU0hSwhXMoRPB5PjblLxo0dc2CVQ==
-X-Google-Smtp-Source: ABdhPJz6PldCPzmNbccBhufxm3jcEJVRQ6uxXSILOfXSy2W7FRHnJA472P45wgV3TmM+aPfnXvyPJg==
-X-Received: by 2002:a62:830e:0:b0:4c9:25cb:e1e with SMTP id h14-20020a62830e000000b004c925cb0e1emr28893038pfe.42.1646164738291;
-        Tue, 01 Mar 2022 11:58:58 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id lp4-20020a17090b4a8400b001bedba2df04sm2527303pjb.30.2022.03.01.11.58.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 11:58:57 -0800 (PST)
-Date:   Tue, 1 Mar 2022 11:58:55 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     daniel@braunwarth.dev
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2-next 1/2] lib: add profinet and ethercat as
- link layer protocol names
-Message-ID: <20220301115855.53fe4e51@hermes.local>
-In-Reply-To: <d928314fccec204c36979e253b8fc4ae@braunwarth.dev>
-References: <20220228092133.59909985@hermes.local>
-        <20220228134520.118589-1-daniel@braunwarth.dev>
-        <20220228134520.118589-2-daniel@braunwarth.dev>
-        <d928314fccec204c36979e253b8fc4ae@braunwarth.dev>
+        with ESMTP id S232694AbiCAT7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:59:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BA22E0BF;
+        Tue,  1 Mar 2022 11:59:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CBAE616DD;
+        Tue,  1 Mar 2022 19:59:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E93DC340EE;
+        Tue,  1 Mar 2022 19:59:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646164744;
+        bh=SW1EEhO8KyY6dUT4IZ3KcW8rX7jwP+ZfdbnQkQgnreA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N8V6YraEtt/f+lcf+go1zap5KQX7uIxOHRNjf/nrdUa/LwI+KqJEgbixNSyZsAMOZ
+         YWnM9x8DCeDhgnRpS+67/6Qc3gs4hQHOmuwWyyfZHxLaeXRvl5HBMldELu3OUdmcLY
+         0xaU/djFBH6oySgSvUqXkqhydq2yM4IfhTq18AzEbH0UDxMWkwDk++jMbArqKCenJO
+         wiJa3LNJtkQ8ialnwsBzVAuIC42ThgOMNT6UNZvrc4IYLSWD4F/GMymN+zUPSiliXg
+         d3dnVz8aQ4HfjBx1+FMvspEvS738UZQyjwTnicaXh8EwE33b8MIMXvcymETFQxNwDD
+         8qNBg2+J3KGSw==
+Date:   Tue, 1 Mar 2022 21:58:59 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com,
+        Yishai Hadas <yishaih@nvidia.com>, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        cohuck@redhat.com, ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [GIT PULL] Add mlx5 live migration driver and v2 migration
+ protocol
+Message-ID: <Yh57A//Wi2QdCLW2@unreal>
+References: <20220228123934.812807-1-leon@kernel.org>
+ <20220301124112.477ab6fc.alex.williamson@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301124112.477ab6fc.alex.williamson@redhat.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 01 Mar 2022 18:26:10 +0000
-daniel@braunwarth.dev wrote:
+On Tue, Mar 01, 2022 at 12:41:12PM -0700, Alex Williamson wrote:
+> On Mon, 28 Feb 2022 14:39:34 +0200
+> Leon Romanovsky <leon@kernel.org> wrote:
+> 
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Hi Alex,
+> > 
+> > This pull request contains the v9 version of recently submitted mlx5 live migration
+> > driver from Yishai and Jason.
+> > 
+> > In addition to changes in VFIO, this series extended the ethernet part of mlx5 driver.
+> > Such changes have all chances to create merge conflicts between VFIO, netdev and RDMA
+> > subsystems, which are eliminated with this PR.
+> 
+> I know that Connie and perhaps others have spent a good deal of time
+> reviewing this, so I'd at least like to give them an opportunity to
+> chime in with their Reviewed-by before merging a PR.  For me please add
+> my
+> 
+> Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
+> 
+> to patches 8-15 in Yishai's v9 posting.  If it's easier, I can adjust
+> the commits from this PR manually, I see there are just a few minor
+> commit log differences versus the v9 post.  Let's give this one more
+> day to collect any further outstanding comments or reviews.  Thanks,
 
-> February 28, 2022 6:21 PM, "Stephen Hemminger" <stephen@networkplumber.org> wrote:
-> > This is legacy table. Original author did choose to use stanard
-> > file /etc/ethertypes. Not sure why??  
-> 
-> I tried to extend /etc/ethertypes with the following line:
-> ETHERCAT        88A4    ethercat
-> 
-> I would expect the following command to successfully run:
-> tc filter add dev eno1 protocol ethercat matchall action drop
-> 
-> Unfortunately all I get is:
-> Error: argument "ethercat" is wrong: invalid protocol
-> 
-> With my patches applied, the command runs without any error.
-> 
-> 
-> I wasn't able to find any hint in the code, where /etc/ethertypes is supposed to be parsed. Could you give me a hint?
-> 
-> 
-> Thanks
-> 
-> Daniel
+Sure, I'll wait till Thursday, collect Acks and repost.
 
-Right, iproute2 has its own built in table.
+I fixed spelling errors which were spotted by spellcheck when created PR,
+so this is probably the reason of commit log differences. The style,
+language and grammar are original.
 
-There is nothing that parses and loads ethertypes.
-I am suggesting that there ought to read and cache the file; assuming it doesn't slow things down too much.
+Thanks
+
+> 
+> Alex
+> 
+> > ------------------------------------------------------------------------------------
+> > 
+> > The following changes since commit cfb92440ee71adcc2105b0890bb01ac3cddb8507:
+> > 
+> >   Linux 5.17-rc5 (2022-02-20 13:07:20 -0800)
+> > 
+> > are available in the Git repository at:
+> > 
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git tags/mlx5-vfio-v9
+> > 
+> > for you to fetch changes up to d18f3ba69448b8f68caf8592a9abb39e75c76e8d:
+> > 
+> >   vfio/mlx5: Use its own PCI reset_done error handler (2022-02-27 11:44:00 +0200)
+> > 
+> > ----------------------------------------------------------------
+> > Add mlx5 live migration driver and v2 migration protocol
+> > 
+> > This series adds mlx5 live migration driver for VFs that are migration
+> > capable and includes the v2 migration protocol definition and mlx5
+> > implementation.
+> > 
+> > The mlx5 driver uses the vfio_pci_core split to create a specific VFIO
+> > PCI driver that matches the mlx5 virtual functions. The driver provides
+> > the same experience as normal vfio-pci with the addition of migration
+> > support.
+> > 
+> > In HW the migration is controlled by the PF function, using its
+> > mlx5_core driver, and the VFIO PCI VF driver co-ordinates with the PF to
+> > execute the migration actions.
+> > 
+> > The bulk of the v2 migration protocol is semantically the same v1,
+> > however it has been recast into a FSM for the device_state and the
+> > actual syscall interface uses normal ioctl(), read() and write() instead
+> > of building a syscall interface using the region.
+> > 
+> > Several bits of infrastructure work are included here:
+> >  - pci_iov_vf_id() to help drivers like mlx5 figure out the VF index from
+> >    a BDF
+> >  - pci_iov_get_pf_drvdata() to clarify the tricky locking protocol when a
+> >    VF reaches into its PF's driver
+> >  - mlx5_core uses the normal SRIOV lifecycle and disables SRIOV before
+> >    driver remove, to be compatible with pci_iov_get_pf_drvdata()
+> >  - Lifting VFIO_DEVICE_FEATURE into core VFIO code
+> > 
+> > This series comes after alot of discussion. Some major points:
+> > - v1 ABI compatible migration defined using the same FSM approach:
+> >    https://lore.kernel.org/all/0-v1-a4f7cab64938+3f-vfio_mig_states_jgg@nvidia.com/
+> > - Attempts to clarify how the v1 API works:
+> >    Alex's:
+> >      https://lore.kernel.org/kvm/163909282574.728533.7460416142511440919.stgit@omen/
+> >    Jason's:
+> >      https://lore.kernel.org/all/0-v3-184b374ad0a8+24c-vfio_mig_doc_jgg@nvidia.com/
+> > - Etherpad exploring the scope and questions of general VFIO migration:
+> >      https://lore.kernel.org/kvm/87mtm2loml.fsf@redhat.com/
+> > 
+> > NOTE: As this series touched mlx5_core parts we need to send this in a
+> > pull request format to VFIO to avoid conflicts.
+> > 
+> > Matching qemu changes can be previewed here:
+> >  https://github.com/jgunthorpe/qemu/commits/vfio_migration_v2
+> > 
+> > Link: https://lore.kernel.org/all/20220224142024.147653-1-yishaih@nvidia.com
+> > Signed-of-by: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > ----------------------------------------------------------------
+> > Jason Gunthorpe (6):
+> >       PCI/IOV: Add pci_iov_vf_id() to get VF index
+> >       PCI/IOV: Add pci_iov_get_pf_drvdata() to allow VF reaching the drvdata of a PF
+> >       vfio: Have the core code decode the VFIO_DEVICE_FEATURE ioctl
+> >       vfio: Define device migration protocol v2
+> >       vfio: Extend the device migration protocol with RUNNING_P2P
+> >       vfio: Remove migration protocol v1 documentation
+> > 
+> > Leon Romanovsky (1):
+> >       net/mlx5: Reuse exported virtfn index function call
+> > 
+> > Yishai Hadas (8):
+> >       net/mlx5: Disable SRIOV before PF removal
+> >       net/mlx5: Expose APIs to get/put the mlx5 core device
+> >       net/mlx5: Introduce migration bits and structures
+> >       net/mlx5: Add migration commands definitions
+> >       vfio/mlx5: Expose migration commands over mlx5 device
+> >       vfio/mlx5: Implement vfio_pci driver for mlx5 devices
+> >       vfio/pci: Expose vfio_pci_core_aer_err_detected()
+> >       vfio/mlx5: Use its own PCI reset_done error handler
+> > 
+> >  MAINTAINERS                                        |   6 +
+> >  drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |  10 +
+> >  drivers/net/ethernet/mellanox/mlx5/core/main.c     |  45 ++
+> >  .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   1 +
+> >  drivers/net/ethernet/mellanox/mlx5/core/sriov.c    |  17 +-
+> >  drivers/pci/iov.c                                  |  43 ++
+> >  drivers/vfio/pci/Kconfig                           |   3 +
+> >  drivers/vfio/pci/Makefile                          |   2 +
+> >  drivers/vfio/pci/mlx5/Kconfig                      |  10 +
+> >  drivers/vfio/pci/mlx5/Makefile                     |   4 +
+> >  drivers/vfio/pci/mlx5/cmd.c                        | 259 ++++++++
+> >  drivers/vfio/pci/mlx5/cmd.h                        |  36 ++
+> >  drivers/vfio/pci/mlx5/main.c                       | 676 +++++++++++++++++++++
+> >  drivers/vfio/pci/vfio_pci.c                        |   1 +
+> >  drivers/vfio/pci/vfio_pci_core.c                   | 101 ++-
+> >  drivers/vfio/vfio.c                                | 295 ++++++++-
+> >  include/linux/mlx5/driver.h                        |   3 +
+> >  include/linux/mlx5/mlx5_ifc.h                      | 147 ++++-
+> >  include/linux/pci.h                                |  15 +-
+> >  include/linux/vfio.h                               |  53 ++
+> >  include/linux/vfio_pci_core.h                      |   4 +
+> >  include/uapi/linux/vfio.h                          | 406 ++++++-------
+> >  22 files changed, 1846 insertions(+), 291 deletions(-)
+> >  create mode 100644 drivers/vfio/pci/mlx5/Kconfig
+> >  create mode 100644 drivers/vfio/pci/mlx5/Makefile
+> >  create mode 100644 drivers/vfio/pci/mlx5/cmd.c
+> >  create mode 100644 drivers/vfio/pci/mlx5/cmd.h
+> >  create mode 100644 drivers/vfio/pci/mlx5/main.c
+> > 
+> 
