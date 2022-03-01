@@ -2,68 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FEEF4C864F
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 09:19:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADEFF4C8654
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 09:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbiCAITp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 03:19:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51694 "EHLO
+        id S231834AbiCAIUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 03:20:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233367AbiCAITo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 03:19:44 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590B919286;
-        Tue,  1 Mar 2022 00:19:02 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id bc10so9305536qtb.5;
-        Tue, 01 Mar 2022 00:19:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GSBys8jJTsNLUREVaBf3CNtCbj8ytu+XMpMTrO1dcz8=;
-        b=G0/ZvlIS5jFjZMWwYeC0mWSRbluXdvWW+Q9xmstMlpytkW2ZELHxo93sAVJuI6KCVn
-         qEqd9qgJMzxAK8m/ip5l93Y65SaMaI1LgcqP1V+S1PqxXLWC33A79k7duf3aexmEJOY/
-         08lp/C5d8qPa/vT6qUbS+hekuiFgiEu9UCDcoRJQQlSPSCX0u632tVBg3J/Gfz4vp4d/
-         NTGL5a9CXdh6az3qSG6FJyAHfyETj4TIcFneBOArLSVjxEZ9bOMofkFtjUh1ar46xbeG
-         Cuw+8zn4AjJUPxB0SwYkojPB+yMJhHUZMnIxMgygiqcWucO7Le1oDPhdzERJ11Ldt7Zy
-         G7WQ==
+        with ESMTP id S230129AbiCAIUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 03:20:53 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF48A6C1F5
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 00:20:12 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F022D3FCA9
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 08:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646122810;
+        bh=wrc3c7oIUMwYQxhE3r5p7FIJPm98qYbXpx/SJrulnFQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=EpDq/xd6N7iTa+xbundcTa8hQWHfBrBaHCwS/DJtMOqruN+my6UGsOBOx9dgcE7Fx
+         646YOKYuR+ZmrtPs19G6AicTokUwElkrs2GbSLC3YnMWDFyoHS0eoSMVhzCv2Gvy8u
+         d5LUI9i752guNS1Urey3xJgtxGLUy6cu5jBqP8WSqIU/tW50gGFJt59WsU46sc41nE
+         dL1Ob6YqBoSVmWi0ftiDZr0RLmkgYM2U0co5K7bmD2pZCOY3ziTlQxqaCUZAxxFRbk
+         sGFnZ9Djh06z6bERPy29nkARnlAq6Tc3f5p7+yM49XZWPVctJyF+S9Fp+aoZ5WiVEM
+         e8iFMeL4LF7DA==
+Received: by mail-ed1-f69.google.com with SMTP id o20-20020aa7dd54000000b00413bc19ad08so3189664edw.7
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 00:20:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=GSBys8jJTsNLUREVaBf3CNtCbj8ytu+XMpMTrO1dcz8=;
-        b=N7N3YutiKwwGNRSAm/5lDcuyn0pTQfOhPGhHYD4gut41b5T7WC1L6tI6ifIsd+0/Xh
-         eYk6lEqPolQjdAshISIPF4fds+7nyGsd5eM7MEbeBZoggwHJrTpW/hJF1nNvCqFt9d5I
-         9gYl7aS6XyCiKxdr51crUutd/2hxARh/GwC0JtMmwP1aJEIpfgV4dRXtPY6BLar7Jd35
-         fZXQ2BrC2Si0NtWY3PE3Jl1Q2HNPauvX+8t7K47I6uWz8rlrbXGxHomYTSPxW0B2y2XT
-         C9ZCF8OJCDOtgacatJzUlS4UQQM+2a7tkKQvF3m1sONo1GpYI6tHxvfp17GdiL6qSYnX
-         H8yA==
-X-Gm-Message-State: AOAM532dgL3P+MG23nFEml/feP20bOfrKZL5wa5KiJmNFljpW7gVlAd+
-        LOaRm6FeoybFX8d96f6sJh4=
-X-Google-Smtp-Source: ABdhPJwK6RAJbpvtYBacQljaFQrC5NX36OyF5HyM6JuGzgkZq8H4JUOp39X731sGflud8KjZh3oY6w==
-X-Received: by 2002:a05:622a:308:b0:2dc:8b37:5dda with SMTP id q8-20020a05622a030800b002dc8b375ddamr19027809qtw.492.1646122741501;
-        Tue, 01 Mar 2022 00:19:01 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id p190-20020a37a6c7000000b00648ea630a45sm6180537qke.121.2022.03.01.00.18.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 00:19:01 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     vyasevich@gmail.com
-Cc:     nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net/sctp: use memset avoid infoleaks
-Date:   Tue,  1 Mar 2022 08:18:55 +0000
-Message-Id: <20220301081855.2053372-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        bh=wrc3c7oIUMwYQxhE3r5p7FIJPm98qYbXpx/SJrulnFQ=;
+        b=W7rzOdYIX3wKWPtkDbb4gIMlN++uZoec8rpPm1xOYKAG5skjdUDYrgzoy1IEAFjcC3
+         K84jGihzIuOVdKJAAmd2OOxOkQypjvYUSYFZA0XPc+7bwnQVm1qnD0EESruWJ5z0GivI
+         X43KVlP5FlH6yr6qHkIc6CQSPMkd7ShMorrh0ECh4gYKd5WPy77huSo77o1UWjBwhaZY
+         3ZvAHX8uzxUE6a3w6VGAOlSUptaEjdSFfgSFbb2QRjpK4aLwUEA0iYqOM3yjVf3hmEFK
+         tX7zqbOlUqolQ9n6NXrxsRhHmEPYHkndg+SHVIt4Lv7m9Cs3zMJE399IGJvL2dJOGEhC
+         DDNQ==
+X-Gm-Message-State: AOAM532RPGEadwGHQqnCZZUaN9uM4nlihK1Qt10TdmYVjiRTjRSZX0Xx
+        F/PUSdFx0WnPD2HBfx8iayTXOi2AOsmrH3JOd5EdVPV6H9nawi5m+QbdwBFs+Qx9z96pQYLihwN
+        rFoV2FH+N71G8zleM9jeKImTk6/C+tHNQ/g==
+X-Received: by 2002:a17:906:4688:b0:6d6:e103:5e36 with SMTP id a8-20020a170906468800b006d6e1035e36mr2781924ejr.407.1646122810406;
+        Tue, 01 Mar 2022 00:20:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyyBQ6isFVLqMehtypRvFgUjjtT929Gj5H/cCPXv89jKdof9042ejhK/i0Dq+tOJBkQ+j+I7g==
+X-Received: by 2002:a17:906:4688:b0:6d6:e103:5e36 with SMTP id a8-20020a170906468800b006d6e1035e36mr2781916ejr.407.1646122810225;
+        Tue, 01 Mar 2022 00:20:10 -0800 (PST)
+Received: from [192.168.0.135] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id gj7-20020a170907740700b006cf57a6648esm5091934ejc.90.2022.03.01.00.20.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 00:20:09 -0800 (PST)
+Message-ID: <664af071-badf-5cc9-c065-c702b0c8a13d@canonical.com>
+Date:   Tue, 1 Mar 2022 09:20:08 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] net/nfc/nci: use memset avoid infoleaks
+Content-Language: en-US
+To:     cgel.zte@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220301081750.2053246-1-chi.minghao@zte.com.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220301081750.2053246-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,29 +83,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+On 01/03/2022 09:17, cgel.zte@gmail.com wrote:
+> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> 
+> Use memset to initialize structs to preventing infoleaks
+> in nci_set_config
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+> ---
+>  net/nfc/nci/core.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+> index d2537383a3e8..32be42be1152 100644
+> --- a/net/nfc/nci/core.c
+> +++ b/net/nfc/nci/core.c
+> @@ -641,6 +641,7 @@ int nci_set_config(struct nci_dev *ndev, __u8 id, size_t len, const __u8 *val)
+>  	if (!val || !len)
+>  		return 0;
+>  
+> +	memset(&param, 0x0, sizeof(param));
+>  	param.id = id;
+>  	param.len = len;
+>  	param.val = val;
 
-Use memset to initialize structs to preventing infoleaks
-in sctp_auth_chunk_verify
+The entire 'param' is overwritten in later code, so what could leak here?
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- net/sctp/sm_statefuns.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index cc544a97c4af..7ff16d12e0c5 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -652,6 +652,7 @@ static bool sctp_auth_chunk_verify(struct net *net, struct sctp_chunk *chunk,
- 		return false;
- 
- 	/* set-up our fake chunk so that we can process it */
-+	memset(&auth, 0x0, sizeof(auth));
- 	auth.skb = chunk->auth_chunk;
- 	auth.asoc = chunk->asoc;
- 	auth.sctp_hdr = chunk->sctp_hdr;
--- 
-2.25.1
-
+Best regards,
+Krzysztof
