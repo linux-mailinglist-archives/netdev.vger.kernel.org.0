@@ -2,83 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D96794C8E3D
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 15:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFCF34C8E46
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 15:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235404AbiCAOux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 09:50:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        id S235416AbiCAOxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 09:53:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235396AbiCAOuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 09:50:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352E38BE25;
-        Tue,  1 Mar 2022 06:50:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C57CB61604;
-        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D75FC340F3;
-        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646146211;
-        bh=T7EEDtDVpo/7MGcsNAe8humb29FdCCXgSHc3f6aTRi8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FyBnkroelMtrz9Lm0OdztFf/JJJPOf4KLs9gmCcyADwhUMHhQiMaObQ9oQdE6mp0g
-         et4jFtCArYcUhYa+4t63NNYcRZRSaaoWCrbsvUeH/23UcP3Pd92OqzGpx5Fa1hPKIF
-         e7whB/S0KbpTuC2h2/Ms1aBBUpFvnem1+H7crI1ZSEMGzyV/VJWjXfxMSekg0tdha8
-         dB79YQIzdEfOcvV2eqjV+jUDuq4WAUhfAyZAeN6ELjWkZxrTIp8v6Rtdvr8zIr79S9
-         5xaINpoBgoH3/tJRODhOKncve0RzKyo4CwCYFFQCxf1dNioesgZFFiSx5K7wKVcy/v
-         t0WzUtz+CoUiQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 00B1FEAC09D;
-        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233998AbiCAOxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 09:53:05 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818D949930
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 06:52:24 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id fc19so16767709qvb.7
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 06:52:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E4qIR0gbcynkMM7ipUNgXxHtJnS+/1BP2qbABctPj58=;
+        b=T3YPMIJe1af7lUTVV3bFe73oGWTJnD/WaKm7NT6U3TLybc38VVyUhFY/ZZk0vAUhv3
+         NWZ3Fi28dMn7x3xi0UIXfGe9GXBY9OMv/TJ/itZNQSgmkVHk1a2b1hT/mU/SVXNcvrw4
+         gY4FhSkdV9LQYeQjCjr+gZncH7wNtx1zQFNSjJcVZeiakOfpHAdqwKYivbHa9iavDZ7g
+         EaYSyuli2AlRgvzr1kWd6PqOx5J4djFmV+JWk35M5myDqLV8IdWPIZrvE5hTIClcoFw1
+         V0fr2p2ycUkvrZ4SKlaQBQzFCtiGK87NOfUjN5zZGhUqwi25A0dNMjz5AAMbqj6Dr7T7
+         RS3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E4qIR0gbcynkMM7ipUNgXxHtJnS+/1BP2qbABctPj58=;
+        b=xql9mSyPTkhKssJlfeoDJMu+SPuKDQBUnP4AvRMZ7bwsVid4pdj16z9vINwJg3VwBZ
+         6FbaZenpUsmYHMEcBI+9+adRRw/lEDQwc1od8qQ1DmyeDldWXfFuPY7dIaycAEXdytt6
+         QnJouuniWsCL/tqM373re5cQSCEXUFYmj86zwVf5dykuis/N5xPuavfvhUJFLPd0LiiN
+         3pFCLTQIcF86ckYNo2sXVyx7G9Hev6czvVt62aC2c+tcIrlRtdweClxvjbhJb8rvPE9y
+         r3HgBDQcirIteUfYQ/pXdVMjDvdyeoI7Kt+xpa3VGuxWBsmALZEWm+evjKf/wLQ7C6MF
+         pORg==
+X-Gm-Message-State: AOAM533UykKy+X9M5f9I6gtJIOWJCe7GsBZduBD3YfBZW/8YYzWeKQx/
+        1OD7ftkD/bEgFi7S4ouV9wy4qVifN+Y=
+X-Google-Smtp-Source: ABdhPJxH9+k2ZuVhCxUfw7eXSuLPimN0jVfR8DBqOD7xVDryjs3WVF1AUa/hsOQbb7/QkNlspJeQTA==
+X-Received: by 2002:a05:6214:19ed:b0:42c:3b5f:cda6 with SMTP id q13-20020a05621419ed00b0042c3b5fcda6mr17562211qvc.70.1646146343688;
+        Tue, 01 Mar 2022 06:52:23 -0800 (PST)
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
+        by smtp.gmail.com with ESMTPSA id v9-20020a05622a144900b002dfedb4dccasm8162330qtx.66.2022.03.01.06.52.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 06:52:23 -0800 (PST)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-2dbd97f9bfcso29217847b3.9
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 06:52:23 -0800 (PST)
+X-Received: by 2002:a81:6603:0:b0:2d6:d166:8c31 with SMTP id
+ a3-20020a816603000000b002d6d1668c31mr24731960ywc.351.1646146342611; Tue, 01
+ Mar 2022 06:52:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] wireless/nl80211: Handle errors for nla_memdup
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164614621099.32176.8459771035422066340.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Mar 2022 14:50:10 +0000
-References: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220301144453.snstwdjy3kmpi4zf@begin>
+In-Reply-To: <20220301144453.snstwdjy3kmpi4zf@begin>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 1 Mar 2022 09:51:45 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfi1aXiBr-fOQ+8XJPjCCTnqTicW2A3OUVfNHurfDL3jA@mail.gmail.com>
+Message-ID: <CA+FuTSfi1aXiBr-fOQ+8XJPjCCTnqTicW2A3OUVfNHurfDL3jA@mail.gmail.com>
+Subject: Re: [PATCH] SO_ZEROCOPY should rather return -ENOPROTOOPT
+To:     Samuel Thibault <samuel.thibault@labri.fr>, willemb@google.com,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Mar 1, 2022 at 9:44 AM Samuel Thibault <samuel.thibault@labri.fr> wrote:
+>
+> ENOTSUPP is documented as "should never be seen by user programs", and
+> is not exposed in <errno.h>, so applications cannot safely check against
+> it. We should rather return the well-known -ENOPROTOOPT.
+>
+> Signed-off-by: Samuel Thibault <samuel.thibault@labri.fr>
+>
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 4ff806d71921..6e5b84194d56 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -1377,9 +1377,9 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+>                         if (!(sk_is_tcp(sk) ||
+>                               (sk->sk_type == SOCK_DGRAM &&
+>                                sk->sk_protocol == IPPROTO_UDP)))
+> -                               ret = -ENOTSUPP;
+> +                               ret = -ENOPROTOOPT;
+>                 } else if (sk->sk_family != PF_RDS) {
+> -                       ret = -ENOTSUPP;
+> +                       ret = -ENOPROTOOPT;
+>                 }
+>                 if (!ret) {
+>                         if (val < 0 || val > 1)
 
-This patch was applied to netdev/net.git (master)
-by Johannes Berg <johannes.berg@intel.com>:
+That should have been a public error code. Perhaps rather EOPNOTSUPP.
 
-On Tue,  1 Mar 2022 18:00:20 +0800 you wrote:
-> As the potential failure of the nla_memdup(),
-> it should be better to check it, as same as kmemdup().
-> 
-> Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  net/wireless/nl80211.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-
-Here is the summary with links:
-  - wireless/nl80211: Handle errors for nla_memdup
-    https://git.kernel.org/netdev/net/c/6ad27f522cb3
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+The problem with a change now is that it will confuse existing
+applications that check for -524 (ENOTSUPP).
