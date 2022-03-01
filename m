@@ -2,348 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFE64C88E2
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 11:04:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E842D4C88EE
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 11:06:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234177AbiCAKEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 05:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
+        id S229944AbiCAKHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 05:07:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234163AbiCAKEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 05:04:41 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4018CDBB
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 02:03:58 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id f37so25915891lfv.8
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 02:03:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=jqsbZZHdMda2x9oc6NoF+wlcHcbYportSlPaVmfdhdw=;
-        b=HKk0hQezxCK92/j7bOgiYTr1ECclfO1RYVPOgm46iOd8IVv5YZuP1DX0qbTwEjSY5T
-         I17GcmYYNnBdIVrkuyZQH7hT6jUZ6giAsrpQ5NwG3UhUdCXT1Vcsh70SiqjjMuCTZFZJ
-         +avKxmLzhlgl19XI+uwyDb04MO7YB53WviZKZrrpXc0teudQ7xYobGV+Ur2m9T8yL/DT
-         vBcnDdltpcRrxFcAdI7ehZTchPIYwmmAWvCl3rxMVGhhxst2FYtMv9tf18Ag0i9Z9qkg
-         CO+q9T8HuUYPDmlDPjVnKPbaIJEsSNyK/sUWd5GCVhVonZ/1fjwyqopw8e1xKDBuOrnx
-         y3TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=jqsbZZHdMda2x9oc6NoF+wlcHcbYportSlPaVmfdhdw=;
-        b=lasz787xRlhcnJardy8aEZ6xX4yzyn8f6rQtNtB+1jotblW1S/x61pBhWnBxr+3jnb
-         OFzD3w3FJMYOfpMQCqa+RGhfyIFqwyMofhKCh3fSW79XtHi2zZoneG79LFEVDPZJmhA3
-         ISf5eNKfeC80nKL/KE1+F7ubDqoviI+ukHj4T6cz2U7sovBO1PC3iuQ0qx6qSLw2SKGe
-         mnVDBD/dl/8+6V0DYmtNCBleTar6Odbm1g+ku3R5tMsXKPsn8eUKDch55QZ/uLzkqWyU
-         abxwWlr6RIeWipHnaRDFS40N+xIp9JHwRgLWNs3OlT2Vn3LZuFf+ExJ4AiuS49J8OfX1
-         8+dQ==
-X-Gm-Message-State: AOAM530r2NuHqYQuOEuWnOo3E6kMfm8rPIDsWx+UQ0hoGWTS+03Ur3Pb
-        OXuBnTJf2+KUsqnXDXsPA2VJgQ==
-X-Google-Smtp-Source: ABdhPJzyTHyE7Ya2J9YjwlEf5uGw6oVRODcnx+gLqTw8XPZn4iWGc0QoLBGe3pNm1B66bq8IOMwHHw==
-X-Received: by 2002:a05:6512:114c:b0:434:b7a7:1fdc with SMTP id m12-20020a056512114c00b00434b7a71fdcmr15109807lfg.608.1646129037075;
-        Tue, 01 Mar 2022 02:03:57 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id s27-20020a05651c049b00b002460fd4252asm1826822ljc.100.2022.03.01.02.03.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 02:03:56 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: [PATCH v2 net-next 10/10] net: dsa: mv88e6xxx: MST Offloading
-Date:   Tue,  1 Mar 2022 11:03:21 +0100
-Message-Id: <20220301100321.951175-11-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220301100321.951175-1-tobias@waldekranz.com>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
+        with ESMTP id S231519AbiCAKHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 05:07:00 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACB25DE63
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 02:06:17 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nOzOZ-00059h-BW; Tue, 01 Mar 2022 11:06:15 +0100
+Message-ID: <792b4bc3-af13-483f-0886-ea56da862172@leemhuis.info>
+Date:   Tue, 1 Mar 2022 11:06:14 +0100
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Regression are sometimes merged slowly, maybe optimize the
+ downstream interaction?
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+References: <37349299-c47b-1f67-2229-78ae9b9b4488@leemhuis.info>
+ <20220228094626.7e116e2c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20220228094626.7e116e2c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1646129178;ae06060f;
+X-HE-SMSGID: 1nOzOZ-00059h-BW
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allocate a SID in the STU for each MSTID in use by a bridge and handle
-the mapping of MSTIDs to VLANs using the SID field of each VTU entry.
+On 28.02.22 18:46, Jakub Kicinski wrote:
+> On Mon, 28 Feb 2022 14:45:47 +0100 Thorsten Leemhuis wrote:
+>> I was wondering if you and your downstream maintainers could consider
+>> slightly optimizing your working habits to get regression fixes from
+>> downstream git repos a bit quicker into mainline. A slightly different
+>> timing afaics might already help a lot; or some timing optimizations in
+>> the interaction with downstream maintainers.
+>>
+>> I ask, because in my regression tracking work I noticed that quite a few
+>> regression fixes take a long time towards mainline when they need to go
+>> through net.git; that imho is especially bad for regressions caused by
+>> commits in earlier development cycles, as they can only be fixed in new
+>> stable releases after the fix was mainlined.
+>>
+>> Often the fixes progress slowly due to the habits of the downstream
+>> maintainers -- some for example are imho not asking you often enough to
+>> pull fixes. I guess that might need to be discussed down the road as
+>> well, but there is something else that imho needs to be addressed first.
+>>
+>> At least from the outside it often looks like bad timing is the reason
+>> why some fixes take quite long journey to mainline. Take for example the
+>> latest pull requests for bluetooth and ipsec:
+>>
+>> https://lore.kernel.org/netdev/20220224210838.197787-1-luiz.dentz@gmail.com/
+>> https://lore.kernel.org/netdev/20220225074733.118664-1-steffen.klassert@secunet.com/
+> 
+> Yeah, we also narrowly missed the BPF pr a week back :/
+> Or should I say BPF pr missed the net pr..
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 178 +++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h |  13 +++
- 2 files changed, 191 insertions(+)
+:-D
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index c14a62aa6a6c..4fb4ec1dff79 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1818,6 +1818,137 @@ static int mv88e6xxx_stu_setup(struct mv88e6xxx_chip *chip)
- 	return mv88e6xxx_stu_loadpurge(chip, &stu);
- }
- 
-+static int mv88e6xxx_sid_new(struct mv88e6xxx_chip *chip, u8 *sid)
-+{
-+	DECLARE_BITMAP(busy, MV88E6XXX_N_SID) = { 0 };
-+	struct mv88e6xxx_mst *mst;
-+
-+	set_bit(0, busy);
-+
-+	list_for_each_entry(mst, &chip->msts, node) {
-+		set_bit(mst->stu.sid, busy);
-+	}
-+
-+	*sid = find_first_zero_bit(busy, MV88E6XXX_N_SID);
-+
-+	return (*sid >= mv88e6xxx_max_sid(chip)) ? -ENOSPC : 0;
-+}
-+
-+static int mv88e6xxx_sid_put(struct mv88e6xxx_chip *chip, u8 sid)
-+{
-+	struct mv88e6xxx_mst *mst, *tmp;
-+	int err = 0;
-+
-+	list_for_each_entry_safe(mst, tmp, &chip->msts, node) {
-+		if (mst->stu.sid == sid) {
-+			if (refcount_dec_and_test(&mst->refcnt)) {
-+				mst->stu.valid = false;
-+				err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
-+				list_del(&mst->node);
-+				kfree(mst);
-+			}
-+
-+			return err;
-+		}
-+	}
-+
-+	return -ENOENT;
-+}
-+
-+static int mv88e6xxx_sid_get(struct mv88e6xxx_chip *chip, struct net_device *br,
-+			     u16 msti, u8 *sid)
-+{
-+	struct mv88e6xxx_mst *mst;
-+	int err, i;
-+
-+	if (!br)
-+		return 0;
-+
-+	if (!mv88e6xxx_has_stu(chip))
-+		return -EOPNOTSUPP;
-+
-+	list_for_each_entry(mst, &chip->msts, node) {
-+		if (mst->br == br && mst->msti == msti) {
-+			refcount_inc(&mst->refcnt);
-+			*sid = mst->stu.sid;
-+			return 0;
-+		}
-+	}
-+
-+	err = mv88e6xxx_sid_new(chip, sid);
-+	if (err)
-+		return err;
-+
-+	mst = kzalloc(sizeof(*mst), GFP_KERNEL);
-+	if (!mst)
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&mst->node);
-+	refcount_set(&mst->refcnt, 1);
-+	mst->br = br;
-+	mst->msti = msti;
-+	mst->stu.valid = true;
-+	mst->stu.sid = *sid;
-+
-+	/* The bridge starts out all ports in the disabled state. But
-+	 * a STU state of disabled means to go by the port-global
-+	 * state. So we set all user port's initial state to blocking,
-+	 * to match the bridge's behavior.
-+	 */
-+	for (i = 0; i < mv88e6xxx_num_ports(chip); i++)
-+		mst->stu.state[i] = dsa_is_user_port(chip->ds, i) ?
-+			MV88E6XXX_PORT_CTL0_STATE_BLOCKING :
-+			MV88E6XXX_PORT_CTL0_STATE_DISABLED;
-+
-+	list_add_tail(&mst->node, &chip->msts);
-+	return mv88e6xxx_stu_loadpurge(chip, &mst->stu);
-+}
-+
-+static int mv88e6xxx_port_mst_state_set(struct dsa_switch *ds, int port,
-+					const struct switchdev_mst_state *st)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct mv88e6xxx_mst *mst;
-+	u8 state;
-+	int err;
-+
-+	if (!mv88e6xxx_has_stu(chip))
-+		return -EOPNOTSUPP;
-+
-+	switch (st->state) {
-+	case BR_STATE_DISABLED:
-+	case BR_STATE_BLOCKING:
-+	case BR_STATE_LISTENING:
-+		state = MV88E6XXX_PORT_CTL0_STATE_BLOCKING;
-+		break;
-+	case BR_STATE_LEARNING:
-+		state = MV88E6XXX_PORT_CTL0_STATE_LEARNING;
-+		break;
-+	case BR_STATE_FORWARDING:
-+		state = MV88E6XXX_PORT_CTL0_STATE_FORWARDING;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	list_for_each_entry(mst, &chip->msts, node) {
-+		if (mst->br == dsa_port_bridge_dev_get(dp) &&
-+		    mst->msti == st->msti) {
-+			if (mst->stu.state[port] == state)
-+				return 0;
-+
-+			mst->stu.state[port] = state;
-+			mv88e6xxx_reg_lock(chip);
-+			err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
-+			mv88e6xxx_reg_unlock(chip);
-+			return err;
-+		}
-+	}
-+
-+	return -ENOENT;
-+}
-+
- static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
- 					u16 vid)
- {
-@@ -2437,6 +2568,12 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
- 	if (err)
- 		return err;
- 
-+	if (!vlan.valid && vlan.sid) {
-+		err = mv88e6xxx_sid_put(chip, vlan.sid);
-+		if (err)
-+			return err;
-+	}
-+
- 	return mv88e6xxx_g1_atu_remove(chip, vlan.fid, port, false);
- }
- 
-@@ -2482,6 +2619,44 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
- 	return err;
- }
- 
-+static int mv88e6xxx_vlan_msti_set(struct dsa_switch *ds,
-+				   const struct switchdev_attr *attr)
-+{
-+	const struct switchdev_vlan_attr *vattr = &attr->u.vlan_attr;
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct mv88e6xxx_vtu_entry vlan;
-+	u8 new_sid;
-+	int err;
-+
-+	mv88e6xxx_reg_lock(chip);
-+
-+	err = mv88e6xxx_vtu_get(chip, vattr->vid, &vlan);
-+	if (err)
-+		goto unlock;
-+
-+	if (!vlan.valid) {
-+		err = -EINVAL;
-+		goto unlock;
-+	}
-+
-+	err = mv88e6xxx_sid_get(chip, attr->orig_dev, vattr->msti, &new_sid);
-+	if (err)
-+		goto unlock;
-+
-+	if (vlan.sid) {
-+		err = mv88e6xxx_sid_put(chip, vlan.sid);
-+		if (err)
-+			goto unlock;
-+	}
-+
-+	vlan.sid = new_sid;
-+	err = mv88e6xxx_vtu_loadpurge(chip, &vlan);
-+
-+unlock:
-+	mv88e6xxx_reg_unlock(chip);
-+	return err;
-+}
-+
- static int mv88e6xxx_port_fdb_add(struct dsa_switch *ds, int port,
- 				  const unsigned char *addr, u16 vid,
- 				  struct dsa_db db)
-@@ -6008,6 +6183,7 @@ static struct mv88e6xxx_chip *mv88e6xxx_alloc_chip(struct device *dev)
- 	mutex_init(&chip->reg_lock);
- 	INIT_LIST_HEAD(&chip->mdios);
- 	idr_init(&chip->policies);
-+	INIT_LIST_HEAD(&chip->msts);
- 
- 	return chip;
- }
-@@ -6540,10 +6716,12 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.port_pre_bridge_flags	= mv88e6xxx_port_pre_bridge_flags,
- 	.port_bridge_flags	= mv88e6xxx_port_bridge_flags,
- 	.port_stp_state_set	= mv88e6xxx_port_stp_state_set,
-+	.port_mst_state_set	= mv88e6xxx_port_mst_state_set,
- 	.port_fast_age		= mv88e6xxx_port_fast_age,
- 	.port_vlan_filtering	= mv88e6xxx_port_vlan_filtering,
- 	.port_vlan_add		= mv88e6xxx_port_vlan_add,
- 	.port_vlan_del		= mv88e6xxx_port_vlan_del,
-+	.vlan_msti_set		= mv88e6xxx_vlan_msti_set,
- 	.port_fdb_add           = mv88e6xxx_port_fdb_add,
- 	.port_fdb_del           = mv88e6xxx_port_fdb_del,
- 	.port_fdb_dump          = mv88e6xxx_port_fdb_dump,
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 6d4daa24d3e5..6a0b66354e1d 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -297,6 +297,16 @@ struct mv88e6xxx_region_priv {
- 	enum mv88e6xxx_region_id id;
- };
- 
-+struct mv88e6xxx_mst {
-+	struct list_head node;
-+
-+	refcount_t refcnt;
-+	struct net_device *br;
-+	u16 msti;
-+
-+	struct mv88e6xxx_stu_entry stu;
-+};
-+
- struct mv88e6xxx_chip {
- 	const struct mv88e6xxx_info *info;
- 
-@@ -397,6 +407,9 @@ struct mv88e6xxx_chip {
- 
- 	/* devlink regions */
- 	struct devlink_region *regions[_MV88E6XXX_REGION_MAX];
-+
-+	/* Bridge MST to SID mappings */
-+	struct list_head msts;
- };
- 
- struct mv88e6xxx_bus_ops {
--- 
-2.25.1
+I guess things like that will always happen and that is nothing to loose
+sleep over -- but maybe with some optimizations we can reduce the number
+of times they happen.
 
+>> One is from Thursday, the other from early Friday; both contain fixes
+>> for regressions in earlier mainline releases that afaics need to get
+>> backported to stable and longterm releases to finally get the regression
+>> erased from this world. The ipsec fix has been in -next already for a
+>> while, the bluetooth fix afaics wasn't.
+>>
+>> Sadly, both patch sets missed rc6 as Jakub already had sent his pull
+>> request to Linus on Thursday:
+>> https://lore.kernel.org/all/20220224195305.1584666-1-kuba@kernel.org/
+>>
+>> This is not the first time I noticed such bad timing. That made me
+>> wonder: would it be possible for you to optimize the workflow here?
+>> Maybe a simple advice to downstream maintainers could do the trick, e.g.
+>> "ideally sent pull request by Friday morning[some timezone] at the
+>> latest, as then the net maintainers can review, merge, and sent them
+>> onwards to Linus in a pull request later that day".
+>
+> These are fair complaints. We've been sending PRs with fixes every
+> Thursday for, I'd say, a year or so now. If the sub-tree PR is posted 
+> by Wednesday it will definitely make the cut. Either folks don't know 
+> this or they want changes to sit in the networking tree for a couple
+> of days? Hm.
+
+Just wondering: some (most?) of those sub-trees afaics have a stable
+branch included in -next, so would sitting in the networking tree
+actually make much of a difference for them?
+
+>> FWIW, I don't know anything about the inner working of your subsystem,
+>> if you need more time to review or process merge requests from
+>> downstream maintainers the "Friday morning" obviously needs to be adjusted.
+>>
+>> Or is there something like that already and the timing just has been bad
+>> a few times when I looked closer?
+> 
+> I think it's a particularly unfortunate time with a few "missed prs"
+> in a short span of time. When Dave was handling all the prs he used
+> to decide the timing based on contents of the tree, maybe that's 
+> a better model for prioritizing fixes getting to Linus, but I lack 
+> the skills necessary to make such calls.
+> 
+> I'll try to advertise the Wednesday rule more, 
+
+Thx
+
+> although creating
+> deadlines has proven to lead to rushed work. Which IMHO is much 
+> worse :(
+
+Don't call it a deadline then. :-D But joking aside, I know what you
+mean, and yes, that is a reasonable concern.
+
+Maybe one thing could help in here sometimes: if sub-tree maintainers
+with your permission ask Linus to pick up a single patch directly from a
+repo or a list, *if* there is a good reason to get a fix quickly merged.
+
+> [...]
+> Anyway, thanks for raising the issue, and please keep us posted on how
+> things look from your perspective. It's a balancing act, it'd be great
+> if we can improve things over time without sudden changes.
+
+Yeah, it's definitely a balancing act.
+
+And as you asked for how things look from here, let me get back to the
+one issue I already briefly in my mail. To repeat a quote from above:
+
+>> Often the fixes progress slowly due to the habits of the downstream
+>> maintainers -- some for example are imho not asking you often enough to
+>> pull fixes. I guess that might need to be discussed down the road as
+>> well, but there is something else that imho needs to be addressed first.
+
+To give an example, but fwiw: that is in no way special, I've seen
+similar turn of events for a few other regressions fixes in sub-tree of
+net, so it really is just meant as an example for a general issue (sorry
+Steffen).
+
+See this fix:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=master&id=a6d95c5a628a09be129f25d5663a7e9db8261f51
+
+The regression was introduced in 5.14-rc1 and the fix was posted on
+2022-01-14, so 46 days ago.
+
+Jiri, who provided the patch, actually wrote "being a regression maybe
+we want the fastest track possible" here:
+https://lore.kernel.org/netdev/20220119091233.pzqdlzpcyicjavk5@dwarf.suse.cz/
+
+Steffen applied the fix 27 days ago:
+https://lore.kernel.org/netdev/20220201064639.GS1223722@gauss3.secunet.de/
+
+Three days later it was in -next. After some time I asked when it will
+get merged, to which Steffen replied "It will be merged with the next
+pull request for the ipsec tree that will happen likely next week."
+https://lore.kernel.org/regressions/20220216110252.GJ17351@gauss3.secunet.de/
+
+He sent that PR on Friday, so the fix will finally be merged to mainline
+on Thursday. If Greg immediately picks it up after -rc7 the issue can
+finally get fixed in 5.15.y and 5.16.y mid next week -- more than 50
+days after the patch for the regression was posted.
+
+Again: I had similar issues with the bluetooth maintainers and the
+wireless maintainers (the latter already seem to have slightly changed
+their workflow to improve things).
+
+Anyway: sure, reviewing takes time and ideally every fix is in -next for
+a while, but I think 50 days is way too long.
+
+Maybe sub-tree maintainers should send PRs more often? Or just tell you
+to directly pick up a fix once they reviewed them to avoid the sub-tree
+and a merge commits that brings in just one patch?
+
+Fwiw, situations like that in the end let to the creation of a docs
+patch that is en-route to 5.18:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=d2b40ba2cce207ecea8a740f71e113f03cc75fd5
+
+To quote:
+
+> +Prioritize work on fixing regressions
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +
+> +You should fix any reported regression as quickly as possible, to provide
+> +affected users with a solution in a timely manner and prevent more users from
+> +running into the issue; nevertheless developers need to take enough time and
+> +care to ensure regression fixes do not cause additional damage.
+> +
+> +In the end though, developers should give their best to prevent users from
+> +running into situations where a regression leaves them only three options: "run
+> +a kernel with a regression that seriously impacts usage", "continue running an
+> +outdated and thus potentially insecure kernel version for more than two weeks
+> +after a regression's culprit was identified", and "downgrade to a still
+> +supported kernel series that lack required features".
+> +
+> +How to realize this depends a lot on the situation. Here are a few rules of
+> +thumb for you, in order or importance:
+> +
+> + * Prioritize work on handling regression reports and fixing regression over all
+> +   other Linux kernel work, unless the latter concerns acute security issues or
+> +   bugs causing data loss or damage.
+> +
+> + * Always consider reverting the culprit commits and reapplying them later
+> +   together with necessary fixes, as this might be the least dangerous and
+> +   quickest way to fix a regression.
+> +
+> + * Developers should handle regressions in all supported kernel series, but are
+> +   free to delegate the work to the stable team, if the issue probably at no
+> +   point in time occurred with mainline.
+> +
+> + * Try to resolve any regressions introduced in the current development before
+> +   its end. If you fear a fix might be too risky to apply only days before a new
+> +   mainline release, let Linus decide: submit the fix separately to him as soon
+> +   as possible with the explanation of the situation. He then can make a call
+> +   and postpone the release if necessary, for example if multiple such changes
+> +   show up in his inbox.
+> +
+> + * Address regressions in stable, longterm, or proper mainline releases with
+> +   more urgency than regressions in mainline pre-releases. That changes after
+> +   the release of the fifth pre-release, aka "-rc5": mainline then becomes as
+> +   important, to ensure all the improvements and fixes are ideally tested
+> +   together for at least one week before Linus releases a new mainline version.
+> +
+> + * Fix regressions within two or three days, if they are critical for some
+> +   reason -- for example, if the issue is likely to affect many users of the
+> +   kernel series in question on all or certain architectures. Note, this
+> +   includes mainline, as issues like compile errors otherwise might prevent many
+> +   testers or continuous integration systems from testing the series.
+> +
+> + * Aim to fix regressions within one week after the culprit was identified, if
+> +   the issue was introduced in either:
+> +
+> +    * a recent stable/longterm release
+> +
+> +    * the development cycle of the latest proper mainline release
+> +
+> +   In the latter case (say Linux v5.14), try to address regressions even
+> +   quicker, if the stable series for the predecessor (v5.13) will be abandoned
+> +   soon or already was stamped "End-of-Life" (EOL) -- this usually happens about
+> +   three to four weeks after a new mainline release.
+> +
+> + * Try to fix all other regressions within two weeks after the culprit was
+> +   found. Two or three additional weeks are acceptable for performance
+> +   regressions and other issues which are annoying, but don't prevent anyone
+> +   from running Linux (unless it's an issue in the current development cycle,
+> +   as those should ideally be addressed before the release). A few weeks in
+> +   total are acceptable if a regression can only be fixed with a risky change
+> +   and at the same time is affecting only a few users; as much time is
+> +   also okay if the regression is already present in the second newest longterm
+> +   kernel series.
+> +
+> +Note: The aforementioned time frames for resolving regressions are meant to
+> +include getting the fix tested, reviewed, and merged into mainline, ideally with
+> +the fix being in linux-next at least briefly. This leads to delays you need to
+> +account for.
+> +
+> +Subsystem maintainers are expected to assist in reaching those periods by doing
+> +timely reviews and quick handling of accepted patches. They thus might have to
+> +send git-pull requests earlier or more often than usual; depending on the fix,
+> +it might even be acceptable to skip testing in linux-next. Especially fixes for
+> +regressions in stable and longterm kernels need to be handled quickly, as fixes
+> +need to be merged in mainline before they can be backported to older series.
+> +
+
+The patch description explains some of the reasons for this. Linus was
+CCed on this, sadly didn't state if this is actually what he expects. So
+it still needs to be proven if this holds in the field.
+
+Ciao, Thorsten
