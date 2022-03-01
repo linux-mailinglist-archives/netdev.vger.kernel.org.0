@@ -2,100 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB4B4C84C0
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 08:16:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1298F4C84E1
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 08:24:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbiCAHQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 02:16:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
+        id S232834AbiCAHYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 02:24:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiCAHQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 02:16:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFC166FA9;
-        Mon, 28 Feb 2022 23:16:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5BF6B8123F;
-        Tue,  1 Mar 2022 07:16:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD1BC340EE;
-        Tue,  1 Mar 2022 07:16:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646118961;
-        bh=gj7jL+hp06quOWj/OMODI68jNcHw9EORNDyPBLvYcAc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qf+A9cpQ+9rZY/fL2VEyozZqaOlOMkLYI7P3imjxSnJe+HbfCNHlSYpSSD8/Zw6/f
-         U0wsd+cWl8Zf+ioA/qAum+8FUaH4QzzYv4FhzKVYgQK25SwgAj+9SorveYOjlTf2DQ
-         /1+J7XoXA549E9cGfaFpwTZt5Z15Xp3uWApOpZnpt7cwwPWi3LB0AvLA88GIybYCSS
-         pqzyRTUCesgWFQLKw6XoEA3l7UXpKnXN/rwQuch9UN8+NmNc3vAaQVu9Mhj1+YAQU/
-         WtPCZU2iwiytCFAo+wz4HJCF+YKoq/aUnPhSs1pw0EmLOro3uPNX3Iv2ZqPL12rOUd
-         XDjSFCXFzbW7g==
-Date:   Mon, 28 Feb 2022 23:16:00 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net/mlx5e: TC, Fix use after free in
- mlx5e_clone_flow_attr_for_post_act()
-Message-ID: <20220301071600.uuzk334p4tw6eq25@sx1>
-References: <20220224145325.GA6793@kili>
- <5024bc30-d872-3861-a6fd-0a7dba5fbf3e@nvidia.com>
+        with ESMTP id S232438AbiCAHYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 02:24:51 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC3E3BA52;
+        Mon, 28 Feb 2022 23:24:08 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K77xk24mLzdfd2;
+        Tue,  1 Mar 2022 15:22:50 +0800 (CST)
+Received: from [10.174.177.215] (10.174.177.215) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 1 Mar 2022 15:24:05 +0800
+Subject: Re: [PATCH bpf-next 4/4] bpf, sockmap: Fix double uncharge the mem of
+ sk_msg
+To:     John Fastabend <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <davem@davemloft.net>, <bpf@vger.kernel.org>
+CC:     <edumazet@google.com>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <kuba@kernel.org>, <ast@kernel.org>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>, <netdev@vger.kernel.org>
+References: <20220225014929.942444-1-wangyufen@huawei.com>
+ <20220225014929.942444-5-wangyufen@huawei.com>
+ <621d9d067de02_8c479208b9@john.notmuch>
+From:   wangyufen <wangyufen@huawei.com>
+Message-ID: <01e30509-406f-2c78-59a7-663f4ccccd04@huawei.com>
+Date:   Tue, 1 Mar 2022 15:24:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <5024bc30-d872-3861-a6fd-0a7dba5fbf3e@nvidia.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <621d9d067de02_8c479208b9@john.notmuch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25 Feb 14:18, Roi Dayan wrote:
->
->
->On 2022-02-24 4:53 PM, Dan Carpenter wrote:
->>This returns freed memory leading to a use after free.  It's supposed to
->>return NULL.
+
+在 2022/3/1 12:11, John Fastabend 写道:
+> Wang Yufen wrote:
+>> If tcp_bpf_sendmsg is running during a tear down operation, psock may be
+>> freed.
 >>
->>Fixes: 8300f225268b ("net/mlx5e: Create new flow attr for multi table actions")
->>Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->>---
->>This goes through Saeed's tree not the net tree.
+>> tcp_bpf_sendmsg()
+>>   tcp_bpf_send_verdict()
+>>    sk_msg_return()
+>>    tcp_bpf_sendmsg_redir()
+>>     unlikely(!psock))
+>>     sk_msg_free()
 >>
->>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> The mem of msg has been uncharged in tcp_bpf_send_verdict() by
+>> sk_msg_return(), so we need to use sk_msg_free_nocharge while psock
+>> is null.
 >>
->>diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->>index 76a015dfc5fc..c0776a4a3845 100644
->>--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->>+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->>@@ -3398,7 +3398,7 @@ mlx5e_clone_flow_attr_for_post_act(struct mlx5_flow_attr *attr,
->>  	if (!attr2 || !parse_attr) {
->>  		kvfree(parse_attr);
->>  		kfree(attr2);
->>-		return attr2;
->>+		return NULL;
->>  	}
->>  	memcpy(attr2, attr, attr_sz);
->
->hi, I noticed your fix now and already reviewed same fix from Colin
->
->https://patchwork.kernel.org/project/netdevbpf/patch/20220224221525.147744-1-colin.i.king@gmail.com/
->
->so just need to take either one.
->thanks
->
+>> This issue can cause the following info:
+>> WARNING: CPU: 0 PID: 2136 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+>> Call Trace:
+>>   <TASK>
+>>   __sk_destruct+0x24/0x1f0
+>>   sk_psock_destroy+0x19b/0x1c0
+>>   process_one_work+0x1b3/0x3c0
+>>   worker_thread+0x30/0x350
+>>   ? process_one_work+0x3c0/0x3c0
+>>   kthread+0xe6/0x110
+>>   ? kthread_complete_and_exit+0x20/0x20
+>>   ret_from_fork+0x22/0x30
+>>   </TASK>
+>>
+>> Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>> ---
+>>   net/ipv4/tcp_bpf.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+>> index 1f0364e06619..03c037d2a055 100644
+>> --- a/net/ipv4/tcp_bpf.c
+>> +++ b/net/ipv4/tcp_bpf.c
+>> @@ -139,7 +139,7 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+>>   	int ret;
+>>   
+>>   	if (unlikely(!psock)) {
+>> -		sk_msg_free(sk, msg);
+>> +		sk_msg_free_nocharge(sk, msg);
+>>   		return 0;
+>>   	}
+>>   	ret = ingress ? bpf_tcp_ingress(sk, psock, msg, bytes, flags) :
+> Did you consider simply returning an error code here? This would then
+> trigger the sk_msg_free_nocharge in the error path of __SK_REDIRECT
+> and would have the side effect of throwing an error up to user space.
+> This would be a slight change in behavior from user side but would
+> look the same as an error if the redirect on the socket threw an
+> error so I think it would be OK.
 
-Ok this one arrived first, will take this one :).
-applied to net-next-mlx5.
+Yes, I think it would be better to return -EPIPE,  will do in v2.
 
->Reviewed-by: Roi Dayan <roid@nvidia.com>
+Thanks.
 
-
+>
+> Thanks,
+> John
+> .
