@@ -2,118 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D97F4C7F7E
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 01:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADD94C7FBB
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 01:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbiCAApg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 19:45:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
+        id S229814AbiCAAxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 19:53:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiCAApf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 19:45:35 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2330FE6;
-        Mon, 28 Feb 2022 16:44:55 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id w63so24035339ybe.10;
-        Mon, 28 Feb 2022 16:44:55 -0800 (PST)
+        with ESMTP id S229649AbiCAAxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 19:53:23 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718F6F70
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:52:42 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id t14so19732401ljh.8
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:52:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4Nf/egCx0Q4I70uptkgfjEanQfEaR61lPRDpLPBXJeg=;
-        b=M+GwEY56nFU9oLTxjb+5lEoD3/IkffH/Jqm+d2voDBhw0M2ZssZlz68XVTNiqKyZex
-         2VYv/3KS0AQxzBjYeFCfmGuNnryR//ge5e5Xzm15Z8mqNUp9KLUmbhXKpD0W1YE64Uaa
-         IXn7ED/d8T57Da2dbfaXSdp54mQuJ2ItYjUdGIrH5tPeWIgO8fNoJ8fTosV3Gt1AzSS3
-         dyLNdP/Ree1IpO9xk4qOB31rUq8Uudb14yBkgUz4WKmb33H3RDnQD9+2QL9BSy62y8Wj
-         Dykqh/rhsuUV/UiD50AK1Bvrt55DvegldSmB0GzIImVTOuiw+BZboMZn95y5UAoMewJR
-         8EOQ==
+        bh=BlmDHl6uq7o6y8aC/cJk7fo5oLGvHdeOO4XUoHPiZHY=;
+        b=CuWkmdhnuqYUPLlFfSW5kqvLG+/BaUYxswQvwT5TlbeMKdgX0f6Tdop/2MomIxMIWT
+         P4yfskuo3sOir2HSEC5b7N//0EkwPlLVbS+ffho6xWO2QaHJfy0oi9bnLtClO4bSDX+r
+         dQzBghLtont2uRRAhfDOfzUglX2wpO3DzhpXQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4Nf/egCx0Q4I70uptkgfjEanQfEaR61lPRDpLPBXJeg=;
-        b=VUreuHBzKsqw3BAw0IpLFshNwj0+RBTrJAmvUD7eDFi1jdscwQsopmjoYkQm60N1FU
-         68xobvmoscpGzCjTl/cOCjX5vZmwbarTwtsHEi0W96lGaxdQLt5iGzSP1kW3xeN/tS3m
-         QaS6TEqJN81cXZYSgGYDU/A7/3t1pepGzaeW/EWEOUErAQXBbTIrLuNRhHxkgh478z2w
-         Saipwpm9ZNWZO+XU/R4NnR7kXD1HuMB6blkNuxDEEDSgkoL6wqvzlbaaJC37s2IndV8U
-         udQeNHSUMMjL4WfEWJ6D75E+PssJIFhACABS4LobNwLH93CkEvN9mzIRRSASKPmQB1qG
-         3sKQ==
-X-Gm-Message-State: AOAM532L8pvyv7SA+gFg1D+sOEfaYF6aTgu8RcmaIIXN3yQD1QNmTTC7
-        UEtXWeoF9tLLU3kfMMDYIUj06LXK94sPl+5pzGs=
-X-Google-Smtp-Source: ABdhPJwsZJOjFD+cAucEDnn2/44FhTiZJamnT2r0djxxGeEJQ+yLbZW1dmeCwnmdpyrs9rjHJusatuYijDxFVPCWY3I=
-X-Received: by 2002:a25:f80c:0:b0:624:40aa:44ab with SMTP id
- u12-20020a25f80c000000b0062440aa44abmr21715244ybd.51.1646095495077; Mon, 28
- Feb 2022 16:44:55 -0800 (PST)
+        bh=BlmDHl6uq7o6y8aC/cJk7fo5oLGvHdeOO4XUoHPiZHY=;
+        b=Qbx9h4Eb4VUKu1+2NJWdL4CmQZZrg7D04bH9ADTWb0nf5gHhbfjY6ORc7wmHAnCUdY
+         LTYJ568E8NjeWzLxzkhfqOpDHy5wKdeKgZx8jYrDAWa00hrF//pjj9AIHWQ5MXIPx5Vm
+         qkgnaAyoNEPL5ujHQh/uUzs71tDQxrOuNsNa/P8qY2i1Mnw8CJoX/NSAbdikXlyK1bDJ
+         hsVPY/DSO/PHL56aymIzPe6LyjirenjyRwit3h7FGdZayjl/DH+uV4mbh0Hg3Zlp22Ui
+         HmhBA8pZt22YJyLvY6BmGyRuOz/USpQPu3bfuPbIwXCZbXwtftBdetwcytaJ+gLVl55F
+         Cj9w==
+X-Gm-Message-State: AOAM530bGmseE7ZXI7mbn43RQjHHAnVDenKBlPodsACkWO50aIAcWS40
+        zve8K2CC3T09s1ltonGOlb4reI5+U3tPCtLRPkE=
+X-Google-Smtp-Source: ABdhPJwj+X6htAjf+fv8dek51yX8GI8kHUi7cZ6R8ItNfhvvdGbvDJSW+6Cvj4htT0SrAq6IMcFI9g==
+X-Received: by 2002:a2e:b5a1:0:b0:244:d3b4:dc24 with SMTP id f1-20020a2eb5a1000000b00244d3b4dc24mr16068938ljn.83.1646095960585;
+        Mon, 28 Feb 2022 16:52:40 -0800 (PST)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id r25-20020ac25a59000000b0044394f8a312sm1219332lfn.75.2022.02.28.16.52.40
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 16:52:40 -0800 (PST)
+Received: by mail-lf1-f42.google.com with SMTP id w27so24299081lfa.5
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:52:40 -0800 (PST)
+X-Received: by 2002:a05:6512:3042:b0:437:96f5:e68a with SMTP id
+ b2-20020a056512304200b0043796f5e68amr14778245lfb.449.1646095527444; Mon, 28
+ Feb 2022 16:45:27 -0800 (PST)
 MIME-Version: 1.0
-References: <20220228233057.1140817-1-pgwipeout@gmail.com> <Yh1lboz7VDiuYuZV@shell.armlinux.org.uk>
-In-Reply-To: <Yh1lboz7VDiuYuZV@shell.armlinux.org.uk>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Mon, 28 Feb 2022 19:44:43 -0500
-Message-ID: <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
-Subject: Re: [PATCH v1] net: phy: fix motorcomm module automatic loading
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+ <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+ <Yh0tl3Lni4weIMkl@casper.infradead.org> <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
+ <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
+In-Reply-To: <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 28 Feb 2022 16:45:11 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
+Message-ID: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 7:14 PM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
+On Mon, Feb 28, 2022 at 3:26 PM Matthew Wilcox <willy@infradead.org> wrote:
 >
-> On Mon, Feb 28, 2022 at 06:30:57PM -0500, Peter Geis wrote:
-> > The sentinel compatible entry whitespace causes automatic module loading
-> > to fail with certain userspace utilities. Fix this by removing the
-> > whitespace and sentinel comment, which is unnecessary.
->
-> Umm. How does it fail?
+> #define ___PASTE(a, b)  a##b
+> #define __PASTE(a, b) ___PASTE(a, b)
+> #define _min(a, b, u) ({         \
 
-It simply does not auto load the module by device id match.
-Manually loading the module after the fact works fine.
+Yeah, except that's ugly beyond belief, plus it's literally not what
+we do in the kernel.
 
->
-> >  static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
-> >       { PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
-> > -     { /* sentinal */ }
-> > +     {}
->
-> These two should be 100% identical in terms of the object code produced,
-> and thus should have no bearing on the ability for the module to be
-> loaded.
->
-> Have you investigated the differences in the produced object code?
+Really. The "-Wshadow doesn't work on the kernel" is not some new
+issue, because you have to do completely insane things to the source
+code to enable it.
 
-Yes, you are correct, I just compared the produced files and they are identical.
-This patch can get dropped then.
-I'm curious now why it seemed to make a difference.
+Just compare your uglier-than-sin version to my straightforward one.
+One does the usual and obvious "use a private variable to avoid the
+classic multi-use of a macro argument". And the other one is an
+abomination.
 
-I am not familiar enough with how the various userspace elements
-decide to match the modules to determine exactly why this is failing.
-It seems to be hit or miss if userspace decides to auto load this, for
-instance Ubuntu 20.04 was happy to load my kernel module built with
-the arm64 official toolchain, but Manjaro will not load their self
-built kernel module.
-I originally suspected it was due to the manufacturer id being all zeros.
-Unless there's some weird compiler optimization that I'm not seeing in
-my configuration.
-
-Any ideas would be appreciated.
-Thanks!
-
-> If not, please do so, and describe what they were. Thanks.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+              Linus
