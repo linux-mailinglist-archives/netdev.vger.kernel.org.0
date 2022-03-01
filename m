@@ -2,226 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 307944C9031
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 17:20:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 519354C9034
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 17:21:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234437AbiCAQV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 11:21:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        id S236161AbiCAQW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 11:22:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233073AbiCAQV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 11:21:28 -0500
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4342AE3A
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 08:20:46 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3CA255803C2;
-        Tue,  1 Mar 2022 11:20:44 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Tue, 01 Mar 2022 11:20:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=puCegnvXXBE4aPPru
-        t7Je71qYeo5eDhY1ihmiOUF38g=; b=OhDHDMGNTNtbpsgFbIR9KlPcXGFAdaNU/
-        dTIcX+4QjzNQt6wdsS4zj8QjixYqhQoo0yv/yf0ZcaIMf00+Us9Nw6dkHgGKBq8t
-        UrqerxZZUgaAvgMTUQ4FFBmDl1RnXfm/4XzQQQ3w4ENQ/fVBsY3ItkVF6CGTBSGM
-        OhZsioOViGBWqb6UU+BU37sY5yEYxdR/lkvTdOFO/HeqakAEZL6ZXCWBTBGeegPl
-        XTk0PfVqNUvz21Xej46haEBWG0Hbc/tfOBgLoSwfCCVrJjVTrmGQYczbVYsRD6fz
-        5Csi3lUT/hLSO+446hOSAYksoUCuxWBKDsoTT/BPEMlPofAvx2AJg==
-X-ME-Sender: <xms:20ceYpNjZkcYd9hLdi7ftHk653PeIOkqDPfS-EAaTemG2UXZ412OPw>
-    <xme:20ceYr-TiPEtFZpoQQHpy8BRl1wR2Ab-cpX4KqoagoYPbH3Atn-buLOiox0hjjvb1
-    2eFB3227fQ9DsU>
-X-ME-Received: <xmr:20ceYoTaWFlRu7yBoa7Uw1OYeVXbQO4_bhLwCqDHm4ZXJ83_lrfM4IdNWHA0FhySCzh_8GZ5usp08KjXUm6r34PXipc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtvddgkeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeehhfdthfduueehgfekkefhhedutddvveefteehteekleevgfegteevueelheek
-    ueenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:20ceYlsOuw1kxcfS1P9kojMtWfsbJpgiAUhyOAVmmbmhQKBGT0Wvwg>
-    <xmx:20ceYhejskkkBaAe1PThnK83FUb4TlHwDnQRLCE4PuckQQw9jDCYgw>
-    <xmx:20ceYh23sKvBlAHvcivzDMLG657DDz37Nm6xWLSWPAKrMhKUml8LbQ>
-    <xmx:3EceYt577LBkXrg61yyHc9_mgaVSUcPxjaeLAWEM5qgMEXfuDwtJSw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 1 Mar 2022 11:20:43 -0500 (EST)
-Date:   Tue, 1 Mar 2022 18:20:39 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S234989AbiCAQW1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 11:22:27 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F771AD9E;
+        Tue,  1 Mar 2022 08:21:46 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id gb39so32562636ejc.1;
+        Tue, 01 Mar 2022 08:21:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Jx8eZ/jgrSE5jtq/IeRwHlPFovNus3LfRlDhg1AW13A=;
+        b=en9t2M3R/YDinK1EfneMzgv5fnKSDbV2GexbGi8qUVmwTSDoEp15UHwZA/M2o65vTS
+         1amV/o9IYHjiDxmjxen42QPAkYKpPfbSgHnHpSavW1XfsTw58PopoiG6cKAbBHAUIh80
+         Z9vXf90FSFzOih7QWrwZWVuvpsy21CRZGjywUCXNukoL5p8tTEzXYMkVKhBYpK7eeQp1
+         iB71j6/AwNLOcWKUYtR2hDgFxCZC/LqpqjPme7lTy8Lh7Q6qlP0sr34zBSPk7aMnM/gD
+         TaZi52W9EXR5i0OekbRJVPsXfV+ELpeg9leOt1TkHdfXLGOy0pvBzQ4B3q69dCXgfx6T
+         Y+XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Jx8eZ/jgrSE5jtq/IeRwHlPFovNus3LfRlDhg1AW13A=;
+        b=UH+lNVu3OhqkCZKYJwtLSSNPUdJX8WbISSLiMP2WuNKn+vyjB1H1yWRW7WdNw236Y5
+         VgR0nNOhBBAAY4Hp4lqjsaGbIeNsE0sCAu8Jfb+WXaUQdLNFWdzIOXf2nu80KjO6nA5L
+         stKJJODVhAX5kxQ2Fclxtvrs58HFZPmrzCS/A+Y/1K6v7lyBCMhgmq8CFSKvZjUKubE3
+         Ma8fDg9IET0qk6NC5ZcfTPw23NWRvbeFttvL1d6Vfe4XzKXZzJ6htI/4YEJW9RFVYiNJ
+         xvaO7wOv4n+EBrlktUJGs136gOV6GulOtKr/esZRUU5syuL/cBYiAn6B/V1/Wuv/qSPd
+         kqKg==
+X-Gm-Message-State: AOAM5302IOmnJ8do9msrMHVzFBf8EyuRpbvrWlNG8Z59iwNvPkcv1Wvn
+        2ufeijIs7J62HKhEbv8M5Qk=
+X-Google-Smtp-Source: ABdhPJxGtOTYdS7L0n3Cy3fp114D1jiHE3zZ+VjSMi5+/5L86y6D2puo9eWWttxwjz7E6uhYGujEWA==
+X-Received: by 2002:a17:906:3ac6:b0:6cb:6808:95f9 with SMTP id z6-20020a1709063ac600b006cb680895f9mr19934324ejd.375.1646151704776;
+        Tue, 01 Mar 2022 08:21:44 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id ey10-20020a1709070b8a00b006cee56b87b9sm5486818ejc.141.2022.03.01.08.21.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 08:21:44 -0800 (PST)
+Date:   Tue, 1 Mar 2022 18:21:42 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
+        Ivan Vecera <ivecera@redhat.com>,
         Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [RFC PATCH v2 net-next 05/17] net: bridge: implement unicast
- filtering for the bridge device
-Message-ID: <Yh5H1zexT0/Q2bc4@shredder>
-References: <20210224114350.2791260-1-olteanv@gmail.com>
- <20210224114350.2791260-6-olteanv@gmail.com>
- <YD0GyJfbhqpPjhVd@shredder.lan>
- <CA+h21hrtnXr11VXsRXokkZHQ3AQ8nNCLsWTC4ztoLMmNmQoxxg@mail.gmail.com>
- <YhUVNc58trg+r3V9@shredder>
- <20220222171810.bpoddx7op3rivenm@skbuf>
- <YheGlwjp849dhcpq@shredder>
- <20220224135241.ne6c64segpt6azed@skbuf>
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 00/10] net: bridge: Multiple Spanning Trees
+Message-ID: <20220301162142.2rv23g4cyd2yacbs@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220224135241.ne6c64segpt6azed@skbuf>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220301100321.951175-1-tobias@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:52:41PM +0200, Vladimir Oltean wrote:
-> On Thu, Feb 24, 2022 at 03:22:31PM +0200, Ido Schimmel wrote:
-> > On Tue, Feb 22, 2022 at 07:18:10PM +0200, Vladimir Oltean wrote:
-> > > On Tue, Feb 22, 2022 at 06:54:13PM +0200, Ido Schimmel wrote:
-> > > > On Tue, Feb 22, 2022 at 01:21:53PM +0200, Vladimir Oltean wrote:
-> > > > > Hi Ido,
-> > > > > 
-> > > > > On Mon, 1 Mar 2021 at 17:22, Ido Schimmel <idosch@idosch.org> wrote:
-> > > > > >
-> > > > > > On Wed, Feb 24, 2021 at 01:43:38PM +0200, Vladimir Oltean wrote:
-> > > > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > > > >
-> > > > > > > The bridge device currently goes into promiscuous mode when it has an
-> > > > > > > upper with a different MAC address than itself. But it could do better:
-> > > > > > > it could sync the MAC addresses of its uppers to the software FDB, as
-> > > > > > > local entries pointing to the bridge itself. This is compatible with
-> > > > > > > switchdev, since drivers are now instructed to trap these MAC addresses
-> > > > > > > to the CPU.
-> > > > > > >
-> > > > > > > Note that the dev_uc_add API does not propagate VLAN ID, so this only
-> > > > > > > works for VLAN-unaware bridges.
-> > > > > >
-> > > > > > IOW, it breaks VLAN-aware bridges...
-> > > > > >
-> > > > > > I understand that you do not want to track bridge uppers, but once you
-> > > > > > look beyond L2 you will need to do it anyway.
-> > > > > >
-> > > > > > Currently, you only care about getting packets with specific DMACs to
-> > > > > > the CPU. With L3 offload you will need to send these packets to your
-> > > > > > router block instead and track other attributes of these uppers such as
-> > > > > > their MTU so that the hardware will know to generate MTU exceptions. In
-> > > > > > addition, the hardware needs to know the MAC addresses of these uppers
-> > > > > > so that it will rewrite the SMAC of forwarded packets.
-> > > > > 
-> > > > > Ok, let's say I want to track bridge uppers. How can I track the changes to
-> > > > > those interfaces' secondary addresses, in a way that keeps the association
-> > > > > with their VLAN ID, if those uppers are VLAN interfaces?
-> > > > 
-> > > > Hi,
-> > > > 
-> > > > I'm not sure what you mean by "secondary addresses", but the canonical
-> > > > way that I'm familiar with of adding MAC addresses to a netdev is to use
-> > > > macvlan uppers. For example:
-> > > > 
-> > > > # ip link add name br0 up type bridge vlan_filtering 1
-> > > > # ip link add link br0 name br0.10 type vlan id 10
-> > > > # ip link add link br0.10 name br0.10-v address 00:11:22:33:44:55 type macvlan mode private
-> > > > 
-> > > > keepalived uses it in VRRP virtual MAC mode (for example):
-> > > > https://github.com/acassen/keepalived/blob/master/doc/NOTE_vrrp_vmac.txt
-> > > > 
-> > > > In the software data path, this will result in br0 transitioning to
-> > > > promisc mode and passing all the packets to upper devices that will
-> > > > filter them.
-> > > > 
-> > > > In the hardware data path, you can apply promisc mode by flooding to
-> > > > your CPU port (I believe this is what you are trying to avoid) or
-> > > > install an FDB entry <00:11:22:33:44:55,10> that points to your CPU
-> > > > port.
-> > > 
-> > > Maybe the terminology is not the best, but by secondary addresses I mean
-> > > struct net_device :: uc and mc. To my knowledge, the MAC address of
-> > > vlan/macvlan uppers is not the only way in which these lists can be
-> > > populated. There is also AF_PACKET UAPI for PACKET_MR_MULTICAST and
-> > > PACKET_MR_UNICAST, and this ends up calling dev_mc_add() and
-> > > dev_uc_add(). User space may use this API to add a secondary address to
-> > > a VLAN upper interface of a bridge.
-> > 
-> > OK, I see the problem... So you want the bridge to support
-> > 'IFF_UNICAST_FLT' by installing local FDB entries? I see two potential
-> > problems:
-> > 
-> > 1. For VLAN-unaware bridges this is trivial as VLAN information is of no
-> > use. For VLAN-aware bridges we either need to communicate VLAN
-> > information from upper layers or install a local FDB entry per each
-> > configured VLAN (wasteful...). Note that VLAN information will not
-> > always be available (in PACKET_MR_UNICAST, for example), in which case a
-> > local FDB entry will need to be configured per each existing VLAN in
-> > order to maintain existing behavior. Which lead to me think about the
-> > second problem...
-> >
-> > 2. The bigger problem that I see is that if the bridge starts supporting
-> > 'IFF_UNICAST_FLT' by installing local FDB entries, then packets that
-> > were previously locally received and flooded will only be locally
-> > received. Only locally receiving them makes sense, but I don't know what
-> > will break if we change the existing behavior... Maybe this needs to be
-> > guarded by a new bridge option?
+Hi Tobias,
+
+On Tue, Mar 01, 2022 at 11:03:11AM +0100, Tobias Waldekranz wrote:
+> A proposal for the corresponding iproute2 interface is available here:
 > 
-> I think it boils down to whether PACKET_MR_UNICAST on br0 is equivalent to
-> 'bridge fdb add dev br0 self permanent' or not. Theoretically, the
-> former means "if a packet enters the local termination path of br0,
-> don't drop it", 
+> https://github.com/wkz/iproute2/tree/mst
 
-Trying to understand the first part of the sentence, are you saying that
-if user space decides to use this interface, then it is up to it to
-ensure that packets with the given unicast address are terminated on the
-bridge? That is, it is up to user space to install the necessary
-permanent FDB record? I think that is fair, it is just that right now
-this operation does something else and causes all the packets forwarded
-via the bridge to be locally terminated. Most of them will then be
-dropped by upper layers. I don't think this was the author's intention,
-it seems like an unfortunate side effect of current implementation. This
-behavior is even more ridiculous when you take hardware offload into
-account, as usually the CPU is unable to handle all these packets.
-
-> while the other means "direct this MAC DA only towards
-> the local termination path of br0".
-
-This I agree with.
-
-> I.o.w. the difference between "copy to CPU" and "trap to CPU".
-> 
-> If we agree they aren't equivalent, and we also agree that a macvlan on
-> top of a bridge wants "trap to CPU" instead of "copy to CPU", I think
-> the only logical conclusion is that the communication mechanism between
-> the bridge and the macvlan that we're looking for doesn't exist -
-> dev_uc_add() does something slightly different.
-> 
-> Which is why I want to better understand your idea of having the bridge
-> track upper interfaces.
-
-In my case these upper interfaces are actually router interfaces and I'm
-interested in their MAC (in addition to other attributes) to know which
-FDB entry to program towards the router port (your CPU port) on ingress
-and which SA to use on egress (the hardware has limitations on SAs).
-
-I'm pretty sure bridge maintainers will not agree to have this code in
-the bridge driver in which case you can implement this in DSA. Should be
-quite simple as I guess most configurations use VLANs/MACVLANs uppers.
-
-> 
-> Essentially, it isn't the bridge local FDB entries that I have a problem with.
-> "Locally terminated packets that are also flooded on other bridge ports"
-> is a problem that DSA users have tried to get rid of for years, I didn't
-> hear a single complaint after we started fixing that. To me, a bridge
-> VLAN is by definition an L2 broadcast domain and MAC addresses should be
-> unique. I can't imagine what would break if we'd make the bridge deliver
-> the packets only to their known destination.
-
-I agree, can't come up with an example
+Please pardon my ignorance. Is there a user-mode STP protocol application
+that supports MSTP, and that you've tested these patches with?
+I'd like to give it a try.
