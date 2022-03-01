@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60EAC4C97F9
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 22:53:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D484C97FB
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 22:53:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237022AbiCAVyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 16:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
+        id S237921AbiCAVyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 16:54:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbiCAVyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 16:54:24 -0500
+        with ESMTP id S230144AbiCAVyZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 16:54:25 -0500
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAB635F4DD;
-        Tue,  1 Mar 2022 13:53:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C12605F4DD;
+        Tue,  1 Mar 2022 13:53:43 -0800 (PST)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 4DA2F60201;
-        Tue,  1 Mar 2022 22:52:14 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 6023160866;
+        Tue,  1 Mar 2022 22:52:15 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 0/8] Netfilter fixes for net
-Date:   Tue,  1 Mar 2022 22:53:29 +0100
-Message-Id: <20220301215337.378405-1-pablo@netfilter.org>
+Subject: [PATCH net 1/8] netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant
+Date:   Tue,  1 Mar 2022 22:53:30 +0100
+Message-Id: <20220301215337.378405-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220301215337.378405-1-pablo@netfilter.org>
+References: <20220301215337.378405-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -35,76 +37,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Eric Dumazet <edumazet@google.com>
 
-The following patchset contains Netfilter fixes for net:
+While kfree_rcu(ptr) _is_ supported, it has some limitations.
 
-1) Use kfree_rcu(ptr, rcu) variant, using kfree_rcu(ptr) was not
-   intentional. From Eric Dumazet.
+Given that 99.99% of kfree_rcu() users [1] use the legacy
+two parameters variant, and @catchall objects do have an rcu head,
+simply use it.
 
-2) Use-after-free in netfilter hook core, from Eric Dumazet.
+Choice of kfree_rcu(ptr) variant was probably not intentional.
 
-3) Missing rcu read lock side for netfilter egress hook,
-   from Florian Westphal.
+[1] including calls from net/netfilter/nf_tables_api.c
 
-4) nf_queue assume state->sk is full socket while it might not be.
-   Invoke sock_gen_put(), from Florian Westphal.
+Fixes: aaa31047a6d2 ("netfilter: nftables: add catch-all set element support")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_tables_api.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-5) Add selftest to exercise the reported KASAN splat in 4)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 9cd1d7a62804..c86748b3873b 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -4502,7 +4502,7 @@ static void nft_set_catchall_destroy(const struct nft_ctx *ctx,
+ 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
+ 		list_del_rcu(&catchall->list);
+ 		nft_set_elem_destroy(set, catchall->elem, true);
+-		kfree_rcu(catchall);
++		kfree_rcu(catchall, rcu);
+ 	}
+ }
+ 
+@@ -5669,7 +5669,7 @@ static void nft_setelem_catchall_remove(const struct net *net,
+ 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
+ 		if (catchall->elem == elem->priv) {
+ 			list_del_rcu(&catchall->list);
+-			kfree_rcu(catchall);
++			kfree_rcu(catchall, rcu);
+ 			break;
+ 		}
+ 	}
+-- 
+2.30.2
 
-6) Fix possible use-after-free in nf_queue in case sk_refcnt is 0.
-   Also from Florian.
-
-7) Use input interface index only for hardware offload, not for
-   the software plane. This breaks tc ct action. Patch from Paul Blakey.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 277f2bb14361790a70e4b3c649e794b75a91a597:
-
-  ibmvnic: schedule failover only if vioctl fails (2022-02-22 17:06:27 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
-
-for you to fetch changes up to db6140e5e35a48405e669353bd54042c1d4c3841:
-
-  net/sched: act_ct: Fix flow table lookup failure with no originating ifindex (2022-03-01 22:08:31 +0100)
-
-----------------------------------------------------------------
-Eric Dumazet (2):
-      netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant
-      netfilter: fix use-after-free in __nf_register_net_hook()
-
-Florian Westphal (5):
-      netfilter: egress: silence egress hook lockdep splats
-      netfilter: nf_queue: don't assume sk is full socket
-      selftests: netfilter: add nfqueue TCP_NEW_SYN_RECV socket race test
-      netfilter: nf_queue: fix possible use-after-free
-      netfilter: nf_queue: handle socket prefetch
-
-Paul Blakey (1):
-      net/sched: act_ct: Fix flow table lookup failure with no originating ifindex
-
- include/linux/netfilter_netdev.h                  |   4 +
- include/net/netfilter/nf_flow_table.h             |   6 +-
- include/net/netfilter/nf_queue.h                  |   2 +-
- net/netfilter/core.c                              |   5 +-
- net/netfilter/nf_flow_table_offload.c             |   6 +-
- net/netfilter/nf_queue.c                          |  36 +++++-
- net/netfilter/nf_tables_api.c                     |   4 +-
- net/netfilter/nfnetlink_queue.c                   |  12 +-
- net/sched/act_ct.c                                |  13 ++-
- tools/testing/selftests/netfilter/.gitignore      |   1 +
- tools/testing/selftests/netfilter/Makefile        |   2 +-
- tools/testing/selftests/netfilter/connect_close.c | 136 ++++++++++++++++++++++
- tools/testing/selftests/netfilter/nft_queue.sh    |  19 +++
- 13 files changed, 226 insertions(+), 20 deletions(-)
- create mode 100644 tools/testing/selftests/netfilter/connect_close.c
