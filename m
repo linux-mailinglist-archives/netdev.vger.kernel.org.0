@@ -2,191 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C81F44C9712
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:36:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 188574C976E
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:59:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237620AbiCAUhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 15:37:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
+        id S238444AbiCAVAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 16:00:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237621AbiCAUhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:37:16 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8573EF31
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 12:36:34 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id 29so23422507ljv.10
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 12:36:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rAZcpGOFnijhfBt719P+IqprCBqe8sD9TF0Sez9IwiQ=;
-        b=F+7BPGYsO9QeRc6BTbvPUJxguXCTYika7fzNVLbSEfMjTVK29FjvhOtCtbBO2oalkB
-         9cweHARFFeQAeiDWhTrtcdfTzbCEOfTOrVCN9rTTV3Ek5jpvIVUt3aua8OA61CgDhA1w
-         zQABsshAfnGl6gFdFI9HcnnKU8AOre3uWnEew=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rAZcpGOFnijhfBt719P+IqprCBqe8sD9TF0Sez9IwiQ=;
-        b=VwwvSFR82f4X4C7jbm4xgOzH5qjbFAAE0bpcnqNjVjevMqhqd9Uatbxv1zqq6ZijU9
-         rgtNcEb4lxojyDMAlD30CVT29hq7+m2Ys4vzLU7vzm8HUyF3p0V5XkbWH8A035v0X8+3
-         T0WgoKUpo7OSDowzzOK9Pzeggca3GYtgSgqX68xQcddYVCxgAZ+ErC9THbHOvI6UYdvR
-         3h8HQWtu/7Gacb4ElbNKzzx2Szblwz+Q7eCwoSR7/DZCvScbGQOU0as5JuLJ6K0Ur79M
-         4XeDBDBMJ/scg6dnO9eDdY322WBY+DBtLeukPwu8nVI2Z1EL9qrxRHk/crNlLDxw8M04
-         1mYw==
-X-Gm-Message-State: AOAM53378hh6Fc1c40G00i2tHfFzQeYnkqc7ffojQiq0MKXBB1sd/bTs
-        M0rnyz1GQBQCnqrs4KFDZ2f3AndET/wG/br8mXQ=
-X-Google-Smtp-Source: ABdhPJzwS1EAuu3+SmO7+InLS5kdIZBGq/vPv8+AYZD0X4sHDxTTveKaZE4NcDtxlhjUewo4baxnUg==
-X-Received: by 2002:a2e:954c:0:b0:236:c43e:df77 with SMTP id t12-20020a2e954c000000b00236c43edf77mr18337045ljh.334.1646166992754;
-        Tue, 01 Mar 2022 12:36:32 -0800 (PST)
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
-        by smtp.gmail.com with ESMTPSA id x3-20020a05651c104300b002460e33ba8fsm2160811ljm.127.2022.03.01.12.36.30
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 12:36:31 -0800 (PST)
-Received: by mail-lj1-f181.google.com with SMTP id 29so23422356ljv.10
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 12:36:30 -0800 (PST)
-X-Received: by 2002:ac2:44a4:0:b0:445:8fc5:a12a with SMTP id
- c4-20020ac244a4000000b004458fc5a12amr10608648lfm.27.1646166980002; Tue, 01
- Mar 2022 12:36:20 -0800 (PST)
+        with ESMTP id S236863AbiCAVAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 16:00:34 -0500
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 12:59:52 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623AF70337;
+        Tue,  1 Mar 2022 12:59:52 -0800 (PST)
+Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MwQw1-1oF3sg3Nxt-00sMy4; Tue, 01 Mar 2022 21:54:47 +0100
+Received: by mail-wm1-f42.google.com with SMTP id c18-20020a7bc852000000b003806ce86c6dso1959111wml.5;
+        Tue, 01 Mar 2022 12:54:47 -0800 (PST)
+X-Gm-Message-State: AOAM530a05NOVHd+QWqarIZf3oTnW50d/On0hNZyH3ZK8It+IbmP7+V+
+        fxvPVWo0MFrrnGUtvC4Pviunihc0Wd3YCjRAppU=
+X-Google-Smtp-Source: ABdhPJyfexIsGrgwygzot8G9sKT9XjsIQsKTtfBymt2kmTT/NR84Ozb3Ztyvv7y1MPCl2UVcmgGXd7qIz2qyYblVz+s=
+X-Received: by 2002:a05:600c:4f8e:b0:381:6de4:fccc with SMTP id
+ n14-20020a05600c4f8e00b003816de4fcccmr7841096wmq.82.1646168087390; Tue, 01
+ Mar 2022 12:54:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com> <20220228110822.491923-7-jakobkoschel@gmail.com>
-In-Reply-To: <20220228110822.491923-7-jakobkoschel@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 1 Mar 2022 12:36:03 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgLtKofBbn9kSXRU3MpdX7S2OxN1V5Mc679oJpFnp_VnQ@mail.gmail.com>
-Message-ID: <CAHk-=wgLtKofBbn9kSXRU3MpdX7S2OxN1V5Mc679oJpFnp_VnQ@mail.gmail.com>
-Subject: Re: [PATCH 6/6] treewide: remove check of list iterator against head
- past the loop body
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     linux-arch <linux-arch@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergman <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
+ <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+In-Reply-To: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 1 Mar 2022 21:54:30 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
+Message-ID: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
+Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        kbuild-all@lists.01.org, Arnd Bergmann <arnd@arndb.de>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-sgx@vger.kernel.org, drbd-dev@lists.linbit.com,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux1394-devel@lists.sourceforge.net,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        nouveau@lists.freedesktop.org,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, Netdev <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org, KVM list <kvm@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        samba-technical@lists.samba.org,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        v9fs-developer@lists.sourceforge.net,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Provags-ID: V03:K1:UyQiCNWs1ZLtkg6WG9++n+3GsQgzK+acpBbi33NPnZxg9U8Lwx5
+ seheEZG2JPgKWzfHK4xhcCJfRX4t/+iKXpgvmzXtudKoVUDl/F6sHKr3OP6lhu9/RZwifnY
+ p1tya+JEk/e9rTfqSpw8IKmfPNNWvzEnpKoLpJ61OmhzKwQwpLD82bRl6diLuPrLup6AlWx
+ B5VLEJrpOJWgaCHKW8SjA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Vsttm/+D7CU=:1Sdx8KiiSCJPouRELWDGHf
+ McMVhzXoPD6nxUL5Qa6xVnXmQaDnuJ4BPuvlpXeGWtGQGb3uT5XRGHRAqOob9lvzW/D9x21HQ
+ KjPLwKIz/9xy1KBDym75bhpLIOzRfj1UJiPeKUR1EqCSOZnMlw5O5agGUEgd01h+SUhro5RYk
+ 9oL32khYM6kg1OV00AqTZHSrSFLzCus7s9Gc3RnhMmbMmo0GIR2EzppSiqVOt+MHjg5DO4Qf1
+ MS1LioWFVBx+EJ32Z+4DZV3sqKsOcywJfCptJskcOnGX5hYIG6jVqqrNoxsOBB9JLC53sSz6r
+ 2t5kr3KlKMb80s3T8vbvwr4hsceNlMEWTfKDYLMIcZcGsDg7v6vRnzLEfulCftPOniBFolE1h
+ llT3qd/BX+uACDvqIWYrT4kDsEh6Up8xVIjdkZ2YFMHLXYFwpSTpKKTVB6EdTqIG9NSkoidtP
+ CuufGeDP+y/Qp/4XrsHpuK+lNTWaZRKqaxF56rVANrrD/QrRRxNQLCWuBql43lBb1ynMT0sed
+ jCjIQ42M3xvHRb9jk6o2HferAFWWDG5lTjp25tcK0NdH2uc7E2khsDwqIghdVbfym8+r8DrOD
+ E5B06qpZiqviKYgh95sVwV+3VSs5ylaTyWEDYQqk3OjYZYwqOQPUAGB8JrFLXkvi+MHD6XKjL
+ lQZQr1bsH1+jZn+lyeNbYEqV5IPDxXldImVroekpUudyzFAXBgUv6nwJ6FezX2GYrs2PsvAze
+ mNqaTePmRAVkoyvPBeXX3XJ51Nk4xNet65FkdmP2mdQ8un4QEZpeeRmWbtWc0kf0Ern0BNIRQ
+ jgIWUab9aPQPilgM5t5qiR0w9WM8HSxeYAcjhBXg0RSKdr9jy8=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So looking at this patch, I really reacted to the fact that quite
-often the "use outside the loop" case is all kinds of just plain
-unnecessary, but _used_ to be a convenience feature.
-
-I'll just quote the first chunk in it's entirely as an example - not
-because I think this chunk is particularly important, but because it's
-a good example:
-
-On Mon, Feb 28, 2022 at 3:09 AM Jakob Koschel <jakobkoschel@gmail.com> wrote:
+On Tue, Mar 1, 2022 at 9:16 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-> index 6794e2db1ad5..fc47c107059b 100644
-> --- a/arch/arm/mach-mmp/sram.c
-> +++ b/arch/arm/mach-mmp/sram.c
-> @@ -39,19 +39,22 @@ static LIST_HEAD(sram_bank_list);
->  struct gen_pool *sram_get_gpool(char *pool_name)
->  {
->         struct sram_bank_info *info = NULL;
-> +       struct sram_bank_info *tmp;
+> On Tue, Mar 1, 2022 at 10:00 AM kernel test robot <lkp@intel.com> wrote:
+> >
+> > All warnings (new ones prefixed by >>):
+> >
+> > >> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
 >
->         if (!pool_name)
->                 return NULL;
+> So that's potentially an interesting warning, but this email doesn't
+> actually tell *where* that warning happens.
 >
->         mutex_lock(&sram_lock);
+> I'm not entirely sure why this warning is new to this '-std=gnu11'
+> change, but it's intriguing.
+...
 >
-> -       list_for_each_entry(info, &sram_bank_list, node)
-> -               if (!strcmp(pool_name, info->pool_name))
-> +       list_for_each_entry(tmp, &sram_bank_list, node)
-> +               if (!strcmp(pool_name, tmp->pool_name)) {
-> +                       info = tmp;
->                         break;
-> +               }
->
->         mutex_unlock(&sram_lock);
->
-> -       if (&info->node == &sram_bank_list)
-> +       if (!info)
->                 return NULL;
->
->         return info->gpool;
+> Is there some place to actually see the full log (or some way to get a
+> better pointer to just the new warning) to see that actual shift
+> overflow thing?
 
-I realize this was probably at least auto-generated with coccinelle,
-but maybe that script could be taught to do avoid the "use after loop"
-by simply moving the code _into_ the loop.
+gcc-11 only shows the one line warning here. The source is
 
-IOW, this all would be cleaner and clear written as
+/* PCI CFG04 status fields */
+#define PCI_CFG04_STAT_BIT      16
+#define PCI_CFG04_STAT          0xffff0000
+#define PCI_CFG04_STAT_66_MHZ   (1 << 21)
+#define PCI_CFG04_STAT_FBB      (1 << 23)
+#define PCI_CFG04_STAT_MDPE     (1 << 24)
+#define PCI_CFG04_STAT_DST      (1 << 25)
+#define PCI_CFG04_STAT_STA      (1 << 27)
+#define PCI_CFG04_STAT_RTA      (1 << 28)
+#define PCI_CFG04_STAT_RMA      (1 << 29)
+#define PCI_CFG04_STAT_SSE      (1 << 30)
+#define PCI_CFG04_STAT_PE       (1 << 31)
+#define KORINA_STAT             (PCI_CFG04_STAT_MDPE | \
+                                 PCI_CFG04_STAT_STA | \
+                                 PCI_CFG04_STAT_RTA | \
+                                 PCI_CFG04_STAT_RMA | \
+                                 PCI_CFG04_STAT_SSE | \
+                                 PCI_CFG04_STAT_PE)
+#define KORINA_CNFG1            ((KORINA_STAT<<16)|KORINA_CMD)
 
-        if (!pool_name)
-                return NULL;
+unsigned int korina_cnfg_regs[25] = {
+        KORINA_CNFG1, /* ... */
+};
 
-        mutex_lock(&sram_lock);
-        list_for_each_entry(info, &sram_bank_list, node) {
-                if (!strcmp(pool_name, info->pool_name)) {
-                        mutex_unlock(&sram_lock);
-                        return info;
-                }
-        }
-        mutex_unlock(&sram_lock);
-        return NULL;
+This looks like an actual bug to me, the bits are shifted 16 bits twice
+by accident, and it's been like this since rb532 was introduced in
+2008.
 
-Ta-daa - no use outside the loop, no need for new variables, just a
-simple "just do it inside the loop". Yes, we end up having that lock
-thing twice, but it looks worth it from a "make the code obvious"
-standpoint.
-
-Would it be even cleaner if the locking was done in the caller, and
-the loop was some simple helper function? It probably would. But that
-would require a bit more smarts than probably a simple coccinelle
-script would do.
-
-                Linus
+         Arnd
