@@ -2,85 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7F704C8BC3
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:37:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F074C8BE6
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234577AbiCAMiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 07:38:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        id S234826AbiCAMpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 07:45:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiCAMiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:38:13 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9905D140E8;
-        Tue,  1 Mar 2022 04:37:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OgWilR1GahRuy4nq1IiDO3LnXPsAbyIUMZ5wyCYKmFQ=; b=eNOjt+N1AIu4tQdxbvwkMNi+mF
-        8SrJQbXMVHijCcnaCGGiUimdRum866ec8uACk05m4IdInEu3fNhuMnJe4s8jgBYxs37JRSHHBXytc
-        cJ4DNeEKMTZrP3YYE84dJiebjbXctJKQyfX8aPwyqlaGRLshpMN4sAJ3sJOPo8/EuhtSvl2l+vNP0
-        nOU2W0wZja3TuMM1HnzO+Xhpw1ZA2iLFQzg9CEN+t80/NH+Q8bKSSs6WYpFbPAdj0M1N6Me+Y+P1n
-        XjgKqdhfF2TFYZf6//FWRHdXoVHXgx39+9boXTrCLuaTg6r6SGOCycYvqwQTUm98/4c/lZOZDM0tO
-        FBkecvTg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57578)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nP1kn-0001Ge-6v; Tue, 01 Mar 2022 12:37:21 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nP1kk-00078x-CT; Tue, 01 Mar 2022 12:37:18 +0000
-Date:   Tue, 1 Mar 2022 12:37:18 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
-        'Segher Boessenkool' <segher@kernel.crashing.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: Remove branch in csum_shift()
-Message-ID: <Yh4TfnHuTmCqWZDb@shell.armlinux.org.uk>
-References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
- <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
- <20220213091619.GY614@gate.crashing.org>
- <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
- <de560db6-d29a-8565-857b-b42ae35f80f8@csgroup.eu>
- <9cdb4a5243d342efb562bc61d0c1bfcb@AcuMS.aculab.com>
- <c616f9a6-c9db-d3a7-1b23-f827732566bb@csgroup.eu>
- <10309fa64833418a980a8d950d037357@AcuMS.aculab.com>
+        with ESMTP id S232420AbiCAMpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:45:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE5D5DE47;
+        Tue,  1 Mar 2022 04:44:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18A98B818D6;
+        Tue,  1 Mar 2022 12:44:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D6ADC340EE;
+        Tue,  1 Mar 2022 12:44:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646138659;
+        bh=Dvmj37OjCzYRSD5lH+68CdPQAV0uvqJN0PHM1p+T0So=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cvEy4Celqtz56G+ZmoQDluWwekayBnfTCkFgpjXIFUH67plCHqLaSs3bbB243KlIR
+         c45wYDECEVf4LWJ00ZQiKAcyUSHL64BhIGFvma252WcK0UALkdGdrYGD/dqovDJKtR
+         nXEk3Ag/hwkYm5li4hxxk+HMio8KgibuwB4aX5v1Z2zZmHKVjrxL7cIQKNI/tiMITd
+         NkO+5zDQZmAzNeWpLD6uKGpNz/FoYh51Uy8J52cCMjZhmPH1IJKDOsrwcP7vK2YjZm
+         nonLZCYTS9eYAKYZRMI8CD96NDXVzp27Rt1yTEqCpDc6ETJVDQByLrDXXZXW/TIYGE
+         LR+shwwVPEBnw==
+Date:   Tue, 1 Mar 2022 12:44:12 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, f.suligoi@asem.it,
+        kuninori.morimoto.gx@renesas.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH] ASoC: fsi: Add check for clk_enable
+Message-ID: <Yh4VHFviMI/LbjVe@sirena.org.uk>
+References: <20220301073949.3678707-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="a4D1fYTki8ZRdcZe"
 Content-Disposition: inline
-In-Reply-To: <10309fa64833418a980a8d950d037357@AcuMS.aculab.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220301073949.3678707-1-jiasheng@iscas.ac.cn>
+X-Cookie: You have a message from the operator.
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 11:41:06AM +0000, David Laight wrote:
-> From: Christophe Leroy
-> > Sent: 01 March 2022 11:15
-> ...
-> > Looks like ARM also does better code with the generic implementation as
-> > it seems to have some looking like conditional instructions 'rorne' and
-> > 'strne'.
-> 
-> In arm32 (and I think arm64) every instruction is conditional.
 
-Almost every instruction in arm32. There are a number of unconditional
-instructions that were introduced.
+--a4D1fYTki8ZRdcZe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On Tue, Mar 01, 2022 at 03:39:49PM +0800, Jiasheng Jiang wrote:
+> As the potential failure of the clk_enable(),
+> it should be better to check it and return error
+> if fails.
+
+> -		clk_enable(clock->xck);
+> -		clk_enable(clock->ick);
+> -		clk_enable(clock->div);
+> +		ret =3D clk_enable(clock->xck);
+> +		if (ret)
+> +			goto err;
+> +		ret =3D clk_enable(clock->ick);
+> +		if (ret)
+> +			goto err;
+> +		ret =3D clk_enable(clock->div);
+> +		if (ret)
+> +			goto err;
+> =20
+>  		clock->count++;
+>  	}
+> =20
+>  	return ret;
+> +
+> +err:
+> +	clk_disable(clock->xck);
+> +	clk_disable(clock->ick);
+> +	clk_disable(clock->div);
+
+You need separate labels for each enable so that we don't end up
+disabling clocks we didn't enable, that would also be a bug.
+
+--a4D1fYTki8ZRdcZe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIeFRwACgkQJNaLcl1U
+h9DwBgf/bin2luVJoiauARSYcwKh6nAuT6t1+pRx4vZsv96asJBq6mHzg3Lde11Y
+m2QgosA3PwMCLdvAIk4gZc2OQfzLQ6r96lgNEFHE3fmZknc9qPeO5P8275sdgfRy
+xn7l5w0j4y/4QoGu6YpE9EidGOGlkLQMcMvVc3CcpIUQLexWdGIgYUoJDT8MaIrA
+NNlrI3R296GI6oToypsEEC+KnTcddRKhEqd/wlCTD75OP9WmbQdUkw84mXq4A29F
+yDHw4BIYC8Mhx+RvUUXSaBue6Ow0kk58x9hdeFIE7Zc2qRk8xuSTxnju+QXIPNZK
+djNrcWAUdWEufFhsSf26mOnIq6bsrQ==
+=LFkr
+-----END PGP SIGNATURE-----
+
+--a4D1fYTki8ZRdcZe--
