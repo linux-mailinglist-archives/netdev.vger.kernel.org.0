@@ -2,52 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 058114C969F
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:25:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DA6D4C96C7
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:25:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238280AbiCAUZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 15:25:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33766 "EHLO
+        id S238150AbiCAUY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 15:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238814AbiCAUXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:23:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F3AA6451;
-        Tue,  1 Mar 2022 12:21:19 -0800 (PST)
+        with ESMTP id S239034AbiCAUYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:24:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B1FA66E8;
+        Tue,  1 Mar 2022 12:21:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 195D4B81D4B;
-        Tue,  1 Mar 2022 20:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B30C340F1;
-        Tue,  1 Mar 2022 20:21:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05C06B81D6C;
+        Tue,  1 Mar 2022 20:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26663C340F7;
+        Tue,  1 Mar 2022 20:21:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166076;
-        bh=2Vzk2YwMAxcJNg8Rm+jvnFFtDs7ThSFhX2BqVrZ51qo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s6tBqiNjjpaShVM2/hLDqSkz66ePssOER49OmyquP39Tq6m2BI2YapFbHlwUFzxCi
-         kn1fd2AEx/TEPMsuXdS+/pCmJ2yci+YGf4XMddrcLm4lq/k8hOTs7Xv3nthX1Kl4t1
-         7Lq59r4cr0r8w9YqP32gIE66aeYSUcJe5st8M3MY2q4PVkWd2FhU6WNmtBnwZh4Nbm
-         G4duiclmwVtLv0SKoj99DjRM5h+Cuv8wwoPS2PvlEMW8efRhJa/SN50yLNluv0+VbH
-         yAxayxO1mwWx7Ff+FxCAZHwZEd/0gLmOsSC0vPn0x1AFtKB7+6pOgocyhoNAYpbbgo
-         uBiPKjFuD/4Zw==
+        s=k20201202; t=1646166098;
+        bh=AjArf40AEd7KFycVFaY6gb+hzMAYUzhlX8vwo65X0lk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cCA2B/IHY5VwYRRFYrjsHVijcemX810mwYcmIXgTcVHJ6DT981zkicIS42D5T/cp4
+         XRKCaHkpxo5biUbF4jWYL48v1lveAUtdb2eT5P1Dl/sedYGcXiXiJRG7GwDMRns/wd
+         FeqW3B7OnpfU4vFAqil2b1oJ+SYbgcL+x68dadeeXjmzID5yZAYyMCtQIKG72aPsW1
+         H2FwRTc+vCXEOU2+xCWR1gkIkfkf2pbTI46WzHCSCC38OqlAgR7NT6LLr14YsW+V2l
+         VLSdReOaQSjiQTNOVogNA9CyU6/fo5sGZ0X23fQxhdVDEXImx4iW1zvfwX8BwPixWR
+         0DipnYk6jebOA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
-        Michael Brown <mbrown@fensystems.co.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
-        davem@davemloft.net, xen-devel@lists.xenproject.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 5/7] Revert "xen-netback: Check for hotplug-status existence before watching"
-Date:   Tue,  1 Mar 2022 15:20:43 -0500
-Message-Id: <20220301202046.19220-5-sashal@kernel.org>
+Cc:     suresh kumar <suresh2514@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        atenart@kernel.org, edumazet@google.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 1/7] net-sysfs: add check for netdevice being present to speed_show
+Date:   Tue,  1 Mar 2022 15:21:22 -0500
+Message-Id: <20220301202131.19318-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301202046.19220-1-sashal@kernel.org>
-References: <20220301202046.19220-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -61,62 +55,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: suresh kumar <suresh2514@gmail.com>
 
-[ Upstream commit e8240addd0a3919e0fd7436416afe9aa6429c484 ]
+[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
 
-This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
+When bringing down the netdevice or system shutdown, a panic can be
+triggered while accessing the sysfs path because the device is already
+removed.
 
-The reasoning in the commit was wrong - the code expected to setup the
-watch even if 'hotplug-status' didn't exist. In fact, it relied on the
-watch being fired the first time - to check if maybe 'hotplug-status' is
-already set to 'connected'. Not registering a watch for non-existing
-path (which is the case if hotplug script hasn't been executed yet),
-made the backend not waiting for the hotplug script to execute. This in
-turns, made the netfront think the interface is fully operational, while
-in fact it was not (the vif interface on xen-netback side might not be
-configured yet).
+    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
+    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
+    ...
+    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
+    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
 
-This was a workaround for 'hotplug-status' erroneously being removed.
-But since that is reverted now, the workaround is not necessary either.
+    crash> bt
+    ...
+    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
+    ...
+     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
+        [exception RIP: dma_pool_alloc+0x1ab]
+        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
+        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
+        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
+        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
+        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
+        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
+        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
+    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
+    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
+    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
+    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
+    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
+    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
+    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
+    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
+    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
+    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
+    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
+    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
+    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
+    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
+    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
+    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
 
-More discussion at
-https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+    crash> net_device.state ffff89443b0c0000
+      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
 
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Reviewed-by: Michael Brown <mbrown@fensystems.co.uk>
-Link: https://lore.kernel.org/r/20220222001817.2264967-2-marmarek@invisiblethingslab.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+To prevent this scenario, we also make sure that the netdevice is present.
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netback/xenbus.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ net/core/net-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 6b678ab0a31f7..6d7fb0a956452 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -1044,15 +1044,11 @@ static void connect(struct backend_info *be)
- 	xenvif_carrier_on(be->vif);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 7d8c6ba5cbd22..5ff47c5bc453e 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -202,7 +202,7 @@ static ssize_t speed_show(struct device *dev,
+ 	if (!rtnl_trylock())
+ 		return restart_syscall();
  
- 	unregister_hotplug_status_watch(be);
--	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
--		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
--					   NULL, hotplug_status_changed,
--					   "%s/%s", dev->nodename,
--					   "hotplug-status");
--		if (err)
--			goto err;
-+	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
-+				   hotplug_status_changed,
-+				   "%s/%s", dev->nodename, "hotplug-status");
-+	if (!err)
- 		be->have_hotplug_status_watch = 1;
--	}
+-	if (netif_running(netdev)) {
++	if (netif_running(netdev) && netif_device_present(netdev)) {
+ 		struct ethtool_link_ksettings cmd;
  
- 	netif_tx_wake_all_queues(be->vif->dev);
- 
+ 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
 -- 
 2.34.1
 
