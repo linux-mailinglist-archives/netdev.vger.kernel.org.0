@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 081424C8BA4
+	by mail.lfdr.de (Postfix) with ESMTP id 5373E4C8BA5
 	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:31:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234681AbiCAMcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 07:32:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
+        id S233983AbiCAMcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 07:32:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233356AbiCAMcA (ORCPT
+        with ESMTP id S233394AbiCAMcA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:32:00 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F4157154
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E3F9287F
         for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 04:31:19 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id i11so26616186lfu.3
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 04:31:18 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id l12so9783880ljh.12
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 04:31:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=J0rKdVpN1zJbCddDzfZ8gqZ9iGgeFZuK48Px54tScXY=;
-        b=cKJcQvAkunhUjecgJQCCoUXAFhgJmdmUCL5HTgdJCwi4gleU3sUYilfniyOrQNL9K8
-         8YGNmcpl/ZA2CbU1rsEMsz+qJJ/V8HSf5JJMD0sUSFMgUL5D44V5bP6juWcQWZh+zxbm
-         tq+E6jIKqfT1XEFgAiyr7QvA8r4tY9sZ0Cc6AIzviXMW9nZWGB1ktFP16TfTpxCpBHZz
-         OdaLI+pj1ESTBso7OeOFldwJgAsSuxJ5frqVphq7nD0D1qvZXB2T6Y3fU5m2hPRPghjW
-         mXU6yxunoo4ezhjH/yt0H8ZBNgq4E0M0BxrKRFjqtefU4bX0mGbjJzC9mh7YND8EdiFl
-         J4qA==
+        bh=OAX0hXOgh+IkX9h/muRq+NDc2OAWMYC8P5Twh1jkg9k=;
+        b=QWyNpNd70xIdIlW40+gZMFtu1/i0GFifmjeaqGBDBJG3YK8972gIJxFI3FdZNiPBVp
+         CmebE+Kzq/yK82TkqvI6Ieg+a9t7phqpQN9UWt4WOmWHkWOKUpo+1xdnyHewAEnw4LYB
+         KwGd9x1UtvWqZo2WTY6GDFdpvjiVNTTLN2IpdRo2HEcOMzkd0qhdXrmcENRysyxSf+ND
+         7IHdWD8JJTZvI4/23TqIbnfmQoB0FSQ9GEONXrjCnUUHTUykFyAMGyDcttmF9CUlzlV/
+         J1t6Vz+42s3Gbj2aLTNhRvcAPuWPskgY9fMG5Sf0rKDRShn3Slnk7vcxc6N6F17aO6uW
+         AjZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=J0rKdVpN1zJbCddDzfZ8gqZ9iGgeFZuK48Px54tScXY=;
-        b=Xmlbf/3e1emx5gvm+9h98ZOE84u2nlWWC84RT0xgIAs2jwnDZdyaHuQpwnPe2WnRvA
-         jJN2FyxfkTXtIrfDugzh9lyJe2E3d4U4hzQufmBdEyFql5aXqECoQja++CE93FguFrjA
-         UMmnlJ+X8wTp13OjprTslTl0NPaKH1EEuoOe0RznJkWMjqnZiV/phi1i52JgzSa9ba1q
-         vN69pVuciTdPKSAECvfcqGw99z1QnSfKCUpB1nN4o8kdscTMQhE5lYARp3Q+r8U0ulQd
-         2dfJqd0sMzrp5MoELKwU82CTM6VDhmbXLe7AhA6e0ZQzDrKBOUZAnlvJar0JzxL1kYKO
-         58Tg==
-X-Gm-Message-State: AOAM533OWS32LAWKZBBLeged/9ah9Tuv2lsDli1qryMVyI1XiOmC+hJh
-        ZKrWMQXCC+mbqahxnjmW4dRlhOxdwvfRY2zxOyc=
-X-Google-Smtp-Source: ABdhPJzPPApjXZtzdx/PSq1l+5H6Tw4D8NbompHK8QzqhqwJQR7a2zRLv73CZRgkMrGNs566MjWC7Q==
-X-Received: by 2002:ac2:44b8:0:b0:430:2ad7:2a21 with SMTP id c24-20020ac244b8000000b004302ad72a21mr14833841lfm.410.1646137877140;
-        Tue, 01 Mar 2022 04:31:17 -0800 (PST)
+        bh=OAX0hXOgh+IkX9h/muRq+NDc2OAWMYC8P5Twh1jkg9k=;
+        b=r/Yqb9kAQyGqJwGBB7uuWxslHEomO1xNh0YZ3yrodIVkEQfSagRnM71uv4/kYgxQDn
+         ckWmPaOXsnTIGaKAjkDGHL0/eE8US6FcKwq8lfj+WGMn1jexPO5qbInVQOd2sA8uBh/N
+         KHhcYH4c33Hyfwb77hL987hc6f8SDiAN87uRrmYc4M9zFTRDA0MyB7rfDymyMb1thJfc
+         l3SydgoyuKc5H7fL48X7KIAUeetMIKITBgtA7LQ61L9wieJ/oVXigThZFjlkiwOjBO3r
+         xEkAiQgsfvX/g0IaG7DdGJTCmIkuanz0o5yxHjRHu/S3lKvtK3x2GQhlmhf0ktGMTgUR
+         9vcQ==
+X-Gm-Message-State: AOAM532NyuOxoK8YvUQpt5uc/JT6jg1hJFmUkV+WGSIVmPGU4ABeKxal
+        1Yfq+rL8X7U3Fnn+1eVXQATJTb1avjaivWcgPXc=
+X-Google-Smtp-Source: ABdhPJxeLGBQ9i7EQgrAFPulDsqCMeYEI5b8OM+MdNI5TA2FnCDONA4+nETEBm4RMY4X/83hwXI2ig==
+X-Received: by 2002:a2e:8890:0:b0:23d:1f76:aa with SMTP id k16-20020a2e8890000000b0023d1f7600aamr16900300lji.222.1646137878066;
+        Tue, 01 Mar 2022 04:31:18 -0800 (PST)
 Received: from wse-c0089.westermo.com (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id i8-20020a0565123e0800b0044312b4112dsm1470459lfv.52.2022.03.01.04.31.16
+        by smtp.gmail.com with ESMTPSA id i8-20020a0565123e0800b0044312b4112dsm1470459lfv.52.2022.03.01.04.31.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 04:31:16 -0800 (PST)
+        Tue, 01 Mar 2022 04:31:17 -0800 (PST)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 X-Google-Original-From: Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
 To:     netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
-Subject: [PATCH 2/3] dsa: Handle the local_receive flag in the DSA layer.
-Date:   Tue,  1 Mar 2022 13:31:03 +0100
-Message-Id: <20220301123104.226731-3-mattias.forsblad+netdev@gmail.com>
+Subject: [PATCH 3/3] mv88e6xxx: Offload the local_receive flag
+Date:   Tue,  1 Mar 2022 13:31:04 +0100
+Message-Id: <20220301123104.226731-4-mattias.forsblad+netdev@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
 References: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
@@ -75,79 +75,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add infrastructure to be able to handle the local_receive
-flag to the DSA layer.
+Use the port vlan table to restrict ingressing traffic to the
+CPU port if the local_receive flag is cleared.
 
 Signed-off-by: Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
 ---
- include/net/dsa.h  |  6 ++++++
- net/dsa/dsa_priv.h |  1 +
- net/dsa/slave.c    | 16 ++++++++++++++++
- 3 files changed, 23 insertions(+)
+ drivers/net/dsa/mv88e6xxx/chip.c | 45 ++++++++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index cfedcfb86350..3abd7cfad7a0 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -925,6 +925,12 @@ struct dsa_switch_ops {
- 	void	(*get_regs)(struct dsa_switch *ds, int port,
- 			    struct ethtool_regs *regs, void *p);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 84b90fc36c58..d5616c7ca46e 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1384,6 +1384,7 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 	struct dsa_switch *ds = chip->ds;
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	struct dsa_port *dp, *other_dp;
++	int local_receive = 1;
+ 	bool found = false;
+ 	u16 pvlan;
  
-+	/*
-+	 * Local receive
-+	 */
-+	int	(*set_local_receive)(struct dsa_switch *ds, int port,
-+				     struct net_device *bridge, bool enable);
+@@ -1425,6 +1426,9 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 
+ 	pvlan = 0;
+ 
++	if (dp->bridge)
++		local_receive = br_local_receive_enabled(dp->bridge->dev);
 +
- 	/*
- 	 * Upper device tracking.
+ 	/* Frames from standalone user ports can only egress on the
+ 	 * upstream port.
  	 */
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 07c0ad52395a..33e607615e63 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -217,6 +217,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
- 			    struct netlink_ext_ack *extack);
- bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
- int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
-+int dsa_port_set_local_receive(struct dsa_port *dp, struct net_device *br, bool enable);
- int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
- 			bool targeted_match);
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 089616206b11..50f88b0bd851 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -295,6 +295,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
- 		ret = dsa_port_vlan_filtering(dp, attr->u.vlan_filtering,
- 					      extack);
- 		break;
-+	case SWITCHDEV_ATTR_ID_BRIDGE_LOCAL_RECEIVE:
-+		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
-+			return -EOPNOTSUPP;
-+
-+		ret = dsa_port_set_local_receive(dp, attr->orig_dev, attr->u.local_receive);
-+		break;
- 	case SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME:
- 		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
- 			return -EOPNOTSUPP;
-@@ -671,6 +677,16 @@ dsa_slave_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *_p)
- 		ds->ops->get_regs(ds, dp->index, regs, _p);
+@@ -1433,10 +1437,11 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 
+ 	/* Frames from bridged user ports can egress any local DSA
+ 	 * links and CPU ports, as well as any local member of their
+-	 * bridge group.
++	 * as well as any local member of their bridge group. However, CPU ports
++	 * are omitted if local_receive is reset.
+ 	 */
+ 	dsa_switch_for_each_port(other_dp, ds)
+-		if (other_dp->type == DSA_PORT_TYPE_CPU ||
++		if ((other_dp->type == DSA_PORT_TYPE_CPU && local_receive) ||
+ 		    other_dp->type == DSA_PORT_TYPE_DSA ||
+ 		    dsa_port_bridge_same(dp, other_dp))
+ 			pvlan |= BIT(other_dp->index);
+@@ -2718,6 +2723,41 @@ static void mv88e6xxx_crosschip_bridge_leave(struct dsa_switch *ds,
+ 	mv88e6xxx_reg_unlock(chip);
  }
  
-+int dsa_port_set_local_receive(struct dsa_port *dp, struct net_device *br, bool enable)
++static int mv88e6xxx_set_local_receive(struct dsa_switch *ds, int port, struct net_device *br,
++				       bool enable)
 +{
-+	struct dsa_switch *ds = dp->ds;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	struct dsa_bridge *bridge;
++	struct dsa_port *dp;
++	bool found = false;
++	int err;
 +
-+	if (ds->ops->set_local_receive)
-+		return ds->ops->set_local_receive(ds, dp->index, br, enable);
++	if (!netif_is_bridge_master(br))
++		return 0;
 +
-+	return 0;
++	list_for_each_entry(dp, &ds->dst->ports, list) {
++		if (dp->ds == ds && dp->index == port) {
++			found = true;
++			break;
++		}
++	}
++
++	if (!found)
++		return 0;
++
++	bridge = dp->bridge;
++	if (!bridge)
++		return 0;
++
++	mv88e6xxx_reg_lock(chip);
++
++	err = mv88e6xxx_bridge_map(chip, *bridge);
++
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
 +}
 +
- static int dsa_slave_nway_reset(struct net_device *dev)
+ static int mv88e6xxx_software_reset(struct mv88e6xxx_chip *chip)
  {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	if (chip->info->ops->reset)
+@@ -6478,6 +6518,7 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.set_eeprom		= mv88e6xxx_set_eeprom,
+ 	.get_regs_len		= mv88e6xxx_get_regs_len,
+ 	.get_regs		= mv88e6xxx_get_regs,
++	.set_local_receive      = mv88e6xxx_set_local_receive,
+ 	.get_rxnfc		= mv88e6xxx_get_rxnfc,
+ 	.set_rxnfc		= mv88e6xxx_set_rxnfc,
+ 	.set_ageing_time	= mv88e6xxx_set_ageing_time,
 -- 
 2.25.1
 
