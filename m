@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A06D4C93B7
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 19:59:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2C84C93B4
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 19:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237200AbiCATAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 14:00:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        id S234161AbiCATAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 14:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234562AbiCATAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:00:11 -0500
+        with ESMTP id S237192AbiCATAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:00:12 -0500
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC3DE0B9
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 10:59:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74ED438A5
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 10:59:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646161169; x=1677697169;
+  t=1646161170; x=1677697170;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=F8J0ErqesH0AWKHhJ4SLGt+AlcgSdn2SNglPAg0WJ+g=;
-  b=dFTCjjTFLACmoShTcbA/8dJ+BzI8maAPoIgE54IBY8sMjryg/212zbCr
-   +jUzlbs+HfpUKdzHaknY7wg0Ad5D/+xkBHwxgOgbq0ptq0c8bLO++7Sb9
-   1ukE9wYu+W+5ZziciisiQeVNeFtj1lNo8qdehBAkKatDJLD61iJOymx7i
-   Kt92jcEFLiTf3c5Nol8WPVMY24H5vIzT6iKxIwtif6dK6RW+RBYTzvjXM
-   I9p/U+2AiK8cl5Zue5o2NXIjgbi3C+UsuBtjq+4w19SP49D5pwCMVHUZN
-   cwn24VMfmz6C4OER+zPF1Ga2wZ7V/Hl8a57+nD1sWKeIhb8Mmn3dCTeSu
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="252042320"
+  bh=VYekS4vq+PGqXhGBHW/W1Lm6x57K0zOqkI2MPAL+3Yc=;
+  b=Z1IAVyCmDG+09lN1/b8SIGzauQNqNEmRt3tyNz5xX4TMArjSImiZtmT4
+   ucO9RKFOW29sJ57VpqyNGRGbvb09M9MbpVpu5VOUCZazz4DlCg+DDomN/
+   AtL4TVz++VwWzZTdf42QThrw2+D3F5APHHz5iogBGWYTPBCM2SyiTCzyg
+   3PhGih1Ibgw1/6CaczhHydXoY4tLlP/BCfxR8Us2JHuWfTvcQbCgKey33
+   4A2neCiXgMqi/4Bcff04VXGDZywO8XkBGY8c/3poH4H9w94FBGws8hyOk
+   T64UwA17mrS3834NWQYaOIDMoaPoBGZR6BehCqFIm9AFCRTk3mqtuJ9xL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="252042323"
 X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="252042320"
+   d="scan'208";a="252042323"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 10:59:27 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="507908263"
+   d="scan'208";a="507908267"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga002.jf.intel.com with ESMTP; 01 Mar 2022 10:59:26 -0800
+  by orsmga002.jf.intel.com with ESMTP; 01 Mar 2022 10:59:27 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sassmann@redhat.com,
+        Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>,
         Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 3/7] iavf: Add usage of new virtchnl format to set default MAC
-Date:   Tue,  1 Mar 2022 10:59:35 -0800
-Message-Id: <20220301185939.3005116-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 4/7] iavf: remove redundant ret variable
+Date:   Tue,  1 Mar 2022 10:59:36 -0800
+Message-Id: <20220301185939.3005116-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220301185939.3005116-1-anthony.l.nguyen@intel.com>
 References: <20220301185939.3005116-1-anthony.l.nguyen@intel.com>
@@ -63,101 +61,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mateusz Palczewski <mateusz.palczewski@intel.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Use new type field of VIRTCHNL_OP_ADD_ETH_ADDR and
-VIRTCHNL_OP_DEL_ETH_ADDR requests to indicate that
-VF wants to change its default MAC address.
+Return value directly instead of taking this in another redundant
+variable.
 
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c     | 12 +++++++++---
- drivers/net/ethernet/intel/iavf/iavf_virtchnl.c | 16 ++++++++++++++++
- 2 files changed, 25 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 450a98196235..f339b78262d3 100644
+index f339b78262d3..25796d07d1e1 100644
 --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
 +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -876,6 +876,7 @@ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
- 		list_add_tail(&f->list, &adapter->mac_filter_list);
- 		f->add = true;
- 		f->is_new_mac = true;
-+		f->is_primary = false;
- 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
- 	} else {
- 		f->remove = false;
-@@ -909,17 +910,22 @@ static int iavf_set_mac(struct net_device *netdev, void *p)
- 	f = iavf_find_filter(adapter, hw->mac.addr);
- 	if (f) {
- 		f->remove = true;
-+		f->is_primary = true;
- 		adapter->aq_required |= IAVF_FLAG_AQ_DEL_MAC_FILTER;
- 	}
+@@ -1523,7 +1523,6 @@ static void iavf_fill_rss_lut(struct iavf_adapter *adapter)
+ static int iavf_init_rss(struct iavf_adapter *adapter)
+ {
+ 	struct iavf_hw *hw = &adapter->hw;
+-	int ret;
  
- 	f = iavf_add_filter(adapter, addr->sa_data);
--
--	spin_unlock_bh(&adapter->mac_vlan_list_lock);
--
- 	if (f) {
-+		f->is_primary = true;
- 		ether_addr_copy(hw->mac.addr, addr->sa_data);
- 	}
+ 	if (!RSS_PF(adapter)) {
+ 		/* Enable PCTYPES for RSS, TCP/UDP with IPv4/IPv6 */
+@@ -1539,9 +1538,8 @@ static int iavf_init_rss(struct iavf_adapter *adapter)
  
-+	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-+
-+	/* schedule the watchdog task to immediately process the request */
-+	if (f)
-+		queue_work(iavf_wq, &adapter->watchdog_task.work);
-+
- 	return (f == NULL) ? -ENOMEM : 0;
+ 	iavf_fill_rss_lut(adapter);
+ 	netdev_rss_key_fill((void *)adapter->rss_key, adapter->rss_key_size);
+-	ret = iavf_config_rss(adapter);
+ 
+-	return ret;
++	return iavf_config_rss(adapter);
  }
  
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 5ee1d118fd30..8d53228046a5 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -453,6 +453,20 @@ void iavf_map_queues(struct iavf_adapter *adapter)
- 	kfree(vimi);
- }
- 
-+/**
-+ * iavf_set_mac_addr_type - Set the correct request type from the filter type
-+ * @virtchnl_ether_addr: pointer to requested list element
-+ * @filter: pointer to requested filter
-+ **/
-+static void
-+iavf_set_mac_addr_type(struct virtchnl_ether_addr *virtchnl_ether_addr,
-+		       const struct iavf_mac_filter *filter)
-+{
-+	virtchnl_ether_addr->type = filter->is_primary ?
-+		VIRTCHNL_ETHER_ADDR_PRIMARY :
-+		VIRTCHNL_ETHER_ADDR_EXTRA;
-+}
-+
  /**
-  * iavf_add_ether_addrs
-  * @adapter: adapter structure
-@@ -508,6 +522,7 @@ void iavf_add_ether_addrs(struct iavf_adapter *adapter)
- 	list_for_each_entry(f, &adapter->mac_filter_list, list) {
- 		if (f->add) {
- 			ether_addr_copy(veal->list[i].addr, f->macaddr);
-+			iavf_set_mac_addr_type(&veal->list[i], f);
- 			i++;
- 			f->add = false;
- 			if (i == count)
-@@ -577,6 +592,7 @@ void iavf_del_ether_addrs(struct iavf_adapter *adapter)
- 	list_for_each_entry_safe(f, ftmp, &adapter->mac_filter_list, list) {
- 		if (f->remove) {
- 			ether_addr_copy(veal->list[i].addr, f->macaddr);
-+			iavf_set_mac_addr_type(&veal->list[i], f);
- 			i++;
- 			list_del(&f->list);
- 			kfree(f);
+@@ -4745,8 +4743,6 @@ static struct pci_driver iavf_driver = {
+  **/
+ static int __init iavf_init_module(void)
+ {
+-	int ret;
+-
+ 	pr_info("iavf: %s\n", iavf_driver_string);
+ 
+ 	pr_info("%s\n", iavf_copyright);
+@@ -4757,8 +4753,7 @@ static int __init iavf_init_module(void)
+ 		pr_err("%s: Failed to create workqueue\n", iavf_driver_name);
+ 		return -ENOMEM;
+ 	}
+-	ret = pci_register_driver(&iavf_driver);
+-	return ret;
++	return pci_register_driver(&iavf_driver);
+ }
+ 
+ module_init(iavf_init_module);
 -- 
 2.31.1
 
