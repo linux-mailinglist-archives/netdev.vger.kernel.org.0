@@ -2,212 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C70984C9792
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 22:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEF7F4C9778
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 22:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237378AbiCAVLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 16:11:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
+        id S238468AbiCAVEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 16:04:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbiCAVLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 16:11:42 -0500
-X-Greylist: delayed 1211 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 13:11:00 PST
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964E180918
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 13:11:00 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:42438)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nP9SE-005Abw-0I; Tue, 01 Mar 2022 13:50:42 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:46522 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nP9SC-001ghx-N7; Tue, 01 Mar 2022 13:50:41 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        NeilBrown <neilb@suse.de>, Vasily Averin <vvs@virtuozzo.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org
-References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
-        <YhzeCkXEvga7+o/A@bombadil.infradead.org>
-        <20220301180917.tkibx7zpcz2faoxy@google.com>
-        <Yh5lyr8dJXmEoFG6@bombadil.infradead.org>
-Date:   Tue, 01 Mar 2022 14:50:06 -0600
-In-Reply-To: <Yh5lyr8dJXmEoFG6@bombadil.infradead.org> (Luis Chamberlain's
-        message of "Tue, 1 Mar 2022 10:28:26 -0800")
-Message-ID: <87wnhdwg75.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S238469AbiCAVEz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 16:04:55 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF90370337
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 13:04:12 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id l12so11680999ljh.12
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 13:04:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=WPdaOZxQv/+NPdqn8YJ6TsMnJrXaQm6Rh85/hgPFMHQ=;
+        b=ZxPc45uI2AqxuFwew1yLhiTkQfXDv4IJjaiXHnuhsgHkpUJCWFzOJ8JHBEeAgz9wNU
+         kC2tdnmBaPZkb0eniZZPMYoq99CXLrZ9ZlaWgKiujHJ+IjFwf+e8hxDHxdYxtOaRNa1l
+         v9FugmAlmBbXgR0CTfN4uY29h2MyZl0qSRXGMvUltqwqelnqvK7Z+nbMW8Ff9flZGCWh
+         PfqOYljYodBYwVOB8JncXY7AZkKuXTCArNQgQwA4/6aDgvb6xRXSEKzDDZAlZh7TSE7k
+         Z46eDqHt9JasRQu9Wi+SlUviqUj2YyGRfrMlLRDMt1PH9VT1YbB1SGgp62o8gF+gjLwu
+         pQOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=WPdaOZxQv/+NPdqn8YJ6TsMnJrXaQm6Rh85/hgPFMHQ=;
+        b=T3WnBcu0Oa6q3FVdcJIICVU31qruzQON2+C4Tk/86AVMjVjYrDaQ4notG8GHt00U/I
+         RFQhySQxE1l0v9MImxf/gHs/i0TU1aQiUwoKraKss3sjSvzMrqaPWXlFqqiVf8lzqOKp
+         aeuaegZp1Egc9SwDAmpjyzgI9dUiIDHM6ZPOkAcQ+l9+yStAfVwWutrdxngDE3zpLXLm
+         vgGujiiEU/f17D1oNFNRnSYhl0yjONmNpikOF6OiQA+lrl6XaO65eNT2Lvt99c8WvMvL
+         UcS3QCd4AgbPegLqc9uZY06L4GWQIgK8RxGz96hePgdnU/ZEf6Hjuoq0T6rQjuYPj2sd
+         3HGg==
+X-Gm-Message-State: AOAM533iLMrMJa4MukeBcbZIQZgeFTAz6kEJkyaHIGDrdrF9H8OM5N6S
+        89C8dbx1sRAF1eB80JeV9kSW9dH4A/YwBOro
+X-Google-Smtp-Source: ABdhPJzaaeog4PPZgDKQuKvfe/WEEiygHdFTaWmJhAcnFvz91X2kwO7JaCrnWaJIHplFIsLSQt9XxA==
+X-Received: by 2002:a2e:a593:0:b0:246:7327:cd8e with SMTP id m19-20020a2ea593000000b002467327cd8emr15683674ljp.108.1646168650570;
+        Tue, 01 Mar 2022 13:04:10 -0800 (PST)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id o25-20020ac24959000000b00443fdf504bcsm1668932lfi.161.2022.03.01.13.04.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 13:04:10 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
+Subject: Re: [PATCH net-next 0/3] bridge: dsa: switchdev: mv88e6xxx:
+ Implement local_receive bridge flag
+In-Reply-To: <2d38e998-396f-db39-7ccf-2a991d4e02cb@gmail.com>
+References: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
+ <2d38e998-396f-db39-7ccf-2a991d4e02cb@gmail.com>
+Date:   Tue, 01 Mar 2022 22:04:09 +0100
+Message-ID: <87ilsxo052.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1nP9SC-001ghx-N7;;;mid=<87wnhdwg75.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18lmp4fBJoK+TGAwQ653r/OCJOTfCXd/3Q=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
-X-Spam-DCC: XMission; sa07 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ;Luis Chamberlain <mcgrof@kernel.org>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 648 ms - load_scoreonly_sql: 0.04 (0.0%),
-        signal_user_changed: 11 (1.7%), b_tie_ro: 10 (1.5%), parse: 1.61
-        (0.2%), extract_message_metadata: 8 (1.3%), get_uri_detail_list: 6
-        (0.9%), tests_pri_-1000: 4.7 (0.7%), tests_pri_-950: 1.24 (0.2%),
-        tests_pri_-900: 1.07 (0.2%), tests_pri_-90: 75 (11.6%), check_bayes:
-        73 (11.3%), b_tokenize: 13 (2.1%), b_tok_get_all: 15 (2.3%),
-        b_comp_prob: 4.6 (0.7%), b_tok_touch_all: 36 (5.6%), b_finish: 0.80
-        (0.1%), tests_pri_0: 527 (81.2%), check_dkim_signature: 0.59 (0.1%),
-        check_dkim_adsp: 2.6 (0.4%), poll_dns_idle: 0.79 (0.1%), tests_pri_10:
-        2.2 (0.3%), tests_pri_500: 7 (1.1%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luis Chamberlain <mcgrof@kernel.org> writes:
-
-> On Tue, Mar 01, 2022 at 10:09:17AM -0800, Shakeel Butt wrote:
->> On Mon, Feb 28, 2022 at 06:36:58AM -0800, Luis Chamberlain wrote:
->> > On Mon, Feb 28, 2022 at 10:17:16AM +0300, Vasily Averin wrote:
->> > > Following one-liner running inside memcg-limited container consumes
->> > > huge number of host memory and can trigger global OOM.
->> > >
->> > > for i in `seq 1 xxx` ; do ip l a v$i type veth peer name vp$i ; done
->> > >
->> > > Patch accounts most part of these allocations and can protect host.
->> > > ---[cut]---
->> > > It is not polished, and perhaps should be splitted.
->> > > obviously it affects other kind of netdevices too.
->> > > Unfortunately I'm not sure that I will have enough time to handle it
->> > properly
->> > > and decided to publish current patch version as is.
->> > > OpenVz workaround it by using per-container limit for number of
->> > > available netdevices, but upstream does not have any kind of
->> > > per-container configuration.
->> > > ------
+On Tue, Mar 01, 2022 at 09:14, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> On 3/1/2022 4:31 AM, Mattias Forsblad wrote:
+>> Greetings,
 >> 
->> > Should this just be a new ucount limit on kernel/ucount.c and have veth
->> > use something like inc_ucount(current_user_ns(), current_euid(),
->> > UCOUNT_VETH)?
+>> This series implements a new bridge flag 'local_receive' and HW
+>> offloading for Marvell mv88e6xxx.
 >> 
->> > This might be abusing ucounts though, not sure, Eric?
+>> When using a non-VLAN filtering bridge we want to be able to limit
+>> traffic to the CPU port to lessen the CPU load. This is specially
+>> important when we have disabled learning on user ports.
 >> 
+>> A sample configuration could be something like this:
 >> 
->> For admins of systems running multiple workloads, there is no easy way
->> to set such limits for each workload.
+>>         br0
+>>        /   \
+>>     swp0   swp1
+>> 
+>> ip link add dev br0 type bridge stp_state 0 vlan_filtering 0
+>> ip link set swp0 master br0
+>> ip link set swp1 master br0
+>> ip link set swp0 type bridge_slave learning off
+>> ip link set swp1 type bridge_slave learning off
+>> ip link set swp0 up
+>> ip link set swp1 up
+>> ip link set br0 type bridge local_receive 0
+>> ip link set br0 up
+>> 
+>> The first part of the series implements the flag for the SW bridge
+>> and the second part the DSA infrastructure. The last part implements
+>> offloading of this flag to HW for mv88e6xxx, which uses the
+>> port vlan table to restrict the ingress from user ports
+>> to the CPU port when this flag is cleared.
 >
-> That's why defaults would exist. Today's ulimits IMHO are insane and
-> some are arbitrarily large.
-
-My perspective is that we have two basic kinds of limits.
-
-Limits to catch programs that go out of control hopefully before they
-bring down the entire system.  This is the purpose I see of rlimits and
-ucounts.  Such limits should be set by default so large that no one has
-to care unless their program is broken.
-
-Limits to contain programs and keep them from having a negative impact
-on other programs.  Generally this is the role I see the cgroups
-playing.  This limits must be much more tightly managed.
-
-The problem with veth that was reported was that the memory cgroup
-limits fails to contain veth's allocations and veth manages to affect
-process outside the memory cgroup where the veth ``lives''.  The effect
-is an OOM but the problem is that it is affecting processes out of the
-memory control group.
-
-Part of the reason for the recent ucount work is so that ordinary users
-can create user namespaces and root in that user namespace won't be able
-to exceed the limits that were set when the user namespace was created
-by creating additional users.
-
-Part of the reason for my ucount work is my frustration that cgroups
-would up something completely different than what was originally
-proposed and solve a rather problem set.  Originally the proposal was
-that cgroups would be the user interface for the bean-counter patches.
-(Roughly counts like the ucounts are now).  Except for maybe the pid
-controller you mention below cgroups look nothing like that today.
-So I went and I solved the original problem because it was still not
-solved.
-
-The network stack should already have packet limits to prevent a global
-OOM so I am a bit curious why those limits aren't preventing a global
-OOM in for the veth device.
-
-
-I am not saying that the patch is correct (although from 10,000 feet the
-patch sounds like it is solving the reported problem).  I am answering
-the question of how I understand limits to work.
-
-Luis does this explanation of how limits work help?
-
-
->> From admin's perspective it is preferred to have minimal
->> knobs to set and if these objects are charged to memcg then the memcg
->> limits would limit them. There was similar situation for inotify
->> instances where fs sysctl inotify/max_user_instances already limits the
->> inotify instances but we memcg charged them to not worry about setting
->> such limits. See ac7b79fd190b ("inotify, memcg: account inotify
->> instances to kmemcg").
+> Why not use a bridge with VLAN filtering enabled? I cannot quite find it 
+> right now, but Vladimir recently picked up what I had attempted before 
+> which was to allow removing the CPU port (via the bridge master device) 
+> from a specific group of VLANs to achieve that isolation.
 >
-> Yes but we want sensible defaults out of the box. What those should be
-> IMHO might be work which needs to be figured out well.
->
-> IMHO today's ulimits are a bit over the top today. This is off slightly
-> off topic but for instance play with:
->
-> git clone https://github.com/ColinIanKing/stress-ng
-> cd stress-ng
-> make -j 8
-> echo 0 > /proc/sys/vm/oom_dump_tasks                                            
-> i=1; while true; do echo "RUNNING TEST $i"; ./stress-ng --unshare 8192 --unshare-ops 10000;  sleep 1; let i=$i+1; done
->
-> If you see:
->
-> [  217.798124] cgroup: fork rejected by pids controller in
-> /user.slice/user-1000.slice/session-1.scope
->                                                                                 
-> Edit /usr/lib/systemd/system/user-.slice.d/10-defaults.conf to be:
->
-> [Slice]                                                                         
-> TasksMax=MAX_TASKS|infinity
->
-> Even though we have max_threads set to 61343, things ulimits have a
-> different limit set, and what this means is the above can end up easily
-> creating over 1048576 (17 times max_threads) threads all eagerly doing
-> nothing to just exit, essentially allowing a sort of fork bomb on exit.
-> Your system may or not fall to its knees.
 
-What max_threads are you talking about here?  The global max_threads
-exposed in /proc/sys/kernel/threads-max?  I don't see how you can get
-around that.  Especially since the count is not decremented until the
-process is reaped.
+Hi Florian,
 
-Or is this the pids controller having a low limit and
-/proc/sys/kernel/threads-max having a higher limit?
+Yes we are aware of this work, which is awesome by the way! For anyone
+else who is interested, I believe you are referring to this series:
 
-I really have not looked at this pids controller.
+https://lore.kernel.org/netdev/20220215170218.2032432-1-vladimir.oltean@nxp.com/
 
-So I am not certain I understand your example here but I hope I have
-answered your question.
+There are cases though, where you want a TPMR-like setup (or "dumb hub"
+mode, if you will) and ignore all tag information.
 
-Eric
+One application could be to use a pair of ports on a switch as an
+ethernet extender/repeater for topologies that span large physical
+distances. If this repeater is part of a redundant topology, you'd to
+well to disable learning, in order to avoid dropping packets when the
+surrounding active topology changes. This, in turn, will mean that all
+flows will be classified as unknown unicast. For that reason it is very
+important that the CPU be shielded.
+
+You might be tempted to solve this using flooding filters of the
+switch's CPU port, but these go out the window if you have another
+bridge configured, that requires that flooding of unknown traffic is
+enabled.
+
+Another application is to create a similar setup, but with three ports,
+and have the third one be used as a TAP.
+
+>> Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
+>
+> I don't believe this tag has much value since it was presumably carried 
+> over from an internal review. Might be worth adding it publicly now, though.
+
+I think Mattias meant to replicate this tag on each individual
+patch. Aside from that though, are you saying that a tag is never valid
+unless there is a public message on the list from the signee? Makes
+sense I suppose. Anyway, I will send separate tags for this series.
