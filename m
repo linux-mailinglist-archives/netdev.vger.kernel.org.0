@@ -2,73 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B80C14C81BB
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 04:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ABBF4C81E3
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 05:03:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbiCADo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 22:44:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        id S231261AbiCAEDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 23:03:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiCADo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 22:44:57 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4458F61A1F;
-        Mon, 28 Feb 2022 19:44:17 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id d19so17114928ioc.8;
-        Mon, 28 Feb 2022 19:44:17 -0800 (PST)
+        with ESMTP id S230272AbiCAEDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 23:03:40 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8604BFDC;
+        Mon, 28 Feb 2022 20:03:00 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id w7so17175009ioj.5;
+        Mon, 28 Feb 2022 20:03:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=Vn+PVVoXKoUHPCXcRLpX+JrNULpiUavqMcZhXHY9RqY=;
-        b=SBTqOQMCWs98AYaN0Qm+mIHtdyqugOlQKaCcmQq6sAdCK3KIOUizjR2zLILpjHYyZM
-         2+NLpK/imqnPvwznXCJM7dUr9t6M8u/qvsfOvjaYDUyHED8uvMh5tSDkjVByapdyu5Av
-         JJ7aoEYLpoI2x2U/w3bMg/hpSrbe0x438o0e1uctBNmB9Px9Pp64NtI+D0Lq7x0rNWzU
-         VpTp6Z4WbkJRUgeBaRYU3rwmEpn+M/W8EET2E8hM4twiT/+qFWk/IIHNtwHdNP19h5j1
-         bco+fpcX1oapsVo/bp3iazSfqKNIU3dGn6iBrbiSa3svsWnxGDLHwrqnin+mNUt0FiYg
-         WbbA==
+        bh=QbGiC4M7yjcGNMo3K5OFtxH8Uhk9ttEp8MVhuXYPVJw=;
+        b=RS5TgXUTmZdxWOKt9lpX1fSbzxAYg63DwcoVNE25UuVL6u8najpILJVkFwCj4B3Z0i
+         w45wLPscmhSv8x63H1OW5wim5f7OYOa0U2YbTN3bDVxmXHYYLOrV+nnG2GGSoF5lnic1
+         n9Wp8kZlpXR6Wm8cxHKFI1tHJ/iQuCSmmU/KFAkRWZLfjELvSeBUoxvpPadIvGct9/MN
+         BxDcSknYMAxNPh4XwhsnbM+wVu7uFRoJjg571mk9kaVzzNlcgTfKo190hikzJQhh/IW+
+         ccULwGj/4K+hSpGdfSPwWasWOGkdqf0dGj8mODn6/561y17RpD1xiy/8uBHH/pmt4WGz
+         jL8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=Vn+PVVoXKoUHPCXcRLpX+JrNULpiUavqMcZhXHY9RqY=;
-        b=nuFhHxijJiLO85yc2i5zgt6ibHwipkJZc+Xo/EEpubAj0FPkSfm8G6wZwjWSWpfItO
-         Y+/qC50empd1agkvOXRKByErrKfwXrNI3LK/2H1HfK7V0Zqj1tYBuKl6ELD8JpoV/eY1
-         y08sE49odLeBnTqrrzbIvGUUYCGpkNfDO7uOi/B1NIiUovON8LULMsFG95Hxwg2BM6+A
-         57WhDOfNFnBfLJqFiH2qffk6xeoTFruJCvtrejByyuD0oEalnUHTyImHD0MB2pB5q9zj
-         zvuE8ldA4uWy4DVPSvkJKOxO3JLXHBn+YuHVsr60QEjXmRrDlEq3N5qlSr16YpHWjW46
-         J/2A==
-X-Gm-Message-State: AOAM530hqtOyPw/neLy+n5JGZB4ra0JUMZIxj1xJj++feU77+vsU/lBW
-        bUyW73JYPXVMm/6q7Sdi/pZYf/7TC8U3WA==
-X-Google-Smtp-Source: ABdhPJz7hjad9HXmOIERw9WyOvpJmxUuFOa1r+SJOXgozLOv3Fwi7RXrznYRZRgEChrQgLwXXjbVOA==
-X-Received: by 2002:a05:6638:d52:b0:314:d4d9:f8e4 with SMTP id d18-20020a0566380d5200b00314d4d9f8e4mr19086526jak.139.1646106256662;
-        Mon, 28 Feb 2022 19:44:16 -0800 (PST)
+        bh=QbGiC4M7yjcGNMo3K5OFtxH8Uhk9ttEp8MVhuXYPVJw=;
+        b=12Tlabq9btazX+Bm5zqnARBh07ldRusul9a5CS3NB0lO2r8a91u+ZJkaPQD22z4zGH
+         PRnl5FTq1OVUevO3vNlucH3erXHuOY1gWxn1Vjrh7TxFAuAVJAPgQ03NmM5TL+vbV/Wp
+         6eyW71Ff7wOJ+RqAwa/KOS2WwzDL9uSzEQj7JV8ioPCTfHRpujne+YHbWEwbmBnayrtE
+         Vxl8vsr3ljdNWfKkfpOPKsU2WRj0LRpTiRHC2H+l3I5fuF1BUKYgLkp0pEwUOypPcWnH
+         iLtZmWmgAczNSSpJJiLns/EdlRhqfq9QXG/kXlVpwtVdad4lKxigjtnmui2DWyFVs17o
+         OA/A==
+X-Gm-Message-State: AOAM532M+5IQhbIKz3su2sMaf0q+LNHLPoplwBQMDT/OnXI2YsV4hIZQ
+        +DcIYVvxmewywMGt/nShUXA=
+X-Google-Smtp-Source: ABdhPJywKwvEilzemENObt86ACBcCDnzan6rjFida8BY+GPH51BGw+1D/vzcYN1WScKxIsckJdR0Jw==
+X-Received: by 2002:a02:a1c7:0:b0:314:cc99:3c4f with SMTP id o7-20020a02a1c7000000b00314cc993c4fmr19285817jah.53.1646107379809;
+        Mon, 28 Feb 2022 20:02:59 -0800 (PST)
 Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id l3-20020a056e020e4300b002c242b778a5sm7060174ilk.74.2022.02.28.19.44.15
+        by smtp.gmail.com with ESMTPSA id p13-20020a056e0206cd00b002c23c551420sm7078911ils.36.2022.02.28.20.02.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 19:44:16 -0800 (PST)
-Date:   Mon, 28 Feb 2022 19:44:08 -0800
+        Mon, 28 Feb 2022 20:02:59 -0800 (PST)
+Date:   Mon, 28 Feb 2022 20:02:53 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     wangyufen <wangyufen@huawei.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
-        jakub@cloudflare.com, lmb@cloudflare.com, davem@davemloft.net,
-        bpf@vger.kernel.org, edumazet@google.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org
-Message-ID: <621d96888e266_8c479208da@john.notmuch>
-In-Reply-To: <43776e3f-08c0-5d1a-1c2b-dd6084a6de33@huawei.com>
+To:     Wang Yufen <wangyufen@huawei.com>, john.fastabend@gmail.com,
+        daniel@iogearbox.net, jakub@cloudflare.com, lmb@cloudflare.com,
+        davem@davemloft.net, bpf@vger.kernel.org
+Cc:     edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>
+Message-ID: <621d9aed541f_8c47920864@john.notmuch>
+In-Reply-To: <20220225014929.942444-3-wangyufen@huawei.com>
 References: <20220225014929.942444-1-wangyufen@huawei.com>
- <20220225014929.942444-2-wangyufen@huawei.com>
- <YhvPKB8O7ml5JSHQ@pop-os.localdomain>
- <43776e3f-08c0-5d1a-1c2b-dd6084a6de33@huawei.com>
-Subject: Re: [PATCH bpf-next 1/4] bpf, sockmap: Fix memleak in
- sk_psock_queue_msg
+ <20220225014929.942444-3-wangyufen@huawei.com>
+Subject: RE: [PATCH bpf-next 2/4] bpf, sockmap: Fix memleak in tcp_bpf_sendmsg
+ while sk msg is full
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,62 +76,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-wangyufen wrote:
-> =
+Wang Yufen wrote:
+> If tcp_bpf_sendmsg() is running while sk msg is full, sk_msg_alloc()
+> returns -ENOSPC, tcp_bpf_sendmsg() goto wait for memory. If partial memory
+> has been alloced by sk_msg_alloc(), that is, msg_tx->sg.size is greater
+> than osize after sk_msg_alloc(), memleak occurs. To fix we use
+> sk_msg_trim() to release the allocated memory, then goto wait for memory.
 
-> =E5=9C=A8 2022/2/28 3:21, Cong Wang =E5=86=99=E9=81=93:
-> > On Fri, Feb 25, 2022 at 09:49:26AM +0800, Wang Yufen wrote:
-> >> If tcp_bpf_sendmsg is running during a tear down operation we may en=
-queue
-> >> data on the ingress msg queue while tear down is trying to free it.
-> >>
-> >>   sk1 (redirect sk2)                         sk2
-> >>   -------------------                      ---------------
-> >> tcp_bpf_sendmsg()
-> >>   tcp_bpf_send_verdict()
-> >>    tcp_bpf_sendmsg_redir()
-> >>     bpf_tcp_ingress()
-> >>                                            sock_map_close()
-> >>                                             lock_sock()
-> >>      lock_sock() ... blocking
-> >>                                             sk_psock_stop
-> >>                                              sk_psock_clear_state(ps=
-ock, SK_PSOCK_TX_ENABLED);
-> >>                                             release_sock(sk);
-> >>      lock_sock()	=
+Small nit, "sk_msg_alloc() returns -ENOSPC" should be something like, "when
+sk_msg_alloc() returns -ENOMEM error,..." That error path is from ENOMEM not
+the ENOSPC.
 
-> >>      sk_mem_charge()
-> >>      get_page()
-> >>      sk_psock_queue_msg()
-> >>       sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED);
-> >>        drop_sk_msg()
-> >>      release_sock()
-> >>
-> >> While drop_sk_msg(), the msg has charged memory form sk by sk_mem_ch=
-arge
-> >> and has sg pages need to put. To fix we use sk_msg_free() and then k=
-fee()
-> >> msg.
-> >>
-> > What about the other code path? That is, sk_psock_skb_ingress_enqueue=
-().
-> > I don't see skmsg is charged there.
-> =
+But nice find thanks! I think we might have seen this in a couple cases on
+our side as well.
 
-> sk_psock_skb_ingress_self() | sk_psock_skb_ingress()
->  =C2=A0=C2=A0 skb_set_owner_r()
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sk_mem_charge()
->  =C2=A0=C2=A0 sk_psock_skb_ingress_enqueue()
-> =
+> 
+> This issue can cause the following info:
+> WARNING: CPU: 3 PID: 7950 at net/core/stream.c:208 sk_stream_kill_queues+0xd4/0x1a0
+> Call Trace:
+>  <TASK>
+>  inet_csk_destroy_sock+0x55/0x110
+>  __tcp_close+0x279/0x470
+>  tcp_close+0x1f/0x60
+>  inet_release+0x3f/0x80
+>  __sock_release+0x3d/0xb0
+>  sock_close+0x11/0x20
+>  __fput+0x92/0x250
+>  task_work_run+0x6a/0xa0
+>  do_exit+0x33b/0xb60
+>  do_group_exit+0x2f/0xa0
+>  get_signal+0xb6/0x950
+>  arch_do_signal_or_restart+0xac/0x2a0
+>  exit_to_user_mode_prepare+0xa9/0x200
+>  syscall_exit_to_user_mode+0x12/0x30
+>  do_syscall_64+0x46/0x80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>  </TASK>
+> 
+> WARNING: CPU: 3 PID: 2094 at net/ipv4/af_inet.c:155 inet_sock_destruct+0x13c/0x260
+> Call Trace:
+>  <TASK>
+>  __sk_destruct+0x24/0x1f0
+>  sk_psock_destroy+0x19b/0x1c0
+>  process_one_work+0x1b3/0x3c0
+>  kthread+0xe6/0x110
+>  ret_from_fork+0x22/0x30
+>  </TASK>
+> 
+> Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> ---
+>  net/ipv4/tcp_bpf.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> index 9b9b02052fd3..ac9f491cc139 100644
+> --- a/net/ipv4/tcp_bpf.c
+> +++ b/net/ipv4/tcp_bpf.c
+> @@ -421,8 +421,10 @@ static int tcp_bpf_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+>  		osize = msg_tx->sg.size;
+>  		err = sk_msg_alloc(sk, msg_tx, msg_tx->sg.size + copy, msg_tx->sg.end - 1);
+>  		if (err) {
+> -			if (err != -ENOSPC)
+> +			if (err != -ENOSPC) {
+> +				sk_msg_trim(sk, msg_tx, osize);
+>  				goto wait_for_memory;
+> +			}
+>  			enospc = true;
+>  			copy = msg_tx->sg.size - osize;
+>  		}
+> -- 
+> 2.25.1
+> 
 
-> The other code path skmsg is charged by skb_set_owner_r()->sk_mem_charg=
-e()
-> =
-
-> >
-> > Thanks.
-> > .
-
-I walked that code and fix LGTM as well.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>=
+Acked-by: John Fastabend <john.fastabend@gmail.com>
