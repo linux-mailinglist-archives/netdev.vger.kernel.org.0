@@ -2,111 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E974C8C91
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 14:26:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 642004C8C94
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 14:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbiCAN1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 08:27:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50122 "EHLO
+        id S234929AbiCAN1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 08:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbiCAN1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 08:27:20 -0500
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DEDF9D0C1;
-        Tue,  1 Mar 2022 05:26:39 -0800 (PST)
-HMM_SOURCE_IP: 172.18.0.218:56246.1658835715
-HMM_ATTACHE_NUM: 0001
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-222.210.155.146 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id D6D50280029;
-        Tue,  1 Mar 2022 21:26:25 +0800 (CST)
-X-189-SAVE-TO-SEND: +lic121@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 06415c6c8f124d04b2344848f72223f3 for bpf@vger.kernel.org;
-        Tue, 01 Mar 2022 21:26:35 CST
-X-Transaction-ID: 06415c6c8f124d04b2344848f72223f3
-X-Real-From: lic121@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: lic121@chinatelecom.cn
-Date:   Tue, 1 Mar 2022 13:26:23 +0000
-From:   lic121 <lic121@chinatelecom.cn>
-To:     bpf@vger.kernel.org
-Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lic121@chinatelecom.cn
-Subject: [PATCH bpf] libbpf: unmap rings when umem deleted
-Message-ID: <20220301132623.GA19995@vscode.7~>
+        with ESMTP id S235012AbiCAN12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 08:27:28 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556169D4C1;
+        Tue,  1 Mar 2022 05:26:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646141205; x=1677677205;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=z2s6MqyiWrQTAqg/P9Yn8V1ROZ3GKC+IbN5wcEyP710=;
+  b=liSiQby72p2kdT6dlEl9tf3ZABIKtIzU/OdJ01Ad9b4JmmwmR2FrxtbW
+   Ti1+p+x6OkFyp2+BaFzQwP/bikwIQLhBW5geS3P9mVsH6q6EWkjR+Di8q
+   d1aDBFc5nmhWi1DWAkttVCk+tlOW53KLQmWujilrevKK9dM3b2QA39DWb
+   GC8JZov/Tcev4zoLqSerGxttvv8suhttjctqNq3qjhwQtLFLl3TbLP/oi
+   HzTcqxHK7Ltq/AiZ5VyZNJ56MSYwE3eCIQQWVTpoFXNmXjndFXYj8ZuJi
+   12zs9ne61/l+94nw+3aU58m2eXxgtqN7pSu110M5sYZuoJQRXsxaSbTyM
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252862561"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="252862561"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 05:26:45 -0800
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="550709348"
+Received: from fsforza-mobl1.ger.corp.intel.com ([10.252.44.248])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 05:26:38 -0800
+Date:   Tue, 1 Mar 2022 15:26:36 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
+Subject: Re: [PATCH net-next v5 10/13] net: wwan: t7xx: Introduce power
+ management
+In-Reply-To: <20220223223326.28021-11-ricardo.martinez@linux.intel.com>
+Message-ID: <3fe7f932-57b7-14c7-4966-7484df7f8250@linux.intel.com>
+References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-11-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xsk_umem__create() does mmap for fill/comp rings, but xsk_umem__delete()
-doesn't do the unmap. This works fine for regular cases, because
-xsk_socket__delete() does unmap for the rings. But for the case that
-xsk_socket__create_shared() fails, umem rings are not unmapped.
+On Wed, 23 Feb 2022, Ricardo Martinez wrote:
 
-fill_save/comp_save are checked to determine if rings have already be
-unmapped by xsk. If fill_save and comp_save are NULL, it means that the
-rings have already been used by xsk. Then they are supposed to be
-unmapped by xsk_socket__delete(). Otherwise, xsk_umem__delete() does the
-unmap.
+> From: Haijun Liu <haijun.liu@mediatek.com>
+> 
+> Implements suspend, resumes, freeze, thaw, poweroff, and restore
+> `dev_pm_ops` callbacks.
+> 
+> >From the host point of view, the t7xx driver is one entity. But, the
+> device has several modules that need to be addressed in different ways
+> during power management (PM) flows.
+> The driver uses the term 'PM entities' to refer to the 2 DPMA and
+> 2 CLDMA HW blocks that need to be managed during PM flows.
+> When a dev_pm_ops function is called, the PM entities list is iterated
+> and the matching function is called for each entry in the list.
+> 
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> ---
 
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-Signed-off-by: lic121 <lic121@chinatelecom.cn>
----
- tools/lib/bpf/xsk.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+> +static int __t7xx_pci_pm_suspend(struct pci_dev *pdev)
+> +{
+...
+> +	iowrite32(L1_DISABLE_BIT(0), IREG_BASE(t7xx_dev) + DIS_ASPM_LOWPWR_CLR_0);
+> +	return 0;
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index edafe56..32a2f57 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -1193,12 +1193,23 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
- 
- int xsk_umem__delete(struct xsk_umem *umem)
- {
-+	struct xdp_mmap_offsets off;
-+	int err;
-+
- 	if (!umem)
- 		return 0;
- 
- 	if (umem->refcount)
- 		return -EBUSY;
- 
-+	err = xsk_get_mmap_offsets(umem->fd, &off);
-+	if (!err && umem->fill_save && umem->comp_save) {
-+		munmap(umem->fill_save->ring - off.fr.desc,
-+		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
-+		munmap(umem->comp_save->ring - off.cr.desc,
-+		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
-+	}
-+
- 	close(umem->fd);
- 	free(umem);
- 
+The success path does this same iowrite32 to DIS_ASPM_LOWPWR_CLR_0
+as the failure paths. Is that intended?
+
+The function looks much better now!
+
+
 -- 
-1.8.3.1
+ i.
 
