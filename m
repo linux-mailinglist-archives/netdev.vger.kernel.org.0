@@ -2,147 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ADD94C7FBB
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 01:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE2644C7FB9
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 01:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbiCAAxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 19:53:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        id S229901AbiCAAwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 19:52:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbiCAAxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 19:53:23 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718F6F70
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:52:42 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id t14so19732401ljh.8
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:52:42 -0800 (PST)
+        with ESMTP id S229631AbiCAAwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 19:52:01 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242CD10FE4
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:51:21 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id m14so24288682lfu.4
+        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:51:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=fastly.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BlmDHl6uq7o6y8aC/cJk7fo5oLGvHdeOO4XUoHPiZHY=;
-        b=CuWkmdhnuqYUPLlFfSW5kqvLG+/BaUYxswQvwT5TlbeMKdgX0f6Tdop/2MomIxMIWT
-         P4yfskuo3sOir2HSEC5b7N//0EkwPlLVbS+ffho6xWO2QaHJfy0oi9bnLtClO4bSDX+r
-         dQzBghLtont2uRRAhfDOfzUglX2wpO3DzhpXQ=
+         :cc:content-transfer-encoding;
+        bh=AHMKNwsJmZIv42C56dUYCGLQL894qM+ba23hywWTdn8=;
+        b=CvrUBJC6MSgGF2nfgS8h6+bd3OM57xvy6mAQ5dDJSDF+HjBQendAmIUKlh1i1XlWJT
+         tfNEvm8PWqbbhCmzwhoWSgEEDCByUvTreqcxm/q8nO2R0zzwFAgv1MrBAC9+bpiv7g/F
+         pTxXnGdDTLZNGOFzq0M2d/89Pzhxwk3ItZZu0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BlmDHl6uq7o6y8aC/cJk7fo5oLGvHdeOO4XUoHPiZHY=;
-        b=Qbx9h4Eb4VUKu1+2NJWdL4CmQZZrg7D04bH9ADTWb0nf5gHhbfjY6ORc7wmHAnCUdY
-         LTYJ568E8NjeWzLxzkhfqOpDHy5wKdeKgZx8jYrDAWa00hrF//pjj9AIHWQ5MXIPx5Vm
-         qkgnaAyoNEPL5ujHQh/uUzs71tDQxrOuNsNa/P8qY2i1Mnw8CJoX/NSAbdikXlyK1bDJ
-         hsVPY/DSO/PHL56aymIzPe6LyjirenjyRwit3h7FGdZayjl/DH+uV4mbh0Hg3Zlp22Ui
-         HmhBA8pZt22YJyLvY6BmGyRuOz/USpQPu3bfuPbIwXCZbXwtftBdetwcytaJ+gLVl55F
-         Cj9w==
-X-Gm-Message-State: AOAM530bGmseE7ZXI7mbn43RQjHHAnVDenKBlPodsACkWO50aIAcWS40
-        zve8K2CC3T09s1ltonGOlb4reI5+U3tPCtLRPkE=
-X-Google-Smtp-Source: ABdhPJwj+X6htAjf+fv8dek51yX8GI8kHUi7cZ6R8ItNfhvvdGbvDJSW+6Cvj4htT0SrAq6IMcFI9g==
-X-Received: by 2002:a2e:b5a1:0:b0:244:d3b4:dc24 with SMTP id f1-20020a2eb5a1000000b00244d3b4dc24mr16068938ljn.83.1646095960585;
-        Mon, 28 Feb 2022 16:52:40 -0800 (PST)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
-        by smtp.gmail.com with ESMTPSA id r25-20020ac25a59000000b0044394f8a312sm1219332lfn.75.2022.02.28.16.52.40
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 16:52:40 -0800 (PST)
-Received: by mail-lf1-f42.google.com with SMTP id w27so24299081lfa.5
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 16:52:40 -0800 (PST)
-X-Received: by 2002:a05:6512:3042:b0:437:96f5:e68a with SMTP id
- b2-20020a056512304200b0043796f5e68amr14778245lfb.449.1646095527444; Mon, 28
- Feb 2022 16:45:27 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AHMKNwsJmZIv42C56dUYCGLQL894qM+ba23hywWTdn8=;
+        b=msQ3Dd3u/d3XfcKsf+n3Hh9TVxURvo3DhRRC5TzyaC7eZaeZEKr4XIe9FuZsaSwTZ4
+         cVC2R24Zih7PlLD+HJNpMVzNS8cj2CDMpETCmtLpR0zabXjwrnUoLrszNIijp4n0ff2E
+         ig/Am45l3rfyqjqW5pAAhrxm7ck137Sj6ACQazrhVVs8jG7FDR6OkKU2Xn810OZOWDuo
+         kbkMjYV2G+nSpPwVeCfUPNvwr1F/Lc0tQ2w7fWo7ypC/is0gmH+QkUfy93UNKeMy9w7z
+         GMYIkKv8Dj7/+IyOx8WaiB/5of5Ij8NFgNk94ARgmfswYDIBqRuqRuaj4MPZyigjU4yz
+         JWew==
+X-Gm-Message-State: AOAM532RuO1mNmpa60VlYZWyQFUARyRGf4JgH3JqgSJ7n/pZ15CATwNS
+        S3cg+Rfsz8IRLUQovLvxJ68UWQKST68CbDBoKVXqOg==
+X-Google-Smtp-Source: ABdhPJx1XgxrxKvShJZnqXdRuXmzpPyv95vdF2irZB/EkJsngmyT6nJoPFnRQo6osF+EKqx9c8UESUZekiL9gRL6td8=
+X-Received: by 2002:ac2:5b4b:0:b0:43c:795a:25a6 with SMTP id
+ i11-20020ac25b4b000000b0043c795a25a6mr14461839lfp.268.1646095879481; Mon, 28
+ Feb 2022 16:51:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
- <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
- <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
- <Yh0tl3Lni4weIMkl@casper.infradead.org> <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
- <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
-In-Reply-To: <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Feb 2022 16:45:11 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
-Message-ID: <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>
+References: <1645810914-35485-1-git-send-email-jdamato@fastly.com>
+ <1645810914-35485-5-git-send-email-jdamato@fastly.com> <453c24e6-f9b1-0b7d-3144-7b3db1d94944@redhat.com>
+ <CALALjgxS0q+Vbg8rgrqTZ+CSV=9tXOTdxE7S4VGGnvsbicLE3A@mail.gmail.com> <87h78jxsrl.fsf@toke.dk>
+In-Reply-To: <87h78jxsrl.fsf@toke.dk>
+From:   Joe Damato <jdamato@fastly.com>
+Date:   Mon, 28 Feb 2022 16:51:08 -0800
+Message-ID: <CALALjgxJDF=WJBbExTn0ua5LoqHqGHe0a8MG0GifbbRptfruLQ@mail.gmail.com>
+Subject: Re: [net-next v7 4/4] mlx5: add support for page_pool_get_stats
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
+        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 3:26 PM Matthew Wilcox <willy@infradead.org> wrote:
+On Mon, Feb 28, 2022 at 1:17 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> #define ___PASTE(a, b)  a##b
-> #define __PASTE(a, b) ___PASTE(a, b)
-> #define _min(a, b, u) ({         \
+> Joe Damato <jdamato@fastly.com> writes:
+>
+> > On Sun, Feb 27, 2022 at 11:28 PM Jesper Dangaard Brouer
+> > <jbrouer@redhat.com> wrote:
+> >>
+> >>
+> >>
+> >> On 25/02/2022 18.41, Joe Damato wrote:
+> >> > +#ifdef CONFIG_PAGE_POOL_STATS
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_fast)=
+ },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_slow)=
+ },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_slow_=
+high_order) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_empty=
+) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_refil=
+l) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_waive=
+) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_c=
+ached) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_c=
+ache_full) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_r=
+ing) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_r=
+ing_full) },
+> >> > +     { MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, page_pool_rec_r=
+eleased_ref) },
+> >> > +#endif
+> >>
+> >> The naming: "page_pool_rec_xxx".
+> >> What does the "rec" stand for?
+> >
+> > rec stands for recycle.
+> >
+> > ethtool strings have a limited size (ETH_GSTRING_LEN - 32 bytes) and
+> > the full word "recycle" didn't fit for some of the stats once the
+> > queue number is prepended elsewhere in the driver code.
+> >
+> >> Users of ethtool -S stats... will they know "rec" is "recycle" ?
+> >
+> > I am open to other names or adding documentation to the driver docs to
+> > explain the meaning.
+>
+> You could shorten the 'page_pool_' prefix to 'ppool_' or even 'pp_' and
+> gain some characters that way?
 
-Yeah, except that's ugly beyond belief, plus it's literally not what
-we do in the kernel.
+I had considered this, but I thought that 'pp' was possibly as terse as 're=
+c'.
 
-Really. The "-Wshadow doesn't work on the kernel" is not some new
-issue, because you have to do completely insane things to the source
-code to enable it.
+If you all think these are more clear, I can send a v8 of this series
+that changes the strings from the above to this instead:
 
-Just compare your uglier-than-sin version to my straightforward one.
-One does the usual and obvious "use a private variable to avoid the
-classic multi-use of a macro argument". And the other one is an
-abomination.
+rx_pp_alloc_fast
+rx_pp_alloc_slow
+rx_pp_alloc_...
 
-              Linus
+and
+
+rx_pp_recyle_cached
+rx_pp_recycle_cache_full
+rx_pp_recycle_...
+
+With this name scheme, it looks like all the stat names seem to fit. I
+have no idea if this is more or less clear to the user though :)
+
+I'll leave it up to the mlx5 maintainers; I am happy to do whatever
+they prefer to get this series in.
+
+Thanks,
+Joe
