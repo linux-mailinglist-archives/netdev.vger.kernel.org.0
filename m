@@ -2,119 +2,366 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C60CD4C93B3
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 19:59:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F8004C93CF
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 20:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237196AbiCATAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 14:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
+        id S237233AbiCATCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 14:02:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237189AbiCATAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:00:12 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E124D9C6
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 10:59:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646161170; x=1677697170;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ECoUXK6lgjBfe+aOlWju3nZhR1T6IzeY9kU3ujSPmME=;
-  b=I0VWiOV6gdN+lYWA2rsrGzvD+iioauRrnD0iGflue1AqW5u9Qt4jnCco
-   siFS+Pf8VXnMGNKTIOVSwMFRnUFCj52oPGsYZ7TQpAAEI5iAY6raSGIbE
-   dHmPmGGPvWRHv19vbxYGI4yx58QWrMmeWO2U0DjVjJN4+IP5yG9sr7Y/A
-   YUYWmSCgLN5Nos3bsb0KddSk65f84i0aNlXmoMjzVWtEt/2/bCvenFyGV
-   7QNL7MkTT1/jo+XFWBlOeCgENegSuOW9voOiWLrENFD1DlyyUSRzCYwIW
-   k0HurnQnFXLYJs2UFKQ7JrUmHe4Dgc/vTjWZXvbX9rhrajzg1WKRsM3/v
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="252042328"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="252042328"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 10:59:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="507908278"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga002.jf.intel.com with ESMTP; 01 Mar 2022 10:59:27 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Subject: [PATCH net-next 7/7] iavf: Remove non-inclusive language
-Date:   Tue,  1 Mar 2022 10:59:39 -0800
-Message-Id: <20220301185939.3005116-8-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220301185939.3005116-1-anthony.l.nguyen@intel.com>
-References: <20220301185939.3005116-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S233437AbiCATCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 14:02:18 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45B54D9C6;
+        Tue,  1 Mar 2022 11:01:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/tBazeosVX7n1CPUUwf6PzIu6vjJVnHyHOkfjsv2zKo=; b=G2U9nPc+cKcx95Z9ga5OZXchNz
+        blxZ0iNm1M+uKQvG5JCjwfBWD2Vqk/JNrOrkTtzRMLvR552E7A4wIdnYTrEx28aAxcIhZIBDk2OhJ
+        2mC2hcK77WGdKfwnLWC9xIRW2naQmlD6pg6blozExF50oYyrluLyuDKCR05dvj4lJCUJucJUHaufH
+        36UHt4On3fRFJ0YJCkBdWklX7NM/KDi/YeSecU8YxtgD7/WN7ClqH8GnFhU3JjJVUQnhYo8rNzSqS
+        E0UBK85SGI9bRQfxw/IXmOle17eRFr0eUMCl1eNz3aBOX0q+MyaB3hvtdfAdZV9rP6eZ0vdNCYptA
+        LfRWRgDg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nP7kD-009r7Z-Q4; Tue, 01 Mar 2022 19:01:09 +0000
+Date:   Tue, 1 Mar 2022 19:01:09 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        samba-technical@lists.samba.org,
+        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <Yh5tdcNNHw/z7VRZ@casper.infradead.org>
+References: <20220228110822.491923-3-jakobkoschel@gmail.com>
+ <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
+ <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
+ <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
+ <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
+ <Yh0tl3Lni4weIMkl@casper.infradead.org>
+ <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
+ <Yh1aMm3hFe/j9ZbI@casper.infradead.org>
+ <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
+ <202203011008.AA0B5A2D@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202203011008.AA0B5A2D@keescook>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mateusz Palczewski <mateusz.palczewski@intel.com>
+On Tue, Mar 01, 2022 at 10:14:07AM -0800, Kees Cook wrote:
+> On Mon, Feb 28, 2022 at 04:45:11PM -0800, Linus Torvalds wrote:
+> > Really. The "-Wshadow doesn't work on the kernel" is not some new
+> > issue, because you have to do completely insane things to the source
+> > code to enable it.
+> 
+> The first big glitch with -Wshadow was with shadowed global variables.
+> GCC 4.8 fixed that, but it still yells about shadowed functions. What
+> _almost_ works is -Wshadow=local. At first glace, all the warnings
+> look solvable, but then one will eventually discover __wait_event()
+> and associated macros that mix when and how deeply it intentionally
+> shadows variables. :)
 
-Remove non-inclusive language from the iavf driver.
+Well, that's just disgusting.  Macros fundamentally shouldn't be
+referring to things that aren't in their arguments.  The first step to
+cleaning this up is ...
 
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+I'll take a look at the rest of cleaning this up soon.
+
+From 28ffe35d56223d4242b915832299e5acc926737e Mon Sep 17 00:00:00 2001
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Date: Tue, 1 Mar 2022 13:47:07 -0500
+Subject: [PATCH] wait: Parameterize the return variable to ___wait_event()
+
+Macros should not refer to variables which aren't in their arguments.
+Pass the name from its callers.
+
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_common.c | 4 ++--
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 2 +-
- drivers/net/ethernet/intel/iavf/iavf_status.h | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ include/linux/swait.h    | 12 ++++++------
+ include/linux/wait.h     | 32 ++++++++++++++++----------------
+ include/linux/wait_bit.h |  4 ++--
+ 3 files changed, 24 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_common.c b/drivers/net/ethernet/intel/iavf/iavf_common.c
-index e9cc7f6ddc46..34e46a23894f 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_common.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_common.c
-@@ -131,8 +131,8 @@ const char *iavf_stat_str(struct iavf_hw *hw, enum iavf_status stat_err)
- 		return "IAVF_ERR_INVALID_MAC_ADDR";
- 	case IAVF_ERR_DEVICE_NOT_SUPPORTED:
- 		return "IAVF_ERR_DEVICE_NOT_SUPPORTED";
--	case IAVF_ERR_MASTER_REQUESTS_PENDING:
--		return "IAVF_ERR_MASTER_REQUESTS_PENDING";
-+	case IAVF_ERR_PRIMARY_REQUESTS_PENDING:
-+		return "IAVF_ERR_PRIMARY_REQUESTS_PENDING";
- 	case IAVF_ERR_INVALID_LINK_SETTINGS:
- 		return "IAVF_ERR_INVALID_LINK_SETTINGS";
- 	case IAVF_ERR_AUTONEG_NOT_COMPLETE:
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 2d355a7383a4..56387cec024f 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -90,7 +90,7 @@ int iavf_status_to_errno(enum iavf_status status)
- 	case IAVF_ERR_UNKNOWN_PHY:
- 	case IAVF_ERR_LINK_SETUP:
- 	case IAVF_ERR_ADAPTER_STOPPED:
--	case IAVF_ERR_MASTER_REQUESTS_PENDING:
-+	case IAVF_ERR_PRIMARY_REQUESTS_PENDING:
- 	case IAVF_ERR_AUTONEG_NOT_COMPLETE:
- 	case IAVF_ERR_RESET_FAILED:
- 	case IAVF_ERR_BAD_PTR:
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_status.h b/drivers/net/ethernet/intel/iavf/iavf_status.h
-index 46e3d1f6b604..2ea5c7c339bc 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_status.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_status.h
-@@ -18,7 +18,7 @@ enum iavf_status {
- 	IAVF_ERR_ADAPTER_STOPPED		= -9,
- 	IAVF_ERR_INVALID_MAC_ADDR		= -10,
- 	IAVF_ERR_DEVICE_NOT_SUPPORTED		= -11,
--	IAVF_ERR_MASTER_REQUESTS_PENDING	= -12,
-+	IAVF_ERR_PRIMARY_REQUESTS_PENDING	= -12,
- 	IAVF_ERR_INVALID_LINK_SETTINGS		= -13,
- 	IAVF_ERR_AUTONEG_NOT_COMPLETE		= -14,
- 	IAVF_ERR_RESET_FAILED			= -15,
+diff --git a/include/linux/swait.h b/include/linux/swait.h
+index 6a8c22b8c2a5..5e8e9b13be2d 100644
+--- a/include/linux/swait.h
++++ b/include/linux/swait.h
+@@ -191,14 +191,14 @@ do {									\
+ } while (0)
+ 
+ #define __swait_event_timeout(wq, condition, timeout)			\
+-	___swait_event(wq, ___wait_cond_timeout(condition),		\
++	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
+ 		      TASK_UNINTERRUPTIBLE, timeout,			\
+ 		      __ret = schedule_timeout(__ret))
+ 
+ #define swait_event_timeout_exclusive(wq, condition, timeout)		\
+ ({									\
+ 	long __ret = timeout;						\
+-	if (!___wait_cond_timeout(condition))				\
++	if (!___wait_cond_timeout(condition, __ret))			\
+ 		__ret = __swait_event_timeout(wq, condition, timeout);	\
+ 	__ret;								\
+ })
+@@ -216,14 +216,14 @@ do {									\
+ })
+ 
+ #define __swait_event_interruptible_timeout(wq, condition, timeout)	\
+-	___swait_event(wq, ___wait_cond_timeout(condition),		\
++	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
+ 		      TASK_INTERRUPTIBLE, timeout,			\
+ 		      __ret = schedule_timeout(__ret))
+ 
+ #define swait_event_interruptible_timeout_exclusive(wq, condition, timeout)\
+ ({									\
+ 	long __ret = timeout;						\
+-	if (!___wait_cond_timeout(condition))				\
++	if (!___wait_cond_timeout(condition, __ret))			\
+ 		__ret = __swait_event_interruptible_timeout(wq,		\
+ 						condition, timeout);	\
+ 	__ret;								\
+@@ -252,7 +252,7 @@ do {									\
+ } while (0)
+ 
+ #define __swait_event_idle_timeout(wq, condition, timeout)		\
+-	___swait_event(wq, ___wait_cond_timeout(condition),		\
++	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
+ 		       TASK_IDLE, timeout,				\
+ 		       __ret = schedule_timeout(__ret))
+ 
+@@ -278,7 +278,7 @@ do {									\
+ #define swait_event_idle_timeout_exclusive(wq, condition, timeout)	\
+ ({									\
+ 	long __ret = timeout;						\
+-	if (!___wait_cond_timeout(condition))				\
++	if (!___wait_cond_timeout(condition, __ret))			\
+ 		__ret = __swait_event_idle_timeout(wq,			\
+ 						   condition, timeout);	\
+ 	__ret;								\
+diff --git a/include/linux/wait.h b/include/linux/wait.h
+index 851e07da2583..890cce3c0f2e 100644
+--- a/include/linux/wait.h
++++ b/include/linux/wait.h
+@@ -271,7 +271,7 @@ static inline void wake_up_pollfree(struct wait_queue_head *wq_head)
+ 		__wake_up_pollfree(wq_head);
+ }
+ 
+-#define ___wait_cond_timeout(condition)						\
++#define ___wait_cond_timeout(condition, __ret)					\
+ ({										\
+ 	bool __cond = (condition);						\
+ 	if (__cond && !__ret)							\
+@@ -386,7 +386,7 @@ do {										\
+ })
+ 
+ #define __wait_event_timeout(wq_head, condition, timeout)			\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_UNINTERRUPTIBLE, 0, timeout,				\
+ 		      __ret = schedule_timeout(__ret))
+ 
+@@ -413,13 +413,13 @@ do {										\
+ ({										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_timeout(wq_head, condition, timeout);	\
+ 	__ret;									\
+ })
+ 
+ #define __wait_event_freezable_timeout(wq_head, condition, timeout)		\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_INTERRUPTIBLE, 0, timeout,				\
+ 		      __ret = freezable_schedule_timeout(__ret))
+ 
+@@ -431,7 +431,7 @@ do {										\
+ ({										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_freezable_timeout(wq_head, condition, timeout); \
+ 	__ret;									\
+ })
+@@ -503,7 +503,7 @@ do {										\
+ })
+ 
+ #define __wait_event_interruptible_timeout(wq_head, condition, timeout)		\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_INTERRUPTIBLE, 0, timeout,				\
+ 		      __ret = schedule_timeout(__ret))
+ 
+@@ -531,7 +531,7 @@ do {										\
+ ({										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_interruptible_timeout(wq_head,		\
+ 						condition, timeout);		\
+ 	__ret;									\
+@@ -698,7 +698,7 @@ do {										\
+ } while (0)
+ 
+ #define __wait_event_idle_timeout(wq_head, condition, timeout)			\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_IDLE, 0, timeout,					\
+ 		      __ret = schedule_timeout(__ret))
+ 
+@@ -725,13 +725,13 @@ do {										\
+ ({										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_idle_timeout(wq_head, condition, timeout);	\
+ 	__ret;									\
+ })
+ 
+ #define __wait_event_idle_exclusive_timeout(wq_head, condition, timeout)	\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_IDLE, 1, timeout,					\
+ 		      __ret = schedule_timeout(__ret))
+ 
+@@ -762,7 +762,7 @@ do {										\
+ ({										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_idle_exclusive_timeout(wq_head, condition, timeout);\
+ 	__ret;									\
+ })
+@@ -932,7 +932,7 @@ extern int do_wait_intr_irq(wait_queue_head_t *, wait_queue_entry_t *);
+ })
+ 
+ #define __wait_event_killable_timeout(wq_head, condition, timeout)		\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      TASK_KILLABLE, 0, timeout,				\
+ 		      __ret = schedule_timeout(__ret))
+ 
+@@ -962,7 +962,7 @@ extern int do_wait_intr_irq(wait_queue_head_t *, wait_queue_entry_t *);
+ ({										\
+ 	long __ret = timeout;							\
+ 	might_sleep();								\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_killable_timeout(wq_head,			\
+ 						condition, timeout);		\
+ 	__ret;									\
+@@ -1107,7 +1107,7 @@ do {										\
+ })
+ 
+ #define __wait_event_lock_irq_timeout(wq_head, condition, lock, timeout, state)	\
+-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
++	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
+ 		      state, 0, timeout,					\
+ 		      spin_unlock_irq(&lock);					\
+ 		      __ret = schedule_timeout(__ret);				\
+@@ -1141,7 +1141,7 @@ do {										\
+ 						  timeout)			\
+ ({										\
+ 	long __ret = timeout;							\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_lock_irq_timeout(				\
+ 					wq_head, condition, lock, timeout,	\
+ 					TASK_INTERRUPTIBLE);			\
+@@ -1151,7 +1151,7 @@ do {										\
+ #define wait_event_lock_irq_timeout(wq_head, condition, lock, timeout)		\
+ ({										\
+ 	long __ret = timeout;							\
+-	if (!___wait_cond_timeout(condition))					\
++	if (!___wait_cond_timeout(condition, __ret))				\
+ 		__ret = __wait_event_lock_irq_timeout(				\
+ 					wq_head, condition, lock, timeout,	\
+ 					TASK_UNINTERRUPTIBLE);			\
+diff --git a/include/linux/wait_bit.h b/include/linux/wait_bit.h
+index 7dec36aecbd9..227e6a20a978 100644
+--- a/include/linux/wait_bit.h
++++ b/include/linux/wait_bit.h
+@@ -292,7 +292,7 @@ do {									\
+ })
+ 
+ #define __wait_var_event_timeout(var, condition, timeout)		\
+-	___wait_var_event(var, ___wait_cond_timeout(condition),		\
++	___wait_var_event(var, ___wait_cond_timeout(condition, __ret),	\
+ 			  TASK_UNINTERRUPTIBLE, 0, timeout,		\
+ 			  __ret = schedule_timeout(__ret))
+ 
+@@ -300,7 +300,7 @@ do {									\
+ ({									\
+ 	long __ret = timeout;						\
+ 	might_sleep();							\
+-	if (!___wait_cond_timeout(condition))				\
++	if (!___wait_cond_timeout(condition, __ret))			\
+ 		__ret = __wait_var_event_timeout(var, condition, timeout); \
+ 	__ret;								\
+ })
 -- 
-2.31.1
+2.34.1
 
