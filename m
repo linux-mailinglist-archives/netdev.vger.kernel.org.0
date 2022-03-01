@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE804C961E
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:18:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFACF4C95E6
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 21:18:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238027AbiCAUTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 15:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S237819AbiCAUSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 15:18:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238015AbiCAUS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:18:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3882D3FBDB;
-        Tue,  1 Mar 2022 12:18:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA3D61763;
-        Tue,  1 Mar 2022 20:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02A4AC340F2;
-        Tue,  1 Mar 2022 20:18:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165886;
-        bh=/UQX7PDAgZm+2XBb1KJevOgdGQXGHiW7vLKQqRymvpU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBsaJWC7vcEPtAGUvHswaRG6nrg4U0MET5mhVFtRjYXSv3XGiMs3xtw76MnriyZMI
-         LBqUtAlO/Zh4jIZA+9M/QELkYetZ90Wtd5haQoGKu86OlfqH/wyN4gK9maJaOwwn1b
-         BpRzn3k4GVrllBk5r/5CV7S1neW2RZVA/Um2zyZNfCJ61z2imznqkwHoePwvdOSCpC
-         k2OZKQFlujrx2msAKaNWhjDpZ6GC9jb5dZTMss7mLCTXtl0PVSDyvmxrhYVdYn01aX
-         HRXYirMGJNC80Fx9gRviSwDzd3J6/PikQFXadoYpDBrMRegk3gEgEnEkHb5d+aYJAF
-         kpeeDihyz3XaA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Niels Dossche <niels.dossche@ugent.be>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/23] ipv6: prevent a possible race condition with lifetimes
-Date:   Tue,  1 Mar 2022 15:16:18 -0500
-Message-Id: <20220301201629.18547-19-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
-References: <20220301201629.18547-1-sashal@kernel.org>
+        with ESMTP id S238023AbiCAURx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 15:17:53 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA75D7B569
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 12:16:51 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id b11so28767003lfb.12
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 12:16:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IVJCWuEom0kHlh/OKXDsN3qCzQx/9M9wC7RTfclR0WE=;
+        b=BpAEsMmHbz6DldI3lrXW/NoVL9h7Y1Bb3g4jW8C7mdmGyS8h6DJzcjMNPCcb5i0eTv
+         U7LBxmxLpMxQLSdiNBGQ/nOQ2K++bwghf8WSxi5cejyHlrOc1Q0Y3NIYV/Er9JexFbTd
+         wZkpV/0FlL02n71JKK++Oi+26AojFvTWPs3FE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IVJCWuEom0kHlh/OKXDsN3qCzQx/9M9wC7RTfclR0WE=;
+        b=TUxoIrLeJmbuSWqrTc7IME2EyJVKLd+PD9Y+t0IqxCyOAwtUuBnaTGw2Wmeiq/kLw2
+         I2kC5JKgZtBNXbjxxsYV9Syu7T9Vb0rI5BHPCuSQMBx8/BPn6izZaBwThSBvzQSvOSng
+         E8DwLGbdfFW4ScrbrypiHaMSku9rhJi96jhpFXsbjkELbac4rlqhEOgSydC/7H5ZvSl9
+         GMc+Fuw1nZO4TNzqGJf7fkphYaSXlzJhAfrY/Wt5DB4NSj5otCTR5tMxG2vuYv6P5bqm
+         S+H2fUBG3YEec120K0zcwP8I4XVkx8q5nNqmXgfz1vkrH1FcvheQ7jJ+pQxFQVr3r63E
+         76wQ==
+X-Gm-Message-State: AOAM531aNE1oIgqJSJBUcOoS6QQ+Un0TRgo2/rmam3s0wx6en0zpTonr
+        N+4bgaq1Cia/LX4PLNA5MEzDwfaCDon7JBBAhHU=
+X-Google-Smtp-Source: ABdhPJx6rprC/dvCv13ri4zehVoGwM1yZYZuXk53eOqNHMDqa20O/SePNpMRg2dZcCbRJ0EnpHvloQ==
+X-Received: by 2002:a05:6512:398e:b0:43f:db1f:9e07 with SMTP id j14-20020a056512398e00b0043fdb1f9e07mr16086662lfu.652.1646165809432;
+        Tue, 01 Mar 2022 12:16:49 -0800 (PST)
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com. [209.85.167.45])
+        by smtp.gmail.com with ESMTPSA id g4-20020a19ac04000000b00443a532746asm1649550lfc.288.2022.03.01.12.16.45
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 12:16:45 -0800 (PST)
+Received: by mail-lf1-f45.google.com with SMTP id bu29so28926302lfb.0
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 12:16:45 -0800 (PST)
+X-Received: by 2002:ac2:5313:0:b0:443:99c1:7e89 with SMTP id
+ c19-20020ac25313000000b0044399c17e89mr16012940lfh.531.1646165804889; Tue, 01
+ Mar 2022 12:16:44 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
+In-Reply-To: <202203020135.5duGpXM2-lkp@intel.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 12:16:28 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+Message-ID: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
+To:     kernel test robot <lkp@intel.com>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, kbuild-all@lists.01.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+On Tue, Mar 1, 2022 at 10:00 AM kernel test robot <lkp@intel.com> wrote:
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
 
-[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
+So that's potentially an interesting warning, but this email doesn't
+actually tell *where* that warning happens.
 
-valid_lft, prefered_lft and tstamp are always accessed under the lock
-"lock" in other places. Reading these without taking the lock may result
-in inconsistencies regarding the calculation of the valid and preferred
-variables since decisions are taken on these fields for those variables.
+I'm not entirely sure why this warning is new to this '-std=gnu11'
+change, but it's intriguing.
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
-Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv6/addrconf.c | 2 ++
- 1 file changed, 2 insertions(+)
+Instead it then gives the location for another warning:
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index c6e1989ab2ed9..01cbfb4321eec 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4996,6 +4996,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
- 		goto error;
- 
-+	spin_lock_bh(&ifa->lock);
- 	if (!((ifa->flags&IFA_F_PERMANENT) &&
- 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
- 		preferred = ifa->prefered_lft;
-@@ -5017,6 +5018,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 		preferred = INFINITY_LIFE_TIME;
- 		valid = INFINITY_LIFE_TIME;
- 	}
-+	spin_unlock_bh(&ifa->lock);
- 
- 	if (!ipv6_addr_any(&ifa->peer_addr)) {
- 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
--- 
-2.34.1
+>    arch/mips/pci/pci-rc32434.c: In function 'rc32434_pcibridge_init':
+>    arch/mips/pci/pci-rc32434.c:111:22: warning: variable 'dummyread' set but not used [-Wunused-but-set-variable]
+>      111 |         unsigned int dummyread, pcicntlval;
+>          |                      ^~~~~~~~~
 
+but that wasn't the new one (and that 'dummyread' is obviously
+_intentionally_ set but not used, as implied by the name).
+
+Is there some place to actually see the full log (or some way to get a
+better pointer to just the new warning) to see that actual shift
+overflow thing?
+
+              Linus
