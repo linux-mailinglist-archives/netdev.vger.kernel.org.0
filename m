@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E41214C8BA3
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:31:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 081424C8BA4
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:31:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234677AbiCAMcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 07:32:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        id S234681AbiCAMcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 07:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231437AbiCAMb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:31:59 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB576FA0A
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 04:31:18 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id y24so26607696lfg.1
+        with ESMTP id S233356AbiCAMcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:32:00 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F4157154
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 04:31:19 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id i11so26616186lfu.3
         for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 04:31:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DxnqJlLtpzlWasTuiQqP9yvuDNBl8IloHud9mhZtYmY=;
-        b=lLFA5O8Aqvt9gV0l0JhZimNb5H5Z/DwGYPNRal9kn0p4hmQXErilDmOL7pZsMLymK+
-         CNFtkkln5x0O6SJHSfVMiCO6Ush6GeI4LPmNJIDt59s4kuk1Qfdf+pTDiSahWqv5BMla
-         mCYcIcRy4zUd7BZRdczfWL3AeC5nWdX38k04kfa7D8YDgrRSPvLG2h4+ikQt8v4UmpYK
-         d0p0EHWmyO1YPb2/ywut7BPldG1lYPKKI7wVENhHOoFcDVM7WkiIUqyWIrTZfZDayUF5
-         tYUb2iKNfBMpUMsf0zlhMqUqT3SysoVK5cNehzrCqZAxEfjfBPNGtj9KBCYjI3u57G6J
-         YDvQ==
+        bh=J0rKdVpN1zJbCddDzfZ8gqZ9iGgeFZuK48Px54tScXY=;
+        b=cKJcQvAkunhUjecgJQCCoUXAFhgJmdmUCL5HTgdJCwi4gleU3sUYilfniyOrQNL9K8
+         8YGNmcpl/ZA2CbU1rsEMsz+qJJ/V8HSf5JJMD0sUSFMgUL5D44V5bP6juWcQWZh+zxbm
+         tq+E6jIKqfT1XEFgAiyr7QvA8r4tY9sZ0Cc6AIzviXMW9nZWGB1ktFP16TfTpxCpBHZz
+         OdaLI+pj1ESTBso7OeOFldwJgAsSuxJ5frqVphq7nD0D1qvZXB2T6Y3fU5m2hPRPghjW
+         mXU6yxunoo4ezhjH/yt0H8ZBNgq4E0M0BxrKRFjqtefU4bX0mGbjJzC9mh7YND8EdiFl
+         J4qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DxnqJlLtpzlWasTuiQqP9yvuDNBl8IloHud9mhZtYmY=;
-        b=6hWZrYzIKG7/EF/Tfo3NZGCkFET7QrGXNHca4nLU9ERBrtggeLETe7Y1ZOZ31Kazyy
-         RKdUc50nRdAQNMlFXDr8YegBT9fn/rIIoJadRrbxCiHaKs1VafwDXJxi1CAgP72X/+9V
-         TibRcDkPyo92YdQR2pU9JEkwGQ/yZEtKOqDEpX7HAwY6SZHN+ByQINvrLoQ38bA6C7qw
-         IBSieiifeUCLihzL6kmMYXzZYjBYhJ8vetPFM2DS/hxNFG1Q2drpEIgnKIeegM1xFs6M
-         4AE54K2FxyPsSCBnDkFOuEluiuoSVW738j8fJ0YvbgVzT2iv4afEBz8GdKFp+3ZxQUtJ
-         v24w==
-X-Gm-Message-State: AOAM533ZuaGB2CcJT2v7nQSohFeyWOiuUT2fz1QzXFxhy8k31VH89sqe
-        o/Hi2vANYuwRQ1C6X0by6Rg0wGv6jRz8TEmZlWg=
-X-Google-Smtp-Source: ABdhPJzsNbMYs699nk6/bnMr6dRwcRLdwkX7te5vrTZLafCruJqy5f0GU5AU6aT4vP5r8QaNG+gUYQ==
-X-Received: by 2002:a05:6512:31d0:b0:443:aca9:ded1 with SMTP id j16-20020a05651231d000b00443aca9ded1mr12851440lfe.112.1646137876121;
-        Tue, 01 Mar 2022 04:31:16 -0800 (PST)
+        bh=J0rKdVpN1zJbCddDzfZ8gqZ9iGgeFZuK48Px54tScXY=;
+        b=Xmlbf/3e1emx5gvm+9h98ZOE84u2nlWWC84RT0xgIAs2jwnDZdyaHuQpwnPe2WnRvA
+         jJN2FyxfkTXtIrfDugzh9lyJe2E3d4U4hzQufmBdEyFql5aXqECoQja++CE93FguFrjA
+         UMmnlJ+X8wTp13OjprTslTl0NPaKH1EEuoOe0RznJkWMjqnZiV/phi1i52JgzSa9ba1q
+         vN69pVuciTdPKSAECvfcqGw99z1QnSfKCUpB1nN4o8kdscTMQhE5lYARp3Q+r8U0ulQd
+         2dfJqd0sMzrp5MoELKwU82CTM6VDhmbXLe7AhA6e0ZQzDrKBOUZAnlvJar0JzxL1kYKO
+         58Tg==
+X-Gm-Message-State: AOAM533OWS32LAWKZBBLeged/9ah9Tuv2lsDli1qryMVyI1XiOmC+hJh
+        ZKrWMQXCC+mbqahxnjmW4dRlhOxdwvfRY2zxOyc=
+X-Google-Smtp-Source: ABdhPJzPPApjXZtzdx/PSq1l+5H6Tw4D8NbompHK8QzqhqwJQR7a2zRLv73CZRgkMrGNs566MjWC7Q==
+X-Received: by 2002:ac2:44b8:0:b0:430:2ad7:2a21 with SMTP id c24-20020ac244b8000000b004302ad72a21mr14833841lfm.410.1646137877140;
+        Tue, 01 Mar 2022 04:31:17 -0800 (PST)
 Received: from wse-c0089.westermo.com (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id i8-20020a0565123e0800b0044312b4112dsm1470459lfv.52.2022.03.01.04.31.15
+        by smtp.gmail.com with ESMTPSA id i8-20020a0565123e0800b0044312b4112dsm1470459lfv.52.2022.03.01.04.31.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 04:31:15 -0800 (PST)
+        Tue, 01 Mar 2022 04:31:16 -0800 (PST)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 X-Google-Original-From: Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
 To:     netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
-Subject: [PATCH 1/3] net: bridge: Implement bridge flag local_receive
-Date:   Tue,  1 Mar 2022 13:31:02 +0100
-Message-Id: <20220301123104.226731-2-mattias.forsblad+netdev@gmail.com>
+Subject: [PATCH 2/3] dsa: Handle the local_receive flag in the DSA layer.
+Date:   Tue,  1 Mar 2022 13:31:03 +0100
+Message-Id: <20220301123104.226731-3-mattias.forsblad+netdev@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
 References: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
@@ -75,295 +75,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implements the bridge flag local_receive. When this
-flag is cleared packets received on bridge ports will not be forwarded up.
-This makes is possible to only forward traffic between the port members
-of the bridge.
+Add infrastructure to be able to handle the local_receive
+flag to the DSA layer.
 
 Signed-off-by: Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
 ---
- include/linux/if_bridge.h      |  6 ++++++
- include/net/switchdev.h        |  2 ++
- include/uapi/linux/if_bridge.h |  1 +
- include/uapi/linux/if_link.h   |  1 +
- net/bridge/br.c                | 18 ++++++++++++++++++
- net/bridge/br_device.c         |  1 +
- net/bridge/br_input.c          |  3 +++
- net/bridge/br_ioctl.c          |  1 +
- net/bridge/br_netlink.c        | 14 +++++++++++++-
- net/bridge/br_private.h        |  2 ++
- net/bridge/br_sysfs_br.c       | 23 +++++++++++++++++++++++
- net/bridge/br_vlan.c           |  8 ++++++++
- 12 files changed, 79 insertions(+), 1 deletion(-)
+ include/net/dsa.h  |  6 ++++++
+ net/dsa/dsa_priv.h |  1 +
+ net/dsa/slave.c    | 16 ++++++++++++++++
+ 3 files changed, 23 insertions(+)
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index 3aae023a9353..e6b77d18c1d2 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -157,6 +157,7 @@ static inline int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
- struct net_device *br_fdb_find_port(const struct net_device *br_dev,
- 				    const unsigned char *addr,
- 				    __u16 vid);
-+bool br_local_receive_enabled(const struct net_device *dev);
- void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
- bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
- u8 br_port_get_stp_state(const struct net_device *dev);
-@@ -170,6 +171,11 @@ br_fdb_find_port(const struct net_device *br_dev,
- 	return NULL;
- }
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index cfedcfb86350..3abd7cfad7a0 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -925,6 +925,12 @@ struct dsa_switch_ops {
+ 	void	(*get_regs)(struct dsa_switch *ds, int port,
+ 			    struct ethtool_regs *regs, void *p);
  
-+static inline bool br_local_receive_enabled(const struct net_device *dev)
-+{
-+	return true;
-+}
++	/*
++	 * Local receive
++	 */
++	int	(*set_local_receive)(struct dsa_switch *ds, int port,
++				     struct net_device *bridge, bool enable);
 +
- static inline void br_fdb_clear_offload(const struct net_device *dev, u16 vid)
- {
- }
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 3e424d40fae3..aec5c1f9b5c7 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -25,6 +25,7 @@ enum switchdev_attr_id {
- 	SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME,
- 	SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING,
- 	SWITCHDEV_ATTR_ID_BRIDGE_VLAN_PROTOCOL,
-+	SWITCHDEV_ATTR_ID_BRIDGE_LOCAL_RECEIVE,
- 	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
- 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
- 	SWITCHDEV_ATTR_ID_MRP_PORT_ROLE,
-@@ -50,6 +51,7 @@ struct switchdev_attr {
- 		u16 vlan_protocol;			/* BRIDGE_VLAN_PROTOCOL */
- 		bool mc_disabled;			/* MC_DISABLED */
- 		u8 mrp_port_role;			/* MRP_PORT_ROLE */
-+		bool local_receive;			/* BRIDGE_LOCAL_RECEIVE */
- 	} u;
- };
- 
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 2711c3522010..fc889b5ccd69 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -72,6 +72,7 @@ struct __bridge_info {
- 	__u32 tcn_timer_value;
- 	__u32 topology_change_timer_value;
- 	__u32 gc_timer_value;
-+	__u8 local_receive;
- };
- 
- struct __port_info {
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index e315e53125f4..bb7c25e1c89c 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -482,6 +482,7 @@ enum {
- 	IFLA_BR_VLAN_STATS_PER_PORT,
- 	IFLA_BR_MULTI_BOOLOPT,
- 	IFLA_BR_MCAST_QUERIER_STATE,
-+	IFLA_BR_LOCAL_RECEIVE,
- 	__IFLA_BR_MAX,
- };
- 
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index b1dea3febeea..ff7eb4f269ec 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -325,6 +325,24 @@ void br_boolopt_multi_get(const struct net_bridge *br,
- 	bm->optmask = GENMASK((BR_BOOLOPT_MAX - 1), 0);
- }
- 
-+int br_local_receive_change(struct net_bridge *p,
-+			    bool local_receive)
-+{
-+	struct switchdev_attr attr = {
-+		.orig_dev = p->dev,
-+		.id = SWITCHDEV_ATTR_ID_BRIDGE_LOCAL_RECEIVE,
-+		.flags = SWITCHDEV_F_DEFER,
-+		.u.local_receive = local_receive,
-+	};
-+	int ret;
-+
-+	ret = switchdev_port_attr_set(p->dev, &attr, NULL);
-+	if (!ret)
-+		br_opt_toggle(p, BROPT_LOCAL_RECEIVE, local_receive);
-+
-+	return ret;
-+}
-+
- /* private bridge options, controlled by the kernel */
- void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on)
- {
-diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 8d6bab244c4a..7cd9c5880d18 100644
---- a/net/bridge/br_device.c
-+++ b/net/bridge/br_device.c
-@@ -524,6 +524,7 @@ void br_dev_setup(struct net_device *dev)
- 	br->bridge_hello_time = br->hello_time = 2 * HZ;
- 	br->bridge_forward_delay = br->forward_delay = 15 * HZ;
- 	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
-+	br_opt_toggle(br, BROPT_LOCAL_RECEIVE, true);
- 	dev->max_mtu = ETH_MAX_MTU;
- 
- 	br_netfilter_rtable_init(br);
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index e0c13fcc50ed..5864b61157d3 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -163,6 +163,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 	/*
+ 	 * Upper device tracking.
+ 	 */
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 07c0ad52395a..33e607615e63 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -217,6 +217,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+ 			    struct netlink_ext_ack *extack);
+ bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
++int dsa_port_set_local_receive(struct dsa_port *dp, struct net_device *br, bool enable);
+ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+ 			bool targeted_match);
+ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 089616206b11..50f88b0bd851 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -295,6 +295,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
+ 		ret = dsa_port_vlan_filtering(dp, attr->u.vlan_filtering,
+ 					      extack);
  		break;
- 	}
- 
-+	if (local_rcv && !br_opt_get(br, BROPT_LOCAL_RECEIVE))
-+		local_rcv = false;
++	case SWITCHDEV_ATTR_ID_BRIDGE_LOCAL_RECEIVE:
++		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
++			return -EOPNOTSUPP;
 +
- 	if (dst) {
- 		unsigned long now = jiffies;
- 
-diff --git a/net/bridge/br_ioctl.c b/net/bridge/br_ioctl.c
-index f213ed108361..abe538129290 100644
---- a/net/bridge/br_ioctl.c
-+++ b/net/bridge/br_ioctl.c
-@@ -177,6 +177,7 @@ int br_dev_siocdevprivate(struct net_device *dev, struct ifreq *rq,
- 		b.topology_change = br->topology_change;
- 		b.topology_change_detected = br->topology_change_detected;
- 		b.root_port = br->root_port;
-+		b.local_receive = br_opt_get(br, BROPT_LOCAL_RECEIVE) ? 1 : 0;
- 
- 		b.stp_enabled = (br->stp_enabled != BR_NO_STP);
- 		b.ageing_time = jiffies_to_clock_t(br->ageing_time);
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 7d4432ca9a20..5e7f99950195 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1163,6 +1163,7 @@ static const struct nla_policy br_policy[IFLA_BR_MAX + 1] = {
- 	[IFLA_BR_MCAST_IGMP_VERSION] = { .type = NLA_U8 },
- 	[IFLA_BR_MCAST_MLD_VERSION] = { .type = NLA_U8 },
- 	[IFLA_BR_VLAN_STATS_PER_PORT] = { .type = NLA_U8 },
-+	[IFLA_BR_LOCAL_RECEIVE] = { .type = NLA_U8 },
- 	[IFLA_BR_MULTI_BOOLOPT] =
- 		NLA_POLICY_EXACT_LEN(sizeof(struct br_boolopt_multi)),
- };
-@@ -1434,6 +1435,14 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 			return err;
- 	}
- 
-+	if (data[IFLA_BR_LOCAL_RECEIVE]) {
-+		u8 val = nla_get_u8(data[IFLA_BR_LOCAL_RECEIVE]);
-+
-+		err = br_local_receive_change(br, !!val);
-+		if (err)
-+			return err;
-+	}
-+
- 	return 0;
++		ret = dsa_port_set_local_receive(dp, attr->orig_dev, attr->u.local_receive);
++		break;
+ 	case SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME:
+ 		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
+ 			return -EOPNOTSUPP;
+@@ -671,6 +677,16 @@ dsa_slave_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *_p)
+ 		ds->ops->get_regs(ds, dp->index, regs, _p);
  }
  
-@@ -1514,6 +1523,7 @@ static size_t br_get_size(const struct net_device *brdev)
- 	       nla_total_size(sizeof(u8)) +     /* IFLA_BR_NF_CALL_ARPTABLES */
- #endif
- 	       nla_total_size(sizeof(struct br_boolopt_multi)) + /* IFLA_BR_MULTI_BOOLOPT */
-+	       nla_total_size(sizeof(u8)) +     /* IFLA_BR_LOCAL_RECEIVE */
- 	       0;
- }
- 
-@@ -1527,6 +1537,7 @@ static int br_fill_info(struct sk_buff *skb, const struct net_device *brdev)
- 	u32 stp_enabled = br->stp_enabled;
- 	u16 priority = (br->bridge_id.prio[0] << 8) | br->bridge_id.prio[1];
- 	u8 vlan_enabled = br_vlan_enabled(br->dev);
-+	u8 local_receive = br_opt_get(br, BROPT_LOCAL_RECEIVE) ? 1 : 0;
- 	struct br_boolopt_multi bm;
- 	u64 clockval;
- 
-@@ -1563,7 +1574,8 @@ static int br_fill_info(struct sk_buff *skb, const struct net_device *brdev)
- 	    nla_put_u8(skb, IFLA_BR_TOPOLOGY_CHANGE_DETECTED,
- 		       br->topology_change_detected) ||
- 	    nla_put(skb, IFLA_BR_GROUP_ADDR, ETH_ALEN, br->group_addr) ||
--	    nla_put(skb, IFLA_BR_MULTI_BOOLOPT, sizeof(bm), &bm))
-+	    nla_put(skb, IFLA_BR_MULTI_BOOLOPT, sizeof(bm), &bm) ||
-+	    nla_put_u8(skb, IFLA_BR_LOCAL_RECEIVE, local_receive))
- 		return -EMSGSIZE;
- 
- #ifdef CONFIG_BRIDGE_VLAN_FILTERING
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 48bc61ebc211..01fa5426094b 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -445,6 +445,7 @@ enum net_bridge_opts {
- 	BROPT_NO_LL_LEARN,
- 	BROPT_VLAN_BRIDGE_BINDING,
- 	BROPT_MCAST_VLAN_SNOOPING_ENABLED,
-+	BROPT_LOCAL_RECEIVE,
- };
- 
- struct net_bridge {
-@@ -720,6 +721,7 @@ int br_boolopt_multi_toggle(struct net_bridge *br,
- void br_boolopt_multi_get(const struct net_bridge *br,
- 			  struct br_boolopt_multi *bm);
- void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on);
-+int br_local_receive_change(struct net_bridge *p, bool local_receive);
- 
- /* br_device.c */
- void br_dev_setup(struct net_device *dev);
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 3f7ca88c2aa3..9af0c2ba929c 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -84,6 +84,28 @@ static ssize_t forward_delay_store(struct device *d,
- }
- static DEVICE_ATTR_RW(forward_delay);
- 
-+static ssize_t local_receive_show(struct device *d,
-+				  struct device_attribute *attr, char *buf)
++int dsa_port_set_local_receive(struct dsa_port *dp, struct net_device *br, bool enable)
 +{
-+	struct net_bridge *br = to_bridge(d);
++	struct dsa_switch *ds = dp->ds;
 +
-+	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_LOCAL_RECEIVE));
++	if (ds->ops->set_local_receive)
++		return ds->ops->set_local_receive(ds, dp->index, br, enable);
++
++	return 0;
 +}
 +
-+static int set_local_receive(struct net_bridge *br, unsigned long val,
-+			     struct netlink_ext_ack *extack)
-+{
-+	return br_local_receive_change(br, !!val);
-+}
-+
-+static ssize_t local_receive_store(struct device *d,
-+				   struct device_attribute *attr,
-+				   const char *buf, size_t len)
-+{
-+	return store_bridge_parm(d, buf, len, set_local_receive);
-+}
-+static DEVICE_ATTR_RW(local_receive);
-+
- static ssize_t hello_time_show(struct device *d, struct device_attribute *attr,
- 			       char *buf)
+ static int dsa_slave_nway_reset(struct net_device *dev)
  {
-@@ -950,6 +972,7 @@ static struct attribute *bridge_attrs[] = {
- 	&dev_attr_group_addr.attr,
- 	&dev_attr_flush.attr,
- 	&dev_attr_no_linklocal_learn.attr,
-+	&dev_attr_local_receive.attr,
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
- 	&dev_attr_multicast_router.attr,
- 	&dev_attr_multicast_snooping.attr,
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 7557e90b60e1..57dd14d5e360 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -905,6 +905,14 @@ bool br_vlan_enabled(const struct net_device *dev)
- }
- EXPORT_SYMBOL_GPL(br_vlan_enabled);
- 
-+bool br_local_receive_enabled(const struct net_device *dev)
-+{
-+	struct net_bridge *br = netdev_priv(dev);
-+
-+	return br_opt_get(br, BROPT_LOCAL_RECEIVE);
-+}
-+EXPORT_SYMBOL_GPL(br_local_receive_enabled);
-+
- int br_vlan_get_proto(const struct net_device *dev, u16 *p_proto)
- {
- 	struct net_bridge *br = netdev_priv(dev);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
 -- 
 2.25.1
 
