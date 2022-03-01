@@ -2,87 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F20B24C8E8B
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 16:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 716204C8E9E
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 16:09:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235527AbiCAPHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 10:07:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
+        id S235212AbiCAPKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 10:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235482AbiCAPHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 10:07:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E61CA647F;
-        Tue,  1 Mar 2022 07:06:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA056B81986;
-        Tue,  1 Mar 2022 15:06:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE474C340EE;
-        Tue,  1 Mar 2022 15:06:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646147176;
-        bh=3rErMr8HPx66Jp00WJd9yEBIjWGz3wiDvsGrMjqCVAg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hdimVuBrc+VRHT8NLNPkQIB6GizNq9maujOWeKdrDVMnAQYQRm2LmLfzNyF3wvOIJ
-         LBPsO/PCcc0nroUoIJq2MjkInjaELLtHkyQoLGJe71NL8il9/nIPKnGZXr1aqh+Ewl
-         x0SXQafhrW9XgowgZPXdWiYFTSdagsEyygI5xMqlQZmR0/HpQFgjRac148KyG9Ga3k
-         LCSsMK9o31q24sTrg7XobBbuSAz6jK5XDrjkIPg2tO6ICqV2e+kEF1RZm9Oib5f+Mb
-         jXdbH8GJA204lhfUZtooGpel8rzHa7B6xg3a76EPzfr+sB/H2rDARzNB+6M0se5UrN
-         HNubxkMRCB/cw==
-Date:   Tue, 1 Mar 2022 16:06:13 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Michael Below <below@judiz.de>,
-        Salvatore Bonaccorso <carnil@debian.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>
-Subject: Re: [PATCH v4 2/7] i2c: core: Use generic_handle_irq_safe() in
- i2c_handle_smbus_host_notify().
-Message-ID: <Yh42ZZFFcXnXqS5K@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Michael Below <below@judiz.de>,
-        Salvatore Bonaccorso <carnil@debian.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>
-References: <20220211181500.1856198-1-bigeasy@linutronix.de>
- <20220211181500.1856198-3-bigeasy@linutronix.de>
- <YhY03EojmT3eaIcR@ninjato>
- <YhlXplZCkflfkg1W@linutronix.de>
+        with ESMTP id S234111AbiCAPKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 10:10:15 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F184160CCB
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 07:09:33 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id bg16-20020a05600c3c9000b00380f6f473b0so1434352wmb.1
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 07:09:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cilium-io.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=SLgwhPj+Eciro4vG6Y8vZraEdKRQYG6EQazsWzzC2tM=;
+        b=l1COxuCXa0h4UJikmXU7PqYNWZ2wVK162IX4HxO+JcML/GTUYj2wOpE8Hd2Hv5Zt2B
+         ORVWc/QcaK36gs2vfLI6x/8+C14OhAFGeBotfOYOq8cExFdZ5IiOkVeOE8swDeiVVSAx
+         5sne4GwRZjM3bsJRoeGFU+hYFUllWa53rci8Mgv47Dj9SPvzNqImmc9n9Wvl5iZ47O1y
+         2xhNXuEgdchMHQQiv0fAs2dcVwnDNimrdZPu7YtqToxLov1xt+x4/w8OZO1O6xKCrBT9
+         mE4Cr+XdzHxFPUtjhcaujN8XTcY3FMbCFqiIlIjIDHulc5FY6y7iOD77pF9CUXJNs2NK
+         S1NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SLgwhPj+Eciro4vG6Y8vZraEdKRQYG6EQazsWzzC2tM=;
+        b=YvnAaDke10XaL+Nde5/QGKo+0TK57YWNEHGrTqPZUTPoFJCzCbQ2INaGsr7kTMzdpk
+         +taV66QpaxmUZFwdILkO3Oan8H5VkVNZZD+cLYKEXDolZU0lHVQH0PHin/y4WGgzJEAa
+         HRWjUXI2+8Urjmc0t8cHR351cEdQ3Vc19pw9r3hWCNJlKt8lkAwdwrcxlvKTJJq80ygP
+         kXj/wVvwVMUGf8C9sXacGvFcvS5oD9Nz2p3STPgRBgfykqUUlSqoj8QtDsJBcgs7U7uA
+         jt8OM1Ul2tG9pImxzns7hYZVpffpOByKT7UPILaNyTSVJ5Q4uoAWaGGLgqQneT5IZ8JK
+         Jkrg==
+X-Gm-Message-State: AOAM532vOW98glDbDz6lurHyhWC3mtslaRjbEvN4dg5zNXQBANbvTl35
+        RX3HFx6S9fpes7XIcO701mQk
+X-Google-Smtp-Source: ABdhPJxb7BaX9vcO/81T2LlTTeeVBe9IUOFFchOh9Xlh0PU2sBHwaYqjoLLrLTh5KgzoGfsE0BCRUw==
+X-Received: by 2002:a05:600c:1592:b0:381:21b4:d1d8 with SMTP id r18-20020a05600c159200b0038121b4d1d8mr17679174wmf.119.1646147372497;
+        Tue, 01 Mar 2022 07:09:32 -0800 (PST)
+Received: from Mem (2a01cb088160fc00891d7b76bd72bf13.ipv6.abo.wanadoo.fr. [2a01:cb08:8160:fc00:891d:7b76:bd72:bf13])
+        by smtp.gmail.com with ESMTPSA id o3-20020a1c7503000000b0038100e2a1adsm2659213wmc.47.2022.03.01.07.09.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 07:09:32 -0800 (PST)
+Date:   Tue, 1 Mar 2022 16:09:30 +0100
+From:   Paul Chaignon <paul@cilium.io>
+To:     Eyal Birger <eyal.birger@gmail.com>, kailueke@linux.microsoft.com
+Cc:     netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH 1/2] Revert "xfrm: interface with if_id 0 should return
+ error"
+Message-ID: <20220301150930.GA56710@Mem>
+References: <20220301131512.1303-1-kailueke@linux.microsoft.com>
+ <CAHsH6Gtzaf2vhSv5sPpBBhBww9dy8_E7c0utoqMBORas2R+_zg@mail.gmail.com>
+ <d5e58052-86df-7ffa-02a0-fc4db5a7bbdf@linux.microsoft.com>
+ <CAHsH6GsxaSgGkF9gkBKCcO9feSrsXsuNBdKRM_R8=Suih9oxSw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vly9pc/cg0xZd513"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YhlXplZCkflfkg1W@linutronix.de>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHsH6GsxaSgGkF9gkBKCcO9feSrsXsuNBdKRM_R8=Suih9oxSw@mail.gmail.com>
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,41 +75,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 01, 2022 at 04:34:52PM +0200, Eyal Birger wrote:
+> Hi Kai,
+> 
+> On Tue, Mar 1, 2022 at 4:17 PM Kai Lüke <kailueke@linux.microsoft.com> wrote:
+> >
+> > Hi,
+> > > Whereas 8dce43919566 ("xfrm: interface with if_id 0 should return error")
+> > > involves xfrm interfaces which don't appear in the pull request.
+> > >
+> > > In which case, why should that commit be reverted?
+> >
+> > Correct me if I misunderstood this but reading the commit message it is
+> > explicitly labeled as a behavior change for userspace:
+> >
+> >     With this commit:
+> >      ip link add ipsec0  type xfrm dev lo  if_id 0
+> >      Error: if_id must be non zero.
+> >
+> > Changing behavior this way is from my understanding a regression because
+> > it breaks programs that happened to work before, even if they worked
+> > incorrect (cf. https://lwn.net/Articles/726021/ "The current process for
+> > Linux development says that kernel patches cannot break programs that
+> > rely on the ABI. That means a program that runs on the 4.0 kernel should
+> > be able to run on the 5.0 kernel, Levin said.").
+> 
+> Well to some extent, but the point was that xfrm interfaces with if_id=0
+> were already broken, so returning an error to userspace in such case
+> would be a better behavior.
+> So I'm not sure this is a regression but it's not up to me to decide these
+> things.
 
---vly9pc/cg0xZd513
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I agree with Eyal here.  As far as Cilium is concerned, this is not
+causing any regression.  Only the second commit, 68ac0f3810e7 ("xfrm:
+state and policy should fail if XFRMA_IF_ID 0") causes issues in a
+previously-working setup in Cilium.  We don't use xfrm interfaces.
 
-On Fri, Feb 25, 2022 at 11:26:46PM +0100, Sebastian Andrzej Siewior wrote:
-> On 2022-02-23 14:21:32 [+0100], Wolfram Sang wrote:
-> > Is this 5.17 material? Or is 5.18 fine, too?
->=20
-> 5.18 is fine. I intend to push into the RT-stable trees and this can't
-> be backported without 1/7 and it does not affect !RT so I wouldn't
-> bother.
-
-Ok, applied to for-next then. Thanks for the heads up!
-
-
---vly9pc/cg0xZd513
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIeNmQACgkQFA3kzBSg
-KbbfYxAAgtOpVKmeFifH+JWyqT1mW6M6PKCY098U/utaJDTEnIPOnkUsMe4spnDs
-TctqYaihXKSZf9UxlJhVPZ/ZIRHYSA+KF14IDEeLzkL49d4ojSGarl893u0l7bx2
-6aQQeO3oJT4dGN7ohZsg2AYD6ym1baCtAH+zimu6hPacRHgucRh+0IvjYxgioXg3
-rhYauOkmcDPxqPvS33shdRagDKbjZ3V+HqswU2FGmLEMCTOxNhvDw4q7mUsAsIqO
-Ct370v13+nH6HQlXaOMzzIGROyz3GO3Xo/ZOYJdRsp/UCRHIMHabGMvyFBX5p4Hj
-gAyWkNCqvLJdzYNmqtosc6r0iQFuZSUItW/wM+kHpwwwdOsup5n7QY7uBp78G6Ea
-eRZJmC80xn3HEZ75FJTkT6aHucCZApCT3uBViUVwOA34fQYuujCcHvhuCEkGeJz5
-kNdx6JdigSxX40Re7h6/ac1sz2EXm4CxmcFzQm10AFjJjjdzU2+zIqi/tk/6J+yS
-oR2DR95lglxohOmzidOAL/qTmBNdeh+eQL0Ta9JJqSnVnRWCzu5iTzt/PXo8Vs5N
-4cg8cpOAOFtYwxQrF1JaHgCStljwQbBp+IHBaJbOtzBYaLA3HoETlXLv/7opaFk4
-+rw1pWvsOmQkGbFW/n+eVO0aYMnOMFGx8AOuKco5SQ73Otp5GSM=
-=3Lg4
------END PGP SIGNATURE-----
-
---vly9pc/cg0xZd513--
+Paul
