@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3788C4C9958
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 00:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0524C9980
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 00:50:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238588AbiCAXa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 18:30:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        id S233206AbiCAXvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 18:51:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237634AbiCAXaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 18:30:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9F85E77B;
-        Tue,  1 Mar 2022 15:30:13 -0800 (PST)
+        with ESMTP id S231490AbiCAXvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 18:51:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576CD61A15;
+        Tue,  1 Mar 2022 15:50:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E67A3614C4;
-        Tue,  1 Mar 2022 23:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 40724C340F1;
-        Tue,  1 Mar 2022 23:30:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C32EB81EA7;
+        Tue,  1 Mar 2022 23:50:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E51C340EE;
+        Tue,  1 Mar 2022 23:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646177412;
-        bh=Nk9jdq+V5/7aJfn04TEEkO508Hs8UlxP6etnQSUs/ck=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=plQIQ9YFS4wXeMLlZCB5gkuTEj532P6ZzldXIFQ6c5p9QwybSLx8+CrK+ctIEcL2a
-         rXUIfl9TzdLwfiEzDV9EXXJRMelKmC0iCn+o+TJIh9JhoF3TyzRkZpmYv3oR41qfGp
-         1NzX2czx1ZSuNf61Hi7VKzbHyr5WqvCokMhhweLj9GHXXLjp9G9e+6tJRDIDED0RGn
-         MfJsKIHxVMf9tXfKomU5n3qxbIesngdH3PQZnHoz3PczZShtovN4DT/IQ6Rz0cDVia
-         8FtT93CZRoQxMigRS+IhvdMOxQ5qPO8PXWY4CMTp24BCYAadAm8/OEpzBpFdAmunpu
-         +rpGDrG7+Ls4w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 242FAE6D4BB;
-        Tue,  1 Mar 2022 23:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1646178632;
+        bh=BDy9HN55VjW0OXpj2rwgeo/0PzouCOspchdWJqyE92I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n8buYiA5Xkt+q8CyWCxWZ7apeIUFPN9cIiAXgvymFb8EvDRYYA6i8g0FrZu8y066u
+         7hlvM60J3bOaN5p7f4s4J0oOeeIZEDmSPIpV32p2UhXJFLcAGRwLzowXzXLj21DXLD
+         OnaMluWGZ+gG0cI2A1meYYvLuAvaDqbqGOFJLceqaXfV5WIA5sIydu8GkyThy8JW0/
+         5FG1EBHUv1Yp1kl98/lObDwo7xvsrOubooirCnCwavbjHiX/68G3cJqGK/C32rzBaQ
+         YJ09EL2UreSH09hYPK92Bw82XzUV4O9jvUcVk3kbck1cZ/LW8T5IOee43BsCGQ8UOG
+         jPSpo6yNgnHOA==
+Date:   Tue, 1 Mar 2022 15:50:31 -0800
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
+        ttoukan.linux@gmail.com, brouer@redhat.com, leon@kernel.org,
+        linux-rdma@vger.kernel.org, saeedm@nvidia.com
+Subject: Re: [net-next v8 1/4] page_pool: Add allocation stats
+Message-ID: <20220301235031.ryy4trywlc3bmnpx@sx1>
+References: <1646172610-129397-1-git-send-email-jdamato@fastly.com>
+ <1646172610-129397-2-git-send-email-jdamato@fastly.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/8] netfilter: nf_tables: prefer kfree_rcu(ptr,
- rcu) variant
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164617741214.25603.717853332136466469.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Mar 2022 23:30:12 +0000
-References: <20220301215337.378405-2-pablo@netfilter.org>
-In-Reply-To: <20220301215337.378405-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <1646172610-129397-2-git-send-email-jdamato@fastly.com>
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,43 +56,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 01 Mar 14:10, Joe Damato wrote:
+>Add per-pool statistics counters for the allocation path of a page pool.
+>These stats are incremented in softirq context, so no locking or per-cpu
+>variables are needed.
+>
+>This code is disabled by default and a kernel config option is provided for
+>users who wish to enable them.
+>
 
-This series was applied to netdev/net.git (master)
-by Pablo Neira Ayuso <pablo@netfilter.org>:
+Sorry for the late review Joe,
 
-On Tue,  1 Mar 2022 22:53:30 +0100 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> While kfree_rcu(ptr) _is_ supported, it has some limitations.
-> 
-> Given that 99.99% of kfree_rcu() users [1] use the legacy
-> two parameters variant, and @catchall objects do have an rcu head,
-> simply use it.
-> 
-> [...]
+Why disabled by default ? if your benchmarks showed no diff.
 
-Here is the summary with links:
-  - [net,1/8] netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant
-    https://git.kernel.org/netdev/net/c/ae089831ff28
-  - [net,2/8] netfilter: fix use-after-free in __nf_register_net_hook()
-    https://git.kernel.org/netdev/net/c/56763f12b0f0
-  - [net,3/8] netfilter: egress: silence egress hook lockdep splats
-    https://git.kernel.org/netdev/net/c/17a8f31bba7b
-  - [net,4/8] netfilter: nf_queue: don't assume sk is full socket
-    https://git.kernel.org/netdev/net/c/747670fd9a2d
-  - [net,5/8] selftests: netfilter: add nfqueue TCP_NEW_SYN_RECV socket race test
-    https://git.kernel.org/netdev/net/c/2e78855d311c
-  - [net,6/8] netfilter: nf_queue: fix possible use-after-free
-    https://git.kernel.org/netdev/net/c/c3873070247d
-  - [net,7/8] netfilter: nf_queue: handle socket prefetch
-    https://git.kernel.org/netdev/net/c/3b836da4081f
-  - [net,8/8] net/sched: act_ct: Fix flow table lookup failure with no originating ifindex
-    https://git.kernel.org/netdev/net/c/db6140e5e35a
+IMHO If we believe in this, we should have it enabled by default.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>The statistics added are:
+>	- fast: successful fast path allocations
+>	- slow: slow path order-0 allocations
+>	- slow_high_order: slow path high order allocations
+>	- empty: ptr ring is empty, so a slow path allocation was forced.
+>	- refill: an allocation which triggered a refill of the cache
+>	- waive: pages obtained from the ptr ring that cannot be added to
+>	  the cache due to a NUMA mismatch.
+>
+
+Let's have this documented under kernel documentation.
+https://docs.kernel.org/networking/page_pool.html
+
+I would also mention the kconfig and any user knobs APIs introduced in
+this series
 
 
