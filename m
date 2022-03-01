@@ -2,145 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 600894C7FAE
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 01:47:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3DC4C7F35
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 01:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiCAAsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 19:48:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S231689AbiCAAcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 19:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbiCAAsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 19:48:15 -0500
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4EE5127CCE;
-        Mon, 28 Feb 2022 16:47:33 -0800 (PST)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 2210V56x017328;
-        Mon, 28 Feb 2022 18:31:05 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 2210V0er017322;
-        Mon, 28 Feb 2022 18:31:00 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 28 Feb 2022 18:30:59 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     James Bottomley <James.Bottomley@HansenPartnership.com>
-Cc:     Mike Rapoport <rppt@kernel.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        alsa-devel@alsa-project.org, KVM list <kvm@vger.kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, linux1394-devel@lists.sourceforge.net,
-        drbd-dev@lists.linbit.com, linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>, linux-aspeed@lists.ozlabs.org,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        samba-technical@lists.samba.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body as a ptr
-Message-ID: <20220301003059.GE614@gate.crashing.org>
-References: <20220228110822.491923-1-jakobkoschel@gmail.com> <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com> <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com> <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com> <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com> <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org> <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
-User-Agent: Mutt/1.4.2.3i
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229480AbiCAAcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 19:32:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC50764C;
+        Mon, 28 Feb 2022 16:31:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 763A3B816C6;
+        Tue,  1 Mar 2022 00:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBEFC340EE;
+        Tue,  1 Mar 2022 00:31:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646094678;
+        bh=Euw391qM8LjbXBajM9+tTp5fY6LR/jx5+DgRym+rV0M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=p+4LNoQZC6RWYH3OJoYXk04Ws5oCuxGDBow3ww7Lg8UgeVyn04Dry3JlhtBcIP1CG
+         rExyYNeQAtacbJc/Z1I+0hUDZGOvYOd12LYJSl1lfO3/CgV91/GLt4vctQZDoUT9P3
+         Of6ocsTiYRIKiUoR7jFFKwjyWT8cuCRFbHruUsCTYfe7tXhEywgA9lW4Fnu+sEHLEm
+         eHzOJaLR7mbXAOKp6TcbON09BdMo68dc+taCjVZ7+HaSEqB/Eh8Zt36M/re5MDI5Bd
+         ZPuG3Uq+Ei0zQXXCO7vZ60X60LyDD8bqcasfs3w+6FEWpUPpiVGWMc8ZqpdkuqQWO/
+         s5cNS3W1aw+dg==
+Date:   Mon, 28 Feb 2022 16:31:16 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [pull request][for-next v2 00/17] mlx5-next 2022-22-02
+Message-ID: <20220228163116.3eb49678@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220228224148.gwzbabatnedfrmu3@sx1>
+References: <20220223233930.319301-1-saeed@kernel.org>
+        <20220228224148.gwzbabatnedfrmu3@sx1>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 05:28:58PM -0500, James Bottomley wrote:
-> On Mon, 2022-02-28 at 23:59 +0200, Mike Rapoport wrote:
-> > 
-> > On February 28, 2022 10:42:53 PM GMT+02:00, James Bottomley <
-> > James.Bottomley@HansenPartnership.com> wrote:
-> > > On Mon, 2022-02-28 at 21:07 +0100, Christian König wrote:
-> [...]
-> > > > > I do wish we could actually poison the 'pos' value after the
-> > > > > loop somehow - but clearly the "might be uninitialized" I was
-> > > > > hoping for isn't the way to do it.
-> > > > > 
-> > > > > Anybody have any ideas?
-> > > > 
-> > > > I think we should look at the use cases why code is touching
-> > > > (pos) after the loop.
-> > > > 
-> > > > Just from skimming over the patches to change this and experience
-> > > > with the drivers/subsystems I help to maintain I think the
-> > > > primary pattern looks something like this:
-> > > > 
-> > > > list_for_each_entry(entry, head, member) {
-> > > >      if (some_condition_checking(entry))
-> > > >          break;
-> > > > }
-> > > > do_something_with(entry);
-> > > 
-> > > Actually, we usually have a check to see if the loop found
-> > > anything, but in that case it should something like
-> > > 
-> > > if (list_entry_is_head(entry, head, member)) {
-> > >    return with error;
-> > > }
-> > > do_somethin_with(entry);
-> > > 
-> > > Suffice?  The list_entry_is_head() macro is designed to cope with
-> > > the bogus entry on head problem.
-> > 
-> > Won't suffice because the end goal of this work is to limit scope of
-> > entry only to loop. Hence the need for additional variable.
+On Mon, 28 Feb 2022 14:41:48 -0800 Saeed Mahameed wrote:
+> On 23 Feb 15:39, Saeed Mahameed wrote:
+> >From: Saeed Mahameed <saeedm@nvidia.com>
+> >
+> >Hi Dave, Jakub and Jason,
+> >
+> >v1->v2:
+> > - Fix typo in the 1st patch's title
+> >
+> >The following PR includes updates to mlx5-next branch:
 > 
-> Well, yes, but my objection is more to the size of churn than the
-> desire to do loop local.  I'm not even sure loop local is possible,
-> because it's always annoyed me that for (int i = 0; ...  in C++ defines
-> i in the outer scope not the loop scope, which is why I never use it.
+> Dave, Jakub, I expecting this to be pulled into net-next, let me know if I
+> did something wrong, I see the series is marked as "Awaiting upstream" in
+> patchworks.
 
-In C its scope is the rest of the declaration and the entire loop, not
-anything after it.  This was the same in C++98 already, btw (but in
-pre-standard versions of C++ things were like you remember, yes, and it
-was painful).
-
-
-Segher
+Indeed, pulled now, sorry for the wait!
