@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F094C8E40
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 15:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D96794C8E3D
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 15:50:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235420AbiCAOuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 09:50:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        id S235404AbiCAOux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 09:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235415AbiCAOuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 09:50:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDBC9284D;
-        Tue,  1 Mar 2022 06:50:13 -0800 (PST)
+        with ESMTP id S235396AbiCAOuw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 09:50:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352E38BE25;
+        Tue,  1 Mar 2022 06:50:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 663C7B81988;
-        Tue,  1 Mar 2022 14:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 13FB2C340F0;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C57CB61604;
+        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D75FC340F3;
         Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646146211;
-        bh=gA9o0xmz6RRxTdFGIbJNp+4yVSE256v/wl49/XRB9Q8=;
+        bh=T7EEDtDVpo/7MGcsNAe8humb29FdCCXgSHc3f6aTRi8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QDAE146Ow9/Ox35JDaM3EN7HCYmiH/E0VWCBJP3pwM7xQa/nJJ2dgJBLyz4BTeK2V
-         rasJfMqAbr6fbOCk/1sSTjrfltwkECwsJRyRy105ZZJFJ3ypmVGDUSzP3vpETQ1wU8
-         8Uo+rs5GQzty3cNTapxR6ub0rusjNmg2Q4CitUt0c8x5fQ8MB2mI3JnV9JHbSYNkfE
-         gbfwuOIkkZxW7e5al56u2ljn/kTVA16V8jVNqrF2EHHeks8Zza4PSe+6azNQHi7BNr
-         4e8q0IztvOK23BmvKQ2pQnG3OYxBLYNN4yKw0zGOB71iovV2fxdnzMDrOToaFBBp6J
-         KBSx2CbzZVDjw==
+        b=FyBnkroelMtrz9Lm0OdztFf/JJJPOf4KLs9gmCcyADwhUMHhQiMaObQ9oQdE6mp0g
+         et4jFtCArYcUhYa+4t63NNYcRZRSaaoWCrbsvUeH/23UcP3Pd92OqzGpx5Fa1hPKIF
+         e7whB/S0KbpTuC2h2/Ms1aBBUpFvnem1+H7crI1ZSEMGzyV/VJWjXfxMSekg0tdha8
+         dB79YQIzdEfOcvV2eqjV+jUDuq4WAUhfAyZAeN6ELjWkZxrTIp8v6Rtdvr8zIr79S9
+         5xaINpoBgoH3/tJRODhOKncve0RzKyo4CwCYFFQCxf1dNioesgZFFiSx5K7wKVcy/v
+         t0WzUtz+CoUiQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EAA87E6D44B;
-        Tue,  1 Mar 2022 14:50:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 00B1FEAC09D;
+        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless 2022-03-01
+Subject: Re: [PATCH] wireless/nl80211: Handle errors for nla_memdup
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164614621095.32176.12951724521893502415.git-patchwork-notify@kernel.org>
+Message-Id: <164614621099.32176.8459771035422066340.git-patchwork-notify@kernel.org>
 Date:   Tue, 01 Mar 2022 14:50:10 +0000
-References: <20220301143948.57278-1-johannes@sipsolutions.net>
-In-Reply-To: <20220301143948.57278-1-johannes@sipsolutions.net>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+References: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,25 +59,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This patch was applied to netdev/net.git (master)
+by Johannes Berg <johannes.berg@intel.com>:
 
-On Tue,  1 Mar 2022 15:39:47 +0100 you wrote:
-> Hi,
+On Tue,  1 Mar 2022 18:00:20 +0800 you wrote:
+> As the potential failure of the nla_memdup(),
+> it should be better to check it, as same as kmemdup().
 > 
-> So now for the first time I'm sending a pull request
-> from our combined tree ... let's see if I'm getting
-> it right.
-> 
-> We actually still have quite a few fixes, but most of
-> them trickled in through the last couple of days, or
-> were still somewhat under discussion.
-> 
-> [...]
+> Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  net/wireless/nl80211.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 
 Here is the summary with links:
-  - pull-request: wireless 2022-03-01
-    https://git.kernel.org/netdev/net/c/b8d06ce712e3
+  - wireless/nl80211: Handle errors for nla_memdup
+    https://git.kernel.org/netdev/net/c/6ad27f522cb3
 
 You are awesome, thank you!
 -- 
