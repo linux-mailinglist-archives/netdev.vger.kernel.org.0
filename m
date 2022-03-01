@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D804C802B
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 02:12:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DD004C805E
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 02:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbiCABNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Feb 2022 20:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
+        id S231281AbiCABdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Feb 2022 20:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiCABNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 20:13:18 -0500
-Received: from relay.hostedemail.com (relay.a.hostedemail.com [64.99.140.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16866FD8
-        for <netdev@vger.kernel.org>; Mon, 28 Feb 2022 17:12:37 -0800 (PST)
-Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay10.hostedemail.com (Postfix) with ESMTP id EB8C16D7;
-        Tue,  1 Mar 2022 01:12:35 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 77B9F20015;
-        Tue,  1 Mar 2022 01:12:29 +0000 (UTC)
-Message-ID: <fe3c21a9c0178a2f0fcea698b8e6405a99747dea.camel@perches.com>
-Subject: Re: [PATCH 03/10] staging: wfx: format comments on 100 columns
-From:   Joe Perches <joe@perches.com>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
-        linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>
-Cc:     devel@driverdev.osuosl.org, netdev@vger.kernel.org,
+        with ESMTP id S229965AbiCABdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Feb 2022 20:33:35 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0860F245AF;
+        Mon, 28 Feb 2022 17:32:55 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id z66so11879205qke.10;
+        Mon, 28 Feb 2022 17:32:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9JEn06hcww2L6NS4S3p4jO39Ct9x9lpXynd0qsWDBiA=;
+        b=ooLMJfc6fgqPxZvdt2P1iN6fDeJda7eqKYC88DNkDtigehLPK04vGLcKYaIEcNWnol
+         1z/ZNyUr+FHs/Jf1Nqru9j1ugBzU2M+kuZ3RxxdzKw+ZaE8lfOApbt+dSfM44nBWtqlF
+         bS7DApyT+OfSYITA1ftjd9QnyR4S0fY9yBlbHdRdouLIadZfFGkKqqPEw3oZCOFGJe5N
+         PDLA1hRe8DQVmdOqBv+j1MI5i/VnovsR9VsR53vCpHovS0gWK2QdSGFr+obDTZIRk9r+
+         0iUGYqi9lyPIx2DR6zh3OoA4zWGYgUcu2qd2hOzwmJpu1CePifEq0lVA3EiZ6OwlpPH3
+         YDVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9JEn06hcww2L6NS4S3p4jO39Ct9x9lpXynd0qsWDBiA=;
+        b=GKsXB9qjDqgp1X7co5aBrEAWXh+4LUyz1n9b7PbMDMRyvEoLky0jg92U1Xb1mVjCcn
+         +7x2lijvEOR7vEr2b/QHurJmJpPqSWltQIYz3INiDFdAYTEQkt2GArXJpP5lb8XwCfXG
+         gXmoKEXxUiStZ5UifRaErcK8to8FMG1csAdmLSStxDkiSBtYXQ6DksYRQ6hE0vid2TEr
+         SYjXR+FsyqH4lGK1zbtnNmlHNOedH4SmcH7yCN5m5ybN9xuWtC2ubk+K7tp4ow2RDoPw
+         44aLrfz1TL7LWg5Yqm/EYtpmPM8eleRLcbfw5lqIclfdyz5ftvgHC4XOYAgedBNAvWEN
+         bYiw==
+X-Gm-Message-State: AOAM533st4jJ3l5xfCUC1Em7dPNPYHzBROSDMuapZCea95woi+rsE3hR
+        qCZ5qd52U7YTV8r5+SdQ3pk=
+X-Google-Smtp-Source: ABdhPJzo0tWiorMvWcE9Vcd9FqDf7fgvFbLMLlJtG/G2wXt9rlQP2Mw+EG2A3+Gk1V8rJH1HWcjz2A==
+X-Received: by 2002:a37:2791:0:b0:60d:d5a2:965e with SMTP id n139-20020a372791000000b0060dd5a2965emr12712941qkn.701.1646098374149;
+        Mon, 28 Feb 2022 17:32:54 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id y16-20020a05622a121000b002deaa0af9e2sm7937286qtx.49.2022.02.28.17.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 17:32:53 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Mon, 28 Feb 2022 17:12:28 -0800
-In-Reply-To: <20220225112405.355599-4-Jerome.Pouiller@silabs.com>
-References: <20220225112405.355599-1-Jerome.Pouiller@silabs.com>
-         <20220225112405.355599-4-Jerome.Pouiller@silabs.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        "Lv Ruyi (CGEL ZTE)" <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ath11k: remove unneeded flush_workqueue
+Date:   Tue,  1 Mar 2022 01:32:46 +0000
+Message-Id: <20220301013246.2052570-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Stat-Signature: 77muhtja19n3dsratymaanib3ctsb9fr
-X-Rspamd-Server: rspamout07
-X-Rspamd-Queue-Id: 77B9F20015
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18rc9SVD0a5kXusMoMzjYsxOtCG3ORwyWA=
-X-HE-Tag: 1646097149-871435
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-02-25 at 12:23 +0100, Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> A few comments were not yet formatted on 100 columns.
+From: "Lv Ruyi (CGEL ZTE)" <lv.ruyi@zte.com.cn>
 
-IMO, none of these changes are necessary or good changes.
+All work currently pending will be done first by calling destroy_workqueue,
+so there is no need to flush it explicitly.
 
-80 columns is preferred.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi (CGEL ZTE) <lv.ruyi@zte.com.cn>
+---
+ drivers/net/wireless/ath/ath11k/core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Really comments should most always use 80 columns, and
-only occasionally should code be more than 80 columns
-and almost never should code be more than 100 columns.
-
-> diff --git a/drivers/staging/wfx/data_tx.c b/drivers/staging/wfx/data_tx.c
-[]
-> @@ -117,9 +117,7 @@ static int wfx_tx_policy_get(struct wfx_vif *wvif, struct ieee80211_tx_rate *rat
->  	if (idx >= 0) {
->  		*renew = false;
->  	} else {
-> -		/* If policy is not found create a new one using the oldest
-> -		 * entry in "free" list
-> -		 */
-> +		/* If policy is not found create a new one using the oldest entry in "free" list */
->  		*renew = true;
->  		entry = list_entry(cache->free.prev, struct wfx_tx_policy, link);
->  		memcpy(entry->rates, wanted.rates, sizeof(entry->rates));
-> @@ -494,9 +492,7 @@ void wfx_tx_confirm_cb(struct wfx_dev *wdev, const struct wfx_hif_cnf_tx *arg)
->  	wfx_tx_fill_rates(wdev, tx_info, arg);
->  	skb_trim(skb, skb->len - tx_priv->icv_size);
->  
-> -	/* From now, you can touch to tx_info->status, but do not touch to
-> -	 * tx_priv anymore
-> -	 */
-> +	/* From now, you can touch to tx_info->status, but do not touch to tx_priv anymore */
->  	/* FIXME: use ieee80211_tx_info_clear_status() */
->  	memset(tx_info->rate_driver_data, 0, sizeof(tx_info->rate_driver_data));
->  	memset(tx_info->pad, 0, sizeof(tx_info->pad));
-> diff --git a/drivers/staging/wfx/queue.c b/drivers/staging/wfx/queue.c
-[]
-> @@ -210,8 +210,8 @@ bool wfx_tx_queues_has_cab(struct wfx_vif *wvif)
->  	if (wvif->vif->type != NL80211_IFTYPE_AP)
->  		return false;
->  	for (i = 0; i < IEEE80211_NUM_ACS; ++i)
-> -		/* Note: since only AP can have mcast frames in queue and only
-> -		 * one vif can be AP, all queued frames has same interface id
-> +		/* Note: since only AP can have mcast frames in queue and only one vif can be AP,
-> +		 * all queued frames has same interface id
->  		 */
->  		if (!skb_queue_empty_lockless(&wvif->tx_queue[i].cab))
->  			return true;
-> @@ -253,9 +253,8 @@ static struct sk_buff *wfx_tx_queues_get_skb(struct wfx_dev *wdev)
->  			skb = skb_dequeue(&queues[i]->cab);
->  			if (!skb)
->  				continue;
-> -			/* Note: since only AP can have mcast frames in queue
-> -			 * and only one vif can be AP, all queued frames has
-> -			 * same interface id
-> +			/* Note: since only AP can have mcast frames in queue and only one vif can
-> +			 * be AP, all queued frames has same interface id
->  			 */
->  			hif = (struct wfx_hif_msg *)skb->data;
->  			WARN_ON(hif->interface != wvif->id);
-
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 5d570a2cc2a5..71eb7d04c3bf 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -1417,7 +1417,6 @@ EXPORT_SYMBOL(ath11k_core_deinit);
+ 
+ void ath11k_core_free(struct ath11k_base *ab)
+ {
+-	flush_workqueue(ab->workqueue);
+ 	destroy_workqueue(ab->workqueue);
+ 
+ 	kfree(ab);
+-- 
+2.25.1
 
