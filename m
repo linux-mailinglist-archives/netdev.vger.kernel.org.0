@@ -2,73 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5605D4C908D
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 17:43:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E4C34C908F
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 17:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233634AbiCAQoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 11:44:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        id S236124AbiCAQp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 11:45:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235154AbiCAQoN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 11:44:13 -0500
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E18560ED
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 08:43:32 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id E0E125C0165;
-        Tue,  1 Mar 2022 11:43:31 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 01 Mar 2022 11:43:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=wR4Ts9VFtWK53GlRv
-        K0lW1rHuCuWvh76zlUaiQPITaU=; b=HgA4rA5T/+ZWzuE+hsH0vZRJIAjrez1mi
-        Ohax8eS+N1pIDGw8p2JtWdBfyi7IO/+cPj3gmGU8wNZnXzAW84Br+DNtOFW+maSt
-        +230jl51YFPZ+t8AuUwG/jRD8uhEzSvpvBIA3eu1Mwav1CpQV4thsR8MAYX/sp6j
-        FPd5o6aEIeDAW/AqOSAp6zyhTGbdam5q1dqFPrMlu6JU78vLB+BU1u2oRrgXlmoo
-        rzVTQsER0xJIpPrMiWAhVfDOkD7gkXou4A+AbPSyGOvs56h4avKB/uungvpCnikx
-        wRJiobLCR3qObYjqLOQG08jb0j0WS9As7uxWcGh2zmJi2NVF47Mjw==
-X-ME-Sender: <xms:Mk0eYgax3AYQKe78YvKNdINK5qTve-I9C1mhrUUDsCaJ5CNO3EYKtA>
-    <xme:Mk0eYrbfgOC8gEw8es6Rbf1vI5ADGRo6AlYSV_ZMPzGUGUWzeW1x_xdX9lNrXpMdY
-    Rj3jMblnyv1qIU>
-X-ME-Received: <xmr:Mk0eYq8cBWcKP8t7Ja0mm3ou0O4PzsbDbqMdgygEPLDIXFgqhFm81R7kP9P86c80_i1JQJLdk5U9puwEVkGKs-pHpoI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtvddgkeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:M00eYqrcKe3vL9yLBUeUD2ngl8YuSdgJ3LofyRzz1sT6h6JPYVCJqA>
-    <xmx:M00eYrp0D6yFbZLwDii_avMkItQyENleqikDILUweuja2-8YWb5wYg>
-    <xmx:M00eYoRr0o0uJCpqjq_vNXOrXMFfHOpM8whW519B5NwswqwuMMMY6g>
-    <xmx:M00eYnLDWZNfpayIywfKX0pRZpTaAiJYsjXcdy3xctrkYboS5cjPNw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 1 Mar 2022 11:43:30 -0500 (EST)
-Date:   Tue, 1 Mar 2022 18:43:27 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
-Subject: Re: [PATCH 1/3] net: bridge: Implement bridge flag local_receive
-Message-ID: <Yh5NL1SY7+3rLW5O@shredder>
-References: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
- <20220301123104.226731-2-mattias.forsblad+netdev@gmail.com>
+        with ESMTP id S236112AbiCAQp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 11:45:28 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1D5C33E1C
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 08:44:47 -0800 (PST)
+Received: from [192.168.1.214] (dynamic-089-012-174-087.89.12.pool.telefonica.de [89.12.174.87])
+        by linux.microsoft.com (Postfix) with ESMTPSA id CCC6820B7178;
+        Tue,  1 Mar 2022 08:44:46 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CCC6820B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646153087;
+        bh=e4esMS/5T0oXmhYx4MXerSxLGPrFjTNeLySYb7LEHIQ=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=mXW38wENoC7+zsTwt7EMXtl7I8NuhiNagD7L4h23BDzCSZKbVW3+cctwsqxO06xrN
+         8t3cnh1ETOwrplv5M3hq2rGdFkPqeMFfSFwxa6j0VvcUYpVXw+pxEf2dYOIlUWnl+0
+         llU8Ghl7niVO4CrbUz9L70l6RL0ekl/wMbNjRjpM=
+Subject: Re: [PATCH 1/2] Revert "xfrm: interface with if_id 0 should return
+ error"
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Paul Chaignon <paul@cilium.io>,
+        Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
+References: <20220301131512.1303-1-kailueke@linux.microsoft.com>
+ <CAHsH6Gtzaf2vhSv5sPpBBhBww9dy8_E7c0utoqMBORas2R+_zg@mail.gmail.com>
+ <d5e58052-86df-7ffa-02a0-fc4db5a7bbdf@linux.microsoft.com>
+ <CAHsH6GsxaSgGkF9gkBKCcO9feSrsXsuNBdKRM_R8=Suih9oxSw@mail.gmail.com>
+ <20220301150930.GA56710@Mem>
+ <dcc83e93-4a28-896c-b3d3-8d675bb705eb@linux.microsoft.com>
+ <20220301161001.GV1223722@gauss3.secunet.de>
+From:   Kai Lueke <kailueke@linux.microsoft.com>
+Message-ID: <f2dc1c09-6e3a-0563-491b-1b8de7a8f5ef@linux.microsoft.com>
+Date:   Tue, 1 Mar 2022 17:44:44 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301123104.226731-2-mattias.forsblad+netdev@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220301161001.GV1223722@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,60 +58,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 01:31:02PM +0100, Mattias Forsblad wrote:
-> This patch implements the bridge flag local_receive. When this
-> flag is cleared packets received on bridge ports will not be forwarded up.
-> This makes is possible to only forward traffic between the port members
-> of the bridge.
-> 
-> Signed-off-by: Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
-> ---
->  include/linux/if_bridge.h      |  6 ++++++
->  include/net/switchdev.h        |  2 ++
+Hi,
+> In general I agree that the userspace ABI has to be stable, but
+> this never worked. We changed the behaviour from silently broken to
+> notify userspace about a misconfiguration.
+>
+> It is the question what is more annoying for the users. A bug that
+> we can never fix, or changing a broken behaviour to something that
+> tells you at least why it is not working.
+>
+> In such a case we should gauge what's the better solution. Here
+> I tend to keep it as it is.
 
-Nik might ask you to split the offload part from the bridge
-implementation. Please wait for his feedback as he might be AFK right
-now
+alternatives are: docs to ensure the API is used the right way, maybe a
+dmesg log entry if wrong usage is detected, and filing bugs where the
+API is used wrong.
 
->  include/uapi/linux/if_bridge.h |  1 +
->  include/uapi/linux/if_link.h   |  1 +
->  net/bridge/br.c                | 18 ++++++++++++++++++
->  net/bridge/br_device.c         |  1 +
->  net/bridge/br_input.c          |  3 +++
->  net/bridge/br_ioctl.c          |  1 +
->  net/bridge/br_netlink.c        | 14 +++++++++++++-
->  net/bridge/br_private.h        |  2 ++
->  net/bridge/br_sysfs_br.c       | 23 +++++++++++++++++++++++
+The chosen way led to having this change being introduced as part of an
+LTS kernel bugfix update, breaking user's clusters:
+https://github.com/flatcar-linux/Flatcar/issues/626
 
-I believe the bridge doesn't implement sysfs for new attributes
+Please rethink how you want to handle this, also for not making a
+precedent here so that this repeats.
 
->  net/bridge/br_vlan.c           |  8 ++++++++
->  12 files changed, 79 insertions(+), 1 deletion(-)
+Regards,
+Kai (Flatcar Container Linux team)
 
-[...]
-
-> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> index e0c13fcc50ed..5864b61157d3 100644
-> --- a/net/bridge/br_input.c
-> +++ b/net/bridge/br_input.c
-> @@ -163,6 +163,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
->  		break;
->  	}
->  
-> +	if (local_rcv && !br_opt_get(br, BROPT_LOCAL_RECEIVE))
-> +		local_rcv = false;
-> +
-
-I don't think the description in the commit message is accurate:
-"packets received on bridge ports will not be forwarded up". From the
-code it seems that if packets hit a local FDB entry, then they will be
-"forwarded up". Instead, it seems that packets will not be flooded
-towards the bridge. In which case, why not maintain the same granularity
-we have for the rest of the ports and split this into unicast /
-multicast / broadcast?
-
-BTW, while the patch honors local FDB entries, it overrides host MDB
-entries which seems wrong / inconsistent.
-
->  	if (dst) {
->  		unsigned long now = jiffies;
