@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F074C8BE6
-	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:44:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAA374C8C01
+	for <lists+netdev@lfdr.de>; Tue,  1 Mar 2022 13:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbiCAMpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 07:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        id S234055AbiCAMvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 07:51:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232420AbiCAMpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:45:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE5D5DE47;
-        Tue,  1 Mar 2022 04:44:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18A98B818D6;
-        Tue,  1 Mar 2022 12:44:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D6ADC340EE;
-        Tue,  1 Mar 2022 12:44:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646138659;
-        bh=Dvmj37OjCzYRSD5lH+68CdPQAV0uvqJN0PHM1p+T0So=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cvEy4Celqtz56G+ZmoQDluWwekayBnfTCkFgpjXIFUH67plCHqLaSs3bbB243KlIR
-         c45wYDECEVf4LWJ00ZQiKAcyUSHL64BhIGFvma252WcK0UALkdGdrYGD/dqovDJKtR
-         nXEk3Ag/hwkYm5li4hxxk+HMio8KgibuwB4aX5v1Z2zZmHKVjrxL7cIQKNI/tiMITd
-         NkO+5zDQZmAzNeWpLD6uKGpNz/FoYh51Uy8J52cCMjZhmPH1IJKDOsrwcP7vK2YjZm
-         nonLZCYTS9eYAKYZRMI8CD96NDXVzp27Rt1yTEqCpDc6ETJVDQByLrDXXZXW/TIYGE
-         LR+shwwVPEBnw==
-Date:   Tue, 1 Mar 2022 12:44:12 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, f.suligoi@asem.it,
-        kuninori.morimoto.gx@renesas.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] ASoC: fsi: Add check for clk_enable
-Message-ID: <Yh4VHFviMI/LbjVe@sirena.org.uk>
-References: <20220301073949.3678707-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S233157AbiCAMvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 07:51:55 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7149986CB
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 04:51:14 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id o8so14325790pgf.9
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 04:51:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qkvrn2WObBzOZmmoswkTMdd18VdHq4sCFKdBiDnUsWw=;
+        b=dQnyaoTCvgDcDMRAEj24m/V5PArv6khgwccBQjXSHcHlU7etPL1YmpO/K8SxmHXMrq
+         c9XC1/E88GEho1Wb6TvIXdT7uMHay/Wp3yXY5yBWryf5odRpEPsO6B4qgyac8n11rK3N
+         w2w9lIS1YiUEQYd5J5seaEEa+lpPKVQvco4DC0eDrgpccNdqgPbUROwfcvlwY0DIpfCJ
+         tyr/HQWEVYGPohDTTcuUXl7+WO2e0wbmb0tKpzS3EgBxBP6sH5I6yoMSEk8OOLqf2ka8
+         chFpn7dGJuS6JoL1E13hk7Bxi5VwF95I0VcNkZ9hSYmHletsrSbOPXmmrttsum9YkA9s
+         2PoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qkvrn2WObBzOZmmoswkTMdd18VdHq4sCFKdBiDnUsWw=;
+        b=GH0/slrA6psYwTqkhJi4oMYtCFOCUZMjVTZa0wtnE09/qbc21PrTV5eTiNeFUC+S1Z
+         pW6M3TMUdNNI3lR99BjAGx4MIAk9cLcbRaNvZK+AfX1fH6Fz2/dKc4bW14Mv3iyi/J4R
+         3SaTxuqFzl/hJqdEuV6f7dKu4m8IxBp9x/R1/qRhn+j1aPihBsgdTF+Aifg3wcAlX+WE
+         9lT7cEVddBaBIAJ/zEniYnUk2fZhxljBRyKRuCF3GpzvA4bwahnIzi/0El7r6G1z+RhZ
+         CfQ+rUVmuBg0vAxwbcvbjv77kSwoLCTmgeCbgGXqXL+/nJqxbULt7daxNqSMLmt3LEDw
+         ZzAA==
+X-Gm-Message-State: AOAM532zVqW768kFKqQDea8QDh3R8N1r3zaGzoAQO5v/w5w6TZ/Kt4yN
+        ZQNiCyymQ6217K8N/9uNglU=
+X-Google-Smtp-Source: ABdhPJxhq7ZqKJBl17l71dtxf8soJKxESmplI2lWRcQXEWEJI6nKxN79fdt0dGULz3uuykLGFowMNw==
+X-Received: by 2002:a63:2fc1:0:b0:374:9f30:9559 with SMTP id v184-20020a632fc1000000b003749f309559mr21654441pgv.278.1646139074183;
+        Tue, 01 Mar 2022 04:51:14 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id u25-20020a62ed19000000b004f140515d56sm16448443pfh.46.2022.03.01.04.51.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 04:51:13 -0800 (PST)
+Date:   Tue, 1 Mar 2022 04:51:11 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH net-next] ptp: ocp: Add ptp_ocp_adjtime_coarse for large
+ adjustments
+Message-ID: <20220301125111.GB14297@hoboy.vegasvil.org>
+References: <20220228203957.367371-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="a4D1fYTki8ZRdcZe"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301073949.3678707-1-jiasheng@iscas.ac.cn>
-X-Cookie: You have a message from the operator.
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220228203957.367371-1-jonathan.lemon@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 12:39:57PM -0800, Jonathan Lemon wrote:
+> In ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime."), the
+> ns adjustment was written to the FPGA register, so the clock could
+> accurately perform adjustments.
+> 
+> However, the adjtime() call passes in a s64, while the clock adjustment
+> registers use a s32.  When trying to perform adjustments with a large
+> value (37 sec), things fail.
+> 
+> Examine the incoming delta, and if larger than 1 sec, use the original
+> (coarse) adjustment method.  If smaller than 1 sec, then allow the
+> FPGA to fold in the changes over a 1 second window.
+> 
+> Fixes: 6d59d4fa1789 ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime.")
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
---a4D1fYTki8ZRdcZe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Mar 01, 2022 at 03:39:49PM +0800, Jiasheng Jiang wrote:
-> As the potential failure of the clk_enable(),
-> it should be better to check it and return error
-> if fails.
-
-> -		clk_enable(clock->xck);
-> -		clk_enable(clock->ick);
-> -		clk_enable(clock->div);
-> +		ret =3D clk_enable(clock->xck);
-> +		if (ret)
-> +			goto err;
-> +		ret =3D clk_enable(clock->ick);
-> +		if (ret)
-> +			goto err;
-> +		ret =3D clk_enable(clock->div);
-> +		if (ret)
-> +			goto err;
-> =20
->  		clock->count++;
->  	}
-> =20
->  	return ret;
-> +
-> +err:
-> +	clk_disable(clock->xck);
-> +	clk_disable(clock->ick);
-> +	clk_disable(clock->div);
-
-You need separate labels for each enable so that we don't end up
-disabling clocks we didn't enable, that would also be a bug.
-
---a4D1fYTki8ZRdcZe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIeFRwACgkQJNaLcl1U
-h9DwBgf/bin2luVJoiauARSYcwKh6nAuT6t1+pRx4vZsv96asJBq6mHzg3Lde11Y
-m2QgosA3PwMCLdvAIk4gZc2OQfzLQ6r96lgNEFHE3fmZknc9qPeO5P8275sdgfRy
-xn7l5w0j4y/4QoGu6YpE9EidGOGlkLQMcMvVc3CcpIUQLexWdGIgYUoJDT8MaIrA
-NNlrI3R296GI6oToypsEEC+KnTcddRKhEqd/wlCTD75OP9WmbQdUkw84mXq4A29F
-yDHw4BIYC8Mhx+RvUUXSaBue6Ow0kk58x9hdeFIE7Zc2qRk8xuSTxnju+QXIPNZK
-djNrcWAUdWEufFhsSf26mOnIq6bsrQ==
-=LFkr
------END PGP SIGNATURE-----
-
---a4D1fYTki8ZRdcZe--
+Acked-by: Richard Cochran <richardcochran@gmail.com>
