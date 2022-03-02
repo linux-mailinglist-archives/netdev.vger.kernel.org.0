@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA714CAE63
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAD9F4CAE6A
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244971AbiCBTPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:15:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
+        id S244935AbiCBTPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:15:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244969AbiCBTPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:15:40 -0500
+        with ESMTP id S244964AbiCBTPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:15:42 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70073.outbound.protection.outlook.com [40.107.7.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBDD5749B
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:14:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C57527C7
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:14:58 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Lfx0yhNtAsg2rcABTOrB45IomY0dAVHc0R9h14DxTTriMuG/mJHmFUE1AF51RzI8snf5ifeviOJTiBuU/WaAQubhxby0QvBQvqYRizQjug1IDFza7FMopJXlGWVnSPf1nVCm1hGVzJOvQcyNtcoSujrITVjwJKVPkx2uE3MCMR42G6h+0gLYXuOWCaYbp8c56w9PdxSDypwYrzN/ki8s6jdEFQxiBDs1qWRJbxVaSbAMR1WB2/Ilach6aw6buSG9TLFbsro4nyqyW6U19xS30jrOrGV+XLsUP/6v/KWw8XHX7g39QASOyOb1sCX0rkxtqQa9nQ+d288TwllNjD2zAA==
+ b=U0LMtSMpODab6mVamnFXk/pOJh7M995U0/ggwv17Zmoi0Jagi9mymn3a8PfRxFhQTI3XHGk+thz+23blfDjtbfqVvx3LI/C9t9273XevD8Td0GEhsVGWFWAo6vb8GDAPXNtjFCV0HsOshKXaIg7+/O2cOF48cV4+553oIFDsi9BtBjDOZ8W5cKmdidQTYx4zVavviyhZHqJkXGCMCYA2U/XZCKr/r3ZFEgqlSU4bEMqSwXVfoKll/v5eBw3oRFpOJepNT4uJ3+neTyu4O0nzUWah7VyOgHlNA9wv2Yn1A0IzDV5LfEHQpzfY9a3bwKjG9+Ip52WaHEmrs1OWFXs+KQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vw5rzboa8boKdXYwei3bEaf6howw+5jM5qHM+dNHe4s=;
- b=nZmM3ewVM3i96U6ASqaHEJtj6Uivg2N/0sNKd4AZwBn8KVLLI/BXWGTZS2hEKJ8pMMEn1vwmMlxasbkyboly8pNnsEtGwQEqp9IOEnXyTZSjCp8Xdri7VW5n4HtWH/d6+3MPNERI98a0TJPyJfDNMntTsFgu5KYmVt/6syIpeB9G63/DZ+NhIzPu/G368gn3AX15B8ErPHVGZLSF+hq0f5dycAoH9Paqxj8c9OPYiR9URLQN2qtGiyq149xnBJncgqLlcITfSAhd42bjKceo0KZCv4+agsEBA3IHHufvpZIfPReWQTnJNlUbqykY/MqTCkLBj/kd4sN+BeNzyRUDYQ==
+ bh=rSoJN4jnmhcBclKRhYOemPz+zsju4op0Smr4663aiVQ=;
+ b=MS7O3LgIj5JTifLY4XcavO/YZV0XebbW5iwJ3t9QLQoExBVEMvzRL8tMXZpbFl3UdLDpljTZUa3PJkMFtG56XEZurdZSGHm/6rsMk6wWDyvBvhSJtTBYaZC41R8B1RwMvMWmG1RBqCu6/POWY1gz5PuMEhX6N3xcOsPi0M3QGPQ52p1wc+UgigmaIUGgDYV/i669vq1sqKjx5JREytc4FvHwF+KJQH/p2aqgMNd1brXQPDoF3pe8+hOSW99zaT1dFlFe0xWehZrf5vbrLcg4Ud1IVGBOa4H6o4xdaU9OhEPxU5r375z0wv2+M6UHljE1RwZIwEGzsoV6kpOJ9/PRxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vw5rzboa8boKdXYwei3bEaf6howw+5jM5qHM+dNHe4s=;
- b=Nkf8o34oCU//slFF4y48L1w8t1K99Bt6lo4gQ+IFOGXRKG8OFOk0w/GWlgS1EikEbIB97I21WDpQJb0YfiG/OWm6SRcvAbf0b+1Y25z7GPdIVA563BCpiXIJ8x+pwt9Jy88vwJNbCZkZYEe8O33duJxNDFMqgJ2ldz9o344wDgM=
+ bh=rSoJN4jnmhcBclKRhYOemPz+zsju4op0Smr4663aiVQ=;
+ b=lq7W86VN+4ulUZpZHOdSERx6ylQ+cRibet46ZOBWhs7tL5FVd6hUpyOb4nfgWa6jRJP91yIp800oQV4N/2ty3PzvCOdeWJ+51cvcmKchg3BRF1W5Znh2C5rmbeBVAr5tlkpox54LKMvJmZI2Nh6N/pKJ/zml0id9SjExgED0LoY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB2911.eurprd04.prod.outlook.com (2603:10a6:800:b8::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Wed, 2 Mar
- 2022 19:14:52 +0000
+ 2022 19:14:53 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36%4]) with mapi id 15.20.5017.027; Wed, 2 Mar 2022
- 19:14:52 +0000
+ 19:14:53 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -52,9 +52,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 01/10] net: dsa: remove workarounds for changing master promisc/allmulti only while up
-Date:   Wed,  2 Mar 2022 21:14:08 +0200
-Message-Id: <20220302191417.1288145-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 02/10] net: dsa: rename the host FDB and MDB methods to contain the "bridge" namespace
+Date:   Wed,  2 Mar 2022 21:14:09 +0200
+Message-Id: <20220302191417.1288145-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220302191417.1288145-1-vladimir.oltean@nxp.com>
 References: <20220302191417.1288145-1-vladimir.oltean@nxp.com>
@@ -65,53 +65,53 @@ X-ClientProxiedBy: AM6PR05CA0030.eurprd05.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b4904e2-e152-4621-0c83-08d9fc80ed7f
+X-MS-Office365-Filtering-Correlation-Id: 3eacc81c-f631-4d03-4e6a-08d9fc80ee47
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB2911:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB2911FFDC3784FAFB23B0499BE0039@VI1PR0402MB2911.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB291109A00450D80164DD2F46E0039@VI1PR0402MB2911.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PbL3la5/JAnbqHZyzg2YCG7oYC9FuV4MHT4y/BiiOQddEXESdX3F2dGCJaxoIB4X4PuFKJVX5jc29mArLA3P77TV6vIKwemASoAUJnDm7Ikg0Vl3p84zP6BaaTiUvmYrKQjWrnxNkGu2QsRrOEx7GeBV1ED8seJ8+FkESpIJWEqe1d64zeHLJUD3iVMFNl+XwBODVDfN8ZNqrm2pL/OfNxRjRxOUPa3Hoh7jpUqeQtYi6MntP43pXSPgNUm1/+9Iu5qn0+UJFb55VjB+9J4vCz1SbJMoGkQ81GpP7Jfe3sEICH/x2NG91EHqwqZqwtAO+K3Qc8nzjXpfzc+IaU1XDiLY7KVBjAsySoR1sLITm232J9ZLGUXGbCpZuE3KBkcuNSL1aayJI0nG+xIQkrFL74A8ktrMFrBtckhXFwenFqXI2mT54BQfoutbdvO6OgQ8nx5pv6AD75rSXt7PbcVDp2tS2x7cSEm5Qw6CzOLceMM9zeW0f9X5132QFwXsKhUVd+dl593sw7fRXiRxdGZjKoSfa/PlpQXPCBnIV+7I5Nf6qO/Ou+pZCvqqWni1XwkDCgckC1ZryrZo9xIhr9afj12QvuyiyOmgM61fCBrdgMdxg9Tre+VpbmOsZQBKnTEGYqSmMk/SMFwGdMTHMnmTbzIl20WRVbRlm/jAQq1l6grgus71xeox+ym7F4Y+nrNeM8HbWEw7/MnUeKylqvk2zA==
+X-Microsoft-Antispam-Message-Info: 63Q0kkAOXN6z2UH9xSRN051SWRk6zEoDwnEut4yiUmqfY7Nr0XXnZ9hQTS1UcJU0b+uZt8hvrPIsyIzmSaIYOMbRtgBqb3sRs2WC/vIoWnWjcTguajab3ZYBJraRHGxmXPlZWIOWUB3lrKHzQPV9Xa+/HJiz/f3rlx9d6hMtTupfCRWpg8om08yH6es5HYgXe0LA9RKjkA9oHs1ArLdwW5JXWK+KIoxpah8OuQVZLzsIznLUahZshWLRFzWFwuFyA7hlCiS9SvY3h0NujSB1VWWlrR3/LVvNgWQsLSSQVN8NuL7j5wIA22ho5QCVVn26t9Xam9Iw2cu/uxMuDQS23d7OMTTH+2TGPXwpb7negEexZEb423IqtaOUgOtr/UdRMTzLaekk3w43Y2jn3kCedR/x8syIDTHXNbywGxyxp0/RD46IMhetVGTCRD/7jxKrc2Iz3Y/DqxMfAWNzxM2GKU5/h2cfnsppWJYBod1ceMnxE0wQv07aiQC8ouY0X6/YOboGp0QacE6kTlVDEkeEJ2LXgnozMMlZ5+R6p+iHBTfN8MaNBLtMN6OpQZZutlkM9+5po6NZ4S8XgqIZ+Tjjc+e7/Hs0pWFEtLiE+iY2wx4o49m7WWvJOsRo47MQLc2qt484aI4QILzEd7f0H0CcD88OENC9RfVtpbHWeJjtdhNJLppw5PuQxFIH9WINwQ7vX1G3cU0RRddNjfdYxeVoUQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(316002)(6916009)(83380400001)(5660300002)(8676002)(4326008)(7416002)(66556008)(66476007)(44832011)(36756003)(54906003)(66946007)(52116002)(8936002)(38100700002)(6506007)(6512007)(6666004)(38350700002)(1076003)(2616005)(26005)(186003)(508600001)(6486002)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pYi/LsyOJaNGB0edc1DAQbFpkZXqF+mvI2K4uF9gtmJcUSpucAlCy7ddvw4F?=
- =?us-ascii?Q?RfONX7CX/VX0YQgnIH6dValYpog6Xze5bY4jWzUxavOXAAwgYazD+b1iBwak?=
- =?us-ascii?Q?v0W/fj51lO9YwlJ23Fp8CqdvUI3m3T0cmFEAvUA9Ag+GuHxVifmJ1Dps02Dz?=
- =?us-ascii?Q?0kvyb4cOP6Cf0+e4PCfAQlwwejZzK86CyZpvE6jnwUL0wsdGNiUreHCL1hF4?=
- =?us-ascii?Q?b98OF9szrTwboljdkCq/XtIBi3T8D7vqsdKhse6EtdmnJMdgt0ribbKiIkb6?=
- =?us-ascii?Q?XWk/qFY68kEOcy2DZWTnpOjy/yC1pL6Vc+bATuTjIp48Q+LuQrYxvv9HN80d?=
- =?us-ascii?Q?FdR4z2Y+DvS0NrnhvgKK/5ELV8iDEatn3jEmJ0uwbkClYkWCCuFGTGv7cAYs?=
- =?us-ascii?Q?IY7tjWmK9o6teBT05Ft/+plBB/QjrEFR+L2FpBO/jB2QTUGTHrYcWuf1prZO?=
- =?us-ascii?Q?a3GMRnKpn7B/gL3Yafv7fNlDg7tV6Z54RGpjBaYNIovjbN99rITwWp/JUQau?=
- =?us-ascii?Q?Vzcr2rQtwmUeJFcTtmlRDRMUV1dkV8sF3ppobIPtB2ORp/V9IFNjW7upUDoK?=
- =?us-ascii?Q?IXwc0WWcAP/nHIYzXy4yO2LyhOhB6HmaS5RpZz3pLGUbGHdZBS+HOpsuLHJY?=
- =?us-ascii?Q?hn1Gzr6mLZb6fdj5SValnSjLOWoEl2GAYXfBgUWnUOsqhvngIoCsZVxszNYG?=
- =?us-ascii?Q?BeeZjzwCFCHkDJSB55lc4nSryH4v36O/cpZhwsW7/w83ON+bKJz97sLOpMzG?=
- =?us-ascii?Q?PHq/r3V657LTXXe4/MMkQV2N3cR9Q2TeA48y7/vrDStMIjDkLmuCDIIApdIC?=
- =?us-ascii?Q?05dDWfqclnwoJW9nRrqnN1ISZb9Phw1dinAfvdSMHmQBW3/or3lMYG5cZApg?=
- =?us-ascii?Q?pL3rIplTFxlxuxna9niYE7iVTLpaBgXarPkz6rtEVBBHr6PTEhCa+1SCDmpd?=
- =?us-ascii?Q?FfdlojaIDRPJefaLR0w/KorQxJZucHb5KgWxvLkS4MMDCZe8O6ZQtRB06yhK?=
- =?us-ascii?Q?obql6Vmuzo8OHWajEDkhi9XYB6GfMEGIJAoJRKOivavIdl/t5PStTpD/edmx?=
- =?us-ascii?Q?hg4ZyxOPktDF/Y8fIswyI3lyEL3cNRRvmiCz7GUeXX8kH6mZf2jNTBdgvlXq?=
- =?us-ascii?Q?g5n0ssVlgdInrpWwUykzX8vygQKIoIiFxxNwnXvIYqVkz2sKjVV4hVQ5kw7Y?=
- =?us-ascii?Q?06ZBlLWBASBeItxp0hj64/XDq9YUVVX/KP07JmmUxFMqUi1KR0Cbo2gk2+zw?=
- =?us-ascii?Q?ARAa5p1X6f74DiT0VzNPcXZnyrGcZ33k5yUaBC7mpAzPxN+82XApc6ZYa8Mg?=
- =?us-ascii?Q?7Q/bFYVcCa1Wni8/eUj9bVnXs2vriDFbaafcErTeeZkAMAZxzNW6pX51ZuS1?=
- =?us-ascii?Q?BoFvUIUJAQDbER61L3W33gIuF/FKeFXLk+TprHsCM541IfOw6F+q6VfkQbl8?=
- =?us-ascii?Q?SzoC3ijfMHKv7FRoLiFvTivDhLA9rywx+CmP0oHem9sTUlL5RGSxu3zdVKPZ?=
- =?us-ascii?Q?EnuYyyBMWfiPlDtiu813d/dlhFL/sF8lFcwq9qUUKO2wbKIa9hN8KpLjEzvw?=
- =?us-ascii?Q?n4ei9FsG0ms1tHL9sxy/4pC8vLFTHqfR/J3TgI8i83L4Xaf8o3ki3kcl0PUw?=
- =?us-ascii?Q?9tJFE3DIzVxrv0m+sPw2mGU=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uWiXiSUyLjCfQ3gWP5giL3C5sf6+QGhNopSt/2C91p9na1OUhWYjwVxKIi01?=
+ =?us-ascii?Q?BKxeTFCD1uaoZcqDBxPUmNHaUeJdh5irTojcnoIuRuB9dMuYo4h5LZVsPcL0?=
+ =?us-ascii?Q?Z2pgV/pPjBg/pxQn8nsfJANVgWKabU3yRXzfwgb8ZOtBBle7AKQ0xC66vnpL?=
+ =?us-ascii?Q?ZE/HWneONSTZSllZDXmqNv1q4wnt6Pe6dMQHHO7Wg+AMV53C7GFlCpK7Llzx?=
+ =?us-ascii?Q?aO9qoPA0Apij3Bh3ro4Yw8sTyriU3XSoeZVCWKmKB+kZgIqwACWl0469GZKT?=
+ =?us-ascii?Q?9DeGdPjOMBUNbDoeyQHXfCbbaps4kS7AAkxnYiCEfYi90ycpk9AzKqpkMjHk?=
+ =?us-ascii?Q?8sfbJGkLRHmFHKj2W+Izpjxkp0bd4BwD07ToYHqYQNNd8RpWTZVKU3/RmVc7?=
+ =?us-ascii?Q?I6w7jkLpmP3rsz2+MF8NzfvzPiQQOTUagfgdC87HQ0UmmnLQZzzUv88l0UMw?=
+ =?us-ascii?Q?TVuwGyjGbmM2ftglhoY6Gcknxc8z16NmFjVwUsBInuPjpDnKBK8Ik2+dEXww?=
+ =?us-ascii?Q?OiE67KneuUQ7oQpSGyN8a15rxrkW/BZ/9Z5ZjDn1dvfQ5CatpyKk4au4hp/t?=
+ =?us-ascii?Q?rXIDSB56UZzeMtBKpQlR9O8+XsBe8WpkASgy/r9mNa0AyCZ013NlvP7Qylz4?=
+ =?us-ascii?Q?XAD9ooWgqskqJ00JSWgaTgnD5VeBCxQhAJgMQ8YsEeSejUfFePSpitPPo4c/?=
+ =?us-ascii?Q?mD6Aj9xowLLXo+VZrSQrTCb/e+M4lt2OCMpB6CBmTQMiOAfy/hn+zI0uARac?=
+ =?us-ascii?Q?l13w5sh/z7mN3MYNTwmoFQM4fyU/WSNCyKJZTG0hXmRU1um/7JNLww2iCRka?=
+ =?us-ascii?Q?lSFchW30r8aP3dziydtWYSVZzgdwUTvDCXY9uG6ocBURBhV+dk8FlwY+IghZ?=
+ =?us-ascii?Q?QIdAf13BYzKzA1tSLObnyD+X4wWm16rbqFuTey6YdqBi+6Fv3MyhyTTQl907?=
+ =?us-ascii?Q?3LUxoORONYETTEycyWUF2sMp/KJ8slv7VOXedt9ZGSmTuo9MkEJuvpW6yJxI?=
+ =?us-ascii?Q?YFt53EMS3ojvR+hIDsX/4e7LHgPz3rn6NEWrJ/3nvgVbOPLmmDBfqX0rUhSM?=
+ =?us-ascii?Q?T8owZGaiOH3bOHUsc2QMNN395anHo4htqm283YfPgw0wPphbrWGXlS3Ognt7?=
+ =?us-ascii?Q?Doc3YLRDs887hRsLhrz2qa7WgmJrXxP4C2HeTrZ1nrRqlaUeWtd/kZg8t7ga?=
+ =?us-ascii?Q?5lg7/fOa5Zeuv3708CW4smo+peHG/Km1EumvhWtBL5Ci3S3hRhCKuFXfKbbO?=
+ =?us-ascii?Q?Hn70dyw7UuZ1+B14mzHroOcesKu+vuErNVfyX2UqoY68IqprhPdSUiVmiIUs?=
+ =?us-ascii?Q?4oILv/EYNS+SfifIv8RIalJGk/eQiBQDueTiIvzAETcw+NBcCJyJi8RJKYVF?=
+ =?us-ascii?Q?NlMPtOooMuj3e4DcG0SZcaHAjBU2iTMq4iia9foTLqMM/8jkCohpKCV82ElI?=
+ =?us-ascii?Q?pI47seboS3jAFlMOr+LyhuddsLMfewbQsnHn9MhZ94VtuAMskWpt8wvDnODW?=
+ =?us-ascii?Q?eLTa+P8qiu4jHmmmjl7R53tcdnW7iwOx69/V+YyjeizgKyZ3KIvXZ2FVFmS9?=
+ =?us-ascii?Q?IRiZA3JLIwdUcMRywJhi0AiCc6TFaLQ+qHAMHyqb37oxk03iX9YvNPEjBt7o?=
+ =?us-ascii?Q?lzpom7UO53eCfD4r/99/8Eg=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b4904e2-e152-4621-0c83-08d9fc80ed7f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3eacc81c-f631-4d03-4e6a-08d9fc80ee47
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 19:14:52.2050
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 19:14:53.4862
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uyTeEyVk6f1Pci7VQSLYC3qqt3qmADD53nRLyaaqBJrogIZ0U9S0lGxErmK6KIo3NfmZX5GYexClLhw3BnPv6A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: u99TQBKwHGi3+hlysCjtuBJt5ihY4SEYONeWegH7rA+jombLrK5rJ7tSyVbXhcwzB4Z5KTeCDsEgA9jrIJxRPg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2911
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,117 +123,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lennert Buytenhek explains in commit df02c6ff2e39 ("dsa: fix master
-interface allmulti/promisc handling"), dated Nov 2008, that changing the
-promiscuity of interfaces that are down (here the master) is broken.
+We are preparing to add API in port.c that adds FDB and MDB entries that
+correspond to the port's standalone database. Rename the existing
+methods to make it clear that the FDB and MDB entries offloaded come
+from the bridge database.
 
-This fact regarding promisc/allmulti has changed since commit
-b6c40d68ff64 ("net: only invoke dev->change_rx_flags when device is UP")
-by Vlad Yasevich, dated Nov 2013.
-
-Therefore, DSA now has unnecessary complexity to handle master state
-transitions from down to up. In fact, syncing the unicast and multicast
-addresses can happen completely asynchronously to the administrative
-state changes.
-
-This change reduces that complexity by effectively fully reverting
-commit df02c6ff2e39 ("dsa: fix master interface allmulti/promisc
-handling").
+Since the function names lengthen in dsa_slave_switchdev_event_work(),
+we place "addr" and "vid" in temporary variables, to shorten those.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 45 ++++++++-------------------------------------
- 1 file changed, 8 insertions(+), 37 deletions(-)
+ net/dsa/dsa_priv.h | 16 ++++++++--------
+ net/dsa/port.c     | 16 ++++++++--------
+ net/dsa/slave.c    | 30 ++++++++++++------------------
+ 3 files changed, 28 insertions(+), 34 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 089616206b11..52d1316368c9 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -81,29 +81,12 @@ static int dsa_slave_open(struct net_device *dev)
- 			goto out;
- 	}
- 
--	if (dev->flags & IFF_ALLMULTI) {
--		err = dev_set_allmulti(master, 1);
--		if (err < 0)
--			goto del_unicast;
--	}
--	if (dev->flags & IFF_PROMISC) {
--		err = dev_set_promiscuity(master, 1);
--		if (err < 0)
--			goto clear_allmulti;
--	}
--
- 	err = dsa_port_enable_rt(dp, dev->phydev);
- 	if (err)
--		goto clear_promisc;
-+		goto del_unicast;
- 
- 	return 0;
- 
--clear_promisc:
--	if (dev->flags & IFF_PROMISC)
--		dev_set_promiscuity(master, -1);
--clear_allmulti:
--	if (dev->flags & IFF_ALLMULTI)
--		dev_set_allmulti(master, -1);
- del_unicast:
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr))
- 		dev_uc_del(master, dev->dev_addr);
-@@ -118,13 +101,6 @@ static int dsa_slave_close(struct net_device *dev)
- 
- 	dsa_port_disable_rt(dp);
- 
--	dev_mc_unsync(master, dev);
--	dev_uc_unsync(master, dev);
--	if (dev->flags & IFF_ALLMULTI)
--		dev_set_allmulti(master, -1);
--	if (dev->flags & IFF_PROMISC)
--		dev_set_promiscuity(master, -1);
--
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr))
- 		dev_uc_del(master, dev->dev_addr);
- 
-@@ -134,14 +110,13 @@ static int dsa_slave_close(struct net_device *dev)
- static void dsa_slave_change_rx_flags(struct net_device *dev, int change)
- {
- 	struct net_device *master = dsa_slave_to_master(dev);
--	if (dev->flags & IFF_UP) {
--		if (change & IFF_ALLMULTI)
--			dev_set_allmulti(master,
--					 dev->flags & IFF_ALLMULTI ? 1 : -1);
--		if (change & IFF_PROMISC)
--			dev_set_promiscuity(master,
--					    dev->flags & IFF_PROMISC ? 1 : -1);
--	}
-+
-+	if (change & IFF_ALLMULTI)
-+		dev_set_allmulti(master,
-+				 dev->flags & IFF_ALLMULTI ? 1 : -1);
-+	if (change & IFF_PROMISC)
-+		dev_set_promiscuity(master,
-+				    dev->flags & IFF_PROMISC ? 1 : -1);
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 07c0ad52395a..2e05c863d4b4 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -223,10 +223,10 @@ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 		     u16 vid);
+ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 		     u16 vid);
+-int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-			  u16 vid);
+-int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-			  u16 vid);
++int dsa_port_bridge_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
++				 u16 vid);
++int dsa_port_bridge_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
++				 u16 vid);
+ int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 			 u16 vid);
+ int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+@@ -236,10 +236,10 @@ int dsa_port_mdb_add(const struct dsa_port *dp,
+ 		     const struct switchdev_obj_port_mdb *mdb);
+ int dsa_port_mdb_del(const struct dsa_port *dp,
+ 		     const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_host_mdb_add(const struct dsa_port *dp,
+-			  const struct switchdev_obj_port_mdb *mdb);
+-int dsa_port_host_mdb_del(const struct dsa_port *dp,
+-			  const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
++				 const struct switchdev_obj_port_mdb *mdb);
++int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
++				 const struct switchdev_obj_port_mdb *mdb);
+ int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+ 			      struct switchdev_brport_flags flags,
+ 			      struct netlink_ext_ack *extack);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index d9da425a17fb..4fb282ae049c 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -835,8 +835,8 @@ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_FDB_DEL, &info);
  }
  
- static void dsa_slave_set_rx_mode(struct net_device *dev)
-@@ -161,9 +136,6 @@ static int dsa_slave_set_mac_address(struct net_device *dev, void *a)
- 	if (!is_valid_ether_addr(addr->sa_data))
- 		return -EADDRNOTAVAIL;
+-int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-			  u16 vid)
++int dsa_port_bridge_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
++				 u16 vid)
+ {
+ 	struct dsa_notifier_fdb_info info = {
+ 		.sw_index = dp->ds->index,
+@@ -867,8 +867,8 @@ int dsa_port_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_ADD, &info);
+ }
  
--	if (!(dev->flags & IFF_UP))
--		goto out;
--
- 	if (!ether_addr_equal(addr->sa_data, master->dev_addr)) {
- 		err = dev_uc_add(master, addr->sa_data);
- 		if (err < 0)
-@@ -173,7 +145,6 @@ static int dsa_slave_set_mac_address(struct net_device *dev, void *a)
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr))
- 		dev_uc_del(master, dev->dev_addr);
+-int dsa_port_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+-			  u16 vid)
++int dsa_port_bridge_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
++				 u16 vid)
+ {
+ 	struct dsa_notifier_fdb_info info = {
+ 		.sw_index = dp->ds->index,
+@@ -982,8 +982,8 @@ int dsa_port_mdb_del(const struct dsa_port *dp,
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_MDB_DEL, &info);
+ }
  
--out:
- 	eth_hw_addr_set(dev, addr->sa_data);
+-int dsa_port_host_mdb_add(const struct dsa_port *dp,
+-			  const struct switchdev_obj_port_mdb *mdb)
++int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
++				 const struct switchdev_obj_port_mdb *mdb)
+ {
+ 	struct dsa_notifier_mdb_info info = {
+ 		.sw_index = dp->ds->index,
+@@ -1007,8 +1007,8 @@ int dsa_port_host_mdb_add(const struct dsa_port *dp,
+ 	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_ADD, &info);
+ }
  
- 	return 0;
+-int dsa_port_host_mdb_del(const struct dsa_port *dp,
+-			  const struct switchdev_obj_port_mdb *mdb)
++int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
++				 const struct switchdev_obj_port_mdb *mdb)
+ {
+ 	struct dsa_notifier_mdb_info info = {
+ 		.sw_index = dp->ds->index,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 52d1316368c9..f0d8f2f5d923 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -397,7 +397,7 @@ static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
+ 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
+ 			return -EOPNOTSUPP;
+ 
+-		err = dsa_port_host_mdb_add(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
++		err = dsa_port_bridge_host_mdb_add(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		if (dsa_port_offloads_bridge_port(dp, obj->orig_dev))
+@@ -478,7 +478,7 @@ static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
+ 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
+ 			return -EOPNOTSUPP;
+ 
+-		err = dsa_port_host_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
++		err = dsa_port_bridge_host_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		if (dsa_port_offloads_bridge_port(dp, obj->orig_dev))
+@@ -2356,7 +2356,9 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ {
+ 	struct dsa_switchdev_event_work *switchdev_work =
+ 		container_of(work, struct dsa_switchdev_event_work, work);
++	const unsigned char *addr = switchdev_work->addr;
+ 	struct net_device *dev = switchdev_work->dev;
++	u16 vid = switchdev_work->vid;
+ 	struct dsa_switch *ds;
+ 	struct dsa_port *dp;
+ 	int err;
+@@ -2367,19 +2369,15 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 	switch (switchdev_work->event) {
+ 	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+ 		if (switchdev_work->host_addr)
+-			err = dsa_port_host_fdb_add(dp, switchdev_work->addr,
+-						    switchdev_work->vid);
++			err = dsa_port_bridge_host_fdb_add(dp, addr, vid);
+ 		else if (dp->lag)
+-			err = dsa_port_lag_fdb_add(dp, switchdev_work->addr,
+-						   switchdev_work->vid);
++			err = dsa_port_lag_fdb_add(dp, addr, vid);
+ 		else
+-			err = dsa_port_fdb_add(dp, switchdev_work->addr,
+-					       switchdev_work->vid);
++			err = dsa_port_fdb_add(dp, addr, vid);
+ 		if (err) {
+ 			dev_err(ds->dev,
+ 				"port %d failed to add %pM vid %d to fdb: %d\n",
+-				dp->index, switchdev_work->addr,
+-				switchdev_work->vid, err);
++				dp->index, addr, vid, err);
+ 			break;
+ 		}
+ 		dsa_fdb_offload_notify(switchdev_work);
+@@ -2387,19 +2385,15 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 
+ 	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+ 		if (switchdev_work->host_addr)
+-			err = dsa_port_host_fdb_del(dp, switchdev_work->addr,
+-						    switchdev_work->vid);
++			err = dsa_port_bridge_host_fdb_del(dp, addr, vid);
+ 		else if (dp->lag)
+-			err = dsa_port_lag_fdb_del(dp, switchdev_work->addr,
+-						   switchdev_work->vid);
++			err = dsa_port_lag_fdb_del(dp, addr, vid);
+ 		else
+-			err = dsa_port_fdb_del(dp, switchdev_work->addr,
+-					       switchdev_work->vid);
++			err = dsa_port_fdb_del(dp, addr, vid);
+ 		if (err) {
+ 			dev_err(ds->dev,
+ 				"port %d failed to delete %pM vid %d from fdb: %d\n",
+-				dp->index, switchdev_work->addr,
+-				switchdev_work->vid, err);
++				dp->index, addr, vid, err);
+ 		}
+ 
+ 		break;
 -- 
 2.25.1
 
