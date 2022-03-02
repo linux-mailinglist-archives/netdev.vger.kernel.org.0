@@ -2,939 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBEB4CAF3A
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F35F4CAF68
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 21:07:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbiCBT5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:57:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49280 "EHLO
+        id S242966AbiCBUID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 15:08:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242890AbiCBT5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:57:41 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF71DB857
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:56:54 -0800 (PST)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 222JMlK7000581
-        for <netdev@vger.kernel.org>; Wed, 2 Mar 2022 11:56:54 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=815Ao93yTpfKnBeg6P7QQKdnraEyz96ssZWjdvLfdWc=;
- b=PcB4etosNBT/RXLXv0oCAr2/9pX92ZblcAkiT+bJ9TPiCPjlWUybHc1YYlAjJeLRVfzD
- Mbj0RagL3hkbBR4W+72FDD5wUh/rSWOU+lNR96XssDP0RNEmoVTYFYiqtS2q68QL2rht
- apSnUiJGWHgf5zpf1Efq4kNIRWJdZa4+CQo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ej7jgvgr4-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 11:56:54 -0800
-Received: from twshared6457.05.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 2 Mar 2022 11:56:52 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 18C057BD3F53; Wed,  2 Mar 2022 11:56:41 -0800 (PST)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH v6 net-next 13/13] bpf: selftests: test skb->tstamp in redirect_neigh
-Date:   Wed, 2 Mar 2022 11:56:41 -0800
-Message-ID: <20220302195641.3485951-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220302195519.3479274-1-kafai@fb.com>
-References: <20220302195519.3479274-1-kafai@fb.com>
+        with ESMTP id S242503AbiCBUIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 15:08:00 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF8CD3ACA
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 12:07:06 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id z12-20020a17090ad78c00b001bf022b69d6so1677204pju.2
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 12:07:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9llME+iRL2iH9L07jwvbWbmbHLr47Rbz7WJ4fOgTlZc=;
+        b=IvpJRwG7ynxkReEE85KaN5rJUYtD4xKNHA+hy6TwBmoQ8B3uYeJI+QViQcnaGiWq86
+         F88M3HTERkoil1v4VBpPtCvYuei+/tfueI2kCXzM7ddvcotxLyWZwiewhTHLUCy28lRK
+         BraqPBOXvwYRthhpbxTgJWS9pGCc3zSZJBqHk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9llME+iRL2iH9L07jwvbWbmbHLr47Rbz7WJ4fOgTlZc=;
+        b=MT616bvyyse+N2fch6cWqNvwvXic1ElHtMvYp7H4pTnEn9PpDVymrsx1BBcy59xvlO
+         QseQJRmJIVNGmjvNMAN9YC15EMKJyI/FnUBroBkmWj3DPt42sU+nJQpTceX5ICyuuHv8
+         xO2YA2uIfhMG2eRhomsd34k5XyHytNavY1JF55aI1zlfXkg2H3KheZo0YNs3yI9+JtlK
+         z9OfbVw6D2EW+N1exBzYjI/+abW3iCckfP8Z30ZLCSBue8VAdk7FzMERV1KT1Lkv2z+S
+         e+bBm2UDdxKWn3HWj+xfFG1Uru7BF+2dmIIcdGoRFBjbbF8jrdaQbBqlVtgT/Cucli36
+         QS0Q==
+X-Gm-Message-State: AOAM532XytyU7xx5W2gkIJZiMpU2ubxDUdN1g5i1KvhbXKxrdLe18xna
+        nPiNKOfU1wz0Xvmrrt6Y9FwrHQ==
+X-Google-Smtp-Source: ABdhPJy1UwpHXuuV3f3znm0dxsm9olmeXR+xl5rRjEup85jJIYqK9IWLqGF+wjaBqFjiuis1mPdaYQ==
+X-Received: by 2002:a17:902:7205:b0:14c:9586:f9d5 with SMTP id ba5-20020a170902720500b0014c9586f9d5mr32273149plb.77.1646251625831;
+        Wed, 02 Mar 2022 12:07:05 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm9354pfh.83.2022.03.02.12.07.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 12:07:05 -0800 (PST)
+Date:   Wed, 2 Mar 2022 12:07:04 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        David Laight <David.Laight@aculab.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        "linux1394-devel@lists.sourceforge.net" 
+        <linux1394-devel@lists.sourceforge.net>,
+        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        "v9fs-developer@lists.sourceforge.net" 
+        <v9fs-developer@lists.sourceforge.net>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <202203021158.DB5204A0@keescook>
+References: <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com>
+ <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
+ <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org>
+ <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
+ <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
+ <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
+ <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
+ <0ced2b155b984882b39e895f0211037c@AcuMS.aculab.com>
+ <CAHk-=wix0HLCBs5sxAeW3uckg0YncXbTjMsE-Tv8WzmkOgLAXQ@mail.gmail.com>
+ <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: T8ODMcuPSmbAGMb55aLhKNwKzuI3FGfQ
-X-Proofpoint-ORIG-GUID: T8ODMcuPSmbAGMb55aLhKNwKzuI3FGfQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-02_12,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 adultscore=0
- mlxlogscore=999 mlxscore=0 lowpriorityscore=0 phishscore=0
- priorityscore=1501 spamscore=0 suspectscore=0 malwarescore=0
- impostorscore=0 clxscore=1015 bulkscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2203020085
-X-FB-Internal: deliver
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds tests on forwarding the delivery_time for
-the following cases
-- tcp/udp + ip4/ip6 + bpf_redirect_neigh
-- tcp/udp + ip4/ip6 + ip[6]_forward
-- bpf_skb_set_delivery_time
-- The old rcv timestamp expectation on tc-bpf@ingress
+On Wed, Mar 02, 2022 at 10:29:31AM +0100, Rasmus Villemoes wrote:
+> This won't help the current issue (because it doesn't exist and might
+> never), but just in case some compiler people are listening, I'd like to
+> have some sort of way to tell the compiler "treat this variable as
+> uninitialized from here on". So one could do
+> 
+> #define kfree(p) do { __kfree(p); __magic_uninit(p); } while (0)
+> 
+> with __magic_uninit being a magic no-op that doesn't affect the
+> semantics of the code, but could be used by the compiler's "[is/may be]
+> used uninitialized" machinery to flag e.g. double frees on some odd
+> error path etc. It would probably only work for local automatic
+> variables, but it should be possible to just ignore the hint if p is
+> some expression like foo->bar or has side effects. If we had that, the
+> end-of-loop test could include that to "uninitialize" the iterator.
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- .../selftests/bpf/prog_tests/tc_redirect.c    | 434 ++++++++++++++++++
- .../selftests/bpf/progs/test_tc_dtime.c       | 349 ++++++++++++++
- 2 files changed, 783 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_tc_dtime.c
+I've long wanted to change kfree() to explicitly set pointers to NULL on
+free. https://github.com/KSPP/linux/issues/87
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools=
-/testing/selftests/bpf/prog_tests/tc_redirect.c
-index 647b0a833628..2b255e28ed26 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -17,6 +17,8 @@
- #include <linux/if_tun.h>
- #include <linux/limits.h>
- #include <linux/sysctl.h>
-+#include <linux/time_types.h>
-+#include <linux/net_tstamp.h>
- #include <sched.h>
- #include <stdbool.h>
- #include <stdio.h>
-@@ -29,6 +31,11 @@
- #include "test_tc_neigh_fib.skel.h"
- #include "test_tc_neigh.skel.h"
- #include "test_tc_peer.skel.h"
-+#include "test_tc_dtime.skel.h"
-+
-+#ifndef TCP_TX_DELAY
-+#define TCP_TX_DELAY 37
-+#endif
-=20
- #define NS_SRC "ns_src"
- #define NS_FWD "ns_fwd"
-@@ -61,6 +68,7 @@
- #define CHK_PROG_PIN_FILE "/sys/fs/bpf/test_tc_chk"
-=20
- #define TIMEOUT_MILLIS 10000
-+#define NSEC_PER_SEC 1000000000ULL
-=20
- #define log_err(MSG, ...) \
- 	fprintf(stderr, "(%s:%d: errno: %s) " MSG "\n", \
-@@ -440,6 +448,431 @@ static int set_forwarding(bool enable)
- 	return 0;
- }
-=20
-+static void rcv_tstamp(int fd, const char *expected, size_t s)
-+{
-+	struct __kernel_timespec pkt_ts =3D {};
-+	char ctl[CMSG_SPACE(sizeof(pkt_ts))];
-+	struct timespec now_ts;
-+	struct msghdr msg =3D {};
-+	__u64 now_ns, pkt_ns;
-+	struct cmsghdr *cmsg;
-+	struct iovec iov;
-+	char data[32];
-+	int ret;
-+
-+	iov.iov_base =3D data;
-+	iov.iov_len =3D sizeof(data);
-+	msg.msg_iov =3D &iov;
-+	msg.msg_iovlen =3D 1;
-+	msg.msg_control =3D &ctl;
-+	msg.msg_controllen =3D sizeof(ctl);
-+
-+	ret =3D recvmsg(fd, &msg, 0);
-+	if (!ASSERT_EQ(ret, s, "recvmsg"))
-+		return;
-+	ASSERT_STRNEQ(data, expected, s, "expected rcv data");
-+
-+	cmsg =3D CMSG_FIRSTHDR(&msg);
-+	if (cmsg && cmsg->cmsg_level =3D=3D SOL_SOCKET &&
-+	    cmsg->cmsg_type =3D=3D SO_TIMESTAMPNS_NEW)
-+		memcpy(&pkt_ts, CMSG_DATA(cmsg), sizeof(pkt_ts));
-+
-+	pkt_ns =3D pkt_ts.tv_sec * NSEC_PER_SEC + pkt_ts.tv_nsec;
-+	ASSERT_NEQ(pkt_ns, 0, "pkt rcv tstamp");
-+
-+	ret =3D clock_gettime(CLOCK_REALTIME, &now_ts);
-+	ASSERT_OK(ret, "clock_gettime");
-+	now_ns =3D now_ts.tv_sec * NSEC_PER_SEC + now_ts.tv_nsec;
-+
-+	if (ASSERT_GE(now_ns, pkt_ns, "check rcv tstamp"))
-+		ASSERT_LT(now_ns - pkt_ns, 5 * NSEC_PER_SEC,
-+			  "check rcv tstamp");
-+}
-+
-+static void snd_tstamp(int fd, char *b, size_t s)
-+{
-+	struct sock_txtime opt =3D { .clockid =3D CLOCK_TAI };
-+	char ctl[CMSG_SPACE(sizeof(__u64))];
-+	struct timespec now_ts;
-+	struct msghdr msg =3D {};
-+	struct cmsghdr *cmsg;
-+	struct iovec iov;
-+	__u64 now_ns;
-+	int ret;
-+
-+	ret =3D clock_gettime(CLOCK_TAI, &now_ts);
-+	ASSERT_OK(ret, "clock_get_time(CLOCK_TAI)");
-+	now_ns =3D now_ts.tv_sec * NSEC_PER_SEC + now_ts.tv_nsec;
-+
-+	iov.iov_base =3D b;
-+	iov.iov_len =3D s;
-+	msg.msg_iov =3D &iov;
-+	msg.msg_iovlen =3D 1;
-+	msg.msg_control =3D &ctl;
-+	msg.msg_controllen =3D sizeof(ctl);
-+
-+	cmsg =3D CMSG_FIRSTHDR(&msg);
-+	cmsg->cmsg_level =3D SOL_SOCKET;
-+	cmsg->cmsg_type =3D SCM_TXTIME;
-+	cmsg->cmsg_len =3D CMSG_LEN(sizeof(now_ns));
-+	*(__u64 *)CMSG_DATA(cmsg) =3D now_ns;
-+
-+	ret =3D setsockopt(fd, SOL_SOCKET, SO_TXTIME, &opt, sizeof(opt));
-+	ASSERT_OK(ret, "setsockopt(SO_TXTIME)");
-+
-+	ret =3D sendmsg(fd, &msg, 0);
-+	ASSERT_EQ(ret, s, "sendmsg");
-+}
-+
-+static void test_inet_dtime(int family, int type, const char *addr, __u1=
-6 port)
-+{
-+	int opt =3D 1, accept_fd =3D -1, client_fd =3D -1, listen_fd, err;
-+	char buf[] =3D "testing testing";
-+	struct nstoken *nstoken;
-+
-+	nstoken =3D open_netns(NS_DST);
-+	if (!ASSERT_OK_PTR(nstoken, "setns dst"))
-+		return;
-+	listen_fd =3D start_server(family, type, addr, port, 0);
-+	close_netns(nstoken);
-+
-+	if (!ASSERT_GE(listen_fd, 0, "listen"))
-+		return;
-+
-+	/* Ensure the kernel puts the (rcv) timestamp for all skb */
-+	err =3D setsockopt(listen_fd, SOL_SOCKET, SO_TIMESTAMPNS_NEW,
-+			 &opt, sizeof(opt));
-+	if (!ASSERT_OK(err, "setsockopt(SO_TIMESTAMPNS_NEW)"))
-+		goto done;
-+
-+	if (type =3D=3D SOCK_STREAM) {
-+		/* Ensure the kernel set EDT when sending out rst/ack
-+		 * from the kernel's ctl_sk.
-+		 */
-+		err =3D setsockopt(listen_fd, SOL_TCP, TCP_TX_DELAY, &opt,
-+				 sizeof(opt));
-+		if (!ASSERT_OK(err, "setsockopt(TCP_TX_DELAY)"))
-+			goto done;
-+	}
-+
-+	nstoken =3D open_netns(NS_SRC);
-+	if (!ASSERT_OK_PTR(nstoken, "setns src"))
-+		goto done;
-+	client_fd =3D connect_to_fd(listen_fd, TIMEOUT_MILLIS);
-+	close_netns(nstoken);
-+
-+	if (!ASSERT_GE(client_fd, 0, "connect_to_fd"))
-+		goto done;
-+
-+	if (type =3D=3D SOCK_STREAM) {
-+		int n;
-+
-+		accept_fd =3D accept(listen_fd, NULL, NULL);
-+		if (!ASSERT_GE(accept_fd, 0, "accept"))
-+			goto done;
-+
-+		n =3D write(client_fd, buf, sizeof(buf));
-+		if (!ASSERT_EQ(n, sizeof(buf), "send to server"))
-+			goto done;
-+		rcv_tstamp(accept_fd, buf, sizeof(buf));
-+	} else {
-+		snd_tstamp(client_fd, buf, sizeof(buf));
-+		rcv_tstamp(listen_fd, buf, sizeof(buf));
-+	}
-+
-+done:
-+	close(listen_fd);
-+	if (accept_fd !=3D -1)
-+		close(accept_fd);
-+	if (client_fd !=3D -1)
-+		close(client_fd);
-+}
-+
-+static int netns_load_dtime_bpf(struct test_tc_dtime *skel)
-+{
-+	struct nstoken *nstoken;
-+
-+#define PIN_FNAME(__file) "/sys/fs/bpf/" #__file
-+#define PIN(__prog) ({							\
-+		int err =3D bpf_program__pin(skel->progs.__prog, PIN_FNAME(__prog)); \
-+		if (!ASSERT_OK(err, "pin " #__prog))		\
-+			goto fail;					\
-+		})
-+
-+	/* setup ns_src tc progs */
-+	nstoken =3D open_netns(NS_SRC);
-+	if (!ASSERT_OK_PTR(nstoken, "setns " NS_SRC))
-+		return -1;
-+	PIN(egress_host);
-+	PIN(ingress_host);
-+	SYS("tc qdisc add dev veth_src clsact");
-+	SYS("tc filter add dev veth_src ingress bpf da object-pinned "
-+	    PIN_FNAME(ingress_host));
-+	SYS("tc filter add dev veth_src egress bpf da object-pinned "
-+	    PIN_FNAME(egress_host));
-+	close_netns(nstoken);
-+
-+	/* setup ns_dst tc progs */
-+	nstoken =3D open_netns(NS_DST);
-+	if (!ASSERT_OK_PTR(nstoken, "setns " NS_DST))
-+		return -1;
-+	PIN(egress_host);
-+	PIN(ingress_host);
-+	SYS("tc qdisc add dev veth_dst clsact");
-+	SYS("tc filter add dev veth_dst ingress bpf da object-pinned "
-+	    PIN_FNAME(ingress_host));
-+	SYS("tc filter add dev veth_dst egress bpf da object-pinned "
-+	    PIN_FNAME(egress_host));
-+	close_netns(nstoken);
-+
-+	/* setup ns_fwd tc progs */
-+	nstoken =3D open_netns(NS_FWD);
-+	if (!ASSERT_OK_PTR(nstoken, "setns " NS_FWD))
-+		return -1;
-+	PIN(ingress_fwdns_prio100);
-+	PIN(egress_fwdns_prio100);
-+	PIN(ingress_fwdns_prio101);
-+	PIN(egress_fwdns_prio101);
-+	SYS("tc qdisc add dev veth_dst_fwd clsact");
-+	SYS("tc filter add dev veth_dst_fwd ingress prio 100 bpf da object-pinn=
-ed "
-+	    PIN_FNAME(ingress_fwdns_prio100));
-+	SYS("tc filter add dev veth_dst_fwd ingress prio 101 bpf da object-pinn=
-ed "
-+	    PIN_FNAME(ingress_fwdns_prio101));
-+	SYS("tc filter add dev veth_dst_fwd egress prio 100 bpf da object-pinne=
-d "
-+	    PIN_FNAME(egress_fwdns_prio100));
-+	SYS("tc filter add dev veth_dst_fwd egress prio 101 bpf da object-pinne=
-d "
-+	    PIN_FNAME(egress_fwdns_prio101));
-+	SYS("tc qdisc add dev veth_src_fwd clsact");
-+	SYS("tc filter add dev veth_src_fwd ingress prio 100 bpf da object-pinn=
-ed "
-+	    PIN_FNAME(ingress_fwdns_prio100));
-+	SYS("tc filter add dev veth_src_fwd ingress prio 101 bpf da object-pinn=
-ed "
-+	    PIN_FNAME(ingress_fwdns_prio101));
-+	SYS("tc filter add dev veth_src_fwd egress prio 100 bpf da object-pinne=
-d "
-+	    PIN_FNAME(egress_fwdns_prio100));
-+	SYS("tc filter add dev veth_src_fwd egress prio 101 bpf da object-pinne=
-d "
-+	    PIN_FNAME(egress_fwdns_prio101));
-+	close_netns(nstoken);
-+
-+#undef PIN
-+
-+	return 0;
-+
-+fail:
-+	close_netns(nstoken);
-+	return -1;
-+}
-+
-+enum {
-+	INGRESS_FWDNS_P100,
-+	INGRESS_FWDNS_P101,
-+	EGRESS_FWDNS_P100,
-+	EGRESS_FWDNS_P101,
-+	INGRESS_ENDHOST,
-+	EGRESS_ENDHOST,
-+	SET_DTIME,
-+	__MAX_CNT,
-+};
-+
-+const char *cnt_names[] =3D {
-+	"ingress_fwdns_p100",
-+	"ingress_fwdns_p101",
-+	"egress_fwdns_p100",
-+	"egress_fwdns_p101",
-+	"ingress_endhost",
-+	"egress_endhost",
-+	"set_dtime",
-+};
-+
-+enum {
-+	TCP_IP6_CLEAR_DTIME,
-+	TCP_IP4,
-+	TCP_IP6,
-+	UDP_IP4,
-+	UDP_IP6,
-+	TCP_IP4_RT_FWD,
-+	TCP_IP6_RT_FWD,
-+	UDP_IP4_RT_FWD,
-+	UDP_IP6_RT_FWD,
-+	UKN_TEST,
-+	__NR_TESTS,
-+};
-+
-+const char *test_names[] =3D {
-+	"tcp ip6 clear dtime",
-+	"tcp ip4",
-+	"tcp ip6",
-+	"udp ip4",
-+	"udp ip6",
-+	"tcp ip4 rt fwd",
-+	"tcp ip6 rt fwd",
-+	"udp ip4 rt fwd",
-+	"udp ip6 rt fwd",
-+};
-+
-+static const char *dtime_cnt_str(int test, int cnt)
-+{
-+	static char name[64];
-+
-+	snprintf(name, sizeof(name), "%s %s", test_names[test], cnt_names[cnt])=
-;
-+
-+	return name;
-+}
-+
-+static const char *dtime_err_str(int test, int cnt)
-+{
-+	static char name[64];
-+
-+	snprintf(name, sizeof(name), "%s %s errs", test_names[test],
-+		 cnt_names[cnt]);
-+
-+	return name;
-+}
-+
-+static void test_tcp_clear_dtime(struct test_tc_dtime *skel)
-+{
-+	int i, t =3D TCP_IP6_CLEAR_DTIME;
-+	__u32 *dtimes =3D skel->bss->dtimes[t];
-+	__u32 *errs =3D skel->bss->errs[t];
-+
-+	skel->bss->test =3D t;
-+	test_inet_dtime(AF_INET6, SOCK_STREAM, IP6_DST, 0);
-+
-+	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
-+		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-+	ASSERT_EQ(dtimes[INGRESS_FWDNS_P101], 0,
-+		  dtime_cnt_str(t, INGRESS_FWDNS_P101));
-+	ASSERT_GT(dtimes[EGRESS_FWDNS_P100], 0,
-+		  dtime_cnt_str(t, EGRESS_FWDNS_P100));
-+	ASSERT_EQ(dtimes[EGRESS_FWDNS_P101], 0,
-+		  dtime_cnt_str(t, EGRESS_FWDNS_P101));
-+	ASSERT_GT(dtimes[EGRESS_ENDHOST], 0,
-+		  dtime_cnt_str(t, EGRESS_ENDHOST));
-+	ASSERT_GT(dtimes[INGRESS_ENDHOST], 0,
-+		  dtime_cnt_str(t, INGRESS_ENDHOST));
-+
-+	for (i =3D INGRESS_FWDNS_P100; i < __MAX_CNT; i++)
-+		ASSERT_EQ(errs[i], 0, dtime_err_str(t, i));
-+}
-+
-+static void test_tcp_dtime(struct test_tc_dtime *skel, int family, bool =
-bpf_fwd)
-+{
-+	__u32 *dtimes, *errs;
-+	const char *addr;
-+	int i, t;
-+
-+	if (family =3D=3D AF_INET) {
-+		t =3D bpf_fwd ? TCP_IP4 : TCP_IP4_RT_FWD;
-+		addr =3D IP4_DST;
-+	} else {
-+		t =3D bpf_fwd ? TCP_IP6 : TCP_IP6_RT_FWD;
-+		addr =3D IP6_DST;
-+	}
-+
-+	dtimes =3D skel->bss->dtimes[t];
-+	errs =3D skel->bss->errs[t];
-+
-+	skel->bss->test =3D t;
-+	test_inet_dtime(family, SOCK_STREAM, addr, 0);
-+
-+	/* fwdns_prio100 prog does not read delivery_time_type, so
-+	 * kernel puts the (rcv) timetamp in __sk_buff->tstamp
-+	 */
-+	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
-+		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-+	for (i =3D INGRESS_FWDNS_P101; i < SET_DTIME; i++)
-+		ASSERT_GT(dtimes[i], 0, dtime_cnt_str(t, i));
-+
-+	for (i =3D INGRESS_FWDNS_P100; i < __MAX_CNT; i++)
-+		ASSERT_EQ(errs[i], 0, dtime_err_str(t, i));
-+}
-+
-+static void test_udp_dtime(struct test_tc_dtime *skel, int family, bool =
-bpf_fwd)
-+{
-+	__u32 *dtimes, *errs;
-+	const char *addr;
-+	int i, t;
-+
-+	if (family =3D=3D AF_INET) {
-+		t =3D bpf_fwd ? UDP_IP4 : UDP_IP4_RT_FWD;
-+		addr =3D IP4_DST;
-+	} else {
-+		t =3D bpf_fwd ? UDP_IP6 : UDP_IP6_RT_FWD;
-+		addr =3D IP6_DST;
-+	}
-+
-+	dtimes =3D skel->bss->dtimes[t];
-+	errs =3D skel->bss->errs[t];
-+
-+	skel->bss->test =3D t;
-+	test_inet_dtime(family, SOCK_DGRAM, addr, 0);
-+
-+	ASSERT_EQ(dtimes[INGRESS_FWDNS_P100], 0,
-+		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-+	/* non mono delivery time is not forwarded */
-+	ASSERT_EQ(dtimes[INGRESS_FWDNS_P101], 0,
-+		  dtime_cnt_str(t, INGRESS_FWDNS_P100));
-+	for (i =3D EGRESS_FWDNS_P100; i < SET_DTIME; i++)
-+		ASSERT_GT(dtimes[i], 0, dtime_cnt_str(t, i));
-+
-+	for (i =3D INGRESS_FWDNS_P100; i < __MAX_CNT; i++)
-+		ASSERT_EQ(errs[i], 0, dtime_err_str(t, i));
-+}
-+
-+static void test_tc_redirect_dtime(struct netns_setup_result *setup_resu=
-lt)
-+{
-+	struct test_tc_dtime *skel;
-+	struct nstoken *nstoken;
-+	int err;
-+
-+	skel =3D test_tc_dtime__open();
-+	if (!ASSERT_OK_PTR(skel, "test_tc_dtime__open"))
-+		return;
-+
-+	skel->rodata->IFINDEX_SRC =3D setup_result->ifindex_veth_src_fwd;
-+	skel->rodata->IFINDEX_DST =3D setup_result->ifindex_veth_dst_fwd;
-+
-+	err =3D test_tc_dtime__load(skel);
-+	if (!ASSERT_OK(err, "test_tc_dtime__load"))
-+		goto done;
-+
-+	if (netns_load_dtime_bpf(skel))
-+		goto done;
-+
-+	nstoken =3D open_netns(NS_FWD);
-+	if (!ASSERT_OK_PTR(nstoken, "setns fwd"))
-+		goto done;
-+	err =3D set_forwarding(false);
-+	close_netns(nstoken);
-+	if (!ASSERT_OK(err, "disable forwarding"))
-+		goto done;
-+
-+	test_tcp_clear_dtime(skel);
-+
-+	test_tcp_dtime(skel, AF_INET, true);
-+	test_tcp_dtime(skel, AF_INET6, true);
-+	test_udp_dtime(skel, AF_INET, true);
-+	test_udp_dtime(skel, AF_INET6, true);
-+
-+	/* Test the kernel ip[6]_forward path instead
-+	 * of bpf_redirect_neigh().
-+	 */
-+	nstoken =3D open_netns(NS_FWD);
-+	if (!ASSERT_OK_PTR(nstoken, "setns fwd"))
-+		goto done;
-+	err =3D set_forwarding(true);
-+	close_netns(nstoken);
-+	if (!ASSERT_OK(err, "enable forwarding"))
-+		goto done;
-+
-+	test_tcp_dtime(skel, AF_INET, false);
-+	test_tcp_dtime(skel, AF_INET6, false);
-+	test_udp_dtime(skel, AF_INET, false);
-+	test_udp_dtime(skel, AF_INET6, false);
-+
-+done:
-+	test_tc_dtime__destroy(skel);
-+}
-+
- static void test_tc_redirect_neigh_fib(struct netns_setup_result *setup_=
-result)
- {
- 	struct nstoken *nstoken =3D NULL;
-@@ -787,6 +1220,7 @@ static void *test_tc_redirect_run_tests(void *arg)
- 	RUN_TEST(tc_redirect_peer_l3);
- 	RUN_TEST(tc_redirect_neigh);
- 	RUN_TEST(tc_redirect_neigh_fib);
-+	RUN_TEST(tc_redirect_dtime);
- 	return NULL;
- }
-=20
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_dtime.c b/tools/te=
-sting/selftests/bpf/progs/test_tc_dtime.c
-new file mode 100644
-index 000000000000..9d9e8e17b8a0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_tc_dtime.c
-@@ -0,0 +1,349 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2022 Meta
-+
-+#include <stddef.h>
-+#include <stdint.h>
-+#include <stdbool.h>
-+#include <linux/bpf.h>
-+#include <linux/stddef.h>
-+#include <linux/pkt_cls.h>
-+#include <linux/if_ether.h>
-+#include <linux/in.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+#include <sys/socket.h>
-+
-+/* veth_src --- veth_src_fwd --- veth_det_fwd --- veth_dst
-+ *           |                                 |
-+ *  ns_src   |              ns_fwd             |   ns_dst
-+ *
-+ * ns_src and ns_dst: ENDHOST namespace
-+ *            ns_fwd: Fowarding namespace
-+ */
-+
-+#define ctx_ptr(field)		(void *)(long)(field)
-+
-+#define ip4_src			__bpf_htonl(0xac100164) /* 172.16.1.100 */
-+#define ip4_dst			__bpf_htonl(0xac100264) /* 172.16.2.100 */
-+
-+#define ip6_src			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-+				  0x00, 0x01, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
-+#define ip6_dst			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-+				  0x00, 0x02, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
-+
-+#define v6_equal(a, b)		(a.s6_addr32[0] =3D=3D b.s6_addr32[0] && \
-+				 a.s6_addr32[1] =3D=3D b.s6_addr32[1] && \
-+				 a.s6_addr32[2] =3D=3D b.s6_addr32[2] && \
-+				 a.s6_addr32[3] =3D=3D b.s6_addr32[3])
-+
-+volatile const __u32 IFINDEX_SRC;
-+volatile const __u32 IFINDEX_DST;
-+
-+#define EGRESS_ENDHOST_MAGIC	0x0b9fbeef
-+#define INGRESS_FWDNS_MAGIC	0x1b9fbeef
-+#define EGRESS_FWDNS_MAGIC	0x2b9fbeef
-+
-+enum {
-+	INGRESS_FWDNS_P100,
-+	INGRESS_FWDNS_P101,
-+	EGRESS_FWDNS_P100,
-+	EGRESS_FWDNS_P101,
-+	INGRESS_ENDHOST,
-+	EGRESS_ENDHOST,
-+	SET_DTIME,
-+	__MAX_CNT,
-+};
-+
-+enum {
-+	TCP_IP6_CLEAR_DTIME,
-+	TCP_IP4,
-+	TCP_IP6,
-+	UDP_IP4,
-+	UDP_IP6,
-+	TCP_IP4_RT_FWD,
-+	TCP_IP6_RT_FWD,
-+	UDP_IP4_RT_FWD,
-+	UDP_IP6_RT_FWD,
-+	UKN_TEST,
-+	__NR_TESTS,
-+};
-+
-+enum {
-+	SRC_NS =3D 1,
-+	DST_NS,
-+};
-+
-+__u32 dtimes[__NR_TESTS][__MAX_CNT] =3D {};
-+__u32 errs[__NR_TESTS][__MAX_CNT] =3D {};
-+__u32 test =3D 0;
-+
-+static void inc_dtimes(__u32 idx)
-+{
-+	if (test < __NR_TESTS)
-+		dtimes[test][idx]++;
-+	else
-+		dtimes[UKN_TEST][idx]++;
-+}
-+
-+static void inc_errs(__u32 idx)
-+{
-+	if (test < __NR_TESTS)
-+		errs[test][idx]++;
-+	else
-+		errs[UKN_TEST][idx]++;
-+}
-+
-+static int skb_proto(int type)
-+{
-+	return type & 0xff;
-+}
-+
-+static int skb_ns(int type)
-+{
-+	return (type >> 8) & 0xff;
-+}
-+
-+static bool fwdns_clear_dtime(void)
-+{
-+	return test =3D=3D TCP_IP6_CLEAR_DTIME;
-+}
-+
-+static bool bpf_fwd(void)
-+{
-+	return test < TCP_IP4_RT_FWD;
-+}
-+
-+/* -1: parse error: TC_ACT_SHOT
-+ *  0: not testing traffic: TC_ACT_OK
-+ * >0: first byte is the inet_proto, second byte has the netns
-+ *     of the sender
-+ */
-+static int skb_get_type(struct __sk_buff *skb)
-+{
-+	void *data_end =3D ctx_ptr(skb->data_end);
-+	void *data =3D ctx_ptr(skb->data);
-+	__u8 inet_proto =3D 0, ns =3D 0;
-+	struct ipv6hdr *ip6h;
-+	struct iphdr *iph;
-+
-+	switch (skb->protocol) {
-+	case __bpf_htons(ETH_P_IP):
-+		iph =3D data + sizeof(struct ethhdr);
-+		if (iph + 1 > data_end)
-+			return -1;
-+		if (iph->saddr =3D=3D ip4_src)
-+			ns =3D SRC_NS;
-+		else if (iph->saddr =3D=3D ip4_dst)
-+			ns =3D DST_NS;
-+		inet_proto =3D iph->protocol;
-+		break;
-+	case __bpf_htons(ETH_P_IPV6):
-+		ip6h =3D data + sizeof(struct ethhdr);
-+		if (ip6h + 1 > data_end)
-+			return -1;
-+		if (v6_equal(ip6h->saddr, (struct in6_addr)ip6_src))
-+			ns =3D SRC_NS;
-+		else if (v6_equal(ip6h->saddr, (struct in6_addr)ip6_dst))
-+			ns =3D DST_NS;
-+		inet_proto =3D ip6h->nexthdr;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	if ((inet_proto !=3D IPPROTO_TCP && inet_proto !=3D IPPROTO_UDP) || !ns=
-)
-+		return 0;
-+
-+	return (ns << 8 | inet_proto);
-+}
-+
-+/* format: direction@iface@netns
-+ * egress@veth_(src|dst)@ns_(src|dst)
-+ */
-+SEC("tc")
-+int egress_host(struct __sk_buff *skb)
-+{
-+	int skb_type;
-+
-+	skb_type =3D skb_get_type(skb);
-+	if (skb_type =3D=3D -1)
-+		return TC_ACT_SHOT;
-+	if (!skb_type)
-+		return TC_ACT_OK;
-+
-+	if (skb_proto(skb_type) =3D=3D IPPROTO_TCP) {
-+		if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO &&
-+		    skb->tstamp)
-+			inc_dtimes(EGRESS_ENDHOST);
-+		else
-+			inc_errs(EGRESS_ENDHOST);
-+	} else {
-+		if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_UNSPEC &&
-+		    skb->tstamp)
-+			inc_dtimes(EGRESS_ENDHOST);
-+		else
-+			inc_errs(EGRESS_ENDHOST);
-+	}
-+
-+	skb->tstamp =3D EGRESS_ENDHOST_MAGIC;
-+
-+	return TC_ACT_OK;
-+}
-+
-+/* ingress@veth_(src|dst)@ns_(src|dst) */
-+SEC("tc")
-+int ingress_host(struct __sk_buff *skb)
-+{
-+	int skb_type;
-+
-+	skb_type =3D skb_get_type(skb);
-+	if (skb_type =3D=3D -1)
-+		return TC_ACT_SHOT;
-+	if (!skb_type)
-+		return TC_ACT_OK;
-+
-+	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO &&
-+	    skb->tstamp =3D=3D EGRESS_FWDNS_MAGIC)
-+		inc_dtimes(INGRESS_ENDHOST);
-+	else
-+		inc_errs(INGRESS_ENDHOST);
-+
-+	return TC_ACT_OK;
-+}
-+
-+/* ingress@veth_(src|dst)_fwd@ns_fwd priority 100 */
-+SEC("tc")
-+int ingress_fwdns_prio100(struct __sk_buff *skb)
-+{
-+	int skb_type;
-+
-+	skb_type =3D skb_get_type(skb);
-+	if (skb_type =3D=3D -1)
-+		return TC_ACT_SHOT;
-+	if (!skb_type)
-+		return TC_ACT_OK;
-+
-+	/* delivery_time is only available to the ingress
-+	 * if the tc-bpf checks the skb->delivery_time_type.
-+	 */
-+	if (skb->tstamp =3D=3D EGRESS_ENDHOST_MAGIC)
-+		inc_errs(INGRESS_FWDNS_P100);
-+
-+	if (fwdns_clear_dtime())
-+		skb->tstamp =3D 0;
-+
-+	return TC_ACT_UNSPEC;
-+}
-+
-+/* egress@veth_(src|dst)_fwd@ns_fwd priority 100 */
-+SEC("tc")
-+int egress_fwdns_prio100(struct __sk_buff *skb)
-+{
-+	int skb_type;
-+
-+	skb_type =3D skb_get_type(skb);
-+	if (skb_type =3D=3D -1)
-+		return TC_ACT_SHOT;
-+	if (!skb_type)
-+		return TC_ACT_OK;
-+
-+	/* delivery_time is always available to egress even
-+	 * the tc-bpf did not use the delivery_time_type.
-+	 */
-+	if (skb->tstamp =3D=3D INGRESS_FWDNS_MAGIC)
-+		inc_dtimes(EGRESS_FWDNS_P100);
-+	else
-+		inc_errs(EGRESS_FWDNS_P100);
-+
-+	if (fwdns_clear_dtime())
-+		skb->tstamp =3D 0;
-+
-+	return TC_ACT_UNSPEC;
-+}
-+
-+/* ingress@veth_(src|dst)_fwd@ns_fwd priority 101 */
-+SEC("tc")
-+int ingress_fwdns_prio101(struct __sk_buff *skb)
-+{
-+	__u64 expected_dtime =3D EGRESS_ENDHOST_MAGIC;
-+	int skb_type;
-+
-+	skb_type =3D skb_get_type(skb);
-+	if (skb_type =3D=3D -1 || !skb_type)
-+		/* Should have handled in prio100 */
-+		return TC_ACT_SHOT;
-+
-+	if (skb_proto(skb_type) =3D=3D IPPROTO_UDP)
-+		expected_dtime =3D 0;
-+
-+	if (skb->delivery_time_type) {
-+		if (fwdns_clear_dtime() ||
-+		    skb->delivery_time_type !=3D BPF_SKB_DELIVERY_TIME_MONO ||
-+		    skb->tstamp !=3D expected_dtime)
-+			inc_errs(INGRESS_FWDNS_P101);
-+		else
-+			inc_dtimes(INGRESS_FWDNS_P101);
-+	} else {
-+		if (!fwdns_clear_dtime() && expected_dtime)
-+			inc_errs(INGRESS_FWDNS_P101);
-+	}
-+
-+	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO) {
-+		skb->tstamp =3D INGRESS_FWDNS_MAGIC;
-+	} else {
-+		if (bpf_skb_set_delivery_time(skb, INGRESS_FWDNS_MAGIC,
-+					      BPF_SKB_DELIVERY_TIME_MONO))
-+			inc_errs(SET_DTIME);
-+		if (!bpf_skb_set_delivery_time(skb, INGRESS_FWDNS_MAGIC,
-+					       BPF_SKB_DELIVERY_TIME_UNSPEC))
-+			inc_errs(SET_DTIME);
-+	}
-+
-+	if (skb_ns(skb_type) =3D=3D SRC_NS)
-+		return bpf_fwd() ?
-+			bpf_redirect_neigh(IFINDEX_DST, NULL, 0, 0) : TC_ACT_OK;
-+	else
-+		return bpf_fwd() ?
-+			bpf_redirect_neigh(IFINDEX_SRC, NULL, 0, 0) : TC_ACT_OK;
-+}
-+
-+/* egress@veth_(src|dst)_fwd@ns_fwd priority 101 */
-+SEC("tc")
-+int egress_fwdns_prio101(struct __sk_buff *skb)
-+{
-+	int skb_type;
-+
-+	skb_type =3D skb_get_type(skb);
-+	if (skb_type =3D=3D -1 || !skb_type)
-+		/* Should have handled in prio100 */
-+		return TC_ACT_SHOT;
-+
-+	if (skb->delivery_time_type) {
-+		if (fwdns_clear_dtime() ||
-+		    skb->delivery_time_type !=3D BPF_SKB_DELIVERY_TIME_MONO ||
-+		    skb->tstamp !=3D INGRESS_FWDNS_MAGIC)
-+			inc_errs(EGRESS_FWDNS_P101);
-+		else
-+			inc_dtimes(EGRESS_FWDNS_P101);
-+	} else {
-+		if (!fwdns_clear_dtime())
-+			inc_errs(EGRESS_FWDNS_P101);
-+	}
-+
-+	if (skb->delivery_time_type =3D=3D BPF_SKB_DELIVERY_TIME_MONO) {
-+		skb->tstamp =3D EGRESS_FWDNS_MAGIC;
-+	} else {
-+		if (bpf_skb_set_delivery_time(skb, EGRESS_FWDNS_MAGIC,
-+					      BPF_SKB_DELIVERY_TIME_MONO))
-+			inc_errs(SET_DTIME);
-+		if (!bpf_skb_set_delivery_time(skb, EGRESS_FWDNS_MAGIC,
-+					       BPF_SKB_DELIVERY_TIME_UNSPEC))
-+			inc_errs(SET_DTIME);
-+	}
-+
-+	return TC_ACT_OK;
-+}
-+
-+char __license[] SEC("license") =3D "GPL";
---=20
-2.30.2
+The thing stopping a trivial transformation of kfree() is:
 
+	kfree(get_some_pointer());
+
+I would argue, though, that the above is poor form: the thing holding
+the pointer should be the thing freeing it, so these cases should be
+refactored and kfree() could do the NULLing by default.
+
+Quoting myself in the above issue:
+
+
+Without doing massive tree-wide changes, I think we need compiler
+support. If we had something like __builtin_is_lvalue(), we could
+distinguish function returns from lvalues. For example, right now a
+common case are things like:
+
+	kfree(get_some_ptr());
+
+But if we could at least gain coverage of the lvalue cases, and detect
+them statically at compile-time, we could do:
+
+#define __kfree_and_null(x) do { __kfree(*x); *x = NULL; } while (0)
+#define kfree(x) __builtin_choose_expr(__builtin_is_lvalue(x),
+			__kfree_and_null(&(x)), __kfree(x))
+
+Alternatively, we could do a tree-wide change of the former case (findable
+with Coccinelle) and change them into something like kfree_no_null()
+and redefine kfree() itself:
+
+#define kfree_no_null(x) do { void *__ptr = (x); __kfree(__ptr); } while (0)
+#define kfree(x) do { __kfree(x); x = NULL; } while (0)
+
+-- 
+Kees Cook
