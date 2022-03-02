@@ -2,56 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A7E54C9B4A
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 03:42:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6AB74C9B5C
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 03:46:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239122AbiCBCm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 21:42:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
+        id S236738AbiCBCqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 21:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232563AbiCBCm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 21:42:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CE537BD4;
-        Tue,  1 Mar 2022 18:42:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 500D0B81ECD;
-        Wed,  2 Mar 2022 02:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57770C340EE;
-        Wed,  2 Mar 2022 02:42:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646188932;
-        bh=HcTWjMbQWeF4eeEa/7jn5IJ2sJEKxX1/E8sp1fvu/Dw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hUqf+YrH9x/8jiL8TOFScEbkoMlgZnpUnUwRNueUnsA9sMLt4WPZVLQkV2kSnAbbD
-         WZ6EnMnfo3p7QmqqQ0FX8vW+eGGRMMK5KiaLi46haG9BZA5Raxnxkr3X0Scg0pPcqA
-         /APjs7oyjC+80LsxBaVDKrpLoL8OqSFqvwT8yAfaVOeMMNycovP0khiYqweocUL26U
-         TSa4YSb4A1PtjA5rWDd+zqkJKy4CPPMbvU/9NqU7KO0OtO0TiAAZnUmWJTk4hZLbii
-         WsLVBM7BF1muL84mq75K3bs3Xw9fvoYI/QqSt6q1KYIxnILomsb1v83bknE+70MVc3
-         cfQifqB9L4ihA==
-Date:   Tue, 1 Mar 2022 18:42:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, dsahern@gmail.com,
-        edumazet@google.com
-Subject: Re: [PATCH net-next v4 2/4] net: tap: track dropped skb via
- kfree_skb_reason()
-Message-ID: <20220301184209.1f11b350@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220226084929.6417-3-dongli.zhang@oracle.com>
-References: <20220226084929.6417-1-dongli.zhang@oracle.com>
-        <20220226084929.6417-3-dongli.zhang@oracle.com>
+        with ESMTP id S239148AbiCBCqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 21:46:50 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0968BA9E39
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 18:46:07 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so434045oos.9
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 18:46:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wjdqSaPpltqhLridozcEUTEQoIYV6/3L4YmJnQ5z0lY=;
+        b=LN9nnhqICRhttXAVr1od9T1t/Ymtpxhtz4tHsjH3dYjcd3Rkq9C9wMhSXlkrlSYC1A
+         DlJ/JptFxg1yVABD2c1AkWjsPC7Du3KLmBhl0PmcAe7J/mlUk1cp6g/yIWvbZRRK/ixo
+         +bm5IDVzJdC4fxWuoEI4G5CHndK46TO9kW9KbAaQI641rdN+rU1dvb6VBLEpmuuVwgUt
+         80QLDod/jgV5iicQ0WoUYh+G5NUspA9Y6GZrYqrOz6zP3KBF8+B00J/JX/kKtJbsLcZw
+         Nn9Y0EtKII81vB9nbqmK7v/AXIDRsz2QxYS4EGE2oGDGOXpVkmABqBHnLwBv01oaAEdI
+         u6og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wjdqSaPpltqhLridozcEUTEQoIYV6/3L4YmJnQ5z0lY=;
+        b=VQfAQWIg/j+8Id3VKQ2nwyzp9n+K5E+z5Wg8Q51ycXP6IihARnw0GHdsN0sOJDeLZK
+         +Vt8qChmcjDhcO+5lGQgdSdlM5sXPt57iPBP8vFcZctup7eYaHBiInGBX7f/aRvvR6SX
+         v1GBdDUP1QhZ/cDg6IJVfc+8G1oCaRZGKzGhbICY2xqbGTlJunRLYt3zROaRIpb4x7lu
+         vZe6kSFq7I/Q9synHGqxjYO2xCgspm+f2tgxZuA3vIOTyTLZzzlrMxZskWJejqy9xbsC
+         ZDrtYaec+4yHayVpysqY2C+Qhb/Wts0efglFhCYSh5BUHBA29yTs5TYCVbjEGbcmEEku
+         77XA==
+X-Gm-Message-State: AOAM530IzkeONpHJrhcdg6x8wt4VpoSWnLpYYAKv0MpB2tqsjcpbQ4lW
+        s5Lbscvt5vJ4CYNnZ58yWijpTA==
+X-Google-Smtp-Source: ABdhPJyABJwssvqzs0MiuFje5MNOUuD4BXQpc8Bd2B6R1kdb3joprE0iJZUcrLXMN5kygRaNyqLzdA==
+X-Received: by 2002:a05:6820:1396:b0:31c:59f4:2fe4 with SMTP id i22-20020a056820139600b0031c59f42fe4mr13722344oow.10.1646189166017;
+        Tue, 01 Mar 2022 18:46:06 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id 23-20020a9d0b97000000b005ad33994e93sm7196700oth.31.2022.03.01.18.46.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 18:46:05 -0800 (PST)
+Date:   Tue, 1 Mar 2022 18:47:56 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Another pass removing cases of 'allOf'
+ containing a '$ref'
+Message-ID: <Yh7a3Gl6PPamTjY5@ripper>
+References: <20220228213802.1639658-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228213802.1639658-1-robh@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,28 +94,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 26 Feb 2022 00:49:27 -0800 Dongli Zhang wrote:
-> +	SKB_DROP_REASON_SKB_CSUM,	/* sk_buff checksum error */
+On Mon 28 Feb 13:38 PST 2022, Rob Herring wrote:
 
-Can we spell it out a little more? It sounds like the checksum was
-incorrect. Will it be clear that computing the checksum failed, rather
-than checksum validation failed?
+> Another pass at removing unnecessary use of 'allOf' with a '$ref'.
+> 
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords.
+> 
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+> Cc: Richard Weinberger <richard@nod.at>
+> Cc: Vignesh Raghavendra <vigneshr@ti.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-mtd@lists.infradead.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-spi@vger.kernel.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/connector/usb-connector.yaml         |  3 +--
+>  .../bindings/display/brcm,bcm2711-hdmi.yaml       |  3 +--
+>  .../bindings/display/bridge/adi,adv7511.yaml      |  5 ++---
+>  .../bindings/display/bridge/synopsys,dw-hdmi.yaml |  5 ++---
+>  .../bindings/display/panel/display-timings.yaml   |  3 +--
+>  .../devicetree/bindings/display/ste,mcde.yaml     |  4 ++--
+>  .../devicetree/bindings/input/adc-joystick.yaml   |  9 ++++-----
+>  .../bindings/leds/cznic,turris-omnia-leds.yaml    |  3 +--
+>  .../devicetree/bindings/leds/leds-lp50xx.yaml     |  3 +--
+>  .../devicetree/bindings/mfd/google,cros-ec.yaml   | 12 ++++--------
+>  .../devicetree/bindings/mtd/nand-controller.yaml  |  8 +++-----
+>  .../bindings/mtd/rockchip,nand-controller.yaml    |  3 +--
+>  .../devicetree/bindings/net/ti,cpsw-switch.yaml   |  3 +--
+>  .../bindings/phy/phy-stm32-usbphyc.yaml           |  3 +--
+>  .../bindings/power/supply/sbs,sbs-manager.yaml    |  4 +---
+>  .../bindings/remoteproc/ti,k3-r5f-rproc.yaml      |  3 +--
 
-> +	SKB_DROP_REASON_SKB_COPY_DATA,	/* failed to copy data from or to
-> +					 * sk_buff
-> +					 */
+For the remoteproc binding:
 
-Here should we specify that it's copying from user space?
+Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-> +	SKB_DROP_REASON_SKB_GSO_SEG,	/* gso segmentation error */
-> +	SKB_DROP_REASON_DEV_HDR,	/* there is something wrong with
-> +					 * device driver specific header
-> +					 */
-
-How about:
-device driver specific header / metadata was invalid
-
-to broaden the scope also to devices which don't transfer the metadata
-in form of a header?
-
-> +	SKB_DROP_REASON_FULL_RING,	/* ring buffer is full */
+Thanks,
+Bjorn
