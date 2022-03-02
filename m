@@ -2,132 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAEC04CB07A
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 21:59:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 524C24CB150
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 22:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245000AbiCBVAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 16:00:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        id S245119AbiCBVa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 16:30:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234176AbiCBVAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 16:00:14 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E188D2050
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 12:59:30 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id i1so2654442plr.2
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 12:59:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R/oQqieG0aXWXHs93Td97reRxAIjZoSgBmUtDJFVhjU=;
-        b=d2ZFN7FzXJICmnX4Tyt0wAx0nHny3V7g7RBF7BzoFi4JqvMjvTlFe6r9CSmtZHYpfY
-         sI7cCbacBhQSn0c2nYjk/wWGRSWn9quhJSSynH9lMYRKPPdVW/LYlF+HQ4F3tfS4GoN+
-         rfxT6gA9HHGJJFfNnOWheyqKpysRyPxkd0f8U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R/oQqieG0aXWXHs93Td97reRxAIjZoSgBmUtDJFVhjU=;
-        b=08F5qxdhx4CVWQZDDbR1UIpcq3Yuu4H7yS4mqr/Qaprwo5Pu2uxHQrXavKWr7AAJ5G
-         Djkx0U/IlE83m67K84x086GOFxu0CWRQo4ruG8DcjMBYYCZbCyqjMXvL12fAPWz6/7oN
-         32fcIXsfXApDk2pjuF9FN9+1K5b1d0dHwtNesDD4K13BMn/ma8EjY6BV3WvbjqrM9ZJq
-         to+g6ZtOxbNrrYi+NW2U3eK9yFpQCpSVwudfmERLuZOp8ttF8lPd1B78+/BeLX6mXvHd
-         wAwN60Mh8lhssjNjVP3ON1j0hwL9wskNkUJZwt6JYw3wkTPDry4Zf0SVILAozlfga0Rr
-         pZgA==
-X-Gm-Message-State: AOAM533S5It3aGoKgo/fd75Cfo0OPIH33SJQ/jqxeqFOtyqhOyXwNMvg
-        F6/jnPfhx/bAG90ze/cHw5RFPQ==
-X-Google-Smtp-Source: ABdhPJykkdhEEGUDkHycvSgNRuEs4QwrQaW1FnUc6uFGBxeAOPBVvK2/xrXBO3QxBQPFHyTwD4zC/w==
-X-Received: by 2002:a17:90b:1bc2:b0:1bf:993:f736 with SMTP id oa2-20020a17090b1bc200b001bf0993f736mr1213267pjb.190.1646254769629;
-        Wed, 02 Mar 2022 12:59:29 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id on18-20020a17090b1d1200b001b9cfbfbf00sm4525pjb.40.2022.03.02.12.59.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 12:59:29 -0800 (PST)
-Date:   Wed, 2 Mar 2022 12:59:28 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        David Laight <David.Laight@aculab.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        KVM list <kvm@vger.kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        "linux1394-devel@lists.sourceforge.net" 
-        <linux1394-devel@lists.sourceforge.net>,
-        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "kgdb-bugreport@lists.sourceforge.net" 
-        <kgdb-bugreport@lists.sourceforge.net>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        "v9fs-developer@lists.sourceforge.net" 
-        <v9fs-developer@lists.sourceforge.net>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-Message-ID: <202203021256.69D7C4BCA6@keescook>
-References: <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org>
- <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
- <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
- <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
- <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
- <0ced2b155b984882b39e895f0211037c@AcuMS.aculab.com>
- <CAHk-=wix0HLCBs5sxAeW3uckg0YncXbTjMsE-Tv8WzmkOgLAXQ@mail.gmail.com>
- <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
- <202203021158.DB5204A0@keescook>
- <CAHk-=wikKPC0LUqZ8++EC5JOvGdBqVH9uUaTX=DvBioDoReYww@mail.gmail.com>
+        with ESMTP id S235450AbiCBVa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 16:30:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6FBC12F4;
+        Wed,  2 Mar 2022 13:30:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CFEDB82259;
+        Wed,  2 Mar 2022 21:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E016DC340EF;
+        Wed,  2 Mar 2022 21:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646256610;
+        bh=i+i4Wl2tm2Zfc0swWiYdjwD2LtuWtpDfWAxCgUYt0Rg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XsAn1fEsRDcHt4ULGp4CRH/mHTR7OlFlq7dXYH2AHZvF9bMHviuKiWATkHuh31rvh
+         V51uLWkd2jnjZP4iAAhN/No0MG20Y6eAilAuvxObY/zI+NQFQn99XM4FgDIuF5WRIh
+         81RlTXJi2DIQ2WeizYVmgblXftmcN9d7RcAAZKLn+pOo5OP8xMYiQ9gIEzS3ZpfFz3
+         ja7hp0PNTBGFdjrUGv51YzinQV8DEnzsDEoARJG/sRyPb0ahy1cjET13rmjfIFsegH
+         X6fA8V+NX3rBL9EfF2lmaCpEdg/aIH0xc16X9/4XwYZA4Fbk+mX4IBTUvT2r2G1RuW
+         UiqdlAMX0ZaDQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C4C16EAC096;
+        Wed,  2 Mar 2022 21:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wikKPC0LUqZ8++EC5JOvGdBqVH9uUaTX=DvBioDoReYww@mail.gmail.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 bpf-next 0/2] fixes for bpf_prog_pack
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164625661080.14464.1524494677053022306.git-patchwork-notify@kernel.org>
+Date:   Wed, 02 Mar 2022 21:30:10 +0000
+References: <20220302175126.247459-1-song@kernel.org>
+In-Reply-To: <20220302175126.247459-1-song@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -136,35 +56,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 12:18:45PM -0800, Linus Torvalds wrote:
-> On Wed, Mar 2, 2022 at 12:07 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > I've long wanted to change kfree() to explicitly set pointers to NULL on
-> > free. https://github.com/KSPP/linux/issues/87
-> 
-> We've had this discussion with the gcc people in the past, and gcc
-> actually has some support for it, but it's sadly tied to the actual
-> function name (ie gcc has some special-casing for "free()")
-> 
-> See
-> 
->     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94527
-> 
-> for some of that discussion.
-> 
-> Oh, and I see some patch actually got merged since I looked there last
-> so that you can mark "deallocator" functions, but I think it's only
-> for the context matching, not for actually killing accesses to the
-> pointer afterwards.
+Hello:
 
-Ah! I missed that getting added in GCC 11. But yes, there it is:
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-malloc-function-attribute
+On Wed, 2 Mar 2022 09:51:24 -0800 you wrote:
+> Changes v1 => v2:
+> 1. Rephrase comments in 2/2. (Yonghong)
+> 
+> Two fixes for bpf_prog_pack.
+> 
+> Song Liu (2):
+>   x86: disable HAVE_ARCH_HUGE_VMALLOC on 32-bit x86
+>   bpf, x86: set header->size properly before freeing it
+> 
+> [...]
 
-Hah, now we may need to split __malloc from __alloc_size. ;)
+Here is the summary with links:
+  - [v2,bpf-next,1/2] x86: disable HAVE_ARCH_HUGE_VMALLOC on 32-bit x86
+    https://git.kernel.org/bpf/bpf-next/c/eed1fcee556f
+  - [v2,bpf-next,2/2] bpf, x86: set header->size properly before freeing it
+    https://git.kernel.org/bpf/bpf-next/c/676b2daabaf9
 
-I'd still like the NULL assignment behavior, though, since some things
-can easily avoid static analysis.
-
+You are awesome, thank you!
 -- 
-Kees Cook
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
