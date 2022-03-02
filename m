@@ -2,138 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 364F14C9E61
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 08:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A054C9E78
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 08:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238308AbiCBHa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 02:30:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
+        id S239902AbiCBHbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 02:31:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiCBHaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 02:30:25 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D164C51E51;
-        Tue,  1 Mar 2022 23:29:41 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso672027pjb.0;
-        Tue, 01 Mar 2022 23:29:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n+PhcwQqRo/8Gtd1tkNC+jMPxT5Ks6cVlUrXMWN3ik4=;
-        b=F6UPPFKKVPcVZFUnTLysi8DeM5ZnNxSinx5W+BPBY7bn2dEiwrb6hCi089Ohyc+Cff
-         cvg3M53iTmASMInR4kjsGHw1gn7Dd6zJO2kE8gMLqeMvCHHM/LYyjSPj7WLRThz0L+or
-         k38oIlwayvHk2meozkmSsvQaf9j9tvKF/L8mc1IN/9lKN5BoLL2aBxWBRvCH69kwwAx5
-         /icdl3iEe1skXX6TNmTzhhbYQOaNUKemUTWz4hJ9OgG7s83PUqyYqS2xmQvxXA7KFXmz
-         jFOlZoqeSZmjtGmHGzhM8W3K38HuU3/poHlovgvPK43HgLmql5ssgppHzD7lsZuRMiJp
-         ft+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n+PhcwQqRo/8Gtd1tkNC+jMPxT5Ks6cVlUrXMWN3ik4=;
-        b=X33iFavQoHySuwEesQgUE0zM7E81GWwwwpo+aevTRXRCVqB+JAPvRW6yCZ2UAfQWC8
-         fKXnBqkAUimErXlAkTZFhkKWdUf0XNcJ6rOePpZoo0JFdbtGeg4Mx09Hp+RLN6DR+7Qc
-         aXjrWcUo/GSXSIDhD/TKevKP5azNvzJMNVq/jr2YGtiek7rRo6aBd+7dQMx+yLimDsDl
-         XOvliNr+SoaV8s2mBRIlNAfnPL1DF5E6qLzSiukY0EOXvfcEWtp+e47gPXbmmgsrJ7oz
-         +YMS/fsL5MOYe8+Vz/qK7k+4dFlLinHsR7BF+6b3sp3W1cdt0F2lKCVA+Rkj2l8Hp90/
-         eh8g==
-X-Gm-Message-State: AOAM530MaF2GQ0hXKi5jIgetBGcspjdyx8GIiukV5+Lj0c/7ud4eNM4O
-        TcEJLulVZqwHNTG6SMJC1W+sfKjGnJYYsYzTnvM=
-X-Google-Smtp-Source: ABdhPJySOpWhvU0ZuNChoueITcvmjAVZyd/O+WwyWQ60m7KIRAB1X8qddJpHis7ybnBVGu3Gd8GMplPU0zKFl7lEgug=
-X-Received: by 2002:a17:90a:b307:b0:1bd:37f3:f0fc with SMTP id
- d7-20020a17090ab30700b001bd37f3f0fcmr16405568pjr.132.1646206181283; Tue, 01
- Mar 2022 23:29:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20220301132623.GA19995@vscode.7~>
-In-Reply-To: <20220301132623.GA19995@vscode.7~>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 2 Mar 2022 08:29:30 +0100
-Message-ID: <CAJ8uoz2y2r1wS3_sSgZ8jC2fkiyNCW_q4oQdc_JYe2bKO4NoJA@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: unmap rings when umem deleted
-To:     lic121 <lic121@chinatelecom.cn>
-Cc:     bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        with ESMTP id S231681AbiCBHbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 02:31:03 -0500
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7EE51E51;
+        Tue,  1 Mar 2022 23:30:21 -0800 (PST)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id B8E6F1C0B81; Wed,  2 Mar 2022 08:30:18 +0100 (CET)
+Date:   Wed, 2 Mar 2022 08:30:16 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Emma Anholt <emma@anholt.net>,
+        David Lechner <david@lechnology.com>,
+        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
+        Antti Palosaari <crope@iki.fi>,
+        Lee Jones <lee.jones@linaro.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Piel <eric.piel@tremplin-utc.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Solomon Peachy <pizza@shaftnet.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Benson Leung <bleung@chromium.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Ronald =?iso-8859-1?Q?Tschal=E4r?= <ronald@innovation.ch>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Heiko Schocher <hs@denx.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Matt Kline <matt@bitbashing.io>,
+        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?iso-8859-1?Q?M=E4tje?= <stefan.maetje@esd.eu>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        Yang Shen <shenyang39@huawei.com>,
+        dingsenjie <dingsenjie@yulong.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michael Walle <michael@walle.cc>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Sidong Yang <realwakka@gmail.com>,
+        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
+        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 5/5] spi: make remove callback a void function
+Message-ID: <20220302073016.GB32222@amd>
+References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+ <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="xXmbgvnjoT4axfJE"
+Content-Disposition: inline
+In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 6:57 PM lic121 <lic121@chinatelecom.cn> wrote:
->
-> xsk_umem__create() does mmap for fill/comp rings, but xsk_umem__delete()
-> doesn't do the unmap. This works fine for regular cases, because
-> xsk_socket__delete() does unmap for the rings. But for the case that
-> xsk_socket__create_shared() fails, umem rings are not unmapped.
->
-> fill_save/comp_save are checked to determine if rings have already be
-> unmapped by xsk. If fill_save and comp_save are NULL, it means that the
-> rings have already been used by xsk. Then they are supposed to be
-> unmapped by xsk_socket__delete(). Otherwise, xsk_umem__delete() does the
-> unmap.
 
-Thanks for the fix. Please note that the AF_XDP support in libbpf has
-been deprecated and moved to libxdp
-(https://github.com/xdp-project/xdp-tools). The code will be
-completely removed in the libbpf 1.0 release. Could I take your patch
-and apply it to libxdp instead and fix the bug there? I have not
-checked, but it is likely present there as well. And that is the code
-base we will be using going forward.
+--xXmbgvnjoT4axfJE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-> Signed-off-by: lic121 <lic121@chinatelecom.cn>
-> ---
->  tools/lib/bpf/xsk.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
->
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index edafe56..32a2f57 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -1193,12 +1193,23 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->
->  int xsk_umem__delete(struct xsk_umem *umem)
->  {
-> +       struct xdp_mmap_offsets off;
-> +       int err;
-> +
->         if (!umem)
->                 return 0;
->
->         if (umem->refcount)
->                 return -EBUSY;
->
-> +       err = xsk_get_mmap_offsets(umem->fd, &off);
-> +       if (!err && umem->fill_save && umem->comp_save) {
-> +               munmap(umem->fill_save->ring - off.fr.desc,
-> +                      off.fr.desc + umem->config.fill_size * sizeof(__u64));
-> +               munmap(umem->comp_save->ring - off.cr.desc,
-> +                      off.cr.desc + umem->config.comp_size * sizeof(__u64));
-> +       }
-> +
->         close(umem->fd);
->         free(umem);
->
-> --
-> 1.8.3.1
->
+Hi!
+
+> The value returned by an spi driver's remove function is mostly ignored.
+> (Only an error message is printed if the value is non-zero that the
+> error is ignored.)
+>=20
+> So change the prototype of the remove function to return no value. This
+> way driver authors are not tempted to assume that passing an error to
+> the upper layer is a good idea. All drivers are adapted accordingly.
+> There is no intended change of behaviour, all callbacks were prepared to
+> return 0 before.
+
+Acked-by: Pavel Machek <pavel@ucw.cz>
+									Pavel
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--xXmbgvnjoT4axfJE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmIfHQgACgkQMOfwapXb+vLxcgCghFIMSLkgbmU4bCcL4+4sOBXY
+b1QAoKETSRxn6hbtUUF5RsaX43sun2ct
+=6C0C
+-----END PGP SIGNATURE-----
+
+--xXmbgvnjoT4axfJE--
