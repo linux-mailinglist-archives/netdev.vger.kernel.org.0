@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEE34CACDC
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 19:03:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3DEB4CAD08
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 19:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244404AbiCBSDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 13:03:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
+        id S242031AbiCBSMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 13:12:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244390AbiCBSDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 13:03:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E4C13FAC
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 10:02:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D05760ACA
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 18:02:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 945B7C340F2;
-        Wed,  2 Mar 2022 18:02:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646244168;
-        bh=yXoAgcoMdMwkB1AvxU0MLHMUqHYlMbDYJCTH9R+87a8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fA+Zel0qm4A7WFYIPBmaas/rauBdbtw9bwGPHIkfHFO6cLN3ZcRsUB8UCCss+a3i8
-         q8YyMO/pg3rrr0wdZA4b74bQCBUpSAUPfE4mbx74xm/y9R03kG4jvZgTOSwDVFYxqe
-         ++mJFhoWUioZBe04niIjqpn1Sew/W8VNvaaTLDfo8QOOICwRvwvuexjRKcrc8nANHl
-         0vSRACbnDobKK6vTw3Kwkd7uXlVC0HSH+2dcW/5PUyaT9aik4vB1Dy7BqlF2PtAUHJ
-         wGE3RqhZe7kZbSbdTMhI4yWZ0WCMx7OtNCYKOu42pj9SuW+1lZ9Q6jqmFn7ijYtrB9
-         +4siOQEd+mjkw==
-Date:   Wed, 2 Mar 2022 10:02:46 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Peter Robinson <pbrobinson@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
- WoL IRQ
-Message-ID: <20220302100246.393f1af7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220223144818.2f9ce725@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220222095348.2926536-1-pbrobinson@gmail.com>
-        <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
-        <CALeDE9NGckRoatePdaWFYqHXHcOJ2Xzd4PGLOoNWDibzPB_zXQ@mail.gmail.com>
-        <734024dc-dadd-f92d-cbbb-c8dc9c955ec3@gmail.com>
-        <CALeDE9Nk8gvCS425pJe5JCgcfSZugSnYwzGOkxhszrBz3Da6Fg@mail.gmail.com>
-        <3ae3a9fc-9dd1-00c6-4ae8-a65df3ed225f@gmail.com>
-        <CALeDE9PK9JkFkbTc36HOZH8CG8MM3OMhKJ24FKioKF5bspSPkA@mail.gmail.com>
-        <6cefe7ca-842b-d3af-0299-588b9307703b@gmail.com>
-        <20220223144818.2f9ce725@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S236621AbiCBSL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 13:11:59 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4FE675221
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 10:11:15 -0800 (PST)
+Received: from [192.168.1.214] (dynamic-089-014-155-020.89.14.pool.telefonica.de [89.14.155.20])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 8922020B7178;
+        Wed,  2 Mar 2022 10:11:14 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8922020B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646244675;
+        bh=wnNxxKJhkbCQZA6MR48J0yJP1hDi/gPWM9pPHYM7Il0=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=RKPY8/WLcodYi6GvwmfAozvyUyE7gVN2ld7er/uPxYunMgMKN0oGFO4huvk1IY5js
+         D/ZZbN9B4M2DxouX06NulIU2xryaSI1PH4JZq/FqvawQIetZ/4U5i50ZV76wH175TQ
+         +CcRFCuylSMf60HqzBSSpi60jFd58om7vo8hwJuA=
+Subject: Re: [PATCH 1/2] Revert "xfrm: interface with if_id 0 should return
+ error"
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Paul Chaignon <paul@cilium.io>,
+        Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
+References: <20220301131512.1303-1-kailueke@linux.microsoft.com>
+ <CAHsH6Gtzaf2vhSv5sPpBBhBww9dy8_E7c0utoqMBORas2R+_zg@mail.gmail.com>
+ <d5e58052-86df-7ffa-02a0-fc4db5a7bbdf@linux.microsoft.com>
+ <CAHsH6GsxaSgGkF9gkBKCcO9feSrsXsuNBdKRM_R8=Suih9oxSw@mail.gmail.com>
+ <20220301150930.GA56710@Mem>
+ <dcc83e93-4a28-896c-b3d3-8d675bb705eb@linux.microsoft.com>
+ <20220301161001.GV1223722@gauss3.secunet.de>
+ <20220302080439.2324c5d0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Kai Lueke <kailueke@linux.microsoft.com>
+Message-ID: <6c2d3e6b-23f8-d4a4-4701-ff9288c18a5c@linux.microsoft.com>
+Date:   Wed, 2 Mar 2022 19:11:06 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220302080439.2324c5d0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Language: en-US
+X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,18 +60,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Feb 2022 14:48:18 -0800 Jakub Kicinski wrote:
-> > Understood and I won't require you or me to complete this investigating 
-> > before fixing the regression, this is just so we understand where it 
-> > stemmed from and possibly fix the IRQ layer if need be. Given what I 
-> > just wrote, do you think you can sprinkle debug prints throughout the 
-> > kernel to figure out whether enable_irq_wake() somehow messes up the 
-> > interrupt descriptor of interrupt and test that theory? We can do that 
-> > offline if you want.  
-> 
-> Let me mark v2 as Deferred for now, then. I'm not really sure if that's
-> what's intended but we have 3 weeks or so until 5.17 is cut so we can
-> afford a few days of investigating.
+Hi,
+> Agreed. FWIW would be great if patch #2 started flowing towards Linus'es
+> tree separately if the discussion on #1 is taking longer.
 
-I think the "few days of investigating" have now run out :( 
-How should we proceed?
+to preserve the initial goal of helping to uncover id 0 usage I think it
+would be best to have the revert be accompanied by a patch that instead
+creates a kernel log warning (or whatever).
+
+Since I never did that I suggest to not wait for me.
+Also, feel free to do the revert yourself with a different commit
+message if mine didn't capture the things appropriately.
+
+Regards,
+Kai
+
