@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E55544CAE1E
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:03:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76ED34CAE32
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:04:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244841AbiCBTD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:03:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
+        id S244896AbiCBTFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:05:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244850AbiCBTDz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:03:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAEE4AE09;
-        Wed,  2 Mar 2022 11:03:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3E44614C9;
-        Wed,  2 Mar 2022 19:03:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9472BC004E1;
-        Wed,  2 Mar 2022 19:03:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646247782;
-        bh=o//HJ6BOALyflat2+5/GXiJeuCPk+VlksyaDQu6xvUo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vFrX8MUdmDI0aw/CwGNlWdVxijOAupdHvPGORfc9vfwp7o9C3E1UfWW6zSvKXoVHs
-         PZwc4C/SYJZKagYuC8rtAcyj6JvNYd7B0tAs4yMk5FyTjhnVCzloNeiMpnYw1EAwde
-         kzFHoX0Lm7lo3yrq6Sd9pQgyinqc6EeWhRw/B2wwP36yEvva87s0wjEPmflAkRRrV3
-         LvIfkTTXdyZUJsgAXz0K33lu+ttMODStUdQMmAaNG/ipZn0hh3vABvjaGyMPMTUQsQ
-         Qvh3dlPm4WYvjNrexqoPy7FXkQoHZnWZn5UqzaZcyWld0LHiz3vbdyJEKe7MnX3JPI
-         xdz7ju2+U5kqA==
-Date:   Wed, 2 Mar 2022 11:03:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, dsahern@gmail.com,
-        edumazet@google.com
-Subject: Re: [PATCH net-next v4 2/4] net: tap: track dropped skb via
- kfree_skb_reason()
-Message-ID: <20220302110300.1ac78804@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <0556b706-cb4d-b0b6-ef29-443123afd71d@oracle.com>
-References: <20220226084929.6417-1-dongli.zhang@oracle.com>
-        <20220226084929.6417-3-dongli.zhang@oracle.com>
-        <20220301184209.1f11b350@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <0556b706-cb4d-b0b6-ef29-443123afd71d@oracle.com>
+        with ESMTP id S244920AbiCBTFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:05:30 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE08FCE912;
+        Wed,  2 Mar 2022 11:04:45 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id e6so2440692pgn.2;
+        Wed, 02 Mar 2022 11:04:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=89mCuEEPrHsDNLVc4CIhD+BpAIBZ4ipH8mmu8QHY24I=;
+        b=ASaAtjHAZ6ZUzTh4PD6SWipUIIfM/2THlxXj1EddQIJUeNE+f0Ed54nasQgGf6sSRm
+         fmGv9F894L/kwRtROdxR+bmzOdzy+ltKxEuR+0ewjxemfuHKW05FZ1fTVPCZVBVp5vxN
+         DBF+pVPbE6Snnwa0J+28pRn2uopN4fBBe/peJkEWLEqhO5skx5H0Xser4LjMTXIC0Ncl
+         gkhBehQfs2HPUKBwc+ZClo21sS2huqlmadns2kPEzCZvzBwADXCYobjOkWR7PQ/bmPoL
+         ijsDDnmWdd7deZhKeNupBsY4puZymFVArw/JyCQHczo/Qm0+RWrwlCj0gsmm029pflPt
+         WEjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=89mCuEEPrHsDNLVc4CIhD+BpAIBZ4ipH8mmu8QHY24I=;
+        b=dFIV+YO+aIs46nSKMUXJiyDGxNLx6TO9liGMj4VFy586duePAkALx9bicY9YhdCn9d
+         Kl6sc2Xf7uAsd1Oh8Pywj1YTprWA8zAGQHL3PD7gKtblAiV3i6v6gDkp/VsXTbkwABAL
+         v8n9jnvn6/Q5uBLHd9ruXatTV59qAVFrCgMV7dqdMyqJEvG0Ght8mb0zRkdfpkefyE8c
+         K8TZJ+Fw0xGg7OHOtPV1qtvifHjgnZIpn9bzKu/q3ntnz3mmqXlbS74H75HbouX6yZ5c
+         SEbeHYuFbQlIIAdMjfLlVGNkuIDuTL9DSwXwzA0MVbpZl8W+JkCXqiqcEaPHGEeQr8Gy
+         ACVQ==
+X-Gm-Message-State: AOAM533ku4sOaMgqC7cdQ1ulRyd28TyfY0qH+zluDDILvjJcZfUandaH
+        LHrr7plnEzBoev6nyHF9cFA=
+X-Google-Smtp-Source: ABdhPJzSF4lKkKQmBZEuODpUX0JiH/7aVt+3OpLX5P4rezHsTIcSBmTrJlQOsdKcjOnhkR7LWLOTYA==
+X-Received: by 2002:a05:6a00:c95:b0:4e1:1f5a:35cf with SMTP id a21-20020a056a000c9500b004e11f5a35cfmr34510025pfv.56.1646247884848;
+        Wed, 02 Mar 2022 11:04:44 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:500::2:156b])
+        by smtp.gmail.com with ESMTPSA id q13-20020a056a00088d00b004e1bea9c582sm22324779pfj.43.2022.03.02.11.04.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 11:04:44 -0800 (PST)
+Date:   Wed, 2 Mar 2022 11:04:40 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v8 2/5] Documentation/bpf: Add documentation for
+ BPF_PROG_RUN
+Message-ID: <20220302190440.t5cvezlkg7ynajam@ast-mbp.dhcp.thefacebook.com>
+References: <20220218175029.330224-1-toke@redhat.com>
+ <20220218175029.330224-3-toke@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220218175029.330224-3-toke@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Mar 2022 09:43:29 -0800 Dongli Zhang wrote:
-> On 3/1/22 6:42 PM, Jakub Kicinski wrote:
-> > On Sat, 26 Feb 2022 00:49:27 -0800 Dongli Zhang wrote:  
-> >> +	SKB_DROP_REASON_SKB_CSUM,	/* sk_buff checksum error */  
-> > 
-> > Can we spell it out a little more? It sounds like the checksum was
-> > incorrect. Will it be clear that computing the checksum failed, rather
-> > than checksum validation failed?  
-> 
-> I am just trying to make the reasons as generic as possible so that:
-> 
-> 1. We may minimize the number of reasons.
-> 
-> 2. People may re-use the same reason for all CSUM related issue.
+On Fri, Feb 18, 2022 at 06:50:26PM +0100, Toke Høiland-Jørgensen wrote:
+> This adds documentation for the BPF_PROG_RUN command; a short overview of
+> the command itself, and a more verbose description of the "live packet"
+> mode for XDP introduced in the previous commit.
 
-The generic nature is fine, my concern is to clearly differentiate
-errors in _validating_ the checksum from errors in _generating_ them.
-"sk_buff checksum error" does not explain which one had taken place.
+Overall the patch set looks great. The doc really helps.
+One nit below.
 
-> >> +	SKB_DROP_REASON_SKB_COPY_DATA,	/* failed to copy data from or to
-> >> +					 * sk_buff
-> >> +					 */  
-> > 
-> > Here should we specify that it's copying from user space?  
-> 
-> Same as above. I am minimizing the number of reasons so that any memory copy for
-> sk_buff may re-use this reason.
+> +- When running the program with multiple repetitions, the execution will happen
+> +  in batches, where the program is executed multiple times in a loop, the result
+> +  is saved, and other actions (like redirecting the packet or passing it to the
+> +  networking stack) will happen for the whole batch after the execution. This is
+> +  similar to how execution happens in driver-mode XDP for each hardware NAPI
+> +  cycle. The batch size defaults to 64 packets (which is same as the NAPI batch
+> +  size), but the batch size can be specified by userspace through the
+> +  ``batch_size`` parameter, up to a maximum of 256 packets.
 
-IIUC this failure is equivalent to user passing an invalid buffer. 
-I mean something like:
-
-	send(fd, (void *)random(), 1000, 0);
-
-I'd be tempted to call the reason something link SKB_UCOPY_FAULT.
-To indicate it's a problem copying from user space. EFAULT is the
-typical errno for that. WDYT?
-
+This paragraph is a bit confusing.
+I've read it as the program can do only one kind of result per batch and
+it will apply to the whole batch.
+But the program can do XDP_PASS/REDIRECT in any order.
+Can you make "the result is saved" a bit more clear?
