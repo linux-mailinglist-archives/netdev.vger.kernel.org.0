@@ -2,470 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1C34CAA50
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 17:33:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 245AF4CAA58
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 17:34:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238592AbiCBQeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 11:34:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40456 "EHLO
+        id S235393AbiCBQfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 11:35:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238954AbiCBQeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:34:12 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2087.outbound.protection.outlook.com [40.107.236.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040324ECFD
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:33:28 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZoaFb9Uty+DavASSgmU9X5DiCdXOx2gBabQrUGcnecuWktnG0D2KDWauP7FwovWAwnJdswXmchoMDFHuS/Zyt4HTWpgu/Pzlv7jQF9hmv5EgUHa1YMpa3jtpxmQLBMgd9G0W2HuMq+oyDHtvf5hpDaarMnSVQpjnHS5m/BP/Hca7S7xzNIw9WhN342EC8wzFRGM4oaEmovEjx60vwWyji5YSj1YIDJbBgFAdwzBDY/kQrbwCTHPSXq3gDuuenAG91bSDNmXLLeI/XX9rbFV2+TafZb3WqDg1cKGpTyuxqoMDD6z5jj51P1KjUP3kDEYI85d3uPeO3Lo4FlA4x6auPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aZyb0/RB3ubDePc05dNyTsmJjNBnynRcl5rLNzwG+SQ=;
- b=gkOweHVZRga48AyDEKrSMb3lNCDZ4NAJTYh8Yl0yot9VUzYUDQfaK/FpsrjHJ9qKnx6refnEgyYkN9kMfMzdyiwiXmMO7fntt+D7uR0XTT5ZRh4gJQyCYIAZyVAYX9p4hly+LaD2DxXue2GDYVWvuuG6OzGCYAJBUV3vYRtJe88h1UQvagNqEPNZbo0e9P91p/uDhihkWQl51R9YwZ7yw/E4Jx6GDOUvNe1G+yXfsq1YDDdEVHPgG3atuwAtYhcw5Fa4rSiYpKvSMeAw71dnWqLvcAV4jrOJgzoQrENdQILUFegrpTYJbfvT/ou9aF7wVHXN9t8WLezXj0ulx9PX4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZyb0/RB3ubDePc05dNyTsmJjNBnynRcl5rLNzwG+SQ=;
- b=HKWQgHWz/mExQrYzVXfYwMF4JdyMMkx4MCoSKu1EEeNRJvOExSlU4xE1LW3WvzvBRRsyzN2oXir3V6On60tMNq/tmSD3kpPBv61oPZXDZqhJ4dEpdvslTiTLiH7UomiIwm+YbaK1e0TNp42IVUj4SmLkDOv1/u4DXb9KAtmrETTvE/nDmjwJkJxVEZ687vEswmSn6ELPpDQwtfXi9KKNEqCRAX4wUVa6fxXgiNQXREpjLq49imZUc2FfMTTXtYiZTWciPqZGrvvBJTcLQBlz0Dzjjpn480MwyVfv90HJsz1Nwtq9TtGsHrYvwp5lZbzDfNx8y1ySRva2m04qVtwUfA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
- by BYAPR12MB3208.namprd12.prod.outlook.com (2603:10b6:a03:13b::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Wed, 2 Mar
- 2022 16:33:25 +0000
-Received: from DM6PR12MB4337.namprd12.prod.outlook.com
- ([fe80::95a1:8c7f:10ef:2581]) by DM6PR12MB4337.namprd12.prod.outlook.com
- ([fe80::95a1:8c7f:10ef:2581%6]) with mapi id 15.20.5038.014; Wed, 2 Mar 2022
- 16:33:25 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
-        jiri@nvidia.com, roopa@nvidia.com, razor@blackwall.org,
-        dsahern@gmail.com, andrew@lunn.ch, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 14/14] selftests: forwarding: hw_stats_l3: Add a new test
-Date:   Wed,  2 Mar 2022 18:31:28 +0200
-Message-Id: <20220302163128.218798-15-idosch@nvidia.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220302163128.218798-1-idosch@nvidia.com>
-References: <20220302163128.218798-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR09CA0052.eurprd09.prod.outlook.com
- (2603:10a6:802:28::20) To DM6PR12MB4337.namprd12.prod.outlook.com
- (2603:10b6:5:2a9::12)
+        with ESMTP id S242385AbiCBQfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:35:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9C56C6275
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:34:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646238856;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PWSd2XUF2mosol4Wi2khE1roXr1zOMVG1AnKT6xRjqU=;
+        b=caY7N8uKoHG536icJeE2TICg2N/+NNYiPUYU/bdiPTrC+9gs21vBtqd14rzlg0BCMu1Aas
+        95zXKm3inzF9K8YpyoiP40x/2dFPlhy8ydFI3l4vk8vTwsusnAbK11Y5tAMiXC7shEAz2F
+        coOGj55cxqYyz5T2GFnBxBZamF54yDE=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-369-KBoGf9uZNnSakisxNvgcGw-1; Wed, 02 Mar 2022 11:34:13 -0500
+X-MC-Unique: KBoGf9uZNnSakisxNvgcGw-1
+Received: by mail-oi1-f197.google.com with SMTP id o2-20020a0568080bc200b002d64d89d460so1315034oik.17
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 08:34:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=PWSd2XUF2mosol4Wi2khE1roXr1zOMVG1AnKT6xRjqU=;
+        b=F28DfIURyGF5Us4LvH/f813Jx6MsPDaZSeUCygvUSz0/tpPRu8EUx4DWDMsHAzSopY
+         KEU3/sCdIgxFfr+NqzAV/XiUuLwRakE9o88T4OSVv2OBaJduDFSgtxzvekZeJbWsHo2I
+         ftaZbgmCo+cvRjtI7c7O9NnkryxOtqEHY2fGQg4SrTe4YWhLhq+4tC77qSkPmFG3bHF4
+         v1riTn+g5MYpwv3Zi2X+rf4lgFl+O1aZvlz2YjyoJoYzA8AyX9iAd+42j9o1VDLAQfP+
+         uQ47oGx76+i8DvmcBod3LMdyNJLGa40cNvbV88so2OXLdAR1tL480x6W5TgCJ/IyezzY
+         PjzQ==
+X-Gm-Message-State: AOAM530ozgQwsvpzccgD6QZYX40CRXAOCFFH0lXG+Uc+TwbQJBIY+yxT
+        1yi+yP54n67d/llSem00alyLkB0ZL56rSwsguy8BoRxBjEc7f8C7jLwgyWLYfM2rvuOeo9BJzI0
+        fqDc1BJtohQn/G9i1
+X-Received: by 2002:a9d:715c:0:b0:5ad:3858:4d54 with SMTP id y28-20020a9d715c000000b005ad38584d54mr16223125otj.214.1646238852766;
+        Wed, 02 Mar 2022 08:34:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxBw2AqrPCsUU+HrPTnHR2yY44LF5FaN0crr7APTArZemj3pcA/s+JkRdkPJTlr0hwX4hI6Ng==
+X-Received: by 2002:a9d:715c:0:b0:5ad:3858:4d54 with SMTP id y28-20020a9d715c000000b005ad38584d54mr16223107otj.214.1646238852555;
+        Wed, 02 Mar 2022 08:34:12 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id n7-20020a4a6107000000b0031c402d8ec9sm8032303ooc.35.2022.03.02.08.34.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 08:34:12 -0800 (PST)
+Date:   Wed, 2 Mar 2022 09:34:09 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH V9 mlx5-next 09/15] vfio: Define device migration
+ protocol v2
+Message-ID: <20220302093409.1aef2b6e.alex.williamson@redhat.com>
+In-Reply-To: <87mti8ibie.fsf@redhat.com>
+References: <20220224142024.147653-1-yishaih@nvidia.com>
+        <20220224142024.147653-10-yishaih@nvidia.com>
+        <87tucgiouf.fsf@redhat.com>
+        <20220302142732.GK219866@nvidia.com>
+        <20220302083440.539a1f33.alex.williamson@redhat.com>
+        <87mti8ibie.fsf@redhat.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 847f1338-f9e5-4552-19c6-08d9fc6a5fca
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3208:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB3208DBAD4CB31DFC2A490BDFB2039@BYAPR12MB3208.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 34uEtObxWWThSbM+0f7UCCh4Oo6N8yqpy/LLZluH2CvzYJvHVNLqiJ0Xppko/Fr75UqFCSx/75xN4qyY+sWE+QIPQ9AOdcFSL/tEPHtBbrXijQ1rErKHQvTzn1s/Km5wVH+twXhW0brzyv7l08C+Jw5PP0JaBsCXHV4gh2RsG46Anwzd29bHwpOsX/7Sxcr67NkedlLBHvNEnkRj9Y5u4fdjHJesB71ggYuPF4CxZ1DAQFjNLnEXTOnuwjpLSMzMbDsQkFX/UALljWMk9E3zExR3dZmpVCH/mLyTHGq0Qa8Vcq+hTofd1w3UoF6e05sa82px2+K5yHgYC4M0vHfuxzQfLTkpcklBbAU5dqhDUnZ1ZJB6iqLgMIZ5Ni1qGBNqptnHG6/KTR4z77pHCYDqQ644VfLErd+b1jxV71pdjMLpnbVnonA2Io5H6ZqxzV4JqFrfynk7j9RlpXHNB238aDhxQ5xnniZ29Y+ZT5PYwCpGuSXMpjMWkr0dddgRprelVBQ4Eaor1Skqw+BQTKNCA6dOYWUqAQ7A1FELgG7iazNIewNmLuwjefHueWIzRipKoD6jNmfumCWsNgQu3iskjSrJHYF/o+vTvVB78kL0rptip4SUL1BJoB0dY344XDT+1RxVNZ0NALsdOnvVTfuiwvlWelFVVmUBdcIU42xhloxokHZI1xP5SmBrR43GUeNM4RVLb1HB5WRHwiiXB+NOgw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(66574015)(6512007)(107886003)(4326008)(66946007)(66476007)(38100700002)(66556008)(2616005)(2906002)(86362001)(5660300002)(8676002)(26005)(83380400001)(186003)(36756003)(6486002)(508600001)(316002)(6916009)(6506007)(1076003)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8xYnTmMgd4zkKEDkhEsc+WR7hOMWCnesZrs4GIApijunLnz4Ie3ac4B6Z5wi?=
- =?us-ascii?Q?AwaCGs2JY2vkACB4i5sD38JGNwUH6HDrB6/VeCuahc78bAI17N26XO2m2zFA?=
- =?us-ascii?Q?6dUnw3MbG2ELrJKVJb9sw3Z8x3AI01tPEgdOPypOFXYzb8ox3bW3aFNFdOmh?=
- =?us-ascii?Q?pj8MahdGUB7WDl2Qt2vFFJ1wOjkfYVginOQIh9dsPn8Shnjdy0uP7URgBH43?=
- =?us-ascii?Q?3p5v6yFJupQhR8XcgDC0+9h+URIvIjSaOKfzLVgqqggrJD+B2bOtjjQyCtb+?=
- =?us-ascii?Q?b2UAMVxwRHTdIoFF340TYofPox97fKW5/SnH6Uf8fDJksz5WQILe01EjWOSL?=
- =?us-ascii?Q?oR4hrseMYd9ViQAzX//Z/GYQjyd7Uv2NScrYX6VEOTPr2cLD/dPvtXiZBEu9?=
- =?us-ascii?Q?3nPxV8s0yx/8VhwFx4ljwjQFtTsnAX0G5HGYDQl2nAnvzKz2VvQKF3pU0m2f?=
- =?us-ascii?Q?a6DC+fqdF7pcx612KTOMABg8XnMvCnnrV4pTBE4b0Ulwkkw0zGQG1QpZuilG?=
- =?us-ascii?Q?4iI6TXnnhaxbYlDmdE55AXOEa58+GF3/HdPNfRt/Sr9L64bDDR1iar0NzmC0?=
- =?us-ascii?Q?SL9GOqqLmkORKPX1ggAJ1+iPOTHu0CdXd8QHKyNbz0llnUNKFdQ24mojzqFR?=
- =?us-ascii?Q?6+bIklcMEG+wocETKBuAARCB6+BSutY/Ggtdv4vCi9UlJwZbzKI28ISJl5ea?=
- =?us-ascii?Q?HauB3R3p8sXbbDhvBNTR6Q2cvMTy5xWGfyc9K5HbWuzISXR5sh8pCVJjNZ7Y?=
- =?us-ascii?Q?b5YkyhbFDePNDEITsQ0dugW4GMv2Z9mE+mfbc8aor/3mLAFLJNDfDhF5elry?=
- =?us-ascii?Q?dqv1bNav9YYzKBF62dfFE+Zcu9ySfnGgQIqWrW57RRnX2HLRPSZVVZ2zoWVy?=
- =?us-ascii?Q?WtsQpSGMQEVDH8ie53kPDfduCspY9qfEwx5Jj6J7y+fYRb125K8yJfb1Zdmr?=
- =?us-ascii?Q?Xi5+rBKDVhbrAb4TDfUx3GYFFGUcD/cOA18we07hc7Vf2ODHX8DUwUJUbx2j?=
- =?us-ascii?Q?famBz8kUS6iMgBQlHfgOUabqU4Kvt8MHDWqb8p4S5kPJaieSG0uKcn37xswz?=
- =?us-ascii?Q?MXKQzryOriZw9w/dUo75kydIoaZlIFUdOob9es033v/Wyc+n9DnZr9OkItd1?=
- =?us-ascii?Q?Sv1QyajzIoyY1S+fHBOn4oKuPiAmjw0m7qk3JPosjqaHdzCyKSd1437pLKlo?=
- =?us-ascii?Q?Jo89/1SlMQuU+Dv0wwlrvCr4qGxdFWi/CIlYOVBxARlwyvmTmTL1OuIdu7LK?=
- =?us-ascii?Q?yYvFCnblqXvWuLxzPh7I28yWkcVKuCLdW3Xx8IQJrSxH8RRSDo7ZJAzeEfpz?=
- =?us-ascii?Q?ZpqKqkp3OHKhpy/BZQJ/KcE2MUfoWYCOGOn+PTkbwuhpxzxqyfuEECaRw0Wp?=
- =?us-ascii?Q?wKshXuM6Khh8sJcQ+gPrhC1wgQfw+8KK9UvgT6gbbMp9G0yT9bel6ayg+BR+?=
- =?us-ascii?Q?M+MBpsF2d+fL6qhjVfPw6JEuJvTzfl2b4ajGah9C15z9/rzZu2SQ+PyXiPnM?=
- =?us-ascii?Q?uwUMHe8wP9oQhAlOgLR5YLIlZIXSE4K6On1BgXogHk4V9n78Hck4Nk7ACEma?=
- =?us-ascii?Q?NVoWoKatGkQwGstFsddFRu6LtGrhhgnKc4+RZZG+WImeCRj1net/otB8VNU2?=
- =?us-ascii?Q?8iPWy7igqYDHDDLl2Ka5Ht8=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 847f1338-f9e5-4552-19c6-08d9fc6a5fca
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 16:33:25.4232
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Udh8OSN6Kq+zk3bAFBkOyYZXnXpoLoQIrMaPXhQ5K08AV0cJIhzHdi6wPU/1kFf+eUff8uOufULW8ooDjIC4wQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3208
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+On Wed, 02 Mar 2022 17:07:21 +0100
+Cornelia Huck <cohuck@redhat.com> wrote:
 
-Add a test that verifies operation of L3 HW statistics.
+> On Wed, Mar 02 2022, Alex Williamson <alex.williamson@redhat.com> wrote:
+> 
+> > On Wed, 2 Mar 2022 10:27:32 -0400
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >  
+> >> On Wed, Mar 02, 2022 at 12:19:20PM +0100, Cornelia Huck wrote:  
+> >> > > +/*
+> >> > > + * vfio_mig_get_next_state - Compute the next step in the FSM
+> >> > > + * @cur_fsm - The current state the device is in
+> >> > > + * @new_fsm - The target state to reach
+> >> > > + * @next_fsm - Pointer to the next step to get to new_fsm
+> >> > > + *
+> >> > > + * Return 0 upon success, otherwise -errno
+> >> > > + * Upon success the next step in the state progression between cur_fsm and
+> >> > > + * new_fsm will be set in next_fsm.    
+> >> > 
+> >> > What about non-success? Can the caller make any assumption about
+> >> > next_fsm in that case? Because...    
+> >> 
+> >> I checked both mlx5 and acc, both properly ignore the next_fsm value
+> >> on error. This oddness aros when Alex asked to return an errno instead
+> >> of the state value.  
+> >
+> > Right, my assertion was that only the driver itself should be able to
+> > transition to the ERROR state.  vfio_mig_get_next_state() should never
+> > advise the driver to go to the error state, it can only report that a
+> > transition is invalid.  The driver may stay in the current state if an
+> > error occurs here, which is why we added the ability to get the device
+> > state.  Thanks,
+> >
+> > Alex  
+> 
+> So, should the function then write anything to next_fsm if it returns
+> -errno? (Maybe I'm misunderstanding.) Or should the caller always expect
+> that something may be written to new_fsm, and simply only look at it if
+> the function returns success?
 
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../selftests/net/forwarding/hw_stats_l3.sh   | 332 ++++++++++++++++++
- 1 file changed, 332 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/hw_stats_l3.sh
+Note that this function doesn't actually transition the device to
+next_fsm, it's only informing the driver what the next state is.
+Therefore I think it's reasonable to expect that the caller is never
+going to use it's actual internal device state for next_fsm.  So I
+don't really see a case where we need to worry about preserving
+next_fsm in the error condition.  Thanks,
 
-diff --git a/tools/testing/selftests/net/forwarding/hw_stats_l3.sh b/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-new file mode 100755
-index 000000000000..1c11c4256d06
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-@@ -0,0 +1,332 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# +--------------------+                     +----------------------+
-+# | H1                 |                     |                   H2 |
-+# |                    |                     |                      |
-+# |          $h1.200 + |                     | + $h2.200            |
-+# |     192.0.2.1/28 | |                     | | 192.0.2.18/28      |
-+# | 2001:db8:1::1/64 | |                     | | 2001:db8:2::1/64   |
-+# |                  | |                     | |                    |
-+# |              $h1 + |                     | + $h2                |
-+# |                  | |                     | |                    |
-+# +------------------|-+                     +-|--------------------+
-+#                    |                         |
-+# +------------------|-------------------------|--------------------+
-+# | SW               |                         |                    |
-+# |                  |                         |                    |
-+# |             $rp1 +                         + $rp2               |
-+# |                  |                         |                    |
-+# |         $rp1.200 +                         + $rp2.200           |
-+# |     192.0.2.2/28                             192.0.2.17/28      |
-+# | 2001:db8:1::2/64                             2001:db8:2::2/64   |
-+# |                                                                 |
-+# +-----------------------------------------------------------------+
-+
-+ALL_TESTS="
-+	ping_ipv4
-+	ping_ipv6
-+	test_stats_rx_ipv4
-+	test_stats_tx_ipv4
-+	test_stats_rx_ipv6
-+	test_stats_tx_ipv6
-+	respin_enablement
-+	test_stats_rx_ipv4
-+	test_stats_tx_ipv4
-+	test_stats_rx_ipv6
-+	test_stats_tx_ipv6
-+	reapply_config
-+	ping_ipv4
-+	ping_ipv6
-+	test_stats_rx_ipv4
-+	test_stats_tx_ipv4
-+	test_stats_rx_ipv6
-+	test_stats_tx_ipv6
-+	test_stats_report_rx
-+	test_stats_report_tx
-+	test_destroy_enabled
-+	test_double_enable
-+"
-+NUM_NETIFS=4
-+source lib.sh
-+
-+h1_create()
-+{
-+	simple_if_init $h1
-+	vlan_create $h1 200 v$h1 192.0.2.1/28 2001:db8:1::1/64
-+	ip route add 192.0.2.16/28 vrf v$h1 nexthop via 192.0.2.2
-+	ip -6 route add 2001:db8:2::/64 vrf v$h1 nexthop via 2001:db8:1::2
-+}
-+
-+h1_destroy()
-+{
-+	ip -6 route del 2001:db8:2::/64 vrf v$h1 nexthop via 2001:db8:1::2
-+	ip route del 192.0.2.16/28 vrf v$h1 nexthop via 192.0.2.2
-+	vlan_destroy $h1 200
-+	simple_if_fini $h1
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2
-+	vlan_create $h2 200 v$h2 192.0.2.18/28 2001:db8:2::1/64
-+	ip route add 192.0.2.0/28 vrf v$h2 nexthop via 192.0.2.17
-+	ip -6 route add 2001:db8:1::/64 vrf v$h2 nexthop via 2001:db8:2::2
-+}
-+
-+h2_destroy()
-+{
-+	ip -6 route del 2001:db8:1::/64 vrf v$h2 nexthop via 2001:db8:2::2
-+	ip route del 192.0.2.0/28 vrf v$h2 nexthop via 192.0.2.17
-+	vlan_destroy $h2 200
-+	simple_if_fini $h2
-+}
-+
-+router_rp1_200_create()
-+{
-+	ip link add name $rp1.200 up \
-+		link $rp1 addrgenmode eui64 type vlan id 200
-+	ip address add dev $rp1.200 192.0.2.2/28
-+	ip address add dev $rp1.200 2001:db8:1::2/64
-+	ip stats set dev $rp1.200 l3_stats on
-+}
-+
-+router_rp1_200_destroy()
-+{
-+	ip stats set dev $rp1.200 l3_stats off
-+	ip address del dev $rp1.200 2001:db8:1::2/64
-+	ip address del dev $rp1.200 192.0.2.2/28
-+	ip link del dev $rp1.200
-+}
-+
-+router_create()
-+{
-+	ip link set dev $rp1 up
-+	router_rp1_200_create
-+
-+	ip link set dev $rp2 up
-+	vlan_create $rp2 200 "" 192.0.2.17/28 2001:db8:2::2/64
-+}
-+
-+router_destroy()
-+{
-+	vlan_destroy $rp2 200
-+	ip link set dev $rp2 down
-+
-+	router_rp1_200_destroy
-+	ip link set dev $rp1 down
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	rp1=${NETIFS[p2]}
-+
-+	rp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	rp1mac=$(mac_get $rp1)
-+	rp2mac=$(mac_get $rp2)
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+
-+	router_create
-+
-+	forwarding_enable
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	forwarding_restore
-+
-+	router_destroy
-+
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+ping_ipv4()
-+{
-+	ping_test $h1.200 192.0.2.18 " IPv4"
-+}
-+
-+ping_ipv6()
-+{
-+	ping_test $h1.200 2001:db8:2::1 " IPv6"
-+}
-+
-+get_l3_stat()
-+{
-+	local selector=$1; shift
-+
-+	ip -j stats show dev $rp1.200 group offload subgroup l3_stats |
-+		  jq '.[0].stats64.'$selector
-+}
-+
-+send_packets_rx_ipv4()
-+{
-+	# Send 21 packets instead of 20, because the first one might trap and go
-+	# through the SW datapath, which might not bump the HW counter.
-+	$MZ $h1.200 -c 21 -d 20msec -p 100 \
-+	    -a own -b $rp1mac -A 192.0.2.1 -B 192.0.2.18 \
-+	    -q -t udp sp=54321,dp=12345
-+}
-+
-+send_packets_rx_ipv6()
-+{
-+	$MZ $h1.200 -6 -c 21 -d 20msec -p 100 \
-+	    -a own -b $rp1mac -A 2001:db8:1::1 -B 2001:db8:2::1 \
-+	    -q -t udp sp=54321,dp=12345
-+}
-+
-+send_packets_tx_ipv4()
-+{
-+	$MZ $h2.200 -c 21 -d 20msec -p 100 \
-+	    -a own -b $rp2mac -A 192.0.2.18 -B 192.0.2.1 \
-+	    -q -t udp sp=54321,dp=12345
-+}
-+
-+send_packets_tx_ipv6()
-+{
-+	$MZ $h2.200 -6 -c 21 -d 20msec -p 100 \
-+	    -a own -b $rp2mac -A 2001:db8:2::1 -B 2001:db8:1::1 \
-+	    -q -t udp sp=54321,dp=12345
-+}
-+
-+___test_stats()
-+{
-+	local dir=$1; shift
-+	local prot=$1; shift
-+
-+	local a
-+	local b
-+
-+	a=$(get_l3_stat ${dir}.packets)
-+	send_packets_${dir}_${prot}
-+	"$@"
-+	b=$(busywait "$TC_HIT_TIMEOUT" until_counter_is ">= $a + 20" \
-+		       get_l3_stat ${dir}.packets)
-+	check_err $? "Traffic not reflected in the counter: $a -> $b"
-+}
-+
-+__test_stats()
-+{
-+	local dir=$1; shift
-+	local prot=$1; shift
-+
-+	RET=0
-+	___test_stats "$dir" "$prot"
-+	log_test "Test $dir packets: $prot"
-+}
-+
-+test_stats_rx_ipv4()
-+{
-+	__test_stats rx ipv4
-+}
-+
-+test_stats_tx_ipv4()
-+{
-+	__test_stats tx ipv4
-+}
-+
-+test_stats_rx_ipv6()
-+{
-+	__test_stats rx ipv6
-+}
-+
-+test_stats_tx_ipv6()
-+{
-+	__test_stats tx ipv6
-+}
-+
-+# Make sure everything works well even after stats have been disabled and
-+# reenabled on the same device without touching the L3 configuration.
-+respin_enablement()
-+{
-+	log_info "Turning stats off and on again"
-+	ip stats set dev $rp1.200 l3_stats off
-+	ip stats set dev $rp1.200 l3_stats on
-+}
-+
-+# For the initial run, l3_stats is enabled on a completely set up netdevice. Now
-+# do it the other way around: enabling the L3 stats on an L2 netdevice, and only
-+# then apply the L3 configuration.
-+reapply_config()
-+{
-+	log_info "Reapplying configuration"
-+
-+	router_rp1_200_destroy
-+
-+	ip link add name $rp1.200 link $rp1 addrgenmode none type vlan id 200
-+	ip stats set dev $rp1.200 l3_stats on
-+	ip link set dev $rp1.200 up addrgenmode eui64
-+	ip address add dev $rp1.200 192.0.2.2/28
-+	ip address add dev $rp1.200 2001:db8:1::2/64
-+}
-+
-+__test_stats_report()
-+{
-+	local dir=$1; shift
-+	local prot=$1; shift
-+
-+	local a
-+	local b
-+
-+	RET=0
-+
-+	a=$(get_l3_stat ${dir}.packets)
-+	send_packets_${dir}_${prot}
-+	ip address flush dev $rp1.200
-+	b=$(busywait "$TC_HIT_TIMEOUT" until_counter_is ">= $a + 20" \
-+		       get_l3_stat ${dir}.packets)
-+	check_err $? "Traffic not reflected in the counter: $a -> $b"
-+	log_test "Test ${dir} packets: stats pushed on loss of L3"
-+
-+	ip stats set dev $rp1.200 l3_stats off
-+	ip link del dev $rp1.200
-+	router_rp1_200_create
-+}
-+
-+test_stats_report_rx()
-+{
-+	__test_stats_report rx ipv4
-+}
-+
-+test_stats_report_tx()
-+{
-+	__test_stats_report tx ipv4
-+}
-+
-+test_destroy_enabled()
-+{
-+	RET=0
-+
-+	ip link del dev $rp1.200
-+	router_rp1_200_create
-+
-+	log_test "Destroy l3_stats-enabled netdev"
-+}
-+
-+test_double_enable()
-+{
-+	RET=0
-+	___test_stats rx ipv4 \
-+		ip stats set dev $rp1.200 l3_stats on
-+	log_test "Test stat retention across a spurious enablement"
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.33.1
+Alex
 
