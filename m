@@ -2,99 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBE74CA4B5
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 13:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AD6C4CA4C0
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 13:24:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbiCBMUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 07:20:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
+        id S238990AbiCBMZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 07:25:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241727AbiCBMUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 07:20:46 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FEA5AED4
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 04:20:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646223603; x=1677759603;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gWlj7uy8VEgdt4dzlsDgPKZyDsEyU2DrQxElz9d/1V8=;
-  b=ChyKargIHL3lv2aWcW15zWry9V8+YyLam0uY6/ywagWBi+47IA8O/IJx
-   QMGJwW0Eijm81hfKn2cKio1IpPmBNqp2rkPrnOO8+tkvhRjxkjUFik9mX
-   XM/4j1YBrbFqafGtOQ3JCUqlW8HtHvZQX02U9oGLz9dNdtzxlYTFN6CSy
-   mWixPL0VTlU2aLYaUeSO4eE0Lh/8/6jGoEm1WsnQHaszdyoNum0Nq2cc9
-   on0pHICkZdD4zgWb4+UWqwwMBsznBcSswUzN9pCnqspigliIubsINMiZF
-   asluWXDdvcpYe17RwlU3YY/VwwSFIXFR0P+CUiBgdP5dHIv9kw4pf2Kbf
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="234001496"
-X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
-   d="scan'208";a="234001496"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 04:20:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,148,1643702400"; 
-   d="scan'208";a="493519807"
-Received: from lkp-server02.sh.intel.com (HELO e9605edfa585) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 02 Mar 2022 04:20:00 -0800
-Received: from kbuild by e9605edfa585 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nPNxX-0001OC-O2; Wed, 02 Mar 2022 12:19:59 +0000
-Date:   Wed, 2 Mar 2022 20:19:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
-Subject: Re: [PATCH 3/3] mv88e6xxx: Offload the local_receive flag
-Message-ID: <202203022050.4XOWNDtx-lkp@intel.com>
-References: <20220301123104.226731-4-mattias.forsblad+netdev@gmail.com>
+        with ESMTP id S234874AbiCBMZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 07:25:25 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E218C1C8D;
+        Wed,  2 Mar 2022 04:24:40 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id o8so1477248pgf.9;
+        Wed, 02 Mar 2022 04:24:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cDTg97giT1w4UkqUHDJQChQ0iXlcc4URzPQyrsb+epo=;
+        b=U3lVbRMIfoWU+t87B4a2k2mgM8CkO2PEG90/U3hxRhx5a7LCpwNPQLz9zVBA/aWpc0
+         780KVNWRLuHbVNqjc/IypFEOf2qquswJquVo1gMLLPYXR6MHqFapZefKfFZnmT1SLtio
+         IlPNcfhBuxuCQYoJ0QHT/jcWgxVsXaLmc2WrbT1B38e/ZIHTj6SmL+UhJCAhina6zP5X
+         yNU/f20G6tM0WrKKJX/+nvqm+1l3RvP4gdP/zhtT1Z2YrSndoJaxkhgOkVTFhUwe+YL7
+         5+Nm94CE3vwKc2fHEeWitVKtxuvmCMX5QwiearRNDBkWRYbKbv4aZXfm3wRauu84qtic
+         0ziA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cDTg97giT1w4UkqUHDJQChQ0iXlcc4URzPQyrsb+epo=;
+        b=5hL8Yd3tKPSdbK16dW0s1hglxR8QCpw30fCIwwN+wYFrn1hETY8Ka+3GnoO7YwmdQl
+         6qCG1xoqTaI5l3YY2vukuPHgws6RGL5ahckdGIBgqmfiZ8dvJfu+imJpkU2GobQ9cISy
+         NuQdsqLtAGog/xMQgSELedIl8HyUNgne50nxyBm4ubd5mB2Ht87mugsEDBLBivj68fJ8
+         o7ui/8l5pHAxAuDXYfUSgi2m43X7mL00fGo9uZWnqhA5p3eyI4RD3216pJ0BpQhQBATd
+         6z8tqoqFXK52+4qGPgXkgIiJXNLqwFL21Um4rOA75iZY0OCFg1Fl0i5UNQ7iFSvNxGd6
+         Znnw==
+X-Gm-Message-State: AOAM532e8pwfKNLE1QWHI5QVMuGvn3NBW5/iZaQEhPLBpVyHumvC1YJc
+        K30HcHUpiG9IvqfuzaKIgw==
+X-Google-Smtp-Source: ABdhPJwEA1XwhWCIzafS1YdEePdYyPSB+32gTHUngKk5ncC0ydYcP6rusXTAUGm49fRiKPBfhlZcIw==
+X-Received: by 2002:a62:ddcc:0:b0:4e1:c248:d4a7 with SMTP id w195-20020a62ddcc000000b004e1c248d4a7mr32718797pff.63.1646223879848;
+        Wed, 02 Mar 2022 04:24:39 -0800 (PST)
+Received: from localhost.localdomain ([8.21.11.252])
+        by smtp.gmail.com with ESMTPSA id gb9-20020a17090b060900b001beecaf986dsm3121105pjb.52.2022.03.02.04.24.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 04:24:39 -0800 (PST)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     m.grzeschik@pengutronix.de, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH v2] net: arcnet: com20020: Fix null-ptr-deref in com20020pci_probe()
+Date:   Wed,  2 Mar 2022 20:24:23 +0800
+Message-Id: <20220302122423.4029168-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301123104.226731-4-mattias.forsblad+netdev@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mattias,
+During driver initialization, the pointer of card info, i.e. the
+variable 'ci' is required. However, the definition of
+'com20020pci_id_table' reveals that this field is empty for some
+devices, which will cause null pointer dereference when initializing
+these devices.
 
-Thank you for the patch! Yet something to improve:
+The following log reveals it:
 
-[auto build test ERROR on net-next/master]
+[    3.973806] KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[    3.973819] RIP: 0010:com20020pci_probe+0x18d/0x13e0 [com20020_pci]
+[    3.975181] Call Trace:
+[    3.976208]  local_pci_probe+0x13f/0x210
+[    3.977248]  pci_device_probe+0x34c/0x6d0
+[    3.977255]  ? pci_uevent+0x470/0x470
+[    3.978265]  really_probe+0x24c/0x8d0
+[    3.978273]  __driver_probe_device+0x1b3/0x280
+[    3.979288]  driver_probe_device+0x50/0x370
 
-url:    https://github.com/0day-ci/linux/commits/Mattias-Forsblad/bridge-dsa-switchdev-mv88e6xxx-Implement-local_receive-bridge-flag/20220301-203159
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 1e385c08249e4822e0f425efde1896d3933d1471
-config: x86_64-randconfig-a002-20220124 (https://download.01.org/0day-ci/archive/20220302/202203022050.4XOWNDtx-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/fcf70df585fafd4afbec12c1597bfc62c3245c32
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Mattias-Forsblad/bridge-dsa-switchdev-mv88e6xxx-Implement-local_receive-bridge-flag/20220301-203159
-        git checkout fcf70df585fafd4afbec12c1597bfc62c3245c32
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Fix this by checking whether the 'ci' is a null pointer first.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "br_local_receive_enabled" [drivers/net/dsa/mv88e6xxx/mv88e6xxx.ko] undefined!
-
+Fixes: 8c14f9c70327 ("ARCNET: add com20020 PCI IDs with metadata")
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Changes in v2:
+    - Add 'fixes' tag
+---
+ drivers/net/arcnet/com20020-pci.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/arcnet/com20020-pci.c b/drivers/net/arcnet/com20020-pci.c
+index 6382e1937cca..c580acb8b1d3 100644
+--- a/drivers/net/arcnet/com20020-pci.c
++++ b/drivers/net/arcnet/com20020-pci.c
+@@ -138,6 +138,9 @@ static int com20020pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
+ 
+ 	ci = (struct com20020_pci_card_info *)id->driver_data;
++	if (!ci)
++		return -EINVAL;
++
+ 	priv->ci = ci;
+ 	mm = &ci->misc_map;
+ 
+-- 
+2.25.1
+
