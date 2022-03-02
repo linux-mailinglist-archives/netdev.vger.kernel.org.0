@@ -2,39 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FB964CA40B
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:44:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F26644CA412
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:45:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240469AbiCBLpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 06:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
+        id S241579AbiCBLpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 06:45:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235218AbiCBLpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:45:04 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611DA6551;
-        Wed,  2 Mar 2022 03:44:19 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V62Zmsp_1646221456;
-Received: from 30.225.28.138(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V62Zmsp_1646221456)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 02 Mar 2022 19:44:17 +0800
-Message-ID: <cc0678b3-304c-0841-db15-ffb2117b63f6@linux.alibaba.com>
-Date:   Wed, 2 Mar 2022 19:44:15 +0800
+        with ESMTP id S241576AbiCBLpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:45:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FDDAC070;
+        Wed,  2 Mar 2022 03:45:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A676961876;
+        Wed,  2 Mar 2022 11:45:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D93C004E1;
+        Wed,  2 Mar 2022 11:45:01 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DPvV7ZIO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646221498;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jKc7MGtOlemLQBMVvgMBuRZXG8kkFVyuHdkwiw9Ht6g=;
+        b=DPvV7ZIO9o6sq8lvzTqsDDC84fozhr05iE2RG7Qko7/wZLa8sGt7BnXIkyXZdzUWtDYHKK
+        kDER9R4cfKR3EsNVMVwn0hgApBG7J7sHRC1yAEeAT3U2a7GC77hegBq02xr9f843c4BhZe
+        Uvorml9W9xUYXrc1SpM2AFMxNg2AaXo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 26b0cb37 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 2 Mar 2022 11:44:57 +0000 (UTC)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2dbd97f9bfcso13827427b3.9;
+        Wed, 02 Mar 2022 03:44:56 -0800 (PST)
+X-Gm-Message-State: AOAM532G28bN2WEKU3By34V3r3WVng0SWE2BE4MOS5fyWAb6yMsdJqwZ
+        Sn0LWLYdpwVo6/YtL/tB2XWxiKzH6/wXrKOzOT0=
+X-Google-Smtp-Source: ABdhPJxws4pfBz+BuT+rmpnNd8+cc6rFxmT3Lf+5UQ8eG5n64VKU5po/5Iv6gzzsSXHheRzQBsa20adXgGJUTjN6NCI=
+X-Received: by 2002:a81:8984:0:b0:2db:6b04:be0c with SMTP id
+ z126-20020a818984000000b002db6b04be0cmr16169292ywf.2.1646221495956; Wed, 02
+ Mar 2022 03:44:55 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [PATCH net] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1646140644-121649-1-git-send-email-alibuda@linux.alibaba.com>
-In-Reply-To: <1646140644-121649-1-git-send-email-alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+References: <20220301231038.530897-1-Jason@zx2c4.com> <20220301231038.530897-4-Jason@zx2c4.com>
+ <20220302033314-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220302033314-mutt-send-email-mst@kernel.org>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 2 Mar 2022 12:44:45 +0100
+X-Gmail-Original-Message-ID: <CAHmME9r6zXw6cByqpbhEBKkvpejrLqGMn55E-uOCQ0V1mQi1LQ@mail.gmail.com>
+Message-ID: <CAHmME9r6zXw6cByqpbhEBKkvpejrLqGMn55E-uOCQ0V1mQi1LQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] wireguard: device: clear keys on VM fork
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>, Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Theodore Ts'o" <tytso@mit.edu>, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -42,57 +70,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Michael,
 
+On Wed, Mar 2, 2022 at 9:36 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> Catastrophic cryptographic failure sounds bad :(
+> So in another thread we discussed that there's a race with this
+> approach, and we don't know how big it is. Question is how expensive
+> it would be to fix it properly checking for fork after every use of
+> key+nonce and before transmitting it. I did a quick microbenchmark
+> and it did not seem too bad - care posting some numbers?
 
-在 2022/3/1 下午9:17, D. Wythe 写道:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> Remove connections from link group is not synchronous with handling
-> SMC_LLC_DELETE_RKEY, which means that even the number of connections is
-> less that SMC_RMBS_PER_LGR_MAX, it does not mean that the connection can
-> register rtoken successfully later, in other words, the rtoken entry may
-> have not been released. This will cause an unexpected
-> SMC_CLC_DECL_ERR_REGRMB to be reported, and then ths smc connection have
-> to fallback to TCP.
-> 
-> We found that the main reason for the problem dues to following execution
-> sequence:
-> 
-> Server Conn A:           Server Conn B:			Client Conn B:
-> 
-> smc_lgr_unregister_conn
->                          smc_lgr_register_conn
->                          smc_clc_send_accept     ->
->                                                          smc_rtoken_add
-> smcr_buf_unuse
-> 		->		Client Conn A:
-> 				smc_rtoken_delete
-> 
-> smc_lgr_unregister_conn() makes current link available to assigned to new
-> incoming connection, while smcr_buf_unuse() has not executed yet, which
-> means that smc_rtoken_add may fail because of insufficient rtoken_entry,
-> reversing their execution order will avoid this problem.
-> 
-> Fixes: 3e034725c0d8 ("net/smc: common functions for RMBs and send buffers")
-> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-> ---
->   net/smc/smc_core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index 2f321d2..c9c3a68 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -1161,8 +1161,8 @@ void smc_conn_free(struct smc_connection *conn)
->   			cancel_work_sync(&conn->abort_work);
->   	}
->   	if (!list_empty(&lgr->list)) {
-> -		smc_lgr_unregister_conn(conn);
->   		smc_buf_unuse(conn, lgr); /* allow buffer reuse */
-> +		smc_lgr_unregister_conn(conn);
->   	}
->   
->   	if (!lgr->conns_num)
+I followed up in that thread, which is a larger one, so it might be
+easiest to keep discussion there. My response to you here is the same
+as it was over there. :)
 
-I have two patch for this issue, and i missed one, I'll post it in v2 
-series.
+https://lore.kernel.org/lkml/CAHmME9pf-bjnZuweoLqoFEmPy1OK7ogEgGEAva1T8uVTufhCuw@mail.gmail.com/
+
+Jason
