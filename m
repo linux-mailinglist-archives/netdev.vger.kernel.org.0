@@ -2,54 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 080AA4CB00A
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 21:39:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F0E4CB062
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 21:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243567AbiCBUj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 15:39:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        id S244842AbiCBU7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 15:59:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239929AbiCBUjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 15:39:54 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD05C46654;
-        Wed,  2 Mar 2022 12:39:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Lnsq5ECKK2HtO41PTE0g9xeHGI0dZEMSI8nTo7bFmeg=; b=dYjKhLD9ma//TONGDNJRWUs+md
-        3SDdsoIxiJ5l4UWOYksN3g55iM6o1eOhNX+oRBHgSrSQYFcmXHf0PsVB0zZ1DypQcjXUX0ZdqtkCo
-        96rHs2cdKKCZKY4K1vzWCDgX1EluXJdyez9dyUJSz0rU0MXF3lyYH6ElnfdBRNs3cOqJLTGDVjpFN
-        X8s4pIh2pJoqp8DO59gXBx8bew0U9zJil/e6NSdzNbXamGycdfEo/O2oD6IpdsCZcxsFjsfMnoPX1
-        FQPSH9IcZGjpoGoWGdIFIimr0L4NNUGAby5p2o+EguhUGwjalFbiwBV/5NMn4VBNLpVFzaEsmAiD4
-        JQkhx/6Q==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nPVkT-0046vs-HN; Wed, 02 Mar 2022 20:39:01 +0000
-Date:   Wed, 2 Mar 2022 12:39:01 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Yan Zhu <zhuyan34@huawei.com>
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        keescook@chromium.org, kpsingh@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liucheng32@huawei.com, netdev@vger.kernel.org,
-        nixiaoming@huawei.com, songliubraving@fb.com,
-        xiechengliang1@huawei.com, yhs@fb.com, yzaikin@google.com,
-        zengweilin@huawei.com
-Subject: Re: [PATCH v3 sysctl-next] bpf: move bpf sysctls from
- kernel/sysctl.c to bpf module
-Message-ID: <Yh/V5QN1OhN9IKsI@bombadil.infradead.org>
-References: <Yh1dtBTeRtjD0eGp@bombadil.infradead.org>
- <20220302020412.128772-1-zhuyan34@huawei.com>
+        with ESMTP id S232801AbiCBU7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 15:59:08 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668D7D2050;
+        Wed,  2 Mar 2022 12:58:24 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2dbfe58670cso33061237b3.3;
+        Wed, 02 Mar 2022 12:58:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gUqcADQZPQvyqaonjnYhl1TaoPMyKV8P7rze27ZP3KI=;
+        b=N5hUOPiLewMUCD+5KaZBMFUn/haOQVDaN2+TFsgiefTgfSDB3L0BGarLhWkc3S3e6R
+         hSaSRV2kSmo2m2GWw0aJ07cybXs2J2cF2RvWIowhPhzEBmvVZ7p5g4YDUzytYOgV0bsu
+         aGafKhgfGfEdHlszoLI2vpItjmasBo6wNfuoRH968Z8To3WUqKyos+4fppD1hCZckv+8
+         d6BtmIXTWZdfrnXXjKMUmU/nCPIqL0OTGzLtMAEbLh7W6+RJShWDachnrSA1yRwB7cuP
+         g28TfoEa9XbBDn7BocwY6DlDEMKrHYBKXR4dJdjY+VQZYC7M0To0hft+yr7OKyAic7u9
+         flvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gUqcADQZPQvyqaonjnYhl1TaoPMyKV8P7rze27ZP3KI=;
+        b=FceiW4m0uXcOdfQUIxnVgU2WUgQ3cTIBBXXvifDduLgTuQ/KCNmxKUT7Jd51RdHmSR
+         apNX2aWMSZUxmZyNaL2tdDh3vV1mPDIVBoiktpos+LYfd18bLlD58P/9iV36Hh78lHv6
+         EW69eV5gJb50uhwInXluJZixyXpSZ8Nx3fx1fytLtjn2eFv9B4kAjMDCW0oMdCZ7X+KA
+         srg6uXJhGh7eQUA71FUU5zasLSO3avXVFQePXoqyKZO5cvwhg/p5+DQLbEtbNVXN/l8q
+         Fn4xFbOHhrUD4dvMB+K52vGCki5EdGfjayAGvr6pjpXZJUw2CQQ9YTnxOsXq3wNyRTxK
+         uKmQ==
+X-Gm-Message-State: AOAM531pu54OjCCPzm9Yyb4oCR5/VLvjLVBQfyERnlYh6WiSLQk15cQu
+        i0LPoXF/8s2Tg2qhxvZdqv6k3W+3vbFcFcDOpEhGpob2vAk=
+X-Google-Smtp-Source: ABdhPJyhnP/LKgkQf+hwmnQFbFT/ZhPe40O2TgJ+0PIiJBYrw0Hr8AGUZNoc/OSbiGZUEN7gVRf9rsSVpJ0Uk7OiJ2M=
+X-Received: by 2002:a81:6357:0:b0:2d7:2af4:6e12 with SMTP id
+ x84-20020a816357000000b002d72af46e12mr31920195ywb.317.1646254703556; Wed, 02
+ Mar 2022 12:58:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220302020412.128772-1-zhuyan34@huawei.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <20220302183515.448334-1-caleb.connolly@linaro.org> <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
+In-Reply-To: <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 2 Mar 2022 12:58:12 -0800
+Message-ID: <CABBYNZJPN6o-v2OpAXND0+UfwB3AQL2=r6CDQ0S8PktWZqijMw@mail.gmail.com>
+Subject: Re: [PATCH v2] bluetooth: hci_event: don't print an error on vendor events
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Caleb Connolly <caleb.connolly@linaro.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,18 +71,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 10:04:12AM +0800, Yan Zhu wrote:
-> We're moving sysctls out of kernel/sysctl.c as its a mess. We
-> already moved all filesystem sysctls out. And with time the goal is
-> to move all sysctls out to their own susbsystem/actual user.
-> 
-> kernel/sysctl.c has grown to an insane mess and its easy to run
-> into conflicts with it. The effort to move them out is part of this.
-> 
-> Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
+Hi Marcel, Caleb,
 
-Daniel, let me know if this makes more sense now, and if so I can
-offer take it through sysctl-next to avoid conflicts more sysctl knobs
-get moved out from kernel/sysctl.c.
+On Wed, Mar 2, 2022 at 11:20 AM Marcel Holtmann <marcel@holtmann.org> wrote:
+>
+> Hi Caleb,
+>
+> > Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
+> > some devices see warnings being printed for vendor events, e.g.
+> >
+> > [   75.806141] Bluetooth: hci0: setting up wcn399x
+> > [   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
+> > [   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
+> > [   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
+> > [   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
+> > [   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
+> > [   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
+> > [   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
+> > [   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
+> > [   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+> > [   77.198451] Bluetooth: hci0: QCA setup on UART is completed
+> >
+> > Avoid printing the event length warning for vendor events, this reverts
+> > to the previous behaviour where such warnings weren't printed.
+> >
+> > Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
+> > Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+> > ---
+> > Changes since v1:
+> > * Don't return early! Vendor events still get parsed despite the
+> >   warning. I should have looked a little more closely at that...
+> > ---
+> > net/bluetooth/hci_event.c | 2 +-
+> > 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> patch has been applied to bluetooth-stable tree.
+>
+> Regards
+>
+> Marcel
 
-  Luis
+I believe a proper fix has already been pushed to bluetooth-next:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=314d8cd2787418c5ac6b02035c344644f47b292b
+
+HCI_EV_VENDOR shall be assumed to be variable length and that also
+uses bt_dev_warn_ratelimited to avoid spamming the logs in case it
+still fails.
+
+-- 
+Luiz Augusto von Dentz
