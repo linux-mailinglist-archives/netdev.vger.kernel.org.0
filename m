@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BFE4C9B1B
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 03:20:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 445AC4C9B1E
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 03:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239085AbiCBCU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 21:20:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S239080AbiCBCWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 21:22:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239080AbiCBCUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 21:20:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783328BF1E
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 18:20:13 -0800 (PST)
+        with ESMTP id S234174AbiCBCWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 21:22:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903458BF4A
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 18:21:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20C53B81EF5
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 02:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AF8C4C340F0;
-        Wed,  2 Mar 2022 02:20:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E8C6168F
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 02:21:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 588FFC340EE;
+        Wed,  2 Mar 2022 02:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646187610;
-        bh=6iD7KG3Zh6je3Bsu/wWTaq+O05aJUWfWI32GoOk0E7M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=F+QNUG/iil1UQVqp6FRQj8ebs17VSwLd0NN29bmikKeWQLg4qG9w+dnN3F1oZE7cv
-         EnIA/CTclhZySAkQKot4KA8jCsRv4hBwsVF7IorPwmkB0P3cXPdXb3+guNqZAT4B2+
-         qQH6E3wUy6/dZyS+RQN8nzwnJLl8vvzY2DDv8ceU4qDxMqAYL2UM/i14zuIa2Vb2GQ
-         JuoZKQ6wV+zmCkSyyq3QRkdWrJdmUGTKmleizn3TRlHYhv3ZfA3+ZkAWkwrTDDSnx1
-         6slH6Z5pImaB1zS8mGCW98slR50BQe8CqguxfS+eraaiP0ZcPS6y9sc82MTig5vk4Z
-         VO7a2WVNs2nQQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 910ACEAC096;
-        Wed,  2 Mar 2022 02:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1646187714;
+        bh=wYSwITO/MLJSe6g515C8Pm7/Xx6z+IZ0RirKja5rQCc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Th40gYxCzIPGb1cPE11+htotzzV4JE7CkwpShHSS2ISZVJKvHjMfosyxR9M0swFXu
+         r1M6bjuvjmzj7NnAL0OT7M6bnSQanrVA+VMYi40OcpwjJP7I2hbv7Gux0ao/ogbGiQ
+         5uxTN+u2wE7nU7s0g0es4sVBKxzdXdpJsxjAC1b8+SS8txFPm7lfbPOEYYdzY4qOgy
+         oST6VimKpPVjFe2jE79mm5UrFiLwetNO/QE8ouMUHQ1pocaZV+tuuS2INKN5PiwCYc
+         EGUb1YcNqXQq5yfW3+hQ+2ZAbkGGjT6zp6QjD3jYr73sJ1hBHN1tVs2oAKxjIkQfvh
+         XT2UIOKjQVCqw==
+Date:   Tue, 1 Mar 2022 18:21:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        richardcochran@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH net-next] ptp: ocp: Add ptp_ocp_adjtime_coarse for large
+ adjustments
+Message-ID: <20220301182153.6a1a8e89@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220228203957.367371-1-jonathan.lemon@gmail.com>
+References: <20220228203957.367371-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] macvtap: advertise link netns via netlink
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164618761059.10543.6751143056551360921.git-patchwork-notify@kernel.org>
-Date:   Wed, 02 Mar 2022 02:20:10 +0000
-References: <20220228003240.1337426-1-sven@narfation.org>
-In-Reply-To: <20220228003240.1337426-1-sven@narfation.org>
-To:     Sven Eckelmann <sven@narfation.org>
-Cc:     netdev@vger.kernel.org, freifunk@irrelefant.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,33 +54,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 28 Feb 2022 01:32:40 +0100 you wrote:
-> Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-> added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-> the link interface to an interface in the wrong namespace.
+On Mon, 28 Feb 2022 12:39:57 -0800 Jonathan Lemon wrote:
+> In ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime."), the
+> ns adjustment was written to the FPGA register, so the clock could
+> accurately perform adjustments.
 > 
-> Test commands:
+> However, the adjtime() call passes in a s64, while the clock adjustment
+> registers use a s32.  When trying to perform adjustments with a large
+> value (37 sec), things fail.
 > 
->   ip netns add nst
->   ip link add dummy0 type dummy
->   ip link add link macvtap0 link dummy0 type macvtap
->   ip link set macvtap0 netns nst
->   ip -netns nst link show macvtap0
+> Examine the incoming delta, and if larger than 1 sec, use the original
+> (coarse) adjustment method.  If smaller than 1 sec, then allow the
+> FPGA to fold in the changes over a 1 second window.
 > 
-> [...]
+> Fixes: 6d59d4fa1789 ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime.")
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-Here is the summary with links:
-  - macvtap: advertise link netns via netlink
-    https://git.kernel.org/netdev/net-next/c/a02192151b7d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+This one's tagged for net-next - do you intend for it to go to net-next,
+or is that a typo?
