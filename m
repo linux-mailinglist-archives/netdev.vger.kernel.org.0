@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 015F74CAA4A
+	by mail.lfdr.de (Postfix) with ESMTP id 9901C4CAA4C
 	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 17:33:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242288AbiCBQdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 11:33:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
+        id S242482AbiCBQdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 11:33:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242506AbiCBQdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:33:22 -0500
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2044.outbound.protection.outlook.com [40.107.94.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9792191
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:32:26 -0800 (PST)
+        with ESMTP id S242308AbiCBQdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:33:36 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2066.outbound.protection.outlook.com [40.107.223.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2D62B1AC
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:32:34 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BxSmWyJKYDZxboNmPLaClrVJUbaEfjZkImtw3cL0hdNgc0kx2f0FoQA1pHS8gzLM6OCEWrsKGG3bG2PZaNA3VQ/Sv2DqM8qG13w6liIGdJpVlew/BWw4DcadGtqNEVUxbkiYPb3mFU2K92L2Kjsqc2eHJX1xNJJfsKE4FIBG+cdM4OjzixfnienIVOqOUXOoFeGirj1QFcHD01tFkE+3Z6mTti+PMoKDA6DCWQp+/BlFb73Hrnw7yQd4ZDkuiiB8V6ejsqOPz3ON/BkqYfokrGtGQiUsDhzGD2FQSrwwGp9mxOPRM2CUpxg/JFE4QwoxZqU4qifrKIOyI0UM+CmcOg==
+ b=P25V26XmmqgCRcLEPkR4BilIpKRXAED3y4GWWcqyg0S/WF/fnqZhmgRwtvdATvxzjlCkniZdPWhzVwFK6UHq9aaBo7ZCoQEvkkULn1BhKRp9L9PrEa3aPqbJPuhAr89MET/auxSqab+PDOhRGMCu/52zQLmsr2wJDVJdzBZnxspidCYXqHueuuaAH7NeOZrFGFN3a4RJyuUNJzXC+brUnu3nwaZmg1sagLXOKdWQydhQRdHXEU0ZFq+NMXP1MJujAwkCx/Mc4EVwo0wBnnxQHCrS9HNhYlq9Uy2CIBz7+FWPcl2OGzmGWHHIkt+iG6VOHFXA8ZeWql+QJerDf14b1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uypNV7VZLUKScYpCApHFh6bts3FMc9rCq4/iJyLDu6o=;
- b=bvZsgzm8mFe1wHkWM7iz+qrurII1J0Z5uG/Yo7WRZjqFKMoJ7BCOKJCs8B3PI/3cdoHANaQ7wD4h6JIITGK9ev0MMB4g32xyykV9F5FfD8jXUmrm+NgJapo2/spYFXgLsZQWQMFDor/tKvf4Cwv09V7ZQlVL1mpA/lnPWUmYuipA3aOSZcHWfhMf8rGK97i0+atrA8tNeRQMiliyXJx68fbjTJJ1ISx5ep+ymAnFXq33UKLuIwu5OVWfSg+KFM1AC6B0+VFhPC0g/qfpbis2EmcpXiytQEwF05x02EB57gK0KP6f8QavvsYnIeZETzC2ukYhkdhjFIAlLXvObYhPDw==
+ bh=kgAyiuAA5HBNrmgZfNzyawMC0iUSmKq7GZHmgWT4f80=;
+ b=mlCWrD43eienweUFyos6ydimHhPFlmJki3ByY/DknVznypZB4XwVDBMidRShWcCUenX42V50ibMDYdn0WHPqFWuBiCOuuyTm4TVMDrWRRw8Eujto91A6gslv69rWPnKQnEMIWfKZZV+SBC2FefW+pAjCzk2zZptCD1Yx+aGtNQS3JfrJnUuZRVgwhdvKv7DJ4/Br5YtpmPoeQ4A72RmGwre2LOwxSn656Uf16qD1hJiUg03ybgfLuMeN6qC3T9Zn11wXx5zXFOX5afDM9v0aZxSyb8fSG4lkIG+K6E2zLj2dGgTvvPoJDvUOUVruM6xwWoHpf8/IDwleMyKYbAfvsQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uypNV7VZLUKScYpCApHFh6bts3FMc9rCq4/iJyLDu6o=;
- b=W/b+bv3cbXvWbm5vN7HMBEyMoR3lZrUHJVQ3yPWY3NL/8K7NDwMj9hpPYtqdZ2mykouBT4p3aNJTLSAJ1mwjjtclrYrfBXntM2yOlA5xX3IN22OvZ01OILCo27bDXjg33x8UM82oXLwEPv2L9IcWYTOpGT7skzu62ACwVoKrYT9VTDlZSTIEV9U5IY/RY00ie40BNGKeLhih1kMhnd1tEzwj5I5/VNjP2OL+W8jaemsL0bPi/CNOpfzpyGAFY6yHOoIvYs7KZglWe4B3dOyHpg3wyb2ZXL2e3zy2D9UB2m9QnSfI/Oz4QG3dEUpPLWkjZnbJtNqmz/gbIPoBj2vVSg==
+ bh=kgAyiuAA5HBNrmgZfNzyawMC0iUSmKq7GZHmgWT4f80=;
+ b=cBQChLOvx+1EqmjjsADqapFzvhrMSpErYjlh2myzDc2mMTwhWjeT+5RiY5XGOG9QMczk3sNImu/59Uqs4xtbzoW/3IwM/qynk2YK6QRGLxQBWoYaA5vUyO3WwOIfJrki5MqPq/3VqfYzsfKGfI9Zz4FHJ3e8ZBfLtw/DWOl7Q2jrTSfsK+TZaHSLtkzB+e2JUmMihkq+XjsTk68P7ZaYuhKL70LNQ7A1AYJCIHSNqB0u2gV5bTHLbR40S6Lp7FheCIuEKaCtsvgArbWE8eC3rFpCVJJ4vjXMZm0GkFQqyZkBfBsi+H5tVNAkJJIwNcH398wz6sVyVoMP/vxCGRvAHw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
  by CY4PR12MB1942.namprd12.prod.outlook.com (2603:10b6:903:128::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Wed, 2 Mar
- 2022 16:32:24 +0000
+ 2022 16:32:32 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::95a1:8c7f:10ef:2581]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::95a1:8c7f:10ef:2581%6]) with mapi id 15.20.5038.014; Wed, 2 Mar 2022
- 16:32:24 +0000
+ 16:32:32 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         jiri@nvidia.com, roopa@nvidia.com, razor@blackwall.org,
         dsahern@gmail.com, andrew@lunn.ch, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 05/14] net: rtnetlink: rtnl_fill_statsinfo(): Permit non-EMSGSIZE error returns
-Date:   Wed,  2 Mar 2022 18:31:19 +0200
-Message-Id: <20220302163128.218798-6-idosch@nvidia.com>
+Subject: [PATCH net-next v2 06/14] net: dev: Add hardware stats support
+Date:   Wed,  2 Mar 2022 18:31:20 +0200
+Message-Id: <20220302163128.218798-7-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220302163128.218798-1-idosch@nvidia.com>
 References: <20220302163128.218798-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0501CA0009.eurprd05.prod.outlook.com
- (2603:10a6:800:92::19) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR0102CA0102.eurprd01.prod.exchangelabs.com
+ (2603:10a6:803:15::43) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6af9a791-67c9-482b-b397-08d9fc6a3b9f
+X-MS-Office365-Filtering-Correlation-Id: fc0e826a-7aba-4e01-fac8-08d9fc6a3fdb
 X-MS-TrafficTypeDiagnostic: CY4PR12MB1942:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB1942FE446D3ABAFB867306E1B2039@CY4PR12MB1942.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1942E4FB9428C6783FD978DEB2039@CY4PR12MB1942.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wXBA2KRF+kUHibiYNwv7NOfP5bjQKMXBGFNqU7X2g9WQAwZqu0PWTy2Nkgd/pACfLumAQR8ZL6Rhv2+c2FCO8D7L01RW+gSO0K+0dPvKLJVv8tyCpG/b60nY+2MZJSKzhgTrk5RvynD+upEaewQiUmOhW8g+W4vRUfFIchjRXyUTv6cHfKLsueS3Y0MCYqULrwSzzDRQ6wdVa3iz8ehiMyoDw2IFz8eYDggCp7LcsL+XymQ0WbTsK17b1DDqq6l4IDIyok6bDkfT4pO7piEvAFqVlz3xugkdVSxLLj+/KjAXYxp0IVqQchdHUP01imJc6qP4MobHUzD0J9qpgpsR5P8Uw+Uuu4due8MhR6iMNphn0xCSm+3SC2Q/KayOHGaRQYaTi8eP1DClOYjULsZmcVL3CjApDW44OWB3evxKAp8z7Bmp199TjBZAsJKSttmT/lZFAvf6acgpJHIJK2lU3L3dmw0WsO3Tkg5KH2dU7xFiwZtMR5vQDHUo0HsHdqak1jkF2pYjCAORGSh1c7sYLoSyVTQ8c9/n8+jtFZBQ1PGOPmtZ9ijfMshXWm8HdEY5jRIZEjF50Go7X6fSUXCny3tDV2egZYMLgr3Qxx/wDTJEMylBqEQez5abBxqs76e6ddP5JU9wbc5r5tvAa2PPDQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(36756003)(2616005)(86362001)(26005)(186003)(1076003)(6916009)(316002)(107886003)(4326008)(6666004)(66476007)(6506007)(66946007)(6512007)(66556008)(8676002)(6486002)(508600001)(2906002)(83380400001)(8936002)(5660300002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: nI95pFOWMddPIqmWuHXBFIHW1fkWayX+a/V1E91hRZ/HevGhmNy4RzysUd6HMN44GYiB/fTbTjFDn67bDY4WJCF/L7QK1v8f55hX8rVGeJxxkvOr7s9dFSatBpEBVojpCbJePJ7ZOHo0RZKX7LH8Y4GBfdd6APHTcWy4suGvwF+X5tJrLSGeVv0lMn7QJ/2YD2wm2/J+6m9tsdJvDL7G1yq95CYiL9Dkl1xye+sdyqZFGUQA72pKUOYeCv5AnFKKnYqbpVVegSvdHzzk22MFeofMeBHTKd2258M1eQ9FkCq0bPoesE4MspZvrfuReM8MWDIy34tu54cUWdqN0ANLRFlHu6qZCX0N67QjL3XlCLodr9qEFjVx7owDscuD8KzfLpSXoPy1zZy/xusCZchykx+TCwcHlV+MxOuGIkO8uqmOLeaTYWOyRL3nQYtSSQJvIswdMmpfnTRymh0SaypNidBGT6TYWw3bKkEyD8AQYmuJwLOFqRp8zqFA17te3lXhh4mvfBIDLcaxFmMOZm4xYjEMHxSL2LVFXBwt2T07iWe0xR518qr4SAcZ8pKGuoMPvuYV0GTtwfjFrW4X+MpaBY874SfAUGKYP/OUPM3oYu48J3Ylcn6LOyYwYZ0QJMEo1wqCWH+c4sJ0F6UMTVmlew==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(36756003)(2616005)(86362001)(26005)(186003)(1076003)(6916009)(316002)(107886003)(4326008)(66574015)(6666004)(66476007)(6506007)(66946007)(6512007)(66556008)(8676002)(6486002)(508600001)(2906002)(83380400001)(30864003)(8936002)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GBFcEtX15rpC3eSZ+BFkTITOAmR0TUuO5ZaKCUvlRGPEDQnRLqIgMnhqr+tm?=
- =?us-ascii?Q?NBNDhe2pEk8d6zB97+DsobSXvZfwM2exn6LdsqBTWhPjSG/qoHS6XF13P6Ok?=
- =?us-ascii?Q?msly2RbDwrVdlca2NrkIF+a0cfgKVkHMpDgXHLfr6ImeA9DXlyU9OxM/4lvC?=
- =?us-ascii?Q?oNhFwfnGz92dNdvD64R+obz6QoN6ZZpazm+/mUN1ttcE7oaOnrQugOJ2Ij8U?=
- =?us-ascii?Q?fL6xOQDmGKNr/9SvDzF2i6nygPZQ3yhVFe11WiU2p3HNxdIwj4Odc4m34YFx?=
- =?us-ascii?Q?CNXgjGGMIwNUX0Z6lcaItShI3X2axSCaH6AgcmhJs8tMAxd47J18q+WdAwI5?=
- =?us-ascii?Q?rUt331lajJ54TbUmfQOZsThWXy7hdmikxB9N2gPNYoGS1S8q+lsskiQAxyQT?=
- =?us-ascii?Q?L009yMXNpxvsyCaLfZS5slfUMd9hen5X8NqSfkICxGfadPCp3ID29I5SK0AQ?=
- =?us-ascii?Q?eH4cN2sEWuXhPpd0Bq1wuEEqhXTb6cPU9oDpipMAxRKr5IZ191k/K7HorrGM?=
- =?us-ascii?Q?qzk2icS8kl0+VCZLadykDko0O8ZhLqjhwMhxOkkU+GPGjt0AcS8W2j4klCWS?=
- =?us-ascii?Q?HF8iXCpOR+LU6B6RtIm94yw8oskgRcGZ+fEQ93XcVqPrhz6wMrncscK70O+1?=
- =?us-ascii?Q?TEElvIeKkHgEHKf5N+agUUv9c3yaubB1xBdODDin1wfwHzafY5Hhp3Ba5lvO?=
- =?us-ascii?Q?TSB111vohI0MN3jgrq2L6+8zFHFzfLizd0kHb/ke2XZ3fNQswttGPTmQbear?=
- =?us-ascii?Q?fg+jIPKaxmqJE58wSoMGQq1ttEBFW4WmLdT6CsapIZohYaDB8GPhXa9V0Nsy?=
- =?us-ascii?Q?yZEQjmY1wS2IoGq2jJA3i3u8yCGx8INvFH1ikTeAxdfbnSExGYAX17X0+jW2?=
- =?us-ascii?Q?ND9nIKpQFLNJo+MogjIWXHJJLn2j2rMlnoIV1fSPi22tAS11xko9FcFV3v48?=
- =?us-ascii?Q?nnu7NXXs55lZMNio4Acsc5pYM8HlM1NLzgOm0l6JxXAZAK4jaSoEJTZjtq0F?=
- =?us-ascii?Q?xcu5z/CfEtvesyqd8cT/Uo9MCkoSKPZUHL4Tj0FuYMfKypcBvnh1mZkq9iix?=
- =?us-ascii?Q?IYyauw0gj6AiespMlnZCNzTsppeymNBeN/xc3KvKYvD9vO1XTFebaiRucfLY?=
- =?us-ascii?Q?gjF5WNqbx6GvJgLRveipJmNyA2kmVLBq/7YwEq2SparyPxp5wOYe10nVHkto?=
- =?us-ascii?Q?iJnBsdNSfTrq75Omxbc9k6SBmPyJFHWfEs2kN0F7q1SPHDAg/CVN5f+5JnBu?=
- =?us-ascii?Q?S7WTMdAB9OU86XUs2pWYY/fxGd+rh+gBFUrmRJe41cXYQK4wCdqoNZFyAFYi?=
- =?us-ascii?Q?M3fVGpQHK6JIe2+mNdhDlR6KK9UY39I/CoNv3VJHFVrZpSrDqfCSIGcfCc6Q?=
- =?us-ascii?Q?CESTwLNiBsCtPfl3wOGMe+ZxjeiqHzvneKt3+izrrjDHXbj/f0ikjQa/75bX?=
- =?us-ascii?Q?ycYOahYhseGB7C0Nh7kcE2UJxenITXcSquDFF2kGMXZ+RqlHZUdIBxWqI4Q4?=
- =?us-ascii?Q?bk1eX6ZaWltiRrsw/JUS3DpyekY1r05Z7r0h+Mv21+3f/norSFbM6OarAU5G?=
- =?us-ascii?Q?x8TxKOuN6BnMLhzTm55jHgHSVGxXsjL91O8lX6hmd71dLWvcXHBDtqE0cXyi?=
- =?us-ascii?Q?hN2MZoQ8xP2ApQ1CcgiwXDk=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yXyzxgqj4iXkYvOFdAXf1QdB/QwbJ4Bg+ovJpLlpAkDQirYollfWHr6H41nV?=
+ =?us-ascii?Q?jJ4VtFcHzSQAPJ8pdfAITwvzY/vm7usXAtfPx34aCmrsW9AFap7oTY4ze3KD?=
+ =?us-ascii?Q?j1/FZFYlktLFAZOLq9TR/tHc9jZTKJnfQonW+j0x0My9rbwwiQX+y2IPoMWW?=
+ =?us-ascii?Q?HYIZJ6obGTul98tGp/SE43DCF84AX4KFss8sSLyu9JpU8CxoN+OOY62/oW0J?=
+ =?us-ascii?Q?zOwpSgdz0m1UAbHwHaFz1XzOFlFY6lqcFXk+aohA9TUq+SSmi3yrgIuKptKu?=
+ =?us-ascii?Q?IG+jGag2QlvWeYOSEUD4U5Z3TB3gjp+sq35/fENBXybMCNRwtcxMzo2eZje6?=
+ =?us-ascii?Q?AtgLskiTVPoQT0mZ1WYA4dxecxKfBayBJ+DxfX+hEIHJWeJZ9ValgwZmNIMz?=
+ =?us-ascii?Q?cD59pvzFiw1zzX87DUiAnsS4h/zPDMv+ejlm0Lx9aXL5OssaWP/GOoWFFrbx?=
+ =?us-ascii?Q?EVBAei09P8prhNHnV7RQoGE4RHa9Lv4YAsuRaMxo9Txf0GADGeJs6vvlXn1W?=
+ =?us-ascii?Q?skb0iZ2CvppbZB4Bb4zv6eEmTX2Au0RZD3TtPPyHcwqFoSo4UGzjg1DGMyPI?=
+ =?us-ascii?Q?UzBfl7MwqmEPOjAC/sH199jQVroU+Vb0H+ZfGGTrz/rFLYqPkjsN688O64AN?=
+ =?us-ascii?Q?oWQLWk3p5JbqJs9tN8JkveIKNuZQq+fe1Z4WRshXSsVSOCAGcbnGPI37KxlG?=
+ =?us-ascii?Q?XzkrpJe7vuWv1QPdINqy72oiqe5c81mX/6gJg6l6Hm8rf0yOUsmwyFOtzTyV?=
+ =?us-ascii?Q?7B0P1Rj+q7PTRRNtorgGaCQr/pQQWGZfeVWO3cadiWvGvIvuWm41f+l8FU6F?=
+ =?us-ascii?Q?7Ph8B5XxKCbzE9DFB0wsAipMWtPNuonl65Cwv5imUoYz3/GoVbYV1vnwRkzv?=
+ =?us-ascii?Q?eLw4NGY82rp2wqMW8nbeJk7hgaRU80RCr05SkKO7Rm2ho1Ox5QUV39WorILM?=
+ =?us-ascii?Q?WYzMG3bONufQym/bpgYQYFSEx/YwsW1lsveGcyFsLuP/Lgea0IwRkmHrZdeb?=
+ =?us-ascii?Q?n5L/SOrOTZ47biH6lgeVcUfVD4hhluF5v/xpeBD9rh0KEEFuC13OrkVtUDg2?=
+ =?us-ascii?Q?qlH55ly0TrneGOkH/UFOSlXfTS12mm3e2GjwOPjtjgx1V5LXLlkJ+KLqVi5M?=
+ =?us-ascii?Q?zsQl0569jQ3meNie6iimZcILGpl4nn4WP0fnpwT0i860mFb7dxBtM8dQB9QE?=
+ =?us-ascii?Q?NHxw2Gch+xxe7qQWSJyPwW3sk9lUzItrORsYmEZeOeSao6HAogohogs48r94?=
+ =?us-ascii?Q?2MppUnoJdmUHgmS08bDWJZfyWmxjpyECRlTOhYq+RvAUpJe4tkfurfQK4ev9?=
+ =?us-ascii?Q?ynIT1BAtd3p4dbJ8044jr7fKEoILObBgTxSQjxH1/ZCFGAkqzb/Z8TlUXElu?=
+ =?us-ascii?Q?bAteB2PPq+sZwDCdAd0143Bu2Fa9rVQnJsBzhangNgloms8HRdiBJT4jCK/T?=
+ =?us-ascii?Q?dhGD/me6ZpxYGgQE5slAL5iPOxwQXfl0LBcDuVr0uKlrpa4U8kRgRFkfAkre?=
+ =?us-ascii?Q?PzopLzueo5xRoZWG5eMInq0ZEPiG5AOIaPwwNXZWbeKR5d14gI79m0CReo32?=
+ =?us-ascii?Q?DTYOrTpBByz1fqLetwwtprslIG5pGbHo8fiYh3XpI+2b64nUV0CaKCUthgRV?=
+ =?us-ascii?Q?8raH7avm5rvverRzAcUPJwM=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6af9a791-67c9-482b-b397-08d9fc6a3b9f
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc0e826a-7aba-4e01-fac8-08d9fc6a3fdb
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 16:32:24.7486
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 16:32:32.1343
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xe2If2tiXEAM+xhcBKWWomtSjTb7d5vxAcgKaWfv1HcYmZxRsIKG5YqiKOpkBASoX3q+0+1c+s8f+15tf6ak1Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: xAqXcVxkMLo3xR5G+hP1amUnEfbcM+OLfVAR/lxgPQ7Hw8Pvw3GkBIZSSfgBh2wiNhIwjxuY9TF1uHf7oksuDA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1942
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -119,91 +119,468 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-Obtaining stats for the IFLA_STATS_LINK_OFFLOAD_XSTATS nest involves a HW
-access, and can fail for more reasons than just netlink message size
-exhaustion. Therefore do not always return -EMSGSIZE on the failure path,
-but respect the error code provided by the callee. Set the error explicitly
-where it is reasonable to assume -EMSGSIZE as the failure reason.
+Offloading switch device drivers may be able to collect statistics of the
+traffic taking place in the HW datapath that pertains to a certain soft
+netdevice, such as VLAN. Add the necessary infrastructure to allow exposing
+these statistics to the offloaded netdevice in question. The API was shaped
+by the following considerations:
+
+- Collection of HW statistics is not free: there may be a finite number of
+  counters, and the act of counting may have a performance impact. It is
+  therefore necessary to allow toggling whether HW counting should be done
+  for any particular SW netdevice.
+
+- As the drivers are loaded and removed, a particular device may get
+  offloaded and unoffloaded again. At the same time, the statistics values
+  need to stay monotonic (modulo the eventual 64-bit wraparound),
+  increasing only to reflect traffic measured in the device.
+
+  To that end, the netdevice keeps around a lazily-allocated copy of struct
+  rtnl_link_stats64. Device drivers then contribute to the values kept
+  therein at various points. Even as the driver goes away, the struct stays
+  around to maintain the statistics values.
+
+- Different HW devices may be able to count different things. The
+  motivation behind this patch in particular is exposure of HW counters on
+  Nvidia Spectrum switches, where the only practical approach to counting
+  traffic on offloaded soft netdevices currently is to use router interface
+  counters, and count L3 traffic. Correspondingly that is the statistics
+  suite added in this patch.
+
+  Other devices may be able to measure different kinds of traffic, and for
+  that reason, the APIs are built to allow uniform access to different
+  statistics suites.
+
+- Because soft netdevices and offloading drivers are only loosely bound, a
+  netdevice uses a notifier chain to communicate with the drivers. Several
+  new notifiers, NETDEV_OFFLOAD_XSTATS_*, have been added to carry messages
+  to the offloading drivers.
+
+- Devices can have various conditions for when a particular counter is
+  available. As the device is configured and reconfigured, the device
+  offload may become or cease being suitable for counter binding. A
+  netdevice can use a notifier type NETDEV_OFFLOAD_XSTATS_REPORT_USED to
+  ping offloading drivers and determine whether anyone currently implements
+  a given statistics suite. This information can then be propagated to user
+  space.
+
+  When the driver decides to unoffload a netdevice, it can use a
+  newly-added function, netdev_offload_xstats_report_delta(), to record
+  outstanding collected statistics, before destroying the HW counter.
+
+This patch adds a helper, call_netdevice_notifiers_info_robust(), for
+dispatching a notifier with the possibility of unwind when one of the
+consumers bails. Given the wish to eventually get rid of the global
+notifier block altogether, this helper only invokes the per-netns notifier
+block.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/core/rtnetlink.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ include/linux/netdevice.h    |  42 ++++++
+ include/uapi/linux/if_link.h |  15 ++
+ net/core/dev.c               | 267 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 323 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 594aba321f42..4db1d6c01a7d 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -5177,8 +5177,10 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 		attr = nla_reserve_64bit(skb, IFLA_STATS_LINK_64,
- 					 sizeof(struct rtnl_link_stats64),
- 					 IFLA_STATS_UNSPEC);
--		if (!attr)
-+		if (!attr) {
-+			err = -EMSGSIZE;
- 			goto nla_put_failure;
-+		}
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index c79ee2296296..19a27ac361ef 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1950,6 +1950,7 @@ enum netdev_ml_priv_type {
+  *	@watchdog_dev_tracker:	refcount tracker used by watchdog.
+  *	@dev_registered_tracker:	tracker for reference held while
+  *					registered
++ *	@offload_xstats_l3:	L3 HW stats for this netdevice.
+  *
+  *	FIXME: cleanup struct net_device such that network protocol info
+  *	moves out.
+@@ -2287,6 +2288,7 @@ struct net_device {
+ 	netdevice_tracker	linkwatch_dev_tracker;
+ 	netdevice_tracker	watchdog_dev_tracker;
+ 	netdevice_tracker	dev_registered_tracker;
++	struct rtnl_hw_stats64	*offload_xstats_l3;
+ };
+ #define to_net_dev(d) container_of(d, struct net_device, dev)
  
- 		sp = nla_data(attr);
- 		dev_get_stats(dev, sp);
-@@ -5191,8 +5193,10 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 			*idxattr = IFLA_STATS_LINK_XSTATS;
- 			attr = nla_nest_start_noflag(skb,
- 						     IFLA_STATS_LINK_XSTATS);
--			if (!attr)
-+			if (!attr) {
-+				err = -EMSGSIZE;
- 				goto nla_put_failure;
-+			}
+@@ -2727,6 +2729,10 @@ enum netdev_cmd {
+ 	NETDEV_CVLAN_FILTER_DROP_INFO,
+ 	NETDEV_SVLAN_FILTER_PUSH_INFO,
+ 	NETDEV_SVLAN_FILTER_DROP_INFO,
++	NETDEV_OFFLOAD_XSTATS_ENABLE,
++	NETDEV_OFFLOAD_XSTATS_DISABLE,
++	NETDEV_OFFLOAD_XSTATS_REPORT_USED,
++	NETDEV_OFFLOAD_XSTATS_REPORT_DELTA,
+ };
+ const char *netdev_cmd_to_name(enum netdev_cmd cmd);
  
- 			err = ops->fill_linkxstats(skb, dev, prividx, *idxattr);
- 			nla_nest_end(skb, attr);
-@@ -5214,8 +5218,10 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 			*idxattr = IFLA_STATS_LINK_XSTATS_SLAVE;
- 			attr = nla_nest_start_noflag(skb,
- 						     IFLA_STATS_LINK_XSTATS_SLAVE);
--			if (!attr)
-+			if (!attr) {
-+				err = -EMSGSIZE;
- 				goto nla_put_failure;
-+			}
+@@ -2777,6 +2783,42 @@ struct netdev_notifier_pre_changeaddr_info {
+ 	const unsigned char *dev_addr;
+ };
  
- 			err = ops->fill_linkxstats(skb, dev, prividx, *idxattr);
- 			nla_nest_end(skb, attr);
-@@ -5233,8 +5239,10 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 		*idxattr = IFLA_STATS_LINK_OFFLOAD_XSTATS;
- 		attr = nla_nest_start_noflag(skb,
- 					     IFLA_STATS_LINK_OFFLOAD_XSTATS);
--		if (!attr)
-+		if (!attr) {
-+			err = -EMSGSIZE;
- 			goto nla_put_failure;
-+		}
++enum netdev_offload_xstats_type {
++	NETDEV_OFFLOAD_XSTATS_TYPE_L3 = 1,
++};
++
++struct netdev_notifier_offload_xstats_info {
++	struct netdev_notifier_info info; /* must be first */
++	enum netdev_offload_xstats_type type;
++
++	union {
++		/* NETDEV_OFFLOAD_XSTATS_REPORT_DELTA */
++		struct netdev_notifier_offload_xstats_rd *report_delta;
++		/* NETDEV_OFFLOAD_XSTATS_REPORT_USED */
++		struct netdev_notifier_offload_xstats_ru *report_used;
++	};
++};
++
++int netdev_offload_xstats_enable(struct net_device *dev,
++				 enum netdev_offload_xstats_type type,
++				 struct netlink_ext_ack *extack);
++int netdev_offload_xstats_disable(struct net_device *dev,
++				  enum netdev_offload_xstats_type type);
++bool netdev_offload_xstats_enabled(const struct net_device *dev,
++				   enum netdev_offload_xstats_type type);
++int netdev_offload_xstats_get(struct net_device *dev,
++			      enum netdev_offload_xstats_type type,
++			      struct rtnl_hw_stats64 *stats, bool *used,
++			      struct netlink_ext_ack *extack);
++void
++netdev_offload_xstats_report_delta(struct netdev_notifier_offload_xstats_rd *rd,
++				   const struct rtnl_hw_stats64 *stats);
++void
++netdev_offload_xstats_report_used(struct netdev_notifier_offload_xstats_ru *ru);
++void netdev_offload_xstats_push_delta(struct net_device *dev,
++				      enum netdev_offload_xstats_type type,
++				      const struct rtnl_hw_stats64 *stats);
++
+ static inline void netdev_notifier_info_init(struct netdev_notifier_info *info,
+ 					     struct net_device *dev)
+ {
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 4d62ea6e1288..ef6a62a2e15d 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -245,6 +245,21 @@ struct rtnl_link_stats64 {
+ 	__u64	rx_nohandler;
+ };
  
- 		err = rtnl_offload_xstats_fill(skb, dev, prividx,
- 					       off_filter_mask, extack);
-@@ -5253,8 +5261,10 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 
- 		*idxattr = IFLA_STATS_AF_SPEC;
- 		attr = nla_nest_start_noflag(skb, IFLA_STATS_AF_SPEC);
--		if (!attr)
-+		if (!attr) {
-+			err = -EMSGSIZE;
- 			goto nla_put_failure;
-+		}
- 
- 		rcu_read_lock();
- 		list_for_each_entry_rcu(af_ops, &rtnl_af_ops, list) {
-@@ -5298,7 +5308,7 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 	else
- 		nlmsg_end(skb, nlh);
- 
--	return -EMSGSIZE;
-+	return err;
++/* Subset of link stats useful for in-HW collection. Meaning of the fields is as
++ * for struct rtnl_link_stats64.
++ */
++struct rtnl_hw_stats64 {
++	__u64	rx_packets;
++	__u64	tx_packets;
++	__u64	rx_bytes;
++	__u64	tx_bytes;
++	__u64	rx_errors;
++	__u64	tx_errors;
++	__u64	rx_dropped;
++	__u64	tx_dropped;
++	__u64	multicast;
++};
++
+ /* The struct should be in sync with struct ifmap */
+ struct rtnl_link_ifmap {
+ 	__u64	mem_start;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2d6771075720..c9e54e5ad48d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -1622,7 +1622,8 @@ const char *netdev_cmd_to_name(enum netdev_cmd cmd)
+ 	N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN)
+ 	N(CVLAN_FILTER_PUSH_INFO) N(CVLAN_FILTER_DROP_INFO)
+ 	N(SVLAN_FILTER_PUSH_INFO) N(SVLAN_FILTER_DROP_INFO)
+-	N(PRE_CHANGEADDR)
++	N(PRE_CHANGEADDR) N(OFFLOAD_XSTATS_ENABLE) N(OFFLOAD_XSTATS_DISABLE)
++	N(OFFLOAD_XSTATS_REPORT_USED) N(OFFLOAD_XSTATS_REPORT_DELTA)
+ 	}
+ #undef N
+ 	return "UNKNOWN_NETDEV_EVENT";
+@@ -1939,6 +1940,32 @@ static int call_netdevice_notifiers_info(unsigned long val,
+ 	return raw_notifier_call_chain(&netdev_chain, val, info);
  }
  
- static size_t if_nlmsg_stats_size(const struct net_device *dev,
++/**
++ *	call_netdevice_notifiers_info_robust - call per-netns notifier blocks
++ *	                                       for and rollback on error
++ *	@val_up: value passed unmodified to notifier function
++ *	@val_down: value passed unmodified to the notifier function when
++ *	           recovering from an error on @val_up
++ *	@info: notifier information data
++ *
++ *	Call all per-netns network notifier blocks, but not notifier blocks on
++ *	the global notifier chain. Parameters and return value are as for
++ *	raw_notifier_call_chain_robust().
++ */
++
++static int
++call_netdevice_notifiers_info_robust(unsigned long val_up,
++				     unsigned long val_down,
++				     struct netdev_notifier_info *info)
++{
++	struct net *net = dev_net(info->dev);
++
++	ASSERT_RTNL();
++
++	return raw_notifier_call_chain_robust(&net->netdev_chain,
++					      val_up, val_down, info);
++}
++
+ static int call_netdevice_notifiers_extack(unsigned long val,
+ 					   struct net_device *dev,
+ 					   struct netlink_ext_ack *extack)
+@@ -7728,6 +7755,242 @@ void netdev_bonding_info_change(struct net_device *dev,
+ }
+ EXPORT_SYMBOL(netdev_bonding_info_change);
+ 
++static int netdev_offload_xstats_enable_l3(struct net_device *dev,
++					   struct netlink_ext_ack *extack)
++{
++	struct netdev_notifier_offload_xstats_info info = {
++		.info.dev = dev,
++		.info.extack = extack,
++		.type = NETDEV_OFFLOAD_XSTATS_TYPE_L3,
++	};
++	int err;
++	int rc;
++
++	dev->offload_xstats_l3 = kzalloc(sizeof(*dev->offload_xstats_l3),
++					 GFP_KERNEL);
++	if (!dev->offload_xstats_l3)
++		return -ENOMEM;
++
++	rc = call_netdevice_notifiers_info_robust(NETDEV_OFFLOAD_XSTATS_ENABLE,
++						  NETDEV_OFFLOAD_XSTATS_DISABLE,
++						  &info.info);
++	err = notifier_to_errno(rc);
++	if (err)
++		goto free_stats;
++
++	return 0;
++
++free_stats:
++	kfree(dev->offload_xstats_l3);
++	dev->offload_xstats_l3 = NULL;
++	return err;
++}
++
++int netdev_offload_xstats_enable(struct net_device *dev,
++				 enum netdev_offload_xstats_type type,
++				 struct netlink_ext_ack *extack)
++{
++	ASSERT_RTNL();
++
++	if (netdev_offload_xstats_enabled(dev, type))
++		return -EALREADY;
++
++	switch (type) {
++	case NETDEV_OFFLOAD_XSTATS_TYPE_L3:
++		return netdev_offload_xstats_enable_l3(dev, extack);
++	}
++
++	WARN_ON(1);
++	return -EINVAL;
++}
++EXPORT_SYMBOL(netdev_offload_xstats_enable);
++
++static void netdev_offload_xstats_disable_l3(struct net_device *dev)
++{
++	struct netdev_notifier_offload_xstats_info info = {
++		.info.dev = dev,
++		.type = NETDEV_OFFLOAD_XSTATS_TYPE_L3,
++	};
++
++	call_netdevice_notifiers_info(NETDEV_OFFLOAD_XSTATS_DISABLE,
++				      &info.info);
++	kfree(dev->offload_xstats_l3);
++	dev->offload_xstats_l3 = NULL;
++}
++
++int netdev_offload_xstats_disable(struct net_device *dev,
++				  enum netdev_offload_xstats_type type)
++{
++	ASSERT_RTNL();
++
++	if (!netdev_offload_xstats_enabled(dev, type))
++		return -EALREADY;
++
++	switch (type) {
++	case NETDEV_OFFLOAD_XSTATS_TYPE_L3:
++		netdev_offload_xstats_disable_l3(dev);
++		return 0;
++	}
++
++	WARN_ON(1);
++	return -EINVAL;
++}
++EXPORT_SYMBOL(netdev_offload_xstats_disable);
++
++static void netdev_offload_xstats_disable_all(struct net_device *dev)
++{
++	netdev_offload_xstats_disable(dev, NETDEV_OFFLOAD_XSTATS_TYPE_L3);
++}
++
++static struct rtnl_hw_stats64 *
++netdev_offload_xstats_get_ptr(const struct net_device *dev,
++			      enum netdev_offload_xstats_type type)
++{
++	switch (type) {
++	case NETDEV_OFFLOAD_XSTATS_TYPE_L3:
++		return dev->offload_xstats_l3;
++	}
++
++	WARN_ON(1);
++	return NULL;
++}
++
++bool netdev_offload_xstats_enabled(const struct net_device *dev,
++				   enum netdev_offload_xstats_type type)
++{
++	ASSERT_RTNL();
++
++	return netdev_offload_xstats_get_ptr(dev, type);
++}
++EXPORT_SYMBOL(netdev_offload_xstats_enabled);
++
++struct netdev_notifier_offload_xstats_ru {
++	bool used;
++};
++
++struct netdev_notifier_offload_xstats_rd {
++	struct rtnl_hw_stats64 stats;
++	bool used;
++};
++
++static void netdev_hw_stats64_add(struct rtnl_hw_stats64 *dest,
++				  const struct rtnl_hw_stats64 *src)
++{
++	dest->rx_packets	  += src->rx_packets;
++	dest->tx_packets	  += src->tx_packets;
++	dest->rx_bytes		  += src->rx_bytes;
++	dest->tx_bytes		  += src->tx_bytes;
++	dest->rx_errors		  += src->rx_errors;
++	dest->tx_errors		  += src->tx_errors;
++	dest->rx_dropped	  += src->rx_dropped;
++	dest->tx_dropped	  += src->tx_dropped;
++	dest->multicast		  += src->multicast;
++}
++
++static int netdev_offload_xstats_get_used(struct net_device *dev,
++					  enum netdev_offload_xstats_type type,
++					  bool *p_used,
++					  struct netlink_ext_ack *extack)
++{
++	struct netdev_notifier_offload_xstats_ru report_used = {};
++	struct netdev_notifier_offload_xstats_info info = {
++		.info.dev = dev,
++		.info.extack = extack,
++		.type = type,
++		.report_used = &report_used,
++	};
++	int rc;
++
++	WARN_ON(!netdev_offload_xstats_enabled(dev, type));
++	rc = call_netdevice_notifiers_info(NETDEV_OFFLOAD_XSTATS_REPORT_USED,
++					   &info.info);
++	*p_used = report_used.used;
++	return notifier_to_errno(rc);
++}
++
++static int netdev_offload_xstats_get_stats(struct net_device *dev,
++					   enum netdev_offload_xstats_type type,
++					   struct rtnl_hw_stats64 *p_stats,
++					   bool *p_used,
++					   struct netlink_ext_ack *extack)
++{
++	struct netdev_notifier_offload_xstats_rd report_delta = {};
++	struct netdev_notifier_offload_xstats_info info = {
++		.info.dev = dev,
++		.info.extack = extack,
++		.type = type,
++		.report_delta = &report_delta,
++	};
++	struct rtnl_hw_stats64 *stats;
++	int rc;
++
++	stats = netdev_offload_xstats_get_ptr(dev, type);
++	if (WARN_ON(!stats))
++		return -EINVAL;
++
++	rc = call_netdevice_notifiers_info(NETDEV_OFFLOAD_XSTATS_REPORT_DELTA,
++					   &info.info);
++
++	/* Cache whatever we got, even if there was an error, otherwise the
++	 * successful stats retrievals would get lost.
++	 */
++	netdev_hw_stats64_add(stats, &report_delta.stats);
++
++	if (p_stats)
++		*p_stats = *stats;
++	*p_used = report_delta.used;
++
++	return notifier_to_errno(rc);
++}
++
++int netdev_offload_xstats_get(struct net_device *dev,
++			      enum netdev_offload_xstats_type type,
++			      struct rtnl_hw_stats64 *p_stats, bool *p_used,
++			      struct netlink_ext_ack *extack)
++{
++	ASSERT_RTNL();
++
++	if (p_stats)
++		return netdev_offload_xstats_get_stats(dev, type, p_stats,
++						       p_used, extack);
++	else
++		return netdev_offload_xstats_get_used(dev, type, p_used,
++						      extack);
++}
++EXPORT_SYMBOL(netdev_offload_xstats_get);
++
++void
++netdev_offload_xstats_report_delta(struct netdev_notifier_offload_xstats_rd *report_delta,
++				   const struct rtnl_hw_stats64 *stats)
++{
++	report_delta->used = true;
++	netdev_hw_stats64_add(&report_delta->stats, stats);
++}
++EXPORT_SYMBOL(netdev_offload_xstats_report_delta);
++
++void
++netdev_offload_xstats_report_used(struct netdev_notifier_offload_xstats_ru *report_used)
++{
++	report_used->used = true;
++}
++EXPORT_SYMBOL(netdev_offload_xstats_report_used);
++
++void netdev_offload_xstats_push_delta(struct net_device *dev,
++				      enum netdev_offload_xstats_type type,
++				      const struct rtnl_hw_stats64 *p_stats)
++{
++	struct rtnl_hw_stats64 *stats;
++
++	ASSERT_RTNL();
++
++	stats = netdev_offload_xstats_get_ptr(dev, type);
++	if (WARN_ON(!stats))
++		return;
++
++	netdev_hw_stats64_add(stats, p_stats);
++}
++EXPORT_SYMBOL(netdev_offload_xstats_push_delta);
++
+ /**
+  * netdev_get_xmit_slave - Get the xmit slave of master device
+  * @dev: device
+@@ -10417,6 +10680,8 @@ void unregister_netdevice_many(struct list_head *head)
+ 
+ 		dev_xdp_uninstall(dev);
+ 
++		netdev_offload_xstats_disable_all(dev);
++
+ 		/* Notify protocols, that we are about to destroy
+ 		 * this device. They should clean all the things.
+ 		 */
 -- 
 2.33.1
 
