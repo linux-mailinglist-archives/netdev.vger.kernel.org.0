@@ -2,254 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D5F04C9AE6
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 03:05:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A1A4C9AE1
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 03:05:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239022AbiCBCGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 21:06:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S239008AbiCBCF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 21:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiCBCGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 21:06:17 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B19A41A3;
-        Tue,  1 Mar 2022 18:05:34 -0800 (PST)
-Received: from dggeme762-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K7clG14X2z1GC1j;
-        Wed,  2 Mar 2022 10:00:26 +0800 (CST)
-Received: from linux-suse12sp5.huawei.com (10.67.133.175) by
- dggeme762-chm.china.huawei.com (10.3.19.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Wed, 2 Mar 2022 10:05:05 +0800
-From:   Yan Zhu <zhuyan34@huawei.com>
-To:     <mcgrof@kernel.org>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
-        <keescook@chromium.org>, <kpsingh@kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liucheng32@huawei.com>, <netdev@vger.kernel.org>,
-        <nixiaoming@huawei.com>, <songliubraving@fb.com>,
-        <xiechengliang1@huawei.com>, <yhs@fb.com>, <yzaikin@google.com>,
-        <zengweilin@huawei.com>, <zhuyan34@huawei.com>
-Subject: [PATCH v3 sysctl-next] bpf: move bpf sysctls from kernel/sysctl.c to bpf module
-Date:   Wed, 2 Mar 2022 10:04:12 +0800
-Message-ID: <20220302020412.128772-1-zhuyan34@huawei.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <Yh1dtBTeRtjD0eGp@bombadil.infradead.org>
-References: <Yh1dtBTeRtjD0eGp@bombadil.infradead.org>
+        with ESMTP id S232069AbiCBCF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 21:05:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1753D5F241;
+        Tue,  1 Mar 2022 18:05:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7635615D3;
+        Wed,  2 Mar 2022 02:05:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8382AC340EE;
+        Wed,  2 Mar 2022 02:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646186714;
+        bh=5i8Y5+dBeeL89jeI9/AO5sLou/tQrxrcO+QtYbCCKUc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f5R3K7LQpxliNR5Lci0onOHclKiqth1ZuwJE+DSpmjDqYk+O6stDhcRJ5MX65Zioe
+         NPTzlzD1OekD3KsA86i3EqwvToKi1cDnAUI4gVpVAd13m9DeT8al538iFv80R9/5bU
+         92oYPHZjTkfdOSoB6oyMevjeC3si3MaMeC7uCuqAzgg4OrpSlytHbenOyU4xV1S4vE
+         bGy5KhHr0o9kkzbkSpNxG+TVpVElHfkkgucfpNfLYLDNTxdkLmNTpGHj/6i/UX2NeO
+         fDGriUvcdbAh8sQwaF1U59Cu30oVk761nMWSG8RNn7GK/yK1TCXs+kFvJxUcAD9CDn
+         tla4rME8QEXYg==
+Date:   Tue, 1 Mar 2022 18:05:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Harold Huang <baymaxhuang@gmail.com>
+Cc:     netdev@vger.kernel.org, jasowang@redhat.com, edumazet@google.com,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kernel@vger.kernel.org (open list),
+        kvm@vger.kernel.org (open list:VIRTIO HOST (VHOST)),
+        virtualization@lists.linux-foundation.org (open list:VIRTIO HOST 
+        (VHOST)), bpf@vger.kernel.org (open list:XDP (eXpress Data Path))
+Subject: Re: [PATCH net-next] tuntap: add sanity checks about msg_controllen
+ in sendmsg
+Message-ID: <20220301180512.06f7f6dc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220301064314.2028737-1-baymaxhuang@gmail.com>
+References: <20220301064314.2028737-1-baymaxhuang@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.133.175]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeme762-chm.china.huawei.com (10.3.19.108)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We're moving sysctls out of kernel/sysctl.c as its a mess. We
-already moved all filesystem sysctls out. And with time the goal is
-to move all sysctls out to their own susbsystem/actual user.
+On Tue,  1 Mar 2022 14:43:14 +0800 Harold Huang wrote:
+> In patch [1], tun_msg_ctl was added to allow pass batched xdp buffers to
+> tun_sendmsg. Although we donot use msg_controllen in this path, we should
+> check msg_controllen to make sure the caller pass a valid msg_ctl.
+> 
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fe8dd45bb7556246c6b76277b1ba4296c91c2505
+> 
+> Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
 
-kernel/sysctl.c has grown to an insane mess and its easy to run
-into conflicts with it. The effort to move them out is part of this.
-
-Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
-
----
-v1->v2:
-  1.Added patch branch identifier sysctl-next.
-  2.Re-describe the reason for the patch submission.
-
-v2->v3:
-  Re-describe the reason for the patch submission.
----
- kernel/bpf/syscall.c | 80 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- kernel/sysctl.c      | 71 ----------------------------------------------
- 2 files changed, 80 insertions(+), 71 deletions(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 35646db3d950..50f85b47d478 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -4888,3 +4888,83 @@ const struct bpf_verifier_ops bpf_syscall_verifier_ops = {
- const struct bpf_prog_ops bpf_syscall_prog_ops = {
- 	.test_run = bpf_prog_test_run_syscall,
- };
-+
-+#ifdef CONFIG_SYSCTL
-+static int bpf_stats_handler(struct ctl_table *table, int write,
-+			     void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	struct static_key *key = (struct static_key *)table->data;
-+	static int saved_val;
-+	int val, ret;
-+	struct ctl_table tmp = {
-+		.data   = &val,
-+		.maxlen = sizeof(val),
-+		.mode   = table->mode,
-+		.extra1 = SYSCTL_ZERO,
-+		.extra2 = SYSCTL_ONE,
-+	};
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	val = saved_val;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret && val != saved_val) {
-+		if (val)
-+			static_key_slow_inc(key);
-+		else
-+			static_key_slow_dec(key);
-+		saved_val = val;
-+	}
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return ret;
-+}
-+
-+static int bpf_unpriv_handler(struct ctl_table *table, int write,
-+			      void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	int ret, unpriv_enable = *(int *)table->data;
-+	bool locked_state = unpriv_enable == 1;
-+	struct ctl_table tmp = *table;
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	tmp.data = &unpriv_enable;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret) {
-+		if (locked_state && unpriv_enable != 1)
-+			return -EPERM;
-+		*(int *)table->data = unpriv_enable;
-+	}
-+	return ret;
-+}
-+
-+static struct ctl_table bpf_syscall_table[] = {
-+	{
-+		.procname	= "unprivileged_bpf_disabled",
-+		.data		= &sysctl_unprivileged_bpf_disabled,
-+		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
-+		.mode		= 0644,
-+		.proc_handler	= bpf_unpriv_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_TWO,
-+	},
-+	{
-+		.procname	= "bpf_stats_enabled",
-+		.data		= &bpf_stats_enabled_key.key,
-+		.maxlen		= sizeof(bpf_stats_enabled_key),
-+		.mode		= 0644,
-+		.proc_handler	= bpf_stats_handler,
-+	},
-+	{ }
-+};
-+
-+static int __init bpf_syscall_sysctl_init(void)
-+{
-+	register_sysctl_init("kernel", bpf_syscall_table);
-+	return 0;
-+}
-+late_initcall(bpf_syscall_sysctl_init);
-+#endif /* CONFIG_SYSCTL */
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index ae5e59396b5d..c64db3755d9c 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -146,59 +146,6 @@ static const int max_extfrag_threshold = 1000;
- 
- #endif /* CONFIG_SYSCTL */
- 
--#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_SYSCTL)
--static int bpf_stats_handler(struct ctl_table *table, int write,
--			     void *buffer, size_t *lenp, loff_t *ppos)
--{
--	struct static_key *key = (struct static_key *)table->data;
--	static int saved_val;
--	int val, ret;
--	struct ctl_table tmp = {
--		.data   = &val,
--		.maxlen = sizeof(val),
--		.mode   = table->mode,
--		.extra1 = SYSCTL_ZERO,
--		.extra2 = SYSCTL_ONE,
--	};
--
--	if (write && !capable(CAP_SYS_ADMIN))
--		return -EPERM;
--
--	mutex_lock(&bpf_stats_enabled_mutex);
--	val = saved_val;
--	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
--	if (write && !ret && val != saved_val) {
--		if (val)
--			static_key_slow_inc(key);
--		else
--			static_key_slow_dec(key);
--		saved_val = val;
--	}
--	mutex_unlock(&bpf_stats_enabled_mutex);
--	return ret;
--}
--
--static int bpf_unpriv_handler(struct ctl_table *table, int write,
--			      void *buffer, size_t *lenp, loff_t *ppos)
--{
--	int ret, unpriv_enable = *(int *)table->data;
--	bool locked_state = unpriv_enable == 1;
--	struct ctl_table tmp = *table;
--
--	if (write && !capable(CAP_SYS_ADMIN))
--		return -EPERM;
--
--	tmp.data = &unpriv_enable;
--	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
--	if (write && !ret) {
--		if (locked_state && unpriv_enable != 1)
--			return -EPERM;
--		*(int *)table->data = unpriv_enable;
--	}
--	return ret;
--}
--#endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
--
- /*
-  * /proc/sys support
-  */
-@@ -2188,24 +2135,6 @@ static struct ctl_table kern_table[] = {
- 		.extra2		= SYSCTL_ONE,
- 	},
- #endif
--#ifdef CONFIG_BPF_SYSCALL
--	{
--		.procname	= "unprivileged_bpf_disabled",
--		.data		= &sysctl_unprivileged_bpf_disabled,
--		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
--		.mode		= 0644,
--		.proc_handler	= bpf_unpriv_handler,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_TWO,
--	},
--	{
--		.procname	= "bpf_stats_enabled",
--		.data		= &bpf_stats_enabled_key.key,
--		.maxlen		= sizeof(bpf_stats_enabled_key),
--		.mode		= 0644,
--		.proc_handler	= bpf_stats_handler,
--	},
--#endif
- #if defined(CONFIG_TREE_RCU)
- 	{
- 		.procname	= "panic_on_rcu_stall",
--- 
-2.12.3
-
+Would you mind resending the same patch? It looks like it depended on
+your other change so the build bot was unable to apply and test it.
