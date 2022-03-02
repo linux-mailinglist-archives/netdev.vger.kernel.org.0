@@ -2,145 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3E64CAEAA
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63C0F4CAEB8
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240505AbiCBT0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:26:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41496 "EHLO
+        id S237298AbiCBTb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:31:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240439AbiCBT0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:26:32 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A33FC1C8C
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:25:37 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 74B673F5F5
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 19:25:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646249136;
-        bh=Mdsn7AT474MZc2MQVfRJDSMS8EOfClYXR9EYCiW/6uw=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=AUCDt5MsPe1PsjaSbSqC0wKPst/OHiR1mFTDwZknPsfCfDn916ACo+WiDg3LUbhvx
-         dZd6/Pg+5i6ioIBg2Vmo0iSut117ANG+Bx5udlxo1Fw0w6W1mjq62wmXsYBLrTKZsD
-         z0eNI7a/NpueBLdcZpxghkvOAZWXkVAFUIG1F6hQMpGwMl3lyjNRgAVQJHk7/AHJnj
-         MOQGDbQZerf8yq2Zn55yQs0ZlhSFSBNHer/c9hTx7546G5clYCgRqQvb3O+8Q9xAzP
-         sE1fNHrkqFBVneq139nTcS3cBXLdX7/8fviz3fsarIn9NQf7MA2I8k7b1hcH9fnw9/
-         IIWibeZL7mW+w==
-Received: by mail-ed1-f71.google.com with SMTP id j9-20020a056402238900b004128085d906so1509059eda.19
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 11:25:36 -0800 (PST)
+        with ESMTP id S232209AbiCBTb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:31:28 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FAFD64F5
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:30:44 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id h17so2454295plc.5
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 11:30:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=c8iavTYSZtTHkQTvUlJdWFExD94rcN/KiGbYJ4UsBRc=;
+        b=YxLrR5R+6xrjuIRazephUgnJ9Dw9t5rzaFNmjb/G9hh7W8vD0XADNlpmMXLlwkcsA2
+         FIqVuqOLgLH8Go9zZ5sytfaOA6A1MW+Oh7U8OFo6BS2th4irAO5UOw8Xxs91QoOZnN0N
+         jkfl3++TIp6EnzYjPzhKWpEGz81O7u/1jqeiqdUe2veZLjt2Vpfe1StgLtS2XeHeCC1m
+         VYQK9JoN8mFFSh4xcmZ6zcw6ASIhT4xLBunQdlXpRVcgcelh5MosqM72uZI06Ij8oRUy
+         Rk3YGgOvb19Ol1S444DuQLrjyOyUbYC/5T7Zrbvc2/1k3a+C7seZ0rtbP5oxV34CHdOv
+         F3uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Mdsn7AT474MZc2MQVfRJDSMS8EOfClYXR9EYCiW/6uw=;
-        b=T1NzDtc/NMBVIBNWb6vLeBgDD11yAD6r2jSRmT1f+m1BMUF8fihlbd1RW5thuFBTHI
-         0hEsigShz5XSSJwqYIDK4WtR075yWd35UFpUJf8L1jXYrhDvP4Tc7p4ufBvpwqSe834M
-         GGtlXCw52LO6Sy62aaEbafr+Gsi5aempXz7SoXpltXrJwN1pjkGMd+cGuTf2ch1xWWGN
-         fwDQpg4mWDaN+4ViEplMMVKqoYMjtpKMcMo25VSFpLd3CFO3OLfkmS35ZXiaFSuQTqRk
-         GueNlr4qK6PHMEBr64+byXgB+FW6VqHBsIq4sIynXi7DTD6uU0uf3tTgYigcAiWujDX5
-         UhwA==
-X-Gm-Message-State: AOAM533Lju2m8ecRhhE3wv3i3T/C8ZjIIaO7qG/xOrxQc00px8Jl2W66
-        dQOnJqDlCANBxHjDYa4ryNZSLd/1F4E6Zd3PoPd59B/CKrTyjh/pgLg1XIPiTP412UlsLCI5Cqg
-        HTXgfBDk8dVKIrkvnT2IOi/axBUehIfEWGw==
-X-Received: by 2002:a17:906:714c:b0:6cf:4850:52cc with SMTP id z12-20020a170906714c00b006cf485052ccmr24550321ejj.319.1646249136076;
-        Wed, 02 Mar 2022 11:25:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzTh8qQiPVslsguc9Q0e99iiJ94AmhFY0BNCMiQLPiKFvI8B9dasw3D154XCQaRCiddESFGrA==
-X-Received: by 2002:a17:906:714c:b0:6cf:4850:52cc with SMTP id z12-20020a170906714c00b006cf485052ccmr24550313ejj.319.1646249135910;
-        Wed, 02 Mar 2022 11:25:35 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id i14-20020a50cfce000000b00415b0730921sm1482765edk.42.2022.03.02.11.25.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 11:25:34 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH v2 6/6] nfc: llcp: Revert "NFC: Keep socket alive until the DISC PDU is actually sent"
-Date:   Wed,  2 Mar 2022 20:25:23 +0100
-Message-Id: <20220302192523.57444-7-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
-References: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c8iavTYSZtTHkQTvUlJdWFExD94rcN/KiGbYJ4UsBRc=;
+        b=UDEkCfBEPxhySMnKj1NZGskn6TwBAR4BCN0trbKgSE0AXyRBQIa0yosIdZae5vrTse
+         k1YNv71as6j6Dy1mPci+0Xtu5hl4zmu8WtuDz3ux7wzxtG1Y/gjLbUnBhVhGdy6ulT/D
+         KQKXq4IU9cKfvnRzwyQQoC+cCcPnxI1D3Xk+NDrryreLJVKMX4wlh2lFPk3nav3ZmOgg
+         c4jCmxhbwOoMmObZOscGe2DWyzRK2feIcWBRifg/doQWfoSl/1P1y7/zIxnpyxvGgX9n
+         MaIjmbzhqXRBrzcfBzTBY5QbJafUpSfiyEb8wNYIkjqldbAzC6iXqiz9Iq+9+gRlPPvc
+         9+Iw==
+X-Gm-Message-State: AOAM530Nd0pyY+VMGy8i2MmxqePZZJFIeO+GIZ1qysYApig3veXfmuFf
+        tcyXeKQlcODqRebddnHPt+QeF0yCkZU=
+X-Google-Smtp-Source: ABdhPJxMJSKDNTZAImVz/7CUxjqkyMzhXHDk0JCjTW0ddepfmGftE2n2KeCxSH7exnryW56tdQKQ2Q==
+X-Received: by 2002:a17:902:db0f:b0:151:5fbb:5f4b with SMTP id m15-20020a170902db0f00b001515fbb5f4bmr18882125plx.36.1646249444207;
+        Wed, 02 Mar 2022 11:30:44 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id r10-20020a635d0a000000b0035d81dd2a09sm16389187pgb.81.2022.03.02.11.30.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 11:30:43 -0800 (PST)
+Message-ID: <8b65b656-bf65-7fa5-f1f2-72429708cf41@gmail.com>
+Date:   Wed, 2 Mar 2022 11:30:41 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net-next 00/10] DSA unicast filtering
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com
+References: <20220302191417.1288145-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220302191417.1288145-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 17f7ae16aef1f58bc4af4c7a16b8778a91a30255.
+Hi Vladimir,
 
-The commit brought a new socket state LLCP_DISCONNECTING, which was
-never set, only read, so socket could never set to such state.
+On 3/2/2022 11:14 AM, Vladimir Oltean wrote:
+> This series doesn't attempt anything extremely brave, it just changes
+> the way in which standalone ports which support FDB isolation work.
+> 
+> Up until now, DSA has recommended that switch drivers configure
+> standalone ports in a separate VID/FID with learning disabled, and with
+> the CPU port as the only destination, reached trivially via flooding.
+> That works, except that standalone ports will deliver all packets to the
+> CPU. We can leverage the hardware FDB as a MAC DA filter, and disable
+> flooding towards the CPU port, to force the dropping of packets with
+> unknown MAC DA.
+> 
+> We handle port promiscuity by re-enabling flooding towards the CPU port.
+> This is relevant because the bridge puts its automatic (learning +
+> flooding) ports in promiscuous mode, and this makes some things work
+> automagically, like for example bridging with a foreign interface.
+> We don't delve yet into the territory of managing CPU flooding more
+> aggressively while under a bridge.
+> 
+> The only switch driver that benefits from this work right now is the
+> NXP LS1028A switch (felix). The others need to implement FDB isolation
+> first, before DSA is going to install entries to the port's standalone
+> database. Otherwise, these entries might collide with bridge FDB/MDB
+> entries.
+> 
+> This work was done mainly to have all the required features in place
+> before somebody starts seriously architecting DSA support for multiple
+> CPU ports. Otherwise it is much more difficult to bolt these features on
+> top of multiple CPU ports.
 
-Remove the dead code.
+Thanks a lot for submitting this, really happy to see a solution being 
+brought upstream. I will be reviewing this in more details later on, but 
+from where I left a few years ago, the two challenges that I had are 
+outlined below, and I believe we have not quite addressed them yet:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- net/nfc/llcp.h      | 1 -
- net/nfc/llcp_core.c | 7 -------
- net/nfc/llcp_sock.c | 7 -------
- 3 files changed, 15 deletions(-)
+- for switches that implement global VLAN filtering, upper VLAN 
+interfaces on top of standalone ports would require programming FDB and 
+MDB entries with the appropriate VLAN ID, however there is no such 
+tracking today AFAICT, so we are not yet solving those use cases yet, right?
 
-diff --git a/net/nfc/llcp.h b/net/nfc/llcp.h
-index d49d4bf2e37c..c1d9be636933 100644
---- a/net/nfc/llcp.h
-+++ b/net/nfc/llcp.h
-@@ -6,7 +6,6 @@
- enum llcp_state {
- 	LLCP_CONNECTED = 1, /* wait_for_packet() wants that */
- 	LLCP_CONNECTING,
--	LLCP_DISCONNECTING,
- 	LLCP_CLOSED,
- 	LLCP_BOUND,
- 	LLCP_LISTEN,
-diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
-index b70d5042bf74..3364caabef8b 100644
---- a/net/nfc/llcp_core.c
-+++ b/net/nfc/llcp_core.c
-@@ -737,13 +737,6 @@ static void nfc_llcp_tx_work(struct work_struct *work)
- 			print_hex_dump_debug("LLCP Tx: ", DUMP_PREFIX_OFFSET,
- 					     16, 1, skb->data, skb->len, true);
- 
--			if (ptype == LLCP_PDU_DISC && sk != NULL &&
--			    sk->sk_state == LLCP_DISCONNECTING) {
--				nfc_llcp_sock_unlink(&local->sockets, sk);
--				sock_orphan(sk);
--				sock_put(sk);
--			}
--
- 			if (ptype == LLCP_PDU_I)
- 				copy_skb = skb_copy(skb, GFP_ATOMIC);
- 
-diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
-index 5c5705f5028b..4ca35791c93b 100644
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -641,13 +641,6 @@ static int llcp_sock_release(struct socket *sock)
- 
- 	release_sock(sk);
- 
--	/* Keep this sock alive and therefore do not remove it from the sockets
--	 * list until the DISC PDU has been actually sent. Otherwise we would
--	 * reply with DM PDUs before sending the DISC one.
--	 */
--	if (sk->sk_state == LLCP_DISCONNECTING)
--		return err;
--
- out:
- 	sock_orphan(sk);
- 	sock_put(sk);
+- what if the switch does not support FDB/MDB isolation, what would be 
+our options here? As you might remember from a few months ago, the 
+Broadcom roboswitch do not have any isolation, but what they can do is 
+internally tag Ethernet frames with two VLAN tags, an that may be used 
+as a form of isolation
+
+> 
+> Vladimir Oltean (10):
+>    net: dsa: remove workarounds for changing master promisc/allmulti only
+>      while up
+>    net: dsa: rename the host FDB and MDB methods to contain the "bridge"
+>      namespace
+>    net: dsa: install secondary unicast and multicast addresses as host
+>      FDB/MDB
+>    net: dsa: install the primary unicast MAC address as standalone port
+>      host FDB
+>    net: dsa: manage flooding on the CPU ports
+>    net: dsa: felix: migrate host FDB and MDB entries when changing tag
+>      proto
+>    net: dsa: felix: migrate flood settings from NPI to tag_8021q CPU port
+>    net: dsa: felix: start off with flooding disabled on the CPU port
+>    net: dsa: felix: stop clearing CPU flooding in felix_setup_tag_8021q
+>    net: mscc: ocelot: accept configuring bridge port flags on the NPI
+>      port
+> 
+>   drivers/net/dsa/ocelot/felix.c     | 241 ++++++++++++++++++++------
+>   drivers/net/ethernet/mscc/ocelot.c |   3 +
+>   include/net/dsa.h                  |   7 +
+>   net/dsa/dsa.c                      |  40 +++++
+>   net/dsa/dsa_priv.h                 |  53 +++++-
+>   net/dsa/port.c                     | 160 +++++++++++++-----
+>   net/dsa/slave.c                    | 261 +++++++++++++++++++++++------
+>   7 files changed, 609 insertions(+), 156 deletions(-)
+> 
+
 -- 
-2.32.0
-
+Florian
