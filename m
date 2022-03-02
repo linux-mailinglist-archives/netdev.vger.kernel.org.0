@@ -2,57 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C29D4CAE79
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:17:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 618B84CAE84
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244230AbiCBTSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:18:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
+        id S238002AbiCBTTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:19:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240728AbiCBTSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:18:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034DAA187;
-        Wed,  2 Mar 2022 11:17:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FB0D61632;
-        Wed,  2 Mar 2022 19:17:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C94DC004E1;
-        Wed,  2 Mar 2022 19:17:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646248653;
-        bh=/Z9NL1R6Uwfmg3+ggDEmUITGmY/PGsenpQnwgnFGBCw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CT5/d8lrPSRXqPX3lQErLUXiAvTtxI0LrBVyWTYAZJSadHlCNSL9UHC63GXIEfF3+
-         tn+JRjIlHyvZhm4YxvbKZdayrrlH4OqaO9mdT04sir14vOKJwJaIFvme/ViMx28R78
-         0LpPIahWyc/GU9aHeE/SyUaGVxsBs4YKHj03oheh1n2SPWneZq4gNqH79j+NaJxbYV
-         TfD83doSTWw0kascuOG3ef/Mhh6TzhBhPKNUQ9Gpj3LZK++pu5C108VY71TaNz+NYU
-         mzHMcrLo+BBQmKFDdA5u1tvaXL9p02Zwz/7nv9sbaGgC1RhHzV31Fw6Q/oF/vY7q4V
-         OnpVqa5bYKBkA==
-Date:   Wed, 2 Mar 2022 11:17:31 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
-Subject: Re: [PATCH net-next v4 4/4] net: tun: track dropped skb via
- kfree_skb_reason()
-Message-ID: <20220302111731.00746020@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <ca81687c-4943-6d58-34f9-fb0a858f6887@oracle.com>
-References: <20220226084929.6417-1-dongli.zhang@oracle.com>
-        <20220226084929.6417-5-dongli.zhang@oracle.com>
-        <20220301185021.7cba195d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <ca81687c-4943-6d58-34f9-fb0a858f6887@oracle.com>
+        with ESMTP id S234453AbiCBTTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:19:44 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8D13EAA8
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:18:59 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id r10so4378840wrp.3
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 11:18:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RMMqf9LQJWaptz0K/Gmd7Tj/qQkC6OYMvX3Op84BQbc=;
+        b=rHLZI791nYv+WOrg2nIm6efxe2ocFjX6a+gFNehTNnv22fed66UWWaOE9PSFzoPeKf
+         6wy1uGWP2CHDmrqJqWrd0Ugoeg74gI/KQacPvF8Atlg+Q4ppCdENUhyJTTtYBAqBhckt
+         GGQ4o9pRYq76bUcaa5jrofxLvraa0I1hgdFCB43nhGELkfFzPPAZW+aT8YPJTX2/jJ6S
+         EH8FKoQxSg1prOA/ChnHxK8OUiLpy6k+vjWpggLPpztMOIjdtZiUX0e1jx60xTZiiqX9
+         rOlVVOO25GgZ4yIY6Mojk7/PBX9EJyfcaSA6UNJThRhYStSek//CBTu0VN4EVN26YNfd
+         ws7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RMMqf9LQJWaptz0K/Gmd7Tj/qQkC6OYMvX3Op84BQbc=;
+        b=hWWcabay9gZ+uGXN4a9tY1QejdmmrbVHBmdDxf1qY8V/mWVC/Jc4xUW2CWzCtiRVCf
+         Lrso1FtBm5tnP3fQjxZg4aHmufMwKrWWOD8NktxuCCgHoG2GhRNRlvGRDcd84PgSe6Vs
+         aBQZMNvSgyqH34vfk4bKt5nwl/QrhsqKqEXMwP7ykvBK1Y+MzL7GQcm+VHROFwVooOmg
+         mZ7iMRFAEUgEkLhd+NFE+wekwCe6cz5Gt0gW+lXyKUq1tbpUBuyyKHXdzQvh4uS8OQj+
+         2z6qeZDhrtq7FGhm/+kWWfV6HC9LPfHVbdzE8IfGkNMvn12P27aJk8cqwzh8Hk1bh0+b
+         LzCQ==
+X-Gm-Message-State: AOAM532zIUwQfNUEy6UEAzy7XthrA8lsP5+5vDAFNamRqs3FOhI34PUe
+        16+jZObeJNBt37WWKb7oVS2SNQ==
+X-Google-Smtp-Source: ABdhPJzfX7YF1G2ueHRNDs/b7uHYGo2ZxFSRnq/jsKtwtUWnFB4EY304tSfe3rIZCNbw9o5t2k3abg==
+X-Received: by 2002:a05:6000:1ace:b0:1e8:cbe4:9920 with SMTP id i14-20020a0560001ace00b001e8cbe49920mr24599046wry.121.1646248738466;
+        Wed, 02 Mar 2022 11:18:58 -0800 (PST)
+Received: from [192.168.0.30] (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id h188-20020a1c21c5000000b00385699a8993sm2299258wmh.11.2022.03.02.11.18.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 11:18:58 -0800 (PST)
+Message-ID: <54a9ec41-300d-a0c7-eee1-9445ea200a5e@linaro.org>
+Date:   Wed, 2 Mar 2022 19:18:57 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] bluetooth: hci_event: don't print an error on vendor
+ events
+Content-Language: en-US
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org
+References: <20220302182352.441352-1-caleb.connolly@linaro.org>
+ <0C35F358-3E66-457E-9080-DAE4EB10BF16@holtmann.org>
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+In-Reply-To: <0C35F358-3E66-457E-9080-DAE4EB10BF16@holtmann.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,121 +81,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Mar 2022 10:19:30 -0800 Dongli Zhang wrote:
-> On 3/1/22 6:50 PM, Jakub Kicinski wrote:
-> > On Sat, 26 Feb 2022 00:49:29 -0800 Dongli Zhang wrote:  
-> >> +	SKB_DROP_REASON_SKB_PULL,	/* failed to pull sk_buff data */
-> >> +	SKB_DROP_REASON_SKB_TRIM,	/* failed to trim sk_buff data */  
-> > 
-> > IDK if these are not too low level and therefore lacking meaning.
-> > 
-> > What are your thoughts David?
-> > 
-> > Would it be better to up level the names a little bit and call SKB_PULL
-> > something like "HDR_TRUNC" or "HDR_INV" or "HDR_ERR" etc or maybe
-> > "L2_HDR_ERR" since in this case we seem to be pulling off ETH_HLEN?  
-> 
-> This is for device driver and I think for most of cases the people understanding
-> source code will be involved. I think SKB_PULL is more meaningful to people
-> understanding source code.
-> 
-> The functions to pull data to skb is commonly used with the same pattern, and
-> not only for ETH_HLEN. E.g., I randomly found below in kernel source code.
-> 
-> 1071 static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
-> 1072 {
-> ... ...
-> 1102         pulled_sci = pskb_may_pull(skb, macsec_extra_len(true));
-> 1103         if (!pulled_sci) {
-> 1104                 if (!pskb_may_pull(skb, macsec_extra_len(false)))
-> 1105                         goto drop_direct;
-> 1106         }
-> ... ...
-> 1254 drop_direct:
-> 1255         kfree_skb(skb);
-> 1256         *pskb = NULL;
-> 1257         return RX_HANDLER_CONSUMED;
-> 
-> 
-> About 'L2_HDR_ERR', I am curious what the user/administrator may do as next
-> step, while the 'SKB_PULL' will be very clear to the developers which kernel
-> operation (e.g., to pull some protocol/hdr data to sk_buff data) is with the issue.
-> 
-> I may use 'L2_HDR_ERR' if you prefer.
+Hi Marcel,
 
-We don't have to break it out per layer if you prefer. Let's call it
-HDR_TRUNC.
+On 02/03/2022 19:16, Marcel Holtmann wrote:
+> Hi Caleb,
+> 
+>> Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
+>> some devices see errors being printed for vendor events, e.g.
+>>
+>> [   75.806141] Bluetooth: hci0: setting up wcn399x
+>> [   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
+>> [   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
+>> [   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
+>> [   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
+>> [   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
+>> [   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
+>> [   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
+>> [   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
+>> [   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
+>> [   77.198451] Bluetooth: hci0: QCA setup on UART is completed
+>>
+>> Use the quick-return path in hci_event_func() to avoid printing this
+>> message for vendor events, this reverts to the previous behaviour which
+>> didn't print an error for vendor events.
+>>
+>> Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
+>> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+>> ---
+>> net/bluetooth/hci_event.c | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> patch has been applied to bluetooth-stable tree.
+I spotted an issue with this patch - the vendor events are actually processed, it's the warning which is printed and not 
+the error, I sent a v2 which properly disables the printing - you probably want that one instead, apologies for the 
+noise/inconvenience.
+> 
+> Regards
+> 
+> Marcel
+> 
 
-I don't like SKB_PULL, people using these trace points are as likely 
-to be BPF developers as kernel developers and skb_pull will not be
-meaningful to them. Besides the code can check if header is not
-truncated in other ways than pskb_may_pull(). And calling things 
-by the name of the helper that failed is bad precedent.
-
-> > For SKB_TRIM the error comes from allocation failures, there may be
-> > a whole bunch of skb helpers which will fail only under mem pressure,
-> > would it be better to identify them and return some ENOMEM related
-> > reason, since, most likely, those will be noise to whoever is tracking
-> > real errors?  
-> 
-> The reasons I want to use SKB_TRIM:
-> 
-> 1. To have SKB_PULL and SKB_TRIM (perhaps more SKB_XXX in the future in the same
-> set).
-> 
-> 2. Although so that SKB_TRIM is always caused by ENOMEM, suppose if there is new
-> return values by pskb_trim(), the reason is not going to be valid any longer.
-> 
-> 
-> I may use SKB_DROP_REASON_NOMEM if you prefer.
-> 
-> Another concern is that many functions may return -ENOMEM. It is more likely
-> that if there are two "goto drop" to return -ENOMEM, we will not be able to tell
-> from which function the sk_buff is dropped, e.g.,
-> 
-> if (function_A()) {
->     reason = -ENOMEM;
->     goto drop;
-> }
-> 
-> if (function_B()) {
->     reason = -ENOMEM;
->     goto drop;
-> }
-
-Are you saying that you're intending to break out skb drop reasons 
-by what entity failed to allocate memory? I'd think "skb was dropped
-because of OOM" is what should be reported. What we were trying to
-allocate is not very relevant (and can be gotten from the stack trace 
-if needed).
-
-> >>  	SKB_DROP_REASON_DEV_HDR,	/* there is something wrong with
-> >>  					 * device driver specific header
-> >>  					 */
-> >> +	SKB_DROP_REASON_DEV_READY,	/* device is not ready */  
-> > 
-> > What is ready? link is not up? peer not connected? can we expand?
-> 
-> In this patchset, it is for either:
-> 
-> - tun->tfiles[txq] is not set, or
-> 
-> - !(tun->dev->flags & IFF_UP)
-> 
-> I want to make it very generic so that the sk_buff dropped due to any device
-> level data structure that is not up/ready/initialized/allocated will use this
-> reason in the future.
-
-Let's expand the documentation so someone reading thru the enum can
-feel confident if they are using this reason correctly.
-
-Side note - you may want to switch to inline comments to make writing
-more verbose documentation, I mean:
-
-	/* This is the explanation of reason one which explains what
-	 * reason ones means, and how it should be used. We can make
-	 * use of full line width this way.
-         */
-	SKB_DROP_REASON_ONE,
-	/* And this is an explanation for reason two. */
-	SKB_DROP_REASON_TWO,
+-- 
+Kind Regards,
+Caleb (they/them)
