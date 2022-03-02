@@ -2,52 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98B554CAE92
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:23:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E59BB4CAE97
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:24:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237298AbiCBTXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:23:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
+        id S237510AbiCBTZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:25:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235975AbiCBTXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:23:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED0745054;
-        Wed,  2 Mar 2022 11:22:59 -0800 (PST)
+        with ESMTP id S232549AbiCBTZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:25:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2661156C25
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:24:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DCF3B821A3;
-        Wed,  2 Mar 2022 19:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12911C004E1;
-        Wed,  2 Mar 2022 19:22:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEE8CB820F9
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 19:24:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9DDDC004E1;
+        Wed,  2 Mar 2022 19:24:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646248976;
-        bh=QljIzW9++PpUcQnYcc8KXlsEqKlfxH2WaPKG//6egiA=;
+        s=k20201202; t=1646249062;
+        bh=I59xCcRx5hWrVRepoNd9dbsGnXxwb8NWzK9I089RJR0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tlAPw6lWDcZ2jNLyAZrKmecShWpEr/g5ZIZNSnZGL1ALGeKTEIaoiiycogBNQm9Rq
-         IcFzGc3PPii/IlqDhefvfcjhQvAElnj7iYLeTJPzJ84LiMZdXw4lSlYkKuP3nzC9pv
-         f5+WOhtmTM0Z59Hh76H92N4N3xf18JGdeT+O9MUGIodvtpyT5p6tonTXIp5+ATC+3T
-         Qs9LMryVpnYJmJdecF0kuecar83AnElBM/x883yodSM8ALsMgrQ9GeNGvFdKk4V7W1
-         uPptJyW+SOV1BJeVJf+FUaq0yaBfXSADBPCpDdPIE6Zm9bXtaBzeW7X16jfPyJFxfg
-         8oP3mvbWFNjzg==
-Date:   Wed, 2 Mar 2022 11:22:55 -0800
+        b=DWM06sKYfCYndEmvAbuKCk85PC0S7nxJ85euc/Az4PXnzmmXb6AVl94XR406glKjZ
+         mCeinmKgp0Xn9A9diJHfTCqgAgKx78IMv724+IYtW/nWYt3LIHjphqq//I70AGMIxN
+         3ffakjC7pZY/kN5/GTO4Q9LBYRm46Tnk24VbzlGMhi2a1ScWhvdURzGgN4fPJRkm3f
+         BKScnnM7y0Ai2EzCFDCT5ZQ7ohIwWRCcLEVcY9/SqAwTcRb+93UIav2CYoHhSRRTKa
+         N0hRk3TIpYKZkqKrzKpMcosns7MsB8sF7l4ILIR+txnhZikDA57nHU8wuuM950LSYD
+         aMxoAXp8EBMNA==
+Date:   Wed, 2 Mar 2022 11:24:20 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        imagedong@tencent.com, joao.m.martins@oracle.com,
-        joe.jin@oracle.com, edumazet@google.com
-Subject: Re: [PATCH net-next v4 4/4] net: tun: track dropped skb via
- kfree_skb_reason()
-Message-ID: <20220302112255.545618dd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <2071f8a0-148d-96fa-75b9-8277c2f87287@gmail.com>
-References: <20220226084929.6417-1-dongli.zhang@oracle.com>
-        <20220226084929.6417-5-dongli.zhang@oracle.com>
-        <20220301185021.7cba195d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <2071f8a0-148d-96fa-75b9-8277c2f87287@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [net-next v9 0/2] net: sched: allow user to select txqueue
+Message-ID: <20220302112420.4bc0cd79@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220222112326.15070-1-xiangxia.m.yue@gmail.com>
+References: <20220222112326.15070-1-xiangxia.m.yue@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,23 +66,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Mar 2022 20:29:37 -0700 David Ahern wrote:
-> On 3/1/22 7:50 PM, Jakub Kicinski wrote:
-> > On Sat, 26 Feb 2022 00:49:29 -0800 Dongli Zhang wrote:  
-> >> +	SKB_DROP_REASON_SKB_PULL,	/* failed to pull sk_buff data */
-> >> +	SKB_DROP_REASON_SKB_TRIM,	/* failed to trim sk_buff data */  
-> > 
-> > IDK if these are not too low level and therefore lacking meaning.
-> > 
-> > What are your thoughts David?  
+On Tue, 22 Feb 2022 19:23:24 +0800 xiangxia.m.yue@gmail.com wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > 
-> I agree. Not every kfree_skb is worthy of a reason. "Internal
-> housekeeping" errors are random and nothing a user / admin can do about
-> drops.
-> 
-> IMHO, the value of the reason code is when it aligns with SNMP counters
-> (original motivation for this direction) and relevant details like TCP
-> or UDP checksum mismatch, packets for a socket that is not open, socket
-> is full, ring buffer is full, packets for "other host", etc.
+> Patch 1 allow user to select txqueue in clsact hook.
+> Patch 2 support skbhash, classid, cpuid to select txqueue.
 
-Agreed :(
+Jamal, you had feedback on the previous version, 
+does this one look good?
