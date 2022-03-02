@@ -2,136 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BF54CB35E
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 01:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 858CE4CB2DB
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 00:51:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiCCABR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 19:01:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
+        id S229448AbiCBXpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 18:45:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiCCABI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:01:08 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019444FC6E;
-        Wed,  2 Mar 2022 16:00:07 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id 185so2739074qkh.1;
-        Wed, 02 Mar 2022 16:00:06 -0800 (PST)
+        with ESMTP id S229446AbiCBXpk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 18:45:40 -0500
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F233CFC6
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 15:43:30 -0800 (PST)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2dbfe58670cso37128517b3.3
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 15:43:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=s2VoxRcgzayXC4zVf8d2bV7EKQmBNoz4BFBzN6+8sx8=;
-        b=irtUW00dYBE7kRhx89tLLgo+OiHCquwUTazjhPRpgra/Ng8ZdA8XxCmleB4NvxllKh
-         4pKE6dlj50+3l1NtV4o9/4ebYa6MzILugoiY6A7PIbHurAxsmGNDq+Azak/YPX7TvXqp
-         vWKgPbmVn8eSbnf0s0rlwVptu1i33O5KFWx6cgKlB1Iv/ADRAyqTCutf86BCCCum8X2/
-         Bf0AFz6Uc9OqJ9+suUpqFsrW1IvnGHcoqc6V2ESgWgVivWiJrGD9dv/iy4uRrGM+OgIG
-         JzhbU+mrHknnWfDH4bhT9zMXZNaDWIeBUzcbCDaaOTAZ4EeZTnnWYTbM3mDIlJ1KSgyy
-         PikQ==
+        bh=XgNhfgXNvyHwhRIZSvG9yNwFcZmNZTVBZvrVHxQyTck=;
+        b=owyjROhU/UFdgg6nxsLdMVG+dkHKfTk0mEiDXgu0qJKKEKJdLctZevqTiPFwDovYjV
+         UMw4lGfsTkK81cAvS4YTfb9KrrhZSnjOunYC/34pePhthPVVbIxP+cpj+MDXBCFkH7BL
+         xUeA3D4orCI4+n0EtzJwsq7/WEhysbZDl/TlqF6ksa39hQ3g9kZB5hJZcJntDZxXk4Wv
+         j/kdkY2gRCyiN9zL+bqckg5kpsoCFXJ8KyleCDWaLIS824v0WJC7FMrMo5KiGgtaDjCx
+         3CBWL7A62bjWq80CgJ+rzeowqqKl8yXKQFc6NGG7kEKF5G4oCiv6vik6dSkg29Pyb99N
+         nHcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=s2VoxRcgzayXC4zVf8d2bV7EKQmBNoz4BFBzN6+8sx8=;
-        b=wCLGp7OUJp/fLsZela7DxIvXWMqB8fMTaKGEFbVYBpJVhW5arTt6ymEBh+LPLVEJoB
-         SBitD97j/9axjRTC5GzF8BYKe0LIwXvp+8KyFUx02QRApxCPyYgOy5yCJBzjSBDR6SEf
-         tzAUuLR/0Dxip33xVNuSNyqvSr4CLSpBewlV4bMI2y8CR3ALVHsIRgnBJrZhjrzDHY4L
-         4QQTfvAlGrKVe5C47SWMfAJBYoQzSMu+s4vXQRXGiG+futo0FRgWFpP5zX+uv9/EYBZv
-         PV9OvMQmw8H+4EplRUvT2mGrKM7g+0Nq+2sILaHvIgXScDwjnhp8el0sXeOJ+NszTQfJ
-         euow==
-X-Gm-Message-State: AOAM530/h/YHG3cvh0tVvANRZMBksuBNc9m19b9MQE+GzLwZzjR/NQWO
-        kfBELprPAxqy7sRyqyySHYOjoL5psvJ9dX7l2+qacind//ASHw==
-X-Google-Smtp-Source: ABdhPJxo/W0o2SxPKcSkXdGg8CN8B7z5+TwZFM+qdHIf07npd47aBOy5NLnFlh9FXRccJ7EOY1O/tmylybId+gaV5XE=
-X-Received: by 2002:a02:aa85:0:b0:314:c152:4c89 with SMTP id
- u5-20020a02aa85000000b00314c1524c89mr26976369jai.93.1646263965076; Wed, 02
- Mar 2022 15:32:45 -0800 (PST)
+        bh=XgNhfgXNvyHwhRIZSvG9yNwFcZmNZTVBZvrVHxQyTck=;
+        b=1XVQzJHy5yuDTay0kKGRmUFCA/F+KsIOvxf9o16fiGmjs1VzkBsLFX8anCy13ZAi2L
+         Ygqey2ZAUUeuo4twZjytQom4XTcbPApKEoL7qoN9HTN672Ix2Npgzx5FcgcdjhBeA9vF
+         L5XoaupUktGrz0fNEmq7pzqpj0z1bzcoIoAFaey7zYxhe6WLEv/Z5+phId+ALE+dcST5
+         gbEq7OY0n2UuM0yHPIssuR+4Lnw5FFmjb5mRg6smgbqxRJq5Sk6NqKVN3kp3+aMhIksT
+         u7PeetDXH48xE3Mk00bJ9KXhMY4U+iQJ3aJoULf833A4/PyttQctwGgKMV35N1TUeuUR
+         ZUgA==
+X-Gm-Message-State: AOAM532YiK1TzCnsBqAho5MLI6z7oyy7+TKkXhwFoTech5MGarq4pkrc
+        IcV+Cdbq8EvQu3fgLgAwjI6rnMutDJMpH6wPZNG1kA==
+X-Google-Smtp-Source: ABdhPJwycDWmZwQXC+GHVdnAAJMiWT0ODpRc0qF6HLXHX5qelrZBF9SJkAASLiAxxM1LqYq5qFLs8avjb2+gvb810Ts=
+X-Received: by 2002:a0d:d596:0:b0:2db:fc7f:990e with SMTP id
+ x144-20020a0dd596000000b002dbfc7f990emr8569913ywd.47.1646264531012; Wed, 02
+ Mar 2022 15:42:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20220301165737.672007-1-ytcoode@gmail.com>
-In-Reply-To: <20220301165737.672007-1-ytcoode@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Mar 2022 15:32:34 -0800
-Message-ID: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Add a check to ensure that page_cnt is non-zero
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+References: <20220302195519.3479274-1-kafai@fb.com> <20220302195622.3483941-1-kafai@fb.com>
+ <CANn89iKN06bKxjrEeZAmcj0x4tYMwRv-YzdZLWKbCcuTYT+SpQ@mail.gmail.com> <20220302223352.txuhu4ielmlxldrg@kafai-mbp>
+In-Reply-To: <20220302223352.txuhu4ielmlxldrg@kafai-mbp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 2 Mar 2022 15:41:59 -0800
+Message-ID: <CANn89i+ZLB8EK2CUC7dnERvcawSAOhpzHpeKSvL0dVfK-fusXg@mail.gmail.com>
+Subject: Re: [PATCH v6 net-next 10/13] net: Postpone skb_clear_delivery_time()
+ until knowing the skb is delivered locally
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        kernel-team <kernel-team@fb.com>,
+        Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 8:57 AM Yuntao Wang <ytcoode@gmail.com> wrote:
+On Wed, Mar 2, 2022 at 2:34 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> The page_cnt parameter is used to specify the number of memory pages
-> allocated for each per-CPU buffer, it must be non-zero and a power of 2.
+> On Wed, Mar 02, 2022 at 12:30:14PM -0800, Eric Dumazet wrote:
+> > On Wed, Mar 2, 2022 at 11:56 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > The previous patches handled the delivery_time in the ingress path
+> > > before the routing decision is made.  This patch can postpone clearing
+> > > delivery_time in a skb until knowing it is delivered locally and also
+> > > set the (rcv) timestamp if needed.  This patch moves the
+> > > skb_clear_delivery_time() from dev.c to ip_local_deliver_finish()
+> > > and ip6_input_finish().
+> > >
+> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > ---
+> > >  net/core/dev.c       | 8 ++------
+> > >  net/ipv4/ip_input.c  | 1 +
+> > >  net/ipv6/ip6_input.c | 1 +
+> > >  3 files changed, 4 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > index 0fc02cf32476..3ff686cc8c84 100644
+> > > --- a/net/core/dev.c
+> > > +++ b/net/core/dev.c
+> > > @@ -5193,10 +5193,8 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+> > >                         goto out;
+> > >         }
+> > >
+> > > -       if (skb_skip_tc_classify(skb)) {
+> > > -               skb_clear_delivery_time(skb);
+> > > +       if (skb_skip_tc_classify(skb))
+> > >                 goto skip_classify;
+> > > -       }
+> > >
+> > >         if (pfmemalloc)
+> > >                 goto skip_taps;
+> > > @@ -5225,14 +5223,12 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+> > >                         goto another_round;
+> > >                 if (!skb)
+> > >                         goto out;
+> > > -               skb_clear_delivery_time(skb);
+> > >
+> > >                 nf_skip_egress(skb, false);
+> > >                 if (nf_ingress(skb, &pt_prev, &ret, orig_dev) < 0)
+> > >                         goto out;
+> > > -       } else
+> > > +       }
+> > >  #endif
+> > > -               skb_clear_delivery_time(skb);
+> > >         skb_reset_redirect(skb);
+> > >  skip_classify:
+> > >         if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
+> > > diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+> > > index d94f9f7e60c3..95f7bb052784 100644
+> > > --- a/net/ipv4/ip_input.c
+> > > +++ b/net/ipv4/ip_input.c
+> > > @@ -226,6 +226,7 @@ void ip_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int protocol)
+> > >
+> > >  static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+> > >  {
+> > > +       skb_clear_delivery_time(skb);
+> > >         __skb_pull(skb, skb_network_header_len(skb));
+> > >
+> > >         rcu_read_lock();
+> > > diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+> > > index d4b1e2c5aa76..5b5ea35635f9 100644
+> > > --- a/net/ipv6/ip6_input.c
+> > > +++ b/net/ipv6/ip6_input.c
+> > > @@ -459,6 +459,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+> > >
+> > >  static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+> > >  {
+> > > +       skb_clear_delivery_time(skb);
+> > >         rcu_read_lock();
+> > >         ip6_protocol_deliver_rcu(net, skb, 0, false);
+> > >         rcu_read_unlock();
+> > > --
+> > > 2.30.2
+> > >
+> >
+> > It is not clear to me why we need to clear tstamp if packet is locally
+> > delivered ?
+> It does not clear the rx tstamp in skb->tstamp.
 >
-> Currently, the __perf_buffer__new() function attempts to validate that
-> the page_cnt is a power of 2 but forgets checking for the case where
-> page_cnt is zero, we can fix it by replacing 'page_cnt & (page_cnt - 1)'
-> with '!is_power_of_2(page_cnt)'.
+> It only clears the EDT in skb->tstamp when the skb
+> is transmitted out of a local tcp_sock and then loop back from egress
+> to ingress through virtual interface like veth.
 >
-> Thus we also don't need to add a check in perf_buffer__new_v0_6_0() to
-> make sure that page_cnt is non-zero and the check for zero in
-> perf_buffer__new_raw_v0_6_0() can also be removed.
->
-> The code is cleaner and more readable.
->
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> ---
->  tools/lib/bpf/libbpf.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index be6480e260c4..4dd1d82cd5b9 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -33,6 +33,7 @@
->  #include <linux/filter.h>
->  #include <linux/list.h>
->  #include <linux/limits.h>
-> +#include <linux/log2.h>
+> >
+> > TCP stack is using tstamp for incoming packets (look for
+> > TCP_SKB_CB(skb)->has_rxtstamp)
+> skb_clear_delivery_time() will put ktime_get_real() back to skb->tstamp
+> so that the receiving tcp_sock can use it.
 
-we don't have this header implemented in Github repo, so this will be
-unnecessary painful
 
+Oh... I had to look at
 
->  #include <linux/perf_event.h>
->  #include <linux/ring_buffer.h>
->  #include <linux/version.h>
-> @@ -10951,7 +10952,7 @@ struct perf_buffer *perf_buffer__new_raw_v0_6_0(int map_fd, size_t page_cnt,
->  {
->         struct perf_buffer_params p = {};
->
-> -       if (page_cnt == 0 || !attr)
-> +       if (!attr)
->                 return libbpf_err_ptr(-EINVAL);
->
->         if (!OPTS_VALID(opts, perf_buffer_raw_opts))
-> @@ -10992,7 +10993,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
->         __u32 map_info_len;
->         int err, i, j, n;
->
-> -       if (page_cnt & (page_cnt - 1)) {
-> +       if (!is_power_of_2(page_cnt)) {
++static inline void skb_clear_delivery_time(struct sk_buff *skb)
++{
++       if (skb->mono_delivery_time) {
++               skb->mono_delivery_time = 0;
++               if (static_branch_unlikely(&netstamp_needed_key))
++                       skb->tstamp = ktime_get_real();
++               else
++                       skb->tstamp = 0;
++       }
++}
 
-so let's instead just use `page_cnt == 0 || (page_cnt & (page_cnt -
-1))` here explicitly
+Name was a bit confusing :)
 
->                 pr_warn("page count should be power of two, but is %zu\n",
->                         page_cnt);
->                 return ERR_PTR(-EINVAL);
-> --
-> 2.35.1
->
+And it seems you have a big opportunity to not call ktime_get_real()
+when skb->sk is known at this point (early demux)
+because few sockets actually enable timestamping ?
