@@ -2,97 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D46394CA912
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 16:31:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BF764CA91F
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 16:34:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243478AbiCBPc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 10:32:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
+        id S243501AbiCBPfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 10:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243474AbiCBPcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 10:32:25 -0500
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C53E27CDE
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 07:31:42 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id E902F5C0070;
-        Wed,  2 Mar 2022 10:31:39 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 02 Mar 2022 10:31:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=P0UyEhJ4bWlfeh/CE
-        NyMsA94qtM/zUSyHBvGgQ8gS70=; b=LBovM/unksIfyIvdREn554y7zbNwoRmrp
-        tGWGnSjMewTOLV3CHXWL68VWDXvJHlF40dke9YMmF7I0dIJFg+tXhGYuX0ysOwx2
-        /SGMh/SeUXieJi77fNMvZkWepQ+EumqJUNukQSLieZC/HtxWB+pcd3WlFNh9Aer/
-        3p+eeABsFLRDsyCgYx4KQtvZgeBaXwhJqJHKNv15syi26Sipm06QBV4D6svBmSNz
-        uQ9pVws8PQVYS/fMheFuuepSyY1wPtn8qrARgGLlvNAe8x3tb/T9KjkYhH1nf6fs
-        0ZxcJs7G3m7R6F6z8TJSEh546mqcRyXLbygjRjfgQ/oJvX/xZlfDw==
-X-ME-Sender: <xms:240fYovaBydhYxXLohlBiY_qTAY9ikGTjK54itAuffIuDAbXDlKbZw>
-    <xme:240fYlcLy_Yht2EtQU08qz_Z5BX7dFJhxgIPXljwI_qyNRnmPtLyDXTanN-NDEJnC
-    LWxJehfgWWxnx8>
-X-ME-Received: <xmr:240fYjxWOF6A9m8yHFUVyFLx28qZ5AZdubrop5nufGKnL07JcTIoLtEzeQnYA4vv4BTSHI6SKe73AYNCMvmQuGioPoQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtgedgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:240fYrMLqodcMR9CxQdkfweEJnnTcLzG0FZDCqaa4eAtHmtJW1xtaQ>
-    <xmx:240fYo-RMclgDRsqTPHFYnJ52OM54yKSEmQuIpg9Yzc_zmf6lLRRaQ>
-    <xmx:240fYjUQnOXE6CWCCy3vSH-JR8TkTPW2M4uWOhj6SheHSMQ6KJh4Pg>
-    <xmx:240fYnZngK-EIDY_IRqBDmjDenBFj0Ydndim1GDt3eiAD8W0maGjeg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 2 Mar 2022 10:31:39 -0500 (EST)
-Date:   Wed, 2 Mar 2022 17:31:36 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Petr Machata <petrm@nvidia.com>
-Subject: Re: [PATCH net] net: dcb: flush lingering app table entries for
- unregistered devices
-Message-ID: <Yh+N2OCM+Mv3GWoO@shredder>
-References: <20220224160154.160783-1-vladimir.oltean@nxp.com>
- <Yh5IdEGC9ggxQ/oy@shredder>
- <20220301163632.pcag3zgluewlwnh3@skbuf>
+        with ESMTP id S233059AbiCBPf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 10:35:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05026C625E
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 07:34:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646235285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QGFEqUfF08Ay8YfxfHzxFFjx43+q2fu6XbpJ32ujXXg=;
+        b=cRPbjuz4ayzbKtaJBVHhnbELJXTakdKrWzGEeMDvnEtJjobm4eoNebAK2RsAHNslfFaXrF
+        18U0alctB7l4umai6WaLo72rbN/JeddlBsePiD5jqd6D36Yh7EJhgnd0r6FY8ayCci8my9
+        Rb84OH50116VJEc3/G6I4Xn4IYQpkDQ=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-ADGexyfFPu25TIzD4BMu3w-1; Wed, 02 Mar 2022 10:34:44 -0500
+X-MC-Unique: ADGexyfFPu25TIzD4BMu3w-1
+Received: by mail-ot1-f70.google.com with SMTP id m7-20020a9d7e87000000b005af1551b419so1504099otp.5
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 07:34:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=QGFEqUfF08Ay8YfxfHzxFFjx43+q2fu6XbpJ32ujXXg=;
+        b=Oklw693DOugEc56fgc060XQX+uLQWVixwYFmD/f1PTQHW2Q2ODVDqg5Mhssc9JXfxQ
+         KFZBQO1qKXs9FH0BXQI1FMEtj9bB1PJcMjDhJJEA06K3lX6dmox6FVTF+wZZNAnjDB+I
+         yAoh6x2Q5Ph8S9DA2LSm2Ui6WMt1I5rTf4FQdPpmKgiq/BIP9SQLLLtbpduPRkELm7gR
+         lP3LqbIwrj8eVNdw8bZOJ/tTwGS5DeE8T3ZTlSbLtI4M3yg4py4OFNYIeUflNjCUZEOq
+         5fQKz7lLv5XFgG+QCwpGvlCP52JcDWCEJ9FasFOuKpjd5bSnEXOLOclYdWGoRyLL/ksL
+         D+tA==
+X-Gm-Message-State: AOAM531ZMJ3b2/WZq78XEdX7mPVaHB+JxLysQg2tKsauABHb7X6XS+y+
+        d/JAsB01H5oLwt0+lIM+I4cWeev5B3BRMsz4QKyFa7ffXXcpKOdtvDUP8HWPF3PX8ncGbCJet9E
+        l6zJgCvY928VJcYAG
+X-Received: by 2002:a9d:64d2:0:b0:5a4:44c:1e76 with SMTP id n18-20020a9d64d2000000b005a4044c1e76mr16173660otl.324.1646235283223;
+        Wed, 02 Mar 2022 07:34:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwFL7AIz+XMoO0pSy0ljQcZTQYiU1hM7aen/H7PCgOUAQayBKEf+UxF/GZqjnBMxmMJL8tbTw==
+X-Received: by 2002:a9d:64d2:0:b0:5a4:44c:1e76 with SMTP id n18-20020a9d64d2000000b005a4044c1e76mr16173643otl.324.1646235283005;
+        Wed, 02 Mar 2022 07:34:43 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id l34-20020a9d1ca2000000b005acea92e8absm8053452ota.42.2022.03.02.07.34.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 07:34:42 -0800 (PST)
+Date:   Wed, 2 Mar 2022 08:34:40 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>, bhelgaas@google.com,
+        saeedm@nvidia.com, linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, maorg@nvidia.com,
+        ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH V9 mlx5-next 09/15] vfio: Define device migration
+ protocol v2
+Message-ID: <20220302083440.539a1f33.alex.williamson@redhat.com>
+In-Reply-To: <20220302142732.GK219866@nvidia.com>
+References: <20220224142024.147653-1-yishaih@nvidia.com>
+        <20220224142024.147653-10-yishaih@nvidia.com>
+        <87tucgiouf.fsf@redhat.com>
+        <20220302142732.GK219866@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301163632.pcag3zgluewlwnh3@skbuf>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 04:36:32PM +0000, Vladimir Oltean wrote:
-> On Tue, Mar 01, 2022 at 06:23:16PM +0200, Ido Schimmel wrote:
-> > On Thu, Feb 24, 2022 at 06:01:54PM +0200, Vladimir Oltean wrote:
-> > > +static void dcbnl_flush_dev(struct net_device *dev)
-> > > +{
-> > > +	struct dcb_app_type *itr, *tmp;
-> > > +
-> > > +	spin_lock(&dcb_lock);
-> > 
-> > Should this be spin_lock_bh()? According to commit 52cff74eef5d ("dcbnl
-> > : Disable software interrupts before taking dcb_lock") this lock can be
-> > acquired from softIRQ.
-> 
-> Could be. I didn't notice the explanation and I was even wondering in
-> which circumstance would it be needed to disable softirqs...
-> Now that I see the explanation I think the dcb_rpl -> cxgb4_dcb_handle_fw_update
-> -> dcb_ieee_setapp call path is problematic, when a different
-> DCB-enabled interface unregisters concurrently with a firmware event.
+On Wed, 2 Mar 2022 10:27:32 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Yep. Can you please send a fix so that it gets into Jakub's PR tomorrow?
+> On Wed, Mar 02, 2022 at 12:19:20PM +0100, Cornelia Huck wrote:
+> > > +/*
+> > > + * vfio_mig_get_next_state - Compute the next step in the FSM
+> > > + * @cur_fsm - The current state the device is in
+> > > + * @new_fsm - The target state to reach
+> > > + * @next_fsm - Pointer to the next step to get to new_fsm
+> > > + *
+> > > + * Return 0 upon success, otherwise -errno
+> > > + * Upon success the next step in the state progression between cur_fsm and
+> > > + * new_fsm will be set in next_fsm.  
+> > 
+> > What about non-success? Can the caller make any assumption about
+> > next_fsm in that case? Because...  
+> 
+> I checked both mlx5 and acc, both properly ignore the next_fsm value
+> on error. This oddness aros when Alex asked to return an errno instead
+> of the state value.
+
+Right, my assertion was that only the driver itself should be able to
+transition to the ERROR state.  vfio_mig_get_next_state() should never
+advise the driver to go to the error state, it can only report that a
+transition is invalid.  The driver may stay in the current state if an
+error occurs here, which is why we added the ability to get the device
+state.  Thanks,
+
+Alex
+
+> > > + * any -> ERROR
+> > > + *   ERROR cannot be specified as a device state, however any transition request
+> > > + *   can be failed with an errno return and may then move the device_state into
+> > > + *   ERROR. In this case the device was unable to execute the requested arc and
+> > > + *   was also unable to restore the device to any valid device_state.
+> > > + *   To recover from ERROR VFIO_DEVICE_RESET must be used to return the
+> > > + *   device_state back to RUNNING.  
+> > 
+> > ...this seems to indicate that not moving into STATE_ERROR is an
+> > option anyway.   
+> 
+> Yes, but it is never done by vfio_mig_get_next_state() it is only
+> directly triggered inside the driver.
+> 
+> > Do we need any extra guidance in the description for
+> > vfio_mig_get_next_state()?  
+> 
+> I think no, it is typical in linux that function failure means output
+> arguments are not valid
+> 
+> Jason
+> 
+
