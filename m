@@ -2,72 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79FF84C9BDD
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 04:12:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 801874C9BF7
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 04:19:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238642AbiCBDM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 22:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
+        id S233824AbiCBDTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 22:19:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239295AbiCBDMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 22:12:51 -0500
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FB44AF1DA;
-        Tue,  1 Mar 2022 19:12:08 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowADX35t24B5idqyQAQ--.22138S2;
-        Wed, 02 Mar 2022 11:11:50 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     broonie@kernel.org
-Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, f.suligoi@asem.it,
-        kuninori.morimoto.gx@renesas.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] ASoC: fsi: Add check for clk_enable
-Date:   Wed,  2 Mar 2022 11:11:48 +0800
-Message-Id: <20220302031148.46395-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230473AbiCBDTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 22:19:51 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52026B0A51;
+        Tue,  1 Mar 2022 19:19:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=rXMw4wUAlXFShkAofA0UbhafXS37c9IoNvi1pzseNYY=; b=2gVtDlIZSkhgIl24UAAe/1Xc+8
+        nbaSQ/y4IaSRN9riitZyu74kEbH70mpKB0s+BR1oos5YcpFnjxVPNs/mdn8lZ6YNNFwe+mx9Rt6ht
+        jU9GvAt8PzPrz1qnT8WfKZHkzqg7tzwljMhcwGudBwAiqMNPFSTwnMwh2ZSGEnphqCFw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nPFW2-008rUw-Ch; Wed, 02 Mar 2022 04:19:02 +0100
+Date:   Wed, 2 Mar 2022 04:19:02 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH net-next 1/4] net: phy: used the genphy_soft_reset
+ for phy reset in Lan87xx
+Message-ID: <Yh7iJpT0H1+3RncS@lunn.ch>
+References: <20220228140510.20883-1-arun.ramadoss@microchip.com>
+ <20220228140510.20883-2-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADX35t24B5idqyQAQ--.22138S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYD7AC8VAFwI0_Xr0_Wr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z2
-        80aVCY1x0267AKxVWxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
-        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMc
-        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v
-        4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6r48MxAIw28IcxkI7VAKI48JMx
-        C20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAF
-        wI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20x
-        vE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v2
-        0xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI
-        0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUg4SrUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228140510.20883-2-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 08:44:12PM +0800, Mark Brown wrote:
->> +err:
->> +	clk_disable(clock->xck);
->> +	clk_disable(clock->ick);
->> +	clk_disable(clock->div);
-> 
-> You need separate labels for each enable so that we don't end up
-> disabling clocks we didn't enable, that would also be a bug.
+On Mon, Feb 28, 2022 at 07:35:07PM +0530, Arun Ramadoss wrote:
+> Replaced current code for soft resetting phy to genphy_soft_reset
+> function. And added the macro for LAN87xx Phy ID.
 
-Thanks, I have submitted a v2 to fix it.
+Hi Arun
 
-Jiang
+Please don't mix multiple things in one patch.
 
+Looking at the actual path, you have:
+
+> +#define LAN87XX_PHY_ID			0x0007c150
+> +#define MICROCHIP_PHY_ID_MASK		0xfffffff0
+
+Part of macros for PHY ID.
+
+> +
+>  /* External Register Control Register */
+>  #define LAN87XX_EXT_REG_CTL                     (0x14)
+>  #define LAN87XX_EXT_REG_CTL_RD_CTL              (0x1000)
+> @@ -197,20 +200,10 @@ static int lan87xx_phy_init(struct phy_device *phydev)
+>  	if (rc < 0)
+>  		return rc;
+>  
+> -	/* Soft Reset the SMI block */
+> -	rc = access_ereg_modify_changed(phydev, PHYACC_ATTR_BANK_SMI,
+> -					0x00, 0x8000, 0x8000);
+> -	if (rc < 0)
+> -		return rc;
+> -
+> -	/* Check to see if the self-clearing bit is cleared */
+> -	usleep_range(1000, 2000);
+> -	rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
+> -			 PHYACC_ATTR_BANK_SMI, 0x00, 0);
+> +	/* phy Soft reset */
+> +	rc = genphy_soft_reset(phydev);
+>  	if (rc < 0)
+>  		return rc;
+> -	if ((rc & 0x8000) != 0)
+> -		return -ETIMEDOUT;
+
+Soft reset.
+
+>  
+>  	/* PHY Initialization */
+>  	for (i = 0; i < ARRAY_SIZE(init); i++) {
+> @@ -273,6 +266,9 @@ static int lan87xx_config_init(struct phy_device *phydev)
+>  {
+>  	int rc = lan87xx_phy_init(phydev);
+>  
+> +	if (rc < 0)
+> +		phydev_err(phydev, "failed to initialize phy\n");
+> +
+
+A new error message.
+
+>  	return rc < 0 ? rc : 0;
+>  }
+>  
+> @@ -506,18 +502,14 @@ static int lan87xx_cable_test_get_status(struct phy_device *phydev,
+>  
+>  static struct phy_driver microchip_t1_phy_driver[] = {
+>  	{
+> -		.phy_id         = 0x0007c150,
+> -		.phy_id_mask    = 0xfffffff0,
+> -		.name           = "Microchip LAN87xx T1",
+> +		.phy_id         = LAN87XX_PHY_ID,
+> +		.phy_id_mask    = MICROCHIP_PHY_ID_MASK,
+
+2nd part of the PHY ID macros.
+
+> +		.name           = "LAN87xx T1",
+
+A change in name.
+
+>  		.flags          = PHY_POLL_CABLE_TEST,
+> -
+>  		.features       = PHY_BASIC_T1_FEATURES,
+> -
+>  		.config_init	= lan87xx_config_init,
+> -
+>  		.config_intr    = lan87xx_phy_config_intr,
+>  		.handle_interrupt = lan87xx_handle_interrupt,
+> -
+
+White space changes.
+
+You can also use PHY_ID_MATCH_MODEL().
+
+    Andrew
