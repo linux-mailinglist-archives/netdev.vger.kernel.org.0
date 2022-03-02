@@ -2,102 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 891214CAE88
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B554CAE92
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233061AbiCBTVk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Mar 2022 14:21:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S237298AbiCBTXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:23:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiCBTVk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:21:40 -0500
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 508F76D970;
-        Wed,  2 Mar 2022 11:20:56 -0800 (PST)
-Received: from smtpclient.apple (p5b3d2910.dip0.t-ipconnect.de [91.61.41.16])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 7696CCED12;
-        Wed,  2 Mar 2022 20:20:55 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [PATCH v2] bluetooth: hci_event: don't print an error on vendor
- events
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20220302183515.448334-1-caleb.connolly@linaro.org>
-Date:   Wed, 2 Mar 2022 20:20:55 +0100
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
-References: <20220302183515.448334-1-caleb.connolly@linaro.org>
-To:     Caleb Connolly <caleb.connolly@linaro.org>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S235975AbiCBTXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:23:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED0745054;
+        Wed,  2 Mar 2022 11:22:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DCF3B821A3;
+        Wed,  2 Mar 2022 19:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12911C004E1;
+        Wed,  2 Mar 2022 19:22:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646248976;
+        bh=QljIzW9++PpUcQnYcc8KXlsEqKlfxH2WaPKG//6egiA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tlAPw6lWDcZ2jNLyAZrKmecShWpEr/g5ZIZNSnZGL1ALGeKTEIaoiiycogBNQm9Rq
+         IcFzGc3PPii/IlqDhefvfcjhQvAElnj7iYLeTJPzJ84LiMZdXw4lSlYkKuP3nzC9pv
+         f5+WOhtmTM0Z59Hh76H92N4N3xf18JGdeT+O9MUGIodvtpyT5p6tonTXIp5+ATC+3T
+         Qs9LMryVpnYJmJdecF0kuecar83AnElBM/x883yodSM8ALsMgrQ9GeNGvFdKk4V7W1
+         uPptJyW+SOV1BJeVJf+FUaq0yaBfXSADBPCpDdPIE6Zm9bXtaBzeW7X16jfPyJFxfg
+         8oP3mvbWFNjzg==
+Date:   Wed, 2 Mar 2022 11:22:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        imagedong@tencent.com, joao.m.martins@oracle.com,
+        joe.jin@oracle.com, edumazet@google.com
+Subject: Re: [PATCH net-next v4 4/4] net: tun: track dropped skb via
+ kfree_skb_reason()
+Message-ID: <20220302112255.545618dd@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <2071f8a0-148d-96fa-75b9-8277c2f87287@gmail.com>
+References: <20220226084929.6417-1-dongli.zhang@oracle.com>
+        <20220226084929.6417-5-dongli.zhang@oracle.com>
+        <20220301185021.7cba195d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <2071f8a0-148d-96fa-75b9-8277c2f87287@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Caleb,
-
-> Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
-> some devices see warnings being printed for vendor events, e.g.
+On Tue, 1 Mar 2022 20:29:37 -0700 David Ahern wrote:
+> On 3/1/22 7:50 PM, Jakub Kicinski wrote:
+> > On Sat, 26 Feb 2022 00:49:29 -0800 Dongli Zhang wrote:  
+> >> +	SKB_DROP_REASON_SKB_PULL,	/* failed to pull sk_buff data */
+> >> +	SKB_DROP_REASON_SKB_TRIM,	/* failed to trim sk_buff data */  
+> > 
+> > IDK if these are not too low level and therefore lacking meaning.
+> > 
+> > What are your thoughts David?  
 > 
-> [   75.806141] Bluetooth: hci0: setting up wcn399x
-> [   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
-> [   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
-> [   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
-> [   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
-> [   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
-> [   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
-> [   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
-> [   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
-> [   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> [   77.198451] Bluetooth: hci0: QCA setup on UART is completed
+> I agree. Not every kfree_skb is worthy of a reason. "Internal
+> housekeeping" errors are random and nothing a user / admin can do about
+> drops.
 > 
-> Avoid printing the event length warning for vendor events, this reverts
-> to the previous behaviour where such warnings weren't printed.
-> 
-> Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-> ---
-> Changes since v1:
-> * Don't return early! Vendor events still get parsed despite the
->   warning. I should have looked a little more closely at that...
-> ---
-> net/bluetooth/hci_event.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+> IMHO, the value of the reason code is when it aligns with SNMP counters
+> (original motivation for this direction) and relevant details like TCP
+> or UDP checksum mismatch, packets for a socket that is not open, socket
+> is full, ring buffer is full, packets for "other host", etc.
 
-patch has been applied to bluetooth-stable tree.
-
-Regards
-
-Marcel
-
+Agreed :(
