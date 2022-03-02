@@ -2,183 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6A04CA0C1
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 10:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 120604CA0DD
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 10:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240457AbiCBJaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 04:30:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        id S240539AbiCBJcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 04:32:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240461AbiCBJaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 04:30:21 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807B5B7C7F
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 01:29:36 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id v28so1369666ljv.9
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 01:29:36 -0800 (PST)
+        with ESMTP id S234241AbiCBJcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 04:32:14 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC44B82C6;
+        Wed,  2 Mar 2022 01:31:31 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id g21so1381278pfj.11;
+        Wed, 02 Mar 2022 01:31:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XH8CYV/Z50iBLZ27uSo3DlVY0KhJ8ZO+RiecWTcYel0=;
-        b=IQg4uBejV+wOE9gbvRPz3nvi4LkiiVw4YSIjC8NPteocLXX0uLpiZyGXJ60leACu72
-         E2mMgbaj2BDeYnhoOw0DKPRcT2bjIlB4yRTWQZ65OcYRTHhlWzgeq8LyFprIEpiij6N8
-         YNaymndxJaFKphqyYHlKdyPolm4uaJOX+WJuI=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=yRnvPGVK9XQdKYPg/H0ecgdZJeSxpiKw/X1pv37GC+w=;
+        b=FSwFYVuD0cAwR74FpWh/UVnJlZEuhHuzmEJF2CmWuTU5VQk08y1iQ6Cm+4Kk/IHZ7f
+         ykn4dSn+LtVJ/QNPcAOF0Kr9OP0uyQbpGUjZhyE2BsGEuIYzlTgMZwHl/BYpjMpkMG0+
+         P9mnuSE0YONb1xqLwPVeO/elgzKWhvv7I7OGEBThyQYghI00EIr5RS9MGp7GsCYrqLUi
+         wR7dcG4fdae3Ke7WyU9tBlNyUPSMcC8RmnmBsmKYAmxRcsIUhLqhpYW4uCJTlnf3AogC
+         YxEVbABh4/fwCz1Lhf2xi5Cnii6w5cwNjqEkAadiEwyP0C/cLXPnnAaLLll6ns+CdAHq
+         Ceuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XH8CYV/Z50iBLZ27uSo3DlVY0KhJ8ZO+RiecWTcYel0=;
-        b=VK0+4b09X8/vGwlomoK6ITsUjbePtd+7s2RubzlEHLUSqHngtOISy8jjqi9CLrnQP2
-         co294zcR9Jm0VUBDuAjkYpaLQhrp0fL9zTJx9GihxVtM3ubxtpYz9eldcuB1SFTA4JPo
-         VUce7BzgytQxW/MQDaNElrpfbJCef/YTOaFDKSePcfaA2u6YNBsV3JlCdhA/8aVrtEY5
-         JqN+JB78VIOgYXkp4DBpeD/KDURMwhAGDjgY/KiWHAYQR5HOFbnM7JoisNqjx7dSG7XR
-         1hzVCwVVw8JSzvDplVuvn8s0Jbq/gYwwupVPlTwAmmwrT4BN3LNlN5xmGmrlcqKd77XK
-         p72A==
-X-Gm-Message-State: AOAM532zzdUInTmodYR/CwCWdrz3a795D8m6ROn2/ZYrFnvLXjGw7vv3
-        uCTBgZSSX+PDPHJxtF44EjMjEA==
-X-Google-Smtp-Source: ABdhPJxPRWTwhfDKGEWi/HTZUmtnN6xoKL1T2KNwEAF9KgB2sMMXSt6lke7BfBVtPRIEaNMyntkyzw==
-X-Received: by 2002:a2e:3c0d:0:b0:246:3c52:7ada with SMTP id j13-20020a2e3c0d000000b002463c527adamr19885072lja.459.1646213374808;
-        Wed, 02 Mar 2022 01:29:34 -0800 (PST)
-Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id f36-20020a0565123b2400b0043795432e87sm1960430lfv.150.2022.03.02.01.29.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Mar 2022 01:29:33 -0800 (PST)
-Message-ID: <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
-Date:   Wed, 2 Mar 2022 10:29:31 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Laight <David.Laight@aculab.com>
-Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        KVM list <kvm@vger.kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        "linux1394-devel@lists.sourceforge.net" 
-        <linux1394-devel@lists.sourceforge.net>,
-        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "kgdb-bugreport@lists.sourceforge.net" 
-        <kgdb-bugreport@lists.sourceforge.net>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        "v9fs-developer@lists.sourceforge.net" 
-        <v9fs-developer@lists.sourceforge.net>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Mike Rapoport <rppt@kernel.org>
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com>
- <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
- <282f0f8d-f491-26fc-6ae0-604b367a5a1a@amd.com>
- <b2d20961dbb7533f380827a7fcc313ff849875c1.camel@HansenPartnership.com>
- <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org>
- <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
- <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
- <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
- <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
- <0ced2b155b984882b39e895f0211037c@AcuMS.aculab.com>
- <CAHk-=wix0HLCBs5sxAeW3uckg0YncXbTjMsE-Tv8WzmkOgLAXQ@mail.gmail.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <CAHk-=wix0HLCBs5sxAeW3uckg0YncXbTjMsE-Tv8WzmkOgLAXQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=yRnvPGVK9XQdKYPg/H0ecgdZJeSxpiKw/X1pv37GC+w=;
+        b=25yx3bE7Tdrh/FIfqtXGWF61WwqDjC5WxWRj3uOQy+xFnOnfSJl4gpSITPKOL6ppvz
+         xr1P/lP+YEIjzKBbNpn03p1MRiNHMFQej41PCQiM7ZYsONScWzARDV9MTLbKYCaJYJKQ
+         0PMbmVDfkgxq+NGUQ/4L1sjWJCqawtx0WZc8uvOruTsaRxv/JHUoXdW3juEItsMZijYe
+         x2y+YeZzcxjNVO2IQiv/vTcoq57n/NERNBTqppUmx/bB0aCArn2Ue28JJCF3twXdYp3U
+         vU+mkukYaeKpIEfnGoPctJjIVuyPhmzcWRY3JAuBB5C9SBIozZ19ogGvwbwxCHlWpuG7
+         k/Jw==
+X-Gm-Message-State: AOAM531WtYP64z3jF1qFTFjDxv9zG3DFlHc4cRXPthGe4IdA63Ho0KnG
+        GBKdtpGAym33H9R0xGshBiw=
+X-Google-Smtp-Source: ABdhPJxxYDNcbSMxl56+YduSTiv9ULKN3/PKEO9PEtlxvCfSyuhc7esxotc8paaSBF6ReGk5V/MJxQ==
+X-Received: by 2002:a05:6a00:244b:b0:4c9:319e:ecb7 with SMTP id d11-20020a056a00244b00b004c9319eecb7mr31990006pfj.58.1646213490674;
+        Wed, 02 Mar 2022 01:31:30 -0800 (PST)
+Received: from ubuntu.huawei.com ([119.3.119.20])
+        by smtp.googlemail.com with ESMTPSA id y74-20020a62644d000000b004f129e94f40sm19496506pfb.131.2022.03.02.01.31.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 01:31:30 -0800 (PST)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     torvalds@linux-foundation.org
+Cc:     akpm@linux-foundation.org, alsa-devel@alsa-project.org,
+        amd-gfx@lists.freedesktop.org, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bcm-kernel-feedback-list@broadcom.com,
+        bjohannesmeyer@gmail.com, c.giuffrida@vu.nl,
+        christian.koenig@amd.com, christophe.jaillet@wanadoo.fr,
+        dan.carpenter@oracle.com, dmaengine@vger.kernel.org,
+        drbd-dev@lists.linbit.com, dri-devel@lists.freedesktop.org,
+        gustavo@embeddedor.com, h.j.bos@vu.nl,
+        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
+        jakobkoschel@gmail.com, jgg@ziepe.ca, keescook@chromium.org,
+        kgdb-bugreport@lists.sourceforge.net, kvm@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-block@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-sgx@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux@rasmusvillemoes.dk,
+        linuxppc-dev@lists.ozlabs.org, nathan@kernel.org,
+        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
+        rppt@kernel.org, samba-technical@lists.samba.org,
+        tglx@linutronix.de, tipc-discussion@lists.sourceforge.net,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body as a ptr
+Date:   Wed,  2 Mar 2022 17:31:06 +0800
+Message-Id: <20220302093106.8402-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAHk-=whLK11HyvpUtEftOjc3Gup2V77KpAQ2fycj3uai=qceHw@mail.gmail.com>
+References: <CAHk-=whLK11HyvpUtEftOjc3Gup2V77KpAQ2fycj3uai=qceHw@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/03/2022 00.55, Linus Torvalds wrote:
-> On Tue, Mar 1, 2022 at 3:19 PM David Laight <David.Laight@aculab.com> wrote:
->>
+On Mon, 28 Feb 2022 16:41:04 -0800, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> But basically to _me_, the important part is that the end result is
+> maintainable longer-term.
 
-> With the "don't use iterator outside the loop" approach, the exact
-> same code works in both the old world order and the new world order,
-> and you don't have the semantic confusion. And *if* you try to use the
-> iterator outside the loop, you'll _mostly_ (*) get a compiler warning
-> about it not being initialized.
-> 
->              Linus
-> 
-> (*) Unless somebody initializes the iterator pointer pointlessly.
-> Which clearly does happen. Thus the "mostly". It's not perfect, and
-> that's most definitely not nice - but it should at least hopefully
-> make it that much harder to mess up.
+I couldn't agree more. And because of that, I stick with the following
+approach because it's maintainable longer-term than "type(pos) pos" one:
+ Implements a new macro for each list_for_each_entry* with _inside suffix.
+  #define list_for_each_entry_inside(pos, type, head, member)
 
-This won't help the current issue (because it doesn't exist and might
-never), but just in case some compiler people are listening, I'd like to
-have some sort of way to tell the compiler "treat this variable as
-uninitialized from here on". So one could do
+I have posted a patch series here to demonstrate this approach:
+https://lore.kernel.org/lkml/20220301075839.4156-3-xiam0nd.tong@gmail.com/
 
-#define kfree(p) do { __kfree(p); __magic_uninit(p); } while (0)
+Although we need replace all the use of list_for_each_entry* (15000+)
+with list_for_each_entry*_inside, the work can be done gradually rather
+than all at once. We can incrementally replace these callers until
+all these in the kernel are completely updated with *_inside* one. At
+that time, we can just remove the implements of origin macros and rename
+the *_inside* macro back to the origin name just in one single patch.
 
-with __magic_uninit being a magic no-op that doesn't affect the
-semantics of the code, but could be used by the compiler's "[is/may be]
-used uninitialized" machinery to flag e.g. double frees on some odd
-error path etc. It would probably only work for local automatic
-variables, but it should be possible to just ignore the hint if p is
-some expression like foo->bar or has side effects. If we had that, the
-end-of-loop test could include that to "uninitialize" the iterator.
+And the "type(pos) pos" approach need teach developers to "not initialize
+the iterator variable, otherwise the use-after-loop will not be reported by
+compiler", which is unreasonable and impossible for all developers. 
 
-Maybe sparse/smatch or some other static analyzer could implement such a
-magic thing? Maybe it's better as a function attribute
-[__attribute__((uninitializes(1)))] to avoid having to macrofy all
-functions that release resources.
+And it will mess up the following code logic and no warnning reported by
+compiler, even without initializing "ext" at the beginning:
+void foo(struct mem_extent *arg) {
+  struct mem_extent *ext;  // used both for iterator and normal ptr
+  ...
+  ext = arg;  // this assignment can alse be done in another bar() func
+  ...
+  list_for_each_entry(ext, head, member) {
+    if (found(ext))
+       break;
+  }
+  ...
+  // use ext after the loop
+  ret = ext;
+}
+If the loop hit the break, the last "ret" will be the found ext iterator.
+However, if the "type(pos) pos" approach applied, the last "ret" will be
+"arg" which is not the intention of the developers, because the "ext" is
+two different variables inside and outside the loop.
 
-Rasmus
+Thus, my idea is *better a finger off than always aching*, let's choose
+the "list_for_each_entry_inside(pos, type, head, member)" approach.
+
+> It turns out that just syntactically, it's really nice to give the
+> type of the iterator from outside the way we do now. Yeah, it may be a
+> bit odd, and maybe it's partly because I'm so used to the
+> "list_for_each_list_entry()" syntax, but moving the type into the loop
+> construct really made it nasty - either one very complex line, or
+> having to split it over two lines which was even worse.
+>
+> Maybe the place I looked at just happened to have a long typename, but
+> it's basically always going to be a struct, so it's never a _simple_
+> type. And it just looked very odd adn unnatural to have the type as
+> one of the "arguments" to that list_for_each_entry() macro.
+
+we can pass a shorter type name to list_for_each_entry_inside, thus no
+need to split it over two lines. Actually it is not a big problem.
++ #define t struct sram_bank_info
+- list_for_each_entry(pos, head, member) {
++ list_for_each_entry_inside(pos, t, head, member) {
+
+I put the type at the second argument not the first to avoid messing up
+the pattern match in some coccinelle scripts.
+
+>  (b) gives us a nice warning for any normal use-after-loop case
+> (unless you explicitly initialized it like that
+> sgx_mmu_notifier_release() function did for no good reason
+
+sometimes developers can be confused by the reported warnning:
+"used without having been initialized", and can not figure out immediately
+that "oh, now i am using another different variable but with the same name
+of the loop iterator variable", which has changed the programming habits
+of developers.
+
+>  (c) also guarantees that even if you don't get a warning,
+> non-converted (or newly written) bad code won't actually _work_
+>
+> so you end up getting the new rules without any ambiguity or mistaken
+
+It will lead to a wrong/NULL pointer dereference if the pointer is used
+anywhere else, depend on which value is used to initialized with.
+
+Best regard,
+--
+Xiaomeng Tong
