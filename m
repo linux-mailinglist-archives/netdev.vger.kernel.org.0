@@ -2,133 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8FE24C9F3D
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 09:30:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8614C9F56
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 09:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240178AbiCBIag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 03:30:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47118 "EHLO
+        id S235422AbiCBIh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 03:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240152AbiCBIaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 03:30:30 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E05B8B5D
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 00:29:45 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso753758wmr.1
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 00:29:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=anfYM1xs0NBMLGEeqezGOYJl+MN+3QcGgOkQ0d7W1KU=;
-        b=T250LPSLKUXQUaclMSeK0mZPrWImkaAZdf7+pxpZvYBVIjiMfRgaCAywrd9G1ZgB/0
-         RPeRZER9ugo42HQs7vOFLBMSQPAOYqXg/oajPZgQ5ONy0UZDqxelCW0yWfe1ksHhPrcL
-         P/a98j6H0buLuTut7KDXTAftRVTqbi5jMarQoWo0xKWi9Z3HP4a7XxZrRZ0rOP/uX4Az
-         LLIvmIk/579eXMZTSFWGq2fEQFgW+uDPuDijzIupYzselXw2nRaSOd5AugqhhPqSZ3gc
-         FEmfiAKLSrRBVcbA2KYP4MfAaSSA9cu4RGT+7dOnfaFc9d8vJLURer8fML3X+2CR2b/7
-         ze5w==
+        with ESMTP id S229808AbiCBIh0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 03:37:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F0B3A0BE2
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 00:36:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646210202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/2FAiDhGcTywdRgwSmwFCo5u8TBif4JlceniLJIbtkU=;
+        b=OHabHEOup82+twi5g/YGPqz4MUHuEq0KBlFKbQC1cSC6YrahlijspI3N320iKzi1tNa/HM
+        ayiO2lmMrpGaMHu+a0NNfH057GlQHvO2uop6gfXYcFMJNTThvSBg/etOQsrhjnmR5F+f7h
+        DAcwl/qyYKuOUrmepdoZGlSOwxdwLNY=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-345-RB3qmmjxP96MsaSeXhlifg-1; Wed, 02 Mar 2022 03:36:41 -0500
+X-MC-Unique: RB3qmmjxP96MsaSeXhlifg-1
+Received: by mail-wr1-f69.google.com with SMTP id z16-20020adff1d0000000b001ef7dc78b23so351489wro.12
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 00:36:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=anfYM1xs0NBMLGEeqezGOYJl+MN+3QcGgOkQ0d7W1KU=;
-        b=43uOOQJGsDfZ8v5UkXhmuPzOVxtLiMm2k7E0k9mH/UHXYzmu1F5QIJIWdmKpHWFIVX
-         wmBnqsc+iPCEVORme0A7zYIzFpAA/99R7sBtgMQmpFbOAPKwroPMAkuOIXnVIPOEN9i8
-         IAylCURmbx3u1o81iCKYT+UVC+DrpKVL0zud2uBF5AN59YzNPRTTUGpo0459BqC0tnqc
-         ErfL7er5ZDZ+AuYld8WGE65GSkoko+bu96tFYhlm7cHGm8MKTJjy++zuQmZiNgPiBGH1
-         rDyjvT9o5h3m+nEESA8NU+qjFC2nw8JQ04x6NHZ0LK/uSeEqqpCQifP2rUEvL4bE5wdS
-         1POg==
-X-Gm-Message-State: AOAM533YcKl/6+qD92bLu0K916ywsad6Y/deIVicS9SkqJ5/h13BpNW6
-        UK4gEzYWECFWX+xj1KTohvxV6YbPREJBNJLn
-X-Google-Smtp-Source: ABdhPJyejoqO4Ua2lw3doPCMFKI7AoknOX/n2Hq9a7QihlNIy2VB0jsIjJbRKAzoK9Beq8n1Bceu5Q==
-X-Received: by 2002:a1c:a915:0:b0:380:e3de:b78f with SMTP id s21-20020a1ca915000000b00380e3deb78fmr20356178wme.19.1646209784264;
-        Wed, 02 Mar 2022 00:29:44 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id z16-20020a7bc7d0000000b00381004c643asm4689971wmk.30.2022.03.02.00.29.43
+         :mime-version:content-disposition:in-reply-to;
+        bh=/2FAiDhGcTywdRgwSmwFCo5u8TBif4JlceniLJIbtkU=;
+        b=rjQMkX0WDH5q9qjY/dMhGZi6YGOH1Kcqj6ZL0M76z+KeLSHBqQIa9o1hGmhMSg+gU1
+         JB5Tmbou7RBTl26tIHgNhB33pN0asqxTwocDIqNr9rhIgIXNdtQ6o6GKWWvAyyLetub3
+         phMjt+ppkDE4Vtaoj8jiV2aR1hNPhde+O61gLj7cDQRTFltEYCZsNKFM4b58YBOj4NK/
+         N5uuQPfGVJOHP/oo0+dRI37aOvRIdzEDI3g63iHUOJu7TbXthjuPvQVyZt8TDFZLQrw2
+         rm0keo/34PwuSSyknAvCxNxOn0yHTNrmRmNEi/ANh0TROjafpSNR3n+p+LLvbuxwg+8E
+         rXKw==
+X-Gm-Message-State: AOAM532733SJ6H/ReOMFMy15ukgsnmx6wX7fQO49a8f+lZCCyLMVs+sy
+        GmqqmuV88BInqCNPeaugpOyNKsDGYdWvnCtcK1i1CfnPDEYmcz2wfIWh0KWKlnHVk1+V1DH9S0S
+        BFRzNkulPbWtVyA79
+X-Received: by 2002:a05:600c:3c9b:b0:380:be98:6204 with SMTP id bg27-20020a05600c3c9b00b00380be986204mr19516438wmb.121.1646210200111;
+        Wed, 02 Mar 2022 00:36:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJymEdMSgAgaDqjHhyxTJw/DIf4G/pqblQVXnivxlcluwVfKcMGVsVinJaSMoAx4IDiFG167KA==
+X-Received: by 2002:a05:600c:3c9b:b0:380:be98:6204 with SMTP id bg27-20020a05600c3c9b00b00380be986204mr19516421wmb.121.1646210199815;
+        Wed, 02 Mar 2022 00:36:39 -0800 (PST)
+Received: from redhat.com ([2a10:8006:355c:0:48d6:b937:2fb9:b7de])
+        by smtp.gmail.com with ESMTPSA id q11-20020adfcd8b000000b001e320028660sm15805542wrj.92.2022.03.02.00.36.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 00:29:43 -0800 (PST)
-Date:   Wed, 2 Mar 2022 08:29:41 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>,
-        jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
-Message-ID: <Yh8q9fzCQHW2qtIG@google.com>
-References: <00000000000070ac6505d7d9f7a8@google.com>
- <0000000000003b07b305d840b30f@google.com>
- <20220218063352-mutt-send-email-mst@kernel.org>
+        Wed, 02 Mar 2022 00:36:39 -0800 (PST)
+Date:   Wed, 2 Mar 2022 03:36:36 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, Alexander Graf <graf@amazon.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Theodore Ts'o <tytso@mit.edu>, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 3/3] wireguard: device: clear keys on VM fork
+Message-ID: <20220302033314-mutt-send-email-mst@kernel.org>
+References: <20220301231038.530897-1-Jason@zx2c4.com>
+ <20220301231038.530897-4-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220218063352-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220301231038.530897-4-Jason@zx2c4.com>
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Feb 2022, Michael S. Tsirkin wrote:
-
-> On Thu, Feb 17, 2022 at 05:21:20PM -0800, syzbot wrote:
-> > syzbot has found a reproducer for the following issue on:
-> > 
-> > HEAD commit:    f71077a4d84b Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=104c04ca700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1362e232700000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11373a6c700000
-> > 
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
-> > 
-> > ------------[ cut here ]------------
-> > kernel BUG at drivers/vhost/vhost.c:2335!
-> > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> > CPU: 1 PID: 3597 Comm: vhost-3596 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
-> > Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 b7 59 28 fd e9 74 ff ff ff e8 5d c8 a1 fa <0f> 0b e8 56 c8 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-> > RSP: 0018:ffffc90001d1fb88 EFLAGS: 00010293
-> > RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> > RDX: ffff8880234b0000 RSI: ffffffff86d715c3 RDI: 0000000000000003
-> > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> > R10: ffffffff86d706bc R11: 0000000000000000 R12: ffff888072c24d68
-> > R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888072c24bb0
-> > FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 0000000000000002 CR3: 000000007902c000 CR4: 00000000003506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  <TASK>
-> >  vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
-> >  vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-> >  kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+On Wed, Mar 02, 2022 at 12:10:38AM +0100, Jason A. Donenfeld wrote:
+> When a virtual machine forks, it's important that WireGuard clear
+> existing sessions so that different plaintext is not transmitted using
+> the same key+nonce, which can result in catastrophic cryptographic
+> failure. To accomplish this, we simply hook into the newly added vmfork
+> notifier, which can use the same notification function we're already
+> using for PM notifications.
 > 
-> I don't see how this can trigger normally so I'm assuming
-> another case of use after free.
+> As a bonus, it turns out that, like the vmfork registration function,
+> the PM registration function is stubbed out when CONFIG_PM_SLEEP is not
+> set, so we can actually just remove the maze of ifdefs, which makes it
+> really quite clean to support both notifiers at once.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Yes, exactly.
+Catastrophic cryptographic failure sounds bad :(
+So in another thread we discussed that there's a race with this
+approach, and we don't know how big it is. Question is how expensive
+it would be to fix it properly checking for fork after every use of
+key+nonce and before transmitting it. I did a quick microbenchmark
+and it did not seem too bad - care posting some numbers?
 
-I patched it.  Please see:
+> ---
+> Hi Jakub,
+> 
+> I wasn't planning on sending other WireGuard changes to net-next this
+> cycle, and this one here depends on previous things in my random.git
+> tree. Is it okay with you if I take this through my tree rather than
+> net-next? Alternatively, I could send it through net after rc1 if you'd
+> prefer that. Or we could just wait for 5.19, but that seems a long way's
+> off.
+> 
+> Thanks,
+> Jason
+> 
+>  drivers/net/wireguard/device.c | 27 ++++++++++++++-------------
+>  1 file changed, 14 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+> index a46067c38bf5..22cc27c221f8 100644
+> --- a/drivers/net/wireguard/device.c
+> +++ b/drivers/net/wireguard/device.c
+> @@ -59,7 +59,10 @@ static int wg_open(struct net_device *dev)
+>  	return ret;
+>  }
+>  
+> -#ifdef CONFIG_PM_SLEEP
+> +static int wg_pm_notification(struct notifier_block *nb, unsigned long action, void *data);
+> +static struct notifier_block pm_notifier = { .notifier_call = wg_pm_notification };
+> +static struct notifier_block vm_notifier = { .notifier_call = wg_pm_notification };
+> +
+>  static int wg_pm_notification(struct notifier_block *nb, unsigned long action,
+>  			      void *data)
+>  {
+> @@ -70,10 +73,10 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action,
+>  	 * its normal operation rather than as a somewhat rare event, then we
+>  	 * don't actually want to clear keys.
+>  	 */
+> -	if (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID))
+> +	if (nb == &pm_notifier && (IS_ENABLED(CONFIG_PM_AUTOSLEEP) || IS_ENABLED(CONFIG_ANDROID)))
+>  		return 0;
+>  
+> -	if (action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
+> +	if (nb == &pm_notifier && action != PM_HIBERNATION_PREPARE && action != PM_SUSPEND_PREPARE)
+>  		return 0;
+>  
+>  	rtnl_lock();
+> @@ -91,9 +94,6 @@ static int wg_pm_notification(struct notifier_block *nb, unsigned long action,
+>  	return 0;
+>  }
+>  
+> -static struct notifier_block pm_notifier = { .notifier_call = wg_pm_notification };
+> -#endif
+> -
+>  static int wg_stop(struct net_device *dev)
+>  {
+>  	struct wg_device *wg = netdev_priv(dev);
+> @@ -424,16 +424,18 @@ int __init wg_device_init(void)
+>  {
+>  	int ret;
+>  
+> -#ifdef CONFIG_PM_SLEEP
+>  	ret = register_pm_notifier(&pm_notifier);
+>  	if (ret)
+>  		return ret;
+> -#endif
+>  
+> -	ret = register_pernet_device(&pernet_ops);
+> +	ret = register_random_vmfork_notifier(&vm_notifier);
+>  	if (ret)
+>  		goto error_pm;
+>  
+> +	ret = register_pernet_device(&pernet_ops);
+> +	if (ret)
+> +		goto error_vm;
+> +
+>  	ret = rtnl_link_register(&link_ops);
+>  	if (ret)
+>  		goto error_pernet;
+> @@ -442,10 +444,10 @@ int __init wg_device_init(void)
+>  
+>  error_pernet:
+>  	unregister_pernet_device(&pernet_ops);
+> +error_vm:
+> +	unregister_random_vmfork_notifier(&vm_notifier);
+>  error_pm:
+> -#ifdef CONFIG_PM_SLEEP
+>  	unregister_pm_notifier(&pm_notifier);
+> -#endif
+>  	return ret;
+>  }
+>  
+> @@ -453,8 +455,7 @@ void wg_device_uninit(void)
+>  {
+>  	rtnl_link_unregister(&link_ops);
+>  	unregister_pernet_device(&pernet_ops);
+> -#ifdef CONFIG_PM_SLEEP
+> +	unregister_random_vmfork_notifier(&vm_notifier);
+>  	unregister_pm_notifier(&pm_notifier);
+> -#endif
+>  	rcu_barrier();
+>  }
+> -- 
+> 2.35.1
+> 
+> 
 
-https://lore.kernel.org/all/20220302075421.2131221-1-lee.jones@linaro.org/T/#t
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
