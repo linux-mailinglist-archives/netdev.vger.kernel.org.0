@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47ABE4C9EBE
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 08:57:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0BF74C9EBD
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 08:57:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239963AbiCBH5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 02:57:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
+        id S239971AbiCBH5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 02:57:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239968AbiCBH5h (ORCPT
+        with ESMTP id S239973AbiCBH5h (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 02:57:37 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC685B6D25
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 23:56:50 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id bd1so868357plb.13
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 23:56:50 -0800 (PST)
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0EDB6D38
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 23:56:52 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id e6so977602pgn.2
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 23:56:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fastly.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=lLWiHNOLOpOs7VCXjgiFdK8vhNi5PAalPhtjnGa8SrQ=;
-        b=chcU02UykgvsqGvz/Mp/FoNeTe8MuHJftdX+aASHnlKPIUJJ9NV5wZHoIdcsCTRUG0
-         pe+PE5XjLSP+/LE4MwLjeV0QQkj4f9Ie5sQmba3yyENOLv2w9KJPpu6KzKmiWutx9JsS
-         EI4n8QyowGsN1VFY/OxmdVl7DL2mNlDhAEyLM=
+        bh=65wf+C798hgbhu/vNQu4lPxOouO4hdIFIyQo2Xy5Kfw=;
+        b=bTanUznjgQX/pqLttZVy7xJT7SFHZSHMz1JzSbDVumLNTDbKsPNImMnhvWf8X05Nhv
+         MAbhWjI1/wZt9B/LEmho3GIyr20QaxmDsWg1Zom/8OJR5Bnw5nFckSWXRwglwNmLqBjY
+         3zZymvE+QIn5xr7i+NTyr8RVqh0i325IL5+R0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=lLWiHNOLOpOs7VCXjgiFdK8vhNi5PAalPhtjnGa8SrQ=;
-        b=uXO/N3ITwWJxYJg2ytXASL7NGynAgwEgrPJZR5SMpcRuBX3futr67ybfBBOrre0sqe
-         2qCG323pxwSyWh+Eb5hcYn3e113M2QDeL9gWUDdThdH5Duhn32BgVHAbw4JG6weVJ9Hn
-         HA1FqYLD5pV3MIGnCbmWqqI0tF+5Os8SSjtXnna9c5kYYFQR7YzPLpCxT3qMYjU+ml+0
-         y+x7AC+W0nnSgttZHIJeWOvt2TSa3i1eB3TRBlDv3OYUD9IbC6ZkIQx23jnfEntcCkXj
-         AU6mjx+dkCz1Jm34x324q3AUnSUxllGQVO3V7qzR9DjQwKVjhzsxU91ZhqHZKXHXQewu
-         TpbQ==
-X-Gm-Message-State: AOAM531QBwlktifELr3qowucjZVOrtqJDHu1ygJtFbla5fT7xj9dWonF
-        S6P9JjhQBop2TqzdgHFBCUdgmJ9U5CB1zOCz67ObTzBEmXPwM1hXR12nHsurn2pZVWHoHqPU9mM
-        QojGDU722vePJqCLf6ObMWFoit9VJOr2ueoXe6+0vVUrMz+A+NnqprSyFZ+C3bs4Pbypd
-X-Google-Smtp-Source: ABdhPJzNR31DfIyQzM6oF9EQabLwCEepj8HKUT+9q0I3Lr+Qtgqjdy6Sc9PI3dLVHAteDOhVD0rt8w==
-X-Received: by 2002:a17:903:24d:b0:14f:84dd:babb with SMTP id j13-20020a170903024d00b0014f84ddbabbmr29055262plh.47.1646207809815;
-        Tue, 01 Mar 2022 23:56:49 -0800 (PST)
+        bh=65wf+C798hgbhu/vNQu4lPxOouO4hdIFIyQo2Xy5Kfw=;
+        b=jwe80p74HLzgerRWTtBGKRyyvpXIRxIjVpn7rH6tuO4VuwqagTbFK+/nx+q4dlxOKy
+         nAHia3Y4hhdfTZIVlqTn1RpQZyM6XObUflV4QE9KNPPC7Q7NbIB623WhbxH30OPDJ9Ie
+         4fBUI1uTE9c5cSQhWsccx2YteIfKgeMP+joUTAQtnKOlKyld1T3cP8E3neaK0MJsdKTn
+         lWeyqhgPd2tyqDRRBXWQEnBj72n5Juavqt5OeZwMefp69zl98NVxdTxN7vqqrDvDNtKw
+         gdKhG1HQDsbsm5zYvZtVYPVbOXMhltyEiw22Lwpbp0Fc7iuN2hZUP8gt9ejQY6TAND1L
+         KVHw==
+X-Gm-Message-State: AOAM530uoI8gA4KEdUZ+lG/Fuc6xTREFUoyoAXiZ7/RTpCOf6NCpUWag
+        dPYa8xw2WqaKowULeQd7FrOZ724dnlDzAOonLUONUdjf+UEUfhGM84D6aVB3QdL8aQ3vVC+uyZy
+        RqqOvm1BWlDLhk/oeGnjuWK3ItnibBAc4EhsMbw21uzK4biYmuHk4e4UtrJJZpULdJJdA
+X-Google-Smtp-Source: ABdhPJwj2T7oY4NM9m2Gdulh4OhUgT64qeq3UDcQyyAYzC5NYINF7zBhrZ1KXqJvfog02XBoJiYu+Q==
+X-Received: by 2002:a05:6a00:13aa:b0:4f1:1e5f:1c39 with SMTP id t42-20020a056a0013aa00b004f11e5f1c39mr31628208pfg.24.1646207811282;
+        Tue, 01 Mar 2022 23:56:51 -0800 (PST)
 Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id gb9-20020a17090b060900b001beecaf986dsm2237780pjb.52.2022.03.01.23.56.48
+        by smtp.gmail.com with ESMTPSA id gb9-20020a17090b060900b001beecaf986dsm2237780pjb.52.2022.03.01.23.56.50
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Mar 2022 23:56:49 -0800 (PST)
+        Tue, 01 Mar 2022 23:56:50 -0800 (PST)
 From:   Joe Damato <jdamato@fastly.com>
 To:     netdev@vger.kernel.org, kuba@kernel.org,
         ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
         saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com,
         leon@kernel.org, linux-rdma@vger.kernel.org, saeedm@nvidia.com
 Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [net-next v9 4/5] Documentation: update networking/page_pool.rst
-Date:   Tue,  1 Mar 2022 23:55:50 -0800
-Message-Id: <1646207751-13621-5-git-send-email-jdamato@fastly.com>
+Subject: [net-next v9 5/5] mlx5: add support for page_pool_get_stats
+Date:   Tue,  1 Mar 2022 23:55:51 -0800
+Message-Id: <1646207751-13621-6-git-send-email-jdamato@fastly.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
 References: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
@@ -66,88 +66,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the new stats API, kernel config parameter, and stats structure
-information to the page_pool documentation.
+This change adds support for the page_pool_get_stats API to mlx5. If the
+user has enabled CONFIG_PAGE_POOL_STATS in their kernel, ethtool will
+output page pool stats.
 
 Signed-off-by: Joe Damato <jdamato@fastly.com>
+Acked-by: Saeed Mahameed <saeed@kernel.org>
 ---
- Documentation/networking/page_pool.rst | 56 ++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 75 ++++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h | 27 +++++++-
+ 2 files changed, 101 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-index a147591..5db8c26 100644
---- a/Documentation/networking/page_pool.rst
-+++ b/Documentation/networking/page_pool.rst
-@@ -105,6 +105,47 @@ a page will cause no race conditions is enough.
-   Please note the caller must not use data area after running
-   page_pool_put_page_bulk(), as this function overwrites it.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 2afecc4..336e4d0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -37,6 +37,10 @@
+ #include "en/ptp.h"
+ #include "en/port.h"
  
-+* page_pool_get_stats(): Retrieve statistics about the page_pool. This API
-+  is only available if the kernel has been configured with
-+  ``CONFIG_PAGE_POOL_STATS=y``. A pointer to a caller allocated ``struct
-+  page_pool_stats`` structure is passed to this API which is filled in. The
-+  caller can then report those stats to the user (perhaps via ethtool,
-+  debugfs, etc.). See below for an example usage of this API.
++#ifdef CONFIG_PAGE_POOL_STATS
++#include <net/page_pool.h>
++#endif
 +
-+Stats API and structures
-+------------------------
-+If the kernel is configured with ``CONFIG_PAGE_POOL_STATS=y``, the API
-+``page_pool_get_stats()`` and structures described below are available. It
-+takes a  pointer to a ``struct page_pool`` and a pointer to a ``struct
-+page_pool_stats`` allocated by the caller.
-+
-+The API will fill in the provided ``struct page_pool_stats`` with
-+statistics about the page_pool.
-+
-+The stats structure has the following fields::
-+
-+    struct page_pool_stats {
-+        struct page_pool_alloc_stats alloc_stats;
-+        struct page_pool_recycle_stats recycle_stats;
-+    };
-+
-+
-+The ``struct page_pool_alloc_stats`` has the following fields:
-+  * ``fast``: successful fast path allocations
-+  * ``slow``: slow path order-0 allocations
-+  * ``slow_high_order``: slow path high order allocations
-+  * ``empty``: ptr ring is empty, so a slow path allocation was forced.
-+  * ``refill``: an allocation which triggered a refill of the cache
-+  * ``waive``: pages obtained from the ptr ring that cannot be added to
-+    the cache due to a NUMA mismatch.
-+
-+The ``struct page_pool_recycle_stats`` has the following fields:
-+  * ``cached``: recycling placed page in the page pool cache
-+  * ``cache_full``: page pool cache was full
-+  * ``ring``: page placed into the ptr ring
-+  * ``ring_full``: page released from page pool because the ptr ring was full
-+  * ``released_refcnt``: page released (and not recycled) because refcnt > 1
-+
- Coding examples
- ===============
+ static unsigned int stats_grps_num(struct mlx5e_priv *priv)
+ {
+ 	return !priv->profile->stats_grps_num ? 0 :
+@@ -183,6 +187,19 @@ static const struct counter_desc sw_stats_desc[] = {
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_congst_umr) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_arfs_err) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_recover) },
++#ifdef CONFIG_PAGE_POOL_STATS
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_fast) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_slow) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_slow_high_order) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_empty) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_refill) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_waive) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_cached) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_cache_full) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_ring) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_ring_full) },
++	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_released_ref) },
++#endif
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_decrypted_packets) },
+ 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_decrypted_bytes) },
+@@ -349,6 +366,19 @@ static void mlx5e_stats_grp_sw_update_stats_rq_stats(struct mlx5e_sw_stats *s,
+ 	s->rx_congst_umr              += rq_stats->congst_umr;
+ 	s->rx_arfs_err                += rq_stats->arfs_err;
+ 	s->rx_recover                 += rq_stats->recover;
++#ifdef CONFIG_PAGE_POOL_STATS
++	s->rx_pp_alloc_fast          += rq_stats->pp_alloc_fast;
++	s->rx_pp_alloc_slow          += rq_stats->pp_alloc_slow;
++	s->rx_pp_alloc_empty         += rq_stats->pp_alloc_empty;
++	s->rx_pp_alloc_refill        += rq_stats->pp_alloc_refill;
++	s->rx_pp_alloc_waive         += rq_stats->pp_alloc_waive;
++	s->rx_pp_alloc_slow_high_order		+= rq_stats->pp_alloc_slow_high_order;
++	s->rx_pp_recycle_cached			+= rq_stats->pp_recycle_cached;
++	s->rx_pp_recycle_cache_full		+= rq_stats->pp_recycle_cache_full;
++	s->rx_pp_recycle_ring			+= rq_stats->pp_recycle_ring;
++	s->rx_pp_recycle_ring_full		+= rq_stats->pp_recycle_ring_full;
++	s->rx_pp_recycle_released_ref		+= rq_stats->pp_recycle_released_ref;
++#endif
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	s->rx_tls_decrypted_packets   += rq_stats->tls_decrypted_packets;
+ 	s->rx_tls_decrypted_bytes     += rq_stats->tls_decrypted_bytes;
+@@ -455,6 +485,35 @@ static void mlx5e_stats_grp_sw_update_stats_qos(struct mlx5e_priv *priv,
+ 	}
+ }
  
-@@ -157,6 +198,21 @@ NAPI poller
-         }
-     }
- 
-+Stats
-+-----
-+
-+.. code-block:: c
-+
-+	#ifdef CONFIG_PAGE_POOL_STATS
-+	/* retrieve stats */
++#ifdef CONFIG_PAGE_POOL_STATS
++static void mlx5e_stats_update_stats_rq_page_pool(struct mlx5e_channel *c)
++{
++	struct mlx5e_rq_stats *rq_stats = c->rq.stats;
++	struct page_pool *pool = c->rq.page_pool;
 +	struct page_pool_stats stats = { 0 };
-+	if (page_pool_get_stats(page_pool, &stats)) {
-+		/* perhaps the driver reports statistics with ethool */
-+		ethtool_print_allocation_stats(&stats.alloc_stats);
-+		ethtool_print_recycle_stats(&stats.recycle_stats);
-+	}
-+	#endif
 +
- Driver unload
- -------------
++	if (!page_pool_get_stats(pool, &stats))
++		return;
++
++	rq_stats->pp_alloc_fast = stats.alloc_stats.fast;
++	rq_stats->pp_alloc_slow = stats.alloc_stats.slow;
++	rq_stats->pp_alloc_slow_high_order = stats.alloc_stats.slow_high_order;
++	rq_stats->pp_alloc_empty = stats.alloc_stats.empty;
++	rq_stats->pp_alloc_waive = stats.alloc_stats.waive;
++	rq_stats->pp_alloc_refill = stats.alloc_stats.refill;
++
++	rq_stats->pp_recycle_cached = stats.recycle_stats.cached;
++	rq_stats->pp_recycle_cache_full = stats.recycle_stats.cache_full;
++	rq_stats->pp_recycle_ring = stats.recycle_stats.ring;
++	rq_stats->pp_recycle_ring_full = stats.recycle_stats.ring_full;
++	rq_stats->pp_recycle_released_ref = stats.recycle_stats.released_refcnt;
++}
++#else
++static void mlx5e_stats_update_stats_rq_page_pool(struct mlx5e_channel *c)
++{
++}
++#endif
++
+ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
+ {
+ 	struct mlx5e_sw_stats *s = &priv->stats.sw;
+@@ -465,8 +524,11 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
+ 	for (i = 0; i < priv->stats_nch; i++) {
+ 		struct mlx5e_channel_stats *channel_stats =
+ 			priv->channel_stats[i];
++
+ 		int j;
  
++		mlx5e_stats_update_stats_rq_page_pool(priv->channels.c[i]);
++
+ 		mlx5e_stats_grp_sw_update_stats_rq_stats(s, &channel_stats->rq);
+ 		mlx5e_stats_grp_sw_update_stats_xdpsq(s, &channel_stats->rq_xdpsq);
+ 		mlx5e_stats_grp_sw_update_stats_ch_stats(s, &channel_stats->ch);
+@@ -1887,6 +1949,19 @@ static const struct counter_desc rq_stats_desc[] = {
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, congst_umr) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, arfs_err) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, recover) },
++#ifdef CONFIG_PAGE_POOL_STATS
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_alloc_fast) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_alloc_slow) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_alloc_slow_high_order) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_alloc_empty) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_alloc_refill) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_alloc_waive) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_recycle_cached) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_recycle_cache_full) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_recycle_ring) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_recycle_ring_full) },
++	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, pp_recycle_released_ref) },
++#endif
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, tls_decrypted_packets) },
+ 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, tls_decrypted_bytes) },
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+index 14eaf92..a7a025d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+@@ -205,7 +205,19 @@ struct mlx5e_sw_stats {
+ 	u64 ch_aff_change;
+ 	u64 ch_force_irq;
+ 	u64 ch_eq_rearm;
+-
++#ifdef CONFIG_PAGE_POOL_STATS
++	u64 rx_pp_alloc_fast;
++	u64 rx_pp_alloc_slow;
++	u64 rx_pp_alloc_slow_high_order;
++	u64 rx_pp_alloc_empty;
++	u64 rx_pp_alloc_refill;
++	u64 rx_pp_alloc_waive;
++	u64 rx_pp_recycle_cached;
++	u64 rx_pp_recycle_cache_full;
++	u64 rx_pp_recycle_ring;
++	u64 rx_pp_recycle_ring_full;
++	u64 rx_pp_recycle_released_ref;
++#endif
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	u64 tx_tls_encrypted_packets;
+ 	u64 tx_tls_encrypted_bytes;
+@@ -352,6 +364,19 @@ struct mlx5e_rq_stats {
+ 	u64 congst_umr;
+ 	u64 arfs_err;
+ 	u64 recover;
++#ifdef CONFIG_PAGE_POOL_STATS
++	u64 pp_alloc_fast;
++	u64 pp_alloc_slow;
++	u64 pp_alloc_slow_high_order;
++	u64 pp_alloc_empty;
++	u64 pp_alloc_refill;
++	u64 pp_alloc_waive;
++	u64 pp_recycle_cached;
++	u64 pp_recycle_cache_full;
++	u64 pp_recycle_ring;
++	u64 pp_recycle_ring_full;
++	u64 pp_recycle_released_ref;
++#endif
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	u64 tls_decrypted_packets;
+ 	u64 tls_decrypted_bytes;
 -- 
 2.7.4
 
