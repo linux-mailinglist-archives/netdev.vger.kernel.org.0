@@ -2,71 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F424CA2CD
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:06:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE3734CA337
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:16:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237701AbiCBLHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 06:07:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
+        id S241397AbiCBLQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 06:16:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236360AbiCBLHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:07:22 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851236F4BF;
-        Wed,  2 Mar 2022 03:06:37 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id i8so2141099wrr.8;
-        Wed, 02 Mar 2022 03:06:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=E2P9iS3Je2xtRYNQbf594u+ZhYUMIabIgXxUGm6ODGg=;
-        b=XDBi/VgM2pC+yfKexBdJowraPWQ9pDLo5J5uw0lSPu4iIxYax5L6nfzVEHQqe6yCHC
-         8w1QEPPOeWHPyH/bUDuoTP1xo+3ZOfX9I+DculDZY8l4FR48Fc7pVaB6E/nHxL/TfgeN
-         8ZN/Q7aJ/079M30Ap6Wk5q542ao4LOtiGfYnDn6EcrYv13BoFOFcvO7OmCpnVAD5vpXj
-         Ixf8F5ZTDGVy5CznPVp6/rVB35r6GhrofIASwhSw/aL7uD1IpdlXy6RtaLRKH3Lr5dlq
-         0Q95eRCjj0ET371T89RWv8K5uv1vRPyy98Zc6XE2XRilQRw/Hcio+S8P+CT/yUrTcPOR
-         l46w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=E2P9iS3Je2xtRYNQbf594u+ZhYUMIabIgXxUGm6ODGg=;
-        b=pytTMizFrb2V78vvzTnQsknPH8iWnoRtDCcHHGXwN2XdMlb7FOFsyiikrE39aOOB2U
-         h6CwtDAGqlHnAsbzYrT+5f/zbWpuyT6TCGDqQn8js9VdW1dxG8+le+yRNohr0N8hMuq8
-         h7Jpjw1GmJYdsT8qT4SwEGPYajm/7gKPUKLM7UUuFGi2gExjAnhWz5rRj8l3TVHRtUm4
-         UVeSjjRGQUr4UBq49NeF6hhm9K0Nw7VMuzBPTiGo2EVdQ86ItYOM//g/EsNfp0oF9xTk
-         IrOYXlYk46HikA3jaOSy/VAWB1v/JAD+sFXZ7Cxt2q5i9cuhOMH7xV3n4IVK33u44AeS
-         5rnQ==
-X-Gm-Message-State: AOAM531ePnfdsFOANIuNeWSVqsd7gpNOfBQIk1jDsQ5vD2yu8/nysA08
-        2xe0LxBjrYYb3NNYm/E/jrU=
-X-Google-Smtp-Source: ABdhPJxF+X+kjDOeLlKYxPtIXbGBHiWyz+tjkvF6rLjESw5o5HWJ1vUVytl0RwHD09LW+tMhZNFd/g==
-X-Received: by 2002:a5d:47ae:0:b0:1ef:d725:876e with SMTP id 14-20020a5d47ae000000b001efd725876emr9969292wrb.447.1646219196121;
-        Wed, 02 Mar 2022 03:06:36 -0800 (PST)
-Received: from ?IPV6:2a01:c22:7331:8a00:3d70:3e0f:83b8:3269? (dynamic-2a01-0c22-7331-8a00-3d70-3e0f-83b8-3269.c22.pool.telefonica.de. [2a01:c22:7331:8a00:3d70:3e0f:83b8:3269])
-        by smtp.googlemail.com with ESMTPSA id u4-20020adfdb84000000b001e8d8ac5394sm17377635wri.110.2022.03.02.03.06.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Mar 2022 03:06:35 -0800 (PST)
-Message-ID: <f519c59e-fdf0-14e8-8cce-c6c2d19cff8b@gmail.com>
-Date:   Wed, 2 Mar 2022 12:06:31 +0100
+        with ESMTP id S241423AbiCBLPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:15:52 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47304A252A;
+        Wed,  2 Mar 2022 03:14:33 -0800 (PST)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K7s1H10R8z67bhp;
+        Wed,  2 Mar 2022 19:13:23 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 2 Mar 2022 12:14:30 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <revest@chromium.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-integrity@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v3 0/9] bpf-lsm: Extend interoperability with IMA
+Date:   Wed, 2 Mar 2022 12:13:55 +0100
+Message-ID: <20220302111404.193900-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2] net: marvell: Use min() instead of doing it manually
-Content-Language: en-US
-To:     Haowen Bai <baihaowen88@gmail.com>,
-        sebastian.hesselbarth@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1646203686-30397-1-git-send-email-baihaowen88@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <1646203686-30397-1-git-send-email-baihaowen88@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,30 +51,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.03.2022 07:48, Haowen Bai wrote:
-> Fix following coccicheck warning:
-> drivers/net/ethernet/marvell/mv643xx_eth.c:1664:35-36: WARNING opportunity for min()
-> 
-> Signed-off-by: Haowen Bai <baihaowen88@gmail.com>
-> ---
->  drivers/net/ethernet/marvell/mv643xx_eth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> index 143ca8b..e3e79cf 100644
-> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> @@ -1661,7 +1661,7 @@ mv643xx_eth_set_ringparam(struct net_device *dev, struct ethtool_ringparam *er,
->  	if (er->rx_mini_pending || er->rx_jumbo_pending)
->  		return -EINVAL;
->  
-> -	mp->rx_ring_size = er->rx_pending < 4096 ? er->rx_pending : 4096;
-> +	mp->rx_ring_size = min(er->rx_pending, (unsigned)4096);
+Extend the interoperability with IMA, to give wider flexibility for the
+implementation of integrity-focused LSMs based on eBPF.
 
-Don't just use unsigned w/o int. Why not simply marking the constant as unsigned: 4096U ?
-And again: You should at least compile-test it.
+Patch 1 fixes some style issues.
 
->  	mp->tx_ring_size = clamp_t(unsigned int, er->tx_pending,
->  				   MV643XX_MAX_SKB_DESCS * 2, 4096);
->  	if (mp->tx_ring_size != er->tx_pending)
+Patches 2-6 give the ability to eBPF-based LSMs to take advantage of the
+measurement capability of IMA without needing to setup a policy in IMA
+(those LSMs might implement the policy capability themselves).
+
+Patches 7-9 allow eBPF-based LSMs to evaluate files read by the kernel.
+
+Changelog
+
+v2:
+- Add better description to patch 1 (suggested by Shuah)
+- Recalculate digest if it is not fresh (when IMA_COLLECTED flag not set)
+- Move declaration of bpf_ima_file_hash() at the end (suggested by
+  Yonghong)
+- Add tests to check if the digest has been recalculated
+- Add deny test for bpf_kernel_read_file()
+- Add description to tests
+
+v1:
+- Modify ima_file_hash() only and allow the usage of the function with the
+  modified behavior by eBPF-based LSMs through the new function
+  bpf_ima_file_hash() (suggested by Mimi)
+- Make bpf_lsm_kernel_read_file() sleepable so that bpf_ima_inode_hash()
+  and bpf_ima_file_hash() can be called inside the implementation of
+  eBPF-based LSMs for this hook
+
+Roberto Sassu (9):
+  ima: Fix documentation-related warnings in ima_main.c
+  ima: Always return a file measurement in ima_file_hash()
+  bpf-lsm: Introduce new helper bpf_ima_file_hash()
+  selftests/bpf: Move sample generation code to ima_test_common()
+  selftests/bpf: Add test for bpf_ima_file_hash()
+  selftests/bpf: Check if the digest is refreshed after a file write
+  bpf-lsm: Make bpf_lsm_kernel_read_file() as sleepable
+  selftests/bpf: Add test for bpf_lsm_kernel_read_file()
+  selftests/bpf: Check that bpf_kernel_read_file() denies reading IMA
+    policy
+
+ include/uapi/linux/bpf.h                      |  11 ++
+ kernel/bpf/bpf_lsm.c                          |  21 +++
+ security/integrity/ima/ima_main.c             |  57 ++++---
+ tools/include/uapi/linux/bpf.h                |  11 ++
+ tools/testing/selftests/bpf/ima_setup.sh      |  35 +++-
+ .../selftests/bpf/prog_tests/test_ima.c       | 149 +++++++++++++++++-
+ tools/testing/selftests/bpf/progs/ima.c       |  66 +++++++-
+ 7 files changed, 321 insertions(+), 29 deletions(-)
+
+-- 
+2.32.0
 
