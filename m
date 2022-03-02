@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B83EB4C9EB9
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 08:57:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47ABE4C9EBE
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 08:57:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239957AbiCBH5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 02:57:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36802 "EHLO
+        id S239963AbiCBH5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 02:57:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239960AbiCBH5h (ORCPT
+        with ESMTP id S239968AbiCBH5h (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 02:57:37 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C387B6D1A
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 23:56:49 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso726564pjb.0
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 23:56:49 -0800 (PST)
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC685B6D25
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 23:56:50 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id bd1so868357plb.13
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 23:56:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fastly.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HPfQh9n09LOH2LrDbaPnNvC5rOCyguVAdFId5ncvNfM=;
-        b=W4CLDVLOmgoqdbcTywJ6SiUonL3zYL12YNWK0gAkjkQKpsxPxWfFzCpv8JtcdE55Jf
-         GntAgEpd0N8/i79K8/X0lwYUi8bA6A9pEtNJMt1rN6YzRh+PhGZwGXFFYEv9CR9QJlbE
-         9aAXQ6E6LedsuOTWHe7ClijpTqCEEjx8OdvK0=
+        bh=lLWiHNOLOpOs7VCXjgiFdK8vhNi5PAalPhtjnGa8SrQ=;
+        b=chcU02UykgvsqGvz/Mp/FoNeTe8MuHJftdX+aASHnlKPIUJJ9NV5wZHoIdcsCTRUG0
+         pe+PE5XjLSP+/LE4MwLjeV0QQkj4f9Ie5sQmba3yyENOLv2w9KJPpu6KzKmiWutx9JsS
+         EI4n8QyowGsN1VFY/OxmdVl7DL2mNlDhAEyLM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=HPfQh9n09LOH2LrDbaPnNvC5rOCyguVAdFId5ncvNfM=;
-        b=rs3pO6X8ajuiYXWCKA9wIvtP7ghDL/3+LzomyVbBurDSTrEsbquYVI9zvOm++GGzIF
-         wRd99twZFg9xnCY1UPmuWWU92wxoOr7yoDYF+QIJCsNhKp/UTWz/9vVFskqvTiHUztXf
-         L6Jhg7ZAYGqSqVfILUKm0PAy8mq3gRx8i5fQodU7mk5nEUtEHbybA9+wJDJ2bLKEl0oP
-         omqFgv2WM4czDUi4r3uM4VOe/DLGijGIGH+JliXcMbXn4sHrveF0I1FuyQ5bGOlP6tEf
-         gmJZQV9E0kFxB9rTXsiHr/rps2+HXP/q7sTAkwVSlPkIFIK0XQt7VSisJpxj8fw1ltop
-         jzVQ==
-X-Gm-Message-State: AOAM532QnqIXeaiBtyEdhxLDrYTSSaHZOg/OzDkqjtfnpk11znVtx7dB
-        1QzIp+detaBCLiobLkZheQ1ksmfkhOA75bEVb+B3OTdKBIuNw/E4VVAwbMhyzyW97zL83qrQQ2a
-        Vo/vGxBlvojWE6OXqVB8Cro5ZQPc9jGUZkNO9SFzZWfZ0CeKBH1Ennsy3EK9zVZgY6ij7
-X-Google-Smtp-Source: ABdhPJz+Eg00dYxOyiEUT1cHkQKs+ewHcDJYqWv0Ke7hxiMGw+pmbDJ83p+PfNPCiRTnRI9XimpeAA==
-X-Received: by 2002:a17:902:904a:b0:149:b6f1:3c8b with SMTP id w10-20020a170902904a00b00149b6f13c8bmr29873638plz.83.1646207808293;
-        Tue, 01 Mar 2022 23:56:48 -0800 (PST)
+        bh=lLWiHNOLOpOs7VCXjgiFdK8vhNi5PAalPhtjnGa8SrQ=;
+        b=uXO/N3ITwWJxYJg2ytXASL7NGynAgwEgrPJZR5SMpcRuBX3futr67ybfBBOrre0sqe
+         2qCG323pxwSyWh+Eb5hcYn3e113M2QDeL9gWUDdThdH5Duhn32BgVHAbw4JG6weVJ9Hn
+         HA1FqYLD5pV3MIGnCbmWqqI0tF+5Os8SSjtXnna9c5kYYFQR7YzPLpCxT3qMYjU+ml+0
+         y+x7AC+W0nnSgttZHIJeWOvt2TSa3i1eB3TRBlDv3OYUD9IbC6ZkIQx23jnfEntcCkXj
+         AU6mjx+dkCz1Jm34x324q3AUnSUxllGQVO3V7qzR9DjQwKVjhzsxU91ZhqHZKXHXQewu
+         TpbQ==
+X-Gm-Message-State: AOAM531QBwlktifELr3qowucjZVOrtqJDHu1ygJtFbla5fT7xj9dWonF
+        S6P9JjhQBop2TqzdgHFBCUdgmJ9U5CB1zOCz67ObTzBEmXPwM1hXR12nHsurn2pZVWHoHqPU9mM
+        QojGDU722vePJqCLf6ObMWFoit9VJOr2ueoXe6+0vVUrMz+A+NnqprSyFZ+C3bs4Pbypd
+X-Google-Smtp-Source: ABdhPJzNR31DfIyQzM6oF9EQabLwCEepj8HKUT+9q0I3Lr+Qtgqjdy6Sc9PI3dLVHAteDOhVD0rt8w==
+X-Received: by 2002:a17:903:24d:b0:14f:84dd:babb with SMTP id j13-20020a170903024d00b0014f84ddbabbmr29055262plh.47.1646207809815;
+        Tue, 01 Mar 2022 23:56:49 -0800 (PST)
 Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id gb9-20020a17090b060900b001beecaf986dsm2237780pjb.52.2022.03.01.23.56.47
+        by smtp.gmail.com with ESMTPSA id gb9-20020a17090b060900b001beecaf986dsm2237780pjb.52.2022.03.01.23.56.48
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Mar 2022 23:56:47 -0800 (PST)
+        Tue, 01 Mar 2022 23:56:49 -0800 (PST)
 From:   Joe Damato <jdamato@fastly.com>
 To:     netdev@vger.kernel.org, kuba@kernel.org,
         ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
         saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com,
         leon@kernel.org, linux-rdma@vger.kernel.org, saeedm@nvidia.com
 Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [net-next v9 3/5] page_pool: Add function to batch and return stats
-Date:   Tue,  1 Mar 2022 23:55:49 -0800
-Message-Id: <1646207751-13621-4-git-send-email-jdamato@fastly.com>
+Subject: [net-next v9 4/5] Documentation: update networking/page_pool.rst
+Date:   Tue,  1 Mar 2022 23:55:50 -0800
+Message-Id: <1646207751-13621-5-git-send-email-jdamato@fastly.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
 References: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
@@ -66,81 +66,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds a function page_pool_get_stats which can be used by drivers to obtain
-stats for a specified page_pool.
+Add the new stats API, kernel config parameter, and stats structure
+information to the page_pool documentation.
 
 Signed-off-by: Joe Damato <jdamato@fastly.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
- include/net/page_pool.h | 17 +++++++++++++++++
- net/core/page_pool.c    | 25 +++++++++++++++++++++++++
- 2 files changed, 42 insertions(+)
+ Documentation/networking/page_pool.rst | 56 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 298af95..ea5fb70 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -107,6 +107,23 @@ struct page_pool_recycle_stats {
- 			      * refcnt
- 			      */
- };
-+
-+/* This struct wraps the above stats structs so users of the
-+ * page_pool_get_stats API can pass a single argument when requesting the
-+ * stats for the page pool.
-+ */
-+struct page_pool_stats {
-+	struct page_pool_alloc_stats alloc_stats;
-+	struct page_pool_recycle_stats recycle_stats;
-+};
-+
-+/*
-+ * Drivers that wish to harvest page pool stats and report them to users
-+ * (perhaps via ethtool, debugfs, or another mechanism) can allocate a
-+ * struct page_pool_stats call page_pool_get_stats to get stats for the specified pool.
-+ */
-+bool page_pool_get_stats(struct page_pool *pool,
-+			 struct page_pool_stats *stats);
- #endif
+diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
+index a147591..5db8c26 100644
+--- a/Documentation/networking/page_pool.rst
++++ b/Documentation/networking/page_pool.rst
+@@ -105,6 +105,47 @@ a page will cause no race conditions is enough.
+   Please note the caller must not use data area after running
+   page_pool_put_page_bulk(), as this function overwrites it.
  
- struct page_pool {
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 3d273cb..1943c0f 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -35,6 +35,31 @@
- 		struct page_pool_recycle_stats __percpu *s = pool->recycle_stats;	\
- 		this_cpu_inc(s->__stat);						\
- 	} while (0)
++* page_pool_get_stats(): Retrieve statistics about the page_pool. This API
++  is only available if the kernel has been configured with
++  ``CONFIG_PAGE_POOL_STATS=y``. A pointer to a caller allocated ``struct
++  page_pool_stats`` structure is passed to this API which is filled in. The
++  caller can then report those stats to the user (perhaps via ethtool,
++  debugfs, etc.). See below for an example usage of this API.
 +
-+bool page_pool_get_stats(struct page_pool *pool,
-+			 struct page_pool_stats *stats)
-+{
-+	int cpu = 0;
++Stats API and structures
++------------------------
++If the kernel is configured with ``CONFIG_PAGE_POOL_STATS=y``, the API
++``page_pool_get_stats()`` and structures described below are available. It
++takes a  pointer to a ``struct page_pool`` and a pointer to a ``struct
++page_pool_stats`` allocated by the caller.
 +
-+	if (!stats)
-+		return false;
++The API will fill in the provided ``struct page_pool_stats`` with
++statistics about the page_pool.
 +
-+	memcpy(&stats->alloc_stats, &pool->alloc_stats, sizeof(pool->alloc_stats));
++The stats structure has the following fields::
 +
-+	for_each_possible_cpu(cpu) {
-+		const struct page_pool_recycle_stats *pcpu =
-+			per_cpu_ptr(pool->recycle_stats, cpu);
++    struct page_pool_stats {
++        struct page_pool_alloc_stats alloc_stats;
++        struct page_pool_recycle_stats recycle_stats;
++    };
 +
-+		stats->recycle_stats.cached += pcpu->cached;
-+		stats->recycle_stats.cache_full += pcpu->cache_full;
-+		stats->recycle_stats.ring += pcpu->ring;
-+		stats->recycle_stats.ring_full += pcpu->ring_full;
-+		stats->recycle_stats.released_refcnt += pcpu->released_refcnt;
++
++The ``struct page_pool_alloc_stats`` has the following fields:
++  * ``fast``: successful fast path allocations
++  * ``slow``: slow path order-0 allocations
++  * ``slow_high_order``: slow path high order allocations
++  * ``empty``: ptr ring is empty, so a slow path allocation was forced.
++  * ``refill``: an allocation which triggered a refill of the cache
++  * ``waive``: pages obtained from the ptr ring that cannot be added to
++    the cache due to a NUMA mismatch.
++
++The ``struct page_pool_recycle_stats`` has the following fields:
++  * ``cached``: recycling placed page in the page pool cache
++  * ``cache_full``: page pool cache was full
++  * ``ring``: page placed into the ptr ring
++  * ``ring_full``: page released from page pool because the ptr ring was full
++  * ``released_refcnt``: page released (and not recycled) because refcnt > 1
++
+ Coding examples
+ ===============
+ 
+@@ -157,6 +198,21 @@ NAPI poller
+         }
+     }
+ 
++Stats
++-----
++
++.. code-block:: c
++
++	#ifdef CONFIG_PAGE_POOL_STATS
++	/* retrieve stats */
++	struct page_pool_stats stats = { 0 };
++	if (page_pool_get_stats(page_pool, &stats)) {
++		/* perhaps the driver reports statistics with ethool */
++		ethtool_print_allocation_stats(&stats.alloc_stats);
++		ethtool_print_recycle_stats(&stats.recycle_stats);
 +	}
++	#endif
 +
-+	return true;
-+}
-+EXPORT_SYMBOL(page_pool_get_stats);
- #else
- #define alloc_stat_inc(pool, __stat)
- #define recycle_stat_inc(pool, __stat)
+ Driver unload
+ -------------
+ 
 -- 
 2.7.4
 
