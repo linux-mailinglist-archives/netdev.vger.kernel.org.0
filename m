@@ -2,49 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 951994C99CE
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 01:22:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E86DB4C9A01
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 01:43:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiCBAXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 19:23:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
+        id S238782AbiCBAoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 19:44:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiCBAXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 19:23:01 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5653E0EE;
-        Tue,  1 Mar 2022 16:22:18 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K7ZYv1ChRz4xcq;
-        Wed,  2 Mar 2022 11:22:10 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1646180533;
-        bh=dAP0ZGftN0DtRSKRVIj+eVXmzd7nsxKydwHZQ5ZXAdU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=JhtfPjOE5b6myYSkCUuDgBHozNF6u6Nrfrz3jV1YxZRWd4sUKgmS4p3bzc8jqLaAo
-         /pK1SbTPgOPmYzPo7/OiYN9xn1jL/5eFpDUnbcfA05V5q9+SK4eHFbKweng01Y84Y2
-         h1sSGahRk6oYEgpye91jCIp0HOkgvxovcpEm+2vHef8u8ffAIR+GNj8AeHr9Vwpk2f
-         HVyH3Bc6FCFI5eGfQLipZjcn6zUjvLGZuhDY8TbtOGf9Jf37KjolXnH2CGynCXhiqB
-         Y0/mE18GssuBlS405k/rUiKRQ51hYCa55fgdQ2sxOF3kUSGJ3glqSNmOAz8ZC9GlPI
-         k/ercW7sE0zwA==
-Date:   Wed, 2 Mar 2022 11:22:09 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220302112209.355def40@canb.auug.org.au>
+        with ESMTP id S229792AbiCBAoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 19:44:14 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0E75E776;
+        Tue,  1 Mar 2022 16:43:32 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id y11so405307pfa.6;
+        Tue, 01 Mar 2022 16:43:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fp/ZzC2cCQ2Io+M+604eQm7eXnqtJaZUFyzMY2YG4e4=;
+        b=MfFzGIps6M/RpO6zEdt6Gh5s1OyHw8P6HX6DsV3Ua9TMoQF+2a6ZDXJeuhDVvFxY1H
+         TkjpTdvzJMdM5x7mNJqkXJZ7jRdHMCHk2lGvCl3Fyiao09PTeZkLtaGTKBEXdUUPmJe8
+         6s2JZy3Er2b8tfOoftN7Tf3rEPYw1CBVk90ccdGvazcHQF25FbdXZ6T1Wfxw6A7iZ7RR
+         /lpz9AJNu6llTUwBjrcq+OIjJfOAc5BJD/D12tKZJ9hmQaPloELTFlPQcbZqYHiLldE3
+         6AXI3kz6xSgTpesmBz03ML7k8aRonqPnS0zTtNhYLt9C27gTIc9P/oV/QmntahSyeroF
+         FrCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fp/ZzC2cCQ2Io+M+604eQm7eXnqtJaZUFyzMY2YG4e4=;
+        b=tYm3NvSBSKVAjTPVM11tDs/FKrjctuy7+g6gE9b4lJIKBgrODB/QtYn3DvDu813M1p
+         mdMgVnAaPbYOQGBnXIrzanrZAG+oMH5xhRSJCbtBjATGCPnRmA49KCnk9RXTrXVuedQ3
+         883yEjkwzmVofH3UBXlOhAS1+cqmpPbeuZ+aOxU1L67aNFN91wU7UJVhtRSg5GYyWddM
+         MBzxYJsBrfPAGs/7Qd6kcdwCAg2jN+0lwE/OqKXGWBfwxqNZmx03m8t0+ULnL9zeiKMA
+         i+VCpeEFMSFfSMa+Yo5LtB5Tmnae9AW5NR41Hp/piTXKx4FKbBh8YS4TliEMx3Q5Gcto
+         3jfw==
+X-Gm-Message-State: AOAM53138qfDM3jUIyQK949OYABp0mCkrX9yCzVqq1Ucy9C2KXnavLkc
+        xXjrzXDh8OjERmDxgvqJgCdcCvkV8Eg=
+X-Google-Smtp-Source: ABdhPJxEg290Uy1RuipYnwv0zJsQxgPpaDyhoftDKqyws7uGD5nLvyxlPaD10XUTCITGaP8iB1FXiQ==
+X-Received: by 2002:a63:e54d:0:b0:375:5987:af5d with SMTP id z13-20020a63e54d000000b003755987af5dmr24160022pgj.14.1646181812227;
+        Tue, 01 Mar 2022 16:43:32 -0800 (PST)
+Received: from lvondent-mobl4.intel.com (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id 6-20020a630006000000b0036d11540db8sm14046833pga.76.2022.03.01.16.43.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 16:43:31 -0800 (PST)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2022-03-01
+Date:   Tue,  1 Mar 2022 16:43:30 -0800
+Message-Id: <20220302004330.125536-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3rw2I3JrDfSWQiBsGkIt2sO";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,80 +66,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/3rw2I3JrDfSWQiBsGkIt2sO
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit caef14b7530c065fb85d54492768fa48fdb5093e:
 
-Hi all,
+  net: ipa: fix a build dependency (2022-02-28 11:44:27 +0000)
 
-Today's linux-next merge of the net-next tree got a conflict in:
+are available in the Git repository at:
 
-  net/smc/af_smc.c
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-03-01
 
-between commit:
+for you to fetch changes up to 275f3f64870245b06188f24bdf917e55a813d294:
 
-  4d08b7b57ece ("net/smc: Fix cleanup when register ULP fails")
+  Bluetooth: Fix not checking MGMT cmd pending queue (2022-03-01 16:10:58 -0800)
 
-from the net tree and commit:
+----------------------------------------------------------------
+bluetooth pull request for net:
 
-  462791bbfa35 ("net/smc: add sysctl interface for SMC")
+ - Fix regression with scanning not working in some systems.
 
-from the net-next tree.
+----------------------------------------------------------------
+Brian Gix (1):
+      Bluetooth: Fix not checking MGMT cmd pending queue
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/smc/af_smc.c
-index 284befa90967,6447607675fa..000000000000
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@@ -3087,14 -3287,20 +3293,22 @@@ static int __init smc_init(void
-  	rc =3D tcp_register_ulp(&smc_ulp_ops);
-  	if (rc) {
-  		pr_err("%s: tcp_ulp_register fails with %d\n", __func__, rc);
- -		goto out_sock;
- +		goto out_ib;
-  	}
- =20
-+ 	rc =3D smc_sysctl_init();
-+ 	if (rc) {
-+ 		pr_err("%s: sysctl_init fails with %d\n", __func__, rc);
-+ 		goto out_ulp;
-+ 	}
-+=20
-  	static_branch_enable(&tcp_have_smc);
-  	return 0;
- =20
-+ out_ulp:
-+ 	tcp_unregister_ulp(&smc_ulp_ops);
- +out_ib:
- +	smc_ib_unregister_client();
-  out_sock:
-  	sock_unregister(PF_SMC);
-  out_proto6:
-
---Sig_/3rw2I3JrDfSWQiBsGkIt2sO
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIeuLEACgkQAVBC80lX
-0GxXxAf/c3JLhvQZbbd21vYirxRsH8mlecMX7Qi1f3zpj/Dp+5yAgjmtWcOTlhkh
-dXB6ZkWwv5DoZOtrFZKjx/ron4dtrDlkzUnI1bO3Mq9q5UEph4h0NK2g/5AOt2dq
-UEPQ6hjAGVJTT5q6dsuisnkELd5dsgVL7B9d2+uppODO78/mzk1BYJsN5YXwWVNw
-cKtY3k850jiKnZYGXL2G7cKrKSE4J7gYD5GblXG3ILB/gZlJ5jXG4dSDniOPUgXg
-Id+a94mxqGWEFYC/qny8A3Pb2pv6vYdEvdqYyjrVGh4XG6slIpvtPZuZscWRPs7d
-HdC5hxhKAMDKfgLqdnVGNue5ja2ybQ==
-=m+8O
------END PGP SIGNATURE-----
-
---Sig_/3rw2I3JrDfSWQiBsGkIt2sO--
+ net/bluetooth/mgmt.c | 99 +++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 63 insertions(+), 36 deletions(-)
