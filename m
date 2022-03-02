@@ -2,112 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE0424CA6CE
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 14:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E57C74CA6D3
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 14:59:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239225AbiCBN6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 08:58:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        id S240421AbiCBOAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 09:00:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237510AbiCBN6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 08:58:46 -0500
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB1444758;
-        Wed,  2 Mar 2022 05:58:03 -0800 (PST)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2dbc48104beso18333717b3.5;
-        Wed, 02 Mar 2022 05:58:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WyKZHwQr5nHGh+e/AL2B1v9HpePCkAYLR4kSXAi9MZM=;
-        b=U0iRu5f8BNM7nILytuX99wKRiCt5vyXXtohu2gzG08qdN7tcXTPoGXlhxytmpKy1iA
-         aNRVUQw8yBm9ys3DsFF5OcoMDLqqmeboEw+3QfaLX5T662sg8X/+bTOD77v9lY895NDW
-         wwbsulJSTGTqRpdarJ6DxHV8jQGHjiMM5IFu/dq6WY828tpsdYxnPR1ciPVinQ0C0OnS
-         s9Lf5lNVUbAsmJn9xlYQDooufA2oVbtDdhQ1787jugqmSS8yo7mbJB2h2spLwaSEwjRr
-         PCHg6atVK7AtntJLp8gUyNPNq2FlJS5WawBmlQMUQ2yop5685zmCPuLhSa/SoYVuyeJr
-         SPNg==
+        with ESMTP id S233470AbiCBOAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 09:00:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F59F4EA11
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 05:59:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646229565;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xe2iwKfGIRkq9VyKQg0gm/3lc8YXGtL4KrUQ6qSmDg0=;
+        b=YwW6Ct5ZADx3AeHLI12xXgybpnFETyU4MT00z2h4DWBWJ6C7PuOe0dkKZrUmHO/KpMbtDw
+        TIoU7qBcWeYhWkolg6c6GC1ttqMMzXzSNV8wVkaxuQ7T+ciO6F3YmCr9TB4JLUYGwMyv37
+        LgoLx2QhSOCEJbvX3TXfo34HWZxHow4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557-PFTlOUrdPMC8g8Xhu898Eg-1; Wed, 02 Mar 2022 08:59:24 -0500
+X-MC-Unique: PFTlOUrdPMC8g8Xhu898Eg-1
+Received: by mail-ed1-f72.google.com with SMTP id da28-20020a056402177c00b00415ce4b20baso110020edb.17
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 05:59:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WyKZHwQr5nHGh+e/AL2B1v9HpePCkAYLR4kSXAi9MZM=;
-        b=nZQRfJ9fnX2UByeUPR7q/CHIT1x8cex9vRMo+ge4q8M0dN6UHmKnLtfZiNdzJvS09C
-         lNl4fIWFhRV8k9JhYvBrPDtO5u9PirrZhN8Ro6bKgDzDHyNkVKq3HZUzXMDM52+3QIfZ
-         cg7aMR1P/GRJCNUkwa55AsKTW2QiHE+1mAMO9ByCLFipGuP9HHnl7VncKbM+JtudjGwP
-         EE2UyROMJtfzPumzKehbcSV+LzK6xvmhvF4VwJ46j1L8C4HoBIrLc3Azs4Ne0gqnJYJc
-         /6RSHdkl7xJgmX5KEfZAU10D7mVrE/XvqolxMs6p0oF3+JnKXc7rPAV9otVd9VCUPmcY
-         Hagw==
-X-Gm-Message-State: AOAM531dSN3bxiC0c+kIwX0+HOhNoC+WWCF8OuVM3t+/fgjYNnuQ7782
-        NXvRkEPZmdOszm3o1lBsV6GOFg1X3jXNvRPECfDyYks8UTRQ9w==
-X-Google-Smtp-Source: ABdhPJyPac81GZXj3hbm1zrqa6T6Hpt+Qnmao5PDX2WxpONnx7zBPrAfJH7wYFShqmnZ+sbpuc/u4K6tmZwwOpAKXuA=
-X-Received: by 2002:a81:2f12:0:b0:2d7:d366:164a with SMTP id
- v18-20020a812f12000000b002d7d366164amr30593700ywv.265.1646229482232; Wed, 02
- Mar 2022 05:58:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xe2iwKfGIRkq9VyKQg0gm/3lc8YXGtL4KrUQ6qSmDg0=;
+        b=dZ8zGJTGJwBVifP2fUL0iPDlnkpLK4fLBX376Svv8O7R3MLs9ZzT18PrkeXqaAEpr0
+         BVMdLNW2wbHgw0RyidOQ0PdKfRQxAgQmKE3MDm03afhAH8yCYfvmyIzZ/FGkOt5gk/Jf
+         EFjTQd0TX0QzwhHPm34JNsRgur+R2InphCj9Ep/slXiRSjfbMi4bJNS7xIfoaVfJsCSs
+         +9aUObYjeS3RNcdGy45g3OvfkxMyxHtHaYDVigDIFrtIhGgXIq8YwjHjpFoYz0pT6zsz
+         b28QJ7zvhmGFVySusoxWWQW0X8U2B7YNG4JJ26vw+dGJwjCcxD7NghMb30lHSjHQceDG
+         BEgQ==
+X-Gm-Message-State: AOAM532Zhy/zTUBK+Pk0U76X4eXjI89sQEHEZxy+MQ/PRpX0bs1k3hNp
+        WNlP6vtNAhZwQUoQ3DNsyIQh5jQd3oewiQkXcVR0BTWpoV9THAkF+8SETrMZIT+105F2QHNP5AG
+        3fbR3B1iRHSH2fgul
+X-Received: by 2002:a17:906:d935:b0:6cc:fcfc:c286 with SMTP id rn21-20020a170906d93500b006ccfcfcc286mr23114032ejb.423.1646229563128;
+        Wed, 02 Mar 2022 05:59:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyNhPgatvjDQdr29sr8p4ut5aR7tTRqN0kQcy5FzWNUczB6jUqUudHhRoIZ2HGAYUznew8Sbw==
+X-Received: by 2002:a17:906:d935:b0:6cc:fcfc:c286 with SMTP id rn21-20020a170906d93500b006ccfcfcc286mr23114006ejb.423.1646229562885;
+        Wed, 02 Mar 2022 05:59:22 -0800 (PST)
+Received: from [10.39.192.144] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id m25-20020a170906161900b006d43be5b95fsm6389055ejd.118.2022.03.02.05.59.22
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Mar 2022 05:59:22 -0800 (PST)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, dev@openvswitch.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6 extension header support
+Date:   Wed, 02 Mar 2022 14:59:21 +0100
+X-Mailer: MailMate (1.14r5875)
+Message-ID: <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+In-Reply-To: <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+ <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+ <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
 MIME-Version: 1.0
-References: <20220227213250.23637-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <Yh4855Np63fEUl4G@robh.at.kernel.org>
-In-Reply-To: <Yh4855Np63fEUl4G@robh.at.kernel.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 2 Mar 2022 13:57:36 +0000
-Message-ID: <CA+V-a8tuLGKf1qY7Z8MP5aAWUCkSPG4Ms8JnD67yJFW4fsX_0A@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: can: renesas,rcar-canfd: Document
- RZ/V2L SoC
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
 
-On Tue, Mar 1, 2022 at 3:34 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Sun, Feb 27, 2022 at 09:32:50PM +0000, Lad Prabhakar wrote:
-> > Document RZ/V2L CANFD bindings. RZ/V2L CANFD is identical to one found on
-> > the RZ/G2L SoC. No driver changes are required as generic compatible
-> > string "renesas,rzg2l-canfd" will be used as a fallback.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > ---
-> > DTSI changes [0] have been posted as part of separate series.
-> >
-> > [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
-> > 20220227203744.18355-4-prabhakar.mahadev-lad.rj@bp.renesas.com/
-> > ---
-> >  .../devicetree/bindings/net/can/renesas,rcar-canfd.yaml          | 1 +
-> >  1 file changed, 1 insertion(+)
->
-> The patch wouldn't apply, but I don't see the problem other than the
-> sha hashes are not from a known base. Please send patches against a
-> known rcX (rc1 is preferred) unless you have some other dependency. And
-> document that dependency.
->
-Sorry about that, I missed mentioning the depadancy patch [0].
 
-> Anyways, it is applied manually now.
+On 2 Mar 2022, at 11:50, Roi Dayan wrote:
+
+> On 2022-03-02 12:03 PM, Roi Dayan wrote:
+>>
+>>
+>> On 2022-02-25 12:40 PM, patchwork-bot+netdevbpf@kernel.org wrote:
+>>> Hello:
+>>>
+>>> This patch was applied to netdev/net-next.git (master)
+>>> by David S. Miller <davem@davemloft.net>:
+>>>
+>>> On Wed, 23 Feb 2022 16:54:09 -0800 you wrote:
+>>>> This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+>>>> packets can be filtered using ipv6_ext flag.
+>>>>
+>>>> Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+>>>> Acked-by: Pravin B Shelar <pshelar@ovn.org>
+>>>> ---
+>>>> =C2=A0 include/uapi/linux/openvswitch.h |=C2=A0=C2=A0 6 ++
+>>>> =C2=A0 net/openvswitch/flow.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 | 140 +++++++++++++++++++++++++++++++
+>>>> =C2=A0 net/openvswitch/flow.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 14 ++++
+>>>> =C2=A0 net/openvswitch/flow_netlink.c=C2=A0=C2=A0 |=C2=A0 26 +++++-
+>>>> =C2=A0 4 files changed, 184 insertions(+), 2 deletions(-)
+>>>
+>>> Here is the summary with links:
+>>> =C2=A0=C2=A0 - [net-next,v8] net: openvswitch: IPv6: Add IPv6 extensi=
+on header support
+>>> =C2=A0=C2=A0=C2=A0=C2=A0 https://git.kernel.org/netdev/net-next/c/28a=
+3f0601727
+>>>
+>>> You are awesome, thank you!
+>>
+>> Hi,
+>>
+>> After the merge of this patch I fail to do ipv6 traffic in ovs.
+>> Am I missing something?
+>>
+>> ovs-vswitchd.log has this msg
+>>
+>> 2022-03-02T09:52:26.604Z|00013|odp_util(handler1)|WARN|attribute packe=
+t_type has length 2 but should have length 4
+>>
+>> Thanks,
+>> Roi
 >
-Thanks.
+>
+> I think there is a missing userspace fix. didnt verify yet.
+> but in ovs userspace odp-netlink.h created from datapath/linux/compat/i=
+nclude/linux/openvswitch.h
+> and that file is not synced the change here.
+> So the new enum OVS_KEY_ATTR_IPV6_EXTHDRS is missing and also struct
+> ovs_key_ipv6_exthdrs which is needed in lib/udp-util.c
+> in struct ovs_flow_key_attr_lens to add expected len for
+> OVS_KEY_ATTR_IPV6_EXTHDR.
 
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20220209163806.18618-5-uli+renesas@fpond.eu/
+I guess if this is creating backward compatibility issues, this patch sho=
+uld be reverted/fixed. As a kmod upgrade should not break existing deploy=
+ments.
 
-Cheers,
-Prabhakar
