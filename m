@@ -2,60 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6664CAAF1
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 17:57:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C43024CAB35
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 18:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243567AbiCBQ6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 11:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
+        id S237685AbiCBRMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 12:12:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243581AbiCBQ6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:58:32 -0500
+        with ESMTP id S243758AbiCBRLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 12:11:50 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B2D021E16
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:57:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4667DCFB85
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 09:10:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646240268;
+        s=mimecast20190719; t=1646241056;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=tmS5o/o7TOxgF/ChRH9DIbCR+xpKRUvssVTS2w4RtUs=;
-        b=COx6V6YMCVLkJKZwhT/8xUFcaKoMsysd7Y6pj0QX6puiOsTMFcHh49CMy6+FeIABk3H9oM
-        0kzhBIJVASVfPNBsHdZ5ZE6GFVSPBxOm/J+fSm+232G3iR1fG//GSJPwqfaEelXIZL1rSp
-        XjXwrD9wi0ci2FNVGnCiza0PlgTsu08=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=OCk0IGN+JSNCGOmZy65+tm/Nx0eAS27c5ZIr+XIGJxc=;
+        b=CPiHdjBah7pYYTvbUbFy7mDSv6ERqwaSXj4sp6woAsFUNuVE64un2yDlqqXc2dpep549iM
+        vwIJIRwJwHKcmkNxSfS+2VFJ2QupstpicHCHYgyjL7LgB3GeU6NjJCax+oLphTnS4EpXxO
+        AYeeVFZk+za11p0PRBMM6mnRu5uebZs=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-dgeZSHUkP-W5PjRyWKQeow-1; Wed, 02 Mar 2022 11:57:41 -0500
-X-MC-Unique: dgeZSHUkP-W5PjRyWKQeow-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3424824FA6;
-        Wed,  2 Mar 2022 16:57:38 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.94])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 246F72DE6B;
-        Wed,  2 Mar 2022 16:57:26 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
-        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com
-Cc:     linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
-        kwankhede@nvidia.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
-        maorg@nvidia.com, ashok.raj@intel.com, kevin.tian@intel.com,
-        shameerali.kolothum.thodi@huawei.com
-Subject: Re: [PATCH V9 mlx5-next 09/15] vfio: Define device migration
- protocol v2
-In-Reply-To: <20220224142024.147653-10-yishaih@nvidia.com>
-Organization: Red Hat GmbH
-References: <20220224142024.147653-1-yishaih@nvidia.com>
- <20220224142024.147653-10-yishaih@nvidia.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Wed, 02 Mar 2022 17:57:25 +0100
-Message-ID: <87h78gi96y.fsf@redhat.com>
+ us-mta-441-IGv-INJUO8q91G_OEdDDHQ-1; Wed, 02 Mar 2022 12:10:55 -0500
+X-MC-Unique: IGv-INJUO8q91G_OEdDDHQ-1
+Received: by mail-wm1-f69.google.com with SMTP id c19-20020a05600c0ad300b00385bb3db625so520618wmr.4
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 09:10:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OCk0IGN+JSNCGOmZy65+tm/Nx0eAS27c5ZIr+XIGJxc=;
+        b=GYxZIwRKQ1Iv628XHcPEVtnNMdMukRjaU4u/fERKhZQTJJGcxrZg0S5aOImSrar+Cu
+         xODlcT7Mbm5ux869zMPoaFdfvT+KZAM1xMAvLrYng3fnDK+XfxKEDLcArVMBCXiwYjhL
+         INoJYN+aeLD5ztqlfvhz5QoSTomAaSPmvKYpUDmWf7aYglkK2W9qvJ2FsiHjcJ/RUCsU
+         riTqGdwVG11u3Pm3Eae+wXgKTRJpeaentrUdf0PFGc5ctvNLkUhb4gY5yITr02o4cekD
+         yErOUMpE1Mi2w3QU2AaYx71GqlS04458oifbF2KpGfXsyhxSMfdmM+WAIEFaWIeapyar
+         eBbA==
+X-Gm-Message-State: AOAM5302jXrElB8cjyoBNPfXhAzBGj0StFcgihVeMBgBnE55ivi2NyQv
+        7RGvngmeJfIZ7OW1d7tzMqEu7cjy4i0Q7+oocdX5NH2OyjgeE+EBaXA+LZ58ZtIAv2CTko57rDb
+        Oi7atY92M3bjvq8Vk
+X-Received: by 2002:a5d:6b0f:0:b0:1e7:9432:ee8c with SMTP id v15-20020a5d6b0f000000b001e79432ee8cmr22844995wrw.216.1646241052249;
+        Wed, 02 Mar 2022 09:10:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwdCmMTM9zLSI+LlHPZY7Qi9z6yOB/Nx9cLAFKLKH9IIrgIyZ3Z4qt7cBDrf7wigHlwXxKhVQ==
+X-Received: by 2002:a5d:6b0f:0:b0:1e7:9432:ee8c with SMTP id v15-20020a5d6b0f000000b001e79432ee8cmr22844983wrw.216.1646241051946;
+        Wed, 02 Mar 2022 09:10:51 -0800 (PST)
+Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id e20-20020adfa454000000b001f01a14dce8sm5579398wra.97.2022.03.02.09.10.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 09:10:51 -0800 (PST)
+Date:   Wed, 2 Mar 2022 18:10:48 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220302171048.aijkcrwcrgsu475z@sgarzare-redhat>
+References: <20220302075421.2131221-1-lee.jones@linaro.org>
+ <20220302082021-mutt-send-email-mst@kernel.org>
+ <Yh93k2ZKJBIYQJjp@google.com>
+ <20220302095045-mutt-send-email-mst@kernel.org>
+ <Yh+F1gkCGoYF2lMV@google.com>
+ <CAGxU2F4cUDrMzoHH1NT5_ivxBPgEE8HOzP5s_Bt5JURRaSsLdQ@mail.gmail.com>
+ <20220302112945-mutt-send-email-mst@kernel.org>
+ <Yh+gDZUbgBRx/1ro@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Yh+gDZUbgBRx/1ro@google.com>
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
@@ -67,88 +89,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
+On Wed, Mar 02, 2022 at 04:49:17PM +0000, Lee Jones wrote:
+>On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+>
+>> On Wed, Mar 02, 2022 at 05:28:31PM +0100, Stefano Garzarella wrote:
+>> > On Wed, Mar 2, 2022 at 3:57 PM Lee Jones <lee.jones@linaro.org> wrote:
+>> > >
+>> > > On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+>> > >
+>> > > > On Wed, Mar 02, 2022 at 01:56:35PM +0000, Lee Jones wrote:
+>> > > > > On Wed, 02 Mar 2022, Michael S. Tsirkin wrote:
+>> > > > >
+>> > > > > > On Wed, Mar 02, 2022 at 07:54:21AM +0000, Lee Jones wrote:
+>> > > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+>> > > > > > > to vhost_get_vq_desc().  All we have to do is take the same lock
+>> > > > > > > during virtqueue clean-up and we mitigate the reported issues.
+>> > > > > > >
+>> > > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+>> > > > > > >
+>> > > > > > > Cc: <stable@vger.kernel.org>
+>> > > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+>> > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+>> > > > > > > ---
+>> > > > > > >  drivers/vhost/vhost.c | 2 ++
+>> > > > > > >  1 file changed, 2 insertions(+)
+>> > > > > > >
+>> > > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> > > > > > > index 59edb5a1ffe28..bbaff6a5e21b8 100644
+>> > > > > > > --- a/drivers/vhost/vhost.c
+>> > > > > > > +++ b/drivers/vhost/vhost.c
+>> > > > > > > @@ -693,6 +693,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>> > > > > > >         int i;
+>> > > > > > >
+>> > > > > > >         for (i = 0; i < dev->nvqs; ++i) {
+>> > > > > > > +               mutex_lock(&dev->vqs[i]->mutex);
+>> > > > > > >                 if (dev->vqs[i]->error_ctx)
+>> > > > > > >                         eventfd_ctx_put(dev->vqs[i]->error_ctx);
+>> > > > > > >                 if (dev->vqs[i]->kick)
+>> > > > > > > @@ -700,6 +701,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+>> > > > > > >                 if (dev->vqs[i]->call_ctx.ctx)
+>> > > > > > >                         eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
+>> > > > > > >                 vhost_vq_reset(dev, dev->vqs[i]);
+>> > > > > > > +               mutex_unlock(&dev->vqs[i]->mutex);
+>> > > > > > >         }
+>> > > > > >
+>> > > > > > So this is a mitigation plan but the bug is still there though
+>> > > > > > we don't know exactly what it is.  I would prefer adding something like
+>> > > > > > WARN_ON(mutex_is_locked(vqs[i]->mutex) here - does this make sense?
+>> > > > >
+>> > > > > As a rework to this, or as a subsequent patch?
+>> > > >
+>> > > > Can be a separate patch.
+>> > > >
+>> > > > > Just before the first lock I assume?
+>> > > >
+>> > > > I guess so, yes.
+>> > >
+>> > > No problem.  Patch to follow.
+>> > >
+>> > > I'm also going to attempt to debug the root cause, but I'm new to this
+>> > > subsystem to it might take a while for me to get my head around.
+>> >
+>> > IIUC the root cause should be the same as the one we solved here:
+>> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a58da53ffd70294ebea8ecd0eb45fd0d74add9f9
+>> >
+>> > The worker was not stopped before calling vhost_dev_cleanup(). So while
+>> > the worker was still running we were going to free memory or initialize
+>> > fields while it was still using virtqueue.
+>>
+>> Right, and I agree but it's not the root though, we do attempt to stop all workers.
+>
+>Exactly.  This is what happens, but the question I'm going to attempt
+>to answer is *why* does this happen.
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
->
-> Replace the existing region based migration protocol with an ioctl based
-> protocol. The two protocols have the same general semantic behaviors, but
-> the way the data is transported is changed.
->
-> This is the STOP_COPY portion of the new protocol, it defines the 5 states
-> for basic stop and copy migration and the protocol to move the migration
-> data in/out of the kernel.
->
-> Compared to the clarification of the v1 protocol Alex proposed:
->
-> https://lore.kernel.org/r/163909282574.728533.7460416142511440919.stgit@omen
->
-> This has a few deliberate functional differences:
->
->  - ERROR arcs allow the device function to remain unchanged.
->
->  - The protocol is not required to return to the original state on
->    transition failure. Instead userspace can execute an unwind back to
->    the original state, reset, or do something else without needing kernel
->    support. This simplifies the kernel design and should userspace choose
->    a policy like always reset, avoids doing useless work in the kernel
->    on error handling paths.
->
->  - PRE_COPY is made optional, userspace must discover it before using it.
->    This reflects the fact that the majority of drivers we are aware of
->    right now will not implement PRE_COPY.
->
->  - segmentation is not part of the data stream protocol, the receiver
->    does not have to reproduce the framing boundaries.
->
-> The hybrid FSM for the device_state is described as a Mealy machine by
-> documenting each of the arcs the driver is required to implement. Defining
-> the remaining set of old/new device_state transitions as 'combination
-> transitions' which are naturally defined as taking multiple FSM arcs along
-> the shortest path within the FSM's digraph allows a complete matrix of
-> transitions.
->
-> A new VFIO_DEVICE_FEATURE of VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE is
-> defined to replace writing to the device_state field in the region. This
-> allows returning a brand new FD whenever the requested transition opens
-> a data transfer session.
->
-> The VFIO core code implements the new feature and provides a helper
-> function to the driver. Using the helper the driver only has to
-> implement 6 of the FSM arcs and the other combination transitions are
-> elaborated consistently from those arcs.
->
-> A new VFIO_DEVICE_FEATURE of VFIO_DEVICE_FEATURE_MIGRATION is defined to
-> report the capability for migration and indicate which set of states and
-> arcs are supported by the device. The FSM provides a lot of flexibility to
-> make backwards compatible extensions but the VFIO_DEVICE_FEATURE also
-> allows for future breaking extensions for scenarios that cannot support
-> even the basic STOP_COPY requirements.
->
-> The VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE with the GET option (i.e.
-> VFIO_DEVICE_FEATURE_GET) can be used to read the current migration state
-> of the VFIO device.
->
-> Data transfer sessions are now carried over a file descriptor, instead of
-> the region. The FD functions for the lifetime of the data transfer
-> session. read() and write() transfer the data with normal Linux stream FD
-> semantics. This design allows future expansion to support poll(),
-> io_uring, and other performance optimizations.
->
-> The complicated mmap mode for data transfer is discarded as current qemu
-> doesn't take meaningful advantage of it, and the new qemu implementation
-> avoids substantially all the performance penalty of using a read() on the
-> region.
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> ---
->  drivers/vfio/vfio.c       | 199 ++++++++++++++++++++++++++++++++++++++
->  include/linux/vfio.h      |  20 ++++
->  include/uapi/linux/vfio.h | 174 ++++++++++++++++++++++++++++++---
->  3 files changed, 380 insertions(+), 13 deletions(-)
+IIUC the worker was still running because the /dev/vhost-vsock file was 
+not explicitly closed, so vhost_vsock_dev_release() was called in the 
+do_exit() of the process.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+In that case there was the issue, because vhost_dev_check_owner() 
+returned false in vhost_vsock_stop() since current->mm was NULL.
+So it returned earlier, without calling vhost_vq_set_backend(vq, NULL).
+
+This did not stop the worker from continuing to run, causing the 
+multiple issues we are seeing.
+
+current->mm was NULL, because in the do_exit() the address space is 
+cleaned in the exit_mm(), which is called before releasing the files 
+into the exit_task_work().
+
+This can be seen from the logs, where we see first the warnings printed 
+by vhost_dev_cleanup() and then the panic in the worker (e.g. here 
+https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000)
+
+Mike also added a few more helpful details in this thread: 
+https://lore.kernel.org/virtualization/20220221100500.2x3s2sddqahgdfyt@sgarzare-redhat/T/#ree61316eac63245c9ba3050b44330e4034282cc2
+
+Thanks,
+Stefano
 
