@@ -2,189 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A594CA361
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:19:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 403914CA36F
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:20:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233173AbiCBLUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 06:20:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55254 "EHLO
+        id S234567AbiCBLUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 06:20:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241417AbiCBLTY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:19:24 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A248A26AD5
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 03:18:03 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id a23so3013193eju.3
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 03:18:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D0sqPtYUx1IaKQQ5NZtOIjB+m27XWbtlilnWNE9woZo=;
-        b=otVe95AslrjqIdNLE670/6X47Ce3Oqc/RedY3AHvj1KGZC3D5pis92Jm4/FZ7TlJUf
-         MDjqGwzn9JhMd1f9hCQrM7DnlpIwymcN0JezbS96X49w9nEMh+yQWjGo2FYUuOOUySpJ
-         +to+TjCTa6DhXUP6/dAsJQk0znDxu3BI00k3YEs4nvTj8v4YMZVRafpmIigSiQghNSeC
-         Zc8UINRqQZdN3hdgXwHScze3Xo9FiHZXll60Vbw72n3gd1tpkvsVzW4VscGwyfBdLtbn
-         NKhHPRJ5PnhIsGUdlqj/cGitNRJR+jR0eeom8jIO8vnsZU+UcPzR0GwiKEzW33pvq+Na
-         J2YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D0sqPtYUx1IaKQQ5NZtOIjB+m27XWbtlilnWNE9woZo=;
-        b=lPkBKwHeYGJ5AjHGNwr02e5+JuacRffU5/ggHUdayXh/XpfqQ3gaoN8pPxAeNKWpIT
-         pNLWHtQO7ApSJh13bx8CHKMXF+CGZCCDSkyVK+On3wU00UZa/rsV+umnpuPAFdgxac36
-         Ojbd+kvbYaRyEnSzlAf+kaHSbuG3evAbifp1ujpuori2yBGJBZNo6WTHy2L+7EmkPhR3
-         kAihizJQ0M7QbwwCj0XkrAH47UnBJ/oCG5/R+7TKMn6s2Zm5XnkrUl6Hf4J2ECaZeyfT
-         jKzwMCs+HMMS0EIXudcO12NYI0kyvhP3Tg7awtqbD32okIUUO7h5WNqfTD8A4WbMHGfa
-         vYkA==
-X-Gm-Message-State: AOAM5320U5YdoWpJovPoEH0tbSPlt+tHhGuhx8aOMNaSAWDZFbJZCLrc
-        0LG5XATg/OVOqyizVOW6Duk=
-X-Google-Smtp-Source: ABdhPJzZyYSguxbxFsTqf1PrvuKRZZ+9H3MYlSukf1lpJejpg6GYETE4YARCBZIifTYZpk3LLXqeCA==
-X-Received: by 2002:a17:906:3a18:b0:6cd:ba45:995f with SMTP id z24-20020a1709063a1800b006cdba45995fmr23203043eje.328.1646219881568;
-        Wed, 02 Mar 2022 03:18:01 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id p7-20020aa7cc87000000b00410ee30cefbsm8385614edt.71.2022.03.02.03.18.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 03:18:01 -0800 (PST)
-Date:   Wed, 2 Mar 2022 13:17:59 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [RFC PATCH v2 net-next 05/17] net: bridge: implement unicast
- filtering for the bridge device
-Message-ID: <20220302111759.xylbcwkiev6igmqg@skbuf>
-References: <20210224114350.2791260-1-olteanv@gmail.com>
- <20210224114350.2791260-6-olteanv@gmail.com>
- <YD0GyJfbhqpPjhVd@shredder.lan>
- <CA+h21hrtnXr11VXsRXokkZHQ3AQ8nNCLsWTC4ztoLMmNmQoxxg@mail.gmail.com>
- <YhUVNc58trg+r3V9@shredder>
- <20220222171810.bpoddx7op3rivenm@skbuf>
- <YheGlwjp849dhcpq@shredder>
- <20220224135241.ne6c64segpt6azed@skbuf>
- <Yh5H1zexT0/Q2bc4@shredder>
+        with ESMTP id S234746AbiCBLUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:20:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 807ADDF9C
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 03:19:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646219976;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oU9xsUH3KYvT9qc7F2Zj/zrvWJj+uZjGFINcg4AMqQg=;
+        b=FSar0niXUURZekXfNwMOAMb1ue7e4TYS3VZ+nAqF3wAMPaSdmCnRh+2M3eJkrIG8hGAkwt
+        /AeLF4oMB7gdkhURKqTEUk41a3XX8tnD/hDR+fTPxciyir0ZNM3mMNAPgHgERDbtMpD52V
+        dIEx0mZz85kSXKpH40pzvt5zCV4rl5k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-36-qOQrJP2YOWal2iQgFKzSHw-1; Wed, 02 Mar 2022 06:19:31 -0500
+X-MC-Unique: qOQrJP2YOWal2iQgFKzSHw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 990E01006AA5;
+        Wed,  2 Mar 2022 11:19:29 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.94])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E6E697554E;
+        Wed,  2 Mar 2022 11:19:21 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>, alex.williamson@redhat.com,
+        bhelgaas@google.com, jgg@nvidia.com, saeedm@nvidia.com
+Cc:     linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, leonro@nvidia.com,
+        kwankhede@nvidia.com, mgurtovoy@nvidia.com, yishaih@nvidia.com,
+        maorg@nvidia.com, ashok.raj@intel.com, kevin.tian@intel.com,
+        shameerali.kolothum.thodi@huawei.com
+Subject: Re: [PATCH V9 mlx5-next 09/15] vfio: Define device migration
+ protocol v2
+In-Reply-To: <20220224142024.147653-10-yishaih@nvidia.com>
+Organization: Red Hat GmbH
+References: <20220224142024.147653-1-yishaih@nvidia.com>
+ <20220224142024.147653-10-yishaih@nvidia.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Wed, 02 Mar 2022 12:19:20 +0100
+Message-ID: <87tucgiouf.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh5H1zexT0/Q2bc4@shredder>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 06:20:39PM +0200, Ido Schimmel wrote:
-> > > OK, I see the problem... So you want the bridge to support
-> > > 'IFF_UNICAST_FLT' by installing local FDB entries? I see two potential
-> > > problems:
-> > > 
-> > > 1. For VLAN-unaware bridges this is trivial as VLAN information is of no
-> > > use. For VLAN-aware bridges we either need to communicate VLAN
-> > > information from upper layers or install a local FDB entry per each
-> > > configured VLAN (wasteful...). Note that VLAN information will not
-> > > always be available (in PACKET_MR_UNICAST, for example), in which case a
-> > > local FDB entry will need to be configured per each existing VLAN in
-> > > order to maintain existing behavior. Which lead to me think about the
-> > > second problem...
-> > >
-> > > 2. The bigger problem that I see is that if the bridge starts supporting
-> > > 'IFF_UNICAST_FLT' by installing local FDB entries, then packets that
-> > > were previously locally received and flooded will only be locally
-> > > received. Only locally receiving them makes sense, but I don't know what
-> > > will break if we change the existing behavior... Maybe this needs to be
-> > > guarded by a new bridge option?
-> > 
-> > I think it boils down to whether PACKET_MR_UNICAST on br0 is equivalent to
-> > 'bridge fdb add dev br0 self permanent' or not. Theoretically, the
-> > former means "if a packet enters the local termination path of br0,
-> > don't drop it", 
-> 
-> Trying to understand the first part of the sentence, are you saying that
-> if user space decides to use this interface, then it is up to it to
-> ensure that packets with the given unicast address are terminated on the
-> bridge? That is, it is up to user space to install the necessary
-> permanent FDB record?
+On Thu, Feb 24 2022, Yishai Hadas <yishaih@nvidia.com> wrote:
 
-This first part of the sentence is just wondering whether it is even
-sane to make the bridge driver essentially provide an implementation for
-PACKET_MR_UNICAST, and translate that into a local FDB entry which means
-something else. User space can already install a local FDB entry with
-the MAC address of the upper interface, and this will behave closer to
-what is expected.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+>
+> Replace the existing region based migration protocol with an ioctl based
+> protocol. The two protocols have the same general semantic behaviors, but
+> the way the data is transported is changed.
+>
+> This is the STOP_COPY portion of the new protocol, it defines the 5 states
+> for basic stop and copy migration and the protocol to move the migration
+> data in/out of the kernel.
+>
+> Compared to the clarification of the v1 protocol Alex proposed:
+>
+> https://lore.kernel.org/r/163909282574.728533.7460416142511440919.stgit@omen
+>
+> This has a few deliberate functional differences:
+>
+>  - ERROR arcs allow the device function to remain unchanged.
+>
+>  - The protocol is not required to return to the original state on
+>    transition failure. Instead userspace can execute an unwind back to
+>    the original state, reset, or do something else without needing kernel
+>    support. This simplifies the kernel design and should userspace choose
+>    a policy like always reset, avoids doing useless work in the kernel
+>    on error handling paths.
+>
+>  - PRE_COPY is made optional, userspace must discover it before using it.
+>    This reflects the fact that the majority of drivers we are aware of
+>    right now will not implement PRE_COPY.
+>
+>  - segmentation is not part of the data stream protocol, the receiver
+>    does not have to reproduce the framing boundaries.
+>
+> The hybrid FSM for the device_state is described as a Mealy machine by
+> documenting each of the arcs the driver is required to implement. Defining
+> the remaining set of old/new device_state transitions as 'combination
+> transitions' which are naturally defined as taking multiple FSM arcs along
+> the shortest path within the FSM's digraph allows a complete matrix of
+> transitions.
+>
+> A new VFIO_DEVICE_FEATURE of VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE is
+> defined to replace writing to the device_state field in the region. This
+> allows returning a brand new FD whenever the requested transition opens
+> a data transfer session.
+>
+> The VFIO core code implements the new feature and provides a helper
+> function to the driver. Using the helper the driver only has to
+> implement 6 of the FSM arcs and the other combination transitions are
+> elaborated consistently from those arcs.
+>
+> A new VFIO_DEVICE_FEATURE of VFIO_DEVICE_FEATURE_MIGRATION is defined to
+> report the capability for migration and indicate which set of states and
+> arcs are supported by the device. The FSM provides a lot of flexibility to
+> make backwards compatible extensions but the VFIO_DEVICE_FEATURE also
+> allows for future breaking extensions for scenarios that cannot support
+> even the basic STOP_COPY requirements.
+>
+> The VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE with the GET option (i.e.
+> VFIO_DEVICE_FEATURE_GET) can be used to read the current migration state
+> of the VFIO device.
+>
+> Data transfer sessions are now carried over a file descriptor, instead of
+> the region. The FD functions for the lifetime of the data transfer
+> session. read() and write() transfer the data with normal Linux stream FD
+> semantics. This design allows future expansion to support poll(),
+> io_uring, and other performance optimizations.
+>
+> The complicated mmap mode for data transfer is discarded as current qemu
+> doesn't take meaningful advantage of it, and the new qemu implementation
+> avoids substantially all the performance penalty of using a read() on the
+> region.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+> ---
+>  drivers/vfio/vfio.c       | 199 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/vfio.h      |  20 ++++
+>  include/uapi/linux/vfio.h | 174 ++++++++++++++++++++++++++++++---
+>  3 files changed, 380 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> index 71763e2ac561..b37ab27b511f 100644
+> --- a/drivers/vfio/vfio.c
+> +++ b/drivers/vfio/vfio.c
+> @@ -1557,6 +1557,197 @@ static int vfio_device_fops_release(struct inode *inode, struct file *filep)
+>  	return 0;
+>  }
+>  
+> +/*
+> + * vfio_mig_get_next_state - Compute the next step in the FSM
+> + * @cur_fsm - The current state the device is in
+> + * @new_fsm - The target state to reach
+> + * @next_fsm - Pointer to the next step to get to new_fsm
+> + *
+> + * Return 0 upon success, otherwise -errno
+> + * Upon success the next step in the state progression between cur_fsm and
+> + * new_fsm will be set in next_fsm.
 
-If the bridge ever implements the support for PACKET_MR_UNICAST, a new
-FDB entry flag is probably needed, for local reception. If the MAC
-address added with PACKET_MR_UNICAST is new, the bridge would create an
-entry with fdb->dst = NULL. If it already exists, it would keep the
-existing fdb->dst and just mark the local reception flag as true.
-This is to comply with the "copy to CPU" semantics instead of altering
-the forwarding destination. I'm not sure whether there are real use
-cases beyond just complying to expected semantics.
+What about non-success? Can the caller make any assumption about
+next_fsm in that case? Because...
 
-> I think that is fair, it is just that right now this operation does
-> something else and causes all the packets forwarded via the bridge to
-> be locally terminated. Most of them will then be dropped by upper
-> layers. I don't think this was the author's intention, it seems like
-> an unfortunate side effect of current implementation.
+> + *
+> + * This breaks down requests for combination transitions into smaller steps and
+> + * returns the next step to get to new_fsm. The function may need to be called
+> + * multiple times before reaching new_fsm.
+> + *
+> + */
+> +int vfio_mig_get_next_state(struct vfio_device *device,
+> +			    enum vfio_device_mig_state cur_fsm,
+> +			    enum vfio_device_mig_state new_fsm,
+> +			    enum vfio_device_mig_state *next_fsm)
+> +{
+> +	enum { VFIO_DEVICE_NUM_STATES = VFIO_DEVICE_STATE_RESUMING + 1 };
+> +	/*
+> +	 * The coding in this table requires the driver to implement 6
+> +	 * FSM arcs:
+> +	 *         RESUMING -> STOP
+> +	 *         RUNNING -> STOP
+> +	 *         STOP -> RESUMING
+> +	 *         STOP -> RUNNING
+> +	 *         STOP -> STOP_COPY
+> +	 *         STOP_COPY -> STOP
+> +	 *
+> +	 * The coding will step through multiple states for these combination
+> +	 * transitions:
+> +	 *         RESUMING -> STOP -> RUNNING
+> +	 *         RESUMING -> STOP -> STOP_COPY
+> +	 *         RUNNING -> STOP -> RESUMING
+> +	 *         RUNNING -> STOP -> STOP_COPY
+> +	 *         STOP_COPY -> STOP -> RESUMING
+> +	 *         STOP_COPY -> STOP -> RUNNING
+> +	 */
+> +	static const u8 vfio_from_fsm_table[VFIO_DEVICE_NUM_STATES][VFIO_DEVICE_NUM_STATES] = {
+> +		[VFIO_DEVICE_STATE_STOP] = {
+> +			[VFIO_DEVICE_STATE_STOP] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_RUNNING] = VFIO_DEVICE_STATE_RUNNING,
+> +			[VFIO_DEVICE_STATE_STOP_COPY] = VFIO_DEVICE_STATE_STOP_COPY,
+> +			[VFIO_DEVICE_STATE_RESUMING] = VFIO_DEVICE_STATE_RESUMING,
+> +			[VFIO_DEVICE_STATE_ERROR] = VFIO_DEVICE_STATE_ERROR,
+> +		},
+> +		[VFIO_DEVICE_STATE_RUNNING] = {
+> +			[VFIO_DEVICE_STATE_STOP] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_RUNNING] = VFIO_DEVICE_STATE_RUNNING,
+> +			[VFIO_DEVICE_STATE_STOP_COPY] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_RESUMING] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_ERROR] = VFIO_DEVICE_STATE_ERROR,
+> +		},
+> +		[VFIO_DEVICE_STATE_STOP_COPY] = {
+> +			[VFIO_DEVICE_STATE_STOP] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_RUNNING] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_STOP_COPY] = VFIO_DEVICE_STATE_STOP_COPY,
+> +			[VFIO_DEVICE_STATE_RESUMING] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_ERROR] = VFIO_DEVICE_STATE_ERROR,
+> +		},
+> +		[VFIO_DEVICE_STATE_RESUMING] = {
+> +			[VFIO_DEVICE_STATE_STOP] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_RUNNING] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_STOP_COPY] = VFIO_DEVICE_STATE_STOP,
+> +			[VFIO_DEVICE_STATE_RESUMING] = VFIO_DEVICE_STATE_RESUMING,
+> +			[VFIO_DEVICE_STATE_ERROR] = VFIO_DEVICE_STATE_ERROR,
+> +		},
+> +		[VFIO_DEVICE_STATE_ERROR] = {
+> +			[VFIO_DEVICE_STATE_STOP] = VFIO_DEVICE_STATE_ERROR,
+> +			[VFIO_DEVICE_STATE_RUNNING] = VFIO_DEVICE_STATE_ERROR,
+> +			[VFIO_DEVICE_STATE_STOP_COPY] = VFIO_DEVICE_STATE_ERROR,
+> +			[VFIO_DEVICE_STATE_RESUMING] = VFIO_DEVICE_STATE_ERROR,
+> +			[VFIO_DEVICE_STATE_ERROR] = VFIO_DEVICE_STATE_ERROR,
+> +		},
+> +	};
+> +
+> +	if (WARN_ON(cur_fsm >= ARRAY_SIZE(vfio_from_fsm_table)))
+> +		return -EINVAL;
+> +
+> +	if (new_fsm >= ARRAY_SIZE(vfio_from_fsm_table))
+> +		return -EINVAL;
+> +
+> +	*next_fsm = vfio_from_fsm_table[cur_fsm][new_fsm];
+> +	return (*next_fsm != VFIO_DEVICE_STATE_ERROR) ? 0 : -EINVAL;
 
-Do you mean here that the "something else" is to turn on promiscuous
-mode for the bridge, and this makes local_rcv = true for every packet in
-br_handle_frame_finish?
+...next_fsm will contain STATE_ERROR if we try to transition from or to
+STATE_ERROR, but it remains unchanged if the input states are out of
+range, yet in both cases the return value is -EINVAL. Looking further, ...
 
-Yes, that is a problem. The dev_uc_add() calls will keep the bridge's
-promiscuity at 1, with no way to turn it back to 0 from user space.
-To get rid of this we'd need to declare IFF_UNICAST_FLT at the very
-least.
+> + * any -> ERROR
+> + *   ERROR cannot be specified as a device state, however any transition request
+> + *   can be failed with an errno return and may then move the device_state into
+> + *   ERROR. In this case the device was unable to execute the requested arc and
+> + *   was also unable to restore the device to any valid device_state.
+> + *   To recover from ERROR VFIO_DEVICE_RESET must be used to return the
+> + *   device_state back to RUNNING.
 
-> This behavior is even more ridiculous when you take hardware offload
-> into account, as usually the CPU is unable to handle all these
-> packets.
+...this seems to indicate that not moving into STATE_ERROR is an
+option anyway. Do we need any extra guidance in the description for
+vfio_mig_get_next_state()?
 
-If we keep the analogy that a PACKET_MR_UNICAST means "copy MAC address
-X to CPU", then IFF_PROMISC means "copy all packets to CPU", no?
-
-So I wouldn't say the behavior is even more ridiculous, it is just as
-ridiculous, just on a different level. And maybe not even "ridiculous",
-just "highly sub-optimal". Ridiculous would be to not comply to the
-expected behavior.
-
-> > while the other means "direct this MAC DA only towards
-> > the local termination path of br0".
-> 
-> This I agree with.
-> 
-> > I.o.w. the difference between "copy to CPU" and "trap to CPU".
-> > 
-> > If we agree they aren't equivalent, and we also agree that a macvlan on
-> > top of a bridge wants "trap to CPU" instead of "copy to CPU", I think
-> > the only logical conclusion is that the communication mechanism between
-> > the bridge and the macvlan that we're looking for doesn't exist -
-> > dev_uc_add() does something slightly different.
-> > 
-> > Which is why I want to better understand your idea of having the bridge
-> > track upper interfaces.
-> 
-> In my case these upper interfaces are actually router interfaces and I'm
-> interested in their MAC (in addition to other attributes) to know which
-> FDB entry to program towards the router port (your CPU port) on ingress
-> and which SA to use on egress (the hardware has limitations on SAs).
-> 
-> I'm pretty sure bridge maintainers will not agree to have this code in
-> the bridge driver in which case you can implement this in DSA. Should be
-> quite simple as I guess most configurations use VLANs/MACVLANs uppers.
-
-Yes, but this will record only the dev_addr of those upper interfaces.
-It would not be fully compliant with what user space can ask for.
