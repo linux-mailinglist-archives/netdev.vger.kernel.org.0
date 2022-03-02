@@ -2,142 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F0E4CB062
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 21:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEC04CB07A
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 21:59:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244842AbiCBU7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 15:59:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
+        id S245000AbiCBVAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 16:00:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232801AbiCBU7I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 15:59:08 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668D7D2050;
-        Wed,  2 Mar 2022 12:58:24 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2dbfe58670cso33061237b3.3;
-        Wed, 02 Mar 2022 12:58:24 -0800 (PST)
+        with ESMTP id S234176AbiCBVAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 16:00:14 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E188D2050
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 12:59:30 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id i1so2654442plr.2
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 12:59:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gUqcADQZPQvyqaonjnYhl1TaoPMyKV8P7rze27ZP3KI=;
-        b=N5hUOPiLewMUCD+5KaZBMFUn/haOQVDaN2+TFsgiefTgfSDB3L0BGarLhWkc3S3e6R
-         hSaSRV2kSmo2m2GWw0aJ07cybXs2J2cF2RvWIowhPhzEBmvVZ7p5g4YDUzytYOgV0bsu
-         aGafKhgfGfEdHlszoLI2vpItjmasBo6wNfuoRH968Z8To3WUqKyos+4fppD1hCZckv+8
-         d6BtmIXTWZdfrnXXjKMUmU/nCPIqL0OTGzLtMAEbLh7W6+RJShWDachnrSA1yRwB7cuP
-         g28TfoEa9XbBDn7BocwY6DlDEMKrHYBKXR4dJdjY+VQZYC7M0To0hft+yr7OKyAic7u9
-         flvg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R/oQqieG0aXWXHs93Td97reRxAIjZoSgBmUtDJFVhjU=;
+        b=d2ZFN7FzXJICmnX4Tyt0wAx0nHny3V7g7RBF7BzoFi4JqvMjvTlFe6r9CSmtZHYpfY
+         sI7cCbacBhQSn0c2nYjk/wWGRSWn9quhJSSynH9lMYRKPPdVW/LYlF+HQ4F3tfS4GoN+
+         rfxT6gA9HHGJJFfNnOWheyqKpysRyPxkd0f8U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gUqcADQZPQvyqaonjnYhl1TaoPMyKV8P7rze27ZP3KI=;
-        b=FceiW4m0uXcOdfQUIxnVgU2WUgQ3cTIBBXXvifDduLgTuQ/KCNmxKUT7Jd51RdHmSR
-         apNX2aWMSZUxmZyNaL2tdDh3vV1mPDIVBoiktpos+LYfd18bLlD58P/9iV36Hh78lHv6
-         EW69eV5gJb50uhwInXluJZixyXpSZ8Nx3fx1fytLtjn2eFv9B4kAjMDCW0oMdCZ7X+KA
-         srg6uXJhGh7eQUA71FUU5zasLSO3avXVFQePXoqyKZO5cvwhg/p5+DQLbEtbNVXN/l8q
-         Fn4xFbOHhrUD4dvMB+K52vGCki5EdGfjayAGvr6pjpXZJUw2CQQ9YTnxOsXq3wNyRTxK
-         uKmQ==
-X-Gm-Message-State: AOAM531pu54OjCCPzm9Yyb4oCR5/VLvjLVBQfyERnlYh6WiSLQk15cQu
-        i0LPoXF/8s2Tg2qhxvZdqv6k3W+3vbFcFcDOpEhGpob2vAk=
-X-Google-Smtp-Source: ABdhPJyhnP/LKgkQf+hwmnQFbFT/ZhPe40O2TgJ+0PIiJBYrw0Hr8AGUZNoc/OSbiGZUEN7gVRf9rsSVpJ0Uk7OiJ2M=
-X-Received: by 2002:a81:6357:0:b0:2d7:2af4:6e12 with SMTP id
- x84-20020a816357000000b002d72af46e12mr31920195ywb.317.1646254703556; Wed, 02
- Mar 2022 12:58:23 -0800 (PST)
-MIME-Version: 1.0
-References: <20220302183515.448334-1-caleb.connolly@linaro.org> <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
-In-Reply-To: <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 2 Mar 2022 12:58:12 -0800
-Message-ID: <CABBYNZJPN6o-v2OpAXND0+UfwB3AQL2=r6CDQ0S8PktWZqijMw@mail.gmail.com>
-Subject: Re: [PATCH v2] bluetooth: hci_event: don't print an error on vendor events
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Caleb Connolly <caleb.connolly@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R/oQqieG0aXWXHs93Td97reRxAIjZoSgBmUtDJFVhjU=;
+        b=08F5qxdhx4CVWQZDDbR1UIpcq3Yuu4H7yS4mqr/Qaprwo5Pu2uxHQrXavKWr7AAJ5G
+         Djkx0U/IlE83m67K84x086GOFxu0CWRQo4ruG8DcjMBYYCZbCyqjMXvL12fAPWz6/7oN
+         32fcIXsfXApDk2pjuF9FN9+1K5b1d0dHwtNesDD4K13BMn/ma8EjY6BV3WvbjqrM9ZJq
+         to+g6ZtOxbNrrYi+NW2U3eK9yFpQCpSVwudfmERLuZOp8ttF8lPd1B78+/BeLX6mXvHd
+         wAwN60Mh8lhssjNjVP3ON1j0hwL9wskNkUJZwt6JYw3wkTPDry4Zf0SVILAozlfga0Rr
+         pZgA==
+X-Gm-Message-State: AOAM533S5It3aGoKgo/fd75Cfo0OPIH33SJQ/jqxeqFOtyqhOyXwNMvg
+        F6/jnPfhx/bAG90ze/cHw5RFPQ==
+X-Google-Smtp-Source: ABdhPJykkdhEEGUDkHycvSgNRuEs4QwrQaW1FnUc6uFGBxeAOPBVvK2/xrXBO3QxBQPFHyTwD4zC/w==
+X-Received: by 2002:a17:90b:1bc2:b0:1bf:993:f736 with SMTP id oa2-20020a17090b1bc200b001bf0993f736mr1213267pjb.190.1646254769629;
+        Wed, 02 Mar 2022 12:59:29 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id on18-20020a17090b1d1200b001b9cfbfbf00sm4525pjb.40.2022.03.02.12.59.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 12:59:29 -0800 (PST)
+Date:   Wed, 2 Mar 2022 12:59:28 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        David Laight <David.Laight@aculab.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        "linux1394-devel@lists.sourceforge.net" 
+        <linux1394-devel@lists.sourceforge.net>,
+        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kgdb-bugreport@lists.sourceforge.net" 
+        <kgdb-bugreport@lists.sourceforge.net>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        "v9fs-developer@lists.sourceforge.net" 
+        <v9fs-developer@lists.sourceforge.net>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+Message-ID: <202203021256.69D7C4BCA6@keescook>
+References: <7D0C2A5D-500E-4F38-AD0C-A76E132A390E@kernel.org>
+ <73fa82a20910c06784be2352a655acc59e9942ea.camel@HansenPartnership.com>
+ <CAHk-=wiT5HX6Kp0Qv4ZYK_rkq9t5fZ5zZ7vzvi6pub9kgp=72g@mail.gmail.com>
+ <7dc860874d434d2288f36730d8ea3312@AcuMS.aculab.com>
+ <CAHk-=whKqg89zu4T95+ctY-hocR6kDArpo2qO14-kV40Ga7ufw@mail.gmail.com>
+ <0ced2b155b984882b39e895f0211037c@AcuMS.aculab.com>
+ <CAHk-=wix0HLCBs5sxAeW3uckg0YncXbTjMsE-Tv8WzmkOgLAXQ@mail.gmail.com>
+ <78ccb184-405e-da93-1e02-078f90d2b9bc@rasmusvillemoes.dk>
+ <202203021158.DB5204A0@keescook>
+ <CAHk-=wikKPC0LUqZ8++EC5JOvGdBqVH9uUaTX=DvBioDoReYww@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wikKPC0LUqZ8++EC5JOvGdBqVH9uUaTX=DvBioDoReYww@mail.gmail.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel, Caleb,
-
-On Wed, Mar 2, 2022 at 11:20 AM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Caleb,
->
-> > Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
-> > some devices see warnings being printed for vendor events, e.g.
+On Wed, Mar 02, 2022 at 12:18:45PM -0800, Linus Torvalds wrote:
+> On Wed, Mar 2, 2022 at 12:07 PM Kees Cook <keescook@chromium.org> wrote:
 > >
-> > [   75.806141] Bluetooth: hci0: setting up wcn399x
-> > [   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
-> > [   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
-> > [   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
-> > [   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
-> > [   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
-> > [   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
-> > [   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
-> > [   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
-> > [   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
-> > [   77.198451] Bluetooth: hci0: QCA setup on UART is completed
-> >
-> > Avoid printing the event length warning for vendor events, this reverts
-> > to the previous behaviour where such warnings weren't printed.
-> >
-> > Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
-> > Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-> > ---
-> > Changes since v1:
-> > * Don't return early! Vendor events still get parsed despite the
-> >   warning. I should have looked a little more closely at that...
-> > ---
-> > net/bluetooth/hci_event.c | 2 +-
-> > 1 file changed, 1 insertion(+), 1 deletion(-)
->
-> patch has been applied to bluetooth-stable tree.
->
-> Regards
->
-> Marcel
+> > I've long wanted to change kfree() to explicitly set pointers to NULL on
+> > free. https://github.com/KSPP/linux/issues/87
+> 
+> We've had this discussion with the gcc people in the past, and gcc
+> actually has some support for it, but it's sadly tied to the actual
+> function name (ie gcc has some special-casing for "free()")
+> 
+> See
+> 
+>     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94527
+> 
+> for some of that discussion.
+> 
+> Oh, and I see some patch actually got merged since I looked there last
+> so that you can mark "deallocator" functions, but I think it's only
+> for the context matching, not for actually killing accesses to the
+> pointer afterwards.
 
-I believe a proper fix has already been pushed to bluetooth-next:
+Ah! I missed that getting added in GCC 11. But yes, there it is:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=314d8cd2787418c5ac6b02035c344644f47b292b
+https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-malloc-function-attribute
 
-HCI_EV_VENDOR shall be assumed to be variable length and that also
-uses bt_dev_warn_ratelimited to avoid spamming the logs in case it
-still fails.
+Hah, now we may need to split __malloc from __alloc_size. ;)
+
+I'd still like the NULL assignment behavior, though, since some things
+can easily avoid static analysis.
 
 -- 
-Luiz Augusto von Dentz
+Kees Cook
