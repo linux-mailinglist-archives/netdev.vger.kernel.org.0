@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8429A4CA35B
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:18:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEC64CA352
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238932AbiCBLTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 06:19:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        id S241415AbiCBLTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 06:19:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241726AbiCBLSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:18:30 -0500
+        with ESMTP id S241738AbiCBLSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:18:35 -0500
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FCAC4B62;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B037AC4B69;
         Wed,  2 Mar 2022 03:16:04 -0800 (PST)
 Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K7s2n1t9Zz67Z6v;
-        Wed,  2 Mar 2022 19:14:41 +0800 (CST)
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K7s2j4DqTz67r9d;
+        Wed,  2 Mar 2022 19:14:37 +0800 (CST)
 Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
  fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 2 Mar 2022 12:15:48 +0100
+ 15.1.2308.21; Wed, 2 Mar 2022 12:15:49 +0100
 From:   Roberto Sassu <roberto.sassu@huawei.com>
 To:     <zohar@linux.ibm.com>, <shuah@kernel.org>, <ast@kernel.org>,
         <daniel@iogearbox.net>, <andrii@kernel.org>, <yhs@fb.com>,
@@ -31,9 +31,9 @@ CC:     <linux-integrity@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v3 5/9] selftests/bpf: Add test for bpf_ima_file_hash()
-Date:   Wed, 2 Mar 2022 12:14:00 +0100
-Message-ID: <20220302111404.193900-6-roberto.sassu@huawei.com>
+Subject: [PATCH v3 6/9] selftests/bpf: Check if the digest is refreshed after a file write
+Date:   Wed, 2 Mar 2022 12:14:01 +0100
+Message-ID: <20220302111404.193900-7-roberto.sassu@huawei.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220302111404.193900-1-roberto.sassu@huawei.com>
 References: <20220302111404.193900-1-roberto.sassu@huawei.com>
@@ -53,122 +53,211 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new test to ensure that bpf_ima_file_hash() returns the digest of the
-executed files.
+Verify that bpf_ima_inode_hash() returns a non-fresh digest after a file
+write, and that bpf_ima_file_hash() returns a fresh digest. Verification is
+done by requesting the digest from the bprm_creds_for_exec hook, called
+before ima_bprm_check().
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- .../selftests/bpf/prog_tests/test_ima.c       | 43 +++++++++++++++++--
- tools/testing/selftests/bpf/progs/ima.c       | 10 ++++-
- 2 files changed, 47 insertions(+), 6 deletions(-)
+ tools/testing/selftests/bpf/ima_setup.sh      | 24 ++++++-
+ .../selftests/bpf/prog_tests/test_ima.c       | 72 ++++++++++++++++++-
+ tools/testing/selftests/bpf/progs/ima.c       | 11 +++
+ 3 files changed, 103 insertions(+), 4 deletions(-)
 
+diff --git a/tools/testing/selftests/bpf/ima_setup.sh b/tools/testing/selftests/bpf/ima_setup.sh
+index 8e62581113a3..a3de1cd43ba0 100755
+--- a/tools/testing/selftests/bpf/ima_setup.sh
++++ b/tools/testing/selftests/bpf/ima_setup.sh
+@@ -12,7 +12,7 @@ LOG_FILE="$(mktemp /tmp/ima_setup.XXXX.log)"
+ 
+ usage()
+ {
+-	echo "Usage: $0 <setup|cleanup|run> <existing_tmp_dir>"
++	echo "Usage: $0 <setup|cleanup|run|modify-bin|restore-bin> <existing_tmp_dir>"
+ 	exit 1
+ }
+ 
+@@ -77,6 +77,24 @@ run()
+ 	exec "${copied_bin_path}"
+ }
+ 
++modify_bin()
++{
++	local tmp_dir="$1"
++	local mount_dir="${tmp_dir}/mnt"
++	local copied_bin_path="${mount_dir}/$(basename ${TEST_BINARY})"
++
++	echo "mod" >> "${copied_bin_path}"
++}
++
++restore_bin()
++{
++	local tmp_dir="$1"
++	local mount_dir="${tmp_dir}/mnt"
++	local copied_bin_path="${mount_dir}/$(basename ${TEST_BINARY})"
++
++	truncate -s -4 "${copied_bin_path}"
++}
++
+ catch()
+ {
+ 	local exit_code="$1"
+@@ -105,6 +123,10 @@ main()
+ 		cleanup "${tmp_dir}"
+ 	elif [[ "${action}" == "run" ]]; then
+ 		run "${tmp_dir}"
++	elif [[ "${action}" == "modify-bin" ]]; then
++		modify_bin "${tmp_dir}"
++	elif [[ "${action}" == "restore-bin" ]]; then
++		restore_bin "${tmp_dir}"
+ 	else
+ 		echo "Unknown action: ${action}"
+ 		exit 1
 diff --git a/tools/testing/selftests/bpf/prog_tests/test_ima.c b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-index 97d8a6f84f4a..acc911ba63fd 100644
+index acc911ba63fd..a0cfba0b4273 100644
 --- a/tools/testing/selftests/bpf/prog_tests/test_ima.c
 +++ b/tools/testing/selftests/bpf/prog_tests/test_ima.c
-@@ -13,6 +13,8 @@
+@@ -13,16 +13,17 @@
  
  #include "ima.skel.h"
  
-+#define MAX_SAMPLES 2
-+
- static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
+-#define MAX_SAMPLES 2
++#define MAX_SAMPLES 4
+ 
+-static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
++static int _run_measured_process(const char *measured_dir, u32 *monitored_pid,
++				 const char *cmd)
  {
  	int child_pid, child_status;
-@@ -32,14 +34,25 @@ static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
+ 
+ 	child_pid = fork();
+ 	if (child_pid == 0) {
+ 		*monitored_pid = getpid();
+-		execlp("./ima_setup.sh", "./ima_setup.sh", "run", measured_dir,
++		execlp("./ima_setup.sh", "./ima_setup.sh", cmd, measured_dir,
+ 		       NULL);
+ 		exit(errno);
+ 
+@@ -34,6 +35,11 @@ static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
  	return -EINVAL;
  }
  
--static u64 ima_hash_from_bpf;
-+static u64 ima_hash_from_bpf[MAX_SAMPLES];
-+static int ima_hash_from_bpf_idx;
- 
- static int process_sample(void *ctx, void *data, size_t len)
- {
--	ima_hash_from_bpf = *((u64 *)data);
-+	if (ima_hash_from_bpf_idx >= MAX_SAMPLES)
-+		return -ENOSPC;
-+
-+	ima_hash_from_bpf[ima_hash_from_bpf_idx++] = *((u64 *)data);
- 	return 0;
- }
- 
-+static void test_init(struct ima__bss *bss)
++static int run_measured_process(const char *measured_dir, u32 *monitored_pid)
 +{
-+	ima_hash_from_bpf_idx = 0;
-+
-+	bss->use_ima_file_hash = false;
++	return _run_measured_process(measured_dir, monitored_pid, "run");
 +}
 +
+ static u64 ima_hash_from_bpf[MAX_SAMPLES];
+ static int ima_hash_from_bpf_idx;
+ 
+@@ -51,6 +57,7 @@ static void test_init(struct ima__bss *bss)
+ 	ima_hash_from_bpf_idx = 0;
+ 
+ 	bss->use_ima_file_hash = false;
++	bss->enable_bprm_creds_for_exec = false;
+ }
+ 
  void test_test_ima(void)
- {
+@@ -58,6 +65,7 @@ void test_test_ima(void)
  	char measured_dir_template[] = "/tmp/ima_measuredXXXXXX";
-@@ -72,13 +85,35 @@ void test_test_ima(void)
- 	if (CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno))
- 		goto close_clean;
+ 	struct ring_buffer *ringbuf = NULL;
+ 	const char *measured_dir;
++	u64 bin_true_sample;
+ 	char cmd[256];
  
-+	/*
-+	 * Test #1
-+	 * - Goal: obtain a sample with the bpf_ima_inode_hash() helper
-+	 * - Expected result:  1 sample (/bin/true)
-+	 */
-+	test_init(skel->bss);
- 	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
--	if (CHECK(err, "run_measured_process", "err = %d\n", err))
-+	if (CHECK(err, "run_measured_process #1", "err = %d\n", err))
- 		goto close_clean;
- 
- 	err = ring_buffer__consume(ringbuf);
- 	ASSERT_EQ(err, 1, "num_samples_or_err");
--	ASSERT_NEQ(ima_hash_from_bpf, 0, "ima_hash");
-+	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
+ 	int err, duration = 0;
+@@ -114,6 +122,64 @@ void test_test_ima(void)
+ 	ASSERT_EQ(err, 2, "num_samples_or_err");
+ 	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
+ 	ASSERT_NEQ(ima_hash_from_bpf[1], 0, "ima_hash");
++	bin_true_sample = ima_hash_from_bpf[1];
 +
 +	/*
-+	 * Test #2
-+	 * - Goal: obtain samples with the bpf_ima_file_hash() helper
-+	 * - Expected result: 2 samples (./ima_setup.sh, /bin/true)
++	 * Test #3
++	 * - Goal: confirm that bpf_ima_inode_hash() returns a non-fresh digest
++	 * - Expected result: 2 samples (/bin/true: non-fresh, fresh)
 +	 */
 +	test_init(skel->bss);
-+	skel->bss->use_ima_file_hash = true;
++
++	err = _run_measured_process(measured_dir, &skel->bss->monitored_pid,
++				    "modify-bin");
++	if (CHECK(err, "modify-bin #3", "err = %d\n", err))
++		goto close_clean;
++
++	skel->bss->enable_bprm_creds_for_exec = true;
 +	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
-+	if (CHECK(err, "run_measured_process #2", "err = %d\n", err))
++	if (CHECK(err, "run_measured_process #3", "err = %d\n", err))
 +		goto close_clean;
 +
 +	err = ring_buffer__consume(ringbuf);
 +	ASSERT_EQ(err, 2, "num_samples_or_err");
 +	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
 +	ASSERT_NEQ(ima_hash_from_bpf[1], 0, "ima_hash");
++	ASSERT_EQ(ima_hash_from_bpf[0], bin_true_sample, "sample_equal_or_err");
++	/* IMA refreshed the digest. */
++	ASSERT_NEQ(ima_hash_from_bpf[1], bin_true_sample,
++		   "sample_different_or_err");
++
++	/*
++	 * Test #4
++	 * - Goal: verify that bpf_ima_file_hash() returns a fresh digest
++	 * - Expected result: 4 samples (./ima_setup.sh: fresh, fresh;
++	 *                               /bin/true: fresh, fresh)
++	 */
++	test_init(skel->bss);
++	skel->bss->use_ima_file_hash = true;
++	skel->bss->enable_bprm_creds_for_exec = true;
++	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
++	if (CHECK(err, "run_measured_process #4", "err = %d\n", err))
++		goto close_clean;
++
++	err = ring_buffer__consume(ringbuf);
++	ASSERT_EQ(err, 4, "num_samples_or_err");
++	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
++	ASSERT_NEQ(ima_hash_from_bpf[1], 0, "ima_hash");
++	ASSERT_NEQ(ima_hash_from_bpf[2], 0, "ima_hash");
++	ASSERT_NEQ(ima_hash_from_bpf[3], 0, "ima_hash");
++	ASSERT_NEQ(ima_hash_from_bpf[2], bin_true_sample,
++		   "sample_different_or_err");
++	ASSERT_EQ(ima_hash_from_bpf[3], ima_hash_from_bpf[2],
++		  "sample_equal_or_err");
++
++	skel->bss->use_ima_file_hash = false;
++	skel->bss->enable_bprm_creds_for_exec = false;
++	err = _run_measured_process(measured_dir, &skel->bss->monitored_pid,
++				    "restore-bin");
++	if (CHECK(err, "restore-bin #3", "err = %d\n", err))
++		goto close_clean;
  
  close_clean:
  	snprintf(cmd, sizeof(cmd), "./ima_setup.sh cleanup %s", measured_dir);
 diff --git a/tools/testing/selftests/bpf/progs/ima.c b/tools/testing/selftests/bpf/progs/ima.c
-index b5a0de50d1b4..e0b073dcfb5d 100644
+index e0b073dcfb5d..9633e5f2453d 100644
 --- a/tools/testing/selftests/bpf/progs/ima.c
 +++ b/tools/testing/selftests/bpf/progs/ima.c
-@@ -18,6 +18,8 @@ struct {
- 
+@@ -19,6 +19,7 @@ struct {
  char _license[] SEC("license") = "GPL";
  
-+bool use_ima_file_hash;
-+
+ bool use_ima_file_hash;
++bool enable_bprm_creds_for_exec;
+ 
  static void ima_test_common(struct file *file)
  {
- 	u64 ima_hash = 0;
-@@ -27,8 +29,12 @@ static void ima_test_common(struct file *file)
- 
- 	pid = bpf_get_current_pid_tgid() >> 32;
- 	if (pid == monitored_pid) {
--		ret = bpf_ima_inode_hash(file->f_inode, &ima_hash,
--					 sizeof(ima_hash));
-+		if (!use_ima_file_hash)
-+			ret = bpf_ima_inode_hash(file->f_inode, &ima_hash,
-+						 sizeof(ima_hash));
-+		else
-+			ret = bpf_ima_file_hash(file, &ima_hash,
-+						sizeof(ima_hash));
- 		if (ret < 0 || ima_hash == 0)
- 			return;
- 
+@@ -54,3 +55,13 @@ void BPF_PROG(bprm_committed_creds, struct linux_binprm *bprm)
+ {
+ 	ima_test_common(bprm->file);
+ }
++
++SEC("lsm.s/bprm_creds_for_exec")
++int BPF_PROG(bprm_creds_for_exec, struct linux_binprm *bprm)
++{
++	if (!enable_bprm_creds_for_exec)
++		return 0;
++
++	ima_test_common(bprm->file);
++	return 0;
++}
 -- 
 2.32.0
 
