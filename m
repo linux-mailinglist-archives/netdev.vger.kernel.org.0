@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 456614CAE65
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33FCE4CAE68
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 20:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244961AbiCBTP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 14:15:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        id S244970AbiCBTP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 14:15:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244959AbiCBTPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:15:52 -0500
+        with ESMTP id S244913AbiCBTPx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 14:15:53 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70073.outbound.protection.outlook.com [40.107.7.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7817485F
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:15:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6AA4D9D4
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 11:15:03 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HZHP88ISwSHaYCPZMsnVTZOOEKHCS/wRiGfHJ0m94BeZtBzUayI7Mhu+ilREcKQ9qfaVh9NZ76QjMIvb155pmcwlOrNgOsxiY5EyMPRTkpuCQCleabO8uoGyL9AWZmMXj+zmk0pJo8U5UUXxoRQaUTaz5m5nkp8G0KteDr4JvPpTrevGkcBZ3LGCTmCQjovjbm7gL3fqOsPpuEURuVg3QG1IM/qjouKqhK76BKv2EqqRNBoRR8NF0CVQFQh+NKJzUfWZIr4fRTNEoMyuP6VyV4f+rC97vNjgTA1+ypF4w0BKVFOeGY5K0arMlZLSCntlH/uoKshKcLyLT8UCtXJT2Q==
+ b=PBpab8KkRWat6K6T4u+MlSpTmDgNlr3FEelEuNitmvAdvJNw/yEjRBhQv58cUhLWRn0fzk+Vug8kHlXSXMlqTMWcrEyihvVqY3Q1AVQhd55hkgYaa3sMvkCX3VXSMFl/Mc55r+vHWAU/7IPqERdlc41E5fZmRPDnHQR3aEwvOTN1CRAWBIuUb98+vPkA/L04wGUx+7au9xtKldBOcUY2vSaS9mGQnrdrslWH3t6jpxzPbKU2Kg8dgi8gu1e02oDsrA272mXuUUn+47AZrr7j+a/a0DUfvmOxi6nzvHUreR0rGtRkxra2FXsr8SjqfHO25fyP0tOAQqwGcHcXbW6TIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BqVG/1jDSLoRzlCvWZFPZlcaigJM3Pczk1LdlM+sw0s=;
- b=odajHY5QNBIgfEzNGp57mbV7FqTqn+KAnIAhfYRpPltSZmuoLuB0QzTspWUVjbYAE/r0eN+Hpy6BUtHEP5NzgtqjZJynggRPi5NR/TC0ieXIY9qjgXuHxVwSnqHz1DWamHQgPE0/OEmiZ99JbPCGtBb7hjXwWz0A/1xUmMmtdLHmBspcXPWXMqeSvFKHyRRmHlo3Ny0bzRT4EiRO5X0RqDvteSINhGIABppckoxnC7DDB7PXDbx2Sf32JZFdm7/9TSv4EpMt6x4izXgOKf3BBKgVeQf0hez/LGjnbk4A1s4g7PBdgn5ecGGDDhOZq7goGrzY4QDy5mbuz5BjVHUq1w==
+ bh=QbrTwuO00E2xzeqv/DSK5wcVZVx8ycrE7S5TX/lSEPY=;
+ b=Cj73xwoFZRjaY6FmQ9mFFtxJXaaW2z3tuYm0niPBKkwCgeODEIzUNJzvIuWfKEGoQQZoDQirZR95eQk2bQ14ycMRAij4KChX/Q/cPDMKiu3difr3UinKPhW7h0PUIKh9bM96MWTJhy6ZnbBBhkZCEK1rEIGJK/o5ED3I22tFZfIMp0q4ZEmaxvRj8WrDcSq6RbhgR54pxJFH2T3gJJuiKlbjM6wzaq0YuTLrF2xI+N9CsiSefpTvWBaabvt9wToJnqbwPYA2cYM3KgfufWYTSEtNnlXgHJLEKZlv136X9wL4C7DvmQQTo8jK4G0HjZ4aWgxTq4hUNOVpyBYQzspYoA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BqVG/1jDSLoRzlCvWZFPZlcaigJM3Pczk1LdlM+sw0s=;
- b=iZtvZ+lEZFtQ/UbJnFsoa7BRCCJ4v6JP/nSgCFTQCuFGUUN4ACJHMKFnn+pI1pS+WrFzwuSR1r6P1uLfn4KiWGgCIA8AuC4ehVQIS9S6dDk51y/Kz5uTGMkgiBpZbpQWuyyaHfpWeuBfkrI/9ckX1f5Ve7Nt0Nwaia/2+4jkONg=
+ bh=QbrTwuO00E2xzeqv/DSK5wcVZVx8ycrE7S5TX/lSEPY=;
+ b=Ec1JuVutBicFVwp6GooRaLzB5Ofaq0Ea00X3kRSnEnoyoI3fi7HRgdY22wdZ5HzHcK8edXbHcj97ZKnXmq/QHvyfk8F27BpOrzKS5hsgM44xHDvWljN6HyIVEqHyf7BjjMavng7Yban6+tT+u8NM98N3c7SUxjF0Fjzt32Uw7jQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB2911.eurprd04.prod.outlook.com (2603:10a6:800:b8::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Wed, 2 Mar
- 2022 19:14:56 +0000
+ 2022 19:14:57 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36%4]) with mapi id 15.20.5017.027; Wed, 2 Mar 2022
- 19:14:56 +0000
+ 19:14:57 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -52,9 +52,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 04/10] net: dsa: install the primary unicast MAC address as standalone port host FDB
-Date:   Wed,  2 Mar 2022 21:14:11 +0200
-Message-Id: <20220302191417.1288145-5-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 05/10] net: dsa: manage flooding on the CPU ports
+Date:   Wed,  2 Mar 2022 21:14:12 +0200
+Message-Id: <20220302191417.1288145-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220302191417.1288145-1-vladimir.oltean@nxp.com>
 References: <20220302191417.1288145-1-vladimir.oltean@nxp.com>
@@ -65,53 +65,53 @@ X-ClientProxiedBy: AM6PR05CA0030.eurprd05.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 150c7f8f-2b08-4930-6fe2-08d9fc80efd5
+X-MS-Office365-Filtering-Correlation-Id: 60951445-67ab-4507-2888-08d9fc80f094
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB2911:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB29110A92A9D4C1B0077F9C9DE0039@VI1PR0402MB2911.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB291176B86B2E362AD9127F10E0039@VI1PR0402MB2911.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xJg4HrEKmtxeaR6rsHODP+8Tjjin/X5GnibSejzTk3wc6dmkWagh6VK5hdZ7fBdhM/gKJyxF+2Z9ntTINM9vwALsvMICP6ebxLbOcF73NSxL5xlZ46wJxSqoDPsJN9UhGrpbocbfO8/HM3GZ5CpFerpNE1Lablx+cFGrsFxDkiig1MUEMWZW1uMDJLU+3FMkuu5upwDf9yAU6MFejunOChAsSkHAsJR561xubDbHrjpvvas2OSW0rUQHO/wD51x+Ra7quioSPMtwGha3WJRvwaxLR5j3xOSoIIb02Ib18u8ePX37Rvjuc4H07ddm6GgQvxXvM1Sf05x4pvAcl2OVpHK5PJBBtg7K7xGs1B5tBdhSHK5Li2hzcuFPJOOtC1uaXotaWzoIecyePy6pxaphTVPSGvvunXecxUgi6S8wuaLdH9C3WYVhkm+9QAR/a9lrd8YHatD+kADxtDCf9ahr6sXMam45hhqBxJJ1176VrOEmY9QSfDh/zsY6t/o4g3k9DBqxrZCRSujgZQR8B20e3K42DVjCgAf4bxK/YnFaknXgW7u6cjMEeDf4vgFSMX1/Q7Z8n6XQJvXqyxtAkawkSLOVQELzLv6poTQrScNd8IZyryvjfuVka8BNITOwnPny3d0S4KJzi7LAm5rqSeNbpZlv4r84VRrNve17WTbH2bL17verFN2Dk5vAiN879tkEzK9aX5fOFLZvlldAQZ/JkA==
+X-Microsoft-Antispam-Message-Info: K5pLARjWynJ9exEJ6nvsTc3PHc9aCyhFuVuc1IH0KEHuU2zm0JF3zW6cQiFCpcaR0R5RDmyqIHpc7RKE4GhJ3oauU2qQMNINu+GiW5LyjQUz5Pbpsh7zQ1OALXWwyrHREfOn7ul2kp9k1NibhP992Ye10VhIp67mXiO1vYCoXOsjqeg+mfe17lWeYnl7F9Kd/lDXArjWx3ToPsbLBZsPt4/m8NIqx+h6r9nn7F1I5ttsOqa4AVSOEbOswb5VlSqwqLLwsh9tk89LubkLqdQWRv7+LXH3uRehFK0qLNt3GdbBSs4lZCHZLGO3+In5/oGmrNOJcvonJrbgOui95xAqGnNhop9OxUxiCVJqjITq3LqH5FnC+409FwaPLFun1K9HglACrWki9jJG+OG9Whvv5NoACsnfm3LJLPxtbN5GAngxslR1Fu03X7kEdKVxucabSFoV+tZXbM0/g3gD4XQV0ECReTyPU/uyc/4tu5xgO6cPcW3T6gktF9RBiqQVI0xIGtlpMXt1oSczgexgfDjIjEFfxm1FKUZTpUfoDYDlYxGA6cne6jxOCYd8M6er3mn7OzhEZKZeeZtwhuEJUnsEAYPjgVXMvtvjzIFXESyz5W9oEo22zM79yQNA9//t9p9t/cLo+7MR/EUyjOhTpdU3ymHPGPlvOljcm2vEqsMP8LBOD+sD10WtBl5KmOlJ9qF/5ZKySy7K7WsCKLGHzFX3Pw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(316002)(6916009)(83380400001)(5660300002)(8676002)(4326008)(7416002)(66556008)(66476007)(44832011)(36756003)(54906003)(66946007)(52116002)(8936002)(38100700002)(6506007)(6512007)(6666004)(38350700002)(1076003)(2616005)(26005)(186003)(508600001)(6486002)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9kTQltctCyiuY/sgVR9N850XZas3JCpGqfWfF24jyG0AGp0anDOUhSOqksTB?=
- =?us-ascii?Q?xEGeoiEP1MfeUhXfzZNjJubz3w2aT65QrRb9MnQWwNzj4Rvq9SCjwPDt+RhT?=
- =?us-ascii?Q?2oSgcD/dZSNsi7TrULPZr83RWorUiv/uwqH3QFu6Hysb+YSR8KNjWhzq908e?=
- =?us-ascii?Q?oM+VNe5UL8d8MKUMEHAn0xbdU+DhIh0MHNKTO4IwSueGIYGFWRVFvuVgQD7Z?=
- =?us-ascii?Q?jDjU99iMtJ62YHKpL+WPNKWVS9xvC/9cggrKyfG4BRhxeNwDsmx0k3T3QJs3?=
- =?us-ascii?Q?ho3kAp1tLpvYRWKQTeCPutaO6BWBYC2pPbI2mEqE3ogSRiRyWKlIQh7fdui0?=
- =?us-ascii?Q?ilQ8lkfuru2t09aZ07HmbaIL1iWgvrMvxOGt4Btr04RTZCvivJ8aHlgyOXJ1?=
- =?us-ascii?Q?Z1ZHITB5+LuoG7/XNeu8MMYcbsLibja7bakGxjRrSIpZ2vVjlb8edEJWzm/4?=
- =?us-ascii?Q?GCRwBDW85QiBEMvoijHTn/9DAlUWAllQ8stoyKchwL46k7XoaO9rk06FPVPY?=
- =?us-ascii?Q?VMRLOtlpGOF0eNV0WtxBfF4Gokmwm9eOapugVFqY8Ig7U0Q9GHKWr3LLkySr?=
- =?us-ascii?Q?xYATdybWnEVQJUFyAuP9N0lP28BOqNLPLaZjRdyrw2TsSQvVWCQvKXeQXZ3v?=
- =?us-ascii?Q?WahCIu19zzgeEP/ErVRGDhAfR2lGcp9skA39GlrjDVCE7BjPPrxPyAFaERAL?=
- =?us-ascii?Q?8riq3NzBLs7LZmPMA/GNSOzh5SeOSXCVtqJ7nJKjJkgo2tAQoM4viE7IXlgt?=
- =?us-ascii?Q?p6660qzQdXKoEMEGoMX97edW/DXsl/FNHkD/Ts9Bvu1SaPvSHJShJ18XpndO?=
- =?us-ascii?Q?wGTCzP1UgVQR4myCgJU70UwvspGNQhWDvuPx3x7DOp+3VyDxRlZwM2nldJVQ?=
- =?us-ascii?Q?dqJqVaCIwdeuHAs+t3G75L5w3GiCoRIxQbe4rRJUu1R6Y8sDeF5KSW52LHgZ?=
- =?us-ascii?Q?6yWURnvGyMeR3lKwP/Zs7ub3bFcS1LtniJ/K4hSpTqnURWFHnCb9drt0/qCA?=
- =?us-ascii?Q?K5LdggQUT01K+FKHOvh+D8IE9xgY6TVUnINHb0VRTa82hVMX5DWtWBRREg8u?=
- =?us-ascii?Q?fNgafujIKiCh5geKXpluEc1HVMSZwaOd8tyYZjxX4vgVdddwQ0kQlPTtf/y0?=
- =?us-ascii?Q?caifz3Bq53a1FM3GYoqBKBnnWOzYrVrCRNw2wq96sHv2RgWwWn5Hogv84HiR?=
- =?us-ascii?Q?vh+gFnC+577niMZMbbXd4Le1Jz0sWaFZkLZu43uN6XdwDFveBtsWjMnCw6V8?=
- =?us-ascii?Q?ZkscTA+0pO2kUOkzHvl20nCu0bmsABwDAh8rcpru2R/f43NdYsTXbyBugo3E?=
- =?us-ascii?Q?+7tAfoDPPYWc5J38KhXE/ZHVrIhAM4JJnD0mui35ewiGMkmDsMoXhHqsfaS7?=
- =?us-ascii?Q?cTnr1R25nf/bx0q7YbMjzaRLI8tqyP7OqpiHwPUdMJeABV8rldIUMId6rfI3?=
- =?us-ascii?Q?4vjSh0zWIePBEk0nMgdQCydSUQmQxeLc7tQH8dbeD3X95A1Jvnos/ToIGUlN?=
- =?us-ascii?Q?BC2AT2qQojDXf0Goxq4JMS+C3tx8LKCMvtQ5umWk4qs96i3C3t1HILsrSyxv?=
- =?us-ascii?Q?pYb0U4Sz0Qmjh7ndoHqz7rxBkgUonnm/5hrJSH1irVcShvllJQ9cJZqgZEFI?=
- =?us-ascii?Q?bolZH9itYAqIbjWaS98gDFg=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5OKLByPjjyUPV38H6ZAu4RvvynZ5I8D3f6nSPm3gsQZyZLAY6q/RSwARHbgD?=
+ =?us-ascii?Q?Osw+BXOjbr9yz3Z1Y3YH40u1kuZgxIAwPN9cNe3FzzkyOLk191tH+Wg4mWEc?=
+ =?us-ascii?Q?EsAJBwfxupqtREVEK4VzFiep4DfLOfcjlIScV1OIYS3jvRFaorQkB4KyEZwd?=
+ =?us-ascii?Q?Q/y0aYmnWoIRCRuY3iZQ8J10CYp/uR902KzPV6umP7I+Xnbiz4rVuyu0OdaA?=
+ =?us-ascii?Q?4CLGkAaEWugJWdr+LChON5yCUFhNUek+CyvbB+4fy3MxwRyerpuuAvWqRMgN?=
+ =?us-ascii?Q?Gw2ilrT4QXSPzNedGPeqd4oHKUqMZc2yrXOjDC+242IIstYbrGezRPorqnmG?=
+ =?us-ascii?Q?EgwbuaLrbyXGPIX6OTVE9gIXtz4R+icsZgGelDX90QSbcS7sULChFT1YAHpB?=
+ =?us-ascii?Q?jERVuEKxT7rKq7uHo5me9n+NlHi31CdhJ8KnZ/JeNe+WIL3uHxqdO1Qr8tc7?=
+ =?us-ascii?Q?Xh54R8W1iWzJQIYGDlcNUhjOFiaYIsKgsPjs0Fw9ekQ9sZkVO7SEQ7/xKLWS?=
+ =?us-ascii?Q?FnoO8lSo0ENJpILfACq8V1jqQ8NM+mPgfGemsD0msFxTj5V8LM8mEg/EmL5G?=
+ =?us-ascii?Q?fnQ4KLbivJT5SPvYDsfzFaL9mgWNfq8cGqC09GusK5qHCAn5ojyuLsYI2xHy?=
+ =?us-ascii?Q?PKy5dtsoa5U3q0YYyJp7ZVqP1WGfvYECsRByEWXhr7bJnoaaWftGhu/HBHBL?=
+ =?us-ascii?Q?gO7hMEg0b2IX5dG5I6mRuA7v0ZCv2BypkqoIEnU3Ny4BiLf/ePesGSPxfheF?=
+ =?us-ascii?Q?ytIvKiYef6sdtGmdcRTcVaihD51weMzxtHp9mtgaD5fcaJMm5o/dxlcoAuME?=
+ =?us-ascii?Q?E/m+HNrcueOuIGzIGBU0RtR44OP7O9oUjV0OkWcpui8RSxSBvoN1udS1gVeV?=
+ =?us-ascii?Q?mRMi6S+DZB0HMBtyGGWNx0nXVp+GKdehUPslI10VtjTPR8O2NNuGQpBkXywz?=
+ =?us-ascii?Q?ThYi+7AlYrIjGF/7d51YwfF4j3//ezHxv78H94pXM36NZVwuPv7TJdnbx/ht?=
+ =?us-ascii?Q?objWbrihfAOpu3/a546F56KvrV/9C7J5/WlmAh6YqJc79/ho2oziUGy8rsDW?=
+ =?us-ascii?Q?V0U14Qph2wUZV8MFYg0bZLlOhSrao1vIIrxH85ZPBstHz2OIgQYOBM7KvG8w?=
+ =?us-ascii?Q?7p0BMonQ+4HQA7od1fyQqeMZa2Lz7nfqJAvaBdJQE4ZAtFU0gHSPIQ2Cq2Fb?=
+ =?us-ascii?Q?/7aqDrgQnZ1RiJMPv/rzU145GA48Nbic4NH167DHNW3Z0OZYi1LlqFjHdwD5?=
+ =?us-ascii?Q?+8WlFzs2CyfbgE38lBSTrXyRbzK9E/Xz1u8IZfL5+VMw8f4MUcgGjsVCH1kP?=
+ =?us-ascii?Q?ZLp94VDMBpmyu7DFjcqSN2SGKPnz4tUFGyef4gHpT+VUoLe2HVXIQYwtk31I?=
+ =?us-ascii?Q?F3gx8j7Pp3rW1avC7R4yA/eaOQ3IileJgI8JhjLGQu0yLKfA0/Q+jLL9m3KM?=
+ =?us-ascii?Q?nsFbvim/FilTwlqEyhjnShWe6Xm2o4xqBCXxNcIYGLnd/J0Yg2Qt5168PbRp?=
+ =?us-ascii?Q?3QLarKyaSDkekhs5Y+cB1ICFiLs/O7BeqJAtM2K8AHllgfHku70/FA+lRX2y?=
+ =?us-ascii?Q?pMAFUbPccQ+MAavDDWl/zToMGF93DfXUdlDBA8DV1Bqo+3gCeRhRNo6xDwRH?=
+ =?us-ascii?Q?dZlj6XsCRDBfYBrfBeRVqQk=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 150c7f8f-2b08-4930-6fe2-08d9fc80efd5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60951445-67ab-4507-2888-08d9fc80f094
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 19:14:56.0797
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2022 19:14:57.3921
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6vD0GZzOXPQwC9DtaBzO6+eOuzUfQA27mOWSao+GWMEmm65gzUHUD91H0mm7bgAiE2BvQEBhjizzok4JoUsMlA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: IqmFs/G54+gtzqxVpkUOuC4wuah8/nr0UY1BiaRw5IGwpq3vfQAI+5iCFKngufQlgKmDS4UFSBw+AKbtvN6LNg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2911
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,115 +123,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To be able to safely turn off CPU flooding for standalone ports, we need
-to ensure that the dev_addr of each DSA slave interface is installed as
-a standalone host FDB entry for compatible switches.
+DSA can treat IFF_PROMISC and IFF_ALLMULTI on standalone user ports as
+signifying whether packets with an unknown MAC DA will be received or
+not. Since known MAC DAs are handled by FDB/MDB entries, this means that
+promiscuity is analogous to including/excluding the CPU port from the
+flood domain of those packets.
+
+There are two ways to signal CPU flooding to drivers.
+
+The first (chosen here) is to synthesize a call to
+ds->ops->port_bridge_flags() for the CPU port, with a mask of
+BR_FLOOD | BR_MCAST_FLOOD. This has the effect of turning on egress
+flooding on the CPU port regardless of source.
+
+The alternative would be to create a new ds->ops->port_host_flood()
+which is called per user port. Some switches (sja1105) have a flood
+domain that is managed per {ingress port, egress port} pair, so it would
+make more sense for this kind of switch to not flood the CPU from port A
+if just port B requires it. Nonetheless, the sja1105 has other quirks
+that prevent it from making use of unicast filtering, and without a
+concrete user making use of this feature, I chose not to implement it.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 35 +++++++++++++++++++++++++++++++++--
- 1 file changed, 33 insertions(+), 2 deletions(-)
+ net/dsa/slave.c | 39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 1402f93b1de2..6eb728efac43 100644
+index 6eb728efac43..42436ac6993b 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -175,6 +175,7 @@ static int dsa_slave_open(struct net_device *dev)
- {
- 	struct net_device *master = dsa_slave_to_master(dev);
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
- 	int err;
- 
- 	err = dev_open(master, NULL);
-@@ -183,10 +184,16 @@ static int dsa_slave_open(struct net_device *dev)
- 		goto out;
- 	}
- 
-+	if (dsa_switch_supports_uc_filtering(ds)) {
-+		err = dsa_port_standalone_host_fdb_add(dp, dev->dev_addr, 0);
-+		if (err)
-+			goto out;
-+	}
-+
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr)) {
- 		err = dev_uc_add(master, dev->dev_addr);
- 		if (err < 0)
--			goto out;
-+			goto del_host_addr;
- 	}
- 
- 	err = dsa_port_enable_rt(dp, dev->phydev);
-@@ -198,6 +205,9 @@ static int dsa_slave_open(struct net_device *dev)
- del_unicast:
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr))
- 		dev_uc_del(master, dev->dev_addr);
-+del_host_addr:
-+	if (dsa_switch_supports_uc_filtering(ds))
-+		dsa_port_standalone_host_fdb_del(dp, dev->dev_addr, 0);
- out:
- 	return err;
- }
-@@ -206,12 +216,16 @@ static int dsa_slave_close(struct net_device *dev)
- {
- 	struct net_device *master = dsa_slave_to_master(dev);
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
- 
- 	dsa_port_disable_rt(dp);
- 
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr))
- 		dev_uc_del(master, dev->dev_addr);
- 
-+	if (dsa_switch_supports_uc_filtering(ds))
-+		dsa_port_standalone_host_fdb_del(dp, dev->dev_addr, 0);
-+
+@@ -229,9 +229,44 @@ static int dsa_slave_close(struct net_device *dev)
  	return 0;
  }
  
-@@ -244,24 +258,41 @@ static void dsa_slave_set_rx_mode(struct net_device *dev)
- static int dsa_slave_set_mac_address(struct net_device *dev, void *a)
++/* Keep flooding enabled towards this port's CPU port as long as it serves at
++ * least one port in the tree that requires it.
++ */
++static void dsa_port_manage_cpu_flood(struct dsa_port *dp)
++{
++	struct switchdev_brport_flags flags = {
++		.mask = BR_FLOOD | BR_MCAST_FLOOD,
++	};
++	struct dsa_switch_tree *dst = dp->ds->dst;
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++	struct dsa_port *other_dp;
++	int err;
++
++	list_for_each_entry(other_dp, &dst->ports, list) {
++		if (!dsa_port_is_user(other_dp))
++			continue;
++
++		if (other_dp->cpu_dp != cpu_dp)
++			continue;
++
++		if (other_dp->slave->flags & IFF_ALLMULTI)
++			flags.val |= BR_MCAST_FLOOD;
++		if (other_dp->slave->flags & IFF_PROMISC)
++			flags.val |= BR_FLOOD;
++	}
++
++	err = dsa_port_pre_bridge_flags(dp, flags, NULL);
++	if (err)
++		return;
++
++	dsa_port_bridge_flags(cpu_dp, flags, NULL);
++}
++
+ static void dsa_slave_change_rx_flags(struct net_device *dev, int change)
  {
  	struct net_device *master = dsa_slave_to_master(dev);
 +	struct dsa_port *dp = dsa_slave_to_port(dev);
 +	struct dsa_switch *ds = dp->ds;
- 	struct sockaddr *addr = a;
- 	int err;
  
- 	if (!is_valid_ether_addr(addr->sa_data))
- 		return -EADDRNOTAVAIL;
- 
-+	if (dsa_switch_supports_uc_filtering(ds)) {
-+		err = dsa_port_standalone_host_fdb_add(dp, addr->sa_data, 0);
-+		if (err)
-+			return err;
-+	}
+ 	if (change & IFF_ALLMULTI)
+ 		dev_set_allmulti(master,
+@@ -239,6 +274,10 @@ static void dsa_slave_change_rx_flags(struct net_device *dev, int change)
+ 	if (change & IFF_PROMISC)
+ 		dev_set_promiscuity(master,
+ 				    dev->flags & IFF_PROMISC ? 1 : -1);
 +
- 	if (!ether_addr_equal(addr->sa_data, master->dev_addr)) {
- 		err = dev_uc_add(master, addr->sa_data);
- 		if (err < 0)
--			return err;
-+			goto del_unicast;
- 	}
- 
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr))
- 		dev_uc_del(master, dev->dev_addr);
- 
-+	if (dsa_switch_supports_uc_filtering(ds))
-+		dsa_port_standalone_host_fdb_del(dp, dev->dev_addr, 0);
-+
- 	eth_hw_addr_set(dev, addr->sa_data);
- 
- 	return 0;
-+
-+del_unicast:
-+	if (dsa_switch_supports_uc_filtering(ds))
-+		dsa_port_standalone_host_fdb_del(dp, addr->sa_data, 0);
-+
-+	return err;
++	if (dsa_switch_supports_uc_filtering(ds) &&
++	    dsa_switch_supports_mc_filtering(ds))
++		dsa_port_manage_cpu_flood(dp);
  }
  
- struct dsa_slave_dump_ctx {
+ static void dsa_slave_set_rx_mode(struct net_device *dev)
 -- 
 2.25.1
 
