@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC31D4C9AB5
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 02:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C7B4C9ABA
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 02:51:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbiCBBvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Mar 2022 20:51:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
+        id S237123AbiCBBw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Mar 2022 20:52:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232397AbiCBBvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 20:51:03 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80302A2531
-        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 17:50:20 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id t13so247289lfd.9
-        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 17:50:20 -0800 (PST)
+        with ESMTP id S229784AbiCBBw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Mar 2022 20:52:29 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1565DA2786
+        for <netdev@vger.kernel.org>; Tue,  1 Mar 2022 17:51:47 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id r20so290673ljj.1
+        for <netdev@vger.kernel.org>; Tue, 01 Mar 2022 17:51:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fastly.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6CDgDe+fGoaVQpiu99+i6UmDH/5/8iEjkUhZabzSYWc=;
-        b=YQAWqK8wpMQgPQ0Wxft7Fo8RokTuetmAdFRVK7XW5OkeUnMk6Zoi/yJMXWIedHm1ko
-         n+9ep8eMqHCfvWDojwpuwbIxKgvEqPM+WSH3eF9U78MumqjpPVBpSf0LteQ8KMcmXbPs
-         hYpFOJiUhxFMABGRNjWo9p5qD41TfFeg9BpAE=
+        bh=nAhweZ+pg9E2HA3BdG1WLz9TgMZtCcFsz7mgDn6TWtU=;
+        b=ReRX9Fz28f1TR66QP9PoPji/Mkj24URC0vxfMrGUYsbIUMT5H0mQY9eDw0UVOccbTQ
+         B+JX4kfaWOZHC3dUgbA8eBTVJp79txfspQIo/SWphL+M3BykEqgXUrT25/+97Rm7yZJ9
+         7c50aWxRAW/8A1mtUL46VM4jXkSBXWCcUJ8KQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6CDgDe+fGoaVQpiu99+i6UmDH/5/8iEjkUhZabzSYWc=;
-        b=NjrqSCoh08XG2H3NHidLWz15J3mZNhvBOnrleOKeUFE2ChylaSLbS1aMHAlLRhH06K
-         TcT9bSeM5D6g6ZIFNZfEE0mA/qtRjQLSDlm7xq6nqwAxce6iqAL3ZRBosRynKCfAxAGa
-         mR/o8KMDMr7t8WvDiIMyCZFURQjKke7OVpXhur7hjws8YC9cyLiovAjUtaMoBjpuPFt9
-         O2PU7ErEu8UvAdZra7SwWDOtS2vcCXEGMSF1m+ziKIt+M5erHM3Ei9s0KXt9771DgGPW
-         9uxTcZwfJcz1WB4pUyNMi3/ujLOXXFEUBzyK3gjZx/c5RhptsdNL3Av0RRsQt9cfq8QD
-         kLeQ==
-X-Gm-Message-State: AOAM533v94s/iUUdlCtJlLzbr1ZVE+5c2cNsHLzw5rxEiuknIqb1s0da
-        bc4T6pPLDAbjDlYN6ke2++yZ5RVEemANKF8QrlzEZA==
-X-Google-Smtp-Source: ABdhPJx7OKJ76M8Afh6/2WeokE0S97lla0JeBVY32S+nLg1a82BfNIt9sZdcDWFWuV3CtY2KsSQm4VDYKo6jBk6qj7o=
-X-Received: by 2002:ac2:5b4b:0:b0:43c:795a:25a6 with SMTP id
- i11-20020ac25b4b000000b0043c795a25a6mr17475739lfp.268.1646185818868; Tue, 01
- Mar 2022 17:50:18 -0800 (PST)
+        bh=nAhweZ+pg9E2HA3BdG1WLz9TgMZtCcFsz7mgDn6TWtU=;
+        b=UbxXgTRXi2zpnNl0fDhgvNTvNpY0ot00CAlWkxaonZ6nrbYhn4QqfAj/3r/ZS64QDm
+         eFmcrVk+w32YVDX/g1XJDBAuKF9mozsuy/KTc7NALxfgsEu9C02Gg50o8on4THMBNJ6k
+         ehYZ6/8a7qnMVd999QzppnOY1XEBktePwtP9KcQE/YJprCXQtWzvYf9X/+Pt7cLnYbfF
+         H37824GZDMzRRDMaL8c2AZLsf0dsLNRqpIKBdO+qfNRuwnvT9z2G7EUg09tWNTYltYCk
+         pAS4+GVg5lwUZxbAtp3evB75Uid26SFs3eNsnlE222Wrg/+HUSW8oLOkAONOPPMbFFoR
+         zMmQ==
+X-Gm-Message-State: AOAM532vgKLYr+55BmXM++iNTTH1rJofQPhF4vydaHZjP8IeNvdmxiFp
+        KiQeTNMsF+aulIybDAjg1zKB5QPcbOoNWscENArBgQ==
+X-Google-Smtp-Source: ABdhPJxtlrPuPv7ooDSZBT4Rfj3jBOu3oM0QAOLQduI4fNucwnn7kd6YlH1aGZYIB+fktcK5pknxbeBa6I7nEnDuhfg=
+X-Received: by 2002:a05:651c:1505:b0:246:8fe5:5293 with SMTP id
+ e5-20020a05651c150500b002468fe55293mr6320922ljf.152.1646185905342; Tue, 01
+ Mar 2022 17:51:45 -0800 (PST)
 MIME-Version: 1.0
 References: <1646172610-129397-1-git-send-email-jdamato@fastly.com>
- <1646172610-129397-5-git-send-email-jdamato@fastly.com> <20220302010225.dlhj3mtikog63zxz@sx1>
-In-Reply-To: <20220302010225.dlhj3mtikog63zxz@sx1>
+ <1646172610-129397-2-git-send-email-jdamato@fastly.com> <20220301235031.ryy4trywlc3bmnpx@sx1>
+In-Reply-To: <20220301235031.ryy4trywlc3bmnpx@sx1>
 From:   Joe Damato <jdamato@fastly.com>
-Date:   Tue, 1 Mar 2022 17:50:07 -0800
-Message-ID: <CALALjgzEerMcHnbEGcrsDPdeO5RPp3TpdZP40RD+Qd7MCv03JQ@mail.gmail.com>
-Subject: Re: [net-next v8 4/4] mlx5: add support for page_pool_get_stats
+Date:   Tue, 1 Mar 2022 17:51:34 -0800
+Message-ID: <CALALjgzWZLjLj1Qss9JQd3DEh-_SZcwCAEkgAE19Nsxf07EOOQ@mail.gmail.com>
+Subject: Re: [net-next v8 1/4] page_pool: Add allocation stats
 To:     Saeed Mahameed <saeed@kernel.org>
 Cc:     netdev@vger.kernel.org, kuba@kernel.org,
         ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
@@ -65,128 +65,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 5:02 PM Saeed Mahameed <saeed@kernel.org> wrote:
+On Tue, Mar 1, 2022 at 3:50 PM Saeed Mahameed <saeed@kernel.org> wrote:
 >
 > On 01 Mar 14:10, Joe Damato wrote:
-> >This change adds support for the page_pool_get_stats API to mlx5. If the
-> >user has enabled CONFIG_PAGE_POOL_STATS in their kernel, ethtool will
-> >output page pool stats.
+> >Add per-pool statistics counters for the allocation path of a page pool.
+> >These stats are incremented in softirq context, so no locking or per-cpu
+> >variables are needed.
+> >
+> >This code is disabled by default and a kernel config option is provided for
+> >users who wish to enable them.
 > >
 >
-> I was hoping to see something other than ethtool, a driver-less approach,
-> page_pool is a first class citizen, it collects own stats and should be
-> able to report own stats without the need for driver help.
+> Sorry for the late review Joe,
+
+No worries, thanks for taking a look.
+
+> Why disabled by default ? if your benchmarks showed no diff.
 >
-> I understand these stats are per driver ring, but we can always come up with
-> a naming convention in the page pool to allow correlating page-pool stats
-> with per ring driver stats.
->
-> Anyway i can't think of a simple hack, so this patch is a good temporary
-> compromise until we come up with the right approach.
->
-> >Signed-off-by: Joe Damato <jdamato@fastly.com>
-> >---
-> > drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 75 ++++++++++++++++++++++
-> > drivers/net/ethernet/mellanox/mlx5/core/en_stats.h | 27 +++++++-
-> > 2 files changed, 101 insertions(+), 1 deletion(-)
+> IMHO If we believe in this, we should have it enabled by default.
+
+I think keeping it disabled by default makes sense for three reasons:
+  - The benchmarks on my hardware don't show a difference, but less
+powerful hardware may be more greatly impacted.
+  - The new code uses more memory when enabled for storing the stats.
+  - These stats are useful for debugging and performance
+investigations, but generally speaking I think the vast majority of
+everyday kernel users won't be looking at this data.
+
+Advanced users who need this information (and are willing to pay the
+cost in memory and potentially CPU) can enable the code relatively
+easily, so I think keeping it defaulted to off makes sense.
+
+> >The statistics added are:
+> >       - fast: successful fast path allocations
+> >       - slow: slow path order-0 allocations
+> >       - slow_high_order: slow path high order allocations
+> >       - empty: ptr ring is empty, so a slow path allocation was forced.
+> >       - refill: an allocation which triggered a refill of the cache
+> >       - waive: pages obtained from the ptr ring that cannot be added to
+> >         the cache due to a NUMA mismatch.
 > >
-> >diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> >index 3e5d8c7..eb518ec 100644
-> >--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> >+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> >@@ -37,6 +37,10 @@
-> > #include "en/ptp.h"
-> > #include "en/port.h"
-> >
-> >+#ifdef CONFIG_PAGE_POOL_STATS
-> >+#include <net/page_pool.h>
-> >+#endif
-> >+
-> > static unsigned int stats_grps_num(struct mlx5e_priv *priv)
-> > {
-> >       return !priv->profile->stats_grps_num ? 0 :
-> >@@ -183,6 +187,19 @@ static const struct counter_desc sw_stats_desc[] = {
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_congst_umr) },
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_arfs_err) },
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_recover) },
-> >+#ifdef CONFIG_PAGE_POOL_STATS
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_fast) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_slow) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_slow_high_order) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_empty) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_refill) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_alloc_waive) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_cached) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_cache_full) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_ring) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_ring_full) },
-> >+      { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_pp_recycle_released_ref) },
-> >+#endif
-> > #ifdef CONFIG_MLX5_EN_TLS
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_decrypted_packets) },
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_decrypted_bytes) },
-> >@@ -349,6 +366,19 @@ static void mlx5e_stats_grp_sw_update_stats_rq_stats(struct mlx5e_sw_stats *s,
-> >       s->rx_congst_umr              += rq_stats->congst_umr;
-> >       s->rx_arfs_err                += rq_stats->arfs_err;
-> >       s->rx_recover                 += rq_stats->recover;
-> >+#ifdef CONFIG_PAGE_POOL_STATS
-> >+      s->rx_pp_alloc_fast          += rq_stats->pp_alloc_fast;
-> >+      s->rx_pp_alloc_slow          += rq_stats->pp_alloc_slow;
-> >+      s->rx_pp_alloc_empty         += rq_stats->pp_alloc_empty;
-> >+      s->rx_pp_alloc_refill        += rq_stats->pp_alloc_refill;
-> >+      s->rx_pp_alloc_waive         += rq_stats->pp_alloc_waive;
-> >+      s->rx_pp_alloc_slow_high_order          += rq_stats->pp_alloc_slow_high_order;
-> >+      s->rx_pp_recycle_cached                 += rq_stats->pp_recycle_cached;
-> >+      s->rx_pp_recycle_cache_full             += rq_stats->pp_recycle_cache_full;
-> >+      s->rx_pp_recycle_ring                   += rq_stats->pp_recycle_ring;
-> >+      s->rx_pp_recycle_ring_full              += rq_stats->pp_recycle_ring_full;
-> >+      s->rx_pp_recycle_released_ref           += rq_stats->pp_recycle_released_ref;
-> >+#endif
-> > #ifdef CONFIG_MLX5_EN_TLS
-> >       s->rx_tls_decrypted_packets   += rq_stats->tls_decrypted_packets;
-> >       s->rx_tls_decrypted_bytes     += rq_stats->tls_decrypted_bytes;
-> >@@ -455,6 +485,35 @@ static void mlx5e_stats_grp_sw_update_stats_qos(struct mlx5e_priv *priv,
-> >       }
-> > }
-> >
-> >+#ifdef CONFIG_PAGE_POOL_STATS
-> >+static void mlx5e_stats_update_stats_rq_page_pool(struct mlx5e_channel *c)
-> >+{
-> >+      struct mlx5e_rq_stats *rq_stats = c->rq.stats;
-> >+      struct page_pool *pool = c->rq.page_pool;
-> >+      struct page_pool_stats stats = { 0 };
-> >+
-> you can drop the 0, just {} should be enough.
 >
-> >+      if (!page_pool_get_stats(pool, &stats))
-> >+              return;
-> >+
+> Let's have this documented under kernel documentation.
+> https://docs.kernel.org/networking/page_pool.html
 >
-> you can contain the whole page_pool_stats objects inside rq_stats object,
-> and avoid all the assignments below.
->
-> just do:
->     page_pool_get_stats(pool, &rq_stats.pp);
->     return;
+> I would also mention the kconfig and any user knobs APIs introduced in
+> this series
 
-I don't think I can because the maximum stat name size is 32 bytes
-(ETH_GSTRING_LEN).
-
-If I do what you are suggesting, I would need to do something like:
-
-{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats,
-pp.recycle_stats.released_refcnt) }
-
-which will generate a string of the form:
-"rx%d_pp.recycle_stats.released_refcnt" which is well over 32 bytes,
-especially with double-digit queue numbers.
-
-The only options I see are:
-  - A new define that allows setting a custom field name
-(MLX5E_DECLARE_RX_STAT_NAME_OVERRIDE ?), or
-  - Leaving the code as-is
-
-Can you let me know what you prefer for the v9?
+Sure, I can add a doc commit in the v9 that explains the kernel config
+option, the API, and the fields of the stats structures.
 
 Thanks,
 Joe
