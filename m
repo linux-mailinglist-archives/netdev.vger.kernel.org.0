@@ -2,78 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B81D34CA2B1
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:02:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3F424CA2CD
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:06:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241175AbiCBLCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 06:02:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        id S237701AbiCBLHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 06:07:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240583AbiCBLCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:02:50 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620656D85C
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 03:02:07 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id a5-20020a05600c224500b003832be89f25so1005025wmm.2
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 03:02:07 -0800 (PST)
+        with ESMTP id S236360AbiCBLHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:07:22 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851236F4BF;
+        Wed,  2 Mar 2022 03:06:37 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id i8so2141099wrr.8;
+        Wed, 02 Mar 2022 03:06:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=GK7LbsrLfu8NDtuAdj7VpigfGpU3e9sLo3rD9+yMAKg=;
-        b=k+AVIXRPpET3eqsYjZTwW5Hwi8ly90xiacCytwW/sdH99Q1pv3OatYQSywJH8WbFOj
-         rFFjCbaOE2/hJqKlseNMYm1JulAXxF6MYvEwodYD5qHvtYnNMpY05PprP8W60o+aBEN9
-         8AO3xJzHmmRmibt2BqeLaWZuzbvIf3HmCn0FgBezOgYX5prJqN5DSl9on4YoLMldlva0
-         eaSdsnt+MeY72NL12QwB9wprx2uMMSloXb7bUvKEOZVw+MG4Vl8Td8rBIdJ1HHHihoF4
-         gmxZhzx3yfqvC0GTHNJ30ptgpANFKm33mN6AofqaU2EXXMKwGIcb81+urCz5PfKMLvqM
-         giBg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=E2P9iS3Je2xtRYNQbf594u+ZhYUMIabIgXxUGm6ODGg=;
+        b=XDBi/VgM2pC+yfKexBdJowraPWQ9pDLo5J5uw0lSPu4iIxYax5L6nfzVEHQqe6yCHC
+         8w1QEPPOeWHPyH/bUDuoTP1xo+3ZOfX9I+DculDZY8l4FR48Fc7pVaB6E/nHxL/TfgeN
+         8ZN/Q7aJ/079M30Ap6Wk5q542ao4LOtiGfYnDn6EcrYv13BoFOFcvO7OmCpnVAD5vpXj
+         Ixf8F5ZTDGVy5CznPVp6/rVB35r6GhrofIASwhSw/aL7uD1IpdlXy6RtaLRKH3Lr5dlq
+         0Q95eRCjj0ET371T89RWv8K5uv1vRPyy98Zc6XE2XRilQRw/Hcio+S8P+CT/yUrTcPOR
+         l46w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=GK7LbsrLfu8NDtuAdj7VpigfGpU3e9sLo3rD9+yMAKg=;
-        b=jrqXZxarUotyr5AXIQrKQrtpXQ8ha4nAqBGXH2V+E5G88vXg71RZ2sB/gh2A2jSEa1
-         cZoPl3PV0Rhg7OyJiHRiPhCXv5RxC28ULUVZujqc5iGA6d/oW1h8oo1hiYKdxpuKpNzW
-         Ue8AVLgydqpTWWl8xZSch5f769Cd+eXEWtPFbFpqo2xkTdjFdFsS8W7nY6PWpPx2zomR
-         ET+T1Roe64GV1WqWzNgVBFLLowO/pAWsqfXsv175t41Szctgqo5U1VfIv+1HrVCdmaBx
-         CIOUUROxJQD2LiMGjkEbCOTZR/ffMHoRbkXiiSxOYMVgz0qcZaY78P5UqcAqU/56ReS/
-         eqKg==
-X-Gm-Message-State: AOAM530NfcbgjrgGmYzZREzZRHCato4h2fIc2kWbSk+pacE3jcjS/LEo
-        zoB0dczQPRzogtvx8KsOnLo=
-X-Google-Smtp-Source: ABdhPJysMuAwmk3s78nTsltDe2Isbs1ISpf2VRTVkR3jz46c8siZbMwco13uuyKzYlxiEe3ux7gl+g==
-X-Received: by 2002:a05:600c:3c8b:b0:37f:1546:40c9 with SMTP id bg11-20020a05600c3c8b00b0037f154640c9mr20703326wmb.161.1646218925888;
-        Wed, 02 Mar 2022 03:02:05 -0800 (PST)
+        bh=E2P9iS3Je2xtRYNQbf594u+ZhYUMIabIgXxUGm6ODGg=;
+        b=pytTMizFrb2V78vvzTnQsknPH8iWnoRtDCcHHGXwN2XdMlb7FOFsyiikrE39aOOB2U
+         h6CwtDAGqlHnAsbzYrT+5f/zbWpuyT6TCGDqQn8js9VdW1dxG8+le+yRNohr0N8hMuq8
+         h7Jpjw1GmJYdsT8qT4SwEGPYajm/7gKPUKLM7UUuFGi2gExjAnhWz5rRj8l3TVHRtUm4
+         UVeSjjRGQUr4UBq49NeF6hhm9K0Nw7VMuzBPTiGo2EVdQ86ItYOM//g/EsNfp0oF9xTk
+         IrOYXlYk46HikA3jaOSy/VAWB1v/JAD+sFXZ7Cxt2q5i9cuhOMH7xV3n4IVK33u44AeS
+         5rnQ==
+X-Gm-Message-State: AOAM531ePnfdsFOANIuNeWSVqsd7gpNOfBQIk1jDsQ5vD2yu8/nysA08
+        2xe0LxBjrYYb3NNYm/E/jrU=
+X-Google-Smtp-Source: ABdhPJxF+X+kjDOeLlKYxPtIXbGBHiWyz+tjkvF6rLjESw5o5HWJ1vUVytl0RwHD09LW+tMhZNFd/g==
+X-Received: by 2002:a5d:47ae:0:b0:1ef:d725:876e with SMTP id 14-20020a5d47ae000000b001efd725876emr9969292wrb.447.1646219196121;
+        Wed, 02 Mar 2022 03:06:36 -0800 (PST)
 Received: from ?IPV6:2a01:c22:7331:8a00:3d70:3e0f:83b8:3269? (dynamic-2a01-0c22-7331-8a00-3d70-3e0f-83b8-3269.c22.pool.telefonica.de. [2a01:c22:7331:8a00:3d70:3e0f:83b8:3269])
-        by smtp.googlemail.com with ESMTPSA id g17-20020a5d4891000000b001e74e998bf9sm16392585wrq.33.2022.03.02.03.02.04
+        by smtp.googlemail.com with ESMTPSA id u4-20020adfdb84000000b001e8d8ac5394sm17377635wri.110.2022.03.02.03.06.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Mar 2022 03:02:05 -0800 (PST)
-Message-ID: <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com>
-Date:   Wed, 2 Mar 2022 12:01:54 +0100
+        Wed, 02 Mar 2022 03:06:35 -0800 (PST)
+Message-ID: <f519c59e-fdf0-14e8-8cce-c6c2d19cff8b@gmail.com>
+Date:   Wed, 2 Mar 2022 12:06:31 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.6.1
+Subject: Re: [PATCH v2] net: marvell: Use min() instead of doing it manually
 Content-Language: en-US
-To:     Erico Nunes <nunes.erico@gmail.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev
-References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
- <1jczjzt05k.fsf@starbuckisacylon.baylibre.com>
- <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
- <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com>
- <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+To:     Haowen Bai <baihaowen88@gmail.com>,
+        sebastian.hesselbarth@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1646203686-30397-1-git-send-email-baihaowen88@gmail.com>
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
- at boot
-In-Reply-To: <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+In-Reply-To: <1646203686-30397-1-git-send-email-baihaowen88@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -86,94 +74,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.03.2022 11:33, Erico Nunes wrote:
-> On Sat, Feb 26, 2022 at 2:53 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->> Just to rule out that the PHY may be involved:
->> - Does the issue occur with internal and/or external PHY?
+On 02.03.2022 07:48, Haowen Bai wrote:
+> Fix following coccicheck warning:
+> drivers/net/ethernet/marvell/mv643xx_eth.c:1664:35-36: WARNING opportunity for min()
 > 
-> My target boards have the internal phy only. It is not possible for me
-> at the moment to test it with an external phy.
+> Signed-off-by: Haowen Bai <baihaowen88@gmail.com>
+> ---
+>  drivers/net/ethernet/marvell/mv643xx_eth.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->> - Issue still occurs in PHY polling mode? (disable PHY interrupt in dts)
-> 
-> Thanks for suggesting this. I did tests with this and it seems to be a
-> workaround.
-> With phy interrupt on recent kernels (around v5.17-rc3) I'm able to
-> reproduce the issue relatively easily over a batch of a hundred jobs.
-> With my tests with the phy in polling mode, I have not been able to
-> reproduce so far, even with several hundred jobs.
-> 
-It's my understanding that in the problem case the "aneg complete"
-interrupt fires, but no data flows.
-This might indicate a timing issue. According to the meson PHY driver
-(I don't have the datasheet) the PHY doesn't have a "link up" interrupt
-source, just the mentioned "aneg complete".
+> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+> index 143ca8b..e3e79cf 100644
+> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
+> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+> @@ -1661,7 +1661,7 @@ mv643xx_eth_set_ringparam(struct net_device *dev, struct ethtool_ringparam *er,
+>  	if (er->rx_mini_pending || er->rx_jumbo_pending)
+>  		return -EINVAL;
+>  
+> -	mp->rx_ring_size = er->rx_pending < 4096 ? er->rx_pending : 4096;
+> +	mp->rx_ring_size = min(er->rx_pending, (unsigned)4096);
 
-Below I send an experimental patch that delays the link up processing
-a little and eliminates not needed interrupt sources.
-Could you please test it with PHY interrupts enabled?
+Don't just use unsigned w/o int. Why not simply marking the constant as unsigned: 4096U ?
+And again: You should at least compile-test it.
 
-
-By the way, to all:
-I found that interrupt mode is broken in fixed (aneg disabled) mode,
-because link-up isn't signaled. Experiments showed that irq source
-bit 7 can be used to fix this, but this bit isn't documented in the
-driver.
-
-> For completeness I also tested 46f69ded988d (from my initial analysis)
-> and setting the phy to polling mode there does not make a difference,
-> issue still reproduces. So it may have been a different bug. Though I
-> guess at this point we can disregard that and focus on the current
-> kernel.
-> 
-> I tried adding a few debugs and delays to the interrupt code path in
-> drivers/net/phy/meson-gxl.c but nothing gave me useful info so far.
-> 
-> Do you have more advice on how to proceed from here?
-> 
-> Thanks
-> 
-> Erico
-
-Heiner
-
-
-diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
-index 7e7904fee..0acb3a99a 100644
---- a/drivers/net/phy/meson-gxl.c
-+++ b/drivers/net/phy/meson-gxl.c
-@@ -7,6 +7,7 @@
-  * Author: Neil Armstrong <narmstrong@baylibre.com>
-  */
- #include <linux/kernel.h>
-+#include <linux/delay.h>
- #include <linux/module.h>
- #include <linux/mii.h>
- #include <linux/ethtool.h>
-@@ -209,12 +210,7 @@ static int meson_gxl_config_intr(struct phy_device *phydev)
- 		if (ret)
- 			return ret;
- 
--		val = INTSRC_ANEG_PR
--			| INTSRC_PARALLEL_FAULT
--			| INTSRC_ANEG_LP_ACK
--			| INTSRC_LINK_DOWN
--			| INTSRC_REMOTE_FAULT
--			| INTSRC_ANEG_COMPLETE;
-+		val = INTSRC_LINK_DOWN | INTSRC_ANEG_COMPLETE;
- 		ret = phy_write(phydev, INTSRC_MASK, val);
- 	} else {
- 		val = 0;
-@@ -240,6 +236,9 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
- 	if (irq_status == 0)
- 		return IRQ_NONE;
- 
-+	if (irq_status & INTSRC_ANEG_COMPLETE)
-+		msleep(100);
-+
- 	phy_trigger_machine(phydev);
- 
- 	return IRQ_HANDLED;
--- 
-2.35.1
+>  	mp->tx_ring_size = clamp_t(unsigned int, er->tx_pending,
+>  				   MV643XX_MAX_SKB_DESCS * 2, 4096);
+>  	if (mp->tx_ring_size != er->tx_pending)
 
