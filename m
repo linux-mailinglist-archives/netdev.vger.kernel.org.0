@@ -2,66 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9FB54CA407
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:43:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB964CA40B
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 12:44:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241564AbiCBLn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 06:43:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
+        id S240469AbiCBLpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 06:45:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235218AbiCBLn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:43:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC4EC41;
-        Wed,  2 Mar 2022 03:43:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48C61B81F8D;
-        Wed,  2 Mar 2022 11:43:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A32C340F1;
-        Wed,  2 Mar 2022 11:43:11 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="C95LBaGB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646221389;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=USGcDy4w3TZ7LgAk31pw0D1MtgBRHHVT0BJsNUeVVbw=;
-        b=C95LBaGBLixaG/A7Zi3cNn1lIN+nl0iiYswsYbJNhJhztuTCsyarCYsp3vrhkYZpUgBXjc
-        SiguryOXLvM2NjOvgpnF5zpzs63KxDPJZbvtQ2jJCaYcL9UldDoQgR997ZDZ2TWXn8QH22
-        1w8qQjcoxHVubUatcTgkGtEZuKh+k2U=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 049a7fc6 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 2 Mar 2022 11:43:09 +0000 (UTC)
-Received: by mail-yb1-f172.google.com with SMTP id u3so2756801ybh.5;
-        Wed, 02 Mar 2022 03:43:08 -0800 (PST)
-X-Gm-Message-State: AOAM530axWYnbtfgS/caymn9tfhP+xcCOO0rMgvMCcH7+xrrhjxYQdp/
-        efBVOV66MBNdNVn0GKAHfj1Z2vYZqHJUpIQwzRQ=
-X-Google-Smtp-Source: ABdhPJzFIO9KLB/vM1BBjlP25MTWZNtMEvsRHE+m99kvA0ufEgLFS+BFdzqkv+9sKx2PuD5luegjn0ddZsSgVsq7t8w=
-X-Received: by 2002:a25:e204:0:b0:610:cb53:b753 with SMTP id
- h4-20020a25e204000000b00610cb53b753mr27109900ybe.267.1646221387488; Wed, 02
- Mar 2022 03:43:07 -0800 (PST)
+        with ESMTP id S235218AbiCBLpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 06:45:04 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611DA6551;
+        Wed,  2 Mar 2022 03:44:19 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V62Zmsp_1646221456;
+Received: from 30.225.28.138(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V62Zmsp_1646221456)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 02 Mar 2022 19:44:17 +0800
+Message-ID: <cc0678b3-304c-0841-db15-ffb2117b63f6@linux.alibaba.com>
+Date:   Wed, 2 Mar 2022 19:44:15 +0800
 MIME-Version: 1.0
-References: <20220301231038.530897-1-Jason@zx2c4.com> <20220301231038.530897-2-Jason@zx2c4.com>
- <Yh8Bsk9RSm22Yr8d@owl.dominikbrodowski.net>
-In-Reply-To: <Yh8Bsk9RSm22Yr8d@owl.dominikbrodowski.net>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 2 Mar 2022 12:42:56 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rSz-GqvQf9S9fPLUvSwP0iky90bipGj-o94tkAU1QP1g@mail.gmail.com>
-Message-ID: <CAHmME9rSz-GqvQf9S9fPLUvSwP0iky90bipGj-o94tkAU1QP1g@mail.gmail.com>
-Subject: Re: [PATCH 1/3] random: replace custom notifier chain with standard one
-To:     Dominik Brodowski <linux@dominikbrodowski.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>, Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Theodore Ts'o" <tytso@mit.edu>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH net] net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1646140644-121649-1-git-send-email-alibuda@linux.alibaba.com>
+In-Reply-To: <1646140644-121649-1-git-send-email-alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,42 +42,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dominik,
 
-On Wed, Mar 2, 2022 at 6:35 AM Dominik Brodowski
-<linux@dominikbrodowski.net> wrote:
->
-> Am Wed, Mar 02, 2022 at 12:10:36AM +0100 schrieb Jason A. Donenfeld:
-> >  /*
-> >   * Delete a previously registered readiness callback function.
-> >   */
-> > -void del_random_ready_callback(struct random_ready_callback *rdy)
-> > +int unregister_random_ready_notifier(struct notifier_block *nb)
-> >  {
-> >       unsigned long flags;
-> > -     struct module *owner = NULL;
-> > -
-> > -     spin_lock_irqsave(&random_ready_list_lock, flags);
-> > -     if (!list_empty(&rdy->list)) {
-> > -             list_del_init(&rdy->list);
-> > -             owner = rdy->owner;
-> > -     }
-> > -     spin_unlock_irqrestore(&random_ready_list_lock, flags);
-> > +     int ret;
-> >
-> > -     module_put(owner);
-> > +     spin_lock_irqsave(&random_ready_chain_lock, flags);
-> > +     ret = raw_notifier_chain_unregister(&random_ready_chain, nb);
-> > +     spin_unlock_irqrestore(&random_ready_chain_lock, flags);
-> > +     return ret;
-> >  }
-> > -EXPORT_SYMBOL(del_random_ready_callback);
->
-> That doesn't seem to be used anywhere, so I'd suggest removing this function
-> altogether.
 
-I thought about this, but it feels weird to have a registration
-function without an unregistration function... No other notifier is
-unbalanced like that.
+在 2022/3/1 下午9:17, D. Wythe 写道:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
+> 
+> Remove connections from link group is not synchronous with handling
+> SMC_LLC_DELETE_RKEY, which means that even the number of connections is
+> less that SMC_RMBS_PER_LGR_MAX, it does not mean that the connection can
+> register rtoken successfully later, in other words, the rtoken entry may
+> have not been released. This will cause an unexpected
+> SMC_CLC_DECL_ERR_REGRMB to be reported, and then ths smc connection have
+> to fallback to TCP.
+> 
+> We found that the main reason for the problem dues to following execution
+> sequence:
+> 
+> Server Conn A:           Server Conn B:			Client Conn B:
+> 
+> smc_lgr_unregister_conn
+>                          smc_lgr_register_conn
+>                          smc_clc_send_accept     ->
+>                                                          smc_rtoken_add
+> smcr_buf_unuse
+> 		->		Client Conn A:
+> 				smc_rtoken_delete
+> 
+> smc_lgr_unregister_conn() makes current link available to assigned to new
+> incoming connection, while smcr_buf_unuse() has not executed yet, which
+> means that smc_rtoken_add may fail because of insufficient rtoken_entry,
+> reversing their execution order will avoid this problem.
+> 
+> Fixes: 3e034725c0d8 ("net/smc: common functions for RMBs and send buffers")
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>   net/smc/smc_core.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> index 2f321d2..c9c3a68 100644
+> --- a/net/smc/smc_core.c
+> +++ b/net/smc/smc_core.c
+> @@ -1161,8 +1161,8 @@ void smc_conn_free(struct smc_connection *conn)
+>   			cancel_work_sync(&conn->abort_work);
+>   	}
+>   	if (!list_empty(&lgr->list)) {
+> -		smc_lgr_unregister_conn(conn);
+>   		smc_buf_unuse(conn, lgr); /* allow buffer reuse */
+> +		smc_lgr_unregister_conn(conn);
+>   	}
+>   
+>   	if (!lgr->conns_num)
 
-Jason
+I have two patch for this issue, and i missed one, I'll post it in v2 
+series.
