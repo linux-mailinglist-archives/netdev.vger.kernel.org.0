@@ -2,83 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5652B4CAA64
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 17:35:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83DE24CAADB
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 17:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242638AbiCBQgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 11:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        id S233692AbiCBQza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 11:55:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242693AbiCBQgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:36:11 -0500
-Received: from simonwunderlich.de (simonwunderlich.de [IPv6:2a01:4f8:c17:e8c0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154F7CE907
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:35:27 -0800 (PST)
-Received: from kero.packetmixer.de (p200300C597470fC0D439FBe5c3508408.dip0.t-ipconnect.de [IPv6:2003:c5:9747:fc0:d439:fbe5:c350:8408])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id 25D48FA750;
-        Wed,  2 Mar 2022 17:35:26 +0100 (CET)
-From:   Simon Wunderlich <sw@simonwunderlich.de>
-To:     kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        Sven Eckelmann <sven@narfation.org>,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 4/4] batman-adv: Demote batadv-on-batadv skip error message
-Date:   Wed,  2 Mar 2022 17:35:22 +0100
-Message-Id: <20220302163522.102842-5-sw@simonwunderlich.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220302163522.102842-1-sw@simonwunderlich.de>
-References: <20220302163522.102842-1-sw@simonwunderlich.de>
+        with ESMTP id S229920AbiCBQz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 11:55:29 -0500
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 08:54:43 PST
+Received: from smtp6.emailarray.com (smtp6.emailarray.com [65.39.216.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CE355BDD
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 08:54:42 -0800 (PST)
+Received: (qmail 99897 invoked by uid 89); 2 Mar 2022 16:48:02 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
+  by smtp6.emailarray.com with SMTP; 2 Mar 2022 16:48:02 -0000
+Date:   Wed, 2 Mar 2022 08:48:00 -0800
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        richardcochran@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH net-next] ptp: ocp: Add ptp_ocp_adjtime_coarse for large
+ adjustments
+Message-ID: <20220302164800.fdfnmutc7f7zb3ek@bsd-mbp.dhcp.thefacebook.com>
+References: <20220228203957.367371-1-jonathan.lemon@gmail.com>
+ <20220301182153.6a1a8e89@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301182153.6a1a8e89@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+On Tue, Mar 01, 2022 at 06:21:53PM -0800, Jakub Kicinski wrote:
+> On Mon, 28 Feb 2022 12:39:57 -0800 Jonathan Lemon wrote:
+> > In ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime."), the
+> > ns adjustment was written to the FPGA register, so the clock could
+> > accurately perform adjustments.
+> > 
+> > However, the adjtime() call passes in a s64, while the clock adjustment
+> > registers use a s32.  When trying to perform adjustments with a large
+> > value (37 sec), things fail.
+> > 
+> > Examine the incoming delta, and if larger than 1 sec, use the original
+> > (coarse) adjustment method.  If smaller than 1 sec, then allow the
+> > FPGA to fold in the changes over a 1 second window.
+> > 
+> > Fixes: 6d59d4fa1789 ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime.")
+> > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> 
+> This one's tagged for net-next - do you intend for it to go to net-next,
+> or is that a typo?
 
-The error message "Cannot find parent device" was shown for users of
-macvtap (on batadv devices) whenever the macvtap was moved to a different
-netns. This happens because macvtap doesn't provide an implementation for
-rtnl_link_ops->get_link_net.
-
-The situation for which this message is printed is actually not an error
-but just a warning that the optional sanity check was skipped. So demote
-the message from error to warning and adjust the text to better explain
-what happened.
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
----
- net/batman-adv/hard-interface.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
-index 59d19097a54c..b25afc7ff59c 100644
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -165,9 +165,9 @@ static bool batadv_is_on_batman_iface(const struct net_device *net_dev)
- 	/* recurse over the parent device */
- 	parent_dev = __dev_get_by_index((struct net *)parent_net,
- 					dev_get_iflink(net_dev));
--	/* if we got a NULL parent_dev there is something broken.. */
- 	if (!parent_dev) {
--		pr_err("Cannot find parent device\n");
-+		pr_warn("Cannot find parent device. Skipping batadv-on-batadv check for %s\n",
-+			net_dev->name);
- 		return false;
- 	}
- 
+I build and test net-next, so that was my target.
 -- 
-2.30.2
-
+Jonathan
