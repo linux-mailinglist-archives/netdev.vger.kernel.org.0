@@ -2,107 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC214CA243
-	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 11:33:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0254CA25E
+	for <lists+netdev@lfdr.de>; Wed,  2 Mar 2022 11:40:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241018AbiCBKd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 05:33:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        id S241065AbiCBKkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 05:40:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241013AbiCBKdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 05:33:55 -0500
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E44ABE1E1
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 02:33:12 -0800 (PST)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2d07ae0b1bfso11853047b3.6
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 02:33:12 -0800 (PST)
+        with ESMTP id S241061AbiCBKkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 05:40:43 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32E9BECE9
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 02:39:58 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id s11so1526442pfu.13
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 02:39:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3UgdP2Dpp/ayPL7kDyX+opL+M19kkYSAxJLDHKMfOjo=;
-        b=hgMHnafWoG7jhNO+4dBb8l3Xj0JRlTx7aC4SxY7F+BOKwgMy8u54J0jEjDFQ/zS9tr
-         781mmzucZbg+phfSkFd9ySl7bdiWpmEK90ZMbm/HqtqGWlqPpaTtUDEfEcEPlBuR8wsK
-         ZvdAp3O/Q0OeHND90mkw42O6HKMQblR7OzOhdcPGYQcFr1fdAl7vIG6NqgsNr+uJYoAA
-         rHTsc52QEwB5qJD+5bu1FB0u7n5BSKP6H3gCNGE/L2eJjpqbxvk0HO0Cf3+ioNDf1XzG
-         bATChf3BdOc3wtqWiZW9DuWAq/zDC9oJ/zj89BAYnou8MvFFARE+Vk5LghE3cvxrs0Qu
-         TkJg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5hSSYyjIeCQj/Yk471H+t4be62lPbXH733Ozer3TJP4=;
+        b=JyG9DV8skFLWA/Riameo1pOnfP0U20+Dvh30cSsaSMOpc+vhdzlg5CjfLqN629EYdQ
+         tX3v6gfw8yy7ZQTErKAB7PtNlyeOaYSPB5hx0vSqLuNBhbQ+ut0olipDjzD3O6JgKWBO
+         5W4JiSd5xc4FTX/EyK9BGNwwOjXzzeKccQr7fZXSu8nlO+bqMCmZNX6QUHzkSCNmB63x
+         fyJcbuFogdBqTAAYWk1XzfB6rHQPpwnYjy3kX9AyFmwp/0hRgHZoLFWTOLevuz6CNhi0
+         d4wRBAN1gzG6/iJkMYYHGUFNsDy/Cxd0k5H09Z17+90EV93R3KXfEBIUnbGzKOlLFnGT
+         6fQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3UgdP2Dpp/ayPL7kDyX+opL+M19kkYSAxJLDHKMfOjo=;
-        b=GrEGE09RRy9t9FNTaWFMMG4OllbOcednMuuurtn+y6rF/ZmQgkCqKaILjhqW37U3IM
-         2+tTGXwlm6TtxDHHoDfBEg0u5Ez4uOmURI+wxsBeFLVOj86dhFGfcwgL66ANawiR2sWA
-         A8bi9GsSDKF9hI7ZLfkiELTAhGJLP96Zqwu4S6Q+tvc0LW7JDDsrnYi5wPg6wVxoqlbW
-         q9HnpuA9VNeeXkW9o47f2sOURVDEKJKaA+9JrtwRkrO0km6/KDdOJ5gGzv+BKI3RnMmr
-         K9ZBTYJFTv+9eHKHXlTrHLjlyw54psNA9kKfBG/g1KXmu6qGEIWQy8DsdRGkTJGbSRmW
-         EkeQ==
-X-Gm-Message-State: AOAM530P31JzXyI5sb+MwIYtvBwymk4KQvCQh0D8TKNCTtxhAgD1fD3g
-        02pwBPLR0tJ1fuK4Uk/RddbWVQuVMLNVLHCQtwo=
-X-Google-Smtp-Source: ABdhPJw/fyplq0eveO/WZAJ9BKAE58Gzeab43u2IhFVd4Pz56JPXFmPNyZ6iFdCRjIel9aE29x2PRK0WUTlcWe1tgBY=
-X-Received: by 2002:a81:4503:0:b0:2db:83ea:6914 with SMTP id
- s3-20020a814503000000b002db83ea6914mr13732773ywa.42.1646217191339; Wed, 02
- Mar 2022 02:33:11 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5hSSYyjIeCQj/Yk471H+t4be62lPbXH733Ozer3TJP4=;
+        b=NJw90prRcBK0C0Ag+mu1EMaB5M9j+tQFg3aw/k1Ra0LRWJBoUpJGwI0gSjemAdWIKM
+         /yo56YPSO/QjomrXzZQKS8kgCqAxpR/fY8RJj8Y5qQsWda/r8CRVQbuOvshaS6ZO5624
+         0QIMB06h3M2ZmmY+EcWTWXlttSdQlm7Oe89ls2U0kgunbIYoCReo4UH9VkcreLXlgcsB
+         QNFzPzGb9DEcCsu92KzA+ztUCM8pkrP9GKywnWFymI3IdaS9geM/JpO9fLHxu/t9P0a2
+         whbiUYgh88WB5SZaeKA2Xxu5DiJoBfE31w3qW7Ur/7j+r1MvhdK88jK38cuejuP6Rwna
+         jFBw==
+X-Gm-Message-State: AOAM532U4HC7uPofSlgV6kyl1Y+UOswIBcx+jaObsDsD/FxWok1jVmkc
+        zE2Bhh6TBca9gZLrGo4XiOXPR49LxCwa0A==
+X-Google-Smtp-Source: ABdhPJzUgJ792DPF3EApiJ3GaQ2Zj69A9UDb+Cj0BKYL2QF0NZYAbbkDZrH7d7ME28LWmmtZzJdK0g==
+X-Received: by 2002:a05:6a00:1694:b0:4e1:5931:b040 with SMTP id k20-20020a056a00169400b004e15931b040mr31936664pfc.7.1646217598082;
+        Wed, 02 Mar 2022 02:39:58 -0800 (PST)
+Received: from localhost.localdomain ([171.50.175.145])
+        by smtp.gmail.com with ESMTPSA id m20-20020a634c54000000b003739af127c9sm15612308pgl.70.2022.03.02.02.39.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 02:39:57 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     netdev@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        vkoul@kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, linux-arm-msm@vger.kernel.org,
+        bjorn.andersson@linaro.org
+Subject: [PATCH v2 0/2 net-next] net: stmmac: Enable support for Qualcomm SA8155p-ADP board
+Date:   Wed,  2 Mar 2022 16:09:48 +0530
+Message-Id: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
- <1jczjzt05k.fsf@starbuckisacylon.baylibre.com> <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
- <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com>
-In-Reply-To: <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com>
-From:   Erico Nunes <nunes.erico@gmail.com>
-Date:   Wed, 2 Mar 2022 11:33:00 +0100
-Message-ID: <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
-Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
- at boot
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 2:53 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> Just to rule out that the PHY may be involved:
-> - Does the issue occur with internal and/or external PHY?
+Changes since v1:
+-----------------
+- v1 can be seen here: https://lore.kernel.org/netdev/20220126221725.710167-1-bhupesh.sharma@linaro.org/t/
+- Fixed review comments from Bjorn - broke the v1 series into two
+  separate series - one each for 'net' tree and 'arm clock/dts' tree
+  - so as to ease review of the same from the respective maintainers.
+- This series is intended for the 'net' tree.
 
-My target boards have the internal phy only. It is not possible for me
-at the moment to test it with an external phy.
+The SA8155p-ADP board supports on-board ethernet (Gibabit Interface),
+with support for both RGMII and RMII buses.
 
-> - Issue still occurs in PHY polling mode? (disable PHY interrupt in dts)
+This patchset adds the support for the same.
 
-Thanks for suggesting this. I did tests with this and it seems to be a
-workaround.
-With phy interrupt on recent kernels (around v5.17-rc3) I'm able to
-reproduce the issue relatively easily over a batch of a hundred jobs.
-With my tests with the phy in polling mode, I have not been able to
-reproduce so far, even with several hundred jobs.
+Note that this patchset is based on an earlier sent patchset
+for adding PDC controller support on SM8150 (see [1]).
 
-For completeness I also tested 46f69ded988d (from my initial analysis)
-and setting the phy to polling mode there does not make a difference,
-issue still reproduces. So it may have been a different bug. Though I
-guess at this point we can disregard that and focus on the current
-kernel.
+[1]. https://lore.kernel.org/linux-arm-msm/20220226184028.111566-1-bhupesh.sharma@linaro.org/T/
 
-I tried adding a few debugs and delays to the interrupt code path in
-drivers/net/phy/meson-gxl.c but nothing gave me useful info so far.
+Cc: David S. Miller <davem@davemloft.net>
 
-Do you have more advice on how to proceed from here?
+Bjorn Andersson (1):
+  net: stmmac: dwmac-qcom-ethqos: Adjust rgmii loopback_en per platform
 
-Thanks
+Vinod Koul (1):
+  net: stmmac: Add support for SM8150
 
-Erico
+ .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 37 +++++++++++++++++--
+ 1 file changed, 33 insertions(+), 4 deletions(-)
+
+-- 
+2.35.1
+
