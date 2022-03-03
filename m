@@ -2,79 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9A074CC93F
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 23:39:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7BB84CC964
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 23:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237020AbiCCWke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 17:40:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
+        id S237096AbiCCWrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 17:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237002AbiCCWkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 17:40:33 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1653B1533A7;
-        Thu,  3 Mar 2022 14:39:47 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id t14so5945750pgr.3;
-        Thu, 03 Mar 2022 14:39:47 -0800 (PST)
+        with ESMTP id S231805AbiCCWrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 17:47:07 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE5716DAE7;
+        Thu,  3 Mar 2022 14:46:17 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id bi12so641105ejb.3;
+        Thu, 03 Mar 2022 14:46:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eWDKJRYY6oFHnn34EJL4pDVUO+3dJRu5ycnBE7hvdes=;
-        b=AkhtvnwAqD27ux5bXVvk0MLcX5a1fieqcywUeIsJJLTtPW1wTcmKUfWWup/0XyUZyB
-         tyy8NXFcZCVVONQZnGmiY7HOEx+mLa7KY24aLknoh6adS03prOaEDJSqugK2/asB2ads
-         gkliC/omB/xF9qNKjqxkjDcJrHfCsH2hs2XuwensYsXGooDm+lOgZBm0+hgrgqDwUOPU
-         xXi+tKFg6yxyonhnNXZcPU8PPzvkptfnd57CnBZwC93wEENXFWzmkcWINhC87CdZ5ycA
-         tMEtY6sZf+a/YcYar71kkAM1uC6XIwUIwdm6sFaU0bnh9818K0c74zTwUJRTXKxN1Gtg
-         tM0w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8G4fsdSTZhHoqhtMqzCYvFpkqK9xPa9Uuwfj+Kc4FDc=;
+        b=Vv6qPamZ34/Ss4Omy+Sumi9AgjANPMe7auZ0nBj4JSeydwwqGjIP+hcyZrglQBlZcu
+         duJMY8yJkpGpiT+2TD6c/iq4zUhj1xfAhCmWegesHd7ZKcwoKHNW2Gk7ECIeitqLF2oc
+         VH3Ir5YY2GcspLm+CD3tbIpF2BIFseWkxqncN+NRNJGU99TyB/SzNzwSc95/Ul7Y5BcK
+         cD87a7Nk+VbD/4iTqN8cDle1ZZ95bvqxYXHXjxf/9H6E2vf6aJR5Z+u6EvieJXgoROdo
+         46oPhvUDiG9DWnc+SuowgIPyc/HMoydyVyJz+Mzzbji8gFtv4OEsrWWW084223TPz5oG
+         DNTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eWDKJRYY6oFHnn34EJL4pDVUO+3dJRu5ycnBE7hvdes=;
-        b=AUgRVBP+0b1iTVltrNk+Cd1oOOznx7F2KsW5/sUlkytUsU58pRQwNty87wleMT9xCn
-         Z75O0bGLTBctX/46j+17/jo7l4kqAwuaMiBTRCqTGYvnbA3wq2AlUbHgC8Lt6Q/OFKyl
-         OulwI0n0v1Z2hV5HHneWWBnf0KbC7NptC0HFJIVju9V8Pwep3E99GWKXLadm+wxWZ7IF
-         jIWR3ogPa8+hd9JqpDxsUWTF3ADRutKgCILW3fg65jmj4gNwtISaYa/oa+UNwe4OkAyK
-         G+4a1zz22Rz29RgT0cPjJb3ZZKifE6CSq3I+ukPZpHiFPHVwe4p2xdAPAccZxRCPy53/
-         k79w==
-X-Gm-Message-State: AOAM532o6p2Vmo7A7o7TKeBeo2hAK0kt0FxpeU/J6OfWjZIejFSN2aCL
-        ohWTwZDcZz8i8vyVVpDUQ5dXiIpm0NptIBf2nE0=
-X-Google-Smtp-Source: ABdhPJzfIILGrDAUb4PgBCLExnCATh8xb3uP0X+L+S7XB9RvY14Y9Xzz1WzFDUu+/9NXgaaJtCTV9ZBHJQF/7RJuvBk=
-X-Received: by 2002:a65:5386:0:b0:375:ec6f:667f with SMTP id
- x6-20020a655386000000b00375ec6f667fmr29590342pgq.543.1646347186560; Thu, 03
- Mar 2022 14:39:46 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8G4fsdSTZhHoqhtMqzCYvFpkqK9xPa9Uuwfj+Kc4FDc=;
+        b=zEDNV0M7ewXHxztSfxXg6+5ZWE5MdxfoFJWyiJcp8kEaT7noZgiwzlyx1fTkAiTFUZ
+         /Ig+OEFwHPa5bKDYczJQxI5hZhamqalfEKfnXI87meFu3p2PcOjRUJrqXTPLkdZSpfEc
+         79zuqWhNO75myAMBXYMKbbZqvjeGQHnMl4J0hopDfCmAyX3+WzsH05iw97F9F8p5m+FN
+         teWeG3mSfnLuXB9OjMDyaqch8DFoQX01/VPBpwBgChYf0RQB/1o1dS1DXUOkdipqFsPx
+         Cd05JyLWw+/zjTzxoYatZebRGF/xrZKm5bueb3E2JXLaAzW5jFytH2aY4gFmq+m/mGo7
+         jSlQ==
+X-Gm-Message-State: AOAM5316EW+jHkpe95958RX8wpzZ5P2REZtpJeqbZw4W/sHf9BAgl5df
+        Hs6We0klr5bFKECobQON3nU=
+X-Google-Smtp-Source: ABdhPJxDygBr+KpHY2REE6mJWoCbqzYcS5amc+jaOuQCbso4BmBRhR/1IV1fcfyjno9g6NqtzkJT0g==
+X-Received: by 2002:a17:906:30d1:b0:6cf:d160:d8e4 with SMTP id b17-20020a17090630d100b006cfd160d8e4mr29143060ejb.265.1646347575877;
+        Thu, 03 Mar 2022 14:46:15 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id ep16-20020a1709069b5000b006daa26de2fbsm581804ejc.153.2022.03.03.14.46.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 14:46:15 -0800 (PST)
+Date:   Fri, 4 Mar 2022 00:46:13 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, alsi@bang-olufsen.dk,
+        arinc.unal@arinc9.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v5 1/3] dt-bindings: net: dsa: add rtl8_4 and
+ rtl8_4t tag formats
+Message-ID: <20220303224613.sdyfcipcmhzepbo7@skbuf>
+References: <20220303015235.18907-1-luizluca@gmail.com>
+ <20220303015235.18907-2-luizluca@gmail.com>
 MIME-Version: 1.0
-References: <20220302111404.193900-1-roberto.sassu@huawei.com>
- <20220302222056.73dzw5lnapvfurxg@ast-mbp.dhcp.thefacebook.com>
- <fe1d17e7e7d4b5e4cdeb9f96f5771ded23b7c8f0.camel@linux.ibm.com>
- <CACYkzJ4fmJ4XtC6gx6k_Gjq0n5vjSJyq=L--H-Eho072HJoywA@mail.gmail.com>
- <04d878d4b2441bb8a579a4191d8edc936c5a794a.camel@linux.ibm.com>
- <CACYkzJ5RNDV582yt1xCZ8AQUW6v_o0Dtoc_XAQN1GXnoOmze6Q@mail.gmail.com> <b6bf8463c1b370a5b5c9987ae1312fd930d36785.camel@linux.ibm.com>
-In-Reply-To: <b6bf8463c1b370a5b5c9987ae1312fd930d36785.camel@linux.ibm.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 3 Mar 2022 14:39:35 -0800
-Message-ID: <CAADnVQKfh3Z1DXJ3PEjFheQWEDFOKQjuyx+pkvqe6MXEmo7YHQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/9] bpf-lsm: Extend interoperability with IMA
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     KP Singh <kpsingh@kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        Florent Revest <revest@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Florent Revest <revest@google.com>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303015235.18907-2-luizluca@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -85,30 +73,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 11:13 AM Mimi Zohar <zohar@linux.ibm.com> wrote:
->
-> On Thu, 2022-03-03 at 19:14 +0100, KP Singh wrote:
-> >
-> > Even Robert's use case is to implement IMA policies in BPF this is still
-> > fundamentally different from IMA doing integrity measurement for BPF
-> > and blocking this patch-set on the latter does not seem rational and
-> > I don't see how implementing integrity for BPF would avoid your
-> > concerns.
->
-> eBPF modules are an entire class of files currently not being measured,
-> audited, or appraised.  This is an integrity gap that needs to be
-> closed.  The purpose would be to at least measure and verify the
-> integrity of the eBPF module that is going to be used in lieu of
-> traditional IMA.
+On Wed, Mar 02, 2022 at 10:52:33PM -0300, Luiz Angelo Daros de Luca wrote:
+> Realtek rtl8365mb DSA driver can use these two tag formats.
+> 
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> ---
 
-Mimi,
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-. There is no such thing as "eBPF modules". There are BPF programs.
-They cannot be signed the same way as kernel modules.
-We've been working on providing a way to sign them for more
-than a year now. That work is still ongoing.
-
-. IMA cannot be used for integrity check of BPF programs for the same
-reasons why kernel module like signing cannot be used.
-
-. This patch set is orthogonal.
+>  Documentation/devicetree/bindings/net/dsa/dsa-port.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> index 702df848a71d..e60867c7c571 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+> @@ -51,6 +51,8 @@ properties:
+>        - edsa
+>        - ocelot
+>        - ocelot-8021q
+> +      - rtl8_4
+> +      - rtl8_4t
+>        - seville
+>  
+>    phy-handle: true
+> -- 
+> 2.35.1
+> 
