@@ -2,116 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC914CBDE8
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 13:37:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 506714CBE3B
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 13:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233357AbiCCMi3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Mar 2022 07:38:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
+        id S232204AbiCCM5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 07:57:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231641AbiCCMi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 07:38:28 -0500
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D71542559E;
-        Thu,  3 Mar 2022 04:37:39 -0800 (PST)
-Received: from smtpclient.apple (p5b3d2910.dip0.t-ipconnect.de [91.61.41.16])
-        by mail.holtmann.org (Postfix) with ESMTPSA id A504ECED23;
-        Thu,  3 Mar 2022 13:37:38 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [PATCH v2] bluetooth: hci_event: don't print an error on vendor
- events
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CABBYNZJPN6o-v2OpAXND0+UfwB3AQL2=r6CDQ0S8PktWZqijMw@mail.gmail.com>
-Date:   Thu, 3 Mar 2022 13:37:38 +0100
-Cc:     Caleb Connolly <caleb.connolly@linaro.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <E6952D0A-FFF7-409E-8779-F82FC4DE9252@holtmann.org>
-References: <20220302183515.448334-1-caleb.connolly@linaro.org>
- <21F7790B-8849-4131-AF09-4E622B1A9E9D@holtmann.org>
- <CABBYNZJPN6o-v2OpAXND0+UfwB3AQL2=r6CDQ0S8PktWZqijMw@mail.gmail.com>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229954AbiCCM5X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 07:57:23 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5916E186218
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 04:56:37 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id s24so6501179edr.5
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 04:56:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xg/x72ENVz5iA/OUZTq9flFI693xAYRwtey/DYACqA4=;
+        b=GvT91XYYJZqzCOhueU90VTjma/myPgMVy5dFIkkTTk4k1lSYQvFhNAtq3pQw/slDwY
+         ISpk08vciFEHv1nwFS+M0VBAj9e+J8rncrf5uT/kJHmzNAVNgqMCCCkxlTEXeUkKbOd/
+         aWE0sL3aMqOwIjfgJMrcyhld9MqsRRYK/UU8Kl8bdEhPcDPCOAJgX34phq6ERjkmlsK7
+         PGzp8BZKzB0sZ3D0mq9YAD/R8PE7A/j0CGxG+byWmg2B71+ufMzTbG2d6Csca2ptxZJ2
+         WyGdl/8KpHvJHxhNYhDzYwdnr4fzAVbfyV67B0wf9wWP9cy7TaAR2w7SklwO+g//Hqs9
+         v0YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xg/x72ENVz5iA/OUZTq9flFI693xAYRwtey/DYACqA4=;
+        b=Ky1xUE5maEymAELLVc53Sx7Kwg/jX268iApSU3B6vbqMPqWA7m+Hcu00kSx4/gMdrC
+         qWtk0UpPzppTO42EbBqqT3az6635MONuAwznh0oo8t/Cf4+CagucPeLF9mTwBBm2bRq4
+         Kop/teNo9x6qCu9oiMbjkaNVxixFhBrgoNoopmB8rjasKZKIyBu0//6zeV++29aRJd/A
+         0WvlIkhSCe+4bnvPPZNZrP/ZpeSYKgXM8oApIUPbS8YApElyVvTBgB8hAeaGNcvazVQQ
+         TjuctPYBCJSowveckkQhYhmJ2K655qyvWvsnKd4jOtoHEnamDsQbdPPR71p96Dw0XNbv
+         pjnQ==
+X-Gm-Message-State: AOAM5323DIjXh/+lhDCF3Alv3Le6kCNHFwGd/v7sahTS4P1kdGhYQTkl
+        2SEw3oaCZGLF1bkxd93UFvwvB4ehqJZWscDNE3kV3673KAw=
+X-Google-Smtp-Source: ABdhPJyGMlNErgbhGPEqrSEJTSCw+03cm8aetw0psdCHq2AUIwOOOXO2Szm2s1/bEK8ahkyeyWidOydChRFz2pOD06M=
+X-Received: by 2002:a05:6402:1e8b:b0:3da:58e6:9a09 with SMTP id
+ f11-20020a0564021e8b00b003da58e69a09mr33828591edf.155.1646312195828; Thu, 03
+ Mar 2022 04:56:35 -0800 (PST)
+MIME-Version: 1.0
+References: <CAOMZO5ALfFDQjtbQwRiZjAhQnihBNFpmKfLh2t97tJBRQOLbNQ@mail.gmail.com>
+ <Yh/r5hkui6MrV4W6@lunn.ch> <CAOMZO5D1X2Vy1aCoLsa=ga94y74Az2RrbwcZgUfmx=Eyi4LcWw@mail.gmail.com>
+ <YiACuNTd9lzN6Wym@lunn.ch> <CAOMZO5ChowWZgryE14DoQG5ORNnKrLQAdQwt6Qsotsacneww3Q@mail.gmail.com>
+ <YiAorTOXfE20snfz@lunn.ch>
+In-Reply-To: <YiAorTOXfE20snfz@lunn.ch>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Thu, 3 Mar 2022 09:56:23 -0300
+Message-ID: <CAOMZO5DFoQCA_Sz3Ec2oT1F6PkgS9E5MCimYwV99YjvM9DygnQ@mail.gmail.com>
+Subject: Re: smsc95xx warning after a 'reboot' command
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Luiz,
+Hi Andrew,
 
->>> Since commit 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events"),
->>> some devices see warnings being printed for vendor events, e.g.
->>> 
->>> [   75.806141] Bluetooth: hci0: setting up wcn399x
->>> [   75.948311] Bluetooth: hci0: unexpected event 0xff length: 14 > 0
->>> [   75.955552] Bluetooth: hci0: QCA Product ID   :0x0000000a
->>> [   75.961369] Bluetooth: hci0: QCA SOC Version  :0x40010214
->>> [   75.967417] Bluetooth: hci0: QCA ROM Version  :0x00000201
->>> [   75.973363] Bluetooth: hci0: QCA Patch Version:0x00000001
->>> [   76.000289] Bluetooth: hci0: QCA controller version 0x02140201
->>> [   76.006727] Bluetooth: hci0: QCA Downloading qca/crbtfw21.tlv
->>> [   76.986850] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.013574] Bluetooth: hci0: QCA Downloading qca/oneplus6/crnv21.bin
->>> [   77.024302] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.032681] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.040674] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.049251] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.057997] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.066320] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.075065] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.083073] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.091250] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.099417] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.110166] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.118672] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.127449] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.137190] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.146192] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.154242] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.163183] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.171202] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.179364] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.187259] Bluetooth: hci0: unexpected event 0xff length: 3 > 0
->>> [   77.198451] Bluetooth: hci0: QCA setup on UART is completed
->>> 
->>> Avoid printing the event length warning for vendor events, this reverts
->>> to the previous behaviour where such warnings weren't printed.
->>> 
->>> Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
->>> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
->>> ---
->>> Changes since v1:
->>> * Don't return early! Vendor events still get parsed despite the
->>>  warning. I should have looked a little more closely at that...
->>> ---
->>> net/bluetooth/hci_event.c | 2 +-
->>> 1 file changed, 1 insertion(+), 1 deletion(-)
->> 
->> patch has been applied to bluetooth-stable tree.
->> 
-> I believe a proper fix has already been pushed to bluetooth-next:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=314d8cd2787418c5ac6b02035c344644f47b292b
-> 
-> HCI_EV_VENDOR shall be assumed to be variable length and that also
-> uses bt_dev_warn_ratelimited to avoid spamming the logs in case it
-> still fails.
+On Wed, Mar 2, 2022 at 11:32 PM Andrew Lunn <andrew@lunn.ch> wrote:
 
-ok, I reverted the patch and lets this go via net-next tree then. Stable can pick this up if it really becomes a larger problem.
+> I'm not a USB expert, but to me, it looks like the smsc95xx device is
+> being disconnected, rather than being unloaded. So it is already gone
+> by the time the PHY device is disconnected.
 
-Regards
+Yes, with 5.17-rc6 there are smsc95xx register accesses happening
+after the device gets unregistered:
 
-Marcel
+smsc95xx 2-1.1:1.0 eth1: unregister 'smsc95xx' usb-ci_hdrc.1-1.1,
+smsc95xx USB 2.0 Ethernet
+smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
 
+> It would be good to have somebody who understands USB net devices to
+> take a look at this, in particularly the order. I'm wondering if there
+> is a hub in the middle, and the hub is being disabled, or a regulator
+> for the hub etc?
+
+Yes, let me start a new thread with some USB folks on Cc.
+
+I will focus on fixing the 5.17-rc6 issue first.
+
+Thanks
