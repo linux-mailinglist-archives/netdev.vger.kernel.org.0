@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F014CB627
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 06:21:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E11444CB670
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 06:33:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiCCFWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 00:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38680 "EHLO
+        id S229654AbiCCFej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 00:34:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiCCFWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 00:22:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415791637FE;
-        Wed,  2 Mar 2022 21:21:27 -0800 (PST)
+        with ESMTP id S229491AbiCCFej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 00:34:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF6F11172
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 21:33:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB406B823AA;
-        Thu,  3 Mar 2022 05:21:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E15A9C004E1;
-        Thu,  3 Mar 2022 05:21:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E83DBCE24ED
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 05:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1EACC004E1;
+        Thu,  3 Mar 2022 05:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646284884;
-        bh=QpJA8xs1s3NtV8aEbClD8BQ6uzwMgBrnvimTomtkHjw=;
+        s=k20201202; t=1646285631;
+        bh=3Bd1SQdQxLngXUadpD8Z9sNrtSoC9S3G6IzadNVNh5c=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=swDDeyTOV3PIAXnPCPH7l7dgtozIokCEu4ffnu5sDkl2NMrCObISCXS6AKqa4x9EN
-         qMunvySTWU6dcfeEyP/2Ixretdyylw26joA6j2ALYQeSKD68psdLVd0leqX967s8i/
-         pCm+cgr/cxHzSDVUNzZC9mY5hbbCFhAzt65cuoinw8UVcoHjtkgt/RfUNbLLjeamt+
-         asvToTju/wKIByt84QMBnSZG77HtIFzhvYMRm1No1DLmzOmuI7S64Bqp4Tl7psdgVW
-         W7IA6QnWrXl6/+riMM4BOm0ITB4nbwtsQ6B0xjJ97h+rv40qfZcBrqyWKHK9ktTcLG
-         PlDXu9HebD03g==
-Date:   Wed, 2 Mar 2022 21:21:22 -0800
+        b=lCUKwH87kCu8XIeUMsgz9JXVJYGfMgcXzQOUuzxtgp3ySZEdMllvBu6o8z2pV3e0J
+         rXyzgbS933PsxKYQmcVo+QEwRK+OAZlmJLyP6IZuq2q9V9CNqsPBbv2xS0tE6scx7D
+         aEFRlTTLEehdFxTS0PbLU1OO23GQ4C4SW0LvCqeHydRFxsm+kGG9vHNxt5HdXZAxRm
+         FPGi5mGyZmuJg6/Cmqo8qhCs4gf+H4R9iifijenPde8f75HEkMeGcbYTb9NXHjd4LV
+         i+5h2E9Yiu+Vqx41jQ9U5bhgljtD3qFBVADAHF0gbjmaGPZm6w4p7aAl5X0Fn11Jdj
+         jibkV2sk9mARA==
+Date:   Wed, 2 Mar 2022 21:33:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
-Subject: Re: [PATCH net-next v4 4/4] net: tun: track dropped skb via
- kfree_skb_reason()
-Message-ID: <20220302212122.7863b690@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <e3bc5ac4-e1db-584c-7219-54a09192a001@oracle.com>
-References: <20220226084929.6417-1-dongli.zhang@oracle.com>
-        <20220226084929.6417-5-dongli.zhang@oracle.com>
-        <20220301185021.7cba195d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <ca81687c-4943-6d58-34f9-fb0a858f6887@oracle.com>
-        <20220302111731.00746020@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <e3bc5ac4-e1db-584c-7219-54a09192a001@oracle.com>
+To:     Kai Lueke <kailueke@linux.microsoft.com>,
+        Paul Chaignon <paul@cilium.io>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2] Revert "xfrm: interface with if_id 0 should return
+ error"
+Message-ID: <20220302213349.0ea3ad05@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <6c2d3e6b-23f8-d4a4-4701-ff9288c18a5c@linux.microsoft.com>
+References: <20220301131512.1303-1-kailueke@linux.microsoft.com>
+        <CAHsH6Gtzaf2vhSv5sPpBBhBww9dy8_E7c0utoqMBORas2R+_zg@mail.gmail.com>
+        <d5e58052-86df-7ffa-02a0-fc4db5a7bbdf@linux.microsoft.com>
+        <CAHsH6GsxaSgGkF9gkBKCcO9feSrsXsuNBdKRM_R8=Suih9oxSw@mail.gmail.com>
+        <20220301150930.GA56710@Mem>
+        <dcc83e93-4a28-896c-b3d3-8d675bb705eb@linux.microsoft.com>
+        <20220301161001.GV1223722@gauss3.secunet.de>
+        <20220302080439.2324c5d0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <6c2d3e6b-23f8-d4a4-4701-ff9288c18a5c@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,21 +63,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Mar 2022 14:21:31 -0800 Dongli Zhang wrote:
-> > because of OOM" is what should be reported. What we were trying to
-> > allocate is not very relevant (and can be gotten from the stack trace 
-> > if needed).  
+On Wed, 2 Mar 2022 19:11:06 +0100 Kai Lueke wrote:
+> > Agreed. FWIW would be great if patch #2 started flowing towards Linus'es
+> > tree separately if the discussion on #1 is taking longer.  
 > 
-> I think OOM is not enough. Although it may not be the case in this patchset,
-> sometimes the allocation is failed because we are allocating a large chunk of
-> physically continuous pages (kmalloc vs. vmalloc) while there is still plenty of
-> memory pages available.
-> 
-> As a kernel developer, it is very significant for me to identify the specific
-> line/function and specific data structure that cause the error. E.g, the bug
-> filer may be chasing which line is making trouble.
-> 
-> It is less likely to SKB_TRIM more than once in a driver function, compared to
-> ENOMEM.
+> to preserve the initial goal of helping to uncover id 0 usage I think it
+> would be best to have the revert be accompanied by a patch that instead
+> creates a kernel log warning (or whatever).
 
-Nack, trim is meaningless.
+extack would be best, but that would mean a little bit of plumbing 
+so more likely net-next material. Which would have to come after.
+
+> Since I never did that I suggest to not wait for me.
+> Also, feel free to do the revert yourself with a different commit
+> message if mine didn't capture the things appropriately.
+
+TBH I'm not 100% clear on the nature of the regression. Does Cilium
+update the configuration later to make if_id be non-zero? Or the broken 
+interface is not used but not being able to create it fails the whole
+configuration?
