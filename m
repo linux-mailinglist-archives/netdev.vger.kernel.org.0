@@ -2,156 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5836E4CC3E1
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 18:31:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F054CC409
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 18:35:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235405AbiCCRc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 12:32:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
+        id S231579AbiCCRgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 12:36:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235479AbiCCRcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 12:32:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B955019F457
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 09:31:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646328686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PD/UAjee6iu7MwOt5iw3w8GxURRgj+hEeLghI5ezEhk=;
-        b=MKeOFCRZSTdD3Qd9HrIe/8b5IMN8E8bb6FjK7ivXuz0eHRtEQdisiX4oPqOhUOsZX6Uvnr
-        IHQEDuwPrs4OnCd9YjXC/pZsj2xwEPEL80iuQDPCVkrlNAlt4pAOUufIM7ZJzpU95Mwt1I
-        ZWNtGyOdIPLBwp3ddDo8ilgUDsFFgVM=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-52-Ny87tnQ9N0W0TNphPnAA9Q-1; Thu, 03 Mar 2022 12:31:25 -0500
-X-MC-Unique: Ny87tnQ9N0W0TNphPnAA9Q-1
-Received: by mail-lf1-f70.google.com with SMTP id z24-20020a056512371800b0043ea4caa07cso1804878lfr.17
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 09:31:25 -0800 (PST)
+        with ESMTP id S229846AbiCCRgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 12:36:09 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B603192F
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 09:35:22 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id m14so9778631lfu.4
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 09:35:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=gJO9t+nw81mCakkJU4rcitth7kTwFygbrgST2tWJ3Vo=;
+        b=qyoVlFBomloAoUn1xlqx5IqE4FsUTuCVy8zHzcuJ6wcDz2/Xvarcsb0GQF5O5/xLF5
+         LZArGmIjj93gpo5DX6O45bTPYBcCKTFF+h220RDpA7/hkvvRNC32IKf1csyrUlo4wQ0X
+         HhwF+6j4xdD4Z2FiJRipv6i5ijnAbRFBsmQsA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=PD/UAjee6iu7MwOt5iw3w8GxURRgj+hEeLghI5ezEhk=;
-        b=1Zn4Aup8umUFVBVGh5M2LS/QfIVyfHiCL7Wv3JvKmILNfHCbU1td/QJbbp3tpC6gHL
-         nzvFzpVrCem5tGB+fcFWxHZVuaaFgIjYXXdFs4BjnGM/HzyIa68O7LBHpECy95c8bbzV
-         NEksHuFiEJ0xc1HDFVk0wk+TAVAA+XpPNaE0czAnw5ls1MozS+sTxgRN2ewOfDArGS5F
-         Dr9/Ncjk4PJvyo88btfX8NV7CB1cIQy+9ZZF0QDRRO1qEdFS7qiy9o8b7LXAGC5Hy09J
-         rSOosLYiwzjTvkIGJPBCnelCY5ssptJ8884k1f2DORvzDYKtuL8FbFNp+4pvKcg877a+
-         /OeA==
-X-Gm-Message-State: AOAM533mDyUKEnE8AHKiBfvea11GcdslyDVW4h4UnzTLH0kMVkzXaKzK
-        LHh8OkYBFnEpE+cYCW61t2q9akY0FV2m/xzIElkHuHRqqb66+2KFGoDdUBWJDqdIKzYQfITROlf
-        CIFLL537uneSDiFvV
-X-Received: by 2002:a05:651c:982:b0:244:c35d:b1ef with SMTP id b2-20020a05651c098200b00244c35db1efmr23622370ljq.243.1646328683812;
-        Thu, 03 Mar 2022 09:31:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw/Gh7tK0NZRXBQYXef7sfppQ2gPtfiE4IrUcAU3T88og4oObHpepdwCcLciftgBpuziddT9A==
-X-Received: by 2002:a05:651c:982:b0:244:c35d:b1ef with SMTP id b2-20020a05651c098200b00244c35db1efmr23622347ljq.243.1646328683552;
-        Thu, 03 Mar 2022 09:31:23 -0800 (PST)
-Received: from [10.30.0.98] (195-67-91-243.customer.telia.com. [195.67.91.243])
-        by smtp.gmail.com with ESMTPSA id g10-20020a19ac0a000000b00441e497867fsm539781lfc.93.2022.03.03.09.31.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Mar 2022 09:31:22 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <d6621a7b-12ad-1e3d-848f-fff576be2dfd@redhat.com>
-Date:   Thu, 3 Mar 2022 18:31:11 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=gJO9t+nw81mCakkJU4rcitth7kTwFygbrgST2tWJ3Vo=;
+        b=pBA/DZ45Tp5dDzZDfydABt3qz31waqBs4yVNc7GJZ79dhzBqmg3grcvMfdMVZe+QUS
+         /r/BwbNdbWB9tO2u5FAvCi6Q/DdYlZ62XTswwH5PFlTu1vN5gVnVLTCMxjX6f/Sc1y+2
+         9VyOJxX+wHjLgmP/OFJKIWRhEEC4urPI+i1hbZfo5XRFxE78DVUZ3TsV8jTM9oO18QuE
+         BNKMRHE0upJbGQ6iiYQs4/8yVtni3Bvqg70g5IYB4bwW/2giDej1wVjXUPUz0I4treSj
+         p9Y/bNBaa9P17XF7O3CsH6NQ9xdCM0HjFTilO82HxLBrvT7KJqPEv+MaggESeVauGXtu
+         c1jg==
+X-Gm-Message-State: AOAM532bS/2c3XH3ADiQn5r9a9WYXYeVwIER/nkZb8lV20B8NVP+JMLB
+        cGdg6b6DJs2Yi2Ah0jge/wHlrQ==
+X-Google-Smtp-Source: ABdhPJzZI8wTAhP+syWE9VPh8Qg10UjeSdqOap0TYm4UFweiyRiNQpiwd1zO6gZNGkzqAu4agWfSxw==
+X-Received: by 2002:ac2:4d29:0:b0:445:b80c:1130 with SMTP id h9-20020ac24d29000000b00445b80c1130mr6625873lfk.21.1646328919443;
+        Thu, 03 Mar 2022 09:35:19 -0800 (PST)
+Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id c12-20020a056512074c00b004458cd423f7sm542354lfs.68.2022.03.03.09.35.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 09:35:19 -0800 (PST)
+References: <20220227202757.519015-1-jakub@cloudflare.com>
+ <20220227202757.519015-3-jakub@cloudflare.com>
+ <20220301062536.zs6z6q56exu3hgvv@kafai-mbp.dhcp.thefacebook.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH net] xdp: xdp_mem_allocator can be NULL in
- trace_mem_connect().
-Content-Language: en-US
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <YiC0BwndXiwxGDNz@linutronix.de> <875yovdtm4.fsf@toke.dk>
- <YiDM0WRlWuM2jjNJ@linutronix.de>
-In-Reply-To: <YiDM0WRlWuM2jjNJ@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com, Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: Re: [PATCH bpf-next v2 2/3] selftests/bpf: Check dst_port only on
+ the client socket
+Date:   Thu, 03 Mar 2022 18:34:38 +0100
+In-reply-to: <20220301062536.zs6z6q56exu3hgvv@kafai-mbp.dhcp.thefacebook.com>
+Message-ID: <87zgm7gcrt.fsf@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 10:25 PM -08, Martin KaFai Lau wrote:
+> On Sun, Feb 27, 2022 at 09:27:56PM +0100, Jakub Sitnicki wrote:
+>> cgroup_skb/egress programs which sock_fields test installs process packets
+>> flying in both directions, from the client to the server, and in reverse
+>> direction.
+>> 
+>> Recently added dst_port check relies on the fact that destination
+>> port (remote peer port) of the socket which sends the packet is known ahead
+>> of time. This holds true only for the client socket, which connects to the
+>> known server port.
+>> 
+>> Filter out any traffic that is not bound to be egressing from the client
+>> socket in the test program for reading the dst_port.
+>> 
+>> Fixes: 8f50f16ff39d ("selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads")
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
+>>  .../testing/selftests/bpf/progs/test_sock_fields.c  | 13 +++++++++++--
+>>  1 file changed, 11 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+>> index 3e2e3ee51cc9..186fed1deaab 100644
+>> --- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
+>> +++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
+>> @@ -42,6 +42,11 @@ struct {
+>>  	__type(value, struct bpf_spinlock_cnt);
+>>  } sk_pkt_out_cnt10 SEC(".maps");
+>>  
+>> +enum {
+>> +	TCP_SYN_SENT = 2,
+>> +	TCP_LISTEN = 10,
+> Thanks for the clean up.
+>
+> A nit. directly use BPF_TCP_SYN_SENT and BPF_TCP_LISTEN.
 
-
-On 03/03/2022 15.12, Sebastian Andrzej Siewior wrote:
-> On 2022-03-03 14:59:47 [+0100], Toke Høiland-Jørgensen wrote:
->> Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
->>
->>> Since the commit mentioned below __xdp_reg_mem_model() can return a NULL
->>> pointer. This pointer is dereferenced in trace_mem_connect() which leads
->>> to segfault. It can be reproduced with enabled trace events during ifup.
->>>
->>> Only assign the arguments in the trace-event macro if `xa' is set.
->>> Otherwise set the parameters to 0.
->>>
->>> Fixes: 4a48ef70b93b8 ("xdp: Allow registering memory model without rxq reference")
->>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
->>
->> Hmm, so before the commit you mention, the tracepoint wasn't triggered
->> at all in the code path that now sets xdp_alloc is NULL. So I'm
->> wondering if we should just do the same here? Is the trace event useful
->> in all cases?
-> 
-> Correct. It says:
-> |              ip-1230    [003] .....     3.053473: mem_connect: mem_id=0 mem_type=PAGE_SHARED allocator=0000000000000000 ifindex=2
-> 
->> Alternatively, if we keep it, I think the mem.id and mem.type should be
->> available from rxq->mem, right?
-> 
-> Yes, if these are the same things. In my case they are also 0:
-> 
-> |              ip-1245    [000] .....     3.045684: mem_connect: mem_id=0 mem_type=PAGE_SHARED allocator=0000000000000000 ifindex=2
-> |        ifconfig-1332    [003] .....    21.030879: mem_connect: mem_id=0 mem_type=PAGE_SHARED allocator=0000000000000000 ifindex=3
-> 
-> So depends on what makes sense that tp can be skipped for xa == NULL or
-> remain with
->                 __entry->mem_id         = rxq->mem.id;
->                 __entry->mem_type       = rxq->mem.type;
-> 	       __entry->allocator      = xa ? xa->allocator : NULL;
-> 
-> if it makes sense.
-> 
-
-I have two bpftrace scripts [1] and [2] that use this tracepoint.
-It is scripts to help driver developers detect memory leaks when using 
-page_pool from their drivers.
-
-I'm a little pressured on time, so I've not evaluated if your change 
-makes sense.
-In the scripts I do use both mem.id and mem.type.
-
-
-[1] 
-https://github.com/xdp-project/xdp-project/blob/master/areas/mem/bpftrace/xdp_mem_track01.bt
-
-[2] 
-https://github.com/xdp-project/xdp-project/blob/master/areas/mem/bpftrace/xdp_mem_track02.bt
-
---Jesper
-
+Thanks. Completely forgot about those.
