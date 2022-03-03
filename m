@@ -2,67 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D3754CB88E
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 09:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13FC34CB8DF
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 09:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbiCCITi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 03:19:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        id S231388AbiCCIbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 03:31:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiCCITg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 03:19:36 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F9D1712B4;
-        Thu,  3 Mar 2022 00:18:51 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id z16so4149026pfh.3;
-        Thu, 03 Mar 2022 00:18:51 -0800 (PST)
+        with ESMTP id S230130AbiCCIbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 03:31:20 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA8F171850;
+        Thu,  3 Mar 2022 00:30:35 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id z4so3886069pgh.12;
+        Thu, 03 Mar 2022 00:30:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vU1b7wDDnqVNlq1Z3Hvkh5KsF871sfs1Pb9VrlvOM1A=;
-        b=qpwp/6D+p9CYtGRLDE/pjwu0ektMH0lMywmc/153ea/IKQFvTa0ijFGROHSzpG0ur2
-         0lxIRSCwR55CVXs3b4YkLKTlfXCLiaDoP9TEl0pHT65bK6dIkDIto8ztD28Fc6QR9e1G
-         94yRK/QPDODBgmyvQuwUcgpAimqi7ihlZsrXkPZVOz1Hz7F7DtUQCdrZgsx+h27uzd0O
-         ABRUNvI5dDHu7TcJ7Yx6tBpjMEVnXwl3RV80aHQEC6vbSJx6aIMqkTC3At0wd7wpcfFS
-         5OD7VtKzLqmjB/f5+Rs2HOIRipvXTg32g8OUFJ2JisK5njm6Dtl0MboQUoYb5nS9LjDD
-         08mw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=uLpTC29O7sSEzWIyhD1PQNyRAs1/upRhzEEBO0P7TrY=;
+        b=R05ZV01Yp+GvJafCjJwp2DdNQL1X7N4+v2qDpWCUjxekJqjhV8nKttt+lgDdDv8VHZ
+         pTpad4a62LLA8SjB/yHHEpNTxY0U28zfBa611uCN9ihzVETreTphlyPy+ETyTE4AgOSy
+         RSp6pqcLA1mQfW+JjTEEtr3nMT+EN3gAPPB7pPpCIhAgeloFO+Vkph8Zctn11Qajj/U0
+         QUVjSv6dTXzOO7akWefQCdrhFJznQKo01Wl+2crhxprXX9zSh/gHLWP/Xe3lMKAcW1nu
+         BI3FrzUOW0QskfQ+hVH91vnr00ExY+gCD8VtMWG6RhFXS05x/6dGZMaR1NPNguf29zlo
+         qAtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vU1b7wDDnqVNlq1Z3Hvkh5KsF871sfs1Pb9VrlvOM1A=;
-        b=3CyAXQFS0evdBRiUOyskkUERs+ipi1DxehTA7f6SQos8WWOBPVUrC9qQZne6cs1lK6
-         DqZdNMtz6FTFDzkFHHkc4qseECCW0gPSgZn5Gz2ZqY4BvOPSu53L/5UAyWbOoCeT/ZVh
-         zu7URgPZN6z8DNGmDwlKnyWXXFS2KGxRXtf2gNDGOGjCwO8w+1XXXmk3wH1ubSOGFG9Y
-         CdqpR0heBVzz2+p9oCpPrvAE18ablU580eAITUeEYZwI+boqXaeLy94VGu3qZ94C++3V
-         VUIaNcjYK24ndSQxajoL06VemzCr/eFOBY+kgKfQOzXAuNV+5WbyvsmPQouZP/asvVO0
-         Y5eg==
-X-Gm-Message-State: AOAM533mCvA0HzFDGRfWvtP6N036N+QI+q1glAIuomM9wwsq4LZh0EN/
-        mHlBuRWeCFYWGYnEZFutkInHuAVMxMnNCZOM
-X-Google-Smtp-Source: ABdhPJyaZ7N5WWHDTy0tfYJJ9BH5pHdFZMLr4vk8eCMjqLRRsNjkUIBSBREIrqJRHdC14YEzXyDjIg==
-X-Received: by 2002:a65:41c3:0:b0:363:5711:e234 with SMTP id b3-20020a6541c3000000b003635711e234mr29286766pgq.386.1646295530702;
-        Thu, 03 Mar 2022 00:18:50 -0800 (PST)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id k20-20020a056a00135400b004ecc81067b8sm1733592pfu.144.2022.03.03.00.18.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=uLpTC29O7sSEzWIyhD1PQNyRAs1/upRhzEEBO0P7TrY=;
+        b=tX4Lvnprkbl55JgpIMGPwUYB3zl4weKQtUQYSCGebicA19Oo2euseaSt/seHhHgl0U
+         WGEXF4Yq70OpGaJzdrRUdewFnJPKwyRe2hcmhELKOAaCQScpZMjVomIJ7EFgGxvhYEp3
+         9HxQe4UlZmMPk4ZhvlJqwjvYVIunkaPltt23SQUu1FRGohEGvel7sT8VStEWsaxjfs5X
+         viiLJUsV/Poav7kbPBu/1Hl2pXtDu+ktsOyqWkyiZbpO4/DOhJ/qeHIG5UgkeNYfEpB/
+         i4SSxCqaL5X+skhojHCTmrD6wVTzE//JfLQc8R7q5KqW7Pfmirm/ksaw2x6Yi8IQw3cR
+         RW+Q==
+X-Gm-Message-State: AOAM533yIcrXrWD0e+qg8tCGwICNQuG2ezuK76KXrTeyZwEDIAawJ7rL
+        tJd6y95jIfu3iOx5y5a6kN0=
+X-Google-Smtp-Source: ABdhPJxl3tqNmXwEb6Rf4RyrJiQAiYb1f64m7AmzgvvLqhkGp3dQvJbj8a24YWybBg5gGNAc3KtcpA==
+X-Received: by 2002:a63:8bca:0:b0:370:2717:3756 with SMTP id j193-20020a638bca000000b0037027173756mr29011952pge.604.1646296234811;
+        Thu, 03 Mar 2022 00:30:34 -0800 (PST)
+Received: from ubuntu.huawei.com ([119.3.119.19])
+        by smtp.googlemail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm7342532pju.44.2022.03.03.00.30.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 00:18:50 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] bpf: Replace strncpy() with strscpy_pad()
-Date:   Thu,  3 Mar 2022 16:18:00 +0800
-Message-Id: <20220303081800.82653-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 03 Mar 2022 00:30:34 -0800 (PST)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     jakobkoschel@gmail.com
+Cc:     David.Laight@ACULAB.COM, akpm@linux-foundation.org,
+        alsa-devel@alsa-project.org, amd-gfx@lists.freedesktop.org,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de,
+        bcm-kernel-feedback-list@broadcom.com, bjohannesmeyer@gmail.com,
+        c.giuffrida@vu.nl, christian.koenig@amd.com,
+        christophe.jaillet@wanadoo.fr, dan.carpenter@oracle.com,
+        dmaengine@vger.kernel.org, drbd-dev@lists.linbit.com,
+        dri-devel@lists.freedesktop.org, gustavo@embeddedor.com,
+        h.j.bos@vu.nl, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, jgg@ziepe.ca,
+        keescook@chromium.org, kgdb-bugreport@lists.sourceforge.net,
+        kvm@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-block@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-sgx@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-tegra@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux@rasmusvillemoes.dk,
+        linuxppc-dev@lists.ozlabs.org, nathan@kernel.org,
+        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
+        rppt@kernel.org, samba-technical@lists.samba.org,
+        tglx@linutronix.de, tipc-discussion@lists.sourceforge.net,
+        torvalds@linux-foundation.org,
+        v9fs-developer@lists.sourceforge.net, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body as a ptr
+Date:   Thu,  3 Mar 2022 16:30:07 +0800
+Message-Id: <20220303083007.11640-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <A568BD90-FE81-4740-B1D3-C795EB636A5A@gmail.com>
+References: <A568BD90-FE81-4740-B1D3-C795EB636A5A@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,35 +94,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using strncpy() on NUL-terminated strings is considered deprecated[1],
-replace it with strscpy_pad().
+> I think this would make sense, it would mean you only assign the containing
+> element on valid elements.
+>
+> I was thinking something along the lines of:
+>
+> #define list_for_each_entry(pos, head, member)					\
+>	for (struct list_head *list = head->next, typeof(pos) pos;	\
+>	     list == head ? 0 : (( pos = list_entry(pos, list, member), 1));	\
+>	     list = list->next)
+>
+> Although the initialization block of the for loop is not valid C, I'm
+> not sure there is any way to declare two variables of a different type
+> in the initialization part of the loop.
 
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
+It can be done using a *nested loop*, like this:
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- kernel/bpf/helpers.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+#define list_for_each_entry(pos, head, member)					\
+	for (struct list_head *list = head->next, cond = (struct list_head *)-1; cond == (struct list_head *)-1; cond = NULL) \
+	  for (typeof(pos) pos;	\
+	     list == head ? 0 : (( pos = list_entry(pos, list, member), 1));	\
+	     list = list->next)
 
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index ae64110a98b5..d03b28761a67 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -225,13 +225,7 @@ BPF_CALL_2(bpf_get_current_comm, char *, buf, u32, size)
- 	if (unlikely(!task))
- 		goto err_clear;
- 
--	strncpy(buf, task->comm, size);
--
--	/* Verifier guarantees that size > 0. For task->comm exceeding
--	 * size, guarantee that buf is %NUL-terminated. Unconditionally
--	 * done here to save the size test.
--	 */
--	buf[size - 1] = 0;
-+	strscpy_pad(buf, task->comm, size);
- 	return 0;
- err_clear:
- 	memset(buf, 0, size);
--- 
-2.35.1
+>
+> I believe all this does is get rid of the &pos->member == (head) check
+> to terminate the list.
 
+Indeed, although the original way is harmless.
+
+> It alone will not fix any of the other issues that using the iterator
+> variable after the loop currently has.
+
+Yes, but I stick with the list_for_each_entry_inside(pos, type, head, member)
+way to make the iterator invisiable outside the loop (before and after the loop).
+It is maintainable longer-term than "type(pos) pos" one and perfect.
+see my explain:
+https://lore.kernel.org/lkml/20220302093106.8402-1-xiam0nd.tong@gmail.com/
+and list_for_each_entry_inside(pos, type, head, member) patch here:
+https://lore.kernel.org/lkml/20220301075839.4156-3-xiam0nd.tong@gmail.com/
+
+--
+Xiaomeng Tong
