@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9664CBB5A
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 11:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCCB4CBB61
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 11:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232350AbiCCKa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 05:30:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
+        id S232355AbiCCKbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 05:31:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiCCKa6 (ORCPT
+        with ESMTP id S232340AbiCCKa6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 05:30:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8B1179A2B;
-        Thu,  3 Mar 2022 02:30:12 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E627E179A24;
+        Thu,  3 Mar 2022 02:30:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ACE861365;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E2C560BFF;
         Thu,  3 Mar 2022 10:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E8D20C340F0;
-        Thu,  3 Mar 2022 10:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 00B73C340F2;
+        Thu,  3 Mar 2022 10:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646303412;
-        bh=vJGtHO8HLMsb4Q6Od8HA8qJMHjiBPSG80rJOEeuzKAY=;
+        bh=GhhKCDrH4JQOA+Apel0fm/Fn8ks4tUJHd3WuIEOhKd4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hAxas/wJ79XJ55GdDOpJv0H8QuuY5XTaxKJ1B5IXC463vWxNA1Iec8/GAQSWdMazn
-         eHG3J8ARFaPb0XvVGE8S5YwEuuNHYRWxnAmoV1gO8rN3RYqIu/LHoud7iQZV5k51pX
-         YwhUDoi5IaUyVKAioJFazLNw99RnjYe6vrwcUN3YFN7+vEkudZgmhKzFCA9jbVH2zt
-         HK2+lynp7o5ebTW7pX9d1uctaNonBnqXlRx+ZHwdSQVsDuXPfd97j0sNhWq7szsX5L
-         1O7ArWpsSZ7e7TAlEXdE6Z3Na1C8IXq9rSVjteMiD255BdYALAdT/Z6x4fpaKtC0IL
-         Xfop7VuxopRww==
+        b=XBN13Z3xtAnUduC/ZWUmLQisZhnsiiPQqZUcL2qtUSb0FaqWBjWeMLNfyEnxcG/Ys
+         +u1IWb7Pov671VOybutobIKsLSSWtuRQy6AHHtBD30VVJ6+wZTrghaoWj5vmShfUcl
+         /1bYhxl09X6JytX396iSvgf8njm6Nh5YbdOhUx1xtz4mgzJjvMUxXFyLJeLp/KNXmk
+         pCRnM5LU1x251eAhDqekXyPhozQ3CU9ns56c9JDEGCRWIE9Hoq9OuzFqOorGPfkef7
+         GRMXjSCP+eP3f6qHRyghZPgOIldB39jjoba0PADZNdfgRZEASZ+umSXBkNy+P38uXC
+         vJLoHOJ/U6aeA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3E3EE8DD5B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC319E5D087;
         Thu,  3 Mar 2022 10:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next v9 0/5] page_pool: Add stats counters
+Subject: Re: [PATCH v2 0/2 net-next] net: stmmac: Enable support for Qualcomm
+ SA8155p-ADP board
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164630341186.19668.2407883981018370083.git-patchwork-notify@kernel.org>
+Message-Id: <164630341189.19668.6956989790890987614.git-patchwork-notify@kernel.org>
 Date:   Thu, 03 Mar 2022 10:30:11 +0000
-References: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
-In-Reply-To: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
-To:     Joe Damato <jdamato@fastly.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
-        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com,
-        leon@kernel.org, linux-rdma@vger.kernel.org, saeedm@nvidia.com
+References: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
+In-Reply-To: <20220302103950.30356-1-bhupesh.sharma@linaro.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     netdev@vger.kernel.org, bhupesh.linux@gmail.com, vkoul@kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,27 +63,22 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue,  1 Mar 2022 23:55:46 -0800 you wrote:
-> Greetings:
-> 
-> Welcome to v9.
-> 
-> This revisions adds a commit which updates the page_pool documentation to
-> describe the stats API, structures, and fields.
+On Wed,  2 Mar 2022 16:09:48 +0530 you wrote:
+> Changes since v1:
+> -----------------
+> - v1 can be seen here: https://lore.kernel.org/netdev/20220126221725.710167-1-bhupesh.sharma@linaro.org/t/
+> - Fixed review comments from Bjorn - broke the v1 series into two
+>   separate series - one each for 'net' tree and 'arm clock/dts' tree
+>   - so as to ease review of the same from the respective maintainers.
+> - This series is intended for the 'net' tree.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v9,1/5] page_pool: Add allocation stats
-    https://git.kernel.org/netdev/net-next/c/8610037e8106
-  - [net-next,v9,2/5] page_pool: Add recycle stats
-    https://git.kernel.org/netdev/net-next/c/ad6fa1e1ab1b
-  - [net-next,v9,3/5] page_pool: Add function to batch and return stats
-    https://git.kernel.org/netdev/net-next/c/6b95e3388b1e
-  - [net-next,v9,4/5] Documentation: update networking/page_pool.rst
-    https://git.kernel.org/netdev/net-next/c/a3dd98281b9f
-  - [net-next,v9,5/5] mlx5: add support for page_pool_get_stats
-    https://git.kernel.org/netdev/net-next/c/cc10e84b2ec3
+  - [v2,1/2,net-next] net: stmmac: Add support for SM8150
+    https://git.kernel.org/netdev/net-next/c/d90b3120473a
+  - [v2,2/2,net-next] net: stmmac: dwmac-qcom-ethqos: Adjust rgmii loopback_en per platform
+    https://git.kernel.org/netdev/net-next/c/a7bf6d7c9249
 
 You are awesome, thank you!
 -- 
