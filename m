@@ -2,316 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E72274CBE51
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 14:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A51164CBE98
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 14:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbiCCNBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 08:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
+        id S233226AbiCCNOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 08:14:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiCCNBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 08:01:30 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E281218640F;
-        Thu,  3 Mar 2022 05:00:41 -0800 (PST)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nPl4Q-000A2h-Pp; Thu, 03 Mar 2022 14:00:38 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nPl4Q-0000aM-GP; Thu, 03 Mar 2022 14:00:38 +0100
-Subject: Re: [PATCH v6 net-next 11/13] bpf: Keep the (rcv) timestamp behavior
- for the existing tc-bpf@ingress
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
-        Willem de Bruijn <willemb@google.com>
-References: <20220302195519.3479274-1-kafai@fb.com>
- <20220302195628.3484598-1-kafai@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9cfeb60e-5d72-8e5e-2e34-5239edc3c09d@iogearbox.net>
-Date:   Thu, 3 Mar 2022 14:00:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S230047AbiCCNOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 08:14:20 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19000151D21
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 05:13:34 -0800 (PST)
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A8CA53F600
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 13:13:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646313212;
+        bh=LMY/CePsTOMSqNYl6Ts31E/1/fcnzCoQjKnJ0fOnEQc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+         In-Reply-To:Content-Type;
+        b=VXC59FZ/yvUOtxhhfQPWntnmeYqNbP8P+qXIxEI5qW3733+/8ivWZlpgMz2l4ePtv
+         UTbVWg98DmW3aBcnKCd4MxhTie5CL3ZYucFR9kS9zXyrQRBVzJPpeitPQ+MYB6JxZ+
+         whn1jBPMThw6C/uCMo4ubccxsaYdfw1lxdCiwG3FNKdaqwvuYipDA/LZDFmwhr3kdt
+         aznJ+Lp1rrXcifz5UntldxdpgdvI8UvAk6SFX8rMfqGKRDO9Lpk8XAzGW6V9NXjAM7
+         xywO808tYrBbaycSLqy0AyRLMen+0Zc1/r5YCjZ0/uOQJmdOCAYdhSrP6W88cI2RMi
+         QauhOoCjX3i5A==
+Received: by mail-wm1-f70.google.com with SMTP id o21-20020a05600c511500b003818c4b98b5so1320241wms.0
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 05:13:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LMY/CePsTOMSqNYl6Ts31E/1/fcnzCoQjKnJ0fOnEQc=;
+        b=ZQwWM5DQs2IgT9WkFkW4V8Hu51vr7UitrQZFOA1GmFr5kQ+pRYtqrvdqoeXskS/zSY
+         4GzTiubRLqMxLPJnYogFTGra2remb/sBz5A1N60jRmqdS6ukHwCbvbMRpQY2PwqRF6Gq
+         I6PhngjLHtlGlkig9ilHlmENffJxIZj5QSsvXTUipOfJAT5mVSHuyR1DGHeLdrt4OxCG
+         aELKqNtvE7EahngsWX3EXAmtu9NZBAweyc9UNw8k/OD1Ysi7wllQ/zKaR04apwEy12n/
+         NTRxqRFq6hGZc4THkVt1wiYiOo3XJz6GUMBxHOnVsjCEMQaYg5LO6ryZk/zHniJRgb3J
+         wWtA==
+X-Gm-Message-State: AOAM5325S2/NDWJ/pBopQ1XiIONnrDhpGr7YoPvghFmGxOpVZz+wdQ+y
+        YMjC6NwuBn8ofBn5QvwuwuGNQPyrY3MGaIvpzJLojd1WaH8nPIyjZS3R90eHkjJQWdMhPVfuJQx
+        mICD9GF0mGl3cvgSqH1YjgjuucFAIUE/eaw==
+X-Received: by 2002:a05:600c:1c1c:b0:381:45b4:3f69 with SMTP id j28-20020a05600c1c1c00b0038145b43f69mr3697485wms.86.1646313212177;
+        Thu, 03 Mar 2022 05:13:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzvYjeIPKK1xybBBwrybTxPehOwM+dcpiu2dLD6jZaYYr/U3PXkimjpZxKtXdvaWl32PpTVkA==
+X-Received: by 2002:a05:600c:1c1c:b0:381:45b4:3f69 with SMTP id j28-20020a05600c1c1c00b0038145b43f69mr3697468wms.86.1646313211951;
+        Thu, 03 Mar 2022 05:13:31 -0800 (PST)
+Received: from [192.168.0.137] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id p5-20020a05600c358500b0038167e239a2sm2444025wmq.19.2022.03.03.05.13.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Mar 2022 05:13:31 -0800 (PST)
+Message-ID: <92ecef5a-cd8d-09e6-a8af-201e04b251c1@canonical.com>
+Date:   Thu, 3 Mar 2022 14:13:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220302195628.3484598-1-kafai@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RESEND PATCH v2 4/6] nfc: llcp: use test_bit()
 Content-Language: en-US
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
+ <20220302192523.57444-5-krzysztof.kozlowski@canonical.com>
+ <7fc4cb250bb8406cadf80649e366b249@AcuMS.aculab.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <7fc4cb250bb8406cadf80649e366b249@AcuMS.aculab.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26470/Thu Mar  3 10:49:16 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/2/22 8:56 PM, Martin KaFai Lau wrote:
-> The current tc-bpf@ingress reads and writes the __sk_buff->tstamp
-> as a (rcv) timestamp which currently could either be 0 (not available)
-> or ktime_get_real().  This patch is to backward compatible with the
-> (rcv) timestamp expectation at ingress.  If the skb->tstamp has
-> the delivery_time, the bpf insn rewrite will read 0 for tc-bpf
-> running at ingress as it is not available.  When writing at ingress,
-> it will also clear the skb->mono_delivery_time bit.
+On 03/03/2022 01:10, David Laight wrote:
+> From: Krzysztof Kozlowski
+>> Sent: 02 March 2022 19:25
+>>
+>> Use test_bit() instead of open-coding it, just like in other places
+>> touching the bitmap.
 > 
-> /* BPF_READ: a = __sk_buff->tstamp */
-> if (!skb->tc_at_ingress || !skb->mono_delivery_time)
-> 	a = skb->tstamp;
-> else
-> 	a = 0
-> 
-> /* BPF_WRITE: __sk_buff->tstamp = a */
-> if (skb->tc_at_ingress)
-> 	skb->mono_delivery_time = 0;
-> skb->tstamp = a;
-> 
-> [ A note on the BPF_CGROUP_INET_INGRESS which can also access
->    skb->tstamp.  At that point, the skb is delivered locally
->    and skb_clear_delivery_time() has already been done,
->    so the skb->tstamp will only have the (rcv) timestamp. ]
-> 
-> If the tc-bpf@egress writes 0 to skb->tstamp, the skb->mono_delivery_time
-> has to be cleared also.  It could be done together during
-> convert_ctx_access().  However, the latter patch will also expose
-> the skb->mono_delivery_time bit as __sk_buff->delivery_time_type.
-> Changing the delivery_time_type in the background may surprise
-> the user, e.g. the 2nd read on __sk_buff->delivery_time_type
-> may need a READ_ONCE() to avoid compiler optimization.  Thus,
-> in expecting the needs in the latter patch, this patch does a
-> check on !skb->tstamp after running the tc-bpf and clears the
-> skb->mono_delivery_time bit if needed.  The earlier discussion
-> on v4 [0].
-> 
-> The bpf insn rewrite requires the skb's mono_delivery_time bit and
-> tc_at_ingress bit.  They are moved up in sk_buff so that bpf rewrite
-> can be done at a fixed offset.  tc_skip_classify is moved together with
-> tc_at_ingress.  To get one bit for mono_delivery_time, csum_not_inet is
-> moved down and this bit is currently used by sctp.
-> 
-> [0]: https://lore.kernel.org/bpf/20220217015043.khqwqklx45c4m4se@kafai-mbp.dhcp.thefacebook.com/
-> 
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->   include/linux/skbuff.h | 18 +++++++----
->   net/core/filter.c      | 71 ++++++++++++++++++++++++++++++++++++------
->   net/sched/act_bpf.c    |  2 ++
->   net/sched/cls_bpf.c    |  2 ++
->   4 files changed, 77 insertions(+), 16 deletions(-)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 4b5b926a81f2..5445860e1ba6 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -941,8 +941,12 @@ struct sk_buff {
->   	__u8			vlan_present:1;	/* See PKT_VLAN_PRESENT_BIT */
->   	__u8			csum_complete_sw:1;
->   	__u8			csum_level:2;
-> -	__u8			csum_not_inet:1;
->   	__u8			dst_pending_confirm:1;
-> +	__u8			mono_delivery_time:1;
-> +#ifdef CONFIG_NET_CLS_ACT
-> +	__u8			tc_skip_classify:1;
-> +	__u8			tc_at_ingress:1;
-> +#endif
->   #ifdef CONFIG_IPV6_NDISC_NODETYPE
->   	__u8			ndisc_nodetype:2;
->   #endif
-> @@ -953,10 +957,6 @@ struct sk_buff {
->   #ifdef CONFIG_NET_SWITCHDEV
->   	__u8			offload_fwd_mark:1;
->   	__u8			offload_l3_fwd_mark:1;
-> -#endif
-> -#ifdef CONFIG_NET_CLS_ACT
-> -	__u8			tc_skip_classify:1;
-> -	__u8			tc_at_ingress:1;
->   #endif
->   	__u8			redirected:1;
->   #ifdef CONFIG_NET_REDIRECT
-> @@ -969,7 +969,7 @@ struct sk_buff {
->   	__u8			decrypted:1;
->   #endif
->   	__u8			slow_gro:1;
-> -	__u8			mono_delivery_time:1;
-> +	__u8			csum_not_inet:1;
->   
->   #ifdef CONFIG_NET_SCHED
->   	__u16			tc_index;	/* traffic control index */
-> @@ -1047,10 +1047,16 @@ struct sk_buff {
->   /* if you move pkt_vlan_present around you also must adapt these constants */
->   #ifdef __BIG_ENDIAN_BITFIELD
->   #define PKT_VLAN_PRESENT_BIT	7
-> +#define TC_AT_INGRESS_MASK		(1 << 0)
-> +#define SKB_MONO_DELIVERY_TIME_MASK	(1 << 2)
->   #else
->   #define PKT_VLAN_PRESENT_BIT	0
-> +#define TC_AT_INGRESS_MASK		(1 << 7)
-> +#define SKB_MONO_DELIVERY_TIME_MASK	(1 << 5)
->   #endif
->   #define PKT_VLAN_PRESENT_OFFSET	offsetof(struct sk_buff, __pkt_vlan_present_offset)
-> +#define TC_AT_INGRESS_OFFSET offsetof(struct sk_buff, __pkt_vlan_present_offset)
-> +#define SKB_MONO_DELIVERY_TIME_OFFSET offsetof(struct sk_buff, __pkt_vlan_present_offset)
-
-Just nit, but given PKT_VLAN_PRESENT_OFFSET, TC_AT_INGRESS_OFFSET and SKB_MONO_DELIVERY_TIME_OFFSET
-are all the same offsetof(struct sk_buff, __pkt_vlan_present_offset), maybe lets use just one single
-define? If anyone moves them out, they would have to adopt as per comment.
-
->   #ifdef __KERNEL__
->   /*
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index cfcf9b4d1ec2..5072733743e9 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -8859,6 +8859,65 @@ static struct bpf_insn *bpf_convert_shinfo_access(const struct bpf_insn *si,
->   	return insn;
->   }
->   
-> +static struct bpf_insn *bpf_convert_tstamp_read(const struct bpf_insn *si,
-> +						struct bpf_insn *insn)
-> +{
-> +	__u8 value_reg = si->dst_reg;
-> +	__u8 skb_reg = si->src_reg;
-> +
-> +#ifdef CONFIG_NET_CLS_ACT
-> +	__u8 tmp_reg = BPF_REG_AX;
-> +
-> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
-> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg, TC_AT_INGRESS_MASK);
-
-nit: As far as I can see, can't si->dst_reg be used instead of AX?
-
-> +	*insn++ = BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 5);
-> +	/* @ingress, read __sk_buff->tstamp as the (rcv) timestamp,
-> +	 * so check the skb->mono_delivery_time.
-> +	 */
-> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-> +			      SKB_MONO_DELIVERY_TIME_OFFSET);
-> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg,
-> +				SKB_MONO_DELIVERY_TIME_MASK);
-> +	*insn++ = BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 2);
-> +	/* skb->mono_delivery_time is set, read 0 as the (rcv) timestamp. */
-> +	*insn++ = BPF_MOV64_IMM(value_reg, 0);
-> +	*insn++ = BPF_JMP_A(1);
-> +#endif
-> +
-> +	*insn++ = BPF_LDX_MEM(BPF_DW, value_reg, skb_reg,
-> +			      offsetof(struct sk_buff, tstamp));
-> +	return insn;
-> +}
-> +
-> +static struct bpf_insn *bpf_convert_tstamp_write(const struct bpf_insn *si,
-> +						 struct bpf_insn *insn)
-> +{
-> +	__u8 value_reg = si->src_reg;
-> +	__u8 skb_reg = si->dst_reg;
-> +
-> +#ifdef CONFIG_NET_CLS_ACT
-> +	__u8 tmp_reg = BPF_REG_AX;
-> +
-> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
-> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg, TC_AT_INGRESS_MASK);
-
-Can't we get rid of tcf_bpf_act() and cls_bpf_classify() changes altogether by just doing:
-
-   /* BPF_WRITE: __sk_buff->tstamp = a */
-   skb->mono_delivery_time = !skb->tc_at_ingress && a;
-   skb->tstamp = a;
-
-(Untested) pseudo code:
-
-   // or see comment on common SKB_FLAGS_OFFSET define or such
-   BUILD_BUG_ON(TC_AT_INGRESS_OFFSET != SKB_MONO_DELIVERY_TIME_OFFSET)
-
-   BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, SKB_MONO_DELIVERY_TIME_OFFSET)
-   BPF_ALU32_IMM(BPF_OR, tmp_reg, SKB_MONO_DELIVERY_TIME_MASK)
-   BPF_JMP32_IMM(BPF_JSET, tmp_reg, TC_AT_INGRESS_MASK, <clear>)
-   BPF_JMP32_REG(BPF_JGE, value_reg, tmp_reg, <store>)
-<clear>:
-   BPF_ALU32_IMM(BPF_AND, tmp_reg, ~SKB_MONO_DELIVERY_TIME_MASK)
-<store>:
-   BPF_STX_MEM(BPF_B, skb_reg, tmp_reg, SKB_MONO_DELIVERY_TIME_OFFSET)
-   BPF_STX_MEM(BPF_DW, skb_reg, value_reg, offsetof(struct sk_buff, tstamp))
-
-(There's a small hack with the BPF_JGE for tmp_reg, so constant blinding for AX doesn't
-get into our way.)
-
-> +	*insn++ = BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 3);
-> +	/* Writing __sk_buff->tstamp at ingress as the (rcv) timestamp.
-> +	 * Clear the skb->mono_delivery_time.
-> +	 */
-> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-> +			      SKB_MONO_DELIVERY_TIME_OFFSET);
-> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg,
-> +				~SKB_MONO_DELIVERY_TIME_MASK);
-> +	*insn++ = BPF_STX_MEM(BPF_B, skb_reg, tmp_reg,
-> +			      SKB_MONO_DELIVERY_TIME_OFFSET);
-> +#endif
-> +
-> +	/* skb->tstamp = tstamp */
-> +	*insn++ = BPF_STX_MEM(BPF_DW, skb_reg, value_reg,
-> +			      offsetof(struct sk_buff, tstamp));
-> +	return insn;
-> +}
-> +
->   static u32 bpf_convert_ctx_access(enum bpf_access_type type,
->   				  const struct bpf_insn *si,
->   				  struct bpf_insn *insn_buf,
-> @@ -9167,17 +9226,9 @@ static u32 bpf_convert_ctx_access(enum bpf_access_type type,
->   		BUILD_BUG_ON(sizeof_field(struct sk_buff, tstamp) != 8);
->   
->   		if (type == BPF_WRITE)
-> -			*insn++ = BPF_STX_MEM(BPF_DW,
-> -					      si->dst_reg, si->src_reg,
-> -					      bpf_target_off(struct sk_buff,
-> -							     tstamp, 8,
-> -							     target_size));
-> +			insn = bpf_convert_tstamp_write(si, insn);
->   		else
-> -			*insn++ = BPF_LDX_MEM(BPF_DW,
-> -					      si->dst_reg, si->src_reg,
-> -					      bpf_target_off(struct sk_buff,
-> -							     tstamp, 8,
-> -							     target_size));
-> +			insn = bpf_convert_tstamp_read(si, insn);
->   		break;
->   
->   	case offsetof(struct __sk_buff, gso_segs):
-> diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
-> index a77d8908e737..fea2d78b9ddc 100644
-> --- a/net/sched/act_bpf.c
-> +++ b/net/sched/act_bpf.c
-> @@ -53,6 +53,8 @@ static int tcf_bpf_act(struct sk_buff *skb, const struct tc_action *act,
->   		bpf_compute_data_pointers(skb);
->   		filter_res = bpf_prog_run(filter, skb);
->   	}
-> +	if (unlikely(!skb->tstamp && skb->mono_delivery_time))
-> +		skb->mono_delivery_time = 0;
->   	if (skb_sk_is_prefetched(skb) && filter_res != TC_ACT_OK)
->   		skb_orphan(skb);
->   
-> diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-> index df19a847829e..c85b85a192bf 100644
-> --- a/net/sched/cls_bpf.c
-> +++ b/net/sched/cls_bpf.c
-> @@ -102,6 +102,8 @@ static int cls_bpf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
->   			bpf_compute_data_pointers(skb);
->   			filter_res = bpf_prog_run(prog->filter, skb);
->   		}
-> +		if (unlikely(!skb->tstamp && skb->mono_delivery_time))
-> +			skb->mono_delivery_time = 0;
->   
->   		if (prog->exts_integrated) {
->   			res->class   = 0;
+> Except it isn't a bitmap, it is just a structure member that contains bits.
+> So all the other places should be changes to use C shifts and masks (etc).
 > 
 
+It's not declared as bitmap but it is unsigned long, so an appropriate
+type (and same type) for test_bit.
+
+
+Best regards,
+Krzysztof
