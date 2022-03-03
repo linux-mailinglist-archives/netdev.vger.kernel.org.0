@@ -2,108 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C1194CBF27
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 14:51:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55CE44CBF4E
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 14:59:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233476AbiCCNwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 08:52:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        id S233363AbiCCOAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 09:00:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiCCNwC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 08:52:02 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44D61795DC
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 05:51:17 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id t28so4574365qtc.7
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 05:51:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ed/fJ9BtGGjVQRKHb9Y3nYI3u4W69M4qgJTD2Jx7kMI=;
-        b=HJiaRPv8U5Z1KsM5KVcfVTJRV4K55lgwfMklAUhWIjd9RENhA2F6B3llzXNI2/QMQi
-         fdQNIELw2uBRKtJYd0hwoCvVr+HehwoRo1OCOOXFXKvkdSZZt/Zf7YK8s92OyGxFPDUd
-         MHf5jDsojEHumbF8JBeszPn6AwD1CZwLWkOpriRYzyk9PofgRevhRnAhng9Ih8Ftmgz2
-         +kmIqB9s7ctYeSSPKCEmhkth18AWCxadeeabqhCzZVtUvi41t/XzU/5JiNuGS9SxmECo
-         3miyA4S2kWjKNPzupqKSARMog2CioI8NEBsPv9WVxAQjtO/FsnoUg038/MzatZQEW6TU
-         akSw==
+        with ESMTP id S231603AbiCCOAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 09:00:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27959B3E54
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 05:59:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646315993;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EPzzRx3cg/pmzHstqnOsA2Fg9HW56H+MJYqezSg++LE=;
+        b=ascQCdwo+OtH4RzhaDb5p2gIlUNrfHRczuhjVbs8+iSLP96TpGNv+BOsVTsUz8ylvD2C2x
+        +IQJvCBkvplTqUGL8CvvDm4oh+w5mLxYRghH79317uT7Oqg8vobGOKS8f/QPLUxTLxmETQ
+        NYLUgZ0Wyo1tHy++47deiCuXtX6k9/U=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-661-JwcDfa6WM4eOwor95VQepA-1; Thu, 03 Mar 2022 08:59:51 -0500
+X-MC-Unique: JwcDfa6WM4eOwor95VQepA-1
+Received: by mail-ej1-f71.google.com with SMTP id sa7-20020a170906eda700b006d1b130d65bso2753921ejb.13
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 05:59:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ed/fJ9BtGGjVQRKHb9Y3nYI3u4W69M4qgJTD2Jx7kMI=;
-        b=k2+OxW5EO0BVxmolXp32t2MIiETTSKfcBFZhYMy0Rg2ZI6YAi17LZadDdeQ3KGjt1w
-         ZWqagmGhVZ/18x4vtfUEHgzlgAKfcLwb49SIG4DBptWfF7DBcdKEhVrU7sbZwcZv/fPy
-         FEV2yRdbJ6LSkFnWP8lhHkMWBQR8DC2Jzk0KPHE5QllFKa8YeTPiWGJMYNj5EjcHKc8m
-         Mti4Ye4L7MeGZSztC8hS47X+JcQJtSSJjkMoFKaFMQsnR8ZLW8jKsHT4pAkmMTw0ZS54
-         VyKXmFwAWcm3yL3wBeacVrlpkJ2RctmaBs6zGKjDwLSEhcf0wcz2b8C48zH8uggbHQh3
-         c8dg==
-X-Gm-Message-State: AOAM5308lZP8IwAZB1ut1OiNjiyQGptVUT35Jiehk3jfPtX4IQGurGJ0
-        z+igp2udNXYTCvakh4pPjP9rSqtmugmDzQXW/xvUlw==
-X-Google-Smtp-Source: ABdhPJxMIYzDU9MchH4PSm1SS4F8hjgoJzQc9CAamWy1q4qx4pS6B3h+9QAQSO5RHs7A3uQ/4/L4vY9985Vtuh+kH58=
-X-Received: by 2002:a05:622a:1e07:b0:2dd:d6fe:a40a with SMTP id
- br7-20020a05622a1e0700b002ddd6fea40amr27518011qtb.261.1646315476648; Thu, 03
- Mar 2022 05:51:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=EPzzRx3cg/pmzHstqnOsA2Fg9HW56H+MJYqezSg++LE=;
+        b=N4bfF4HVxVF+4qRt3nxVKTPUYOB/IFN5TRsyHAMVqpmiTh4Gca6HsYNrDtUaVoj4de
+         fEXxWTss80IOeC+CyrmYbecRY7N1JjpxKwqbolf43sC7mtPz7tpsZFIcWv5MuD/kKkYT
+         EADukFZfwAsVt9r3Fr1YvwXIGHn2PAP9XCpIryMx4eohTfMWk1AwLbviyca+NDoUH5NX
+         /L/fW8F77DviMQzKNDFlJgy1oebEH0X8QX3XbBsNIs0ALaLUmWZPjC2NNd5b+rn71xJF
+         Q33pJav8IahDMP6XnGrOeGYHL5l4JSWd7Jnitv+OiDFAXzlfdSZi6A8DlUqHqh4+y5dI
+         GCcA==
+X-Gm-Message-State: AOAM533ctcGEOVIp9x964dA97P9N0gXJIzUeoD1wRHk68QLtSJkKMqZD
+        yUGeAk5X3O3j17Am0d+LwigxaRbjs1gNh6lR1OkbW7jb00GLkojPI27taFC8euZ3u70BGFiq4hY
+        +CULDrPFgLNHeeWKl
+X-Received: by 2002:a17:906:5d0e:b0:6da:97a8:95bd with SMTP id g14-20020a1709065d0e00b006da97a895bdmr1380845ejt.442.1646315990028;
+        Thu, 03 Mar 2022 05:59:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxPnR2SJt5wIOYwF3ZPR//qWJvAOvhL8xvzO6S0xyW+z1dASzCi5+vPXcvA+rmAJGVgj2I9eQ==
+X-Received: by 2002:a17:906:5d0e:b0:6da:97a8:95bd with SMTP id g14-20020a1709065d0e00b006da97a895bdmr1380809ejt.442.1646315989561;
+        Thu, 03 Mar 2022 05:59:49 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id t19-20020a1709060c5300b006d582121f99sm711461ejf.36.2022.03.03.05.59.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 05:59:48 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 78D1B13199B; Thu,  3 Mar 2022 14:59:47 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH net] xdp: xdp_mem_allocator can be NULL in
+ trace_mem_connect().
+In-Reply-To: <YiC0BwndXiwxGDNz@linutronix.de>
+References: <YiC0BwndXiwxGDNz@linutronix.de>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 03 Mar 2022 14:59:47 +0100
+Message-ID: <875yovdtm4.fsf@toke.dk>
 MIME-Version: 1.0
-References: <55dcdba34b9d9fbd2a95257de7916560e1a6b7b1.1646308584.git.dcaratti@redhat.com>
-In-Reply-To: <55dcdba34b9d9fbd2a95257de7916560e1a6b7b1.1646308584.git.dcaratti@redhat.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 3 Mar 2022 08:51:00 -0500
-Message-ID: <CADVnQynp-N4HCsNDzCde6YK5iqK4xivQYxrec3HNyoxX5DNTaQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next] ss: display advertised TCP receive window
- and out-of-order counter
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Thomas Higdon <tph@fb.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Stefano Brivio <sbrivio@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 6:58 AM Davide Caratti <dcaratti@redhat.com> wrote:
->
-> these members of TCP_INFO have been included in v5.4.
->
-> tested with:
->  # ss -nti
->
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  misc/ss.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/misc/ss.c b/misc/ss.c
-> index f7d369142d93..d77b7f10dc43 100644
-> --- a/misc/ss.c
-> +++ b/misc/ss.c
-> @@ -854,6 +854,8 @@ struct tcpstat {
->         unsigned int        reord_seen;
->         double              rcv_rtt;
->         double              min_rtt;
-> +       unsigned int        rcv_ooopack;
-> +       unsigned int        snd_wnd;
->         int                 rcv_space;
->         unsigned int        rcv_ssthresh;
->         unsigned long long  busy_time;
-> @@ -2654,6 +2656,10 @@ static void tcp_stats_print(struct tcpstat *s)
->                 out(" notsent:%u", s->not_sent);
->         if (s->min_rtt)
->                 out(" minrtt:%g", s->min_rtt);
-> +       if (s->rcv_ooopack)
-> +               out(" rcv_oopack:%u", s->rcv_ooopack);
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
 
-It seems there may be a typo where there is a missing 'o' in the
-'rcv_oopack' field name that is printed?; probably this should be:
+> Since the commit mentioned below __xdp_reg_mem_model() can return a NULL
+> pointer. This pointer is dereferenced in trace_mem_connect() which leads
+> to segfault. It can be reproduced with enabled trace events during ifup.
+>
+> Only assign the arguments in the trace-event macro if `xa' is set.
+> Otherwise set the parameters to 0.
+>
+> Fixes: 4a48ef70b93b8 ("xdp: Allow registering memory model without rxq reference")
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
- +               out(" rcv_ooopack:%u", s->rcv_ooopack);
+Hmm, so before the commit you mention, the tracepoint wasn't triggered
+at all in the code path that now sets xdp_alloc is NULL. So I'm
+wondering if we should just do the same here? Is the trace event useful
+in all cases?
 
-best,
-neal
+Alternatively, if we keep it, I think the mem.id and mem.type should be
+available from rxq->mem, right?
+
+-Toke
+
