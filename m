@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 600384CC526
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D154E4CC529
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235766AbiCCS0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 13:26:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
+        id S235778AbiCCS0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 13:26:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235755AbiCCS0K (ORCPT
+        with ESMTP id S235760AbiCCS0K (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:26:10 -0500
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE96E1A58E4;
-        Thu,  3 Mar 2022 10:25:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCD71A58E9;
+        Thu,  3 Mar 2022 10:25:24 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3246D2000E;
-        Thu,  3 Mar 2022 18:25:18 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 737132000F;
+        Thu,  3 Mar 2022 18:25:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646331919;
+        t=1646331920;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YJXbl6AYQi16uRc3GrKH3BgZvJvVjapvU0fhtBE7LcY=;
-        b=WF+7s/bSIFt9w8pGKpgjBN708I8BeoCChdW1hmuA8ejyKgKpaqUH/p50acY0ljrkaMlhHq
-        A7V4Cq2DaxP24WkDGAxBb93n/OEp1eKfotCaEv4ng5v7ogkgNS+WOpg5+XXlc4/7ZI8k/G
-        47+Tk6Q2APocd3y3RCe+/DNRj83iA9q6Ak0lMPmc7NVrYUNvymu3Faytl0+8ne7qUlEbTk
-        XPH59tbXmUIZL9YzS+gpZBQE58g0em6naIpyJI3RQQEbVwxr2wVbMtficWzp1Yh6dhqLX5
-        22I2+MTqfkCRHA8d7q+SOYPKpuLM8WIcICjN+9IScX8mn4kMAqwMIwFMk9J85A==
+        bh=WPv/8Ot5ykbhlNZhcY2g7IR2LHAZfOxJORZgNi+HzlY=;
+        b=Vyp+ldFqelPevxlLvIltLkMYDubuDE+/jwHK95FaRfCzwJCfsMzrpgICCqiSkn3BeCFnlp
+        SKlH88HVpY0BGVeEFd/XxYMv/ocbYMkbnxYp8i/4GIiuqPSlQACn9AG56MkxrZftGZ//GD
+        X62uE5wG5yhGHr7fkAWbVL1eriG6cVfBg1gg1wjBkyNr/8Wcv4AlN37l8SwELC2OZZ7U0M
+        oj4A56fztryjh1DFfl40kAEcK8KZuYCPJ+hawFYPteEXK/p20mNPVbO66xm3zo5n/9Bqsq
+        mInF3WIzRwtWerjdQUsks9i110amsG1Ez/yDyd9552PwlPCNeYyufo/kGajSlw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v3 06/11] net: ieee802154: at86rf230: Return early in case of error
-Date:   Thu,  3 Mar 2022 19:25:03 +0100
-Message-Id: <20220303182508.288136-7-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v3 07/11] net: ieee802154: at86rf230: Provide meaningful error codes when possible
+Date:   Thu,  3 Mar 2022 19:25:04 +0100
+Message-Id: <20220303182508.288136-8-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220303182508.288136-1-miquel.raynal@bootlin.com>
 References: <20220303182508.288136-1-miquel.raynal@bootlin.com>
@@ -59,79 +59,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TRAC register is only parsed in the Tx path if the debugfs entry is
-enabled. This does not look like a good idea because this register gives
-us the actual status of the transmitted packet.
-
-Let's always check the content of this register and error out when
-appropriate.
+Either the spi operation failed, or the device encountered an error. In
+both case, we know more or less what happened thanks to the spi call
+return code or the content of the TRAC register otherwise. Use them in
+order to propagate one step above the error.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/at86rf230.c | 49 ++++++++++++++++--------------
- 1 file changed, 26 insertions(+), 23 deletions(-)
+ drivers/net/ieee802154/at86rf230.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 616acfa8cd28..12ee071057d2 100644
+index 12ee071057d2..5f19266b3045 100644
 --- a/drivers/net/ieee802154/at86rf230.c
 +++ b/drivers/net/ieee802154/at86rf230.c
-@@ -673,33 +673,36 @@ at86rf230_tx_trac_check(void *context)
- 	struct at86rf230_state_change *ctx = context;
- 	struct at86rf230_local *lp = ctx->lp;
- 
--	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS)) {
--		u8 trac = TRAC_MASK(ctx->buf[1]);
-+	u8 trac = TRAC_MASK(ctx->buf[1]);
- 
--		switch (trac) {
--		case TRAC_SUCCESS:
--			lp->trac.success++;
--			break;
--		case TRAC_SUCCESS_DATA_PENDING:
--			lp->trac.success_data_pending++;
--			break;
--		case TRAC_CHANNEL_ACCESS_FAILURE:
--			lp->trac.channel_access_failure++;
--			break;
--		case TRAC_NO_ACK:
--			lp->trac.no_ack++;
--			break;
--		case TRAC_INVALID:
--			lp->trac.invalid++;
--			break;
--		default:
--			WARN_ONCE(1, "received tx trac status %d\n", trac);
--			lp->trac.invalid++;
--			break;
--		}
-+	switch (trac) {
-+	case TRAC_SUCCESS:
-+		lp->trac.success++;
-+		break;
-+	case TRAC_SUCCESS_DATA_PENDING:
-+		lp->trac.success_data_pending++;
-+		break;
+@@ -370,7 +370,27 @@ static inline void
+ at86rf230_async_error(struct at86rf230_local *lp,
+ 		      struct at86rf230_state_change *ctx, int rc)
+ {
+-	dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
++	int reason;
++
++	switch (rc) {
 +	case TRAC_CHANNEL_ACCESS_FAILURE:
-+		lp->trac.channel_access_failure++;
-+		goto failure;
++		reason = IEEE802154_CHANNEL_ACCESS_FAILURE;
++		break;
 +	case TRAC_NO_ACK:
-+		lp->trac.no_ack++;
-+		goto failure;
++		reason = IEEE802154_NO_ACK;
++		break;
 +	case TRAC_INVALID:
-+		lp->trac.invalid++;
-+		goto failure;
++		reason = IEEE802154_SYSTEM_ERROR;
++		break;
 +	default:
-+		WARN_ONCE(1, "received tx trac status %d\n", trac);
-+		lp->trac.invalid++;
-+		goto failure;
- 	}
++		reason = rc;
++	}
++
++	if (reason < 0)
++		dev_err(&lp->spi->dev, "spi_async error %d\n", reason);
++	else
++		dev_err(&lp->spi->dev, "xceiver error %d\n", reason);
++
  
- 	at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86rf230_tx_on);
-+
-+	return;
-+
-+failure:
-+	at86rf230_async_error(lp, ctx, -EIO);
+ 	at86rf230_async_state_change(lp, ctx, STATE_FORCE_TRX_OFF,
+ 				     at86rf230_async_error_recover);
+@@ -693,6 +713,7 @@ at86rf230_tx_trac_check(void *context)
+ 		goto failure;
+ 	default:
+ 		WARN_ONCE(1, "received tx trac status %d\n", trac);
++		trac = TRAC_INVALID;
+ 		lp->trac.invalid++;
+ 		goto failure;
+ 	}
+@@ -702,7 +723,7 @@ at86rf230_tx_trac_check(void *context)
+ 	return;
+ 
+ failure:
+-	at86rf230_async_error(lp, ctx, -EIO);
++	at86rf230_async_error(lp, ctx, trac);
  }
  
  static void
