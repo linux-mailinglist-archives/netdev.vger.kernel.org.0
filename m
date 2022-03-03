@@ -2,267 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C9B4CB332
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 01:34:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A09044CB39B
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 01:35:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiCCAVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 19:21:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
+        id S230363AbiCCAb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 19:31:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbiCCAVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:21:13 -0500
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B963139CFD;
-        Wed,  2 Mar 2022 16:20:27 -0800 (PST)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 222JMi0t029835;
-        Wed, 2 Mar 2022 16:20:11 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=NkkW/gubnVZZPPmbHGogBkXWV4OD3ZgoodckJcCo5sU=;
- b=ZKYDLVjHr1xtNQOABv5p81Fn++r5/aQXIpvNW4TnLycNvJEzdk/sbzt7i0OynkMUAyTi
- lbIQJqs1Q7rIjaaY+4vhv2wi4Ni4k+oMYfCsIYwtnNCtDKNdq0lC90bdhpsK98ZGzMdk
- KJFdKWXkXyHUKckoDsUkyWCXJf3rOfcyjsw= 
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam08lp2044.outbound.protection.outlook.com [104.47.74.44])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ej1r0s5hy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Mar 2022 16:20:11 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pt2i2WZ95J1CtDPnFle1dJXp+/CrQFIu3iaIrCP0alC/pi4gxEf4S8qcfyuDLuCuG4RA2ud6ghR1i96ViDmIByHyXZ5dm+ht9vntsA4Nl/dNCtZNhYgzOM0fy9u/SykoT1VHNwkVNnwGzoW8cdi4lAu4Wqe0a/EAqL82TZrul5/tudPItHEap+Mq+LkuSgN7C03rMtljBbmmdjf4KKDYUoETr2hXAnwObE0GcbhOhY2+Qd5FNolpoR5mInVyAg9AtsI3z7uhezcFM02s3a1NJL19Kc8qpsum6sjX4Ze/Lkg8pc85NNfkLSYg9mkvVFYRFF2oOCdrpalQxaO+GU4wEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NkkW/gubnVZZPPmbHGogBkXWV4OD3ZgoodckJcCo5sU=;
- b=n3uVpqXxXgNo5pr1xO03Ln+K0w3KCDByv9ht2a0JzOwrhIScIZ6vHBuEvg6IZStJ+woTtv0dtEIqZ6gLKGMGvgHXYLiL30oCehFNTbbPpHAySSaoC0adElKInnvF6esjuSyo5BD22iX+PyE0KillpQwxdDcxLkKJ5+I7hDkBARkL7Yghbj523Wt1YORk8JCTEZNeNCAd2rQraFV7vSVbfbbqiTH8fPNTe2H8X7bGOiX1Z4t5b35rq8dRLLOL4SK6fxsptf6JMbn6B22BOQOU87bSF1LSkA/ZulVOIXHmXOKHDp+FI+IVb79nP6n1eI19hMV0yyfuOzBowE+xrGSKAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by MW5PR15MB5146.namprd15.prod.outlook.com (2603:10b6:303:192::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 3 Mar
- 2022 00:20:09 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::1d2d:7a0f:fa57:cbdd]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::1d2d:7a0f:fa57:cbdd%7]) with mapi id 15.20.5038.014; Thu, 3 Mar 2022
- 00:20:09 +0000
-Date:   Wed, 2 Mar 2022 16:19:01 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S230332AbiCCAb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:31:26 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC7C887B7;
+        Wed,  2 Mar 2022 16:30:40 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id mr24-20020a17090b239800b001bf0a375440so906558pjb.4;
+        Wed, 02 Mar 2022 16:30:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TufDDGyoEGt9EY9DB5LHuZDJFxHU1L6lF561oF+pA9I=;
+        b=alA/+1sHANIZdsAalvkJRrUEEd+j45Ydc60/ZHZVP7eFfs2QKe12vLdJQp6m/Nt7Ip
+         IR6r7mdPStld60p/X32oJbNWJ43Y8HwiZzxWZciir0ctbX8RxGypi1UPxl+9Tzju8NkH
+         kPCpKao5vZszOncd8Hp8S6J85kSZdNmrM2xsFuGlrTDM/xjHpyzp8WCpofsPeoMAogDe
+         zaTdYa9WeVKSnQth7vKsGIu2TNXl+RLSvRo/tMNyVkrh3ximSKmCfJtOtTeSiMx7Ihro
+         ITuMXAZ1LEbLCO9b5aCidl2uFd+iWkqg5ABg7bEYFHJZEv6SvtFUPs5PVxm5CG8DjJHM
+         la3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TufDDGyoEGt9EY9DB5LHuZDJFxHU1L6lF561oF+pA9I=;
+        b=sR+Sw2WBn0sTdzcvfdH2mCYBZ4Op0LrZ59xu+gxWIogY62kZpwtT9njQyCMbKqB+3U
+         JHk9zccelks5pmDb/Tslb3xMhfnNgYHr8kFPgji7gg42qU9R3iBE/tc9C8aC13uCRT7w
+         tJxQo+rw8xWsTJo1O/uHMS/Kq1WY9R7RM2f6AkeBiHG5r6OnkrD6Gpcdv5Qp1E2JGJTA
+         6ee1sdu6nOVPgKWIsB3tNPfw+bdrgdM2M3UOeTV+JYXK2EQ4GVCASMLgdXhGiNHXvW8R
+         0tKNYfbtmSJoVHkOJeo9X73ipeyjKraVxuvx7m1tR3An2Tm+81WoPlUsy3l6i/o//yY8
+         QTQg==
+X-Gm-Message-State: AOAM532k5/+EwO5kR+JH/iyGgRPadgeH7nQePrgqlOZJqQzngIA5yYvv
+        BRCN4eZGLYpIgB85loVZZ7Q=
+X-Google-Smtp-Source: ABdhPJy/JxOVyPt8UB3HRfwKitIGFCigp0jkcWJGgjbGoToIRptUOzdI8V2jL2SoRPKvNORHRkvDwQ==
+X-Received: by 2002:a17:902:ed93:b0:14f:c84d:2448 with SMTP id e19-20020a170902ed9300b0014fc84d2448mr33917909plj.64.1646267439696;
+        Wed, 02 Mar 2022 16:30:39 -0800 (PST)
+Received: from jeffreyji1.c.googlers.com.com (180.145.227.35.bc.googleusercontent.com. [35.227.145.180])
+        by smtp.gmail.com with ESMTPSA id e11-20020a63e00b000000b0037341d979b8sm267013pgh.94.2022.03.02.16.30.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 16:30:39 -0800 (PST)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Brian Vazquez <brianvv@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        kernel-team <kernel-team@fb.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH v6 net-next 10/13] net: Postpone
- skb_clear_delivery_time() until knowing the skb is delivered locally
-Message-ID: <20220303001901.nuq66ukomfqqkytg@kafai-mbp>
-References: <20220302195519.3479274-1-kafai@fb.com>
- <20220302195622.3483941-1-kafai@fb.com>
- <CANn89iKN06bKxjrEeZAmcj0x4tYMwRv-YzdZLWKbCcuTYT+SpQ@mail.gmail.com>
- <20220302223352.txuhu4ielmlxldrg@kafai-mbp>
- <CANn89i+ZLB8EK2CUC7dnERvcawSAOhpzHpeKSvL0dVfK-fusXg@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89i+ZLB8EK2CUC7dnERvcawSAOhpzHpeKSvL0dVfK-fusXg@mail.gmail.com>
-X-ClientProxiedBy: MWHPR19CA0005.namprd19.prod.outlook.com
- (2603:10b6:300:d4::15) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jeffreyji <jeffreyji@google.com>
+Subject: [PATCH v2 net-next] net-core: add rx_otherhost_dropped counter
+Date:   Thu,  3 Mar 2022 00:30:34 +0000
+Message-Id: <20220303003034.1906898-1-jeffreyjilinux@gmail.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8f089476-45ad-4faa-e630-08d9fcab934c
-X-MS-TrafficTypeDiagnostic: MW5PR15MB5146:EE_
-X-Microsoft-Antispam-PRVS: <MW5PR15MB51469A9963A8ECD5817CED4ED5049@MW5PR15MB5146.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p26+wv68ga/f9qykot9JMmCCNw0/l7BZnOObtbXKmT1Iqfcnx/ve/tsRkuG4yoGMjNh+iN0AoEq1W6LxhZlrE8e6/EWGhP8Tjuin78bP7WVAMk0YquwT0XVAvi6MPd0eg2wsKIwl+Jne9/QAm2XzQVBGUTeFLPzWj0mttqCSRQLlwYGCD4Md+1l/jCusBFuZmbfuuitpVsXozurmHJmk6PFwgKyFCxSEyWWUz9klIERJQqkwV46QebcvW1Mu7HTPwD6NKuk01v5LMKKBzwpX7bcxdqn54V27PYa0Kk0TRkmJ4N+ZDXmb3CgZTu5lnWn9BvdpOyrbIYErpE07q1BpyhOgLStVZUjhXy8zr5uGyiwNNgbI/nSIJAYMQt1wnVmcTzW/dBmC8H9kd54gRwc+pTb0HyCuVdIyEy7M+Dt50zCd59nRDpyOVR4DbgGjkTJWAvoaYs2cFxB/ktalCTREwq8GZfinvGkkuRlCWKcShrnQhzIe+u2osILiL4KsnP7egVRTJ21fkYpqPofL9L8L233zNiqdCJHumHyebxLr/s+FaefBJfU9X41I1bPG2z2F0FnC2njr3Dr9UQD/htiGN9CwY1HfTV1BjpzWOPINbYsJmvALkPVop6GRLo61kL27IelCxli21sf+wUjxJ+gcIQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(9686003)(6512007)(6916009)(86362001)(66946007)(8676002)(54906003)(33716001)(66476007)(316002)(66556008)(6486002)(6666004)(4326008)(508600001)(6506007)(2906002)(186003)(83380400001)(52116002)(8936002)(1076003)(53546011)(5660300002)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Dg1qdRhWYlFgZvQfOeShAnok6HG+u01Yz3gzYviQ84eYfbGMpy8bLQ/p7UYd?=
- =?us-ascii?Q?rIDnGZwTD8Q45b7Grc1dDwiG5mprz1U090penBbygazuLeNhLdU15ewdSqfU?=
- =?us-ascii?Q?SbHrdJs15/oWOkkMmJ4JXH+fN3BiqHMsebi568+xagrakwsBDBk6zazO5iiK?=
- =?us-ascii?Q?nDPmcXwzFLDqPjN9huaK7KnUre8KaVnJGEvmarIKxse+Ux3/CF4o+KGf9vOb?=
- =?us-ascii?Q?fmshFSIXoCCZ80corrxG2q0dStlO4Evgx4rXCGkPtUtIsDZu/9jygQQp9bmO?=
- =?us-ascii?Q?r9Beu+3J5Ieb1y5iSUteuchcxzn5V/SiCWDU8Snh2JewAF958rXAUIN7gCxv?=
- =?us-ascii?Q?ioxYJDHTRYB2poG3jgyiPPZbsd+gWskNJu5/VbMQxVFAfYgj+7nso0DTWvYq?=
- =?us-ascii?Q?/b/f/azebKukhNhymzfqv3vc8Tknfe24qM8f/iphZf74GAcuMCvEDAC+X3+r?=
- =?us-ascii?Q?KLyjmnwN66g5lMDqKwssq3qqNFAagaOvuTvfdS0ttyIx76EnAoUend3QDkW9?=
- =?us-ascii?Q?9gwR5kjFxMfpAecV2z9WnmuVWzbH46RagghWZfceejD3hwPUJxWg4nbbkL6U?=
- =?us-ascii?Q?LxXN0ZN2NytD7Bj+iuPHLklnTEBlSFYwIAtOMr4Geu8WQXfA/Nx8Ui3wo3sa?=
- =?us-ascii?Q?dajOqOP5TPIEYsTm/xLgprwyYg4Xvd/+XfztxdqOXvFXXVV10Zjm2BP8U2y5?=
- =?us-ascii?Q?UHZXkVc15cZ/JD6Bh+ORvHE98AWJIm5PbYcOqwi9Fvsjdf0l4xvJeMBh+L12?=
- =?us-ascii?Q?DBt0CrORN7Qr6+saLeMiEy6p2m99lmtuh5egnqTCq5l4XSB137Clmx7E1+ZQ?=
- =?us-ascii?Q?tx+xJLMagdoygIhJhkyTvR1zS82bwSm/N6RkHMctoQDCiiGBYg72kQvX5wPc?=
- =?us-ascii?Q?DifA0Pu2336NQzdLX/j45lnOrvwSdzsp7A7OGHD0vHim22PYbqnGblJCcEoh?=
- =?us-ascii?Q?5lHYU1TT51soYiA6eZdgS+uiGvlafR7EXhwM/gfvZqTwjDU+/xfJQJ+aiDbH?=
- =?us-ascii?Q?U8T2af8LYONNeEr2OAGhQXD1+YT1BGl/EpbjBO2kNy/xwkWnNRcKKZSKe+Aw?=
- =?us-ascii?Q?vWpzwxFyy+K3IQ10dDcaNtc7lBq8n+fdduXIQBVuSQGfRH2xjqDYCbd3tADo?=
- =?us-ascii?Q?VUwdy+NFe+01ecXYU5+tWAZjBQ0z4ZAwNPHwGD0cSL7/5eCwFaiY4MqejjPY?=
- =?us-ascii?Q?Ej5RWIjpUZtbSbn8WsUK2dSLQwpOxULp0d2lK0UqP066NZP0Rxy74vZ5m6gT?=
- =?us-ascii?Q?lKfvE1owVqd3YVK2TCJ+XnZRJhrVzDVBCzjHw9Zcx9zhVs4R9pIl5NfHemFR?=
- =?us-ascii?Q?sfrzqEQ1yT9rKvUEHITAa6Vq5GwNrx7NX1RQaxszRPPsU9G+zkagMnzP0VGu?=
- =?us-ascii?Q?N7Cx1QIDqSJ+6jyAgeQaUk3J6LhqdlwDWYHuLz1zar0+zF7IyNxOoxV1VKiQ?=
- =?us-ascii?Q?OJXbnSU5+JjAcjK5OxZM+zUcLFVQ+vikNYhepmYTYweUbahwWMUdYnFiAdp/?=
- =?us-ascii?Q?ivQA9Ubq0XJnEurlMW42rCROZSX8xITN/Itq5FZYFtbdMA6/BKnsSAsuWsbk?=
- =?us-ascii?Q?9+rPByAI5vPZ6dpPXRitRsjNN6pHUDeUOaUWdLovo2UHIBRhapo3BjEbdoF7?=
- =?us-ascii?Q?/A=3D=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f089476-45ad-4faa-e630-08d9fcab934c
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2022 00:20:09.1626
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CtaCi4Ky6iIy2M7DInHD3tK0Fx/5JrZq7YqCH1fKKsJpcfFoejCxFCUDBeBZF+7A
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR15MB5146
-X-Proofpoint-ORIG-GUID: wQV1ErFEV-MYzSds6V5A2QXD0mFoFyf8
-X-Proofpoint-GUID: wQV1ErFEV-MYzSds6V5A2QXD0mFoFyf8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-02_12,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 bulkscore=0
- phishscore=0 mlxscore=0 impostorscore=0 lowpriorityscore=0 mlxlogscore=999
- clxscore=1015 spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2203030000
-X-FB-Internal: deliver
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 03:41:59PM -0800, Eric Dumazet wrote:
-> On Wed, Mar 2, 2022 at 2:34 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > On Wed, Mar 02, 2022 at 12:30:14PM -0800, Eric Dumazet wrote:
-> > > On Wed, Mar 2, 2022 at 11:56 AM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > >
-> > > > The previous patches handled the delivery_time in the ingress path
-> > > > before the routing decision is made.  This patch can postpone clearing
-> > > > delivery_time in a skb until knowing it is delivered locally and also
-> > > > set the (rcv) timestamp if needed.  This patch moves the
-> > > > skb_clear_delivery_time() from dev.c to ip_local_deliver_finish()
-> > > > and ip6_input_finish().
-> > > >
-> > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > > ---
-> > > >  net/core/dev.c       | 8 ++------
-> > > >  net/ipv4/ip_input.c  | 1 +
-> > > >  net/ipv6/ip6_input.c | 1 +
-> > > >  3 files changed, 4 insertions(+), 6 deletions(-)
-> > > >
-> > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > index 0fc02cf32476..3ff686cc8c84 100644
-> > > > --- a/net/core/dev.c
-> > > > +++ b/net/core/dev.c
-> > > > @@ -5193,10 +5193,8 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
-> > > >                         goto out;
-> > > >         }
-> > > >
-> > > > -       if (skb_skip_tc_classify(skb)) {
-> > > > -               skb_clear_delivery_time(skb);
-> > > > +       if (skb_skip_tc_classify(skb))
-> > > >                 goto skip_classify;
-> > > > -       }
-> > > >
-> > > >         if (pfmemalloc)
-> > > >                 goto skip_taps;
-> > > > @@ -5225,14 +5223,12 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
-> > > >                         goto another_round;
-> > > >                 if (!skb)
-> > > >                         goto out;
-> > > > -               skb_clear_delivery_time(skb);
-> > > >
-> > > >                 nf_skip_egress(skb, false);
-> > > >                 if (nf_ingress(skb, &pt_prev, &ret, orig_dev) < 0)
-> > > >                         goto out;
-> > > > -       } else
-> > > > +       }
-> > > >  #endif
-> > > > -               skb_clear_delivery_time(skb);
-> > > >         skb_reset_redirect(skb);
-> > > >  skip_classify:
-> > > >         if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
-> > > > diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> > > > index d94f9f7e60c3..95f7bb052784 100644
-> > > > --- a/net/ipv4/ip_input.c
-> > > > +++ b/net/ipv4/ip_input.c
-> > > > @@ -226,6 +226,7 @@ void ip_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int protocol)
-> > > >
-> > > >  static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
-> > > >  {
-> > > > +       skb_clear_delivery_time(skb);
-> > > >         __skb_pull(skb, skb_network_header_len(skb));
-> > > >
-> > > >         rcu_read_lock();
-> > > > diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> > > > index d4b1e2c5aa76..5b5ea35635f9 100644
-> > > > --- a/net/ipv6/ip6_input.c
-> > > > +++ b/net/ipv6/ip6_input.c
-> > > > @@ -459,6 +459,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
-> > > >
-> > > >  static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
-> > > >  {
-> > > > +       skb_clear_delivery_time(skb);
-> > > >         rcu_read_lock();
-> > > >         ip6_protocol_deliver_rcu(net, skb, 0, false);
-> > > >         rcu_read_unlock();
-> > > > --
-> > > > 2.30.2
-> > > >
-> > >
-> > > It is not clear to me why we need to clear tstamp if packet is locally
-> > > delivered ?
-> > It does not clear the rx tstamp in skb->tstamp.
-> >
-> > It only clears the EDT in skb->tstamp when the skb
-> > is transmitted out of a local tcp_sock and then loop back from egress
-> > to ingress through virtual interface like veth.
-> >
-> > >
-> > > TCP stack is using tstamp for incoming packets (look for
-> > > TCP_SKB_CB(skb)->has_rxtstamp)
-> > skb_clear_delivery_time() will put ktime_get_real() back to skb->tstamp
-> > so that the receiving tcp_sock can use it.
-> 
-> 
-> Oh... I had to look at
-> 
-> +static inline void skb_clear_delivery_time(struct sk_buff *skb)
-> +{
-> +       if (skb->mono_delivery_time) {
-> +               skb->mono_delivery_time = 0;
-> +               if (static_branch_unlikely(&netstamp_needed_key))
-> +                       skb->tstamp = ktime_get_real();
-> +               else
-> +                       skb->tstamp = 0;
-> +       }
-> +}
-> 
-> Name was a bit confusing :)
-A few names were attempted in the early version and
-then concluded on delivery_time. :p
+From: jeffreyji <jeffreyji@google.com>
 
-> 
-> And it seems you have a big opportunity to not call ktime_get_real()
-> when skb->sk is known at this point (early demux)
-> because few sockets actually enable timestamping ?
-iiuc, you are suggesting to also check the skb->sk (if early demux)
-and check for SK_FLAGS_TIMESTAMP.
+Increment rx_otherhost_dropped counter when packet dropped due to
+mismatched dest MAC addr.
 
-Without checking skb->sk here, it should not be worse than the
-current ktime_get_real() done in dev.c where it also does not have sk
-available?  netstamp_needed_key should have been enabled as
-long as there is one sk asked for it.
+An example when this drop can occur is when manually crafting raw
+packets that will be consumed by a user space application via a tap
+device. For testing purposes local traffic was generated using trafgen
+for the client and netcat to start a server
+
+Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+with "{eth(daddr=$INCORRECT_MAC...}", verified that iproute2 showed the
+counter was incremented. (Also had to modify iproute2 to show the stat,
+additional patch for that coming next.)
+
+changelog:
+
+v2: add kdoc comment
+
+Signed-off-by: jeffreyji <jeffreyji@google.com>
+---
+ include/linux/netdevice.h    | 3 +++
+ include/uapi/linux/if_link.h | 5 +++++
+ net/core/dev.c               | 2 ++
+ net/ipv4/ip_input.c          | 1 +
+ net/ipv6/ip6_input.c         | 1 +
+ 5 files changed, 12 insertions(+)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index c79ee2296296..e4073c38bd77 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1741,6 +1741,8 @@ enum netdev_ml_priv_type {
+  *			do not use this in drivers
+  *	@rx_nohandler:	nohandler dropped packets by core network on
+  *			inactive devices, do not use this in drivers
++ *	@rx_otherhost_dropped:	Dropped packets due to mismatch in packet dest
++ *				MAC address
+  *	@carrier_up_count:	Number of times the carrier has been up
+  *	@carrier_down_count:	Number of times the carrier has been down
+  *
+@@ -2025,6 +2027,7 @@ struct net_device {
+ 	atomic_long_t		rx_dropped;
+ 	atomic_long_t		tx_dropped;
+ 	atomic_long_t		rx_nohandler;
++	atomic_long_t		rx_otherhost_dropped;
+ 
+ 	/* Stats to monitor link on/off, flapping */
+ 	atomic_t		carrier_up_count;
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index e315e53125f4..17e74385fca8 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -211,6 +211,9 @@ struct rtnl_link_stats {
+  * @rx_nohandler: Number of packets received on the interface
+  *   but dropped by the networking stack because the device is
+  *   not designated to receive packets (e.g. backup link in a bond).
++ *
++ * @rx_otherhost_dropped: Number of packets dropped due to mismatch in
++ * packet's destination MAC address.
+  */
+ struct rtnl_link_stats64 {
+ 	__u64	rx_packets;
+@@ -243,6 +246,8 @@ struct rtnl_link_stats64 {
+ 	__u64	rx_compressed;
+ 	__u64	tx_compressed;
+ 	__u64	rx_nohandler;
++
++	__u64	rx_otherhost_dropped;
+ };
+ 
+ /* The struct should be in sync with struct ifmap */
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2d6771075720..d039d8fdc16a 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10037,6 +10037,8 @@ struct rtnl_link_stats64 *dev_get_stats(struct net_device *dev,
+ 	storage->rx_dropped += (unsigned long)atomic_long_read(&dev->rx_dropped);
+ 	storage->tx_dropped += (unsigned long)atomic_long_read(&dev->tx_dropped);
+ 	storage->rx_nohandler += (unsigned long)atomic_long_read(&dev->rx_nohandler);
++	storage->rx_otherhost_dropped +=
++		(unsigned long)atomic_long_read(&dev->rx_otherhost_dropped);
+ 	return storage;
+ }
+ EXPORT_SYMBOL(dev_get_stats);
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index d94f9f7e60c3..ef97b0a4c77f 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -450,6 +450,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
+ 	 * that it receives, do not try to analyse it.
+ 	 */
+ 	if (skb->pkt_type == PACKET_OTHERHOST) {
++		atomic_long_inc(&skb->dev->rx_otherhost_dropped);
+ 		drop_reason = SKB_DROP_REASON_OTHERHOST;
+ 		goto drop;
+ 	}
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index d4b1e2c5aa76..3f0cbe126d82 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -150,6 +150,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+ 	struct inet6_dev *idev;
+ 
+ 	if (skb->pkt_type == PACKET_OTHERHOST) {
++		atomic_long_inc(&skb->dev->rx_otherhost_dropped);
+ 		kfree_skb(skb);
+ 		return NULL;
+ 	}
+-- 
+2.35.1.616.g0bdcbb4464-goog
+
