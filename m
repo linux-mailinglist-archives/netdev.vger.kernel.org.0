@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E014CC8DD
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 23:27:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C2E4CC8E4
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 23:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236876AbiCCW2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 17:28:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
+        id S236901AbiCCW3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 17:29:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236881AbiCCW2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 17:28:32 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA2433360;
-        Thu,  3 Mar 2022 14:27:46 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id bg10so13718180ejb.4;
-        Thu, 03 Mar 2022 14:27:46 -0800 (PST)
+        with ESMTP id S231722AbiCCW3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 17:29:38 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733F24F9D6;
+        Thu,  3 Mar 2022 14:28:52 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id p15so13686676ejc.7;
+        Thu, 03 Mar 2022 14:28:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=lhX6RB0dmLl0zBx/bSbkGbH0bXRDixWhMm0OMYsDjEU=;
-        b=nUcta1pBTg1eBDqSeVWWC7RG7LE4QO9NxqSvWSEBN6avbu3LxoVHgonweXNczxA8MY
-         +0Xj6fYsk9kHfFFRpreqU9+GJF2viD2HI+ZdY1mhk/jIuewPSKhu1Irnu+7J7LLQXKVg
-         Z//I2qjCq4oVYHYpupnAzHWP6Z2BBlhtBVlzl7AwyiHgequ7CP/pVy8emqV4jZhPxD4Z
-         GB9VFg9w4zeY/9P30Hjj0LMeUHKGlVp330zGsWsVAI9UCVxnjvJZgcMcAjywIN65TF8n
-         nrg2CurmSd4ZdoOTAw4FVnASk1a5QpYDKtbLcXQHWVlEEj82yA5ezQrcCPbZO32CUuYX
-         wRuQ==
+        bh=Q3KMKlNL1UmXA+3fpqyraxkBiFVYfDRSUjKE3l3RuVk=;
+        b=MDnX4bgCQ/oEW0UhmojxOqONfN9vQW6YLWXvJiTN9ZgftqcQr1HntMOS2g3/z2DPmE
+         8m33ZJNdMHy5QvE34NBHTPyrFtQvSqNCX42VcKXLUA28fVVOjSENDm9kkQb1YrThCzCw
+         4mhs+Ja7G4trf5TymB8l8SBevLF4w8Cx1wjasWV1OlHemYMPolDQEc3m40FjuotYMIpW
+         V6ohRAT19l0vMqSS6sFnNBHePLzvjUzcp24j5GeZvNTFfz0x9TD2VOYGM0sWaQzurbAG
+         VnZd3CbpCGqvfBGxVJoFWuMNGVRlf0X0sqsXMbKEppdV4jwy/kqgzP0I0ikBXbUVso/Z
+         hbtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=lhX6RB0dmLl0zBx/bSbkGbH0bXRDixWhMm0OMYsDjEU=;
-        b=nZj+YcqnE2QDj+XS2WjJ/btzix8HFnf9YoN4ruW7k0uHXP9p4XQmtYUwWwth3HGlTE
-         snEYJxk5iDtzbc8m+GUkgmo9Ftptm+i40X5agEij64SErRLagiGtIES+hiN9az8w34XY
-         TWOVoS2hHBwzQWMUSpguAd2yzJrt0ve2jycsb8CFmMo0kgD2bYlpP0vlieqj+lzNOXxy
-         Yt/mODhU2yAN6k6Su3tfRkoSMgXAqUh7/CwO8sZ3/d+YGWoGczlzTLycWfoiCKfKFUzU
-         NRYMm9FKCWaYNtecn9jiVbNdZm0fYd0NQi/5w8iPirmpJtSSOS98cnV+J7NdBi2FIC53
-         cxZw==
-X-Gm-Message-State: AOAM533HkViY2jPAianlZfom1wNTfg3k9mP4SlfETYtIBLR2u/tSsrGF
-        OOi2qbHJi0FbXrvHjIA4SdY=
-X-Google-Smtp-Source: ABdhPJwPUPd+eZufSqs2WXGP5Zo2/8iTvzMgr73R155deDRlQqBghh7PIunOorAqMCKxilu/lv6H3g==
-X-Received: by 2002:a17:906:a10:b0:6ce:7107:598b with SMTP id w16-20020a1709060a1000b006ce7107598bmr28299009ejf.653.1646346464998;
-        Thu, 03 Mar 2022 14:27:44 -0800 (PST)
+        bh=Q3KMKlNL1UmXA+3fpqyraxkBiFVYfDRSUjKE3l3RuVk=;
+        b=P/2ngA0FyEHXKt4hqIz9HzpYQq1w3xcHsbxEKIMHVG6YNhN89x7Hpws9/yoDEPqv3E
+         EcpHjj6AKh6dACEwgE6iClywy5JXqFKy+hx4X2snwS6Jb1JlZ/EVffY2TdaMd1p0AVQ1
+         2IFJCOUtwuZ3YIQTwnCcvjqOgvjcm9O2fvQ0wL2PoGAQRbOVnMTs+CflW04LF4j9iz2o
+         +QUKSY7VzYohlZtJAKuzphQ3JHWHep8z1xpD3X4oQYDMnzoRq32WU5kdWz/dw0qGYozU
+         o8327ahW36YYCohhd1ItrwvozSNtcRKweDH+9Sbf1KHX2R/c+q0B6DxUfU4fR13gDX+f
+         5OHg==
+X-Gm-Message-State: AOAM530VxHyrYgiJYDEeNg+X4APjS+utm4WFXb8E2n/R7GD6Ni4ceM+U
+        o7d+OGqz9EMDXkMxEsi8vQ8=
+X-Google-Smtp-Source: ABdhPJzk13wyTbmYgwXumamuMcIRNwpzubAWgHvblQ9VhZ2Wj9eexC+yjherORwhPTNIQRvPpaYgVg==
+X-Received: by 2002:a17:906:5d11:b0:6da:68ed:270f with SMTP id g17-20020a1709065d1100b006da68ed270fmr7732259ejt.661.1646346530968;
+        Thu, 03 Mar 2022 14:28:50 -0800 (PST)
 Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id v2-20020a509d02000000b00412d53177a6sm1368434ede.20.2022.03.03.14.27.43
+        by smtp.gmail.com with ESMTPSA id n27-20020a1709062bdb00b006da975173bfsm810028ejg.170.2022.03.03.14.28.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 14:27:44 -0800 (PST)
-Date:   Fri, 4 Mar 2022 00:27:42 +0200
+        Thu, 03 Mar 2022 14:28:50 -0800 (PST)
+Date:   Fri, 4 Mar 2022 00:28:48 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Tobias Waldekranz <tobias@waldekranz.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
@@ -64,15 +64,15 @@ Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Matt Johnston <matt@codeconstruct.com.au>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 02/10] net: bridge: mst: Allow changing a
- VLAN's MSTI
-Message-ID: <20220303222742.si2gksy3tzagsc7r@skbuf>
+Subject: Re: [PATCH v2 net-next 01/10] net: bridge: mst: Multiple Spanning
+ Tree (MST) mode
+Message-ID: <20220303222848.4e2s2zrbzfckmiqw@skbuf>
 References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-3-tobias@waldekranz.com>
+ <20220301100321.951175-2-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301100321.951175-3-tobias@waldekranz.com>
+In-Reply-To: <20220301100321.951175-2-tobias@waldekranz.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -83,59 +83,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 11:03:13AM +0100, Tobias Waldekranz wrote:
-> Allow a VLAN to move out of the CST (MSTI 0), to an independent tree.
+On Tue, Mar 01, 2022 at 11:03:12AM +0100, Tobias Waldekranz wrote:
+> Allow the user to switch from the current per-VLAN STP mode to an MST
+> mode.
 > 
-> The user manages the VID to MSTI mappings via a global VLAN
-> setting. The proposed iproute2 interface would be:
+> Up to this point, per-VLAN STP states where always isolated from each
+> other. This is in contrast to the MSTP standard (802.1Q-2018, Clause
+> 13.5), where VLANs are grouped into MST instances (MSTIs), and the
+> state is managed on a per-MSTI level, rather that at the per-VLAN
+> level.
 > 
->     bridge vlan global set dev br0 vid <VID> msti <MSTI>
+> Perhaps due to the prevalence of the standard, many switching ASICs
+> are built after the same model. Therefore, add a corresponding MST
+> mode to the bridge, which we can later add offloading support for in a
+> straight-forward way.
 > 
-> Changing the state in non-zero MSTIs is still not supported, but will
-> be addressed in upcoming changes.
+> For now, all VLANs are fixed to MSTI 0, also called the Common
+> Spanning Tree (CST). That is, all VLANs will follow the port-global
+> state.
+> 
+> Upcoming changes will make this actually useful by allowing VLANs to
+> be mapped to arbitrary MSTIs and allow individual MSTI states to be
+> changed.
 > 
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > ---
+> +void br_mst_vlan_set_state(struct net_bridge_port *p, struct net_bridge_vlan *v,
+> +			   u8 state)
 
-> +static void br_mst_vlan_sync_state(struct net_bridge_vlan *pv, u16 msti)
+Function can be static.
+
 > +{
-> +	struct net_bridge_vlan_group *vg = nbp_vlan_group(pv->port);
-> +	struct net_bridge_vlan *v;
+> +	struct net_bridge_vlan_group *vg = nbp_vlan_group(p);
 > +
-> +	list_for_each_entry(v, &vg->vlan_list, vlist) {
-> +		/* If this port already has a defined state in this
-> +		 * MSTI (through some other VLAN membership), inherit
-> +		 * it.
-> +		 */
-> +		if (v != pv && v->brvlan->msti == msti) {
-> +			br_mst_vlan_set_state(pv->port, pv, v->state);
-> +			return;
-> +		}
-> +	}
+> +	if (v->state == state)
+> +		return;
 > +
-> +	/* Otherwise, start out in a new MSTI with all ports disabled. */
-> +	return br_mst_vlan_set_state(pv->port, pv, BR_STATE_DISABLED);
-> +}
+> +	br_vlan_set_state(v, state);
 > +
-> +int br_mst_vlan_set_msti(struct net_bridge_vlan *mv, u16 msti)
-> +{
-> +	struct net_bridge_vlan_group *vg;
-> +	struct net_bridge_vlan *pv;
-> +	struct net_bridge_port *p;
-
-No attempt to detect non-changes to the MSTI, and exit early? In a later
-patch you will also notify switchdev uselessly because of this.
-
-> +
-> +	mv->msti = msti;
-> +
-> +	list_for_each_entry(p, &mv->br->port_list, list) {
-> +		vg = nbp_vlan_group(p);
-> +
-> +		pv = br_vlan_find(vg, mv->vid);
-> +		if (pv)
-> +			br_mst_vlan_sync_state(pv, msti);
-> +	}
-> +
-> +	return 0;
+> +	if (v->vid == vg->pvid)
+> +		br_vlan_set_pvid_state(vg, state);
 > +}
