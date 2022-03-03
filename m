@@ -2,106 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6C74CB822
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 08:52:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2AD4CB82C
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 08:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbiCCHwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 02:52:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
+        id S230414AbiCCHzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 02:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiCCHwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 02:52:54 -0500
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C5616EABD
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 23:52:08 -0800 (PST)
-Received: by mail-oo1-xc43.google.com with SMTP id n5-20020a4a9545000000b0031d45a442feso4909120ooi.3
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 23:52:08 -0800 (PST)
+        with ESMTP id S230408AbiCCHzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 02:55:09 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA3916F960
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 23:54:23 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id kt27so8899235ejb.0
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 23:54:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=hvlkBAx1TYSvfdFp/tVhjXEGQ55kSnYzbJ/Pg5/5k1k=;
-        b=RDhESrELcIs7hQC5IrBIOXArsEH8FXqYUI6GCnm5ee3RhJ6bI4431x1XXcZJ7zkAJS
-         F79N4wXf4tC1U99yxNCg0PYyUUVyNyoYYUkUXXvBO2fP6CGNH8l1+hHTFGwhJB++uhOy
-         KQ85j5sMPo5rei8Z90YYVa7OS5qKid3lM+Hm8ISrqTXY4LpybrIUHv6oW7OO8MFpqTKr
-         mG+mtUMEPOwunscdaX7h/ATKVYC0+eFAlt0HgyQbdJtfSucI3ikuiXe3UeaoUP9suJ8Y
-         MejVpe7x9zqVnc1qebz4mXXyKMLivnZrr1Wun57VmSmZ3BTVSS3BxAhlYhP8VHLXAgjg
-         Ni+g==
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=M4XRf2sIBG0/gEW/qp5zl/3bv8xHye0TNCiBP0f7nIc=;
+        b=UOdXsYKoHU8Sb4BfBpPn6+kmp5JZbNOgwuuX8KgkW6JEq/jxNwJE3F+raFOL339fDr
+         9mhF4u9I3N1QEBYFA69+FF8fgaXVq71GMrA2mNJXuiidC4HHotqNBa5xeUj2LKJs0fSY
+         mdgmbuKCyuZ1jfIaymv9hprAYLOOe7B1rYCey1q44pITBLzY5n7Lc/D5k1ZxWqvQNEXS
+         8mlcQ9tCHJcgN2UKhXe0/J3maT8dU3yDPXwlvBIXgj1sHwxqduHSjDMOk8L1jS7zq1Gn
+         rLeMo+6aYzk0nUIpKFSWE0wt6rz1QylJm6UkHMdkmqtFxgXxt74LsmjikPomvNBHkzyb
+         7o5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=hvlkBAx1TYSvfdFp/tVhjXEGQ55kSnYzbJ/Pg5/5k1k=;
-        b=V0EeCgJ/3y6oHoTcXUk47fqhuhwuYDEKJsHO2lMNdnhWAj4Z1Da9R5IIK/oW6rAR1D
-         oJOIWdRwPbCc9Vdw+5MU886EQXA54Dyemd6tozJr9L0VmygUky0j6MDs56T+CZDQCkBR
-         nWS1x/O+by8q1GLVmyVuNs0INu5fjRw9wotwRoiMY9tkoRNFsOFmqrRfNf5nqbo98y0f
-         va0pILpqsz7sYO/vLktM7WDSD3/nOo9fSfKVQCg5EviBa4RGb8ZfbpTNb7UpGw6ZTk3m
-         uFbEkQgALt+DxZfh5VKAr+qbDeJradOEaEpbfqYI3I/HAUlkS4Nc79KOdoY9831smF/V
-         QcIg==
-X-Gm-Message-State: AOAM532iTXB3y/mEayRAGuUr/uPzdVAfwMrrBxsaqXfqIVyNoFqTgufU
-        PbKOtTcANuXvsUb/FLVHQw+QBh/C7sK1z/zHKiw=
-X-Google-Smtp-Source: ABdhPJzJOnUy2xOCdJjqG2/iZx5MTdFuXlZrVjPKGC6/iKv4k496e/QVoDMd0kZ/O76wCbkYIf6froYdbHK1xtcfXSk=
-X-Received: by 2002:a05:6870:a8ab:b0:d2:cd36:7859 with SMTP id
- eb43-20020a056870a8ab00b000d2cd367859mr2996471oab.83.1646293927693; Wed, 02
- Mar 2022 23:52:07 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=M4XRf2sIBG0/gEW/qp5zl/3bv8xHye0TNCiBP0f7nIc=;
+        b=It9ZSPkqVEKQBEKEnPaP0taNuqnb/EB/0qtC5uMykf951eLCoOxWx3xIJlQwMg8wWK
+         hgQ7q4C8ncv1Qoyqv3/R2E4h4oJ0RzQibp8O8PMfHlC8+f+nzj0c3Z1gvGvucvasET4p
+         A6kYLJSbzs5CFtgC9fgoD9O6Erah5tsAyrbvNpVkJFHabj/UL9VCHelG5TInRDkRkhXW
+         0Kh45i7BZP04SakTUSDIRTapd809JnQ4Clh/jcLfxhn3TgzhWU43Asa0V6SN8FxENsRR
+         1Jl39gWlJbsI0JMA9JL2CLNaaVjWYtg5Q3oMqy95XnpspbYANe77okxIhE70KrpcSiUT
+         CwAg==
+X-Gm-Message-State: AOAM532IvMabAhuyPpLPwMIR9uhoxRtx1tnjkv4qW/qBc3fIWzPf1/tH
+        apO3xNJ/2TTL3/yodalQJfE=
+X-Google-Smtp-Source: ABdhPJwh3lwBn4C1AqDcAdk1HxU1PbxBM+iT5YZF5nv1VJ5aqKL5crIXy447dJvtp1MEyoThyqsaqw==
+X-Received: by 2002:a17:907:1c13:b0:6da:62bb:f1ff with SMTP id nc19-20020a1709071c1300b006da62bbf1ffmr5237397ejc.276.1646294061921;
+        Wed, 02 Mar 2022 23:54:21 -0800 (PST)
+Received: from ?IPV6:2a01:c22:77fb:7800:e497:e843:ca71:bb7d? (dynamic-2a01-0c22-77fb-7800-e497-e843-ca71-bb7d.c22.pool.telefonica.de. [2a01:c22:77fb:7800:e497:e843:ca71:bb7d])
+        by smtp.googlemail.com with ESMTPSA id y18-20020a170906471200b006da8a883b5fsm423367ejq.54.2022.03.02.23.54.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Mar 2022 23:54:21 -0800 (PST)
+Message-ID: <04cac530-ea1b-850e-6cfa-144a55c4d75d@gmail.com>
+Date:   Thu, 3 Mar 2022 08:54:15 +0100
 MIME-Version: 1.0
-Reply-To: skjshs888@gmail.com
-Sender: anrothdgnyers@gmail.com
-Received: by 2002:a05:6840:951:b0:bb1:e66d:f98a with HTTP; Wed, 2 Mar 2022
- 23:52:06 -0800 (PST)
-From:   Amanda Steed <bryjhns177@gmail.com>
-Date:   Thu, 3 Mar 2022 07:52:06 +0000
-X-Google-Sender-Auth: 15tx0jNcC3VeaWhFlT9WWqnLjgM
-Message-ID: <CANDNYSioc5dR61JYiC7Ed6bh-BkavJPVaNMYWCyCiqYhSE1nMg@mail.gmail.com>
-Subject: INTERESTED IN BLITZ TRADE!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:c43 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4998]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [skjshs888[at]gmail.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [bryjhns177[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.6 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>, netdev@vger.kernel.org,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] net: phy: meson-gxl: fix interrupt handling in forced
+ mode
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This PHY doesn't support a link-up interrupt source. If aneg is enabled
+we use the "aneg complete" interrupt for this purpose, but if aneg is
+disabled link-up isn't signaled currently.
+According to a vendor driver there's an additional "energy detect"
+interrupt source that can be used to signal link-up if aneg is disabled.
+We can safely ignore this interrupt source if aneg is enabled.
+
+This patch was tested on a TX3 Mini TV box with S905W (even though
+boot message says it's a S905D).
+
+This issue has been existing longer, but due to changes in phylib and
+the driver the patch applies only from the commit marked as fixed.
+
+Fixes: 84c8f773d2dc ("net: phy: meson-gxl: remove the use of .ack_callback()")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/meson-gxl.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+index 7e7904fee..c49062ad7 100644
+--- a/drivers/net/phy/meson-gxl.c
++++ b/drivers/net/phy/meson-gxl.c
+@@ -30,8 +30,12 @@
+ #define  INTSRC_LINK_DOWN	BIT(4)
+ #define  INTSRC_REMOTE_FAULT	BIT(5)
+ #define  INTSRC_ANEG_COMPLETE	BIT(6)
++#define  INTSRC_ENERGY_DETECT	BIT(7)
+ #define INTSRC_MASK	30
+ 
++#define INT_SOURCES (INTSRC_LINK_DOWN | INTSRC_ANEG_COMPLETE | \
++		     INTSRC_ENERGY_DETECT)
++
+ #define BANK_ANALOG_DSP		0
+ #define BANK_WOL		1
+ #define BANK_BIST		3
+@@ -200,7 +204,6 @@ static int meson_gxl_ack_interrupt(struct phy_device *phydev)
+ 
+ static int meson_gxl_config_intr(struct phy_device *phydev)
+ {
+-	u16 val;
+ 	int ret;
+ 
+ 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+@@ -209,16 +212,9 @@ static int meson_gxl_config_intr(struct phy_device *phydev)
+ 		if (ret)
+ 			return ret;
+ 
+-		val = INTSRC_ANEG_PR
+-			| INTSRC_PARALLEL_FAULT
+-			| INTSRC_ANEG_LP_ACK
+-			| INTSRC_LINK_DOWN
+-			| INTSRC_REMOTE_FAULT
+-			| INTSRC_ANEG_COMPLETE;
+-		ret = phy_write(phydev, INTSRC_MASK, val);
++		ret = phy_write(phydev, INTSRC_MASK, INT_SOURCES);
+ 	} else {
+-		val = 0;
+-		ret = phy_write(phydev, INTSRC_MASK, val);
++		ret = phy_write(phydev, INTSRC_MASK, 0);
+ 
+ 		/* Ack any pending IRQ */
+ 		ret = meson_gxl_ack_interrupt(phydev);
+@@ -237,9 +233,16 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+ 		return IRQ_NONE;
+ 	}
+ 
++	irq_status &= INT_SOURCES;
++
+ 	if (irq_status == 0)
+ 		return IRQ_NONE;
+ 
++	/* Aneg-complete interrupt is used for link-up detection */
++	if (phydev->autoneg == AUTONEG_ENABLE &&
++	    irq_status == INTSRC_ENERGY_DETECT)
++		return IRQ_HANDLED;
++
+ 	phy_trigger_machine(phydev);
+ 
+ 	return IRQ_HANDLED;
 -- 
-Greetings,
+2.35.1
 
-Are you interested in Blitz Trade with LANCE IPPOLITO? Would you like to
-invest and earn on a regular basis?
-Do you seek a part-time job where you can earn more income, look no further
-for with little capital you can earn weekly or monthly.
-
-Contact for more information on how to sign up and start earning income on
-a regular basis.
-
-Amanda Steed
