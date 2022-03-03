@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E5A64CC281
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 17:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEA2B4CC285
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 17:20:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234527AbiCCQTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 11:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        id S234471AbiCCQVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 11:21:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233778AbiCCQTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 11:19:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C942C199D67;
-        Thu,  3 Mar 2022 08:19:04 -0800 (PST)
+        with ESMTP id S230522AbiCCQU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 11:20:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1824199D7C
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 08:20:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 604A86134C;
-        Thu,  3 Mar 2022 16:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B2D0C340E9;
-        Thu,  3 Mar 2022 16:19:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60AD2B82663
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 16:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EE94FC340E9;
+        Thu,  3 Mar 2022 16:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646324343;
-        bh=EHSnoQ9T2eNfI5kHK09JKtgNuw2uBGQFRsAu4RJhSFM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y/d8lp4CUTzQK9Y9Z9QtLrZ15sAaHD/vaftwePtHXuaVvkzvwpokXx2enAeI1cqk9
-         MI5GpNyIafLj8bpb19IwH3b7lf37VyN0uJFGwzExvmHtP3e4dvSxadg9bpRp1L5qUV
-         ofYylYk+uRk7vjUjb7U6A30qulP6f4MZ1vTf0K/NQaejAH7DFx6hcpAZN1zCgeafuh
-         UGkXVydeRGu/lslxdCoviWJOVBRZwnD1MH7rYNQMtdOQXbSzcurISHkkgwj9EC+oVX
-         TFWdTvOsISJAEJ78I+q1MjSzY37YBk3lnr4AFpDera/PC18M7MwLnevxeWP1wZIIVe
-         qXeOQxQYm5vmg==
-Date:   Thu, 3 Mar 2022 08:19:01 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        bpf@vger.kernel.org, andrii@kernel.org, kpsingh@kernel.org,
-        kafai@fb.com, yhs@fb.com, songliubraving@fb.com,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>
-Subject: Re: [PATCH net 2/2] ice: avoid XDP checks in ice_clean_tx_irq()
-Message-ID: <20220303081901.3e811507@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220302175928.4129098-3-anthony.l.nguyen@intel.com>
-References: <20220302175928.4129098-1-anthony.l.nguyen@intel.com>
-        <20220302175928.4129098-3-anthony.l.nguyen@intel.com>
+        s=k20201202; t=1646324411;
+        bh=XYu4WOl9rcPCE8qghH4BLdRHBa33yWJaUrfe1ZOFWl4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YOSy7HAoLRHVqC4b1EJlQnSbjkvrabiXfWfyjS8UDTMCiw1DK7n4z/dDQPRp83RIx
+         t3yXlAt1DfeTxq1vi8YPnfTJL09ns/LjCqmxnDC+8bM6j/ig84rHKVJj0GuQClUpBn
+         qWOa7kw7QYBaUhsE1VaeVf4mdB0d8CIwBmImHxZ7junc2tJE+fK2+Esle2Wc9lZ/iT
+         YlRqEGEMejUVOOJ6xUG6YkTtLnJKKtzZvycPSomTibin6HvDdjz0NYKMHn/xzhfwBJ
+         wjVxfvnEgdagjMyyxQ4pEQAQ5xv6FzlFT1Md/NnfALRW83R1X+BM3UomiBj4X5Q0CP
+         Ns9tfRUsyindg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D35C4EAC096;
+        Thu,  3 Mar 2022 16:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dcb: disable softirqs in dcbnl_flush_dev()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164632441086.16147.7200522822745526359.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Mar 2022 16:20:10 +0000
+References: <20220302193939.1368823-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220302193939.1368823-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        john.fastabend@gmail.com, petrm@nvidia.com, idosch@nvidia.com,
+        idosch@idosch.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,19 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Mar 2022 09:59:28 -0800 Tony Nguyen wrote:
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> 
-> Commit 9610bd988df9 ("ice: optimize XDP_TX workloads") introduced Tx IRQ
-> cleaning routine dedicated for XDP rings. Currently it is impossible to
-> call ice_clean_tx_irq() against XDP ring, so it is safe to drop
-> ice_ring_is_xdp() calls in there.
-> 
-> Fixes: 1c96c16858ba ("ice: update to newer kernel API")
-> Fixes: cc14db11c8a4 ("ice: use prefetch methods")
-> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>  (A Contingent Worker at Intel)
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Hello:
 
-Is this really a fix?
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed,  2 Mar 2022 21:39:39 +0200 you wrote:
+> Ido Schimmel points out that since commit 52cff74eef5d ("dcbnl : Disable
+> software interrupts before taking dcb_lock"), the DCB API can be called
+> by drivers from softirq context.
+> 
+> One such in-tree example is the chelsio cxgb4 driver:
+> dcb_rpl
+> -> cxgb4_dcb_handle_fw_update
+>    -> dcb_ieee_setapp
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: dcb: disable softirqs in dcbnl_flush_dev()
+    https://git.kernel.org/netdev/net/c/10b6bb62ae1a
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
