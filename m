@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A64304CC4E6
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE8874CC4EC
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:17:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233871AbiCCSRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 13:17:38 -0500
+        id S235683AbiCCSRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 13:17:41 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235681AbiCCSRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:17:34 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5D91A39E2
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 10:16:48 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id p17so5319217plo.9
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 10:16:48 -0800 (PST)
+        with ESMTP id S235672AbiCCSRg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:17:36 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51C41A39DA
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 10:16:50 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so5644664pjl.4
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 10:16:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5aBQM8wNOxbvrRsNnfmdlVwJl6wi5pr+JOyZvAg1e78=;
-        b=CmmQoHKkd7R1qYbvWj9EBEKTzS5g48bOc0U87tmu8Pi/Qqx1YTbqxZfbFWOqamHJeo
-         A+DXiAn3Kd11jFExEm4lJRNe4rvtDHpheKn3UwffPG9HpmSH2RW4KFFt9QKEdlu8tZa+
-         ZfSHyPcidSOqQZab5AUceUsrv6RVe2D+2HC2Sx9hoZU3fW9EuItzdb1FEDllmzhDjsdt
-         jOVjgVzKJVt/dKkPObKY+zJo44QldzXxR/jt3KlE5hap5rjA5Bp8Ik7yWsWKyBxiKQw4
-         0fWS8LKearRkhQjyUqY9bEovHeDSwxKQFXRBlIotEQrVXs1HXW9QpROvjm1STuZjM1fO
-         /0eg==
+        bh=jPmr3gnK1AlLQRyI/oWCnKd6ewHGXGMist7/1+3ySOk=;
+        b=NsfITdRLM4D6e5az1M1E0ToHuep7BoevrlZYglz1rhz68mzk6Y7Pw5Y0MpjmyehSC5
+         xCAly3sM/gKLZCP51sMKlByScJoMtZZpkHWX5bCpI+lbRfIWfWCP7E2S71OijDAUBnVx
+         UHwfWrfRJqTV0cnvWd0TH62vg9yJ/cApHwmkqp/i9DhXLGhPddWq4G7PKYeA9k1rUg5d
+         4rpGSb8YWAXiqkYCLzRrc7ByYosyDXcw2J2096I28LEs/ZSOlYLDnjTzHbHkA/FgRx64
+         +Xuq+BI88mXyjVkJdDBsfO4WuwoYRDocJromktsZa4ZxdFvLy0o1gmB53vNX2sutFNlq
+         N+NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5aBQM8wNOxbvrRsNnfmdlVwJl6wi5pr+JOyZvAg1e78=;
-        b=i/88GTbwBF+iO3HvYiw4K5TswBNnsKs5OBY3C9QN+pshNQpcnm8xwX/sLkrAIviHTy
-         RiG6nnuY9XSkk3qP5P9IPnylGYxzQojBgkGEDeuHPGXXt7y/Gw6BOpoNtydB+KuXrRzR
-         a/aE+qppREk4uuZ670azwdQQTRxmf9+h6W3DHFKXMYABTRnAhwpuMsOQ2bPBgzYEyXGT
-         12SWK6Vcw4l1iLD1OZt9XwETLl+hdblCAAYKEqKfwtVZS5eJFjw4COKKLzRsAafhtv62
-         oZtJ6GcDX3YVH8i8y6ZrUSLv9kqXhE25wDu39VwwGhyNxVc3Mka6r6IZ6XmjQFuxpcH7
-         UluA==
-X-Gm-Message-State: AOAM531kvlLuORMs6n7QiCR4GzRbT76Ba4g5vJhcmmjMhwFxbKBbohDb
-        8dnyi1dTGYoGZG3VDjkAiVU=
-X-Google-Smtp-Source: ABdhPJw9t+tUOeOLe/Uvw1q+XZ6c7JbgyP69AtpICY9Pk6s+ShZH8nxM2fOgykF6DqFuVN7e503qMQ==
-X-Received: by 2002:a17:90b:4d0f:b0:1bf:6a2:5637 with SMTP id mw15-20020a17090b4d0f00b001bf06a25637mr6697066pjb.106.1646331407807;
-        Thu, 03 Mar 2022 10:16:47 -0800 (PST)
+        bh=jPmr3gnK1AlLQRyI/oWCnKd6ewHGXGMist7/1+3ySOk=;
+        b=hXlbprV3SQYnCFF++kDq9W7vELUx4qEyWNAZiNt1Oh3N4SNqQ0cubYD2X7Gge/wF9F
+         Gg/AneoO7PnZU4wqQ1wXaiPgox8Q4Pz9QuAUfxq0cUXyK2BrBN0DKIIMyDgduE3AdmVM
+         PRP+K3vb2ovH7XruHkX3wrImykd9gfxnCV8TDQMnLIVeOy2F9jzKzUOQ4QcXF2U2XdxT
+         Ngh8hXFEtwHtVmVSZUn/4K9DP8TJpMzLiU/xlALqCN6mtP3LK1peP0mOdHmO9vVz0hWe
+         /Bsej2AFZF5dh5yyolX3Rfgcn/RpZ3lwVBhCI33qxvBi7py4guvLtlboH5GtxB8NDoY/
+         8IMw==
+X-Gm-Message-State: AOAM530rpKna5Gq5czp7HJN62+o3ux0kn1SFu/FEez8v8TsM7kg2sCVc
+        HgdB1BAvkofa+cHM5ehudUw=
+X-Google-Smtp-Source: ABdhPJzmgqfy8W/uR+sRU70gHdKOjxZDC7Lo8SIo78tp5BYRErc5zS6OSRaQpk67KkQB/PvEo3Rucg==
+X-Received: by 2002:a17:90b:228a:b0:1bc:7ca4:efaf with SMTP id kx10-20020a17090b228a00b001bc7ca4efafmr6668205pjb.245.1646331410263;
+        Thu, 03 Mar 2022 10:16:50 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5388:c313:5e37:a261])
-        by smtp.gmail.com with ESMTPSA id u14-20020a17090adb4e00b001bee5dd39basm7611016pjx.1.2022.03.03.10.16.46
+        by smtp.gmail.com with ESMTPSA id u14-20020a17090adb4e00b001bee5dd39basm7611016pjx.1.2022.03.03.10.16.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 10:16:47 -0800 (PST)
+        Thu, 03 Mar 2022 10:16:49 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,9 +56,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         David Ahern <dsahern@kernel.org>,
         Alexander Duyck <alexanderduyck@fb.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 10/14] bonding: update dev->tso_ipv6_max_size
-Date:   Thu,  3 Mar 2022 10:16:03 -0800
-Message-Id: <20220303181607.1094358-11-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 11/14] macvlan: enable BIG TCP Packets
+Date:   Thu,  3 Mar 2022 10:16:04 -0800
+Message-Id: <20220303181607.1094358-12-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 In-Reply-To: <20220303181607.1094358-1-eric.dumazet@gmail.com>
 References: <20220303181607.1094358-1-eric.dumazet@gmail.com>
@@ -76,41 +76,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Use the minimal value found in the set of lower devices.
+Inherit tso_ipv6_max_size from lower device.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- drivers/net/bonding/bond_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/macvlan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 55e0ba2a163d0d9c17fdaf47a49d7a2190959651..357188c1f00e6e3919740adb6369d75712fc4e64 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1420,6 +1420,7 @@ static void bond_compute_features(struct bonding *bond)
- 	struct slave *slave;
- 	unsigned short max_hard_header_len = ETH_HLEN;
- 	unsigned int gso_max_size = GSO_MAX_SIZE;
-+	unsigned int tso_ipv6_max_size = ~0U;
- 	u16 gso_max_segs = GSO_MAX_SEGS;
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index d87c06c317ede4d757b10722a258668d24a25f1d..d921cd84b23818c3d4ea88134c77a2365e6d9caa 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -902,6 +902,7 @@ static int macvlan_init(struct net_device *dev)
+ 	dev->hw_enc_features    |= dev->features;
+ 	netif_set_gso_max_size(dev, lowerdev->gso_max_size);
+ 	netif_set_gso_max_segs(dev, lowerdev->gso_max_segs);
++	netif_set_tso_ipv6_max_size(dev, lowerdev->tso_ipv6_max_size);
+ 	dev->hard_header_len	= lowerdev->hard_header_len;
+ 	macvlan_set_lockdep_class(dev);
  
- 	if (!bond_has_slaves(bond))
-@@ -1450,6 +1451,7 @@ static void bond_compute_features(struct bonding *bond)
- 			max_hard_header_len = slave->dev->hard_header_len;
- 
- 		gso_max_size = min(gso_max_size, slave->dev->gso_max_size);
-+		tso_ipv6_max_size = min(tso_ipv6_max_size, slave->dev->tso_ipv6_max_size);
- 		gso_max_segs = min(gso_max_segs, slave->dev->gso_max_segs);
- 	}
- 	bond_dev->hard_header_len = max_hard_header_len;
-@@ -1465,6 +1467,7 @@ static void bond_compute_features(struct bonding *bond)
- 	bond_dev->mpls_features = mpls_features;
- 	netif_set_gso_max_segs(bond_dev, gso_max_segs);
- 	netif_set_gso_max_size(bond_dev, gso_max_size);
-+	netif_set_tso_ipv6_max_size(bond_dev, tso_ipv6_max_size);
- 
- 	bond_dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
- 	if ((bond_dev->priv_flags & IFF_XMIT_DST_RELEASE_PERM) &&
 -- 
 2.35.1.616.g0bdcbb4464-goog
 
