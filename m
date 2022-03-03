@@ -2,198 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8E44CC4D7
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E0544CC4DD
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:16:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233967AbiCCSPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 13:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
+        id S234697AbiCCSRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 13:17:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235045AbiCCSPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:15:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3301965F3
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 10:14:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE16EB81E60
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 18:14:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9F9C36AE2
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 18:14:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646331269;
-        bh=qFUOAEusKf5EqlT1leY+fpapk6uaLFy25npXakzaPOU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LgUz89MlyL2oMwnV+jl1CbkoV4FbjRYo0SlhXSUZ5hMQ4yb4Pb/zp+uPocsPFMlLo
-         +PAx6suDpzaP2faoPunZF/mEOn2MyJE+M/fwgFgk+f3BRfUub8yYBjEuyRaYnm+WR3
-         zRK4lTnWpb3wOnfBAI1+ZbMVeC9JaNL1vEsPfnFHgH804PMs+l+YfcnTECikPFhXMi
-         kelhjewrFDrVG2AdHUUmuJIl02+yTU70VqMCcPqOYv5ablzsxGe4RqxQd5AZq/QTIB
-         gaB9H+Let7QPiYMJNQm63Ac6YvnY8T11fAlrpmyHwftuwyttNrOPF5VZyz2CrSkndp
-         vFaQFnxldDTtA==
-Received: by mail-ej1-f50.google.com with SMTP id qt6so12416749ejb.11
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 10:14:29 -0800 (PST)
-X-Gm-Message-State: AOAM533WP0liN2epImCImVf0AQLiTlC6CMyJCo46yaYULkPFwRcge9bx
-        QvjLy1BVEvPAf+jsna0CNpXGbrz2NJnqEsFQsIp1pQ==
-X-Google-Smtp-Source: ABdhPJxnZKo6LX8xW1ggtkT/YnLsX1bDHLa/SMbYlFtKkMSZxzUgC3/QFBzNDtHaNzXIkRqX2USVwPgCqAewaig5tfo=
-X-Received: by 2002:a17:906:9814:b0:6da:a60b:f99b with SMTP id
- lm20-20020a170906981400b006daa60bf99bmr1287850ejb.496.1646331267646; Thu, 03
- Mar 2022 10:14:27 -0800 (PST)
+        with ESMTP id S230456AbiCCSRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:17:08 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4E21A3617
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 10:16:23 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id q11so5310569pln.11
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 10:16:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q/FGlWEqjy/Hi9ivhFJLpg+HXAOkE3W1UIfCB1vn210=;
+        b=omLZ9Pp2u3i96URnFCyJAUn4oOZ0ODav/8rFpuVUChoAmfSfbLIru9PFz/A82FRjB9
+         0S+Ue8TZhEyOhxE8Dt3YMAeRYj2WRRtirH1Zm1KRpAx3s4se/Tl98Gfx5kfkebxZiHNq
+         gcGpQdBv2bZxTCdrLwTcmWPxuov+907HWSKLp81IU4KR4FF1xE3Ze2TtlwIC4DarBiIF
+         CgrcZN7SM1kj/XSVVJ4KypimUWNoHuA9fhmcTJLhAP9LiT8gs+do7b7GzOXbXLOjWIMo
+         Bg1acC3eNWg20u4OzrR/2LR68kxZY4M24fzS1h7s39TyJE9N/d3UvLKR/6siLwqZdAO2
+         98Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q/FGlWEqjy/Hi9ivhFJLpg+HXAOkE3W1UIfCB1vn210=;
+        b=lwAht9In+xpbfWJmUofKxPOoidqPflwKfFZSi5KySLRfy2IVNF1STy7cTwHyJcmj3L
+         1JDuWLvhF/Uh1IUzMZxgWwL4pgGh6jx4XBWDUbYupyoQZ3sbH8bwXL8a6xX9m0k5Lb6/
+         Wkbz+5aaq4w9eSRkLhzZfr3ZGCGSDWcLclFWcTcK5sVV11iv6NECfS71FfE0smLPnN53
+         YHfIl4ixYWbd9ZaTQLoRCGCLhGFseBfgB2XF3SuhRt4qGTzj1giSsv2GZNxzMsFYUfrn
+         sEjFx3XVm1nLB0239FefW7Rij3+yKv/8t738yPYH+rIOZ76DzmcUhn1elM7LrispzFWc
+         foBQ==
+X-Gm-Message-State: AOAM533Ib4t/1pHKoClu2FiOxGSUAaDWyLA82UDc6ylCGxGjXwRcWdHP
+        32Nb+UbFMjkrQxREFd+poQE=
+X-Google-Smtp-Source: ABdhPJy6/l7YrdC++kcsrjmHlGQjjyPIpcbFizSAQsXowfjUpaiHXl+aPUL16q/7V9ScffzI4zJ+cw==
+X-Received: by 2002:a17:902:900c:b0:14d:81e9:75d with SMTP id a12-20020a170902900c00b0014d81e9075dmr37383359plp.69.1646331382420;
+        Thu, 03 Mar 2022 10:16:22 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5388:c313:5e37:a261])
+        by smtp.gmail.com with ESMTPSA id u14-20020a17090adb4e00b001bee5dd39basm7611016pjx.1.2022.03.03.10.16.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 10:16:21 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>,
+        David Ahern <dsahern@kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 00/14] tcp: BIG TCP implementation
+Date:   Thu,  3 Mar 2022 10:15:53 -0800
+Message-Id: <20220303181607.1094358-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 MIME-Version: 1.0
-References: <20220302111404.193900-1-roberto.sassu@huawei.com>
- <20220302222056.73dzw5lnapvfurxg@ast-mbp.dhcp.thefacebook.com>
- <fe1d17e7e7d4b5e4cdeb9f96f5771ded23b7c8f0.camel@linux.ibm.com>
- <CACYkzJ4fmJ4XtC6gx6k_Gjq0n5vjSJyq=L--H-Eho072HJoywA@mail.gmail.com> <04d878d4b2441bb8a579a4191d8edc936c5a794a.camel@linux.ibm.com>
-In-Reply-To: <04d878d4b2441bb8a579a4191d8edc936c5a794a.camel@linux.ibm.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Thu, 3 Mar 2022 19:14:16 +0100
-X-Gmail-Original-Message-ID: <CACYkzJ5RNDV582yt1xCZ8AQUW6v_o0Dtoc_XAQN1GXnoOmze6Q@mail.gmail.com>
-Message-ID: <CACYkzJ5RNDV582yt1xCZ8AQUW6v_o0Dtoc_XAQN1GXnoOmze6Q@mail.gmail.com>
-Subject: Re: [PATCH v3 0/9] bpf-lsm: Extend interoperability with IMA
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        yhs@fb.com, revest@chromium.org, gregkh@linuxfoundation.org,
-        linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Florent Revest <revest@google.com>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 5:30 PM Mimi Zohar <zohar@linux.ibm.com> wrote:
->
-> On Thu, 2022-03-03 at 17:17 +0100, KP Singh wrote:
-> > On Thu, Mar 3, 2022 at 5:05 PM Mimi Zohar <zohar@linux.ibm.com> wrote:
-> > >
-> > > [Cc'ing Florent, Kees]
-> > >
-> > > Hi Alexei,
-> > >
-> > > On Wed, 2022-03-02 at 14:20 -0800, Alexei Starovoitov wrote:
-> > > > On Wed, Mar 02, 2022 at 12:13:55PM +0100, Roberto Sassu wrote:
-> > > > > Extend the interoperability with IMA, to give wider flexibility for the
-> > > > > implementation of integrity-focused LSMs based on eBPF.
-> > > > >
-> > > > > Patch 1 fixes some style issues.
-> > > > >
-> > > > > Patches 2-6 give the ability to eBPF-based LSMs to take advantage of the
-> > > > > measurement capability of IMA without needing to setup a policy in IMA
-> > > > > (those LSMs might implement the policy capability themselves).
-> > > > >
-> > > > > Patches 7-9 allow eBPF-based LSMs to evaluate files read by the kernel.
-> > > > >
-> > > > > Changelog
-> > > > >
-> > > > > v2:
-> > > > > - Add better description to patch 1 (suggested by Shuah)
-> > > > > - Recalculate digest if it is not fresh (when IMA_COLLECTED flag not set)
-> > > > > - Move declaration of bpf_ima_file_hash() at the end (suggested by
-> > > > >   Yonghong)
-> > > > > - Add tests to check if the digest has been recalculated
-> > > > > - Add deny test for bpf_kernel_read_file()
-> > > > > - Add description to tests
-> > > > >
-> > > > > v1:
-> > > > > - Modify ima_file_hash() only and allow the usage of the function with the
-> > > > >   modified behavior by eBPF-based LSMs through the new function
-> > > > >   bpf_ima_file_hash() (suggested by Mimi)
-> > > > > - Make bpf_lsm_kernel_read_file() sleepable so that bpf_ima_inode_hash()
-> > > > >   and bpf_ima_file_hash() can be called inside the implementation of
-> > > > >   eBPF-based LSMs for this hook
-> > > > >
-> > > > > Roberto Sassu (9):
-> > > > >   ima: Fix documentation-related warnings in ima_main.c
-> > > > >   ima: Always return a file measurement in ima_file_hash()
-> > > > >   bpf-lsm: Introduce new helper bpf_ima_file_hash()
-> > > > >   selftests/bpf: Move sample generation code to ima_test_common()
-> > > > >   selftests/bpf: Add test for bpf_ima_file_hash()
-> > > > >   selftests/bpf: Check if the digest is refreshed after a file write
-> > > > >   bpf-lsm: Make bpf_lsm_kernel_read_file() as sleepable
-> > > > >   selftests/bpf: Add test for bpf_lsm_kernel_read_file()
-> > > > >   selftests/bpf: Check that bpf_kernel_read_file() denies reading IMA
-> > > > >     policy
-> > > >
-> > > > We have to land this set through bpf-next.
-> > > > Please get the Acks for patches 1 and 2, so we can proceed.
-> > >
-> >
-> > Hi Mimi,
-> >
-> > > Each year in the LSS integrity status update talk, I've mentioned the
-> > > eBPF integrity gaps.  I finally reached out to KP, Florent Revest, Kees
-> >
-> > Thanks for bringing this up and it's very timely because we have been
-> > having discussion around eBPF program signing and delineating that
-> > from eBPF program integrity use-cases.
-> >
-> > My plan is to travel to LSS (travel and visa permitting) and we can discuss
-> > it more there.
-> >
-> > If you prefer we can also discuss it before in one of the BPF office hours:
-> >
-> > https://docs.google.com/spreadsheets/d/1LfrDXZ9-fdhvPEp_LHkxAMYyxxpwBXjywWa0AejEveU/edit#gid=0
->
-> Sounds good.
->
-> >
-> > > and others, letting them know that I'm concerned about the eBPF module
-> > > integrity gaps.  True there is a difference between signing the eBPF
-> > > source modules versus the eBPF generated output, but IMA could at least
-> > > verify the integrity of the source eBPF modules making sure they are
-> > > measured, the module hash audited, and are properly signed.
-> > >
-> > > Before expanding the ima_file_hash() or ima_inode_hash() usage, I'd
-> > > appreciate someone adding the IMA support to measure, appraise, and
-> > > audit eBPF modules.  I realize that closing the eBPF integrity gaps is
-> > > orthogonal to this patch set, but this patch set is not only extending
-> >
-> > This really is orthogonal and IMHO it does not seem rational to block this
-> > patchset on it.
-> >
-> > > the ima_file_hash()/ima_inode_hash() usage, but will be used to
-> > > circumvent IMA.  As per usual, IMA is policy based, allowing those
-> >
-> > I don't think they are being used to circumvent IMA but for totally
-> > different use-cases (e.g. as a data point for detecting attacks).
-> >
-> >
-> > > interested in eBPF module integrity to define IMA policy rules.
->
-> That might be true for your usecase, but not Roberto's.  From the cover
-> letter above, Roberto was honest in saying:
->
-> Patches 2-6 give the ability to eBPF-based LSMs to take advantage of
-> the measurement capability of IMA without needing to setup a policy in
-> IMA (those LSMs might implement the policy capability themselves).
+From: Eric Dumazet <edumazet@google.com>
 
-Currently to use the helper bpf_ima_inode_hash in LSM progs
-one needs to have a basic IMA policy in place just to get a hash,
-even if one does not need to use the whole feature-set provided by IMA.
-These patches would be quite beneficial for this user-journey.
+This series implements BIG TCP as presented in netdev 0x15:
 
-Even Robert's use case is to implement IMA policies in BPF this is still
-fundamentally different from IMA doing integrity measurement for BPF
-and blocking this patch-set on the latter does not seem rational and
-I don't see how implementing integrity for BPF would avoid your
-concerns.
+https://netdevconf.info/0x15/session.html?BIG-TCP
 
+Jonathan Corbet made a nice summary: https://lwn.net/Articles/884104/
 
+Standard TSO/GRO packet limit is 64KB
 
->
-> --
-> thanks,
->
-> Mimi
->
+With BIG TCP, we allow bigger TSO/GRO packet sizes for IPv6 traffic.
+
+Note that this feature is by default not enabled, because it might
+break some eBPF programs assuming TCP header immediately follows IPv6 header.
+
+Reducing number of packets traversing networking stack usually improves
+performance, as shown on this experiment using a 100Gbit NIC, and 4K MTU.
+
+'Standard' performance with current (74KB) limits.
+for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+77           138          183          8542.19    
+79           143          178          8215.28    
+70           117          164          9543.39    
+80           144          176          8183.71    
+78           126          155          9108.47    
+80           146          184          8115.19    
+71           113          165          9510.96    
+74           113          164          9518.74    
+79           137          178          8575.04    
+73           111          171          9561.73    
+
+Now enable BIG TCP on both hosts.
+
+ip link set dev eth0 gro_ipv6_max_size 185000 gso_ipv6_max_size 185000
+for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+57           83           117          13871.38   
+64           118          155          11432.94   
+65           116          148          11507.62   
+60           105          136          12645.15   
+60           103          135          12760.34   
+60           102          134          12832.64   
+62           109          132          10877.68   
+58           82           115          14052.93   
+57           83           124          14212.58   
+57           82           119          14196.01   
+
+We see an increase of transactions per second, and lower latencies as well.
+
+v2: Removed the MAX_SKB_FRAGS change, this belongs to a different series.
+    Addressed feedback, for Alexander and nvidia folks.
+
+Coco Li (5):
+  ipv6: add dev->gso_ipv6_max_size
+  ipv6: add GRO_IPV6_MAX_SIZE
+  ipv6: Add hop-by-hop header to jumbograms in ip6_output
+  ipvlan: enable BIG TCP Packets
+  mlx5: support BIG TCP packets
+
+Eric Dumazet (9):
+  net: add netdev->tso_ipv6_max_size attribute
+  tcp_cubic: make hystart_ack_delay() aware of BIG TCP
+  ipv6: add struct hop_jumbo_hdr definition
+  ipv6/gso: remove temporary HBH/jumbo header
+  ipv6/gro: insert temporary HBH/jumbo header
+  net: loopback: enable BIG TCP packets
+  bonding: update dev->tso_ipv6_max_size
+  macvlan: enable BIG TCP Packets
+  mlx4: support BIG TCP packets
+
+ drivers/net/bonding/bond_main.c               |  3 +
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 +
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 82 +++++++++++++++----
+ drivers/net/ipvlan/ipvlan_main.c              |  1 +
+ drivers/net/loopback.c                        |  2 +
+ drivers/net/macvlan.c                         |  1 +
+ include/linux/ipv6.h                          |  1 +
+ include/linux/netdevice.h                     | 32 ++++++++
+ include/net/ipv6.h                            | 44 ++++++++++
+ include/uapi/linux/if_link.h                  |  3 +
+ net/core/dev.c                                |  4 +
+ net/core/gro.c                                | 20 ++++-
+ net/core/rtnetlink.c                          | 33 ++++++++
+ net/core/sock.c                               |  6 ++
+ net/ipv4/tcp_cubic.c                          |  4 +-
+ net/ipv6/ip6_offload.c                        | 56 ++++++++++++-
+ net/ipv6/ip6_output.c                         | 22 ++++-
+ tools/include/uapi/linux/if_link.h            |  3 +
+ 20 files changed, 334 insertions(+), 34 deletions(-)
+
+-- 
+2.35.1.616.g0bdcbb4464-goog
+
