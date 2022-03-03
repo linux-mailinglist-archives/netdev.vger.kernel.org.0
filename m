@@ -2,72 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D324CBB58
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 11:30:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9664CBB5A
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 11:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiCCKa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 05:30:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
+        id S232350AbiCCKa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 05:30:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbiCCKa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 05:30:57 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98548179A25
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 02:30:11 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id f38so9284774ybi.3
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 02:30:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=k6NYZQl2rxZhVB/aKDQvMsV5vW2gUENZyGD3qWaMtBI=;
-        b=laI23BgcZDhcP/9hP+X1hN4Z14KZUKGolqcmzFNHfC/QP77+/OCeZliYYDIoDxHIhq
-         Er6kZ4beuigKECI77wyuP8XEZwNksjnAyFqNiOR7p1P+T311fTmdihj9HOMhuqdD6RWZ
-         JtsBDx5EBlsmMT7MLsvDi1fF1zISaIlPX3Hj6dBeq/0S84+J7KtEZ3daFtE8U/6exz/1
-         bJCbcWr4SnHdNiEu2v/nHIB855YWAD85bmXyz2TbZgNxpF3w26gm1WP/DrCb9MDtkB4P
-         pVfCYprDC69SaXck8MTcHOC1fxM7Rj1UquaWXRYcS7WZHs0iydCd7TiRphLYJulRp6c6
-         WcHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=k6NYZQl2rxZhVB/aKDQvMsV5vW2gUENZyGD3qWaMtBI=;
-        b=iLhTxZFQPk9uYZaSNwGpalk6JwMk4bl1X3RlvRI4+GWinFUQYG/TrgiXYVsTLBK8JX
-         zaRBQ876YN4pQBpUvcvuzYI1wwi1mdBsBKFAtZcQwfQkPBZ95cQ+Vk/m+YwwPvF3rsyD
-         tcR1nWkQj+Cu6EMWQCE1bd1bjT3L5bZjHjD6cHSwvSUuTpoowitViwJuvBCCtS3fQfM4
-         9Mn+MAZrjk0Mxl8dGBwP3nwBrJjnZO1H6GTl8Ph4jKGVE21f2YoWQI7rByq0TTKwPLVX
-         3Md9x8Whas7UdwnSopjo89K+OzEi8VpVZlZ8nZ/dSeh9e/LChx9VJ4K1xiolSPHjXcKB
-         kRMA==
-X-Gm-Message-State: AOAM532rTJmjQAhhiz2t6IIQA2a5LI+KCMt+zrieIayxXLeFWDMeZwMY
-        R0e0G2wjXL/+YulzOm6wQhjWGmQd/Kyq30Keb5bP2Lk9
-X-Google-Smtp-Source: ABdhPJxEBxT1/3gEl0Cmj58oRDigp0Sxrtcf/ZvyRdaOy0OJ8lqfzAkUQOs+16l4KSHCIlDpuNxUChHdam22Ke8yKOY=
-X-Received: by 2002:a05:6902:1506:b0:628:7962:6682 with SMTP id
- q6-20020a056902150600b0062879626682mr12156012ybu.59.1646303410821; Thu, 03
- Mar 2022 02:30:10 -0800 (PST)
+        with ESMTP id S232335AbiCCKa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 05:30:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8B1179A2B;
+        Thu,  3 Mar 2022 02:30:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ACE861365;
+        Thu,  3 Mar 2022 10:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E8D20C340F0;
+        Thu,  3 Mar 2022 10:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646303412;
+        bh=vJGtHO8HLMsb4Q6Od8HA8qJMHjiBPSG80rJOEeuzKAY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hAxas/wJ79XJ55GdDOpJv0H8QuuY5XTaxKJ1B5IXC463vWxNA1Iec8/GAQSWdMazn
+         eHG3J8ARFaPb0XvVGE8S5YwEuuNHYRWxnAmoV1gO8rN3RYqIu/LHoud7iQZV5k51pX
+         YwhUDoi5IaUyVKAioJFazLNw99RnjYe6vrwcUN3YFN7+vEkudZgmhKzFCA9jbVH2zt
+         HK2+lynp7o5ebTW7pX9d1uctaNonBnqXlRx+ZHwdSQVsDuXPfd97j0sNhWq7szsX5L
+         1O7ArWpsSZ7e7TAlEXdE6Z3Na1C8IXq9rSVjteMiD255BdYALAdT/Z6x4fpaKtC0IL
+         Xfop7VuxopRww==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3E3EE8DD5B;
+        Thu,  3 Mar 2022 10:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Sender: edithbrown0257@gmail.com
-Received: by 2002:a05:7010:cc8a:b0:210:741f:4d30 with HTTP; Thu, 3 Mar 2022
- 02:30:10 -0800 (PST)
-From:   Rose Funk Williams <rosefunkwilliams02577@gmail.com>
-Date:   Thu, 3 Mar 2022 11:30:10 +0100
-X-Google-Sender-Auth: MDLx6wFUgHexXojOEAxZtWZA-tk
-Message-ID: <CAEbKRu2pY9b+z52qm=P3Z9KDRnN0bqW+LYqfTC3_jXAPjnO=LQ@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_05,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next v9 0/5] page_pool: Add stats counters
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164630341186.19668.2407883981018370083.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Mar 2022 10:30:11 +0000
+References: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
+In-Reply-To: <1646207751-13621-1-git-send-email-jdamato@fastly.com>
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net, hawk@kernel.org,
+        saeed@kernel.org, ttoukan.linux@gmail.com, brouer@redhat.com,
+        leon@kernel.org, linux-rdma@vger.kernel.org, saeedm@nvidia.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello,
+Hello:
 
-My name is Rose Funk Williams, I will be honored if we talk and know
-something about ourselves, share pictures and life experiences, I look
-forward to your reply, thank you.
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Tue,  1 Mar 2022 23:55:46 -0800 you wrote:
+> Greetings:
+> 
+> Welcome to v9.
+> 
+> This revisions adds a commit which updates the page_pool documentation to
+> describe the stats API, structures, and fields.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v9,1/5] page_pool: Add allocation stats
+    https://git.kernel.org/netdev/net-next/c/8610037e8106
+  - [net-next,v9,2/5] page_pool: Add recycle stats
+    https://git.kernel.org/netdev/net-next/c/ad6fa1e1ab1b
+  - [net-next,v9,3/5] page_pool: Add function to batch and return stats
+    https://git.kernel.org/netdev/net-next/c/6b95e3388b1e
+  - [net-next,v9,4/5] Documentation: update networking/page_pool.rst
+    https://git.kernel.org/netdev/net-next/c/a3dd98281b9f
+  - [net-next,v9,5/5] mlx5: add support for page_pool_get_stats
+    https://git.kernel.org/netdev/net-next/c/cc10e84b2ec3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
