@@ -2,85 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E474D4CB49B
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B583D4CB467
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:42:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231467AbiCCBqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 20:46:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S231431AbiCCBjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 20:39:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiCCBqx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 20:46:53 -0500
-X-Greylist: delayed 914 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Mar 2022 17:46:07 PST
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67AC21B6E18;
-        Wed,  2 Mar 2022 17:46:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=XAi7D
-        k9Yg7EF/mSMo8raLyxYjVznmUNk90i0YbDYo5A=; b=ZEmq/qzrJtrY9zC207PgZ
-        REzIQycl5G5Qj/X4NlmoD0WDcQJJIo/2XwUaDq+pebvUyOZ0q/RK6IWhS58FaZaj
-        NLHKooZXW2WFd1/q87NjPrpNq51uyfD7UAx3EZeW/lM1eAo2Q/pFkztOqoXHwAnJ
-        FqL/lfJ8JYmk+SV6qQxKps=
-Received: from localhost.localdomain (unknown [218.106.182.227])
-        by smtp4 (Coremail) with SMTP id HNxpCgBnPKQzGiBi+_cuEw--.7369S4;
-        Thu, 03 Mar 2022 09:30:37 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
-Date:   Thu,  3 Mar 2022 09:30:22 +0800
-Message-Id: <20220303013022.459154-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231383AbiCCBjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 20:39:06 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A5639684;
+        Wed,  2 Mar 2022 17:38:22 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2d07ae0b1c4so39071467b3.11;
+        Wed, 02 Mar 2022 17:38:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=5hlAKeJCmJMR/cAYdpKEw4pHq90wUKYdfUsO0fMGF/4=;
+        b=piRuZTEK8y2DTytxHjr3XSCGAnedDErY3XcDBKqwBiZQ19+PaCsBftib5ydtBMxn7V
+         fQB4Js3bjvWZ6eH33JEvct0GBGnaAJFrnlsreT2m39p8wuSyxK+RY4TLIrMc9QBusyfa
+         0j3Bch6cG6YdMK+8GxCN5m11A9cHU4/KL17c6XtIJ1SoMcZhsAGFmiO4YEqPpJQyKY0+
+         /FTp9dWTXbYw481hanOr6ikJzo0+ucNkrUmF52A2gjCAEqr0JHjhRRAxoOAXKQtyemsg
+         GakM56IFCjDZJZGtqfmvXYkq9DWJiitIcDWz4T3RbJKYds+R0TunoTdZz9lwtOKD6BGJ
+         luCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5hlAKeJCmJMR/cAYdpKEw4pHq90wUKYdfUsO0fMGF/4=;
+        b=4ReExbOImk/S/thOUq4SY5l9MrZZz9JG4PI5FNg8ofmS5xXa32wp/AhyJO9kZBSwOD
+         vJswdrkheHAFpIB2Cu1DbH+g7wse7gUaK68TA1EpmY8ela/Gbvbc1UFHPTCHihjpWzMa
+         8ZHULhbUGrxfxWXhO/d3hM/BLPhypk3lVDAuvHnAI62Edr/d0vzwa3GxXx1QpAJ8UbAt
+         W9KUkq+AL00+K6+NrARSg4nx855x5XUbhR/9uUjiojRM9gACVgDuS3j7/DgYbdfoMfXj
+         u/ZuZg9ndcUcxKAVM55Rbpu2nAoC5mk3BT/nvYNQhAWmVTqQhob2DbCxbl4Ns+Thw6hs
+         UNdg==
+X-Gm-Message-State: AOAM531WRUnNDEoZwvk7H1JFns2yVAUMIDDmszUXYAgWtpz4U0WqbNz7
+        A3bND63eT5eh5Rx5ZzGmpp+MA9aNBPBN7xjaxcph00t61KsbC65+lmM=
+X-Google-Smtp-Source: ABdhPJyYmud61vfBErDjxizv/6VxrfGJ5q1vYo8+n1S3FBdMbZbtlk/lPcIXe80dVFgPWfT6f9w1SwrSW5CqkUMNwhk=
+X-Received: by 2002:a81:6307:0:b0:2d6:6aee:dc75 with SMTP id
+ x7-20020a816307000000b002d66aeedc75mr33572142ywb.249.1646271501383; Wed, 02
+ Mar 2022 17:38:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgBnPKQzGiBi+_cuEw--.7369S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gw45KFyDGF47urW7GrW3Wrg_yoWDZFgE9w
-        18Za43Jw43tr90gw4j9F4ayryvk3yUXrs3uF4fKr9xAr9rCr47X3WkuF93Jr1kuws2qF9I
-        qayayrW7u348KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREzuWtUUUUU==
-X-Originating-IP: [218.106.182.227]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiQx24jFc7XpwVewAAsq
+References: <1646203686-30397-1-git-send-email-baihaowen88@gmail.com> <f519c59e-fdf0-14e8-8cce-c6c2d19cff8b@gmail.com>
+In-Reply-To: <f519c59e-fdf0-14e8-8cce-c6c2d19cff8b@gmail.com>
+From:   lotte bai <baihaowen88@gmail.com>
+Date:   Thu, 3 Mar 2022 09:38:10 +0800
+Message-ID: <CAFo17Pj2oi1fdgc=ypKZj+J0H8A4uettkk=trzq--9qe_8QYaQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net: marvell: Use min() instead of doing it manually
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     sebastian.hesselbarth@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
-the "bus". But bus->name is still used in the next line, which will lead
-to a use after free.
+Yes, I have compiled at local, either unsigned and U is pass.  Thank
+you for your kindly reminder.
 
-We can fix it by assigning dev_err_probe() to dev_err before the bus is
-freed to avoid the uaf.
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
-index 9acf589b1178..795a25c5848a 100644
---- a/drivers/net/ethernet/arc/emac_mdio.c
-+++ b/drivers/net/ethernet/arc/emac_mdio.c
-@@ -165,9 +165,10 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- 
- 	error = of_mdiobus_register(bus, priv->dev->of_node);
- 	if (error) {
--		mdiobus_free(bus);
--		return dev_err_probe(priv->dev, error,
-+		int dev_err = dev_err_probe(priv->dev, error,
- 				     "cannot register MDIO bus %s\n", bus->name);
-+		mdiobus_free(bus);
-+		return dev_err;
- 	}
- 
- 	return 0;
--- 
-2.25.1
-
+Heiner Kallweit <hkallweit1@gmail.com> =E4=BA=8E2022=E5=B9=B43=E6=9C=882=E6=
+=97=A5=E5=91=A8=E4=B8=89 19:06=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On 02.03.2022 07:48, Haowen Bai wrote:
+> > Fix following coccicheck warning:
+> > drivers/net/ethernet/marvell/mv643xx_eth.c:1664:35-36: WARNING opportun=
+ity for min()
+> >
+> > Signed-off-by: Haowen Bai <baihaowen88@gmail.com>
+> > ---
+> >  drivers/net/ethernet/marvell/mv643xx_eth.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/e=
+thernet/marvell/mv643xx_eth.c
+> > index 143ca8b..e3e79cf 100644
+> > --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
+> > +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+> > @@ -1661,7 +1661,7 @@ mv643xx_eth_set_ringparam(struct net_device *dev,=
+ struct ethtool_ringparam *er,
+> >       if (er->rx_mini_pending || er->rx_jumbo_pending)
+> >               return -EINVAL;
+> >
+> > -     mp->rx_ring_size =3D er->rx_pending < 4096 ? er->rx_pending : 409=
+6;
+> > +     mp->rx_ring_size =3D min(er->rx_pending, (unsigned)4096);
+>
+> Don't just use unsigned w/o int. Why not simply marking the constant as u=
+nsigned: 4096U ?
+> And again: You should at least compile-test it.
+>
+> >       mp->tx_ring_size =3D clamp_t(unsigned int, er->tx_pending,
+> >                                  MV643XX_MAX_SKB_DESCS * 2, 4096);
+> >       if (mp->tx_ring_size !=3D er->tx_pending)
+>
