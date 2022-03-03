@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC2A4CB400
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:09:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6AFC4CB42E
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:09:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbiCCAmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 19:42:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
+        id S230494AbiCCAsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 19:48:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230466AbiCCAm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:42:29 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6A6488BA;
-        Wed,  2 Mar 2022 16:41:44 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id d3so2928889qvb.5;
-        Wed, 02 Mar 2022 16:41:44 -0800 (PST)
+        with ESMTP id S230466AbiCCAsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:48:14 -0500
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5B81277D
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 16:47:29 -0800 (PST)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2dc28791ecbso24742007b3.4
+        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 16:47:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HPK1WTvE1B28R5Sfb07/BE6k/60BFpLEj3e8MJE0oQM=;
-        b=M7kKSmqSto8sYacgEmFjL1NiVFFKx8swBt/TWVyaUgexmwvKm9y0a4tZsaN5YWtBTu
-         TidRZkU3ZaFTb37PFWZd6iWF5/WuLMXz2NkpkYppLl1gMrIiGe5p503vSEaaJbp0NcXx
-         8L2FlrQ5tvhg5uG8JPiJNqVhmnaSNnhWUUiIFY3z6SBrxxYVvoMdbSBJpuh08IhwV8di
-         97EuIgu294BChky/fknlXD+jVL0t3r7ZD+D6/c8Xl1cNj3M7o9NokfzEzcY0nyjh4snL
-         98VWvULkqvJ5k38H437Q8GA8hlp2onLwvgQzfds1KmdOC/5pEcnlkmoYHCVIYJquTdj6
-         f9jA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6/QocpX/Yx1QPx7+OoGO0cuNtQS2CN33zDaLXn1WZR8=;
+        b=Nw+pBrTS23BHanWlPy+y1VHb61+McjM7u2H5SlHBILp2I++sN+SgvVc4jh5/6McqGT
+         2L7PDuMn+12oiGUBgZtyKhPNQTzGGkG6BAjaXAiYQKCWVf54sWOU+2n4iU3REKlzFDTd
+         kuV6wtDwCby7eZRtd+MAJN4puzHYrvoMRwuHfiO43A/mcorfgkDhpABIatLE00reA4wr
+         CzhLyryWU1D0NT/BSe/+90N1ygHA9lFoeLQPyNSuuJ1pC+xyEgQ0Al2liOPuLvE+VEiZ
+         TiO22+CoAF99JqGV/u49T2PrKAhEioUvJQhapdazDePGO/2ESS2kq5c+K07oO/axh7KY
+         fOPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HPK1WTvE1B28R5Sfb07/BE6k/60BFpLEj3e8MJE0oQM=;
-        b=2T9w8v4tWmc9AgMA/8ZP/wfBh2C0fr/9QueiE4WABJjQ0+IZaODtRuaYK5ARIyndQS
-         0NOKMmsnwqD06OETSDGWU483Fe8dGLghoVc5hHRqkixR86YHv1ttjGzzd7ZQPybdmZu2
-         7UxizyboyLJ0Cese//w77hncmmEyrYlbpSackUlPV0adw5iYuSZ9pnc8YANvjjN5U/zU
-         oSg6cN5AyY4jAeY3KCtFUVxv9GdbC3WDdchMx9PEWYohEyJc5buuFHN/XbAbXT96AyBQ
-         ujP9csl2IECBtHhTeK4pEpeACaI+Z/EaJgDgZQriHIPMnVIxGcnjqXNYVITm+wjo1MP1
-         dFiQ==
-X-Gm-Message-State: AOAM531xDuvAJzGthJbnh3K5KeqxivguMkX5aIKQ30lvBk9Nfqnn02bm
-        PPtcYSOPDFH/nHr97Sd4YQ8=
-X-Google-Smtp-Source: ABdhPJxj9OyxWn4Nkvpj8GkycsaZ6Ex/Is+hmsS48In6rwdvPC5BAWbRVXkxf6DPxdX0fh9Q2rka8Q==
-X-Received: by 2002:a05:6214:20e9:b0:434:ff41:d773 with SMTP id 9-20020a05621420e900b00434ff41d773mr7405911qvk.115.1646268103497;
-        Wed, 02 Mar 2022 16:41:43 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:17f1:53ec:373a:a88a])
-        by smtp.gmail.com with ESMTPSA id z14-20020a05622a028e00b002dc8e843596sm395308qtw.61.2022.03.02.16.41.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 16:41:43 -0800 (PST)
-Date:   Wed, 2 Mar 2022 16:41:41 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
-        jakub@cloudflare.com, lmb@cloudflare.com, davem@davemloft.net,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 1/4] bpf, sockmap: Fix memleak in
- sk_psock_queue_msg
-Message-ID: <YiAOxRWZBHWDTpAs@pop-os.localdomain>
-References: <20220302022755.3876705-1-wangyufen@huawei.com>
- <20220302022755.3876705-2-wangyufen@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6/QocpX/Yx1QPx7+OoGO0cuNtQS2CN33zDaLXn1WZR8=;
+        b=l1BL29xEEEY7pPMUkwKidu/OfkMVrnuV4nvBEZUzkGoGrkBfLsdG1/HiLMNAQo1LM1
+         zUnWHfSKH30Vt1lhuuL28bnfV+om0Q84sFwt20Dv/Vue2qN3vG+6vXMJl6thHl6gGOi9
+         qjM4Rb/9zQh0Slyf8B9yhe6x7DaqTzce9qpRW3U0kp4Wk7B/3AmRULdIvld5vb0VRBf/
+         69mA/pWXQ1EPYo9xdlyQmTz7uzQuVlauQwQbWVSHnjo0ApWW+8HgF+1gk2t8bEo6Zn2k
+         8hfE7xgHZuHX9xtWsl9a1po0UfXAD2pxQ0w9qZ3pXNfij+kHyQtYVmdUIzxFXzBxHFAq
+         4KnQ==
+X-Gm-Message-State: AOAM530oL4ffMQABPGUQZie2Vwxfy6Zm7ASAIrqASwUuwKI2R+Q7+5ZD
+        Sw2HUGmf1ciEuRT4MH3I4SA9NY6QbHGVmnUaKNSD+Q==
+X-Google-Smtp-Source: ABdhPJzcvVFQxd2mWsSPFtChivE713BfcIbVn8hoXDAkXa7iSw64V6dwye0/b3oPHnJF82hgeQWfTHfcqtxGeYhL/eI=
+X-Received: by 2002:a81:75c6:0:b0:2d0:cbf8:e7b3 with SMTP id
+ q189-20020a8175c6000000b002d0cbf8e7b3mr32425732ywc.255.1646268448878; Wed, 02
+ Mar 2022 16:47:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220302022755.3876705-2-wangyufen@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220302195519.3479274-1-kafai@fb.com> <20220302195622.3483941-1-kafai@fb.com>
+ <CANn89iKN06bKxjrEeZAmcj0x4tYMwRv-YzdZLWKbCcuTYT+SpQ@mail.gmail.com>
+ <20220302223352.txuhu4ielmlxldrg@kafai-mbp> <CANn89i+ZLB8EK2CUC7dnERvcawSAOhpzHpeKSvL0dVfK-fusXg@mail.gmail.com>
+ <20220303001901.nuq66ukomfqqkytg@kafai-mbp>
+In-Reply-To: <20220303001901.nuq66ukomfqqkytg@kafai-mbp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 2 Mar 2022 16:47:17 -0800
+Message-ID: <CANn89i+Md-tykepszvB-KqebVBYYOOeHSC6NTptNjwk5QkE-zg@mail.gmail.com>
+Subject: Re: [PATCH v6 net-next 10/13] net: Postpone skb_clear_delivery_time()
+ until knowing the skb is delivered locally
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        kernel-team <kernel-team@fb.com>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,38 +76,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 10:27:52AM +0800, Wang Yufen wrote:
-> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-> index fdb5375f0562..c5a2d6f50f25 100644
-> --- a/include/linux/skmsg.h
-> +++ b/include/linux/skmsg.h
-> @@ -304,21 +304,16 @@ static inline void sock_drop(struct sock *sk, struct sk_buff *skb)
->  	kfree_skb(skb);
->  }
->  
-> -static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
-> -{
-> -	if (msg->skb)
-> -		sock_drop(psock->sk, msg->skb);
-> -	kfree(msg);
-> -}
-> -
->  static inline void sk_psock_queue_msg(struct sk_psock *psock,
->  				      struct sk_msg *msg)
->  {
->  	spin_lock_bh(&psock->ingress_lock);
->  	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
->  		list_add_tail(&msg->list, &psock->ingress_msg);
-> -	else
-> -		drop_sk_msg(psock, msg);
-> +	else {
-> +		sk_msg_free(psock->sk, msg);
+On Wed, Mar 2, 2022 at 4:20 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, Mar 02, 2022 at 03:41:59PM -0800, Eric Dumazet wrote:
 
-__sk_msg_free() calls sk_msg_init() at the end.
+> > Name was a bit confusing :)
+> A few names were attempted in the early version and
+> then concluded on delivery_time. :p
+>
+> >
+> > And it seems you have a big opportunity to not call ktime_get_real()
+> > when skb->sk is known at this point (early demux)
+> > because few sockets actually enable timestamping ?
+> iiuc, you are suggesting to also check the skb->sk (if early demux)
+> and check for SK_FLAGS_TIMESTAMP.
+>
+> Without checking skb->sk here, it should not be worse than the
+> current ktime_get_real() done in dev.c where it also does not have sk
+> available?  netstamp_needed_key should have been enabled as
+> long as there is one sk asked for it.
 
-> +		kfree(msg);
+Yes, but typically there is often one active timestamp consumer,
+enabling the static key.
 
-Now you free it, hence the above sk_msg_init() is completely
-unnecessary.
-
-Thanks.
+This is a corner case anyway, not sure if hosts running VM would have
+slow  ktime_get_real()
