@@ -2,58 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DE34CC5E3
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 20:18:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0564CC618
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 20:38:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235981AbiCCTS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 14:18:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
+        id S235940AbiCCTjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 14:39:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235985AbiCCTS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 14:18:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EACA4186;
-        Thu,  3 Mar 2022 11:18:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8990B8267E;
-        Thu,  3 Mar 2022 19:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 57AA0C340EF;
-        Thu,  3 Mar 2022 19:18:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646335085;
-        bh=K5IOr4Wzr1MpOVg6L2fgbRxtxn8B3rD1Bt8crLRDvbM=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=iA6LwuvK4Ixr20kT6IU4rLUFR59TJH6SWpzFztNHHOcq6tANsz88dDvrwtwLtW/t5
-         mtzqs3HMcLYFty7muu2bblh/Hv1GArCyknOsIlaZqFxRo8r8AGNLpinN7E0wXl4Y1Y
-         WhsAr3U+9XoX2pwfuFXWLOv33lVWcHSdZE2mAdp1BZVGe/BRsOzU3LtwvZBDFNJn/N
-         ju45M0c1qIFqEfkbgp0h1y1M7MhjrRXN464TSq6RivonGoFcN0ywuzZIs8l4EM+bgo
-         DJp3VmpkP/IIqjS15euIkJ2OJ1M/z/L30BB+zfUt3qBtYl4ZVK5UNZVpmLdbzTbauL
-         sItzbsFAktiuA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 45375E5D087;
-        Thu,  3 Mar 2022 19:18:05 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.17-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220303185419.1418173-1-kuba@kernel.org>
-References: <20220303185419.1418173-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220303185419.1418173-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc7
-X-PR-Tracked-Commit-Id: 2d3916f3189172d5c69d33065c3c21119fe539fc
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b949c21fc23ecaccef89582f251e6281cad1f81e
-Message-Id: <164633508527.14270.3235061392061878042.pr-tracker-bot@kernel.org>
-Date:   Thu, 03 Mar 2022 19:18:05 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S235757AbiCCTjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 14:39:16 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E665A156
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 11:38:30 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id t11so9426305wrm.5
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 11:38:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=K/Uvx4MIMduNNDUv4nDfaCXMVJaGsHQl+DgmzbLveXQ=;
+        b=e2UXZ2yMHjPpoZgPSa1aRHFYjLtrivnIS2MfokW9t+URqQaA2lz0Jk892K6CpV4Can
+         fI2Dn7TVWCTVCMo/IbIhYVani9D/KsdjabsR13UQNjbxDvfYT8FQqnms61kik5HvSXLT
+         8SNiyCOcpYUsDJd96EhjKTrn3qFsYHWOaiFvG0v+Og2ywiklUW45/qieIvuFe1kRN2Wq
+         ABfxlSHYHSh1PvX3ydZW9WZP4x+sro+5PnYnjrbSJ035qgD5eiQXMsShISpMlpJsBfwc
+         YCl4eCNMO1TVH1gA4Q/kAgG5fFFQ+sSGPMS9WqK3+W5lARa245KVDXUOXwNKDeEdoEMx
+         XvAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=K/Uvx4MIMduNNDUv4nDfaCXMVJaGsHQl+DgmzbLveXQ=;
+        b=ugEOL5Cukxade8nnKUSr6jHhl/Cpn9lXCJ64kGfJ+UPh4al38tAceTLJSdw7bOLGEE
+         ywPnNxaNo+dwcnfc7V6WCNsWw4rslwd6pTSEroIIt/G+HGNYMuX+Y6VgmcWgGLIGUgmK
+         7EJTIJSRkS6LhXqUdcujOdWXUb/JUnBsZ6dqWus0QhSK4ltfr8vI19dSoYCmXswas6CI
+         MVLCNtlx5b3OH5yWIf+St4fckot6oK9S+qmdN0Mc5+/9qHkw+zkfGrZ8raVzUTZne0eA
+         wWCZB5M+pKxu3vB3qN336HDmEXvbI3RtbMxiJH4Av8f6iTrsNqX7AoZI90a+H/7eCbCZ
+         UuSA==
+X-Gm-Message-State: AOAM531Dm2o2132ZRqlN3eVn8PZo0s+fHi+6OqqQm/xTsd/FSbI+AWq0
+        URHNlfIgq7mhkMSv6Siobpwjdg==
+X-Google-Smtp-Source: ABdhPJxF1hwyx/TulXuxizSn127hf9j+oayH5mwMGUSVqCtOFlbiXVw7t2v5rHwBQTtwhb5/KdQc7A==
+X-Received: by 2002:a5d:43c2:0:b0:1ed:c331:9a96 with SMTP id v2-20020a5d43c2000000b001edc3319a96mr29299741wrr.389.1646336308813;
+        Thu, 03 Mar 2022 11:38:28 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bi21-20020a05600c3d9500b003814de297fcsm9093215wmb.16.2022.03.03.11.38.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 11:38:28 -0800 (PST)
+Date:   Thu, 3 Mar 2022 19:38:24 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] vhost: Provide a kernel warning if mutex is held
+ whilst clean-up in progress
+Message-ID: <YiEZMHJ6urZTffsq@google.com>
+References: <20220303151929.2505822-1-lee.jones@linaro.org>
+ <YiETnIcfZCLb63oB@unreal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YiETnIcfZCLb63oB@unreal>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,15 +74,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu,  3 Mar 2022 10:54:19 -0800:
+On Thu, 03 Mar 2022, Leon Romanovsky wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc7
+> On Thu, Mar 03, 2022 at 03:19:29PM +0000, Lee Jones wrote:
+> > All workers/users should be halted before any clean-up should take place.
+> > 
+> > Suggested-by:  Michael S. Tsirkin <mst@redhat.com>
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > ---
+> >  drivers/vhost/vhost.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index bbaff6a5e21b8..d935d2506963f 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -693,6 +693,9 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> >  	int i;
+> >  
+> >  	for (i = 0; i < dev->nvqs; ++i) {
+> > +		/* Ideally all workers should be stopped prior to clean-up */
+> > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > +
+> >  		mutex_lock(&dev->vqs[i]->mutex);
+> 
+> I know nothing about vhost, but this construction and patch looks
+> strange to me.
+> 
+> If all workers were stopped, you won't need mutex_lock(). The mutex_lock
+> here suggests to me that workers can still run here.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b949c21fc23ecaccef89582f251e6281cad1f81e
+The suggestion for this patch came from the maintainer.
 
-Thank you!
+Please see the conversation here:
+
+https://lore.kernel.org/all/20220302082021-mutt-send-email-mst@kernel.org/
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
