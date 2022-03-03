@@ -2,107 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 338914CB4FA
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 03:40:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4A54CB50B
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 03:40:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiCCCdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 21:33:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
+        id S231776AbiCCCgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 21:36:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231796AbiCCCdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 21:33:00 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2337313D29
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 18:32:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/lEQGxdI46nMh/bOHvmr688PKLIDsxNoYda3hUYRO9U=; b=K0bRWIOWnVU5t2hWNsrSxU6e1c
-        jvNZZURERjI2Q6N3k0CNV3JEi0VSe1OOxeTyNbgjHXH5VFQluzuIGmlf1qGYMfZGBC7KMb6YD0Qg0
-        IB69EF/iXH9ULLp6/crmwcQW3/NxImvltvM4CI6d4FWHMapDeWcWqzvdhMFgAxieWspg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nPbGH-00916T-1C; Thu, 03 Mar 2022 03:32:13 +0100
-Date:   Thu, 3 Mar 2022 03:32:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, netdev <netdev@vger.kernel.org>
-Subject: Re: smsc95xx warning after a 'reboot' command
-Message-ID: <YiAorTOXfE20snfz@lunn.ch>
-References: <CAOMZO5ALfFDQjtbQwRiZjAhQnihBNFpmKfLh2t97tJBRQOLbNQ@mail.gmail.com>
- <Yh/r5hkui6MrV4W6@lunn.ch>
- <CAOMZO5D1X2Vy1aCoLsa=ga94y74Az2RrbwcZgUfmx=Eyi4LcWw@mail.gmail.com>
- <YiACuNTd9lzN6Wym@lunn.ch>
- <CAOMZO5ChowWZgryE14DoQG5ORNnKrLQAdQwt6Qsotsacneww3Q@mail.gmail.com>
+        with ESMTP id S231892AbiCCCgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 21:36:09 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD49124C1F;
+        Wed,  2 Mar 2022 18:35:23 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V65YL3i_1646274920;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V65YL3i_1646274920)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 03 Mar 2022 10:35:20 +0800
+Date:   Thu, 3 Mar 2022 10:35:19 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>, kernel test robot <lkp@intel.com>
+Cc:     Karsten Graul <kgraul@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] net/smc: fix compile warning for smc_sysctl
+Message-ID: <20220303023519.GA35207@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20220302034312.31168-1-dust.li@linux.alibaba.com>
+ <202203022234.AMB3WcyJ-lkp@intel.com>
+ <20220302114503.47d64a55@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOMZO5ChowWZgryE14DoQG5ORNnKrLQAdQwt6Qsotsacneww3Q@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220302114503.47d64a55@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 09:40:54PM -0300, Fabio Estevam wrote:
-> On Wed, Mar 2, 2022 at 8:50 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > If i'm reading this correctly, this is way to late, the device has
-> > already gone. The PHY needs to be stopped while the device is still
-> > connected to the USB bus.
-> >
-> > I could understand a trace like this with a hot unplug, but not with a
-> > reboot. I would expect things to be shut down starting from the leaves
-> > of the USB tree, so the smsc95xx should have a chance to perform a
-> > controlled shutdown before the device is removed.
-> >
-> > This code got reworked recently. smsc95xx_disconnect_phy() has been
-> > removed, and the phy is now disconnected in smsc95xx_unbind(). Do you
-> > get the same stack trace with 5.17-rc? Or is it a different stack
-> > trace?
-> 
-> Just tested 5.17-rc6 and I get no stack strace at all after a 'reboot' command:
-> 
-> [   21.953945] ci_hdrc ci_hdrc.1: remove, state 1
-> [   21.958418] usb usb2: USB disconnect, device number 1
-> [   21.963493] usb 2-1: USB disconnect, device number 2
-> [   21.964227] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-> [   21.968469] usb 2-1.1: USB disconnect, device number 3
-> [   21.970808] smsc95xx 2-1.1:1.0 eth1: unregister 'smsc95xx'
-> usb-ci_hdrc.1-1.1, smsc95xx USB 2.0 Ethernet
-> [   21.975619] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-> [   21.975625] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-> [   22.002479] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-> [   22.009630] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-> [   22.015392] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-> [   22.021939] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-> [   22.029087] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-> [   22.034845] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-> [   22.041743] smsc95xx 2-1.1:1.0 eth1: hardware isn't capable of remote wakeup
-> [   22.068706] usb 2-1.4: USB disconnect, device number 4
-> [   22.077327] ci_hdrc ci_hdrc.1: USB bus 2 deregistered
-> [   22.085222] ci_hdrc ci_hdrc.0: remove, state 4
-> [   22.089685] usb usb1: USB disconnect, device number 1
-> [   22.095284] ci_hdrc ci_hdrc.0: USB bus 1 deregistered
-> [   22.122356] imx2-wdt 30280000.watchdog: Device shutdown: Expect reboot!
-> [   22.129073] reboot: Restarting system
-> 
-> I applied a049a30fc 27c ("net: usb: Correct PHY handling of smsc95xx")
-> into 5.10.102, but it did not help.
+On Wed, Mar 02, 2022 at 11:45:03AM -0800, Jakub Kicinski wrote:
+>On Wed, 2 Mar 2022 23:02:23 +0800 kernel test robot wrote:
+>>    In file included from net/smc/smc_sysctl.c:18:
+>>    net/smc/smc_sysctl.h:23:19: note: previous definition of 'smc_sysctl_init' with type 'int(void)'
+>>       23 | static inline int smc_sysctl_init(void)
+>>          |                   ^~~~~~~~~~~~~~~
+>> >> net/smc/smc_sysctl.c:78:1: warning: ignoring attribute 'noinline' because it conflicts with attribute 'gnu_inline' [-Wattributes]  
+>>       78 | {
+>>          | ^
+>
+>The __net_init / __net_exit attr has to go on the prototype as well.
 
-I'm not a USB expert, but to me, it looks like the smsc95xx device is
-being disconnected, rather than being unloaded. So it is already gone
-by the time the PHY device is disconnected.
+Thanks a lot for pointing out !
 
-It would be good to have somebody who understands USB net devices to
-take a look at this, in particularly the order. I'm wondering if there
-is a hub in the middle, and the hub is being disabled, or a regulator
-for the hub etc?
+>
+>This doesn't look right, tho, why __net_* attrs?  You call those
+>functions from the module init/exit. __net_ is for namespace code.
 
-    Andrew
+Yes, I made the mistake and mixes up smc_sysctl_{init|exit}() with
+smc_sysctl_{init|exit}_net when doing the quick fix...
+
+And my check script with neither allyesconfig/allnoconfig nor defconfig
+reproduced this.
+This happens when CONFIG_SMC=y|m and CONFIG_SYSCTL is not set.
+
+I will send a v2.
+
+Thanks.
