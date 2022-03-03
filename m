@@ -2,38 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A994CB955
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 09:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4382B4CB993
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 09:50:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiCCIk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 03:40:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
+        id S231683AbiCCIu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 03:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiCCIk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 03:40:56 -0500
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29542175830;
-        Thu,  3 Mar 2022 00:40:09 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V66rH41_1646296807;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V66rH41_1646296807)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 03 Mar 2022 16:40:07 +0800
-From:   Dust Li <dust.li@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH net-next v2] net/smc: fix compile warning for smc_sysctl
-Date:   Thu,  3 Mar 2022 16:40:06 +0800
-Message-Id: <20220303084006.54313-1-dust.li@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.3.ge56e4f7
+        with ESMTP id S231686AbiCCIuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 03:50:55 -0500
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAEF175866;
+        Thu,  3 Mar 2022 00:50:08 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A7171FF808;
+        Thu,  3 Mar 2022 08:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646297407;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5UW3cjbm8xQStGhB2RvIfU4jnFusyu8R3w5M3pRZH24=;
+        b=dANPvPfz8FfZs3WYqIq9bl4LlaLJLTAlJ5KjEa5/oSz4t4sxrd/UksWc73/lSCGG+nrHCd
+        mQIxG3Ur43o8TMewlH30a6KsQHToz3ai9gTjVkLYOfs1J0ysL1HCB5xUmtUX3PGTynenxc
+        C9JR86pqix6ZdzHmr4NC1Xi/zegZdOfIZIewOvdoXVb8ro7spl0+Vg6PcWaqO+k2QU+Zyr
+        IZ/nAzMfgna+2fCIn63SCZP9bEOTTG/pLhMuc694mgQVT8ubQa8/cmDsgN7/OandstlQoA
+        RwRHGSWNGI6ycsn7veJsYuVOW0Xp94gZ89qONjeyTS3SL9/Y9UjVGSN76TCcQA==
+Date:   Thu, 3 Mar 2022 09:48:40 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <20220303094840.3b75c4c9@fixe.home>
+In-Reply-To: <Yhe/qhFNNiGVHSW1@sirena.org.uk>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <20220224154040.2633a4e4@fixe.home>
+        <2d3278ef-0126-7b93-319b-543b17bccdc2@redhat.com>
+        <20220224174205.43814f3f@fixe.home>
+        <Yhe/qhFNNiGVHSW1@sirena.org.uk>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -41,173 +72,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernel test robot reports multiple warning for smc_sysctl:
+Le Thu, 24 Feb 2022 17:26:02 +0000,
+Mark Brown <broonie@kernel.org> a =C3=A9crit :
 
-  In file included from net/smc/smc_sysctl.c:17:
->> net/smc/smc_sysctl.h:23:5: warning: no previous prototype \
-	for function 'smc_sysctl_init' [-Wmissing-prototypes]
-  int smc_sysctl_init(void)
-       ^
-and
-  >> WARNING: modpost: vmlinux.o(.text+0x12ced2d): Section mismatch \
-  in reference from the function smc_sysctl_exit() to the variable
-  .init.data:smc_sysctl_ops
-  The function smc_sysctl_exit() references
-  the variable __initdata smc_sysctl_ops.
-  This is often because smc_sysctl_exit lacks a __initdata
-  annotation or the annotation of smc_sysctl_ops is wrong.
+> On Thu, Feb 24, 2022 at 05:42:05PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Hans de Goede <hdegoede@redhat.com> a =C3=A9crit : =20
+>=20
+> > > As Mark already mentioned the regulator subsystem has shown to
+> > > be a bit problematic here, but you don't seem to need that? =20
+>=20
+> > Indeed, I don't need this subsystem. However, I'm still not clear why
+> > this subsystem in particular is problematic. Just so that I can
+> > recognize the other subsystems with the same pattern, could you explain
+> > me why it is problematic ?  =20
+>=20
+> ACPI has a strong concept of how power supply (and general critical
+> resources) for devices should be described by firmware which is very
+> different to that which DT as it is used in Linux has, confusing that
+> model would make it much harder for generic OSs to work with generic
+> ACPI systems, and makes it much easier to create unfortunate interactions
+> between bits of software expecting ACPI models and bits of software
+> expecting DT models for dealing with a device.  Potentially we could
+> even run into issues with new versions of Linux if there's timing or
+> other changes.  If Linux starts parsing the core DT bindings for
+> regulators on ACPI systems then that makes it more likely that system
+> integrators who are primarily interested in Linux will produce firmwares
+> that run into these issues, perhaps unintentionally through a "this just
+> happens to work" process.
 
-and
-  net/smc/smc_sysctl.c: In function 'smc_sysctl_init_net':
-  net/smc/smc_sysctl.c:47:17: error: 'struct netns_smc' has no member named 'smc_hdr'
-     47 |         net->smc.smc_hdr = register_net_sysctl(net, "net/smc", table);
+Ok that's way more clear.
 
-Since we don't need global sysctl initialization. To make things
-clean and simple, remove the global pernet_operations and
-smc_sysctl_{init|exit}. Call smc_sysctl_net_{init|exit} directly
-from smc_net_{init|exit}.
+>=20
+> As a result of this we very much do not want to have the regulator code
+> parsing DT bindings using the fwnode APIs since that makes it much
+> easier for us to end up with a situation where we are interpreting _DSD
+> versions of regulator bindings and ending up with people making systems
+> that rely on that.  Instead the regulator API is intentional about which
+> platform description interfaces it is using.  We could potentially have
+> something that is specific to swnode and won't work with general fwnode
+> but it's hard to see any advantages for this over the board file based
+> mechanism we have already, swnode offers less error detection (typoing
+> field names is harder to spot) and the data marshalling takes more code.
 
-Also initialized sysctl_autocorking_size if CONFIG_SYSCTL it not
-set, this makes sure SMC autocorking is enabled by default if
-CONFIG_SYSCTL is not set.
+Instead of making it specific for swnode, could we make it instead non
+working for acpi nodes ? Thus, the parsing would work only for swnode
+and device_node, not allowing to use the fwnode support with acpi for
+such subsystems (not talking about regulators here).
 
-Fixes: 462791bbfa35 ("net/smc: add sysctl interface for SMC")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+If switching to board file based mechanism, this means that all drivers
+that are used by the PCIe card will have to be modified to support this
+mechanism.
 
----
-v2: 1. Removes pernet_operations and smc_sysctl_{init|exit}
-    2. Initialize sysctl_autocorking_size if CONFIG_SYSCTL not set
----
- net/smc/Makefile     |  3 ++-
- net/smc/af_smc.c     | 15 ++++++---------
- net/smc/smc_sysctl.c | 19 ++-----------------
- net/smc/smc_sysctl.h |  9 +++++----
- 4 files changed, 15 insertions(+), 31 deletions(-)
+>=20
+> fwnode is great for things like properties for leaf devices since those
+> are basically a free for all on ACPI systems, it allows us to quickly
+> and simply apply the work done defining bindings for DT to ACPI systems
+> in a way that's compatible with how APCI wants to work.  It's also good
+> for cross device bindings that are considered out of scope for ACPI,
+> though a bit of caution is needed determining when that's the case.
 
-diff --git a/net/smc/Makefile b/net/smc/Makefile
-index 640af9a39f9c..875efcd126a2 100644
---- a/net/smc/Makefile
-+++ b/net/smc/Makefile
-@@ -4,4 +4,5 @@ obj-$(CONFIG_SMC)	+= smc.o
- obj-$(CONFIG_SMC_DIAG)	+= smc_diag.o
- smc-y := af_smc.o smc_pnet.o smc_ib.o smc_clc.o smc_core.o smc_wr.o smc_llc.o
- smc-y += smc_cdc.o smc_tx.o smc_rx.o smc_close.o smc_ism.o smc_netlink.o smc_stats.o
--smc-y += smc_tracepoint.o smc_sysctl.o
-+smc-y += smc_tracepoint.o
-+smc-$(CONFIG_SYSCTL) += smc_sysctl.o
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 6447607675fa..4ab17d35ca80 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -3173,11 +3173,17 @@ unsigned int smc_net_id;
- 
- static __net_init int smc_net_init(struct net *net)
- {
-+	int rc;
-+
-+	rc = smc_sysctl_net_init(net);
-+	if (rc)
-+		return rc;
- 	return smc_pnet_net_init(net);
- }
- 
- static void __net_exit smc_net_exit(struct net *net)
- {
-+	smc_sysctl_net_exit(net);
- 	smc_pnet_net_exit(net);
- }
- 
-@@ -3290,17 +3296,9 @@ static int __init smc_init(void)
- 		goto out_sock;
- 	}
- 
--	rc = smc_sysctl_init();
--	if (rc) {
--		pr_err("%s: sysctl_init fails with %d\n", __func__, rc);
--		goto out_ulp;
--	}
--
- 	static_branch_enable(&tcp_have_smc);
- 	return 0;
- 
--out_ulp:
--	tcp_unregister_ulp(&smc_ulp_ops);
- out_sock:
- 	sock_unregister(PF_SMC);
- out_proto6:
-@@ -3328,7 +3326,6 @@ static int __init smc_init(void)
- static void __exit smc_exit(void)
- {
- 	static_branch_disable(&tcp_have_smc);
--	smc_sysctl_exit();
- 	tcp_unregister_ulp(&smc_ulp_ops);
- 	sock_unregister(PF_SMC);
- 	smc_core_exit();
-diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
-index 3b59876aaac9..c4a2ffb6deee 100644
---- a/net/smc/smc_sysctl.c
-+++ b/net/smc/smc_sysctl.c
-@@ -28,7 +28,7 @@ static struct ctl_table smc_table[] = {
- 	{  }
- };
- 
--static __net_init int smc_sysctl_init_net(struct net *net)
-+int smc_sysctl_net_init(struct net *net)
- {
- 	struct ctl_table *table;
- 
-@@ -59,22 +59,7 @@ static __net_init int smc_sysctl_init_net(struct net *net)
- 	return -ENOMEM;
- }
- 
--static __net_exit void smc_sysctl_exit_net(struct net *net)
-+void smc_sysctl_net_exit(struct net *net)
- {
- 	unregister_net_sysctl_table(net->smc.smc_hdr);
- }
--
--static struct pernet_operations smc_sysctl_ops __net_initdata = {
--	.init = smc_sysctl_init_net,
--	.exit = smc_sysctl_exit_net,
--};
--
--int __init smc_sysctl_init(void)
--{
--	return register_pernet_subsys(&smc_sysctl_ops);
--}
--
--void smc_sysctl_exit(void)
--{
--	unregister_pernet_subsys(&smc_sysctl_ops);
--}
-diff --git a/net/smc/smc_sysctl.h b/net/smc/smc_sysctl.h
-index 49553ac236b6..66bd617e26ad 100644
---- a/net/smc/smc_sysctl.h
-+++ b/net/smc/smc_sysctl.h
-@@ -15,17 +15,18 @@
- 
- #ifdef CONFIG_SYSCTL
- 
--int smc_sysctl_init(void);
--void smc_sysctl_exit(void);
-+int smc_sysctl_net_init(struct net *net);
-+void smc_sysctl_net_exit(struct net *net);
- 
- #else
- 
--int smc_sysctl_init(void)
-+static inline int smc_sysctl_net_init(struct net *net)
- {
-+	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
- 	return 0;
- }
- 
--void smc_sysctl_exit(void) { }
-+static inline void smc_sysctl_net_exit(struct net *net) { }
- 
- #endif /* CONFIG_SYSCTL */
- 
--- 
-2.19.1.3.ge56e4f7
+Ok got it, thanks for the in-depth explanations.
 
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
