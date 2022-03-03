@@ -2,61 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 429454CB42A
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:09:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC2A4CB400
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbiCCAl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 19:41:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49430 "EHLO
+        id S230473AbiCCAmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 19:42:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiCCAlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:41:55 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D7621A2
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 16:41:06 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id qt6so7238177ejb.11
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 16:41:06 -0800 (PST)
+        with ESMTP id S230466AbiCCAm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:42:29 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6A6488BA;
+        Wed,  2 Mar 2022 16:41:44 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id d3so2928889qvb.5;
+        Wed, 02 Mar 2022 16:41:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dyhdH8yVwujpH7jVlSFrGTvhiGeWm/V/9QVZ0+HaToU=;
-        b=dTk+s5TFp5OLCjyLX2vL0N4O9wc+A5qhpYoNrYjjZdbmPFlKCexKp8MDm2shuv4LJN
-         VOmSqo7PyM/0uWJIcBqxuv6+/9aBbImx6o/ouDhWwFz8bruh2EJqRC4ze+ZQKMwvAvlE
-         Nfff0Id73NvQJ2tU6YthfE5AzDFnmh9lenQXaHGp0dExveTNtQhtUyjzpO4bv7T8tJ8O
-         B+c/uf1rVLTut4yT+z8us9qRaN7yWDS0lz+NbLw2KP1Xi7+gv/3WtglxOgHUnksGVPv7
-         /s0Z9nxXUH8YAh2V0zQ26iQCU1oOTeGmFqBuJ23iakFxpOQ7k2iEbUNW7S24ynj/o4tu
-         n1/Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HPK1WTvE1B28R5Sfb07/BE6k/60BFpLEj3e8MJE0oQM=;
+        b=M7kKSmqSto8sYacgEmFjL1NiVFFKx8swBt/TWVyaUgexmwvKm9y0a4tZsaN5YWtBTu
+         TidRZkU3ZaFTb37PFWZd6iWF5/WuLMXz2NkpkYppLl1gMrIiGe5p503vSEaaJbp0NcXx
+         8L2FlrQ5tvhg5uG8JPiJNqVhmnaSNnhWUUiIFY3z6SBrxxYVvoMdbSBJpuh08IhwV8di
+         97EuIgu294BChky/fknlXD+jVL0t3r7ZD+D6/c8Xl1cNj3M7o9NokfzEzcY0nyjh4snL
+         98VWvULkqvJ5k38H437Q8GA8hlp2onLwvgQzfds1KmdOC/5pEcnlkmoYHCVIYJquTdj6
+         f9jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dyhdH8yVwujpH7jVlSFrGTvhiGeWm/V/9QVZ0+HaToU=;
-        b=aBq4VSn46o3DuSsiA51jyZW+yyryUWAMdxTiA7dqSizh4THcST/tFI8MvriZGYwP01
-         AxC91EYUqq+jRjaRZ8M343C66a8jxGurEV7ap1Bq/c/bX/qzeFnrQxUbiDE5YyalWeHT
-         aW+uCShb+cBSuojrxmbF76z+aTupdEWoxlhtRfXmDRKorrFejEDZShzPt10s46+Pwuz7
-         fVcOTRtlyIqQYza8Obec/uKwn6R38Mlxpxw+9cPbV++GGSlWYYpbnsq1WlVqp+7ShVlC
-         UV5/0jwIHd5SdwbAEEW2ZP1SFjm7FrVrnS19uRE42zSia+ROjAnAl0ahheZOqk7u/rqh
-         11eA==
-X-Gm-Message-State: AOAM532+NxCMVcW+6qNX0+NT6QpsdQBXvUvNaJyfcOCtr9VtPzKgm6N/
-        zaJJFYlxyuBp0MjF9mhPS/VYwljTtwogTV1jzp0=
-X-Google-Smtp-Source: ABdhPJzhFMNGRwnx90PS1NXQEEnzaCJkg5Y4HiLA42uOg59ynYVqcN1uLlZkjTHo8cKGkBNS0eSoJeEc/EiuuO4IIdM=
-X-Received: by 2002:a17:906:2646:b0:6d5:d889:c92b with SMTP id
- i6-20020a170906264600b006d5d889c92bmr25807144ejc.696.1646268065213; Wed, 02
- Mar 2022 16:41:05 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HPK1WTvE1B28R5Sfb07/BE6k/60BFpLEj3e8MJE0oQM=;
+        b=2T9w8v4tWmc9AgMA/8ZP/wfBh2C0fr/9QueiE4WABJjQ0+IZaODtRuaYK5ARIyndQS
+         0NOKMmsnwqD06OETSDGWU483Fe8dGLghoVc5hHRqkixR86YHv1ttjGzzd7ZQPybdmZu2
+         7UxizyboyLJ0Cese//w77hncmmEyrYlbpSackUlPV0adw5iYuSZ9pnc8YANvjjN5U/zU
+         oSg6cN5AyY4jAeY3KCtFUVxv9GdbC3WDdchMx9PEWYohEyJc5buuFHN/XbAbXT96AyBQ
+         ujP9csl2IECBtHhTeK4pEpeACaI+Z/EaJgDgZQriHIPMnVIxGcnjqXNYVITm+wjo1MP1
+         dFiQ==
+X-Gm-Message-State: AOAM531xDuvAJzGthJbnh3K5KeqxivguMkX5aIKQ30lvBk9Nfqnn02bm
+        PPtcYSOPDFH/nHr97Sd4YQ8=
+X-Google-Smtp-Source: ABdhPJxj9OyxWn4Nkvpj8GkycsaZ6Ex/Is+hmsS48In6rwdvPC5BAWbRVXkxf6DPxdX0fh9Q2rka8Q==
+X-Received: by 2002:a05:6214:20e9:b0:434:ff41:d773 with SMTP id 9-20020a05621420e900b00434ff41d773mr7405911qvk.115.1646268103497;
+        Wed, 02 Mar 2022 16:41:43 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:17f1:53ec:373a:a88a])
+        by smtp.gmail.com with ESMTPSA id z14-20020a05622a028e00b002dc8e843596sm395308qtw.61.2022.03.02.16.41.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 16:41:43 -0800 (PST)
+Date:   Wed, 2 Mar 2022 16:41:41 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
+        jakub@cloudflare.com, lmb@cloudflare.com, davem@davemloft.net,
+        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 1/4] bpf, sockmap: Fix memleak in
+ sk_psock_queue_msg
+Message-ID: <YiAOxRWZBHWDTpAs@pop-os.localdomain>
+References: <20220302022755.3876705-1-wangyufen@huawei.com>
+ <20220302022755.3876705-2-wangyufen@huawei.com>
 MIME-Version: 1.0
-References: <CAOMZO5ALfFDQjtbQwRiZjAhQnihBNFpmKfLh2t97tJBRQOLbNQ@mail.gmail.com>
- <Yh/r5hkui6MrV4W6@lunn.ch> <CAOMZO5D1X2Vy1aCoLsa=ga94y74Az2RrbwcZgUfmx=Eyi4LcWw@mail.gmail.com>
- <YiACuNTd9lzN6Wym@lunn.ch>
-In-Reply-To: <YiACuNTd9lzN6Wym@lunn.ch>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Wed, 2 Mar 2022 21:40:54 -0300
-Message-ID: <CAOMZO5ChowWZgryE14DoQG5ORNnKrLQAdQwt6Qsotsacneww3Q@mail.gmail.com>
-Subject: Re: smsc95xx warning after a 'reboot' command
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220302022755.3876705-2-wangyufen@huawei.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -67,49 +75,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 8:50 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, Mar 02, 2022 at 10:27:52AM +0800, Wang Yufen wrote:
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index fdb5375f0562..c5a2d6f50f25 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -304,21 +304,16 @@ static inline void sock_drop(struct sock *sk, struct sk_buff *skb)
+>  	kfree_skb(skb);
+>  }
+>  
+> -static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
+> -{
+> -	if (msg->skb)
+> -		sock_drop(psock->sk, msg->skb);
+> -	kfree(msg);
+> -}
+> -
+>  static inline void sk_psock_queue_msg(struct sk_psock *psock,
+>  				      struct sk_msg *msg)
+>  {
+>  	spin_lock_bh(&psock->ingress_lock);
+>  	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
+>  		list_add_tail(&msg->list, &psock->ingress_msg);
+> -	else
+> -		drop_sk_msg(psock, msg);
+> +	else {
+> +		sk_msg_free(psock->sk, msg);
 
-> If i'm reading this correctly, this is way to late, the device has
-> already gone. The PHY needs to be stopped while the device is still
-> connected to the USB bus.
->
-> I could understand a trace like this with a hot unplug, but not with a
-> reboot. I would expect things to be shut down starting from the leaves
-> of the USB tree, so the smsc95xx should have a chance to perform a
-> controlled shutdown before the device is removed.
->
-> This code got reworked recently. smsc95xx_disconnect_phy() has been
-> removed, and the phy is now disconnected in smsc95xx_unbind(). Do you
-> get the same stack trace with 5.17-rc? Or is it a different stack
-> trace?
+__sk_msg_free() calls sk_msg_init() at the end.
 
-Just tested 5.17-rc6 and I get no stack strace at all after a 'reboot' command:
+> +		kfree(msg);
 
-[   21.953945] ci_hdrc ci_hdrc.1: remove, state 1
-[   21.958418] usb usb2: USB disconnect, device number 1
-[   21.963493] usb 2-1: USB disconnect, device number 2
-[   21.964227] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-[   21.968469] usb 2-1.1: USB disconnect, device number 3
-[   21.970808] smsc95xx 2-1.1:1.0 eth1: unregister 'smsc95xx'
-usb-ci_hdrc.1-1.1, smsc95xx USB 2.0 Ethernet
-[   21.975619] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-[   21.975625] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-[   22.002479] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-[   22.009630] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-[   22.015392] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-[   22.021939] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-[   22.029087] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-[   22.034845] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-[   22.041743] smsc95xx 2-1.1:1.0 eth1: hardware isn't capable of remote wakeup
-[   22.068706] usb 2-1.4: USB disconnect, device number 4
-[   22.077327] ci_hdrc ci_hdrc.1: USB bus 2 deregistered
-[   22.085222] ci_hdrc ci_hdrc.0: remove, state 4
-[   22.089685] usb usb1: USB disconnect, device number 1
-[   22.095284] ci_hdrc ci_hdrc.0: USB bus 1 deregistered
-[   22.122356] imx2-wdt 30280000.watchdog: Device shutdown: Expect reboot!
-[   22.129073] reboot: Restarting system
+Now you free it, hence the above sk_msg_init() is completely
+unnecessary.
 
-I applied a049a30fc 27c ("net: usb: Correct PHY handling of smsc95xx")
-into 5.10.102, but it did not help.
-
-Thanks
+Thanks.
