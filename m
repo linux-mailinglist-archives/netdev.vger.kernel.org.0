@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C434CB71B
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 07:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0211F4CB71F
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 07:40:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiCCGk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 01:40:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
+        id S229852AbiCCGlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 01:41:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiCCGk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 01:40:58 -0500
+        with ESMTP id S229620AbiCCGlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 01:41:20 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8D71688FF;
-        Wed,  2 Mar 2022 22:40:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4DD1688CE;
+        Wed,  2 Mar 2022 22:40:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3238AB82400;
-        Thu,  3 Mar 2022 06:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DC284C004E1;
-        Thu,  3 Mar 2022 06:40:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13B3BB823F7;
+        Thu,  3 Mar 2022 06:40:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68C86C004E1;
+        Thu,  3 Mar 2022 06:40:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646289610;
-        bh=8K7jB4I3jW3hbwpFkd8rOjNLPze/3EMTo6q7jWT5VOQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kb5Rko2Sc3qd8i0dw2tMQTewTGyMHwJOxJaZ1nUY/ngx21r+EQ4myjaTyr9SMa9vO
-         vLppCtI6pnb50OIr0tlf/HgDGL2fSP+RhAxTLZ+KlluikBfafaNhPIRYMQMGbvOy3T
-         PQEKMncvAgPrsopLFgFYxKf9yHJYnC8vQh+61WjlPg2Bauq9xVIHPgLdwyKqTEycrB
-         s2LXEIImo/OZ/TajM/5cVw1GbZoMMpikqZSiWGYrKkAzRpIEUB8qMErWbA7G3NnNVD
-         Tqku1pnuATpLb2NEHuVLTo9ATbdyISbY9zxxo/LvhI9nqIH18CXoEZhHAKszr6dVPJ
-         9pvIvPqJQohoA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BBEF2EAC096;
-        Thu,  3 Mar 2022 06:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1646289632;
+        bh=4VZm6LvFsQzBvkZ1Z9ZsQuTBOWLyfQ/dgJPYMcv+B38=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=J70GEyKMuq0CQh/hswgFpQM206UbbqzuG8fN82fyl2VtIA4GIBpwkatRojOOXrldT
+         51WJaFJQ8sV22ABzWJ9hi/NFzWm0vcEbAvUbqmJG/WndUJ94ML77o+18G0Us2u2Vl6
+         rm2/QHIDE//2fQDnDOXmKjOHOFq8vakTDAlnY5pW4xLDgq9HNP6zaZDz5uCjzM3UjE
+         TRisb7L+T4isA65Ai6lNn29WorWXYE5HqxwhN5yWHYqZbgnkW9Sar0fseIhubrJRxw
+         E+1B0u3a90v9BWfe1lKWJe2twUiBouJw/KRO49jH9uzE9ODELk0+ffhXrFTATLaxbq
+         atk0y1OGLPx8Q==
+Date:   Wed, 2 Mar 2022 22:40:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     netdev@vger.kernel.org, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com, davem@davemloft.net,
+        soren.brinkmann@xilinx.com, scott.mcnutt@siriusxm.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net] net: macb: Fix lost RX packet wakeup race in NAPI
+ receive
+Message-ID: <20220302224031.72fb62a9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220228183328.338143-1-robert.hancock@calian.com>
+References: <20220228183328.338143-1-robert.hancock@calian.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] net: openvswitch: remove unneeded semicolon
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164628961076.13615.16852026380052114967.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Mar 2022 06:40:10 +0000
-References: <20220227132208.24658-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220227132208.24658-1-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, abaci@linux.alibaba.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,28 +56,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sun, 27 Feb 2022 21:22:08 +0800 you wrote:
-> Eliminate the following coccicheck warning:
-> ./net/openvswitch/flow.c:379:2-3: Unneeded semicolon
+On Mon, 28 Feb 2022 12:33:28 -0600 Robert Hancock wrote:
+> There is an oddity in the way the RSR register flags propagate to the
+> ISR register (and the actual interrupt output) on this hardware: it
+> appears that RSR register bits only result in ISR being asserted if the
+> interrupt was actually enabled at the time, so enabling interrupts with
+> RSR bits already set doesn't trigger an interrupt to be raised. There
+> was already a partial fix for this race in the macb_poll function where
+> it checked for RSR bits being set and re-triggered NAPI receive.
+> However, there was a still a race window between checking RSR and
+> actually enabling interrupts, where a lost wakeup could happen. It's
+> necessary to check again after enabling interrupts to see if RSR was set
+> just prior to the interrupt being enabled, and re-trigger receive in that
+> case.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> This issue was noticed in a point-to-point UDP request-response protocol
+> which periodically saw timeouts or abnormally high response times due to
+> received packets not being processed in a timely fashion. In many
+> applications, more packets arriving, including TCP retransmissions, would
+> cause the original packet to be processed, thus masking the issue.
+> 
+> Also change from using napi_reschedule to napi_schedule, as the only
+> difference is the presence of a return value which wasn't used here
+> anyway.
+
+Let's leave that out from this particular patch - fixes should be
+minimal, this sounds like cleanup.
+
+> Fixes: 02f7a34f34e3 ("net: macb: Re-enable RX interrupt only when RX is done")
+> Cc: stable@vger.kernel.org
+> Co-developed-by: Scott McNutt <scott.mcnutt@siriusxm.com>
+> Signed-off-by: Scott McNutt <scott.mcnutt@siriusxm.com>
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 > ---
->  net/openvswitch/flow.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/net/ethernet/cadence/macb_main.c | 26 ++++++++++++++++++++++--
+>  1 file changed, 24 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 98498a76ae16..338660fe1d93 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -1573,14 +1573,36 @@ static int macb_poll(struct napi_struct *napi, int budget)
+>  	if (work_done < budget) {
+>  		napi_complete_done(napi, work_done);
+>  
+> -		/* Packets received while interrupts were disabled */
+> +		/* RSR bits only seem to propagate to raise interrupts when
+> +		 * interrupts are enabled at the time, so if bits are already
+> +		 * set due to packets received while interrupts were disabled,
+> +		 * they will not cause another interrupt to be generated when
+> +		 * interrupts are re-enabled.
+> +		 * Check for this case here.
+> +		 */
+>  		status = macb_readl(bp, RSR);
 
-Here is the summary with links:
-  - [-next] net: openvswitch: remove unneeded semicolon
-    https://git.kernel.org/netdev/net-next/c/cb1d8fba91f2
+Which case is more likely - status == 0 or != 0?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Because MMIO reads are usually expensive so if status is likely 
+to be zero your other suggestion could be lower overhead.
+It'd be good to mention this expectation in the commit message 
+or comment here.
 
+>  		if (status) {
+>  			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+>  				queue_writel(queue, ISR, MACB_BIT(RCOMP));
+> -			napi_reschedule(napi);
+> +			napi_schedule(napi);
+>  		} else {
+>  			queue_writel(queue, IER, bp->rx_intr_mask);
+> +
+> +			/* Packets could have been received in the window
+> +			 * between the check above and re-enabling interrupts.
+> +			 * Therefore, a double-check is required to avoid
+> +			 * losing a wakeup. This can potentially race with
+> +			 * the interrupt handler doing the same actions if an
+> +			 * interrupt is raised just after enabling them, but
+> +			 * this should be harmless.
+> +			 */
+> +			status = macb_readl(bp, RSR);
+> +			if (unlikely(status)) {
+> +				queue_writel(queue, IDR, bp->rx_intr_mask);
+> +				if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+> +					queue_writel(queue, ISR, MACB_BIT(RCOMP));
+> +				napi_schedule(napi);
+> +			}
+>  		}
+>  	}
+>  
 
