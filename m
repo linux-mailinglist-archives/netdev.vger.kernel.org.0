@@ -2,60 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E06DD4CB47C
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:57:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952C14CB488
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:57:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbiCCBxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 20:53:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
+        id S231579AbiCCBxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 20:53:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231503AbiCCBxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 20:53:36 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B192232EC2
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 17:52:51 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id j24so3480544oii.11
-        for <netdev@vger.kernel.org>; Wed, 02 Mar 2022 17:52:51 -0800 (PST)
+        with ESMTP id S231503AbiCCBxk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 20:53:40 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB841ADA7;
+        Wed,  2 Mar 2022 17:52:55 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id x193so3547770oix.0;
+        Wed, 02 Mar 2022 17:52:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QJq/3cG0hVwKXZA60SUN+lPgJHx9II62bg9E+fAgP60=;
-        b=qR+VORl1dwD+fSD17/D1mC/ZGmILuk2yB8ykX+0jfGppNesa0F62yw+pgp+pQIyMY7
-         oElvDBOmMFwyP3Wf3LG3ssR3/q1HXcD4zk5+Q/Vsd63CkI+Ps3uBUG/1V6fB+40MHyGp
-         anrJnrwtqfs5GWPJyar88iA3w0gBz/7bJfUjnOphHf3g+EhmUc6nWWxVcDCDr5HEPNzR
-         a0UMmLKVlSs5Xf7V8u/wNDeXzzBPRsR7flcA+uKP78TaiGFtUDf5FgtBl0gR+vSeENGl
-         0BVnSA9r5qWXJdldyJa3c0SlDxelxdnkdnB82xwyIlGZ6I9xlCyO9OFkxrAYVCmlQC2x
-         jHRw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=iQB0vYq8LkR/vFpCk3gDNacx/LQaaAUMMsiPFTE4IUE=;
+        b=SdZB/SZx1Q8uq2FJM6zA0EeHj0vrBi1onjSvO9naI2tY7bcdZKlKLMUovJTG1ryoB1
+         31CLCPFAxpioXFwtR3Ub1JM2wjVxVx3ynBTPPkwEqEYddrFzqAQL016kPQVHYmUWBGRS
+         n9Je75cSOnfUmp1XsOrCH7236pyRdZ8pUV1t5m8HG+m31QCP02evhAoYu4g2quMUP1bv
+         qdPtubdJqzbx6K23NatKe1DJx/ZIpF/09tHPvse6IrgnYMhehZKPs9yxyZzc5fx20do4
+         Hjx2zE+plHuNxrEtqFvEAKblfMyc08xtPxgM1MCNYfCpVkZLjrBnRYVrSyYCp80uIDeN
+         NVHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QJq/3cG0hVwKXZA60SUN+lPgJHx9II62bg9E+fAgP60=;
-        b=1DiSB5vjH2cly1WU4x3p/RLtZXFWIkOIvhis+rNwQ/Z7Gzh1i4Ub11/YPiQ2TeIFqC
-         PyLhJgonTazurX41WAsdMJ/hpfvF2r0OIQ+mwgK+Tv7xVKp247mK31O88fQ1b4dwPoCz
-         6NvZyEMu29nBP9afI5ew6euZ1XfdDJMmBaKu5sNdLm7633EQAMgb+mEMahccE96h1vXf
-         BVwzh3d2wp/h9IQIuYdKY6Ufe4JNwR8oHlmYqwppV7NFkyc0tZx6DlgcKJHMq3N9NLq3
-         Hgtv4Z7C3L/fvlWHGu/J1zJdfnPSp8fmTeEA6trCPqp+3TYE1fkoWA2zvMRmafLN50yh
-         cshg==
-X-Gm-Message-State: AOAM533RHj5dNoXWHdff9MOap/0Gz1Jj+7aOe1LC+R2uNnHaACSuArTt
-        MFJwuQEIfEkEi5xu5FDN/OOgVxKwJ0Y=
-X-Google-Smtp-Source: ABdhPJxfiCxm88JSg52+8JA+JvDsTzc05fXpA5OZH4PiTAa/+TjnDodatF9auofS5pZs8SHKuY0tiQ==
-X-Received: by 2002:a05:6808:f8f:b0:2d7:a316:490 with SMTP id o15-20020a0568080f8f00b002d7a3160490mr2589681oiw.56.1646272370541;
-        Wed, 02 Mar 2022 17:52:50 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iQB0vYq8LkR/vFpCk3gDNacx/LQaaAUMMsiPFTE4IUE=;
+        b=sVyjbF1Zv2po/qSV7uey3WSojKJ4OHT0mYUNviBIX4gkZMkl0X9/v/ek7wBMU05KZv
+         908Y5sx4TzCtEVR5S4Yt5T2lU34L32GopqKesbDM7OxV7xXvzhrLuojcV3I9cFYjqVL6
+         bIMrYm5b3yMbrphFeEMH/XOUrI0u15pNuRjIO5eWLETk3ZYUPY5liYnuRi5vSfR8PFg0
+         eUiqfYxNWLVAeqXoRJEO5NjZ2ZEcT8+mkKhyMK9gVV7WUuWIS5V1jnIqVbc8Yw6i+0rj
+         WHW8DlNt+XmDmaPW7XssQXCslW3ZAA7i731AeLy8KM2IoRjyjpxxKuuJ6t8FbIp/ld8L
+         bEpg==
+X-Gm-Message-State: AOAM531GVeBuwCwb5NYQihux+l1K00Tg8NbPxuM+EjEUVF/N4dB5yXEO
+        vujifYs56bUrm+FlpYSP1A/ym+wwD5o=
+X-Google-Smtp-Source: ABdhPJxjktwZen9Pc8nn0dW34yw+NliWgdRNBHGNJB0frAc9XT+gLbicCae3kmEsMYkEDWWFFhIcRg==
+X-Received: by 2002:a05:6808:128a:b0:2d7:8f0b:e9a8 with SMTP id a10-20020a056808128a00b002d78f0be9a8mr2602255oiw.174.1646272374137;
+        Wed, 02 Mar 2022 17:52:54 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id a10-20020a05687073ca00b000d128dfeebfsm446310oan.2.2022.03.02.17.52.47
+        by smtp.gmail.com with ESMTPSA id a10-20020a05687073ca00b000d128dfeebfsm446310oan.2.2022.03.02.17.52.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 17:52:49 -0800 (PST)
+        Wed, 02 Mar 2022 17:52:53 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com
-Subject: [PATCH net-next v5 0/3] net: dsa: realtek: add rtl8_4t tag
-Date:   Wed,  2 Mar 2022 22:52:32 -0300
-Message-Id: <20220303015235.18907-1-luizluca@gmail.com>
+        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        devicetree@vger.kernel.org
+Subject: [PATCH net-next v5 1/3] dt-bindings: net: dsa: add rtl8_4 and rtl8_4t tag formats
+Date:   Wed,  2 Mar 2022 22:52:33 -0300
+Message-Id: <20220303015235.18907-2-luizluca@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220303015235.18907-1-luizluca@gmail.com>
+References: <20220303015235.18907-1-luizluca@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -68,55 +72,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds support for rtl8_4t tag. It is a variant of
-rtl8_4 tag, with identical values but placed at the end of the packet
-(before CRC).
+Realtek rtl8365mb DSA driver can use these two tag formats.
 
-It forces checksum in software before adding the tag as those extra
-bytes at the end of the packet would be summed together with the rest of
-the payload. When the switch removes the tag before sending the packet
-to the network, that checksum will not match.
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+---
+ Documentation/devicetree/bindings/net/dsa/dsa-port.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-It might be useful to diagnose or avoid checksum offload issues. With an
-ethertype tag like rtl8_4, the cpu port ethernet driver must work with
-cksum_start and chksum_offset to correctly calculate checksums. If not,
-the checksum field will be broken (it will contain the fake ip header
-sum).  In those cases, using 'rtl8_4t' might be an alternative way to
-avoid checksum offload, either using runtime or device-tree property.
-
-Regards,
-
-Luiz
-
-v4-v5)
-- tags in alphabetical order in dsa_port.yaml
-- remove ret var from rtl8365mb_change_tag_protocol
-- Comment typos fixes
-
-v3-v4)
-- added rtl8_4 and rtl8_4t to dsa_port.yaml
-- removed generic considerations about checksum problems with DSA tags.
-  They belong to Documentation/networking/dsa/dsa.rst
-
-v2-v3)
-- updated tag documentation (file header)
-- do not remove position and format from rtl8365mb_cpu
-- reinstate cpu to rtl8365mb
-- moved rtl8365mb_change_tag_protocol after rtl8365mb_cpu_config
-- do not modify rtl8365mb_cpu_config() logic
-- remove cpu arg from rtl8365mb_cpu_config(); get it from priv
-- dropped tag_protocol from rtl8365mb. It is now derived from
-  cpu->position.
-- init cpu struct before dsa_register as default tag must be already
-  defined before dsa_register()
-- fix formatting issues
-
-v1-v2)
-- remove mention to tail tagger, use trailing tagger.
-- use void* instead of char* for pointing to tag beginning
-- use memcpy to avoid problems with unaligned tags
-- calculate checksum if it still pending
-- keep in-use tag protocol in memory instead of reading from switch
-  register
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+index 702df848a71d..e60867c7c571 100644
+--- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+@@ -51,6 +51,8 @@ properties:
+       - edsa
+       - ocelot
+       - ocelot-8021q
++      - rtl8_4
++      - rtl8_4t
+       - seville
+ 
+   phy-handle: true
+-- 
+2.35.1
 
