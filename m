@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1314B4CC385
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 18:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7634CC383
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 18:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235273AbiCCRQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 12:16:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
+        id S235269AbiCCRQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 12:16:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235255AbiCCRQF (ORCPT
+        with ESMTP id S235254AbiCCRQF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 12:16:05 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DB5199D44
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E73F47ED
         for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 09:15:20 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
@@ -21,29 +21,32 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ma4J9ocKpCHf06EncgSsmQwBMmUomI5W80Q4vzDVqt4=;
-        b=gBkasA8X12HzhBufYeEYVZ8eQ6FXI3N94zaNcv9rgy9vkSA4GJuacTZEWGLVSFhN2OrEjN
-        ZWHGLlhn75XfWSJqminWviu+dV/0m3eItDVybJbIsTbhFC7R6IAM0Tom86NFU4MblV/U5z
-        NFm8mqO9OL9f7Zx98cjhbM7pP8VPYB61YYiV99Jr7jwETPv5zuhAuAXPUhyRtOjFM99pUa
-        rV76bcd+GER6i9lnFfZSR83kuQOVPAX7AV9wEsca7ZZGQ482O4bLxxHD5mTcm+0HHjt8D5
-        QIt/OuOb0qo5ikZKI7ou7PGQQ9pjgC8/6OAXnbfKtUQcLktu5MDt4FhVe1U47Q==
+        bh=ekfc/m1gUeDgqzbzoOq4tlU805jIirBBBnL0GRluSkE=;
+        b=UbMgbC00q9J4LNhJMOvTENKvy3Gri3V1n229kBj6hgGjbGQICe3eYEMvI6xhFdTkClbv2r
+        RM1YZBzT3GtTAWII8P3Ts9VzP591Q8o52R5x1cLNsv68yl/0pl1LfQ790b21peETOc3Pdw
+        KBuDTEHPcasoFr61+HGiU5fkWVbdulo/1/0khDoLv1bgmAmWBqAJiVQAn6l+53P4/1ilpX
+        dUDoS66IxZbMYtswEOazSlsP9QAdFuKQrVC8rpyL+6WbIG0WiKj8YVHAM80OzQq4GAgi25
+        RnZXd+D0gv/OQkCScT/rDjoqrMpz1be6OCsfQ8UQmIfH46CdIzprMJQXxO6p0g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1646327718;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ma4J9ocKpCHf06EncgSsmQwBMmUomI5W80Q4vzDVqt4=;
-        b=euYUfly+1sCmj9kU9rxCHefUOZCAv/UeT3zkKFXUbkrjSHGnVM+mFDtydBzy/sYdiFlM1b
-        f+jKNtdUr3O7YrCA==
+        bh=ekfc/m1gUeDgqzbzoOq4tlU805jIirBBBnL0GRluSkE=;
+        b=q2mFoyOzA9IBZHmwMV9PJdWFOCZ2KzMNCHINJ1mDRUnl1liF35lOCv2Te4hyM8xo9sHRt8
+        B8Vy/0Z9hWoV7rBA==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH net-next 7/9] net: macvlan: Use netif_rx().
-Date:   Thu,  3 Mar 2022 18:15:03 +0100
-Message-Id: <20220303171505.1604775-8-bigeasy@linutronix.de>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH net-next 8/9] net: bridge: Use netif_rx().
+Date:   Thu,  3 Mar 2022 18:15:04 +0100
+Message-Id: <20220303171505.1604775-9-bigeasy@linutronix.de>
 In-Reply-To: <20220303171505.1604775-1-bigeasy@linutronix.de>
 References: <20220303171505.1604775-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -67,24 +70,38 @@ well as in interrupt context.
 
 Use netif_rx().
 
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Cc: Nikolay Aleksandrov <razor@blackwall.org>
+Cc: bridge@lists.linux-foundation.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/net/macvlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bridge/br_arp_nd_proxy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index d87c06c317ede..33753a2fde292 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -285,7 +285,7 @@ static void macvlan_broadcast(struct sk_buff *skb,
- 		if (likely(nskb))
- 			err =3D macvlan_broadcast_one(nskb, vlan, eth,
- 					mode =3D=3D MACVLAN_MODE_BRIDGE) ?:
--			      netif_rx_ni(nskb);
-+			      netif_rx(nskb);
- 		macvlan_count_rx(vlan, skb->len + ETH_HLEN,
- 				 err =3D=3D NET_RX_SUCCESS, true);
+diff --git a/net/bridge/br_arp_nd_proxy.c b/net/bridge/br_arp_nd_proxy.c
+index 3db1def4437b3..e5e48c6e35d78 100644
+--- a/net/bridge/br_arp_nd_proxy.c
++++ b/net/bridge/br_arp_nd_proxy.c
+@@ -84,7 +84,7 @@ static void br_arp_send(struct net_bridge *br, struct net=
+_bridge_port *p,
+ 		skb->ip_summed =3D CHECKSUM_UNNECESSARY;
+ 		skb->pkt_type =3D PACKET_HOST;
+=20
+-		netif_rx_ni(skb);
++		netif_rx(skb);
  	}
+ }
+=20
+@@ -364,7 +364,7 @@ static void br_nd_send(struct net_bridge *br, struct ne=
+t_bridge_port *p,
+ 		reply->ip_summed =3D CHECKSUM_UNNECESSARY;
+ 		reply->pkt_type =3D PACKET_HOST;
+=20
+-		netif_rx_ni(reply);
++		netif_rx(reply);
+ 	}
+ }
+=20
 --=20
 2.35.1
 
