@@ -2,51 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9D44CC58F
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 20:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCAE4CC5C9
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 20:14:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235840AbiCCTCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 14:02:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
+        id S235845AbiCCTOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 14:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235834AbiCCTB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 14:01:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECA019F474
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 11:01:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E97B2B82626
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 19:01:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42042C340EF;
-        Thu,  3 Mar 2022 19:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646334070;
-        bh=Q8yzXrd09tTmLRNdZ2eLfUBJUGV8Jx3hIoJtI27Ml+E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RPAUnJ8Rf2/gJGRWW3RSCPeOcl+08L9lt+xwPKkhDAL+Hq0RwoqNXhatDJ1ScpMcc
-         P3SJh6fLmrsCijBUDoWSnmitHS0dqBYgyIOflhSohTn3hQXxiqNQGCRdfhyZXYLBsL
-         wMtYhyh0hD7XqmeJPoj/aGcw4PBxIJw/y1If5ncv/jCMux0pvYq3xc/ttYA/Y6MND7
-         y0BI8l32IZOnpTJIiXpjy9zXqFwxGpW8slJ7oISY7qdjmTJy/RW7+cJYX1/QiIEHOg
-         BSvlP3QvWe/RW5tDg8wqveWrFtkf2XVLW7b6oClu5AFLSmXgcqIP8qcLrvUYMNivZS
-         7fZDqFCLNBoSw==
-Date:   Thu, 3 Mar 2022 20:56:57 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com, markzhang@nvidia.com
-Subject: Re: [PATCH iproute2 v2 1/2] lib/fs: fix memory leak in
- get_task_name()
-Message-ID: <YiEPeU8z5Y+qd3+l@unreal>
-References: <cover.1646223467.git.aclaudi@redhat.com>
- <0731f9e5b5ce95ab2da44ac74aa1f79ead9413bf.1646223467.git.aclaudi@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0731f9e5b5ce95ab2da44ac74aa1f79ead9413bf.1646223467.git.aclaudi@redhat.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        with ESMTP id S231142AbiCCTOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 14:14:43 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C268E15695C;
+        Thu,  3 Mar 2022 11:13:53 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 223I7lah022075;
+        Thu, 3 Mar 2022 19:13:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=qmrt+/Jkb8gDsrGOIzxJnNKsZAsWE6WMeHS3jtGFsOw=;
+ b=DiSJgUgqV7yXSBLAk+0HzVrG7I4/t/D2mCttumHpFScW6oS0jrkN3NDg3d9cyNoePadv
+ 54tzw9Vlm+QqZwcrckbjN9EDRMh5eSnRSobU2uYLLdkCe32o88YAkgtyrUdjQTa73kZV
+ wzN0th04iOw9EqF7PaAEeCuFZz22nu+Cfe8BRkLUuM7yjg0+kmaZqZt89qF1l+Clg+yh
+ 67Q7bpkJ7pQb9O5WF/ce/ne9l1X1OxHW/MALb9hgxpfEx2IttLwc5vqfR7S/tdJ4vvh4
+ +6BS/QKQZu/dyQ1NKXSscwI9/JR5NVxOd3fcRX8xKmwEwaQQxZFehTlR7VyW1gwM0ZCB rQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ek0nm4asy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Mar 2022 19:13:32 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 223IdA7Z019088;
+        Thu, 3 Mar 2022 19:13:32 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ek0nm4ase-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Mar 2022 19:13:31 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 223J8wax004102;
+        Thu, 3 Mar 2022 19:13:29 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma02fra.de.ibm.com with ESMTP id 3efbu9h0wq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Mar 2022 19:13:29 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 223JDRHq41877958
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 3 Mar 2022 19:13:27 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4232A42049;
+        Thu,  3 Mar 2022 19:13:27 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BD84B42047;
+        Thu,  3 Mar 2022 19:13:24 +0000 (GMT)
+Received: from sig-9-65-93-208.ibm.com (unknown [9.65.93.208])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  3 Mar 2022 19:13:24 +0000 (GMT)
+Message-ID: <b6bf8463c1b370a5b5c9987ae1312fd930d36785.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 0/9] bpf-lsm: Extend interoperability with IMA
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     KP Singh <kpsingh@kernel.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        yhs@fb.com, revest@chromium.org, gregkh@linuxfoundation.org,
+        linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Florent Revest <revest@google.com>,
+        Kees Cook <keescook@chromium.org>
+Date:   Thu, 03 Mar 2022 14:13:24 -0500
+In-Reply-To: <CACYkzJ5RNDV582yt1xCZ8AQUW6v_o0Dtoc_XAQN1GXnoOmze6Q@mail.gmail.com>
+References: <20220302111404.193900-1-roberto.sassu@huawei.com>
+         <20220302222056.73dzw5lnapvfurxg@ast-mbp.dhcp.thefacebook.com>
+         <fe1d17e7e7d4b5e4cdeb9f96f5771ded23b7c8f0.camel@linux.ibm.com>
+         <CACYkzJ4fmJ4XtC6gx6k_Gjq0n5vjSJyq=L--H-Eho072HJoywA@mail.gmail.com>
+         <04d878d4b2441bb8a579a4191d8edc936c5a794a.camel@linux.ibm.com>
+         <CACYkzJ5RNDV582yt1xCZ8AQUW6v_o0Dtoc_XAQN1GXnoOmze6Q@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: FANeqy5G1wiM_J_SJU3GjaSTTFkeGmlg
+X-Proofpoint-GUID: Ur-wuaMT2dDIoAnuan4VD-noqUb6Frs_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-03_09,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 suspectscore=0 priorityscore=1501 mlxscore=0
+ spamscore=0 bulkscore=0 mlxlogscore=995 clxscore=1015 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2203030086
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -55,327 +104,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 01:28:47PM +0100, Andrea Claudi wrote:
-> asprintf() allocates memory which is not freed on the error path of
-> get_task_name(), thus potentially leading to memory leaks.
-
-Not really, memory is released when the application exits, which is the
-case here.
-
+On Thu, 2022-03-03 at 19:14 +0100, KP Singh wrote:
 > 
-> Rework get_task_name() and avoid asprintf() usage and memory allocation,
-> returning the task string to the caller using an additional char*
-> parameter.
-> 
-> Fixes: 81bfd01a4c9e ("lib: move get_task_name() from rdma")
+> Even Robert's use case is to implement IMA policies in BPF this is still
+> fundamentally different from IMA doing integrity measurement for BPF
+> and blocking this patch-set on the latter does not seem rational and
+> I don't see how implementing integrity for BPF would avoid your
+> concerns.
 
-As I was told before, in netdev Fixes means that it is a bug that
-affects users. This is not the case here.
+eBPF modules are an entire class of files currently not being measured,
+audited, or appraised.  This is an integrity gap that needs to be
+closed.  The purpose would be to at least measure and verify the
+integrity of the eBPF module that is going to be used in lieu of
+traditional IMA.
 
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  include/utils.h |  2 +-
->  ip/iptuntap.c   | 17 ++++++++++-------
->  lib/fs.c        | 20 ++++++++++----------
->  rdma/res-cmid.c |  8 +++++---
->  rdma/res-cq.c   |  8 +++++---
->  rdma/res-ctx.c  |  7 ++++---
->  rdma/res-mr.c   |  7 ++++---
->  rdma/res-pd.c   |  8 +++++---
->  rdma/res-qp.c   |  7 ++++---
->  rdma/res-srq.c  |  7 ++++---
->  rdma/stat.c     |  5 ++++-
->  11 files changed, 56 insertions(+), 40 deletions(-)
+-- 
+thanks,
 
-Honestly, I don't see any need in both patches.
+Mimi
 
-Thanks
-
-> 
-> diff --git a/include/utils.h b/include/utils.h
-> index b6c468e9..81294488 100644
-> --- a/include/utils.h
-> +++ b/include/utils.h
-> @@ -307,7 +307,7 @@ char *find_cgroup2_mount(bool do_mount);
->  __u64 get_cgroup2_id(const char *path);
->  char *get_cgroup2_path(__u64 id, bool full);
->  int get_command_name(const char *pid, char *comm, size_t len);
-> -char *get_task_name(pid_t pid);
-> +int get_task_name(pid_t pid, char *name);
->  
->  int get_rtnl_link_stats_rta(struct rtnl_link_stats64 *stats64,
->  			    struct rtattr *tb[]);
-> diff --git a/ip/iptuntap.c b/ip/iptuntap.c
-> index 385d2bd8..2ae6b1a1 100644
-> --- a/ip/iptuntap.c
-> +++ b/ip/iptuntap.c
-> @@ -321,14 +321,17 @@ static void show_processes(const char *name)
->  			} else if (err == 2 &&
->  				   !strcmp("iff", key) &&
->  				   !strcmp(name, value)) {
-> -				char *pname = get_task_name(pid);
-> -
-> -				print_string(PRINT_ANY, "name",
-> -					     "%s", pname ? : "<NULL>");
-> +				SPRINT_BUF(pname);
-> +
-> +				if (get_task_name(pid, pname)) {
-> +					print_string(PRINT_ANY, "name",
-> +						     "%s", "<NULL>");
-> +				} else {
-> +					print_string(PRINT_ANY, "name",
-> +						     "%s", pname);
-> +				}
->  
-> -				print_uint(PRINT_ANY, "pid",
-> -					   "(%d)", pid);
-> -				free(pname);
-> +				print_uint(PRINT_ANY, "pid", "(%d)", pid);
->  			}
->  
->  			free(key);
-> diff --git a/lib/fs.c b/lib/fs.c
-> index f6f5f8a0..03df0f6a 100644
-> --- a/lib/fs.c
-> +++ b/lib/fs.c
-> @@ -342,25 +342,25 @@ int get_command_name(const char *pid, char *comm, size_t len)
->  	return 0;
->  }
->  
-> -char *get_task_name(pid_t pid)
-> +int get_task_name(pid_t pid, char *name)
->  {
-> -	char *comm;
-> +	char path[PATH_MAX];
->  	FILE *f;
->  
->  	if (!pid)
-> -		return NULL;
-> +		return -1;
->  
-> -	if (asprintf(&comm, "/proc/%d/comm", pid) < 0)
-> -		return NULL;
-> +	if (snprintf(path, sizeof(path), "/proc/%d/comm", pid) >= sizeof(path))
-> +		return -1;
->  
-> -	f = fopen(comm, "r");
-> +	f = fopen(path, "r");
->  	if (!f)
-> -		return NULL;
-> +		return -1;
->  
-> -	if (fscanf(f, "%ms\n", &comm) != 1)
-> -		comm = NULL;
-> +	if (fscanf(f, "%s\n", name) != 1)
-> +		return -1;
->  
->  	fclose(f);
->  
-> -	return comm;
-> +	return 0;
->  }
-> diff --git a/rdma/res-cmid.c b/rdma/res-cmid.c
-> index bfaa47b5..3475349d 100644
-> --- a/rdma/res-cmid.c
-> +++ b/rdma/res-cmid.c
-> @@ -159,8 +159,11 @@ static int res_cm_id_line(struct rd *rd, const char *name, int idx,
->  		goto out;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  
->  	if (rd_is_filtered_attr(rd, "pid", pid,
-> @@ -199,8 +202,7 @@ static int res_cm_id_line(struct rd *rd, const char *name, int idx,
->  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
->  	newline(rd);
->  
-> -out:	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
-> +out:
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/res-cq.c b/rdma/res-cq.c
-> index 9e7c4f51..5ed455ea 100644
-> --- a/rdma/res-cq.c
-> +++ b/rdma/res-cq.c
-> @@ -84,8 +84,11 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
->  		goto out;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  
->  	if (rd_is_filtered_attr(rd, "pid", pid,
-> @@ -123,8 +126,7 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
->  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
->  	newline(rd);
->  
-> -out:	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
-> +out:
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/res-ctx.c b/rdma/res-ctx.c
-> index 30afe97a..fbd52dd5 100644
-> --- a/rdma/res-ctx.c
-> +++ b/rdma/res-ctx.c
-> @@ -18,8 +18,11 @@ static int res_ctx_line(struct rd *rd, const char *name, int idx,
->  		return MNL_CB_ERROR;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  
->  	if (rd_is_filtered_attr(rd, "pid", pid,
-> @@ -48,8 +51,6 @@ static int res_ctx_line(struct rd *rd, const char *name, int idx,
->  	newline(rd);
->  
->  out:
-> -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/res-mr.c b/rdma/res-mr.c
-> index 1bf73f3a..6a59d9e4 100644
-> --- a/rdma/res-mr.c
-> +++ b/rdma/res-mr.c
-> @@ -47,8 +47,11 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
->  		goto out;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  
->  	if (rd_is_filtered_attr(rd, "pid", pid,
-> @@ -87,8 +90,6 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
->  	newline(rd);
->  
->  out:
-> -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/res-pd.c b/rdma/res-pd.c
-> index df538010..a51bb634 100644
-> --- a/rdma/res-pd.c
-> +++ b/rdma/res-pd.c
-> @@ -34,8 +34,11 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
->  			nla_line[RDMA_NLDEV_ATTR_RES_UNSAFE_GLOBAL_RKEY]);
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  
->  	if (rd_is_filtered_attr(rd, "pid", pid,
-> @@ -76,8 +79,7 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
->  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
->  	newline(rd);
->  
-> -out:	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
-> +out:
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/res-qp.c b/rdma/res-qp.c
-> index a38be399..575e0529 100644
-> --- a/rdma/res-qp.c
-> +++ b/rdma/res-qp.c
-> @@ -146,8 +146,11 @@ static int res_qp_line(struct rd *rd, const char *name, int idx,
->  		goto out;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  
->  	if (rd_is_filtered_attr(rd, "pid", pid,
-> @@ -179,8 +182,6 @@ static int res_qp_line(struct rd *rd, const char *name, int idx,
->  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
->  	newline(rd);
->  out:
-> -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/res-srq.c b/rdma/res-srq.c
-> index 3038c352..945109fc 100644
-> --- a/rdma/res-srq.c
-> +++ b/rdma/res-srq.c
-> @@ -174,8 +174,11 @@ static int res_srq_line(struct rd *rd, const char *name, int idx,
->  		return MNL_CB_ERROR;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  	if (rd_is_filtered_attr(rd, "pid", pid,
->  				nla_line[RDMA_NLDEV_ATTR_RES_PID]))
-> @@ -228,8 +231,6 @@ static int res_srq_line(struct rd *rd, const char *name, int idx,
->  	newline(rd);
->  
->  out:
-> -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> -		free(comm);
->  	return MNL_CB_OK;
->  }
->  
-> diff --git a/rdma/stat.c b/rdma/stat.c
-> index adfcd34a..a63b70a4 100644
-> --- a/rdma/stat.c
-> +++ b/rdma/stat.c
-> @@ -248,8 +248,11 @@ static int res_counter_line(struct rd *rd, const char *name, int index,
->  		return MNL_CB_OK;
->  
->  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> +		SPRINT_BUF(b);
-> +
->  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> -		comm = get_task_name(pid);
-> +		if (!get_task_name(pid, b))
-> +			comm = b;
->  	}
->  	if (rd_is_filtered_attr(rd, "pid", pid,
->  				nla_line[RDMA_NLDEV_ATTR_RES_PID]))
-> -- 
-> 2.35.1
-> 
