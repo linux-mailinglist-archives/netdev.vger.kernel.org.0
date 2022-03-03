@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6B14CC518
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:25:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A2034CC51E
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 19:25:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235728AbiCCS0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 13:26:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
+        id S232674AbiCCS0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 13:26:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232674AbiCCS0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:26:01 -0500
+        with ESMTP id S235740AbiCCS0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 13:26:09 -0500
 Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9361D1A41DF;
-        Thu,  3 Mar 2022 10:25:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E821A41EB;
+        Thu,  3 Mar 2022 10:25:18 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DF48520007;
-        Thu,  3 Mar 2022 18:25:12 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 35F2F2000B;
+        Thu,  3 Mar 2022 18:25:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646331914;
+        t=1646331915;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hzRFgzM4CKz3QS8PYg7wgueEZihoX1rywNOkCigJb0c=;
-        b=G47oq8jBXeX2cCXSHseKTTzju0VIlOmJzjEvXVY+oJG2v61bvThChGBYRUfMJqq3AtQNmO
-        bDUAjn/4s1gjEKinKncd37r5cMMFTgmKMJKggT0Xlodu40bkK8SoOS2Ydldv+qL+MZ6Vx8
-        TBo6Ykfs37ncBSpw6oz0QR9Yn6N5vZ5dSVRaEfewAK5M0b35ZysUrFZAKrDtUb19xWOr6u
-        nn+OItQ4n4yyn3H2ozYiO76z1C2CKhgn9kKImYhlg3VQVxe1DWxi5u1J/rmkavNYmHn0FW
-        63O8LplWM6Ah+/vlP0s3/SkDGuZOYJolQgOU0hnBguhGrynFq/g1+QW4qCfHuw==
+        bh=gc9GvEmcqPdgjbsstrsAlcUKY3OGmYysVOqtCmZ0Ffc=;
+        b=G2C2kWpZ8MCW9Vi1ORpk0GsXh2KYOqsRaIyJiL/DajnjKR/C5Tvsg+2EmFiUfjadFIFtpT
+        LtjtrC5Tic8FPTxQY6gJRhc/d4KJp5qJM3YqdLtuqOK6M4vn9huphze2YwxBTC3QFCqQ37
+        RX1u2SAe957HegMx736MrUpfszjwQ3efn+Hw8LxK2C8v1RLUTstG1yPFh0LHiIRor4rlCV
+        srrn7Q0K1k+xXekfibTSvvQqFOxjgu9DJbgJcjLhbbcw6NCZESVwG3QDQpOTipOgnErcYx
+        H7/hD9ztHz4l6Rb7cL1sFUVydE0UBuE02BGivt4HOYRZ2E0uGAAZn+W0LlYBSw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v3 02/11] net: ieee802154: Fill the list of MLME return codes
-Date:   Thu,  3 Mar 2022 19:24:59 +0100
-Message-Id: <20220303182508.288136-3-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v3 03/11] net: mac802154: Create a transmit error helper
+Date:   Thu,  3 Mar 2022 19:25:00 +0100
+Message-Id: <20220303182508.288136-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220303182508.288136-1-miquel.raynal@bootlin.com>
 References: <20220303182508.288136-1-miquel.raynal@bootlin.com>
@@ -59,105 +59,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are more codes than already listed, let's be a bit more
-exhaustive. This will allow to drop device drivers local definitions of
-these codes.
+So far there is only a helper for successful transmission, which led
+device drivers to implement their own handling in case of
+error. Unfortunately, we really need all the drivers to give the hand
+back to the core once they are done in order to be able to build a
+proper synchronous API. So let's create a _xmit_error() helper and take
+this opportunity to fill the new device-global field storing Tx
+statuses.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/linux/ieee802154.h | 67 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 66 insertions(+), 1 deletion(-)
+ include/net/mac802154.h | 10 ++++++++++
+ net/mac802154/util.c    | 11 +++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/include/linux/ieee802154.h b/include/linux/ieee802154.h
-index 01d945c8b2e1..f1f9412b6ac6 100644
---- a/include/linux/ieee802154.h
-+++ b/include/linux/ieee802154.h
-@@ -134,7 +134,35 @@ enum {
- 	 * a successful transmission.
- 	 */
- 	IEEE802154_SUCCESS = 0x0,
--
-+	/* The requested operation failed. */
-+	IEEE802154_MAC_ERROR = 0x1,
-+	/* The requested operation has been cancelled. */
-+	IEEE802154_CANCELLED = 0x2,
-+	/*
-+	 * Device is ready to poll the coordinator for data in a non beacon
-+	 * enabled PAN.
-+	 */
-+	IEEE802154_READY_FOR_POLL = 0x3,
-+	/* Wrong frame counter. */
-+	IEEE802154_COUNTER_ERROR = 0xdb,
-+	/*
-+	 * The frame does not conforms to the incoming key usage policy checking
-+	 * procedure.
-+	 */
-+	IEEE802154_IMPROPER_KEY_TYPE = 0xdc,
-+	/*
-+	 * The frame does not conforms to the incoming security level usage
-+	 * policy checking procedure.
-+	 */
-+	IEEE802154_IMPROPER_SECURITY_LEVEL = 0xdd,
-+	/* Secured frame received with an empty Frame Version field. */
-+	IEEE802154_UNSUPPORTED_LEGACY = 0xde,
-+	/*
-+	 * A secured frame is received or must be sent but security is not
-+	 * enabled in the device. Or, the Auxiliary Security Header has security
-+	 * level of zero in it.
-+	 */
-+	IEEE802154_UNSUPPORTED_SECURITY = 0xdf,
- 	/* The beacon was lost following a synchronization request. */
- 	IEEE802154_BEACON_LOST = 0xe0,
- 	/*
-@@ -204,11 +232,48 @@ enum {
- 	 * that is not supported.
- 	 */
- 	IEEE802154_UNSUPPORTED_ATTRIBUTE = 0xf4,
-+	/* Missing source or destination address or address mode. */
-+	IEEE802154_INVALID_ADDRESS = 0xf5,
-+	/*
-+	 * MLME asked to turn the receiver on, but the on time duration is too
-+	 * big compared to the macBeaconOrder.
-+	 */
-+	IEEE802154_ON_TIME_TOO_LONG = 0xf6,
-+	/*
-+	 * MLME asaked to turn the receiver on, but the request was delayed for
-+	 * too long before getting processed.
-+	 */
-+	IEEE802154_PAST_TIME = 0xf7,
-+	/*
-+	 * The StartTime parameter is nonzero, and the MLME is not currently
-+	 * tracking the beacon of the coordinator through which it is
-+	 * associated.
-+	 */
-+	IEEE802154_TRACKING_OFF = 0xf8,
-+	/*
-+	 * The index inside the hierarchical values in PIBAttribute is out of
-+	 * range.
-+	 */
-+	IEEE802154_INVALID_INDEX = 0xf9,
-+	/*
-+	 * The number of PAN descriptors discovered during a scan has been
-+	 * reached.
-+	 */
-+	IEEE802154_LIMIT_REACHED = 0xfa,
-+	/*
-+	 * The PIBAttribute parameter specifies an attribute that is a read-only
-+	 * attribute.
-+	 */
-+	IEEE802154_READ_ONLY = 0xfb,
- 	/*
- 	 * A request to perform a scan operation failed because the MLME was
- 	 * in the process of performing a previously initiated scan operation.
- 	 */
- 	IEEE802154_SCAN_IN_PROGRESS = 0xfc,
-+	/* The outgoing superframe overlaps the incoming superframe. */
-+	IEEE802154_SUPERFRAME_OVERLAP = 0xfd,
-+	/* Any other error situation. */
-+	IEEE802154_SYSTEM_ERROR = 0xff,
- };
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index 2c3bbc6645ba..abbe88dc9df5 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -498,4 +498,14 @@ void ieee802154_stop_queue(struct ieee802154_hw *hw);
+ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 			      bool ifs_handling);
  
- /* frame control handling */
++/**
++ * ieee802154_xmit_error - frame transmission failed
++ *
++ * @hw: pointer as obtained from ieee802154_alloc_hw().
++ * @skb: buffer for transmission
++ * @reason: error code
++ */
++void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
++			   int reason);
++
+ #endif /* NET_MAC802154_H */
+diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+index f2078238718b..37d2520804e3 100644
+--- a/net/mac802154/util.c
++++ b/net/mac802154/util.c
+@@ -88,6 +88,17 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(ieee802154_xmit_complete);
+ 
++void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
++			   int reason)
++{
++	struct ieee802154_local *local = hw_to_local(hw);
++
++	local->tx_result = reason;
++	ieee802154_wake_queue(hw);
++	dev_kfree_skb_any(skb);
++}
++EXPORT_SYMBOL(ieee802154_xmit_error);
++
+ void ieee802154_stop_device(struct ieee802154_local *local)
+ {
+ 	flush_workqueue(local->workqueue);
 -- 
 2.27.0
 
