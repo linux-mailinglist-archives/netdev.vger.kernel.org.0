@@ -2,83 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E11444CB670
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 06:33:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 797874CB692
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 06:49:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiCCFej (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 00:34:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
+        id S229729AbiCCFt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 00:49:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiCCFej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 00:34:39 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF6F11172
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 21:33:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E83DBCE24ED
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 05:33:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1EACC004E1;
-        Thu,  3 Mar 2022 05:33:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646285631;
-        bh=3Bd1SQdQxLngXUadpD8Z9sNrtSoC9S3G6IzadNVNh5c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lCUKwH87kCu8XIeUMsgz9JXVJYGfMgcXzQOUuzxtgp3ySZEdMllvBu6o8z2pV3e0J
-         rXyzgbS933PsxKYQmcVo+QEwRK+OAZlmJLyP6IZuq2q9V9CNqsPBbv2xS0tE6scx7D
-         aEFRlTTLEehdFxTS0PbLU1OO23GQ4C4SW0LvCqeHydRFxsm+kGG9vHNxt5HdXZAxRm
-         FPGi5mGyZmuJg6/Cmqo8qhCs4gf+H4R9iifijenPde8f75HEkMeGcbYTb9NXHjd4LV
-         i+5h2E9Yiu+Vqx41jQ9U5bhgljtD3qFBVADAHF0gbjmaGPZm6w4p7aAl5X0Fn11Jdj
-         jibkV2sk9mARA==
-Date:   Wed, 2 Mar 2022 21:33:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kai Lueke <kailueke@linux.microsoft.com>,
-        Paul Chaignon <paul@cilium.io>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] Revert "xfrm: interface with if_id 0 should return
- error"
-Message-ID: <20220302213349.0ea3ad05@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <6c2d3e6b-23f8-d4a4-4701-ff9288c18a5c@linux.microsoft.com>
-References: <20220301131512.1303-1-kailueke@linux.microsoft.com>
-        <CAHsH6Gtzaf2vhSv5sPpBBhBww9dy8_E7c0utoqMBORas2R+_zg@mail.gmail.com>
-        <d5e58052-86df-7ffa-02a0-fc4db5a7bbdf@linux.microsoft.com>
-        <CAHsH6GsxaSgGkF9gkBKCcO9feSrsXsuNBdKRM_R8=Suih9oxSw@mail.gmail.com>
-        <20220301150930.GA56710@Mem>
-        <dcc83e93-4a28-896c-b3d3-8d675bb705eb@linux.microsoft.com>
-        <20220301161001.GV1223722@gauss3.secunet.de>
-        <20220302080439.2324c5d0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <6c2d3e6b-23f8-d4a4-4701-ff9288c18a5c@linux.microsoft.com>
+        with ESMTP id S229720AbiCCFt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 00:49:28 -0500
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C903119F04
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 21:48:41 -0800 (PST)
+Received: from [192.168.1.18] ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id PeKLnokkrxHdTPeKLneDHk; Thu, 03 Mar 2022 06:48:39 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 03 Mar 2022 06:48:39 +0100
+X-ME-IP: 90.126.236.122
+Message-ID: <3bf9dbf1-74fc-5cc9-b6fc-c3267be0a4ac@wanadoo.fr>
+Date:   Thu, 3 Mar 2022 06:48:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] Bluetooth: Don't assign twice the same value
+Content-Language: en-US
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+References: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
+ <CABBYNZKpZ+tA0YuBFzwug-W3Bcx9GuL4hcrPSfSQt0VnbZi58A@mail.gmail.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+In-Reply-To: <CABBYNZKpZ+tA0YuBFzwug-W3Bcx9GuL4hcrPSfSQt0VnbZi58A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Mar 2022 19:11:06 +0100 Kai Lueke wrote:
-> > Agreed. FWIW would be great if patch #2 started flowing towards Linus'es
-> > tree separately if the discussion on #1 is taking longer.  
+Le 02/03/2022 à 22:36, Luiz Augusto von Dentz a écrit :
+> Hi Christophe,
 > 
-> to preserve the initial goal of helping to uncover id 0 usage I think it
-> would be best to have the revert be accompanied by a patch that instead
-> creates a kernel log warning (or whatever).
+> On Wed, Mar 2, 2022 at 12:18 PM Christophe JAILLET
+> <christophe.jaillet-39ZsbGIQGT5GWvitb5QawA@public.gmane.org> wrote:
+>>
+>> data.pid is set twice with the same value. Remove one of these redundant
+>> calls.
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet-39ZsbGIQGT5GWvitb5QawA@public.gmane.org>
+>> ---
+>>   net/bluetooth/l2cap_core.c | 1 -
+>>   1 file changed, 1 deletion(-)
+>>
+>> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+>> index e817ff0607a0..0d460cb7f965 100644
+>> --- a/net/bluetooth/l2cap_core.c
+>> +++ b/net/bluetooth/l2cap_core.c
+>> @@ -1443,7 +1443,6 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
+>>          data.pdu.scid[0]     = cpu_to_le16(chan->scid);
+>>
+>>          chan->ident = l2cap_get_ident(conn);
+>> -       data.pid = chan->ops->get_peer_pid(chan);
+> 
+> Perhaps we should do if (!data->pid) then since afaik one can do
+> connect without bind.
 
-extack would be best, but that would mean a little bit of plumbing 
-so more likely net-next material. Which would have to come after.
+Not sure to follow you.
+'data' is local to this function. data->pid is undefined at this point.
 
-> Since I never did that I suggest to not wait for me.
-> Also, feel free to do the revert yourself with a different commit
-> message if mine didn't capture the things appropriately.
 
-TBH I'm not 100% clear on the nature of the regression. Does Cilium
-update the configuration later to make if_id be non-zero? Or the broken 
-interface is not used but not being able to create it fails the whole
-configuration?
+If your comment is about the end of the function that should be 
+conditional, I don't know the bluetooth stack at all and can't have any 
+opinion about it.
+
+If it is relevant, s.o. else will need to provide a patch for it.
+
+CJ
+
+> 
+>>          data.count = 1;
+>>          data.chan = chan;
+>> --
+>> 2.32.0
+>>
+> 
+> 
+
