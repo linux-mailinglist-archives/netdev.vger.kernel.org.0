@@ -2,92 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 762FA4CB40A
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51CDB4CB41F
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 02:09:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230482AbiCCAtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 19:49:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47436 "EHLO
+        id S231139AbiCCBDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 20:03:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230466AbiCCAtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:49:12 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7314D4E3B6;
-        Wed,  2 Mar 2022 16:48:28 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id c7so2776993qka.7;
-        Wed, 02 Mar 2022 16:48:28 -0800 (PST)
+        with ESMTP id S231204AbiCCBDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 20:03:17 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FC3DEEA;
+        Wed,  2 Mar 2022 17:02:13 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id e15so1846103pfv.11;
+        Wed, 02 Mar 2022 17:02:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uoln0TwoeXhapQQ2kgJF3aYfxwyFeRpalFgynBUGE70=;
-        b=DRB6EVN7LYOU0szntJypZT7IgNAJOCkTHzI0QVn8onPzwifEsBkenP8zm6gBcOYyNg
-         RsjOl6Ti21etCXyLxm1VrfL0mVN12EB9gJiGaM3o4EFDKXK1QTbG1SKmyOs1U0zouSKZ
-         4EfRRbRg0vVkbQ6cEnFhEVAg7/oFM7EhJ7OjBOOPNX3PrWvsyVzwfxEME7I8MI0eJzgn
-         DCeovsC60HqXlPOCD8TeSTr3At4IcUqamXYVXp6G7bH93fczVB3JwVaKhTTkYBQQGBON
-         yoaWmidydwdTLhDXM7/NbJaJCEcFymzwcGz/zMt/ah22qyldDv6bsAwenv6dT5hFLipf
-         bJNA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RAL3hdQzDPJBJDPviupEa5iJmAtcqnWIkzPTN5WWFRk=;
+        b=ANc5nsQR46yz5q8JWZ0HfBXXDXO3SYIkdLhFjQOa2LHneW7UuyTfdwgUGmnyJ+pt2+
+         z/ueEO019yu3Jt5o8Wk/U+B8r7rjRL5O4jO4l8QDRg1+qatp+5Ym/2L1q5p9IQtlVyUF
+         rx3q24xb/vqvgBrLMbldKXR6mxrOvb4AuYoHoFo50907NzqE5UJva5wr+V8mPrZK7VpM
+         pTI3PyJ7dr1cYW5e7ei/sFTJ8j3wVBr2PhjowUug3FwVj4uoRkq7l7196eRp+ykLDZar
+         ME+LZNwrd8/oLMMqPQ1gt7fhm8Ix9wOwGRIiSdUSMFtNWwOfEgwJZd6+AW1SNniV2NqL
+         SVWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uoln0TwoeXhapQQ2kgJF3aYfxwyFeRpalFgynBUGE70=;
-        b=3G7mUBqvctVV5CDUnQavKyo6fmzsAvSET6Ow7CfkIcrWOHecvTVPpMekngH4btEVF0
-         WowyP+kap5GE4PaYpzX6IkEhSlMTFnvu4D2MAj6d3rWD9W+E1IuwG2JnifR7GZZ4enGU
-         RBTLqRWKPoaXfoqf+zyUQFTqzu6OkYh1WM3OfE9ZKap1ksZv9dw2yxoetSpv69qrbF2f
-         Nzg85EoMv0UX+Gx3NmNfNLwaNbmGczW9Cik0hLDQ8rOW7/1rrqGbXs8uhabFELEOdZYd
-         ruXZJ3fw7yES18YZO1/ayFQNyRL/SFyD5mbQgqlkX39zjF4Ktn0bLTGGaGm+QTCuo2nn
-         Mm2Q==
-X-Gm-Message-State: AOAM530oeiZpWYAFzgnds670cht0snv+KTCzdwTK/cxFLZ2x+NN34b/e
-        T5ZjqoTeB0GXcy3N7pYTD2Svfc/QvVI=
-X-Google-Smtp-Source: ABdhPJwsOadWkOm35OOSXNRLw0XChfyguz/qkr143FjkHmn4dol2MqQ3CfiP6tOSB/ImCL+MnTaryA==
-X-Received: by 2002:a05:620a:2941:b0:47e:144b:84a9 with SMTP id n1-20020a05620a294100b0047e144b84a9mr17755693qkp.32.1646268507582;
-        Wed, 02 Mar 2022 16:48:27 -0800 (PST)
-Received: from localhost ([2600:1700:65a0:ab60:17f1:53ec:373a:a88a])
-        by smtp.gmail.com with ESMTPSA id w1-20020a05620a094100b00648e56836ffsm299922qkw.82.2022.03.02.16.48.27
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RAL3hdQzDPJBJDPviupEa5iJmAtcqnWIkzPTN5WWFRk=;
+        b=iPdEmaxhs2KEFkAF3h+1LYuMCc1tQ8cEIFTo3pd7hiq6/gfZehTWhOQ6m2O5Qp8WJk
+         w9r1pkCSnlWPPBqLxXFCauAasFbB0zbvxHHQFk3BbyqV0lCx1ncc1rYXJUaf6XU232Po
+         1D/YMoCUSXt/pntL10cYHnEytUDM6VXuyIOMfR/49cNLyWVqSmYTvZIHvtThPUCKZLw6
+         Eik6QBuZzJwYSGzfrfKUEnPYkJevADcg3GA1j72E/eeuEYwGfXgs4MPDhmyviKNHy05B
+         RtrHBe+ibIhAE3JNoirAH4GViB5yVc8iVB1g4x3n+3Uj3iG9LmMbCZwlu513g/O05Pb9
+         sM+w==
+X-Gm-Message-State: AOAM530u9fDcAvhsAzf9UJcS8d0krEwASufPmhQfy7fd48n/z8hBynTp
+        /6p2dlM9T6rqZBf48jpjd0Hl04X4ZtLRrOXG
+X-Google-Smtp-Source: ABdhPJyvRYLWHHMzoAWYl2wbaSpQ7rq6ierqyUXMpHzPtpPbnx5Im4f24PfwMzPLbGZfM2MtlfJa8Q==
+X-Received: by 2002:a05:6a00:114e:b0:4c8:55f7:faad with SMTP id b14-20020a056a00114e00b004c855f7faadmr35483932pfm.86.1646269332784;
+        Wed, 02 Mar 2022 17:02:12 -0800 (PST)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id k195-20020a636fcc000000b0037c4e3bc503sm298976pgc.77.2022.03.02.17.02.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 16:48:27 -0800 (PST)
-Date:   Wed, 2 Mar 2022 16:48:25 -0800
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
-        jakub@cloudflare.com, lmb@cloudflare.com, davem@davemloft.net,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 2/4] bpf, sockmap: Fix memleak in
- tcp_bpf_sendmsg while sk msg is full
-Message-ID: <YiAQWaVPEmfpiale@pop-os.localdomain>
-References: <20220302022755.3876705-1-wangyufen@huawei.com>
- <20220302022755.3876705-3-wangyufen@huawei.com>
+        Wed, 02 Mar 2022 17:02:12 -0800 (PST)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     andrii.nakryiko@gmail.com
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com,
+        ytcoode@gmail.com
+Subject: [PATCH bpf-next v2] libbpf: Add a check to ensure that page_cnt is non-zero
+Date:   Thu,  3 Mar 2022 08:59:21 +0800
+Message-Id: <20220303005921.53436-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
+References: <CAEf4BzYYaRyTh=W+ceb6V=Dj+SzoKNV_O24by4j8Fn4oG3gq2A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220302022755.3876705-3-wangyufen@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 02, 2022 at 10:27:53AM +0800, Wang Yufen wrote:
-> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-> index 9b9b02052fd3..ac9f491cc139 100644
-> --- a/net/ipv4/tcp_bpf.c
-> +++ b/net/ipv4/tcp_bpf.c
-> @@ -421,8 +421,10 @@ static int tcp_bpf_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
->  		osize = msg_tx->sg.size;
->  		err = sk_msg_alloc(sk, msg_tx, msg_tx->sg.size + copy, msg_tx->sg.end - 1);
->  		if (err) {
-> -			if (err != -ENOSPC)
-> +			if (err != -ENOSPC) {
-> +				sk_msg_trim(sk, msg_tx, osize);
->  				goto wait_for_memory;
+The page_cnt parameter is used to specify the number of memory pages
+allocated for each per-CPU buffer, it must be non-zero and a power of 2.
 
-Is it a good idea to handle this logic inside sk_msg_alloc()?
+Currently, the __perf_buffer__new() function attempts to validate that
+the page_cnt is a power of 2 but forgets checking for the case where
+page_cnt is zero, we can fix it by replacing 'page_cnt & (page_cnt - 1)'
+with 'page_cnt == 0 || (page_cnt & (page_cnt - 1))'.
+
+If so, we also don't need to add a check in perf_buffer__new_v0_6_0() to
+make sure that page_cnt is non-zero and the check for zero in
+perf_buffer__new_raw_v0_6_0() can also be removed.
+
+The code will be cleaner and more readable.
+
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+v1 -> v2: remove dependency on linux/log2.h header
+
+ tools/lib/bpf/libbpf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index be6480e260c4..81bf01d67671 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -10951,7 +10951,7 @@ struct perf_buffer *perf_buffer__new_raw_v0_6_0(int map_fd, size_t page_cnt,
+ {
+ 	struct perf_buffer_params p = {};
+ 
+-	if (page_cnt == 0 || !attr)
++	if (!attr)
+ 		return libbpf_err_ptr(-EINVAL);
+ 
+ 	if (!OPTS_VALID(opts, perf_buffer_raw_opts))
+@@ -10992,7 +10992,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+ 	__u32 map_info_len;
+ 	int err, i, j, n;
+ 
+-	if (page_cnt & (page_cnt - 1)) {
++	if (page_cnt == 0 || (page_cnt & (page_cnt - 1))) {
+ 		pr_warn("page count should be power of two, but is %zu\n",
+ 			page_cnt);
+ 		return ERR_PTR(-EINVAL);
+-- 
+2.35.1
 
