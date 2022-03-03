@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1054C4CC14C
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 16:31:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 539134CC160
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 16:33:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbiCCPb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 10:31:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54948 "EHLO
+        id S234433AbiCCPee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 10:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234448AbiCCPbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 10:31:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 816EA18645D
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 07:31:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CA48B82610
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 15:31:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F240C340F3;
-        Thu,  3 Mar 2022 15:31:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646321465;
-        bh=6Rhjapl3Sp4lyeFVGQWAc2cItYX2bIMzkAGlTQeBX4E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gvQalPGGmG3HoHHb0LSzTsHv0vF4g5200OHN6a3s6udVYQgoI0jUT64wMC4zNQAL5
-         eenTsC1L8EiwBPqACvEU1ftXeEPLA/ZQxqAKVuwDP10phAqWipFjbVkeAJllUOGLTj
-         cfJDdkPxkU8vK5CHNbqkwpuZSKGtHLCRtswM00hCPIwSnGCINhJyaF0qTGET8v6BHz
-         F4ghxaj5cBRUHBKiiWOI1e9AUTwh2s7AH7seskoP8BpAI7ycI4W6XyK6SKj+QQtuC3
-         F3pipoPSmXpqJaymdwpqazKM8LukRPe78kRksHBHihZLSQaJdbaFtRkvNZtFVUd6Pk
-         PywqITPvfYgEA==
-Date:   Thu, 3 Mar 2022 07:31:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Juhee Kang <claudiajkang@gmail.com>,
-        Andreas Oetken <ennoerlangen@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        netdev@vger.kernel.org,
-        Anthony Harivel <anthony.harivel@linutronix.de>
-Subject: Re: [PATCH net-next v1] flow_dissector: Add support for HSR
-Message-ID: <20220303073103.6fb2e995@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <87ilsva264.fsf@kurt>
-References: <20220228195856.88187-1-kurt@linutronix.de>
-        <20220302224425.410e1f15@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <87ilsva264.fsf@kurt>
+        with ESMTP id S233534AbiCCPec (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 10:34:32 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01136141E34
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 07:33:45 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id 185so4165877qkh.1
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 07:33:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ig9NGme6dunkp+n7dkfisBk2ONzUXxQk28VQCuHiDnQ=;
+        b=gaYbBK/nWwqBWs6yfsGlZUVA5MB+JwE+ZRFqJusdJ3ZcCFYEKJzHxv4XlqIEcYRGDp
+         XaQ2tOXjfPMpXm8K3lxwgBl214MGsKB3saSLfW8H9+WU37inMjZL60y3w5lPyyS1UitC
+         0S5JAiBpz0l5SmbbaF0kJmALC6Ty3bPbhK6+yKNwajYJn0xKLiR2wGPITR+9J1c3Gu6p
+         u9aGlIjYun0Bbv9MZU2IT4cspwVQ3qvTC9rG2KncwB+FUJKLf6sHeuVSBKrGQOtRUoJv
+         bf8MC0bkaF1H+5a1nH7tK0PbeRgVvS8NAebMKqf5POe97RLcWHZjbazlOtGZxTd6GWDO
+         ss/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ig9NGme6dunkp+n7dkfisBk2ONzUXxQk28VQCuHiDnQ=;
+        b=vzB7XotrPS68Y2dtwOUv/bwWVxBVyWkRc6E/u4QMsLfXw90Nd2Tcl3TdFUTKfhwMeq
+         KIKMV8IS+k7DYzcoTGMWEoC17FDWsCSF/UVvpSBmUkrSSBwmFp2JfIniyV/CW6d9htPU
+         ny6benMZpG+ynMZjkerGn5my6UoBHJfqY1zUGSBY5lsjp1GrG04SAkUJMSXZbOEEfx28
+         O317yypq/gwQnwqG8rSqS/vPMiAXldjGfOE5i/j2nGR7ddyovPjwkI0LEHNTl7YVMK/4
+         aJ4bIs1ptRgZHaJOgYfTR0pAXilR2ZcBHNdE62+HgGZ9jOZDczX1LOOqssX0khz3TKg8
+         UmpQ==
+X-Gm-Message-State: AOAM532l0zTCXbyiuf5x3BLN1kwX67uQVh87nMvs/OImR4L7RJWUGMMG
+        s9CUjGBv/5vf9S+mBjpPanlzo1dH1gXxDLop0gGPS4ci12WN2A==
+X-Google-Smtp-Source: ABdhPJx3m2CIRaGY5rtWvQOlDPTXq2KsgpdanJ33r8tVA20c/W7IHxQ9LO/QW+Fn5FRdTkNKAGKFcPOH3fD8ydBNJqQ=
+X-Received: by 2002:a05:620a:15b9:b0:508:1a13:c3ce with SMTP id
+ f25-20020a05620a15b900b005081a13c3cemr18807668qkk.296.1646321624886; Thu, 03
+ Mar 2022 07:33:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <01806a230fab4a6122f407fe96486cee2f6318dd.1646317132.git.dcaratti@redhat.com>
+In-Reply-To: <01806a230fab4a6122f407fe96486cee2f6318dd.1646317132.git.dcaratti@redhat.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 3 Mar 2022 10:33:28 -0500
+Message-ID: <CADVnQy=LVAmN-vQ9OxryquBLsZOfhjv7JUEim96-5Cwq-7b5dA@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next v2] ss: display advertised TCP receive
+ window and out-of-order counter
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     dsahern@kernel.org, netdev@vger.kernel.org, sbrivio@redhat.com,
+        tph@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 03 Mar 2022 09:08:35 +0100 Kurt Kanzenbach wrote:
-> It's this statement here:
-> 
->  https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/include/linux/skbuff.h#n2483
-> 
-> I tried to look up, why is this a BUG_ON() in Thomas' history tree
-> [1]. Couldn't find an explanation. It's been introduced by this commit:
+On Thu, Mar 3, 2022 at 10:19 AM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> these members of TCP_INFO have been included in v5.4.
+>
+> tested with:
+>  # ss -nti
+>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> ---
+>  misc/ss.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/misc/ss.c b/misc/ss.c
+> index f7d369142d93..5e7e84ee819e 100644
+> --- a/misc/ss.c
+> +++ b/misc/ss.c
+> @@ -854,6 +854,8 @@ struct tcpstat {
+>         unsigned int        reord_seen;
+>         double              rcv_rtt;
+>         double              min_rtt;
+> +       unsigned int        rcv_ooopack;
+> +       unsigned int        snd_wnd;
+>         int                 rcv_space;
+>         unsigned int        rcv_ssthresh;
+>         unsigned long long  busy_time;
+> @@ -2654,6 +2656,10 @@ static void tcp_stats_print(struct tcpstat *s)
+>                 out(" notsent:%u", s->not_sent);
+>         if (s->min_rtt)
+>                 out(" minrtt:%g", s->min_rtt);
+> +       if (s->rcv_ooopack)
+> +               out(" rcv_ooopack:%u", s->rcv_ooopack);
+> +       if (s->snd_wnd)
+> +               out(" snd_wnd:%u", s->snd_wnd);
+>  }
+>
+>  static void tcp_timer_print(struct tcpstat *s)
+> @@ -3088,6 +3094,8 @@ static void tcp_show_info(const struct nlmsghdr *nlh, struct inet_diag_msg *r,
+>                 s.reord_seen = info->tcpi_reord_seen;
+>                 s.bytes_sent = info->tcpi_bytes_sent;
+>                 s.bytes_retrans = info->tcpi_bytes_retrans;
+> +               s.rcv_ooopack = info->tcpi_rcv_ooopack;
+> +               s.snd_wnd = info->tcpi_snd_wnd;
+>                 tcp_stats_print(&s);
+>                 free(s.dctcp);
+>                 free(s.bbr_info);
+> --
 
-I meant fix the caller to discard a frame if it doesn't have enough
-data - call pskb_may_pull() first, then skb_pull().
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-> |commit 1a0153507ffae9cf3350e76c12d441788c0191e1 (HEAD)
-> |Author: Linus Torvalds <torvalds@athlon.transmeta.com>
-> |Date:   Mon Feb 4 18:11:38 2002 -0800
-> |
-> |    v2.4.3.2 -> v2.4.3.3
-> |    
-> |      - Hui-Fen Hsu: sis900 driver update
-> |      - NIIBE Yutaka: Super-H update
-> |      - Alan Cox: more resyncs (ARM down, but more to go)
-> |      - David Miller: network zerocopy, Sparc sync, qlogic,FC fix, etc.
-> |      - David Miller/me: get rid of various drivers hacks to do mmap
-> |      alignment behind the back of the VM layer. Create a real
-> |      protocol for it.
-> 
-> It seems like BUG/BUG_ON() is the error handling practice in case of
-> unavailable memory. Even though most functions such as skb_push() or
-> skb_put() use asserts or skb_over_panic() which also result in BUG() at
-> the end.
+Thanks for adding these!
+
+neal
