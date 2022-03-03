@@ -2,95 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 836AB4CB52C
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 03:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FC294CB574
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 04:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231871AbiCCC6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 21:58:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
+        id S229524AbiCCDcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Mar 2022 22:32:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231834AbiCCC6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 21:58:07 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2124993A;
-        Wed,  2 Mar 2022 18:57:23 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id ay10so5636535wrb.6;
-        Wed, 02 Mar 2022 18:57:23 -0800 (PST)
+        with ESMTP id S229446AbiCCDcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 22:32:19 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA7D205F0;
+        Wed,  2 Mar 2022 19:31:34 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id v4so3556741pjh.2;
+        Wed, 02 Mar 2022 19:31:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=VWT1nnZHFDs5KVBOsFtYYBtJaBHbWpLPsvtCyOdWdNA=;
-        b=WRMDzRVxlt+lbSe+XQv4GQ55KeEuKYtud9GSY9bBRprMwKCIGSWym34qliDbbk4IQd
-         p0RV1PL+byNgeR70N1HoqI3dkGa3EhjEKO70n9HHQRYhbNDieIYRAifCt4X7DbJQfCle
-         ma8XSa2zwNtVJB7YHyJ/PXvy4ty8AZzEwR5a+E2cqpPmrJs4a8A3ydGALHrBZlLN4mhd
-         nwB5Tz/0YPUkFUWO4YWIjlXEob3yq3MgokWdj1CfB420hB1+aa23E1lwMrWkivCsjGLp
-         z+s3LofRlqBznrnjuDADYlUZHSLsSBhFzIweBksvAZkG6eyAPhKESFQgPmgPHfzXQ6D3
-         An9Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=pGBvvXv0+bIemEpOMWx5hDUzr2X3HaovG9ODW4Gck18=;
+        b=howYcMrVhW/d8Do6Nlm4w4Jt7BHLOLV+2YwJgPe7YI2G3oBIPY6NNsjLmmzuUE11IW
+         s/AWRMmIFli6RvC1P9MjBDurn+s2BLxshmG0WYZdG1sX5zdBg7R8gzkacLFq+PWjbMS7
+         deH/AMz5iLaIP69PXbUtgGA4iJtFfyTiCa1O6dwgawKp329pJUx5boFzPPTviUUartB5
+         usR9YAwoJ/ZU8CSd5U+oQlFjZIufd/wtVhWz4jdcENMMZBfyKD2OQaJRgaqtiRzb6Alj
+         Q+IIrg72P8uUE19PrSWFqvXu18a6k4+/UwEf6Cs8SNddraR4zLPcZcNi+5Sf+2nLNela
+         pzSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=VWT1nnZHFDs5KVBOsFtYYBtJaBHbWpLPsvtCyOdWdNA=;
-        b=58T0HdP5Wxe0UdGTXr5YUDjg0mnznkSHmh1oZ9byhiPQ49jZH2JtZqkm39WDuP0VJK
-         HBChYYWHmRQPWkemWTJwlaY+AI3KWuRy9hICHtNQvYqbxBtNA6SE+Pixm3kdDgq3yamT
-         I6qqgZMLFTGG5EfEO/0XqydYnxqYsPrcftCqOkVj7TNSykWaFNlcze237dQ18a2SvTuL
-         5lveBK4Mw9WU6cAydm4uG1fltUUYAEuruZeKfh/+2k4CgsFT67p1XTxPkvaOmf/DGFeT
-         zJcySVXZ3qM4p1ZyjoNj9ZrAIQ39nPrdDteeAOySQomh+hsqhpy4q2iSIsoW7GTVwWRo
-         FSqw==
-X-Gm-Message-State: AOAM530ont+eJcW1ZHqsYul/az7Zip/GuIxKtyVDQslifQxPCxy+KyRQ
-        1n3TJa3KlyhvopGKGbdsom4=
-X-Google-Smtp-Source: ABdhPJwRki+RozVmL4+AnfkNifNb8GY8a4uRigih5L9Ru3UVsKhqOjv5ZFlPbnKgRKOYj4nox/IpOg==
-X-Received: by 2002:a05:6000:16c9:b0:1ef:f2e8:1210 with SMTP id h9-20020a05600016c900b001eff2e81210mr10481252wrf.494.1646276241741;
-        Wed, 02 Mar 2022 18:57:21 -0800 (PST)
-Received: from localhost.localdomain ([64.64.123.48])
-        by smtp.gmail.com with ESMTPSA id k184-20020a1ca1c1000000b0038617ae5297sm2323697wme.33.2022.03.02.18.57.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=pGBvvXv0+bIemEpOMWx5hDUzr2X3HaovG9ODW4Gck18=;
+        b=fUTmliX49S1X6I4sU/Z8S36zgqdD63iQYYfBZIOyezfjmhVphrnwh9779rNK0SafyK
+         eOaxqoM/wtVM1I4kzw9cHIlIynB2+nq8ZPBdL+eARmMEshq6WuXTnzTjZPNqZ7Qix4UL
+         u4XGWknrvm7xTth6EU5/wiTNyiI0FaTUpTEvjFtLlYxFgOhPzkJfqREtRg1K/jZ6j+h3
+         e88/F5wyxfO9n0lK7TtO4CoBZ2N4GZyoNfCyVV2JT46t7QnDgSDCVRiTf1O3mXanQqE3
+         OtAmub+c41yW7mmnLVWFv8SG0Dq4/tKVk6OugJfSLF1iz4MFrzropk0/r19OmLecvb5I
+         bo2A==
+X-Gm-Message-State: AOAM532P7IJbSwSS4tpGeakkzmsaJE5FZnaZBTJF58NYnA9sx23PbNOk
+        C7XmGzClcATXs77nfKghNv8=
+X-Google-Smtp-Source: ABdhPJwVQjxrQ0+UJfpvvM58vmsnYjycON6psaMhdHTnaETmUhm7UVpWWj7w8EURRXPSwTwHGXSXjg==
+X-Received: by 2002:a17:90a:7147:b0:1bd:24ac:13bd with SMTP id g7-20020a17090a714700b001bd24ac13bdmr3147872pjs.70.1646278294550;
+        Wed, 02 Mar 2022 19:31:34 -0800 (PST)
+Received: from ubuntu.huawei.com ([119.3.119.19])
+        by smtp.googlemail.com with ESMTPSA id ot13-20020a17090b3b4d00b001bf0b8a1ee7sm566981pjb.11.2022.03.02.19.31.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Mar 2022 18:57:21 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     isdn@linux-pingi.de, davem@davemloft.net, zou_wei@huawei.com,
-        zheyuma97@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] isdn: hfcpci: check the return value of dma_set_mask() in setup_hw()
-Date:   Wed,  2 Mar 2022 18:57:10 -0800
-Message-Id: <20220303025710.1201-1-baijiaju1990@gmail.com>
+        Wed, 02 Mar 2022 19:31:33 -0800 (PST)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     james.bottomley@hansenpartnership.com
+Cc:     arnd@arndb.de, gregkh@linuxfoundation.org, jakobkoschel@gmail.com,
+        jannh@google.com, keescook@chromium.org,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        torvalds@linux-foundation.org, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable outside the loop
+Date:   Thu,  3 Mar 2022 11:31:22 +0800
+Message-Id: <20220303033122.10028-1-xiam0nd.tong@gmail.com>
 X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <c0fc6e9c096778dce5c1e63c29af5ebdce83aca6.camel@HansenPartnership.com>
+References: <c0fc6e9c096778dce5c1e63c29af5ebdce83aca6.camel@HansenPartnership.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function dma_set_mask() in setup_hw() can fail, so its return value
-should be checked.
+On Wed, 02 Mar 2022 08:02:23 -0500, James Bottomley
+<James.Bottomley@HansenPartnership.com> wrote:
+> pos shouldn't be an input to the macro since it's being declared inside
+> it.  All that will do will set up confusion about the shadowing of pos.
+> The macro should still work as
+>
+> #define list_for_each_entry_inside(type, head, member) \
+>   ...
+>
+> For safety, you could
+>
+> #define POS __UNIQUE_ID(pos)
+>
+> and use POS as the loop variable .. you'll have to go through an
+> intermediate macro to get it to be stable.  There are examples in
+> linux/rcupdate.h
 
-Fixes: e85da794f658 ("mISDN: switch from 'pci_' to 'dma_' API")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/isdn/hardware/mISDN/hfcpci.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+The outer "pos" variable is no longer needed and thus the declare
+statement before the loop is removed, see the demostration in PATCH
+3~6. Now, there is only one inner "pos" variable left. Thus, there
+should be no such *shadow* problem.
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
-index bd087cca1c1d..af17459c1a5c 100644
---- a/drivers/isdn/hardware/mISDN/hfcpci.c
-+++ b/drivers/isdn/hardware/mISDN/hfcpci.c
-@@ -2005,7 +2005,11 @@ setup_hw(struct hfc_pci *hc)
- 	}
- 	/* Allocate memory for FIFOS */
- 	/* the memory needs to be on a 32k boundary within the first 4G */
--	dma_set_mask(&hc->pdev->dev, 0xFFFF8000);
-+	if (dma_set_mask(&hc->pdev->dev, 0xFFFF8000)) {
-+		printk(KERN_WARNING
-+		       "HFC-PCI: No usable DMA configuration!\n");
-+		return -EIO;
-+	}
- 	buffer = dma_alloc_coherent(&hc->pdev->dev, 0x8000, &hc->hw.dmahandle,
- 				    GFP_KERNEL);
- 	/* We silently assume the address is okay if nonzero */
--- 
-2.17.1
+Please remind me if i missed something, thanks.
 
+--
+Xiaomeng Tong
