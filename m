@@ -2,121 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1554CB2FB
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 00:52:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA0114CB374
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 01:35:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229665AbiCBXvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Mar 2022 18:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        id S230094AbiCCAL0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Mar 2022 19:11:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiCBXvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 18:51:03 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942DE64CE
-        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 15:50:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=bWjsF7uNB7MJczwOXQEwDgCwb5vkngDHRyGGCne/Kvo=; b=yvyMer/7SgWaji20XjefDMoDoz
-        6pZ9Ka5ay/CrU7KHjH7jcrb4LHn6XV6gmphDRG0vC/eC31jeCKBpyrKnM4ZZt2wL3CYjWskrvTk+A
-        0D9q/1W9bxlwkKHYUy1InyoFhjgXrdPolMnDWyOtRJr9cqHDvJgL0Xm4Y+zMP78GQGZ4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nPYjY-008zoD-HR; Thu, 03 Mar 2022 00:50:16 +0100
-Date:   Thu, 3 Mar 2022 00:50:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, netdev <netdev@vger.kernel.org>
-Subject: Re: smsc95xx warning after a 'reboot' command
-Message-ID: <YiACuNTd9lzN6Wym@lunn.ch>
-References: <CAOMZO5ALfFDQjtbQwRiZjAhQnihBNFpmKfLh2t97tJBRQOLbNQ@mail.gmail.com>
- <Yh/r5hkui6MrV4W6@lunn.ch>
- <CAOMZO5D1X2Vy1aCoLsa=ga94y74Az2RrbwcZgUfmx=Eyi4LcWw@mail.gmail.com>
+        with ESMTP id S230005AbiCCALY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Mar 2022 19:11:24 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CA7C15A11
+        for <netdev@vger.kernel.org>; Wed,  2 Mar 2022 16:10:40 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-9-TaJDYF8zPkim1JgaaMOOTA-1; Thu, 03 Mar 2022 00:10:37 +0000
+X-MC-Unique: TaJDYF8zPkim1JgaaMOOTA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 3 Mar 2022 00:10:36 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 3 Mar 2022 00:10:36 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Krzysztof Kozlowski' <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [RESEND PATCH v2 4/6] nfc: llcp: use test_bit()
+Thread-Topic: [RESEND PATCH v2 4/6] nfc: llcp: use test_bit()
+Thread-Index: AQHYLmtWg0E/2bVm5kqjDz1/h/f2VKysyObA
+Date:   Thu, 3 Mar 2022 00:10:36 +0000
+Message-ID: <7fc4cb250bb8406cadf80649e366b249@AcuMS.aculab.com>
+References: <20220302192523.57444-1-krzysztof.kozlowski@canonical.com>
+ <20220302192523.57444-5-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220302192523.57444-5-krzysztof.kozlowski@canonical.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5D1X2Vy1aCoLsa=ga94y74Az2RrbwcZgUfmx=Eyi4LcWw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> > So it looks like the PHY state machine has not been told to stop using
-> > the PHY. That suggests smsc95xx_disconnect_phy() has not been
-> > called. Could you confirm this by putting a printk() in there.
+From: Krzysztof Kozlowski
+> Sent: 02 March 2022 19:25
 > 
-> I added a printk (*********** smsc95xx_disconnect_phy())
-> and confirmed that smsc95xx_disconnect_phy() is being called.
+> Use test_bit() instead of open-coding it, just like in other places
+> touching the bitmap.
+
+Except it isn't a bitmap, it is just a structure member that contains bits.
+So all the other places should be changes to use C shifts and masks (etc).
+
+	David
+
 > 
-> Please see the log below, thanks.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  net/nfc/llcp_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> [   22.140598] ci_hdrc ci_hdrc.1: remove, state 1
-> [   22.145077] usb usb2: USB disconnect, device number 1
-> [   22.146674] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-> [   22.150146] usb 2-1: USB disconnect, device number 2
-> [   22.157275] smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
-> [   22.162237] usb 2-1.1: USB disconnect, device number 3
-> [   22.167986] smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
-> [   22.174690] smsc95xx 2-1.1:1.0 eth1: unregister 'smsc95xx'
-> usb-ci_hdrc.1-1.1, smsc95xx USB 2.0 Ethernet
-> [   22.179732] ------------[ cut here ]------------
-> [   22.193687] WARNING: CPU: 1 PID: 114 at drivers/net/phy/phy.c:958
-> phy_error+0x14/0x60
-> [   22.201514] Modules linked in:
-> [   22.204577] CPU: 1 PID: 114 Comm: kworker/u8:2 Not tainted
-> 5.10.102-00042-ga4a140612082-dirty #29
-> [   22.213447] Hardware name: CompuLab i.MX8MM IoT Gateway (DT)
-> [   22.219112] Workqueue: events_power_efficient phy_state_machine
-> [   22.225036] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
-> [   22.231043] pc : phy_error+0x14/0x60
-> [   22.234620] lr : phy_state_machine+0x88/0x218
-> [   22.238975] sp : ffff800011733d20
-> [   22.242289] x29: ffff800011733d20 x28: ffff800011217000
-> [   22.247608] x27: ffff000000008070 x26: ffff000000008020
-> [   22.252924] x25: 0000000000000000 x24: 00000000ffffffed
-> [   22.258240] x23: ffff00000edb8ce8 x22: ffff000002165580
-> [   22.263558] x21: ffff00000edb8800 x20: 0000000000000005
-> [   22.268875] x19: ffff00000edb8800 x18: 0000000000000010
-> [   22.274193] x17: 0000000000000000 x16: 0000000000000000
-> [   22.279509] x15: ffff0000021659f8 x14: 00000000000000dd
-> [   22.284825] x13: 0000000000000001 x12: 0000000000000000
-> [   22.290140] x11: 0000000000000000 x10: 00000000000009d0
-> [   22.295456] x9 : ffff8000117338a0 x8 : ffff000002165fb0
-> [   22.300772] x7 : ffff00007fb8d680 x6 : 000000000000000e
-> [   22.306088] x5 : 00000000410fd030 x4 : 0000000000000000
-> [   22.311406] x3 : ffff00000edb8ce8 x2 : 0000000000000000
-> [   22.316723] x1 : ffff000002165580 x0 : ffff00000edb8800
-> [   22.322039] Call trace:
-> [   22.324490]  phy_error+0x14/0x60
-> [   22.327722]  phy_state_machine+0x88/0x218
-> [   22.331736]  process_one_work+0x1bc/0x338
-> [   22.335747]  worker_thread+0x50/0x420
-> [   22.339411]  kthread+0x140/0x160
-> [   22.342642]  ret_from_fork+0x10/0x34
-> [   22.346219] ---[ end trace 25b1972853f1f1f8 ]---
-> [   22.350892] smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
-> [   22.350975] *********** smsc95xx_disconnect_phy()
+> diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
+> index 5ad5157aa9c5..b70d5042bf74 100644
+> --- a/net/nfc/llcp_core.c
+> +++ b/net/nfc/llcp_core.c
+> @@ -383,7 +383,7 @@ u8 nfc_llcp_get_sdp_ssap(struct nfc_llcp_local *local,
+>  			pr_debug("WKS %d\n", ssap);
+> 
+>  			/* This is a WKS, let's check if it's free */
+> -			if (local->local_wks & BIT(ssap)) {
+> +			if (test_bit(ssap, &local->local_wks)) {
+>  				mutex_unlock(&local->sdp_lock);
+> 
+>  				return LLCP_SAP_MAX;
+> --
+> 2.32.0
 
-If i'm reading this correctly, this is way to late, the device has
-already gone. The PHY needs to be stopped while the device is still
-connected to the USB bus.
-
-I could understand a trace like this with a hot unplug, but not with a
-reboot. I would expect things to be shut down starting from the leaves
-of the USB tree, so the smsc95xx should have a chance to perform a
-controlled shutdown before the device is removed.
-
-This code got reworked recently. smsc95xx_disconnect_phy() has been
-removed, and the phy is now disconnected in smsc95xx_unbind(). Do you
-get the same stack trace with 5.17-rc? Or is it a different stack
-trace?
-
-	Andrew
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
