@@ -2,109 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F054CC409
-	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 18:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F7D4CC413
+	for <lists+netdev@lfdr.de>; Thu,  3 Mar 2022 18:37:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiCCRgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 12:36:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S230284AbiCCRiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 12:38:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiCCRgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 12:36:09 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B603192F
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 09:35:22 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id m14so9778631lfu.4
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 09:35:22 -0800 (PST)
+        with ESMTP id S229846AbiCCRiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 12:38:20 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D41A2C128
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 09:37:34 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 6so591340pgg.0
+        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 09:37:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=gJO9t+nw81mCakkJU4rcitth7kTwFygbrgST2tWJ3Vo=;
-        b=qyoVlFBomloAoUn1xlqx5IqE4FsUTuCVy8zHzcuJ6wcDz2/Xvarcsb0GQF5O5/xLF5
-         LZArGmIjj93gpo5DX6O45bTPYBcCKTFF+h220RDpA7/hkvvRNC32IKf1csyrUlo4wQ0X
-         HhwF+6j4xdD4Z2FiJRipv6i5ijnAbRFBsmQsA=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IqBk163J54tSLaRPxp7ot55KxhOG2acpdqBW8vh7NA8=;
+        b=PHcJ7LzmBRqt9YYI48V9uzjBOoDhhWjYcQHm3r8W+I/o4ongECCAso+cXD6ERUBMGh
+         lEEogQn5zcd8iF+El+Y3gYa9RZPhMNASZSw6I6se23vtVeeSs2K2ML19VAomRHZKALns
+         ghE5Yb1FTynLnZ+XoCM6PurMUjTGB/At3NxFpQjzc2qgnYeOylZ2CWBuev/gFSrjreTi
+         VClnAHaB8Mp8OARlnqVZX4juTgwmmYfp1c833h3jVowz2EAdFeUOLT6vtIeY4I6iI6mw
+         LbTCPBqg4qL5d8UMHoyWaS/HtKJjJAMxdPWwWlP6VWARrhOnSpm7R+MOfxetuk/wpPi3
+         xVDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=gJO9t+nw81mCakkJU4rcitth7kTwFygbrgST2tWJ3Vo=;
-        b=pBA/DZ45Tp5dDzZDfydABt3qz31waqBs4yVNc7GJZ79dhzBqmg3grcvMfdMVZe+QUS
-         /r/BwbNdbWB9tO2u5FAvCi6Q/DdYlZ62XTswwH5PFlTu1vN5gVnVLTCMxjX6f/Sc1y+2
-         9VyOJxX+wHjLgmP/OFJKIWRhEEC4urPI+i1hbZfo5XRFxE78DVUZ3TsV8jTM9oO18QuE
-         BNKMRHE0upJbGQ6iiYQs4/8yVtni3Bvqg70g5IYB4bwW/2giDej1wVjXUPUz0I4treSj
-         p9Y/bNBaa9P17XF7O3CsH6NQ9xdCM0HjFTilO82HxLBrvT7KJqPEv+MaggESeVauGXtu
-         c1jg==
-X-Gm-Message-State: AOAM532bS/2c3XH3ADiQn5r9a9WYXYeVwIER/nkZb8lV20B8NVP+JMLB
-        cGdg6b6DJs2Yi2Ah0jge/wHlrQ==
-X-Google-Smtp-Source: ABdhPJzZI8wTAhP+syWE9VPh8Qg10UjeSdqOap0TYm4UFweiyRiNQpiwd1zO6gZNGkzqAu4agWfSxw==
-X-Received: by 2002:ac2:4d29:0:b0:445:b80c:1130 with SMTP id h9-20020ac24d29000000b00445b80c1130mr6625873lfk.21.1646328919443;
-        Thu, 03 Mar 2022 09:35:19 -0800 (PST)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id c12-20020a056512074c00b004458cd423f7sm542354lfs.68.2022.03.03.09.35.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IqBk163J54tSLaRPxp7ot55KxhOG2acpdqBW8vh7NA8=;
+        b=FlHsWadFjEvvGmhjE2eM1jia+F/puHwfsQW2QmAWCJ0VLJe7QgtUPmOpEysv5ixGDd
+         CfGM/gBrTyUccRgOrxG6DzsP6oSV80HGJpkgkNDNpNlS65dqDdz2sOdRgMqzpt2/+NPr
+         7u4sg1iGUyL8ohc5je1DaEDuEtsLP4Eyu24k2P/YWgOu1Aeql3uRk1N6YgxBZ8ji8fag
+         rxccKOqKoLpP7DLCwK3sLjWV94kRbXwbiWMs49OeTEaKblHpX4Q7HIyKhRtHI246Y4XM
+         dICi8KdhMj2MgnB2LECKHMCOButgZqWIT1MQQsP2VtjR/5/2fp8kfAVV4dXH42rnXWzW
+         dk0Q==
+X-Gm-Message-State: AOAM532LskVs3H9BVfuh+ZG7T+dlM+1bf/WgzYSYY2bxGY7QlezVgheE
+        tDoXWLUk3jDuDxdI2TC5WHU=
+X-Google-Smtp-Source: ABdhPJy0VYuXX3/Rb3L1Xbit8rRi4leLFWNqh41fZxGoLJHrNROciZRIm812XIm9dBXvDFqtGsVYcQ==
+X-Received: by 2002:a05:6a00:a8f:b0:4e1:2619:11a2 with SMTP id b15-20020a056a000a8f00b004e1261911a2mr39109278pfl.53.1646329053585;
+        Thu, 03 Mar 2022 09:37:33 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:87fe:92b5:3de5:d71e])
+        by smtp.gmail.com with ESMTPSA id b3-20020a056a00114300b004cc39630bfcsm3107412pfm.207.2022.03.03.09.37.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 09:35:19 -0800 (PST)
-References: <20220227202757.519015-1-jakub@cloudflare.com>
- <20220227202757.519015-3-jakub@cloudflare.com>
- <20220301062536.zs6z6q56exu3hgvv@kafai-mbp.dhcp.thefacebook.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com, Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: Re: [PATCH bpf-next v2 2/3] selftests/bpf: Check dst_port only on
- the client socket
-Date:   Thu, 03 Mar 2022 18:34:38 +0100
-In-reply-to: <20220301062536.zs6z6q56exu3hgvv@kafai-mbp.dhcp.thefacebook.com>
-Message-ID: <87zgm7gcrt.fsf@cloudflare.com>
+        Thu, 03 Mar 2022 09:37:33 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net] ipv6: fix skb drops in igmp6_event_query() and igmp6_event_report()
+Date:   Thu,  3 Mar 2022 09:37:28 -0800
+Message-Id: <20220303173728.937869-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 10:25 PM -08, Martin KaFai Lau wrote:
-> On Sun, Feb 27, 2022 at 09:27:56PM +0100, Jakub Sitnicki wrote:
->> cgroup_skb/egress programs which sock_fields test installs process packets
->> flying in both directions, from the client to the server, and in reverse
->> direction.
->> 
->> Recently added dst_port check relies on the fact that destination
->> port (remote peer port) of the socket which sends the packet is known ahead
->> of time. This holds true only for the client socket, which connects to the
->> known server port.
->> 
->> Filter out any traffic that is not bound to be egressing from the client
->> socket in the test program for reading the dst_port.
->> 
->> Fixes: 8f50f16ff39d ("selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads")
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->>  .../testing/selftests/bpf/progs/test_sock_fields.c  | 13 +++++++++++--
->>  1 file changed, 11 insertions(+), 2 deletions(-)
->> 
->> diff --git a/tools/testing/selftests/bpf/progs/test_sock_fields.c b/tools/testing/selftests/bpf/progs/test_sock_fields.c
->> index 3e2e3ee51cc9..186fed1deaab 100644
->> --- a/tools/testing/selftests/bpf/progs/test_sock_fields.c
->> +++ b/tools/testing/selftests/bpf/progs/test_sock_fields.c
->> @@ -42,6 +42,11 @@ struct {
->>  	__type(value, struct bpf_spinlock_cnt);
->>  } sk_pkt_out_cnt10 SEC(".maps");
->>  
->> +enum {
->> +	TCP_SYN_SENT = 2,
->> +	TCP_LISTEN = 10,
-> Thanks for the clean up.
->
-> A nit. directly use BPF_TCP_SYN_SENT and BPF_TCP_LISTEN.
+From: Eric Dumazet <edumazet@google.com>
 
-Thanks. Completely forgot about those.
+While investigating on why a synchronize_net() has been added recently
+in ipv6_mc_down(), I found that igmp6_event_query() and igmp6_event_report()
+might drop skbs in some cases.
+
+Discussion about removing synchronize_net() from ipv6_mc_down()
+will happen in a different thread.
+
+Fixes: f185de28d9ae ("mld: add new workqueues for process mld events")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Taehee Yoo <ap420073@gmail.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: David Ahern <dsahern@kernel.org>
+---
+ include/net/ndisc.h |  4 ++--
+ net/ipv6/mcast.c    | 32 ++++++++++++--------------------
+ 2 files changed, 14 insertions(+), 22 deletions(-)
+
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index 53cb8de0e589cec4161051a3cfd27de138b282ff..47ffb360ddfac154372d5cf8729a113e5ef736a0 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -475,9 +475,9 @@ int igmp6_late_init(void);
+ void igmp6_cleanup(void);
+ void igmp6_late_cleanup(void);
+ 
+-int igmp6_event_query(struct sk_buff *skb);
++void igmp6_event_query(struct sk_buff *skb);
+ 
+-int igmp6_event_report(struct sk_buff *skb);
++void igmp6_event_report(struct sk_buff *skb);
+ 
+ 
+ #ifdef CONFIG_SYSCTL
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index a8861db52c1877e8bb94a0eee9154af7340d1ba1..909f937befd71fce194517d44cb9a4c5e2876360 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -1371,27 +1371,23 @@ static void mld_process_v2(struct inet6_dev *idev, struct mld2_query *mld,
+ }
+ 
+ /* called with rcu_read_lock() */
+-int igmp6_event_query(struct sk_buff *skb)
++void igmp6_event_query(struct sk_buff *skb)
+ {
+ 	struct inet6_dev *idev = __in6_dev_get(skb->dev);
+ 
+-	if (!idev)
+-		return -EINVAL;
+-
+-	if (idev->dead) {
+-		kfree_skb(skb);
+-		return -ENODEV;
+-	}
++	if (!idev || idev->dead)
++		goto out;
+ 
+ 	spin_lock_bh(&idev->mc_query_lock);
+ 	if (skb_queue_len(&idev->mc_query_queue) < MLD_MAX_SKBS) {
+ 		__skb_queue_tail(&idev->mc_query_queue, skb);
+ 		if (!mod_delayed_work(mld_wq, &idev->mc_query_work, 0))
+ 			in6_dev_hold(idev);
++		skb = NULL;
+ 	}
+ 	spin_unlock_bh(&idev->mc_query_lock);
+-
+-	return 0;
++out:
++	kfree_skb(skb);
+ }
+ 
+ static void __mld_query_work(struct sk_buff *skb)
+@@ -1542,27 +1538,23 @@ static void mld_query_work(struct work_struct *work)
+ }
+ 
+ /* called with rcu_read_lock() */
+-int igmp6_event_report(struct sk_buff *skb)
++void igmp6_event_report(struct sk_buff *skb)
+ {
+ 	struct inet6_dev *idev = __in6_dev_get(skb->dev);
+ 
+-	if (!idev)
+-		return -EINVAL;
+-
+-	if (idev->dead) {
+-		kfree_skb(skb);
+-		return -ENODEV;
+-	}
++	if (!idev || idev->dead)
++		goto out;
+ 
+ 	spin_lock_bh(&idev->mc_report_lock);
+ 	if (skb_queue_len(&idev->mc_report_queue) < MLD_MAX_SKBS) {
+ 		__skb_queue_tail(&idev->mc_report_queue, skb);
+ 		if (!mod_delayed_work(mld_wq, &idev->mc_report_work, 0))
+ 			in6_dev_hold(idev);
++		skb = NULL;
+ 	}
+ 	spin_unlock_bh(&idev->mc_report_lock);
+-
+-	return 0;
++out:
++	kfree_skb(skb);
+ }
+ 
+ static void __mld_report_work(struct sk_buff *skb)
+-- 
+2.35.1.616.g0bdcbb4464-goog
+
