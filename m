@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CC74CD18C
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 10:45:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 285404CD188
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 10:45:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239143AbiCDJpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 04:45:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        id S239298AbiCDJpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 04:45:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237189AbiCDJpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 04:45:06 -0500
+        with ESMTP id S239288AbiCDJpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 04:45:15 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9652C134DCC;
-        Fri,  4 Mar 2022 01:44:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1BD1986C7;
+        Fri,  4 Mar 2022 01:44:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646387058; x=1677923058;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=EmjHiPsMxOOnWiYDwCWMUBLUdno138ROaGI7g3qe+u0=;
-  b=bpFPhby/+7QgAG0SmEKfBsXsJGV1enYV6KpHVikl/3rEQtdlaSqFZI6g
-   PfMWoykQErxoUEwdyajwjvVGf6RYEwwuykzgYix+NmF/KEo3ZddKXQM4h
-   loDOjtxL7y0vKNy5ketg5pFE2h8l1qmwPZgTsPuN2ry5wNSW+vi0NRnEJ
-   W0xw2G7QgZh9nysVzmh8LxDPvDA2KatpEMpzekcBoJZejxMaP0bzIHtQw
-   0OcXG/GRvYP6cWWMiPRRaHCwgYgco+c1PpbYAD1uWbAqvH9vKAbWOkvhO
-   QBbT+NqWSNF4g1+oNccjiQKKMLhUfUP2XU0PyrPS25FyNXOZPK1dXlAbB
+  t=1646387068; x=1677923068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=E3rqwY/99wnq4HgwXc6HJ5NbOlQpp4iqKb8/360vcls=;
+  b=fWc5PYsmwGp05DKxGplrvgkGtzOFG1tqAhxbjV8zJRN8EgBOwm0CZE9f
+   9m4sv2EF9qv6RxHRMQo54EXhoft+3qp4XWtb2NDUDVLRw7WDtep6Q14e2
+   FCu1/uqXXyHUc9r25Y7X4RKYhSm7JdVyPzgqnyI0j6KlKqlkw23DLnH8q
+   nVtkFIAC/457UsfBviO66U/9/H5ViF3xVQ838+RtgjxzfXpjHUF1GslrB
+   cIa8efgjK+o5CSiqdfp1g4ptQ15CZ1ZruTP/oGDKY6QUXt4hlMKQhtnS0
+   yAK+FaI7grjrjr4qP5A0TcCbIAHwFsNzS5us6kaMiLI7+lxqEOBuK6vwa
    Q==;
 X-IronPort-AV: E=Sophos;i="5.90,154,1643698800"; 
-   d="scan'208";a="148081499"
+   d="scan'208";a="148081517"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 02:44:18 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 02:44:27 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 02:44:17 -0700
+ 15.1.2375.17; Fri, 4 Mar 2022 02:44:26 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 02:44:13 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 02:44:22 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Andrew Lunn <andrew@lunn.ch>,
@@ -46,10 +46,12 @@ CC:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next 0/6] Add support for LAN937x T1 Phy Driver
-Date:   Fri, 4 Mar 2022 15:13:55 +0530
-Message-ID: <20220304094401.31375-1-arun.ramadoss@microchip.com>
+Subject: [PATCH net-next 1/6] net: phy: used genphy_soft_reset for phy reset in LAN87xx
+Date:   Fri, 4 Mar 2022 15:13:56 +0530
+Message-ID: <20220304094401.31375-2-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220304094401.31375-1-arun.ramadoss@microchip.com>
+References: <20220304094401.31375-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -63,24 +65,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LAN937x is a Multi-port 100Base-T1 Switch and it internally uses LAN87xx
-T1 Phy.  This series of patch update the initialization routine for the
-LAN87xx phy and also add LAN937x part support. Added the T1 Phy
-master-slave configuration through ethtool.
+Replaced the current code of resetting of LAN87xx phy to
+genphy_soft_reset library function.
 
-Arun Ramadoss (6):
-  net: phy: used genphy_soft_reset for phy reset in LAN87xx
-  net: phy: used the PHY_ID_MATCH_MODEL macro for LAN87XX
-  net: phy: removed empty lines in LAN87XX
-  net: phy: updated the initialization routine for LAN87xx
-  net: phy: added the LAN937x phy support
-  net: phy: added ethtool master-slave configuration support
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/phy/microchip_t1.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
- drivers/net/phy/microchip_t1.c | 387 +++++++++++++++++++++++++++------
- 1 file changed, 325 insertions(+), 62 deletions(-)
-
-
-base-commit: f9f52c3474282a5485b28cf188b47d6e2efee185
+diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
+index bc50224d43dd..c6a8c22efcce 100644
+--- a/drivers/net/phy/microchip_t1.c
++++ b/drivers/net/phy/microchip_t1.c
+@@ -197,20 +197,10 @@ static int lan87xx_phy_init(struct phy_device *phydev)
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	/* Soft Reset the SMI block */
+-	rc = access_ereg_modify_changed(phydev, PHYACC_ATTR_BANK_SMI,
+-					0x00, 0x8000, 0x8000);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Check to see if the self-clearing bit is cleared */
+-	usleep_range(1000, 2000);
+-	rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
+-			 PHYACC_ATTR_BANK_SMI, 0x00, 0);
++	/* phy Soft reset */
++	rc = genphy_soft_reset(phydev);
+ 	if (rc < 0)
+ 		return rc;
+-	if ((rc & 0x8000) != 0)
+-		return -ETIMEDOUT;
+ 
+ 	/* PHY Initialization */
+ 	for (i = 0; i < ARRAY_SIZE(init); i++) {
 -- 
 2.33.0
 
