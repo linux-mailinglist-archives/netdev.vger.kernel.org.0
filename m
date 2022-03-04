@@ -2,92 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AE914CD472
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 13:47:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 263944CD473
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 13:47:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiCDMsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 07:48:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
+        id S231324AbiCDMs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 07:48:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234070AbiCDMrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 07:47:53 -0500
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01olkn2041.outbound.protection.outlook.com [40.92.98.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AAA31B3A7E
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 04:47:05 -0800 (PST)
+        with ESMTP id S230194AbiCDMs2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 07:48:28 -0500
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01olkn2065.outbound.protection.outlook.com [40.92.98.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01DEF32ED6
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 04:47:41 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BvWw84JBDUZDnK2iWXjIk+JrWaEuQZaaeXtJbANWpkPXA5BAVDJDoVmmrj1MPv8wBnyJs1cfbeF9am6b0nzjsSCfvUgiAP8R6C7pOxulDrSvogMMOF9ClzwKZNURgPJ73Ya4XoK5O/2+mwZxxzYjOGkjV7r0q3UZo7McZq3mn5Q+EGakE0tGOjuaa6HdqFiF8JXjF2ip5R2l63OGCQiDNpdKG6UPnI2SHshmq+DaAWs99M3CnvJItmuBTDW4eUGqZjRZ3GsY4lpTqyi6sYGaTQMKonz9WlLx+C/NEtX53eZ4fFHIzA+H9sUyiqxzFKrwQKGQsGLkCouHrFPHny8u3A==
+ b=PpEhxCOfJROG146rEVtP7qFRDnPfwFMeTZV26+hszUX9tyWWKSp8gvCi9HMRL7fUNuFFNmBFuDWXIv0plVIBmxvXDLfMRn9vjWbB5xyr78Qvt0zqwmuqGBt2BweZCIINxv6H9QnV7KzdiGZGDCTghlqwVTdRwzJBmFk+j/cqxtXJgTWKq5eGZTKV3RBY257eYmL7N3iaLOXWysDqGoXVekPhWJR2vA4qCoZZHeMTTXFQrOfAdDhcrpCVLC0qXo2AN0Z44nyEap4t+5vNCovcfA10dwbWUjS4S1agF7MstaIdWgrAc5YGsk6EiV+sSes+UGF6l+LAPqj+gx4HqJbqtA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d5nA6fsgzzV9zNg7FS6qMZPh42yAYxE2crc4hd/2nuY=;
- b=isjI83YvDq9Y3P1OYGBXBLnaFGwPe20z0qWowto+7aSXrb5OonM7y5BFvhsTU5q5Dsb0xFqzLqfiqbAtQy2zJlnVVe92E9IJOrf5n1izvZdWj5kSC8rDWK9atG2/AMm0+gzovaw/C0F8vsmLr0U/1Pyen/DkjteQdt8/eV8REXttQLtvlpuEV4nRjGxezzFCmvA+7cZPn3hcJY8cogef+oLqln08lQ5ZwA8gEJdTxEFQH+O2Pb8Hf/HDucKHvxPZhBHmLitE0t5fYAOFvs8fHxz1DXQVjeuWECEjYX1IJLUs8cz+9KDsTFQV8KpoRKmtib/a5R1RTLg28rumf1y3DQ==
+ bh=cZkNE3vfKPrpvj7dVCttmiepkAfbMUnRb16R9/ifzhk=;
+ b=c1/Zb5fSiI1t90BcWmNRrch53upMubmzvoXR9iAUXiEF2nHm+/M0TIcC2D5PDEz8BS2ZOyYytle743eecDOjq19B9yPEQ6ssh4PI8XhRUA2QzUpoQwzXHFpBA8o1vMKyZqugT5nZa+LbWwUdEn/xdM7RVmqsrazjIEmk+V8Etst4cSYaqXXD7+ZFyZSPtvgMk0QPGHCXcMEn76/Rg8Agv+uuDjd2Czv1IHhjgvgkW7ajSH/5GFpE2c1avvSAHB8z4Y7IPIOGy1gJtla6v4b0sBdBT6cEspwNUdUShKImz+vNeq10hMuE5gRRPC2wJlUss1LxeyZ3USWStj/Kl+/kGQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d5nA6fsgzzV9zNg7FS6qMZPh42yAYxE2crc4hd/2nuY=;
- b=n/1yJsS1FBwdmYyA24zGgYSzN8fFeM8gaTghgEzjMg1tYvKbJ0ha2nP6IuXKMztDSBT/q06C3/OWrYzQA6KV5RpqK8Yahd332HtGH6W2ACf7wopaZ2J1u6ZbS2TyY0fAyDGR6yFzJH1rO3eVg7C/i7dwuhpHz87h6PDf1YtAstCQYPXA1Uwg6qxJalgdjZO9JzwpR5XxmtkNOEEnqrp1+V6VSm9nTKOt3/2aX/CgsKhdiGRgVPgnGUhhhwM02DXhzZaUMQt5FTnRUydcBnvtevAFMJMKkadfBjFRlWlfoNEukgELE8O5sAQuTj4g1m7LXD+CtlNVPY4jRB2q0/+QyA==
+ bh=cZkNE3vfKPrpvj7dVCttmiepkAfbMUnRb16R9/ifzhk=;
+ b=HN305grSEz8CbtjebPpS3+Uz0xDFJwoTSXfco7w+jtNMXV0jT3WobeVjsR8HbLeDDfmC8f52V5j7EhkMKvOnV36ZDbtsCKZ0ntZAHP7r4geLK/gEcPx/KzAhg3phskd568ouoH9TTEmTbD8iae7VV0y+btb9z2sk9R6RC7um4WKu7XSPLjiQVEli0Rw1Kwlu0/wS7q1nSlkNjxaw6+hAMLHRmc0x85a+Y1hZ/XKDAkPIMgg4kV5X4N+Bd1e3XN1KZu8ltv2dHZqNbWYil0eir3IImdKNcazUcKPa2Fk3pj7bTqz9eQy0rUJRFP1LZ3Eutm8nw1atmSCfAd8vMwshdg==
 Received: from OSAPR01MB7567.jpnprd01.prod.outlook.com (2603:1096:604:147::9)
  by TY2PR01MB3435.jpnprd01.prod.outlook.com (2603:1096:404:d6::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Fri, 4 Mar
- 2022 12:47:02 +0000
+ 2022 12:47:39 +0000
 Received: from OSAPR01MB7567.jpnprd01.prod.outlook.com
  ([fe80::ed12:bc41:7a3b:ea5d]) by OSAPR01MB7567.jpnprd01.prod.outlook.com
  ([fe80::ed12:bc41:7a3b:ea5d%6]) with mapi id 15.20.5038.016; Fri, 4 Mar 2022
- 12:47:02 +0000
+ 12:47:39 +0000
 From:   Shangyan Zhou <sy.zhou@hotmail.com>
-To:     leon@kernel.org
-Cc:     netdev@vger.kernel.org, Shangyan Zhou <sy.zhou@hotmail.com>
-Subject: [PATCH v3] rdma: Fix res_print_uint() and add res_print_u64()
-Date:   Fri,  4 Mar 2022 20:46:37 +0800
-Message-ID: <OSAPR01MB7567AF3E28F7D2D72FFA876BE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <OSAPR01MB75677A8532242F986A967C9DE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
-References: <OSAPR01MB75677A8532242F986A967C9DE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [3aib1yOGM18D9Ow/XpxWxY73ftkZioDz]
-X-ClientProxiedBy: HK0PR03CA0113.apcprd03.prod.outlook.com
- (2603:1096:203:b0::29) To OSAPR01MB7567.jpnprd01.prod.outlook.com
- (2603:1096:604:147::9)
-X-Microsoft-Original-Message-ID: <20220304124637.1304-1-sy.zhou@hotmail.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2] rdma: Fix res_print_uint()
+Thread-Topic: [PATCH v2] rdma: Fix res_print_uint()
+Thread-Index: AQHYL3Q43+5Ed/aduU2HGz50LYAYLqyuzMCAgABXQ6A=
+Date:   Fri, 4 Mar 2022 12:47:39 +0000
+Message-ID: <OSAPR01MB75672F674485556F9DE61C92E3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
+References: <TYCPR01MB7578E54F06AEFE50785B771CE3039@TYCPR01MB7578.jpnprd01.prod.outlook.com>
+ <OSAPR01MB75677A8532242F986A967C9DE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
+ <YiG5jQHDA7HuGjrO@unreal>
+In-Reply-To: <YiG5jQHDA7HuGjrO@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [SLQgcnQQzShvchXOAjy8eiwzw6F/8+qw]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5b5a0351-867d-4cfe-2b0f-08d9fddd2a6b
+x-ms-traffictypediagnostic: TY2PR01MB3435:EE_
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: U70bBdlyJI4S7ghDv1rNMdJPZkaWj/2qBkUKs5wtjTJ5mJfRmoZDMb9UzMdQ09wcCYDjE1znDF34FvLD1EOHdEL34rWzHctFREOgDPhBdceDa5KX9In0DoHwt0Vs/mNMyGFXyT1aAYIQctzkyHQZoniXVYmROJ64mYFV7tPHPMb2+ihRtD29E/VkBGOEImsRBgbKwNojKtD9Rvd1PaSbYzzBtD0Fp1J2/DwibSyGFDVmfM+qETHNUjetlQCHYSNXbSbD3UNnd+dRnr407m1cRubgHHKCpe6eg0+1Al73Qyjlb6mB6ApoOLzBrBtUSvUp9FJqQhLp70NemTEOtwGfBGGaZ37VQt4A/EVA2/QB6Lp1b4QrJy2DI3vEF6yT5LJ60YudKI95rC7RVB2Jhcv0IS2fTqaNTpGM4PA45XKDjZstqaX8fCBimBtdOtCg02Fc/ug19PCm6U0IVg8aA+6MXmsruf/Nu8TtlU0yNyxgcgQ39H+OpzmS9QJikXNAxPULPhg0fHwgckpO0LoecAc7ZFyZSKsDgLUIqZT9/KWowtxNsek7/nHF+kKSuBnSvBDRJNH6v106KA+HqABSqI9ulw==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ueq8g0bRavK8hGQXAGVce6m/AvhP218zyshEzqcEEkKoPmRnLWoLywIEm+N3?=
+ =?us-ascii?Q?s+OtiQLgei99LlWjMw1tKZLw6/XnKt0BLeDLpql+bjbkGZbizXe1XEgmuUXc?=
+ =?us-ascii?Q?OeUOmvDDhNriftmc0EYRsjx6+DgxJ2p91JW4+sV0MCiabGJusV1WToWyE7cc?=
+ =?us-ascii?Q?GPk52+aWOO86Qb/VmnjdJuw5hc49jTHIZx3n7+JYZKBmfQyZpIJ7v9DY4jVu?=
+ =?us-ascii?Q?pUK1l82OmWxad/JqingeX+LfyCBOti/ku2EbiB0RwNrBngNw6vZgs8Ml5vdD?=
+ =?us-ascii?Q?Pg8iyOqRpsGpqgiVkqcoDx3ajHvNxYfF/29RbcQ70Htd5nrNhJnZD+ARibur?=
+ =?us-ascii?Q?jmI+gvcQ5qSpyBfUzqaVHahDvzDG3R8JqfteTeiriIezzT2WQp84fcq1tqEL?=
+ =?us-ascii?Q?EOZ5vpsVzTetrV9XZuR5WFlySxiUGity+PwnramhpipQVvppowBlaEqatExp?=
+ =?us-ascii?Q?zXCE6bfNd7UaLMFQZCAq4V54ycetrf+t+U5VAS6Gl9bEf3dbxcLksYrJ0CiV?=
+ =?us-ascii?Q?GdntkedEN5oWt/9mrxZ7JkXhzD/nRn+tvR7ZCJCzgtG4Xi2vkJleTgjl8VX/?=
+ =?us-ascii?Q?A6igCnhnf7dcguJZ/wWie5BwMA6XTIw4goziT8QmBkK0S57KoVNYQG6VyYW2?=
+ =?us-ascii?Q?hWQNP4LApXW+Xb1PV6FIYL/BoARJ2qErauhuhRMcNqgCd0Jp0N3v39ip6kfW?=
+ =?us-ascii?Q?rucCKJogPlNJVMaxVad87PGw6lVhbvqNkJUFlmzBEnuryRiimLjd2/5ChPK3?=
+ =?us-ascii?Q?l/EuRqDR6WknNiq4oh2t1Ng10ouDo2DYmPjnTcb1baoWg3LuQVskfMxzennI?=
+ =?us-ascii?Q?JrV7RctzJzUvHCrcya7DumOwc+BV0FGnfjpsdM+gR2BN8kloBxUzRW2tCtqY?=
+ =?us-ascii?Q?nyJ/Xirp6hIG+WJXCNHg0ZBdHapWGec4VKbz0/ZfNvKeWI1FxiTqAYjcnxLI?=
+ =?us-ascii?Q?J8E/YKxhSy7/gDNmsCUDkA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 70361a33-3049-4674-8298-08d9fddd14b8
-X-MS-Exchange-SLBlob-MailProps: Zv/SX2iM+5W1hGIRq8GIYM8L/wQyb+0HFoZ4lLC+VHKYg5kMJhX+mI0ihIETgzHern5ul1JEOlAPZVf9+VDq+p2ZQ44CRg1roGQis4WyUNW/YLuUvsor7HSjvk+ZBOwPmQzDIB+hZZ4JoYdAlYtgGGtONkOmFaQMMk88CGmyZm8eAE+ppsTmVHg+/jHtERCcAoqSSYs7wBDcIPWLKg8Q0PlHjQUmrmfGrC1kESTpAn+pjKqAzMzjjiO0J+q0rAn2jccHbYNOm987rRSoqDQeTl7rIPJK3w/rAn708d45eN9zXKHI+1O7OFKmeTtf6KQXzLuhe1YYi0dXI8O+8PFlXr1587IR8X04R9a6ytyTZyd/W8VM8uFpiFokTR3G4O90z3dpjVH0T0+bUBplkak76LVzHnc5mATSi6dSj/flucckpyQyz/ivQz1StgjzTcQD41T207RW/oLMH1hOTLXkfCVQ92YRSjkTZh1PUnZbLATdSEWFR9RB+nnJlOgUgq+244xFGL/y/oiB7rd9IYm+yunbHY8OlncHa98l5ncVTB+ZHL35+aX0spz+4qox0uygqBSrCzVqFNjJY0u63Lzjv6Xj2onaPOo49y2Jm9UAvVunEUvHgo336gqiEFYfU617VwEmASTv1UkbtJCVlNF6ukn2P497/soGs8z8eipg13uTkx+P8m1IPtNZicJhHMxA+Z67E5wkKOI=
-X-MS-TrafficTypeDiagnostic: TY2PR01MB3435:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9WZXaoq/V7KfRi3OrzebYTS4XrY5U4tzNjjeFZMq5EWjXyWDX37Jywa2HDNYIJiCwrsIhjhNOUrVfricasAWCmy+1frjw2ILqzaHISXHmmhfRHL5qL4px3W6cVPVr4gwaJrjq+Bis/Ue3n3vj6btw6WxTsWCqx/7FpElgHVRMDkpKGlVx4lKVDYtrTJtEcPt1oEfL6hcugEhj4MVxdUohLKUExH8ka6NQyBuS6QXjJ8tVZOzIEzEGJpic5qCJd3hzw7hHyzxbJsIr1KSZweqN62JaAWR8WOYrG3Q0oeneJKXHIs+eTEpTeSllZjR1wA8gxDg/hsiw8plNJs+8cgyTXR7lLpZeFuROIHt0bM5RGCACEhgyGNXEq3FfQnY+CclPSo90GdcypO0Fgky30jX469+lc0QatZT384S2BKoFPxUEAmoO+yJLEoLVl9lpZ9ahrDfo6QzTgeCO+aworeli0I/ref8RG2cG609qrheZ15V4VygnyNMTT6aUR6Ex1qs+gJcVGmjeUNDudWRGA8O7BLkaCo3Pofl1JchfRltuvt1Fih7r4+wBZai3XGVmdXlpUNVl1nk30sbUmQqvu4veQ==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?B4Zl4cBYya1fJdCy4Q3NnMkLGToLTqiypAbNcYis7A4wPKKAcOTeqpTZwiai?=
- =?us-ascii?Q?Kalh9padOuqoVPXHO7IdnmePCqVW4IF4KzSxJBjm+Am25rIHe1htQtuUKXnz?=
- =?us-ascii?Q?X5Rwyk0yEEgK2DzM34w/DluQlmzSfoZUI7FPxN0pldDg4Zx6+HmpH1Vxxa7c?=
- =?us-ascii?Q?cc1aRgtnuMTBcgvKirLYNiu48+DOx+AK0iTCteSw6FsMuG8vaPrYuHZtjvi2?=
- =?us-ascii?Q?u79KvVSiD9MRzcX3TjpN1m54Fs2wDCLay/HR+SHexDElRHGne+fGg3KoW53c?=
- =?us-ascii?Q?GnXEHk1aNXtMN6U+qXwzalZbS1FphlISxXgzHta9oHlxtz4mEvjXQcm+6Rdf?=
- =?us-ascii?Q?R5dMMaFniziWk4QPzBQgsb9wJZIadycOmuNaOdAoIZnhb4UoY0JBG7x1lt/H?=
- =?us-ascii?Q?5adIf1KNPHVkmT0T14xxZqBAEpGPCJLlUcL2KG5u0EdUdJID0Y+eQL85yJHV?=
- =?us-ascii?Q?ToBELWnbot9uocy/DvBRBUGcXdfd8XJQZ90Siw2qG3xOlggC0HmdgGUuAcA8?=
- =?us-ascii?Q?uR+2Uq6ug2W6D5w1TsCWAJ0NUfDdxRKZUt49dFyC8Th0EO8wbLHwhIitwo4R?=
- =?us-ascii?Q?HAk1RNWu6ybbZ+tthAz4T4T1uW6jugLJQstD8gEl8PEJEqku2AdBOhqq0ujw?=
- =?us-ascii?Q?rYkRIDOFWC/76dBqQYDSB+pMvA5RRhWCvouMFxQBnNg0si2i02EwEVYlSlcu?=
- =?us-ascii?Q?nfZkz103b4NPXG+Nv2Lyb1rmDEyp6KXvcS+pIPr4qtGSvbbTxTVu4Bq1DtRK?=
- =?us-ascii?Q?VaLilUxrgaaXFZTLCkHcSbbibtSvo83lC3FuLXFKx6Elwotj5kGQ7SgErugk?=
- =?us-ascii?Q?miXNLm7FWn4mM6PiCSORUHLNXAr7VDquCxOiYmd22+fRB+VeCxLrsY3gZ9X1?=
- =?us-ascii?Q?/tvmjLhWt0OhvXTkfOvuHsgxLSr/zEQpcAcgA54gcTAC6eWCX+ioprNfZglO?=
- =?us-ascii?Q?CAxBk2IphnI8Q9BQAnmmcA=3D=3D?=
 X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-9cf38.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70361a33-3049-4674-8298-08d9fddd14b8
-X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB7567.jpnprd01.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 12:47:02.9215
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB7567.jpnprd01.prod.outlook.com
 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b5a0351-867d-4cfe-2b0f-08d9fddd2a6b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2022 12:47:39.0120
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB3435
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -99,133 +102,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the corresponding function and fmt string to print unsigned int32
-and int64.
+Did you mean the function name?
 
-Signed-off-by: Shangyan Zhou <sy.zhou@hotmail.com>
----
- rdma/res-cq.c |  2 +-
- rdma/res-mr.c |  2 +-
- rdma/res-pd.c |  2 +-
- rdma/res.c    | 15 ++++++++++++---
- rdma/res.h    |  4 +++-
- rdma/stat.c   |  4 ++--
- 6 files changed, 20 insertions(+), 9 deletions(-)
+I see some of the input values are uint32_t and other is uint64_t, so I add=
+ed a res_print_u64() and submitted a new patch.
 
-diff --git a/rdma/res-cq.c b/rdma/res-cq.c
-index 9e7c4f51..475179c8 100644
---- a/rdma/res-cq.c
-+++ b/rdma/res-cq.c
-@@ -112,7 +112,7 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
- 	print_dev(rd, idx, name);
- 	res_print_uint(rd, "cqn", cqn, nla_line[RDMA_NLDEV_ATTR_RES_CQN]);
- 	res_print_uint(rd, "cqe", cqe, nla_line[RDMA_NLDEV_ATTR_RES_CQE]);
--	res_print_uint(rd, "users", users,
-+	res_print_u64(rd, "users", users,
- 		       nla_line[RDMA_NLDEV_ATTR_RES_USECNT]);
- 	print_poll_ctx(rd, poll_ctx, nla_line[RDMA_NLDEV_ATTR_RES_POLL_CTX]);
- 	print_cq_dim_setting(rd, nla_line[RDMA_NLDEV_ATTR_DEV_DIM]);
-diff --git a/rdma/res-mr.c b/rdma/res-mr.c
-index 1bf73f3a..a5b1ec5d 100644
---- a/rdma/res-mr.c
-+++ b/rdma/res-mr.c
-@@ -77,7 +77,7 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
- 	print_key(rd, "rkey", rkey, nla_line[RDMA_NLDEV_ATTR_RES_RKEY]);
- 	print_key(rd, "lkey", lkey, nla_line[RDMA_NLDEV_ATTR_RES_LKEY]);
- 	print_key(rd, "iova", iova, nla_line[RDMA_NLDEV_ATTR_RES_IOVA]);
--	res_print_uint(rd, "mrlen", mrlen, nla_line[RDMA_NLDEV_ATTR_RES_MRLEN]);
-+	res_print_u64(rd, "mrlen", mrlen, nla_line[RDMA_NLDEV_ATTR_RES_MRLEN]);
- 	res_print_uint(rd, "pdn", pdn, nla_line[RDMA_NLDEV_ATTR_RES_PDN]);
- 	res_print_uint(rd, "pid", pid, nla_line[RDMA_NLDEV_ATTR_RES_PID]);
- 	print_comm(rd, comm, nla_line);
-diff --git a/rdma/res-pd.c b/rdma/res-pd.c
-index df538010..6fec787c 100644
---- a/rdma/res-pd.c
-+++ b/rdma/res-pd.c
-@@ -65,7 +65,7 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
- 	res_print_uint(rd, "pdn", pdn, nla_line[RDMA_NLDEV_ATTR_RES_PDN]);
- 	print_key(rd, "local_dma_lkey", local_dma_lkey,
- 		  nla_line[RDMA_NLDEV_ATTR_RES_LOCAL_DMA_LKEY]);
--	res_print_uint(rd, "users", users,
-+	res_print_u64(rd, "users", users,
- 		       nla_line[RDMA_NLDEV_ATTR_RES_USECNT]);
- 	print_key(rd, "unsafe_global_rkey", unsafe_global_rkey,
- 		  nla_line[RDMA_NLDEV_ATTR_RES_UNSAFE_GLOBAL_RKEY]);
-diff --git a/rdma/res.c b/rdma/res.c
-index 21fef9bd..62599095 100644
---- a/rdma/res.c
-+++ b/rdma/res.c
-@@ -51,7 +51,7 @@ static int res_print_summary(struct rd *rd, struct nlattr **tb)
- 
- 		name = mnl_attr_get_str(nla_line[RDMA_NLDEV_ATTR_RES_SUMMARY_ENTRY_NAME]);
- 		curr = mnl_attr_get_u64(nla_line[RDMA_NLDEV_ATTR_RES_SUMMARY_ENTRY_CURR]);
--		res_print_uint(
-+		res_print_u64(
- 			rd, name, curr,
- 			nla_line[RDMA_NLDEV_ATTR_RES_SUMMARY_ENTRY_CURR]);
- 	}
-@@ -208,13 +208,22 @@ void print_key(struct rd *rd, const char *name, uint64_t val,
- 	print_color_hex(PRINT_ANY, COLOR_NONE, name, " 0x%" PRIx64 " ", val);
- }
- 
--void res_print_uint(struct rd *rd, const char *name, uint64_t val,
-+void res_print_uint(struct rd *rd, const char *name, uint32_t val,
- 		    struct nlattr *nlattr)
- {
- 	if (!nlattr)
- 		return;
- 	print_color_uint(PRINT_ANY, COLOR_NONE, name, name, val);
--	print_color_uint(PRINT_FP, COLOR_NONE, NULL, " %d ", val);
-+	print_color_uint(PRINT_FP, COLOR_NONE, NULL, " %" PRIu32 " ", val);
-+}
-+
-+void res_print_u64(struct rd *rd, const char *name, uint64_t val,
-+		    struct nlattr *nlattr)
-+{
-+	if (!nlattr)
-+		return;
-+	print_color_u64(PRINT_ANY, COLOR_NONE, name, name, val);
-+	print_color_u64(PRINT_FP, COLOR_NONE, NULL, " %" PRIu64 " ", val);
- }
- 
- RES_FUNC(res_no_args,	RDMA_NLDEV_CMD_RES_GET,	NULL, true, 0);
-diff --git a/rdma/res.h b/rdma/res.h
-index 58fa6ad1..90c02513 100644
---- a/rdma/res.h
-+++ b/rdma/res.h
-@@ -188,7 +188,9 @@ void print_link(struct rd *rd, uint32_t idx, const char *name, uint32_t port,
- 		struct nlattr **nla_line);
- void print_key(struct rd *rd, const char *name, uint64_t val,
- 	       struct nlattr *nlattr);
--void res_print_uint(struct rd *rd, const char *name, uint64_t val,
-+void res_print_uint(struct rd *rd, const char *name, uint32_t val,
-+		    struct nlattr *nlattr);
-+void res_print_u64(struct rd *rd, const char *name, uint64_t val,
- 		    struct nlattr *nlattr);
- void print_comm(struct rd *rd, const char *str, struct nlattr **nla_line);
- const char *qp_types_to_str(uint8_t idx);
-diff --git a/rdma/stat.c b/rdma/stat.c
-index adfcd34a..c7da2922 100644
---- a/rdma/stat.c
-+++ b/rdma/stat.c
-@@ -210,7 +210,7 @@ int res_get_hwcounters(struct rd *rd, struct nlattr *hwc_table, bool print)
- 		v = mnl_attr_get_u64(hw_line[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_VALUE]);
- 		if (rd->pretty_output && !rd->json_output)
- 			newline_indent(rd);
--		res_print_uint(rd, nm, v, hw_line[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME]);
-+		res_print_u64(rd, nm, v, hw_line[RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME]);
- 	}
- 
- 	return MNL_CB_OK;
-@@ -283,7 +283,7 @@ static int res_counter_line(struct rd *rd, const char *name, int index,
- 	print_color_uint(PRINT_ANY, COLOR_NONE, "cntn", "cntn %u ", cntn);
- 	if (nla_line[RDMA_NLDEV_ATTR_RES_TYPE])
- 		print_qp_type(rd, qp_type);
--	res_print_uint(rd, "pid", pid, nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-+	res_print_u64(rd, "pid", pid, nla_line[RDMA_NLDEV_ATTR_RES_PID]);
- 	print_comm(rd, comm, nla_line);
- 	res_get_hwcounters(rd, hwc_table, true);
- 	isfirst = true;
--- 
-2.30.2
+Thanks.
 
+-----Original Message-----
+From: Leon Romanovsky <leon@kernel.org>=20
+Sent: Friday, March 4, 2022 3:03 PM
+To: Shangyan Zhou <sy.zhou@hotmail.com>
+Cc: netdev@vger.kernel.org
+Subject: Re: [PATCH v2] rdma: Fix res_print_uint()
+
+On Fri, Mar 04, 2022 at 11:00:28AM +0800, Shangyan Zhou wrote:
+> Print unsigned int64 should use print_color_u64() and fmt string should b=
+e "%" PRIu64.
+>=20
+> Signed-off-by: Shangyan Zhou <sy.zhou@hotmail.com>
+> ---
+>  rdma/res.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/rdma/res.c b/rdma/res.c
+> index 21fef9bd..1af61aa6 100644
+> --- a/rdma/res.c
+> +++ b/rdma/res.c
+> @@ -214,7 +214,7 @@ void res_print_uint(struct rd *rd, const char *name, =
+uint64_t val,
+>  	if (!nlattr)
+>  		return;
+>  	print_color_uint(PRINT_ANY, COLOR_NONE, name, name, val);
+> -	print_color_uint(PRINT_FP, COLOR_NONE, NULL, " %d ", val);
+> +	print_color_u64(PRINT_FP, COLOR_NONE, NULL, " %" PRIu64 " ", val);
+>  }
+
+Except the res_print_uint() that should be changed too, the patch LGTM.
+
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
