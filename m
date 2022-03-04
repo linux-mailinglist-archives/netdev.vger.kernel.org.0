@@ -2,133 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDD04CDADA
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 18:36:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB30F4CDAD8
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 18:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241384AbiCDRfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 12:35:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
+        id S241110AbiCDRfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 12:35:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236903AbiCDRer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 12:34:47 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E3841CD9D0
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:33:48 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2B04F1424;
-        Fri,  4 Mar 2022 09:33:48 -0800 (PST)
-Received: from [192.168.122.164] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D43D73F73D;
-        Fri,  4 Mar 2022 09:33:47 -0800 (PST)
-Message-ID: <6fc548ca-1195-8941-5caa-2e3384debad7@arm.com>
-Date:   Fri, 4 Mar 2022 11:33:43 -0600
+        with ESMTP id S241291AbiCDRe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 12:34:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875821D0D7F
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:33:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3882BB82A7D
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 17:33:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67EB6C340E9;
+        Fri,  4 Mar 2022 17:33:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646415235;
+        bh=9CM6lOB2aBHDVx0tnc1cbmZr65bzFE0jK5WH7VGsh90=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BPWs9DIf5Qp5VAXdnBa8/B1OZB9EbPuJBdZ7IP5c1+xzURlIohXTcEPUuL1ktVLTK
+         Ix7T18CQMm7aqBoGHJyCM72odeOf1ILF5UcIIsvk6nbjdbPzxO2J8DQQwdJ+e54g21
+         7oBV9Bpcs1vzgGNsTZZPum5aOBgmW5uKTFMEv47xwDqnWo3VwS44AQA055qG8teJIM
+         fZ9m2f2NIvJ3yj3EAeg7cJCkxPlHB8fifQ9mRNNKfz6RC/5yrcnOxr/TcbqgCVxYSG
+         EyujFUELuECrGTLkqlvEJ18mkH2n2hkHSId9FV3VqpvGQW586idYKlV44CAr96y+mc
+         /4KVMZe90TF+g==
+Date:   Fri, 4 Mar 2022 19:33:51 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Shangyan Zhou <sy.zhou@hotmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3] rdma: Fix res_print_uint() and add res_print_u64()
+Message-ID: <YiJNfx85POmhzGQV@unreal>
+References: <OSAPR01MB75677A8532242F986A967C9DE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
+ <OSAPR01MB7567AF3E28F7D2D72FFA876BE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
- WoL IRQ
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Peter Robinson <pbrobinson@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-References: <20220222095348.2926536-1-pbrobinson@gmail.com>
- <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
- <CALeDE9NGckRoatePdaWFYqHXHcOJ2Xzd4PGLOoNWDibzPB_zXQ@mail.gmail.com>
- <734024dc-dadd-f92d-cbbb-c8dc9c955ec3@gmail.com>
- <CALeDE9Nk8gvCS425pJe5JCgcfSZugSnYwzGOkxhszrBz3Da6Fg@mail.gmail.com>
- <3ae3a9fc-9dd1-00c6-4ae8-a65df3ed225f@gmail.com>
- <CALeDE9PK9JkFkbTc36HOZH8CG8MM3OMhKJ24FKioKF5bspSPkA@mail.gmail.com>
- <6cefe7ca-842b-d3af-0299-588b9307703b@gmail.com>
- <20220223144818.2f9ce725@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <922fab4e-0608-0d46-9379-026a51398b7a@arm.com>
- <e0fbf7c7-c09f-0f39-e53a-3118c1b2f193@redhat.com>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-In-Reply-To: <e0fbf7c7-c09f-0f39-e53a-3118c1b2f193@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OSAPR01MB7567AF3E28F7D2D72FFA876BE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 3/3/22 14:04, Javier Martinez Canillas wrote:
-> Hello Jeremy,
+On Fri, Mar 04, 2022 at 08:46:37PM +0800, Shangyan Zhou wrote:
+> Use the corresponding function and fmt string to print unsigned int32
+> and int64.
 > 
-> On 3/3/22 21:00, Jeremy Linton wrote:
->> Hi,
->>
->> On 2/23/22 16:48, Jakub Kicinski wrote:
->>> On Wed, 23 Feb 2022 09:54:26 -0800 Florian Fainelli wrote:
->>>>> I have no problems working with you to improve the driver, the problem
->>>>> I have is this is currently a regression in 5.17 so I would like to
->>>>> see something land, whether it's reverting the other patch, landing
->>>>> thing one or another straight forward fix and then maybe revisit as
->>>>> whole in 5.18.
->>>>
->>>> Understood and I won't require you or me to complete this investigating
->>>> before fixing the regression, this is just so we understand where it
->>>> stemmed from and possibly fix the IRQ layer if need be. Given what I
->>>> just wrote, do you think you can sprinkle debug prints throughout the
->>>> kernel to figure out whether enable_irq_wake() somehow messes up the
->>>> interrupt descriptor of interrupt and test that theory? We can do that
->>>> offline if you want.
->>>
->>> Let me mark v2 as Deferred for now, then. I'm not really sure if that's
->>> what's intended but we have 3 weeks or so until 5.17 is cut so we can
->>> afford a few days of investigating.
->>>
->>> I'm likely missing the point but sounds like the IRQ subsystem treats
->>> IRQ numbers as unsigned so if we pass a negative value "fun" is sort
->>> of expected. Isn't the problem that device somehow comes with wakeup
->>> capable being set already? Isn't it better to make sure device is not
->>> wake capable if there's no WoL irq instead of adding second check?
->>>
->>> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>> index cfe09117fe6c..7dea44803beb 100644
->>> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>> @@ -4020,12 +4020,12 @@ static int bcmgenet_probe(struct platform_device *pdev)
->>>    
->>>    	/* Request the WOL interrupt and advertise suspend if available */
->>>    	priv->wol_irq_disabled = true;
->>> -	if (priv->wol_irq > 0) {
->>> +	if (priv->wol_irq > 0)
->>>    		err = devm_request_irq(&pdev->dev, priv->wol_irq,
->>>    				       bcmgenet_wol_isr, 0, dev->name, priv);
->>> -		if (!err)
->>> -			device_set_wakeup_capable(&pdev->dev, 1);
->>> -	}
->>> +	else
->>> +		err = -ENOENT;
->>> +	device_set_wakeup_capable(&pdev->dev, !err);
->>>    
->>>    	/* Set the needed headroom to account for any possible
->>>    	 * features enabling/disabling at runtime
->>>
->>
->>
->> I duplicated the problem on rpi4/ACPI by moving to gcc12, so I have a/b
->> config that is close as I can achieve using gcc11 vs 12 and the one
->> built with gcc12 fails pretty consistently while the gcc11 works.
->>
+> Signed-off-by: Shangyan Zhou <sy.zhou@hotmail.com>
+> ---
+>  rdma/res-cq.c |  2 +-
+>  rdma/res-mr.c |  2 +-
+>  rdma/res-pd.c |  2 +-
+>  rdma/res.c    | 15 ++++++++++++---
+>  rdma/res.h    |  4 +++-
+>  rdma/stat.c   |  4 ++--
+>  6 files changed, 20 insertions(+), 9 deletions(-)
 > 
-> Did Peter's patch instead of this one help ?
-> 
+> diff --git a/rdma/res-cq.c b/rdma/res-cq.c
+> index 9e7c4f51..475179c8 100644
+> --- a/rdma/res-cq.c
+> +++ b/rdma/res-cq.c
+> @@ -112,7 +112,7 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
+>  	print_dev(rd, idx, name);
+>  	res_print_uint(rd, "cqn", cqn, nla_line[RDMA_NLDEV_ATTR_RES_CQN]);
+>  	res_print_uint(rd, "cqe", cqe, nla_line[RDMA_NLDEV_ATTR_RES_CQE]);
+> -	res_print_uint(rd, "users", users,
+> +	res_print_u64(rd, "users", users,
+>  		       nla_line[RDMA_NLDEV_ATTR_RES_USECNT]);
+>  	print_poll_ctx(rd, poll_ctx, nla_line[RDMA_NLDEV_ATTR_RES_POLL_CTX]);
+>  	print_cq_dim_setting(rd, nla_line[RDMA_NLDEV_ATTR_DEV_DIM]);
+> diff --git a/rdma/res-mr.c b/rdma/res-mr.c
+> index 1bf73f3a..a5b1ec5d 100644
+> --- a/rdma/res-mr.c
+> +++ b/rdma/res-mr.c
+> @@ -77,7 +77,7 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
+>  	print_key(rd, "rkey", rkey, nla_line[RDMA_NLDEV_ATTR_RES_RKEY]);
+>  	print_key(rd, "lkey", lkey, nla_line[RDMA_NLDEV_ATTR_RES_LKEY]);
+>  	print_key(rd, "iova", iova, nla_line[RDMA_NLDEV_ATTR_RES_IOVA]);
+> -	res_print_uint(rd, "mrlen", mrlen, nla_line[RDMA_NLDEV_ATTR_RES_MRLEN]);
+> +	res_print_u64(rd, "mrlen", mrlen, nla_line[RDMA_NLDEV_ATTR_RES_MRLEN]);
+>  	res_print_uint(rd, "pdn", pdn, nla_line[RDMA_NLDEV_ATTR_RES_PDN]);
+>  	res_print_uint(rd, "pid", pid, nla_line[RDMA_NLDEV_ATTR_RES_PID]);
+>  	print_comm(rd, comm, nla_line);
+> diff --git a/rdma/res-pd.c b/rdma/res-pd.c
+> index df538010..6fec787c 100644
+> --- a/rdma/res-pd.c
+> +++ b/rdma/res-pd.c
+> @@ -65,7 +65,7 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
+>  	res_print_uint(rd, "pdn", pdn, nla_line[RDMA_NLDEV_ATTR_RES_PDN]);
+>  	print_key(rd, "local_dma_lkey", local_dma_lkey,
+>  		  nla_line[RDMA_NLDEV_ATTR_RES_LOCAL_DMA_LKEY]);
+> -	res_print_uint(rd, "users", users,
+> +	res_print_u64(rd, "users", users,
+>  		       nla_line[RDMA_NLDEV_ATTR_RES_USECNT]);
+>  	print_key(rd, "unsafe_global_rkey", unsafe_global_rkey,
+>  		  nla_line[RDMA_NLDEV_ATTR_RES_UNSAFE_GLOBAL_RKEY]);
+> diff --git a/rdma/res.c b/rdma/res.c
+> index 21fef9bd..62599095 100644
+> --- a/rdma/res.c
+> +++ b/rdma/res.c
+> @@ -51,7 +51,7 @@ static int res_print_summary(struct rd *rd, struct nlattr **tb)
+>  
+>  		name = mnl_attr_get_str(nla_line[RDMA_NLDEV_ATTR_RES_SUMMARY_ENTRY_NAME]);
+>  		curr = mnl_attr_get_u64(nla_line[RDMA_NLDEV_ATTR_RES_SUMMARY_ENTRY_CURR]);
+> -		res_print_uint(
+> +		res_print_u64(
+>  			rd, name, curr,
+>  			nla_line[RDMA_NLDEV_ATTR_RES_SUMMARY_ENTRY_CURR]);
+>  	}
+> @@ -208,13 +208,22 @@ void print_key(struct rd *rd, const char *name, uint64_t val,
+>  	print_color_hex(PRINT_ANY, COLOR_NONE, name, " 0x%" PRIx64 " ", val);
+>  }
+>  
+> -void res_print_uint(struct rd *rd, const char *name, uint64_t val,
+> +void res_print_uint(struct rd *rd, const char *name, uint32_t val,
+>  		    struct nlattr *nlattr)
 
-No, it seems to be the same problem. The second irq is registered, but 
-never seems to fire. There are a couple odd compiler warnings about 
-infinite recursion in memcpy()/etc I was looking at, but nothing really 
-pops out. Its like the adapter never gets the command submissions 
-(although link/up/down appear to be working/etc).
+It is res_print_u32() now and not res_print_uint().
+But it is nitpicking.
 
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
