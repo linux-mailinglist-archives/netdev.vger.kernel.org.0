@@ -2,137 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E994CCC1F
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 04:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 285A94CCC46
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 04:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237813AbiCDDSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 22:18:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
+        id S236436AbiCDD0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 22:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232140AbiCDDSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 22:18:32 -0500
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01olkn2084.outbound.protection.outlook.com [40.92.99.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54831377D9
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 19:17:43 -0800 (PST)
+        with ESMTP id S235846AbiCDD0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 22:26:23 -0500
+Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-eopbgr40137.outbound.protection.outlook.com [40.107.4.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2115F17F689
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 19:25:36 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HzFpVMLxQCUqGGpwjTtnndEeTqoGx5unLSQj4i+16nqULrmVje1sLHxng+PFO+rXxRK1klxgcsK7vdpHta7gb6cmMRxp17aQKmOYrng1iN6trnskgGejVYIdeJiliopYFEKEH+SO5lw+iUnbpgEIhMbccKNbD75G7Z3aGeEy0KZcmu8M6K6J0wjKpm6sS2NzKp5/VMarPR4hMN21rmp0PSASE8FledTXPtaDhMvvXF5XeYiSBMSb22Pn76XoPZpnFh0fLy2dzplONDHkNNQTRyfBN9DgeeHLw2nNRj1Gzg/p/pvhWXOBUYwdq0MtNNao2zc6541+YQc6XlNXO0L0AA==
+ b=Gd68365cK+WFUmgbWz15E3UIz1+SzHpscJdQQNy85Scy6z0jmpUkDEEWGDXz4g7KSCl1afKOte/zHIVsz0iHPcpgA+yaq7oq0gQY+wHMyZm+AmgQIQjJ8IA609dt+zv8mkIn8qpin/3UI4xl0guAF8ry9nqpMqhHbBHhwxBEuiXLUlx5zCwm9hSnUrzK0SFBDIE3FLPfGdHIBzurTCWYlGLD58m64+RHIC3BWIioMi7E2sggKhk+bUWqgUZ6bfep9ordqIElhR6Fi/kv/ArRTJ9WcyEModpaHdtgeTywURcSQMQQwWcwkYxGXpm6V9h+NUC+TB33IIgDaPeK+J3qrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=snX3PDXw5AYmztC6K543cRx1y4NoL7+fbs8hRWfvfSQ=;
- b=RcSvSMWkPdCVOffCElaQfqtjZ9WNDWQafxmFhzxnlVtQRqj/A40yk4CVlzTMWOaar5ceZBvE9WaSU3hiviJ+lT85IMu8pKFzecVVSkHOboSHK55WRkknnhHFX7SlDcVKbl3GZkw1RRB+fSRQN/WFMI39Qj3iGMTZ4LEdfcyLdYh5hovPPlS+Q4jrbxr7N1xjbdQR4Sf1vZ+EGomQiUmSs/AZn2iDxzlvqWFVXotXKTDHBV6FHtMcDI8zR6/ep52RZbfMzhGIbm/xPepZX0r/00iT4YQho3yQNg4bXxwaSjTGaaek17IG0bPdRkjEUhiqN0URyOymrCod/1ABHmoQVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
+ bh=c2E1uIKgpy8TBwZt2q+jcg+7iM79ypN/7IefPD4LDgw=;
+ b=ig7y+VNbUh8v/fxvHSYteHsN7XlRHnuSa4jjdgqBxTGdJxG4gQZMTzqMKt8ADOOZcZ+yvey41fKK+tdDsNJI6uoQK+YuUTQdgqvXHL7UmOobR5Gu5gOOHSHdsg5RErs+CI9tvYGgx9juC4f9foN34ATLHnyx5+XGjKVDFZs41oMBLSw2pUmNVXYCF+xNitlCMTn5vzBcR9CyjAhs0Zd/unjdJNMG+yg0Xj6IsLonb01GVVaWS25KfK8uwJiyZ6dKt/XuaooAviOtrSz/pDbX93EJQ3KCn3Lm6HykZlL3F/xxhD80nC4HT7rER4EHLo41rNu5Kt2BWMWr1OlPxHHCcg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=snX3PDXw5AYmztC6K543cRx1y4NoL7+fbs8hRWfvfSQ=;
- b=UbgKmj0bAqPzEmYhec1rkXLOWi4Yf1NKkW85Sbo95DUx0ss85WVp1d6sP+b3J1L7WgWX3M2/hA1ND7L8jy1yaUropgjA1rRBFYZHVqR3SWD7dEx8wfoICyC17FTEiCn8PXp9Z8+/M//nEmmYSuzIO+BL6eZbayrIfbchqqkrlij6igKwnK4wErcxBp1b642X5jht9cRhiMcqDdT8UkHBv+mi32Ibk14XNQEGnrb9cCnt3YX4oVBLSCRc69QIxJfnPSMPHirCpx08Hxbv/gDHACJuKtIVe+eDXWFtaU1NQbeJhkDChypabGnVr7YCKk5It5/FTrMuuOfZP0eDnqrctg==
-Received: from OSAPR01MB7567.jpnprd01.prod.outlook.com (2603:1096:604:147::9)
- by OSAPR01MB3938.jpnprd01.prod.outlook.com (2603:1096:604:5a::23) with
+ bh=c2E1uIKgpy8TBwZt2q+jcg+7iM79ypN/7IefPD4LDgw=;
+ b=u3+Z/lpqHtrasYWBMbeJKOoLFql3wZygpgTywM/W/iTlftZkidbjawaThceuc510HBzbzin9D1J6siC6GCHcmLWcgb0wSVtpwZV8K9I1fy4ArIGp0shjAcWYW7xypJQW2vzEVf5UrMqkQkXACwzlBy09SE09yGIAGk6mytl1aDQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=dektech.com.au;
+Received: from DB9PR05MB9078.eurprd05.prod.outlook.com (2603:10a6:10:36a::7)
+ by AM8PR05MB7441.eurprd05.prod.outlook.com (2603:10a6:20b:1d1::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 4 Mar
- 2022 03:17:41 +0000
-Received: from OSAPR01MB7567.jpnprd01.prod.outlook.com
- ([fe80::ed12:bc41:7a3b:ea5d]) by OSAPR01MB7567.jpnprd01.prod.outlook.com
- ([fe80::ed12:bc41:7a3b:ea5d%6]) with mapi id 15.20.5038.016; Fri, 4 Mar 2022
- 03:17:41 +0000
-From:   Shangyan Zhou <sy.zhou@hotmail.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] rdma: Fix res_print_uint()
-Thread-Topic: [PATCH] rdma: Fix res_print_uint()
-Thread-Index: AQHYLeKZOum8s/EYpUytAKJkewQs8KyuAYUAgACMycA=
-Date:   Fri, 4 Mar 2022 03:17:40 +0000
-Message-ID: <OSAPR01MB75673C9BF3232C94E34D994CE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
-References: <TYCPR01MB7578E54F06AEFE50785B771CE3039@TYCPR01MB7578.jpnprd01.prod.outlook.com>
- <YiEMcDbZAvSsFURj@unreal>
-In-Reply-To: <YiEMcDbZAvSsFURj@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-tmn:  [d8sAe5vRVOM5dWUWa7TMg3yE7S31FdTS]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 894f1380-cc58-460e-d385-08d9fd8d8ac9
-x-ms-traffictypediagnostic: OSAPR01MB3938:EE_
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: u6qknD3R4K/1qGRiTzpDdU0Q7uJMmWDE5KyZl4p4u5Z116SsILJnWCAEEfeYTm6sqck9dIJqv92E3usbTAFiCWW2PLZALI3vFHkZJ1Jar08AAUKqnEQ8YeAorkz7c1jOlFsjVPNw6iRUA5sZTylaLfAZTtl/2jQlO2L6xc24TbCh+voqoSZkp8u3F49gRo3S2uy1T9un2nZQITGR93fu0cv68YxNZTP/FGVWYQveJSyQ4wkrutt0Lyc8IFst27Xr6K1rA7dM11opgO5IpTGG781qsDJ6UWUhHQme69ZLACTtxWmofCE0qTDO732sRzjcAUuioAOTmJ3TvbPCRdDzQh5ZHen5huH+2mV2DrKo4O1xt+QSYnDaMCsaX8iy5ea6BouHoLMT0m+xx7/E3YcINCIucFNUrp7uj95T/aY8muLUWKRGOmUwVvw6q+9XCwM8YWzYli8/yYFPLOhz5RZdi7p+vdd25NjiWwXGLG2RLGyDsFBEBakKm8dleZNaaSQBYimbIQbho2QJaLmE9rN+L97RnTaW2PViDfOjBud42ukh1iIghKQaoDr6KWGlDis2NZMHz+YoEUts0nGJvileTQ==
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: gBj/x0PezNJTeXolwYWQ/S9IgzBUVpDokLJ7kJ4f91cdQcZxj7BBlCG247beLa5drqDVUEbh9nvF0IEFLUewnJZF1ECeRu5Vg5y6OjI0WvqaMBGSLIWklcbMr/5MFKibqKVkeKxme8qHaNxklySf8Mc+Ey1z2kRWBljip5P8s6FxJPAU/QG6nHy+b7a0pWi+sO2KERFN3qaC/bPqg1GKkpOIHPIqvInU7jJt9IRhBZh6Mh1KJjxziZ7vyeVbY1YxP8KFtKSvh1B1BGcFZn74xuhARn3g5Oa/G7xjpwgjMdlp5dQfUWvAdnKCYE+FOUdEepl5Zr0MpS/gVQ1oXDGIgKCGB+Z3XPXGYIIZC0XVu5sI2Yv2HIt+uV4RRYj0gGhNHXVK+2H+alcHEDPjrGmxPoKNowE/nu9YDNbdavxPaiQg4iV9dW9NsJtJQJoQlMaDFnIWyFylqSUilaEwxef8a+pX1xzbHRSx1p3QMzMATA2R660EpIqF0k4YTCC1MM7EMYarjOD2mEHBwlFCPvmVop04Ki52bieZgvoL0FLn4ln/SzEd4gW9kKHqefumpxWT5z9NvtNAZKz3PeAXV8iS9M1A/zykzJXYkrh4Kr44S+nOXAMZg51b4hA3diVe6X3mMs6wrO3yL5pW93R3XjDGjoyfMwBFe/8S+mQBHH3GK//LJ9mjb4iNFiyexMg/0KHTJMSggVIxqQYO36zrd2lVEqWVPtsQojwKTVEjolUnlrJ+lOHKDFTFwqq0Af9lcIqGd2yiDsSxTDGxJG9oFdhGNm38lbR47tAkF/BeKulNhO2BiGFjAFHXn2S7F/v5QLKPMsPR1vQYmWGiGQGY6LZLP1NIzrE/7q1z0QclSikEZFL1MHf87TIbGQTZBqTxnOmCjlydcEinhg+dKjFEjmS1noNxRrFCN56LEyiU0BvTdWyzEn3i8Xsy/204OKIU4uzx
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Fri, 4 Mar
+ 2022 03:25:33 +0000
+Received: from DB9PR05MB9078.eurprd05.prod.outlook.com
+ ([fe80::f19e:3be:670d:9d13]) by DB9PR05MB9078.eurprd05.prod.outlook.com
+ ([fe80::f19e:3be:670d:9d13%7]) with mapi id 15.20.5038.015; Fri, 4 Mar 2022
+ 03:25:33 +0000
+From:   Tung Nguyen <tung.q.nguyen@dektech.com.au>
+To:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Shuang Li <shuali@redhat.com>, Jon Maloy <jmaloy@redhat.com>
+Subject: [PATCH net v2 1/1] tipc: fix kernel panic when enabling bearer
+Date:   Fri,  4 Mar 2022 03:25:18 +0000
+Message-Id: <20220304032518.9305-1-tung.q.nguyen@dektech.com.au>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0122.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::26) To DB9PR05MB9078.eurprd05.prod.outlook.com
+ (2603:10a6:10:36a::7)
 MIME-Version: 1.0
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-9cf38.templateTenant
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1c852049-2ac7-46e2-1711-08d9fd8ea3e6
+X-MS-TrafficTypeDiagnostic: AM8PR05MB7441:EE_
+X-Microsoft-Antispam-PRVS: <AM8PR05MB74416A92BF12D69BB7F7B45988059@AM8PR05MB7441.eurprd05.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z38Lfi0tiql7KHUb2TbbL07srr1MTM1n4vIhTQNLQwrCOtDaLAJ5pdSLmTB/xGYNeie0ipGKlC/hKYNyKcBRapKrhfDsRs3WIboFYFqXCzKvgltWXdWt/t4nRWm9zBnVF4inHDliOt4HAgurKYAL59NugkIEMRPof0B3u+kllcAmkGS+q10PhfyOzwqX5gzd0t6HK4mUiot5XZ/LRTErBraCCQ0uN4/dPswsicjYyJP80sk8P6C07Ki9mhmmXVmDMEtZ0oFfRBhPQtIhFTQvI/R5anvip00bc9UR+lJbjFOa2QgthYhvkdCpnYSHMlbs8ObjQxJQsG6BKuV1upk5XuxV3XSCEvEmjnJ5nijeiO5DpU0zolrrYkBpViol/H16e6L0tDBpj6U+14zhH0VGuxRsukU14vGOm89+3KJ3ApkcXHNrAhmJvJEDAHX1bNVHFBrTrupfo609Szod+nzGSNaYgmrINBR5SBld5c0aQbgnTMqoafDMMnwuCTWp8N971k6i2/C1x6YpO7smnCbziUFFGcwkbpSeV/aAlG1H35MCK9B6Sh6JMV+ceWi7R+VvBIniyl5Oc32fVPlMr2iamT+tkX3F82SKd1XOj2JxGgFih9YRo7FVz63pN9ED9eJhUShgCybBijVwumzUgaCp+BEXIh9rKdDJwzetK04O+xtT2bVAeWe+4QyMA6I1mWzDnbVQfen55DGjfT/yNKAJTw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB9078.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(346002)(52116002)(86362001)(5660300002)(103116003)(83380400001)(6506007)(66946007)(8936002)(66556008)(8676002)(4326008)(66476007)(6666004)(508600001)(6486002)(54906003)(2616005)(38100700002)(1076003)(38350700002)(2906002)(36756003)(6512007)(26005)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p7g6H1El0ziBga9D7iJvy3zsobCLL4l4p3+0SQEgJ5tiOk3hWKB2uGJ5F53i?=
+ =?us-ascii?Q?8o+6EFWWsstBz2dkosWyAQucxXlN8n0I+qp1D0/3oB270U5dyv+O8F6vTmdT?=
+ =?us-ascii?Q?9BPo0bQW41tFtxAhGa/Ei9MiZYUA7F4uAqrCthx8KMq4im203isj/AsDorYH?=
+ =?us-ascii?Q?mgvv8i6IBrWBKcWIhV8drqWh5gXwCloiKz5Fx677BniE4Htg7ztw+lEQez32?=
+ =?us-ascii?Q?98o8MAV207XHpUMEj8qxtbjBD3nS8ne0Q0ehjuYXZaMiD3aG7WsovGzTwiyW?=
+ =?us-ascii?Q?DfSxZ44mTNDwloDpcrQH0/dMZexjXlum4aeoql4DtiK50eBHzg3tmRSapVin?=
+ =?us-ascii?Q?k6UQyvbrZx/qpoV3RbhRnhsew625I5QVkwxHhbmii1qWIZzkhJ/qtLE5D3jA?=
+ =?us-ascii?Q?cWYywiq+dcrcStb03OyhyUQQSWihMufGXSJUNSS4wigP1FBXyPtXReU4U2m7?=
+ =?us-ascii?Q?fMemm31Q4LIWrw1vJliY0mm+/qIExC7Pti/89P9zHmTXRp8hrO5yKnLmntYw?=
+ =?us-ascii?Q?wNShEV2+ONQSnT8dIqjXDeRJLkXyrsTCB9VaF8G4Bg9gBSaVYC+vIzREKkbd?=
+ =?us-ascii?Q?lfucYyVJj8WnsWRkM3nLmFc1JtUHZLI8UsUWzpln0o2AK2XWLW0iUzXHC0Tu?=
+ =?us-ascii?Q?Du8wCAoa1szC5Sodwdk21B/9Z9ZICjjN+pLV343TLqCRL7NxkHjfI7sggKyC?=
+ =?us-ascii?Q?NZPWJWEPMD7muegk1JlOBc9yy4ov567NA8byY5fOeP655vNXPGSQi4JPhAN7?=
+ =?us-ascii?Q?hKGBBbMkTkt4zHOx8349TdQgqNKDU8rRyKY1lQvsM+wfbpS/GXIdGCKbtoZU?=
+ =?us-ascii?Q?zHccrf5TKCqNhSF1hr76yRd3qEMDlZaY33RRkSzTmcscexrRvq3HXHmEwhya?=
+ =?us-ascii?Q?zALjd+PhGGPiCjeZdIB10PMuCthD5Z4g1Yo5XxcXyki+dTeCwRju3xv2Scje?=
+ =?us-ascii?Q?vLj0BvSRMMhIAXHAsj2pTZxMtZCSQ/gWgOlY90Qv6W8vXmSOvGciPbjrAS2T?=
+ =?us-ascii?Q?k+o7a8iYzunuDedPB75V6GTpZ2kw9I0kdyEurh/yYJjQS4V1N7SWllXvM6Aj?=
+ =?us-ascii?Q?3tm80VRudrEewRY/il6BIljdBbaEC+TiyRhjpJUVx5aKRfsNYkDKVGEbyDE8?=
+ =?us-ascii?Q?+NEejL91YvrjX4/knvvCsPu0/XrKirXgQoUoYARG5S6drF2fWd8W85YF8uBx?=
+ =?us-ascii?Q?FseEnMLi4YTfD+kqA3RQwxbEjVTxN6zpRv0auUUb65sS1cRP5S0ZkYsgGCRy?=
+ =?us-ascii?Q?CKEQhuS+R4ooIrEBdAjTWrGAUD6BfBZ8SO8BVZRj5jmapMpKBoWZCUAoeDGE?=
+ =?us-ascii?Q?XI8zBimFLTMjxyXsjwjC6XHi1jwWxxz7l4o1LXK7716WMaqc8KQn34p7t335?=
+ =?us-ascii?Q?SFTySEQx25OqZZFrxnPKLVqI1fTzj4xByL4OkXRqSYj70pIHbeBvUzyTfXOW?=
+ =?us-ascii?Q?4RWeq3AYH1S3uaD1LSvh9hXWdbZ0BOXiy64GWpXttXMmEPH3UTZW/Zd3idZN?=
+ =?us-ascii?Q?LuPuI/keXMfeWfhvYDLnk73s4107UoVszE5Run/PTdQxq5rgRnFk9Rd1Ovh4?=
+ =?us-ascii?Q?RxS70vA3vuaaMEDk6dxhlfRDLgdrkNARWe18X9lrQh28polDGeo/Ybk3iclb?=
+ =?us-ascii?Q?yGL7egDyyqsjnCo+GQ5eSIRbrJh2Qya7haM51sJndgseFUv5iDYcR58d2LKY?=
+ =?us-ascii?Q?fvgkLQ=3D=3D?=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c852049-2ac7-46e2-1711-08d9fd8ea3e6
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB9078.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB7567.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 894f1380-cc58-460e-d385-08d9fd8d8ac9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2022 03:17:40.9709
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 03:25:32.9240
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB3938
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /sIuP7N/5D3Mku3vpKPXAFG5/8WDX1IlVvWvYn2+6D3nET8MCsCdlwhJnMlQyP9CIq0XZ9qAgUwRiEDCMWh2vbZglkcfBMaMeb0a4eg9j6g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR05MB7441
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm also confused by the uint64 and %d at first. Since I encounter this pro=
-blem on a 32-bit hw_counter, I thought it may assumed the input val is 32-b=
-it.
+When enabling a bearer on a node, a kernel panic is observed:
 
-I checked that the _color_ variant for u64 does exist, and changed my commi=
-t.
+[    4.498085] RIP: 0010:tipc_mon_prep+0x4e/0x130 [tipc]
+...
+[    4.520030] Call Trace:
+[    4.520689]  <IRQ>
+[    4.521236]  tipc_link_build_proto_msg+0x375/0x750 [tipc]
+[    4.522654]  tipc_link_build_state_msg+0x48/0xc0 [tipc]
+[    4.524034]  __tipc_node_link_up+0xd7/0x290 [tipc]
+[    4.525292]  tipc_rcv+0x5da/0x730 [tipc]
+[    4.526346]  ? __netif_receive_skb_core+0xb7/0xfc0
+[    4.527601]  tipc_l2_rcv_msg+0x5e/0x90 [tipc]
+[    4.528737]  __netif_receive_skb_list_core+0x20b/0x260
+[    4.530068]  netif_receive_skb_list_internal+0x1bf/0x2e0
+[    4.531450]  ? dev_gro_receive+0x4c2/0x680
+[    4.532512]  napi_complete_done+0x6f/0x180
+[    4.533570]  virtnet_poll+0x29c/0x42e [virtio_net]
+...
 
-I'm a newbie to submit patch by email, I replied this email and found it cr=
-eated a new patch. I don't know if it is the right way. if I'm wrong, pleas=
-e let me know.=20
+The node in question is receiving activate messages in another
+thread after changing bearer status to allow message sending/
+receiving in current thread:
 
-Thanks!
+         thread 1           |              thread 2
+         --------           |              --------
+                            |
+tipc_enable_bearer()        |
+  test_and_set_bit_lock()   |
+    tipc_bearer_xmit_skb()  |
+                            | tipc_l2_rcv_msg()
+                            |   tipc_rcv()
+                            |     __tipc_node_link_up()
+                            |       tipc_link_build_state_msg()
+                            |         tipc_link_build_proto_msg()
+                            |           tipc_mon_prep()
+                            |           {
+                            |             ...
+                            |             // null-pointer dereference
+                            |             u16 gen = mon->dom_gen;
+                            |             ...
+                            |           }
+  // Not being executed yet |
+  tipc_mon_create()         |
+  {                         |
+    ...                     |
+    // allocate             |
+    mon = kzalloc();        |
+    ...                     |
+  }                         |
 
------Original Message-----
-From: Leon Romanovsky <leon@kernel.org>=20
-Sent: Friday, March 4, 2022 2:44 AM
-To: Shangyan Zhou <sy.zhou@hotmail.com>
-Cc: netdev@vger.kernel.org
-Subject: Re: [PATCH] rdma: Fix res_print_uint()
+Monitoring pointer in thread 2 is dereferenced before monitoring data
+is allocated in thread 1. This causes kernel panic.
 
-On Wed, Mar 02, 2022 at 11:06:41AM +0800, Shangyan Zhou wrote:
-> Print unsigned int should use "%u" instead of "%d"
->=20
-> Signed-off-by: Shangyan Zhou <sy.zhou@hotmail.com>
-> ---
->  rdma/res.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/rdma/res.c b/rdma/res.c
-> index 21fef9bd..832b795d 100644
-> --- a/rdma/res.c
-> +++ b/rdma/res.c
-> @@ -214,7 +214,7 @@ void res_print_uint(struct rd *rd, const char *name, =
-uint64_t val,
->  	if (!nlattr)
->  		return;
->  	print_color_uint(PRINT_ANY, COLOR_NONE, name, name, val);
-> -	print_color_uint(PRINT_FP, COLOR_NONE, NULL, " %d ", val);
-> +	print_color_uint(PRINT_FP, COLOR_NONE, NULL, " %u ", val);
+This commit fixes it by allocating the monitoring data before enabling
+the bearer to receive messages.
 
-val is uint64_t, so the more correct change will need to use print_u64(...)=
- and "%"PRIu64 instead of %u/%d, but I don't know if _color_ variant exists=
- for *_u64.
+Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
+Reported-by: Shuang Li <shuali@redhat.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+---
+ net/tipc/bearer.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-Thanks
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 473a790f5894..a2f9c9640716 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -352,16 +352,18 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 		goto rejected;
+ 	}
+ 
+-	test_and_set_bit_lock(0, &b->up);
+-	rcu_assign_pointer(tn->bearer_list[bearer_id], b);
+-	if (skb)
+-		tipc_bearer_xmit_skb(net, bearer_id, skb, &b->bcast_addr);
+-
++	/* Create monitoring data before accepting activate messages */
+ 	if (tipc_mon_create(net, bearer_id)) {
+ 		bearer_disable(net, b);
++		kfree_skb(skb);
+ 		return -ENOMEM;
+ 	}
+ 
++	test_and_set_bit_lock(0, &b->up);
++	rcu_assign_pointer(tn->bearer_list[bearer_id], b);
++	if (skb)
++		tipc_bearer_xmit_skb(net, bearer_id, skb, &b->bcast_addr);
++
+ 	pr_info("Enabled bearer <%s>, priority %u\n", name, prio);
+ 
+ 	return res;
+-- 
+2.25.1
 
->  }
-> =20
->  RES_FUNC(res_no_args,	RDMA_NLDEV_CMD_RES_GET,	NULL, true, 0);
-> --
-> 2.20.1
->=20
