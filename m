@@ -2,119 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F9EA4CCBAC
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 03:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C52864CCC01
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 03:51:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236722AbiCDCVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Mar 2022 21:21:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34150 "EHLO
+        id S236550AbiCDCwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Mar 2022 21:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235925AbiCDCVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 21:21:20 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2097.outbound.protection.outlook.com [40.107.22.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B06170D43
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 18:20:32 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jaKXKDYEYsX48B+pYiY5y7FpV/kcIS7H+a+694uASw643GGgf34UjpDO67ZUcXl/BoLPm7Yo57biecKCkHckxt/q7gPcSmMrGHn+u22OyoUnAkZrEJrSh327Ydzlpxez9Tj5w7aU1To4V6MDc7+fYC0beVyfND6K/GX8BTpCmbd4kUdzbwvYSyapxP9bsk8OiytBAanzZxAsvq4j7S0xs1Iz0vlEMGQmrJBg08H+ow8+X+TlF9VaZtaz7StG8UsgrD6y7Op/YZ7nQLTJ4oZ+EkEreMYRsk99HC4PZZxViviU+8DKR7IgRpP1s9GEzu+0kou4aULkBZRVcgMPT1IHxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TWlVSPOubQe9uWl+LLZ5mifljlYF8jWztZuOuyP/j2k=;
- b=EgzIn3YtIdG3z7V7LYplRcgtTk2ukQd5u3NPQXnEz065DlGOqrgcSldHCQZcnvOW+jElkE7tTwyBPzgzvMpuXt/vynXdNFtGkYh9Ooen8mNs6RkXtfR8B4/Jd256KhPgYINmnohpk9bvje10fe4sql/dcyj79S1g+OqM5WACcZsGfh0qGaJM3ZuTZcuREqApZr6Hk92VourLSuzMiBvxINIgmy446Z84fMz+gA66oE2ReT1DkyOp/xBxfmQF9+1tjEa97Buon69vESPsqTRydrvZVw3oNoArpcNmntcWPQ9OE0M8HDklBh7UarmLPio+nu7U68xogbkq8SZ47hGKIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TWlVSPOubQe9uWl+LLZ5mifljlYF8jWztZuOuyP/j2k=;
- b=ti2mkTsfAQcU1n074ZqXJosLHiKNSfvu5wsbT8mePkjFElpcZ1Rg8yX43eNDPUYFAGKoa3iF6uNzwWuhOa+OJ/jl+GGiKq3XassN/GjjI0/RgelDIVK92i+evmvXtjVY7kPDkD/c2/qZbSVpx9Fb0aCi133bq4X/dsH8NVcR6M4=
-Received: from DB9PR05MB9078.eurprd05.prod.outlook.com (2603:10a6:10:36a::7)
- by AS8PR05MB8759.eurprd05.prod.outlook.com (2603:10a6:20b:401::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Fri, 4 Mar
- 2022 02:20:30 +0000
-Received: from DB9PR05MB9078.eurprd05.prod.outlook.com
- ([fe80::f19e:3be:670d:9d13]) by DB9PR05MB9078.eurprd05.prod.outlook.com
- ([fe80::f19e:3be:670d:9d13%7]) with mapi id 15.20.5038.015; Fri, 4 Mar 2022
- 02:20:30 +0000
-From:   Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Shuang Li <shuali@redhat.com>, Jon Maloy <jmaloy@redhat.com>
-Subject: RE: [PATCH net 1/1] tipc: fix kernel panic when enabling bearer
-Thread-Topic: [PATCH net 1/1] tipc: fix kernel panic when enabling bearer
-Thread-Index: AQHYLrsxOvJ8/Ucc70SBy8iceidY2qyt2WiAgACleLA=
-Date:   Fri, 4 Mar 2022 02:20:29 +0000
-Message-ID: <DB9PR05MB9078043829EC119527F36CE588059@DB9PR05MB9078.eurprd05.prod.outlook.com>
-References: <20220303045717.30232-1-tung.q.nguyen@dektech.com.au>
- <20220303082629.6f6be6a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220303082629.6f6be6a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c3a6be73-599d-4eeb-67ab-08d9fd858dcc
-x-ms-traffictypediagnostic: AS8PR05MB8759:EE_
-x-microsoft-antispam-prvs: <AS8PR05MB8759567558EAEE74FFCD378488059@AS8PR05MB8759.eurprd05.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZaakjzFpIKzXgU/jKvfDJdeCHtUJTj16LApLt9IXHsnjtIs+ODxT6bqQt9ofsXdhCXq5q/DBXXDp3fZZMnOujruiDErX6llv6vrhiyA/A9siV8mbSZEFDtBNwvFDqYiD4jNvXucqVzhCo8t27NRkNivX5x83NYhTW5P/TINxMVrSOf2JuddEUdBbwqdtZGQ6OPOqLiJIg1/zsvc0Vm5tiqX41Al3eRioTyfyp55LY0d0oaz87rKKmeEqKE30YL9pEgBeXmENA4XVKZ0KyjVmlvM6ZMNpNeoe+Z53gL0qXFMIekfjSzF3xfwY/qpoS66CogzZSDpyVvGRZAiMoqKBylkOECoUpQM5mSsqq/AESFgbOv8eW92iueFtaL45V0z5/LBNb3N6+x6c6B33Sxku5Z7XBvyyjHkGu5M1DffPUPJIDIZ2wRRiOB/Sx6EYkZtpC5hdyWYclyoNT3iTVo3P6mYZLDw+YlENO4HSCL0NFtCdIXAV5bDf6+ziccrEMJBMwlYBBqfeaitJHpBumgoaorCnP6HLHfvWdX+x9TbmxpKG1treGQJTohO6n5h+ia4LKHEoX4I/Ecttc7Gi13nQWFmdil/FD99/tNYNmWdhmfFvUaFDHxHCh8OWVTrTWLX7Fq0Vr42e9jl9O4sL1MUNM25wZcqEp6v3WjyClP5tXmDn4Oyu6AFkwI2Kqsxe4yy8U1STOSxTR7XRhDWq9uStzg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB9078.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(396003)(366004)(39850400004)(346002)(376002)(8936002)(4744005)(52536014)(71200400001)(122000001)(26005)(186003)(5660300002)(508600001)(86362001)(54906003)(55016003)(38070700005)(6916009)(316002)(4326008)(6506007)(38100700002)(7696005)(9686003)(8676002)(76116006)(66556008)(66476007)(66446008)(64756008)(66946007)(2906002)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?11koouCGis45DOdWv478FzVehhdWyiRvDl4hiU++Od+kKdUDpwPdZiv5eVmA?=
- =?us-ascii?Q?bUHE74VB6RvwQZ1RuFiNgWYugueIsUFKEgkwVx+gTGaAnTVh2uS5JgDAy8Xe?=
- =?us-ascii?Q?XCb0qqXJJ/tpeLCtCAUcrxLRMgrouRwIr+exJhsiySdMKb2qXZCBI2YfPVJN?=
- =?us-ascii?Q?oGGOD+fFhO+t082Na5Dd4ko6t3kbvNY8GikQcR++zDf1DOsqZ/WHcOh9LaB3?=
- =?us-ascii?Q?iH/zSte7zkjwnSr/jkW7CQsCTfxCUES0yaiKFOdpwDmrmu35V6jYFLdoZk64?=
- =?us-ascii?Q?iRMX06sNaazWOuDae2JZBOwcROnY0JJx+ePA2pvBkEzupIbmT7FvLfJbi3EV?=
- =?us-ascii?Q?BnbQw1wwbQi16m3BoYTaT+PXN84OhLSjfE6NG1rFlnVlIgZ+1rYx9qNj7HXM?=
- =?us-ascii?Q?JbN3L+qvbtL3Y/BW06Epj+kntWxODtDjt+LUA1rNpGSDHhTzWPSQoU0u1vtP?=
- =?us-ascii?Q?hLadid6cfKr0Mlxjd9ZrydnHxjfCd3BJbq/dV5QmFY/PgKsNKzVxk/BCHXeT?=
- =?us-ascii?Q?V9GBdy/3/aNDMp6edqbAyzG3IMqL1xo36DUC3fEhTTv3J6p483O4QzuNdJ2K?=
- =?us-ascii?Q?zpw0sZPytNqeTv6lb6nWY2Hlse4XtXbJh9G5FT8g2J2trhbY1xKLn9EAcQmq?=
- =?us-ascii?Q?9sG+3BrkFpR0Vo37/1F1Ql5olKdk0Urjw0BmBTr2phxINu5E/hroQSpkgtoj?=
- =?us-ascii?Q?pekFPk2WNBlK7OReLM7zpN52LrOJfgdKLg8BdxRNMrjNVTdiVr35FySGqE1Y?=
- =?us-ascii?Q?gAMFzBULL9OltCt3/vnTU6qJ0xSiBbiZp+6oFbcqodwxtfxNbwTFtUo85NmY?=
- =?us-ascii?Q?BsFq7C9u5X6ekoIzjnEEeMy8j8MJB8HrjeEGV6MGP1rdvWLFNVgDEu182CC9?=
- =?us-ascii?Q?KIO5hxV/c4X8WjTlsBK1ybfSA8HGgUFhENFtOx7Fy2VBy+ky3gEHWzukciB4?=
- =?us-ascii?Q?blolXzOU5wN7CCmRkVfSSSkQsP7hJlZtBeVhDfCi8cG1HVOi1hM4GXbZ6P2P?=
- =?us-ascii?Q?4YvY3u9OLqwczNPY8FT/XFOl9jYxV+qm81vHnwNPMEEEg2u3RwSFm+cDyzW3?=
- =?us-ascii?Q?Mq3kvfIVWMy9wPJVZpoH2Wrul1LtXtqsW0Apvz/qQa9y2IhPZvWEBJ4qibpv?=
- =?us-ascii?Q?M+xUVWbQCwXQguNAHWX/zdIIVFbwPJShERWOnLrkZxjtXrW0iId4DpybGqwP?=
- =?us-ascii?Q?9y4du268FvMYVf8rcScXe1d06uuKoqcyeOWEbeGopY9gy5hpoYpqU/KC81qv?=
- =?us-ascii?Q?NdNYOAqnR9694nTF5d84W1VleCMy77R291YMJbShg9MYEioN+49fDZjfxw+l?=
- =?us-ascii?Q?znKUGFGDIYhEMd6IMkwLDTgjeP6Y/AFjVw+7boo1K3/LsSGHwX238Vh12fhd?=
- =?us-ascii?Q?Ghionl2tduY59Xf/NATmYjZ33lDI2tILNeB1jFyPjFUkkfWNKfqgYrYeru8q?=
- =?us-ascii?Q?0mNkRakW/LoPf3xU5INulOsgDYT2xUvm8uujehR+osZS46kgKtBqQYlndKNo?=
- =?us-ascii?Q?TEL0qFRaEXdbHpZYtEKWeXHUPFKooyEpy/wea2IzM965AXn6iDj1c9jJ6z/K?=
- =?us-ascii?Q?cJQh1R32No6yNZyuVCEVnmT55DdrAP+3aroPTqxuvAVIG6An9nXaN57+Zw7m?=
- =?us-ascii?Q?pTqkOIIVOXYwsnfb1in/msfwGbkdPRzN86graNyrDplSTkHMAlUH3DmeOHyl?=
- =?us-ascii?Q?hrZVZw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB9078.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3a6be73-599d-4eeb-67ab-08d9fd858dcc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2022 02:20:29.9691
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: s264PVBMK3aJKnyLOQzTf5LW39zr/AxoHExvrVE+3Bc3RYmRN85Sxw5AHRmSGAneMFaHF0WEz98vwuQeRZaYQFTjzV6bKuaMRNCU+O2jcF4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR05MB8759
+        with ESMTP id S231992AbiCDCwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Mar 2022 21:52:07 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF40E7AC8;
+        Thu,  3 Mar 2022 18:51:21 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id mv5-20020a17090b198500b001bf2a039831so180700pjb.5;
+        Thu, 03 Mar 2022 18:51:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=owY1s88VHqFIqmWlN/4fq6tMIh7jqxjAFgGkmfxykCc=;
+        b=be6F6DUnBVqm6V8lf6rJEZlRStZRBrvf/NOPkoEFbfXxUE3/hQ6TPD10pbNkQro36n
+         X7XWV7VX7RwlfhlghkxS6z4KqHuuY6n0xSK59EAzGhcks76Rg7ENd/tmaL+ivQxo6q6q
+         ck/39o8bSNRHz6V1//cnQYt9KvTBcQP4LFOST9HXS6FRW1HMZ2cn1rf+8v0JbDm2J6D5
+         31dag7spo5VRAo6cPZIsMJM0lFhYVVp6oYxAAXmAOUw2lBTQacPvVqmzt//+4pxDRIDO
+         hmEjg+t8xH7tRnRUjjr9UNmNassjZplIQ892Svbf0c1+cOv+Rs0PpGaRI4rqRnG94XkE
+         Tb1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=owY1s88VHqFIqmWlN/4fq6tMIh7jqxjAFgGkmfxykCc=;
+        b=WxSHBqRCazYOH0jjpI7oROSmthG+tW1ZG29Oc0aeS8gRqVyy/ws6JDkK6cbLVx6BxW
+         P3c2PHju2Vc6WMGIB/rFoGFNBE508BfTqun7KVO1ZcYiHPWoNzj4CeCxhDeloMedFMIg
+         ia9YzpF7ONGV1hkU/GvgwrQFi0h3hsssbX6FkexcZdW6d3XAYNzypVTf/D0GXppjJx9K
+         dFflOWj8b9+GgvcXIxxDLvasRjeI0EdsByyxL8/dR2gVbR7APrPKVBk0/tmFfGJ4DxTD
+         yMNBCQwuzMy6ahhqsOvfp5MUZmUklXOa2RqqNM/XtT/sYwKkKh11zYlpww9ZnWwl3Y0p
+         Iq7Q==
+X-Gm-Message-State: AOAM532DOBK++rGVh3Iy8Fmxf6VObGXbP8Lij/uGSDTmtec9dGYS/aXb
+        WZzUuAhNhMXn12EU6PE77BA=
+X-Google-Smtp-Source: ABdhPJzFlaLTCsMtGn2cwRd0MGGVF6lbESQ/hRdBkkUekh8Das9Mmy1uSMMmXl5QuWqGAAT+m8xkgQ==
+X-Received: by 2002:a17:90b:1bca:b0:1bf:1a17:beda with SMTP id oa10-20020a17090b1bca00b001bf1a17bedamr4491359pjb.215.1646362280440;
+        Thu, 03 Mar 2022 18:51:20 -0800 (PST)
+Received: from ubuntu.huawei.com ([119.3.119.19])
+        by smtp.googlemail.com with ESMTPSA id w5-20020a056a0014c500b004f3a5535431sm4143781pfu.4.2022.03.03.18.51.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 18:51:19 -0800 (PST)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     torvalds@linux-foundation.org
+Cc:     arnd@arndb.de, gregkh@linuxfoundation.org, jakobkoschel@gmail.com,
+        jannh@google.com, keescook@chromium.org,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable outside the loop
+Date:   Fri,  4 Mar 2022 10:51:09 +0800
+Message-Id: <20220304025109.15501-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
+References: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -122,23 +68,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+First of all, thank you very much for your patient reply and valuable
+comments. This is a great inspiration to me.
 
-On Thu,  3 Mar 2022 04:57:17 +0000 Tung Nguyen wrote:
-> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-> index 473a790f5894..63460183440d 100644
-> --- a/net/tipc/bearer.c
-> +++ b/net/tipc/bearer.c
-> @@ -252,7 +252,7 @@ static int tipc_enable_bearer(struct net *net, const =
-char *name,
->  	int with_this_prio =3D 1;
->  	struct tipc_bearer *b;
->  	struct tipc_media *m;
-> -	struct sk_buff *skb;
-> +	struct sk_buff *skb =3D NULL;
->  	int bearer_id =3D 0;
->  	int res =3D -EINVAL;
->  	char *errstr =3D "";
+> On Mon, Feb 28, 2022 at 11:59 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
+> >
+> > +#define list_for_each_entry_inside(pos, type, head, member)            \
+> 
+> So as mentioned in another thread, I actually tried exactly this.
+> 
+> And it was horrendous.
+> 
+> It's _technically_ probably a very nice solution, but
 
-This chunk looks unrelated and unnecessary. The had previously trusted
-skb to be initialized by tipc_disc_create().
-[Tung]: OK. I will remove it in v2.
+Yes, I always think it is a perfect solution _technically_, since you
+first proposed in the thread of Jakob's first subject.
+
+> 
+>  - it means that the already *good* cases are the ones that are
+> penalized by having to change
+
+Yes, but it also kills potential risks that one day somebody mistakely
+uses iterator after the loop in this already *good* cases, as it removed
+the original declare of pos and any use-after-loop will be catched by
+compiler.
+
+> 
+>  - the syntax of the thing becomes absolutely nasty
+> 
+> which means that _practially_ it's exactly the wrong thing to do.
+> 
+> Just as an example, this is a random current "good user" in kernel/exit.c:
+> 
+> -       list_for_each_entry_safe(p, n, dead, ptrace_entry) {
+> +       list_for_each_entry_safe_inside(p, n, struct task_struct,
+> dead, ptrace_entry) {
+> 
+> and while some of the effects are nice (no need to declare p/n ahead
+> of time), just look at how nasty that line is.
+> 
+> Basically every single use will result in an over-long line. The above
+> example has minimal indentation, almost minimal variable names (to the
+> point of not being very descriptive at all), and one of the most basic
+> kernel structure types. And it still ended up 87 columns wide.
+> 
+>  And no, the answer to that is not "do it on multiple lines then".
+> That is just even worse.
+
+Two avoid multiple lines,  there are some mitigations:
+1. use a shorter macro name: (add 2 chars)
+list_for_each_entry_i instead of list_for_each_entry_inside
+
+2. using a shorter type passing to the macro: (add 3 chars)
++ #define t struct sram_bank_info
+- list_for_each_entry(pos, head, member) {
++ list_for_each_entry_i(pos, t, head, member) {
+
+3. restore all name back to list_for_each_entry after everything is done:
+   (minus 2 chars)
+Although we need replace all the use of list_for_each_entry* (15000+)
+with list_for_each_entry*_i, the work can be done gradually rather
+than all at once. We can incrementally replace these callers until
+all these in the kernel are completely updated with *_i* one. At
+that time, we can just remove the implements of origin macros and rename
+the *_i* macro back to the origin name just in one single patch.
+
+4. As you mentioned, the "safe" version of list_for_each_entry do not
+   need "n" argument anymore with the help of -std=gnu11. (minus 3 chars)
+
+Thus, after all mitigations applied, the "safe" version adds *no* chars to
+columns wide, and other version adds 3 chars totally, which is acceptable
+to me.
+
+> 
+> So I really think this is a major step in the wrong direction.
+
+Maybe yes or maybe no.
+Before the list_for_each_entry_inside way, I have tried something like
+"typeof(pos) pos" way as and before you proposed in the thread of Jakob's
+second subject, to avoid any changes to callers of the macros. But it also
+has potential problems. see my previous reply to you here:
+https://lore.kernel.org/lkml/20220302093106.8402-1-xiam0nd.tong@gmail.com/
+
+> 
+> We should strive for the *bad* cases to have to do extra work, and
+> even there we should really strive for legibility.
+
+Indeed, there are many "multiple lines" problems in the current kernel
+code, for example (drivers/dma/iop-adma.c):
+				list_for_each_entry_from(grp_iter,
+					&iop_chan->chain, chain_node) {
+
+> 
+> Now, I think that "safe" version in particular can be simplified:
+> there's no reason to give the "n" variable a name. Now that we can
+> (with -stc=gnu11) just declare our own variables in the for-loop, the
+> need for that externally visible 'next' declaration just goes away.
+> 
+> So three of those 87 columns are pointless and should be removed. The
+> macro can just internally decare 'n' like it always wanted (but
+> couldn't do due to legacy C language syntax restrictions).
+
+Great, this does reduce three chars. and i will look into other versions.
+
+> 
+> But even with that fixed, it's still a very cumbersome line.
+
+With other mitigations mentioned above, the addition to line will be
+acceptable.
+
+> 
+> Note how the old syntax was "only" 60 characters - long but still
+> quite legible (and would have space for two more levels of indentation
+> without even hitting 80 characters). And that was _despute_ having to
+> have that 'n' declaration.
+> 
+> And yes, the old syntax does require that
+> 
+>         struct task_struct *p, *n;
+> 
+> line to declare the types, but that really is not a huge burden, and
+> is not complicated. It's just another "variables of the right type"
+> line (and as mentioned, the 'n' part has always been a C syntax
+> annoyance).
+
+Yes, that really is not a huge burden, so is the mitigation 2 mentioned
+above which defining a shorter type passing to the macro, to shorten the 
+new line.
+
+> 
+>               Linus
+
+--
+Xiaomeng Tong
