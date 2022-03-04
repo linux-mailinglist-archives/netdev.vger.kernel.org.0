@@ -2,132 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22AB14CDE3B
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 21:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AD1D4CDDFD
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 21:25:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbiCDUDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 15:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        id S229665AbiCDUSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 15:18:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbiCDUD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 15:03:26 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA3B28D7B1
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 12:00:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646424008; x=1677960008;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7kC064xb6BMbDim0pmnLeLvVczZMRtariLgOphzx/OI=;
-  b=Rv/ocFmJkUKMFrKgs9Nu4xThQtuq37OGrqiBH5owS6z5ojBb+x+DwlbP
-   BycE2jY/dyXIAYvMwho+OcfRkWAwwvAlGQuUevSQH3SnRzw+xLyFosouB
-   rucpz2+lTO+a0Q9+jo0hvQds2oM16OC/309d1a1vqdjlZSugBOuENzQfR
-   BCVSta7XkNL/KNMgOS1vgOlFyXs1EGfW2VwHSk1/zo5DQRa8jt5ArewDH
-   ykIccDbg2LVEknfUO2c9zZ87TRcigYnGkZRGRnEi6QiJI00tDWD6/RZij
-   huTbTW+nn2DO1S6p9Tn1a/UqXPQWwwo96jZKy4JAV0Z1yvIHIFzw0K7pi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253981343"
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="253981343"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:36:43 -0800
-X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
-   d="scan'208";a="552340794"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.225.124])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:36:43 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 11/11] selftests: mptcp: update output info of chk_rm_nr
-Date:   Fri,  4 Mar 2022 11:36:36 -0800
-Message-Id: <20220304193636.219315-12-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S230256AbiCDURm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 15:17:42 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B6CC8F82;
+        Fri,  4 Mar 2022 12:14:17 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id 195so10849540iou.0;
+        Fri, 04 Mar 2022 12:14:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=p3HzqQP1KC7y7MVdIYLOONNXlQIe0kZIuhD7eE/pgTM=;
+        b=kgGd9pMRtCj6/JHxEDcKGFQ0tuYTYldJVrrfutWg3nVXkn51yxiqgRN/xHbH45h09p
+         JeiBXGCcuRm4H9ZlkmxsfvxnNEgEgyn9zsl8uZ6egstmLdWFObrfSx6bLQbGQolYAuOy
+         msOCk5IrS+XGgk6AN677Tfwd1ur+bBAx6VJey195AbZLp3DHgEV57m0jx2Yu5TvBkn+H
+         Xe8iDI9ssOomS4pGxaE+64oVh9GUzgwLPUjiQ7r7GPGhn4EyV9wY2wT4MrWWvy274i4Y
+         GI7WqRb7sD9JQCRWgQdIsuP+rlH5IQnSYmoPFLBmz+tH+X8eVkKfppVecxsS2iQEfKaK
+         Lhig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=p3HzqQP1KC7y7MVdIYLOONNXlQIe0kZIuhD7eE/pgTM=;
+        b=AzG54a2uTJKC0hRGAuq5vqUaABu6fpjkkomj5K/XTTVfECnIhACgS0tTwhmDHv3JqB
+         a7SBSu++JOvbkF+rqE3Kw+B0zXYInrrrXGmVjkT186srQ8CFwiuC+4WfWBwUZcqAEhwR
+         rR6bxMnYtSgTn3Ef5r749EwgUDl8vjOqTDVYKu106QelqAOPvEuvN6oKWVV1UubIAENT
+         vvzlQ2qTu4kAAzhqPDuNmwhTri8LGwbANZQXqjz0urU1P4d666+1AUmgRa1oGJeQDjAN
+         0JzGPVBqDuzGrADsFBGsdmOH7dVYG277+qSt+/LMjXQJGhXilSu6r281PrXrqPZcIPwL
+         L/iw==
+X-Gm-Message-State: AOAM533oylzCNa3VZDw6kDJ+/7FEaLuCdJxR3zr0a3y69InlqzJK0eWS
+        xmSGiEChBADswO8SvJjpgEviHka6WjI=
+X-Google-Smtp-Source: ABdhPJxAPBJQuPy9+BtOUh7FGRm150+QGtm6IiLk//Fi//I4qmvJWVobehU4IrWjgFBahNYtxLTBbw==
+X-Received: by 2002:a02:c6b4:0:b0:315:3d31:b6e5 with SMTP id o20-20020a02c6b4000000b003153d31b6e5mr131354jan.44.1646422760750;
+        Fri, 04 Mar 2022 11:39:20 -0800 (PST)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id g4-20020a92cda4000000b002c24724f23csm6334863ild.13.2022.03.04.11.39.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 11:39:20 -0800 (PST)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth-next 2022-03-04
+Date:   Fri,  4 Mar 2022 11:39:19 -0800
+Message-Id: <20220304193919.649815-1-luiz.dentz@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220304193636.219315-1-mathew.j.martineau@linux.intel.com>
-References: <20220304193636.219315-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+The following changes since commit 1039135aedfc5021b4827eb87276d7b4272024ac:
 
-This patch updated the output info of chk_rm_nr. Renamed 'sf' to 'rmsf',
-which means 'remove subflow'. Added the display of whether the inverted
-namespaces has been used to check the mib counters.
+  net: ethernet: sun: Remove redundant code (2022-03-04 13:07:54 +0000)
 
-The new output looks like this:
+are available in the Git repository at:
 
- 002 remove multiple subflows          syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                       rm [ ok ] - rmsf  [ ok ]
- 003 remove single address             syn[ ok ] - synack[ ok ] - ack[ ok ]
-                                       add[ ok ] - echo  [ ok ]
-                                       rm [ ok ] - rmsf  [ ok ]   invert
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-03-04
 
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+for you to fetch changes up to 6dfbe29f45fb0bde29213dbd754a79e8bfc6ecef:
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 2912289d63f4..45c6e5f06916 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -1153,15 +1153,14 @@ chk_rm_nr()
- 	local invert=${3:-""}
- 	local count
- 	local dump_stats
--	local addr_ns
--	local subflow_ns
-+	local addr_ns=$ns1
-+	local subflow_ns=$ns2
-+	local extra_msg=""
- 
--	if [ -z $invert ]; then
--		addr_ns=$ns1
--		subflow_ns=$ns2
--	elif [ $invert = "invert" ]; then
-+	if [[ $invert = "invert" ]]; then
- 		addr_ns=$ns2
- 		subflow_ns=$ns1
-+		extra_msg="   invert"
- 	fi
- 
- 	printf "%-${nr_blank}s %s" " " "rm "
-@@ -1175,7 +1174,7 @@ chk_rm_nr()
- 		echo -n "[ ok ]"
- 	fi
- 
--	echo -n " - sf    "
-+	echo -n " - rmsf  "
- 	count=`ip netns exec $subflow_ns nstat -as | grep MPTcpExtRmSubflow | awk '{print $2}'`
- 	[ -z "$count" ] && count=0
- 	if [ "$count" != "$rm_subflow_nr" ]; then
-@@ -1183,10 +1182,12 @@ chk_rm_nr()
- 		ret=1
- 		dump_stats=1
- 	else
--		echo "[ ok ]"
-+		echo -n "[ ok ]"
- 	fi
- 
- 	[ "${dump_stats}" = 1 ] && dump_stats
-+
-+	echo "$extra_msg"
- }
- 
- chk_prio_nr()
--- 
-2.35.1
+  Bluetooth: btusb: Add another Realtek 8761BU (2022-03-04 16:58:13 +0100)
 
+----------------------------------------------------------------
+bluetooth-next pull request for net-next:
+
+ - Add new PID/VID (0x13d3/0x3567) for MT7921
+ - Add new PID/VID (0x2550/0x8761) for Realtek 8761BU
+ - Add support for LG LGSBWAC02 (MT7663BUN)
+ - Add support for BCM43430A0 and BCM43430A1
+ - Add support for Intel Madison Peak (MsP2)
+
+----------------------------------------------------------------
+Changcheng Deng (1):
+      Bluetooth: mgmt: Replace zero-length array with flexible-array member
+
+Chih-Ying Chiang (1):
+      Bluetooth: mt7921s: support bluetooth reset mechanism
+
+Christophe JAILLET (1):
+      Bluetooth: 6lowpan: No need to clear memory twice
+
+Colin Ian King (1):
+      Bluetooth: make array bt_uuid_any static const
+
+Helmut Grohne (1):
+      Bluetooth: btusb: Add another Realtek 8761BU
+
+Kiran K (1):
+      Bluetooth: btusb: Add support for Intel Madison Peak (MsP2) device
+
+Luca Weiss (1):
+      Bluetooth: hci_bcm: add BCM43430A0 & BCM43430A1
+
+Luiz Augusto von Dentz (2):
+      Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
+      Bluetooth: btusb: Make use of of BIT macro to declare flags
+
+Minghao Chi (1):
+      Bluetooth: mgmt: Remove unneeded variable
+
+Minghao Chi (CGEL ZTE) (1):
+      Bluetooth: use memset avoid memory leaks
+
+Niels Dossche (2):
+      Bluetooth: hci_event: Add missing locking on hdev in hci_le_ext_adv_term_evt
+      Bluetooth: move adv_instance_cnt read within the device lock
+
+Piotr Dymacz (1):
+      Bluetooth: btusb: add support for LG LGSBWAC02 (MT7663BUN)
+
+Radoslaw Biernacki (2):
+      Bluetooth: Fix skb allocation in mgmt_remote_name() & mgmt_device_connected()
+      Bluetooth: Improve skb handling in mgmt_device_connected()
+
+Sean Wang (1):
+      Bluetooth: mediatek: fix the conflict between mtk and msft vendor event
+
+Tom Rix (1):
+      Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()
+
+Yake Yang (2):
+      Bluetooth: btusb: Add a new PID/VID 13d3/3567 for MT7921
+      Bluetooth: btmtksdio: Fix kernel oops when sdio suspend.
+
+Zijun Hu (1):
+      Bluetooth: btusb: Improve stability for QCA devices
+
+ drivers/bluetooth/btmtk.h         |   7 +++
+ drivers/bluetooth/btmtksdio.c     | 126 ++++++++++++++++++++++++++++++++++----
+ drivers/bluetooth/btusb.c         |  81 +++++++++++++-----------
+ drivers/bluetooth/hci_bcm.c       |   2 +
+ include/net/bluetooth/bluetooth.h |  14 +++--
+ include/net/bluetooth/mgmt.h      |   2 +-
+ net/bluetooth/6lowpan.c           |   1 -
+ net/bluetooth/eir.h               |  20 ++++++
+ net/bluetooth/hci_event.c         |  19 +++---
+ net/bluetooth/hci_sync.c          |   2 +-
+ net/bluetooth/l2cap_core.c        |   1 +
+ net/bluetooth/mgmt.c              |  58 ++++++++----------
+ 12 files changed, 237 insertions(+), 96 deletions(-)
