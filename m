@@ -2,173 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FAC94CD7EA
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 16:34:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E8594CD824
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 16:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbiCDPfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 10:35:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
+        id S240322AbiCDPnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 10:43:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiCDPfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 10:35:09 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A3F1BB707;
-        Fri,  4 Mar 2022 07:34:21 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D9DBA2113A;
-        Fri,  4 Mar 2022 15:34:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646408059; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lZ6TTNtxY74fXOWfXPiwCETlyP35ucwNz18yl/4y86g=;
-        b=FtWoEWlcVlMAA7P+iq1Jdcg6fF2ws1Qr0crkZkuxgh8C5J0VJe3kIsc6ynKuS1ZcQ/fCzx
-        RcFjsoS6ejia0S0VCCeQ+4lYzgt5elaPjafqRj9syOVxg4M16VtjkHLLhJpWMjnHEH8JFS
-        0CSvSjvfelZa1W4tNwDs1ZxpWlqgWeY=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6B5A9A3B84;
-        Fri,  4 Mar 2022 15:34:19 +0000 (UTC)
-Date:   Fri, 4 Mar 2022 16:34:19 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     torvalds@linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Willy Tarreau <w@1wt.eu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] mm: Consider __GFP_NOWARN flag for oversized kvmalloc()
- calls
-Message-ID: <YiIxe1gZRwTJ86cY@dhcp22.suse.cz>
-References: <8a99a175d25f4bcce6b78cee8fa536e40b987b0a.1646403182.git.daniel@iogearbox.net>
+        with ESMTP id S233917AbiCDPnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 10:43:31 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED04924088;
+        Fri,  4 Mar 2022 07:42:43 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id gj15-20020a17090b108f00b001bef86c67c1so8156049pjb.3;
+        Fri, 04 Mar 2022 07:42:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YgucM+pyBKX8gfpYonvUJSz0KwBP+cTn6q7it4dMeJw=;
+        b=BQLDSB2P5WBjDBnJWqSX/5NWZ0uUXnd5kwq62qhSOIkTDR8ph9lnqQlO3kjiKynaHM
+         mMHxXPaJHEaApjW4Wqngbn1zlGFUm9jMwZkk/qg6wVU7CUe1B14fpZxAqeEC7OX0Ag3g
+         Z+EJsM48zpNVSpZMS36o8jDMTQShQEnOqX3j3+v8QkpGNVOz4kXoK/ScmhabZF5sJKyu
+         ekwRmXoZ4pAneh9ujEfdwfbg4jP3YBKF67nkDr7gsAHoIlRWf+OiKB4276cnHLanH+HL
+         uSFHPtEWYAJqhQ+3rmO48AASvZAMEyPP/4vFrX4tY2D3pLf2q5C81XUdi9goFeTz8EaM
+         NHtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YgucM+pyBKX8gfpYonvUJSz0KwBP+cTn6q7it4dMeJw=;
+        b=sUrx4nsHO6Guz2OR8wO9BNQQpW8FXphX1naJFMTpphBuIFeQQ0xKYZb877HMHtSqq+
+         LDm1EMtlQyd+9LjlZjrBlwUhledAY2vXfKoYH39PPyP8L9OabNWTNcmL6X2xzIpjuaKT
+         49InDmOlxPxabPbMpVnvGrcjkEV6My7awevWH7Hu1svl0x/LsT7pJPRCfdUWI+goweqp
+         1Udel358tr4+eaujdOzPTUCFKs3alqq/cpmcxtX8SmOjwTlCzQn17mHeEFax40iBLfAN
+         4P7/01E6xDDDNsiapVc3P3jLHJFm7vsvHwVP5cggSwjLUMBzRrW4njviY15Jy6N2QZiV
+         Z4rA==
+X-Gm-Message-State: AOAM533OSLXKQe6jC8O9WqubydalckhvDwYOx1Ah1k6Fg1LqXqQnsMn8
+        IKk/BmTCwVmwL9X62mwuhZcFvkTqiU0=
+X-Google-Smtp-Source: ABdhPJyejU5rfz127LXWtET01fbm7lJIft9hDGfGYPcKay7D8wXRpNXedntDeQ6KNyv5TZZWAZlzDg==
+X-Received: by 2002:a17:902:7086:b0:14f:ee29:5ef0 with SMTP id z6-20020a170902708600b0014fee295ef0mr41307036plk.142.1646408563050;
+        Fri, 04 Mar 2022 07:42:43 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id nk11-20020a17090b194b00b001beed2f1046sm8739014pjb.28.2022.03.04.07.42.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 07:42:42 -0800 (PST)
+Date:   Fri, 4 Mar 2022 07:42:39 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>, Divya.Koppera@microchip.com,
+        netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, madhuri.sripada@microchip.com,
+        manohar.puri@microchip.com
+Subject: Re: [PATCH net-next 0/3] Add support for 1588 in LAN8814
+Message-ID: <20220304154239.GA13902@hoboy.vegasvil.org>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <164639821168.27302.1826304809342359025.git-patchwork-notify@kernel.org>
+ <YiIO7lAMCkHhd11L@lunn.ch>
+ <20220304.132121.856864783082151547.davem@davemloft.net>
+ <20220304140628.GF16032@hoboy.vegasvil.org>
+ <YiIfb821yzXf7YqY@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8a99a175d25f4bcce6b78cee8fa536e40b987b0a.1646403182.git.daniel@iogearbox.net>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <YiIfb821yzXf7YqY@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 04-03-22 15:26:32, Daniel Borkmann wrote:
-> syzkaller was recently triggering an oversized kvmalloc() warning via
-> xdp_umem_create().
-> 
-> The triggered warning was added back in 7661809d493b ("mm: don't allow
-> oversized kvmalloc() calls"). The rationale for the warning for huge
-> kvmalloc sizes was as a reaction to a security bug where the size was
-> more than UINT_MAX but not everything was prepared to handle unsigned
-> long sizes.
-> 
-> Anyway, the AF_XDP related call trace from this syzkaller report was:
-> 
->   kvmalloc include/linux/mm.h:806 [inline]
->   kvmalloc_array include/linux/mm.h:824 [inline]
->   kvcalloc include/linux/mm.h:829 [inline]
->   xdp_umem_pin_pages net/xdp/xdp_umem.c:102 [inline]
->   xdp_umem_reg net/xdp/xdp_umem.c:219 [inline]
->   xdp_umem_create+0x6a5/0xf00 net/xdp/xdp_umem.c:252
->   xsk_setsockopt+0x604/0x790 net/xdp/xsk.c:1068
->   __sys_setsockopt+0x1fd/0x4e0 net/socket.c:2176
->   __do_sys_setsockopt net/socket.c:2187 [inline]
->   __se_sys_setsockopt net/socket.c:2184 [inline]
->   __x64_sys_setsockopt+0xb5/0x150 net/socket.c:2184
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> Björn mentioned that requests for >2GB allocation can still be valid:
-> 
->   The structure that is being allocated is the page-pinning accounting.
->   AF_XDP has an internal limit of U32_MAX pages, which is *a lot*, but
->   still fewer than what memcg allows (PAGE_COUNTER_MAX is a LONG_MAX/
->   PAGE_SIZE on 64 bit systems). [...]
-> 
->   I could just change from U32_MAX to INT_MAX, but as I stated earlier
->   that has a hacky feeling to it. [...] From my perspective, the code
->   isn't broken, with the memcg limits in consideration. [...]
-> 
-> Linus says:
-> 
->   [...] Pretty much every time this has come up, the kernel warning has
->   shown that yes, the code was broken and there really wasn't a reason
->   for doing allocations that big.
-> 
->   Of course, some people would be perfectly fine with the allocation
->   failing, they just don't want the warning. I didn't want __GFP_NOWARN
->   to shut it up originally because I wanted people to see all those
->   cases, but these days I think we can just say "yeah, people can shut
->   it up explicitly by saying 'go ahead and fail this allocation, don't
->   warn about it'".
-> 
->   So enough time has passed that by now I'd certainly be ok with [it].
-> 
-> Thus allow call-sites to silence such userspace triggered splats if the
-> allocation requests have __GFP_NOWARN. For xdp_umem_pin_pages()'s call
-> to kvcalloc() this is already the case, so nothing else needed there.
-> 
-> Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
-> Reported-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Tested-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
-> Cc: Björn Töpel <bjorn@kernel.org>
-> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-> Cc: Willy Tarreau <w@1wt.eu>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Andrii Nakryiko <andrii@kernel.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: David S. Miller <davem@davemloft.net>
-> Link: https://lore.kernel.org/bpf/CAJ+HfNhyfsT5cS_U9EC213ducHs9k9zNxX9+abqC0kTrPbQ0gg@mail.gmail.com
-> Link: https://lore.kernel.org/bpf/20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org
+On Fri, Mar 04, 2022 at 03:17:19PM +0100, Andrew Lunn wrote:
 
-This makes sense to me.
-Ackd-by: Michal Hocko <mhocko@suse.com>
+> My perception is that you also like to sleep at nights, and cannot
+> keep up with David rapid pace. So setting up your own tree, collecting
+> reviews and acks yourself will help you and the quality of the PTP
+> code. So yes, go for it.  I just think it is wrong you have to do
+> this.
 
-> ---
->  [ Hi Linus, just to follow-up on the discussion from here [0], I've cooked
->    up proper and tested patch. Feel free to take it directly to your tree if
->    you prefer, or we could also either route it via bpf or mm, whichever way
->    is best. Thanks!
->    [0] https://lore.kernel.org/bpf/CAHk-=wiRq+_jd_O1gz3J6-ANtXMY7iLpi8XFUcmtB3rBixvUXQ@mail.gmail.com/ ]
-> 
->  mm/util.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/mm/util.c b/mm/util.c
-> index 7e43369064c8..d3102081add0 100644
-> --- a/mm/util.c
-> +++ b/mm/util.c
-> @@ -587,8 +587,10 @@ void *kvmalloc_node(size_t size, gfp_t flags, int node)
->  		return ret;
->  
->  	/* Don't even allow crazy sizes */
-> -	if (WARN_ON_ONCE(size > INT_MAX))
-> +	if (unlikely(size > INT_MAX)) {
-> +		WARN_ON_ONCE(!(flags & __GFP_NOWARN));
->  		return NULL;
-> +	}
->  
->  	return __vmalloc_node(size, 1, flags, node,
->  			__builtin_return_address(0));
-> -- 
-> 2.21.0
+I agree that PTP drivers are being merged too quickly without enough
+review, and my commitment to maintaining a PTP tree will both allow
+better review and reduce davem's burden.
 
--- 
-Michal Hocko
-SUSE Labs
+So maybe it is right for me to do this after all.
+
+Thanks,
+Richard
+
+
+
+
