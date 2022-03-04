@@ -2,415 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5085C4CDBC3
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 19:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECC644CDC46
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 19:21:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiCDSGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 13:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
+        id S236882AbiCDSWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 13:22:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236709AbiCDSGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 13:06:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7F381C46B2
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 10:05:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646417112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1LQCaFXHVFxd9eTB5EpGTf9HGKm8GO1n2hfxb2aYkKc=;
-        b=Z1WQcKDsfEU8ojtn92d+UBvLDSD4J8vAGXXGhrSVccO1Gy4She7GYqz0d0JOlSJXpqxT2+
-        Eadg0vsfkRNOlo9/es4fl/KaPaV4ZifHnYNbCIWAi00zjvNwPivkLjIT2w622lx6/HthdP
-        u0Em+G0hIVN2xw52Gda94aReB5J+Fc0=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-G0Mn034_P0GZKqV3j4zzbQ-1; Fri, 04 Mar 2022 13:05:11 -0500
-X-MC-Unique: G0Mn034_P0GZKqV3j4zzbQ-1
-Received: by mail-qk1-f199.google.com with SMTP id i10-20020a05620a144a00b00648d4fa059dso6167598qkl.0
-        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 10:05:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1LQCaFXHVFxd9eTB5EpGTf9HGKm8GO1n2hfxb2aYkKc=;
-        b=Zkmmvk/y6lSdYUQMcxWqMd/FUQHjmZUs0QwHOhlJb3Ku3QsJP+6rrdkvzlH365ybO1
-         6o6CBzKtf/SO4yp1n7eKlf+ctjW6hRidI3RdQwziZEJAPaRL/iYLVLDnbIP6Ry+Kr6JY
-         8vfFkcyfGRRHid7RtfXkheIjK1uSUHz5O/1+eqdcx1HUt703Fe5vbbkrd0vVNr0v0Wfe
-         d9w9a1qMnFKxgHzPefzx396nbrbebYY43qEajj8fSnr/oSzevUfJKNB5gwb7xaaa7G0W
-         OpUCab5CZp6yf0QxSJGDsBYAUt81WnpU7LPbdk89luP+nk0HqY+O+6FSJAB3++zQAemV
-         09Hg==
-X-Gm-Message-State: AOAM533C74V9jwLY5nilvdp7JaxsxMXz16RfmuY6B3iRXQnTvxwLX2K/
-        NneeTLAYKreVDckMkz7TsAfjPiJgy4Bc6sEGJdLxRnebucSv5eY/iMmA2hLUCxe4tqtXS0+A8Ar
-        5hqvQfuCkV5LEXHT8COl2K+ZmDrYaorB5
-X-Received: by 2002:a05:620a:1a97:b0:663:8d24:8cac with SMTP id bl23-20020a05620a1a9700b006638d248cacmr3336466qkb.632.1646417110544;
-        Fri, 04 Mar 2022 10:05:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzxdJDiS+VCQGyEYcH1o6RcK4SfVP0dMzDWB8rgpswFGZgSkAo4tGCe1isg3UE4F8p5mxDoeswbU7YOx47iz0c=
-X-Received: by 2002:a05:620a:1a97:b0:663:8d24:8cac with SMTP id
- bl23-20020a05620a1a9700b006638d248cacmr3336441qkb.632.1646417110187; Fri, 04
- Mar 2022 10:05:10 -0800 (PST)
+        with ESMTP id S229866AbiCDSWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 13:22:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2C81D3045;
+        Fri,  4 Mar 2022 10:21:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C56BB82A88;
+        Fri,  4 Mar 2022 18:21:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35D9BC340E9;
+        Fri,  4 Mar 2022 18:21:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646418081;
+        bh=ijAnT92eJIWDRpJp0pSBCthRFzRenCZ3oVxEs3ekiKQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eJ+8W3M/Fd3dxHBMcadLocUW48x7wlVV3T950BQXjmcgY5tgOPNMVt8kdZ1dQSrAB
+         hSr66zlEH6giXWJvtV6eixvm1ADH1hplwb3t3hegm7uToNSax9wicI9bMEnhFNIcuv
+         CT5YoYXa6T9TA55foie+L9Vi/LsMGqOl6bQ6Tjdk=
+Date:   Fri, 4 Mar 2022 19:21:09 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 02/28] bpf: introduce hid program type
+Message-ID: <YiJYlfIywoG5yIMd@kroah.com>
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-3-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-References: <20201216064818.48239-1-jasowang@redhat.com> <20220224212314.1326-1-gdawar@xilinx.com>
- <20220224212314.1326-16-gdawar@xilinx.com>
-In-Reply-To: <20220224212314.1326-16-gdawar@xilinx.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Fri, 4 Mar 2022 19:04:34 +0100
-Message-ID: <CAJaqyWcesvA68ghx15y0eJgZvXr5MNqYy2X2S+PJ3U_K8Z+DdQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 15/19] vhost-vdpa: support ASID based IOTLB API
-To:     Gautam Dawar <gautam.dawar@xilinx.com>
-Cc:     Gautam Dawar <gdawar@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Tanuj Murlidhar Kamde <tanujk@xilinx.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Longpeng <longpeng2@huawei.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304172852.274126-3-benjamin.tissoires@redhat.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:28 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
->
-> This patch extends the vhost-vdpa to support ASID based IOTLB API. The
-> vhost-vdpa device will allocated multiple IOTLBs for vDPA device that
-> supports multiple address spaces. The IOTLBs and vDPA device memory
-> mappings is determined and maintained through ASID.
->
-> Note that we still don't support vDPA device with more than one
-> address spaces that depends on platform IOMMU. This work will be done
-> by moving the IOMMU logic from vhost-vDPA to vDPA device driver.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+On Fri, Mar 04, 2022 at 06:28:26PM +0100, Benjamin Tissoires wrote:
+> HID is a protocol that could benefit from using BPF too.
+> 
+> This patch implements a net-like use of BPF capability for HID.
+> Any incoming report coming from the device can be injected into a series
+> of BPF programs that can modify it or even discard it by setting the
+> size in the context to 0.
+> 
+> The kernel/bpf implementation is based on net-namespace.c, with only
+> the bpf_link part kept, there is no real points in keeping the
+> bpf_prog_{attach|detach} API.
+> 
+> The implementation here is only focusing on the bpf changes. The HID
+> changes that hooks onto this are coming in a separate patch.
+> 
+> Given that HID can be compiled in as a module, and the functions that
+> kernel/bpf/hid.c needs to call in hid.ko are exported in struct hid_hooks.
+> 
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> 
 > ---
->  drivers/vhost/vdpa.c  | 129 ++++++++++++++++++++++++++++++++----------
->  drivers/vhost/vhost.c |   2 +-
->  2 files changed, 100 insertions(+), 31 deletions(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 47e6cf9d0881..4bcf824e3b12 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -28,7 +28,8 @@
->  enum {
->         VHOST_VDPA_BACKEND_FEATURES =
->         (1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2) |
-> -       (1ULL << VHOST_BACKEND_F_IOTLB_BATCH),
-> +       (1ULL << VHOST_BACKEND_F_IOTLB_BATCH) |
-> +       (1ULL << VHOST_BACKEND_F_IOTLB_ASID),
+> 
+> changes in v2:
+> - split the series by bpf/libbpf/hid/selftests and samples
+> - unsigned long -> __u16 in uapi/linux/bpf_hid.h
+> - change the bpf_ctx to be of variable size, with a min of 1024 bytes
+> - make this 1 kB available directly from bpf program, the rest will
+>   need a helper
+> - add some more doc comments in uapi
+> ---
+>  include/linux/bpf-hid.h        | 108 ++++++++
+>  include/linux/bpf_types.h      |   4 +
+>  include/linux/hid.h            |   5 +
+>  include/uapi/linux/bpf.h       |   7 +
+>  include/uapi/linux/bpf_hid.h   |  39 +++
+>  kernel/bpf/Makefile            |   3 +
+>  kernel/bpf/hid.c               | 437 +++++++++++++++++++++++++++++++++
+>  kernel/bpf/syscall.c           |   8 +
+>  tools/include/uapi/linux/bpf.h |   7 +
+>  9 files changed, 618 insertions(+)
+>  create mode 100644 include/linux/bpf-hid.h
+>  create mode 100644 include/uapi/linux/bpf_hid.h
+>  create mode 100644 kernel/bpf/hid.c
+> 
+> diff --git a/include/linux/bpf-hid.h b/include/linux/bpf-hid.h
+> new file mode 100644
+> index 000000000000..3cda78051b5f
+> --- /dev/null
+> +++ b/include/linux/bpf-hid.h
+> @@ -0,0 +1,108 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _BPF_HID_H
+> +#define _BPF_HID_H
+> +
+> +#include <linux/mutex.h>
+> +#include <uapi/linux/bpf.h>
+> +#include <uapi/linux/bpf_hid.h>
+> +#include <linux/list.h>
+> +#include <linux/slab.h>
+> +
+> +struct bpf_prog;
+> +struct bpf_prog_array;
+> +struct hid_device;
+> +
+> +enum bpf_hid_attach_type {
+> +	BPF_HID_ATTACH_INVALID = -1,
+> +	BPF_HID_ATTACH_DEVICE_EVENT = 0,
+> +	MAX_BPF_HID_ATTACH_TYPE
+> +};
+> +
+> +struct bpf_hid {
+> +	struct hid_bpf_ctx *ctx;
+> +
+> +	/* Array of programs to run compiled from links */
+> +	struct bpf_prog_array __rcu *run_array[MAX_BPF_HID_ATTACH_TYPE];
+> +	struct list_head links[MAX_BPF_HID_ATTACH_TYPE];
+> +};
+> +
+> +static inline enum bpf_hid_attach_type
+> +to_bpf_hid_attach_type(enum bpf_attach_type attach_type)
+> +{
+> +	switch (attach_type) {
+> +	case BPF_HID_DEVICE_EVENT:
+> +		return BPF_HID_ATTACH_DEVICE_EVENT;
+> +	default:
+> +		return BPF_HID_ATTACH_INVALID;
+> +	}
+> +}
+> +
+> +static inline struct hid_bpf_ctx *bpf_hid_allocate_ctx(struct hid_device *hdev,
+> +						       size_t data_size)
+> +{
+> +	struct hid_bpf_ctx *ctx;
+> +
+> +	/* ensure data_size is between min and max */
+> +	data_size = clamp_val(data_size,
+> +			      HID_BPF_MIN_BUFFER_SIZE,
+> +			      HID_BPF_MAX_BUFFER_SIZE);
+
+Do you want to return an error if the data size is not within the range?
+Otherwise people will just start to use crazy values and you will always
+be limiting them?
+
+> +
+> +	ctx = kzalloc(sizeof(*ctx) + data_size, GFP_KERNEL);
+> +	if (!ctx)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	ctx->hdev = hdev;
+> +	ctx->allocated_size = data_size;
+> +
+> +	return ctx;
+> +}
+
+And why is this an inline function?  Why not put it in a .c file?
+
+> +
+> +union bpf_attr;
+> +struct bpf_prog;
+> +
+> +#if IS_ENABLED(CONFIG_HID)
+> +int bpf_hid_prog_query(const union bpf_attr *attr,
+> +		       union bpf_attr __user *uattr);
+> +int bpf_hid_link_create(const union bpf_attr *attr,
+> +			struct bpf_prog *prog);
+> +#else
+> +static inline int bpf_hid_prog_query(const union bpf_attr *attr,
+> +				     union bpf_attr __user *uattr)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline int bpf_hid_link_create(const union bpf_attr *attr,
+> +				      struct bpf_prog *prog)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +#endif
+> +
+> +static inline bool bpf_hid_link_empty(struct bpf_hid *bpf,
+> +				      enum bpf_hid_attach_type type)
+> +{
+> +	return list_empty(&bpf->links[type]);
+> +}
+> +
+> +struct bpf_hid_hooks {
+> +	struct hid_device *(*hdev_from_fd)(int fd);
+> +	int (*link_attach)(struct hid_device *hdev, enum bpf_hid_attach_type type);
+> +	void (*array_detached)(struct hid_device *hdev, enum bpf_hid_attach_type type);
+> +};
+> +
+> +#ifdef CONFIG_BPF
+> +int bpf_hid_init(struct hid_device *hdev);
+> +void bpf_hid_exit(struct hid_device *hdev);
+> +void bpf_hid_set_hooks(struct bpf_hid_hooks *hooks);
+> +#else
+> +static inline int bpf_hid_init(struct hid_device *hdev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void bpf_hid_exit(struct hid_device *hdev) {}
+> +static inline void bpf_hid_set_hooks(struct bpf_hid_hooks *hooks) {}
+> +#endif
+> +
+> +#endif /* _BPF_HID_H */
+> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> index 48a91c51c015..1509862aacc4 100644
+> --- a/include/linux/bpf_types.h
+> +++ b/include/linux/bpf_types.h
+> @@ -76,6 +76,10 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_EXT, bpf_extension,
+>  BPF_PROG_TYPE(BPF_PROG_TYPE_LSM, lsm,
+>  	       void *, void *)
+>  #endif /* CONFIG_BPF_LSM */
+> +#if IS_ENABLED(CONFIG_HID)
+> +BPF_PROG_TYPE(BPF_PROG_TYPE_HID, hid,
+> +	      __u32, u32)
+
+Why the mix of __u32 and u32 here?
+
+> +#endif
+>  #endif
+>  BPF_PROG_TYPE(BPF_PROG_TYPE_SYSCALL, bpf_syscall,
+>  	      void *, void *)
+> diff --git a/include/linux/hid.h b/include/linux/hid.h
+> index 7487b0586fe6..56f6f4ad45a7 100644
+> --- a/include/linux/hid.h
+> +++ b/include/linux/hid.h
+> @@ -15,6 +15,7 @@
+>  
+>  
+>  #include <linux/bitops.h>
+> +#include <linux/bpf-hid.h>
+>  #include <linux/types.h>
+>  #include <linux/slab.h>
+>  #include <linux/list.h>
+> @@ -639,6 +640,10 @@ struct hid_device {							/* device report descriptor */
+>  	struct list_head debug_list;
+>  	spinlock_t  debug_list_lock;
+>  	wait_queue_head_t debug_wait;
+> +
+> +#ifdef CONFIG_BPF
+> +	struct bpf_hid bpf;
+> +#endif
 >  };
->
->  #define VHOST_VDPA_DEV_MAX (1U << MINORBITS)
-> @@ -57,13 +58,20 @@ struct vhost_vdpa {
->         struct eventfd_ctx *config_ctx;
->         int in_batch;
->         struct vdpa_iova_range range;
-> -       int used_as;
-> +       u32 batch_asid;
+>  
+>  #define to_hid_device(pdev) \
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index afe3d0d7f5f2..5978b92cacd3 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -952,6 +952,7 @@ enum bpf_prog_type {
+>  	BPF_PROG_TYPE_LSM,
+>  	BPF_PROG_TYPE_SK_LOOKUP,
+>  	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
+> +	BPF_PROG_TYPE_HID,
 >  };
->
->  static DEFINE_IDA(vhost_vdpa_ida);
->
->  static dev_t vhost_vdpa_major;
->
-> +static inline u32 iotlb_to_asid(struct vhost_iotlb *iotlb)
-> +{
-> +       struct vhost_vdpa_as *as = container_of(iotlb, struct
-> +                                               vhost_vdpa_as, iotlb);
-> +       return as->id;
-> +}
-> +
->  static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
->  {
->         struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
-> @@ -76,6 +84,16 @@ static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
->         return NULL;
->  }
->
-> +static struct vhost_iotlb *asid_to_iotlb(struct vhost_vdpa *v, u32 asid)
-> +{
-> +       struct vhost_vdpa_as *as = asid_to_as(v, asid);
-> +
-> +       if (!as)
-> +               return NULL;
-> +
-> +       return &as->iotlb;
-> +}
-> +
->  static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
->  {
->         struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
-> @@ -84,6 +102,9 @@ static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
->         if (asid_to_as(v, asid))
->                 return NULL;
->
-> +       if (asid >= v->vdpa->nas)
-> +               return NULL;
-> +
->         as = kmalloc(sizeof(*as), GFP_KERNEL);
->         if (!as)
->                 return NULL;
-> @@ -91,18 +112,24 @@ static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
->         vhost_iotlb_init(&as->iotlb, 0, 0);
->         as->id = asid;
->         hlist_add_head(&as->hash_link, head);
-> -       ++v->used_as;
->
->         return as;
->  }
->
-> -static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
-> +static struct vhost_vdpa_as *vhost_vdpa_find_alloc_as(struct vhost_vdpa *v,
-> +                                                     u32 asid)
->  {
->         struct vhost_vdpa_as *as = asid_to_as(v, asid);
->
-> -       /* Remove default address space is not allowed */
-> -       if (asid == 0)
-> -               return -EINVAL;
-> +       if (as)
-> +               return as;
-> +
-> +       return vhost_vdpa_alloc_as(v, asid);
-> +}
-> +
-> +static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
-> +{
-> +       struct vhost_vdpa_as *as = asid_to_as(v, asid);
->
->         if (!as)
->                 return -EINVAL;
-> @@ -110,7 +137,6 @@ static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
->         hlist_del(&as->hash_link);
->         vhost_iotlb_reset(&as->iotlb);
->         kfree(as);
-> -       --v->used_as;
->
->         return 0;
->  }
-> @@ -665,6 +691,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
->         struct vhost_dev *dev = &v->vdev;
->         struct vdpa_device *vdpa = v->vdpa;
->         const struct vdpa_config_ops *ops = vdpa->config;
-> +       u32 asid = iotlb_to_asid(iotlb);
->         int r = 0;
->
->         r = vhost_iotlb_add_range_ctx(iotlb, iova, iova + size - 1,
-> @@ -673,10 +700,10 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
->                 return r;
->
->         if (ops->dma_map) {
-> -               r = ops->dma_map(vdpa, 0, iova, size, pa, perm, opaque);
-> +               r = ops->dma_map(vdpa, asid, iova, size, pa, perm, opaque);
->         } else if (ops->set_map) {
->                 if (!v->in_batch)
-> -                       r = ops->set_map(vdpa, 0, iotlb);
-> +                       r = ops->set_map(vdpa, asid, iotlb);
->         } else {
->                 r = iommu_map(v->domain, iova, pa, size,
->                               perm_to_iommu_flags(perm));
-> @@ -692,23 +719,35 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
->         return 0;
->  }
->
-> -static void vhost_vdpa_unmap(struct vhost_vdpa *v,
-> -                            struct vhost_iotlb *iotlb,
-> -                            u64 iova, u64 size)
-> +static int vhost_vdpa_unmap(struct vhost_vdpa *v,
-> +                           struct vhost_iotlb *iotlb,
-> +                           u64 iova, u64 size)
->  {
->         struct vdpa_device *vdpa = v->vdpa;
->         const struct vdpa_config_ops *ops = vdpa->config;
-> +       u32 asid = iotlb_to_asid(iotlb);
-> +
-> +       if (!iotlb)
-> +               return -EINVAL;
+>  
+>  enum bpf_attach_type {
+> @@ -997,6 +998,7 @@ enum bpf_attach_type {
+>  	BPF_SK_REUSEPORT_SELECT,
+>  	BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+>  	BPF_PERF_EVENT,
+> +	BPF_HID_DEVICE_EVENT,
+>  	__MAX_BPF_ATTACH_TYPE
+>  };
+>  
+> @@ -1011,6 +1013,7 @@ enum bpf_link_type {
+>  	BPF_LINK_TYPE_NETNS = 5,
+>  	BPF_LINK_TYPE_XDP = 6,
+>  	BPF_LINK_TYPE_PERF_EVENT = 7,
+> +	BPF_LINK_TYPE_HID = 8,
+>  
+>  	MAX_BPF_LINK_TYPE,
+>  };
+> @@ -5870,6 +5873,10 @@ struct bpf_link_info {
+>  		struct {
+>  			__u32 ifindex;
+>  		} xdp;
+> +		struct  {
+> +			__s32 hidraw_ino;
 
-I think there is no need of checking for this. Similar functions
-assume the caller will pass non-null arguments, and
-vhost_vdpa_process_iotlb_msg does it.
+"ino"?  We have lots of letters to spell words out :)
 
-With that into account, I think there is little point in making this
-function return something different than void.
+> +			__u32 attach_type;
+> +		} hid;
+>  	};
+>  } __attribute__((aligned(8)));
+>  
+> diff --git a/include/uapi/linux/bpf_hid.h b/include/uapi/linux/bpf_hid.h
+> new file mode 100644
+> index 000000000000..975ca5bd526f
+> --- /dev/null
+> +++ b/include/uapi/linux/bpf_hid.h
+> @@ -0,0 +1,39 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
+> +
+> +/*
+> + *  HID BPF public headers
+> + *
+> + *  Copyright (c) 2021 Benjamin Tissoires
 
-Apart from that, iotlb is already used before checking for NULL.
+Did you forget the copyright line on the other .h file above?
 
->
->         vhost_vdpa_iotlb_unmap(v, iotlb, iova, iova + size - 1);
->
->         if (ops->dma_map) {
-> -               ops->dma_unmap(vdpa, 0, iova, size);
-> +               ops->dma_unmap(vdpa, asid, iova, size);
->         } else if (ops->set_map) {
->                 if (!v->in_batch)
-> -                       ops->set_map(vdpa, 0, iotlb);
-> +                       ops->set_map(vdpa, asid, iotlb);
->         } else {
->                 iommu_unmap(v->domain, iova, size);
->         }
+> + */
 > +
-> +       /* If we are in the middle of batch processing, delay the free
-> +        * of AS until BATCH_END.
-> +        */
-> +       if (!v->in_batch && !iotlb->nmaps)
-> +               vhost_vdpa_remove_as(v, asid);
+> +#ifndef _UAPI__LINUX_BPF_HID_H__
+> +#define _UAPI__LINUX_BPF_HID_H__
 > +
-> +       return 0;
->  }
->
->  static int vhost_vdpa_va_map(struct vhost_vdpa *v,
-> @@ -916,33 +955,55 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
->         struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
->         struct vdpa_device *vdpa = v->vdpa;
->         const struct vdpa_config_ops *ops = vdpa->config;
-> -       struct vhost_vdpa_as *as = asid_to_as(v, 0);
-> -       struct vhost_iotlb *iotlb = &as->iotlb;
-> +       struct vhost_iotlb *iotlb = NULL;
-> +       struct vhost_vdpa_as *as = NULL;
->         int r = 0;
->
->         mutex_lock(&dev->mutex);
->
-> -       if (asid != 0)
-> -               return -EINVAL;
-> -
->         r = vhost_dev_check_owner(dev);
->         if (r)
->                 goto unlock;
->
-> +       if (msg->type == VHOST_IOTLB_UPDATE ||
-> +           msg->type == VHOST_IOTLB_BATCH_BEGIN) {
-> +               as = vhost_vdpa_find_alloc_as(v, asid);
-> +               if (!as) {
-> +                       dev_err(&v->dev, "can't find and alloc asid %d\n",
-> +                               asid);
-> +                       return -EINVAL;
-> +               }
-> +               iotlb = &as->iotlb;
-> +       } else
-> +               iotlb = asid_to_iotlb(v, asid);
+> +#include <linux/types.h>
 > +
-> +       if ((v->in_batch && v->batch_asid != asid) || !iotlb) {
-> +               if (v->in_batch && v->batch_asid != asid) {
-> +                       dev_info(&v->dev, "batch id %d asid %d\n",
-> +                                v->batch_asid, asid);
-> +               }
-> +               if (!iotlb)
-> +                       dev_err(&v->dev, "no iotlb for asid %d\n", asid);
-> +               return -EINVAL;
-> +       }
-> +
->         switch (msg->type) {
->         case VHOST_IOTLB_UPDATE:
->                 r = vhost_vdpa_process_iotlb_update(v, iotlb, msg);
->                 break;
->         case VHOST_IOTLB_INVALIDATE:
-> -               vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
-> +               r = vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
->                 break;
->         case VHOST_IOTLB_BATCH_BEGIN:
-> +               v->batch_asid = asid;
->                 v->in_batch = true;
->                 break;
->         case VHOST_IOTLB_BATCH_END:
->                 if (v->in_batch && ops->set_map)
-> -                       ops->set_map(vdpa, 0, iotlb);
-> +                       ops->set_map(vdpa, asid, iotlb);
->                 v->in_batch = false;
-> +               if (!iotlb->nmaps)
-> +                       vhost_vdpa_remove_as(v, asid);
->                 break;
->         default:
->                 r = -EINVAL;
-> @@ -1030,9 +1091,17 @@ static void vhost_vdpa_set_iova_range(struct vhost_vdpa *v)
->
->  static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
->  {
-> +       struct vhost_vdpa_as *as;
-> +       u32 asid;
-> +
->         vhost_dev_cleanup(&v->vdev);
->         kfree(v->vdev.vqs);
-> -       vhost_vdpa_remove_as(v, 0);
-> +
-> +       for (asid = 0; asid < v->vdpa->nas; asid++) {
-> +               as = asid_to_as(v, asid);
-> +               if (as)
-> +                       vhost_vdpa_remove_as(v, asid);
-> +       }
->  }
->
->  static int vhost_vdpa_open(struct inode *inode, struct file *filep)
-> @@ -1067,12 +1136,9 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
->         vhost_dev_init(dev, vqs, nvqs, 0, 0, 0, false,
->                        vhost_vdpa_process_iotlb_msg);
->
-> -       if (!vhost_vdpa_alloc_as(v, 0))
-> -               goto err_alloc_as;
-> -
->         r = vhost_vdpa_alloc_domain(v);
->         if (r)
-> -               goto err_alloc_as;
-> +               goto err_alloc_domain;
->
->         vhost_vdpa_set_iova_range(v);
->
-> @@ -1080,7 +1146,7 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
->
->         return 0;
->
-> -err_alloc_as:
-> +err_alloc_domain:
->         vhost_vdpa_cleanup(v);
->  err:
->         atomic_dec(&v->opened);
-> @@ -1205,8 +1271,11 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->         int minor;
->         int i, r;
->
-> -       /* Only support 1 address space and 1 groups */
-> -       if (vdpa->ngroups != 1 || vdpa->nas != 1)
-> +       /* We can't support platform IOMMU device with more than 1
-> +        * group or as
-> +        */
-> +       if (!ops->set_map && !ops->dma_map &&
-> +           (vdpa->ngroups > 1 || vdpa->nas > 1))
->                 return -EOPNOTSUPP;
->
->         v = kzalloc(sizeof(*v), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 1f514d98f0de..92eeb684c84d 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1167,7 +1167,7 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
->                                 ret = -EINVAL;
->                                 goto done;
->                         }
-> -                       offset = sizeof(__u16);
-> +                       offset = 0;
->                 } else
->                         offset = sizeof(__u32);
->                 break;
-> --
-> 2.25.0
->
+> +/*
+> + * The first 1024 bytes are available directly in the bpf programs.
+> + * To access the rest of the data (if allocated_size is bigger
+> + * than 1024, you need to use bpf_hid_ helpers.
+> + */
+> +#define HID_BPF_MIN_BUFFER_SIZE		1024
+> +#define HID_BPF_MAX_BUFFER_SIZE		16384		/* in sync with HID_MAX_BUFFER_SIZE */
+
+Can't you just use HID_MAX_BUFFER_SIZE?
+
+Anyway, all minor stuff, looks good!
+
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
