@@ -2,102 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CB14CD933
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 17:36:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E87C14CD936
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 17:38:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbiCDQh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 11:37:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
+        id S240403AbiCDQjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 11:39:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiCDQh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 11:37:26 -0500
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0576D4F7
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 08:36:38 -0800 (PST)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2dc28791ecbso83963267b3.4
-        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 08:36:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xCmekLk9q2t0G74HRVTW7XFTIVdmQew14t0GN6TBCkU=;
-        b=Xjf/b1q7l2ce6is/oa7p5YBY+l5+ORREeY00FxBPD2sgkgz2AeOjYCowcynefD90+S
-         X2wGunUmruEuGbM2X9RzrdbZ2qh6vciPt6bdBMdVvU6UOTvW9uALdkEPyx2kwIb1NTxy
-         dvAQrAXEu1gVKvUXc2FPZSuo8gcsViprs3i+li379T4QD+lJ62346YlHyI4Vuh9XbMRN
-         BHwBEpfAhdjoaW8PapLDu57r49Cmh51MyShHqFMZURTGmPeb5IldavR57WU0CVHRPCT9
-         OKrMiQ+ksNLfTdooGGpBG/lX4BZjBcC9VDCf/QUrGI/hYLkEw3jHOApD+nCkGr503PDP
-         1rmA==
+        with ESMTP id S237555AbiCDQjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 11:39:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97A3F65493
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 08:38:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646411902;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6EPRGQE/0v4vpBDuxKxWtHT4mXa5VDUCWuXpciIweIM=;
+        b=JHMPxcyGa2yeOOFeJ+D/10/zfz+DVH73Wln/JUT9fW7X9hy1Y/hr/OTZN9Sla8OY2PDu5/
+        4UlEIVf/KOxaQM7kimJdzHMJrwHtyjSpxlKBU8DSZgOuiy/JEHeEnhjSpInnIGZZKhY5Ri
+        ywkITID/oQXHoAKzo+YQKwPv1mtTvRk=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-340-vhe4dLpzNRSImNevBkillA-1; Fri, 04 Mar 2022 11:38:21 -0500
+X-MC-Unique: vhe4dLpzNRSImNevBkillA-1
+Received: by mail-wm1-f70.google.com with SMTP id 26-20020a05600c22da00b00388307f3503so1255741wmg.1
+        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 08:38:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xCmekLk9q2t0G74HRVTW7XFTIVdmQew14t0GN6TBCkU=;
-        b=fDTY2bULlLfnfSRG3/2nt4IdQg4jsvO+2rOsX256OnYPet2W1G8+VOhKvdhdShPzNP
-         eSBk1hUToFurk5uU9AijVXTg3Feb5vb9ZgRpzaI0pO200mBwHLP/W9SGHA7SoWLUG4R1
-         ipYF4lGFy+XJgK9g5WiUeu0xNZ4uaHY8UPUJ31QoyTsR1MibVXLhuWAB6JQyfEBxMPoE
-         lyzrwcVLHzt3l6+FuSM0EVgr6F51unjN3bW+mJD2PcjOiil6N0QCSSA8S1H4jc5TpNRx
-         lnVytNfsBllWDEDOsBr1e4oCnGAfrm7fGEoQws1lON15rEffiwetyWKrf5aX4hOGgGg2
-         fQ5A==
-X-Gm-Message-State: AOAM533rvR/3/BDWSL0ynP7jdkTSdwohoQ2XQdcRU8cwdhMF86XMiPVS
-        bnlVO5LhIoFJouV9MmixL/L6GBDRQX6lTQafgo1ODA==
-X-Google-Smtp-Source: ABdhPJzErsVflu988KrSzhvVIS9E2fyOLpJLauGI1PlNI731SsCBFVmaGj5z9OMHH0LJQNohTLiDlWBAm0/Hu9vYO7I=
-X-Received: by 2002:a81:af57:0:b0:2dc:40d0:1380 with SMTP id
- x23-20020a81af57000000b002dc40d01380mr7465003ywj.255.1646411797657; Fri, 04
- Mar 2022 08:36:37 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6EPRGQE/0v4vpBDuxKxWtHT4mXa5VDUCWuXpciIweIM=;
+        b=MQ1NIa6XAo+vrOEwYRg3v8P69At7+CzEYzgFsRHx48JoWD9L9WdNsSfmb1Vq1DhC76
+         hSt2lw2hGfl50bY/AikcNBwRRyEw4hAHY38Qb6Zodw4LvqegcxvVlbos/a+kACyZLA0a
+         rMCaAr7BxDSoLXjBd9mEAHUI5tComhvNCqdl30c7Dt6zePKGb9suO8RLefn/xxnL0MUh
+         9efi49v1w07yceuSf7/JORPtu8YCqDSuclg2bWPX/TaZTj91ZaG94D/W8XWdJz5EelpO
+         TzjcwbL3eaWH1fPrAPS3Lb/8ML6mMyjmnpI8uGJXIFJtQPmew1p3Zc3MaodRlR4cqIpC
+         USZQ==
+X-Gm-Message-State: AOAM532cz0S60+yJG3a6borGQGjg65igOWmkU0QyGhFTI6IXRxRn94I9
+        SjpFCbqlSU5pgNwBIXwWcQTcXXKvY8e4OOV+dM7FM/i+fzDwGoV8Yz3RCFoIGbN35nTnTLuvsxa
+        W8Df+M/9EjICRT0aG
+X-Received: by 2002:a5d:4ccc:0:b0:1f0:d0d7:3239 with SMTP id c12-20020a5d4ccc000000b001f0d0d73239mr2290169wrt.137.1646411900372;
+        Fri, 04 Mar 2022 08:38:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwfLvl3TD7vPXLKPydZXT7gU3bFx7qvbxDxEGWlF41piBEtxcGWoo0f2y7oLmHBQVDBL5m8Qw==
+X-Received: by 2002:a5d:4ccc:0:b0:1f0:d0d7:3239 with SMTP id c12-20020a5d4ccc000000b001f0d0d73239mr2290148wrt.137.1646411900072;
+        Fri, 04 Mar 2022 08:38:20 -0800 (PST)
+Received: from redhat.com ([2.52.16.157])
+        by smtp.gmail.com with ESMTPSA id m128-20020a1ca386000000b003898b148bf0sm460195wme.20.2022.03.04.08.38.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 08:38:19 -0800 (PST)
+Date:   Fri, 4 Mar 2022 11:38:14 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH v2 9/9] virtio_net: xdp xmit use virtio dma api
+Message-ID: <20220304113316-mutt-send-email-mst@kernel.org>
+References: <20220224110402.108161-1-xuanzhuo@linux.alibaba.com>
+ <20220224110402.108161-10-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220304045353.1534702-1-kuba@kernel.org> <20220303212236.5193923d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CANn89iJ_06Tz8qA26JsgG14XdHCcDbK91MCYqneygSuTRdzsDg@mail.gmail.com> <c9f81dc8-d32c-4ce1-5963-a45bc72fcd31@gmail.com>
-In-Reply-To: <c9f81dc8-d32c-4ce1-5963-a45bc72fcd31@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 4 Mar 2022 08:36:25 -0800
-Message-ID: <CANn89iLKSXpTO_GFmfLYtnd2145p8noB_CjifPiW-8VuvXWG3g@mail.gmail.com>
-Subject: Re: [PATCH net-next] skb: make drop reason booleanable
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Menglong Dong <menglong8.dong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224110402.108161-10-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 7:31 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 3/3/22 11:37 PM, Eric Dumazet wrote:
-> > On Thu, Mar 3, 2022 at 9:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >>
-> >> On Thu,  3 Mar 2022 20:53:53 -0800 Jakub Kicinski wrote:
-> >>> -     return false;
-> >>> +     return __SKB_OKAY;
-> >>
-> >> s/__//
-> >>
-> >> I'll send a v2 if I get acks / positive feedback.
-> >
-> >
-> > I am not a big fan of SKB_OKAY ?
-> >
-> > Maybe SKB_NOT_DROPPED_YET, or SKB_VALID_SO_FAR.
-> >
-> > Oh well, I am not good at names.
->
-> SKB_DROP_EXPECTED or SKB_DROP_NORMAL? That said I thought consume_skb is
-> for normal, release path and then kfree_skb is when an skb is dropped
-> for unexpected reasons.
+On Thu, Feb 24, 2022 at 07:04:02PM +0800, Xuan Zhuo wrote:
+> XDP xmit uses virtio dma api for DMA operations. No longer let virtio
+> core manage DMA address.
+> 
+> To record the DMA address, allocate a space in the xdp_frame headroom to
+> store the DMA address.
+> 
+> Introduce virtnet_return_xdp_frame() to release the xdp frame and
+> complete the dma unmap operation.
 
-Jakub wanted to use a special value in the enum, so that md5 function
-can return this value to tell to the caller :
-(To remove the extra "enum skb_drop_reason *reason" parameter  )
+This commit suffers from the same issue as most other commits
+in this series: log just repeats what patch is doing without
+adding motivation.
 
-    "Please proceed with this packet, md5 layer found nothing wrong with it."
+So with this patch applied, what happened exactly? Did something
+previously broken start working now?
+This is what we want in the commit log, first of all.
 
-Other TCP checks need to apply after this, we do not know yet if skb
-is going to be dropped or consumed.
+Thanks!
+
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  drivers/net/virtio_net.c | 42 +++++++++++++++++++++++++++++++++-------
+>  1 file changed, 35 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index a801ea40908f..0efbf7992a95 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -321,6 +321,20 @@ static struct page *get_a_page(struct receive_queue *rq, gfp_t gfp_mask)
+>  	return p;
+>  }
+>  
+> +static void virtnet_return_xdp_frame(struct send_queue *sq,
+> +				     struct xdp_frame *frame)
+> +{
+> +	struct virtnet_info *vi = sq->vq->vdev->priv;
+> +	dma_addr_t *p_addr, addr;
+> +
+> +	p_addr = frame->data - sizeof(*p_addr);
+> +	addr = *p_addr;
+> +
+> +	virtio_dma_unmap(&vi->vdev->dev, addr, frame->len, DMA_TO_DEVICE);
+> +
+> +	xdp_return_frame(frame);
+> +}
+> +
+>  static void virtqueue_napi_schedule(struct napi_struct *napi,
+>  				    struct virtqueue *vq)
+>  {
+> @@ -504,9 +518,11 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>  				   struct xdp_frame *xdpf)
+>  {
+>  	struct virtio_net_hdr_mrg_rxbuf *hdr;
+> +	struct device *dev = &vi->vdev->dev;
+> +	dma_addr_t addr, *p_addr;
+>  	int err;
+>  
+> -	if (unlikely(xdpf->headroom < vi->hdr_len))
+> +	if (unlikely(xdpf->headroom < vi->hdr_len + sizeof(addr)))
+>  		return -EOVERFLOW;
+>  
+>  	/* Make room for virtqueue hdr (also change xdpf->headroom?) */
+> @@ -516,10 +532,21 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>  	memset(hdr, 0, vi->hdr_len);
+>  	xdpf->len   += vi->hdr_len;
+>  
+> -	sg_init_one(sq->sg, xdpf->data, xdpf->len);
+> +	p_addr = xdpf->data - sizeof(addr);
+> +
+> +	addr = virtio_dma_map(dev, xdpf->data, xdpf->len, DMA_TO_DEVICE);
+> +
+> +	if (virtio_dma_mapping_error(dev, addr))
+> +		return -ENOMEM;
+> +
+> +	*p_addr = addr;
+> +
+> +	sg_init_table(sq->sg, 1);
+> +	sq->sg->dma_address = addr;
+> +	sq->sg->length = xdpf->len;
+>  
+> -	err = virtqueue_add_outbuf(sq->vq, sq->sg, 1, xdp_to_ptr(xdpf),
+> -				   GFP_ATOMIC);
+> +	err = virtqueue_add_outbuf_premapped(sq->vq, sq->sg, 1,
+> +					     xdp_to_ptr(xdpf), GFP_ATOMIC);
+>  	if (unlikely(err))
+>  		return -ENOSPC; /* Caller handle free/refcnt */
+>  
+> @@ -600,7 +627,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  			struct xdp_frame *frame = ptr_to_xdp(ptr);
+>  
+>  			bytes += frame->len;
+> -			xdp_return_frame(frame);
+> +			virtnet_return_xdp_frame(sq, frame);
+>  		} else {
+>  			struct sk_buff *skb = ptr;
+>  
+> @@ -1486,7 +1513,7 @@ static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
+>  			struct xdp_frame *frame = ptr_to_xdp(ptr);
+>  
+>  			bytes += frame->len;
+> -			xdp_return_frame(frame);
+> +			virtnet_return_xdp_frame(sq, frame);
+>  		}
+>  		packets++;
+>  	}
+> @@ -2815,7 +2842,8 @@ static void free_unused_bufs(struct virtnet_info *vi)
+>  			if (!is_xdp_frame(buf))
+>  				dev_kfree_skb(buf);
+>  			else
+> -				xdp_return_frame(ptr_to_xdp(buf));
+> +				virtnet_return_xdp_frame(vi->sq + i,
+> +							 ptr_to_xdp(buf));
+>  		}
+>  	}
+>  
+> -- 
+> 2.31.0
+
