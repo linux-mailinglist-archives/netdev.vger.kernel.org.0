@@ -2,115 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C474CCEE8
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:13:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2545A4CCEEA
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:14:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234965AbiCDHOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 02:14:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
+        id S229522AbiCDHOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 02:14:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238804AbiCDHLJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:11:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB808190C14;
-        Thu,  3 Mar 2022 23:08:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75862B8277B;
-        Fri,  4 Mar 2022 07:08:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE489C36AE2;
-        Fri,  4 Mar 2022 07:08:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646377690;
-        bh=yQYBzWouNWOyD9zM5WtI9fIV8Tp/PcZjsK5VYT69gEM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G2dtgef9seu1rfUTmGaIXrWAUcOn2Gy1WhrcXurBrEpz4hhDxdQg7EuNpftnUXTtq
-         JBjN5h0HVmLOkCA8JyqebsGSz1ffWON8GKhccz7Q5MuDxS0yeif3v1gVvhTo9iy6Z4
-         Yw6NZHCj6bSAU0PEYw//6qnMTd2WRw8pJiHKGe6JiSFkn463dtBONTLAz/3Kg2qOg6
-         AdlvY4hZkaePiNMTjfX3xpLCbwh6s4cGOiFALYCVSglUJl2L8ebgwYO1lzaPPco9Q0
-         Vz3MokG1wkJrp38nUB/wBYXbGjM1z0dCF6Rn3lWXwku46vZjTmVwOoV0nx1hn+/02I
-         9AGKhomxWLQYw==
-Date:   Fri, 4 Mar 2022 09:08:05 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] vhost: Provide a kernel warning if mutex is held
- whilst clean-up in progress
-Message-ID: <YiG61RqXFvq/t0fB@unreal>
-References: <20220303151929.2505822-1-lee.jones@linaro.org>
- <YiETnIcfZCLb63oB@unreal>
- <20220303155645-mutt-send-email-mst@kernel.org>
+        with ESMTP id S239104AbiCDHNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:13:08 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE567199D7F;
+        Thu,  3 Mar 2022 23:08:38 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K8zSQ22yQzdfxT;
+        Fri,  4 Mar 2022 15:07:18 +0800 (CST)
+Received: from [10.174.177.215] (10.174.177.215) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 4 Mar 2022 15:08:36 +0800
+Subject: Re: [PATCH bpf-next v2 3/4] bpf, sockmap: Fix more uncharged while
+ msg has more_data
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <davem@davemloft.net>, <edumazet@google.com>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <ast@kernel.org>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <kpsingh@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+References: <20220302022755.3876705-1-wangyufen@huawei.com>
+ <20220302022755.3876705-4-wangyufen@huawei.com>
+ <YiBczo/gN8w9Hl+L@pop-os.localdomain>
+From:   wangyufen <wangyufen@huawei.com>
+Message-ID: <43486167-1d02-c053-96f4-55a2683f3da8@huawei.com>
+Date:   Fri, 4 Mar 2022 15:08:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303155645-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <YiBczo/gN8w9Hl+L@pop-os.localdomain>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.215]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 04:01:06PM -0500, Michael S. Tsirkin wrote:
-> On Thu, Mar 03, 2022 at 09:14:36PM +0200, Leon Romanovsky wrote:
-> > On Thu, Mar 03, 2022 at 03:19:29PM +0000, Lee Jones wrote:
-> > > All workers/users should be halted before any clean-up should take place.
-> > > 
-> > > Suggested-by:  Michael S. Tsirkin <mst@redhat.com>
-> > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > ---
-> > >  drivers/vhost/vhost.c | 3 +++
-> > >  1 file changed, 3 insertions(+)
-> > > 
-> > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > index bbaff6a5e21b8..d935d2506963f 100644
-> > > --- a/drivers/vhost/vhost.c
-> > > +++ b/drivers/vhost/vhost.c
-> > > @@ -693,6 +693,9 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > >  	int i;
-> > >  
-> > >  	for (i = 0; i < dev->nvqs; ++i) {
-> > > +		/* Ideally all workers should be stopped prior to clean-up */
-> > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > > +
-> > >  		mutex_lock(&dev->vqs[i]->mutex);
-> > 
-> > I know nothing about vhost, but this construction and patch looks
-> > strange to me.
-> > 
-> > If all workers were stopped, you won't need mutex_lock(). The mutex_lock
-> > here suggests to me that workers can still run here.
-> > 
-> > Thanks
-> 
-> 
-> "Ideally" here is misleading, we need a bigger detailed comment
-> along the lines of:
-> 
-> /* 
->  * By design, no workers can run here. But if there's a bug and the
->  * driver did not flush all work properly then they might, and we
->  * encountered such bugs in the past.  With no proper flush guest won't
->  * work correctly but avoiding host memory corruption in this case
->  * sounds like a good idea.
->  */
 
-This description looks better, but the check is inherently racy.
-Why don't you add a comment and mutex_lock()? The WARN_ON here is
-more distraction than actual help.
+在 2022/3/3 14:14, Cong Wang 写道:
+> On Wed, Mar 02, 2022 at 10:27:54AM +0800, Wang Yufen wrote:
+>> In tcp_bpf_send_verdict(), if msg has more data after
+>> tcp_bpf_sendmsg_redir():
+>>
+>> tcp_bpf_send_verdict()
+>>   tosend = msg->sg.size  //msg->sg.size = 22220
+>>   case __SK_REDIRECT:
+>>    sk_msg_return()  //uncharged msg->sg.size(22220) sk->sk_forward_alloc
+>>    tcp_bpf_sendmsg_redir() //after tcp_bpf_sendmsg_redir, msg->sg.size=11000
+>>   goto more_data;
+>>   tosend = msg->sg.size  //msg->sg.size = 11000
+>>   case __SK_REDIRECT:
+>>    sk_msg_return()  //uncharged msg->sg.size(11000) to sk->sk_forward_alloc
+>>
+>> The msg->sg.size(11000) has been uncharged twice, to fix we can charge the
+>> remaining msg->sg.size before goto more data.
+> It looks like bpf_exec_tx_verdict() has the same issue.
+>
+> .
 
-Thanks
+In bpf_exec_tx_verdict(), case __SK_REDIRECT,  msg_redir is used and 
+msg->sg.size is deducted in advance.
 
-> 
-> > >  		if (dev->vqs[i]->error_ctx)
-> > >  			eventfd_ctx_put(dev->vqs[i]->error_ctx);
-> > > -- 
-> > > 2.35.1.574.g5d30c73bfb-goog
-> > > 
-> 
+Therefore, this issue (more uncharged) does not exist.
+
+However, I think that if msg_redir processing cannot be completed , that 
+is msg_redir has more data,
+
+and there is no subsequent processing,  maybe that is another problem.
+
+
+Thanks.
+
