@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B354CCF12
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:31:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E2184CCF2F
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238021AbiCDHcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 02:32:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
+        id S235558AbiCDHmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 02:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiCDHcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:32:11 -0500
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4951419141B
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 23:31:24 -0800 (PST)
-Received: by mail-qt1-x842.google.com with SMTP id bc10so6737593qtb.5
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 23:31:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
-        b=A8s97aGXurgLri/VLXVjQQ+6H90uys1vFefw+GDhUFNUgj0ZKAM7D/CZqAQTv65Qpf
-         h2X54nVb4//TLwMTzB71BGH3yfapsLMIYSpOfv5uY0KILnQuZWJ5oK4R1H67XOGoWo1G
-         TAG8VyDaDNbRm3rFBtuyvvh/kFtNXDBgO96iw8nk+FxG9SsnXKkVaxhqOj9yVzOt7yTn
-         xiyC57WBo3q2gztJ2qt12LpeKieDqgPkIWjDc2qgKlfintGWw0+9IqGCBGY7L2NIguJk
-         zVeNFb0BqpaU6fsAfKyMlgLJq7mA91rB3CzhqpTzPbLjdBjKZOXY4GDkbuct6vDSGmXW
-         L5KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
-        b=Gi0mWFww/k5OaBu9YHhyyF85NoGoykmf677xqqZRcpQ/3bswshKjgNTMa1NU4K+Hhf
-         ZgsF07ghuZcoJYr81x1Zscg7ZWJcyoBZLO4HtVwJ8QYepPUa3yxYyuF7qmEWiF/OE2ME
-         iGXaklvaymeoaHMwfJ9Uqc2SflVd1pxVmHnaVl389alUH8frt55FtuFcamA1XRcIrm0y
-         FOku9ZckLvZLEBjazpuZi0Go43KEkTO+ahBFn4N36TJbLLoIshk4eKP6bqDxkGL154QZ
-         5Pt2D6kj/H6AUaxlZzPdA7yS621LutCtx5OcESIseQp3Yd3d1aqElDpQPg4WcAoFo554
-         Gmsw==
-X-Gm-Message-State: AOAM530AF6/KKVxF9VoEE8RTJlHFJ0BWBwYVQPdUjzHRYTlqzHgJclBd
-        /EHeq2GHio7sX52bQaHk8cKGQqNq8kPJXCjgDXc=
-X-Google-Smtp-Source: ABdhPJxL1ubGR8HAapuq6JPbp1H6IfxWDBnyIVSukBlBs/h3AcHs6Wu+tYYTk1szqogLhjdb6MFg79w7xrNH8/bWCPM=
-X-Received: by 2002:ac8:5b56:0:b0:2cc:2dc9:9a89 with SMTP id
- n22-20020ac85b56000000b002cc2dc99a89mr30832785qtw.182.1646379083009; Thu, 03
- Mar 2022 23:31:23 -0800 (PST)
+        with ESMTP id S231557AbiCDHmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:42:08 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F391D18C786
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 23:41:20 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646379678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yfEybpt1FZFQUx0bhvUQdjLM5shYjb2AwbFFI9JMzb0=;
+        b=AsrTKhFHY5l737FClqjHQkrpA7b5WPLh/LEHvADgkKk3UoQuQoTkRxMv6w/owT0oyiyHR+
+        HoWI4asfhTul28pJCXkbTnokvbgWV+5kGYSvsopH5sCgC/8uf2QGQKJXYgQoFq6AWgDimb
+        SmhHroABjoa1jV+9au0u5S0kQMPDvNEXzhdXDj9RUlnrPeuCb8sYvuP/q/YmIZcvjxAqY9
+        vGjcD3nyMbN9LHbTyYcBlH5OqFDhvf0wDKwS1I91dnTfUFBBR/GcZZMgQrozeQhm68xXo6
+        qy8MzltqgZ3ZiIJS6SyJ88e2HUvephoXRDthGE7EQmqVftHV6jQj8Psxndlbcw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646379678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yfEybpt1FZFQUx0bhvUQdjLM5shYjb2AwbFFI9JMzb0=;
+        b=tmmPOPUY1TaXx9kqcOoP+Z5p0MK/h75zc2cQFPtqC25H65KJ7M32CwkIkToWyp3+UtSpBS
+        vKPPGTP/30ZWCNDA==
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next 5/9] net: dsa: Use netif_rx().
+In-Reply-To: <20220303171505.1604775-6-bigeasy@linutronix.de>
+References: <20220303171505.1604775-1-bigeasy@linutronix.de>
+ <20220303171505.1604775-6-bigeasy@linutronix.de>
+Date:   Fri, 04 Mar 2022 08:41:17 +0100
+Message-ID: <87wnhacggy.fsf@kurt>
 MIME-Version: 1.0
-Reply-To: salkavar2@gmail.com
-Sender: mrseedwards7@gmail.com
-Received: by 2002:ad4:594f:0:0:0:0:0 with HTTP; Thu, 3 Mar 2022 23:31:22 -0800 (PST)
-From:   "Mr.Sal kavar" <salkavar2@gmail.com>
-Date:   Fri, 4 Mar 2022 08:31:22 +0100
-X-Google-Sender-Auth: uDbWE1-8C7bKV4AnpCRg-JWoyqg
-Message-ID: <CA+-WbAXRs0BNO7OaM5FN8F_9pKQRMhdA9hS6kXS4g5s9n17bcg@mail.gmail.com>
-Subject: Yours Faithful,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,MILLION_HUNDRED,
-        MONEY_FRAUD_8,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_HK_NAME_FM_MR_MRS,T_MONEY_PERCENT,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I assume you and your family are in good health. I am the foreign
-operations Manager
+--=-=-=
+Content-Type: text/plain
 
-This being a wide world in which it can be difficult to make new
-acquaintances and because it is virtually impossible to know who is
-trustworthy and who can be believed, i have decided to repose
-confidence in you after much fasting and prayer. It is only because of
-this that I have decided to confide in you and to share with you this
-confidential business.
+On Thu Mar 03 2022, Sebastian Andrzej Siewior wrote:
+> Since commit
+>    baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any context.")
+>
+> the function netif_rx() can be used in preemptible/thread context as
+> well as in interrupt context.
+>
+> Use netif_rx().
+>
+> Cc: Kurt Kanzenbach <kurt@linutronix.de>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Vivien Didelot <vivien.didelot@gmail.com>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
-Thousand Dollars Only) when the account holder suddenly passed on, he
-left no beneficiary who would be entitled to the receipt of this fund.
-For this reason, I have found it expedient to transfer this fund to a
-trustworthy individual with capacity to act as foreign business
-partner.
+Acked-by: Kurt Kanzenbach <kurt@linutronix.de> # hellcreek
 
-Thus i humbly request your assistance to claim this fund. Upon the
-transfer of this fund in your account, you will take 45% as your share
-from the total fund, 10% will be shared to Charity Organizations in
-both country and 45% will be for me.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Yours Faithful,
-Mr.Sal Kavar.
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmIhwp0THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgoYiD/9d65h6436tex8iS/GbW5zySVTq+4WN
+3OXL5/Z9C3VBkcS65Zf2ZADabRfseWuABory7eMWZ0wHalN8zQ/bOCXGG7wx37Sq
+OdDogVtLH40hwmqROh+FWPRblh9bAnxz/5ixJyjzApg9qVkPDEkglQFnuiRnNfE0
+JeOwKjBiqSBSP1O1iBLxpU79BtL1WjddjZN4Fl9NNvVgR8wsN0EX+Uw4ox2RU8OV
+LsVkAxPhfaXq2W205JChq20H9RhDKRK8f9AZxwz4hXC5z7K/Io6jA/r1fUBdHVVX
+m5GlEtVBNFN407P9+j1loR4s02WxgmP6yhs1PV6W71FGHXwS/nD4T3MmMKHBg1Mp
+cAki7LDs/7wD/sHCZpGBZu1qS5gJeKo6bxcjQDlcY3vRKHS4tksZPGa4nL2+Qxbr
+WfsFklanlKUWiS2GFwkAT3FNndMaftfiqgwPtxZ6d5ieJA4o3cUvLkO4yhnwZbjw
+QDjDABE3zqpe8pTTVu+AyosYy3k+vRfEWKqcHeK7+UoyHN06PyhlnUeHrDPiX6/6
+rLqg9TmTFYZuConGy1FlqZRJIhDQ6flH8YglNDHorJkhAAGyncUyi7AnEWk1lWuq
+5YvyejYAOUenFQEDO7SbnBrBHU3Zs495IWMJO52oodwIboIjqQsdVo97dACxGR1p
+aEze15SaabKKxQ==
+=HIBv
+-----END PGP SIGNATURE-----
+--=-=-=--
