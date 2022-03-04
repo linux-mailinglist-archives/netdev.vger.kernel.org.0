@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 443F24CD939
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 17:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 019914CD93A
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 17:41:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240005AbiCDQlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 11:41:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32956 "EHLO
+        id S240670AbiCDQmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 11:42:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiCDQlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 11:41:55 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33ED515F611
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 08:41:07 -0800 (PST)
+        with ESMTP id S229547AbiCDQl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 11:41:56 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C0C15F611
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 08:41:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646412067; x=1677948067;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gXUtyNq+tQ5eEQe4KT2irXcFI7ZLoWT79V4KnWbrRlo=;
-  b=Kz19PXF20jCn2qN0DY12ytdsC3/OHLFYJEKT7rLA7+hrtXpWdnXJGmww
-   gxOo8SlzjgdG/e8+8RgUowwrx14j7zZOxoQfj/FUpQ0MjVLtM9m0GfN4d
-   RBSLv8IHOsUs+CalIkpjTxTRfXUkHF3UXqZjdAIUMfcvX6ZS501v/2XE+
-   Qz14pEy/r3ye8YbYIoAPu4V35tAfHbAlrdIiNcAoUw6GHSkNKFPM+rr2E
-   UOEFdjewi5ArmOPPB93S3SGabCwg0Gaaaz1vo0Syol7rH1nu0XPVtZczq
-   R6Xs8W6EkNljgtiMhwl8yub34u1h5C4paw4UllhsN6Fnuy19qXRbQ2ahO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="317241321"
+  t=1646412068; x=1677948068;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BpObjkEYOWpfUHhmJHod3xYbHwzfc95NdhRYb5Ab2FA=;
+  b=GZyoqojkZEUWjVE/3X1gp9IbA1cbocUheNdSpvBCONE852DX40PEwAop
+   8XgBvGFvRMC8MOkqQzAV8RpXCpJyyvv0BKixxU5Toddm09cxnHNakJmRP
+   KhzPLVBa8QWrYDqm4ZAkyiRgaTqByn8ALpWczbzapIym4pSOcF+TGa7Ix
+   y1o9+MNvXXOtwegccMCEP0CJd62RgPJRrFN8qYkjoADVKOnwrh2XK2Idn
+   l7FyBhQhcpc/81jQrLc3yR0QB4oxTj3vvRIwUCsmY53xoYqpGijofGM3h
+   L1BacraZX2Yg9mBozZpoVrfBkQTMaRnKMEXWG7Wu4Qo0LkPuBNWlkbdr1
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="314726427"
 X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="317241321"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 08:41:06 -0800
+   d="scan'208";a="314726427"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 08:41:07 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
-   d="scan'208";a="509028436"
+   d="scan'208";a="511901818"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 04 Mar 2022 08:41:03 -0800
+  by orsmga006.jf.intel.com with ESMTP; 04 Mar 2022 08:41:04 -0800
 Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 224Gf12G020994;
-        Fri, 4 Mar 2022 16:41:01 GMT
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 224Gf12H020994;
+        Fri, 4 Mar 2022 16:41:02 GMT
 From:   Marcin Szycik <marcin.szycik@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
@@ -48,12 +48,13 @@ Cc:     michal.swiatkowski@linux.intel.com, wojciech.drewek@intel.com,
         osmocom-net-gprs@lists.osmocom.org,
         intel-wired-lan@lists.osuosl.org, xiyou.wangcong@gmail.com,
         jhs@mojatatu.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com,
-        Marcin Szycik <marcin.szycik@linux.intel.com>
-Subject: [PATCH net-next v10 0/7] ice: GTP support in switchdev
-Date:   Fri,  4 Mar 2022 17:40:41 +0100
-Message-Id: <20220304164048.476900-1-marcin.szycik@linux.intel.com>
+        anthony.l.nguyen@intel.com
+Subject: [PATCH net-next v10 1/7] gtp: Allow to create GTP device without FDs
+Date:   Fri,  4 Mar 2022 17:40:42 +0100
+Message-Id: <20220304164048.476900-2-marcin.szycik@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220304164048.476900-1-marcin.szycik@linux.intel.com>
+References: <20220304164048.476900-1-marcin.szycik@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -66,76 +67,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for adding GTP-C and GTP-U filters in switchdev mode.
+From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-To create a filter for GTP, create a GTP-type netdev with ip tool, enable
-hardware offload, add qdisc and add a filter in tc:
+Currently, when the user wants to create GTP device, he has to
+provide file handles to the sockets created in userspace (IFLA_GTP_FD0,
+IFLA_GTP_FD1). This behaviour is not ideal, considering the option of
+adding support for GTP device creation through ip link. Ip link
+application is not a good place to create such sockets.
 
-ip link add $GTP0 type gtp role <sgsn/ggsn> hsize <hsize>
-ethtool -K $PF0 hw-tc-offload on
-tc qdisc add dev $GTP0 ingress
-tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
-action mirred egress redirect dev $VF1_PR
+This patch allows to create GTP device without providing
+IFLA_GTP_FD0 and IFLA_GTP_FD1 arguments. If the user sets
+IFLA_GTP_CREATE_SOCKETS attribute, then GTP module takes care
+of creating UDP sockets by itself. Sockets are created with the
+commonly known UDP ports used for GTP protocol (GTP0_PORT and
+GTP1U_PORT). In this case we don't have to provide encap_destroy
+because no extra deinitialization is needed, everything is covered
+by udp_tunnel_sock_release.
 
-By default, a filter for GTP-U will be added. To add a filter for GTP-C,
-specify enc_dst_port = 2123, e.g.:
+Note: GTP instance created with only this change applied, does
+not handle GTP Echo Requests. This is implemented in the following
+patch.
 
-tc filter add dev $GTP0 ingress prio 1 flower enc_key_id 1337 \
-enc_dst_port 2123 action mirred egress redirect dev $VF1_PR
-
-Note: outer IPv6 offload is not supported yet.
-Note: GTP-U with no payload offload is not supported yet.
-
-ICE COMMS package is required to create a filter as it contains GTP
-profiles.
-
-Changes in iproute2 [1] are required to be able to add GTP netdev and use
-GTP-specific options (QFI and PDU type).
-
-[1] https://lore.kernel.org/netdev/20220211182902.11542-1-wojciech.drewek@intel.com/T
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 ---
-v2: Add more CC
-v3: Fix mail thread, sorry for spam
-v4: Add GTP echo response in gtp module
-v5: Change patch order
-v6: Add GTP echo request in gtp module
-v7: Fix kernel-docs in ice
-v8: Remove handling of GTP Echo Response
-v9: Add sending of multicast message on GTP Echo Response, fix GTP-C dummy 
-    packet selection
-v10: Rebase, fixed most 80 char line limits
+v4: Use ntohs when creating UDP socket
+v5: IFLA_GTP_CREATE_SOCKETS introduced, gtp_newlink refactor
+v6: Reordering refactor removed
+---
+ drivers/net/gtp.c            | 101 +++++++++++++++++++++++++++++------
+ include/uapi/linux/if_link.h |   1 +
+ 2 files changed, 85 insertions(+), 17 deletions(-)
 
-Marcin Szycik (1):
-  ice: Support GTP-U and GTP-C offload in switchdev
-
-Michal Swiatkowski (1):
-  ice: Fix FV offset searching
-
-Wojciech Drewek (5):
-  gtp: Allow to create GTP device without FDs
-  gtp: Implement GTP echo response
-  gtp: Implement GTP echo request
-  net/sched: Allow flower to match on GTP options
-  gtp: Add support for checking GTP device type
-
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- .../net/ethernet/intel/ice/ice_flex_pipe.c    |  53 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |   2 +-
- .../net/ethernet/intel/ice/ice_flex_type.h    |   6 +-
- .../ethernet/intel/ice/ice_protocol_type.h    |  19 +
- drivers/net/ethernet/intel/ice/ice_switch.c   | 643 ++++++++++++++++--
- drivers/net/ethernet/intel/ice/ice_switch.h   |   9 +
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 105 ++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.h   |   3 +
- drivers/net/gtp.c                             | 565 +++++++++++++--
- include/net/gtp.h                             |  42 ++
- include/uapi/linux/gtp.h                      |   1 +
- include/uapi/linux/if_link.h                  |   2 +
- include/uapi/linux/if_tunnel.h                |   4 +-
- include/uapi/linux/pkt_cls.h                  |  15 +
- net/sched/cls_flower.c                        | 116 ++++
- 16 files changed, 1473 insertions(+), 113 deletions(-)
-
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index bf087171bcf0..25d8521897b3 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -66,8 +66,10 @@ struct gtp_dev {
+ 
+ 	struct sock		*sk0;
+ 	struct sock		*sk1u;
++	u8			sk_created;
+ 
+ 	struct net_device	*dev;
++	struct net		*net;
+ 
+ 	unsigned int		role;
+ 	unsigned int		hash_size;
+@@ -320,8 +322,16 @@ static void gtp_encap_disable_sock(struct sock *sk)
+ 
+ static void gtp_encap_disable(struct gtp_dev *gtp)
+ {
+-	gtp_encap_disable_sock(gtp->sk0);
+-	gtp_encap_disable_sock(gtp->sk1u);
++	if (gtp->sk_created) {
++		udp_tunnel_sock_release(gtp->sk0->sk_socket);
++		udp_tunnel_sock_release(gtp->sk1u->sk_socket);
++		gtp->sk_created = false;
++		gtp->sk0 = NULL;
++		gtp->sk1u = NULL;
++	} else {
++		gtp_encap_disable_sock(gtp->sk0);
++		gtp_encap_disable_sock(gtp->sk1u);
++	}
+ }
+ 
+ /* UDP encapsulation receive handler. See net/ipv4/udp.c.
+@@ -656,17 +666,69 @@ static void gtp_destructor(struct net_device *dev)
+ 	kfree(gtp->tid_hash);
+ }
+ 
++static struct sock *gtp_create_sock(int type, struct gtp_dev *gtp)
++{
++	struct udp_tunnel_sock_cfg tuncfg = {};
++	struct udp_port_cfg udp_conf = {
++		.local_ip.s_addr	= htonl(INADDR_ANY),
++		.family			= AF_INET,
++	};
++	struct net *net = gtp->net;
++	struct socket *sock;
++	int err;
++
++	if (type == UDP_ENCAP_GTP0)
++		udp_conf.local_udp_port = htons(GTP0_PORT);
++	else if (type == UDP_ENCAP_GTP1U)
++		udp_conf.local_udp_port = htons(GTP1U_PORT);
++	else
++		return ERR_PTR(-EINVAL);
++
++	err = udp_sock_create(net, &udp_conf, &sock);
++	if (err)
++		return ERR_PTR(err);
++
++	tuncfg.sk_user_data = gtp;
++	tuncfg.encap_type = type;
++	tuncfg.encap_rcv = gtp_encap_recv;
++	tuncfg.encap_destroy = NULL;
++
++	setup_udp_tunnel_sock(net, sock, &tuncfg);
++
++	return sock->sk;
++}
++
++static int gtp_create_sockets(struct gtp_dev *gtp, struct nlattr *data[])
++{
++	struct sock *sk1u = NULL;
++	struct sock *sk0 = NULL;
++
++	sk0 = gtp_create_sock(UDP_ENCAP_GTP0, gtp);
++	if (IS_ERR(sk0))
++		return PTR_ERR(sk0);
++
++	sk1u = gtp_create_sock(UDP_ENCAP_GTP1U, gtp);
++	if (IS_ERR(sk1u)) {
++		udp_tunnel_sock_release(sk0->sk_socket);
++		return PTR_ERR(sk1u);
++	}
++
++	gtp->sk_created = true;
++	gtp->sk0 = sk0;
++	gtp->sk1u = sk1u;
++
++	return 0;
++}
++
+ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 		       struct nlattr *tb[], struct nlattr *data[],
+ 		       struct netlink_ext_ack *extack)
+ {
++	unsigned int role = GTP_ROLE_GGSN;
+ 	struct gtp_dev *gtp;
+ 	struct gtp_net *gn;
+ 	int hashsize, err;
+ 
+-	if (!data[IFLA_GTP_FD0] && !data[IFLA_GTP_FD1])
+-		return -EINVAL;
+-
+ 	gtp = netdev_priv(dev);
+ 
+ 	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
+@@ -677,11 +739,23 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 			hashsize = 1024;
+ 	}
+ 
++	if (data[IFLA_GTP_ROLE]) {
++		role = nla_get_u32(data[IFLA_GTP_ROLE]);
++		if (role > GTP_ROLE_SGSN)
++			return -EINVAL;
++	}
++	gtp->role = role;
++
++	gtp->net = src_net;
++
+ 	err = gtp_hashtable_new(gtp, hashsize);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = gtp_encap_enable(gtp, data);
++	if (data[IFLA_GTP_CREATE_SOCKETS])
++		err = gtp_create_sockets(gtp, data);
++	else
++		err = gtp_encap_enable(gtp, data);
+ 	if (err < 0)
+ 		goto out_hashtable;
+ 
+@@ -726,6 +800,7 @@ static const struct nla_policy gtp_policy[IFLA_GTP_MAX + 1] = {
+ 	[IFLA_GTP_FD1]			= { .type = NLA_U32 },
+ 	[IFLA_GTP_PDP_HASHSIZE]		= { .type = NLA_U32 },
+ 	[IFLA_GTP_ROLE]			= { .type = NLA_U32 },
++	[IFLA_GTP_CREATE_SOCKETS]	= { .type = NLA_U8 },
+ };
+ 
+ static int gtp_validate(struct nlattr *tb[], struct nlattr *data[],
+@@ -848,7 +923,9 @@ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[])
+ {
+ 	struct sock *sk1u = NULL;
+ 	struct sock *sk0 = NULL;
+-	unsigned int role = GTP_ROLE_GGSN;
++
++	if (!data[IFLA_GTP_FD0] && !data[IFLA_GTP_FD1])
++		return -EINVAL;
+ 
+ 	if (data[IFLA_GTP_FD0]) {
+ 		u32 fd0 = nla_get_u32(data[IFLA_GTP_FD0]);
+@@ -868,18 +945,8 @@ static int gtp_encap_enable(struct gtp_dev *gtp, struct nlattr *data[])
+ 		}
+ 	}
+ 
+-	if (data[IFLA_GTP_ROLE]) {
+-		role = nla_get_u32(data[IFLA_GTP_ROLE]);
+-		if (role > GTP_ROLE_SGSN) {
+-			gtp_encap_disable_sock(sk0);
+-			gtp_encap_disable_sock(sk1u);
+-			return -EINVAL;
+-		}
+-	}
+-
+ 	gtp->sk0 = sk0;
+ 	gtp->sk1u = sk1u;
+-	gtp->role = role;
+ 
+ 	return 0;
+ }
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index ddca20357e7e..ebd2aa3ef809 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -887,6 +887,7 @@ enum {
+ 	IFLA_GTP_FD1,
+ 	IFLA_GTP_PDP_HASHSIZE,
+ 	IFLA_GTP_ROLE,
++	IFLA_GTP_CREATE_SOCKETS,
+ 	__IFLA_GTP_MAX,
+ };
+ #define IFLA_GTP_MAX (__IFLA_GTP_MAX - 1)
 -- 
 2.35.1
 
