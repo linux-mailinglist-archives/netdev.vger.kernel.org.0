@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C0224CD128
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 10:36:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 683984CD12F
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 10:36:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237246AbiCDJgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 04:36:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
+        id S237756AbiCDJhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 04:37:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238812AbiCDJgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 04:36:20 -0500
+        with ESMTP id S238616AbiCDJgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 04:36:41 -0500
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDB518E3F1;
-        Fri,  4 Mar 2022 01:35:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10ACD1A6375;
+        Fri,  4 Mar 2022 01:35:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646386530; x=1677922530;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=OEBCwV4gYIEMY6/7C6NgMRZqVYsrG0pU0/zpgEqXjmA=;
-  b=pal6YhWd+KQOilBWOfC0zEXQWVWZYdUXBwOOBYtgyxZxA7KOXrQfWUd3
-   0PurYwOtTlBq/C0SY9+5eqVbUUAKwpEK+rjFsJY0V2rzhLmXnB4FjBoGE
-   0yJuBd5bWymxSQZdANHKnbJoOWJg6LAQJSawKLyruPR5YF/W3dkxoqOG7
-   +r6t28NrNZy5CN0A3nXjOxiChc2Le1rhsDXsbahFr8UdiHe3k/xLBr7N4
-   Zi0G9oosLsSJ6o4a12bCxDOiw+Vt2dS0ayDa5GOUOr/Nt2VCD7ZD1duaf
-   xQNtMqwtSPmB8PsvcCD/AlqQQUS1HngpG4sUAfx3C3t16PpOf7Z/tdYYA
-   g==;
+  t=1646386546; x=1677922546;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=54M4w1EDLE8QNkdXmAR9uZulKSEVc54n/sn/k/7upUQ=;
+  b=p59rbIlBuCRGI8t4FRSqcQ5if+Mj+elUqTyMRsjYDjNnGJVv85egmM1H
+   mbzF0mdUTyO96BSkzOeI87CydbeElqqlNSMtjOv0VuAInVlc8VLBC5ux9
+   SgCXgX8335Y8M98fEj9MLs5zzyY3hDrwWNpTXM8XZF3BVmxcWX3X71y8a
+   zNU13QtSfLNaIRgnjDEll7DKdb8LrJRBrsnqSHWS2nQvmJ6fAVkW30rwp
+   7OWq7btTSpgdeg+N/VzmrR9GDtmWB7hjKS9oS/TsXJvRqcXyx6f0RdpLe
+   nR5D4PhAN2P1Nf6beFhuDCokr1GMU7gMaUMDxv3M35XJ70DOj7ai+QLnA
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.90,154,1643698800"; 
-   d="scan'208";a="150846843"
+   d="scan'208";a="148080784"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 02:35:29 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 02:35:44 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 4 Mar 2022 02:35:29 -0700
+ 15.1.2375.17; Fri, 4 Mar 2022 02:35:43 -0700
 Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 02:35:24 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 02:35:39 -0700
 From:   Divya Koppera <Divya.Koppera@microchip.com>
 To:     <netdev@vger.kernel.org>, <andrew@lunn.ch>, <hkallweit1@gmail.com>,
         <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
@@ -44,10 +45,12 @@ To:     <netdev@vger.kernel.org>, <andrew@lunn.ch>, <hkallweit1@gmail.com>,
         <richardcochran@gmail.com>
 CC:     <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
         <madhuri.sripada@microchip.com>, <manohar.puri@microchip.com>
-Subject: [PATCH net-next 0/3] Add support for 1588 in LAN8814
-Date:   Fri, 4 Mar 2022 15:04:15 +0530
-Message-ID: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+Subject: [PATCH net-next 1/3] net: phy: micrel: Fix concurrent register access
+Date:   Fri, 4 Mar 2022 15:04:16 +0530
+Message-ID: <20220304093418.31645-2-Divya.Koppera@microchip.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -60,23 +63,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following patch series contains:
-- Fix for concurrent register access, which provides
-  atomic access to extended page register reads/writes.
-- Provides dt-bindings related to latency and timestamping
-  that are required for LAN8814 phy.
-- 1588 hardware timestamping support in LAN8814 phy.
+Make Extended page register accessing atomic,
+to overcome unexpected output from register
+reads/writes.
 
-Divya Koppera (3):
-  net: phy: micrel: Fix concurrent register access
-  dt-bindings: net: micrel: Configure latency values and timestamping
-    check for LAN8814 phy
-  net: phy: micrel: 1588 support for LAN8814 phy
+Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
+Signed-off-by: Divya Koppera<Divya.Koppera@microchip.com>
+---
+ drivers/net/phy/micrel.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
- .../devicetree/bindings/net/micrel.txt        |   17 +
- drivers/net/phy/micrel.c                      | 1114 ++++++++++++++++-
- 2 files changed, 1097 insertions(+), 34 deletions(-)
-
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index a7ebcdab415b..281cebc3d00c 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1596,11 +1596,13 @@ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
+ {
+ 	u32 data;
+ 
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
+-		  (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
+-	data = phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
++	phy_lock_mdio_bus(phydev);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
++		    (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
++	data = __phy_read(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA);
++	phy_unlock_mdio_bus(phydev);
+ 
+ 	return data;
+ }
+@@ -1608,18 +1610,18 @@ static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
+ static int lanphy_write_page_reg(struct phy_device *phydev, int page, u16 addr,
+ 				 u16 val)
+ {
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+-	phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
+-		  (page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC));
++	phy_lock_mdio_bus(phydev);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL, page);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
++	__phy_write(phydev, LAN_EXT_PAGE_ACCESS_CONTROL,
++		    page | LAN_EXT_PAGE_ACCESS_CTRL_EP_FUNC);
+ 
+-	val = phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
+-	if (val) {
++	val = __phy_write(phydev, LAN_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
++	if (val != 0)
+ 		phydev_err(phydev, "Error: phy_write has returned error %d\n",
+ 			   val);
+-		return val;
+-	}
+-	return 0;
++	phy_unlock_mdio_bus(phydev);
++	return val;
+ }
+ 
+ static int lan8814_config_init(struct phy_device *phydev)
 -- 
 2.17.1
 
