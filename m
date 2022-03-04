@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 440324CE0B5
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 00:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 728D24CE0C3
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 00:13:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbiCDXMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 18:12:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S230041AbiCDXMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 18:12:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiCDXMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 18:12:24 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E241427B910;
-        Fri,  4 Mar 2022 15:11:34 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id d62so11086589iog.13;
-        Fri, 04 Mar 2022 15:11:34 -0800 (PST)
+        with ESMTP id S229542AbiCDXM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 18:12:26 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2943727B929;
+        Fri,  4 Mar 2022 15:11:38 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id c23so11216271ioi.4;
+        Fri, 04 Mar 2022 15:11:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1gzqM+fI8L57ITd1AkQS2sQnxRxWLhMOjue8gj0QwBk=;
-        b=XzsSls8oRVEG8aj5sG+FF+YVI5/j/VzcgZINA5RRFPCtVeqt4MejlWe8K+hLZU14TW
-         2SlKlbmnm2WYXn7zJkgULe4VjzHuNJDLPYmz1GbSg99Dlvp/XJz3dCiquVABzZj1OXNr
-         eGS1kBH1GNX7+sCwb+Bo+vI8zljaNEbcrGMg2t0+PoxCoT33mvSIF9Hwyd5tHk1fpPIl
-         VMhs7lTMlB2q6ZEh7ikUpxU0KReomvRjbv4WHrpwxlst4LnxDToDMyGVT1jfpJI55p9G
-         117iDhkrRDCWxYxlglSo2AiOYmXzw51IkQwV5NQ8yNEsiKGxh4yUGz9IGKQyJDDAY9Yx
-         1zSw==
+        bh=WMYQjlufi219kBckXHrmZ59mOYrpYpcXHXQJbwGQ/Pc=;
+        b=OMoGxLR4MZVjm3RcfwM0Wdf3BKqIen4nHOnAFYk0HEdPl9USyJrqWHaRSX02dZ2I21
+         iy32OEKWrnA98EwaZYZYQxaX5tCpAzmVhxxz9UpZMnlogWqWovo/wkk35luKpl+gX71I
+         cAB0EOLwJqyOgGXFqARIIsDqGh9LdZBQjC8RN5Chg6mQjY/ubqb99hDjd9E0uJYjCIr8
+         hdNzJ/0OavB8NnENeP0ZP7OL4ILiSubLNzSaZgbL8KhZ6/yEEg6NvANLzDOWSYxA+b+O
+         2coGuqGpGO/Is6kAElHhw8tpcVTSkcItxiww7OsONLFQCcT1qAmHVmPmQVQpNlCOdgK5
+         FNyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1gzqM+fI8L57ITd1AkQS2sQnxRxWLhMOjue8gj0QwBk=;
-        b=bgjaU9sYlC9iwjqXzvfocgw02p/yTM6nJy+pVKblHKfz2MFDpsN8sAJ6FHouyE5aUZ
-         bqwzk9eGxlXr4Ncwa/36Kqj5vbUaIui4KB1SAef2p0l1ZbdzhMqBU3HLFbwSJJJc/vag
-         T7KJ/RyJhlILt7ysOjsu8s0dFAHQqZ2NGVJtDGlPCIygDlqeb63Qe8x1djZjvuQQJ9V5
-         qD3ZmTkjZjA9PKqA3AFBRYp4ZQ9RGpojhv/I4Id5o/0CGT8F4RZFnq7YNgSA2vi2hnGp
-         LQH7arv5ER7+ERE/Hv+ABYQr1BPh5LS+VyER263HrM2+HMeBYN1ImQO6HTnn0K8vNA5C
-         b30g==
-X-Gm-Message-State: AOAM530K3viDKeUeqFUHfT9bbc7tIfOEV4irGYzO893uHwijrI7PjVO2
-        ez+5VuKZvxwtr20YQDfoPPpiqJ1ZKRXIjt6utI8=
-X-Google-Smtp-Source: ABdhPJydnf0WSpatYMMouwDrjxxxT95bQIsWqB7R4Dd3PlUe4UmH9w0ofUg05YR/rqnn3I6iI7eMF485cVV1Cb6i2bo=
-X-Received: by 2002:a05:6602:1605:b0:644:d491:1bec with SMTP id
- x5-20020a056602160500b00644d4911becmr730013iow.63.1646435494276; Fri, 04 Mar
- 2022 15:11:34 -0800 (PST)
+        bh=WMYQjlufi219kBckXHrmZ59mOYrpYpcXHXQJbwGQ/Pc=;
+        b=G6EMpwYO7sMghmUuG5ESkrmdSqbOpp5N46xOpsVRMBo3iH9vZ5wt9esiJINimRS385
+         mUMXHdI3uxASq89OLl9VX9rcIBsZXhpp2n8RGBsWmxKtuzhJaWHURNCtgodjR6M4jmAv
+         27mvER/tEx/2dwUBCQ65qDj8SOBl2CFhx7n/9JlYdVPkJ4DagT4lK+WSLRAOkbrcguFo
+         a5x596Y/Ud9ed2nJi+xVO66Ty/1uY0fgkoZdzL9ltnZXuebHxqh/Jnpj/rQml4Vh+mKn
+         rTTQDKQory0b2AfuJVIXWKE1WwC0H5ayJj9KJlEL+g2LYDkSBCoHhu2KmuuPh2LznfYn
+         iR6w==
+X-Gm-Message-State: AOAM530b16bgCHFSW0sNIisitfKs1oz1ud4uoSeYS4K+ogF8UB2e2TS+
+        M338rHgxWJ0CbjBp8J5chysikpJ3hUZUTxI9nIwLx8TcBUg=
+X-Google-Smtp-Source: ABdhPJy8YiUtVDrIHUNcSSBJVOoBbqJYOSDBqdCWj9X7n5pS3Y2c7UBPg7D9k6N2Oqgi4iqfXEO9XtqTvM23iOeGSm0=
+X-Received: by 2002:a6b:e901:0:b0:640:7bf8:f61d with SMTP id
+ u1-20020a6be901000000b006407bf8f61dmr754404iof.112.1646435497530; Fri, 04 Mar
+ 2022 15:11:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20220222170600.611515-1-jolsa@kernel.org> <20220222170600.611515-10-jolsa@kernel.org>
-In-Reply-To: <20220222170600.611515-10-jolsa@kernel.org>
+References: <20220222170600.611515-1-jolsa@kernel.org> <20220222170600.611515-11-jolsa@kernel.org>
+In-Reply-To: <20220222170600.611515-11-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 4 Mar 2022 15:11:23 -0800
-Message-ID: <CAEf4BzZ+6SN4BRFKEBePqyjB2-Xw49tKa3rpmxt8-qDwONXC8w@mail.gmail.com>
-Subject: Re: [PATCH 09/10] selftest/bpf: Add kprobe_multi attach test
+Date:   Fri, 4 Mar 2022 15:11:26 -0800
+Message-ID: <CAEf4BzZW-W5PcNmB2PoRE-70e1FjqpE-EJKgxfj2SsvjwdBjRA@mail.gmail.com>
+Subject: Re: [PATCH 10/10] selftest/bpf: Add kprobe_multi test for bpf_cookie values
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -76,98 +76,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, Feb 22, 2022 at 9:08 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding kprobe_multi attach test that uses new fprobe interface to
-> attach kprobe program to multiple functions.
->
-> The test is attaching programs to bpf_fentry_test* functions and
-> uses single trampoline program bpf_prog_test_run to trigger
-> bpf_fentry_test* functions.
+> Adding bpf_cookie test for programs attached by kprobe_multi links.
 >
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
-
-subj typo: selftest -> selftests
-
->  .../bpf/prog_tests/kprobe_multi_test.c        | 115 ++++++++++++++++++
->  .../selftests/bpf/progs/kprobe_multi.c        |  58 +++++++++
->  2 files changed, 173 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
->  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi.c
+>  .../selftests/bpf/prog_tests/bpf_cookie.c     | 72 +++++++++++++++++++
+>  .../bpf/progs/kprobe_multi_bpf_cookie.c       | 62 ++++++++++++++++
+>  2 files changed, 134 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
 >
-
-[...]
-
-> +
-> +static void test_link_api_addrs(void)
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> index cd10df6cd0fc..edfb9f8736c6 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> @@ -7,6 +7,7 @@
+>  #include <unistd.h>
+>  #include <test_progs.h>
+>  #include "test_bpf_cookie.skel.h"
+> +#include "kprobe_multi_bpf_cookie.skel.h"
+>
+>  /* uprobe attach point */
+>  static void trigger_func(void)
+> @@ -63,6 +64,75 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
+>         bpf_link__destroy(retlink2);
+>  }
+>
+> +static void kprobe_multi_subtest(void)
 > +{
 > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-> +       __u64 addrs[8];
+> +       int err, prog_fd, link1_fd = -1, link2_fd = -1;
+> +       LIBBPF_OPTS(bpf_test_run_opts, topts);
+
+consistency ftw, LIBBPF_OPTS
+
+
+> +       struct kprobe_multi_bpf_cookie *skel = NULL;
+> +       __u64 addrs[8], cookies[8];
 > +
-> +       kallsyms_find("bpf_fentry_test1", &addrs[0]);
-> +       kallsyms_find("bpf_fentry_test2", &addrs[1]);
-> +       kallsyms_find("bpf_fentry_test3", &addrs[2]);
-> +       kallsyms_find("bpf_fentry_test4", &addrs[3]);
-> +       kallsyms_find("bpf_fentry_test5", &addrs[4]);
-> +       kallsyms_find("bpf_fentry_test6",  &addrs[5]);
-> +       kallsyms_find("bpf_fentry_test7", &addrs[6]);
-> +       kallsyms_find("bpf_fentry_test8", &addrs[7]);
 
-ASSERT_OK() that symbols are found? It also sucks that we re-parse
-kallsyms so much...
+[..]
 
-maybe use load_kallsyms() to pre-cache? We should also teach
-load_kallsyms() to not reload kallsyms more than once
-
-> +
-> +       opts.kprobe_multi.addrs = (__u64) addrs;
-> +       opts.kprobe_multi.cnt = 8;
-
-ARRAY_SIZE()?
-
-> +       test_link_api(&opts);
-> +}
-> +
-> +static void test_link_api_syms(void)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-
-nit: just LIBBPF_OPTS
-
-> +       const char *syms[8] = {
-> +               "bpf_fentry_test1",
-> +               "bpf_fentry_test2",
-> +               "bpf_fentry_test3",
-> +               "bpf_fentry_test4",
-> +               "bpf_fentry_test5",
-> +               "bpf_fentry_test6",
-> +               "bpf_fentry_test7",
-> +               "bpf_fentry_test8",
-> +       };
-> +
-> +       opts.kprobe_multi.syms = (__u64) syms;
-> +       opts.kprobe_multi.cnt = 8;
-
-ARRAY_SIZE() ?
-
-> +       test_link_api(&opts);
-> +}
-> +
-> +void test_kprobe_multi_test(void)
-> +{
-> +       test_skel_api();
-> +       test_link_api_syms();
-> +       test_link_api_addrs();
-
-model as subtests?
-
-
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi.c b/tools/testing/selftests/bpf/progs/kprobe_multi.c
+> diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
 > new file mode 100644
-> index 000000000000..71318c65931c
+> index 000000000000..d6f8454ba093
 > --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/kprobe_multi.c
-> @@ -0,0 +1,58 @@
+> +++ b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
+> @@ -0,0 +1,62 @@
 > +// SPDX-License-Identifier: GPL-2.0
 > +#include <linux/bpf.h>
 > +#include <bpf/bpf_helpers.h>
@@ -193,19 +147,30 @@ model as subtests?
 > +
 > +__u64 test2_result = 0;
 > +
-> +SEC("kprobe.multi/bpf_fentry_test?")
+> +SEC("kprobe.multi/bpf_fentry_tes??")
 > +int test2(struct pt_regs *ctx)
 > +{
+> +       __u64 cookie = bpf_get_attach_cookie(ctx);
 > +       __u64 addr = bpf_get_func_ip(ctx);
 > +
-> +       test2_result += (const void *) addr == &bpf_fentry_test1 ||
-> +                       (const void *) addr == &bpf_fentry_test2 ||
-> +                       (const void *) addr == &bpf_fentry_test3 ||
-> +                       (const void *) addr == &bpf_fentry_test4 ||
-> +                       (const void *) addr == &bpf_fentry_test5 ||
-> +                       (const void *) addr == &bpf_fentry_test6 ||
-> +                       (const void *) addr == &bpf_fentry_test7 ||
-> +                       (const void *) addr == &bpf_fentry_test8;
+> +       test2_result += (const void *) addr == &bpf_fentry_test1 && cookie == 1;
+> +       test2_result += (const void *) addr == &bpf_fentry_test2 && cookie == 2;
+> +       test2_result += (const void *) addr == &bpf_fentry_test3 && cookie == 3;
+> +       test2_result += (const void *) addr == &bpf_fentry_test4 && cookie == 4;
+> +       test2_result += (const void *) addr == &bpf_fentry_test5 && cookie == 5;
+> +       test2_result += (const void *) addr == &bpf_fentry_test6 && cookie == 6;
+> +       test2_result += (const void *) addr == &bpf_fentry_test7 && cookie == 7;
+> +       test2_result += (const void *) addr == &bpf_fentry_test8 && cookie == 8;
+
+this is not parallel mode friendly
+
+let's filter by pid, but also it's best to do count locally and just
+assign it (so that multiple calls of the program still produce the
+same value, instead of constantly increasing global variable with each
+run)
+
+
+> +
 > +       return 0;
 > +}
 > +
@@ -214,16 +179,18 @@ model as subtests?
 > +SEC("kretprobe.multi/bpf_fentry_test*")
 > +int test3(struct pt_regs *ctx)
 > +{
+> +       __u64 cookie = bpf_get_attach_cookie(ctx);
 > +       __u64 addr = bpf_get_func_ip(ctx);
 > +
-> +       test3_result += (const void *) addr == &bpf_fentry_test1 ||
-> +                       (const void *) addr == &bpf_fentry_test2 ||
-> +                       (const void *) addr == &bpf_fentry_test3 ||
-> +                       (const void *) addr == &bpf_fentry_test4 ||
-> +                       (const void *) addr == &bpf_fentry_test5 ||
-> +                       (const void *) addr == &bpf_fentry_test6 ||
-> +                       (const void *) addr == &bpf_fentry_test7 ||
-> +                       (const void *) addr == &bpf_fentry_test8;
+> +       test3_result += (const void *) addr == &bpf_fentry_test1 && cookie == 8;
+> +       test3_result += (const void *) addr == &bpf_fentry_test2 && cookie == 7;
+> +       test3_result += (const void *) addr == &bpf_fentry_test3 && cookie == 6;
+> +       test3_result += (const void *) addr == &bpf_fentry_test4 && cookie == 5;
+> +       test3_result += (const void *) addr == &bpf_fentry_test5 && cookie == 4;
+> +       test3_result += (const void *) addr == &bpf_fentry_test6 && cookie == 3;
+> +       test3_result += (const void *) addr == &bpf_fentry_test7 && cookie == 2;
+> +       test3_result += (const void *) addr == &bpf_fentry_test8 && cookie == 1;
+> +
 > +       return 0;
 > +}
 > --
