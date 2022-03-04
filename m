@@ -2,78 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15E464CCE43
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:02:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BCDD4CCE46
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233879AbiCDHDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 02:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53528 "EHLO
+        id S237083AbiCDHHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 02:07:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbiCDHDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:03:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7933820F53
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 23:02:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ADC461D55
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 07:02:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F302C340E9;
-        Fri,  4 Mar 2022 07:02:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646377362;
-        bh=L8kaEBCCbaB2RO3ZzJG3ELbwC8QItZ6kqT+c9BvjG5k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ugzMbDCwoI3pejV+tCgGD0unIjZU/2FRA+I3XTyYQmf9x6Or5C09Kg/t1e18RL3h8
-         rq89Lvp/K7TLmqKQUzC+lLjzc9dnPUWfhbadub+NsmlvzZkhmAk72YqfE9pKnfruqT
-         y/IjB/vTZ6ILuQj2N1cv3zr+oqUZT3iWSz1YYQu8ZgPg++iUYnOAao095atLRye5GU
-         4QrlJ+mXceW7MheMWENRH83trh7UBAjSN5cqQ6BhgE8UQo5NYrNAndHeA/bmIFhuM0
-         Ahe9XdsKg86YxJFNS4RFlkJ6zua3bGnWZ0xYGA6LvcDBFC37wT3TMjjzn0Uno+Qxre
-         CwyAkwyi6EfgA==
-Date:   Fri, 4 Mar 2022 09:02:37 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shangyan Zhou <sy.zhou@hotmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v2] rdma: Fix res_print_uint()
-Message-ID: <YiG5jQHDA7HuGjrO@unreal>
-References: <TYCPR01MB7578E54F06AEFE50785B771CE3039@TYCPR01MB7578.jpnprd01.prod.outlook.com>
- <OSAPR01MB75677A8532242F986A967C9DE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
+        with ESMTP id S231714AbiCDHHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:07:12 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1F718E430;
+        Thu,  3 Mar 2022 23:06:25 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id b8so6647606pjb.4;
+        Thu, 03 Mar 2022 23:06:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Q/M3caOnFE3N93SPkyxpAe4BQV2suFmBpM97xNgq+TA=;
+        b=anS/vfnrEbn89xVNCCdRDdOukM3FAdc/3eOHFcE9uWJA+9Xx46X3WP0tLapUtRkGPd
+         Hj0FMecC2bNJmBBnyKEJqIOuvkWrTVI8vwTS6oXYbo6c38lu70/HoAnkMHCPSW8k3rOh
+         ekyJ6fFjyp61UiOGj1uhC5ZoYVdioNtO9AxJmFzumb1AY5ffwwLjcPWPbsV8s2wZJq4h
+         7ZZ39NvWbSpJezJ95Xm6u7Nsh4kL8sEWvDwuU73cBWIET6ZJ1iYihl6SoP5bf146yDJG
+         gtYKBwgDcbRy3qfT8QQhzxWbHuOpuB76lauxlTn7F2YXaeeWkHg1FAAWjenCOdF7bk89
+         3a3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Q/M3caOnFE3N93SPkyxpAe4BQV2suFmBpM97xNgq+TA=;
+        b=jbKdqX+xh8BQVrnKSWgI64PQwZYC5l0A3mh095Sii9AhHvrfeRFAhCfcln3UPpNnyA
+         Gc1FOnxniPFYwU5ZOFcUoANOaItY6M7v2r+0D3gMXxZlCSLW6DpFpgT3+aDwGX54852x
+         3E1YJi2Au8sApALefw9VYOYNeQOp2uh1kMisgD/orG3+iKAEEhM6WiXkejWRb4oi4Ulf
+         aqx0BDkKljHuDgLhLy+TqP2SPsKHBWKqJNuPMEeLj4DlhW0ssFsWn3MgPw9P9UlHJcsy
+         JucdVDtJQzgImknTJiucHWJaVF0pvi7eK4RVKIKioOP5mbFXwoGgC+k6fqK6a1gZJ7r2
+         k+aw==
+X-Gm-Message-State: AOAM5338RmWVKUxrTOA3DLideliS0IcMp95pobaE+hO0Qym8d3xQVqjV
+        jmqQtKE8noqpYq52dwLgxB8=
+X-Google-Smtp-Source: ABdhPJxJWAPOFI6E9NdzxWEpdtku8KpJi10GWzq0ldm6Pw+2AH4SvRr9Of/Dd1ZzIZzxezLQ0njqLg==
+X-Received: by 2002:a17:902:e5cf:b0:151:b24e:8d3b with SMTP id u15-20020a170902e5cf00b00151b24e8d3bmr4883162plf.29.1646377585360;
+        Thu, 03 Mar 2022 23:06:25 -0800 (PST)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id c34-20020a630d22000000b0034cb89e4695sm3783586pgl.28.2022.03.03.23.06.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Mar 2022 23:06:24 -0800 (PST)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     yhs@fb.com
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com, ytcoode@gmail.com
+Subject: [PATCH bpf-next v2] bpf: Replace strncpy() with strscpy()
+Date:   Fri,  4 Mar 2022 15:04:08 +0800
+Message-Id: <20220304070408.233658-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <e1e060a0-898f-1969-abec-ca01c2eb2049@fb.com>
+References: <e1e060a0-898f-1969-abec-ca01c2eb2049@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OSAPR01MB75677A8532242F986A967C9DE3059@OSAPR01MB7567.jpnprd01.prod.outlook.com>
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 11:00:28AM +0800, Shangyan Zhou wrote:
-> Print unsigned int64 should use print_color_u64() and fmt string should be "%" PRIu64.
-> 
-> Signed-off-by: Shangyan Zhou <sy.zhou@hotmail.com>
-> ---
->  rdma/res.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/rdma/res.c b/rdma/res.c
-> index 21fef9bd..1af61aa6 100644
-> --- a/rdma/res.c
-> +++ b/rdma/res.c
-> @@ -214,7 +214,7 @@ void res_print_uint(struct rd *rd, const char *name, uint64_t val,
->  	if (!nlattr)
->  		return;
->  	print_color_uint(PRINT_ANY, COLOR_NONE, name, name, val);
-> -	print_color_uint(PRINT_FP, COLOR_NONE, NULL, " %d ", val);
-> +	print_color_u64(PRINT_FP, COLOR_NONE, NULL, " %" PRIu64 " ", val);
->  }
+Using strncpy() on NUL-terminated strings is considered deprecated[1].
+Moreover, if the length of 'task->comm' is less than the destination buffer
+size, strncpy() will NUL-pad the destination buffer, which is a needless
+performance penalty.
 
-Except the res_print_uint() that should be changed too, the patch LGTM.
+Replacing strncpy() with strscpy() fixes all these issues.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
+
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+v1 -> v2: replace strncpy() with strscpy() instead of strscpy_pad()
+
+ kernel/bpf/helpers.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index ae64110a98b5..315053ef6a75 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -225,13 +225,8 @@ BPF_CALL_2(bpf_get_current_comm, char *, buf, u32, size)
+ 	if (unlikely(!task))
+ 		goto err_clear;
+ 
+-	strncpy(buf, task->comm, size);
+-
+-	/* Verifier guarantees that size > 0. For task->comm exceeding
+-	 * size, guarantee that buf is %NUL-terminated. Unconditionally
+-	 * done here to save the size test.
+-	 */
+-	buf[size - 1] = 0;
++	/* Verifier guarantees that size > 0 */
++	strscpy(buf, task->comm, size);
+ 	return 0;
+ err_clear:
+ 	memset(buf, 0, size);
+-- 
+2.35.1
+
