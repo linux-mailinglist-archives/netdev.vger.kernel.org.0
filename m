@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE6F4CDC68
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 19:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A60954CDC8C
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 19:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241157AbiCDS2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 13:28:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
+        id S241748AbiCDSds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 13:33:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232543AbiCDS2d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 13:28:33 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C8C3CFCB;
-        Fri,  4 Mar 2022 10:27:45 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id c1so8185687pgk.11;
-        Fri, 04 Mar 2022 10:27:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LvmSyZzQRNQUyJ7FXCcgvACVEOlbwc9YXOG/YfEoPhw=;
-        b=Hu9tZzR5nCi4uuzWy81rRifFKV2i9HgCOYyfxLgDcuzuNXdD1VQXFfEXNKX3hPmXXF
-         /LJwdbdz2EFPUQ43SUNF9Q8UWFZBOpSaeD3vgF1xeaARbu+9zZYmGL+2JY1rtF1z56Vm
-         C2VnGMTPRyw79o8dUiGznT+61ofSHsvknrG3c82BG3XgCC6sTGlhFoGMdWP8v1Ce1PqQ
-         boVjQHiALhFN5ovv2F4hPSbmZi59bdxhdXM2FS1/wUbinbhbPk6a6CZoJyS8Ca/uWXwC
-         3oC9ybxScv2N1TBoXYJ0hTsFmiXF2+68jUxfwoawg5kTD0knN1Ft71tYiyq+Df3nvUV9
-         /W0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LvmSyZzQRNQUyJ7FXCcgvACVEOlbwc9YXOG/YfEoPhw=;
-        b=ZcLDDn7qAURBJOMHpuLf38b/RbG5mQQ/nzMfUjUiTfevoDuj9TbBidP0FlAfCEkLU9
-         Qb2iBpEN5nFrX5hJ4ns/nLuK41qymdhJsbYZUczh8b0HfRzjy8gWS3YKSzwZmDmxo2KK
-         VlKYWttI8PWBHYrj7+oW+AEnoGnXnrnFQmJ2wNzYWx8tvyaVqXV606IJ7laYfkrJvFY7
-         SrzpXnQm18jn93kpG91b4g9YPzppBtBPKvKs3sp0BPfl1cgKaHBjThEj9O7jdj0eyOJb
-         jBy8gQYt7XuueFBgUQWWwsQ8hp4/QZ89HjSfpfDKG+gNYTPtg55caVX4IOR9NVY5eGxI
-         zNyA==
-X-Gm-Message-State: AOAM531TzKceifqJ2JSjSeaaBSg4ws+LlS/ZI54tWz5TZ10ik6BKWyle
-        n+4xdi92WpLEmw3uhvZtMtA=
-X-Google-Smtp-Source: ABdhPJwCodtZ81e4pL09u62nr29Kwx+gEEvUelA/rFJJFZJ57L810c0ESXgqCNqLtdX9dgBWdP/a2A==
-X-Received: by 2002:a63:cd58:0:b0:364:bca8:55a with SMTP id a24-20020a63cd58000000b00364bca8055amr35584768pgj.56.1646418464814;
-        Fri, 04 Mar 2022 10:27:44 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id y5-20020a056a00190500b004f104b5350fsm6746079pfi.93.2022.03.04.10.27.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 10:27:43 -0800 (PST)
-Message-ID: <9cde59df-3148-8d28-6751-da955a8116fd@gmail.com>
-Date:   Fri, 4 Mar 2022 10:27:41 -0800
+        with ESMTP id S241709AbiCDSdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 13:33:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CC5157239;
+        Fri,  4 Mar 2022 10:32:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 420C061661;
+        Fri,  4 Mar 2022 18:32:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82BDC340E9;
+        Fri,  4 Mar 2022 18:32:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646418765;
+        bh=Vu4fL4KE530EAVkO1moX8T+C8QaTr+SV8CFC4jhiG24=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OKyDe0C9noUTIXE09lh4DwDhngdpLhcawCoQ3TQr+JTv6ZRPK55n/BnxyjuO8XA4H
+         SG3WVlgjPdSXf3Vrl46ebyHI6HTmKORztjkkNy0JSIIMjLM86XZZD2raaHbyFLHiza
+         tyxVx6CYcsKolpW7P8XJKAhyMHI8qd/JSf1xt+gs=
+Date:   Fri, 4 Mar 2022 19:32:26 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 07/28] bpf/hid: add a new attach type to
+ change the report descriptor
+Message-ID: <YiJbOu8NY9UhigKZ@kroah.com>
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-8-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH net-next v5 1/3] dt-bindings: net: dsa: add rtl8_4 and
- rtl8_4t tag formats
-Content-Language: en-US
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        devicetree@vger.kernel.org
-References: <20220303015235.18907-1-luizluca@gmail.com>
- <20220303015235.18907-2-luizluca@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220303015235.18907-2-luizluca@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304172852.274126-8-benjamin.tissoires@redhat.com>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/2/2022 5:52 PM, Luiz Angelo Daros de Luca wrote:
-> Realtek rtl8365mb DSA driver can use these two tag formats.
+On Fri, Mar 04, 2022 at 06:28:31PM +0100, Benjamin Tissoires wrote:
+> The report descriptor is the dictionary of the HID protocol specific
+> to the given device.
+> Changing it is a common habit in the HID world, and making that feature
+> accessible from eBPF allows to fix devices without having to install a
+> new kernel.
 > 
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> However, the report descriptor is supposed to be static on a device.
+> To be able to change it, we need to reconnect the device at the HID
+> level.
+> So whenever the report descriptor program type is attached or detached,
+> we call on a hook on HID to notify it that there is something to be
+> done.
+> 
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
