@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B27764CCF55
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D94F4CCF58
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 08:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239012AbiCDHys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 02:54:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56410 "EHLO
+        id S239017AbiCDHyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 02:54:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239001AbiCDHyo (ORCPT
+        with ESMTP id S239002AbiCDHyo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 02:54:44 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6E719414F;
-        Thu,  3 Mar 2022 23:53:56 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K90Q22QvXz9sRg;
-        Fri,  4 Mar 2022 15:50:18 +0800 (CST)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366B0194162;
+        Thu,  3 Mar 2022 23:53:57 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K90Nm68x9z1GCD1;
+        Fri,  4 Mar 2022 15:49:12 +0800 (CST)
 Received: from localhost.localdomain (10.175.104.82) by
  canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 4 Mar 2022 15:53:53 +0800
+ 15.1.2308.21; Fri, 4 Mar 2022 15:53:54 +0800
 From:   Wang Yufen <wangyufen@huawei.com>
 To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
         <jakub@cloudflare.com>, <lmb@cloudflare.com>,
@@ -30,10 +30,12 @@ CC:     <edumazet@google.com>, <yoshfuji@linux-ipv6.org>,
         <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
         Wang Yufen <wangyufen@huawei.com>
-Subject: [PATCH bpf-next v3 0/4] bpf, sockmap: Fix memleaks and issues of mem charge/uncharge
-Date:   Fri, 4 Mar 2022 16:11:41 +0800
-Message-ID: <20220304081145.2037182-1-wangyufen@huawei.com>
+Subject: [PATCH bpf-next v3 1/4] bpf, sockmap: Fix memleak in sk_psock_queue_msg
+Date:   Fri, 4 Mar 2022 16:11:42 +0800
+Message-ID: <20220304081145.2037182-2-wangyufen@huawei.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220304081145.2037182-1-wangyufen@huawei.com>
+References: <20220304081145.2037182-1-wangyufen@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -50,9 +52,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset fixes memleaks and incorrect charge/uncharge memory, these
-issues cause the following info:
+If tcp_bpf_sendmsg is running during a tear down operation we may enqueue
+data on the ingress msg queue while tear down is trying to free it.
 
+ sk1 (redirect sk2)                         sk2
+ -------------------                      ---------------
+tcp_bpf_sendmsg()
+ tcp_bpf_send_verdict()
+  tcp_bpf_sendmsg_redir()
+   bpf_tcp_ingress()
+                                          sock_map_close()
+                                           lock_sock()
+    lock_sock() ... blocking
+                                           sk_psock_stop
+                                            sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
+                                           release_sock(sk);
+    lock_sock()
+    sk_mem_charge()
+    get_page()
+    sk_psock_queue_msg()
+     sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED);
+      drop_sk_msg()
+    release_sock()
+
+While drop_sk_msg(), the msg has charged memory form sk by sk_mem_charge
+and has sg pages need to put. To fix we use sk_msg_free() and then kfee()
+msg.
+
+This issue can cause the following info:
 WARNING: CPU: 0 PID: 9202 at net/core/stream.c:205 sk_stream_kill_queues+0xc8/0xe0
 Call Trace:
  <IRQ>
@@ -90,27 +117,43 @@ Call Trace:
  ret_from_fork+0x22/0x30
  </TASK>
 
-Changes since v2:
--Move sk_msg_trim() logic into sk_msg_alloc while -ENOMEM occurs, as
-Cong Wang suggested.
-
-Changes since v1:
--Update the commit message of patch #2, the error path is from ENOMEM not
-the ENOSPC.
--Simply returning an error code when psock is null, as John Fastabend
-suggested.
-
-Wang Yufen (4):
-  bpf, sockmap: Fix memleak in sk_psock_queue_msg
-  bpf, sockmap: Fix memleak in tcp_bpf_sendmsg while sk msg is full
-  bpf, sockmap: Fix more uncharged while msg has more_data
-  bpf, sockmap: Fix double uncharge the mem of sk_msg
-
+Fixes: 9635720b7c88 ("bpf, sockmap: Fix memleak on ingress msg enqueue")
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+---
  include/linux/skmsg.h | 13 ++++---------
- net/core/skmsg.c      | 17 +++++++++++++----
- net/ipv4/tcp_bpf.c    | 14 ++++++++------
- 3 files changed, 25 insertions(+), 19 deletions(-)
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index fdb5375f0562..c5a2d6f50f25 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -304,21 +304,16 @@ static inline void sock_drop(struct sock *sk, struct sk_buff *skb)
+ 	kfree_skb(skb);
+ }
+ 
+-static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
+-{
+-	if (msg->skb)
+-		sock_drop(psock->sk, msg->skb);
+-	kfree(msg);
+-}
+-
+ static inline void sk_psock_queue_msg(struct sk_psock *psock,
+ 				      struct sk_msg *msg)
+ {
+ 	spin_lock_bh(&psock->ingress_lock);
+ 	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
+ 		list_add_tail(&msg->list, &psock->ingress_msg);
+-	else
+-		drop_sk_msg(psock, msg);
++	else {
++		sk_msg_free(psock->sk, msg);
++		kfree(msg);
++	}
+ 	spin_unlock_bh(&psock->ingress_lock);
+ }
+ 
 -- 
 2.25.1
 
