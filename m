@@ -2,76 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5D614CCCC6
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 06:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 148784CCCDE
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 06:15:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236838AbiCDFGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 00:06:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
+        id S230244AbiCDFPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 00:15:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiCDFGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 00:06:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D01416FDD5;
-        Thu,  3 Mar 2022 21:05:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S238004AbiCDFPy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 00:15:54 -0500
+X-Greylist: delayed 388 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Mar 2022 21:15:02 PST
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631769285C
+        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 21:15:02 -0800 (PST)
+Received: from HP-EliteBook-840-G7.. (36-229-235-123.dynamic-ip.hinet.net [36.229.235.123])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 316FDB82758;
-        Fri,  4 Mar 2022 05:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9693EC340E9;
-        Fri,  4 Mar 2022 05:05:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646370346;
-        bh=4x65Fp7ObQMvsWCK/jjF9UZ9wVhjMToo0McU7yZbAB8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UOPsBaUoldwHegmZ9+2wxga8RV87CUfr9bstWRpPWCQFWuyfuh0d+e/n8sxsXyQFr
-         lS4EdOsfJ5/mV/JlcbaQSuumz3m02f6267PCit8/jnPDWoAbPdsYrhrs4jyQD7mmsK
-         i7niYPHvGEc8K8q+r5QDB6RCKY11vfUpCGFwAOi/wB+Y5oYQtEgxrkjzWuWwVkUpI5
-         qoEb8lkS8AQo5AIoeWltX/Vt7pJ33fYiNlO5E2y2/ri5pHjk0B66ROfDNloHG+j7HN
-         YsZ52/PwF2Z5rRLdT7MLf4oGzEOJBYKj2CBTmHmJA8rlkEpQ6xP4t/NJHYB7L/AAnp
-         SDQXsmB1rbViA==
-Date:   Thu, 3 Mar 2022 21:05:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Lobakin <alobakin@pm.me>, flyingpeng@tencent.com,
-        Mengen Sun <mengensun@tencent.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/7] net: dev: use kfree_skb_reason() for
- sch_handle_egress()
-Message-ID: <20220303210544.5036cf7c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <CADxym3ZC1kXYF2_YnY3xKYnRGzPimHnahR5eoAr4fkawkm5aSA@mail.gmail.com>
-References: <20220303174707.40431-1-imagedong@tencent.com>
-        <20220303174707.40431-2-imagedong@tencent.com>
-        <20220303202539.17ac1dd5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <CADxym3ZC1kXYF2_YnY3xKYnRGzPimHnahR5eoAr4fkawkm5aSA@mail.gmail.com>
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 64BD03F615;
+        Fri,  4 Mar 2022 05:08:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646370507;
+        bh=sGlok+QxXUJMqxle/m0fwKdw/UVUhMjtd+mUVGGBQug=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=C0fM7Z9SylA6Gc1x6MFjBXU5FpPTseKi1N3wNeavs+9hsXsa91vvqz/anhZsFCn8v
+         re3VYGz5p/td6kprV+MfW/VfQSUH71pajbGIEYJuxSqKhlE8Ks39QRkXC96TurYkcG
+         tET3QuFDBjl13+MalZeaZGKtULAtPkCNNRTDM9wkbkSPjO455Wl4wn1t4El5Ei3FJ4
+         OxIaWKHPFb6rtJjQoEPcNLWfptnZzkU6YiNnBXZK4yb0nO83H7vso8ZnCYKXiyxLzz
+         i3Hbv/RrDgCMnU6DOzs2pVACaCMfg/x/wL61wWMnTriqKXtR0HTahdJx4OMQGC94Ey
+         fxifyRuHp7dvQ==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: atlantic: Avoid out-of-bounds indexing
+Date:   Fri,  4 Mar 2022 13:08:12 +0800
+Message-Id: <20220304050812.7472-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,14 +52,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Mar 2022 12:56:40 +0800 Menglong Dong wrote:
-> You are right, I think I misunderstanded the concept of qdisc and tc before.
-> and seems all 'QDISC' here should be 'TC'? which means:
-> 
-> QDISC_EGRESS -> TC_EGRESS
-> QDISC_DROP -> TC_DROP
+UBSAN warnings are observed on atlantic driver:
+[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
+[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
 
-For this one QDISC is good, I think, it will mostly catch packets 
-which went thru qdisc_drop(), right?
+The index is assigned right before breaking out the loop, so there's no actual
+deferencing happening.
 
-> QDISC_INGRESS -> TC_INGRESS
+So only use the index inside the loop to fix the issue.
+
+BugLink: https://bugs.launchpad.net/bugs/1958770
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+index f4774cf051c97..6ab1f3212d246 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
+ 	if (!self) {
+ 		err = -EINVAL;
+ 	} else {
+-		for (i = 0U, ring = self->ring[0];
+-			self->tx_rings > i; ++i, ring = self->ring[i]) {
++		for (i = 0U; self->tx_rings > i; ++i) {
++			ring = self->ring[i];
+ 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
+ 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
+ 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
+@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
+ 	self->aq_hw_ops = aq_hw_ops;
+ 	self->aq_hw = aq_hw;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
+ 		if (err < 0)
+ 			goto err_exit;
+@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
+ 	unsigned int i = 0U;
+ 	int err = 0;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
+ 							&ring[AQ_VEC_TX_ID]);
+ 		if (err < 0)
+@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
+ 	struct aq_ring_s *ring = NULL;
+ 	unsigned int i = 0U;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
+ 						 &ring[AQ_VEC_TX_ID]);
+ 
+@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
+ 	if (!self)
+ 		goto err_exit;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
+ 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
+ 	}
+@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
+ 	if (!self)
+ 		goto err_exit;
+ 
+-	for (i = 0U, ring = self->ring[0];
+-		self->tx_rings > i; ++i, ring = self->ring[i]) {
++	for (i = 0U; self->tx_rings > i; ++i) {
++		ring = self->ring[i];
+ 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
+ 		if (i < self->rx_rings)
+ 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
+-- 
+2.34.1
+
