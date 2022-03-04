@@ -2,71 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F28EE4CD33F
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 12:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 638D84CD2F2
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 12:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239147AbiCDLVX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Mar 2022 06:21:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52802 "EHLO
+        id S238359AbiCDLHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 06:07:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbiCDLVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 06:21:22 -0500
-X-Greylist: delayed 744 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 03:20:35 PST
-Received: from mxo.utc.fr (mxo-out8.utc.fr [195.83.155.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 508E0137754
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 03:20:35 -0800 (PST)
-Received: from vmc.utc.fr (vmc.utc.fr [195.83.155.12])
-        by mxo.utc.fr (Postfix) with ESMTP id B50BF45F4C
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 12:06:52 +0100 (CET)
-Received: from mxo.utc.fr (mxo.utc.fr [195.83.155.6])
-        by vmc.utc.fr (vmc.utc.fr) with ESMTP id 9322C2A4800
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 11:42:55 +0100 (CET)
-Received: from mxo.utc.fr (localhost [127.0.0.1])
-        by mxo.utc.fr (Postfix) with ESMTP id F37DA4D656
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 11:14:52 +0100 (CET)
-Received: from smtps.utc.fr (smtps.utc.fr [195.83.155.8])
-        by mxo.utc.fr (Postfix) with ESMTP id 5F45BA119F
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 10:49:22 +0100 (CET)
-Received: from [193.169.255.111] (unknown [193.169.255.111])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pougetju@smtps.utc.fr)
-        by smtps.utc.fr (Postfix) with ESMTPSA id 5D9F2222D09
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:47:40 +0100 (CET)
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S231405AbiCDLHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 06:07:20 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D95F4FC69;
+        Fri,  4 Mar 2022 03:06:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646391992; x=1677927992;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=p8Fa23wYHcovyCGBRwDb95f17RKV5nETuLwfv0uMp7M=;
+  b=JXUetVdN2nlOwy8H8rZhIucjnPTuEYXYzzRmVL9ozuU1iQKtgjGqqy+4
+   DuqntJhjRhyW+ihwRBvlWteB3Ns84/GUyd/4/x2q0iFjXR2RSbJ+SGibW
+   o6FqHOyCj57fTqNZ17Jq5DuAEBrsngr86frgqlAEkUjpzZIVfVYpQh0ex
+   1Zmbzi0Y2QTgYgH82fs2h4eo3CgxzzNEePnLBsadwqCe9rtXH3U9MZzeE
+   551yA3Cu45NGQxBI6uPGf3NX5018VorWlWzJfWiyqzDrJ8pZt7m6hMVp5
+   wErnrjc/KjKQTXlZjCJSfYYyQOXRD0FLeAKYw65V9rDYcuo7f8pRyZ+bu
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,155,1643698800"; 
+   d="scan'208";a="87822961"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Mar 2022 04:06:31 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 4 Mar 2022 04:06:30 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 4 Mar 2022 04:06:28 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <casper.casan@gmail.com>,
+        <richardcochran@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 0/9] net: sparx5: Add PTP Hardware Clock support
+Date:   Fri, 4 Mar 2022 12:08:51 +0100
+Message-ID: <20220304110900.3199904-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Re:
-To:     netdev@vger.kernel.org
-From:   "Harald Hauge" <justine.pouget@etu.utc.fr>
-Date:   Fri, 04 Mar 2022 00:47:40 -0800
-Reply-To: weicho110@163.com
-Message-Id: <20220304101452.F37DA4D656@mxo.utc.fr>
-X-DRWEB-SCAN: disabled
-X-CLAMAV-SCAN: ok
-X-VRSPAM-SCORE: 1
-X-VRSPAM-STATE: legit
-X-VRSPAM-CAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddruddtkedgudejucetufdoteggodetrfcurfhrohhfihhlvgemucggteffgffitefvgfghtegjpdggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddtnecuogfuphgrmhfkphdqohhuthculddumdenucfjughrpegtggfguffvhfffrhesthhqtddttddtudenucfhrhhomhepfdfjrghrrghlugcujfgruhhgvgdfuceojhhushhtihhnvgdrphhouhhgvghtsegvthhurdhuthgtrdhfrheqnecuggftrfgrthhtvghrnhepueeuheekjeefteegffeujeekvdduudevudfhhfduiedtheelhedvkeehfeeiieelnecukfhppeduleehrdekfedrudehhedriedpudelfedrudeiledrvdehhedrudduudenucfuphgrmhfkphepudelfedrudeiledrvdehhedrudduudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdpihhnvghtpeduleehrdekfedrudehhedriedphhgvlhhopehmgihordhuthgtrdhfrhdpmhgrihhlfhhrohhmpehjuhhsthhinhgvrdhpohhughgvthesvghtuhdruhhttgdrfhhrpdhnsggprhgtphhtthhopedupdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-Spam-Status: No, score=4.0 required=5.0 tests=BAYES_60,
-        FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,KHOP_HELO_FCRDNS,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-I'm Harald Hauge, an Investment Manager from Norway.
-I will your assistance in executing this Business from my country
-to yours.
+Add support for PTP Hardware Clock (PHC) for sparx5.
 
-This is a short term investment with good returns. Kindly
-reply to confirm the validity of your email so I can give you comprehensive details about the project.
+Horatiu Vultur (9):
+  net: sparx5: Move ifh from port to local variable
+  dt-bindings: net: sparx5: Extend with the ptp interrupt
+  dts: sparx5: Enable ptp interrupt
+  net: sparx5: Add registers that are used by ptp functionality
+  net: sparx5: Add support for ptp clocks
+  net: sparx5: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP
+  net: sparx5: Update extraction/injection for timestamping
+  net: sparx5: Add support for ptp interrupts
+  net: sparx5: Implement get_ts_info
 
-Best Regards,
-Harald Hauge
-Business Consultant
+ .../bindings/net/microchip,sparx5-switch.yaml |   2 +
+ arch/arm64/boot/dts/microchip/sparx5.dtsi     |   5 +-
+ .../net/ethernet/microchip/sparx5/Makefile    |   3 +-
+ .../microchip/sparx5/sparx5_ethtool.c         |  34 +
+ .../ethernet/microchip/sparx5/sparx5_fdma.c   |   2 +
+ .../ethernet/microchip/sparx5/sparx5_main.c   |  21 +
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  66 +-
+ .../microchip/sparx5/sparx5_main_regs.h       | 335 ++++++++-
+ .../ethernet/microchip/sparx5/sparx5_netdev.c |  42 +-
+ .../ethernet/microchip/sparx5/sparx5_packet.c |  37 +-
+ .../ethernet/microchip/sparx5/sparx5_ptp.c    | 685 ++++++++++++++++++
+ 11 files changed, 1221 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_ptp.c
+
+-- 
+2.33.0
+
