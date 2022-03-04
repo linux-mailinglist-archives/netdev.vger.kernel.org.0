@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 012204CDA95
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 18:32:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 925274CDA9E
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 18:33:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241190AbiCDRcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 12:32:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
+        id S241170AbiCDRdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 12:33:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241175AbiCDRcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 12:32:42 -0500
+        with ESMTP id S241256AbiCDRc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 12:32:56 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61ED31D06FE
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:31:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 374A11CE9AA
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:32:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646415110;
+        s=mimecast20190719; t=1646415127;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OE0r/OKc2053ESgSK8t3z8KfogKogU32PwBJEY1LnEc=;
-        b=VYRdRWujDG2993NligVFxyp9Rgz3/g+F/kHz+xT8LMIFZ0vhHldZ2Rl/pgvEhdq5msCO79
-        VwxFCHVvCtzF9W01d3MkBsCowXLFu8amRk0Urtjq5BOSCWFcscbSHZwm7ZV1YoI85tfOKb
-        L0+TBskQNB2eSgUTC07B0v7Nl3jaw6s=
+        bh=AHXclG4UU3SsFO1lmPzG4KrgiciUiPhbXYLOOW1McYw=;
+        b=LrghOQXNUOR0r0kuatoGrfArTEqrYDbRFzbT30v73POJbiNl7MumXnywvf8JMPLuxtTjVQ
+        APKp52hkHExi+L9CTgivORTFZxOt/4n1gOdw2+VNgzVhg3XA6aiE7f5nRDNWikj0KyhhHi
+        FLuiC3oQ6vcYGI9corXHnWfetncRevs=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-488-mJypGw2FOR24BpQcynWSUg-1; Fri, 04 Mar 2022 12:31:47 -0500
-X-MC-Unique: mJypGw2FOR24BpQcynWSUg-1
+ us-mta-438-dEgrSUCrOImgtxojmRx8Bg-1; Fri, 04 Mar 2022 12:32:04 -0500
+X-MC-Unique: dEgrSUCrOImgtxojmRx8Bg-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 760178031E1;
-        Fri,  4 Mar 2022 17:31:44 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C19BA1091DA1;
+        Fri,  4 Mar 2022 17:32:01 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7628E86595;
-        Fri,  4 Mar 2022 17:31:40 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C5B2886595;
+        Fri,  4 Mar 2022 17:31:44 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v2 08/28] HID: allow to change the report descriptor from an eBPF program
-Date:   Fri,  4 Mar 2022 18:28:32 +0100
-Message-Id: <20220304172852.274126-9-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v2 09/28] libbpf: add new attach type BPF_HID_RDESC_FIXUP
+Date:   Fri,  4 Mar 2022 18:28:33 +0100
+Message-Id: <20220304172852.274126-10-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -73,12 +73,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make use of BPF_HID_ATTACH_RDESC_FIXUP so we can trigger an rdesc fixup
-in the bpf world.
-
-Whenever the program gets attached/detached, the device is reconnected
-meaning that userspace will see it disappearing and reappearing with
-the new report descriptor.
+Adds the SEC definiton for report descriptor fixups.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
@@ -87,150 +82,21 @@ Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 changes in v2:
 - split the series by bpf/libbpf/hid/selftests and samples
 ---
- drivers/hid/hid-bpf.c  | 60 ++++++++++++++++++++++++++++++++++++++++++
- drivers/hid/hid-core.c |  3 ++-
- include/linux/hid.h    |  6 +++++
- 3 files changed, 68 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
-index 8120e598de9f..510e24f4307c 100644
---- a/drivers/hid/hid-bpf.c
-+++ b/drivers/hid/hid-bpf.c
-@@ -50,6 +50,14 @@ static struct hid_device *hid_bpf_fd_to_hdev(int fd)
- 	return hdev;
- }
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 356bbd3ad2c7..192ef3901251 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8681,6 +8681,7 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("struct_ops+",		STRUCT_OPS, 0, SEC_NONE),
+ 	SEC_DEF("sk_lookup",		SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("hid/device_event",	HID, BPF_HID_DEVICE_EVENT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
++	SEC_DEF("hid/rdesc_fixup",	HID, BPF_HID_RDESC_FIXUP, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ };
  
-+static int hid_reconnect(struct hid_device *hdev)
-+{
-+	if (!test_and_set_bit(ffs(HID_STAT_REPROBED), &hdev->status))
-+		return device_reprobe(&hdev->dev);
-+
-+	return 0;
-+}
-+
- static int hid_bpf_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
- {
- 	int err = 0;
-@@ -71,6 +79,17 @@ static int hid_bpf_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type
- 	return err;
- }
- 
-+static void hid_bpf_link_attached(struct hid_device *hdev, enum bpf_hid_attach_type type)
-+{
-+	switch (type) {
-+	case BPF_HID_ATTACH_RDESC_FIXUP:
-+		hid_reconnect(hdev);
-+		break;
-+	default:
-+		/* do nothing */
-+	}
-+}
-+
- static void hid_bpf_array_detached(struct hid_device *hdev, enum bpf_hid_attach_type type)
- {
- 	switch (type) {
-@@ -78,6 +97,9 @@ static void hid_bpf_array_detached(struct hid_device *hdev, enum bpf_hid_attach_
- 		kfree(hdev->bpf.ctx);
- 		hdev->bpf.ctx = NULL;
- 		break;
-+	case BPF_HID_ATTACH_RDESC_FIXUP:
-+		hid_reconnect(hdev);
-+		break;
- 	default:
- 		/* do nothing */
- 	}
-@@ -98,6 +120,9 @@ static int hid_bpf_run_progs(struct hid_device *hdev, enum bpf_hid_attach_type t
- 	case BPF_HID_ATTACH_DEVICE_EVENT:
- 		event = HID_BPF_DEVICE_EVENT;
- 		break;
-+	case BPF_HID_ATTACH_RDESC_FIXUP:
-+		event = HID_BPF_RDESC_FIXUP;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -138,11 +163,46 @@ u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *data, int *size)
- 	return hdev->bpf.ctx->data;
- }
- 
-+u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
-+{
-+	struct hid_bpf_ctx *ctx = NULL;
-+	int ret;
-+
-+	if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
-+		goto ignore_bpf;
-+
-+	ctx = bpf_hid_allocate_ctx(hdev, HID_MAX_DESCRIPTOR_SIZE);
-+	if (IS_ERR(ctx))
-+		goto ignore_bpf;
-+
-+	ret = hid_bpf_run_progs(hdev, BPF_HID_ATTACH_RDESC_FIXUP, ctx, rdesc, *size);
-+	if (ret)
-+		goto ignore_bpf;
-+
-+	*size = ctx->size;
-+
-+	if (!*size) {
-+		rdesc = NULL;
-+		goto unlock;
-+	}
-+
-+	rdesc = kmemdup(ctx->data, *size, GFP_KERNEL);
-+
-+ unlock:
-+	kfree(ctx);
-+	return rdesc;
-+
-+ ignore_bpf:
-+	kfree(ctx);
-+	return kmemdup(rdesc, *size, GFP_KERNEL);
-+}
-+
- int __init hid_bpf_module_init(void)
- {
- 	struct bpf_hid_hooks hooks = {
- 		.hdev_from_fd = hid_bpf_fd_to_hdev,
- 		.link_attach = hid_bpf_link_attach,
-+		.link_attached = hid_bpf_link_attached,
- 		.array_detached = hid_bpf_array_detached,
- 	};
- 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index a80bffe6ce4a..0eb8189faaee 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
- 		return -ENODEV;
- 	size = device->dev_rsize;
- 
--	buf = kmemdup(start, size, GFP_KERNEL);
-+	/* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
-+	buf = hid_bpf_report_fixup(device, start, &size);
- 	if (buf == NULL)
- 		return -ENOMEM;
- 
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index 8fd79011f461..66d949d10b78 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -1213,10 +1213,16 @@ do {									\
- 
- #ifdef CONFIG_BPF
- u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size);
-+u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size);
- int hid_bpf_module_init(void);
- void hid_bpf_module_exit(void);
- #else
- static inline u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size) { return rd; }
-+static inline u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
-+				       unsigned int *size)
-+{
-+	return kmemdup(rdesc, *size, GFP_KERNEL);
-+}
- static inline int hid_bpf_module_init(void) { return 0; }
- static inline void hid_bpf_module_exit(void) {}
- #endif
+ #define MAX_TYPE_NAME_SIZE 32
 -- 
 2.35.1
 
