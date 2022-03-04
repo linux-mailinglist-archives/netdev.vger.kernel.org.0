@@ -2,145 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DE6C4CDFA4
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 22:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F14C54CDFA6
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 22:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbiCDVOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 16:14:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
+        id S229739AbiCDVQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 16:16:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiCDVOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 16:14:20 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E55013CA2B
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 13:13:29 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id z11so879900lfh.13
-        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 13:13:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FhAw6s/ZDBzFaLO+5qA2AUiMTy3oDy4zAgPP2+mMM6w=;
-        b=K5CKs5nw6XbYQA+OWJHeC6/+m0eYn1u5EEnhysHc94DkKsitLS1zOGLWO0IOE8RZg0
-         MDFsCR/7gRfUUWtMIc02DrDUKgTyPMPkvzSpxm+pUCYS8un0MgAp4lwB3YdOO882AYIT
-         eM969HIFQ8vVAHe/oeJ81d4ORRDl6RdQ7vyKA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FhAw6s/ZDBzFaLO+5qA2AUiMTy3oDy4zAgPP2+mMM6w=;
-        b=5CD3ebRIT627tG8HVfmOrjgm2fd7Zptw3fPX4Zfwpug9jjA2D09y4tEsj0jPTe20/N
-         +uGwOlYZitidjy43QBV+WKBSB4pQMRN6vk0mk4z7y72PGego7VSowMmvqFQyzCqOLOfK
-         UFgzosZ3aFMdGQw3EJJh0Yz0T41Gd4GQ/PeeQbzZ/ZBa4haTuwHktwGwNZAJ0dwsWjtk
-         22gQ+FtvmYxu15G5GQcSo9NvQBQa59BrtztKWKvrN6j2lfu2yGfS+VZlmbnU1+wUTTv4
-         Tnm9XZY0Rfu9Lx25fP/aZp8eG8EtWmuFDch0PBU9OIvbe3Y/lZM5kwHCirXi66/WovkK
-         qPOw==
-X-Gm-Message-State: AOAM531db1i2jABMjg8fKA3oDoVh/93cWEfYcY5rqqtmEHqTd3dt5V4J
-        8Mp8AKjy1HZcv1nC5suARhcYLGQET7puPfE+
-X-Google-Smtp-Source: ABdhPJzjU2kA+F5P+W0XMunLtm+GTLvZXsNT1b7r/lpIE1x2aRcY29WGQjvDsfGNt4x7srnfn/GKxA==
-X-Received: by 2002:a05:6512:3402:b0:448:c29:ce8a with SMTP id i2-20020a056512340200b004480c29ce8amr388158lfr.633.1646428407720;
-        Fri, 04 Mar 2022 13:13:27 -0800 (PST)
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
-        by smtp.gmail.com with ESMTPSA id k11-20020a2e920b000000b002463777bbb9sm1321572ljg.24.2022.03.04.13.13.25
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Mar 2022 13:13:26 -0800 (PST)
-Received: by mail-lj1-f173.google.com with SMTP id v28so12626693ljv.9
-        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 13:13:25 -0800 (PST)
-X-Received: by 2002:a2e:bc17:0:b0:246:32b7:464 with SMTP id
- b23-20020a2ebc17000000b0024632b70464mr323667ljf.506.1646428405700; Fri, 04
- Mar 2022 13:13:25 -0800 (PST)
-MIME-Version: 1.0
-References: <tencent_B01AAA5AC1C24CDEE81286F1006CE27B440A@qq.com>
-In-Reply-To: <tencent_B01AAA5AC1C24CDEE81286F1006CE27B440A@qq.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 4 Mar 2022 13:13:09 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wic8ind8nY5fea+otfkmjBuMwgiXY6idbtrXZcig3yDaA@mail.gmail.com>
-Message-ID: <CAHk-=wic8ind8nY5fea+otfkmjBuMwgiXY6idbtrXZcig3yDaA@mail.gmail.com>
-Subject: Re: sendmsg bug
-To:     1031265646 <1031265646@qq.com>,
+        with ESMTP id S229670AbiCDVQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 16:16:14 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF2DED94F
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 13:15:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=0+eRzW8QoNchUXarIdgq+gIdcDvhXLJtgK/7yf0SH9o=; b=HO1nQeeXy03hGWD3SoUGuPih2P
+        nNQ5lxr23XboaumwTtY1gWZnA5BjzcFpCy1Vc2mAj3HcXf+WS+A+zg0p/DsXrdwGKWzHfPrntZbQl
+        SsUeN2ObKCD9/tMJj0ntvGbB66iHpe14QlTxhVmC1LIUWv+44h2VMvins8V2Fr/fumbZfpEkfcX/O
+        8z8+3HqVe9W6Ao9/iyyl/05yhEVI3z/CVFnAhbEBSzb3XIQ8J639IqHT/7yx2HZAein6BvGQn/z1O
+        ZuDRYuP+JxrJMBGdZVq7UbTYY/iCYfzKAuMJmSAkt9dR23uKypZjAFXAn5ya2i6fdOIzR3UXCeVib
+        5trCx7AA==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nQFGn-00C698-BM; Fri, 04 Mar 2022 21:15:25 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
+        Dimitris Michailidis <dmichail@fungible.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Subject: [PATCH net-next?] net: fungible: fix multiple build problems
+Date:   Fri,  4 Mar 2022 13:15:24 -0800
+Message-Id: <20220304211524.10706-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ Appending the full original email - converted to plain-text - below.
-Note that the "comments i marked red" are no longer red, since the
-html has been stripped out ]
+It is currently possible to have CONFIG_FUN_ETH=y and CONFIG_TLS=m.
+This causes build errors. Therefore FUN_ETH should
+	depend on TLS || TLS=n
 
-Dear 1031265646,
- please don't email me in private about bugs, much better to send them
-to the right person and mailing list (see scripts/get_maintainer.pl in
-the kernel sources).
+TLS_DEVICE is a bool symbol, so there is no need to test it as
+	depends on TLS && TLS_DEVICE || TLS_DEVICE=n
 
-The bug seems real, although mostly harmless. If ip_make_skb() returns
-NULL, it's true that udp_sendmsg() will return a misleading success
-value since 'err' will be 0 and it will return the length of the
-packet that wasn't actually ever created or sent.
+And due to rules of precedence, the above means
+	depends on (TLS && TLS_DEVICE) || TLS_DEVICE=n
+but that's probably not what was meant here. More likely it
+should have been
+	depends on TLS && (TLS_DEVICE || TLS_DEVICE=n)
 
-UDP being a lossy protocol, probably nobody has cared, since
-"successful send" doesn't mean "successful receive" anyway.
+That no longer matters.
 
-I'm not sure what the right error should be for this case, and whether
-it should be fixed inside ip_make_skb() ("always return a proper
-ERR_PTR") or what.. Or whether it should just be left alone as a
-"packet dropped early" thing.
+Also, gcc 7.5 does not handle the "C language" vs. #ifdef preprocessor
+usage of IS_ENABLED() very well -- it is causing compile errors.
 
-I'll leave that to the network people added to the participants.
+$ gcc --version
+gcc (SUSE Linux) 7.5.0
 
-            Linus
+And then funeth uses sbitmap, so it should select SBITMAP in order
+to prevent build errors.
 
-On Thu, Mar 3, 2022 at 10:23 PM 1031265646 <1031265646@qq.com> wrote:
->
-> hi=EF=BC=8C
->
-> in file udp.c, a function named udp_sendmsg has a code like this:
->
-> /* Lockless fast path for the non-corking case. */
-> if (!corkreq) {
-> skb =3D ip_make_skb(sk, fl4, getfrag, msg, ulen,
->  sizeof(struct udphdr), &ipc, &rt,
->  msg->msg_flags);
-> err =3D PTR_ERR(skb);
->
->         //here IS_ERR_OR_NULL is expected, instead of !IS_ERR_OR_NULL.
-> if (!IS_ERR_OR_NULL(skb))
-> err =3D udp_send_skb(skb, fl4);
-> goto out;
-> }
->
-> but function ip_make_skb may return a null, then err will be set to 0;and=
- out like this:
->
-> out:
-> ip_rt_put(rt);
-> if (free)
-> kfree(ipc.opt);
-> if (!err)
-> return len;  // return a positive value
->
-> the ip_make_skb failed means the send operation failed. but a positive va=
-lue is returnd here. finnally, users regard the operation was success, but =
-actually it failed in kernel.
->
->
-> the comments i marked red is the right way i think. which i think is a bu=
-g.
->
->
-> 1031265646
-> 1031265646@qq.com
-> =E7=AD=BE=E5=90=8D=E7=94=B1=E7=BD=91=E6=98=93=E9=82=AE=E7=AE=B1=E5=A4=A7=
-=E5=B8=88=E5=AE=9A=E5=88=B6
+Fixes these build errors:
+
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c: In function ‘write_pkt_desc’:
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:244:13: error: implicit declaration of function ‘tls_driver_ctx’ [-Werror=implicit-function-declaration]
+   tls_ctx = tls_driver_ctx(skb->sk, TLS_OFFLOAD_CTX_DIR_TX);
+             ^~~~~~~~~~~~~~
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:244:37: error: ‘TLS_OFFLOAD_CTX_DIR_TX’ undeclared (first use in this function); did you mean ‘BPF_OFFLOAD_MAP_FREE’?
+   tls_ctx = tls_driver_ctx(skb->sk, TLS_OFFLOAD_CTX_DIR_TX);
+                                     ^~~~~~~~~~~~~~~~~~~~~~
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:244:37: note: each undeclared identifier is reported only once for each function it appears in
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:245:23: error: dereferencing pointer to incomplete type ‘struct fun_ktls_tx_ctx’
+   tls->tlsid = tls_ctx->tlsid;
+                       ^~
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c: In function ‘fun_start_xmit’:
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:310:6: error: implicit declaration of function ‘tls_is_sk_tx_device_offloaded’ [-Werror=implicit-function-declaration]
+      tls_is_sk_tx_device_offloaded(skb->sk)) {
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:311:9: error: implicit declaration of function ‘fun_tls_tx’; did you mean ‘fun_xdp_tx’? [-Werror=implicit-function-declaration]
+   skb = fun_tls_tx(skb, q, &tls_len);
+         ^~~~~~~~~~
+../drivers/net/ethernet/fungible/funeth/funeth_tx.c:311:7: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+   skb = fun_tls_tx(skb, q, &tls_len);
+       ^
+
+and
+
+ERROR: modpost: "__sbitmap_queue_get" [drivers/net/ethernet/fungible/funcore/funcore.ko] undefined!
+ERROR: modpost: "sbitmap_finish_wait" [drivers/net/ethernet/fungible/funcore/funcore.ko] undefined!
+ERROR: modpost: "sbitmap_queue_clear" [drivers/net/ethernet/fungible/funcore/funcore.ko] undefined!
+ERROR: modpost: "sbitmap_prepare_to_wait" [drivers/net/ethernet/fungible/funcore/funcore.ko] undefined!
+ERROR: modpost: "sbitmap_queue_init_node" [drivers/net/ethernet/fungible/funcore/funcore.ko] undefined!
+ERROR: modpost: "sbitmap_queue_wake_all" [drivers/net/ethernet/fungible/funcore/funcore.ko] undefined!
+
+#Fixes: not-merged-yet ("X")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Dimitris Michailidis <dmichail@fungible.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/fungible/funeth/Kconfig     |    3 ++-
+ drivers/net/ethernet/fungible/funeth/funeth_tx.c |    9 ++++++---
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+--- mmotm-2022-0303-2124.orig/drivers/net/ethernet/fungible/funeth/Kconfig
++++ mmotm-2022-0303-2124/drivers/net/ethernet/fungible/funeth/Kconfig
+@@ -6,9 +6,10 @@
+ config FUN_ETH
+ 	tristate "Fungible Ethernet device driver"
+ 	depends on PCI && PCI_MSI
+-	depends on TLS && TLS_DEVICE || TLS_DEVICE=n
++	depends on TLS || TLS=n
+ 	select NET_DEVLINK
+ 	select FUN_CORE
++	select SBITMAP
+ 	help
+ 	  This driver supports the Ethernet functionality of Fungible adapters.
+ 	  It works with both physical and virtual functions.
+--- mmotm-2022-0303-2124.orig/drivers/net/ethernet/fungible/funeth/funeth_tx.c
++++ mmotm-2022-0303-2124/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+@@ -234,7 +234,8 @@ static unsigned int write_pkt_desc(struc
+ 			fun_dataop_gl_init(gle, 0, 0, lens[i], addrs[i]);
+ 	}
+ 
+-	if (IS_ENABLED(CONFIG_TLS_DEVICE) && unlikely(tls_len)) {
++#if IS_ENABLED(CONFIG_TLS_DEVICE)
++	if (unlikely(tls_len)) {
+ 		struct fun_eth_tls *tls = (struct fun_eth_tls *)gle;
+ 		struct fun_ktls_tx_ctx *tls_ctx;
+ 
+@@ -250,6 +251,7 @@ static unsigned int write_pkt_desc(struc
+ 		q->stats.tx_tls_pkts += 1 + extra_pkts;
+ 		u64_stats_update_end(&q->syncp);
+ 	}
++#endif
+ 
+ 	u64_stats_update_begin(&q->syncp);
+ 	q->stats.tx_bytes += skb->len + extra_bytes;
+@@ -306,12 +308,13 @@ netdev_tx_t fun_start_xmit(struct sk_buf
+ 	unsigned int tls_len = 0;
+ 	unsigned int ndesc;
+ 
+-	if (IS_ENABLED(CONFIG_TLS_DEVICE) && skb->sk &&
+-	    tls_is_sk_tx_device_offloaded(skb->sk)) {
++#if IS_ENABLED(CONFIG_TLS_DEVICE)
++	if (skb->sk && tls_is_sk_tx_device_offloaded(skb->sk)) {
+ 		skb = fun_tls_tx(skb, q, &tls_len);
+ 		if (unlikely(!skb))
+ 			goto dropped;
+ 	}
++#endif
+ 
+ 	ndesc = write_pkt_desc(skb, q, tls_len);
+ 	if (unlikely(!ndesc)) {
