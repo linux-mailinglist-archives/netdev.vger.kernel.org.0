@@ -2,84 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A984CCDEF
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 07:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 761824CCDFA
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 07:46:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237662AbiCDGi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 01:38:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        id S238479AbiCDGqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 01:46:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237244AbiCDGiZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 01:38:25 -0500
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4118EAE7F
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 22:37:37 -0800 (PST)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2dc585dbb02so16995747b3.13
-        for <netdev@vger.kernel.org>; Thu, 03 Mar 2022 22:37:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3fLrVxBtlxhn0wrp2tAt5sglfBK5RcrlC4xzm6Ry66U=;
-        b=H/IrSNshqB0YpMztLKTG2p5rZGIvmjuZYGGfgMh9857kj0Atg40FNjYypfTDnMg/ow
-         Qhh05JF33zHlosZMfOsOBz2FdQVlWs23Rmw74iFmf+HapqUMN7O5nvCC37Z6bOW14YI4
-         Dkz9FpjW6qmr5STY4MAhRfstQNeNSUWVUChn5/cTw+SHTE+4cNNDsmy9ey39pF1o+Gu9
-         gpjrSDl3kpgcxqtdQNB/qgOtSyK84AHgc8lZfAD5zA3/80HvWJm6kMztvC+1DjME/qZV
-         9jprdKIatVYAHIuwNczyZdEdhWY7i6CVSPm+NmlQzKXTyOCqD9mKQv4TMH5fqmD2pubk
-         m+3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3fLrVxBtlxhn0wrp2tAt5sglfBK5RcrlC4xzm6Ry66U=;
-        b=OOZMGhh0wWC+eUadO1B8pUvAHd98mZf3Jdrg9xwxlAvFXosRNYs84toNnpY5TP15/d
-         mK3GUghUJcHlMQQZpUi0S9BEWn/zSa/VtIsvSJffbTDPMZlk3pvTvHLvjBYKIPQQ8S+s
-         d9S4SVWlW/eIOXXRev7RkwpEJSuRyxxZoy1IvlcTqYl0B4Yvb3FJKav+4DJCC6GhGpyU
-         3IzDzFDsZiB4e8huk0wl/pW1IiVt5erC6NjjaNCSy3EwtIYqnAKIFOeaBuQ1kFAZ43+w
-         Z++IyZawNB9lQIX5yWbPqdZMJYIBNmbsNNlJSv+tBOhtcEdZ0f9sggHIp/Ym63lqRMg8
-         AJoA==
-X-Gm-Message-State: AOAM533r/4V5P4dEU6VnsN54u5ZAHkHB+QQSCyt4OtQtJAXls1EzjP/Y
-        jtgA3eqtQ1N6Co9OfmamZenlwSMA4QsCN+jm2xoUfw==
-X-Google-Smtp-Source: ABdhPJzovtFWt7BjKksgwSY16S446P0AHfMtWnFFY99KZRcNokgi3VmYf2UbOwNAvxIAm4jluc6nLw4RlmmuroJPFtY=
-X-Received: by 2002:a81:af57:0:b0:2dc:40d0:1380 with SMTP id
- x23-20020a81af57000000b002dc40d01380mr5354981ywj.255.1646375855747; Thu, 03
- Mar 2022 22:37:35 -0800 (PST)
+        with ESMTP id S229889AbiCDGqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 01:46:49 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B6F18CC0C;
+        Thu,  3 Mar 2022 22:46:01 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K8yyJ736QzdZdk;
+        Fri,  4 Mar 2022 14:44:40 +0800 (CST)
+Received: from [10.174.177.215] (10.174.177.215) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 4 Mar 2022 14:45:58 +0800
+Subject: Re: [PATCH bpf-next v2 1/4] bpf, sockmap: Fix memleak in
+ sk_psock_queue_msg
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <jakub@cloudflare.com>, <lmb@cloudflare.com>,
+        <davem@davemloft.net>, <edumazet@google.com>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <ast@kernel.org>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <kpsingh@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+References: <20220302022755.3876705-1-wangyufen@huawei.com>
+ <20220302022755.3876705-2-wangyufen@huawei.com>
+ <YiAOxRWZBHWDTpAs@pop-os.localdomain>
+From:   wangyufen <wangyufen@huawei.com>
+Message-ID: <2ebeeba1-f06d-9ebf-b59c-b0289ad89885@huawei.com>
+Date:   Fri, 4 Mar 2022 14:45:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-References: <20220304045353.1534702-1-kuba@kernel.org> <20220303212236.5193923d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220303212236.5193923d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Mar 2022 22:37:24 -0800
-Message-ID: <CANn89iJ_06Tz8qA26JsgG14XdHCcDbK91MCYqneygSuTRdzsDg@mail.gmail.com>
-Subject: Re: [PATCH net-next] skb: make drop reason booleanable
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
-        Menglong Dong <menglong8.dong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YiAOxRWZBHWDTpAs@pop-os.localdomain>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.215]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 9:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
+
+ÔÚ 2022/3/3 8:41, Cong Wang Ð´µÀ:
+> On Wed, Mar 02, 2022 at 10:27:52AM +0800, Wang Yufen wrote:
+>> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+>> index fdb5375f0562..c5a2d6f50f25 100644
+>> --- a/include/linux/skmsg.h
+>> +++ b/include/linux/skmsg.h
+>> @@ -304,21 +304,16 @@ static inline void sock_drop(struct sock *sk, struct sk_buff *skb)
+>>   	kfree_skb(skb);
+>>   }
+>>   
+>> -static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
+>> -{
+>> -	if (msg->skb)
+>> -		sock_drop(psock->sk, msg->skb);
+>> -	kfree(msg);
+>> -}
+>> -
+>>   static inline void sk_psock_queue_msg(struct sk_psock *psock,
+>>   				      struct sk_msg *msg)
+>>   {
+>>   	spin_lock_bh(&psock->ingress_lock);
+>>   	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
+>>   		list_add_tail(&msg->list, &psock->ingress_msg);
+>> -	else
+>> -		drop_sk_msg(psock, msg);
+>> +	else {
+>> +		sk_msg_free(psock->sk, msg);
+> __sk_msg_free() calls sk_msg_init() at the end.
 >
-> On Thu,  3 Mar 2022 20:53:53 -0800 Jakub Kicinski wrote:
-> > -     return false;
-> > +     return __SKB_OKAY;
+>> +		kfree(msg);
+> Now you free it, hence the above sk_msg_init() is completely
+> unnecessary.
+
+Invoking of sk_msg_free() does not always follow kfree().
+
+That is, sk_msg needs to be reused in some cases.
+
+We can implement sk_msg_free_xx() without sk_msg_init(),
+
+but I don't think it is necessary.
+
+
+Thanks
+
 >
-> s/__//
->
-> I'll send a v2 if I get acks / positive feedback.
-
-
-I am not a big fan of SKB_OKAY ?
-
-Maybe SKB_NOT_DROPPED_YET, or SKB_VALID_SO_FAR.
-
-Oh well, I am not good at names.
+> Thanks.
+> .
