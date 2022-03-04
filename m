@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C2E4CCD7B
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 07:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1A54CCD7F
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 07:02:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238263AbiCDGCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 01:02:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
+        id S238254AbiCDGDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 01:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238277AbiCDGCr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 01:02:47 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391D418644E;
-        Thu,  3 Mar 2022 22:02:00 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id y11so6785729pfa.6;
-        Thu, 03 Mar 2022 22:02:00 -0800 (PST)
+        with ESMTP id S238293AbiCDGCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 01:02:54 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA9D187BB5;
+        Thu,  3 Mar 2022 22:02:06 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id t14so6668982pgr.3;
+        Thu, 03 Mar 2022 22:02:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=M1KGGJ++5jvrBcGkFVx4NiuAGaDCJ+LibUibMFb2wJo=;
-        b=eGL+lMsza+NRI7f1au4IUVjPjVgjopU7gUu3TDgoNEPCYpCFiUliOlTBqgPgRJ3XJW
-         mdVvtktc4gIoB12ZWU6m0PLLuZt8P/QoxAowaCMHs3B8IM3jxJnEsKNO2iyA+ToA5Lb0
-         WfypiescCI9F83DvithbGm638ZLN9JAI5PZztfs68fLbbwlnFKfSQtDP5/lf8ktWU6zO
-         GFrudvjp30eeucmgSXGADFxguxKt/JykSFEdT+D78up4Szpe/3zF2EKpckvWWJruVdBl
-         Ap5EpgNNNc1LQcQBQ+g+0SzS/BsvKGAE6tXxNGsL8agqKEhq/IVsii8H7rawW2p6jPeW
-         788Q==
+        bh=pNFrY2MhzoakFNW6ci8QTeSX3zRLAuHfLCZuqh4I71Y=;
+        b=jAlc4UdrydDIJ23f6GwmZhCfGK6niQ/+YpwSezFPqnTOJFGSLxHlgKFpyV//3VNK4/
+         Xhh/7ciTu/9l4h2AvwzUpKwaRtkBqHTJyvtM8kyXe6E94F4jjeJMf2RAOblwkdF6mMPz
+         p2rZ+Km1e3L0z5aOQaL+9M80Yq8Z3GgiqTX6YJHQOvlI9yTtGEfoFZAjmsWjpmbT0zp5
+         Oe+pyMnFQNAZwB1urqENLAcHnx9zRk4N5qJsQo6u+guiRUb61zwCn2ztSSnSviXY9MHR
+         aeTVTH3sUXufgVoponxiCE4/STG8366xtXcTs6UimhUf9o7L/L83CJ64s19z40kib2Tg
+         r7iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=M1KGGJ++5jvrBcGkFVx4NiuAGaDCJ+LibUibMFb2wJo=;
-        b=bEwkrgPp+wRqMfueH29DS+nHZslJLR+X66GkmddrgZFCQnk//KiGJIFolCCHOqb930
-         8WMUGlQMD/JLqlAyzlnnPLkQaIsmdTW+6vUqf/5927inBKK9I0t3AOHNHRmqoKygnkyK
-         zgTgDMKGviHu0sPnAErcH57BjdwNDFe2K9pSIdHRIuywffiC/VpRs7dqZ05BR1yx/yf1
-         NfmcxY4glveJorbNdAFHKP6lra0Ootjb4i/olJAHSQMgQUpOyKSQ2UHF9IuNH6xBzkSu
-         6JlQDR4GeQg35EUW+RCNFQOhRaYx3m/uRbzl6Kkqrd0sZhVMesxO8NRLsXbOO344rSO9
-         FdoQ==
-X-Gm-Message-State: AOAM530+7uPmy7pZ3HU98ypB8FBzgaB8eZL0/GPsNBRZtvMeEz8dqv0+
-        VLhcexDFCihe3Xtvcid/NGM=
-X-Google-Smtp-Source: ABdhPJxDUYrkMB4n7fkWhNNcvZb9Nko0XU74IJcdXzXHcXNn77Ko6MKFcATl2GCXVUQK9EGDUxW8Ng==
-X-Received: by 2002:a05:6a00:987:b0:4f3:e5d3:448d with SMTP id u7-20020a056a00098700b004f3e5d3448dmr32437882pfg.14.1646373719728;
-        Thu, 03 Mar 2022 22:01:59 -0800 (PST)
+        bh=pNFrY2MhzoakFNW6ci8QTeSX3zRLAuHfLCZuqh4I71Y=;
+        b=BydA6o4eQ+DB0bGKeiVzWwJaKpYzQdyHZzwM4JcTSqBQvOMJaUj9LZWmQ9OjvDEG5P
+         MSFn/oKwzo+6SPR8ToJXSA1j330AwK6rmoITF5Pl1WZMSJWRY6CY8TYkdhleQLX6IbkK
+         ypVMkCG8U92cTWHW7albfTigRtF2EXN8kYM0uOZLiE4Ygn4pMhdlmGNMJUG/Cx7A7hM7
+         SLImZOsSqH1Yx1eNkr14FqKpbVvRsuKV17ou5TLfRXlmEiIuI/I56Jc+grNgTisEubUl
+         AJBOwLqRajo8DVkZWu2FXExs6xUYw4dlN3gE2VjlLJNSULoQl/Jotu5WsmKgiK+qtO6O
+         coQg==
+X-Gm-Message-State: AOAM533NVqHDFXO6DF19Qsemqo0BroPsLQmP+O40GbVZG2FZ/z2kxw9d
+        H8mZ8SERSKNXQMmZ2i5MYjY=
+X-Google-Smtp-Source: ABdhPJze2Haz8Mif3fbJheI8tbVi5baPyGwsK2vbIP09IJMY7YTDREKH/KMasC9N+huECprL2fbLyw==
+X-Received: by 2002:a63:82c1:0:b0:37c:99c3:e3ef with SMTP id w184-20020a6382c1000000b0037c99c3e3efmr1052751pgd.27.1646373726392;
+        Thu, 03 Mar 2022 22:02:06 -0800 (PST)
 Received: from localhost.localdomain ([203.205.141.116])
-        by smtp.gmail.com with ESMTPSA id y5-20020a056a00190500b004f104b5350fsm4569073pfi.93.2022.03.03.22.01.53
+        by smtp.gmail.com with ESMTPSA id y5-20020a056a00190500b004f104b5350fsm4569073pfi.93.2022.03.03.22.02.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Mar 2022 22:01:59 -0800 (PST)
+        Thu, 03 Mar 2022 22:02:05 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -60,9 +60,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         pabeni@redhat.com, willemb@google.com, vvs@virtuozzo.com,
         cong.wang@bytedance.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH net-next v2 3/7] net: dev: add skb drop reasons to __dev_xmit_skb()
-Date:   Fri,  4 Mar 2022 14:00:42 +0800
-Message-Id: <20220304060046.115414-4-imagedong@tencent.com>
+Subject: [PATCH net-next v2 4/7] net: dev: use kfree_skb_reason() for enqueue_to_backlog()
+Date:   Fri,  4 Mar 2022 14:00:43 +0800
+Message-Id: <20220304060046.115414-5-imagedong@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220304060046.115414-1-imagedong@tencent.com>
 References: <20220304060046.115414-1-imagedong@tencent.com>
@@ -80,67 +80,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Add reasons for skb drops to __dev_xmit_skb() by replacing
-kfree_skb_list() with kfree_skb_list_reason(). The drop reason of
-SKB_DROP_REASON_QDISC_DROP is introduced for qdisc enqueue fails.
+Replace kfree_skb() used in enqueue_to_backlog() with
+kfree_skb_reason(). The skb rop reason SKB_DROP_REASON_CPU_BACKLOG is
+introduced for the case of failing to enqueue the skb to the per CPU
+backlog queue. The further reason can be backlog queue full or RPS
+flow limition, and I think we needn't to make further distinctions.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h     | 4 ++++
+ include/linux/skbuff.h     | 6 ++++++
  include/trace/events/skb.h | 1 +
- net/core/dev.c             | 5 +++--
- 3 files changed, 8 insertions(+), 2 deletions(-)
+ net/core/dev.c             | 5 ++++-
+ 3 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 9d219e266dc7..a3d65e749ea3 100644
+index a3d65e749ea3..cf168f353338 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -395,6 +395,10 @@ enum skb_drop_reason {
- 						 */
- 	SKB_DROP_REASON_NEIGH_DEAD,	/* neigh entry is dead */
- 	SKB_DROP_REASON_TC_EGRESS,	/* dropped in TC egress HOOK */
-+	SKB_DROP_REASON_QDISC_DROP,	/* dropped by qdisc when packet
-+					 * outputting (failed to enqueue to
-+					 * current qdisc)
+@@ -399,6 +399,12 @@ enum skb_drop_reason {
+ 					 * outputting (failed to enqueue to
+ 					 * current qdisc)
+ 					 */
++	SKB_DROP_REASON_CPU_BACKLOG,	/* failed to enqueue the skb to
++					 * the per CPU backlog queue. This
++					 * can be caused by backlog queue
++					 * full (see netdev_max_backlog in
++					 * net.rst) or RPS flow limit
 +					 */
  	SKB_DROP_REASON_MAX,
  };
  
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 53755e8191a1..dbf3e2e3c1b4 100644
+index dbf3e2e3c1b4..3bb90ca893ae 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -46,6 +46,7 @@
- 	EM(SKB_DROP_REASON_NEIGH_QUEUEFULL, NEIGH_QUEUEFULL)	\
+@@ -47,6 +47,7 @@
  	EM(SKB_DROP_REASON_NEIGH_DEAD, NEIGH_DEAD)		\
  	EM(SKB_DROP_REASON_TC_EGRESS, TC_EGRESS)		\
-+	EM(SKB_DROP_REASON_QDISC_DROP, QDISC_DROP)		\
+ 	EM(SKB_DROP_REASON_QDISC_DROP, QDISC_DROP)		\
++	EM(SKB_DROP_REASON_CPU_BACKLOG, CPU_BACKLOG)		\
  	EMe(SKB_DROP_REASON_MAX, MAX)
  
  #undef EM
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 353322e72a61..2ba331b5b775 100644
+index 2ba331b5b775..0d097d0e710f 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3730,7 +3730,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+@@ -4541,10 +4541,12 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
+ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 			      unsigned int *qtail)
+ {
++	enum skb_drop_reason reason;
+ 	struct softnet_data *sd;
+ 	unsigned long flags;
+ 	unsigned int qlen;
  
- no_lock_out:
- 		if (unlikely(to_free))
--			kfree_skb_list(to_free);
-+			kfree_skb_list_reason(to_free,
-+					      SKB_DROP_REASON_QDISC_DROP);
- 		return rc;
- 	}
++	reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	sd = &per_cpu(softnet_data, cpu);
  
-@@ -3785,7 +3786,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+ 	rps_lock_irqsave(sd, &flags);
+@@ -4567,13 +4569,14 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 			napi_schedule_rps(sd);
+ 		goto enqueue;
  	}
- 	spin_unlock(root_lock);
- 	if (unlikely(to_free))
--		kfree_skb_list(to_free);
-+		kfree_skb_list_reason(to_free, SKB_DROP_REASON_QDISC_DROP);
- 	if (unlikely(contended))
- 		spin_unlock(&q->busylock);
- 	return rc;
++	reason = SKB_DROP_REASON_CPU_BACKLOG;
+ 
+ drop:
+ 	sd->dropped++;
+ 	rps_unlock_irq_restore(sd, &flags);
+ 
+ 	atomic_long_inc(&skb->dev->rx_dropped);
+-	kfree_skb(skb);
++	kfree_skb_reason(skb, reason);
+ 	return NET_RX_DROP;
+ }
+ 
 -- 
 2.35.1
 
