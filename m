@@ -2,157 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AD1D4CDDFD
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 21:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C021F4CDE81
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 21:26:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229665AbiCDUSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 15:18:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60108 "EHLO
+        id S230522AbiCDUJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 15:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbiCDURm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 15:17:42 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B6CC8F82;
-        Fri,  4 Mar 2022 12:14:17 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id 195so10849540iou.0;
-        Fri, 04 Mar 2022 12:14:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=p3HzqQP1KC7y7MVdIYLOONNXlQIe0kZIuhD7eE/pgTM=;
-        b=kgGd9pMRtCj6/JHxEDcKGFQ0tuYTYldJVrrfutWg3nVXkn51yxiqgRN/xHbH45h09p
-         JeiBXGCcuRm4H9ZlkmxsfvxnNEgEgyn9zsl8uZ6egstmLdWFObrfSx6bLQbGQolYAuOy
-         msOCk5IrS+XGgk6AN677Tfwd1ur+bBAx6VJey195AbZLp3DHgEV57m0jx2Yu5TvBkn+H
-         Xe8iDI9ssOomS4pGxaE+64oVh9GUzgwLPUjiQ7r7GPGhn4EyV9wY2wT4MrWWvy274i4Y
-         GI7WqRb7sD9JQCRWgQdIsuP+rlH5IQnSYmoPFLBmz+tH+X8eVkKfppVecxsS2iQEfKaK
-         Lhig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=p3HzqQP1KC7y7MVdIYLOONNXlQIe0kZIuhD7eE/pgTM=;
-        b=AzG54a2uTJKC0hRGAuq5vqUaABu6fpjkkomj5K/XTTVfECnIhACgS0tTwhmDHv3JqB
-         a7SBSu++JOvbkF+rqE3Kw+B0zXYInrrrXGmVjkT186srQ8CFwiuC+4WfWBwUZcqAEhwR
-         rR6bxMnYtSgTn3Ef5r749EwgUDl8vjOqTDVYKu106QelqAOPvEuvN6oKWVV1UubIAENT
-         vvzlQ2qTu4kAAzhqPDuNmwhTri8LGwbANZQXqjz0urU1P4d666+1AUmgRa1oGJeQDjAN
-         0JzGPVBqDuzGrADsFBGsdmOH7dVYG277+qSt+/LMjXQJGhXilSu6r281PrXrqPZcIPwL
-         L/iw==
-X-Gm-Message-State: AOAM533oylzCNa3VZDw6kDJ+/7FEaLuCdJxR3zr0a3y69InlqzJK0eWS
-        xmSGiEChBADswO8SvJjpgEviHka6WjI=
-X-Google-Smtp-Source: ABdhPJxAPBJQuPy9+BtOUh7FGRm150+QGtm6IiLk//Fi//I4qmvJWVobehU4IrWjgFBahNYtxLTBbw==
-X-Received: by 2002:a02:c6b4:0:b0:315:3d31:b6e5 with SMTP id o20-20020a02c6b4000000b003153d31b6e5mr131354jan.44.1646422760750;
-        Fri, 04 Mar 2022 11:39:20 -0800 (PST)
-Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id g4-20020a92cda4000000b002c24724f23csm6334863ild.13.2022.03.04.11.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 11:39:20 -0800 (PST)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull request: bluetooth-next 2022-03-04
-Date:   Fri,  4 Mar 2022 11:39:19 -0800
-Message-Id: <20220304193919.649815-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S230466AbiCDUHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 15:07:37 -0500
+X-Greylist: delayed 543 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 04 Mar 2022 12:02:00 PST
+Received: from mx.msync.work (mx.msync.work [IPv6:2001:41d0:d:357f:aaaa::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AA42067FF
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 12:02:00 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 02CEE1E078;
+        Fri,  4 Mar 2022 19:52:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lexina.in; s=dkim;
+        t=1646423574; h=from:subject:date:message-id:to:mime-version:content-type:
+         content-transfer-encoding:content-language:in-reply-to:references;
+        bh=lKAg1aZ3/OVlbnHBQ2pMnRlOfyWJyfFmLorR+5Ap/IQ=;
+        b=u4+p9YgsY4u3lL70tjKH6XhGIXH2yCrFY46fIuWJkAPggRctMKPAlLQpYm3qQFup4ynTL+
+        ZOryPcFEz4vXCDX6kHGQYM9QWLDBu5SXF9dGYUVMz1IK7DFGmWNdQc0YrjUlNbtV8MsNXY
+        k2UEtAbjNWrZ/qsyimEhAPSi5OWZoa0sj3OrRhDlSzofHdSyFE03XBBoLQ9weKNPQZ/tbU
+        +nlVcMT/8GOU42lyEM7rQALoUSCp09YL+22l3ip5gQ+lpjZN8XN2h7obGYX0mizNgup75r
+        ZYQJyfRBDdNkmD+wo0vDIS7rFKi5Gt6TcMeqUUHAB/whMIEiI31X4txyzDa0aw==
+Message-ID: <962ae330-b2aa-c52d-5888-83b4fff74c44@lexina.in>
+Date:   Fri, 4 Mar 2022 22:52:48 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH net] net: phy: meson-gxl: fix interrupt handling in forced
+ mode
+Content-Language: ru
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-amlogic@lists.infradead.org,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>, netdev@vger.kernel.org
+References: <04cac530-ea1b-850e-6cfa-144a55c4d75d@gmail.com>
+From:   Vyacheslav <adeep@lexina.in>
+In-Reply-To: <04cac530-ea1b-850e-6cfa-144a55c4d75d@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Last-TLS-Session-Version: TLSv1.3
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 1039135aedfc5021b4827eb87276d7b4272024ac:
+Seems works for JetHub H1 (S905W with internal phy)
 
-  net: ethernet: sun: Remove redundant code (2022-03-04 13:07:54 +0000)
+03.03.2022 10:54, Heiner Kallweit wrote:
+> This PHY doesn't support a link-up interrupt source. If aneg is enabled
+> we use the "aneg complete" interrupt for this purpose, but if aneg is
+> disabled link-up isn't signaled currently.
+> According to a vendor driver there's an additional "energy detect"
+> interrupt source that can be used to signal link-up if aneg is disabled.
+> We can safely ignore this interrupt source if aneg is enabled.
+> 
+> This patch was tested on a TX3 Mini TV box with S905W (even though
+> boot message says it's a S905D).
+> 
+> This issue has been existing longer, but due to changes in phylib and
+> the driver the patch applies only from the commit marked as fixed.
+> 
+> Fixes: 84c8f773d2dc ("net: phy: meson-gxl: remove the use of .ack_callback()")
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>   drivers/net/phy/meson-gxl.c | 23 +++++++++++++----------
+>   1 file changed, 13 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+> index 7e7904fee..c49062ad7 100644
+> --- a/drivers/net/phy/meson-gxl.c
+> +++ b/drivers/net/phy/meson-gxl.c
+> @@ -30,8 +30,12 @@
+>   #define  INTSRC_LINK_DOWN	BIT(4)
+>   #define  INTSRC_REMOTE_FAULT	BIT(5)
+>   #define  INTSRC_ANEG_COMPLETE	BIT(6)
+> +#define  INTSRC_ENERGY_DETECT	BIT(7)
+>   #define INTSRC_MASK	30
+>   
+> +#define INT_SOURCES (INTSRC_LINK_DOWN | INTSRC_ANEG_COMPLETE | \
+> +		     INTSRC_ENERGY_DETECT)
+> +
+>   #define BANK_ANALOG_DSP		0
+>   #define BANK_WOL		1
+>   #define BANK_BIST		3
+> @@ -200,7 +204,6 @@ static int meson_gxl_ack_interrupt(struct phy_device *phydev)
+>   
+>   static int meson_gxl_config_intr(struct phy_device *phydev)
+>   {
+> -	u16 val;
+>   	int ret;
+>   
+>   	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+> @@ -209,16 +212,9 @@ static int meson_gxl_config_intr(struct phy_device *phydev)
+>   		if (ret)
+>   			return ret;
+>   
+> -		val = INTSRC_ANEG_PR
+> -			| INTSRC_PARALLEL_FAULT
+> -			| INTSRC_ANEG_LP_ACK
+> -			| INTSRC_LINK_DOWN
+> -			| INTSRC_REMOTE_FAULT
+> -			| INTSRC_ANEG_COMPLETE;
+> -		ret = phy_write(phydev, INTSRC_MASK, val);
+> +		ret = phy_write(phydev, INTSRC_MASK, INT_SOURCES);
+>   	} else {
+> -		val = 0;
+> -		ret = phy_write(phydev, INTSRC_MASK, val);
+> +		ret = phy_write(phydev, INTSRC_MASK, 0);
+>   
+>   		/* Ack any pending IRQ */
+>   		ret = meson_gxl_ack_interrupt(phydev);
+> @@ -237,9 +233,16 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+>   		return IRQ_NONE;
+>   	}
+>   
+> +	irq_status &= INT_SOURCES;
+> +
+>   	if (irq_status == 0)
+>   		return IRQ_NONE;
+>   
+> +	/* Aneg-complete interrupt is used for link-up detection */
+> +	if (phydev->autoneg == AUTONEG_ENABLE &&
+> +	    irq_status == INTSRC_ENERGY_DETECT)
+> +		return IRQ_HANDLED;
+> +
+>   	phy_trigger_machine(phydev);
+>   
+>   	return IRQ_HANDLED;
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-03-04
-
-for you to fetch changes up to 6dfbe29f45fb0bde29213dbd754a79e8bfc6ecef:
-
-  Bluetooth: btusb: Add another Realtek 8761BU (2022-03-04 16:58:13 +0100)
-
-----------------------------------------------------------------
-bluetooth-next pull request for net-next:
-
- - Add new PID/VID (0x13d3/0x3567) for MT7921
- - Add new PID/VID (0x2550/0x8761) for Realtek 8761BU
- - Add support for LG LGSBWAC02 (MT7663BUN)
- - Add support for BCM43430A0 and BCM43430A1
- - Add support for Intel Madison Peak (MsP2)
-
-----------------------------------------------------------------
-Changcheng Deng (1):
-      Bluetooth: mgmt: Replace zero-length array with flexible-array member
-
-Chih-Ying Chiang (1):
-      Bluetooth: mt7921s: support bluetooth reset mechanism
-
-Christophe JAILLET (1):
-      Bluetooth: 6lowpan: No need to clear memory twice
-
-Colin Ian King (1):
-      Bluetooth: make array bt_uuid_any static const
-
-Helmut Grohne (1):
-      Bluetooth: btusb: Add another Realtek 8761BU
-
-Kiran K (1):
-      Bluetooth: btusb: Add support for Intel Madison Peak (MsP2) device
-
-Luca Weiss (1):
-      Bluetooth: hci_bcm: add BCM43430A0 & BCM43430A1
-
-Luiz Augusto von Dentz (2):
-      Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
-      Bluetooth: btusb: Make use of of BIT macro to declare flags
-
-Minghao Chi (1):
-      Bluetooth: mgmt: Remove unneeded variable
-
-Minghao Chi (CGEL ZTE) (1):
-      Bluetooth: use memset avoid memory leaks
-
-Niels Dossche (2):
-      Bluetooth: hci_event: Add missing locking on hdev in hci_le_ext_adv_term_evt
-      Bluetooth: move adv_instance_cnt read within the device lock
-
-Piotr Dymacz (1):
-      Bluetooth: btusb: add support for LG LGSBWAC02 (MT7663BUN)
-
-Radoslaw Biernacki (2):
-      Bluetooth: Fix skb allocation in mgmt_remote_name() & mgmt_device_connected()
-      Bluetooth: Improve skb handling in mgmt_device_connected()
-
-Sean Wang (1):
-      Bluetooth: mediatek: fix the conflict between mtk and msft vendor event
-
-Tom Rix (1):
-      Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()
-
-Yake Yang (2):
-      Bluetooth: btusb: Add a new PID/VID 13d3/3567 for MT7921
-      Bluetooth: btmtksdio: Fix kernel oops when sdio suspend.
-
-Zijun Hu (1):
-      Bluetooth: btusb: Improve stability for QCA devices
-
- drivers/bluetooth/btmtk.h         |   7 +++
- drivers/bluetooth/btmtksdio.c     | 126 ++++++++++++++++++++++++++++++++++----
- drivers/bluetooth/btusb.c         |  81 +++++++++++++-----------
- drivers/bluetooth/hci_bcm.c       |   2 +
- include/net/bluetooth/bluetooth.h |  14 +++--
- include/net/bluetooth/mgmt.h      |   2 +-
- net/bluetooth/6lowpan.c           |   1 -
- net/bluetooth/eir.h               |  20 ++++++
- net/bluetooth/hci_event.c         |  19 +++---
- net/bluetooth/hci_sync.c          |   2 +-
- net/bluetooth/l2cap_core.c        |   1 +
- net/bluetooth/mgmt.c              |  58 ++++++++----------
- 12 files changed, 237 insertions(+), 96 deletions(-)
+-- 
+Vyacheslav Bocharov
