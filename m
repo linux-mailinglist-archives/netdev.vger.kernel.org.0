@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D324CD9E3
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 18:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94CFD4CD9EC
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 18:16:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240938AbiCDRPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 12:15:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
+        id S240947AbiCDRRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 12:17:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240943AbiCDRPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 12:15:20 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A02A1B3708
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:14:32 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id w16so18116205ybi.12
-        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 09:14:32 -0800 (PST)
+        with ESMTP id S236449AbiCDRRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 12:17:32 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7F21CD9F0
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 09:16:44 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2dc242a79beso88490637b3.8
+        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 09:16:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ip+ao6k+ZndAM1FQFLo0WeRgyK3IKbG/PSwwUjybTVo=;
-        b=TsBust4lk2f6NZXH2fLvUXt0jm1wMZTsR4NtgiCDQn95SYuMU7HdYM1N0D2U0295DQ
-         qoDifyY/DnQBFfq0kdtdhPyF4JUWzDkAiXW+Jg1QkQH+FuBUV6iNEmCh5L106aDn/31K
-         CALHm/04yzgXUQ4WeyHlE4tCWue/93rL2kDEOd9VHN8PKZ97CZidSQg2rIw+D0x94cPx
-         oon/AlPMeSKnWKNiqpl4wTKvltjrlkMAlNA6Yh7t0eG+NaykE3Ho9w9dshQ9Gmt1cpNN
-         p7hzJVCKFT39i3Hi66N1cxZa5HZKSMZGGvQxGoICvS12TgvJ94Ye9huGWRiYbOOdEwZh
-         Cn7Q==
+        bh=nQaMKntsJ/SPnc7wWdYnYjTXxWL4K4LBjyDT5CBhBpk=;
+        b=Uh6kHNEpl8ECj5EBa6Ph4vKE2wvtuEQk34zn8LUM2NH768PQS/N61EyPSuirsOnfcR
+         wyUPOKq79J44YWdHTiSFFeF9rLsbn6I2mSu3aur6yFf2D0G1rhJeLMbX9lTwMRP0Midm
+         CaMFRuyBGsSyVmVSFGcWXgj6EJ38jZSIMx5pJ57tSTnxP+Kb8FX7jXor5S0HvN5oYPRe
+         rosO69Q78bBbQeccdKIzywEIcpw1wfKjqH7JDXzxJPsBZgPQLxgNF9mlRfbNyM/DpFBN
+         X+wNi0XVNJhvnZ1CEJyPOhLccQ0BAg3Yxu4RXoe0pVaCZsUbGFEzuj4GMsRkBgBI+O4F
+         pBXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ip+ao6k+ZndAM1FQFLo0WeRgyK3IKbG/PSwwUjybTVo=;
-        b=7A8tt+Xzvzkn5IIpCmhionXt9HXE5IhtVp16X/55HwB16ZZAC7ALiT1jc+9p5EPqMi
-         Hk12zYoerNKio72Xkp5VS2+IVz59CdHLvAFI4OUnCTEvB/A3XEHE80wYnYyMpk8Cr8J/
-         +X9zv3DY5V8nKdgFjTThtDtLsbL4MSCHwxed4xZKdN/0FDcEhMIfdZjv9h/GYykQ67Tn
-         vIHZcckYxQqKJBSvTU5ARiRcCByAibp1+02ufz+e6AeGu12rea8wYE3Vfq0csaKjaDaR
-         Vfio0xZZ3Yz8yG1o1j5SgrnQu+3s76+izoroCDWEulHc2k0stPSFrXefi/dARbmU+DzC
-         BZxA==
-X-Gm-Message-State: AOAM532lo2uF+X8bFBPxsb5rENWMENkaPgNiKRgHUbaJqu1Zg9bX9Z9n
-        dYM49z1hUaRvk0sIqlmr6ZhdjLcFTR845wBNSQn/gBJurj8=
-X-Google-Smtp-Source: ABdhPJwhlqqjXXdUEAQdWRn3PBvMLQVCxOtLHC1vh1Ho+bU+ArA1thkesypOCUbmAd/3b04q8Nd+HYp43olYYsk6DvI=
-X-Received: by 2002:a25:f45:0:b0:628:b4c9:7a9f with SMTP id
- 66-20020a250f45000000b00628b4c97a9fmr11151905ybp.55.1646414070808; Fri, 04
- Mar 2022 09:14:30 -0800 (PST)
+        bh=nQaMKntsJ/SPnc7wWdYnYjTXxWL4K4LBjyDT5CBhBpk=;
+        b=iMEI58NPyUcjevwjrtUvoJGKism7D8ssywctVBd7f+YlNKdYUHTbmkV0GSHBym04fQ
+         eKL+LQz2+c9JRWxoEukMVQBhYoCG66D0fU4mWk7dQmyxKzScP9Wew/4osEGHlQT/nBWk
+         DSmZ0Fcmt6QYmegm4KyTqX6KXkKaGHpT0+Tk1UKPqMaObbaZyc3HtFZ019epHLXNcdha
+         0FoUsvpGKK/uwIZDCXv63M4QDh/pfvqj/9jgk5eCO5TojMZrpnEjF1RMLTeUmTNcsxol
+         aLHkmoKoFN8BETizI1ziSohv4KYjH31aGahURuq/7o1R69FpnE8teSukil5OHmyBJeYF
+         B+9A==
+X-Gm-Message-State: AOAM532VL3nWVouVALl0M+SgnsvsG4Qgb/o53MnCSLrCilPuwkrcBSC8
+        VT6nIczMz29Ge5ba3StpLeGTXaLIzxQEFJ8XNO18txuDm6U=
+X-Google-Smtp-Source: ABdhPJzK6nRNY8Rxxm+ElNle5R3Js3Gr4i3kQp2yJiFPLxIaXQlb2eU6EkP64ILXEi323TQjmSp5uW2BFKP2Wx+emrU=
+X-Received: by 2002:a81:1043:0:b0:2dc:289f:9533 with SMTP id
+ 64-20020a811043000000b002dc289f9533mr11504963ywq.467.1646414203183; Fri, 04
+ Mar 2022 09:16:43 -0800 (PST)
 MIME-Version: 1.0
 References: <20220303181607.1094358-1-eric.dumazet@gmail.com>
- <20220303181607.1094358-15-eric.dumazet@gmail.com> <c9f5c261-c263-a6b4-7e00-17dfefd36a7a@kernel.org>
-In-Reply-To: <c9f5c261-c263-a6b4-7e00-17dfefd36a7a@kernel.org>
+ <20220303181607.1094358-8-eric.dumazet@gmail.com> <f7c14a37-3404-2ad0-bb71-2446b52c572d@kernel.org>
+In-Reply-To: <f7c14a37-3404-2ad0-bb71-2446b52c572d@kernel.org>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 4 Mar 2022 09:14:19 -0800
-Message-ID: <CANn89iJKEV6Y+2mY1Gs_zJTrnm+TTXOHoW_D3AWYE0ELijrm+w@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 14/14] mlx5: support BIG TCP packets
+Date:   Fri, 4 Mar 2022 09:16:32 -0800
+Message-ID: <CANn89i+DTORA9B4TPoqfZifCns4dChJAGFXtunU5yg8efBM5aA@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 07/14] ipv6: add GRO_IPV6_MAX_SIZE
 To:     David Ahern <dsahern@kernel.org>
 Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
+        Alexander Duyck <alexanderduyck@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -72,31 +70,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 8:43 PM David Ahern <dsahern@kernel.org> wrote:
+On Thu, Mar 3, 2022 at 8:37 PM David Ahern <dsahern@kernel.org> wrote:
 >
 > On 3/3/22 11:16 AM, Eric Dumazet wrote:
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> > index b2ed2f6d4a9208aebfd17fd0c503cd1e37c39ee1..1e51ce1d74486392a26568852c5068fe9047296d 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> > @@ -4910,6 +4910,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+> > From: Coco Li <lixiaoyan@google.com>
 > >
-> >       netdev->priv_flags       |= IFF_UNICAST_FLT;
+> > Enable GRO to have IPv6 specific limit for max packet size.
 > >
-> > +     netif_set_tso_ipv6_max_size(netdev, 512 * 1024);
+> > This patch introduces new dev->gro_ipv6_max_size
+> > that is modifiable through ip link.
+> >
+> > ip link set dev eth0 gro_ipv6_max_size 185000
+> >
+> > Note that this value is only considered if bigger than
+> > gro_max_size, and for non encapsulated TCP/ipv6 packets.
+> >
 >
->
-> How does the ConnectX hardware handle fairness for such large packet
-> sizes? For 1500 MTU this means a single large TSO can cause the H/W to
-> generate 349 MTU sized packets. Even a 4k MTU means 128 packets. This
-> has an effect on the rate of packets hitting the next hop switch for
-> example.
+> What is the point of a max size for the Rx path that is per ingress
+> device? If the stack understands the larger packets then the ingress
+> device limits should not matter. (yes, I realize the existing code has
+> it this way, so I guess this is a historical question)
 
-I think ConnectX cards interleave packets from all TX queues, at least
-old CX3 have a parameter to control that.
+The point is to opt-in for this feature really.
 
-Given that we already can send at line rate, from a single TX queue, I
-do not see why presenting larger TSO packets
-would change anything on the wire ?
+Some software stack might not be ready yet.
 
-Do you think ConnectX adds an extra gap on the wire at the end of a TSO train ?
+For example, maybe you do not want to let GRO build skbs with
+frag_list, because you know these skbs might cause problems later.
