@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90AF34CD24F
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 11:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9FCC4CD24D
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 11:22:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233430AbiCDKXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 05:23:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
+        id S233080AbiCDKXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 05:23:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiCDKXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 05:23:35 -0500
+        with ESMTP id S233148AbiCDKXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 05:23:40 -0500
 Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2115.outbound.protection.outlook.com [40.107.243.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DD34FC78
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 02:22:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F7752B36
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 02:22:49 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=daBWISHLG8JP7SiEc/cF6rHpJRoWEPt6IR6J/TsioUWbjWvUHHCHHYYZb7lCV6zvOlCDdnJlvf4MGKkAVJhw96cVIW9B7aNR0FEk3y9XfT8MOr8luAuPUGo3UIvbmC3pO/zG75klOCSP1bGKmiEdCndctaFPLAP2CslLTXBxcHYWNJezJDymfrP7ekvm6aYNlc4k6DQxLn61muY+vBTJrgqOf7uE8BHgqu3u44jaJXZ3Zg2zqaVO4TwLXT1qgpNq3pWAwQM0Tg7E5wDxlGdyM1pHq24A1QimHXxqrE3A4cUyp44dWCPgOtSov5EH/2ve3z8CK4ve7+vKgrY09TgAfw==
+ b=XTW7UoizVqJ+NjlehBAQ0QO5zyiTJHZklNW4Bh4HMC/RQWsMVWou6oWIm4X+eDBc7sJAA+NoDj8oceEk7rxXSqa858+a14osMtq6vnp0l3ML/sCbs+K3HebQ8dNx3gQCUWlx85cv2TNFO+3fGNWlhPcvZomd0QcIjcFPqbWe4ivMkgFzFETmXxocg6l8fPivbF9hpZwKcLVX2bSV70hoKOuF/h+ygbrc5qHzc4f17hH0S4ZU6OShoblDr5ApZ7Dt8lyyf/JqK1lqCtlmN1mh/MBP4alNzUwhE70qkM/g3i4mguOFbKlWGGISYMeDknYbu5MagPlh2YxUP2AB2CJpXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hU0B925EyjRBDADBs2ULn9tGrWSG7S0lYlorGoKvivs=;
- b=XvxeV3DjPE2Bnx0wh6IH1AdT1LWqFLXxjdg4HmlIYDeFlSdlRhAByBklG8oWO0z9KqoOHhtpPK8lQVNZU91LIlpOG8czdKzKCbSaq3fSDWjj4q2vkmOICbL2rpiGnaO8FRyNiE5p+ChD11NAJR25v385R0L3VghnjoFVH1EDGweUWLhHm6PWWDlS2nMoCeijE2N3aznJ0PZqJxyvgIov0iZLUUcTut1RwG6GuUo/wcbNoWHITQuzsh5dMopqwOO4QcXI5Zz1rJRLfo6/5tXqHnhTPDXY2zn8YXkQ9CkNL52mIL5rm+joJp4vw9el1HV0KCnQl+w9KxT5hMXRBqErBQ==
+ bh=LheVwKJAJHbw8rOI7CD2UWqC1OpvinT+TJjCYJC6knM=;
+ b=BvHslYA83J9GWKqaYZ0jzQJaEFSqPMGL/RBb+Cb5cM7ny6/Eb/SO987N5U9IJfHFOEemHj5v7NTf+NEL3Rscu+M/eZbY4ePhwmajpCtsaE/UACqYpXAlIw37NBSVZSSxk/hwyiza/GRqcWvntdolMU0fOKXwjjVxdJKg2tZGIGsWvBFSIoXCpo0wKzIsypxq7SvLQXvPMZkOF0434PdYX6VhmQWPGVSPldfi1E27Ol2jPMqb01mhRVxcPHknkkQkWAbX0I2yGGv8HH7ZD++eLfjD2OYXQdTBTaBidy7INAD2MgClSd8NGN+DDcNTQbNEH+w0BXFowzBRMRyCLl9sqA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hU0B925EyjRBDADBs2ULn9tGrWSG7S0lYlorGoKvivs=;
- b=D7bR4mDW/SdXM2wNdnA0xgoT4w/s0HxtDfuGnb7rJhf5kqju29CiDAcydqBUwPAl0iFGoisqw60uv8bz7mHkw07oLJZrJJMbGg7dk+GEvOnaEV3DU5VVEbh8/2qKhK9FI/EHtNizNri122F7PmLWIP150desuyimhurK2HNH6XU=
+ bh=LheVwKJAJHbw8rOI7CD2UWqC1OpvinT+TJjCYJC6knM=;
+ b=Xigy+drBDp8IuvgmxlglYNAV9H6kK/ZorBUAgMWWeVXWvxuYdZT1V3YV2tjTa8nNVlUlg/uT+lqty6M0GfMVoZRP2PAcDsZ/Vwq9JuRcK38Uje+wWdUTjVj4+6OIRsNs2vp51CkWcWvoj4qfP7jNQBPnihThX7S8kcMjclUEWCA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by BN7PR13MB2404.namprd13.prod.outlook.com (2603:10b6:406:b7::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.11; Fri, 4 Mar
- 2022 10:22:44 +0000
+ 2022 10:22:46 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5038.017; Fri, 4 Mar 2022
- 10:22:44 +0000
+ 10:22:46 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next 3/5] nfp: xsk: add an array of xsk buffer pools to each data path
-Date:   Fri,  4 Mar 2022 11:22:12 +0100
-Message-Id: <20220304102214.25903-4-simon.horman@corigine.com>
+Subject: [PATCH net-next 4/5] nfp: xsk: add configuration check for XSK socket chunk size
+Date:   Fri,  4 Mar 2022 11:22:13 +0100
+Message-Id: <20220304102214.25903-5-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220304102214.25903-1-simon.horman@corigine.com>
 References: <20220304102214.25903-1-simon.horman@corigine.com>
@@ -58,65 +58,65 @@ X-ClientProxiedBy: AM8P190CA0012.EURP190.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 633e3909-a068-4906-ee6c-08d9fdc8ebf4
+X-MS-Office365-Filtering-Correlation-Id: 2f694f45-e2ee-4d90-1d3f-08d9fdc8ecc2
 X-MS-TrafficTypeDiagnostic: BN7PR13MB2404:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR13MB240479FB8CAD164BF0EB0499E8059@BN7PR13MB2404.namprd13.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <BN7PR13MB240487EB0A5CF6B00BD248EBE8059@BN7PR13MB2404.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UZltEl/VApJy5JKWKBQw8+ViuLaWjF8mlxKQJPSrG7LeNQ1GGG2vFyGy5+HO3Me129FYvIYy4gkXVum6SQXvRgqfS4seh8ThgA1SGt1L0OrkHyvanb0w967lS0QRI4b2gDYCRoUfb1HuoTTMpTLFW1GCKqvvwO5bH4KowMxBFO5ydL/UUWPOw2Oc6wllpXW2q3XfvMTnBgjw41x5oN/nHfVhZaJzKRDHyuxR0CTJ5T7KKJe2dNRde57O3sUgtB8fLVwT+bvuhP32JYsmJXcGDF/R2JhhtLSmMPJ8w0SgIhYMku93g60mOF/l+Ei60sMFjkfstguGjjL+ey56eU3NR4obvkDXcaHLjK7PYAQsU/4JLzq0YD7Dwzh7wwxYEMttkMVOcvnmB3CcJkgvHoDWGXzdD3rfr3g8n4pUqEoYoY8dda37Z42ubngHbpENlb/n6H3t53WpcLq/xNbj7ruRPRIqhyE5voQakOUT1X2BZB1Lto6BOjCWXoJiidFgXn0drnf6NWBp7bXXfVYtIjnkCRh2K1bkCR4VLfC59OpMOP6dc1URNqfiKEQi/gQfmxtIGH/3fMvxx0pJizor2siQ4O9Nb+fYoWUYDDU7mHCZuTzUM/c3tWgkXeT2EaOxboVyC0bb9Nci+QcAZUgI3lNahA==
+X-Microsoft-Antispam-Message-Info: 80++RJOUVH++URZqJXMPPTIH5SlvyQ66qj1XDDzvyUbMmmu6pCCz3lzmbfOl1FdrQxzgn3ejU/GvKn+GPxICyYW8Duc5UDe/6it7fRHUrs/GVXulikit8ZFjuM4+rlnRjUtuQ+mST6xb3wuJR5+vBwfnjbB3L9KvJoRgV8oIZqm4rwwtZUXv0SyR2lsICnefvzv+RC1Jny984h/iAfiP5aVxsbPHMDW0D2BDnNgSuuEUn63DuESJ3EI8yA6KrO/5wO69KB1EVPEKk0qrVoNzXT0+/JaJHBALUPwrS3t50EKUW+KumzzvmcIyyWwkCThMfZ2+IEzkYBB0bZYhyMAxhzyWy19ZYYA7iex79UubGWG6fNkjHANTIroLeBQTlIkGjUoHLcS/LVjoCTIK+C+KCjXhA8oyvuzouYEZKP9NQwYsSVbGTsYRKgxvowOWmbMFwBDBuSThftS8rhYCF9Ux46qO68KSdIAHqZ8punebT3L6JF9bUysA8evFjEYGE4De9M3lsFGZRCWDg5rkj3i1jM2/spaFklDiytU6UjihWe6RkjEoCNIYUG1hV1MXBTeuW0CU2CJqpxwYAlpgtE07/ZuSP0gsOwANuml60FDcJTYRK8KMoJLadR9oWiaK8pGx0I/ozpmeE7DS6gjzEBcnMw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(396003)(346002)(136003)(376002)(39840400004)(110136005)(316002)(86362001)(4326008)(8676002)(38100700002)(52116002)(66476007)(66556008)(66946007)(6666004)(6512007)(6636002)(6506007)(6486002)(508600001)(8936002)(44832011)(107886003)(5660300002)(186003)(2616005)(2906002)(1076003)(36756003)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NWFHNzUrN2NzdFlZaXhoYXdUajI2Sk5BaTFOcVJkM1Yxci9hNFVsNCs3MWRQ?=
- =?utf-8?B?V2pQRGhaUXpla085QlZZZjNBcXNCc0JMVnVuVDdBUXNuOUc3V3o0VEtNdUNx?=
- =?utf-8?B?TDVLTzdmdHVnUjJ2MXkvOWZ0c2V4c3I1M3V4T3BRUnJmb2JsMzM1RkhkcWVo?=
- =?utf-8?B?VkdzSGk3TThSSit2dFJvN3VTZWVVcktjQzJlcHVYckljdkZxSUxxOXJMeVgw?=
- =?utf-8?B?T2VNV0NzNkcwSWdvc29mMVFNeGQxcFFzUkRrdFVvdWlGbVdwdFRMU0xvQjY4?=
- =?utf-8?B?emZDRVJPb1F3cndESXV1MDBpUGVzL3B5WGNqM043eWdWKzdYWkhRQXMrY3lz?=
- =?utf-8?B?WnZmWkdnSHhIcUxwMVlUZ1FDNDAzck5YM2x6aVZKSEdaRGhqYWx3N0x0Nmxz?=
- =?utf-8?B?SUJBT0tkZ0lPa1h0eTdrZkN3WldqL2hEaklaWXhHYjNSbE5wWU5sblV0UWZH?=
- =?utf-8?B?Z245NmVrNDhjRGJiNTZwenJBaDJ4VzYzR1VkOTVsK0ZsbTYyUTQySDA1WHda?=
- =?utf-8?B?cGJFNGdVbitmeFpZYUxrOXNwQ0YxQTlEVXlGaHlneE9HTVpUWnNCTktEWjJ0?=
- =?utf-8?B?STlib1U4ZzMydU1LREN1MzAyOXE5MnpLUzd2RHFPaWtaclRyWWJnY1RaMGFh?=
- =?utf-8?B?bjhFUGd6bzBrQ25KN0YzemV3MlNNb3lUdS9ONTdUemIrckFZZnVEaGFISHNV?=
- =?utf-8?B?YXBReTY3N1B5dGNrZllHR25MNzV4Y2IzSmpoekxvSWorSGhvUkxORGd4TFZF?=
- =?utf-8?B?aXhNVjV2VERBTHdJZlpoclg2QmFkMkMxenFqMkFFTTR0QzREUkE2cC9HUWky?=
- =?utf-8?B?WC9OMUdMV216MHIrVGhMRzRIaHdYN1poMENXblZNb2JXcDY0VEVva3g3TDYx?=
- =?utf-8?B?V0FEUTl2UnFVdTdDakQ2M29WQTNMOG1taDlLc05GKytWeGlDZi93T0I4TzVq?=
- =?utf-8?B?Qmc2OEZnODJXZElWUzJueEV4a25aVDV0RFRwdExaTnhKcEJZYTE0SUx0dHo5?=
- =?utf-8?B?VDIvR1JSM2lEQUM3UEtLNG1ybS9nZTVYNmRvbUhpY29ydE05dlJDeE02cDFa?=
- =?utf-8?B?aE44LzE5RGIyMXM3L0N1RkJnOWRQR2dBMks3eWxsdGwvYlVKWmdiL3JiU0Rs?=
- =?utf-8?B?UjBxazA5ZFlhcC8xQVhDYm14U2RoSFhLMXlqUUNFZ3lRSU5reklqS2FQbXV1?=
- =?utf-8?B?WllVNEtPSnRZYlA0b25OYjIycmFyQlpDRlJvdXVLUEdXckZlYVp2YXcwMmdm?=
- =?utf-8?B?MW94MkpMZ0Zvd1V0QkVsMjUvUTlDZnR3S2JBYU1XMnlHUGtqZFo2cnlDU3hW?=
- =?utf-8?B?K3dLck5PeWpBdHBFYW8rTVdLNHZxNWZQZG9oMk5sRGZaZWxWNVF6QUQ2T0NP?=
- =?utf-8?B?TEdxYkRCbUs1RW9VL2xsR2xjcXQweTlyWGlWQSs2SVFZcGtNNnp6UGxGNEhj?=
- =?utf-8?B?YnZ6anYwV0IzUlZkMy95dmZqWUdQbGI5VTlRT1dNUmtuWlpvMG1YR215Y1RM?=
- =?utf-8?B?TzRxVkJCei9EQngwRGhJbHJmSk1BREZ4TWplc0FNUGtiaHJCYitKWVNYUGda?=
- =?utf-8?B?MVBEQzl1STNzaXE4bklGd3FKd1Z0QU1vQmhsTWllU2xYYnI5TFZSVlZPVXdQ?=
- =?utf-8?B?NGZBK0Jrb1o3NmJSbWlpWHlIemluMXgzbkJaYkxWaTNOYzQyMnh2Sngrc1VE?=
- =?utf-8?B?SzlMMFJuY1NHOUZ0TWcyaElKWWV3V1QvdlFaeUpPQzdwTVF1N2NyZGZ3U3hl?=
- =?utf-8?B?UFN4WTJMRjVLU1laRnBqRXdnS25hR3F1VFhmeTc4UUxId3QxcTk3TUdjdEx6?=
- =?utf-8?B?R3lWek9XRUoyblVvSVJCemJJMUhvY2xpOFptRzVIanlHSURqSUxFT1ZXQ0Rz?=
- =?utf-8?B?WEZvcW9WN1BLcDVBWTFWc0VjV3RzK01tTU1SLzBrbU5WbVJXZkx6WGtZSUs1?=
- =?utf-8?B?OUY1eE5MUEZUSFB1RFl4c3pFZE9sVVVVNGkvdjJzTW9iZ1VubkF0SktzdVJN?=
- =?utf-8?B?enA0V2EwODZxOS81ampDbDBRSi9FU3poZTc5NFpXSWFnTnpOeGNUNVVYVUNT?=
- =?utf-8?B?NlhreG9WZlhuUXhjdnJyVFExUW9LT2drTTZ5dEdEYzE4eDBsT1JBdno5ZVRX?=
- =?utf-8?B?M1pDTjhHUHNTb09OMytaVStZK3lrSnIxay82b1dGRjJqQ3VMRjhTeGgwUENL?=
- =?utf-8?B?OHIzRXcrcDR2QXQvOUdUeThqRmNlUTliTTg1dEVBemZlUnBxZUhLbVZvSXMx?=
- =?utf-8?B?VFNVYmtFdHFQZ2pPYThKWlBMdnJITjNDeTkwRHlNWE5DMklrdDVSRVR2a25S?=
- =?utf-8?B?TThHQnBQQ1FwVkRFeVZjMDJXZ3dyVmN4Q0JoQmtnSlJSL3hJekQ2b1FIMWNP?=
- =?utf-8?Q?a2A6oDo0d6X9M/8s=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aHFKZEQ2Y25BbFdLWXdSemRCRE1IWWtVclBWRTJOTmJRMkhaQld5L04xOEhu?=
+ =?utf-8?B?TzliZGxqNDBJby82MzgyZzk5WVVnMWprMlp3bWlqd1hqOUF4RVR4cWhGYURB?=
+ =?utf-8?B?V0doWHRWcTBBU3phWUVLWFRXSFNNd2wrdVBlOGY4VzljZTlKQW8xanlwU1E4?=
+ =?utf-8?B?RXV1Mm8wVEkrVWM0MC8vbzVkV3VJQXkwaks1c2xkcWRFODMvZE1vR2lkWml2?=
+ =?utf-8?B?NVFocFpaMGE2R3hEd2RmbXArbi9MTkJUUDZqdklMSXEvSWhHZ1o5Z0JydGZq?=
+ =?utf-8?B?MWJqMTYyWEtIaWVIZmpiM3E0VW5qZExzbVNKSUFQV1lhVGswRUk4bEtVNGRL?=
+ =?utf-8?B?YjdHSGQvK1c1MDdQaFZ6dVVWdmhTaEJtbHZQQ2tCSUE3cExuVklLVklXbG9j?=
+ =?utf-8?B?eFo4OHFRQWo2NFhTQnpFVGdMbSt3Yi9nZUpSU0ZEd0I3UGpCRHRiMGo1TjVL?=
+ =?utf-8?B?RlFJcVRNblc5TVBkeGlpM1pObUo3cGhIOXpyRGc3OGRjYlBpdWh1dXg2VkI3?=
+ =?utf-8?B?QTJ3LzRydVVERmswODNkblU3dWFWdklLK01FMU14K01PbFpJWk1SazR5Ung1?=
+ =?utf-8?B?QXNtZFJHRzh1a015VlRMT25YSlFEUlNxMUcvS0NpUUVCUmF5WU1FZityM3B4?=
+ =?utf-8?B?ZzBzNnNFeEFpR2l3SnFMRXZabzZoYnFXYkljRktVUER1dXhuS2FUZnJvdU5W?=
+ =?utf-8?B?bHpKelA5Vkd0VXhhSk1SNXd1RFZSYmJSQWZaNzdvNWpGM1E2bXdCd0svUk55?=
+ =?utf-8?B?dzRtcG9XM0hkdXJXRW1PL0lSRFdtWEZIVENkSmNheEszRFVRSWowdHRiOFU3?=
+ =?utf-8?B?MlBjV21kNEVOdnVBeGZoMkw4YzdoL3hzVWsxZGRxbnRGR1FTYlNNTmdDUCtu?=
+ =?utf-8?B?ZXBtQUwwanFJOUR1M3NqZm9kU3JRRUw2Z0F0dU5pcmt5M3RHTHVXd3QvTVNZ?=
+ =?utf-8?B?MC9tRHRwdFFGQUVVSmhOeDh4UFd1My9FVW9rRXJWZlJyTHRSbS9IRzAwOG9n?=
+ =?utf-8?B?MDJXNXQwVzZoOTRJWkY3cE9EODRKVktZUnp2a3ZHM0IzckVUWFhoOTFHRDcw?=
+ =?utf-8?B?eVV4eVIvZTVEVHE2Mk90VGVIeHJGRjhwU2V0NjEyWWxlOTFKN1JBd0UrMnZa?=
+ =?utf-8?B?VzdGeGNjRTdGL0Y5ZDdjcDNEZjVtSGlxOE4zTXFoYVkrYTBsRktPQ1g1T28z?=
+ =?utf-8?B?S1lRanRtaGQ2K2NTTnM3eUJBUmVpeGRsS1ZzbXFXUGFtMHlZRkFMRDE3S1ZC?=
+ =?utf-8?B?VHZJekYrTHhzVkZWZFFyeW9wS0N4S1VsV2NWbjk2MmIzOVhobU53YTBsZm53?=
+ =?utf-8?B?akV6SHZOZlptM0pRL1dUclhrbXR6S0ZsUFZBQk1nclZNMklvOUM4TXQ3dTcw?=
+ =?utf-8?B?UFdQN1R6QnlERGdscHRBazFSd09rVGVzbU1YWVNnMVlzY3dqa0JYdHZzeTVW?=
+ =?utf-8?B?UjBQdHBOTFJacmtsMkRhUkxEVUkxYys5K0trM3pMUXRRNURPQk04dkJCWDhG?=
+ =?utf-8?B?QkFDMVdIWkE2cVhEcldwYm5JN0sxZklBUEhEeGovS3B2bEtIZDFSUytWRnll?=
+ =?utf-8?B?bm5jVnBISFlXSlpQL21aMWVDb0FtTUFmbzhZVzBLckhXNm40U01xcGVtTk1K?=
+ =?utf-8?B?c3dCc1lCRUNaK0ttanduMTludTBGYmVLcVRmQlc0b1pmeDlqR3hDMVBjYVcy?=
+ =?utf-8?B?ektqci9tUnlIZUVuczYwS3RIWnFGT3I5YUpueFZjdi9ZS1cvaHdiKzBBSTNk?=
+ =?utf-8?B?b3ZDeU1ENXU4Q2FSQmcvK2VGRUIrckcwOVArM0x1Z3lxNU5oc1FWQkhPOVZ1?=
+ =?utf-8?B?QnkvZHE1ZFhIOFhFUkVvM3VvMEkzOGJZUjFSTDhoQUZ3Tm1LVmNYdU5MN1hq?=
+ =?utf-8?B?M3pIN2d0dmVTbXplVVdFOXBGZXMwb0o3SWFjeGM1WjhXVVNUanB1aGFEZHo4?=
+ =?utf-8?B?d09KTmdmZ1p2WGVpdXNtcHNvK0hRZXZCdGhNY1lpL0d4ODZpZU5FNW5nb1Za?=
+ =?utf-8?B?ank0TGNrRGFPczY3UGwvSmxGNTZ0aTJsSmhSSHVLNTJUZm5VZDVJRzhRY0JM?=
+ =?utf-8?B?TDRqMnlDWlQ1endFelpXejJZOFN4ek8vYjB4djgzcXE1OS9tY3NKdmFhaE4r?=
+ =?utf-8?B?UzJuZDZIekk0bzVVaVE1SEU0eFg5cHZMTzFBQ1BtQ2srY2pOdEY1ekdoa2Q4?=
+ =?utf-8?B?M1lFT2I0Y2RPWHRxUjJQM3hZTDMwbCtRaGxLZzJSRWRhZTc5V0VrTmUvQzQw?=
+ =?utf-8?B?RVB1ZXJ2ZHBiNytWSk8wMEJzTkpVVVkrS1ZsMEpwYURuVjFDUFRUWEhNQk1j?=
+ =?utf-8?B?dzIrR2VHMFJNSE9mTndnQXRDU0NGTDlSYXh4bFc1WmlaL3pvVjFpSFdNNWEz?=
+ =?utf-8?Q?MGu4fvCLay7RDQLI=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 633e3909-a068-4906-ee6c-08d9fdc8ebf4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f694f45-e2ee-4d90-1d3f-08d9fdc8ecc2
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 10:22:44.5025
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 10:22:45.8629
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZakFWGlb8BAjgttDwr6rXH1450QU63o61qFxlfm+zoLpad3OMfpuqZqJNMrvzEycyfpANWgE+Kz1rygmlVn1/nlmlB3oIUB2PQINrPtjEoU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: CRDvouFA5FL3CqQVDVr+JfKLj1sBi2EL1HXKerWxb0cvCBcN9VXC761ommo9Jj8qm3Z/o+dpnH9AMiwyow6n9pWy7rbiJHpAUp10QJoQ41Y=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR13MB2404
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -129,95 +129,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Niklas Söderlund <niklas.soderlund@corigine.com>
 
-Each data path needs an array of xsk pools to track if an xsk socket is
-in use. Add this array and make sure it's handled correctly when the
-data path is duplicated.
+In preparation for adding AF_XDP support add a configuration check to
+make sure the buffer size can not be set to a larger value then the XSK
+socket chunk size.
 
 Signed-off-by: Niklas Söderlund <niklas.soderlund@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net.h  |  4 ++++
- .../ethernet/netronome/nfp/nfp_net_common.c   | 19 +++++++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ .../ethernet/netronome/nfp/nfp_net_common.c   | 42 +++++++++++++++++--
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index fa40d339df8d..12f403d004ee 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -109,6 +109,7 @@ struct nfp_eth_table_port;
- struct nfp_net;
- struct nfp_net_r_vector;
- struct nfp_port;
-+struct xsk_buff_pool;
- 
- /* Convenience macro for wrapping descriptor index on ring size */
- #define D_IDX(ring, idx)	((idx) & ((ring)->cnt - 1))
-@@ -501,6 +502,7 @@ struct nfp_stat_pair {
-  * @num_stack_tx_rings:	Number of TX rings used by the stack (not XDP)
-  * @num_rx_rings:	Currently configured number of RX rings
-  * @mtu:		Device MTU
-+ * @xsk_pools:		AF_XDP UMEM table (@num_r_vecs in size)
-  */
- struct nfp_net_dp {
- 	struct device *dev;
-@@ -537,6 +539,8 @@ struct nfp_net_dp {
- 	unsigned int num_rx_rings;
- 
- 	unsigned int mtu;
-+
-+	struct xsk_buff_pool **xsk_pools;
- };
- 
- /**
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index e6a17af731ba..abfc4f3963c5 100644
+index abfc4f3963c5..c10e977d2472 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -3302,6 +3302,15 @@ struct nfp_net_dp *nfp_net_clone_dp(struct nfp_net *nn)
+@@ -38,6 +38,7 @@
  
- 	*new = nn->dp;
+ #include <net/tls.h>
+ #include <net/vxlan.h>
++#include <net/xdp_sock_drv.h>
  
-+	new->xsk_pools = kmemdup(new->xsk_pools,
-+				 array_size(nn->max_r_vecs,
-+					    sizeof(new->xsk_pools)),
-+				 GFP_KERNEL);
-+	if (!new->xsk_pools) {
-+		kfree(new);
-+		return NULL;
-+	}
-+
- 	/* Clear things which need to be recomputed */
- 	new->fl_bufsz = 0;
- 	new->tx_rings = NULL;
-@@ -3312,6 +3321,12 @@ struct nfp_net_dp *nfp_net_clone_dp(struct nfp_net *nn)
- 	return new;
- }
+ #include "nfpcore/nfp_nsp.h"
+ #include "ccm.h"
+@@ -1338,24 +1339,43 @@ static void nfp_net_tx_timeout(struct net_device *netdev, unsigned int txqueue)
+ /* Receive processing
+  */
+ static unsigned int
+-nfp_net_calc_fl_bufsz(struct nfp_net_dp *dp)
++nfp_net_calc_fl_bufsz_data(struct nfp_net_dp *dp)
+ {
+-	unsigned int fl_bufsz;
++	unsigned int fl_bufsz = 0;
  
-+static void nfp_net_free_dp(struct nfp_net_dp *dp)
-+{
-+	kfree(dp->xsk_pools);
-+	kfree(dp);
+-	fl_bufsz = NFP_NET_RX_BUF_HEADROOM;
+-	fl_bufsz += dp->rx_dma_off;
+ 	if (dp->rx_offset == NFP_NET_CFG_RX_OFFSET_DYNAMIC)
+ 		fl_bufsz += NFP_NET_MAX_PREPEND;
+ 	else
+ 		fl_bufsz += dp->rx_offset;
+ 	fl_bufsz += ETH_HLEN + VLAN_HLEN * 2 + dp->mtu;
+ 
++	return fl_bufsz;
 +}
 +
- static int
++static unsigned int nfp_net_calc_fl_bufsz(struct nfp_net_dp *dp)
++{
++	unsigned int fl_bufsz;
++
++	fl_bufsz = NFP_NET_RX_BUF_HEADROOM;
++	fl_bufsz += dp->rx_dma_off;
++	fl_bufsz += nfp_net_calc_fl_bufsz_data(dp);
++
+ 	fl_bufsz = SKB_DATA_ALIGN(fl_bufsz);
+ 	fl_bufsz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+ 
+ 	return fl_bufsz;
+ }
+ 
++static unsigned int nfp_net_calc_fl_bufsz_xsk(struct nfp_net_dp *dp)
++{
++	unsigned int fl_bufsz;
++
++	fl_bufsz = XDP_PACKET_HEADROOM;
++	fl_bufsz += nfp_net_calc_fl_bufsz_data(dp);
++
++	return fl_bufsz;
++}
++
+ static void
+ nfp_net_free_frag(void *frag, bool xdp)
+ {
+@@ -3331,6 +3351,8 @@ static int
  nfp_net_check_config(struct nfp_net *nn, struct nfp_net_dp *dp,
  		     struct netlink_ext_ack *extack)
-@@ -3395,7 +3410,7 @@ int nfp_net_ring_reconfig(struct nfp_net *nn, struct nfp_net_dp *dp,
+ {
++	unsigned int r, xsk_min_fl_bufsz;
++
+ 	/* XDP-enabled tests */
+ 	if (!dp->xdp_prog)
+ 		return 0;
+@@ -3343,6 +3365,18 @@ nfp_net_check_config(struct nfp_net *nn, struct nfp_net_dp *dp,
+ 		return -EINVAL;
+ 	}
  
- 	nfp_net_open_stack(nn);
- exit_free_dp:
--	kfree(dp);
-+	nfp_net_free_dp(dp);
- 
- 	return err;
- 
-@@ -3404,7 +3419,7 @@ int nfp_net_ring_reconfig(struct nfp_net *nn, struct nfp_net_dp *dp,
- err_cleanup_vecs:
- 	for (r = dp->num_r_vecs - 1; r >= nn->dp.num_r_vecs; r--)
- 		nfp_net_cleanup_vector(nn, &nn->r_vecs[r]);
--	kfree(dp);
-+	nfp_net_free_dp(dp);
- 	return err;
++	xsk_min_fl_bufsz = nfp_net_calc_fl_bufsz_xsk(dp);
++	for (r = 0; r < nn->max_r_vecs; r++) {
++		if (!dp->xsk_pools[r])
++			continue;
++
++		if (xsk_pool_get_rx_frame_size(dp->xsk_pools[r]) < xsk_min_fl_bufsz) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "XSK buffer pool chunk size too small\n");
++			return -EINVAL;
++		}
++	}
++
+ 	return 0;
  }
  
 -- 
