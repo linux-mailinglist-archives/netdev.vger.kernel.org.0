@@ -2,93 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB6394CDFF3
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 22:55:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B537C4CE039
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 23:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiCDVz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 16:55:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
+        id S229828AbiCDWZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 17:25:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiCDVzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 16:55:55 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B7426D579;
-        Fri,  4 Mar 2022 13:54:58 -0800 (PST)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nQFt1-000G6t-Qi; Fri, 04 Mar 2022 22:54:55 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nQFt1-000A9c-G3; Fri, 04 Mar 2022 22:54:55 +0100
-Subject: Re: [PATCH 1/1] libbpf: ensure F_DUPFD_CLOEXEC is defined
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220227142551.2349805-1-james.hilliard1@gmail.com>
- <6af1530a-a4bf-dccf-947d-78ce235a4414@iogearbox.net>
- <CAEf4Bza84V1hwknb9XR+cNz8Sy4BK2EMYB-Oudq==pOYpqV0nw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c2d6db56-0381-d72c-2c9d-1e0ea324ceff@iogearbox.net>
-Date:   Fri, 4 Mar 2022 22:54:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229520AbiCDWZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 17:25:33 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E231C8871
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 14:24:45 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id p17so8946642plo.9
+        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 14:24:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=y+6/vmIuHY8eQXWAKyocNaQeGDTm4yWucBqdOm+hmlU=;
+        b=TjgqnYIcwLonWwRmuAVErGGJMqrgKj6+7tLdzrCtpUsgIpe2PFIEcAve8fTMHqPjcl
+         CXNQBHk4BEw5bGc58Mfv+r9JaEUef5k2LvpDRYgWlkci/D82qFKlMcAJrWUdzN5J9EsC
+         GfBYlvkTQtYvkpbhQy0XogAvedNi3ydE75H65zJigK0BKP0D9CzvGpUV8hJbHuG53fIi
+         n4diews8pfuGfbOjqb26U51FFQ1jd1pYf3EEq8hiu5WBssufA/WFQRGYHEki/s/gwNs+
+         c5Y9gBx/YYxcFedVnMF34/0NKuIWRfWn11vJxviJyDMlCOuacrmHsWydxXoqyKc9PukW
+         BkoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=y+6/vmIuHY8eQXWAKyocNaQeGDTm4yWucBqdOm+hmlU=;
+        b=6qkXpfxqLGddFJbwCJCAcy2sHS7Y7toGXeyVJYqCuhr7OqD++w+lucio2r7kyiKd8/
+         2EMkLasC6jUT4yZnQ6BM4W96/VYsFMfgDApEjAqiK8wP5hHHnlBU35Vi+amFAMLCu2ey
+         TnyVxH9w6TFIVq2jaFcc+AhRFpLJiUVdIrh0IpQhT1XKrhL8TUNmqW2QgFWJYUyOLPbS
+         6ahA+jU+jRGo/QoWQf88nsx+oCN22wGBVi8jZM9zaeqzSN1ADeEMgpO3vCYgtnq21pJd
+         8o8xVWDQMDZeUtYvT66wXxWdhnQQcepH9KlN6gSAbJeblNnvRzZrY8rK9rBs9xr+C7tB
+         4eFA==
+X-Gm-Message-State: AOAM531qXkbXo0Yo7wV4TJjNH8wdysSyFbtu2PMQgfZgp94NtVczP6wf
+        Ama7v9JmS2rB/EzV84rdlf8ZOTCZ9d5NdQ==
+X-Google-Smtp-Source: ABdhPJzCk1eWOR/HXK3v6JC7Qsv3fR1FKKRjdRGz4DHJfuqo7mNF/UjOvpIodsFXOFsZZXDKS0mCtQ==
+X-Received: by 2002:a17:902:ab52:b0:14d:7ce1:8d66 with SMTP id ij18-20020a170902ab5200b0014d7ce18d66mr730569plb.88.1646432684674;
+        Fri, 04 Mar 2022 14:24:44 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm7421270pfh.21.2022.03.04.14.24.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Mar 2022 14:24:44 -0800 (PST)
+Date:   Fri, 4 Mar 2022 14:24:41 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     maxime.deroucy@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] ipaddress: remove 'label' compatibility
+ with Linux-2.0 net aliases
+Message-ID: <20220304142441.342f3156@hermes.local>
+In-Reply-To: <f0215a333fd80102cfab9c560fc2872e8eddb079.camel@gmail.com>
+References: <f0215a333fd80102cfab9c560fc2872e8eddb079.camel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza84V1hwknb9XR+cNz8Sy4BK2EMYB-Oudq==pOYpqV0nw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26471/Fri Mar  4 10:24:47 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/22 8:01 PM, Andrii Nakryiko wrote:
-> On Mon, Feb 28, 2022 at 7:00 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 2/27/22 3:25 PM, James Hilliard wrote:
->>> This definition seems to be missing from some older toolchains.
->>>
->>> Note that the fcntl.h in libbpf_internal.h is not a kernel header
->>> but rather a toolchain libc header.
->>>
->>> Fixes:
->>> libbpf_internal.h:521:18: error: 'F_DUPFD_CLOEXEC' undeclared (first use in this function); did you mean 'FD_CLOEXEC'?
->>>      fd = fcntl(fd, F_DUPFD_CLOEXEC, 3);
->>>                     ^~~~~~~~~~~~~~~
->>>                     FD_CLOEXEC
->>>
->>> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
->>
->> Do you have some more info on your env (e.g. libc)? Looks like F_DUPFD_CLOEXEC
->> was added back in 2.6.24 kernel. When did libc add it?
-> 
-> It seems like it's guarded by __USE_XOPEN2K8 in glibc (from a quick
-> glance at glibc code). But it's been there since 2010 or so, at the
-> very least.
-> 
->> Should we instead just add an include for <linux/fcntl.h> to libbpf_internal.h
->> (given it defines F_DUPFD_CLOEXEC as well)?
-> 
-> yep, this is UAPI header so we can use it easily (we'll need to sync
-> it into Github repo, but that's not a problem)
+On Thu, 03 Mar 2022 23:14:55 +0100
+maxime.deroucy@gmail.com wrote:
 
-Sgtm, James, could you respin with using the include?
+> As Linux-2.0 is getting old and systemd allows non Linux-2.0 compatible
+> aliases to be set, I think iproute2 should be able to manage such
+> aliases.
+> ---
+> =C2=A0ip/ipaddress.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 | 16 ----------------
+> =C2=A0man/man8/ip-address.8.in |=C2=A0 3 ---
+> =C2=A02 files changed, 19 deletions(-)
 
-Thanks,
-Daniel
+Sorry, this patch is missing Signed-off-by:
+
+Please resubmit and run it through checkpatch to make sure it
+is correct format.
+
+ERROR: patch seems to be corrupt (line wrapped?)
+#93: FILE: ip/ipaddress.c:2348:
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0return false;
+
+ERROR: Missing Signed-off-by: line(s)
+
+total: 2 errors, 0 warnings, 43 lines checked
