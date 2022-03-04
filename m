@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 094024CD269
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 11:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 292484CD268
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 11:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiCDKbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 05:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51618 "EHLO
+        id S234283AbiCDKbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 05:31:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbiCDKbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 05:31:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC6316BCE6
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 02:30:18 -0800 (PST)
+        with ESMTP id S231650AbiCDKbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 05:31:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30D81680AF
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 02:30:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7C88B8275C
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DD0661BCD
         for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 10:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 67CCFC340EE;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 72223C340F2;
         Fri,  4 Mar 2022 10:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646389814;
-        bh=8EG4P8GQaLbNz514fbI2BgX5HgpT7Wq6BiP4gOlB18E=;
+        bh=dW6dUkE8EtfjxAXRnEXLGBoIz/ZZDAIHCWj83OXPnkk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SMjdJrnc1jr0+EwlxPYgKEgu8NYJSbDH89z0cKFyBTBfcnLQN/Xd3UsF+pOxmZA0Q
-         ru6fBRrOSfK3C1KRpUYddzdS1TbNPggjp/RKaLN1vMjW8/gKVpUmhTw9Wu3C6XDqbB
-         9uoUgTGHeZW9uMODRINzQp2xXLX0F7k3NU7cyBcTH5hsM4flHwpUmC+qDopliVP4Ng
-         AOTfOldBtQOqoCk6n1ldb/8Y0XmrRC2ys9C1wu2fQlnXdNnAvgUHQz+qvXcqsXMcLN
-         DnrvP2MSnGVGc5deZOjLgSZ746HhIbzM1sTZVa26YGTxdSL/uXk+y0lgRnKfGTtsLQ
-         8rwsFDKYcFstA==
+        b=MsgcetWaHcbqrznE2C2OZoY6nJfgfEWmXrtKksJRYKEh0lYClv1ritzStOYSvHr9l
+         4lx4/DXbwwRlmLQW5atn+kDnv0xlhPZujFvUoFJ6p77t2kEHNU/iWXPfhk0lJchryf
+         T+jNBr3Nlj4jM7UrYClTTYRa5MBrLpbz2u7MN7mWxdsJeld5LL2BhoR82/aZoY4JjV
+         6vX0m3PQUgo0kkab/pStyZLD7KrVEVHvPZx71SAyg9nOLAF4J6kwo0imHnWfJG2608
+         rJwuGdY+kr62e5JrFcthkFP9tB6TvSZyCVJqDYCNrotdcLMrfv38ROqJro3DGU0KUz
+         6+rV1VTAUFoTw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4FFA8EAC099;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58625EAC095;
         Fri,  4 Mar 2022 10:30:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/11][pull request] 100GbE Intel Wired LAN Driver
- Updates 2022-03-03
+Subject: Re: [PATCH net-next 0/7] Cleanups for ocelot/felix drivers
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164638981432.20580.15439256824854720198.git-patchwork-notify@kernel.org>
+Message-Id: <164638981435.20580.933935079764294543.git-patchwork-notify@kernel.org>
 Date:   Fri, 04 Mar 2022 10:30:14 +0000
-References: <20220303211449.899956-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220303211449.899956-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        jacob.e.keller@intel.com
+References: <20220303140126.1815356-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220303140126.1815356-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com, idosch@nvidia.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,44 +61,41 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+by David S. Miller <davem@davemloft.net>:
 
-On Thu,  3 Mar 2022 13:14:38 -0800 you wrote:
-> Jacob Keller says:
+On Thu,  3 Mar 2022 16:01:19 +0200 you wrote:
+> This patch set is an assorted collection of minor cleanups brought to
+> the felix DSA driver and ocelot switch library.
 > 
-> This series refactors the ice networking driver VF storage from a simple
-> static array to a hash table. It also introduces krefs and proper locking
-> and protection to prevent common use-after-free and concurrency issues.
-> 
-> There are two motivations for this work. First is to make the ice driver
-> more resilient by preventing a whole class of use-after-free bugs that can
-> occur around concurrent access to VF structures while removing VFs.
+> Vladimir Oltean (7):
+>   net: mscc: ocelot: use list_for_each_entry in
+>     ocelot_vcap_block_remove_filter
+>   net: mscc: ocelot: use pretty names for IPPROTO_UDP and IPPROTO_TCP
+>   net: dsa: felix: remove ocelot->npi assignment from
+>     felix_8021q_cpu_port_init
+>   net: dsa: felix: drop the ptp_type argument from felix_check_xtr_pkt()
+>   net: dsa: felix: initialize "err" to 0 in felix_check_xtr_pkt()
+>   net: dsa: felix: print error message in felix_check_xtr_pkt()
+>   net: dsa: felix: remove redundant assignment in
+>     felix_8021q_cpu_port_deinit
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/11] ice: refactor unwind cleanup in eswitch mode
-    https://git.kernel.org/netdev/net-next/c/df830543d63c
-  - [net-next,02/11] ice: store VF pointer instead of VF ID
-    https://git.kernel.org/netdev/net-next/c/b03d519d3460
-  - [net-next,03/11] ice: pass num_vfs to ice_set_per_vf_res()
-    https://git.kernel.org/netdev/net-next/c/cd0f4f3b2c04
-  - [net-next,04/11] ice: move clear_malvf call in ice_free_vfs
-    https://git.kernel.org/netdev/net-next/c/294627a67e96
-  - [net-next,05/11] ice: move VFLR acknowledge during ice_free_vfs
-    https://git.kernel.org/netdev/net-next/c/44efe75f736f
-  - [net-next,06/11] ice: remove checks in ice_vc_send_msg_to_vf
-    https://git.kernel.org/netdev/net-next/c/59e1f857e377
-  - [net-next,07/11] ice: use ice_for_each_vf for iteration during removal
-    https://git.kernel.org/netdev/net-next/c/19281e866808
-  - [net-next,08/11] ice: convert ice_for_each_vf to include VF entry iterator
-    https://git.kernel.org/netdev/net-next/c/c4c2c7db64e1
-  - [net-next,09/11] ice: factor VF variables to separate structure
-    https://git.kernel.org/netdev/net-next/c/000773c00f52
-  - [net-next,10/11] ice: introduce VF accessor functions
-    https://git.kernel.org/netdev/net-next/c/fb916db1f04f
-  - [net-next,11/11] ice: convert VF storage to hash table with krefs and RCU
-    https://git.kernel.org/netdev/net-next/c/3d5985a185e6
+  - [net-next,1/7] net: mscc: ocelot: use list_for_each_entry in ocelot_vcap_block_remove_filter
+    https://git.kernel.org/netdev/net-next/c/c5a0edaeb9e1
+  - [net-next,2/7] net: mscc: ocelot: use pretty names for IPPROTO_UDP and IPPROTO_TCP
+    https://git.kernel.org/netdev/net-next/c/c3cde44f3c6e
+  - [net-next,3/7] net: dsa: felix: remove ocelot->npi assignment from felix_8021q_cpu_port_init
+    https://git.kernel.org/netdev/net-next/c/28c1305b0b72
+  - [net-next,4/7] net: dsa: felix: drop the ptp_type argument from felix_check_xtr_pkt()
+    https://git.kernel.org/netdev/net-next/c/d219b4b674e9
+  - [net-next,5/7] net: dsa: felix: initialize "err" to 0 in felix_check_xtr_pkt()
+    https://git.kernel.org/netdev/net-next/c/dbd032856ba3
+  - [net-next,6/7] net: dsa: felix: print error message in felix_check_xtr_pkt()
+    https://git.kernel.org/netdev/net-next/c/5d3bb7dda43a
+  - [net-next,7/7] net: dsa: felix: remove redundant assignment in felix_8021q_cpu_port_deinit
+    https://git.kernel.org/netdev/net-next/c/162fbf6a2f95
 
 You are awesome, thank you!
 -- 
