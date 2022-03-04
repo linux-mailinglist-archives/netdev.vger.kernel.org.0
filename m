@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 148784CCCDE
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 06:15:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B684CCCCE
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 06:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbiCDFPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 00:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        id S237974AbiCDFK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 00:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238004AbiCDFPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 00:15:54 -0500
-X-Greylist: delayed 388 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Mar 2022 21:15:02 PST
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631769285C
-        for <netdev@vger.kernel.org>; Thu,  3 Mar 2022 21:15:02 -0800 (PST)
-Received: from HP-EliteBook-840-G7.. (36-229-235-123.dynamic-ip.hinet.net [36.229.235.123])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S230244AbiCDFK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 00:10:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993B817E36F;
+        Thu,  3 Mar 2022 21:10:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 64BD03F615;
-        Fri,  4 Mar 2022 05:08:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646370507;
-        bh=sGlok+QxXUJMqxle/m0fwKdw/UVUhMjtd+mUVGGBQug=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=C0fM7Z9SylA6Gc1x6MFjBXU5FpPTseKi1N3wNeavs+9hsXsa91vvqz/anhZsFCn8v
-         re3VYGz5p/td6kprV+MfW/VfQSUH71pajbGIEYJuxSqKhlE8Ks39QRkXC96TurYkcG
-         tET3QuFDBjl13+MalZeaZGKtULAtPkCNNRTDM9wkbkSPjO455Wl4wn1t4El5Ei3FJ4
-         OxIaWKHPFb6rtJjQoEPcNLWfptnZzkU6YiNnBXZK4yb0nO83H7vso8ZnCYKXiyxLzz
-         i3Hbv/RrDgCMnU6DOzs2pVACaCMfg/x/wL61wWMnTriqKXtR0HTahdJx4OMQGC94Ey
-         fxifyRuHp7dvQ==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: atlantic: Avoid out-of-bounds indexing
-Date:   Fri,  4 Mar 2022 13:08:12 +0800
-Message-Id: <20220304050812.7472-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EF5E61B7F;
+        Fri,  4 Mar 2022 05:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E64D6C340F0;
+        Fri,  4 Mar 2022 05:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646370610;
+        bh=1oAEoAybRxvzYK4cdHb/DaE5zyuOWBL/TAWV22fHxpA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rzJNU54LWfcdwZAq3rRuXqqrW9/VmXO5fdgMdUeP+rApMsKJJi97LtdKlxLPxIntQ
+         CrECMTP8IhenJ7f2lVqFrHt2frL+Py8HFRR4as8RBSXhE6AXmINfWuvQLdgRgLSTX7
+         q8ftdGiW918FuU4o51wEJ0N/4ChqDQVTqB6NgttlYQcUeU6x9oCCHmauSINK2Gx68w
+         Wl9ryZnNwY5iIeL9H7EKDbTNHmGRynymSsBcfxu8aTXmJB0A7/8jHOHiekPvIWcZmg
+         oZm7TYxweU33SOVaGtWxzaywsksj/z6j7DRJSPERwANXk3d6H/2e06n5a4nue6RHw2
+         +bSje8Zic9Q2g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CAAE7E7BB08;
+        Fri,  4 Mar 2022 05:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Subject: Re: pull request: bluetooth 2022-03-03
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164637060982.7623.2431046217416492091.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Mar 2022 05:10:09 +0000
+References: <20220303210743.314679-1-luiz.dentz@gmail.com>
+In-Reply-To: <20220303210743.314679-1-luiz.dentz@gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,92 +56,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UBSAN warnings are observed on atlantic driver:
-[ 294.432996] UBSAN: array-index-out-of-bounds in /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq_nic.c:484:48
-[ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
+Hello:
 
-The index is assigned right before breaking out the loop, so there's no actual
-deferencing happening.
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-So only use the index inside the loop to fix the issue.
+On Thu,  3 Mar 2022 13:07:43 -0800 you wrote:
+> The following changes since commit f8e9bd34cedd89b93b1167aa32ab8ecd6c2ccf4a:
+> 
+>   Merge branch 'smc-fix' (2022-03-03 10:34:18 +0000)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-03-03
+> 
+> [...]
 
-BugLink: https://bugs.launchpad.net/bugs/1958770
-Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- .../net/ethernet/aquantia/atlantic/aq_vec.c   | 24 +++++++++----------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+Here is the summary with links:
+  - pull request: bluetooth 2022-03-03
+    https://git.kernel.org/netdev/net/c/9f3956d6595a
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-index f4774cf051c97..6ab1f3212d246 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
-@@ -43,8 +43,8 @@ static int aq_vec_poll(struct napi_struct *napi, int budget)
- 	if (!self) {
- 		err = -EINVAL;
- 	} else {
--		for (i = 0U, ring = self->ring[0];
--			self->tx_rings > i; ++i, ring = self->ring[i]) {
-+		for (i = 0U; self->tx_rings > i; ++i) {
-+			ring = self->ring[i];
- 			u64_stats_update_begin(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
- 			ring[AQ_VEC_RX_ID].stats.rx.polls++;
- 			u64_stats_update_end(&ring[AQ_VEC_RX_ID].stats.rx.syncp);
-@@ -182,8 +182,8 @@ int aq_vec_init(struct aq_vec_s *self, const struct aq_hw_ops *aq_hw_ops,
- 	self->aq_hw_ops = aq_hw_ops;
- 	self->aq_hw = aq_hw;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = aq_ring_init(&ring[AQ_VEC_TX_ID], ATL_RING_TX);
- 		if (err < 0)
- 			goto err_exit;
-@@ -224,8 +224,8 @@ int aq_vec_start(struct aq_vec_s *self)
- 	unsigned int i = 0U;
- 	int err = 0;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		err = self->aq_hw_ops->hw_ring_tx_start(self->aq_hw,
- 							&ring[AQ_VEC_TX_ID]);
- 		if (err < 0)
-@@ -248,8 +248,8 @@ void aq_vec_stop(struct aq_vec_s *self)
- 	struct aq_ring_s *ring = NULL;
- 	unsigned int i = 0U;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		self->aq_hw_ops->hw_ring_tx_stop(self->aq_hw,
- 						 &ring[AQ_VEC_TX_ID]);
- 
-@@ -268,8 +268,8 @@ void aq_vec_deinit(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_tx_clean(&ring[AQ_VEC_TX_ID]);
- 		aq_ring_rx_deinit(&ring[AQ_VEC_RX_ID]);
- 	}
-@@ -297,8 +297,8 @@ void aq_vec_ring_free(struct aq_vec_s *self)
- 	if (!self)
- 		goto err_exit;
- 
--	for (i = 0U, ring = self->ring[0];
--		self->tx_rings > i; ++i, ring = self->ring[i]) {
-+	for (i = 0U; self->tx_rings > i; ++i) {
-+		ring = self->ring[i];
- 		aq_ring_free(&ring[AQ_VEC_TX_ID]);
- 		if (i < self->rx_rings)
- 			aq_ring_free(&ring[AQ_VEC_RX_ID]);
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
