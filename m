@@ -2,102 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA7F4CDEA6
-	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 21:26:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041874CDDDF
+	for <lists+netdev@lfdr.de>; Fri,  4 Mar 2022 21:25:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiCDUHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 15:07:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52598 "EHLO
+        id S229881AbiCDUDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 15:03:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbiCDUGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 15:06:37 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930C11BFDF7
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 12:01:21 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id f38so19020005ybi.3
-        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 12:01:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S0hgM+UUFcR3uDXF/xP2YGoAG6MiXhyiVMH8Jve4w2M=;
-        b=JWHsUs5DIK+NouQSBaB/f6c3Uixo4+apR6o9cWahmW2tRDLgRJM3wJBYLg0oGD0j8b
-         755VDHwxbbQavBbT13PXbFmTx1qb6G5s2PmPD3txvJHPwloJ/QMuWFKACMuLjfXTg9MM
-         lc9+pVCRq0V7aWOodllPKpXQIERVSDVu0mpOeYmwbibRFuwMfQZ2vmCe/GdpmA1nLHDp
-         Nz+MBDVceLzBmCexRXFOa4AGQRrZPhwRBKXRbnRVmRWBvl3GsNcRmAiMAoo/dxIq7ipL
-         4qNSXqYraiWRNcWN6rgrmw6FA1ob1VTUlL5fxRUSHmUDgQj68iWngWkD6XQrp/E6A3qO
-         zzfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S0hgM+UUFcR3uDXF/xP2YGoAG6MiXhyiVMH8Jve4w2M=;
-        b=mXIW6h/2r/nuISESQknBADklLtEI1lA2phplm2quHIMUIbamqoyUStovlt/ZPDd6/6
-         u02Ffaj+EUkbPM/qYgfakMZHRZkZ8Iuy2jQskvFEJ7zfhilgxRTWZu5bWydiYiMTUFvq
-         J1blwK1OnMNRRStiMD4WmezzYV9nep9Aq7kxkrHjR2iDLa05BXlhNxAmfalEYTAtHH2g
-         8TOa4sgcBPOeF287SnHdJGwFCEZ68tbuMxCHIPrBcPAmP42RVGqpkwP1udrRI/Z0MKne
-         EovtU4EFlio/kueSw/VASOw2Irnhs73FfASE+BNh9hhU+Wj9TqSbjlr1d6TgC7kpztPy
-         rCNA==
-X-Gm-Message-State: AOAM531fbe8U+F3vMtJg1Vz1yJ2aaan/oNFDb4fPNqT/9hveavZCCITh
-        CgEQ31RQjGq+dqJSyDJNFdLCGV/+056HesWbKh1z88i0J4s=
-X-Google-Smtp-Source: ABdhPJxj86jlR/Nf5BMY/fLztK0Sqbj0s6hWowm4DI7YcujF4fxssFrX58GlPiCdeCI+5lylBc1OxewF+INcp9tWY9c=
-X-Received: by 2002:a25:8c86:0:b0:628:a042:9529 with SMTP id
- m6-20020a258c86000000b00628a0429529mr13684307ybl.231.1646422146966; Fri, 04
- Mar 2022 11:29:06 -0800 (PST)
+        with ESMTP id S229755AbiCDUDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 15:03:32 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC780244A16
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 11:58:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646423925; x=1677959925;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7y/BxYMS9tI6XR3NRSpOEvF3gtB7W3YhNNHW2z4bOH4=;
+  b=Mw9vVRo0dFACmF3Mpe6JOn9nt4HgvvSAKo7N+P68kCUhUoFcMSAvPnYy
+   3PC09uJmWn0SjUqSo9PUCeIy9rPJwif6iNsItt+4PYUNAODup5Nn7Grct
+   pSnNjLLhfHTW1/n2YTkOQPx/nsPQqQjsWizfkBVSlSQIG5Pv3YbCDeo8k
+   C6eJtwN7kHIjbR1ci9xzMgcgoqvOBX1ul1vIkxGk9nvpuY11SFnTb7T9e
+   pZlPnKfITvKN/ohjDV54kWLdsf3ctI1/1qffMTYb8sPOVlfG9oeYy4rgJ
+   /TEF8UjbatASBVpJFbi0Z/7zm6fkmXPbQJcvMN7FRx22UwsVLsLZ3H+pm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="253981329"
+X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
+   d="scan'208";a="253981329"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:36:43 -0800
+X-IronPort-AV: E=Sophos;i="5.90,156,1643702400"; 
+   d="scan'208";a="552340774"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.225.124])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 11:36:42 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 00/11] mptcp: Selftest refinements and a new test
+Date:   Fri,  4 Mar 2022 11:36:25 -0800
+Message-Id: <20220304193636.219315-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220303181607.1094358-1-eric.dumazet@gmail.com>
- <20220303181607.1094358-5-eric.dumazet@gmail.com> <3e50ceabe3f1ea4007249afb6a30bda8996884c7.camel@gmail.com>
-In-Reply-To: <3e50ceabe3f1ea4007249afb6a30bda8996884c7.camel@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 4 Mar 2022 11:28:55 -0800
-Message-ID: <CANn89i+pb5tt4JhEUGf6ip=urQXT=LoiHKk-7H_wkoA6ZRDNaA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 04/14] ipv6: add struct hop_jumbo_hdr definition
-To:     Alexander H Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-18.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 11:26 AM Alexander H Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Thu, 2022-03-03 at 10:15 -0800, Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > Following patches will need to add and remove local IPv6 jumbogram
-> > options to enable BIG TCP.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > ---
-> >  include/net/ipv6.h | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> >
-> > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> > index 213612f1680c7c39f4c07f0c05b4e6cf34a7878e..95f405cde9e539d7909b6b89af2b956655f38b94 100644
-> > --- a/include/net/ipv6.h
-> > +++ b/include/net/ipv6.h
-> > @@ -151,6 +151,17 @@ struct frag_hdr {
-> >       __be32  identification;
-> >  };
-> >
-> > +/*
-> > + * Jumbo payload option, as described in RFC 2676 2.
-> > + */
->
-> The RFC number is 2675 isn't it?
->
+Patches 1 and 11 improve the printed output of the mptcp_join.sh
+selftest.
 
-You are right, thanks.
+Patches 2-8 add a test for the MP_FASTCLOSE option, including
+prerequisite changes like additional MPTCP MIBs.
+
+Patches 9-10 add some groundwork for upcoming tests.
+
+
+Geliang Tang (11):
+  selftests: mptcp: adjust output alignment for more tests
+  mptcp: add the mibs for MP_FASTCLOSE
+  selftests: mptcp: add the MP_FASTCLOSE mibs check
+  mptcp: add the mibs for MP_RST
+  selftests: mptcp: add the MP_RST mibs check
+  selftests: mptcp: add extra_args in do_transfer
+  selftests: mptcp: reuse linkfail to make given size files
+  selftests: mptcp: add fastclose testcase
+  selftests: mptcp: add invert check in check_transfer
+  selftests: mptcp: add more arguments for chk_join_nr
+  selftests: mptcp: update output info of chk_rm_nr
+
+ net/mptcp/mib.c                               |   4 +
+ net/mptcp/mib.h                               |   4 +
+ net/mptcp/options.c                           |   5 +
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 271 ++++++++++++++----
+ 4 files changed, 223 insertions(+), 61 deletions(-)
+
+
+base-commit: 1039135aedfc5021b4827eb87276d7b4272024ac
+-- 
+2.35.1
+
