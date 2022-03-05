@@ -2,55 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B024CE40F
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 10:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4828C4CE410
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 10:57:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231285AbiCEJ5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 04:57:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
+        id S231336AbiCEJ6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 04:58:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiCEJ5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 04:57:01 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3F157B2D;
-        Sat,  5 Mar 2022 01:56:11 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1646474162; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=Our1pnjEm3wEeZp5KFJrRiLbsuNIBDTA6aEc1VZpzJ8nzWM3+wuSY79vdGpUMtfNX7mE1J5qt80/NdbfCPTrEdB9kndiNJqNka+etdkFNqwAKRAENqv4V6N7OO5bXym4fJDkx6fKHGUEfFck9ERowhGeGLs9DgtcjumwRw0pz/0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1646474162; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=DCSRpNWrnHSQa2u5Cncgea/UlXhpttbCIaNQ2y3CigU=; 
-        b=LO2Mh7OM/kPbSLn+jA4ZdxmHmW/781SASE3gTj8NSqjxfdRL9RmJOu+hbjvAtRlIjLVZQpTvJ+ulBmV9eAwVV9ruW9Jna8VWZur3sgRT2bzaa3Ln0Zh9p8qqy0mRRJO66iYG9A3+vgDu2vTAsGQ8C5YyS83Gxa8rm9QhgP1SjQs=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1646474162;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Transfer-Encoding;
-        bh=DCSRpNWrnHSQa2u5Cncgea/UlXhpttbCIaNQ2y3CigU=;
-        b=dys0TUCXkIgliqh90qFYPqUTjNPdb0u1wF+YLiBlRwWnLB0KYTxu5evnvE2pbTlY
-        DKowcNfwzJmpUJOLmhiPfwupP8hnHNaY7WI1vrB492sw4cRZYJkTorKSoqFciouk+g0
-        8GIAptVu3TDfXbKN2Iz9qkXa9h2a2/Z9ZTy+64So=
-Received: from localhost.localdomain (49.207.224.178 [49.207.224.178]) by mx.zohomail.com
-        with SMTPS id 1646474159765555.5049508686128; Sat, 5 Mar 2022 01:55:59 -0800 (PST)
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     mail@anirudhrb.com,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] vhost: fix hung thread due to erroneous iotlb entries
-Date:   Sat,  5 Mar 2022 15:25:25 +0530
-Message-Id: <20220305095525.5145-1-mail@anirudhrb.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S230077AbiCEJ6E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 04:58:04 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F16859A49;
+        Sat,  5 Mar 2022 01:57:15 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id j2so10342990oie.7;
+        Sat, 05 Mar 2022 01:57:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1q/M7KC4YQOzuzU3gfyVVZfmbsjK5hZe7O6MPiN/Bk8=;
+        b=McslBKcHxVzCIPHnZvFk4aQDX77ImcUv7m4m6qytWzxUmh4NfFXmVgbG7M7f9irvcj
+         59l9IXu6oDj/ztL3PhYQUbKLbukAJgzNPJVgeR2AhastWLFekMl1bIZtxchVNCmE5y+z
+         JzKpcsHvzzRO2reD6Y1fi0kt6SS02+YpeJdecUuJntroVh51Fs7PlITBuKB0DM6+D8D3
+         03G9Z5RIB7npaQ9QxBenkb4TsXvAEFoAEMbQEEn1p0u8kQDEpPPxpFiT3A95sAJkyZKE
+         XLS+fhAyOMwGt7FRsIOrYfGvxTXES+D6JK8bm4SsnNryeqDvjB2mAkcaGW38eK6bPX9H
+         hA0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1q/M7KC4YQOzuzU3gfyVVZfmbsjK5hZe7O6MPiN/Bk8=;
+        b=Oaq0tJlbUEQXFU6Kosrmza8PAb8+/ZxktbYsKgxI2THpzdKhqMtgd/olN2gPspJswQ
+         eXEeKmJOi/6P/Fo335+1cav7do1yGtqvzIrA+cm/EGVDjKG7kxYIsR9AGArV6nHEWmfr
+         VbJIDAXYAj9L+1hjFaf8iysFYcmcBe+EU6OWrptGM70bVi4SP89SQnrl9e1KjKOis/p8
+         i7QA3zMV3mP8nZHUUNUr2Q3SjUOUHYIHZurieIhigHAXrpxvEMID04wEoICcgtqg/xhF
+         kS25XtNnL3wxK5/mShOTvv5lj49jUy+PSZF4AybhtM24qC1c78dBoO/iR+Unf3EGvkc+
+         a9fA==
+X-Gm-Message-State: AOAM533Pudc6CbVyG+VUpZejOMhZdcXe/eJL81cn56ZVR0cLCtImAAX3
+        TbFvCqXx7f13zG8nvL61TM1/0vBs6uz0oJllFgOfqXU7iUQ=
+X-Google-Smtp-Source: ABdhPJyZZFc1GhxQ1wI1wpyTpk8Z96+bZq0RBY35+3T4OroeQOC9Qf64W5yIrE3QXuEYEP9E6n6UgJD1R9mY5+oVLJ4=
+X-Received: by 2002:a05:6808:bce:b0:2d9:a01a:487d with SMTP id
+ o14-20020a0568080bce00b002d9a01a487dmr1836643oik.200.1646474234766; Sat, 05
+ Mar 2022 01:57:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+References: <20220227142551.2349805-1-james.hilliard1@gmail.com>
+ <6af1530a-a4bf-dccf-947d-78ce235a4414@iogearbox.net> <CAEf4Bza84V1hwknb9XR+cNz8Sy4BK2EMYB-Oudq==pOYpqV0nw@mail.gmail.com>
+In-Reply-To: <CAEf4Bza84V1hwknb9XR+cNz8Sy4BK2EMYB-Oudq==pOYpqV0nw@mail.gmail.com>
+From:   James Hilliard <james.hilliard1@gmail.com>
+Date:   Sat, 5 Mar 2022 02:57:03 -0700
+Message-ID: <CADvTj4r4UKTV1RSs-1v=QZT8hehLzqHhZ3zmwugkcwYQQxrfuA@mail.gmail.com>
+Subject: Re: [PATCH 1/1] libbpf: ensure F_DUPFD_CLOEXEC is defined
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,93 +73,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In vhost_iotlb_add_range_ctx(), range size can overflow to 0 when
-start is 0 and last is ULONG_MAX. One instance where it can happen
-is when userspace sends an IOTLB message with iova=size=uaddr=0
-(vhost_process_iotlb_msg). So, an entry with size = 0, start = 0,
-last = ULONG_MAX ends up in the iotlb. Next time a packet is sent,
-iotlb_access_ok() loops indefinitely due to that erroneous entry.
+On Fri, Mar 4, 2022 at 12:01 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Mon, Feb 28, 2022 at 7:00 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > Hi James,
+> >
+> > On 2/27/22 3:25 PM, James Hilliard wrote:
+> > > This definition seems to be missing from some older toolchains.
+> > >
+> > > Note that the fcntl.h in libbpf_internal.h is not a kernel header
+> > > but rather a toolchain libc header.
+> > >
+> > > Fixes:
+> > > libbpf_internal.h:521:18: error: 'F_DUPFD_CLOEXEC' undeclared (first use in this function); did you mean 'FD_CLOEXEC'?
+> > >     fd = fcntl(fd, F_DUPFD_CLOEXEC, 3);
+> > >                    ^~~~~~~~~~~~~~~
+> > >                    FD_CLOEXEC
+> > >
+> > > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> >
+> > Do you have some more info on your env (e.g. libc)? Looks like F_DUPFD_CLOEXEC
+> > was added back in 2.6.24 kernel. When did libc add it?
+>
+> It seems like it's guarded by __USE_XOPEN2K8 in glibc (from a quick
+> glance at glibc code). But it's been there since 2010 or so, at the
+> very least.
 
-	Call Trace:
-	 <TASK>
-	 iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-	 vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-	 vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-	 vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-	 kthread+0x2e9/0x3a0 kernel/kthread.c:377
-	 ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-	 </TASK>
+The toolchain that hit this issue appears to be uclibc based which seems to have
+had some bugs with the F_DUPFD_CLOEXEC definition.
 
-Reported by syzbot at:
-	https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
-
-To fix this, do two things:
-
-1. Return -EINVAL in vhost_chr_write_iter() when userspace asks to map
-   a range with size 0.
-2. Fix vhost_iotlb_add_range_ctx() to handle the range [0, ULONG_MAX]
-   by splitting it into two entries.
-
-Fixes: 0bbe30668d89e ("vhost: factor out IOTLB")
-Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
----
-Changes in v3:
-1. Simplify expression since start is always 0
-2. Fix checkpatch issue
-3. Add Fixes tag
-
-v2: https://lore.kernel.org/kvm/20220224143320.3751-1-mail@anirudhrb.com/
-Changes in v2:
-1. Don't reject range [0, ULONG_MAX], split it instead.
-2. Validate msg.size in vhost_chr_write_iter().
-
-v1: https://lore.kernel.org/lkml/20220221195303.13560-1-mail@anirudhrb.com/
-
----
- drivers/vhost/iotlb.c | 11 +++++++++++
- drivers/vhost/vhost.c |  5 +++++
- 2 files changed, 16 insertions(+)
-
-diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-index 670d56c879e5..40b098320b2a 100644
---- a/drivers/vhost/iotlb.c
-+++ b/drivers/vhost/iotlb.c
-@@ -57,6 +57,17 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
- 	if (last < start)
- 		return -EFAULT;
- 
-+	/* If the range being mapped is [0, ULONG_MAX], split it into two entries
-+	 * otherwise its size would overflow u64.
-+	 */
-+	if (start == 0 && last == ULONG_MAX) {
-+		u64 mid = last / 2;
-+
-+		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
-+		addr += mid + 1;
-+		start = mid + 1;
-+	}
-+
- 	if (iotlb->limit &&
- 	    iotlb->nmaps == iotlb->limit &&
- 	    iotlb->flags & VHOST_IOTLB_FLAG_RETIRE) {
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 59edb5a1ffe2..55475fd59fb7 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1170,6 +1170,11 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 		goto done;
- 	}
- 
-+	if (msg.size == 0) {
-+		ret = -EINVAL;
-+		goto done;
-+	}
-+
- 	if (dev->msg_handler)
- 		ret = dev->msg_handler(dev, &msg);
- 	else
--- 
-2.35.1
-
+>
+> >
+> > Should we instead just add an include for <linux/fcntl.h> to libbpf_internal.h
+> > (given it defines F_DUPFD_CLOEXEC as well)?
+>
+> yep, this is UAPI header so we can use it easily (we'll need to sync
+> it into Github repo, but that's not a problem)
+>
+>
+> >
+> > > ---
+> > >   tools/lib/bpf/libbpf_internal.h | 4 ++++
+> > >   1 file changed, 4 insertions(+)
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+> > > index 4fda8bdf0a0d..d2a86b5a457a 100644
+> > > --- a/tools/lib/bpf/libbpf_internal.h
+> > > +++ b/tools/lib/bpf/libbpf_internal.h
+> > > @@ -31,6 +31,10 @@
+> > >   #define EM_BPF 247
+> > >   #endif
+> > >
+> > > +#ifndef F_DUPFD_CLOEXEC
+> > > +#define F_DUPFD_CLOEXEC 1030
+> > > +#endif
+> > > +
+> > >   #ifndef R_BPF_64_64
+> > >   #define R_BPF_64_64 1
+> > >   #endif
+> > >
+> >
+> > Thanks,
+> > Daniel
