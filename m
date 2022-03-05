@@ -2,91 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D114CE13C
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 00:55:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3124CE150
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 01:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbiCDX4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 18:56:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
+        id S230121AbiCEADy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 19:03:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiCDX4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 18:56:18 -0500
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807691E2FED;
-        Fri,  4 Mar 2022 15:55:29 -0800 (PST)
-Received: by mail-oo1-f46.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so11213946oos.9;
-        Fri, 04 Mar 2022 15:55:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tSliGbcTSyYzBFVpCZN6O+4ZDMOchGSsN4LqAQ8U/xg=;
-        b=ECXVwP0y6CsC4ai6utWIYTngpLPMIrUBejiPNDc9mwES0hUGfnXuJFKjYETI72yhN5
-         YzeIdYT83oDEEAlYoTC7GhQCTeLRN4/JiU3Z7j6I249YWTi4UCO1LGNl9m71hgzmOG5Y
-         X6H0VM+DqrAYajodGYUxuHEeE2swESwvna0W6a8Zc4JhB6Yodj7S7UTe0gcItSIOw8rv
-         NFEAOextzbnT6rcf8+2xrXizDHeRe4TTQ/a1BmWfvI09a0qKH4cUXj2xfotgjhW2ARoG
-         HF9BuYP0NrXajnYtm5AGGadrXLeWlBcD9xpJSqtQjaIYdPJUTwTNg2Qevm/e+6s7z2VN
-         YiQQ==
-X-Gm-Message-State: AOAM532x549IBAq7q9BVmywG5jmvwriu2NdXQTAyjNjp5RM6oCwX2ZhQ
-        JltDIAHGuyZvrdZv+JrJMw==
-X-Google-Smtp-Source: ABdhPJwDll/7f5d8b0aYbIcWJFfsE9cWCdTQ2AfJhNqsJJJ6cfkTOdTcRm+Nvt4ZnlHXMIazqE4Vmg==
-X-Received: by 2002:a05:6870:ac21:b0:da:b3f:2b63 with SMTP id kw33-20020a056870ac2100b000da0b3f2b63mr906904oab.258.1646438128840;
-        Fri, 04 Mar 2022 15:55:28 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id u9-20020a4ab5c9000000b003182df292f7sm2802929ooo.18.2022.03.04.15.55.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 15:55:28 -0800 (PST)
-Received: (nullmailer pid 715300 invoked by uid 1000);
-        Fri, 04 Mar 2022 23:55:27 -0000
-Date:   Fri, 4 Mar 2022 17:55:27 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Baruch Siach <baruch.siach@siklu.com>,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: net: ipq4019-mdio: Add ipq6018
- compatible
-Message-ID: <YiKm76II+51YXXAn@robh.at.kernel.org>
-References: <8de887697c90cd432b7ab5fe0d833c87fc17f0f1.1646031524.git.baruch@tkos.co.il>
+        with ESMTP id S229521AbiCEADx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 19:03:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA971FA1C5;
+        Fri,  4 Mar 2022 16:03:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF05FB82C77;
+        Sat,  5 Mar 2022 00:03:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461F5C340E9;
+        Sat,  5 Mar 2022 00:03:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646438581;
+        bh=HkQ4qKe5yFev3q2U/3+9s4iDlAiLS8y6DXp1GDO1UtQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LP+SM2taO+rPs4vmzpYIxIk58rHQ5CsAq0GDiYcja/rNgS74SUtbCyii3pngvVRvU
+         Bhj8nszROutnhmR3kkF6jHoimCEG1j7xv2TgPTKPLurLSxyVUS8uraZUxixZ6J3KGt
+         1QFXCSbB+Ai/6A3TkxdPCneLdaTnIDx7skKRJmy/F5ClgnEHzPXRUae/4q9HcYmZ2O
+         rrUqdjuUuejc7bwaY7RaAObZWCRsHIsdnWNlVucn5hnq0KiLke+iYHxq6UCDGRORdZ
+         9ZTc+zIGLleAclobsmAmMsRBog98Edls8noBeJCw/q0uuwErkU26EkriyLqHSv3i/5
+         BbHf0HT3g4LHA==
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2dc0364d2ceso108898417b3.7;
+        Fri, 04 Mar 2022 16:03:01 -0800 (PST)
+X-Gm-Message-State: AOAM531qpEVi2knn610Vizqkoxu99XEeOUvezOcdge5ssoGK4OJWw3nj
+        ABZTjliRqK6+kkuuCBLyHLQDtjfhFdafh1NXw0E=
+X-Google-Smtp-Source: ABdhPJzqy9U4NMVkCiJSdrG4jE3r+07o5tK+2YmcaQ58sGinDLQEh5daP1Ce1ujhZvoysk50PZ14aLNbDE6nXFJOBgA=
+X-Received: by 2002:a81:10cc:0:b0:2dc:24f7:7dd3 with SMTP id
+ 195-20020a8110cc000000b002dc24f77dd3mr1020905ywq.460.1646438580349; Fri, 04
+ Mar 2022 16:03:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8de887697c90cd432b7ab5fe0d833c87fc17f0f1.1646031524.git.baruch@tkos.co.il>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com> <20220304172852.274126-3-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220304172852.274126-3-benjamin.tissoires@redhat.com>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 4 Mar 2022 16:02:49 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5CYF9isR4ffRdm3xA_n_FBoL+AGFkzNn4dn2LgRaQQkg@mail.gmail.com>
+Message-ID: <CAPhsuW5CYF9isR4ffRdm3xA_n_FBoL+AGFkzNn4dn2LgRaQQkg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 02/28] bpf: introduce hid program type
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Feb 2022 08:58:43 +0200, Baruch Siach wrote:
-> From: Baruch Siach <baruch.siach@siklu.com>
-> 
-> The IPQ60xx MDIO bus is the same as IPQ4019.
-> 
-> Update the schema to allow qcom,ipq4019-mdio compatible as fallback for
-> newer IPQ series.
-> 
-> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-> ---
-> 
-> v3:
-> 
->   Correct the schema to fix yamllint failure (Rob's bot)
-> 
-> v2:
-> 
->   Update the schema to allow fallback compatible (Rob Herring)
-> ---
->  .../devicetree/bindings/net/qcom,ipq4019-mdio.yaml     | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
+On Fri, Mar 4, 2022 at 9:31 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> HID is a protocol that could benefit from using BPF too.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+[...]
+
+> +#include <linux/list.h>
+> +#include <linux/slab.h>
+> +
+> +struct bpf_prog;
+> +struct bpf_prog_array;
+> +struct hid_device;
+> +
+> +enum bpf_hid_attach_type {
+> +       BPF_HID_ATTACH_INVALID = -1,
+> +       BPF_HID_ATTACH_DEVICE_EVENT = 0,
+> +       MAX_BPF_HID_ATTACH_TYPE
+
+Is it typical to have different BPF programs for different attach types?
+Otherwise, (different types may have similar BPF programs), maybe
+we can pass type as an argument to the program (shared among
+different types)?
+
+[...]
+
+> +struct hid_device;
+> +
+> +enum hid_bpf_event {
+> +       HID_BPF_UNDEF = 0,
+> +       HID_BPF_DEVICE_EVENT,           /* when attach type is BPF_HID_DEVICE_EVENT */
+> +};
+> +
+> +struct hid_bpf_ctx {
+> +       enum hid_bpf_event type;        /* read-only */
+> +       __u16 allocated_size;           /* the allocated size of data below (RO) */
+
+There is a (6-byte?) hole here.
+
+> +       struct hid_device *hdev;        /* read-only */
+> +
+> +       __u16 size;                     /* used size in data (RW) */
+> +       __u8 data[];                    /* data buffer (RW) */
+> +};
+
+Do we really need hit_bpf_ctx in uapi? Maybe we can just use it
+from vmlinuxh?
+
+[...]
+
+> +
+> +static bool hid_is_valid_access(int off, int size,
+> +                               enum bpf_access_type access_type,
+> +                               const struct bpf_prog *prog,
+> +                               struct bpf_insn_access_aux *info)
+> +{
+> +       /* everything not in ctx is prohibited */
+> +       if (off < 0 || off + size > sizeof(struct hid_bpf_ctx) + HID_BPF_MIN_BUFFER_SIZE)
+> +               return false;
+
+Mabe add the following here to fail unaligned accesses
+
+        if (off % size != 0)
+                return false;
+[...]
