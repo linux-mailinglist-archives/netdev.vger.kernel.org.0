@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8CBE4CE75E
+	by mail.lfdr.de (Postfix) with ESMTP id 112B94CE75C
 	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 23:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232714AbiCEWOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S232719AbiCEWOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 5 Mar 2022 17:14:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiCEWOJ (ORCPT
+        with ESMTP id S232709AbiCEWOJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 17:14:09 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B70517FD
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 14:13:18 -0800 (PST)
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B53A517FB;
+        Sat,  5 Mar 2022 14:13:18 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1646518396;
@@ -21,34 +21,33 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=t+y+wsLXJ2N2picgDAR53A5GkB2/WvIC1ArRsV+KuXo=;
-        b=WBZa1G/rUHxgpOT62AIxnLvkoiFbHCv9FC3N40FBdlbU2Az1P8IxbcpvhmeXmkn1VPDjLp
-        q73G94pjm+t1dbEQmFMX4fRHEt0qhoqY4CTEOIx+xnL3lAIBnE0gvygd1RNF1r99zgCv1y
-        ZagA4NdEsIKSr3w9Q56gsjNwHFBUJ+UVCGKrIlLZKlwbKJGi+YD7os0/X/DH7z4TubXAta
-        yy162jm6zcmz5f86lK798AJ89FEMYZLL95974qbk+LIdM5ane//qUcNj66cfrTuQL2YFWv
-        GVMXXt+9OuuhpAyW3zpHo8LSwdU7eeVv9eokmEBmYP5K6v2lowS8XDUfaOhSew==
+        bh=7uGNP9Djz1TwgueFOo46UUQ187Tk4tNDpxEJOSudrzs=;
+        b=qaqgVU36NS1iGqgj6SBekZsPSycB/xGOV9gwhRL6eIAGO8hDshPhdLLU7V2CMxOVI8fSjs
+        YAsqdk34Lr9WwKQF+VBc6QcAjO5bkYjMBkYYmWyFm2V+YLX004SZdBJMU51HkD68VtMaxy
+        ARIXg4Xg3eN29SnPpo6DzXeO1C8fKAMCVb2vht9H+vq0+s4DcVUem0O35DmCUa8IqR0Ax7
+        RHY4KcRBewCnJ7yI0CH7g4/Oof+v88WPVGCBluk9O/z3zrsYWGCwKQO/RS9Fqb8eNwWlTd
+        e6Chtp2IXkIaJZcs05bhbJo+He4lX06D9z8Rqws9WT8sJryTxiA2LNL0GgN19g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1646518396;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=t+y+wsLXJ2N2picgDAR53A5GkB2/WvIC1ArRsV+KuXo=;
-        b=itreT8Va2bpW7yN+0RunbZ5lwuPQRp68c253fNYvYSBtXwEQTWaZwooyPEuiGhgvYAXpIT
-        A5c318RfYMqthjBw==
+        bh=7uGNP9Djz1TwgueFOo46UUQ187Tk4tNDpxEJOSudrzs=;
+        b=pws7mI33hXL1DuQuAxslfc/xTZQOEqJ0rocE3Ni5uHecn3u2hK/C1uD74heb1vrt8POzAG
+        DDT8jgA8d3M2yJDA==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next 1/8] net: phy: Use netif_rx().
-Date:   Sat,  5 Mar 2022 23:12:45 +0100
-Message-Id: <20220305221252.3063812-2-bigeasy@linutronix.de>
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org
+Subject: [PATCH net-next 2/8] can: Use netif_rx().
+Date:   Sat,  5 Mar 2022 23:12:46 +0100
+Message-Id: <20220305221252.3063812-3-bigeasy@linutronix.de>
 In-Reply-To: <20220305221252.3063812-1-bigeasy@linutronix.de>
 References: <20220305221252.3063812-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -72,81 +71,143 @@ well as in interrupt context.
 
 Use netif_rx().
 
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Radu Pirea <radu-nicolae.pirea@oss.nxp.com>
-Cc: Richard Cochran <richardcochran@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: linux-can@vger.kernel.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/net/phy/dp83640.c         | 6 +++---
- drivers/net/phy/mscc/mscc_ptp.c   | 2 +-
- drivers/net/phy/nxp-c45-tja11xx.c | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/can/dev/dev.c     | 2 +-
+ drivers/net/can/slcan.c       | 2 +-
+ drivers/net/can/spi/hi311x.c  | 6 +++---
+ drivers/net/can/spi/mcp251x.c | 4 ++--
+ drivers/net/can/vcan.c        | 2 +-
+ drivers/net/can/vxcan.c       | 2 +-
+ net/can/af_can.c              | 2 +-
+ 7 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
-index c2d1a85ec5591..c0a617311e2d4 100644
---- a/drivers/net/phy/dp83640.c
-+++ b/drivers/net/phy/dp83640.c
-@@ -886,7 +886,7 @@ static void decode_rxts(struct dp83640_private *dp83640,
- 	spin_unlock_irqrestore(&dp83640->rx_lock, flags);
+diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
+index c192f25f96956..e7ab45f1c43b2 100644
+--- a/drivers/net/can/dev/dev.c
++++ b/drivers/net/can/dev/dev.c
+@@ -154,7 +154,7 @@ static void can_restart(struct net_device *dev)
 =20
- 	if (shhwtstamps)
--		netif_rx_ni(skb);
-+		netif_rx(skb);
- }
+ 	cf->can_id |=3D CAN_ERR_RESTARTED;
 =20
- static void decode_txts(struct dp83640_private *dp83640,
-@@ -1329,7 +1329,7 @@ static void rx_timestamp_work(struct work_struct *wor=
-k)
- 			break;
- 		}
-=20
--		netif_rx_ni(skb);
-+		netif_rx(skb);
- 	}
-=20
- 	if (!skb_queue_empty(&dp83640->rx_queue))
-@@ -1380,7 +1380,7 @@ static bool dp83640_rxtstamp(struct mii_timestamper *=
-mii_ts,
- 		skb_queue_tail(&dp83640->rx_queue, skb);
- 		schedule_delayed_work(&dp83640->ts_work, SKB_TIMESTAMP_TIMEOUT);
- 	} else {
--		netif_rx_ni(skb);
-+		netif_rx(skb);
- 	}
-=20
- 	return true;
-diff --git a/drivers/net/phy/mscc/mscc_ptp.c b/drivers/net/phy/mscc/mscc_pt=
-p.c
-index 34f829845d067..cf728bfd83e22 100644
---- a/drivers/net/phy/mscc/mscc_ptp.c
-+++ b/drivers/net/phy/mscc/mscc_ptp.c
-@@ -1212,7 +1212,7 @@ static bool vsc85xx_rxtstamp(struct mii_timestamper *=
-mii_ts,
- 		ts.tv_sec--;
-=20
- 	shhwtstamps->hwtstamp =3D ktime_set(ts.tv_sec, ns);
 -	netif_rx_ni(skb);
 +	netif_rx(skb);
 =20
- 	return true;
+ restart:
+ 	netdev_dbg(dev, "restarted\n");
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index 27783fbf011fc..ec294d0c5722c 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -221,7 +221,7 @@ static void slc_bump(struct slcan *sl)
+ 	if (!(cf.can_id & CAN_RTR_FLAG))
+ 		sl->dev->stats.rx_bytes +=3D cf.len;
+=20
+-	netif_rx_ni(skb);
++	netif_rx(skb);
  }
-diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tj=
-a11xx.c
-index 06fdbae509a79..047c581457e34 100644
---- a/drivers/net/phy/nxp-c45-tja11xx.c
-+++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -478,7 +478,7 @@ static long nxp_c45_do_aux_work(struct ptp_clock_info *=
-ptp)
- 		shhwtstamps_rx =3D skb_hwtstamps(skb);
- 		shhwtstamps_rx->hwtstamp =3D ns_to_ktime(timespec64_to_ns(&ts));
- 		NXP_C45_SKB_CB(skb)->header->reserved2 =3D 0;
+=20
+ /* parse tty input stream */
+diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
+index 664b8f14d7b05..a5b2952b8d0ff 100644
+--- a/drivers/net/can/spi/hi311x.c
++++ b/drivers/net/can/spi/hi311x.c
+@@ -356,7 +356,7 @@ static void hi3110_hw_rx(struct spi_device *spi)
+=20
+ 	can_led_event(priv->net, CAN_LED_EVENT_RX);
+=20
+-	netif_rx_ni(skb);
++	netif_rx(skb);
+ }
+=20
+ static void hi3110_hw_sleep(struct spi_device *spi)
+@@ -677,7 +677,7 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+ 			tx_state =3D txerr >=3D rxerr ? new_state : 0;
+ 			rx_state =3D txerr <=3D rxerr ? new_state : 0;
+ 			can_change_state(net, cf, tx_state, rx_state);
+-			netif_rx_ni(skb);
++			netif_rx(skb);
+=20
+ 			if (new_state =3D=3D CAN_STATE_BUS_OFF) {
+ 				can_bus_off(net);
+@@ -718,7 +718,7 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+ 				cf->data[6] =3D hi3110_read(spi, HI3110_READ_TEC);
+ 				cf->data[7] =3D hi3110_read(spi, HI3110_READ_REC);
+ 				netdev_dbg(priv->net, "Bus Error\n");
+-				netif_rx_ni(skb);
++				netif_rx(skb);
+ 			}
+ 		}
+=20
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index d23edaf224204..fc747bff5eeb2 100644
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -740,7 +740,7 @@ static void mcp251x_hw_rx(struct spi_device *spi, int b=
+uf_idx)
+=20
+ 	can_led_event(priv->net, CAN_LED_EVENT_RX);
+=20
+-	netif_rx_ni(skb);
++	netif_rx(skb);
+ }
+=20
+ static void mcp251x_hw_sleep(struct spi_device *spi)
+@@ -987,7 +987,7 @@ static void mcp251x_error_skb(struct net_device *net, i=
+nt can_id, int data1)
+ 	if (skb) {
+ 		frame->can_id |=3D can_id;
+ 		frame->data[1] =3D data1;
 -		netif_rx_ni(skb);
 +		netif_rx(skb);
+ 	} else {
+ 		netdev_err(net, "cannot allocate error skb\n");
+ 	}
+diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
+index c42f18845b02a..a15619d883ec2 100644
+--- a/drivers/net/can/vcan.c
++++ b/drivers/net/can/vcan.c
+@@ -80,7 +80,7 @@ static void vcan_rx(struct sk_buff *skb, struct net_devic=
+e *dev)
+ 	skb->dev       =3D dev;
+ 	skb->ip_summed =3D CHECKSUM_UNNECESSARY;
+=20
+-	netif_rx_ni(skb);
++	netif_rx(skb);
+ }
+=20
+ static netdev_tx_t vcan_tx(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
+index 47ccc15a3486b..556f1a12ec9a0 100644
+--- a/drivers/net/can/vxcan.c
++++ b/drivers/net/can/vxcan.c
+@@ -63,7 +63,7 @@ static netdev_tx_t vxcan_xmit(struct sk_buff *skb, struct=
+ net_device *dev)
+ 	skb->ip_summed  =3D CHECKSUM_UNNECESSARY;
+=20
+ 	len =3D cfd->can_id & CAN_RTR_FLAG ? 0 : cfd->len;
+-	if (netif_rx_ni(skb) =3D=3D NET_RX_SUCCESS) {
++	if (netif_rx(skb) =3D=3D NET_RX_SUCCESS) {
+ 		srcstats->tx_packets++;
+ 		srcstats->tx_bytes +=3D len;
+ 		peerstats =3D &peer->stats;
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index cce2af10eb3ea..1fb49d51b25d6 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -284,7 +284,7 @@ int can_send(struct sk_buff *skb, int loop)
  	}
 =20
- 	if (priv->extts) {
+ 	if (newskb)
+-		netif_rx_ni(newskb);
++		netif_rx(newskb);
+=20
+ 	/* update statistics */
+ 	pkg_stats->tx_frames++;
 --=20
 2.35.1
 
