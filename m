@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C43554CE3B3
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF1554CE3B7
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiCEIz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 03:55:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
+        id S230373AbiCEI4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 03:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiCEIzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:55 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3402525B6
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:05 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id e6so9465708pgn.2
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:05 -0800 (PST)
+        with ESMTP id S230247AbiCEIz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:56 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5549B254A94
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:07 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id v4so9217143pjh.2
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ktL21C6yJ/8g9EUyS5/aJvlisDdS/FCE22KeszpBEF0=;
-        b=MtPXPJ5E8O0fZ2yjip9YX94rXFd9kZGtGx/MtzW2flIBwwk6jq5WOYWzpM2xQ/C+26
-         1ERLmZpr/a2qwdc0jnYPbBY8Xp30fJmbn081yFkjuO06jBbzqqaEhruqpziZhIZgFUKq
-         RtctlAjnfOSKuKWKx76Q/eKShOzuuzgmfsMLQ=
+        bh=ONfaY1y7JV9ykUjb/mTdKQErQlaDTAgMAWo9KN+tU1w=;
+        b=SSFuNtNXarfRSPDPS7PnGtNIPZfggdL56AI62smh/G3Bmci+6Hk4tabyoPAMPdXHzo
+         ykMD9+NMFOmAKJdfl2eCraSqHveWyUjWDrulfHnVaSsH3h1YV/XdtsONk/i+F4rxBosB
+         QDCzo54Oa5mBIQb4w6e4Es5KXtnaLxoEs5wWU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ktL21C6yJ/8g9EUyS5/aJvlisDdS/FCE22KeszpBEF0=;
-        b=kCxedWT18eNQEHcxeeO+FFAr7f9p+mWrISG/BfWtD1/4b0eJ5j8H4IuUSWP3lxY5qb
-         8kEzicskItLzmJd4moO4d9y7isNs72gPP3/CdgLKF1jcj1xPSCxKIz/J64Jjh2WGDOo2
-         TGJmpi3zUapXzZLM8yJpbSngXaVLab5r3NwjxKnZ1abI/7hqluN9tJGi0LxxDtzVfLZP
-         gA7jKiLmpf7HvDTSAm3/7kwHGJapOsVluxIrFKPdv4UxPFMsMNKtafxilwPze+fVGXoj
-         Ye3fVXH/55PtberFQaqLPnQK6WO0rO6zrCg564a9SnYCbjqPVs8ayi9uqPGRDoBjsQA0
-         6tmQ==
-X-Gm-Message-State: AOAM532PRNzoDX9WsL9fGBT64Xbfcg1D+6IN9IoAj1cJhOQsJz8qocpa
-        Xd/X/nTrxpis0MpRNU+CqfQSRQ==
-X-Google-Smtp-Source: ABdhPJxa2B07xfbmCZ6AxQpM9ZOfLCADrxbEuyteACtUHSIcvOdvL8c+saxZ3oehHLYXLQwoAjUMzA==
-X-Received: by 2002:a63:2b4d:0:b0:36c:7c39:b66c with SMTP id r74-20020a632b4d000000b0036c7c39b66cmr1984066pgr.583.1646470505213;
-        Sat, 05 Mar 2022 00:55:05 -0800 (PST)
+        bh=ONfaY1y7JV9ykUjb/mTdKQErQlaDTAgMAWo9KN+tU1w=;
+        b=46Rz85DTIqt9fD+np4EH5O+yXCdvIF1TjFAj2KaXhodp52cCbBiHoV5+WcU0Ctr7PS
+         0V8NBkVHiJVaMI177228MpHN/a4LT60baa95MIj1NNIVA7p/+s1kKFjZk2HX7oid+0lK
+         AVKp7rYW9pHOrLzIgVghfNp4oK1mvTHSRvEi64N9WQfMEf/KDWj/LRshJ4MyPoL9jpB5
+         X3oIv/Jk5LJM+lgdVnUl7e0mmjRvIHA31xCQHdKoWW+x5KzBUS95GGJ2M761GsQC1//8
+         fOUWhHWkLWwFyxzZaT9LspZ7xhT0J9l5HE8IBPzeEp00UsYVZtpBcz9RhlfCefCNfU81
+         q50A==
+X-Gm-Message-State: AOAM53298vGeaQfzK+MKgV13vBFi3jMBFS6KTCuUlGfa/Tln5535vhgZ
+        X7YFR40DZCvC9+69sTDXnFBsNQ==
+X-Google-Smtp-Source: ABdhPJx1Aia0JDW+EVo8MtjYZ8Z0d1vl/rvv+iN0h7PFnO3sDKGUeN5rXfnA8ZR0t6ZWsPT6S2ZxQQ==
+X-Received: by 2002:a17:903:22cb:b0:151:9f41:8738 with SMTP id y11-20020a17090322cb00b001519f418738mr2729205plg.46.1646470506290;
+        Sat, 05 Mar 2022 00:55:06 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.04
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:04 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:05 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 3/9] bnxt_en: parse result field when NVRAM package install fails
-Date:   Sat,  5 Mar 2022 03:54:36 -0500
-Message-Id: <1646470482-13763-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 4/9] bnxt_en: introduce initial link state of unknown
+Date:   Sat,  5 Mar 2022 03:54:37 -0500
+Message-Id: <1646470482-13763-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009fb13905d974c95e"
+        boundary="000000000000b45a4405d974c9a4"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,90 +65,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009fb13905d974c95e
+--000000000000b45a4405d974c9a4
 
-From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Instead of always returning -ENOPKG, decode the firmware error
-code further when the HWRM_NVM_INSTALL_UPDATE firmware call fails.
-Return a more suitable error code to userspace and log an error
-in dmesg.
+This will force link state to always be logged for initial NIC open.
 
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 44 ++++++++++++++++++-
- 1 file changed, 43 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 33 ++++++++++++-------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  6 +++-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 +--
+ 3 files changed, 29 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index a3151af9a279..3927ceb581da 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2496,6 +2496,48 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
- 	return rc;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 37facef47846..1ed71b6fed8a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9300,7 +9300,7 @@ void bnxt_tx_enable(struct bnxt *bp)
+ 	/* Make sure napi polls see @dev_state change */
+ 	synchronize_net();
+ 	netif_tx_wake_all_queues(bp->dev);
+-	if (bp->link_info.link_up)
++	if (BNXT_LINK_IS_UP(bp))
+ 		netif_carrier_on(bp->dev);
  }
  
-+static int nvm_update_err_to_stderr(struct net_device *dev, u8 result)
-+{
-+	switch (result) {
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_TYPE_PARAMETER:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_INDEX_PARAMETER:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_DATA_ERROR:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_CHECKSUM_ERROR:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_ITEM_NOT_FOUND:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_ITEM_LOCKED:
-+		netdev_err(dev, "PKG install error : Data integrity on NVM\n");
-+		return -EINVAL;
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PREREQUISITE:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_FILE_HEADER:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_SIGNATURE:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PROP_STREAM:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PROP_LENGTH:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_MANIFEST:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_TRAILER:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_CHECKSUM:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_ITEM_CHECKSUM:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_DATA_LENGTH:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_DIRECTIVE:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_DUPLICATE_ITEM:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_ZERO_LENGTH_ITEM:
-+		netdev_err(dev, "PKG install error : Invalid package\n");
-+		return -ENOPKG;
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_AUTHENTICATION_ERROR:
-+		netdev_err(dev, "PKG install error : Authentication error\n");
-+		return -EPERM;
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_CHIP_REV:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_DEVICE_ID:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_SUBSYS_VENDOR:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_SUBSYS_ID:
-+	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_PLATFORM:
-+		netdev_err(dev, "PKG install error : Invalid device\n");
-+		return -EOPNOTSUPP;
-+	default:
-+		netdev_err(dev, "PKG install error : Internal error\n");
-+		return -EIO;
-+	}
-+}
-+
- #define BNXT_PKG_DMA_SIZE	0x40000
- #define BNXT_NVM_MORE_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_MODE))
- #define BNXT_NVM_LAST_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_LAST))
-@@ -2650,7 +2692,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 	if (resp->result) {
- 		netdev_err(dev, "PKG install error = %d, problem_item = %d\n",
- 			   (s8)resp->result, (int)resp->problem_item);
--		rc = -ENOPKG;
-+		rc = nvm_update_err_to_stderr(dev, resp->result);
+@@ -9330,7 +9330,7 @@ static char *bnxt_report_fec(struct bnxt_link_info *link_info)
+ 
+ void bnxt_report_link(struct bnxt *bp)
+ {
+-	if (bp->link_info.link_up) {
++	if (BNXT_LINK_IS_UP(bp)) {
+ 		const char *signal = "";
+ 		const char *flow_ctrl;
+ 		const char *duplex;
+@@ -9466,7 +9466,7 @@ int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
+ 	struct bnxt_link_info *link_info = &bp->link_info;
+ 	struct hwrm_port_phy_qcfg_output *resp;
+ 	struct hwrm_port_phy_qcfg_input *req;
+-	u8 link_up = link_info->link_up;
++	u8 link_state = link_info->link_state;
+ 	bool support_changed = false;
+ 	int rc;
+ 
+@@ -9567,14 +9567,14 @@ int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
+ 	/* TODO: need to add more logic to report VF link */
+ 	if (chng_link_state) {
+ 		if (link_info->phy_link_status == BNXT_LINK_LINK)
+-			link_info->link_up = 1;
++			link_info->link_state = BNXT_LINK_STATE_UP;
+ 		else
+-			link_info->link_up = 0;
+-		if (link_up != link_info->link_up)
++			link_info->link_state = BNXT_LINK_STATE_DOWN;
++		if (link_state != link_info->link_state)
+ 			bnxt_report_link(bp);
+ 	} else {
+-		/* alwasy link down if not require to update link state */
+-		link_info->link_up = 0;
++		/* always link down if not require to update link state */
++		link_info->link_state = BNXT_LINK_STATE_DOWN;
  	}
- 	if (rc == -EACCES)
- 		bnxt_print_admin_err(bp);
+ 	hwrm_req_drop(bp, req);
+ 
+@@ -9774,7 +9774,18 @@ static int bnxt_hwrm_shutdown_link(struct bnxt *bp)
+ 		return rc;
+ 
+ 	req->flags = cpu_to_le32(PORT_PHY_CFG_REQ_FLAGS_FORCE_LINK_DWN);
+-	return hwrm_req_send(bp, req);
++	rc = hwrm_req_send(bp, req);
++	if (!rc) {
++		mutex_lock(&bp->link_lock);
++		/* Device is not obliged link down in certain scenarios, even
++		 * when forced. Setting the state unknown is consistent with
++		 * driver startup and will force link state to be reported
++		 * during subsequent open based on PORT_PHY_QCFG.
++		 */
++		bp->link_info.link_state = BNXT_LINK_STATE_UNKNOWN;
++		mutex_unlock(&bp->link_lock);
++	}
++	return rc;
+ }
+ 
+ static int bnxt_fw_reset_via_optee(struct bnxt *bp)
+@@ -10205,7 +10216,7 @@ static int bnxt_update_phy_setting(struct bnxt *bp)
+ 	/* The last close may have shutdown the link, so need to call
+ 	 * PHY_CFG to bring it back up.
+ 	 */
+-	if (!bp->link_info.link_up)
++	if (!BNXT_LINK_IS_UP(bp))
+ 		update_link = true;
+ 
+ 	if (!bnxt_eee_config_ok(bp))
+@@ -11437,7 +11448,7 @@ static void bnxt_timer(struct timer_list *t)
+ 	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY)
+ 		bnxt_fw_health_check(bp);
+ 
+-	if (bp->link_info.link_up && bp->stats_coal_ticks) {
++	if (BNXT_LINK_IS_UP(bp) && bp->stats_coal_ticks) {
+ 		set_bit(BNXT_PERIODIC_STATS_SP_EVENT, &bp->sp_event);
+ 		bnxt_queue_sp_work(bp);
+ 	}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 802ec1e9956d..5d743976cb35 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1175,7 +1175,11 @@ struct bnxt_link_info {
+ #define BNXT_PHY_STATE_ENABLED		0
+ #define BNXT_PHY_STATE_DISABLED		1
+ 
+-	u8			link_up;
++	u8			link_state;
++#define BNXT_LINK_STATE_UNKNOWN	0
++#define BNXT_LINK_STATE_DOWN	1
++#define BNXT_LINK_STATE_UP	2
++#define BNXT_LINK_IS_UP(bp)	((bp)->link_info.link_state == BNXT_LINK_STATE_UP)
+ 	u8			duplex;
+ #define BNXT_LINK_DUPLEX_HALF	PORT_PHY_QCFG_RESP_DUPLEX_STATE_HALF
+ #define BNXT_LINK_DUPLEX_FULL	PORT_PHY_QCFG_RESP_DUPLEX_STATE_FULL
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 3927ceb581da..519edad70f16 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2135,7 +2135,7 @@ static u32 bnxt_get_link(struct net_device *dev)
+ 	struct bnxt *bp = netdev_priv(dev);
+ 
+ 	/* TODO: handle MF, VF, driver close case */
+-	return bp->link_info.link_up;
++	return BNXT_LINK_IS_UP(bp);
+ }
+ 
+ int bnxt_hwrm_nvm_get_dev_info(struct bnxt *bp,
+@@ -3383,7 +3383,7 @@ static int bnxt_disable_an_for_lpbk(struct bnxt *bp,
+ 		return rc;
+ 
+ 	fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_1GB;
+-	if (bp->link_info.link_up)
++	if (BNXT_LINK_IS_UP(bp))
+ 		fw_speed = bp->link_info.link_speed;
+ 	else if (fw_advertising & BNXT_LINK_SPEED_MSK_10GB)
+ 		fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_10GB;
 -- 
 2.18.1
 
 
---0000000000009fb13905d974c95e
+--000000000000b45a4405d974c9a4
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -219,13 +282,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII9lE+rD5jHkN83Q6cklSLF1s8j+D6kL
-rv54Wluwj9C8MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBswgYCgUs81+oCtCqY6N4NrHDhvGJwK
+BaKDGVT4zdSUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBDLesIk9JVpWyrJxpTxo0E4YgrisBOPMdbc+OmO5DhR2PIO3E/
-ooPQdpwXwo07HLq1OWjNkH1gIO6AYl13YygYCwsxZaolKe4S77dkmIFeNBit4JSgtY/d7n3EnFkp
-Y/25GzC5R67WN1kkglAnWMVvfoZ9WU1FYsfHlFusU1u6ywC80gW39OQaw08r/Y7OULZvTwHDEgsC
-/unOo2cjDlRBAYPZTVvcCD72L0USx99vV3VBYmiLg6S7e3LD6g/ZWvGaPSEVQ7JhMv9UhGxQZaEi
-pmNOdwP4JOxTbZyIG2quFn2xHAalzP1nLBQGzv8OD0GcJATZzUomm1y0on+gz6hm
---0000000000009fb13905d974c95e--
+ATANBgkqhkiG9w0BAQEFAASCAQCj5ox/9RZUnAU2XEq4Jj3Zypc/vhs97B2ONpNfoqBRXUnRekWT
+mT+Cny9pmxLiSqMLdg5WPwmuSCIF38wI2FA9yLvYu7ZwtPil1I47G07AOG9pSPdpjAbHjozmhFNH
+Me3t51oaG3PAA74+lMkBeSsMR/Xkzy1rjAVinqjgNC9UIJ9FaFKdvgAHk1d8YI5zvQEZsInxxipi
+ANDEJvyifD9QspSJrRZJGc9p+XedTWXeYE/+S2FVk1PgXjiEmVSCteejuasm8odgf4UkqcRjsfYS
+9zIPz5R2EcnND91DqFCO6VFRRlhM0PBNNAqrY3Btfjq4qS1il2Usx9jw3Rx8roqk
+--000000000000b45a4405d974c9a4--
