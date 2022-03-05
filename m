@@ -2,107 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0C54CE486
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 12:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A834A4CE4B3
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 13:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231572AbiCELW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 06:22:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
+        id S231492AbiCEMLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 07:11:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbiCELWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 06:22:54 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FD54C789
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 03:22:04 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646479322;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WZOt6spQRcdebq/mtE9uDiTLJIwxzfTlt+Y7JO6aRms=;
-        b=j+XZVfex0HCqPgGUqE3RkfXAh1px2VN/yRNNMvyezAd/IFdSihNmbSrKLlFEcU82iA7QPi
-        esnfeLP4YzqapZ/rhZ0JL5NbJWnDHfm7o9GQuT2t3RGSgdZvS5/9WjxQluETpoT289DjOG
-        QNUujrPPzP2sBDlByXqZaP2t77LAQja/9EJQvaNSJLpKm7dT3rNCvekN7xHyqR64FyReab
-        btc5FcQYHD9OeEG6kXF5/yK1xYep6ixN+ONK203W8D17JVpjnwSPKhdztMYesYf02EAYZM
-        J8L+6n2fhWrJuSiTWO5oN9l3fjQ5Ajz8NaVdS/5tJQ+x5JhNMcWq/FdeX1uc5w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646479322;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WZOt6spQRcdebq/mtE9uDiTLJIwxzfTlt+Y7JO6aRms=;
-        b=jkDYF/hKURac8vP8oJhSeB2tVsDQ88QMev7ROIMNsY47OcKZH86ho0bgtuzcO+7AhGYdj/
-        iHEzT0aRdmNcg5AA==
-To:     Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Divya Koppera <Divya.Koppera@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next 3/3] micrel: Use generic ptp_msg_is_sync() function
-Date:   Sat,  5 Mar 2022 12:21:27 +0100
-Message-Id: <20220305112127.68529-4-kurt@linutronix.de>
-In-Reply-To: <20220305112127.68529-1-kurt@linutronix.de>
-References: <20220305112127.68529-1-kurt@linutronix.de>
+        with ESMTP id S229541AbiCEMLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 07:11:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1395440E51;
+        Sat,  5 Mar 2022 04:10:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B787DB80BE7;
+        Sat,  5 Mar 2022 12:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80BF2C340F1;
+        Sat,  5 Mar 2022 12:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646482209;
+        bh=POlbJ+3a+0ccS7uKBAWFPqA5GXG9dgf0YBx1qQKxGzM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DZY+59sp7fffH6fhjfe6Sx8Ae95LTXMiWduV+06/ey2DcQAu5N0o4oLPMiPrsd8w5
+         7X6DwClq5TkO7nzdfLH8twDsvwxlNO2Z4Sg1ZcS6R23CkP/2bOP70gfJoDF3owOvjX
+         6+JqzEw0F/pa3SykM4YudRV8ecFdb0NVdurBtWD10oNc5fuTZIXDxEf4XHw+lEyI66
+         4+WTmo5WOcfheusU2KketcowtGhIWHGPtEYdH5VbVYazgeacvFZlTmBdT9uoJjEaQ8
+         7ZQS9bpi/0qj/+MjzQMJgM4yX183GVPv/NRU/hlDaEpJNNnZGlqeV1+j+cOvDyAn1E
+         shJ7sIli90Ngw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 68076EAC095;
+        Sat,  5 Mar 2022 12:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH] mISDN: Fix memory leak in dsp_pipeline_build()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164648220942.4612.11657656133766874161.git-patchwork-notify@kernel.org>
+Date:   Sat, 05 Mar 2022 12:10:09 +0000
+References: <1646418336-12115-1-git-send-email-khoroshilov@ispras.ru>
+In-Reply-To: <1646418336-12115-1-git-send-email-khoroshilov@ispras.ru>
+To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use generic ptp_msg_is_sync() function to avoid code duplication.
+Hello:
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/phy/micrel.c | 13 +------------
- 1 file changed, 1 insertion(+), 12 deletions(-)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 81a76322254c..9e6b29b23935 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1976,17 +1976,6 @@ static int lan8814_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
- 	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ? -EFAULT : 0;
- }
- 
--static bool is_sync(struct sk_buff *skb, int type)
--{
--	struct ptp_header *hdr;
--
--	hdr = ptp_parse_header(skb, type);
--	if (!hdr)
--		return false;
--
--	return ((ptp_get_msgtype(hdr, type) & 0xf) == 0);
--}
--
- static void lan8814_txtstamp(struct mii_timestamper *mii_ts,
- 			     struct sk_buff *skb, int type)
- {
-@@ -1994,7 +1983,7 @@ static void lan8814_txtstamp(struct mii_timestamper *mii_ts,
- 
- 	switch (ptp_priv->hwts_tx_type) {
- 	case HWTSTAMP_TX_ONESTEP_SYNC:
--		if (is_sync(skb, type)) {
-+		if (ptp_msg_is_sync(skb, type)) {
- 			kfree_skb(skb);
- 			return;
- 		}
+On Fri,  4 Mar 2022 21:25:36 +0300 you wrote:
+> dsp_pipeline_build() allocates dup pointer by kstrdup(cfg),
+> but then it updates dup variable by strsep(&dup, "|").
+> As a result when it calls kfree(dup), the dup variable contains NULL.
+> 
+> Found by Linux Driver Verification project (linuxtesting.org) with SVACE.
+> 
+> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Fixes: 960366cf8dbb ("Add mISDN DSP")
+> 
+> [...]
+
+Here is the summary with links:
+  - mISDN: Fix memory leak in dsp_pipeline_build()
+    https://git.kernel.org/netdev/net/c/c6a502c22999
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
