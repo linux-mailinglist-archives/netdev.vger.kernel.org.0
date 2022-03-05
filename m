@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C31B44CE239
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 03:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0EBD4CE23D
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 03:25:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiCEC0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 21:26:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
+        id S230403AbiCEC0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 21:26:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbiCEC0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 21:26:06 -0500
+        with ESMTP id S230382AbiCEC0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 21:26:10 -0500
 Received: from mx0d-0054df01.pphosted.com (mx0d-0054df01.pphosted.com [67.231.150.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A1422C6FE
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 18:25:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813EF22C889
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 18:25:20 -0800 (PST)
 Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22524FEk004428;
-        Fri, 4 Mar 2022 21:24:59 -0500
-Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2051.outbound.protection.outlook.com [104.47.60.51])
-        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3ek4hy8qh1-1
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22524FEl004428;
+        Fri, 4 Mar 2022 21:25:00 -0500
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2055.outbound.protection.outlook.com [104.47.60.55])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3ek4hy8qh2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Mar 2022 21:24:58 -0500
+        Fri, 04 Mar 2022 21:25:00 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wvyz+wLLsm2TJr2E+k8EizpBO6XAEVQwmChl/+sirHa5Fao8aWiCVXf10/ttzC0X08bft3c9L9Sp1fdZaF/oH32Da9ZF6GXk7VDaOkkPVmu33mLBDv33LxcXUa3FamuraFt4XAc/1wQ+2nJ1BNxSiwgLCRNvt0pjsd05NS0UonhHyMd6GxrYMEUpuEKtgxJ8LhQQWz6SCsFBidfi8HKMDt3RfFeuE46hsMkWlKE1dw8rUWn2IMkml0w19q83X1tGcvOAWkm/UcfHDSWTiVHWF0ehazUzCFP/PxWk2Wpeo8+NvjAzhnAEYnc9kWqRxnrKfVZYHykljHRS5k8qh0e/og==
+ b=AC3PtFfDVZIISjsVQCCaPH8DKVr6gzPdJviXtMhCqT52kGHVUkgJml63m8zGjqmaiagMFrWofBGoNu+31yPBCUWyd7eDbiB97Vh1Ab0W3pyb7kUfwPle1k8bmVZUjuzbCkuluJSCfGpq97QvJ09QabXqxkqqhlEXvpYbGVqMJZyPDFF7pwHBbcLB7UqVzWEyzazwOIzpe5LpJE/L1mKXDsnWLrReLS+WmyWcNVPcUs8pJjOu1yJYpW7nwEHztXsYHcsxQ95NPvP3NTnqlRPIEq+JBFQsrKImNCKgkEQcupZ4Bsgv8b8Ezv/xvfDhrYp1jpEBUM8jH4lvzjWdQc0IzA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hbsz6wDcjqlIRWTFKuKUW8d+CfW2Sx4F3QeW3d+dLzg=;
- b=MgYZ6p282LdWEOmndSQqLJ9fXeXDuvhqwpTbDpIT5YjSTqgvYP4a+6GPwrz7FNsEkwP9KonCDBwOUR7qnh4E9UBehfnFjKhZ8xOrgPwK2gXR6zPKl4Ld5wB2ed+FG6bkjpQxYRHZKTp/bwlsCCM5Y+J7gvFkAhkwTMbr5jL/ivzJgEqk0B7kcleLJKrmlmEC9v/JBexhz9RE44IJ83mvzONnkC30oH8f24kQhzKiQ5Dh6e1m65w7qgfa2cgMSOAHkUv/aRJl2hM9F72XsLqzpw81/s5avoQoKLLaNYnz5n8OyfZNINjHls9NnTBNdqUfeEVerj69kjr/Gu3NJN0AZg==
+ bh=KxpxjxCFXZlWDF24DkzLxeaNSzy9l3DlHkDk+1FV8Lk=;
+ b=LnnMEPvJaYH9JTpetvZ8vOU+oUzs/n9ekL9ugq379A29XWYONWbKQ99jHU6tDdooK/M/96IPC4COWinyHPDdD+f5jjT1RkBelW2mdPOpPVYa4U2ITUI3eKjqhupku5ZbD8V9MH3+k+kDf3/lCY0K0t62VKyrkrBoekOOzx2m58Mq11H223zQqMfPR2iP0p6gy+peiKZZQHc2Wzqeria0naktiAexSrGfnU3epj6bYp8SA5tFNJYxYV7n2Kz+Ztxt6usmZPCJIoC8dQ7TJoa1YCjvSAEL+RAa/Yi5iRTDz49ZtRW9R8estRv2dHSllQzuj9rOBQM9fsfLlF5vzL8IwA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hbsz6wDcjqlIRWTFKuKUW8d+CfW2Sx4F3QeW3d+dLzg=;
- b=p+qjTEdbUytiHYECNhSnZKgWqnM9aa28pV8fRA4613QJqF3rJy63rgPHuh8dB+Mt8JMEQXz1oTCPi+xkX/uz99eyGa7glutrq6/z0SkSnFgYdd05r91TNdG67Bu3kgEGHvsMcF+zI4I99Gpk9Xc7jJglzzp2aJwnFTmv6DLqEao=
+ bh=KxpxjxCFXZlWDF24DkzLxeaNSzy9l3DlHkDk+1FV8Lk=;
+ b=UBWTN8WsEdi245hZyJAG+TTVAFuLS5etL4s/pe9sO77uP8uUDc+OgTi0z69NMMcCtnetThNz+Yt4P9Fc8SdaCfhniQPk2U8+oD+Iot/Ln8koXECaiJ++NTMFXZCqWgvdh7hmHGM/LyC7iE9Zd1+L8diFuqFgI5UIS5M0i2nEY+s=
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (10.167.1.243) by
  YTBPR01MB3184.CANPRD01.PROD.OUTLOOK.COM (10.255.47.154) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5038.14; Sat, 5 Mar 2022 02:24:57 +0000
+ 15.20.5038.14; Sat, 5 Mar 2022 02:24:58 +0000
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::e8a8:1158:905f:8230]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::e8a8:1158:905f:8230%7]) with mapi id 15.20.5038.017; Sat, 5 Mar 2022
- 02:24:57 +0000
+ 02:24:58 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
 To:     netdev@vger.kernel.org
 Cc:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
         kuba@kernel.org, michal.simek@xilinx.com, linux@armlinux.org.uk,
         daniel@iogearbox.net, linux-arm-kernel@lists.infradead.org,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next v3 2/7] net: axienet: Clean up device used for DMA calls
-Date:   Fri,  4 Mar 2022 20:24:38 -0600
-Message-Id: <20220305022443.2708763-3-robert.hancock@calian.com>
+Subject: [PATCH net-next v3 3/7] net: axienet: Clean up DMA start/stop and error handling
+Date:   Fri,  4 Mar 2022 20:24:39 -0600
+Message-Id: <20220305022443.2708763-4-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220305022443.2708763-1-robert.hancock@calian.com>
 References: <20220305022443.2708763-1-robert.hancock@calian.com>
@@ -63,63 +63,63 @@ X-ClientProxiedBy: MW4PR03CA0304.namprd03.prod.outlook.com
  (2603:10b6:b01:6a::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2a1b04b3-ee8b-4700-8e01-08d9fe4f578b
+X-MS-Office365-Filtering-Correlation-Id: 979bc3e3-edaf-48f9-1afa-08d9fe4f584f
 X-MS-TrafficTypeDiagnostic: YTBPR01MB3184:EE_
-X-Microsoft-Antispam-PRVS: <YTBPR01MB3184F730E8D165145D79F5ABEC069@YTBPR01MB3184.CANPRD01.PROD.OUTLOOK.COM>
+X-Microsoft-Antispam-PRVS: <YTBPR01MB3184F80F7C5C7B34E98CC95FEC069@YTBPR01MB3184.CANPRD01.PROD.OUTLOOK.COM>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mqU+vWlDp4Dul4/Q3rkmgmkZ/M867Au2o0Eev6fserAoSP5lOSlVbkwGHzUDhKJCiSUO6FGv8RK21DUBb3AcvBecLT4FLeBn7dQuU3l2WwAx0WgoiHOJu2hsktiqag522HoX8KWRZLRZ/osj8zlPK9wm57OqxqkvdmnmLM/fwCO7dqMK2gFRLeTgLao1+SWxBltupXfe1kaAriV5fvRJCYFXpGVHGvAs9iF5J8D2x0mtvGqp7TwE+TsTGQPWK7mlTVnJwv6+MbnrsDGkZRXPjE+A+zrMV41q+W5O2BDhI5fqShuBQSWWvf/5oCnEmoRhsKsKwVSbI5EtS850SxzB+s2GAobqyH7S0okn/rbXpl1u/wdoE8753UPVwXD/BDCV0yOVy9GabeWzUGsQXCgeopPPvt32xoN7Jqk1FXAFhsagGyAXiXiKvPVse/gArOvuqujrLlBrEabaTaRcw0v4qO4wXd81crAixfzkXwINa1Ce7LrqXvud66ruQR4DJuMVrheBS+4yPb3Z5bCE7awFlOB+Z7tbAyVa9euP9hUMX6mn8DZHV2E7jL6KVrMPVIj6S7AGbQ1LXgIj8JOkH/8jpZDpS8Eib24cWc6DYXVkRE4oYVgpm3fg+icC5+AZMS+X2W7BaE1+9ZInnXSXLogjZJHuFkWzb7J59l4wvOaim8vi6ju378vs3Z3jF2IQYoLDgkdAICUNTc2l/jBP90e+yQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(2906002)(107886003)(5660300002)(26005)(186003)(83380400001)(6916009)(4326008)(2616005)(1076003)(8936002)(44832011)(6486002)(38350700002)(38100700002)(508600001)(86362001)(316002)(6666004)(52116002)(8676002)(66556008)(66476007)(66946007)(6506007)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: t3hWUor4ca4bbvF/vCj1W2/pu8Dn8wab23mHu//tN5oLXlAEkbHgLspXodZhrteUpPJCZGkiaeE5rRSxzYXpFyRCfwv/+qruqAubz3Ive6gIwENlNP2hhOXaRG/jq58KKfAMeo3u7dbE9O48EMi3/4cotzlUsxQtWrx8Mv6h5W6dkrLLAyopMdRDaElf1S+aA5G1RgryGbvyLVpcbzAdBPkPck2s/1Ye2e6zLNb03/KW/d0r9pfTdl2uVhnwwfsQRQ5yehDyHJ+mCRafpvlxOZmVO5uoTeXq3Di5yJ1FAktkr9wdAUafCCwxVdDZ7GkCq7gDNc2ewGf459eEKrXuyG30EsQI86YP3Xjf0T7XzR73hD6FDgknfh3GWA4l0eEwcS2BRTleFC06aqSXq8SErczAj3nCjkVJBrKwONd47LxOnaYjxzAsbE+R1duIdiMLuxZ7/nTrwl8e6Sv+VSDv4e7qUzD0R/irv5Ne30PR9OG8aQgHBNMWBztkJz0VcCathlYE4AtPyby1PBEs/4V0S3Ps/ESlpdUQRqaW10Jb0P6Iy0Kn9L57JlSzfsyhcNmJ9hAAM28xyXTGaGVF8ZibqZBgsmJierh6jspeG+zWU1h5yYdIRj9QMP7lWu4njBxjUFLneWEcKD9rE0nnCfDasbzXtfSQyaUIrC+s67GMHY+YgUil7tQq9GuU2O7v4iGSdbpnlai1p8zUzVMavrUVfA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(2906002)(107886003)(5660300002)(26005)(186003)(83380400001)(6916009)(4326008)(2616005)(1076003)(8936002)(44832011)(6486002)(30864003)(38350700002)(38100700002)(508600001)(86362001)(316002)(6666004)(52116002)(8676002)(66556008)(66476007)(66946007)(6506007)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ReD9R1dN6oOEVtY0ZqQfTKxD0xjz8CLNZpjxH4lLnl8+pVK3ZJmHcd21AJf+?=
- =?us-ascii?Q?5azHxE9Rvv5U/xTzmATt3x0rR6SFeS7anGq0Hgl9DU28s8MQCy7MN4rcf581?=
- =?us-ascii?Q?9WpoKD6R79zp56SeOGrMaWnazyYOPIqwRdCnW5+ZPyQ6qvUxhWO666iI/VrP?=
- =?us-ascii?Q?zoo7zKEO4UsAZ4l9UjKPkesXZmyGD7KVerRYMtEz42JFSuyxj78/RE3meUZL?=
- =?us-ascii?Q?zakVuNOKhu0k0TF7g7Tn4rSJOepfelF8iDvFzYfM2Ed00GA5rzw6yrHT03Kw?=
- =?us-ascii?Q?Ra+Fk8uOZE7w6hsTqbcJ7agJx52vrQc9qwlCP+m/yX6HPzXpT/rcsfmHV1mT?=
- =?us-ascii?Q?fiOUwMwt/m0vNdKPdzWijfRunCioMoXN9VTkLdcvbR1JyuoC9+b0qyl8F8+5?=
- =?us-ascii?Q?CmiRyvnxeL+o4LCZjU9llzfFcj/0IiFYZlts4HupLfYGQvAPls5yziNIakQR?=
- =?us-ascii?Q?6mbOe6HbNUs7jHihXXxKPksW0cPFDoX3UVShfr1pPV9VFFxWMcvDyaGGUYDI?=
- =?us-ascii?Q?9WqGqLjY2sFh1pp0m6jRV3epicVMRqGxR9Tf2CoWLpzZhChiH76PL/P8og9U?=
- =?us-ascii?Q?U9WUIrgvAKDjsbEu9EagpJrJqW8z+CUBa3Jk4uZSG8w1F8Ivf5KHzan0Ns3w?=
- =?us-ascii?Q?MG4po4FjyITcAZXbGbJLy3bV0qCG0n87TIpEgvnHaCTS+OUdJSxKHsolqXpZ?=
- =?us-ascii?Q?/R43s8Jhmw6pZJFAQOjD/Cbj/n5YcVXurrUBZQzyqR4tMLhjTkoG/V94T7Ai?=
- =?us-ascii?Q?+6eqvJSGmbfo6LZXx/fQA4RTLBb1czBXC2DUY5blYAAxNLxuhygVmOldB9Ph?=
- =?us-ascii?Q?w/gBcHF5D76oOC5C8EFR+LDwYceH3vOEhKizPRSw6f8OZqRWKAApqHlPuZG7?=
- =?us-ascii?Q?H92rnYJ6aT8jl6gh8Mr37NLDAqldhSr135NYHvQ0ST3qmibYAf9THLt3GMQS?=
- =?us-ascii?Q?UkxM8Cix7hVvgNQrN9spfJO5yTZ3YmHvOxlW2uGI/Pj9KmSCYDIlGTk1q5bd?=
- =?us-ascii?Q?PV3u8GGFiQTPb8jURCpHb4tqhF1L5hlb9cpie1GBhL3sSqGtxxqT7sO3AG7Y?=
- =?us-ascii?Q?Vt797hIo8GbLP4jfhQGjCUh8euuMgf9+zQ9thR+g19UQ/3H+1I29gfdu1+SX?=
- =?us-ascii?Q?84cSG9r0e53A81L54bqOd4z/HdeFWEJdqk4Bp5NFCma435C602wnt3NrBiuV?=
- =?us-ascii?Q?UoImUn3II/5LlDRdQOs0qyYwLl+1DN3dfUs/OI/G+z9Bp0MFAul59+tX80/O?=
- =?us-ascii?Q?r+q8TNq29pZZgLNoLLqbBvGkbOVWPfOL+1xQoD23s/tPkjuOdEEpSPWf3kjC?=
- =?us-ascii?Q?tgJmO6wCacYFmtTfWoKP16K6qNWY6A8hBGCbmmW++6E3fcysT6HjC35tHiFo?=
- =?us-ascii?Q?lvILK4GCip6RWXM0vu6gH1ml0NJ1rG89RNGCFRIyOjYRA0GOMNg3/sKKC2rT?=
- =?us-ascii?Q?EqsxPZiVzNPpQPmSrqFCMDz1nLpFwRSjvim9eTinQ8wmYF/hmQGMrtglDdQy?=
- =?us-ascii?Q?GNN0cMxVtGnQoKr5QBonrRbH4gMlCW12o3DdjltHz7vwxrOJxWvoN8K/G4uI?=
- =?us-ascii?Q?kU09+TSOcjyu0XtQO7eqC3M/UflkdjV7PH8yHWxzlCbIyFjesx1UahugGGOz?=
- =?us-ascii?Q?XGK6NTHMXRgxqVGbwk6XGwgODhv/lY+/bQ/wLvKrnY6FxQF6siDfK5TfGEDo?=
- =?us-ascii?Q?tvSafqhx9eKzdTibAvMPBWutPFE=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0A/JQD9KDuPiIgZzqUU3Dv4OssL+np9JCYQc4NhmHsDIFe9CMl6XL2EoBOq5?=
+ =?us-ascii?Q?edOAurgWDQFNqWTPylrsrX5KnBYg3X+3egQnjvYptXu0c8ayAnBdBQ7GmObT?=
+ =?us-ascii?Q?9OIMqAMIVB0ozZdA5Ji8hybYHNffgqg65dtT7PC54xWvzGFRUw8JshfK/xvB?=
+ =?us-ascii?Q?4Unv1H9zcHZpA3vaUfbItLxGGLPEx9M/CMCTOGsXctCPcRdjBsSnKf0HWRyC?=
+ =?us-ascii?Q?bipgP3Un02QvUEMA/LWJ62NuzGnQTP/aHx5cHHjaF9RHOTFlEHBg5lP+5zd9?=
+ =?us-ascii?Q?d3tivhkBsQC2CEkLgwqBZQHW7sSBHK1JT36O1I6bwVSdDxSBtiTm2Z0OMtWs?=
+ =?us-ascii?Q?Cn0wsTUwtwqh4Fma1p/G/9nlx/i7Ln/E/GIufTVMn9n7V+rgbVpz2pgSbd7p?=
+ =?us-ascii?Q?P8gUCFroH+YPJsdooMeZO4VzbscYZRRg97qSAWFzkCHHrvPtcx/wDYnyctS6?=
+ =?us-ascii?Q?XzAHwid4ZmEV6tZ4myJerfmsGoAASn6LkxoQHp/uBlkEzCDtMpLlT4R6ozcQ?=
+ =?us-ascii?Q?Ix2+v5YiSbeSXcovmXCHvZzB2Neb4qSr0AYRVSmou++HViwl46B8HuOTrCZB?=
+ =?us-ascii?Q?QA8wt3Hq2JoPIXLfaju9doSyouA8GtUWWOcK3z4OS1FunM1aHOL3LGOTEkcp?=
+ =?us-ascii?Q?i+3pXJnNo7GjxifjNohoSo5v67mUGAMeBa+B3j0Jf0nf9PA9gFDM10D7p1F0?=
+ =?us-ascii?Q?U8f4hu72QpMYkltM/+aNjLQJZtwkxSqWOnvJRrYoxlZNkE4TuQ0bN1AhXWmw?=
+ =?us-ascii?Q?EyZN7PhsdOUvQ3k7B2JOaDXSwR5sCFOgvcGNAGZEDpFRqCxHOUe7BNdDBJ32?=
+ =?us-ascii?Q?VcwDcer8ujHT/Aw6aU6dAN2iOMqUJWLwa+F+HEEBkKysuucd54Zm1xBl7RXr?=
+ =?us-ascii?Q?BvZSgfsCb7SIF4uOD+4EKzP/qtgxS4Y60c/Yg0UL0GKfS/JPCO5w25EyZLT7?=
+ =?us-ascii?Q?2Z6UY8EQi7Z38h0IzlBwUn79Z1L6s898mvnrBks0wPL43FAGFJrf13b5Z95q?=
+ =?us-ascii?Q?m04jegmRe9yxI70FDPvkXg0MbnBj3Hfy4Hkp4h0qwRLsG3xwCA8rv01jEBXi?=
+ =?us-ascii?Q?O4LDi5XrbIhJ8NglkskvbeEHijqIGlm1HE1+pzFjQUv/q7fZzJBcNVCmfKHr?=
+ =?us-ascii?Q?H/dwf/45DbponjI/ThZSPNj3VNcJK7F4ZjBVtNsw/lNJYv/x8PG8LG4HmzQb?=
+ =?us-ascii?Q?dwYmCwKGAFgj8efHqxwrZpBe3sy7csZFS4eM/pf8PBOjUHTUQcnMaGn4q4D/?=
+ =?us-ascii?Q?S4trTqDTTZ8UG9uWX+4PFPLzSS/huvN7dzcfAVqdVM94v/6A19UhyFoQ5dMd?=
+ =?us-ascii?Q?wCtkL7vS3oC9odEJIQxCv4Iyk8UD9XYMHjXff+ZbmLKuVTFPQB88BlWGvt4X?=
+ =?us-ascii?Q?mFcza9D/lJhAYxGnwnTVzHjvNWUfKvCdcvhaGGYoKnM5WhZ/aWwL5EwGzZBc?=
+ =?us-ascii?Q?DMElEr0dJ/NKB0fcxqGnuBBHWpY/95DIv2zpLmiCV8yZwANpTt0joZf8PGXN?=
+ =?us-ascii?Q?j0QNNSS92PBrAHg+q6ZZiiS6QlCGigEzjUVggpqPwyiOprK5sNTDLjQMFzyi?=
+ =?us-ascii?Q?fwIULI5rVh9dmFQ7CQRioD6jLIuOjKNuI4+8+j1egXhUTXWgq3FaEkQ30KvG?=
+ =?us-ascii?Q?TCH9kTVRD4KT2qsI2pebDhZ7+r5yh6tHSpL85jB0D1SwfVH6ngwwmoDov+Wx?=
+ =?us-ascii?Q?8Nh5LEQgNdhrc9FeM7BXeWuc3rI=3D?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a1b04b3-ee8b-4700-8e01-08d9fe4f578b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 979bc3e3-edaf-48f9-1afa-08d9fe4f584f
 X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2022 02:24:57.5520
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2022 02:24:58.8648
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Jg3ldLHva+1CemEJHtkVevroMrDQeojnylBwx7HBeGmMpHG20UdrgE6iQuJCIfj+yrYHJK+xuQWT+YkHblShT+ejC8R7TBXjn/9LLb+TA2k=
+X-MS-Exchange-CrossTenant-UserPrincipalName: dmHh7Z/SXBaLcPf6tsh8JuXLww3YitCt/qx+9+U3tO1FY2FGx0elB84uC+6PeP/MbPzOHKxw5ifweqeD1vBGviZ+Wb4LpL2ayGQQ5osDJ4U=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB3184
-X-Proofpoint-ORIG-GUID: Piva6rHVLSuet7GdxFPhQFa9cC_8AP-j
-X-Proofpoint-GUID: Piva6rHVLSuet7GdxFPhQFa9cC_8AP-j
+X-Proofpoint-ORIG-GUID: tzWceT-HM_rcVZ3vN4MGYjfbeC0vBNDo
+X-Proofpoint-GUID: tzWceT-HM_rcVZ3vN4MGYjfbeC0vBNDo
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-04_09,2022-03-04_01,2022-02-23_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
  bulkscore=0 mlxscore=0 malwarescore=0 impostorscore=0 clxscore=1015
- priorityscore=1501 adultscore=0 mlxlogscore=774 phishscore=0
+ priorityscore=1501 adultscore=0 mlxlogscore=999 phishscore=0
  suspectscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2203050007
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -132,136 +132,398 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of using lp->ndev.parent to find the correct device to use for
-DMA API calls, just use the dev attribute in the device structure.
+Simplify the DMA error handling process, and remove some duplicated code
+between the DMA error handling and the stop function.
 
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 ---
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 32 +++++++++----------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 280 +++++++-----------
+ 1 file changed, 105 insertions(+), 175 deletions(-)
 
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 3457a7f13747..5a1ffdf9d8f7 100644
+index 5a1ffdf9d8f7..d705b62c3958 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -190,7 +190,7 @@ static void axienet_dma_bd_release(struct net_device *ndev)
+@@ -226,6 +226,44 @@ static void axienet_dma_bd_release(struct net_device *ndev)
+ 			  lp->rx_bd_p);
+ }
+ 
++/**
++ * axienet_dma_start - Set up DMA registers and start DMA operation
++ * @lp:		Pointer to the axienet_local structure
++ */
++static void axienet_dma_start(struct axienet_local *lp)
++{
++	u32 rx_cr, tx_cr;
++
++	/* Start updating the Rx channel control register */
++	rx_cr = (lp->coalesce_count_rx << XAXIDMA_COALESCE_SHIFT) |
++		(XAXIDMA_DFT_RX_WAITBOUND << XAXIDMA_DELAY_SHIFT) |
++		XAXIDMA_IRQ_ALL_MASK;
++	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, rx_cr);
++
++	/* Start updating the Tx channel control register */
++	tx_cr = (lp->coalesce_count_tx << XAXIDMA_COALESCE_SHIFT) |
++		(XAXIDMA_DFT_TX_WAITBOUND << XAXIDMA_DELAY_SHIFT) |
++		XAXIDMA_IRQ_ALL_MASK;
++	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, tx_cr);
++
++	/* Populate the tail pointer and bring the Rx Axi DMA engine out of
++	 * halted state. This will make the Rx side ready for reception.
++	 */
++	axienet_dma_out_addr(lp, XAXIDMA_RX_CDESC_OFFSET, lp->rx_bd_p);
++	rx_cr |= XAXIDMA_CR_RUNSTOP_MASK;
++	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, rx_cr);
++	axienet_dma_out_addr(lp, XAXIDMA_RX_TDESC_OFFSET, lp->rx_bd_p +
++			     (sizeof(*lp->rx_bd_v) * (lp->rx_bd_num - 1)));
++
++	/* Write to the RS (Run-stop) bit in the Tx channel control register.
++	 * Tx channel is now ready to run. But only after we write to the
++	 * tail pointer register that the Tx channel will start transmitting.
++	 */
++	axienet_dma_out_addr(lp, XAXIDMA_TX_CDESC_OFFSET, lp->tx_bd_p);
++	tx_cr |= XAXIDMA_CR_RUNSTOP_MASK;
++	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, tx_cr);
++}
++
+ /**
+  * axienet_dma_bd_init - Setup buffer descriptor rings for Axi DMA
+  * @ndev:	Pointer to the net_device structure
+@@ -238,7 +276,6 @@ static void axienet_dma_bd_release(struct net_device *ndev)
+  */
+ static int axienet_dma_bd_init(struct net_device *ndev)
+ {
+-	u32 cr;
+ 	int i;
+ 	struct sk_buff *skb;
+ 	struct axienet_local *lp = netdev_priv(ndev);
+@@ -296,50 +333,7 @@ static int axienet_dma_bd_init(struct net_device *ndev)
+ 		lp->rx_bd_v[i].cntrl = lp->max_frm_size;
+ 	}
+ 
+-	/* Start updating the Rx channel control register */
+-	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-	/* Update the interrupt coalesce count */
+-	cr = ((cr & ~XAXIDMA_COALESCE_MASK) |
+-	      ((lp->coalesce_count_rx) << XAXIDMA_COALESCE_SHIFT));
+-	/* Update the delay timer count */
+-	cr = ((cr & ~XAXIDMA_DELAY_MASK) |
+-	      (XAXIDMA_DFT_RX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
+-	/* Enable coalesce, delay timer and error interrupts */
+-	cr |= XAXIDMA_IRQ_ALL_MASK;
+-	/* Write to the Rx channel control register */
+-	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
+-
+-	/* Start updating the Tx channel control register */
+-	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-	/* Update the interrupt coalesce count */
+-	cr = (((cr & ~XAXIDMA_COALESCE_MASK)) |
+-	      ((lp->coalesce_count_tx) << XAXIDMA_COALESCE_SHIFT));
+-	/* Update the delay timer count */
+-	cr = (((cr & ~XAXIDMA_DELAY_MASK)) |
+-	      (XAXIDMA_DFT_TX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
+-	/* Enable coalesce, delay timer and error interrupts */
+-	cr |= XAXIDMA_IRQ_ALL_MASK;
+-	/* Write to the Tx channel control register */
+-	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
+-
+-	/* Populate the tail pointer and bring the Rx Axi DMA engine out of
+-	 * halted state. This will make the Rx side ready for reception.
+-	 */
+-	axienet_dma_out_addr(lp, XAXIDMA_RX_CDESC_OFFSET, lp->rx_bd_p);
+-	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET,
+-			  cr | XAXIDMA_CR_RUNSTOP_MASK);
+-	axienet_dma_out_addr(lp, XAXIDMA_RX_TDESC_OFFSET, lp->rx_bd_p +
+-			     (sizeof(*lp->rx_bd_v) * (lp->rx_bd_num - 1)));
+-
+-	/* Write to the RS (Run-stop) bit in the Tx channel control register.
+-	 * Tx channel is now ready to run. But only after we write to the
+-	 * tail pointer register that the Tx channel will start transmitting.
+-	 */
+-	axienet_dma_out_addr(lp, XAXIDMA_TX_CDESC_OFFSET, lp->tx_bd_p);
+-	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
+-			  cr | XAXIDMA_CR_RUNSTOP_MASK);
++	axienet_dma_start(lp);
+ 
+ 	return 0;
+ out:
+@@ -530,6 +524,44 @@ static int __axienet_device_reset(struct axienet_local *lp)
+ 	return 0;
+ }
+ 
++/**
++ * axienet_dma_stop - Stop DMA operation
++ * @lp:		Pointer to the axienet_local structure
++ */
++static void axienet_dma_stop(struct axienet_local *lp)
++{
++	int count;
++	u32 cr, sr;
++
++	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
++	cr &= ~(XAXIDMA_CR_RUNSTOP_MASK | XAXIDMA_IRQ_ALL_MASK);
++	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
++	synchronize_irq(lp->rx_irq);
++
++	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
++	cr &= ~(XAXIDMA_CR_RUNSTOP_MASK | XAXIDMA_IRQ_ALL_MASK);
++	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
++	synchronize_irq(lp->tx_irq);
++
++	/* Give DMAs a chance to halt gracefully */
++	sr = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
++	for (count = 0; !(sr & XAXIDMA_SR_HALT_MASK) && count < 5; ++count) {
++		msleep(20);
++		sr = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
++	}
++
++	sr = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
++	for (count = 0; !(sr & XAXIDMA_SR_HALT_MASK) && count < 5; ++count) {
++		msleep(20);
++		sr = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
++	}
++
++	/* Do a reset to ensure DMA is really stopped */
++	axienet_lock_mii(lp);
++	__axienet_device_reset(lp);
++	axienet_unlock_mii(lp);
++}
++
+ /**
+  * axienet_device_reset - Reset and initialize the Axi Ethernet hardware.
+  * @ndev:	Pointer to the net_device structure
+@@ -949,41 +981,27 @@ static void axienet_recv(struct net_device *ndev)
+  */
+ static irqreturn_t axienet_tx_irq(int irq, void *_ndev)
+ {
+-	u32 cr;
+ 	unsigned int status;
+ 	struct net_device *ndev = _ndev;
  	struct axienet_local *lp = netdev_priv(ndev);
  
- 	/* If we end up here, tx_bd_v must have been DMA allocated. */
--	dma_free_coherent(ndev->dev.parent,
-+	dma_free_coherent(lp->dev,
- 			  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
- 			  lp->tx_bd_v,
- 			  lp->tx_bd_p);
-@@ -215,12 +215,12 @@ static void axienet_dma_bd_release(struct net_device *ndev)
- 		 */
- 		if (lp->rx_bd_v[i].cntrl) {
- 			phys = desc_get_phys_addr(lp, &lp->rx_bd_v[i]);
--			dma_unmap_single(ndev->dev.parent, phys,
-+			dma_unmap_single(lp->dev, phys,
- 					 lp->max_frm_size, DMA_FROM_DEVICE);
- 		}
- 	}
+ 	status = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
+-	if (status & (XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_DELAY_MASK)) {
+-		axienet_dma_out32(lp, XAXIDMA_TX_SR_OFFSET, status);
+-		axienet_start_xmit_done(lp->ndev);
+-		goto out;
+-	}
++
+ 	if (!(status & XAXIDMA_IRQ_ALL_MASK))
+ 		return IRQ_NONE;
+-	if (status & XAXIDMA_IRQ_ERROR_MASK) {
+-		dev_err(&ndev->dev, "DMA Tx error 0x%x\n", status);
+-		dev_err(&ndev->dev, "Current BD is at: 0x%x%08x\n",
+-			(lp->tx_bd_v[lp->tx_bd_ci]).phys_msb,
+-			(lp->tx_bd_v[lp->tx_bd_ci]).phys);
+-
+-		cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-		/* Disable coalesce, delay timer and error interrupts */
+-		cr &= (~XAXIDMA_IRQ_ALL_MASK);
+-		/* Write to the Tx channel control register */
+-		axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
+-
+-		cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-		/* Disable coalesce, delay timer and error interrupts */
+-		cr &= (~XAXIDMA_IRQ_ALL_MASK);
+-		/* Write to the Rx channel control register */
+-		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
  
--	dma_free_coherent(ndev->dev.parent,
-+	dma_free_coherent(lp->dev,
- 			  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
- 			  lp->rx_bd_v,
- 			  lp->rx_bd_p);
-@@ -249,13 +249,13 @@ static int axienet_dma_bd_init(struct net_device *ndev)
++	axienet_dma_out32(lp, XAXIDMA_TX_SR_OFFSET, status);
++
++	if (unlikely(status & XAXIDMA_IRQ_ERROR_MASK)) {
++		netdev_err(ndev, "DMA Tx error 0x%x\n", status);
++		netdev_err(ndev, "Current BD is at: 0x%x%08x\n",
++			   (lp->tx_bd_v[lp->tx_bd_ci]).phys_msb,
++			   (lp->tx_bd_v[lp->tx_bd_ci]).phys);
+ 		schedule_work(&lp->dma_err_task);
+-		axienet_dma_out32(lp, XAXIDMA_TX_SR_OFFSET, status);
++	} else {
++		axienet_start_xmit_done(lp->ndev);
+ 	}
+-out:
++
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -999,41 +1017,27 @@ static irqreturn_t axienet_tx_irq(int irq, void *_ndev)
+  */
+ static irqreturn_t axienet_rx_irq(int irq, void *_ndev)
+ {
+-	u32 cr;
+ 	unsigned int status;
+ 	struct net_device *ndev = _ndev;
+ 	struct axienet_local *lp = netdev_priv(ndev);
+ 
+ 	status = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
+-	if (status & (XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_DELAY_MASK)) {
+-		axienet_dma_out32(lp, XAXIDMA_RX_SR_OFFSET, status);
+-		axienet_recv(lp->ndev);
+-		goto out;
+-	}
++
+ 	if (!(status & XAXIDMA_IRQ_ALL_MASK))
+ 		return IRQ_NONE;
+-	if (status & XAXIDMA_IRQ_ERROR_MASK) {
+-		dev_err(&ndev->dev, "DMA Rx error 0x%x\n", status);
+-		dev_err(&ndev->dev, "Current BD is at: 0x%x%08x\n",
+-			(lp->rx_bd_v[lp->rx_bd_ci]).phys_msb,
+-			(lp->rx_bd_v[lp->rx_bd_ci]).phys);
+-
+-		cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-		/* Disable coalesce, delay timer and error interrupts */
+-		cr &= (~XAXIDMA_IRQ_ALL_MASK);
+-		/* Finally write to the Tx channel control register */
+-		axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
+-
+-		cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-		/* Disable coalesce, delay timer and error interrupts */
+-		cr &= (~XAXIDMA_IRQ_ALL_MASK);
+-		/* write to the Rx channel control register */
+-		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
+ 
++	axienet_dma_out32(lp, XAXIDMA_RX_SR_OFFSET, status);
++
++	if (unlikely(status & XAXIDMA_IRQ_ERROR_MASK)) {
++		netdev_err(ndev, "DMA Rx error 0x%x\n", status);
++		netdev_err(ndev, "Current BD is at: 0x%x%08x\n",
++			   (lp->rx_bd_v[lp->rx_bd_ci]).phys_msb,
++			   (lp->rx_bd_v[lp->rx_bd_ci]).phys);
+ 		schedule_work(&lp->dma_err_task);
+-		axienet_dma_out32(lp, XAXIDMA_RX_SR_OFFSET, status);
++	} else {
++		axienet_recv(lp->ndev);
+ 	}
+-out:
++
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -1151,8 +1155,6 @@ static int axienet_open(struct net_device *ndev)
+  */
+ static int axienet_stop(struct net_device *ndev)
+ {
+-	u32 cr, sr;
+-	int count;
+ 	struct axienet_local *lp = netdev_priv(ndev);
+ 
+ 	dev_dbg(&ndev->dev, "axienet_close()\n");
+@@ -1163,34 +1165,10 @@ static int axienet_stop(struct net_device *ndev)
+ 	axienet_setoptions(ndev, lp->options &
+ 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
+ 
+-	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-	cr &= ~(XAXIDMA_CR_RUNSTOP_MASK | XAXIDMA_IRQ_ALL_MASK);
+-	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
+-
+-	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-	cr &= ~(XAXIDMA_CR_RUNSTOP_MASK | XAXIDMA_IRQ_ALL_MASK);
+-	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
++	axienet_dma_stop(lp);
+ 
+ 	axienet_iow(lp, XAE_IE_OFFSET, 0);
+ 
+-	/* Give DMAs a chance to halt gracefully */
+-	sr = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
+-	for (count = 0; !(sr & XAXIDMA_SR_HALT_MASK) && count < 5; ++count) {
+-		msleep(20);
+-		sr = axienet_dma_in32(lp, XAXIDMA_RX_SR_OFFSET);
+-	}
+-
+-	sr = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
+-	for (count = 0; !(sr & XAXIDMA_SR_HALT_MASK) && count < 5; ++count) {
+-		msleep(20);
+-		sr = axienet_dma_in32(lp, XAXIDMA_TX_SR_OFFSET);
+-	}
+-
+-	/* Do a reset to ensure DMA is really stopped */
+-	axienet_lock_mii(lp);
+-	__axienet_device_reset(lp);
+-	axienet_unlock_mii(lp);
+-
+ 	cancel_work_sync(&lp->dma_err_task);
+ 
+ 	if (lp->eth_irq > 0)
+@@ -1709,22 +1687,17 @@ static const struct phylink_mac_ops axienet_phylink_ops = {
+  */
+ static void axienet_dma_err_handler(struct work_struct *work)
+ {
++	u32 i;
+ 	u32 axienet_status;
+-	u32 cr, i;
++	struct axidma_bd *cur_p;
+ 	struct axienet_local *lp = container_of(work, struct axienet_local,
+ 						dma_err_task);
+ 	struct net_device *ndev = lp->ndev;
+-	struct axidma_bd *cur_p;
+ 
+ 	axienet_setoptions(ndev, lp->options &
+ 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
+-	/* When we do an Axi Ethernet reset, it resets the complete core
+-	 * including the MDIO. MDIO must be disabled before resetting.
+-	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
+-	 */
+-	axienet_lock_mii(lp);
+-	__axienet_device_reset(lp);
+-	axienet_unlock_mii(lp);
++
++	axienet_dma_stop(lp);
+ 
+ 	for (i = 0; i < lp->tx_bd_num; i++) {
+ 		cur_p = &lp->tx_bd_v[i];
+@@ -1764,50 +1737,7 @@ static void axienet_dma_err_handler(struct work_struct *work)
+ 	lp->tx_bd_tail = 0;
  	lp->rx_bd_ci = 0;
  
- 	/* Allocate the Tx and Rx buffer descriptors. */
--	lp->tx_bd_v = dma_alloc_coherent(ndev->dev.parent,
-+	lp->tx_bd_v = dma_alloc_coherent(lp->dev,
- 					 sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
- 					 &lp->tx_bd_p, GFP_KERNEL);
- 	if (!lp->tx_bd_v)
- 		return -ENOMEM;
+-	/* Start updating the Rx channel control register */
+-	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-	/* Update the interrupt coalesce count */
+-	cr = ((cr & ~XAXIDMA_COALESCE_MASK) |
+-	      (XAXIDMA_DFT_RX_THRESHOLD << XAXIDMA_COALESCE_SHIFT));
+-	/* Update the delay timer count */
+-	cr = ((cr & ~XAXIDMA_DELAY_MASK) |
+-	      (XAXIDMA_DFT_RX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
+-	/* Enable coalesce, delay timer and error interrupts */
+-	cr |= XAXIDMA_IRQ_ALL_MASK;
+-	/* Finally write to the Rx channel control register */
+-	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
+-
+-	/* Start updating the Tx channel control register */
+-	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-	/* Update the interrupt coalesce count */
+-	cr = (((cr & ~XAXIDMA_COALESCE_MASK)) |
+-	      (XAXIDMA_DFT_TX_THRESHOLD << XAXIDMA_COALESCE_SHIFT));
+-	/* Update the delay timer count */
+-	cr = (((cr & ~XAXIDMA_DELAY_MASK)) |
+-	      (XAXIDMA_DFT_TX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
+-	/* Enable coalesce, delay timer and error interrupts */
+-	cr |= XAXIDMA_IRQ_ALL_MASK;
+-	/* Finally write to the Tx channel control register */
+-	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
+-
+-	/* Populate the tail pointer and bring the Rx Axi DMA engine out of
+-	 * halted state. This will make the Rx side ready for reception.
+-	 */
+-	axienet_dma_out_addr(lp, XAXIDMA_RX_CDESC_OFFSET, lp->rx_bd_p);
+-	cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+-	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET,
+-			  cr | XAXIDMA_CR_RUNSTOP_MASK);
+-	axienet_dma_out_addr(lp, XAXIDMA_RX_TDESC_OFFSET, lp->rx_bd_p +
+-			     (sizeof(*lp->rx_bd_v) * (lp->rx_bd_num - 1)));
+-
+-	/* Write to the RS (Run-stop) bit in the Tx channel control register.
+-	 * Tx channel is now ready to run. But only after we write to the
+-	 * tail pointer register that the Tx channel will start transmitting
+-	 */
+-	axienet_dma_out_addr(lp, XAXIDMA_TX_CDESC_OFFSET, lp->tx_bd_p);
+-	cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+-	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
+-			  cr | XAXIDMA_CR_RUNSTOP_MASK);
++	axienet_dma_start(lp);
  
--	lp->rx_bd_v = dma_alloc_coherent(ndev->dev.parent,
-+	lp->rx_bd_v = dma_alloc_coherent(lp->dev,
- 					 sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
- 					 &lp->rx_bd_p, GFP_KERNEL);
- 	if (!lp->rx_bd_v)
-@@ -285,9 +285,9 @@ static int axienet_dma_bd_init(struct net_device *ndev)
- 			goto out;
- 
- 		lp->rx_bd_v[i].skb = skb;
--		addr = dma_map_single(ndev->dev.parent, skb->data,
-+		addr = dma_map_single(lp->dev, skb->data,
- 				      lp->max_frm_size, DMA_FROM_DEVICE);
--		if (dma_mapping_error(ndev->dev.parent, addr)) {
-+		if (dma_mapping_error(lp->dev, addr)) {
- 			netdev_err(ndev, "DMA mapping error\n");
- 			goto out;
- 		}
-@@ -636,7 +636,7 @@ static int axienet_free_tx_chain(struct net_device *ndev, u32 first_bd,
- 		/* Ensure we see complete descriptor update */
- 		dma_rmb();
- 		phys = desc_get_phys_addr(lp, cur_p);
--		dma_unmap_single(ndev->dev.parent, phys,
-+		dma_unmap_single(lp->dev, phys,
- 				 (cur_p->cntrl & XAXIDMA_BD_CTRL_LENGTH_MASK),
- 				 DMA_TO_DEVICE);
- 
-@@ -774,9 +774,9 @@ axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 		cur_p->app0 |= 2; /* Tx Full Checksum Offload Enabled */
- 	}
- 
--	phys = dma_map_single(ndev->dev.parent, skb->data,
-+	phys = dma_map_single(lp->dev, skb->data,
- 			      skb_headlen(skb), DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(ndev->dev.parent, phys))) {
-+	if (unlikely(dma_mapping_error(lp->dev, phys))) {
- 		if (net_ratelimit())
- 			netdev_err(ndev, "TX DMA mapping error\n");
- 		ndev->stats.tx_dropped++;
-@@ -790,11 +790,11 @@ axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 			lp->tx_bd_tail = 0;
- 		cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
- 		frag = &skb_shinfo(skb)->frags[ii];
--		phys = dma_map_single(ndev->dev.parent,
-+		phys = dma_map_single(lp->dev,
- 				      skb_frag_address(frag),
- 				      skb_frag_size(frag),
- 				      DMA_TO_DEVICE);
--		if (unlikely(dma_mapping_error(ndev->dev.parent, phys))) {
-+		if (unlikely(dma_mapping_error(lp->dev, phys))) {
- 			if (net_ratelimit())
- 				netdev_err(ndev, "TX DMA mapping error\n");
- 			ndev->stats.tx_dropped++;
-@@ -872,7 +872,7 @@ static void axienet_recv(struct net_device *ndev)
- 			length = cur_p->app4 & 0x0000FFFF;
- 
- 			phys = desc_get_phys_addr(lp, cur_p);
--			dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
-+			dma_unmap_single(lp->dev, phys, lp->max_frm_size,
- 					 DMA_FROM_DEVICE);
- 
- 			skb_put(skb, length);
-@@ -905,10 +905,10 @@ static void axienet_recv(struct net_device *ndev)
- 		if (!new_skb)
- 			break;
- 
--		phys = dma_map_single(ndev->dev.parent, new_skb->data,
-+		phys = dma_map_single(lp->dev, new_skb->data,
- 				      lp->max_frm_size,
- 				      DMA_FROM_DEVICE);
--		if (unlikely(dma_mapping_error(ndev->dev.parent, phys))) {
-+		if (unlikely(dma_mapping_error(lp->dev, phys))) {
- 			if (net_ratelimit())
- 				netdev_err(ndev, "RX DMA mapping error\n");
- 			dev_kfree_skb(new_skb);
-@@ -1731,7 +1731,7 @@ static void axienet_dma_err_handler(struct work_struct *work)
- 		if (cur_p->cntrl) {
- 			dma_addr_t addr = desc_get_phys_addr(lp, cur_p);
- 
--			dma_unmap_single(ndev->dev.parent, addr,
-+			dma_unmap_single(lp->dev, addr,
- 					 (cur_p->cntrl &
- 					  XAXIDMA_BD_CTRL_LENGTH_MASK),
- 					 DMA_TO_DEVICE);
+ 	axienet_status = axienet_ior(lp, XAE_RCW1_OFFSET);
+ 	axienet_status &= ~XAE_RCW1_RX_MASK;
 -- 
 2.31.1
 
