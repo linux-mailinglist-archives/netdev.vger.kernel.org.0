@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF1554CE3B7
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D854CE3B8
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230373AbiCEI4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 03:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
+        id S230329AbiCEI4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 03:56:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbiCEIz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:56 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5549B254A94
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:07 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id v4so9217143pjh.2
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:07 -0800 (PST)
+        with ESMTP id S230321AbiCEI4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:56:03 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E11F254A9A
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:08 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id c16-20020a17090aa61000b001befad2bfaaso9510484pjq.1
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ONfaY1y7JV9ykUjb/mTdKQErQlaDTAgMAWo9KN+tU1w=;
-        b=SSFuNtNXarfRSPDPS7PnGtNIPZfggdL56AI62smh/G3Bmci+6Hk4tabyoPAMPdXHzo
-         ykMD9+NMFOmAKJdfl2eCraSqHveWyUjWDrulfHnVaSsH3h1YV/XdtsONk/i+F4rxBosB
-         QDCzo54Oa5mBIQb4w6e4Es5KXtnaLxoEs5wWU=
+        bh=PIGXVqns4U9Qy7E9Gb+B0/UKAvd8V3LTZva1AI8QZC8=;
+        b=LJ2zxf+u2rGELA0x87CIHtcSLNdUpd8cyF4gYRtaqD8Ii3lS2g1ElGgCio9vD1ohlW
+         FUQj9LhRaUInHeT3XGD8xwZOH31uMXL9k0ZSZPIKfvetU+oxIsIbvTEjzUvIxUEJxXDq
+         UnlueGFuCBDft5XrNZbjaWnl1VzuXTTfodmu8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ONfaY1y7JV9ykUjb/mTdKQErQlaDTAgMAWo9KN+tU1w=;
-        b=46Rz85DTIqt9fD+np4EH5O+yXCdvIF1TjFAj2KaXhodp52cCbBiHoV5+WcU0Ctr7PS
-         0V8NBkVHiJVaMI177228MpHN/a4LT60baa95MIj1NNIVA7p/+s1kKFjZk2HX7oid+0lK
-         AVKp7rYW9pHOrLzIgVghfNp4oK1mvTHSRvEi64N9WQfMEf/KDWj/LRshJ4MyPoL9jpB5
-         X3oIv/Jk5LJM+lgdVnUl7e0mmjRvIHA31xCQHdKoWW+x5KzBUS95GGJ2M761GsQC1//8
-         fOUWhHWkLWwFyxzZaT9LspZ7xhT0J9l5HE8IBPzeEp00UsYVZtpBcz9RhlfCefCNfU81
-         q50A==
-X-Gm-Message-State: AOAM53298vGeaQfzK+MKgV13vBFi3jMBFS6KTCuUlGfa/Tln5535vhgZ
-        X7YFR40DZCvC9+69sTDXnFBsNQ==
-X-Google-Smtp-Source: ABdhPJx1Aia0JDW+EVo8MtjYZ8Z0d1vl/rvv+iN0h7PFnO3sDKGUeN5rXfnA8ZR0t6ZWsPT6S2ZxQQ==
-X-Received: by 2002:a17:903:22cb:b0:151:9f41:8738 with SMTP id y11-20020a17090322cb00b001519f418738mr2729205plg.46.1646470506290;
-        Sat, 05 Mar 2022 00:55:06 -0800 (PST)
+        bh=PIGXVqns4U9Qy7E9Gb+B0/UKAvd8V3LTZva1AI8QZC8=;
+        b=gW73Xp/BGY5tmm6lqYbcQdlIrbW3shAsdUOknC2wUzw6vjw6FlkyBgloXB9FvzIAkX
+         kBQ9ujUsCdewdl75f27QUpp4fv6u7feXZ2O69mF9o5SplqCnMpqsaC22qoxRAnovNByD
+         4IzA2JzGVccEfqwPNRBqRJ21FdEqlOmutqTdMYOZExwt/LzdQHeg1u+qMfPwcEYBRUA6
+         PJP3j5jagpkakge86Vf85JRYnNF6xHCip+rxkh8P+RC/EV0B0Ndnaiw3tJ82lhtC+w1g
+         1cYxXdd0kLRg912t+9mUgonEmoOPazrIbYXllGjX74wWsmvD3kYrbZPWshvmK88nhIhG
+         OR6Q==
+X-Gm-Message-State: AOAM531NSUjqSsRCwxfAdw+SDcr2un/P9woE2xMOIaFs9SH2bqISyFg+
+        e8lKbuTAAAGlAL0S562jBUie9lEqgvJG1g==
+X-Google-Smtp-Source: ABdhPJydq3/bf3KiqVTgag1JbbWnx5nkzRYPIXTwkUDdgdlO11LhGXy77jqqC61PXOt+SIH9psKo5g==
+X-Received: by 2002:a17:902:f782:b0:14b:63db:9bc1 with SMTP id q2-20020a170902f78200b0014b63db9bc1mr2502659pln.60.1646470507319;
+        Sat, 05 Mar 2022 00:55:07 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.05
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.06
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:05 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:07 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 4/9] bnxt_en: introduce initial link state of unknown
-Date:   Sat,  5 Mar 2022 03:54:37 -0500
-Message-Id: <1646470482-13763-5-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 5/9] bnxt_en: Properly report no pause support on some cards
+Date:   Sat,  5 Mar 2022 03:54:38 -0500
+Message-Id: <1646470482-13763-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b45a4405d974c9a4"
+        boundary="000000000000c6419e05d974c908"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,153 +65,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000b45a4405d974c9a4
+--000000000000c6419e05d974c908
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+Some cards are configured to never support link pause or PFC.  Discover
+these cards and properly report no pause support to ethtool.  Disable
+PFC settings from DCBNL if PFC is unsupported.
 
-This will force link state to always be logged for initial NIC open.
-
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 33 ++++++++++++-------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  6 +++-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 +--
- 3 files changed, 29 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  6 ++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c     |  3 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 15 ++++++++++-----
+ 4 files changed, 17 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 37facef47846..1ed71b6fed8a 100644
+index 1ed71b6fed8a..2280b189f3d6 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -9300,7 +9300,7 @@ void bnxt_tx_enable(struct bnxt *bp)
- 	/* Make sure napi polls see @dev_state change */
- 	synchronize_net();
- 	netif_tx_wake_all_queues(bp->dev);
--	if (bp->link_info.link_up)
-+	if (BNXT_LINK_IS_UP(bp))
- 		netif_carrier_on(bp->dev);
- }
+@@ -9416,7 +9416,7 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
+ 	if (rc)
+ 		goto hwrm_phy_qcaps_exit;
  
-@@ -9330,7 +9330,7 @@ static char *bnxt_report_fec(struct bnxt_link_info *link_info)
- 
- void bnxt_report_link(struct bnxt *bp)
- {
--	if (bp->link_info.link_up) {
-+	if (BNXT_LINK_IS_UP(bp)) {
- 		const char *signal = "";
- 		const char *flow_ctrl;
- 		const char *duplex;
-@@ -9466,7 +9466,7 @@ int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 	struct bnxt_link_info *link_info = &bp->link_info;
- 	struct hwrm_port_phy_qcfg_output *resp;
- 	struct hwrm_port_phy_qcfg_input *req;
--	u8 link_up = link_info->link_up;
-+	u8 link_state = link_info->link_state;
- 	bool support_changed = false;
- 	int rc;
- 
-@@ -9567,14 +9567,14 @@ int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 	/* TODO: need to add more logic to report VF link */
- 	if (chng_link_state) {
- 		if (link_info->phy_link_status == BNXT_LINK_LINK)
--			link_info->link_up = 1;
-+			link_info->link_state = BNXT_LINK_STATE_UP;
- 		else
--			link_info->link_up = 0;
--		if (link_up != link_info->link_up)
-+			link_info->link_state = BNXT_LINK_STATE_DOWN;
-+		if (link_state != link_info->link_state)
- 			bnxt_report_link(bp);
- 	} else {
--		/* alwasy link down if not require to update link state */
--		link_info->link_up = 0;
-+		/* always link down if not require to update link state */
-+		link_info->link_state = BNXT_LINK_STATE_DOWN;
- 	}
- 	hwrm_req_drop(bp, req);
- 
-@@ -9774,7 +9774,18 @@ static int bnxt_hwrm_shutdown_link(struct bnxt *bp)
- 		return rc;
- 
- 	req->flags = cpu_to_le32(PORT_PHY_CFG_REQ_FLAGS_FORCE_LINK_DWN);
--	return hwrm_req_send(bp, req);
-+	rc = hwrm_req_send(bp, req);
-+	if (!rc) {
-+		mutex_lock(&bp->link_lock);
-+		/* Device is not obliged link down in certain scenarios, even
-+		 * when forced. Setting the state unknown is consistent with
-+		 * driver startup and will force link state to be reported
-+		 * during subsequent open based on PORT_PHY_QCFG.
-+		 */
-+		bp->link_info.link_state = BNXT_LINK_STATE_UNKNOWN;
-+		mutex_unlock(&bp->link_lock);
-+	}
-+	return rc;
- }
- 
- static int bnxt_fw_reset_via_optee(struct bnxt *bp)
-@@ -10205,7 +10216,7 @@ static int bnxt_update_phy_setting(struct bnxt *bp)
- 	/* The last close may have shutdown the link, so need to call
- 	 * PHY_CFG to bring it back up.
- 	 */
--	if (!bp->link_info.link_up)
-+	if (!BNXT_LINK_IS_UP(bp))
- 		update_link = true;
- 
- 	if (!bnxt_eee_config_ok(bp))
-@@ -11437,7 +11448,7 @@ static void bnxt_timer(struct timer_list *t)
- 	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY)
- 		bnxt_fw_health_check(bp);
- 
--	if (bp->link_info.link_up && bp->stats_coal_ticks) {
-+	if (BNXT_LINK_IS_UP(bp) && bp->stats_coal_ticks) {
- 		set_bit(BNXT_PERIODIC_STATS_SP_EVENT, &bp->sp_event);
- 		bnxt_queue_sp_work(bp);
- 	}
+-	bp->phy_flags = resp->flags;
++	bp->phy_flags = resp->flags | (le16_to_cpu(resp->flags2) << 8);
+ 	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED) {
+ 		struct ethtool_eee *eee = &bp->eee;
+ 		u16 fw_speeds = le16_to_cpu(resp->supported_speeds_eee_mode);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 802ec1e9956d..5d743976cb35 100644
+index 5d743976cb35..447a9406b8a2 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1175,7 +1175,11 @@ struct bnxt_link_info {
- #define BNXT_PHY_STATE_ENABLED		0
- #define BNXT_PHY_STATE_DISABLED		1
+@@ -2104,8 +2104,8 @@ struct bnxt {
+ 	u32			lpi_tmr_lo;
+ 	u32			lpi_tmr_hi;
  
--	u8			link_up;
-+	u8			link_state;
-+#define BNXT_LINK_STATE_UNKNOWN	0
-+#define BNXT_LINK_STATE_DOWN	1
-+#define BNXT_LINK_STATE_UP	2
-+#define BNXT_LINK_IS_UP(bp)	((bp)->link_info.link_state == BNXT_LINK_STATE_UP)
- 	u8			duplex;
- #define BNXT_LINK_DUPLEX_HALF	PORT_PHY_QCFG_RESP_DUPLEX_STATE_HALF
- #define BNXT_LINK_DUPLEX_FULL	PORT_PHY_QCFG_RESP_DUPLEX_STATE_FULL
+-	/* copied from flags in hwrm_port_phy_qcaps_output */
+-	u8			phy_flags;
++	/* copied from flags and flags2 in hwrm_port_phy_qcaps_output */
++	u32			phy_flags;
+ #define BNXT_PHY_FL_EEE_CAP		PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED
+ #define BNXT_PHY_FL_EXT_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_EXTERNAL_LPBK_SUPPORTED
+ #define BNXT_PHY_FL_AN_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_AUTONEG_LPBK_SUPPORTED
+@@ -2114,6 +2114,8 @@ struct bnxt {
+ #define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
+ #define BNXT_PHY_FL_FW_MANAGED_LKDN	PORT_PHY_QCAPS_RESP_FLAGS_FW_MANAGED_LINK_DOWN
+ #define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
++#define BNXT_PHY_FL_NO_PAUSE		(PORT_PHY_QCAPS_RESP_FLAGS2_PAUSE_UNSUPPORTED << 8)
++#define BNXT_PHY_FL_NO_PFC		(PORT_PHY_QCAPS_RESP_FLAGS2_PFC_UNSUPPORTED << 8)
+ 
+ 	u8			num_tests;
+ 	struct bnxt_test_info	*test_info;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+index 217ff597cdf2..caab3d626a2a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+@@ -627,7 +627,8 @@ static int bnxt_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
+ 	int rc;
+ 
+ 	if (!(bp->dcbx_cap & DCB_CAP_DCBX_VER_IEEE) ||
+-	    !(bp->dcbx_cap & DCB_CAP_DCBX_HOST))
++	    !(bp->dcbx_cap & DCB_CAP_DCBX_HOST) ||
++	    (bp->phy_flags & BNXT_PHY_FL_NO_PAUSE))
+ 		return -EINVAL;
+ 
+ 	if (!my_pfc) {
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 3927ceb581da..519edad70f16 100644
+index 519edad70f16..7cc69957e529 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2135,7 +2135,7 @@ static u32 bnxt_get_link(struct net_device *dev)
+@@ -1662,15 +1662,19 @@ static void bnxt_fw_to_ethtool_support_fec(struct bnxt_link_info *link_info,
+ static void bnxt_fw_to_ethtool_support_spds(struct bnxt_link_info *link_info,
+ 				struct ethtool_link_ksettings *lk_ksettings)
+ {
++	struct bnxt *bp = container_of(link_info, struct bnxt, link_info);
+ 	u16 fw_speeds = link_info->support_speeds;
+ 
+ 	BNXT_FW_TO_ETHTOOL_SPDS(fw_speeds, 0, lk_ksettings, supported);
+ 	fw_speeds = link_info->support_pam4_speeds;
+ 	BNXT_FW_TO_ETHTOOL_PAM4_SPDS(fw_speeds, lk_ksettings, supported);
+ 
+-	ethtool_link_ksettings_add_link_mode(lk_ksettings, supported, Pause);
+-	ethtool_link_ksettings_add_link_mode(lk_ksettings, supported,
+-					     Asym_Pause);
++	if (!(bp->phy_flags & BNXT_PHY_FL_NO_PAUSE)) {
++		ethtool_link_ksettings_add_link_mode(lk_ksettings, supported,
++						     Pause);
++		ethtool_link_ksettings_add_link_mode(lk_ksettings, supported,
++						     Asym_Pause);
++	}
+ 
+ 	if (link_info->support_auto_speeds ||
+ 	    link_info->support_pam4_auto_speeds)
+@@ -1901,7 +1905,8 @@ static int bnxt_set_link_ksettings(struct net_device *dev,
+ 		/* any change to autoneg will cause link change, therefore the
+ 		 * driver should put back the original pause setting in autoneg
+ 		 */
+-		set_pause = true;
++		if (!(bp->phy_flags & BNXT_PHY_FL_NO_PAUSE))
++			set_pause = true;
+ 	} else {
+ 		u8 phy_type = link_info->phy_type;
+ 
+@@ -2093,7 +2098,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
  	struct bnxt *bp = netdev_priv(dev);
+ 	struct bnxt_link_info *link_info = &bp->link_info;
  
- 	/* TODO: handle MF, VF, driver close case */
--	return bp->link_info.link_up;
-+	return BNXT_LINK_IS_UP(bp);
- }
+-	if (!BNXT_PHY_CFG_ABLE(bp))
++	if (!BNXT_PHY_CFG_ABLE(bp) || (bp->phy_flags & BNXT_PHY_FL_NO_PAUSE))
+ 		return -EOPNOTSUPP;
  
- int bnxt_hwrm_nvm_get_dev_info(struct bnxt *bp,
-@@ -3383,7 +3383,7 @@ static int bnxt_disable_an_for_lpbk(struct bnxt *bp,
- 		return rc;
- 
- 	fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_1GB;
--	if (bp->link_info.link_up)
-+	if (BNXT_LINK_IS_UP(bp))
- 		fw_speed = bp->link_info.link_speed;
- 	else if (fw_advertising & BNXT_LINK_SPEED_MSK_10GB)
- 		fw_speed = PORT_PHY_CFG_REQ_FORCE_LINK_SPEED_10GB;
+ 	mutex_lock(&bp->link_lock);
 -- 
 2.18.1
 
 
---000000000000b45a4405d974c9a4
+--000000000000c6419e05d974c908
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -282,13 +252,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBswgYCgUs81+oCtCqY6N4NrHDhvGJwK
-BaKDGVT4zdSUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIH2QcVKZq57Kx6YdkiiZWacFhryJSevi
+N0XqXYyNOz2EMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUwOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCj5ox/9RZUnAU2XEq4Jj3Zypc/vhs97B2ONpNfoqBRXUnRekWT
-mT+Cny9pmxLiSqMLdg5WPwmuSCIF38wI2FA9yLvYu7ZwtPil1I47G07AOG9pSPdpjAbHjozmhFNH
-Me3t51oaG3PAA74+lMkBeSsMR/Xkzy1rjAVinqjgNC9UIJ9FaFKdvgAHk1d8YI5zvQEZsInxxipi
-ANDEJvyifD9QspSJrRZJGc9p+XedTWXeYE/+S2FVk1PgXjiEmVSCteejuasm8odgf4UkqcRjsfYS
-9zIPz5R2EcnND91DqFCO6VFRRlhM0PBNNAqrY3Btfjq4qS1il2Usx9jw3Rx8roqk
---000000000000b45a4405d974c9a4--
+ATANBgkqhkiG9w0BAQEFAASCAQDXkrPMGpi+8psyu/eczdQDoYC/MOlP860Aobvt4aTCCUDEUyb4
+EjT5Fwvq6rjZgaY732vX+j66lrMXWti6glJqKNKhvIfp6m6PaVUyuk5duCzJJZTASBgPWDZnFn+n
+LRDkGqPXM1GCb26CPEm4rqXu+ojhycIHiFbbISBMSpjRATWUO+JyW2jbvBrJKcDvoffwwXZseOsr
+1i3UN+sqCrlpA9ymXRRkF8Ws3EPRTPh2n3Isne+R/3PKlhQvVMCpTiLwx1iW3h5PcBz7oxnKDd9j
+O5XDOCjBYbFsiUy1bxDS2yjbAJdbii2pMp5RLP1AG4OcYYb1cwkxK7RgGmUZ5iWw
+--000000000000c6419e05d974c908--
