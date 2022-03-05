@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D854CE3B8
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 735AA4CE3B6
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230329AbiCEI4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230260AbiCEI4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 5 Mar 2022 03:56:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiCEI4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:56:03 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E11F254A9A
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:08 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id c16-20020a17090aa61000b001befad2bfaaso9510484pjq.1
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:08 -0800 (PST)
+        with ESMTP id S230352AbiCEI4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:56:04 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBAC254AA2
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:09 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id bx5so9202171pjb.3
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=PIGXVqns4U9Qy7E9Gb+B0/UKAvd8V3LTZva1AI8QZC8=;
-        b=LJ2zxf+u2rGELA0x87CIHtcSLNdUpd8cyF4gYRtaqD8Ii3lS2g1ElGgCio9vD1ohlW
-         FUQj9LhRaUInHeT3XGD8xwZOH31uMXL9k0ZSZPIKfvetU+oxIsIbvTEjzUvIxUEJxXDq
-         UnlueGFuCBDft5XrNZbjaWnl1VzuXTTfodmu8=
+        bh=rxo8qmm7H4K7Efya4RR/ibYwyVF1qG9fLDcY78AMW6M=;
+        b=WyhMGmMaK5+JasehiBmHy2LEyQ7DYSqKFsDUZizvqovtniKsxc7T/p3jfxgl4oaLpr
+         UKgK94Q/LVHRA+7TnYZkcC1xcs7MCyG6J4jlnkSwu+bE1xPxAJmPGihpWFiheMXyrOwl
+         nK0BLszHbI7cKQi8ikfKBXmgT+L+P7iHCkIV8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=PIGXVqns4U9Qy7E9Gb+B0/UKAvd8V3LTZva1AI8QZC8=;
-        b=gW73Xp/BGY5tmm6lqYbcQdlIrbW3shAsdUOknC2wUzw6vjw6FlkyBgloXB9FvzIAkX
-         kBQ9ujUsCdewdl75f27QUpp4fv6u7feXZ2O69mF9o5SplqCnMpqsaC22qoxRAnovNByD
-         4IzA2JzGVccEfqwPNRBqRJ21FdEqlOmutqTdMYOZExwt/LzdQHeg1u+qMfPwcEYBRUA6
-         PJP3j5jagpkakge86Vf85JRYnNF6xHCip+rxkh8P+RC/EV0B0Ndnaiw3tJ82lhtC+w1g
-         1cYxXdd0kLRg912t+9mUgonEmoOPazrIbYXllGjX74wWsmvD3kYrbZPWshvmK88nhIhG
-         OR6Q==
-X-Gm-Message-State: AOAM531NSUjqSsRCwxfAdw+SDcr2un/P9woE2xMOIaFs9SH2bqISyFg+
-        e8lKbuTAAAGlAL0S562jBUie9lEqgvJG1g==
-X-Google-Smtp-Source: ABdhPJydq3/bf3KiqVTgag1JbbWnx5nkzRYPIXTwkUDdgdlO11LhGXy77jqqC61PXOt+SIH9psKo5g==
-X-Received: by 2002:a17:902:f782:b0:14b:63db:9bc1 with SMTP id q2-20020a170902f78200b0014b63db9bc1mr2502659pln.60.1646470507319;
-        Sat, 05 Mar 2022 00:55:07 -0800 (PST)
+        bh=rxo8qmm7H4K7Efya4RR/ibYwyVF1qG9fLDcY78AMW6M=;
+        b=sfRVn9PAJvXXQPkeprRS/0tMu3gA6I92zyCnHPoRUn9K1D5RXsMrf46L0BjrYL3tkr
+         i1S0aWojzhvH7VxRFDQaXGPqLMT2btc5Xtp4JqQFNEonuI/JuTaTrV5nn6BnC04AE8VZ
+         q9Q2pjnSySFcFuj9EaAp2vHV6SvI/G/PtTKqSAKNBdGqIvZ9zEcadIQTg1zwL4aPG+4t
+         hC5b8i1UmBSVWCkFErhImDp0quKz9ALN6pfJ1XDIpwpbwsfOAiSz4x8NFgyz2+l7cuCh
+         Xv4IpKm0aZBfr0hL51fvwiR90k5P8RbFPbBIUauEhm34sIQ1gpCuJS6C2stfRJAC1+NU
+         7+Lw==
+X-Gm-Message-State: AOAM531lhL45aFLzvL30v2IU9th9rAnt5JpTa3XGVzAJbW9zoMNJIwsE
+        6ziHZJ3QLCgHExaPboWR1Z1XXw==
+X-Google-Smtp-Source: ABdhPJxEdLeUNutN+mKzSJtwYIBzgWRUGC5CTYOhQtHhildrV6VR649kh+vE0BCroZLau5KP+QQjtg==
+X-Received: by 2002:a17:902:d481:b0:151:b6e0:34bf with SMTP id c1-20020a170902d48100b00151b6e034bfmr2462962plg.140.1646470508341;
+        Sat, 05 Mar 2022 00:55:08 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.06
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.07
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
         Sat, 05 Mar 2022 00:55:07 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 5/9] bnxt_en: Properly report no pause support on some cards
-Date:   Sat,  5 Mar 2022 03:54:38 -0500
-Message-Id: <1646470482-13763-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 6/9] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Sat,  5 Mar 2022 03:54:39 -0500
+Message-Id: <1646470482-13763-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c6419e05d974c908"
+        boundary="000000000000d5251505d974c907"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,123 +65,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c6419e05d974c908
+--000000000000d5251505d974c907
 
-Some cards are configured to never support link pause or PFC.  Discover
-these cards and properly report no pause support to ethtool.  Disable
-PFC settings from DCBNL if PFC is unsupported.
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
+
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  6 ++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c     |  3 ++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 15 ++++++++++-----
- 4 files changed, 17 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 1ed71b6fed8a..2280b189f3d6 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -9416,7 +9416,7 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- 	if (rc)
- 		goto hwrm_phy_qcaps_exit;
- 
--	bp->phy_flags = resp->flags;
-+	bp->phy_flags = resp->flags | (le16_to_cpu(resp->flags2) << 8);
- 	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED) {
- 		struct ethtool_eee *eee = &bp->eee;
- 		u16 fw_speeds = le16_to_cpu(resp->supported_speeds_eee_mode);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 5d743976cb35..447a9406b8a2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2104,8 +2104,8 @@ struct bnxt {
- 	u32			lpi_tmr_lo;
- 	u32			lpi_tmr_hi;
- 
--	/* copied from flags in hwrm_port_phy_qcaps_output */
--	u8			phy_flags;
-+	/* copied from flags and flags2 in hwrm_port_phy_qcaps_output */
-+	u32			phy_flags;
- #define BNXT_PHY_FL_EEE_CAP		PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED
- #define BNXT_PHY_FL_EXT_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_EXTERNAL_LPBK_SUPPORTED
- #define BNXT_PHY_FL_AN_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_AUTONEG_LPBK_SUPPORTED
-@@ -2114,6 +2114,8 @@ struct bnxt {
- #define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
- #define BNXT_PHY_FL_FW_MANAGED_LKDN	PORT_PHY_QCAPS_RESP_FLAGS_FW_MANAGED_LINK_DOWN
- #define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
-+#define BNXT_PHY_FL_NO_PAUSE		(PORT_PHY_QCAPS_RESP_FLAGS2_PAUSE_UNSUPPORTED << 8)
-+#define BNXT_PHY_FL_NO_PFC		(PORT_PHY_QCAPS_RESP_FLAGS2_PFC_UNSUPPORTED << 8)
- 
- 	u8			num_tests;
- 	struct bnxt_test_info	*test_info;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-index 217ff597cdf2..caab3d626a2a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-@@ -627,7 +627,8 @@ static int bnxt_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
- 	int rc;
- 
- 	if (!(bp->dcbx_cap & DCB_CAP_DCBX_VER_IEEE) ||
--	    !(bp->dcbx_cap & DCB_CAP_DCBX_HOST))
-+	    !(bp->dcbx_cap & DCB_CAP_DCBX_HOST) ||
-+	    (bp->phy_flags & BNXT_PHY_FL_NO_PAUSE))
- 		return -EINVAL;
- 
- 	if (!my_pfc) {
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 519edad70f16..7cc69957e529 100644
+index 7cc69957e529..eadaca42ed96 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1662,15 +1662,19 @@ static void bnxt_fw_to_ethtool_support_fec(struct bnxt_link_info *link_info,
- static void bnxt_fw_to_ethtool_support_spds(struct bnxt_link_info *link_info,
- 				struct ethtool_link_ksettings *lk_ksettings)
- {
-+	struct bnxt *bp = container_of(link_info, struct bnxt, link_info);
- 	u16 fw_speeds = link_info->support_speeds;
+@@ -2109,9 +2109,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
- 	BNXT_FW_TO_ETHTOOL_SPDS(fw_speeds, 0, lk_ksettings, supported);
- 	fw_speeds = link_info->support_pam4_speeds;
- 	BNXT_FW_TO_ETHTOOL_PAM4_SPDS(fw_speeds, lk_ksettings, supported);
- 
--	ethtool_link_ksettings_add_link_mode(lk_ksettings, supported, Pause);
--	ethtool_link_ksettings_add_link_mode(lk_ksettings, supported,
--					     Asym_Pause);
-+	if (!(bp->phy_flags & BNXT_PHY_FL_NO_PAUSE)) {
-+		ethtool_link_ksettings_add_link_mode(lk_ksettings, supported,
-+						     Pause);
-+		ethtool_link_ksettings_add_link_mode(lk_ksettings, supported,
-+						     Asym_Pause);
-+	}
- 
- 	if (link_info->support_auto_speeds ||
- 	    link_info->support_pam4_auto_speeds)
-@@ -1901,7 +1905,8 @@ static int bnxt_set_link_ksettings(struct net_device *dev,
- 		/* any change to autoneg will cause link change, therefore the
- 		 * driver should put back the original pause setting in autoneg
- 		 */
--		set_pause = true;
-+		if (!(bp->phy_flags & BNXT_PHY_FL_NO_PAUSE))
-+			set_pause = true;
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
  	} else {
- 		u8 phy_type = link_info->phy_type;
- 
-@@ -2093,7 +2098,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 	struct bnxt *bp = netdev_priv(dev);
- 	struct bnxt_link_info *link_info = &bp->link_info;
- 
--	if (!BNXT_PHY_CFG_ABLE(bp))
-+	if (!BNXT_PHY_CFG_ABLE(bp) || (bp->phy_flags & BNXT_PHY_FL_NO_PAUSE))
- 		return -EOPNOTSUPP;
- 
- 	mutex_lock(&bp->link_lock);
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
 -- 
 2.18.1
 
 
---000000000000c6419e05d974c908
+--000000000000d5251505d974c907
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -252,13 +175,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIH2QcVKZq57Kx6YdkiiZWacFhryJSevi
-N0XqXYyNOz2EMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINo3I6VYj345k1keuxPFJgoF/7o8mfXK
+Z5Esr8a/ylcVMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDXkrPMGpi+8psyu/eczdQDoYC/MOlP860Aobvt4aTCCUDEUyb4
-EjT5Fwvq6rjZgaY732vX+j66lrMXWti6glJqKNKhvIfp6m6PaVUyuk5duCzJJZTASBgPWDZnFn+n
-LRDkGqPXM1GCb26CPEm4rqXu+ojhycIHiFbbISBMSpjRATWUO+JyW2jbvBrJKcDvoffwwXZseOsr
-1i3UN+sqCrlpA9ymXRRkF8Ws3EPRTPh2n3Isne+R/3PKlhQvVMCpTiLwx1iW3h5PcBz7oxnKDd9j
-O5XDOCjBYbFsiUy1bxDS2yjbAJdbii2pMp5RLP1AG4OcYYb1cwkxK7RgGmUZ5iWw
---000000000000c6419e05d974c908--
+ATANBgkqhkiG9w0BAQEFAASCAQBclFNIHQSKvSPxZlLf4Oox+8AUltFsYaQsh/Jgr8U73O1Y/cPq
+h9VmwuGQoYIu5oftaPAIeUmQIkvZuw91cWBursG/VcOmHSil0Ft7Y5FNnOB6hy7vxydytwf6J9d2
+GxT7ufo2u6iDWii9ErapRXUq4z+rGdWk0y6yxD/iuzyf5Xm0EvUegZINtUHBQn/T2ktpS7U/MTNP
+1crIL/E+o9eajdkIERUktyhSk0R9ekpOFcEOI3DLr8rF1SqA4wuQm9mOl/TeWzQqaDU7GAZojyaE
+er0gnMghoLoxL5wM9WWDx2X4ktwLcNiLwUPuxVJaHwfRUpZr0dblKMt77pGtVChS
+--000000000000d5251505d974c907--
