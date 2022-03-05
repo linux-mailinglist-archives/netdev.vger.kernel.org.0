@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 712434CE335
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 07:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 670744CE356
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 08:03:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbiCEGBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 01:01:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
+        id S230370AbiCEHDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 02:03:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiCEGBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 01:01:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884752261D9
-        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 22:00:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E77AC60F03
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 06:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 44D61C340EE;
-        Sat,  5 Mar 2022 06:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646460021;
-        bh=hUIdtqRbJWm5CMHptbIB8uNOaz9K3+jQv9pi8BFDCVU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=f1ilnMOzYcjDHim9si1dc+JjvzjA1fvFpUuBFEdDX70Bau29ybvrAdFym4PmcVAU5
-         gaSeruPLCHS4wN+utXBRO8GMMw2/ifFzp4CWg6ODv72Yb1YwTnx1OfRzsyE7O5hGi7
-         keFRogqgwxQDjweisK/Q16NMsJu4RRDyCYzSAwOtzhfCt58DcclO1OlNAucp9XWZ3o
-         9/0PcvgxgotDR5WOPw6uAsFnPr4wzxaE/nNQ2wSos2YF69dwAoDj8U2/gk6ZU3wxjE
-         Yf9rhyMHfZc4zw5K8MCqNhDz818Yv1nRYbsrmKfZjXJl4NwQf2aw7QWgAJTo/NdGjP
-         FCc4VpizjTAKA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 21EDFE7BB18;
-        Sat,  5 Mar 2022 06:00:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229479AbiCEHDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 02:03:20 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D631BD31F2
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 23:02:30 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-227-IBxUC2iNMviUCLLp-QFpZQ-1; Sat, 05 Mar 2022 07:02:27 +0000
+X-MC-Unique: IBxUC2iNMviUCLLp-QFpZQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Sat, 5 Mar 2022 07:02:26 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Sat, 5 Mar 2022 07:02:26 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Dimitrios P. Bouras'" <dimitrios.bouras@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 1/1] eth: Transparently receive IP over LLC/SNAP
+Thread-Topic: [PATCH 1/1] eth: Transparently receive IP over LLC/SNAP
+Thread-Index: AQHYMCimD+c3nDfKNk2FTT507UZnFqywW3rQ
+Date:   Sat, 5 Mar 2022 07:02:26 +0000
+Message-ID: <4baebbcb95d84823a7f4ecbe18cbbc3c@AcuMS.aculab.com>
+References: <462fa134-bc85-a629-b9c5-8c6ea08b751d@gmail.com>
+In-Reply-To: <462fa134-bc85-a629-b9c5-8c6ea08b751d@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/11] mptcp: Selftest refinements and a new test
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164646002113.31837.15868652515983059293.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Mar 2022 06:00:21 +0000
-References: <20220304193636.219315-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220304193636.219315-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri,  4 Mar 2022 11:36:25 -0800 you wrote:
-> Patches 1 and 11 improve the printed output of the mptcp_join.sh
-> selftest.
-> 
-> Patches 2-8 add a test for the MP_FASTCLOSE option, including
-> prerequisite changes like additional MPTCP MIBs.
-> 
-> Patches 9-10 add some groundwork for upcoming tests.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,01/11] selftests: mptcp: adjust output alignment for more tests
-    https://git.kernel.org/netdev/net-next/c/9a0a93672c14
-  - [net-next,02/11] mptcp: add the mibs for MP_FASTCLOSE
-    https://git.kernel.org/netdev/net-next/c/1e75629cb964
-  - [net-next,03/11] selftests: mptcp: add the MP_FASTCLOSE mibs check
-    https://git.kernel.org/netdev/net-next/c/e8e947ef50f6
-  - [net-next,04/11] mptcp: add the mibs for MP_RST
-    https://git.kernel.org/netdev/net-next/c/e40dd439d6da
-  - [net-next,05/11] selftests: mptcp: add the MP_RST mibs check
-    https://git.kernel.org/netdev/net-next/c/922fd2b39e5a
-  - [net-next,06/11] selftests: mptcp: add extra_args in do_transfer
-    https://git.kernel.org/netdev/net-next/c/cbfafac4cf8f
-  - [net-next,07/11] selftests: mptcp: reuse linkfail to make given size files
-    https://git.kernel.org/netdev/net-next/c/34b572b76fec
-  - [net-next,08/11] selftests: mptcp: add fastclose testcase
-    https://git.kernel.org/netdev/net-next/c/01542c9bf9ab
-  - [net-next,09/11] selftests: mptcp: add invert check in check_transfer
-    https://git.kernel.org/netdev/net-next/c/8117dac3e7c3
-  - [net-next,10/11] selftests: mptcp: add more arguments for chk_join_nr
-    https://git.kernel.org/netdev/net-next/c/26516e10c433
-  - [net-next,11/11] selftests: mptcp: update output info of chk_rm_nr
-    https://git.kernel.org/netdev/net-next/c/7d9bf018f907
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+RnJvbTogRGltaXRyaW9zIFAuIEJvdXJhcw0KPiBTZW50OiAwNSBNYXJjaCAyMDIyIDAwOjMzDQo+
+IA0KPiBQcmFjdGljYWwgdXNlIGNhc2VzIGV4aXN0IHdoZXJlIGJlaW5nIGFibGUgdG8gcmVjZWl2
+ZSBFdGhlcm5ldCBwYWNrZXRzDQo+IGVuY2Fwc3VsYXRlZCBpbiBMTEMgU05BUCBpcyB1c2VmdWws
+IHdoaWxlIGF0IHRoZSBzYW1lIHRpbWUgZW5jYXBzdWxhdGluZw0KPiByZXBsaWVzICh0cmFuc21p
+dHRpbmcgYmFjaykgaW4gTExDIFNOQVAgaXMgbm90IHJlcXVpcmVkLg0KDQpJIHRoaW5rIHlvdSBu
+ZWVkIHRvIGJlIG1vcmUgZXhwbGljaXQuDQpJZiByZWNlaXZlZCBmcmFtZXMgaGF2ZSB0aGUgU05B
+UCBoZWFkZXIgSSdkIGV4cGVjdCB0cmFuc21pdHRlZCBvbmVzDQp0byBuZWVkIGl0IGFzIHdlbGwu
+DQoNCj4gQWNjb3JkaW5nbHksIHRoaXMNCj4gaXMgbm90IGFuIGF0dGVtcHQgdG8gYWRkIGZ1bGwt
+Ymxvd24gc3VwcG9ydCBmb3IgSVAgb3ZlciBMTEMgU05BUCwgb25seSBhDQo+ICJoYWNrIiB0aGF0
+ICJqdXN0IHdvcmtzIiAtLSBzZWUgQWxhbidzIGNvbW1lbnQgb24gdGhlIHRoZSBMaW51eC1rZXJu
+ZWwNCj4gbGlzdCBvbiB0aGlzIHN1YmplY3QgKCJMaW51eCBzdXBwb3J0cyBMTEMvU05BUCBhbmQg
+dmFyaW91cyB0aGluZ3Mgb3ZlciBpdA0KPiAoSVBYL0FwcGxldGFsayBERFAgZXRjKSBidXQgbm90
+IElQIG92ZXIgaXQsIGFzIGl0J3Mgb25lIG9mIHRob3NlIHN0YW5kYXJkcw0KPiBib2RpZXMgZHJp
+dmVuIGJvZ29zaXRpZXMgd2hpY2ggbm9ib2R5IGV2ZXIgYWN0dWFsbHkgZGVwbG95ZWQiIC0tDQo+
+IGh0dHA6Ly9sa21sLml1LmVkdS9oeXBlcm1haWwvbGludXgva2VybmVsLzExMDcuMy8wMTI0OS5o
+dG1sKS4NCg0KSVAgb3ZlciBTTkFQIGlzIG5lZWRlZCBmb3IgVG9rZW4gcmluZyBuZXR3b3JrcyAo
+ZXNwLiAxNk0gb25lcykgd2hlcmUgdGhlDQptdHUgaXMgbXVjaCBsYXJnZXIgdGhhbiAxNTAwIGJ5
+dGVzLg0KDQpJdCBpcyBhbGwgdG9vIGxvbmcgYWdvIHRob3VnaCwgSSBjYW4ndCByZW1lbWJlciB3
+aGV0aGVyIHRva2VuIHJpbmcNCnRlbmRzIHRvIGJpdC1yZXZlcnNlIHRoZSBNQUMgYWRkcmVzcyAo
+bGlrZSBGRERJIGRvZXMpIHdoaWNoIG1lYW5zIHlvdQ0KY2FuJ3QganVzdCBicmlkZ2UgQVJQIHBh
+Y2tldHMuDQpTbyB5b3UgbmVlZCBhIGJldHRlciBicmlkZ2UgLSBhbmQgdGhhdCBjYW4gYWRkL3Jl
+bW92ZSBzb21lIFNOQVAgaGVhZGVycy4NCg0KLi4uDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVk
+IEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5l
+cywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
