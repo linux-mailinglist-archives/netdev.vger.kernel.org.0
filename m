@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 735AA4CE3B6
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADF8F4CE3BA
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbiCEI4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 03:56:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        id S230355AbiCEI4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 03:56:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbiCEI4E (ORCPT
+        with ESMTP id S230353AbiCEI4E (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:56:04 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBAC254AA2
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:09 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id bx5so9202171pjb.3
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:09 -0800 (PST)
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A97255509
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:10 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id a5so9578832pfv.9
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rxo8qmm7H4K7Efya4RR/ibYwyVF1qG9fLDcY78AMW6M=;
-        b=WyhMGmMaK5+JasehiBmHy2LEyQ7DYSqKFsDUZizvqovtniKsxc7T/p3jfxgl4oaLpr
-         UKgK94Q/LVHRA+7TnYZkcC1xcs7MCyG6J4jlnkSwu+bE1xPxAJmPGihpWFiheMXyrOwl
-         nK0BLszHbI7cKQi8ikfKBXmgT+L+P7iHCkIV8=
+        bh=Z/HgDuc364ySKXYOWhh7f+ayeLSSoP7piIi4XMOTYqg=;
+        b=AUC+4O7ZEHa/olvD/fWTlqXzYIoCkKmpIRYkP9UzyY3jSNTXdxqeZF5BFukYjLufE9
+         bZO/g2jefqBuxPz936h2kaK1bEmOwCC7O7W6h/Xa13dsqf0HJKot08ctXRdg3NHljFQe
+         l+acMjzYu3vo0IL6pooEIfS9QKurWBO76fANI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=rxo8qmm7H4K7Efya4RR/ibYwyVF1qG9fLDcY78AMW6M=;
-        b=sfRVn9PAJvXXQPkeprRS/0tMu3gA6I92zyCnHPoRUn9K1D5RXsMrf46L0BjrYL3tkr
-         i1S0aWojzhvH7VxRFDQaXGPqLMT2btc5Xtp4JqQFNEonuI/JuTaTrV5nn6BnC04AE8VZ
-         q9Q2pjnSySFcFuj9EaAp2vHV6SvI/G/PtTKqSAKNBdGqIvZ9zEcadIQTg1zwL4aPG+4t
-         hC5b8i1UmBSVWCkFErhImDp0quKz9ALN6pfJ1XDIpwpbwsfOAiSz4x8NFgyz2+l7cuCh
-         Xv4IpKm0aZBfr0hL51fvwiR90k5P8RbFPbBIUauEhm34sIQ1gpCuJS6C2stfRJAC1+NU
-         7+Lw==
-X-Gm-Message-State: AOAM531lhL45aFLzvL30v2IU9th9rAnt5JpTa3XGVzAJbW9zoMNJIwsE
-        6ziHZJ3QLCgHExaPboWR1Z1XXw==
-X-Google-Smtp-Source: ABdhPJxEdLeUNutN+mKzSJtwYIBzgWRUGC5CTYOhQtHhildrV6VR649kh+vE0BCroZLau5KP+QQjtg==
-X-Received: by 2002:a17:902:d481:b0:151:b6e0:34bf with SMTP id c1-20020a170902d48100b00151b6e034bfmr2462962plg.140.1646470508341;
-        Sat, 05 Mar 2022 00:55:08 -0800 (PST)
+        bh=Z/HgDuc364ySKXYOWhh7f+ayeLSSoP7piIi4XMOTYqg=;
+        b=Ivp8IjKlvnABs66SqMrXa5qOHnjjiuLNfr4TJPp9rRu7LDHiqrMK6TuUlP/AIUFPlt
+         6P7Y+dYn+ewnVdcNt7B6qBB7IlJN1u95PglQEFCVk8Ypi3+ZJEWc67dqJzC3xaXiOBI/
+         aRKty3RaeY5UKaC/zCNisB0LOcdd11RLZJm/W+I9cScM4qEoRxzSextKpHReGPqBDPhO
+         PNF7ljUm0ngq6CHvdNDVMgsafgXnyPx6qlQZS+byoDQ7R8FRgAd9muad/vrJLR3bPBbI
+         4rpzT78WzurDqayp2FErU5GxNMFLaUob0mnnzsJSDu/ZDt58/zzpA+g+RtI5g4N5038c
+         Glqw==
+X-Gm-Message-State: AOAM532qzYlz9kW99LptBir3LwSHAlKwnlOUqTVWp0KW5OsyFzO3tt7h
+        VyNthOH2WUEjOYfi7qOgBdoP+Q==
+X-Google-Smtp-Source: ABdhPJz1HELyUd7h9fFJC62M91HlYHmYRmj6BkGqDaItdxmaGjV/azdAYNS444/zSSMjEXCpJdA2ig==
+X-Received: by 2002:aa7:8d42:0:b0:4bd:265:def4 with SMTP id s2-20020aa78d42000000b004bd0265def4mr2939023pfe.24.1646470509358;
+        Sat, 05 Mar 2022 00:55:09 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.07
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:07 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:08 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 6/9] bnxt_en: Eliminate unintended link toggle during FW reset
-Date:   Sat,  5 Mar 2022 03:54:39 -0500
-Message-Id: <1646470482-13763-7-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 7/9] bnxt_en: Do not destroy health reporters during reset
+Date:   Sat,  5 Mar 2022 03:54:40 -0500
+Message-Id: <1646470482-13763-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000d5251505d974c907"
+        boundary="000000000000def5ff05d974c961"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,46 +65,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000d5251505d974c907
+--000000000000def5ff05d974c961
 
-If the flow control settings have been changed, a subsequent FW reset
-may cause the ethernet link to toggle unnecessarily.  This link toggle
-will increase the down time by a few seconds.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-The problem is caused by bnxt_update_phy_setting() detecting a false
-mismatch in the flow control settings between the stored software
-settings and the current FW settings after the FW reset.  This mismatch
-is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
-inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
-bit should not be added to link_info->req_flow_ctrl.
+Health reporter state should be maintained over resets. Previously
+reporters were destroyed if the device capabilities changed, but
+since none of the reporters depend on capabilities anymore, this
+logic should be removed.
 
-Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  7 +--
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 44 +++++++++----------
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |  2 +-
+ 3 files changed, 24 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 7cc69957e529..eadaca42ed96 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2109,9 +2109,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 		}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 2280b189f3d6..2de02950086f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -12149,11 +12149,6 @@ int bnxt_fw_init_one(struct bnxt *bp)
+ 	if (rc)
+ 		return rc;
  
- 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
--		if (bp->hwrm_spec_code >= 0x10201)
--			link_info->req_flow_ctrl =
--				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
-+		link_info->req_flow_ctrl = 0;
- 	} else {
- 		/* when transition from auto pause to force pause,
- 		 * force a link change
+-	/* In case fw capabilities have changed, destroy the unneeded
+-	 * reporters and create newly capable ones.
+-	 */
+-	bnxt_dl_fw_reporters_destroy(bp, false);
+-	bnxt_dl_fw_reporters_create(bp);
+ 	bnxt_fw_init_one_p3(bp);
+ 	return 0;
+ }
+@@ -12982,7 +12977,7 @@ static void bnxt_remove_one(struct pci_dev *pdev)
+ 	cancel_delayed_work_sync(&bp->fw_reset_task);
+ 	bp->sp_event = 0;
+ 
+-	bnxt_dl_fw_reporters_destroy(bp, true);
++	bnxt_dl_fw_reporters_destroy(bp);
+ 	bnxt_dl_unregister(bp);
+ 	bnxt_shutdown_tc(bp);
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index f6e21fac0e69..0c17f90d44a2 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -241,37 +241,37 @@ static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
+ 	.recover = bnxt_fw_recover,
+ };
+ 
+-void bnxt_dl_fw_reporters_create(struct bnxt *bp)
++static struct devlink_health_reporter *
++__bnxt_dl_reporter_create(struct bnxt *bp,
++			  const struct devlink_health_reporter_ops *ops)
+ {
+-	struct bnxt_fw_health *health = bp->fw_health;
+-
+-	if (!health || health->fw_reporter)
+-		return;
++	struct devlink_health_reporter *reporter;
+ 
+-	health->fw_reporter =
+-		devlink_health_reporter_create(bp->dl, &bnxt_dl_fw_reporter_ops,
+-					       0, bp);
+-	if (IS_ERR(health->fw_reporter)) {
+-		netdev_warn(bp->dev, "Failed to create FW health reporter, rc = %ld\n",
+-			    PTR_ERR(health->fw_reporter));
+-		health->fw_reporter = NULL;
+-		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
++	reporter = devlink_health_reporter_create(bp->dl, ops, 0, bp);
++	if (IS_ERR(reporter)) {
++		netdev_warn(bp->dev, "Failed to create %s health reporter, rc = %ld\n",
++			    ops->name, PTR_ERR(reporter));
++		return NULL;
+ 	}
++
++	return reporter;
+ }
+ 
+-void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all)
++void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ {
+-	struct bnxt_fw_health *health = bp->fw_health;
++	struct bnxt_fw_health *fw_health = bp->fw_health;
+ 
+-	if (!health)
+-		return;
++	if (fw_health && !fw_health->fw_reporter)
++		fw_health->fw_reporter = __bnxt_dl_reporter_create(bp, &bnxt_dl_fw_reporter_ops);
++}
+ 
+-	if ((bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) && !all)
+-		return;
++void bnxt_dl_fw_reporters_destroy(struct bnxt *bp)
++{
++	struct bnxt_fw_health *fw_health = bp->fw_health;
+ 
+-	if (health->fw_reporter) {
+-		devlink_health_reporter_destroy(health->fw_reporter);
+-		health->fw_reporter = NULL;
++	if (fw_health && fw_health->fw_reporter) {
++		devlink_health_reporter_destroy(fw_health->fw_reporter);
++		fw_health->fw_reporter = NULL;
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
+index a715458abc30..b8105065367b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
+@@ -75,7 +75,7 @@ void bnxt_devlink_health_fw_report(struct bnxt *bp);
+ void bnxt_dl_health_fw_status_update(struct bnxt *bp, bool healthy);
+ void bnxt_dl_health_fw_recovery_done(struct bnxt *bp);
+ void bnxt_dl_fw_reporters_create(struct bnxt *bp);
+-void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all);
++void bnxt_dl_fw_reporters_destroy(struct bnxt *bp);
+ int bnxt_dl_register(struct bnxt *bp);
+ void bnxt_dl_unregister(struct bnxt *bp);
+ 
 -- 
 2.18.1
 
 
---000000000000d5251505d974c907
+--000000000000def5ff05d974c961
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -175,13 +259,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINo3I6VYj345k1keuxPFJgoF/7o8mfXK
-Z5Esr8a/ylcVMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII7/lHQGhpnv4Q/90tvvAjNJMNulC89S
+RikYH3r0HavSMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
 NTA4NTUwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBclFNIHQSKvSPxZlLf4Oox+8AUltFsYaQsh/Jgr8U73O1Y/cPq
-h9VmwuGQoYIu5oftaPAIeUmQIkvZuw91cWBursG/VcOmHSil0Ft7Y5FNnOB6hy7vxydytwf6J9d2
-GxT7ufo2u6iDWii9ErapRXUq4z+rGdWk0y6yxD/iuzyf5Xm0EvUegZINtUHBQn/T2ktpS7U/MTNP
-1crIL/E+o9eajdkIERUktyhSk0R9ekpOFcEOI3DLr8rF1SqA4wuQm9mOl/TeWzQqaDU7GAZojyaE
-er0gnMghoLoxL5wM9WWDx2X4ktwLcNiLwUPuxVJaHwfRUpZr0dblKMt77pGtVChS
---000000000000d5251505d974c907--
+ATANBgkqhkiG9w0BAQEFAASCAQC41EEDn4yAWTl3C6Lr2zFgS6t8X/NL7pGn+j7baeoKuL90A9PI
+Kkev3E50v9t+1y44PQHqvJLIttfh+ZIS8dl7KalzINZe1lkuESfX18HkRcHvxxDMncAEHh95ztBf
+UiUNYl8t05E6UMDPdWc/TlKvwFD8ed60GXkuq4UiIVfWNRSlXEmMSzCjoCJQ1cZFpKxiTvOy5oom
+QC7P0FlZZx7g6cgwEgS6P+c3O12BuRtz9xZOkga7d1u0rjYRSuLdHawv3yvXJXop3W920Avh+wO2
+hHs0mec4tb+4FfiPEIqrctQomM5Q2WGH7onG/zkJvDFY9ZtGL+QkpE31mdJ+xUIM
+--000000000000def5ff05d974c961--
