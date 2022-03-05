@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6114CE3B1
+	by mail.lfdr.de (Postfix) with ESMTP id 78C3C4CE3B2
 	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiCEIzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 03:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
+        id S230226AbiCEIzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 03:55:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiCEIzx (ORCPT
+        with ESMTP id S230212AbiCEIzx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:53 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1393225259F
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7132525B6
         for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:04 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 6so4916152pgg.0
+Received: by mail-pf1-x431.google.com with SMTP id j1so5609964pfj.5
         for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=eC1lzqanh4BuhcfVyujuAm3QV1fvH0oW+3+onCEn47g=;
-        b=BXmKFNH4PhSFGss4glGJYyD6HCjGBQjRP5jxi1Nn3q7s7EUOqcvVQHzs5SognaLATe
-         JmD3Xql4EA/G3oIvSHwT4YkSa+kDAqp2q1dB1QiVvsJDd4dV/77qbgx8xjBDbVe8NTcn
-         lkVTNOevE39sHecDSxroJ5WZ4sx7LazrRv6+g=
+        bh=JKbyk4sw44njRI+vPJt6jsM/3N630tpKhlybDHTrgjI=;
+        b=aDgF1pR2eeGy4VtelsKzH/tkkHJNkiD0YLtkfZM/QmlLad4eApE78Gphwh//qnmCXF
+         pxwk0ZCHSJH/hQGVTl6bTMfWSyYWgFeYFopa1/T+JyfuUFdcH5sWGccox1M/YPy2W3I9
+         ulUuvhRABBefJd9JjrLI8ty+Zj1Gf+TB9uygw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=eC1lzqanh4BuhcfVyujuAm3QV1fvH0oW+3+onCEn47g=;
-        b=bqbXvWJFmzfcORBaKBwGB+7qHlVFHgn4A3P/UyUETZE5iTwBIhuyCe94nrAa6jPUq7
-         OQU1hZl2j51hKhlAa9on350s5ZLkQdh53Bfyc0Ej9dm2fmQv38mj1VYuiJTnz/cgTtFK
-         EiPiwsQGBlFUZhYm5lkojlDVKqNn/iH4favfTTEQCAnNnYJ+uUErGzoYb6xDqYxX6zFT
-         jS7UjT5IopIFpUOGQjppEchnEiqEa0CT1ZCVAMXzeJuuWfBRvCHrSOh4EikVuuOAe8en
-         BkzvUXjh+TLVUbHROJc4J0fK4cOgv33Wa5q2wsOozanWfNbvH429KDteMLy4CsCAGvNJ
-         MmcA==
-X-Gm-Message-State: AOAM531R250Cyl+TM6LepHq/EMPnnFvGYGi8k3TVSzPR8pKhGCi++LLi
-        nsxNq2/xrcvMJySsdv+i4Tj+KQ==
-X-Google-Smtp-Source: ABdhPJw0Ad9mJW3w6Vx/XecBMBa8eV4mlz1RlsMEe9AAyU3LyfGwhnFtZICZBgEeriqA6BhuG0K1Bg==
-X-Received: by 2002:a05:6a00:1a47:b0:4e1:5bc7:840d with SMTP id h7-20020a056a001a4700b004e15bc7840dmr2810666pfv.10.1646470502851;
-        Sat, 05 Mar 2022 00:55:02 -0800 (PST)
+        bh=JKbyk4sw44njRI+vPJt6jsM/3N630tpKhlybDHTrgjI=;
+        b=Fe1UM54idaYk8ubRrw/QNOTYIEHZmU2U+IA4DXtryzUlXk7DrZZrZkwXh/EtDR37AG
+         RG9nzLytkLrk1U59qDLBYxllT9H37IcPkN58QM6dBmjfvgc6tPdM0IOKnrX9R1GQR7QF
+         xsHjEAJyavM6bVzzwVSTW3X5dRT6mfvTymSSQe5mejzLOna0AS9t2nhNWQnuIZx0evKg
+         v2aN5/FR3EmnG/ut52cron7XkdClEo8vCZmeTcnvgUZK1zT5zesRC5Jz1s9XdmVCdCKC
+         4o6JCBmdq3tIGsflISeSulj0/NQkxAJye6Qmylcrr8UIrMREzUGUxr/Mb++LTKnJzECq
+         ZwMQ==
+X-Gm-Message-State: AOAM533+7np/V1ogMTo/C+2qoGATVUr+kC2zFfRXQvzDiczF2i19yQtY
+        hgNSQmVP+61zl0RvvUp0Z+Z0xg==
+X-Google-Smtp-Source: ABdhPJwYHR53e2La53OiadSEpdXVedy0qBmj9rT4SRSYbLWxqzykZTUPCn8pbpLes3Nk2u3tRYqFLg==
+X-Received: by 2002:aa7:909a:0:b0:4e1:6d4:5905 with SMTP id i26-20020aa7909a000000b004e106d45905mr2780740pfa.34.1646470503844;
+        Sat, 05 Mar 2022 00:55:03 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.01
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:02 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:03 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 1/9] bnxt_en: refactor error handling of HWRM_NVM_INSTALL_UPDATE
-Date:   Sat,  5 Mar 2022 03:54:34 -0500
-Message-Id: <1646470482-13763-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 2/9] bnxt_en: add more error checks to HWRM_NVM_INSTALL_UPDATE
+Date:   Sat,  5 Mar 2022 03:54:35 -0500
+Message-Id: <1646470482-13763-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000083967705d974c9fc"
+        boundary="0000000000008efd5805d974c912"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,90 +65,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000083967705d974c9fc
+--0000000000008efd5805d974c912
 
 From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-This is in anticipation of handling more "cmd_err" from FW in the next
-patch.
+FW returns error code "NVM_INSTALL_UPDATE_CMD_ERR_CODE_ANTI_ROLLBACK"
+in the response to indicate that HWRM_NVM_INSTALL_UPDATE command has
+failed due to Anti-rollback feature. Parse the error and return an
+appropriate error code to the user.
 
 Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 26 +++++++++++++------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index fecb03b49f01..59838a4f45fb 100644
+index 59838a4f45fb..a3151af9a279 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2512,6 +2512,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 	u8 *kmem = NULL;
- 	u32 modify_len;
- 	u32 item_len;
-+	u8 cmd_err;
- 	u16 index;
- 	int rc;
+@@ -2609,6 +2609,10 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 		cmd_err = ((struct hwrm_err_output *)resp)->cmd_err;
  
-@@ -2595,6 +2596,8 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 		}
- 
- 		rc = hwrm_req_send_silent(bp, install);
-+		if (!rc)
+ 		switch (cmd_err) {
++		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_ANTI_ROLLBACK:
++			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure Anti-rollback detected\n");
++			rc = -EALREADY;
 +			break;
- 
- 		if (defrag_attempted) {
- 			/* We have tried to defragment already in the previous
-@@ -2603,15 +2606,20 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 			break;
- 		}
- 
--		if (rc && ((struct hwrm_err_output *)resp)->cmd_err ==
--		    NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR) {
-+		cmd_err = ((struct hwrm_err_output *)resp)->cmd_err;
-+
-+		switch (cmd_err) {
-+		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR:
+ 		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR:
  			install->flags =
  				cpu_to_le16(NVM_INSTALL_UPDATE_REQ_FLAGS_ALLOWED_TO_DEFRAG);
- 
- 			rc = hwrm_req_send_silent(bp, install);
-+			if (!rc)
-+				break;
-+
-+			cmd_err = ((struct hwrm_err_output *)resp)->cmd_err;
- 
--			if (rc && ((struct hwrm_err_output *)resp)->cmd_err ==
--			    NVM_INSTALL_UPDATE_CMD_ERR_CODE_NO_SPACE) {
-+			if (cmd_err == NVM_INSTALL_UPDATE_CMD_ERR_CODE_NO_SPACE) {
- 				/* FW has cleared NVM area, driver will create
- 				 * UPDATE directory and try the flash again
- 				 */
-@@ -2621,11 +2629,13 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 						      BNX_DIR_TYPE_UPDATE,
- 						      BNX_DIR_ORDINAL_FIRST,
- 						      0, 0, item_len, NULL, 0);
--			} else if (rc) {
--				netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x\n", rc);
-+				if (!rc)
-+					break;
- 			}
--		} else if (rc) {
--			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x\n", rc);
-+			fallthrough;
-+		default:
-+			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x cmd_err :%x\n",
-+				   rc, cmd_err);
- 		}
- 	} while (defrag_attempted && !rc);
- 
 -- 
 2.18.1
 
 
---00000000000083967705d974c9fc
+--0000000000008efd5805d974c912
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -219,13 +172,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDBUsWcVu+APZ6H1jdFD5nOsHGnN51ig
-GCBMz8+xJ0puMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIClAL0e3hKutTIfBoaoiGmybvcYuccbS
+Aw2+fXBk9JgdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCXHRuUCAukciMCq2+7fra4frsla/QVcE4Zs/imKM1yxzw8co9/
-B4QJG47D7o4MLuWHqCqGYxqUEIJUPGHUTIJRDhJix9RsyivbVamZDEmDV1eyg6tWEHCj4l0jwTV/
-88XeEpV3bMnOAAECRt4u0lQ8p1QSyYkweVIsGvuw5jt5/0YoLa/pOISMZicr05nGB2YeyFVdYDz3
-gbp6BnZ/qesRW6+pZ2aVWVwIYB9btedcK86HZo3MYsp39UXCxEMQ+eZ11jjycTi0H8ftJaIXDexp
-SXmTBMW/MGRptdn6RMp8jzOJArh7C5n+ZEde8lUDY/Jrv4nhSOtTOM88FFgCbYPY
---00000000000083967705d974c9fc--
+ATANBgkqhkiG9w0BAQEFAASCAQAy7/2xZABwRdEBy8jHBz594ObnwLVxGLND67Z76UZZELo5gEL7
+E7R3JPf0uK/9sdx5NlUzyNCjgyuc4CWJNMgnSArkqcR4wrhz6FYDHIRlZEx4Qj+3oSClrlMx3Y0a
+LYWqaH0a6wkc1ofqY4CS6RsI1/MHYRgDSmUTrgv9z9UeTGVezzOa65GlMw3oa7ctPL08BaWSgFnq
+Xh0+czku9nB6jYRti4Gk0wW64BbIv2pknEa3FKccQwaRz0uSETwREGQK/Iri8Gkf7Q4KZlca6JZg
+jSB4IvZT0Cc4MdwihXK2uF2gGaIZ4fAIqsiQeCYSjB1FXrlnKdlDpfJl1ecXd4WE
+--0000000000008efd5805d974c912--
