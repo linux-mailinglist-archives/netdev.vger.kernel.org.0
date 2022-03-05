@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C3C4CE3B2
+	by mail.lfdr.de (Postfix) with ESMTP id C43554CE3B3
 	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230226AbiCEIzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 03:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
+        id S230235AbiCEIz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 03:55:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230212AbiCEIzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:53 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7132525B6
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:04 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id j1so5609964pfj.5
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:04 -0800 (PST)
+        with ESMTP id S230234AbiCEIzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:55 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3402525B6
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:05 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id e6so9465708pgn.2
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JKbyk4sw44njRI+vPJt6jsM/3N630tpKhlybDHTrgjI=;
-        b=aDgF1pR2eeGy4VtelsKzH/tkkHJNkiD0YLtkfZM/QmlLad4eApE78Gphwh//qnmCXF
-         pxwk0ZCHSJH/hQGVTl6bTMfWSyYWgFeYFopa1/T+JyfuUFdcH5sWGccox1M/YPy2W3I9
-         ulUuvhRABBefJd9JjrLI8ty+Zj1Gf+TB9uygw=
+        bh=ktL21C6yJ/8g9EUyS5/aJvlisDdS/FCE22KeszpBEF0=;
+        b=MtPXPJ5E8O0fZ2yjip9YX94rXFd9kZGtGx/MtzW2flIBwwk6jq5WOYWzpM2xQ/C+26
+         1ERLmZpr/a2qwdc0jnYPbBY8Xp30fJmbn081yFkjuO06jBbzqqaEhruqpziZhIZgFUKq
+         RtctlAjnfOSKuKWKx76Q/eKShOzuuzgmfsMLQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JKbyk4sw44njRI+vPJt6jsM/3N630tpKhlybDHTrgjI=;
-        b=Fe1UM54idaYk8ubRrw/QNOTYIEHZmU2U+IA4DXtryzUlXk7DrZZrZkwXh/EtDR37AG
-         RG9nzLytkLrk1U59qDLBYxllT9H37IcPkN58QM6dBmjfvgc6tPdM0IOKnrX9R1GQR7QF
-         xsHjEAJyavM6bVzzwVSTW3X5dRT6mfvTymSSQe5mejzLOna0AS9t2nhNWQnuIZx0evKg
-         v2aN5/FR3EmnG/ut52cron7XkdClEo8vCZmeTcnvgUZK1zT5zesRC5Jz1s9XdmVCdCKC
-         4o6JCBmdq3tIGsflISeSulj0/NQkxAJye6Qmylcrr8UIrMREzUGUxr/Mb++LTKnJzECq
-         ZwMQ==
-X-Gm-Message-State: AOAM533+7np/V1ogMTo/C+2qoGATVUr+kC2zFfRXQvzDiczF2i19yQtY
-        hgNSQmVP+61zl0RvvUp0Z+Z0xg==
-X-Google-Smtp-Source: ABdhPJwYHR53e2La53OiadSEpdXVedy0qBmj9rT4SRSYbLWxqzykZTUPCn8pbpLes3Nk2u3tRYqFLg==
-X-Received: by 2002:aa7:909a:0:b0:4e1:6d4:5905 with SMTP id i26-20020aa7909a000000b004e106d45905mr2780740pfa.34.1646470503844;
-        Sat, 05 Mar 2022 00:55:03 -0800 (PST)
+        bh=ktL21C6yJ/8g9EUyS5/aJvlisDdS/FCE22KeszpBEF0=;
+        b=kCxedWT18eNQEHcxeeO+FFAr7f9p+mWrISG/BfWtD1/4b0eJ5j8H4IuUSWP3lxY5qb
+         8kEzicskItLzmJd4moO4d9y7isNs72gPP3/CdgLKF1jcj1xPSCxKIz/J64Jjh2WGDOo2
+         TGJmpi3zUapXzZLM8yJpbSngXaVLab5r3NwjxKnZ1abI/7hqluN9tJGi0LxxDtzVfLZP
+         gA7jKiLmpf7HvDTSAm3/7kwHGJapOsVluxIrFKPdv4UxPFMsMNKtafxilwPze+fVGXoj
+         Ye3fVXH/55PtberFQaqLPnQK6WO0rO6zrCg564a9SnYCbjqPVs8ayi9uqPGRDoBjsQA0
+         6tmQ==
+X-Gm-Message-State: AOAM532PRNzoDX9WsL9fGBT64Xbfcg1D+6IN9IoAj1cJhOQsJz8qocpa
+        Xd/X/nTrxpis0MpRNU+CqfQSRQ==
+X-Google-Smtp-Source: ABdhPJxa2B07xfbmCZ6AxQpM9ZOfLCADrxbEuyteACtUHSIcvOdvL8c+saxZ3oehHLYXLQwoAjUMzA==
+X-Received: by 2002:a63:2b4d:0:b0:36c:7c39:b66c with SMTP id r74-20020a632b4d000000b0036c7c39b66cmr1984066pgr.583.1646470505213;
+        Sat, 05 Mar 2022 00:55:05 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.03
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.04
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:03 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:04 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 2/9] bnxt_en: add more error checks to HWRM_NVM_INSTALL_UPDATE
-Date:   Sat,  5 Mar 2022 03:54:35 -0500
-Message-Id: <1646470482-13763-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 3/9] bnxt_en: parse result field when NVRAM package install fails
+Date:   Sat,  5 Mar 2022 03:54:36 -0500
+Message-Id: <1646470482-13763-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000008efd5805d974c912"
+        boundary="0000000000009fb13905d974c95e"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,43 +65,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000008efd5805d974c912
+--0000000000009fb13905d974c95e
 
 From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-FW returns error code "NVM_INSTALL_UPDATE_CMD_ERR_CODE_ANTI_ROLLBACK"
-in the response to indicate that HWRM_NVM_INSTALL_UPDATE command has
-failed due to Anti-rollback feature. Parse the error and return an
-appropriate error code to the user.
+Instead of always returning -ENOPKG, decode the firmware error
+code further when the HWRM_NVM_INSTALL_UPDATE firmware call fails.
+Return a more suitable error code to userspace and log an error
+in dmesg.
 
 Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 44 ++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 59838a4f45fb..a3151af9a279 100644
+index a3151af9a279..3927ceb581da 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2609,6 +2609,10 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 		cmd_err = ((struct hwrm_err_output *)resp)->cmd_err;
+@@ -2496,6 +2496,48 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
+ 	return rc;
+ }
  
- 		switch (cmd_err) {
-+		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_ANTI_ROLLBACK:
-+			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure Anti-rollback detected\n");
-+			rc = -EALREADY;
-+			break;
- 		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR:
- 			install->flags =
- 				cpu_to_le16(NVM_INSTALL_UPDATE_REQ_FLAGS_ALLOWED_TO_DEFRAG);
++static int nvm_update_err_to_stderr(struct net_device *dev, u8 result)
++{
++	switch (result) {
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_TYPE_PARAMETER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_INDEX_PARAMETER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_DATA_ERROR:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_CHECKSUM_ERROR:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_ITEM_NOT_FOUND:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_ITEM_LOCKED:
++		netdev_err(dev, "PKG install error : Data integrity on NVM\n");
++		return -EINVAL;
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PREREQUISITE:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_FILE_HEADER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_SIGNATURE:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PROP_STREAM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PROP_LENGTH:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_MANIFEST:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_TRAILER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_CHECKSUM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_ITEM_CHECKSUM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_DATA_LENGTH:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_DIRECTIVE:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_DUPLICATE_ITEM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_ZERO_LENGTH_ITEM:
++		netdev_err(dev, "PKG install error : Invalid package\n");
++		return -ENOPKG;
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_AUTHENTICATION_ERROR:
++		netdev_err(dev, "PKG install error : Authentication error\n");
++		return -EPERM;
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_CHIP_REV:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_DEVICE_ID:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_SUBSYS_VENDOR:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_SUBSYS_ID:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_PLATFORM:
++		netdev_err(dev, "PKG install error : Invalid device\n");
++		return -EOPNOTSUPP;
++	default:
++		netdev_err(dev, "PKG install error : Internal error\n");
++		return -EIO;
++	}
++}
++
+ #define BNXT_PKG_DMA_SIZE	0x40000
+ #define BNXT_NVM_MORE_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_MODE))
+ #define BNXT_NVM_LAST_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_LAST))
+@@ -2650,7 +2692,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 	if (resp->result) {
+ 		netdev_err(dev, "PKG install error = %d, problem_item = %d\n",
+ 			   (s8)resp->result, (int)resp->problem_item);
+-		rc = -ENOPKG;
++		rc = nvm_update_err_to_stderr(dev, resp->result);
+ 	}
+ 	if (rc == -EACCES)
+ 		bnxt_print_admin_err(bp);
 -- 
 2.18.1
 
 
---0000000000008efd5805d974c912
+--0000000000009fb13905d974c95e
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -172,13 +219,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIClAL0e3hKutTIfBoaoiGmybvcYuccbS
-Aw2+fXBk9JgdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII9lE+rD5jHkN83Q6cklSLF1s8j+D6kL
+rv54Wluwj9C8MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUwNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAy7/2xZABwRdEBy8jHBz594ObnwLVxGLND67Z76UZZELo5gEL7
-E7R3JPf0uK/9sdx5NlUzyNCjgyuc4CWJNMgnSArkqcR4wrhz6FYDHIRlZEx4Qj+3oSClrlMx3Y0a
-LYWqaH0a6wkc1ofqY4CS6RsI1/MHYRgDSmUTrgv9z9UeTGVezzOa65GlMw3oa7ctPL08BaWSgFnq
-Xh0+czku9nB6jYRti4Gk0wW64BbIv2pknEa3FKccQwaRz0uSETwREGQK/Iri8Gkf7Q4KZlca6JZg
-jSB4IvZT0Cc4MdwihXK2uF2gGaIZ4fAIqsiQeCYSjB1FXrlnKdlDpfJl1ecXd4WE
---0000000000008efd5805d974c912--
+ATANBgkqhkiG9w0BAQEFAASCAQBDLesIk9JVpWyrJxpTxo0E4YgrisBOPMdbc+OmO5DhR2PIO3E/
+ooPQdpwXwo07HLq1OWjNkH1gIO6AYl13YygYCwsxZaolKe4S77dkmIFeNBit4JSgtY/d7n3EnFkp
+Y/25GzC5R67WN1kkglAnWMVvfoZ9WU1FYsfHlFusU1u6ywC80gW39OQaw08r/Y7OULZvTwHDEgsC
+/unOo2cjDlRBAYPZTVvcCD72L0USx99vV3VBYmiLg6S7e3LD6g/ZWvGaPSEVQ7JhMv9UhGxQZaEi
+pmNOdwP4JOxTbZyIG2quFn2xHAalzP1nLBQGzv8OD0GcJATZzUomm1y0on+gz6hm
+--0000000000009fb13905d974c95e--
