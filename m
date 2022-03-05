@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B68B4CE3B4
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6114CE3B1
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbiCEIzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230217AbiCEIzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 5 Mar 2022 03:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiCEIzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:52 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54221254A93
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:02 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id e2so9763427pls.10
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:02 -0800 (PST)
+        with ESMTP id S229448AbiCEIzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:55:53 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1393225259F
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:04 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id 6so4916152pgg.0
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=btymlOwDmaUtwtfC2Az2Z/pQkcZglZ6zJSPbE4gPQrQ=;
-        b=DAJP7FXCEy/+8ZgFA5prLNZiFohvHAWdqM7KSWzOepYUDmrEv0cC5vjpseii0E+9Fg
-         Qm1P2DFf21ATTVYQt7UTkQ/UHBVei5EE/i56E1bmxUsp+nmRkDJBKqwUYfE1itZ97jnc
-         XDMc+ytEx6jsSZ4jZ4905MleiY6lvu7C5B4sM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=eC1lzqanh4BuhcfVyujuAm3QV1fvH0oW+3+onCEn47g=;
+        b=BXmKFNH4PhSFGss4glGJYyD6HCjGBQjRP5jxi1Nn3q7s7EUOqcvVQHzs5SognaLATe
+         JmD3Xql4EA/G3oIvSHwT4YkSa+kDAqp2q1dB1QiVvsJDd4dV/77qbgx8xjBDbVe8NTcn
+         lkVTNOevE39sHecDSxroJ5WZ4sx7LazrRv6+g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=btymlOwDmaUtwtfC2Az2Z/pQkcZglZ6zJSPbE4gPQrQ=;
-        b=Ul7geV1//OMhMhRLFcsH3s9/N8/6sv5/ahSjfFzxqI2dWjCYR4E9Tby6JK5CKmfynY
-         38zMkP/IowH1G5yfIks/SQoGD2WO5AeOf0cF9bfOwSXpvxVuRvJOwuVVa4EPRn/Dzhv5
-         GwkDxhag5Y6X4CnrEap8AwmDQC1uROedahNbnXDdkWqC8AVQCBZL6doJG6zRseAdZUjh
-         CmpEL2BmQIlmpJX3xNme7duxuKh12lMmlK7uQnY69nchWXcNsCzpPQLaBq5jy5f/8YLf
-         //0eBU5F7BaE2IwDkney4/3yrvsv45GOnj9DlBPBSy8RWOpz1fQGHc0lgAqlO4wgcgnb
-         b7OA==
-X-Gm-Message-State: AOAM532ZxIYD9IiWzlac5n625ktqJtlJc1vCHMLQgoRiqLIMd9penUPT
-        lXqBl2zQxIxbHocsqiFr2db49A==
-X-Google-Smtp-Source: ABdhPJxRF6YUZzRHtv4qG4+J9aapVUTzxW9ua1K5chNsCa98CR4yQk3i20/+C6GPPRQIyYm1/GUtbw==
-X-Received: by 2002:a17:902:bd89:b0:14d:93b4:71a9 with SMTP id q9-20020a170902bd8900b0014d93b471a9mr2657602pls.98.1646470501494;
-        Sat, 05 Mar 2022 00:55:01 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=eC1lzqanh4BuhcfVyujuAm3QV1fvH0oW+3+onCEn47g=;
+        b=bqbXvWJFmzfcORBaKBwGB+7qHlVFHgn4A3P/UyUETZE5iTwBIhuyCe94nrAa6jPUq7
+         OQU1hZl2j51hKhlAa9on350s5ZLkQdh53Bfyc0Ej9dm2fmQv38mj1VYuiJTnz/cgTtFK
+         EiPiwsQGBlFUZhYm5lkojlDVKqNn/iH4favfTTEQCAnNnYJ+uUErGzoYb6xDqYxX6zFT
+         jS7UjT5IopIFpUOGQjppEchnEiqEa0CT1ZCVAMXzeJuuWfBRvCHrSOh4EikVuuOAe8en
+         BkzvUXjh+TLVUbHROJc4J0fK4cOgv33Wa5q2wsOozanWfNbvH429KDteMLy4CsCAGvNJ
+         MmcA==
+X-Gm-Message-State: AOAM531R250Cyl+TM6LepHq/EMPnnFvGYGi8k3TVSzPR8pKhGCi++LLi
+        nsxNq2/xrcvMJySsdv+i4Tj+KQ==
+X-Google-Smtp-Source: ABdhPJw0Ad9mJW3w6Vx/XecBMBa8eV4mlz1RlsMEe9AAyU3LyfGwhnFtZICZBgEeriqA6BhuG0K1Bg==
+X-Received: by 2002:a05:6a00:1a47:b0:4e1:5bc7:840d with SMTP id h7-20020a056a001a4700b004e15bc7840dmr2810666pfv.10.1646470502851;
+        Sat, 05 Mar 2022 00:55:02 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.00
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.01
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:01 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:02 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 0/9] bnxt_en: Updates.
-Date:   Sat,  5 Mar 2022 03:54:33 -0500
-Message-Id: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 1/9] bnxt_en: refactor error handling of HWRM_NVM_INSTALL_UPDATE
+Date:   Sat,  5 Mar 2022 03:54:34 -0500
+Message-Id: <1646470482-13763-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
+References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000068126805d974c9c0"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="00000000000083967705d974c9fc"
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,47 +65,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000068126805d974c9c0
+--00000000000083967705d974c9fc
 
-This patch series contains mainly NVRAM related features.  More
-NVRAM error checking and logging are added when installing firmware
-packages.  A new devlink hw health report is now added to report
-and diagnose NVRAM issues.  Other miscellaneous patches include
-reporting correctly cards that don't support link pause, adding
-an internal unknown link state, and avoiding unnecessary link
-toggle during firmware reset.
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-Edwin Peer (2):
-  bnxt_en: introduce initial link state of unknown
-  bnxt_en: Do not destroy health reporters during reset
+This is in anticipation of handling more "cmd_err" from FW in the next
+patch.
 
-Kalesh AP (4):
-  bnxt_en: refactor error handling of HWRM_NVM_INSTALL_UPDATE
-  bnxt_en: add more error checks to HWRM_NVM_INSTALL_UPDATE
-  bnxt_en: parse result field when NVRAM package install fails
-  bnxt_en: implement hw health reporter
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 26 +++++++++++++------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-Michael Chan (2):
-  bnxt_en: Properly report no pause support on some cards
-  bnxt_en: Eliminate unintended link toggle during FW reset
-
-Vikas Gupta (1):
-  bnxt_en: add an nvm test for hw diagnose
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  61 ++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  57 +++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |   3 +-
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 191 ++++++++++++++++--
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |   3 +-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 119 ++++++++---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |   7 +
- 7 files changed, 367 insertions(+), 74 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index fecb03b49f01..59838a4f45fb 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2512,6 +2512,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 	u8 *kmem = NULL;
+ 	u32 modify_len;
+ 	u32 item_len;
++	u8 cmd_err;
+ 	u16 index;
+ 	int rc;
+ 
+@@ -2595,6 +2596,8 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 		}
+ 
+ 		rc = hwrm_req_send_silent(bp, install);
++		if (!rc)
++			break;
+ 
+ 		if (defrag_attempted) {
+ 			/* We have tried to defragment already in the previous
+@@ -2603,15 +2606,20 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 			break;
+ 		}
+ 
+-		if (rc && ((struct hwrm_err_output *)resp)->cmd_err ==
+-		    NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR) {
++		cmd_err = ((struct hwrm_err_output *)resp)->cmd_err;
++
++		switch (cmd_err) {
++		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR:
+ 			install->flags =
+ 				cpu_to_le16(NVM_INSTALL_UPDATE_REQ_FLAGS_ALLOWED_TO_DEFRAG);
+ 
+ 			rc = hwrm_req_send_silent(bp, install);
++			if (!rc)
++				break;
++
++			cmd_err = ((struct hwrm_err_output *)resp)->cmd_err;
+ 
+-			if (rc && ((struct hwrm_err_output *)resp)->cmd_err ==
+-			    NVM_INSTALL_UPDATE_CMD_ERR_CODE_NO_SPACE) {
++			if (cmd_err == NVM_INSTALL_UPDATE_CMD_ERR_CODE_NO_SPACE) {
+ 				/* FW has cleared NVM area, driver will create
+ 				 * UPDATE directory and try the flash again
+ 				 */
+@@ -2621,11 +2629,13 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 						      BNX_DIR_TYPE_UPDATE,
+ 						      BNX_DIR_ORDINAL_FIRST,
+ 						      0, 0, item_len, NULL, 0);
+-			} else if (rc) {
+-				netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x\n", rc);
++				if (!rc)
++					break;
+ 			}
+-		} else if (rc) {
+-			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x\n", rc);
++			fallthrough;
++		default:
++			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x cmd_err :%x\n",
++				   rc, cmd_err);
+ 		}
+ 	} while (defrag_attempted && !rc);
+ 
 -- 
 2.18.1
 
 
---00000000000068126805d974c9c0
+--00000000000083967705d974c9fc
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -173,13 +219,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINbxhPUEF7czrHzNsBiw2kAVZC63nx2o
-B1geMyxcO80jMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDBUsWcVu+APZ6H1jdFD5nOsHGnN51ig
+GCBMz8+xJ0puMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUwM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCxa7WFlmnvlGv+vCtVoeROeUdLSu46s0jNCJFFRyap1gRpypgN
-dXPSaNwtZQQ7TwovmV9zVS6U5sW9Lc2F/xgZ2gL8lP1u8KbwJl6m9WuLLcQCd4/8BAQlvERIPyU3
-AjgSQz64+ab6E9F1uCk/dIsMIQ1eUv4PrIskZfiLI6t25IBf3UDkD0p3oso/AepACheZmfqeUt/d
-22dePEMYm9+k0GlJXQzOIydvd9csJ137sm5mLqv0dn1qMinMR6GACRSpOjigPOIfjRpX02lox31p
-tG46OMZ9bCR+hYawLCo13MfZlLZaa3r7/OOAAdDpJg6U5TAYP2GJqbq1/+lZLqjL
---00000000000068126805d974c9c0--
+ATANBgkqhkiG9w0BAQEFAASCAQCXHRuUCAukciMCq2+7fra4frsla/QVcE4Zs/imKM1yxzw8co9/
+B4QJG47D7o4MLuWHqCqGYxqUEIJUPGHUTIJRDhJix9RsyivbVamZDEmDV1eyg6tWEHCj4l0jwTV/
+88XeEpV3bMnOAAECRt4u0lQ8p1QSyYkweVIsGvuw5jt5/0YoLa/pOISMZicr05nGB2YeyFVdYDz3
+gbp6BnZ/qesRW6+pZ2aVWVwIYB9btedcK86HZo3MYsp39UXCxEMQ+eZ11jjycTi0H8ftJaIXDexp
+SXmTBMW/MGRptdn6RMp8jzOJArh7C5n+ZEde8lUDY/Jrv4nhSOtTOM88FFgCbYPY
+--00000000000083967705d974c9fc--
