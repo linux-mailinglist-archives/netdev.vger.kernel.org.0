@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF8F4CE3BA
+	by mail.lfdr.de (Postfix) with ESMTP id 623884CE3B9
 	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 09:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiCEI4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 03:56:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        id S230352AbiCEI4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 03:56:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230353AbiCEI4E (ORCPT
+        with ESMTP id S230364AbiCEI4E (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 03:56:04 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A97255509
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:10 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id a5so9578832pfv.9
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:10 -0800 (PST)
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4977B25553B
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 00:55:11 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso12477473pjj.2
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 00:55:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Z/HgDuc364ySKXYOWhh7f+ayeLSSoP7piIi4XMOTYqg=;
-        b=AUC+4O7ZEHa/olvD/fWTlqXzYIoCkKmpIRYkP9UzyY3jSNTXdxqeZF5BFukYjLufE9
-         bZO/g2jefqBuxPz936h2kaK1bEmOwCC7O7W6h/Xa13dsqf0HJKot08ctXRdg3NHljFQe
-         l+acMjzYu3vo0IL6pooEIfS9QKurWBO76fANI=
+        bh=ASlRKYmDCMm9ejST+ewaFE7nCTOcKLOVzdDTGLrzEdA=;
+        b=JDFE8a2jXaq/4I/PJV2Txsse8kFf03aVl28Ntnzi8NYAcRF0zlBVtbV+GM9kN7am5e
+         Y+CSBBc0ADIcs4kSJRexTULogQo6ucxuAN66jcH7e0zm5uDJ7vek2J2PAiJNZXYZEU+b
+         5jb/rwrBPvpqr0gESLh2V93KSFoPVS+/4hNpI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Z/HgDuc364ySKXYOWhh7f+ayeLSSoP7piIi4XMOTYqg=;
-        b=Ivp8IjKlvnABs66SqMrXa5qOHnjjiuLNfr4TJPp9rRu7LDHiqrMK6TuUlP/AIUFPlt
-         6P7Y+dYn+ewnVdcNt7B6qBB7IlJN1u95PglQEFCVk8Ypi3+ZJEWc67dqJzC3xaXiOBI/
-         aRKty3RaeY5UKaC/zCNisB0LOcdd11RLZJm/W+I9cScM4qEoRxzSextKpHReGPqBDPhO
-         PNF7ljUm0ngq6CHvdNDVMgsafgXnyPx6qlQZS+byoDQ7R8FRgAd9muad/vrJLR3bPBbI
-         4rpzT78WzurDqayp2FErU5GxNMFLaUob0mnnzsJSDu/ZDt58/zzpA+g+RtI5g4N5038c
-         Glqw==
-X-Gm-Message-State: AOAM532qzYlz9kW99LptBir3LwSHAlKwnlOUqTVWp0KW5OsyFzO3tt7h
-        VyNthOH2WUEjOYfi7qOgBdoP+Q==
-X-Google-Smtp-Source: ABdhPJz1HELyUd7h9fFJC62M91HlYHmYRmj6BkGqDaItdxmaGjV/azdAYNS444/zSSMjEXCpJdA2ig==
-X-Received: by 2002:aa7:8d42:0:b0:4bd:265:def4 with SMTP id s2-20020aa78d42000000b004bd0265def4mr2939023pfe.24.1646470509358;
-        Sat, 05 Mar 2022 00:55:09 -0800 (PST)
+        bh=ASlRKYmDCMm9ejST+ewaFE7nCTOcKLOVzdDTGLrzEdA=;
+        b=EL5abIc/FYC2U2+3Koq8LMI2Oct1gJ9d4aWE7ZFxFvMmwu0b1xYQNCGPw8Tsf0fnI1
+         MxPQ1wqSBv1+zavvAjB5Q6CBHzuDwKsXOjI3lcMlNcduOnGgils2T8UVhuk0xaX3ekl3
+         2QK2RMXVOUZIwV91lJZsZqRDiE8TdlmiU439/jbQfF/R7Bg3fwlShtKExWpz5kmMH4z+
+         GGwFpCQq+t2X5s9xFLinOJdCuPT+StWEqhkEiZJllcuu9xXWv2tkn9aQ+yQAxRiKcwgA
+         SA01dXiuw5E9gFXH69WTS2AmtlRMVIlF3f4gCwmRihVwaCjmphtX41HHXgYOVYabbQHf
+         S8yg==
+X-Gm-Message-State: AOAM5315IKyexJvi5VobODCkDxWutU5YZWXZlQPvqDw2ODSOONmiQAzx
+        VrIxlaV9lKtXeIHG4gsKniGv7w==
+X-Google-Smtp-Source: ABdhPJzI81Q51SmIUrZ+FM4bo/y805JJmBiNYxgVZOZmSSPCLrVSrq6ovPKy4k/M7KJ/qJtObh/EzA==
+X-Received: by 2002:a17:902:eccf:b0:151:6a35:8498 with SMTP id a15-20020a170902eccf00b001516a358498mr2629015plh.131.1646470510452;
+        Sat, 05 Mar 2022 00:55:10 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.08
+        by smtp.gmail.com with ESMTPSA id p28-20020a056a000a1c00b004f6519e61b7sm9213261pfh.21.2022.03.05.00.55.09
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 00:55:08 -0800 (PST)
+        Sat, 05 Mar 2022 00:55:10 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 7/9] bnxt_en: Do not destroy health reporters during reset
-Date:   Sat,  5 Mar 2022 03:54:40 -0500
-Message-Id: <1646470482-13763-8-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 8/9] bnxt_en: implement hw health reporter
+Date:   Sat,  5 Mar 2022 03:54:41 -0500
+Message-Id: <1646470482-13763-9-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000def5ff05d974c961"
+        boundary="000000000000f1d12605d974c9b3"
 X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,130 +65,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000def5ff05d974c961
+--000000000000f1d12605d974c9b3
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-Health reporter state should be maintained over resets. Previously
-reporters were destroyed if the device capabilities changed, but
-since none of the reporters depend on capabilities anymore, this
-logic should be removed.
+This reporter will report NVM errors which are non-fatal.
+When we receive these NVM error events, we'll report it
+through this new hw health reporter.
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  7 +--
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 44 +++++++++----------
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |  2 +-
- 3 files changed, 24 insertions(+), 29 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 19 +++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 33 +++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 73 +++++++++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |  1 +
+ 4 files changed, 126 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 2280b189f3d6..2de02950086f 100644
+index 2de02950086f..63b8fc4f9d42 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12149,11 +12149,6 @@ int bnxt_fw_init_one(struct bnxt *bp)
- 	if (rc)
- 		return rc;
+@@ -2061,6 +2061,22 @@ static void bnxt_event_error_report(struct bnxt *bp, u32 data1, u32 data2)
+ 	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_DOORBELL_DROP_THRESHOLD:
+ 		netdev_warn(bp->dev, "One or more MMIO doorbells dropped by the device!\n");
+ 		break;
++	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_NVM: {
++		struct bnxt_hw_health *hw_health = &bp->hw_health;
++
++		hw_health->nvm_err_address = EVENT_DATA2_NVM_ERR_ADDR(data2);
++		if (EVENT_DATA1_NVM_ERR_TYPE_WRITE(data1)) {
++			hw_health->synd = BNXT_HW_STATUS_NVM_WRITE_ERR;
++			hw_health->nvm_write_errors++;
++		} else if (EVENT_DATA1_NVM_ERR_TYPE_ERASE(data1)) {
++			hw_health->synd = BNXT_HW_STATUS_NVM_ERASE_ERR;
++			hw_health->nvm_erase_errors++;
++		} else {
++			hw_health->synd = BNXT_HW_STATUS_NVM_UNKNOWN_ERR;
++		}
++		set_bit(BNXT_FW_NVM_ERR_SP_EVENT, &bp->sp_event);
++		break;
++	}
+ 	default:
+ 		netdev_err(bp->dev, "FW reported unknown error type %u\n",
+ 			   err_type);
+@@ -11887,6 +11903,9 @@ static void bnxt_sp_task(struct work_struct *work)
+ 	if (test_and_clear_bit(BNXT_FW_ECHO_REQUEST_SP_EVENT, &bp->sp_event))
+ 		bnxt_fw_echo_reply(bp);
  
--	/* In case fw capabilities have changed, destroy the unneeded
--	 * reporters and create newly capable ones.
--	 */
--	bnxt_dl_fw_reporters_destroy(bp, false);
--	bnxt_dl_fw_reporters_create(bp);
- 	bnxt_fw_init_one_p3(bp);
- 	return 0;
- }
-@@ -12982,7 +12977,7 @@ static void bnxt_remove_one(struct pci_dev *pdev)
- 	cancel_delayed_work_sync(&bp->fw_reset_task);
- 	bp->sp_event = 0;
++	if (test_and_clear_bit(BNXT_FW_NVM_ERR_SP_EVENT, &bp->sp_event))
++		bnxt_devlink_health_hw_report(bp);
++
+ 	/* These functions below will clear BNXT_STATE_IN_SP_TASK.  They
+ 	 * must be the last functions to be called before exiting.
+ 	 */
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 447a9406b8a2..fa0df43ddc1a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -516,6 +516,21 @@ struct rx_tpa_end_cmp_ext {
+ 	  ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_EVENT_DATA2_PIN_ID_MASK) >>\
+ 	 ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_EVENT_DATA2_PIN_ID_SFT)
  
--	bnxt_dl_fw_reporters_destroy(bp, true);
-+	bnxt_dl_fw_reporters_destroy(bp);
- 	bnxt_dl_unregister(bp);
- 	bnxt_shutdown_tc(bp);
++#define EVENT_DATA2_NVM_ERR_ADDR(data2)					\
++	(((data2) &							\
++	  ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA2_ERR_ADDR_MASK) >>\
++	 ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA2_ERR_ADDR_SFT)
++
++#define EVENT_DATA1_NVM_ERR_TYPE_WRITE(data1)				\
++	(((data1) &							\
++	  ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA1_NVM_ERR_TYPE_MASK) ==\
++	 ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA1_NVM_ERR_TYPE_WRITE)
++
++#define EVENT_DATA1_NVM_ERR_TYPE_ERASE(data1)				\
++	(((data1) &							\
++	  ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA1_NVM_ERR_TYPE_MASK) ==\
++	 ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA1_NVM_ERR_TYPE_ERASE)
++
+ struct nqe_cn {
+ 	__le16	type;
+ 	#define NQ_CN_TYPE_MASK           0x3fUL
+@@ -1528,6 +1543,21 @@ struct bnxt_ctx_mem_info {
+ 	struct bnxt_mem_init	mem_init[BNXT_CTX_MEM_INIT_MAX];
+ };
  
++enum bnxt_hw_err {
++	BNXT_HW_STATUS_HEALTHY		= 0x0,
++	BNXT_HW_STATUS_NVM_WRITE_ERR	= 0x1,
++	BNXT_HW_STATUS_NVM_ERASE_ERR	= 0x2,
++	BNXT_HW_STATUS_NVM_UNKNOWN_ERR	= 0x3,
++};
++
++struct bnxt_hw_health {
++	u32 nvm_err_address;
++	u32 nvm_write_errors;
++	u32 nvm_erase_errors;
++	u8 synd;
++	struct devlink_health_reporter *hw_reporter;
++};
++
+ enum bnxt_health_severity {
+ 	SEVERITY_NORMAL = 0,
+ 	SEVERITY_WARNING,
+@@ -2045,6 +2075,7 @@ struct bnxt {
+ #define BNXT_FW_EXCEPTION_SP_EVENT	19
+ #define BNXT_LINK_CFG_CHANGE_SP_EVENT	21
+ #define BNXT_FW_ECHO_REQUEST_SP_EVENT	23
++#define BNXT_FW_NVM_ERR_SP_EVENT	25
+ 
+ 	struct delayed_work	fw_reset_task;
+ 	int			fw_reset_state;
+@@ -2145,6 +2176,8 @@ struct bnxt {
+ 	struct dentry		*debugfs_pdev;
+ 	struct device		*hwmon_dev;
+ 	enum board_idx		board_idx;
++
++	struct bnxt_hw_health	hw_health;
+ };
+ 
+ #define BNXT_NUM_RX_RING_STATS			8
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index f6e21fac0e69..0c17f90d44a2 100644
+index 0c17f90d44a2..a802bbda1c27 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -241,37 +241,37 @@ static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
+@@ -241,6 +241,69 @@ static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
  	.recover = bnxt_fw_recover,
  };
  
--void bnxt_dl_fw_reporters_create(struct bnxt *bp)
-+static struct devlink_health_reporter *
-+__bnxt_dl_reporter_create(struct bnxt *bp,
-+			  const struct devlink_health_reporter_ops *ops)
- {
--	struct bnxt_fw_health *health = bp->fw_health;
--
--	if (!health || health->fw_reporter)
--		return;
-+	struct devlink_health_reporter *reporter;
- 
--	health->fw_reporter =
--		devlink_health_reporter_create(bp->dl, &bnxt_dl_fw_reporter_ops,
--					       0, bp);
--	if (IS_ERR(health->fw_reporter)) {
--		netdev_warn(bp->dev, "Failed to create FW health reporter, rc = %ld\n",
--			    PTR_ERR(health->fw_reporter));
--		health->fw_reporter = NULL;
--		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
-+	reporter = devlink_health_reporter_create(bp->dl, ops, 0, bp);
-+	if (IS_ERR(reporter)) {
-+		netdev_warn(bp->dev, "Failed to create %s health reporter, rc = %ld\n",
-+			    ops->name, PTR_ERR(reporter));
-+		return NULL;
- 	}
-+
-+	return reporter;
- }
- 
--void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all)
-+void bnxt_dl_fw_reporters_create(struct bnxt *bp)
- {
--	struct bnxt_fw_health *health = bp->fw_health;
-+	struct bnxt_fw_health *fw_health = bp->fw_health;
- 
--	if (!health)
--		return;
-+	if (fw_health && !fw_health->fw_reporter)
-+		fw_health->fw_reporter = __bnxt_dl_reporter_create(bp, &bnxt_dl_fw_reporter_ops);
-+}
- 
--	if ((bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) && !all)
--		return;
-+void bnxt_dl_fw_reporters_destroy(struct bnxt *bp)
++static int bnxt_hw_recover(struct devlink_health_reporter *reporter,
++			   void *priv_ctx,
++			   struct netlink_ext_ack *extack)
 +{
-+	struct bnxt_fw_health *fw_health = bp->fw_health;
++	struct bnxt *bp = devlink_health_reporter_priv(reporter);
++	struct bnxt_hw_health *hw_health = &bp->hw_health;
++
++	hw_health->synd = BNXT_HW_STATUS_HEALTHY;
++	return 0;
++}
++
++static const char *hw_err_str(u8 synd)
++{
++	switch (synd) {
++	case BNXT_HW_STATUS_HEALTHY:
++		return "healthy";
++	case BNXT_HW_STATUS_NVM_WRITE_ERR:
++		return "nvm write error";
++	case BNXT_HW_STATUS_NVM_ERASE_ERR:
++		return "nvm erase error";
++	case BNXT_HW_STATUS_NVM_UNKNOWN_ERR:
++		return "unrecognized nvm error";
++	default:
++		return "unknown hw error";
++	}
++}
++
++static int bnxt_hw_diagnose(struct devlink_health_reporter *reporter,
++			    struct devlink_fmsg *fmsg,
++			    struct netlink_ext_ack *extack)
++{
++	struct bnxt *bp = devlink_health_reporter_priv(reporter);
++	struct bnxt_hw_health *h = &bp->hw_health;
++	int rc;
++
++	rc = devlink_fmsg_string_pair_put(fmsg, "Status", hw_err_str(h->synd));
++	if (rc)
++		return rc;
++	rc = devlink_fmsg_u32_pair_put(fmsg, "nvm_write_errors", h->nvm_write_errors);
++	if (rc)
++		return rc;
++	rc = devlink_fmsg_u32_pair_put(fmsg, "nvm_erase_errors", h->nvm_erase_errors);
++	if (rc)
++		return rc;
++	return 0;
++}
++
++void bnxt_devlink_health_hw_report(struct bnxt *bp)
++{
++	struct bnxt_hw_health *hw_health = &bp->hw_health;
++
++	netdev_warn(bp->dev, "%s reported at address 0x%x\n", hw_err_str(hw_health->synd),
++		    hw_health->nvm_err_address);
++
++	devlink_health_report(hw_health->hw_reporter, hw_err_str(hw_health->synd), NULL);
++}
++
++static const struct devlink_health_reporter_ops bnxt_dl_hw_reporter_ops = {
++	.name = "hw",
++	.diagnose = bnxt_hw_diagnose,
++	.recover = bnxt_hw_recover,
++};
++
+ static struct devlink_health_reporter *
+ __bnxt_dl_reporter_create(struct bnxt *bp,
+ 			  const struct devlink_health_reporter_ops *ops)
+@@ -260,6 +323,10 @@ __bnxt_dl_reporter_create(struct bnxt *bp,
+ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
++	struct bnxt_hw_health *hw_health = &bp->hw_health;
++
++	if (!hw_health->hw_reporter)
++		hw_health->hw_reporter = __bnxt_dl_reporter_create(bp, &bnxt_dl_hw_reporter_ops);
  
--	if (health->fw_reporter) {
--		devlink_health_reporter_destroy(health->fw_reporter);
--		health->fw_reporter = NULL;
-+	if (fw_health && fw_health->fw_reporter) {
-+		devlink_health_reporter_destroy(fw_health->fw_reporter);
-+		fw_health->fw_reporter = NULL;
- 	}
- }
+ 	if (fw_health && !fw_health->fw_reporter)
+ 		fw_health->fw_reporter = __bnxt_dl_reporter_create(bp, &bnxt_dl_fw_reporter_ops);
+@@ -268,6 +335,12 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
++	struct bnxt_hw_health *hw_health = &bp->hw_health;
++
++	if (hw_health->hw_reporter) {
++		devlink_health_reporter_destroy(hw_health->hw_reporter);
++		hw_health->hw_reporter = NULL;
++	}
  
+ 	if (fw_health && fw_health->fw_reporter) {
+ 		devlink_health_reporter_destroy(fw_health->fw_reporter);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-index a715458abc30..b8105065367b 100644
+index b8105065367b..056962e4b177 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-@@ -75,7 +75,7 @@ void bnxt_devlink_health_fw_report(struct bnxt *bp);
+@@ -74,6 +74,7 @@ enum bnxt_dl_version_type {
+ void bnxt_devlink_health_fw_report(struct bnxt *bp);
  void bnxt_dl_health_fw_status_update(struct bnxt *bp, bool healthy);
  void bnxt_dl_health_fw_recovery_done(struct bnxt *bp);
++void bnxt_devlink_health_hw_report(struct bnxt *bp);
  void bnxt_dl_fw_reporters_create(struct bnxt *bp);
--void bnxt_dl_fw_reporters_destroy(struct bnxt *bp, bool all);
-+void bnxt_dl_fw_reporters_destroy(struct bnxt *bp);
+ void bnxt_dl_fw_reporters_destroy(struct bnxt *bp);
  int bnxt_dl_register(struct bnxt *bp);
- void bnxt_dl_unregister(struct bnxt *bp);
- 
 -- 
 2.18.1
 
 
---000000000000def5ff05d974c961
+--000000000000f1d12605d974c9b3
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -259,13 +370,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEII7/lHQGhpnv4Q/90tvvAjNJMNulC89S
-RikYH3r0HavSMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
-NTA4NTUwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPH7NEFmpsN+CU/PU/IguuL2QatjaUFW
+V2gfuZD3Ch9IMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMw
+NTA4NTUxMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQC41EEDn4yAWTl3C6Lr2zFgS6t8X/NL7pGn+j7baeoKuL90A9PI
-Kkev3E50v9t+1y44PQHqvJLIttfh+ZIS8dl7KalzINZe1lkuESfX18HkRcHvxxDMncAEHh95ztBf
-UiUNYl8t05E6UMDPdWc/TlKvwFD8ed60GXkuq4UiIVfWNRSlXEmMSzCjoCJQ1cZFpKxiTvOy5oom
-QC7P0FlZZx7g6cgwEgS6P+c3O12BuRtz9xZOkga7d1u0rjYRSuLdHawv3yvXJXop3W920Avh+wO2
-hHs0mec4tb+4FfiPEIqrctQomM5Q2WGH7onG/zkJvDFY9ZtGL+QkpE31mdJ+xUIM
---000000000000def5ff05d974c961--
+ATANBgkqhkiG9w0BAQEFAASCAQCAdDLjFGddj7bUR5kL8WHGYqpQLHlRtrUL56pMu8EuU5koxYRl
+mhgHDmVHpIjtAT8Z9QmJCAMmlDFa1AhcPBG6GNqL1lKxi1ROKd/N39KocI/USrOiyRgTF4NRdHhM
+mSfwCFqsBZgvyJU0Xx+c0tffAFEuEjKXL+q+T+Omk96zVDi6c4MosRGTTyRqvQTyBW4ObeizF3rD
+obeedyuY+bQQrzMgE2IkOzi/XU3GW3uRHpL71hj5sF8XKKkKEUlW5gjyc8JJNZN4oaQ9qMAwCFWe
+2w0xVEdRQfJ3sp6lSIMCyph0N5CEWlfiFulPPtD/fu3G4EMyBHspDTb5YpWxtIzz
+--000000000000f1d12605d974c9b3--
