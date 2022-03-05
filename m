@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18BA64CE283
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 04:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA73D4CE286
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 04:50:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231137AbiCEDrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 22:47:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
+        id S231138AbiCEDvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 22:51:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbiCEDrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 22:47:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B279240078;
-        Fri,  4 Mar 2022 19:46:42 -0800 (PST)
+        with ESMTP id S230201AbiCEDvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 22:51:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD63248CCA;
+        Fri,  4 Mar 2022 19:50:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17DD860B22;
-        Sat,  5 Mar 2022 03:46:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B2ADC004E1;
-        Sat,  5 Mar 2022 03:46:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F4F1B80D07;
+        Sat,  5 Mar 2022 03:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 51BACC340F1;
+        Sat,  5 Mar 2022 03:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646452001;
-        bh=THvl/XBRt/H3hsP73htK0LNdZZJbBwfB3D+k9ciILWI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XFY5joiuEoOUr70zRMrxLuVNjC/+/TPsuPjrRVTv9iZenElb81NxskfVHELiuRxWN
-         G7qxeEh2sWn2A2JSnq87F3RYbZLEKOPEj3gdTRzM+K6YUW5CiTx728uyFHN9ZyX1ob
-         +yUQnmidNHCH/Px2mX/Ld8bILkyt7qumEfJVtnQXfQDOm3GSFmTg6YEI5ZTZrOQ/7Y
-         INFmt0IhP+qvthIGVudKJI8aFl8CNwF8nDF0/zQfBSjkQlUX9OVJXtUXS25gbqlFL+
-         WhuMl/CcPM6EsPc+BHGno0VXio1IwcTZOUgswpIGbMwGU+9DXqeEervm9xWLae5qjY
-         7G48zwuaRpt1w==
-Date:   Fri, 4 Mar 2022 19:46:40 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: pull request: bluetooth-next 2022-03-04
-Message-ID: <20220304194640.4409744d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220304193919.649815-1-luiz.dentz@gmail.com>
-References: <20220304193919.649815-1-luiz.dentz@gmail.com>
+        s=k20201202; t=1646452214;
+        bh=9Noe74znUTlSQ2LVYZqmqxjISIBD6ymH+uFe+CwXJK4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jrX7LGcYO2xP8rpMwd/C2sKqODmA78csTLYr0UL4BZiGwsBisjnIB7PYyMNQPaLrD
+         kV3KLcISaGpEo3BzS3BZDFRrDw4dVjL7yxJo/UO7w4+0byLxdjS4DFafwreigTloZu
+         MJdWKL7c37ysDwD65jRa+BWfm/bDs4gX3OkOaET7YY3UGv2sxeGsKb9ewFycmY2poz
+         KQ3H2TiEHbEg3gr83Ig/gveH+u+pfmC+AmljxfdVm4AJT1LfcnBS7mc/222KVvJtFI
+         ZZZRpJEdRrRCBbU3J/LeoLmZaHdnvPzdD0RRd8NzhkNbf6QGrg+U4GTG7iZzJJnqGJ
+         6osi9L1pAZnfw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2B3D3E7BB18;
+        Sat,  5 Mar 2022 03:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2022-03-04
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164645221417.2975.11319882682056680040.git-patchwork-notify@kernel.org>
+Date:   Sat, 05 Mar 2022 03:50:14 +0000
+References: <20220304164313.31675-1-daniel@iogearbox.net>
+In-Reply-To: <20220304164313.31675-1-daniel@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -53,17 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Mar 2022 11:39:19 -0800 Luiz Augusto von Dentz wrote:
-> bluetooth-next pull request for net-next:
+Hello:
+
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Fri,  4 Mar 2022 17:43:13 +0100 you wrote:
+> Hi David, hi Jakub,
 > 
->  - Add new PID/VID (0x13d3/0x3567) for MT7921
->  - Add new PID/VID (0x2550/0x8761) for Realtek 8761BU
->  - Add support for LG LGSBWAC02 (MT7663BUN)
->  - Add support for BCM43430A0 and BCM43430A1
->  - Add support for Intel Madison Peak (MsP2)
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 32 non-merge commits during the last 14 day(s) which contain
+> a total of 59 files changed, 1038 insertions(+), 473 deletions(-).
+> 
+> [...]
 
-The missing sign-offs are back. I don't think our attempts to fix that
-last time did much good, so let me pull, but please be vigilant.
+Here is the summary with links:
+  - pull-request: bpf-next 2022-03-04
+    https://git.kernel.org/netdev/net-next/c/6646dc241dd0
 
-The checker script is here FWIW:
-https://raw.githubusercontent.com/gregkh/gregkh-linux/master/work/verify_signedoff.sh
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
