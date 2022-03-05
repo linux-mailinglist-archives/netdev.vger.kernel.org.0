@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4828C4CE410
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 10:57:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8EE64CE417
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 11:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231336AbiCEJ6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 04:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        id S230134AbiCEKIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 05:08:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiCEJ6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 04:58:04 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F16859A49;
-        Sat,  5 Mar 2022 01:57:15 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id j2so10342990oie.7;
-        Sat, 05 Mar 2022 01:57:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1q/M7KC4YQOzuzU3gfyVVZfmbsjK5hZe7O6MPiN/Bk8=;
-        b=McslBKcHxVzCIPHnZvFk4aQDX77ImcUv7m4m6qytWzxUmh4NfFXmVgbG7M7f9irvcj
-         59l9IXu6oDj/ztL3PhYQUbKLbukAJgzNPJVgeR2AhastWLFekMl1bIZtxchVNCmE5y+z
-         JzKpcsHvzzRO2reD6Y1fi0kt6SS02+YpeJdecUuJntroVh51Fs7PlITBuKB0DM6+D8D3
-         03G9Z5RIB7npaQ9QxBenkb4TsXvAEFoAEMbQEEn1p0u8kQDEpPPxpFiT3A95sAJkyZKE
-         XLS+fhAyOMwGt7FRsIOrYfGvxTXES+D6JK8bm4SsnNryeqDvjB2mAkcaGW38eK6bPX9H
-         hA0w==
+        with ESMTP id S231293AbiCEKIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 05:08:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FF7425C128
+        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 02:07:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646474838;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a0Fgc88E/ZnztbMYK2n/3xkvK5J7VCgRYmi3UI+KKPI=;
+        b=EQrcV1RngVR5eUbfS2dgxmuc8SYZRCtPitexg/fdWpbtPZjqYmzv0D3SwI/WQN/+CG24Fp
+        qgYiO31q68r9j7sANSvKfQBz/w04ttcabOHIm52l6vs5K+WVkjtBhFs+KbTw8BdYzKXx5E
+        +jtAwQJWyPQRZy39BhDguIJ/+j+yd3o=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-613-laYm5U8DO4uqeTKP2zIrfw-1; Sat, 05 Mar 2022 05:07:17 -0500
+X-MC-Unique: laYm5U8DO4uqeTKP2zIrfw-1
+Received: by mail-pj1-f69.google.com with SMTP id lp2-20020a17090b4a8200b001bc449ecbceso8893389pjb.8
+        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 02:07:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1q/M7KC4YQOzuzU3gfyVVZfmbsjK5hZe7O6MPiN/Bk8=;
-        b=Oaq0tJlbUEQXFU6Kosrmza8PAb8+/ZxktbYsKgxI2THpzdKhqMtgd/olN2gPspJswQ
-         eXEeKmJOi/6P/Fo335+1cav7do1yGtqvzIrA+cm/EGVDjKG7kxYIsR9AGArV6nHEWmfr
-         VbJIDAXYAj9L+1hjFaf8iysFYcmcBe+EU6OWrptGM70bVi4SP89SQnrl9e1KjKOis/p8
-         i7QA3zMV3mP8nZHUUNUr2Q3SjUOUHYIHZurieIhigHAXrpxvEMID04wEoICcgtqg/xhF
-         kS25XtNnL3wxK5/mShOTvv5lj49jUy+PSZF4AybhtM24qC1c78dBoO/iR+Unf3EGvkc+
-         a9fA==
-X-Gm-Message-State: AOAM533Pudc6CbVyG+VUpZejOMhZdcXe/eJL81cn56ZVR0cLCtImAAX3
-        TbFvCqXx7f13zG8nvL61TM1/0vBs6uz0oJllFgOfqXU7iUQ=
-X-Google-Smtp-Source: ABdhPJyZZFc1GhxQ1wI1wpyTpk8Z96+bZq0RBY35+3T4OroeQOC9Qf64W5yIrE3QXuEYEP9E6n6UgJD1R9mY5+oVLJ4=
-X-Received: by 2002:a05:6808:bce:b0:2d9:a01a:487d with SMTP id
- o14-20020a0568080bce00b002d9a01a487dmr1836643oik.200.1646474234766; Sat, 05
- Mar 2022 01:57:14 -0800 (PST)
+        bh=a0Fgc88E/ZnztbMYK2n/3xkvK5J7VCgRYmi3UI+KKPI=;
+        b=oqB9WCfHqcVxbyjmIJpgmSwB84Br/tFPIU6b4NA0wd5vRPfDfT2rKF/nnMrWaqT11u
+         1z/m5YCWAk3T44fc7G+JWqHPORPWMuXrF5P5kduj7TpfI5GvsWoc3yII9FTFcejRZTLO
+         /tVY7L/b8hlu2sjZunMF9PLiTHfe0gm+VO+MeCTxYe8S5H2KwdQ674yRjc+cZKGgXklP
+         4r7yHVCDFdGOYTj0qKP+STEkEyHIHI70qNATtfWd+zHgCWlQrltAyOfHDHEdEJjk4bcp
+         5k4rdvsG7y2aDc4rAtv4DnWV0UkzKft89qrJ1RTy2d/L/54Djgg1VqUMUIjzRUST9Teu
+         X+VA==
+X-Gm-Message-State: AOAM533HpUDJfKwH5f4c0Ix7sQPhGSf/Dh59RUpdk3aJTvaHLUnal3Ne
+        rZYe6RJxeTBG9lzOibrpFlV3d02OJ9fkc+TNachAiz5cZQobvr2xBUq2iK6iOn+4ux2F7KozMWa
+        8OZvzNT+rBquBkMFDcPLZ191wADC6jCAj
+X-Received: by 2002:a17:90a:dac2:b0:1bd:fecf:6bd1 with SMTP id g2-20020a17090adac200b001bdfecf6bd1mr3049404pjx.113.1646474835971;
+        Sat, 05 Mar 2022 02:07:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzDEJR/yHEdFWnXc0pHQ+ViBWp74yyK9Eo9xHnLMRRGwOjXlrUAgunUqQ5UkVHlbRmy69Wo/GZFxyibXBCaP0k=
+X-Received: by 2002:a17:90a:dac2:b0:1bd:fecf:6bd1 with SMTP id
+ g2-20020a17090adac200b001bdfecf6bd1mr3049372pjx.113.1646474835671; Sat, 05
+ Mar 2022 02:07:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20220227142551.2349805-1-james.hilliard1@gmail.com>
- <6af1530a-a4bf-dccf-947d-78ce235a4414@iogearbox.net> <CAEf4Bza84V1hwknb9XR+cNz8Sy4BK2EMYB-Oudq==pOYpqV0nw@mail.gmail.com>
-In-Reply-To: <CAEf4Bza84V1hwknb9XR+cNz8Sy4BK2EMYB-Oudq==pOYpqV0nw@mail.gmail.com>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Sat, 5 Mar 2022 02:57:03 -0700
-Message-ID: <CADvTj4r4UKTV1RSs-1v=QZT8hehLzqHhZ3zmwugkcwYQQxrfuA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] libbpf: ensure F_DUPFD_CLOEXEC is defined
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-2-benjamin.tissoires@redhat.com> <CAPhsuW4otgwwDN6+xcjPXmZyUDiynEKFtXjaFb-=kjz7HzUmZw@mail.gmail.com>
+In-Reply-To: <CAPhsuW4otgwwDN6+xcjPXmZyUDiynEKFtXjaFb-=kjz7HzUmZw@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Sat, 5 Mar 2022 11:07:04 +0100
+Message-ID: <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 01/28] bpf: add new is_sys_admin_prog_type() helper
+To:     Song Liu <song@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org, Sean Young <sean@mess.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,67 +86,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 12:01 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Sat, Mar 5, 2022 at 12:12 AM Song Liu <song@kernel.org> wrote:
 >
-> On Mon, Feb 28, 2022 at 7:00 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> On Fri, Mar 4, 2022 at 9:30 AM Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
 > >
-> > Hi James,
+> > LIRC_MODE2 does not really need net_admin capability, but only sys_admin.
 > >
-> > On 2/27/22 3:25 PM, James Hilliard wrote:
-> > > This definition seems to be missing from some older toolchains.
-> > >
-> > > Note that the fcntl.h in libbpf_internal.h is not a kernel header
-> > > but rather a toolchain libc header.
-> > >
-> > > Fixes:
-> > > libbpf_internal.h:521:18: error: 'F_DUPFD_CLOEXEC' undeclared (first use in this function); did you mean 'FD_CLOEXEC'?
-> > >     fd = fcntl(fd, F_DUPFD_CLOEXEC, 3);
-> > >                    ^~~~~~~~~~~~~~~
-> > >                    FD_CLOEXEC
-> > >
-> > > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> > Extract a new helper for it, it will be also used for the HID bpf
+> > implementation.
 > >
-> > Do you have some more info on your env (e.g. libc)? Looks like F_DUPFD_CLOEXEC
-> > was added back in 2.6.24 kernel. When did libc add it?
+> > Cc: Sean Young <sean@mess.org>
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+> >
+> > new in v2
+> > ---
+> >  kernel/bpf/syscall.c | 14 +++++++++++++-
+> >  1 file changed, 13 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index db402ebc5570..cc570891322b 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -2165,7 +2165,6 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
+> >         case BPF_PROG_TYPE_LWT_SEG6LOCAL:
+> >         case BPF_PROG_TYPE_SK_SKB:
+> >         case BPF_PROG_TYPE_SK_MSG:
+> > -       case BPF_PROG_TYPE_LIRC_MODE2:
+> >         case BPF_PROG_TYPE_FLOW_DISSECTOR:
+> >         case BPF_PROG_TYPE_CGROUP_DEVICE:
+> >         case BPF_PROG_TYPE_CGROUP_SOCK:
+> > @@ -2202,6 +2201,17 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
+> >         }
+> >  }
+> >
+> > +static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
+> > +{
+> > +       switch (prog_type) {
+> > +       case BPF_PROG_TYPE_LIRC_MODE2:
+> > +       case BPF_PROG_TYPE_EXT: /* extends any prog */
+> > +               return true;
+> > +       default:
+> > +               return false;
+> > +       }
+> > +}
 >
-> It seems like it's guarded by __USE_XOPEN2K8 in glibc (from a quick
-> glance at glibc code). But it's been there since 2010 or so, at the
-> very least.
+> I am not sure whether we should do this. This is a behavior change, that may
+> break some user space. Also, BPF_PROG_TYPE_EXT is checked in
+> is_perfmon_prog_type(), and this change will make that case useless.
 
-The toolchain that hit this issue appears to be uclibc based which seems to have
-had some bugs with the F_DUPFD_CLOEXEC definition.
+Sure, I can drop it from v3 and make this function appear for HID only.
+
+Regarding BPF_PROG_TYPE_EXT, it was already in both
+is_net_admin_prog_type() and is_perfmon_prog_type(), so I duplicated
+it here, but I agree, given that it's already in the first function
+there, CPA_SYS_ADMIN is already checked.
+
+Cheers,
+Benjamin
 
 >
-> >
-> > Should we instead just add an include for <linux/fcntl.h> to libbpf_internal.h
-> > (given it defines F_DUPFD_CLOEXEC as well)?
+> Thanks,
+> Song
 >
-> yep, this is UAPI header so we can use it easily (we'll need to sync
-> it into Github repo, but that's not a problem)
+> [...]
 >
->
-> >
-> > > ---
-> > >   tools/lib/bpf/libbpf_internal.h | 4 ++++
-> > >   1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-> > > index 4fda8bdf0a0d..d2a86b5a457a 100644
-> > > --- a/tools/lib/bpf/libbpf_internal.h
-> > > +++ b/tools/lib/bpf/libbpf_internal.h
-> > > @@ -31,6 +31,10 @@
-> > >   #define EM_BPF 247
-> > >   #endif
-> > >
-> > > +#ifndef F_DUPFD_CLOEXEC
-> > > +#define F_DUPFD_CLOEXEC 1030
-> > > +#endif
-> > > +
-> > >   #ifndef R_BPF_64_64
-> > >   #define R_BPF_64_64 1
-> > >   #endif
-> > >
-> >
-> > Thanks,
-> > Daniel
+
