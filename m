@@ -2,156 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DEA74CE725
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 22:09:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 840354CE765
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 23:13:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232614AbiCEVKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 16:10:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59540 "EHLO
+        id S232725AbiCEWON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 17:14:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232432AbiCEVKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 16:10:12 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1687694BB
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 13:09:21 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id u7so15329772ljk.13
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 13:09:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s2/4A0u52052NhlLyv5JICwZ+hKXNcyjgvPejm7yB/I=;
-        b=g8gQIPzfZ2LG3gjucY5ZIcN2ya279MiioMJ7uCceoo9vkrRICzK31sZf9y8ntZ/OSZ
-         zhNbSxIWHh/6mLmeJ3TGYLeWaMuJcyFXU4X67ktDHsEMcoPGvxH3OT6tsXf+Mv+yzcoc
-         1mE2TNZgL4GXuqrwWSr6hHya2FaGxdYrQzaZU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s2/4A0u52052NhlLyv5JICwZ+hKXNcyjgvPejm7yB/I=;
-        b=6ZWugDf/97VrDKd/j5mgNeUIOKvH9tErmU4Ybrku1nr1FswucMDHzc44+QFps4r4Wm
-         q+fUB7O+VwKEEF7qMjzOqO8ha1ZBj61Y5yzom8BbP8ML8FLTBBRo4o3Lo4iG/CU9rEAw
-         zFMsHVZcJtId+JmGHe7CEA68hrCqtNYb0eVXQXYndO05gdpehDF2SZI2fh7dwoLH5OOH
-         xvjCoAeZw7POwYFVr/yD0xidjd9JTm7VOwoU4BvMU+7zHbnXHPW71B8KHJpcx71h/3hY
-         SeHa9Yxi/8XcYqhBUb+wqbfkgYpAJ2IhiC11fnaHqXQJ5w5vE5BGauQS101PXci+KmCv
-         sDGA==
-X-Gm-Message-State: AOAM53224WqbSvSJOvzcosV1S8AAhsmgUUnpbvTYodUWMSb6Kp1jrOAA
-        3MXyHOoAiiWWhCbVW0mjhxnzZQaLiMaDsnwnEuE=
-X-Google-Smtp-Source: ABdhPJwVuGrsWHpoehAH9dAy7O6KZYXJeQ8Md3yDG70fVE1mAEK3ra44fAGNG4cR0Y4jn9YhXJZ/Tw==
-X-Received: by 2002:a2e:bf25:0:b0:247:d216:43fc with SMTP id c37-20020a2ebf25000000b00247d21643fcmr3045887ljr.520.1646514559814;
-        Sat, 05 Mar 2022 13:09:19 -0800 (PST)
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
-        by smtp.gmail.com with ESMTPSA id bt22-20020a056512261600b00445be337da5sm1858705lfb.60.2022.03.05.13.09.17
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Mar 2022 13:09:18 -0800 (PST)
-Received: by mail-lj1-f182.google.com with SMTP id p20so15444245ljo.0
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 13:09:17 -0800 (PST)
-X-Received: by 2002:a2e:80c6:0:b0:246:3334:9778 with SMTP id
- r6-20020a2e80c6000000b0024633349778mr2967024ljg.443.1646514557473; Sat, 05
- Mar 2022 13:09:17 -0800 (PST)
+        with ESMTP id S232707AbiCEWOJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 17:14:09 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0B651E72;
+        Sat,  5 Mar 2022 14:13:18 -0800 (PST)
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646518395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=K6RsnwD/BCzH5WC8kzG/RcEEnIxeuBZkPWilYKAkaIA=;
+        b=19SAR6XmxUBramFZyCy1np5zMmBB3Gw5a/tfCzzKpkbCigHriL+nnH5cgsgk/pe2IMWmO3
+        QU8pqgK5jlQ34nP8ofDcByl3d0bNcmOl9fl5Pkay3kaMDBsaZdNGLGlMwnBH73D2hgJeSj
+        s86UAJXgvzBCpKie+0oPVJf/h51lSPBKf4BjdQfXL4OCwIICEoDhb6tO9M/Eq/KUADzQaw
+        x06b2X+fKTPlromrFZLilV573RI6/2PHFYy9x8Tr1yi7VyrpKUVs1RXomYc92DD2pkNhRP
+        jrhXMQGSqpTSuihSBS3fLupM0XWwEelKOl6kWmzJL+BRWN74HzCG96iXwBfAxA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646518395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=K6RsnwD/BCzH5WC8kzG/RcEEnIxeuBZkPWilYKAkaIA=;
+        b=0b628Q7I/sf6Ay3zX05/3px2i3BWkvu3PAZfEOkGogLsjLNBGytZf+tzG5fkg4GDbuAc+1
+        Ahs7B8uSJWPVcVAQ==
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arend van Spriel <aspriel@gmail.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@kernel.org>,
+        libertas-dev@lists.infradead.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Maya Erez <merez@codeaurora.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        wil6210@qti.qualcomm.com, Wolfgang Grandegger <wg@grandegger.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Xinming Hu <huxinming820@gmail.com>
+Subject: [PATCH net-next 0/8] net: Convert user to netif_rx(), part 2.
+Date:   Sat,  5 Mar 2022 23:12:44 +0100
+Message-Id: <20220305221252.3063812-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-References: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
- <20220304025109.15501-1-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220304025109.15501-1-xiam0nd.tong@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 5 Mar 2022 13:09:01 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjesxw9U6JvTw34FREFAsayEE196Fi=VHtJXL8_9wgi=A@mail.gmail.com>
-Message-ID: <CAHk-=wjesxw9U6JvTw34FREFAsayEE196Fi=VHtJXL8_9wgi=A@mail.gmail.com>
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
- outside the loop
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 3, 2022 at 6:51 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
->
-> >  - it means that the already *good* cases are the ones that are
-> > penalized by having to change
->
-> Yes, but it also kills potential risks that one day somebody mistakely
-> uses iterator after the loop in this already *good* cases, as it removed
-> the original declare of pos and any use-after-loop will be catched by
-> compiler.
+This is the second batch of converting netif_rx_ni() caller to
+netif_rx(). The change making this possible is net-next and
+netif_rx_ni() is a wrapper around netif_rx(). This is a clean up in
+order to remove netif_rx_ni().
 
-The thing is, I think we already have a solution to that case.
+The brcmfmac changes are slilghtly larger because the inirq parameter
+can be removed.
 
-I think it's the bad "entry used outside" that we need to care about doing well.
+Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Arend van Spriel <aspriel@gmail.com>
+Cc: brcm80211-dev-list.pdl@broadcom.com
+Cc: Chi-hsien Lin <chi-hsien.lin@infineon.com>
+Cc: Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
+Cc: Franky Lin <franky.lin@broadcom.com>
+Cc: Ganapathi Bhat <ganapathi017@gmail.com>
+Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Jeremy Kerr <jk@codeconstruct.com.au>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: libertas-dev@lists.infradead.org
+Cc: linux-can@vger.kernel.org
+Cc: linux-wireless@vger.kernel.org
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: Matt Johnston <matt@codeconstruct.com.au>
+Cc: Maya Erez <merez@codeaurora.org>
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Cc: Radu Pirea <radu-nicolae.pirea@oss.nxp.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: SHA-cyfmac-dev-list@infineon.com
+Cc: Sharvari Harisangam <sharvari.harisangam@nxp.com>
+Cc: wil6210@qti.qualcomm.com
+Cc: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Wright Feng <wright.feng@infineon.com>
+Cc: Xinming Hu <huxinming820@gmail.com>
 
-> 3. restore all name back to list_for_each_entry after everything is done:
->    (minus 2 chars)
 
-You are ignoring the big elephant in the room - counting the small
-things, but not counting the BIG thing.
+Sebastian
 
-That type name argument is long.
-
-Right now we avoid it by pre-declaring it, and that's in many ways the
-natural thing to do in C (you don't declare types in the place that
-uses them, you declare the types in the variable declarations above
-the code).
-
-Now, I'd love for the list head entry itself to "declare the type",
-and solve it that way. That would in many ways be the optimal
-situation, in that when a structure has that
-
-        struct list_head xyz;
-
-entry, it would be lovely to declare *there* what the list entry type
-is - and have 'list_for_each_entry()' just pick it up that way.
-
-It would be doable in theory - with some preprocessor trickery all the
-'struct list_head' things *could* be made to be unnamed unions of the
-list head, and the actual type it points to, ie something like
-
-   #define declare_list_head(type,type) union { struct list_head x;
-type *x##_list_type; }
-
-and then (to pick one particular example), we could make the "struct
-task_struct" entry for children be
-
--       struct list_head                children;
-+       declare_list_head(struct task_struct, children);
-
-and now when you use
-
-        list_for_each_entry(p, &father->children, sibling) {
-
-you could actually pick out the type with some really ugly
-preprocessor crud, by doing 'typeof(*head##_list_type)' to get the
-type of the thing we iterate over.
-
-So we *could* embed the type that a list head points to with tricks
-like that. The it would actually be type-safe, and not need a
-declaration of the type anywhere. And it would be kind of nice to
-document "this is a list head pointer to this kind of type".
-
-And yes, it would be even better if we could also encode the member
-name that contains the list entries somehow (ie in this case the
-'sibling' list entry of the task struct) so that you'd really document
-the full chain. But even my twisted mind cannot come up with any
-tricks to do *that*.
-
-But the above would be quite a *major* change.
-
-And the above kind of preprocessor trickery and encoding a secondary
-type as a union entry that isn't actually used for anythign else may
-be too ugly to live anyway.
-
-                 Linus
