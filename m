@@ -2,71 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8D64CE50E
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 14:48:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA5F4CE525
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 15:12:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbiCENtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 08:49:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
+        id S231801AbiCEOMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 09:12:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiCENtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 08:49:03 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592F4419B4
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 05:48:14 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id 24-20020a5d9c18000000b0064075f4edbdso7297240ioe.19
-        for <netdev@vger.kernel.org>; Sat, 05 Mar 2022 05:48:14 -0800 (PST)
+        with ESMTP id S231793AbiCEOMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 09:12:54 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB8E2067FF;
+        Sat,  5 Mar 2022 06:12:04 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id c1so9850747pgk.11;
+        Sat, 05 Mar 2022 06:12:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xFOxDfJvy6Fpu46Gu4Jr5O7h7HL12qBSD8Q83PgJ91U=;
+        b=mr1JZLcU2cVjvY7+jLaYZ7C8048f42u6P81+bRTBvJ7GgrcI5TsDwORB2np3KWYcUJ
+         afeLu9CvW5lLz0D0XRhcQ8Cs2KFRdjLEL+UdKAQJR/ih6mshmJZBPqb94W348nnDCSgb
+         2GfRU6KLdHSyriSd+jLWwMpUG5hodBE3xH+R3Bqvga1j8BDwgFojdTsfg9g//ehEO55c
+         bj36mFZYHjJMJH0mCmRI50oA9GNhex/9/VyiiR3nx8DbBBzxVJRzClvlBqikmpyjGpvG
+         EeH2oEB8lF4IAsDDhMapXqSFmV9uQD9HeSRmb10aImM/xa8wcyRdqbHRT4s033eEo08A
+         AXOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=pk5i+sOPNXGGBb0bRxTeZIscW27o2u6cpIxn3IP3DjI=;
-        b=sPBv9pxcNHjCyN1+u4dwoWaRlTgj2Po4NvigyBJg4rbT4899D6Q42a5PbL7Zpnennp
-         yyYqNCXW8XGlNwCIi+eqMGWfNZ4qidYGqVUxa8CqbXCQRHkd+WTVqzdZypH0Ec07T8sy
-         bACi/2o+EI1acD0hSIIVCBxNmgy2cC2zvPobLQXLIYWQ/GP8Nxv37DfW9yx88Gwus88h
-         BgvypVHQEZ6a4IDKunprAJVcLcKcIrBNAYQTh2X9N7m0YAgARYo8MFZX+uR49sJmfctd
-         M3A5UlHEp3GpxCmVH+pRdK4J6YPpquVriNtJey1n/04rVU4/4mToXuXUxFdUZPk4fVqa
-         6BCA==
-X-Gm-Message-State: AOAM532v++6CQZYTbxph2AyAn5c6VKyFdVZRTsAE+1Z2R+a78byJKxYi
-        91zimAyKkR+jIiNSS7qaL8kSAIk+KLFE+9eH1Rl9m3yLRXD0
-X-Google-Smtp-Source: ABdhPJwFokXr7PNDlAhr5YTXrfGJwclIsk7jdhrcR6q7AYq7uZuP2/Pw/iovnLwCRfTkfZQLaa9C8ZvbWLcE2WMPYwPkuL1FiVXU
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xFOxDfJvy6Fpu46Gu4Jr5O7h7HL12qBSD8Q83PgJ91U=;
+        b=IUghuBF0ASL8TV1A28CPdcE+XrTqEmxdGIJImBIMpb2mbkR+JpgtGTQmtImuZq51uT
+         PC0dRqj92pBOvkoMDTLHZh3YN58HeaU0N7Zyg6WQELk+dUBLhePh24rHcepKDNN/Wfq5
+         q5R/f+l76BLZ5vAszwBJj0OpKGzQ7ussHCz5q4kPGwpDY814wH3Nt5w+4/joICIxPCFd
+         19CNbmuBF3+chankAgOJt0TWE3bEa8zZj6oEBM+cNoIkWHjth/FzPKLiVTi6rxbfR9tK
+         PruIadDtqQx2DcHzqCJGPhKVaEf81a8YCjC2fv3S9wmUKtY2ozn/4A05wThBLgjGvxG1
+         7AoQ==
+X-Gm-Message-State: AOAM530b7sF75YJQriL/yQhj7Q5oHwKvIJjp5cpNZjk+gbViLeRWcgSY
+        6GekkgrYjZBbliNY/mpqps+LV1xJNP+EKv256w==
+X-Google-Smtp-Source: ABdhPJwxkXEzW3Wbt9AMZeA8EoAIBljKo8Un5hMC79McXM/gjPX5hhw0FR0DMJMjGCTQ801Udq4JSdx3KkoXC9vkHCA=
+X-Received: by 2002:a62:1787:0:b0:4f6:c5d2:1da7 with SMTP id
+ 129-20020a621787000000b004f6c5d21da7mr3979165pfx.71.1646489524279; Sat, 05
+ Mar 2022 06:12:04 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9301:0:b0:614:549c:4c40 with SMTP id
- l1-20020a5d9301000000b00614549c4c40mr3047461ion.50.1646488093616; Sat, 05 Mar
- 2022 05:48:13 -0800 (PST)
-Date:   Sat, 05 Mar 2022 05:48:13 -0800
-In-Reply-To: <20220305133546.2971-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f2732b05d978e176@google.com>
-Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in smc_fback_error_report
-From:   syzbot <syzbot+b425899ed22c6943e00b@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <CAMhUBjkt1E4gQ5-sgAfPvKqNrfXBFUQ14zRP=MWPwfhZJu3QPA@mail.gmail.com>
+ <20220303075738.56a90b79@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220303075738.56a90b79@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Sat, 5 Mar 2022 22:11:48 +0800
+Message-ID: <CAMhUBjm9+nt8j0JFwHEms2Ra1YjhAXquVyHuDYX0_ZZzJyNuZA@mail.gmail.com>
+Subject: Re: [BUG] net: macb: Use-After-Free when removing the module
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Mar 3, 2022 at 11:57 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 3 Mar 2022 20:24:53 +0800 Zheyu Ma wrote:
+> > When removing the macb_pci module, the driver will cause a UAF bug.
+> >
+> > Commit d82d5303c4c5 ("net: macb: fix use after free on rmmod") moves
+> > the platform_device_unregister() after clk_unregister(), but this
+> > introduces another UAF bug.
+>
+> The layering is all weird here. macb_probe() should allocate a private
+> structure for the _PCI driver_ which it can then attach to
+> struct pci_dev *pdev as driver data. Then free it in remove.
+> It shouldn't stuff its information into the platform device.
+>
+> Are you willing to send a fix like that?
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Thanks for your useful suggestion, I'm willing to submit a patch.
+But I'm a newbie to kernel and I think I need some time to think about
+how to make such changes.
 
-Reported-and-tested-by: syzbot+b425899ed22c6943e00b@syzkaller.appspotmail.com
-
-Tested on:
-
-commit:         07ebd38a Merge tag 'riscv-for-linus-5.17-rc7' of git:/..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=542b2708133cc492
-dashboard link: https://syzkaller.appspot.com/bug?extid=b425899ed22c6943e00b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=171228ee700000
-
-Note: testing is done by a robot and is best-effort only.
+Regards,
+Zheyu Ma
