@@ -2,151 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B33734CE188
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 01:31:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EE4E4CE18B
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 01:33:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230227AbiCEAcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Mar 2022 19:32:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37864 "EHLO
+        id S229805AbiCEAeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Mar 2022 19:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiCEAcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 19:32:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9BECE91E;
-        Fri,  4 Mar 2022 16:31:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E941C61F4A;
-        Sat,  5 Mar 2022 00:31:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54163C340F0;
-        Sat,  5 Mar 2022 00:31:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646440284;
-        bh=awRIwbysAAAcaXhf9r6G70yV9eNUMtyfdpt6cG+WdS4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NFihrsXcizDRGkyxR3Cg8awQAmkhhYtn0duiPuoXhota0ipzzUhn0yIn1mBzEff/z
-         lYSENiDeC1aSvAozEsWcLonBQoLmwjVnsusZmchqpphq73olCMv8xLDYP3QBOefsMZ
-         MAbKYdMeDjdCecydm+LAf7EnOwEE2BIoIB1d7q7mZ+03q3qGfKoPAAM5YEF+URMYEu
-         eDh9hcN5B+BgMM42Zf8YyBIekByZ7I0WQEvhF3HEU/GAONPC+qkgVlTqicNjptUXkx
-         lnbaxgOJWuAM4jKtf5q98skl8kVSVfV/UFjSL5U6MnfPgtguZC1hA1eBwugEgEfK2a
-         Ha+p1aGLhWxmg==
-Received: by mail-yb1-f182.google.com with SMTP id u10so237377ybd.9;
-        Fri, 04 Mar 2022 16:31:24 -0800 (PST)
-X-Gm-Message-State: AOAM532hF4FQd+XySXHlgCbIMUMbQctUrbc0ehJa/S6UcmQyDpccTJmP
-        aEoY6GGCmJIP9sVwG8GgCjYml/DJ6FA1RHGcCUc=
-X-Google-Smtp-Source: ABdhPJwBFO65kWq2rI3Da1Dusm/a5tFW4fIDNdvUf2aQDb/11b8ll7yQ8fxaG8oivNovon9SFOEepuumfAFj9I22pOY=
-X-Received: by 2002:a05:6902:1ca:b0:624:e2a1:2856 with SMTP id
- u10-20020a05690201ca00b00624e2a12856mr946847ybh.389.1646440283308; Fri, 04
- Mar 2022 16:31:23 -0800 (PST)
+        with ESMTP id S229449AbiCEAeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Mar 2022 19:34:18 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF49C49F9D
+        for <netdev@vger.kernel.org>; Fri,  4 Mar 2022 16:33:27 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id bx5so8612077pjb.3
+        for <netdev@vger.kernel.org>; Fri, 04 Mar 2022 16:33:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :content-language:content-transfer-encoding;
+        bh=NO4BC5cgypleMchbOjrIiZOfPNN/DB7Bo6Y/HO3gXIw=;
+        b=Ush65w8vk2JA4M/n2e9QAgoqfsSWozVhI5mJI9ljOmFVcb5gWC33x/dQ5mS/Vz5Pl2
+         V1RI7rJEznHhvXJz8BVGGD10CmuSX4H47y8yC3NTYNgUrXP8whMSHRq9NziSSUADnqal
+         mLEGGL4oozOnoZH6jhK8bw/mfDCau8hh+NLPe8egQWOC1ed8E4LuOtshnUvTxAYzh5ak
+         rhQf6QMnX5+DJuqI/cYtzSWbX64nSOZz9WqWDitQ6qVyggw1p8g+gYuZ9d5az0DRHBiI
+         yYHibvY1XHuRYRNzM6gbGqN+I6/GyiHA5RwRtO5EuoY1jgZ5u+T9V3R01704MclqFNLF
+         E+Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:content-language:content-transfer-encoding;
+        bh=NO4BC5cgypleMchbOjrIiZOfPNN/DB7Bo6Y/HO3gXIw=;
+        b=alPATSmJ5mNbOvFuJyrEt0YsDfgW8lRKNLZvJfS2x6JNnZGLIFuZ/INNL+75o0F8Kh
+         Oqhv8AlYC9ELnUZ7OHAoXiEP4DnVmQaTe7K5ENeUdAolznrfTfH6FJiMsmt15TKFEBfj
+         unrDYfax8MuYFyD3ynyUUAd0EkIWI9fbthtOVZiWiR7PQ98Q7Uupnscxav8qm4dbOt6F
+         JQRFJ6y2aHjTZNqHmNFHOvAHJZccYHqXY4CdimzuZWfoshYZDSpcCWELfseJMhODO17F
+         nYJ1BXbP67179XvVROWsQSJGT7VzM+fw7dLfNLIYwLsD2KDWO5kc9QmEimeXVvKEaR6z
+         V8Ig==
+X-Gm-Message-State: AOAM532gXzEQRopFpZTbx1gQN2h6T5sri65MRh4orsK5iVdjaUqvrv5t
+        rC1chXup8zL40DmY4i/Wkv4=
+X-Google-Smtp-Source: ABdhPJyowvsExPRfZANpr/oC4crBluLKKm573HTy/JjBlnM0jxDoZxfepsP235phQg72ZG1UWQ4oFQ==
+X-Received: by 2002:a17:902:e549:b0:150:2412:c94c with SMTP id n9-20020a170902e54900b001502412c94cmr952696plf.94.1646440407131;
+        Fri, 04 Mar 2022 16:33:27 -0800 (PST)
+Received: from [10.169.5.185] ([38.142.1.26])
+        by smtp.googlemail.com with ESMTPSA id j5-20020a17090a31c500b001bf37d6abe1sm657592pjf.45.2022.03.04.16.33.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Mar 2022 16:33:26 -0800 (PST)
+Message-ID: <462fa134-bc85-a629-b9c5-8c6ea08b751d@gmail.com>
+Date:   Fri, 4 Mar 2022 16:33:25 -0800
 MIME-Version: 1.0
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com> <20220304172852.274126-5-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220304172852.274126-5-benjamin.tissoires@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 4 Mar 2022 16:31:12 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5BtN6_x1pz1rZ-q5bF6P3XGzvp2maFiXiqSemdTC9jZw@mail.gmail.com>
-Message-ID: <CAPhsuW5BtN6_x1pz1rZ-q5bF6P3XGzvp2maFiXiqSemdTC9jZw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 04/28] libbpf: add HID program type and API
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+From:   "Dimitrios P. Bouras" <dimitrios.bouras@gmail.com>
+Subject: [PATCH 1/1] eth: Transparently receive IP over LLC/SNAP
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URI_DOTEDU autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 4, 2022 at 9:31 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> HID-bpf program type are needing a new SEC.
-> To bind a hid-bpf program, we can rely on bpf_program__attach_fd()
-> so export a new function to the API.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Practical use cases exist where being able to receive Ethernet packets
+encapsulated in LLC SNAP is useful, while at the same time encapsulating
+replies (transmitting back) in LLC SNAP is not required. Accordingly, this
+is not an attempt to add full-blown support for IP over LLC SNAP, only a
+"hack" that "just works" -- see Alan's comment on the the Linux-kernel
+list on this subject ("Linux supports LLC/SNAP and various things over it
+(IPX/Appletalk DDP etc) but not IP over it, as it's one of those standards
+bodies driven bogosities which nobody ever actually deployed" --
+http://lkml.iu.edu/hypermail/linux/kernel/1107.3/01249.html). It is worth
+noting, however, that the networking stack in all recent versions of MS
+Windows behaves in the exact same way (receives LLC/SNAP-encapsulated IP
+just fine but replies in plain IP), even though this doesn't appear to be
+documented anywhere.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Dimitrios Bouras <dimitrios.bouras@gmail.com>
+---
+I hope I've addressed this properly - please be gentle in guiding me if otherwise (it's my first).
 
->
-> ---
->
-> changes in v2:
-> - split the series by bpf/libbpf/hid/selftests and samples
-> ---
->  tools/lib/bpf/libbpf.c   | 7 +++++++
->  tools/lib/bpf/libbpf.h   | 2 ++
->  tools/lib/bpf/libbpf.map | 1 +
->  3 files changed, 10 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 81bf01d67671..356bbd3ad2c7 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8680,6 +8680,7 @@ static const struct bpf_sec_def section_defs[] = {
->         SEC_DEF("cgroup/setsockopt",    CGROUP_SOCKOPT, BPF_CGROUP_SETSOCKOPT, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
->         SEC_DEF("struct_ops+",          STRUCT_OPS, 0, SEC_NONE),
->         SEC_DEF("sk_lookup",            SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
-> +       SEC_DEF("hid/device_event",     HID, BPF_HID_DEVICE_EVENT, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
->  };
->
->  #define MAX_TYPE_NAME_SIZE 32
-> @@ -10659,6 +10660,12 @@ static struct bpf_link *attach_iter(const struct bpf_program *prog, long cookie)
->         return bpf_program__attach_iter(prog, NULL);
->  }
->
-> +struct bpf_link *
-> +bpf_program__attach_hid(const struct bpf_program *prog, int hid_fd)
-> +{
-> +       return bpf_program__attach_fd(prog, hid_fd, 0, "hid");
-> +}
-> +
->  struct bpf_link *bpf_program__attach(const struct bpf_program *prog)
->  {
->         if (!prog->sec_def || !prog->sec_def->attach_fn)
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index c8d8daad212e..f677ac0a9ede 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -529,6 +529,8 @@ struct bpf_iter_attach_opts {
->  LIBBPF_API struct bpf_link *
->  bpf_program__attach_iter(const struct bpf_program *prog,
->                          const struct bpf_iter_attach_opts *opts);
-> +LIBBPF_API struct bpf_link *
-> +bpf_program__attach_hid(const struct bpf_program *prog, int hid_fd);
->
->  /*
->   * Libbpf allows callers to adjust BPF programs before being loaded
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 47e70c9058d9..fdc6fa743953 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -424,6 +424,7 @@ LIBBPF_0.6.0 {
->  LIBBPF_0.7.0 {
->         global:
->                 bpf_btf_load;
-> +               bpf_program__attach_hid;
->                 bpf_program__expected_attach_type;
->                 bpf_program__log_buf;
->                 bpf_program__log_level;
-> --
-> 2.35.1
->
+Many thanks,
+Dimitri
+
+ net/ethernet/eth.c | 59 +++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 42 insertions(+), 17 deletions(-)
+
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index ebcc812735a4..1df5446af922 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -15,23 +15,24 @@
+  *		Alan Cox, <gw4pts@gw4pts.ampr.org>
+  *
+  * Fixes:
+- *		Mr Linux	: Arp problems
+- *		Alan Cox	: Generic queue tidyup (very tiny here)
+- *		Alan Cox	: eth_header ntohs should be htons
+- *		Alan Cox	: eth_rebuild_header missing an htons and
+- *				  minor other things.
+- *		Tegge		: Arp bug fixes.
+- *		Florian		: Removed many unnecessary functions, code cleanup
+- *				  and changes for new arp and skbuff.
+- *		Alan Cox	: Redid header building to reflect new format.
+- *		Alan Cox	: ARP only when compiled with CONFIG_INET
+- *		Greg Page	: 802.2 and SNAP stuff.
+- *		Alan Cox	: MAC layer pointers/new format.
+- *		Paul Gortmaker	: eth_copy_and_sum shouldn't csum padding.
+- *		Alan Cox	: Protect against forwarding explosions with
+- *				  older network drivers and IFF_ALLMULTI.
+- *	Christer Weinigel	: Better rebuild header message.
+- *             Andrew Morton    : 26Feb01: kill ether_setup() - use netdev_boot_setup().
++ *		Mr Linux		: Arp problems
++ *		Alan Cox		: Generic queue tidyup (very tiny here)
++ *		Alan Cox		: eth_header ntohs should be htons
++ *		Alan Cox		: eth_rebuild_header missing an htons and
++ *					  minor other things.
++ *		Tegge			: Arp bug fixes.
++ *		Florian			: Removed many unnecessary functions, code cleanup
++ *					  and changes for new arp and skbuff.
++ *		Alan Cox		: Redid header building to reflect new format.
++ *		Alan Cox		: ARP only when compiled with CONFIG_INET
++ *		Greg Page		: 802.2 and SNAP stuff.
++ *		Alan Cox		: MAC layer pointers/new format.
++ *		Paul Gortmaker		: eth_copy_and_sum shouldn't csum padding.
++ *		Alan Cox		: Protect against forwarding explosions with
++ *					  older network drivers and IFF_ALLMULTI.
++ *		Christer Weinigel	: Better rebuild header message.
++ *		Andrew Morton		: 26Feb01: kill ether_setup() - use netdev_boot_setup().
++ *		Dimitrios Bouras	: May 2021: transparently receive Ethernet over LLC/SNAP.
+  */
+ #include <linux/module.h>
+ #include <linux/types.h>
+@@ -157,6 +158,7 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
+ 	unsigned short _service_access_point;
+ 	const unsigned short *sap;
+ 	const struct ethhdr *eth;
++	const unsigned char *esn;
+ 
+ 	skb->dev = dev;
+ 	skb_reset_mac_header(skb);
+@@ -185,9 +187,32 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
+ 	if (unlikely(netdev_uses_dsa(dev)))
+ 		return htons(ETH_P_XDSA);
+ 
++	/* The protocol field is > 0x0600 so this is an Ethernet frame */
+ 	if (likely(eth_proto_is_802_3(eth->h_proto)))
+ 		return eth->h_proto;
+ 
++	/* Check for Ethernet protocol packets encapsulated in LCC SNAP.
++	 * If found, de-encapsulate transparently and feed them upwards
++	 * as if they were received inside normal Ethernet frames.
++	 *
++	 *    6      6     2      1      1     1      5    0-1492 0-38    4
++	 * +------+-----+-----+------+------+-----+-------+------+-----+-----+
++	 * | Dest | Src | Len | DSAP | SSAP | CTL | Proto | Data | Pad | FCS |
++	 * |      |     |     |  xAA |  xAA | x03 |       |      |     |     |
++	 * +------+-----+-----+------+------+-----+-------+------+-----+-----+
++	 */
++	esn = skb->data;
++	if (esn[0] == 0xAA && esn[1] == 0xAA && esn[2] == 0x03 &&
++	    esn[3] == 0x00 && esn[4] == 0x00 && esn[5] == 0x00) {
++		/* pull LLC header (3 bytes) and protocol ID (5 bytes) */
++		/* then recalculate the FCS checksum. After the call, */
++		/* skb->data will be pointing to the IP protocol payload */
++		skb_pull_rcsum(skb, 8);
++		/* pretend that this is an Ethernet frame by returning */
++		/* the encapsulated prototol code (2 LSBytes of Proto) */
++		return *(__be16 *)(esn + 6);
++	}
++
+ 	/*
+ 	 *      This is a magic hack to spot IPX packets. Older Novell breaks
+ 	 *      the protocol design and runs IPX over 802.3 without an 802.2 LLC
+-- 
+2.34.1
+
