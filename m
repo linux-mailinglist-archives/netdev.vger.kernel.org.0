@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4A14CE541
-	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 15:25:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D6EA4CE55E
+	for <lists+netdev@lfdr.de>; Sat,  5 Mar 2022 15:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbiCEOZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 09:25:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S231913AbiCEO4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Mar 2022 09:56:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230455AbiCEOZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 09:25:47 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CC5A7748;
-        Sat,  5 Mar 2022 06:24:56 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id t19so6621110plr.5;
-        Sat, 05 Mar 2022 06:24:56 -0800 (PST)
+        with ESMTP id S231879AbiCEO4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 09:56:04 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2E2396A9;
+        Sat,  5 Mar 2022 06:55:14 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id n15so227623plh.2;
+        Sat, 05 Mar 2022 06:55:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id;
-        bh=V0+BPych17wtPc2qM6EJ5swnTMFGy4m1k60tybQ7bJ8=;
-        b=S541tO/7BOECRkLObQ/ss88E0L5lW9NqwCtyPSw3nTGHljZZHO/1w+ZQc0jAaVlnj6
-         HS5LW7+pVNKhIQHu7Zy+ujo5/Sml34pebkIhx6y2vf6v7GRc3bmhCFwyfJhtRybriztn
-         M+anDplw+EGv8oPG0xeUS5mQncJ/ZYVLqqubhCO7nPARaCRC2JV4HcYkIiiQMa+Xw5kt
-         azyq7xnXayNdLNYP3odh0HSo6FGstz+DAN0I+Ss/RxoaqIyH8VmwZ3QbUShDZlSk447y
-         QdYj0sFrecg7toRUpkb8IY34lvAg19+4WlpTdbqDbFlR8l70M9v11pf+ixJ87TED+UCX
-         l8VA==
+        bh=aCTkDCJYSB+lOnRJ9woHxklOjSBgeP6h4/7iJlYWqs8=;
+        b=KpL2cMjlDbeYQQWH0y/uLqKLMeb1AcPo65b6XqQdmB1Dc6Num2JQ25L1hz926LXuPd
+         lqndb69Dkf1lC4NIfZvneoNdMYZXUvGmsOCVDMr9wF7VmXYCdGeKGR1TCxEG9zQ4n2JN
+         lMux9BaePU5yPWP+WqDGXorL6/TXVmjtzgtQxv4heQPC2DoQwuEAW3bxnM0MCv34htju
+         UOuffRKP3pMOMKzPvZ+zp6XRJCQWiYIG9i49PcT8wfShCSc5X4+AR+HSNopwMoWR2qOm
+         rB4v/f8xsVJhIBgO92mTEiYoc5whoR1uY038ikSXARs95A2H96lR5P91nrrZ1D5OubtB
+         +P8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=V0+BPych17wtPc2qM6EJ5swnTMFGy4m1k60tybQ7bJ8=;
-        b=O0HscLV+1ES2BJlbdOorUTPK5RHYqNpsipQzqEoGnafL1IsPCO0L08EPeP1Oe8u1s9
-         QqPaIt13h8uQO7NvWt3wM+yHqVR22Ogksc1L9kpgYpKNjdAlxQaPfZMbA3e0ucHMu9iL
-         iRXMkylIJN6d3jZwIi9mx52GLQpmvLkmY4xcJ8hJs/NTQDrD2Axug1Wi/gb/aN74wmCA
-         Lw++VK4FXEzmKEkpQEpGsfGavIToPcGkiI4wnHgSXBCrAMfAlGL22ojSQx1ts/eLYu0D
-         ruo2XvcoXyeNbrYtw/MhlxhOrB0HgUejJkukW//j+RnnOyNQE03h1J5ULsrge5XbziMN
-         IsmA==
-X-Gm-Message-State: AOAM531BcZwgNbTIXjYwiIVMiS0gisbstUUZbH4rqvVqRS8qeYoC3eJP
-        2mmhABWQ3dbrQmA1HsUOCg==
-X-Google-Smtp-Source: ABdhPJy9LM8LD0Szs9UH11qFmWCM+7jwNJQ393lKOth1A/hR2oMDpmorF/tRORnbWEX3mtJicgnEgw==
-X-Received: by 2002:a17:90b:1a81:b0:1bc:c3e5:27b2 with SMTP id ng1-20020a17090b1a8100b001bcc3e527b2mr16247200pjb.20.1646490296243;
-        Sat, 05 Mar 2022 06:24:56 -0800 (PST)
+        bh=aCTkDCJYSB+lOnRJ9woHxklOjSBgeP6h4/7iJlYWqs8=;
+        b=sbmH8QzKPyPQe3DbnRyOZC53MIHgduy0/MN8dOr2A8YJn8Rdloye7RESko5YhHBg6t
+         U0t4lthgOF4L11vLc7/afLG9u3BQr2xh+Ghdan4rMADumw3MJiY7gDe7nFOOaWM60x1I
+         eQYco3hqzTp/iciidYid2yjcRcg3k61HpWha+zbDfwst7zuMjbOE2KsSiAEueR+5U9uk
+         j/nzGvDSxKFY9V3/BhBJ+GCAhhk0KyuZWZq218RlD8tHEKfAM+floCH8zMtMCKLFYLdl
+         VIPjrv1lCe2DbohTx+0UXksAqlHFxKYfqpARXiWT5IRFtav8ldVRLaYMg5XnAWXwonmq
+         TYHg==
+X-Gm-Message-State: AOAM530p3FwfYuWgeHz7xRDw6NqJKLWjbF4sJCjFl22gZj4eDZoRm8LY
+        B5x2Fgw5w0Cu0h+RoYOskQ==
+X-Google-Smtp-Source: ABdhPJyuFeAxh3xixyiYxI1F75IvUa00LHlfeeQee5vDZsyzOu2SMMXR5LdlQXbbhKtZhRu9ehuilg==
+X-Received: by 2002:a17:902:8e88:b0:14f:b460:ec02 with SMTP id bg8-20020a1709028e8800b0014fb460ec02mr3954907plb.35.1646492114497;
+        Sat, 05 Mar 2022 06:55:14 -0800 (PST)
 Received: from vultr.guest ([107.191.53.97])
-        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm13515189pju.44.2022.03.05.06.24.54
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm10078213pfl.135.2022.03.05.06.55.12
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 05 Mar 2022 06:24:55 -0800 (PST)
+        Sat, 05 Mar 2022 06:55:14 -0800 (PST)
 From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     rajur@chelsio.com, davem@davemloft.net, kuba@kernel.org
+To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] net: cxgb3: Fix an error code when probing the driver
-Date:   Sat,  5 Mar 2022 14:24:44 +0000
-Message-Id: <1646490284-22791-1-git-send-email-zheyuma97@gmail.com>
+Subject: [PATCH] ethernet: sun: Free the coherent when failing in probing
+Date:   Sat,  5 Mar 2022 14:55:04 +0000
+Message-Id: <1646492104-23040-1-git-send-email-zheyuma97@gmail.com>
 X-Mailer: git-send-email 2.7.4
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
@@ -63,30 +63,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During the process of driver probing, probe function should return < 0
-for failure, otherwise kernel will treat value >= 0 as success.
-
-Therefore, the driver should set 'err' to -EINVAL when
-'adapter->registered_device_map' is NULL. Otherwise kernel will assume
-that the driver has been successfully probed and will cause unexpected
-errors.
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
 Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
- drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-index bfffcaeee624..662af61fc723 100644
---- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
-@@ -3346,6 +3346,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index ad9029ae6848..77e5dffb558f 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3146,7 +3146,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
  	}
- 	if (!adapter->registered_device_map) {
- 		dev_err(&pdev->dev, "could not register any net devices\n");
-+		err = -EINVAL;
- 		goto out_free_dev;
- 	}
+ 
+ 	pci_set_drvdata(pdev, hp);
+@@ -3179,6 +3179,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 
+ 	return 0;
+ 
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
  
 -- 
 2.25.1
