@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0AB24CEA1E
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 09:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3564CEA29
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 10:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbiCFI6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 03:58:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42788 "EHLO
+        id S231462AbiCFJKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 04:10:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233059AbiCFI6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 03:58:38 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921FA220E0
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 00:57:46 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id y2so11372808edc.2
-        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 00:57:46 -0800 (PST)
+        with ESMTP id S229614AbiCFJKE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 04:10:04 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9062D1F2;
+        Sun,  6 Mar 2022 01:09:12 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id o23so11099451pgk.13;
+        Sun, 06 Mar 2022 01:09:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Hxr58LzZb0xxkkoq+RaydR2euslE0TC19IlcbYrBZQY=;
-        b=Pfh75midBf1EUr2TAsvYTlIJ+DYEdwl8BN5UPbCWSQOth9ajWfpD+86OfZndGAXcvz
-         eAgCXhImV9xhOc2N0vW/6hGC93N7UmRi7o9k3yP4Xxi1Q0hMT2eQMBdmp3GN8HHuiEB6
-         GWRrqDRLKe+G8IDuSRZrWQeRzUUgD7DAQuWrW4TZq7WJMiKzbuzwD6WqpL4MnP/02vsX
-         0BTJrvGjL7XG5Bh+omAYgSnfEqPFMyTzzVQx0ts0koHsfYY90LCvSarM6mu/E2pjYxji
-         btKejEQWgyixY/uB6CyiRSxnyd/IahpLWf3bFLAZbYnmS2PSqaJJSC2qwAC1oYq6lviV
-         Zdxw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MdKwZWcDlXNg70OUOcgY+Uv8sryuhH6Ae0VUERvAE1k=;
+        b=SmqrWRC+Vcb49bqkKIs/1IUYyspO/4NrjRtaR4tHmFbv2+YU9Y6VhTD2voFMSbYNuo
+         /EFzIMaU7rdpDhG9WtoNxsYSiGjcnQeIgWiaCNKu3W9ZPKZGKF8NvBGC2d2q/nX0GFG3
+         5ovT6f5iHyxLLJkp7howMejysf9NJN94hBzHPua0rmmCjGBfL61Rt9o5LopnoHLs04+a
+         s3LpwSkEDFQwDXoDapznPNqdNKX3CTNjde9NoyF5Z/WRDrduNsdNmRue4VNcZ6/d8+JT
+         Xr6pp1CLZCK0f3HPLH9Ul4rwO41XYobkyffDG150R5I5I6CSyht4clW7TFHAtrDdb+wg
+         JjtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Hxr58LzZb0xxkkoq+RaydR2euslE0TC19IlcbYrBZQY=;
-        b=VDHnlUvCEfl/rPCmSCNFBs/cpEMx9XxtbI57bpOpCToYvyk/m+PYPh8Wz23qEDPEqF
-         N9hdn8B1vA7OVLjynXQhkHbEhEntF8Q6l/LJQr0tv0MqY4j03ncS5yLsfmspID38xGNc
-         qZ8NJ7vIT+D8dK7jSruIetUNUqD7AldFzgD+O1c6/B79368+F2fCjD60FEE3PlJrjET2
-         XsP2ZDGDKmav0t1N3C0pKEUwE1IuHfaLFPWYLEeqJ0T8GdkJ11n+nxveio5Jn3psf5HH
-         lODoGlmlQq+9dI4TdAqaFdhBjrgoQMoTAyt5uzsGYAKYaL2lU6tH2ictsbFdBUv3GbsJ
-         t4rQ==
-X-Gm-Message-State: AOAM5339sNfzYAeVFxijiIgklC6fV0I3rJa0JJY9iQmOOl2DIsdMchFD
-        gq+JswvBFZdX/zUsSrlSiKW1wA==
-X-Google-Smtp-Source: ABdhPJx4y9mO5/uw/w0zmTscsH8XTeYed+K5MptAi/ri9hbPRqKK+5Ei0ve0lsp6Vwl9KLvaDSBzWA==
-X-Received: by 2002:a05:6402:8d5:b0:416:1b20:5090 with SMTP id d21-20020a05640208d500b004161b205090mr5728555edz.393.1646557065183;
-        Sun, 06 Mar 2022 00:57:45 -0800 (PST)
-Received: from hornet.engleder.at ([2001:871:23a:8366:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id z24-20020a170906815800b006dab4bd985dsm2663423ejw.107.2022.03.06.00.57.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MdKwZWcDlXNg70OUOcgY+Uv8sryuhH6Ae0VUERvAE1k=;
+        b=vx/TWT6HoTt/pCv0cgYneUNY8oVjhRzOOMKMwAFQrd6UZCCcYSHFgybrIJJ1CTAsZX
+         Yg+HEo+m2g2vEpg+kaIwTWYzI6hltnUVPwwv0zGvM7FSBGgXoXMxdNV3LDD/qJzZDGeL
+         yWnnC4lDsRedFxt2rgsdA53eQ6+L3br7UMpt5M96m1czCz+ZtCc5ag6RmaG64CiknH2h
+         ffxLW/8fYuHcKglKWHxdld0/rg0fS7F+XVGu152WoveuehG5c144znUNNQE7KKqD0B/Q
+         dr9wh11ykc8utdFjpSPrkpLBeYV9LUw7jMq1v7QSW83Qh/EjoQSf0zPJZVPBU7enxNfD
+         hm3A==
+X-Gm-Message-State: AOAM530gJw88v73dGOIHWv0pgNsz8ScJ3OaBj3gRtrLNygFMY+V+mHoB
+        g6cjzRNwCX4U9QqmmyS1c6QOGr0K+Dw4jAY=
+X-Google-Smtp-Source: ABdhPJzfRxHHnkiS4mLAbA0wWkrZ6NdVfauQqYSUvfy1YomjO+Y+eJNmS0OqgU/NsK6UrHahHLs9JA==
+X-Received: by 2002:a63:1620:0:b0:375:948e:65bf with SMTP id w32-20020a631620000000b00375948e65bfmr5601458pgl.49.1646557752323;
+        Sun, 06 Mar 2022 01:09:12 -0800 (PST)
+Received: from 8888.icu ([210.3.157.149])
+        by smtp.gmail.com with ESMTPSA id f18-20020a056a001ad200b004bf321765dfsm11931375pfv.95.2022.03.06.01.09.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 00:57:44 -0800 (PST)
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
+        Sun, 06 Mar 2022 01:09:11 -0800 (PST)
+From:   Lu Jicong <jiconglu58@gmail.com>
+To:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
         kuba@kernel.org
-Cc:     mlichvar@redhat.com, vinicius.gomes@intel.com,
-        netdev@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [RFC PATCH net-next 6/6] tsnep: Add free running time support
-Date:   Sun,  6 Mar 2022 09:56:58 +0100
-Message-Id: <20220306085658.1943-7-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220306085658.1943-1-gerhard@engleder-embedded.com>
-References: <20220306085658.1943-1-gerhard@engleder-embedded.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lu Jicong <jiconglu58@gmail.com>
+Subject: [PATCH] rtlwifi: rtl8192ce: remove duplicated function '_rtl92ce_phy_set_rf_sleep'
+Date:   Sun,  6 Mar 2022 09:08:46 +0000
+Message-Id: <20220306090846.28523-1-jiconglu58@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,132 +68,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TSN endpoint Ethernet MAC supports a free running counter
-additionally to its clock. This free running counter can be read and
-hardware time stamps are supported. As the name implies, this counter
-cannot be set and its frequency cannot be adjusted.
+This function exists in phy_common.c as '_rtl92c_phy_set_rf_sleep'.
+Switch to the one in common file.
 
-Add free running time support based on free running counter to physical
-clock. This also requires hardware time stamps based on that free
-running time.
-
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+Signed-off-by: Lu Jicong <jiconglu58@gmail.com>
 ---
- drivers/net/ethernet/engleder/tsnep_hw.h   |  9 +++++--
- drivers/net/ethernet/engleder/tsnep_main.c |  6 +++++
- drivers/net/ethernet/engleder/tsnep_ptp.c  | 28 ++++++++++++++++++++++
- 3 files changed, 41 insertions(+), 2 deletions(-)
+ .../wireless/realtek/rtlwifi/rtl8192ce/phy.c  | 32 +------------------
+ 1 file changed, 1 insertion(+), 31 deletions(-)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep_hw.h b/drivers/net/ethernet/engleder/tsnep_hw.h
-index 71cc8577d640..916ceac3ada2 100644
---- a/drivers/net/ethernet/engleder/tsnep_hw.h
-+++ b/drivers/net/ethernet/engleder/tsnep_hw.h
-@@ -43,6 +43,10 @@
- #define ECM_RESET_CHANNEL 0x00000100
- #define ECM_RESET_TXRX 0x00010000
- 
-+/* counter */
-+#define ECM_COUNTER_LOW 0x0028
-+#define ECM_COUNTER_HIGH 0x002C
-+
- /* control and status */
- #define ECM_STATUS 0x0080
- #define ECM_LINK_MODE_OFF 0x01000000
-@@ -190,7 +194,8 @@ struct tsnep_tx_desc {
- /* tsnep TX descriptor writeback */
- struct tsnep_tx_desc_wb {
- 	__le32 properties;
--	__le32 reserved1[3];
-+	__le32 reserved1;
-+	__le64 counter;
- 	__le64 timestamp;
- 	__le32 dma_delay;
- 	__le32 reserved2;
-@@ -221,7 +226,7 @@ struct tsnep_rx_desc_wb {
- 
- /* tsnep RX inline meta */
- struct tsnep_rx_inline {
--	__le64 reserved;
-+	__le64 counter;
- 	__le64 timestamp;
- };
- 
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 904f3304727e..4aa3d04da2e4 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -472,9 +472,12 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 			struct skb_shared_hwtstamps hwtstamps;
- 			u64 timestamp =
- 				__le64_to_cpu(entry->desc_wb->timestamp);
-+			u64 counter =
-+				__le64_to_cpu(entry->desc_wb->counter);
- 
- 			memset(&hwtstamps, 0, sizeof(hwtstamps));
- 			hwtstamps.hwtstamp = ns_to_ktime(timestamp);
-+			hwtstamps.hwfreeruntstamp = ns_to_ktime(counter);
- 
- 			skb_tstamp_tx(entry->skb, &hwtstamps);
- 		}
-@@ -706,9 +709,12 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 					(struct tsnep_rx_inline *)skb->data;
- 				u64 timestamp =
- 					__le64_to_cpu(rx_inline->timestamp);
-+				u64 counter =
-+					__le64_to_cpu(rx_inline->counter);
- 
- 				memset(hwtstamps, 0, sizeof(*hwtstamps));
- 				hwtstamps->hwtstamp = ns_to_ktime(timestamp);
-+				hwtstamps->hwfreeruntstamp = ns_to_ktime(counter);
- 			}
- 			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
- 			skb->protocol = eth_type_trans(skb,
-diff --git a/drivers/net/ethernet/engleder/tsnep_ptp.c b/drivers/net/ethernet/engleder/tsnep_ptp.c
-index eaad453d487e..5f0b807fd86c 100644
---- a/drivers/net/ethernet/engleder/tsnep_ptp.c
-+++ b/drivers/net/ethernet/engleder/tsnep_ptp.c
-@@ -175,6 +175,33 @@ static int tsnep_ptp_settime64(struct ptp_clock_info *ptp,
- 	return 0;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/phy.c
+index 04735da11168..da54e51badd3 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/phy.c
+@@ -396,36 +396,6 @@ void _rtl92ce_phy_lc_calibrate(struct ieee80211_hw *hw, bool is2t)
+ 	}
  }
  
-+static int tsnep_ptp_getfreeruntimex64(struct ptp_clock_info *ptp,
-+				       struct timespec64 *ts,
-+				       struct ptp_system_timestamp *sts)
-+{
-+	struct tsnep_adapter *adapter = container_of(ptp, struct tsnep_adapter,
-+						     ptp_clock_info);
-+	u32 high_before;
-+	u32 low;
-+	u32 high;
-+	u64 counter;
-+
-+	/* read high dword twice to detect overrun */
-+	high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
-+	do {
-+		ptp_read_system_prets(sts);
-+		low = ioread32(adapter->addr + ECM_COUNTER_LOW);
-+		ptp_read_system_postts(sts);
-+		high_before = high;
-+		high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
-+	} while (high != high_before);
-+	counter = (((u64)high) << 32) | ((u64)low);
-+
-+	*ts = ns_to_timespec64(counter);
-+
-+	return 0;
-+}
-+
- int tsnep_ptp_init(struct tsnep_adapter *adapter)
+-static void _rtl92ce_phy_set_rf_sleep(struct ieee80211_hw *hw)
+-{
+-	u32 u4b_tmp;
+-	u8 delay = 5;
+-	struct rtl_priv *rtlpriv = rtl_priv(hw);
+-
+-	rtl_write_byte(rtlpriv, REG_TXPAUSE, 0xFF);
+-	rtl_set_rfreg(hw, RF90_PATH_A, 0x00, RFREG_OFFSET_MASK, 0x00);
+-	rtl_write_byte(rtlpriv, REG_APSD_CTRL, 0x40);
+-	u4b_tmp = rtl_get_rfreg(hw, RF90_PATH_A, 0, RFREG_OFFSET_MASK);
+-	while (u4b_tmp != 0 && delay > 0) {
+-		rtl_write_byte(rtlpriv, REG_APSD_CTRL, 0x0);
+-		rtl_set_rfreg(hw, RF90_PATH_A, 0x00, RFREG_OFFSET_MASK, 0x00);
+-		rtl_write_byte(rtlpriv, REG_APSD_CTRL, 0x40);
+-		u4b_tmp = rtl_get_rfreg(hw, RF90_PATH_A, 0, RFREG_OFFSET_MASK);
+-		delay--;
+-	}
+-	if (delay == 0) {
+-		rtl_write_byte(rtlpriv, REG_APSD_CTRL, 0x00);
+-		rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN, 0xE2);
+-		rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN, 0xE3);
+-		rtl_write_byte(rtlpriv, REG_TXPAUSE, 0x00);
+-		rtl_dbg(rtlpriv, COMP_POWER, DBG_TRACE,
+-			"Switch RF timeout !!!\n");
+-		return;
+-	}
+-	rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN, 0xE2);
+-	rtl_write_byte(rtlpriv, REG_SPS0_CTRL, 0x22);
+-}
+-
+ static bool _rtl92ce_phy_set_rf_power_state(struct ieee80211_hw *hw,
+ 					    enum rf_pwrstate rfpwr_state)
  {
- 	int retval = 0;
-@@ -192,6 +219,7 @@ int tsnep_ptp_init(struct tsnep_adapter *adapter)
- 	adapter->ptp_clock_info.adjtime = tsnep_ptp_adjtime;
- 	adapter->ptp_clock_info.gettimex64 = tsnep_ptp_gettimex64;
- 	adapter->ptp_clock_info.settime64 = tsnep_ptp_settime64;
-+	adapter->ptp_clock_info.getfreeruntimex64 = tsnep_ptp_getfreeruntimex64;
- 
- 	spin_lock_init(&adapter->ptp_lock);
- 
+@@ -519,7 +489,7 @@ static bool _rtl92ce_phy_set_rf_power_state(struct ieee80211_hw *hw,
+ 				jiffies_to_msecs(jiffies -
+ 						 ppsc->last_awake_jiffies));
+ 			ppsc->last_sleep_jiffies = jiffies;
+-			_rtl92ce_phy_set_rf_sleep(hw);
++			_rtl92c_phy_set_rf_sleep(hw);
+ 			break;
+ 		}
+ 	default:
 -- 
-2.20.1
+2.25.1
 
