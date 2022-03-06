@@ -2,109 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B3F4CED38
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 19:39:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B32094CED46
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 19:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbiCFSkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 13:40:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        id S233628AbiCFS6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 13:58:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbiCFSj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 13:39:58 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAAC25C48
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 10:39:05 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id f14so14906822ioz.1
-        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 10:39:05 -0800 (PST)
+        with ESMTP id S233507AbiCFS6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 13:58:32 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DA51CFDB
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 10:57:38 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id b5so2846239lfs.1
+        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 10:57:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9j4rxqkFvudE6edfDTrSZc6T4GWXMAOtNWayS7Y3Fh4=;
-        b=rmNiJNwn2SVuYMYdbVMStjgzLzfUx/7Dahg9TuEx9bGARhHeSjljs+a3V7E6wvefqY
-         d6bq1RWSBB/T0Ve1UXrbRuveKYtRGVgbrC+qcmh7Y+Uqow3y7G02ziOeyAmuEq4Vz+PF
-         dzceMiI19Gf15Z/+F9cjqC8REJ1/oTv1r2dmO7cNr9zztCtFz4q07THvXpa6cgr1/s0a
-         ImoTYMsM3TugyadeRLARPLixIEGTBIcQ91jDCmrKmzgaAIJSaNre050PftFmTql0jww9
-         +hMpf1WdxbwpDVfyCX6Ai4vOhs8Kgv7hl8QM1mAFa4s6RGqwpUgevHvkWAd3GZHB9Ex1
-         lctQ==
+        bh=qj6QUg+mPOSXqYLVwnSwOPcd0+aQB4PrpOLySbesqDI=;
+        b=NMdTtTNbaeoZJonHKJ7sJZqrEn56YUSwRiX+/WQ0gNQDpclgZ5aR/0+mk6g/KddsP0
+         2DuCPmlqJF+5nGNp29W3gYMO6pJnxRA25xUksW95XPX/Sa5KYs1R/5iJHFFju6S8BJGd
+         O+hpanaAaaNd2mWW4m2T892GFgKi9WPRzhkKU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9j4rxqkFvudE6edfDTrSZc6T4GWXMAOtNWayS7Y3Fh4=;
-        b=JgXRD0dwlSapOgNv7INT/rwb+WC5CSMHcsHm4f/ZT7qwTuB3qo7iz/c1cH/joNLxkw
-         hJA9tJipWC4YJRbqv+ag+s849JNqVQA9rhcqhqrdRG7+f4NIEcgvQ6kIc9RuTDvGkR9w
-         XZkDcPDOpogeSGHu7yT992+amBd01lcVIqiO3rNbIiajrbil/iKzfYaDoc/VOXQdK7Xl
-         FqzRo9Qu0meA/l78Fwmn4WXg7onkEr8c42ZN0NdF1lH5VJ90qvCrgqs8DcC6EdjujzRV
-         Tx10AaMeurbihaJZUVbG7zcX23GcSbLmrzfWSwcxfad9A2Rgw1zDELsllRS21vhs0osr
-         3u9w==
-X-Gm-Message-State: AOAM531Lbv4u+gf3785Tqbst15ARaGNFcH5BrlAHdwLJgtZ+JQUAPbUc
-        doQFlrYOEtQvQs0KEPGmWFtbqp4s0KwGduwBWYIrPQ==
-X-Google-Smtp-Source: ABdhPJxawtA9Eq0xBKDsLpOnQ/xn5w2MDpr4IMuFE/hUFRC1rqxBh0qAUReI4BrqrDF5vDUJw0DI2ixBUsNAx1h+lj0=
-X-Received: by 2002:a05:6638:1453:b0:30e:221e:d497 with SMTP id
- l19-20020a056638145300b0030e221ed497mr8022316jad.115.1646591944989; Sun, 06
- Mar 2022 10:39:04 -0800 (PST)
+        bh=qj6QUg+mPOSXqYLVwnSwOPcd0+aQB4PrpOLySbesqDI=;
+        b=vsWpR1+z+/sTR6t9rm2oZ2+IzJzW1XxeGAHNDrcQoGRt2ODvrxbRLN286T6yagpxRy
+         vus6UioNkUTKisWYZU/f9pTNWBTlL4AfWzSa7jgAv6xOpio/lZC3BQ+0QGe5w+p255SL
+         skk8TmPEY5kLaCHhVDGa0vq6Z+tqxPEPDHa0JzRF6iMzO3phCeiOrGL5+3dibEDfZPL9
+         mjtvqDGaAQ7Jj+Pag5GbzCYhTIfIX7oKiZLhVD8po4tWSxCpar9Er10+OBMrN3o9Ti0Q
+         mlX7O6hyxfrpYef+MLxLFyjsdH06PEpVps18Vz83uRhzRkpWBUbhP/1DA+GuFked4BTr
+         7NTw==
+X-Gm-Message-State: AOAM531P9I0VE/2CyL8QFmxt1lSRLSwMR15SbEYPbgRKc95dImAjI6/g
+        dpLfCJdO5spWM1o3wrmqmtyirhKTtZEMGLvHCEQ=
+X-Google-Smtp-Source: ABdhPJwP8kEyOmkHUosJ713JmqhSTsh8dPT0DafODm0sDerGNat/CNoj0kj3uq22vjBvuuLY7s5i2g==
+X-Received: by 2002:a05:6512:15a5:b0:448:2e98:250e with SMTP id bp37-20020a05651215a500b004482e98250emr1721392lfb.351.1646593054608;
+        Sun, 06 Mar 2022 10:57:34 -0800 (PST)
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
+        by smtp.gmail.com with ESMTPSA id x6-20020ac259c6000000b004435e105572sm2388872lfn.131.2022.03.06.10.57.31
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Mar 2022 10:57:32 -0800 (PST)
+Received: by mail-lf1-f51.google.com with SMTP id 5so20824584lfz.9
+        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 10:57:31 -0800 (PST)
+X-Received: by 2002:ac2:41cf:0:b0:448:1eaa:296c with SMTP id
+ d15-20020ac241cf000000b004481eaa296cmr5694758lfi.52.1646593051338; Sun, 06
+ Mar 2022 10:57:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20220306085658.1943-1-gerhard@engleder-embedded.com> <20220306170504.GE6290@hoboy.vegasvil.org>
-In-Reply-To: <20220306170504.GE6290@hoboy.vegasvil.org>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Sun, 6 Mar 2022 19:38:55 +0100
-Message-ID: <CANr-f5wNJM4raaXrMA8if8gkUgMRrK7+5beCnpGOzoLu59zwsg@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 0/6] ptp: Support hardware clocks with
- additional free running time
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     yangbo.lu@nxp.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev <netdev@vger.kernel.org>
+References: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
+ <20220304025109.15501-1-xiam0nd.tong@gmail.com> <CAHk-=wjesxw9U6JvTw34FREFAsayEE196Fi=VHtJXL8_9wgi=A@mail.gmail.com>
+ <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com> <634CBC77-281E-421C-9ED9-DB9E7224E7EA@gmail.com>
+In-Reply-To: <634CBC77-281E-421C-9ED9-DB9E7224E7EA@gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 6 Mar 2022 10:57:15 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whSRNrhxx__Zo5mpKGKZ9BVwCqHCUcfxfBF4VPfFx8edA@mail.gmail.com>
+Message-ID: <CAHk-=whSRNrhxx__Zo5mpKGKZ9BVwCqHCUcfxfBF4VPfFx8edA@mail.gmail.com>
+Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
+ outside the loop
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 6, 2022 at 6:05 PM Richard Cochran <richardcochran@gmail.com> wrote:
-> > ptp vclocks require a clock with free running time for the timecounter.
-> > Currently only a physical clock forced to free running is supported.
-> > If vclocks are used, then the physical clock cannot be synchronized
-> > anymore. The synchronized time is not available in hardware in this
-> > case. As a result, timed transmission with ETF/TAPRIO hardware support
-> > is not possible anymore.
+On Sun, Mar 6, 2022 at 4:19 AM Jakob Koschel <jakobkoschel@gmail.com> wrote:
 >
-> NAK.
->
-> I don't see why you don't simply provide two PHC instances from this
-> one device.
+> I guess we could apply this to list_for_each_entry() as well
+> once all the uses after the loop are fixed?
 
-Because with vclocks the user space interface is already available. Also In
-my opinion it is a good fit. The second PHC would be based on the free running
-hardware counter. So it would not provide any additional functionality compared
-to the vclocks based on it.
+I think that would be a good longer-term plan. "list_traverse()" ends
+up being simpler syntactically, and has a certain level of inherent
+type safety (not just the "don't expose the mis-typed head pointer
+after the loop").
 
-Are two PHC instances supported? At least for ethtool there is only a single
-phc_index field.
+> I feel like this simply introduces a new set of macros
+> (we would also need list_traverse_reverse(), list_traverse_continue_reverse()
+> etc) and end up with a second set of macros that do pretty much
+> the same as the first one.
 
-> AFAICT, this series is not needed at all, as the existing API covers
-> this use case already.
+I think that if we're happy with this, we can probably do a scripted
+conversion. But I do like how it's incremental, in that we wouldn't
+necessarily have to do it all in one go.
 
-I assume that you mean for ETF the transmission time can be converted,
-similar like for time stamps. So for ETF you are right. It was too quick to
-mention ETF along with TAPRIO.
+Because it's always really painful with flag-day interface changes,
+which it would be to actually change the semantics of
+"list_for_each_entry()" without a name change. It just makes for a lot
+of pain for things that aren't in-tree yet (not just drivers that are
+out-of-tree in general, but drivers in development etc).
 
-My use case is TAPRIO with hardware support. For TAPRIO the hardware
-has to act based on the synchronized time within the TSN network. No
-transmission times, which could be converted, are used. The hardware
-is in charge to transmit frames from a certain queue only during defined
-intervals. These intervals are based on the synchronized time. So the
-hardware must be synchronized somehow. This is my solution to keep
-the hardware synchronized while vclocks are in use.
+And I really disliked the "pass the type to the list_for_each()"
+macro, because of how it made the end result look more complex.
 
-How can I cover my use case with the existing API? I had no idea so far.
+But list_traverse() looks like it would make the end result better
+both from a user perspective (ie the code just looks simpler) but also
+from the type safety point.
 
-Thanks!
+> Personally I guess I also prefer the name list_for_each_entry() over list_traverse()
+> and not having two types of iterators for the same thing at the same time.
 
-Gerhard
+I absolutely agree with you in theory, and in many ways I like
+list_for_each_entry() better as a name too (probably just because I'm
+used to it).
+
+But keeping the same name and changing how it works ends up being such
+a "everything at once" thing that I don't think it's realistic.
+
+               Linus
