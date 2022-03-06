@@ -2,108 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F5D24CEE0C
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 22:58:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9ADC4CEE1B
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 23:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234336AbiCFV7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 16:59:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        id S234327AbiCFWNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 17:13:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232146AbiCFV7E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 16:59:04 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4701EAEE
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 13:58:06 -0800 (PST)
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646603883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9iqhR7wOpt14o8SWxa1auGl70g18S7XMunJngf1hH6w=;
-        b=4G1Pj9C2ssAnDu0dt9ay0bzrkLLTHZEGoPAG9gpy+OBiZKJOe8f7NIqe/sG/zNfQ6CR+a3
-        QNviUe+qKnyuRiMjGXOCkVH2UpwCNw6OVjAwtn+r6CmYv2EC+HsOmVDsUpCtCXXcwqXK0x
-        J+hf6/JOR2reUnc0p/8GIUxos37bFdsjrYKJyfROiEZEkibkM4RPbXD3/gy86TzXjTg5rV
-        NtU4WOSS9LQNb44cL+rOoQdiQMiribA3jgFdhUSymwTVqjU3BkkpD4wBV3aCyYW3rIk1jO
-        J/EcCVJCl/6dqGHeN9M9TZ6EHiB6fWqSkFhxk8brqnIX+tadr/QO3jbysuQJ3w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646603883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9iqhR7wOpt14o8SWxa1auGl70g18S7XMunJngf1hH6w=;
-        b=cXqE1GNSEwbpSBnIlRMOIZsz5wur+bghVFzjOFPrHfeycTBphzw1nyROiR5QZJhCOmt0f5
-        Ay+S3B3pTtkngWAQ==
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231239AbiCFWNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 17:13:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E23F2612A
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 14:12:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC13160FA8
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 22:12:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6380C340EC;
+        Sun,  6 Mar 2022 22:12:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646604732;
+        bh=Vg4dg+rtnXwPXxFzIQ41Fx4epBxcehS/Bu7Z4cIzmXA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fOuQOc40xppJhSkTOioF4U7Q6Dn2jMdyVnE7XKLORst016QJcqwbwdfM9q8/oz+m7
+         H9s1szundRyDYNkOYGu4gxiWDkYhA3HLtaefkrE1PcLMkf5tflDIpCORqctHFaaDnJ
+         f9pXcyQQvNRiMa8FRE1HmfcwotzLNx6nr4qYAecI=
+Date:   Sun, 6 Mar 2022 23:12:08 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Divya Koppera <Divya.Koppera@microchip.com>
-Subject: [PATCH net-next 10/10] net: phy: micrel: Move netif_rx() outside of IRQ-off section.
-Date:   Sun,  6 Mar 2022 22:57:53 +0100
-Message-Id: <20220306215753.3156276-11-bigeasy@linutronix.de>
-In-Reply-To: <20220306215753.3156276-1-bigeasy@linutronix.de>
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH net-next 02/10] staging: Use netif_rx().
+Message-ID: <YiUxuBxop3AtLmnw@kroah.com>
 References: <20220306215753.3156276-1-bigeasy@linutronix.de>
+ <20220306215753.3156276-3-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220306215753.3156276-3-bigeasy@linutronix.de>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-lan8814_match_rx_ts() invokes netif_rx() with disables interrupts
-outside which will create a warning. Invoking netif_rx_ni() with
-disabled interrupts is wrong even without the recent rework because
-netif_rx_ni() would enable interrupts while processing the softirq. This
-in turn can lead to dead lock if an interrupts triggers and attempts to
-acquire kszphy_ptp_priv::rx_ts_lock.
+On Sun, Mar 06, 2022 at 10:57:45PM +0100, Sebastian Andrzej Siewior wrote:
+> Since commit
+>    baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any context.")
+> 
+> the function netif_rx() can be used in preemptible/thread context as
+> well as in interrupt context.
+> 
+> Use netif_rx().
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-staging@lists.linux.dev
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/staging/gdm724x/gdm_lte.c      | 2 +-
+>  drivers/staging/wlan-ng/p80211netdev.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
-Move netif_rx() outside the IRQ-off section.
-
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Divya Koppera <Divya.Koppera@microchip.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/net/phy/micrel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index cbae1524a420f..ce3992383766d 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -2045,8 +2045,6 @@ static bool lan8814_match_rx_ts(struct kszphy_ptp_pri=
-v *ptp_priv,
- 		memset(shhwtstamps, 0, sizeof(*shhwtstamps));
- 		shhwtstamps->hwtstamp =3D ktime_set(rx_ts->seconds,
- 						  rx_ts->nsec);
--		netif_rx(skb);
--
- 		list_del(&rx_ts->list);
- 		kfree(rx_ts);
-=20
-@@ -2055,6 +2053,8 @@ static bool lan8814_match_rx_ts(struct kszphy_ptp_pri=
-v *ptp_priv,
- 	}
- 	spin_unlock_irqrestore(&ptp_priv->rx_ts_lock, flags);
-=20
-+	if (ret)
-+		netif_rx(skb);
- 	return ret;
- }
-=20
---=20
-2.35.1
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
