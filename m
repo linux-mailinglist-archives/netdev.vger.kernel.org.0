@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AF2F4CEEB3
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 00:43:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12BB34CEEB5
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 00:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233516AbiCFXo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 18:44:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
+        id S234477AbiCFXo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 18:44:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234479AbiCFXo1 (ORCPT
+        with ESMTP id S234485AbiCFXo1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 18:44:27 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4ED341636;
-        Sun,  6 Mar 2022 15:43:28 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id d17so12316262pfl.0;
-        Sun, 06 Mar 2022 15:43:28 -0800 (PST)
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF32441FA6;
+        Sun,  6 Mar 2022 15:43:31 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id n2so2779801plf.4;
+        Sun, 06 Mar 2022 15:43:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=SK5eJWwdny4MgSa99M4Dd7h9oZBl1uRtjfGWpEWW6Xs=;
-        b=p15VkK1Jm11t+6iLUfSsmmRo8ggtct6+ebAlDnbgtuSjbOttJs90I5IhDL6Xw90tld
-         fXrNbAaRi9rzia+/RbaE0IshMnPV7ywD6IWb7tiiJnoxvq8X582lB5m0/UbWgsD1HHvO
-         rCfQgEYNIysZp04fTW0hmYx3fEAYfiX0o2L49uJxFcxhnV5nezCM4TkDS5LtTjQYpQZV
-         MmVig9d5LGIX9hH4IupM9QZmEhR7Rmsl8fNiGqGmHJkD35X4jUwaF4CTLYunibq4Oj0P
-         GXbtWFF9O50n2nkfznQcY04iNGb6GKNLGhwJA5hoMjqOYg1gb+iPhXp4AMEaUPUcM/q7
-         GzvQ==
+        bh=lJBUsmq/FnvtLIHjhXncbj5Tidl/UCuplMGGTlXujII=;
+        b=LQi92m9Afpnf1TM82RlMQxFYjgT3szmcMSDg2sQr/BnC9mXVyV9VbKDAdPfa40RKnz
+         SHwzoxd6RC5AwfNOh8syL+fTj1yP++/ShUCiGxyo5nHn/0DMX85x+26hJK1qhZDiTv6Y
+         Yr3XEMM+d3fn9xwQIpUTCNaq0TLe6QXeMEoa/lUy+R5xNuQbcDMpAiT/dEUe7+qVv3Hy
+         NcTcvcGXAOSR9eSEFIK5KB4eArj0JEDR7B0DPbs/Ylg+pjXljzCWePQNNaT/a58bZPmY
+         Iu13eLaei/BRSzLhNs2ukpMtarQX1vFowagoJv2ALwpqtZN0opRlHhScyFsj+jBzxfWy
+         jkuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SK5eJWwdny4MgSa99M4Dd7h9oZBl1uRtjfGWpEWW6Xs=;
-        b=QNSl0Ahmn8+wdTrHLg1cNfqYtHFjquLGSa7GSn0SQcVyt4DUTd2MZ6vKtbOJ8Ut8JI
-         XEIv0T44D4XLMybfuCBaIYS5T0xE4UrwD78ii5QV0XZwt/KWQM9xC1mIRKSbnZ6/nCzq
-         eZZm2bJ67BASb2L1q2Nr4SP+VkGrjFbl5xaF3BSWwjA/jY5hrj5Vbwx86+PcI6/T/RVk
-         bLVwNDPiQrhVRaFSh+ZcKjQM8RknAEpzc/rgRUEaWpP5vDa6pJWWkRhHMHKIKYkmyhg8
-         uqPl4L7Xqjz7eDc8YFd5/CTRIlKhsXBi4jOxDbaHfw5EKtoihZaGaPcoDrkeN6gitBN9
-         9FwA==
-X-Gm-Message-State: AOAM5321CORdpBkTqxLY2X8KtQ0dBxKSKZYCx0/4vs1vcG4Zk3OUPoN+
-        pMGvxvwxbmEQHjTdm23mqMkQX9Ez/kI=
-X-Google-Smtp-Source: ABdhPJx7SA2MTL6Q/7xJoebnAcbyQs28ZXljIGLt+wgzZs9QrBme47ZkO4/dlW3ykrY+aXzsAVLiRw==
-X-Received: by 2002:a65:6a8e:0:b0:378:b62d:f397 with SMTP id q14-20020a656a8e000000b00378b62df397mr7762246pgu.239.1646610208057;
-        Sun, 06 Mar 2022 15:43:28 -0800 (PST)
+        bh=lJBUsmq/FnvtLIHjhXncbj5Tidl/UCuplMGGTlXujII=;
+        b=M5EZij4657QiKS9aqkTpEzhxaqic0boPxYJe4kUaIawqcZE5J1P1D4Ucq3Mr4OHmLj
+         Niibvdc2Ygfk/OSTGuCXvPsMTBg/dIkTMD+cL2SdJwoxwn4cOCCVB2zeBlgJm5y33w7c
+         Li7gcz7ivbsgk5vFhGIsLRipQ0oSeL4yPvX1gkLimQvUOtzB891KdaslIR3mm3vwDLtD
+         rFJhjPPynMPlAP3E2ERzK9TyGWa2BvwAiF42Dbq+H5TAAVIK+A1XWHdWypAU95exUeME
+         UJ94H7JKo/IINO+sySdkk4WODPdXUDaAQcnFUTfh9z/Y3mPbOknlyCKqAlGSVmx9Ilr0
+         sncw==
+X-Gm-Message-State: AOAM5300o7CgSLZ3jpfMYAUnlTu007P3SRWAo8dLfRaEB0I+MC7N4/uc
+        ybm5GZKkj1I2R5ddqmnaIKO1mk7GGNQ=
+X-Google-Smtp-Source: ABdhPJxihHw79IwcWUHPwD503YUhnpkHhvXyT4+4bwOqEiG1Du8iSfrW3MOGY9klGUHDH05qTfKyzA==
+X-Received: by 2002:a17:903:4a:b0:151:be09:3de9 with SMTP id l10-20020a170903004a00b00151be093de9mr9484280pla.138.1646610211165;
+        Sun, 06 Mar 2022 15:43:31 -0800 (PST)
 Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id x1-20020a637c01000000b0038007eeee0bsm4024983pgc.22.2022.03.06.15.43.27
+        by smtp.gmail.com with ESMTPSA id e18-20020a63d952000000b00372a1295210sm9821274pgj.51.2022.03.06.15.43.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 15:43:27 -0800 (PST)
+        Sun, 06 Mar 2022 15:43:30 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -59,14 +59,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, Lorenz Bauer <linux@lmb.io>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v1 4/5] selftests/bpf: Add verifier tests for pkt pointer with pkt_uid
-Date:   Mon,  7 Mar 2022 05:13:10 +0530
-Message-Id: <20220306234311.452206-5-memxor@gmail.com>
+Subject: [PATCH bpf-next v1 5/5] selftests/bpf: Update xdp_adjust_frags to use bpf_packet_pointer
+Date:   Mon,  7 Mar 2022 05:13:11 +0530
+Message-Id: <20220306234311.452206-6-memxor@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220306234311.452206-1-memxor@gmail.com>
 References: <20220306234311.452206-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6037; h=from:subject; bh=v2oPD/898mip5EnchYtYAcaGnb/9AXn9iiWsqg8DQh4=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiJUWoITMEHp/+IE2alU3k+E1XjmQEBgvhNyEeLIJX n0oZJ4eJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYiVFqAAKCRBM4MiGSL8Ryov0D/ 9PaohaNpddLWKELefPVlZaa+uBXz9m2WKda2RSx2Zd4oQZGsi5sQgnqeB6TWZNrB3GjqTYog1D2yd9 uBGJG3J5BsnUzXHfYT14kLyZ5NdPr8y0KLB2xqsaExPGdS4eYYwSB2FiTDbeOPDFwwsEny5JyeTNir NjbZOua1e6M2CaNmGnm5dw3Cddq5CCyT39iiranKmTgomeg0a8HjunaFrof08uFPVCVoGrYdaQxKtt jJNoKpWI3WPiqVT2QDqmr0xEk6LZsQon1rtVx0tPzA4qv8zFHessvxvGeituqsrFe1qVx3mryHYJ7I G2pDWf8DSt4E8NmE7gljalVax5r7J/W9do8vj1jQJSIRZCpA9iyiv5hSfesi3lOliftriHjzfww5S4 CrMA3UwALnUl3aCT+1a2gG7qCB8+rexRygp4TFdUceAHCBm9RsaY28tdUJl21ytD/ZfTUu2SDyzv+6 hX2hZhMeyoG/6Rq6IGfQ3l3AKc1kTY/o3W16IA7OxNL5nEQU7LMU+XRka//ZsKp+yqLoBNkmCH/sMG yxBjevKOqd6xFLSdRgeOk+Mf9ziGeh0nfdqDsIC3PikHAZpeMXoxEh/AGUZi0Uuiat0WbB6gg4WhU9 HSxsgCft6ZzkGpr6k/m93w/Kt8OWDmwCPylcdJg+zFsPXdYft5Vz/lDLZJBg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6576; h=from:subject; bh=OXZz41oVugK2/7L6N3ycV+OTCSur4CL6HLpmzD2oez4=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiJUWoJznMM5rS0a5JMG902uKhYP4qtu8Mca9o8Ucm coegemaJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYiVFqAAKCRBM4MiGSL8RyuxpEA COV26IS1uGo85apqHNO1zlSf8il4NxnYojYQ1jMEKDcqb+E+IPiUTuu26dWXLPdiSbms/zfJ/m3Uef WA7UKrOmO6+/a7IBtmpjbvSFGfauA29EjmWI4NwzwZCLE2sHXpoK1HbnPLdkvn5RsicATgaVjotdfN FUypDdl8l/r6+3uzT9E4mWJtHgZv2ERP5GPmE1dZdynm75eyfUlQLja0AtRbphjcF2gAUyvcht6EgJ 1LyJxO/Lz9g1yI4L2l7BZFfD4dCrrTo/LCFhvZq+L07JZoFABlc/vxVMVvtP7t4WxJwatLfUhNslf8 IuHKIGcwd00r9SQqZg+PoMqIuHYrGzSNKYBsxTbm2FXTTe0VdJIUvqPAc0kZB5uCuUFGxGhZBgcNbs B21TWnC//R1oJutDhkbUkWjgLnmmi2IvqjI40LxU/38WONXtZfr1Hlb2tr7po6aTsZaWHRqQDBVPip vT3qbJlQSTQqXJejU5YKKtEJFirhnQHeqricQ4MKaTj/Vycr21fVeHMmP9hAIo0RJjJYlPTFVJV1sV z7/+s3p8jIGTU2yGDBrKOgEzdCeiXQuq0bYQ5i9vxUG9ByIKxalB4BQ5hxdW8gVJnbD/HUdO1bEk6K hbWCoE16vlp+IumeqecBoLA5o0cAXS7ul9FTKjyD6JG6YTK40RgoKmyxVnng==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,172 +79,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use bpf_packet_pointer to obtain such pkt pointers, and verify various
-behaviors, like find_good_pkt_pointers skipping pkt pointers with
-unequal pkt_uid, ensuring that offset, len to bpf_packet_pointer are
-within limits imposed statically by verifier, rejecting comparion of pkt
-pointer with pkt_uid against unequal pkt_uid, ensuring
-clear_all_pkt_pointers doens't skip pkt_uid pkts.
+Test that in case of linear region, we always are able to do DPA without
+any errors. Note how offset is clamped to range [0, 0xffff] and len is a
+constant. Ensure that helper vs DPA is detected and tested.
+
+Add a force_helper mode, that forces use of bpf_xdp_load_bytes and
+bpf_xdp_store_bytes instead of using bpf_packet_pointer, even for
+contiguous regions, to make sure that case keeps working.
+
+Also, we can take this opportunity to convert it to use BPF skeleton.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/testing/selftests/bpf/verifier/xdp.c | 146 +++++++++++++++++++++
- 1 file changed, 146 insertions(+)
+ .../bpf/prog_tests/xdp_adjust_frags.c         | 46 +++++++++++++------
+ .../bpf/progs/test_xdp_update_frags.c         | 46 +++++++++++++------
+ 2 files changed, 65 insertions(+), 27 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/verifier/xdp.c b/tools/testing/selftests/bpf/verifier/xdp.c
-index 5ac390508139..580b294cde11 100644
---- a/tools/testing/selftests/bpf/verifier/xdp.c
-+++ b/tools/testing/selftests/bpf/verifier/xdp.c
-@@ -12,3 +12,149 @@
- 	.prog_type = BPF_PROG_TYPE_XDP,
- 	.retval = 1,
- },
-+{
-+	"XDP bpf_packet_pointer offset cannot be > 0xffff",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_2, 0x10000),
-+	BPF_MOV64_IMM(BPF_REG_3, 42),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "R2 must be in range [0, 0xffff]",
-+},
-+{
-+	"XDP bpf_packet_pointer len must be constant",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, offsetof(struct xdp_md, ingress_ifindex)),
-+	BPF_JMP32_IMM(BPF_JSGE, BPF_REG_2, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_JMP32_IMM(BPF_JSLE, BPF_REG_2, 0xffff, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_MOV64_REG(BPF_REG_3, BPF_REG_2),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "R3 is not a known constant",
-+},
-+{
-+	"XDP bpf_packet_pointer len cannot be 0",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, offsetof(struct xdp_md, ingress_ifindex)),
-+	BPF_JMP32_IMM(BPF_JSGE, BPF_REG_2, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_JMP32_IMM(BPF_JSLE, BPF_REG_2, 0xffff, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "R3 must be in range [1, 0xffff]",
-+},
-+{
-+	"XDP bpf_packet_pointer R0 cannot be compared with xdp_md pkt ptr",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_2, 0),
-+	BPF_MOV64_IMM(BPF_REG_3, 42),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_6, offsetof(struct xdp_md, data_end)),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, 16),
-+	BPF_JMP_REG(BPF_JGE, BPF_REG_0, BPF_REG_1, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_0, 0),
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "R0, R1 pkt pointer comparison prohibited",
-+},
-+{
-+	"XDP bpf_packet_pointer R0 range propagation skips unequal pkt_uid",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_2, 0),
-+	BPF_MOV64_IMM(BPF_REG_3, 1),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_6, offsetof(struct xdp_md, data)),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_6, offsetof(struct xdp_md, data)),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_3, BPF_REG_6, offsetof(struct xdp_md, data)),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_6, offsetof(struct xdp_md, data_end)),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, 16),
-+	BPF_JMP_REG(BPF_JLT, BPF_REG_1, BPF_REG_4, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, -16),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_2, BPF_REG_2, 4),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_3, 8),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_0, 0),
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "invalid access to packet, off=0 size=8, R0(id=0,off=0,r=1)",
-+},
-+{
-+	"XDP clear_all_pkt_pointers doesn't skip pkt_uid != 0",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_2, 0),
-+	BPF_MOV64_IMM(BPF_REG_3, 16),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
-+	BPF_MOV64_IMM(BPF_REG_2, 1),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_xdp_adjust_tail),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "R7 invalid mem access 'scalar'",
-+},
-+{
-+	"XDP pkt_uid preserved when resetting range on rX += var",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_MOV64_IMM(BPF_REG_2, 0),
-+	BPF_MOV64_IMM(BPF_REG_3, 16),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_packet_pointer),
-+	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_6, offsetof(struct xdp_md, ingress_ifindex)),
-+	BPF_JMP32_IMM(BPF_JGE, BPF_REG_1, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_JMP32_IMM(BPF_JLE, BPF_REG_1, 4, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_1, BPF_REG_0),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_6, offsetof(struct xdp_md, data_end)),
-+	BPF_JMP_REG(BPF_JLT, BPF_REG_1, BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.result_unpriv = REJECT,
-+	.result = REJECT,
-+	.errstr = "R1, R0 pkt pointer comparison prohibited",
-+},
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+index 2f033da4cd45..cfb50a575b11 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+@@ -2,26 +2,24 @@
+ #include <test_progs.h>
+ #include <network_helpers.h>
+ 
+-static void test_xdp_update_frags(void)
++#include "test_xdp_update_frags.skel.h"
++
++static void test_xdp_update_frags(bool force_helper)
+ {
+-	const char *file = "./test_xdp_update_frags.o";
+ 	int err, prog_fd, max_skb_frags, buf_size, num;
+-	struct bpf_program *prog;
+-	struct bpf_object *obj;
++	LIBBPF_OPTS(bpf_test_run_opts, topts);
++	struct test_xdp_update_frags *skel;
+ 	__u32 *offset;
+ 	__u8 *buf;
+ 	FILE *f;
+-	LIBBPF_OPTS(bpf_test_run_opts, topts);
+ 
+-	obj = bpf_object__open(file);
+-	if (libbpf_get_error(obj))
++	skel = test_xdp_update_frags__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_xdp_update_frags__open_and_load"))
+ 		return;
+ 
+-	prog = bpf_object__next_program(obj, NULL);
+-	if (bpf_object__load(obj))
+-		return;
++	skel->bss->force_helper = force_helper;
+ 
+-	prog_fd = bpf_program__fd(prog);
++	prog_fd = bpf_program__fd(skel->progs.xdp_adjust_frags);
+ 
+ 	buf = malloc(128);
+ 	if (!ASSERT_OK_PTR(buf, "alloc buf 128b"))
+@@ -45,6 +43,13 @@ static void test_xdp_update_frags(void)
+ 	ASSERT_EQ(topts.retval, XDP_PASS, "xdp_update_frag retval");
+ 	ASSERT_EQ(buf[16], 0xbb, "xdp_update_frag buf[16]");
+ 	ASSERT_EQ(buf[31], 0xbb, "xdp_update_frag buf[31]");
++	if (force_helper) {
++		ASSERT_EQ(skel->bss->used_dpa, false, "did not use DPA");
++		ASSERT_EQ(skel->bss->used_helper, true, "used helper");
++	} else {
++		ASSERT_EQ(skel->bss->used_dpa, true, "used DPA");
++		ASSERT_EQ(skel->bss->used_helper, false, "did not use helper");
++	}
+ 
+ 	free(buf);
+ 
+@@ -70,6 +75,13 @@ static void test_xdp_update_frags(void)
+ 	ASSERT_EQ(topts.retval, XDP_PASS, "xdp_update_frag retval");
+ 	ASSERT_EQ(buf[5000], 0xbb, "xdp_update_frag buf[5000]");
+ 	ASSERT_EQ(buf[5015], 0xbb, "xdp_update_frag buf[5015]");
++	if (force_helper) {
++		ASSERT_EQ(skel->bss->used_dpa, false, "did not use DPA");
++		ASSERT_EQ(skel->bss->used_helper, true, "used helper");
++	} else {
++		ASSERT_EQ(skel->bss->used_dpa, true, "used DPA");
++		ASSERT_EQ(skel->bss->used_helper, false, "did not use helper");
++	}
+ 
+ 	memset(buf, 0, 9000);
+ 	offset = (__u32 *)buf;
+@@ -84,6 +96,8 @@ static void test_xdp_update_frags(void)
+ 	ASSERT_EQ(topts.retval, XDP_PASS, "xdp_update_frag retval");
+ 	ASSERT_EQ(buf[3510], 0xbb, "xdp_update_frag buf[3510]");
+ 	ASSERT_EQ(buf[3525], 0xbb, "xdp_update_frag buf[3525]");
++	ASSERT_EQ(skel->bss->used_dpa, false, "did not use DPA");
++	ASSERT_EQ(skel->bss->used_helper, true, "used helper");
+ 
+ 	memset(buf, 0, 9000);
+ 	offset = (__u32 *)buf;
+@@ -98,6 +112,8 @@ static void test_xdp_update_frags(void)
+ 	ASSERT_EQ(topts.retval, XDP_PASS, "xdp_update_frag retval");
+ 	ASSERT_EQ(buf[7606], 0xbb, "xdp_update_frag buf[7606]");
+ 	ASSERT_EQ(buf[7621], 0xbb, "xdp_update_frag buf[7621]");
++	ASSERT_EQ(skel->bss->used_dpa, false, "did not use DPA");
++	ASSERT_EQ(skel->bss->used_helper, true, "used helper");
+ 
+ 	free(buf);
+ 
+@@ -136,11 +152,13 @@ static void test_xdp_update_frags(void)
+ 		  "unsupported buf size, possible non-default /proc/sys/net/core/max_skb_flags?");
+ 	free(buf);
+ out:
+-	bpf_object__close(obj);
++	test_xdp_update_frags__destroy(skel);
+ }
+ 
+ void test_xdp_adjust_frags(void)
+ {
+-	if (test__start_subtest("xdp_adjust_frags"))
+-		test_xdp_update_frags();
++	if (test__start_subtest("xdp_adjust_frags-force-nodpa"))
++		test_xdp_update_frags(true);
++	if (test__start_subtest("xdp_adjust_frags-dpa+memcpy"))
++		test_xdp_update_frags(false);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c b/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+index 2a3496d8e327..1ad5c45e06e0 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+@@ -4,37 +4,57 @@
+  * modify it under the terms of version 2 of the GNU General Public
+  * License as published by the Free Software Foundation.
+  */
+-#include <linux/bpf.h>
+-#include <linux/if_ether.h>
++#include <vmlinux.h>
+ #include <bpf/bpf_helpers.h>
+ 
+ int _version SEC("version") = 1;
+ 
++bool force_helper;
++bool used_dpa;
++bool used_helper;
++
++#define XDP_LEN 16
++
+ SEC("xdp.frags")
+ int xdp_adjust_frags(struct xdp_md *xdp)
+ {
+ 	__u8 *data_end = (void *)(long)xdp->data_end;
+ 	__u8 *data = (void *)(long)xdp->data;
+-	__u8 val[16] = {};
++	__u8 val[XDP_LEN] = {};
++	__u8 *ptr = NULL;
+ 	__u32 offset;
+ 	int err;
+ 
++	used_dpa = false;
++	used_helper = false;
++
+ 	if (data + sizeof(__u32) > data_end)
+ 		return XDP_DROP;
+ 
+ 	offset = *(__u32 *)data;
+-	err = bpf_xdp_load_bytes(xdp, offset, val, sizeof(val));
+-	if (err < 0)
++	offset &= 0xffff;
++	if (!force_helper)
++		ptr = bpf_packet_pointer(xdp, offset, XDP_LEN);
++	if (!ptr) {
++		used_helper = true;
++		err = bpf_xdp_load_bytes(xdp, offset, val, sizeof(val));
++		if (err < 0)
++			return XDP_DROP;
++		ptr = val;
++	} else {
++		used_dpa = true;
++	}
++
++	if (ptr[0] != 0xaa || ptr[15] != 0xaa) /* marker */
+ 		return XDP_DROP;
+ 
+-	if (val[0] != 0xaa || val[15] != 0xaa) /* marker */
+-		return XDP_DROP;
+-
+-	val[0] = 0xbb; /* update the marker */
+-	val[15] = 0xbb;
+-	err = bpf_xdp_store_bytes(xdp, offset, val, sizeof(val));
+-	if (err < 0)
+-		return XDP_DROP;
++	ptr[0] = 0xbb; /* update the marker */
++	ptr[15] = 0xbb;
++	if (ptr == val) {
++		err = bpf_xdp_store_bytes(xdp, offset, val, sizeof(val));
++		if (err < 0)
++			return XDP_DROP;
++	}
+ 
+ 	return XDP_PASS;
+ }
 -- 
 2.35.1
 
