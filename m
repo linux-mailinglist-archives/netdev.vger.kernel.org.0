@@ -2,104 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FEE24CEBE1
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 15:22:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38E14CEBEC
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 15:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232073AbiCFOXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 09:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
+        id S233621AbiCFO2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 09:28:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiCFOXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 09:23:34 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2AB427C5
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 06:22:42 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id q14so3950120wrc.4
-        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 06:22:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=kwZNP1RxO5jbKcqcVo5J57WHAPnFKQEGwOPKdKtn4w0=;
-        b=mENyr2WdQu1iqLwhmiQsIsXSFNd7PdKKwtQl1rfqmbE/XSLL8YOI+//JgYzsmhT/8R
-         vRv46mrhgItcdMH6BMeHhJC1nLlNbS1h8DjcRT8Ut0VS+goJyPfel5t4Hcb7JD13WopS
-         FgWf0690mH+MeOv49WmV82CTDu5k8LpZNpjTFovD+6pbTOca8RdDSA8gy+vpR+SScid2
-         /7j+SCdGfqqD7twLTBgKRJHLdEPgRe5EqIoDIxv8Bpu+CxWyzEkDXTpKHKNlx22SeUQq
-         Ds3kVaLm9k7LQtMRs0Xe9uozSG/fjVq5Md5uNXlPVRs2b4N2F4mncsauOLZcVv5aXG0w
-         7hRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=kwZNP1RxO5jbKcqcVo5J57WHAPnFKQEGwOPKdKtn4w0=;
-        b=rLGkXeCccmKFIPtPGCA0NK6pXxuMzKc/EXEOJrs5c8ooNzvC6kr0zFQC7LjREfDOpW
-         g096qk8qtJNuazZLNG++E4kE8G1d5ErL+/F/XmwQ+6eYm5QEp5F3EoG6+QAXVWTViLYp
-         lrtC/F+dJz1UFwjntmzgp/OA2P0nJEBiee7nJp1pr7dMQsCWEAzGqHG3PRfa09z3Qjo4
-         vp62g9pkYoCQTXwZb+HagaJz4OLWnCyUVu49f5YilkenzRs+GdrgzN2Yhdzpw8P0kUcc
-         hAySC+YnEMeQ2wsT94OT5xbgbBHDOhvYmqGeE1XJ5jBM6MgzX4wIzkJgEx03l3BN5l8N
-         DIWA==
-X-Gm-Message-State: AOAM530RpwKqMhwoHST0unNGST9DeMXlVkV5FxswrAq+C3N/6C7Uz99d
-        EVPbwJhhAEoHm1BdOjUO6jg=
-X-Google-Smtp-Source: ABdhPJwz0k5f0VBg+0WOZX0k59yimCL4Hji5pMudDyGxj1Tk28EAmeG2dj+7agmnR196RFb4IbISqg==
-X-Received: by 2002:a05:6000:101:b0:1f0:2381:7feb with SMTP id o1-20020a056000010100b001f023817febmr5471961wrx.10.1646576560862;
-        Sun, 06 Mar 2022 06:22:40 -0800 (PST)
-Received: from ?IPV6:2a01:c22:7720:f200:10e7:aa42:9870:907c? (dynamic-2a01-0c22-7720-f200-10e7-aa42-9870-907c.c22.pool.telefonica.de. [2a01:c22:7720:f200:10e7:aa42:9870:907c])
-        by smtp.googlemail.com with ESMTPSA id o18-20020a05600c511200b00352ec3b4c5asm12716375wms.7.2022.03.06.06.22.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Mar 2022 06:22:40 -0800 (PST)
-Message-ID: <00b4bb1e-98f9-b4e7-5549-e095a4701f66@gmail.com>
-Date:   Sun, 6 Mar 2022 15:22:34 +0100
+        with ESMTP id S229463AbiCFO2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 09:28:05 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4C94EF6A;
+        Sun,  6 Mar 2022 06:27:12 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V6MKPYm_1646576828;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V6MKPYm_1646576828)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sun, 06 Mar 2022 22:27:09 +0800
+Date:   Sun, 6 Mar 2022 22:27:08 +0800
+From:   "dust.li" <dust.li@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Karsten Graul <kgraul@linux.ibm.com>,
+        Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net/smc: fix compile warning for smc_sysctl
+Message-ID: <20220306142708.GD35207@linux.alibaba.com>
+Reply-To: dust.li@linux.alibaba.com
+References: <20220303084006.54313-1-dust.li@linux.alibaba.com>
+ <20220304213151.04ecbe8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: mdio-mux: add bus name to bus id
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220304213151.04ecbe8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Spam-Status: No, score=-10.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of DT-configured systems it may be hard to identify the PHY
-interrupt in the /proc/interrupts output. Therefore add the name to
-the id to make clearer that it's about a device on a muxed mdio bus.
-In my case:
+On Fri, Mar 04, 2022 at 09:31:51PM -0800, Jakub Kicinski wrote:
+>On Thu,  3 Mar 2022 16:40:06 +0800 Dust Li wrote:
+>> kernel test robot reports multiple warning for smc_sysctl:
+>> 
+>>   In file included from net/smc/smc_sysctl.c:17:
+>> >> net/smc/smc_sysctl.h:23:5: warning: no previous prototype \  
+>> 	for function 'smc_sysctl_init' [-Wmissing-prototypes]
+>>   int smc_sysctl_init(void)
+>>        ^
+>> and
+>>   >> WARNING: modpost: vmlinux.o(.text+0x12ced2d): Section mismatch \  
+>>   in reference from the function smc_sysctl_exit() to the variable
+>>   .init.data:smc_sysctl_ops
+>>   The function smc_sysctl_exit() references
+>>   the variable __initdata smc_sysctl_ops.
+>>   This is often because smc_sysctl_exit lacks a __initdata
+>>   annotation or the annotation of smc_sysctl_ops is wrong.
+>> 
+>> and
+>>   net/smc/smc_sysctl.c: In function 'smc_sysctl_init_net':
+>>   net/smc/smc_sysctl.c:47:17: error: 'struct netns_smc' has no member named 'smc_hdr'
+>>      47 |         net->smc.smc_hdr = register_net_sysctl(net, "net/smc", table);
+>> 
+>> Since we don't need global sysctl initialization. To make things
+>> clean and simple, remove the global pernet_operations and
+>> smc_sysctl_{init|exit}. Call smc_sysctl_net_{init|exit} directly
+>> from smc_net_{init|exit}.
+>> 
+>> Also initialized sysctl_autocorking_size if CONFIG_SYSCTL it not
+>> set, this makes sure SMC autocorking is enabled by default if
+>> CONFIG_SYSCTL is not set.
+>
+>I think that makes sense, one nit below.
+>
+>> -static __net_init int smc_sysctl_init_net(struct net *net)
+>> +int smc_sysctl_net_init(struct net *net)
+>>  {
+>>  	struct ctl_table *table;
+>>  
+>> @@ -59,22 +59,7 @@ static __net_init int smc_sysctl_init_net(struct net *net)
+>>  	return -ENOMEM;
+>>  }
+>>  
+>> -static __net_exit void smc_sysctl_exit_net(struct net *net)
+>> +void smc_sysctl_net_exit(struct net *net)
+>>  {
+>>  	unregister_net_sysctl_table(net->smc.smc_hdr);
+>>  }
+>
+>> +int smc_sysctl_net_init(struct net *net);
+>> +void smc_sysctl_net_exit(struct net *net);
+>
+>I believe these functions can become / remain __net_init and __net_exit,
+>since all the callers are also marked as such.
 
-Now: mdio_mux-0.e40908ff:08
-Before: 0.e40908ff:08
+Agree, I will add this in the next version.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/mdio/mdio-mux.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-mux.c b/drivers/net/mdio/mdio-mux.c
-index ebd001f0e..a881e3523 100644
---- a/drivers/net/mdio/mdio-mux.c
-+++ b/drivers/net/mdio/mdio-mux.c
-@@ -168,8 +168,8 @@ int mdio_mux_init(struct device *dev,
- 		cb->mii_bus->priv = cb;
- 
- 		cb->mii_bus->name = "mdio_mux";
--		snprintf(cb->mii_bus->id, MII_BUS_ID_SIZE, "%x.%x",
--			 pb->parent_id, v);
-+		snprintf(cb->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x.%x",
-+			 cb->mii_bus->name, pb->parent_id, v);
- 		cb->mii_bus->parent = dev;
- 		cb->mii_bus->read = mdio_mux_read;
- 		cb->mii_bus->write = mdio_mux_write;
--- 
-2.35.1
+>
+>>  #else
+>>  
+>> -int smc_sysctl_init(void)
+>> +static inline int smc_sysctl_net_init(struct net *net)
+>>  {
+>> +	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
+>>  	return 0;
+>>  }
+>>  
+>> -void smc_sysctl_exit(void) { }
+>> +static inline void smc_sysctl_net_exit(struct net *net) { }
+>
+>Doesn't matter for static inlines.
 
+OK
+
+Thanks for you advice
+
+>
+>>  #endif /* CONFIG_SYSCTL */
+>>  
