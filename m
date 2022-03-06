@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0FD4CEC79
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 18:28:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E507C4CEC7C
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 18:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233883AbiCFR3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 12:29:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        id S233898AbiCFRaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 12:30:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiCFR3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 12:29:44 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037CE2613C;
-        Sun,  6 Mar 2022 09:28:52 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id i8so19909632wrr.8;
-        Sun, 06 Mar 2022 09:28:51 -0800 (PST)
+        with ESMTP id S229445AbiCFRaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 12:30:03 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0535B275E7;
+        Sun,  6 Mar 2022 09:29:11 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id p9so19915192wra.12;
+        Sun, 06 Mar 2022 09:29:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=W4/OOhsYIUeVHmDM2SWsQOWi+B+oFhl/nI7c5RX4BKk=;
-        b=k/G44Yt5DvmreJLgQI3GuAgC3wsb0j+ZJByjP5drkWfERt+YNmstc2W0TTfGm1HxVS
-         3G2VKahdAIEqjtFVK8rujNynCstafulKqH5XtTZLRa2c6jHvSy8v2dPBRKV6QQXkYQ3t
-         HKbY5GdjOKvLFJVrFe6Efa+7pU/nGCOYrS7KHCVzgfmswKjplqS6URV2g8GGrcLa9zpj
-         R7IQevo1KkJxzjSkaeFTWrL3zhA4t4U08BGo4Gc6FJ0b7JMOQaFifVg2IloQy25BDbNa
-         40z9Fq8Ra6Lwt3zV74EBEpiLTaDUjePKwn647y5A4ALQb/qSEJxVN1/E7tOCd2ZcgRPC
-         GJfQ==
+        bh=tRKtixCq2vkVN92yBMRPljmnJXwe1i5rOdDIlOZzuDk=;
+        b=J080D3g44Cklc4QlyLmGYLzaaUx4BtacJ+HReuhiJK9yjmk5dnBeVT7y+SdAWHR/QD
+         Uc4JTiEaj32A7R8Hb5eGCKoc/n2rnjYeMFL0Py5bdvgGYeMc90YI4w11obnh1yMWkJ83
+         h0nUDlP4i1F64eEIMxyMfmiZHalYqTzZOfzALs7lsIYH+LB4edjw5ClYj5Jyu6rV9H2F
+         ricyAp4cbPFYkwFl0FWAM4PxrPQZkkaZluZAJybGRaDNcdlMAdEFsrNOsYQtHIsgtjnx
+         PqofavJic5dFMgRe57wPfJ1ZaX5JFzBmxSm2AbALpP93zwr12soNELu1zMcQ8gim77Sn
+         KEPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=W4/OOhsYIUeVHmDM2SWsQOWi+B+oFhl/nI7c5RX4BKk=;
-        b=pj0MLWLtI54fvuJ6xwrH1x86zH3Rc2ikwlve36eTh8H1dCNfRRZt9bSH1jQlZBC5pu
-         39ptICXuOu0PCcskP88zzO+ib2mCKlHnV2K8UnlAtr/8lT9cj88mARKAbbNtdLMlRSFM
-         iUM9G4p9olUOBLT5S9by7snOeIEFrbxS9Na2LYPQRz8pRozhpCi/kexSoVA82rkkZODI
-         QuxW4ZcFgNmwwuZZm+RvmNcYPGQg7BL/5SyKv+FvqrN1tr0SK0GNPVKJ0cNlWxZsHo/V
-         sKmXRYASmOXx0tvpCj1Fc7x76KN2mGwMwV7yiyPz4VJk8FBRbZ6cUSwTZUhOnptlUZEb
-         HPBQ==
-X-Gm-Message-State: AOAM533P2h4T3ZOCKW3B4UBEiq4H743RfIrIBt9YDZcLzEYHcZSZtlws
-        8ksB33O5nLuZb18XCE1aN7o=
-X-Google-Smtp-Source: ABdhPJy6IOIefZKEVLH85QOwAx1WyN/ui30/FZc13mqplCcQ42ZblD13664bXrW0hVvc2oia4b/ALg==
-X-Received: by 2002:a5d:648f:0:b0:1f0:567b:5619 with SMTP id o15-20020a5d648f000000b001f0567b5619mr5581201wri.66.1646587730449;
-        Sun, 06 Mar 2022 09:28:50 -0800 (PST)
+        bh=tRKtixCq2vkVN92yBMRPljmnJXwe1i5rOdDIlOZzuDk=;
+        b=7J7oBRqLHAH7UOlviraUTY9glShyjZ8emRAHFqwROtxdz1tOLgrHjRTI2FcgmUv48p
+         Jg+RdNpCzrvr5wDLbBaqihG1rWjWvACGm9Id2oYGgxHgKCboO2YdMOWRkdzMSIiavkUb
+         gf7mDE0apcDjIrj4NcsXbjl1dZ1lOqRmmwj2lvSDJWjk9rb0l2GM+YCF3XojtiM428ef
+         1CD5g3PppNsgnap7C/kqej9V4VbQvCUcKTOnveL5p+cg1ZbF2V7u1cSVgw66zKMzO88W
+         AdrzS2r2Ud3baypEFhAkY86FDAp0oWFBPKGW+oo6OFh06vIysE2sK3YmIFp2Nw+08sYA
+         IAHg==
+X-Gm-Message-State: AOAM5304QAbQJkFJ2cq+/aJEqLH/PlR0xY3lUXvqkz92pofuVDhdCLA0
+        sH79FvECj3pphuwUjf7Fdc/CD4PdLfDlFg==
+X-Google-Smtp-Source: ABdhPJz/8EBo34jh+L1IZNodNYVAdLwJUHAbHueCZwdVkoQ4z2ZjGCs/xRJdqxVlgRX9741ElMKCFw==
+X-Received: by 2002:adf:f28a:0:b0:1f0:246e:11f8 with SMTP id k10-20020adff28a000000b001f0246e11f8mr5716448wro.481.1646587749465;
+        Sun, 06 Mar 2022 09:29:09 -0800 (PST)
 Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id l5-20020a5d6745000000b001f1e4e40e42sm3504346wrw.77.2022.03.06.09.28.49
+        by smtp.gmail.com with ESMTPSA id r13-20020a5d498d000000b001f0587248c4sm8933998wrq.3.2022.03.06.09.29.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:28:50 -0800 (PST)
-Date:   Sun, 6 Mar 2022 18:28:47 +0100
+        Sun, 06 Mar 2022 09:29:09 -0800 (PST)
+Date:   Sun, 6 Mar 2022 18:29:07 +0100
 From:   Jiri Olsa <olsajiri@gmail.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
@@ -61,15 +61,16 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
-Message-ID: <YiTvT0nyWLDvFya+@krava>
+Subject: Re: [PATCH 05/10] bpf: Add cookie support to programs attached with
+ kprobe multi link
+Message-ID: <YiTvY2Ly/XWICP2H@krava>
 References: <20220222170600.611515-1-jolsa@kernel.org>
- <20220222170600.611515-3-jolsa@kernel.org>
- <CAEf4BzadsmOTas7BdF-J+de7AqsoccY1o6e0pUBkRuWH+53DiQ@mail.gmail.com>
+ <20220222170600.611515-6-jolsa@kernel.org>
+ <CAEf4Bzab_crw+e_POJ39E+JkBDG4WJQqDGz-8Gz_JOt0rYnigA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzadsmOTas7BdF-J+de7AqsoccY1o6e0pUBkRuWH+53DiQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzab_crw+e_POJ39E+JkBDG4WJQqDGz-8Gz_JOt0rYnigA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -80,70 +81,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 03:11:01PM -0800, Andrii Nakryiko wrote:
+On Fri, Mar 04, 2022 at 03:11:08PM -0800, Andrii Nakryiko wrote:
+> On Tue, Feb 22, 2022 at 9:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Adding support to call bpf_get_attach_cookie helper from
+> > kprobe programs attached with kprobe multi link.
+> >
+> > The cookie is provided by array of u64 values, where each
+> > value is paired with provided function address or symbol
+> > with the same array index.
+> >
+> > Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  include/linux/sort.h           |   2 +
+> >  include/uapi/linux/bpf.h       |   1 +
+> >  kernel/trace/bpf_trace.c       | 103 ++++++++++++++++++++++++++++++++-
+> >  lib/sort.c                     |   2 +-
+> >  tools/include/uapi/linux/bpf.h |   1 +
+> >  5 files changed, 107 insertions(+), 2 deletions(-)
+> >
+> 
+> [...]
+> 
+> >  BPF_CALL_1(bpf_get_attach_cookie_trace, void *, ctx)
+> >  {
+> >         struct bpf_trace_run_ctx *run_ctx;
+> > @@ -1297,7 +1312,9 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >                         &bpf_get_func_ip_proto_kprobe_multi :
+> >                         &bpf_get_func_ip_proto_kprobe;
+> >         case BPF_FUNC_get_attach_cookie:
+> > -               return &bpf_get_attach_cookie_proto_trace;
+> > +               return prog->expected_attach_type == BPF_TRACE_KPROBE_MULTI ?
+> > +                       &bpf_get_attach_cookie_proto_kmulti :
+> > +                       &bpf_get_attach_cookie_proto_trace;
+> >         default:
+> >                 return bpf_tracing_func_proto(func_id, prog);
+> >         }
+> > @@ -2203,6 +2220,9 @@ struct bpf_kprobe_multi_link {
+> >         struct bpf_link link;
+> >         struct fprobe fp;
+> >         unsigned long *addrs;
+> > +       struct bpf_run_ctx run_ctx;
+> 
+> clever, I like it! Keep in mind, though, that this trick can only be
+> used here because this run_ctx is read-only (I'd leave the comment
+> here about this, I didn't realize immediately that this approach can't
+> be used for run_ctx that needs to be modified).
 
-SNIP
+hum, I don't see it at the moment.. I'll check on that and add the
+comment or come up with more questions ;-)
 
-> > +static int
-> > +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
-> > +                         unsigned long *addrs)
+> 
+> > +       u64 *cookies;
+> > +       u32 cnt;
+> >  };
+> >
+> >  static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+> > @@ -2219,6 +2239,7 @@ static void bpf_kprobe_multi_link_dealloc(struct bpf_link *link)
+> >
+> >         kmulti_link = container_of(link, struct bpf_kprobe_multi_link, link);
+> >         kvfree(kmulti_link->addrs);
+> > +       kvfree(kmulti_link->cookies);
+> >         kfree(kmulti_link);
+> >  }
+> >
+> > @@ -2227,10 +2248,57 @@ static const struct bpf_link_ops bpf_kprobe_multi_link_lops = {
+> >         .dealloc = bpf_kprobe_multi_link_dealloc,
+> >  };
+> >
+> > +static void bpf_kprobe_multi_cookie_swap(void *a, void *b, int size, const void *priv)
 > > +{
-> > +       unsigned long addr, size;
-> > +       const char **syms;
-> > +       int err = -ENOMEM;
-> > +       unsigned int i;
-> > +       char *func;
+> > +       const struct bpf_kprobe_multi_link *link = priv;
+> > +       unsigned long *addr_a = a, *addr_b = b;
+> > +       u64 *cookie_a, *cookie_b;
 > > +
-> > +       size = cnt * sizeof(*syms);
-> > +       syms = kvzalloc(size, GFP_KERNEL);
-> > +       if (!syms)
-> > +               return -ENOMEM;
+> > +       cookie_a = link->cookies + (addr_a - link->addrs);
+> > +       cookie_b = link->cookies + (addr_b - link->addrs);
 > > +
-> > +       func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
-> > +       if (!func)
-> > +               goto error;
-> > +
-> > +       if (copy_from_user(syms, usyms, size)) {
-> > +               err = -EFAULT;
-> > +               goto error;
-> > +       }
-> > +
-> > +       for (i = 0; i < cnt; i++) {
-> > +               err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
-> > +               if (err == KSYM_NAME_LEN)
-> > +                       err = -E2BIG;
-> > +               if (err < 0)
-> > +                       goto error;
-> > +
-> > +               err = -EINVAL;
-> > +               if (func[0] == '\0')
-> > +                       goto error;
+> > +       swap_words_64(addr_a, addr_b, size);
+> > +       swap_words_64(cookie_a, cookie_b, size);
 > 
-> wouldn't empty string be handled by kallsyms_lookup_name?
+> is it smart to call (now) non-inlined function just to swap two longs
+> and u64s?..
+> 
+> unsigned long tmp1;
+> u64 tmp2;
+> 
+> tmp1 = *addr_a; *addr_a = addr_b; *addr_b = tmp1;
+> tmp2 = *cookie_a; *cookie_a = cookie_b; *cookie_b = tmp2;
 
-it would scan and compare all symbols with empty string,
-so it's better to test for it
-
-jirka
+the swap_words_64 has CONFIG_64BIT ifdef with some tweaks for 32bit,
+so I wanted to use that.. but I agree with your other comment below
+wrt performace, so will change
 
 > 
-> > +               addr = kallsyms_lookup_name(func);
-> > +               if (!addr)
-> > +                       goto error;
-> > +               if (!kallsyms_lookup_size_offset(addr, &size, NULL))
-> > +                       size = MCOUNT_INSN_SIZE;
-> > +               addr = ftrace_location_range(addr, addr + size - 1);
-> > +               if (!addr)
-> > +                       goto error;
-> > +               addrs[i] = addr;
-> > +       }
+> ?
+> 
+> > +}
 > > +
-> > +       err = 0;
-> > +error:
-> > +       kvfree(syms);
-> > +       kfree(func);
-> > +       return err;
+> > +static int __bpf_kprobe_multi_cookie_cmp(const void *a, const void *b)
+> > +{
+> > +       const unsigned long *addr_a = a, *addr_b = b;
+> > +
+> > +       if (*addr_a == *addr_b)
+> > +               return 0;
+> > +       return *addr_a < *addr_b ? -1 : 1;
 > > +}
 > > +
 > 
 > [...]
+> 
+> > @@ -2238,12 +2306,16 @@ kprobe_multi_link_prog_run(struct bpf_kprobe_multi_link *link,
+> >                 goto out;
+> >         }
+> >
+> > +       old_run_ctx = bpf_set_run_ctx(&link->run_ctx);
+> > +
+> >         rcu_read_lock();
+> 
+> so looking at other code, I see that we first migrate_disable() and
+> then rcu_read_lock(), so let's swap? We also normally set/reset
+> run_ctx inside migrate+rcu_lock region. I'm not sure that's necessary,
+> but also shouldn't hurt to stay consistent.
+
+ok, will change
+
+> 
+> >         migrate_disable();
+> >         err = bpf_prog_run(link->link.prog, regs);
+> >         migrate_enable();
+> >         rcu_read_unlock();
+> >
+> > +       bpf_reset_run_ctx(old_run_ctx);
+> > +
+> >   out:
+> >         __this_cpu_dec(bpf_prog_active);
+> >         return err;
+> 
+> [...]
+> 
+> > diff --git a/lib/sort.c b/lib/sort.c
+> > index b399bf10d675..91f7ce701cf4 100644
+> > --- a/lib/sort.c
+> > +++ b/lib/sort.c
+> > @@ -80,7 +80,7 @@ static void swap_words_32(void *a, void *b, size_t n)
+> >   * but it's possible to have 64-bit loads without 64-bit pointers (e.g.
+> >   * x32 ABI).  Are there any cases the kernel needs to worry about?
+> >   */
+> > -static void swap_words_64(void *a, void *b, size_t n)
+> > +void swap_words_64(void *a, void *b, size_t n)
+> 
+> I'm worried that this might change performance unintentionally in
+> other places (making the function global might pessimize inlining, I
+> think). So let's not do that, just do a straightforward swap in cookie
+> support code?
+
+right, I did not realize this.. I'll add to cookie code directly
+
+> 
+> >  {
+> >         do {
+> >  #ifdef CONFIG_64BIT
+> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> > index 6c66138c1b9b..d18996502aac 100644
+> > --- a/tools/include/uapi/linux/bpf.h
+> > +++ b/tools/include/uapi/linux/bpf.h
+> > @@ -1482,6 +1482,7 @@ union bpf_attr {
+> >                         struct {
+> >                                 __aligned_u64   syms;
+> >                                 __aligned_u64   addrs;
+> > +                               __aligned_u64   cookies;
+> 
+> looks a bit weird to change layout of UAPI. That's not really a
+> problem, because both patches will land at the same time. But if you
+> move flags and cnt to the front of the struct it would a bit better.
+
+I was following your previous comment:
+  https://lore.kernel.org/bpf/CAEf4BzbPeQbURZOD93TgPudOk3JD4odsZ9uwriNkrphes9V4dg@mail.gmail.com/
+
+I like the idea that syms/addrs/cookies stay together,
+because they are all related to cnt.. but yes, it's
+'breaking' KABI in between these patches
+
+jirka
+
+> 
+> 
+> >                                 __u32           cnt;
+> >                                 __u32           flags;
+> >                         } kprobe_multi;
+> > --
+> > 2.35.1
+> >
