@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A3E4CEE0E
+	by mail.lfdr.de (Postfix) with ESMTP id B66C54CEE0F
 	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 22:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234324AbiCFV7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 16:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
+        id S234337AbiCFV7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 16:59:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234313AbiCFV67 (ORCPT
+        with ESMTP id S234315AbiCFV67 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 16:58:59 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD311EAD9
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DC41EAE2
         for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 13:58:06 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646603882;
+        s=2020; t=1646603883;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lqJLFzMNwUI3glsCEQzZp1FtzCGUjUGLW4CKX1XCqNI=;
-        b=RkLwUXbPJ0v9vXqgSyrjLDGj8Zi1OEqtc/K/ulwy4tWnSxC1xv8/DK5a3CDqmn24vY74d/
-        9DbgdknvIY+vxL6qCNq6sQkgtVVUaJ9ZbHUF+l8flEylzkg48O1U8eprgQhMEQ0Hwa9sHk
-        BZ8z2YonjP5+paNiafmHrZ7bffRcJSmMfiwUrrRv6x0mFvn2zMGVlemV5vrJ65LhHrpv/J
-        JlsMmgRAAwiPvii71HXMIoVUBjguIOg9DSjMErZIWi50vEWd2GKkwENb3oHq4QxwR6SB4L
-        179sUqJQ7sLUv04idsudzOg32RP9Q0/GPcVVS1/47WRPpaQCdS0TVomJT8ZAJg==
+        bh=Uz2IIPVuQKx3/pILSWn2S3QDmjUlhowGxJ2Zh1uUMFI=;
+        b=2xiEY5r1xWUPLU1Ez7MHaa7p+BlM+YQrythV/rPkE+xzTr2NV7XaUzXDOs4EOGbMjHRIwc
+        0QBPE5yIiGanmcTpUXAIpZHacz3qRADeAa82Ei4wyoWISrm0hbidneJokp7dDdfOTQnJfD
+        T7EhV34NLpwitsLGD7ThDN1sVhuxIlieclBmVKhg538e7bdBXoN3kQkginY8eEuIYS0S9k
+        z4wcCYyop1z1T1VMoRV1RWOhwuHOkwEbPHUImNexwV09SPVOVedEK98BqVa5DBEr6Wgpo3
+        Uj0saDhhN2SyUIEm5z+SHlWUMWAb8l4XDgT/e+oPDdz0hdDVGon2XKlC7162Qg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646603882;
+        s=2020e; t=1646603883;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lqJLFzMNwUI3glsCEQzZp1FtzCGUjUGLW4CKX1XCqNI=;
-        b=IS6+ufh2RIcEndcRg533gv94BbnaEgxb9vVYSfXKbJlwUYEop7DF85NRNVxrNKLAMVgMln
-        s+jKYy9el330gUCw==
+        bh=Uz2IIPVuQKx3/pILSWn2S3QDmjUlhowGxJ2Zh1uUMFI=;
+        b=yAUAfeynSwNpESFRooUndNnL9K2soJd3M0YjFPwt3h3ofzI9wPabZ2GIRSiKeeoGQZ3iIQ
+        xjtqBHzvSC/aUMAQ==
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Remi Denis-Courmont <courmisch@gmail.com>
-Subject: [PATCH net-next 07/10] phonet: Use netif_rx().
-Date:   Sun,  6 Mar 2022 22:57:50 +0100
-Message-Id: <20220306215753.3156276-8-bigeasy@linutronix.de>
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Divya Koppera <Divya.Koppera@microchip.com>
+Subject: [PATCH net-next 08/10] net: phy: micrel: Use netif_rx().
+Date:   Sun,  6 Mar 2022 22:57:51 +0100
+Message-Id: <20220306215753.3156276-9-bigeasy@linutronix.de>
 In-Reply-To: <20220306215753.3156276-1-bigeasy@linutronix.de>
 References: <20220306215753.3156276-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -68,54 +71,39 @@ well as in interrupt context.
 
 Use netif_rx().
 
-Cc: Remi Denis-Courmont <courmisch@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Divya Koppera <Divya.Koppera@microchip.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- net/phonet/af_phonet.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/phy/micrel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/phonet/af_phonet.c b/net/phonet/af_phonet.c
-index 65218b7ce9f94..2b582da1e88c0 100644
---- a/net/phonet/af_phonet.c
-+++ b/net/phonet/af_phonet.c
-@@ -146,7 +146,7 @@ EXPORT_SYMBOL(phonet_header_ops);
-  * Prepends an ISI header and sends a datagram.
-  */
- static int pn_send(struct sk_buff *skb, struct net_device *dev,
--			u16 dst, u16 src, u8 res, u8 irq)
-+			u16 dst, u16 src, u8 res)
- {
- 	struct phonethdr *ph;
- 	int err;
-@@ -182,7 +182,7 @@ static int pn_send(struct sk_buff *skb, struct net_devi=
-ce *dev,
- 	if (skb->pkt_type =3D=3D PACKET_LOOPBACK) {
- 		skb_reset_mac_header(skb);
- 		skb_orphan(skb);
--		err =3D (irq ? netif_rx(skb) : netif_rx_ni(skb)) ? -ENOBUFS : 0;
-+		err =3D netif_rx(skb) ? -ENOBUFS : 0;
- 	} else {
- 		err =3D dev_hard_header(skb, dev, ntohs(skb->protocol),
- 					NULL, NULL, skb->len);
-@@ -214,7 +214,7 @@ static int pn_raw_send(const void *data, int len, struc=
-t net_device *dev,
- 	skb_reserve(skb, MAX_PHONET_HEADER);
- 	__skb_put(skb, len);
- 	skb_copy_to_linear_data(skb, data, len);
--	return pn_send(skb, dev, dst, src, res, 1);
-+	return pn_send(skb, dev, dst, src, res);
- }
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 81a76322254c5..cbae1524a420f 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2045,7 +2045,7 @@ static bool lan8814_match_rx_ts(struct kszphy_ptp_pri=
+v *ptp_priv,
+ 		memset(shhwtstamps, 0, sizeof(*shhwtstamps));
+ 		shhwtstamps->hwtstamp =3D ktime_set(rx_ts->seconds,
+ 						  rx_ts->nsec);
+-		netif_rx_ni(skb);
++		netif_rx(skb);
 =20
- /*
-@@ -269,7 +269,7 @@ int pn_skb_send(struct sock *sk, struct sk_buff *skb,
- 	if (!pn_addr(src))
- 		src =3D pn_object(saddr, pn_obj(src));
+ 		list_del(&rx_ts->list);
+ 		kfree(rx_ts);
+@@ -2398,7 +2398,7 @@ static bool lan8814_match_skb(struct kszphy_ptp_priv =
+*ptp_priv,
+ 		shhwtstamps =3D skb_hwtstamps(skb);
+ 		memset(shhwtstamps, 0, sizeof(*shhwtstamps));
+ 		shhwtstamps->hwtstamp =3D ktime_set(rx_ts->seconds, rx_ts->nsec);
+-		netif_rx_ni(skb);
++		netif_rx(skb);
+ 	}
 =20
--	err =3D pn_send(skb, dev, dst, src, res, 0);
-+	err =3D pn_send(skb, dev, dst, src, res);
- 	dev_put(dev);
- 	return err;
-=20
+ 	return ret;
 --=20
 2.35.1
 
