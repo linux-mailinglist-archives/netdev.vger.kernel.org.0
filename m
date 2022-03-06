@@ -2,74 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F1A4CEE46
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 23:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 322774CEE58
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 00:14:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234408AbiCFWyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 17:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
+        id S233070AbiCFXPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 18:15:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiCFWyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 17:54:39 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3137D5A17D
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 14:53:46 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id s8so8141432pfk.12
-        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 14:53:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XeyZqgew3ZYkn7wmNIavNBgqbX60cnBTugaU6zIZ4Oc=;
-        b=bma9Np9QSfw6YRZbEauUe+FBVQULo8Q1M9ZiUOCk2ejt2gXjtFWsDp9O3147ckqImX
-         nZsSJt8P+KIqy15yUryoSMWu932uzZlHKEIeQU7nIqQk9129XVksFt3r01cTSX9CAMj9
-         HiyRX5bZ9I1T4rJbS1b/pfSfTJ2LNKCTxpVadbRh37Crev0XH0XSbBOxe3ulJ+Mt3rM9
-         /SQQYbZktC2Js05Zio/Ji5DVycJzMEZ9I0YelnYY+nDS4iyyAI5WITljRZHTVuSaD6mQ
-         Pu8bsvR2F2QGZYVUCb1WNiRCNuInrodUi59zkaNFrPxeUe4OBL9Qc1szQhbFCd1R+Sl0
-         PQjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XeyZqgew3ZYkn7wmNIavNBgqbX60cnBTugaU6zIZ4Oc=;
-        b=ESsQncWQ89vJHuh951djbVt99aKGgV4/TuIvGFW7gVoroI59OD2UosNsk5A5esaGjJ
-         i1Pa/eotix2nPW/wYdSyJF7g/ZxRBtp7RXH0dd94sYnIp656Ceh95vSmToPlL1V/1z5a
-         yIXSAWSMbJUQG2mGECwNZ6Dd2c8Le3cT2aVIBm5tNv4PnqHhbrtUPHpJggZn+SJqOVCY
-         Oy6FR08eSu+kmBJOgoV8f/iDJnbjZPqCDTmF1OGwkqMdt5f00DkYWSAWc0vDo81SM9tW
-         F37TI/wdJxL0H+orPEpw0uBcjSqxd+QeAmrTx/u1HCBBCjVfHFHHdlxcMwbBtHt7gSw2
-         p4kA==
-X-Gm-Message-State: AOAM532qrRWNKl/W4IH62pDpOWfachOqW0XA41QYQUpnbx1XMId3vjk4
-        38crhwqAeFplBMaHYMShGVy6HTNCU8I=
-X-Google-Smtp-Source: ABdhPJyZmBjJGRP1c/XAdo+KBBcpWg2nnYDmE09pXrLjFsyVJeQioFXtybogqgo6R2deMV5kKwFXhg==
-X-Received: by 2002:a63:90c7:0:b0:37c:7a8c:c2d3 with SMTP id a190-20020a6390c7000000b0037c7a8cc2d3mr7648657pge.473.1646607225633;
-        Sun, 06 Mar 2022 14:53:45 -0800 (PST)
-Received: from [100.127.84.93] ([2620:10d:c090:400::5:c84])
-        by smtp.gmail.com with ESMTPSA id nn5-20020a17090b38c500b001bf09d6c7d7sm10803595pjb.26.2022.03.06.14.53.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Mar 2022 14:53:44 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
-        davem@davemloft.net, kernel-team@fb.com
-Subject: Re: [PATCH net-next 1/2] ptp: ocp: add nvmem interface for accessing
- eeprom
-Date:   Sun, 06 Mar 2022 14:53:42 -0800
-X-Mailer: MailMate (1.13.2r5673)
-Message-ID: <0B9D1A8D-C56F-4B7C-BC62-31633003D7AC@gmail.com>
-In-Reply-To: <20220304191134.6146087d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220303233801.242870-1-jonathan.lemon@gmail.com>
- <20220303233801.242870-4-jonathan.lemon@gmail.com>
- <20220303210112.701ed143@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <3D45B7EC-D480-4A0F-8ED2-2CC5677B8B13@gmail.com>
- <20220304081834.552ae666@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DC32C07D-52FC-437C-AE9A-FA03082E008B@gmail.com>
- <20220304191134.6146087d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S230331AbiCFXPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 18:15:36 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA7323BF9;
+        Sun,  6 Mar 2022 15:14:42 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KBcqd2hTvz4xvS;
+        Mon,  7 Mar 2022 10:14:36 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646608477;
+        bh=aEQWMqXdoCOIPAGzph08yIKzBRNDLEBPjztdvdKgsxI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=da4/zggK4h0oxQLkbp+BpzP6JTFgUvdgJscjxkUoAMfSGLahGu7I4l/gmaIW+ZXcC
+         6WqfFZ9got+GeFy9Str5JVyp0eL+ddGXdGT+PMsxYpSr6ZE8p0AHdRRyQxGiZl8zAC
+         b1dvxSCYGJCK3+lbk3V4/wIwwaJFAv5p61DnFQucF4XA5xMrlIMt2oo9dGZvKg7TzC
+         dhoNwbxjq1vO6UCsaIOL6f5fLHjwrPn4rrWqOHJt1tMhsOGMwOLxE+RuwHyz3ulEOT
+         6L//q4SQvyrMeFWYNwmkEO2olPO7DWpLYYWAhrLaB6yHpbzLMQHiHkxaOe3yb7mZTG
+         ERMXk9axjWqzg==
+Date:   Mon, 7 Mar 2022 10:14:36 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20220307101436.7ae87da0@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/YFuQs165iYKTP7YjEyi1H7z";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,64 +52,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/YFuQs165iYKTP7YjEyi1H7z
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 4 Mar 2022, at 19:11, Jakub Kicinski wrote:
+Today's linux-next merge of the net-next tree got a conflict in:
 
-> On Fri, 04 Mar 2022 08:50:02 -0800 Jonathan Lemon wrote:
->>> And AFAIU the company delivering the card writes / assembles the
->>> firmware, you can't take FW load from company A and flash it onto
->>> company B's card, no?
->>
->> Nope.  There are currently 3 designs, and 3 firmware variants.
->> I’m looking for a way to tell them apart, especially since the
->> firmware file must match the card.  Suggestions?
->>
->> [root@timecard net-next]# devlink dev info
->> pci/0000:02:00.0:
->>   driver ptp_ocp
->>   serial_number fc:c2:3d:2e:d7:c0
->>   versions:
->>       fixed:
->>         board.manufacture GOTHAM
->>         board.id RSH04940
->>       running:
->>         fw 21
->> pci/0000:65:00.0:
->>   driver ptp_ocp
->>   serial_number 4e:75:6d:00:00:00
->>   versions:
->>       fixed:
->>         board.manufacture O2S
->>         board.id R3006G000100
->>       running:
->>         fw 9
->> pci/0000:b3:00.0:
->>   driver ptp_ocp
->>   serial_number 3d:00:00:0e:37:73
->>   versions:
->>       fixed:
->>         board.manufacture CLS
->>         board.id R4006G000101
->>       running:
->>         fw 32773
->
-> Thanks for the output!
->
-> In my limited experience the right fit here would be PCI Subsystem
-> Vendor ID. This will also allow lspci to pretty print the vendor
-> name like:
->
-> 30:00.0 Dunno controller: OCP Time Card whatever (Vendor X)
+  net/dsa/dsa2.c
 
-Unfortunately, that’s not going to work for a while, until the
-relevant numbers get through the PCI approval body.
+between commit:
 
-I believe that board.manufacture is correct.  In this particular
-example, the 3 boards are fabbed in 3 different locations, but
-there are 2 “vendors”.
+  afb3cc1a397d ("net: dsa: unlock the rtnl_mutex when dsa_master_setup() fa=
+ils")
 
-So what this does is identify the contractor who assembled the
-particular board.  Isn’t that what this is intended for?
-—
-Jonathan
+from the net tree and commit:
+
+  e83d56537859 ("net: dsa: replay master state events in dsa_tree_{setup,te=
+ardown}_master")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/dsa/dsa2.c
+index 074e4a69a728,d5f21a770689..000000000000
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@@ -1064,9 -1078,18 +1078,18 @@@ static int dsa_tree_setup_master(struc
+ =20
+  	list_for_each_entry(dp, &dst->ports, list) {
+  		if (dsa_port_is_cpu(dp)) {
+- 			err =3D dsa_master_setup(dp->master, dp);
++ 			struct net_device *master =3D dp->master;
++ 			bool admin_up =3D (master->flags & IFF_UP) &&
++ 					!qdisc_tx_is_noop(master);
++=20
++ 			err =3D dsa_master_setup(master, dp);
+  			if (err)
+ -				return err;
+ +				break;
++=20
++ 			/* Replay master state event */
++ 			dsa_tree_master_admin_state_change(dst, master, admin_up);
++ 			dsa_tree_master_oper_state_change(dst, master,
++ 							  netif_oper_up(master));
+  		}
+  	}
+ =20
+
+--Sig_/YFuQs165iYKTP7YjEyi1H7z
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIlQFwACgkQAVBC80lX
+0GzeuQf7Bwf9dz0BDxU3kURL6XgCo4QmQ7w1lTSP9AIfFMHX/G6PLiHzH6eOPnfW
+00ED2iMXzLRaCRwXs7Pm+d656HEPLgfAZCTC9nV8dAPxtPtEUjGLXJmgEAyXsP0Y
+FhL8OzHd3/5xovWqUbavMWxIgwfpGOo+ngMRRFerMt0yolum3HwAAIWjLPukPYA5
+MQRw1gM0dzqRToLRCNl+Bzzkfx0tLz5KJi29HEpTk6ok6HTJoZ0VHutViqJelssD
+G+5GNXu7t/MZ10ZxL16JCH4NiSbBmwTmvbe59IA5pFbCXok7AWDLXHtJbpJAVq74
+ptqYQ4Bm9kfR+ppux7N8fNmYNBAdrA==
+=AcCJ
+-----END PGP SIGNATURE-----
+
+--Sig_/YFuQs165iYKTP7YjEyi1H7z--
