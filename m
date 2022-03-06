@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA6CF4CEEAB
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 00:43:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4084CEEAE
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 00:43:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiCFXoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 18:44:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        id S234469AbiCFXoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 18:44:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234465AbiCFXoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 18:44:11 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA243FBF6;
-        Sun,  6 Mar 2022 15:43:18 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id n15so2303905plh.2;
-        Sun, 06 Mar 2022 15:43:18 -0800 (PST)
+        with ESMTP id S234470AbiCFXoQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 18:44:16 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26624091B;
+        Sun,  6 Mar 2022 15:43:21 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id z16so12287168pfh.3;
+        Sun, 06 Mar 2022 15:43:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VwHdyYnuRcRXYNFmqabJL9282iWYdbjzM/YzBvIZOfw=;
-        b=FtabHTT7QlroIUf2e3cAIpypNvHpmjUDgNGcIr34R+uTczAO0l6rFhlp1CJP5R2SET
-         oFgP3nvv2edWIdVI4mSH0+HL4QED/oVyUHzkkPGO3NLVqjGx2zbgb2fw+48iiQN5tWy0
-         CheDnblejxQUhs0kri34MLyhX0FKliODSFBF22R+TRIDaKcpta9RR2cJfAon7IoiUpm8
-         +PhsJhNGhpwT3xz4q4w5vRk5V81UhF9UfYW+p/54Hd8V0sVh2ElOQgJzeI+dC3jq3y0r
-         U1BLyFuZ4B9lpxmAgB6jQu0SYrtlvxQwvwEiGXlqVoTFDwHGA7JbLRqbCsn5My9U0Zej
-         nQjg==
+        bh=/1xcdTbkMMBdSKTr166+hix38bor1ITd/OdvOt4zm1I=;
+        b=kWfhBnv1mR/Q7Z/cNCua8julakqqYaLhjsyodjh0lBvi/93mQTJFXWV9JEbVrlyr7x
+         K2XkkSek6viYiKBo/vYMM8VCmwwTp6nV9POWWWD2pkFnhbVLsrNOafXuE1DZ0x8djXoX
+         acOxti5Zkgu0oqS6REYslj72HYokkmKEUGYwbaMM4rzPS/mHNwuimcN6aMtQ6BEa+Fiy
+         mmXvXUzYLecdl1uYN8ETpeDaLMtzMwLiJui1T1BcxwAB/47s5YErt3jTh3ffGaw/pLWS
+         q5ffZqhaxz+wIe0iVCke5wtbgNi14GPyZUqipuFnn8WprVD6l5PWc3MVkG9fp5GCb1tV
+         sIXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VwHdyYnuRcRXYNFmqabJL9282iWYdbjzM/YzBvIZOfw=;
-        b=PFxrmO6Z+o6g7/q4iV5E+SM3ueGZahIcYMeFPbB+GJLT2lORBz95pXKtjxXtgFilck
-         E0Enkq0+EblVbf5Ae/MNHOi/I4iq6bGgPV/oqsSDJPQwT6f0oq37/WuXeUj6szKofExc
-         2cwDaFlKW2ViX6s71Yq8hkLVqsdmfw6ACFMz5ak6Il8PcH36gFvfCeqsv7KOB3SXBhoF
-         gpWk+WxnN4R771q07kbJ3k2PRU9BNPV/JSx8OZwW7Eqb6NfltCFrS1xRwQwNUZDIP2eU
-         U7VbaFVjx2lhouirn+SDq2MbOTgSaPQZeF4txDbSRk0+z2GaOjmzsq0w++P3fRGrzp+t
-         p1Pw==
-X-Gm-Message-State: AOAM5316DUOnQf+en5Lr6IALEyLSP+o2ZAC8xHs/2kRq+hnBAwJ49r9x
-        RYSDnXdWLkOi6HgCNshoNvf/xpR/PRc=
-X-Google-Smtp-Source: ABdhPJzPCnm135JRRlwfFwUmQVnOXL1DEKfhj/f9eRGrrELkTyhO91A9aQZEFEIXAndIgxAtlw/Ayw==
-X-Received: by 2002:a17:90b:3b45:b0:1bf:275d:e3a6 with SMTP id ot5-20020a17090b3b4500b001bf275de3a6mr14685131pjb.157.1646610197821;
-        Sun, 06 Mar 2022 15:43:17 -0800 (PST)
+        bh=/1xcdTbkMMBdSKTr166+hix38bor1ITd/OdvOt4zm1I=;
+        b=u2J7UNBb8cUb6LPd7+ejUyKq/8WPLW3x8UNSijhx8Xi5Xaxvvjc4Lg4b/NvmY+kNHe
+         gMxGVCOD74v+pmtCvgMLNp+tR3GygxA78Bu9LyTgHPAtZ2QWe6yC1b/4DxVh8GkW73QL
+         1kvmP2UwI5PD6Tf37ZhyaYhxTYJneH2fGBjtlzi+iex94TiqrK7unC70kVHSdOnjAkn9
+         wUj/VuODgwqfImC4K/awNLqfMqglbn6JpjPFFeiOZFBzXHxsdCeLfEIXGpSZXhwIjRw/
+         A2E4QEW63FQpUvEM6k8UaMrpionzEx1RmELfLZmSxfOf1Qs1vGTkfd8LGMAdbS3TLRv8
+         33JA==
+X-Gm-Message-State: AOAM5304zeMe1OJzeYwaEMP150tCqpwd8gMxd5J26dFm4zkips85bLUi
+        8WRPlFPT7Mjk24HULqOTfsXAbtAlO34=
+X-Google-Smtp-Source: ABdhPJz+TO0N3hPDmasYgHPVc0GjHABKLPWweXbCvjBCjQZgZpglGI1e4ISsbN5rxcpsEB9QlKdy9g==
+X-Received: by 2002:a63:4864:0:b0:378:badd:b786 with SMTP id x36-20020a634864000000b00378baddb786mr7668735pgk.512.1646610201018;
+        Sun, 06 Mar 2022 15:43:21 -0800 (PST)
 Received: from localhost ([2405:201:6014:d0c0:6243:316e:a9e1:adda])
-        by smtp.gmail.com with ESMTPSA id c5-20020a056a00248500b004f6b5ddcc65sm10220143pfv.199.2022.03.06.15.43.17
+        by smtp.gmail.com with ESMTPSA id s8-20020a056a0008c800b004f664655937sm13984919pfu.157.2022.03.06.15.43.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 15:43:17 -0800 (PST)
+        Sun, 06 Mar 2022 15:43:20 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -59,14 +59,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, Lorenz Bauer <linux@lmb.io>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v1 1/5] bpf: Add ARG_SCALAR and ARG_CONSTANT
-Date:   Mon,  7 Mar 2022 05:13:07 +0530
-Message-Id: <20220306234311.452206-2-memxor@gmail.com>
+Subject: [PATCH bpf-next v1 2/5] bpf: Introduce pkt_uid concept for PTR_TO_PACKET
+Date:   Mon,  7 Mar 2022 05:13:08 +0530
+Message-Id: <20220306234311.452206-3-memxor@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220306234311.452206-1-memxor@gmail.com>
 References: <20220306234311.452206-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2592; h=from:subject; bh=+UTutSV7e6MxZzmPcWPn5d4JDQXC+kDPpa78cbCfs90=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiJUWooddDSYApqqx1ZGBQrmGShyR+BarlGZJnYKCC //Ag5mGJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYiVFqAAKCRBM4MiGSL8RykqYD/ wPBgtBobik/QPvn9vUOCRnvGj+dc2qegy9RqXUXytJfvas6L3x2cp3z3FJuOxOEQggZ+QGixxahs2d FxUu62ECQGNw8hRUyAo93+T8sROPKpatnD1YjWyuAsvaaqio80KyvMoQKyaK4+5hjvQ1nhGHPE9h81 TIN/orECOFXw5OZTUKo5UUm1mcXfxxvpbNEbETJu7cHb3HHGrrFPBaOwgKEvNM3iA+fJo81mbuOdyu ga61FT7ttIJxB/dxsLcASQx/Hl7GMP/veqh9FkSYCJWtozIQg2nWg6nFwoMYHaLN/1Cg6u2Uts8zJf vBH5e16DrPaY1WT2km5N8dVgkqUa6+bmqVYls8NoJfjkNI7h3QngoOkQTLjiHzWoU60RpzPTJjOO+C e6RnpozaLOq0boHnzFcFCaEh8U45OTlREMBsJq9lRbKQFykdWVE1Ba0UVZrabyMPVoKmkkLGGnWwi/ 9VPfqo9JoL68D1c5mLEDtrk5iFRgyQnRVtMD88whW8tw+rCHsJun0lWDsEoIlQDgTZ8KX5M/W+fTK/ S/K5RqCw/trezMuptmk2ZZDea6Jgc1bnnVp+j2rKkilppB1WnbmgZSR+ozlzrJR3GEGCVokKrjel3c lHUKjq1ckBaC+zo6Rp2CF/mFpLggcrZBZUXDZxRJSuQiyiqchkq8qnxoANYg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=7096; h=from:subject; bh=1r3cqsm4DN2Zvo68UgHRNdowV7LtN0+dv3/iFHXLB2c=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBiJUWoZMfvQPzkb9ZuQ+yeRrvDU0UgfmlES3VoS8JC 5yMyJY6JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYiVFqAAKCRBM4MiGSL8RysPfD/ 4lGrXjWqMdlaZKnNMavl/4jH4zUH7Y+AawB/FZnUyxXLUtu3dZUHQkTJ9rCxe0XOaruHghx9fLtSC6 aSbktlterKvVuTWQ36RLlveChPyPFHSwlLy9Q3sgKogytmzWxSpGjiumTGyYQVe12Aw1vjncNtHn5j Y0muRe8wOcEsfyT1vsibsFNISfly0JugvMbYdydveP72Ng6XYeKjBUNqP/CsaWKL1rASGwmagqIrXV 93hFNfDF9VI339VxsDJNen48B+QFau2T8f1bbFh73jUNgzdvI6yxUqbiolDU6KCXhNj3mQGRs/9DpX ySAh1KdIXv/cQe96OVPA4k2pPW1JtH0262Tjf9QmXakK3I/KgkIctxwYuotGTwj/pvk3XiYbD7TQNd 7FGNoAS3pnYJFvevqidGiH+5A/BdFTCMIpZ/A8f7JznrwnpjkAlue2a7ds5Rzc9oOX4VDJvdjK+SSs 1bvicxUATC9mTg/FoZZq+PpQe//I9XHn4tb74Dkbvdysh3KCYBBRQQmkoDy6OfKYkoXCvndCvqJ+jy w0m8vcvCWGBjKLsV1slsfV3oxyz+q7FrVDbWhE0M8cA/OpUvzk1q6gyNoPRGaWvnKjyC1zYZcwSvue A51q0cfYEcSpU0HNN/gQ8ajoP5W5YNqWHQtXwg6/VGlGmVP0u4F/iSIqHP+Q==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,73 +79,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the next patch, we will introduce a new helper 'bpf_packet_pointer'
-that takes offset and len and returns a packet pointer. There we want to
-statically enforce offset is in range [0, 0xffff], and that len is a
-constant value, in range [1, 0xffff]. This also helps us avoid a
-pointless runtime check. To make these checks possible, we need to
-ensure we only get a scalar type. Although a lot of other argument types
-take scalars, their intent is different. Hence add general ARG_SCALAR
-and ARG_CONSTANT types, where the latter is also checked to be constant
-in addition to being scalar.
+Add a new member in PTR_TO_PACKET specific register state, namely
+pkt_uid. This is used to classify packet pointers into different sets,
+and the invariant is that any pkt pointers not belonging to the same
+set, i.e. not sharing same pkt_uid, won't be allowed for comparison with
+each other. During range propagation in __find_good_pkt_pointers, we now
+need to take care to skip packet pointers with a different pkt_uid.
+
+This can be used to set for a packet pointer returned from a helper
+'bpf_packet_pointer' in the next patch, that encodes the range from the
+len parameter it gets. Generating a distinct pkt_uid means this pointer
+cannot be compared with other packet pointers and its range cannot be
+manipulated.
+
+Note that for helpers which change underlying packet data, we don't make
+any distinction based on pkt_uid for clear_all_pkt_pointers, since even
+though the pkt_uid is different, they all point into ctx.
+
+regsafe is updated to match non-zero pkt_uid using the idmap to ensure
+it rejects distinct pkt_uid pkt pointers.
+
+We also replace memset of reg->raw to set range to 0, but it is helpful
+to elaborate on why replacing it with reg->range = 0 is correct. In
+commit 0962590e5533 ("bpf: fix partial copy of map_ptr when dst is scalar"),
+the copying was changed to use raw so that all possible members of type
+specific register state are copied, since at that point the type of
+register is not known. But inside the reg_is_pkt_pointer block, there is
+no need to memset the whole 'raw' struct, since we also have a pkt_uid
+member that we now want to preserve after copying from one register to
+another, for pkt pointers. A test for this case has been included to
+prevent regressions.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf.h   |  2 ++
- kernel/bpf/verifier.c | 13 +++++++++++++
- 2 files changed, 15 insertions(+)
+ include/linux/bpf_verifier.h |  9 ++++++-
+ kernel/bpf/verifier.c        | 47 ++++++++++++++++++++++++++++--------
+ 2 files changed, 45 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 88449fbbe063..7841d90b83df 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -391,6 +391,8 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_STACK,	/* pointer to stack */
- 	ARG_PTR_TO_CONST_STR,	/* pointer to a null terminated read-only string */
- 	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
-+	ARG_SCALAR,		/* a scalar with any value(s) */
-+	ARG_CONSTANT,		/* a scalar with constant value */
- 	__BPF_ARG_TYPE_MAX,
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index c1fc4af47f69..0379f953cf22 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -50,7 +50,14 @@ struct bpf_reg_state {
+ 	s32 off;
+ 	union {
+ 		/* valid when type == PTR_TO_PACKET */
+-		int range;
++		struct {
++			int range;
++			/* This is used to tag some PTR_TO_PACKET so that they
++			 * cannot be compared existing PTR_TO_PACKET with
++			 * different pkt_uid.
++			 */
++			u32 pkt_uid;
++		};
  
- 	/* Extended arg_types. */
+ 		/* valid when type == CONST_PTR_TO_MAP | PTR_TO_MAP_VALUE |
+ 		 *   PTR_TO_MAP_VALUE_OR_NULL
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index ec3a7b6c9515..0373d5bd240f 100644
+index 0373d5bd240f..88ac2c833bed 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -5163,6 +5163,12 @@ static bool arg_type_is_int_ptr(enum bpf_arg_type type)
- 	       type == ARG_PTR_TO_LONG;
+@@ -712,8 +712,14 @@ static void print_verifier_state(struct bpf_verifier_env *env,
+ 				verbose_a("ref_obj_id=%d", reg->ref_obj_id);
+ 			if (t != SCALAR_VALUE)
+ 				verbose_a("off=%d", reg->off);
+-			if (type_is_pkt_pointer(t))
++			if (type_is_pkt_pointer(t)) {
+ 				verbose_a("r=%d", reg->range);
++				/* pkt_uid is only set for PTR_TO_PACKET, so
++				 * type_is_pkt_pointer check is enough.
++				 */
++				if (reg->pkt_uid)
++					verbose_a("pkt_uid=%d", reg->pkt_uid);
++			}
+ 			else if (base_type(t) == CONST_PTR_TO_MAP ||
+ 				 base_type(t) == PTR_TO_MAP_KEY ||
+ 				 base_type(t) == PTR_TO_MAP_VALUE)
+@@ -7604,7 +7610,7 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
+ 		if (reg_is_pkt_pointer(ptr_reg)) {
+ 			dst_reg->id = ++env->id_gen;
+ 			/* something was added to pkt_ptr, set range to zero */
+-			memset(&dst_reg->raw, 0, sizeof(dst_reg->raw));
++			dst_reg->range = 0;
+ 		}
+ 		break;
+ 	case BPF_SUB:
+@@ -7664,7 +7670,7 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
+ 			dst_reg->id = ++env->id_gen;
+ 			/* something was added to pkt_ptr, set range to zero */
+ 			if (smin_val < 0)
+-				memset(&dst_reg->raw, 0, sizeof(dst_reg->raw));
++				dst_reg->range = 0;
+ 		}
+ 		break;
+ 	case BPF_AND:
+@@ -8701,7 +8707,8 @@ static void __find_good_pkt_pointers(struct bpf_func_state *state,
+ 
+ 	for (i = 0; i < MAX_BPF_REG; i++) {
+ 		reg = &state->regs[i];
+-		if (reg->type == type && reg->id == dst_reg->id)
++		if (reg->type == type && reg->id == dst_reg->id &&
++		    reg->pkt_uid == dst_reg->pkt_uid)
+ 			/* keep the maximum range already checked */
+ 			reg->range = max(reg->range, new_range);
+ 	}
+@@ -8709,7 +8716,8 @@ static void __find_good_pkt_pointers(struct bpf_func_state *state,
+ 	bpf_for_each_spilled_reg(i, state, reg) {
+ 		if (!reg)
+ 			continue;
+-		if (reg->type == type && reg->id == dst_reg->id)
++		if (reg->type == type && reg->id == dst_reg->id &&
++		    reg->pkt_uid == dst_reg->pkt_uid)
+ 			reg->range = max(reg->range, new_range);
+ 	}
+ }
+@@ -9330,6 +9338,14 @@ static void mark_ptr_or_null_regs(struct bpf_verifier_state *vstate, u32 regno,
+ 		__mark_ptr_or_null_regs(vstate->frame[i], id, is_null);
  }
  
-+static bool arg_type_is_scalar(enum bpf_arg_type type)
++static bool is_bad_pkt_comparison(const struct bpf_reg_state *dst_reg,
++				  const struct bpf_reg_state *src_reg)
 +{
-+	return type == ARG_SCALAR ||
-+	       type == ARG_CONSTANT;
++	if (!reg_is_pkt_pointer_any(dst_reg) || !reg_is_pkt_pointer_any(src_reg))
++		return false;
++	return dst_reg->pkt_uid != src_reg->pkt_uid;
 +}
 +
- static int int_ptr_type_to_size(enum bpf_arg_type type)
- {
- 	if (type == ARG_PTR_TO_INT)
-@@ -5302,6 +5308,8 @@ static const struct bpf_reg_types *compatible_reg_types[__BPF_ARG_TYPE_MAX] = {
- 	[ARG_PTR_TO_STACK]		= &stack_ptr_types,
- 	[ARG_PTR_TO_CONST_STR]		= &const_str_ptr_types,
- 	[ARG_PTR_TO_TIMER]		= &timer_types,
-+	[ARG_SCALAR]			= &scalar_types,
-+	[ARG_CONSTANT]			= &scalar_types,
- };
+ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+ 				   struct bpf_reg_state *dst_reg,
+ 				   struct bpf_reg_state *src_reg,
+@@ -9343,6 +9359,9 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+ 	if (BPF_CLASS(insn->code) == BPF_JMP32)
+ 		return false;
  
- static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
-@@ -5635,6 +5643,11 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
- 			verbose(env, "string is not zero-terminated\n");
- 			return -EINVAL;
- 		}
-+	} else if (arg_type_is_scalar(arg_type)) {
-+		if (arg_type == ARG_CONSTANT && !tnum_is_const(reg->var_off)) {
-+			verbose(env, "R%d is not a known constant\n", regno);
++	if (is_bad_pkt_comparison(dst_reg, src_reg))
++		return false;
++
+ 	switch (BPF_OP(insn->code)) {
+ 	case BPF_JGT:
+ 		if ((dst_reg->type == PTR_TO_PACKET &&
+@@ -9640,11 +9659,17 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
+ 		mark_ptr_or_null_regs(other_branch, insn->dst_reg,
+ 				      opcode == BPF_JEQ);
+ 	} else if (!try_match_pkt_pointers(insn, dst_reg, &regs[insn->src_reg],
+-					   this_branch, other_branch) &&
+-		   is_pointer_value(env, insn->dst_reg)) {
+-		verbose(env, "R%d pointer comparison prohibited\n",
+-			insn->dst_reg);
+-		return -EACCES;
++					   this_branch, other_branch)) {
++		if (is_pointer_value(env, insn->dst_reg)) {
++			verbose(env, "R%d pointer comparison prohibited\n",
++				insn->dst_reg);
++			return -EACCES;
++		}
++		if (is_bad_pkt_comparison(dst_reg, &regs[insn->src_reg])) {
++			verbose(env, "R%d, R%d pkt pointer comparison prohibited\n",
++				insn->dst_reg, insn->src_reg);
 +			return -EACCES;
 +		}
  	}
- 
- 	return err;
+ 	if (env->log.level & BPF_LOG_LEVEL)
+ 		print_insn_state(env, this_branch->frame[this_branch->curframe]);
+@@ -10891,6 +10916,8 @@ static bool regsafe(struct bpf_verifier_env *env, struct bpf_reg_state *rold,
+ 		/* id relations must be preserved */
+ 		if (rold->id && !check_ids(rold->id, rcur->id, idmap))
+ 			return false;
++		if (rold->pkt_uid && !check_ids(rold->pkt_uid, rcur->pkt_uid, idmap))
++			return false;
+ 		/* new val must satisfy old val knowledge */
+ 		return range_within(rold, rcur) &&
+ 		       tnum_in(rold->var_off, rcur->var_off);
 -- 
 2.35.1
 
