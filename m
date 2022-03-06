@@ -2,192 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D4E04CEA5B
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 10:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1EE4CEA5F
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 10:47:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229686AbiCFJlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 04:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52052 "EHLO
+        id S231439AbiCFJs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 04:48:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiCFJlv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 04:41:51 -0500
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831A8443F1
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 01:40:59 -0800 (PST)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2d6d0cb5da4so133909687b3.10
-        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 01:40:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IbHyYTr6WOPJjB6Gi+P7cukHb81trN1p7PDNUlogpq0=;
-        b=ULSSmk/qS6K+NUV9dXKDoKW48orew9LWfGZ1Cay/PkA+Mdf3Ct2cpAD5r4lfzceYmJ
-         Wl3CwJg9d5TDzlXloE8ym4AdZhp3s6pKva8mY7Q1I5fXzH5qgx0y5HtPipp9+WarkXU+
-         /0ufDpuHq2ZEZondl02FCAyeqc97Iq0AEsuB68CiDAGvazAf+j3YwVMuoyypj6xVcTq6
-         OsU8UB4JsQmhBMwXpY2PIt7h2BXWzx91K7cRVD1qFCB5NzndCADnFW9MkbmYVAM0IJUI
-         HOULKjSH6tiWhFK2A7tZRb2FvPlo1QIRyhiBkgdCx9M/nxfP7J45ldwO8b6otY8mKScD
-         usow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IbHyYTr6WOPJjB6Gi+P7cukHb81trN1p7PDNUlogpq0=;
-        b=GdzSp4wltJF9g4tWCUgdTKSpF+MpeI8RYNpnJXnuxjww3n6J7mXZv34SAzzCXoPNe0
-         awsbP3ryoigpFEYllnSd8Fua/Kpsl6xOxxeElWBPe68P9dQXKYfnSzQOH4hIWRZc5mad
-         vVKV4NOdKhMhMoFL37AYJEThpANNIIwj9EDjDmJugITx1q+nX8ZrMTQh1SfN7LzVNinT
-         LBTW8vtXgqw/djru/2ky75PnCHAwAFCtfdtLoqOTclIsVvNio8Y38/kLVSdQpzM9nW10
-         wuLVZ/2cqH2Bpd3gOxSFuHEVmrh5SfFHHFXncpEqT7qif0WZuLKIcjvDLuP0Y0/KLTU2
-         HzPg==
-X-Gm-Message-State: AOAM533MAfQXze4N0qCGD9biCmFiDW/XmxPy0/Y2jndJzeVtZIuJlVZQ
-        DVYp5G60OeZKdnirV3pxuWUu2cZH6S7hFZs/C10=
-X-Google-Smtp-Source: ABdhPJxGHlUXwba52RmTK6Cc/YUTsTVchbtsUg2P2U70IppClc6ePUHTgfFCfjBEzN9w52V2RDjWTrl5gNHkDeOtC/Q=
-X-Received: by 2002:a0d:f507:0:b0:2dc:348e:54af with SMTP id
- e7-20020a0df507000000b002dc348e54afmr4604951ywf.204.1646559658793; Sun, 06
- Mar 2022 01:40:58 -0800 (PST)
+        with ESMTP id S230478AbiCFJsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 04:48:25 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2F46265;
+        Sun,  6 Mar 2022 01:47:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646560031;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=RoYXG1foArqAIi9p7RoX5ecVJMlMY6MlmJEXhXKeC9Q=;
+    b=r2W4qetnffJejcQI5v4IptvTmpYx/nYkX7nMB/iICggjAAc9aFggW4TqqVx4Zlm6EE
+    x6M3gzntVpSmxCCiKtot8keupwCTFNYBdCjjXAE963vY1KE5GsIc47BK6d7q4B3+WfFh
+    nx8fn7s6ZnVAv8Oc7/xQ0gY6UM+p9VwNxs+Ouq+N8hwy33lcvpvJhv9xPzdlHq49pxFU
+    SfygKZ2X2DbYgf6cek0GPKebp1powhFYY5WtX4PKwQkmybobyZWZXSgnMGdBwSaDEUgY
+    Qk1SYDL+jwKH+PhBC+ODtaJLHytvu7hvtZOWwLwEOEI11v7sxdroPeNz26Sc83ASOl4t
+    JDEw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.40.1 AUTH)
+    with ESMTPSA id 6c57e6y269lA4oU
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sun, 6 Mar 2022 10:47:10 +0100 (CET)
+Message-ID: <86b4131e-f70c-dfc9-60e1-e91643bb6ed4@hartkopp.net>
+Date:   Sun, 6 Mar 2022 10:47:04 +0100
 MIME-Version: 1.0
-References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
- <1jczjzt05k.fsf@starbuckisacylon.baylibre.com> <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
- <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com> <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
- <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com> <1j8rts76te.fsf@starbuckisacylon.baylibre.com>
- <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
-In-Reply-To: <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
-From:   Erico Nunes <nunes.erico@gmail.com>
-Date:   Sun, 6 Mar 2022 10:40:47 +0100
-Message-ID: <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
-Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
- at boot
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH net-next 2/8] can: Use netif_rx().
+Content-Language: en-US
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org
+References: <20220305221252.3063812-1-bigeasy@linutronix.de>
+ <20220305221252.3063812-3-bigeasy@linutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220305221252.3063812-3-bigeasy@linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 2, 2022 at 5:35 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> When using polling the time difference between aneg complete and
-> PHY state machine run is random in the interval 0 .. 1s.
-> Hence there's a certain chance that the difference is too small
-> to avoid the issue.
->
-> > If I understand the proposed patch correctly, it is mostly about the phy
-> > IRQ. Since I reproduce without the IRQ, I suppose it is not the
-> > problem we where looking for (might still be a problem worth fixing -
-> > the phy is not "rock-solid" when it comes to aneg - I already tried
-> > stabilising it a few years ago)
->
-> Below is a slightly improved version of the test patch. It doesn't sleep
-> in the (threaded) interrupt handler and lets the workqueue do it.
->
-> Maybe Amlogic is aware of a potentially related silicon issue?
->
-> >
-> > TBH, It bothers me that I reproduced w/o the IRQ. The idea makes
-> > sense :/
-> >
-> >>
-> [...]
-> >
->
->
-> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
-> index 7e7904fee..a3318ae01 100644
-> --- a/drivers/net/phy/meson-gxl.c
-> +++ b/drivers/net/phy/meson-gxl.c
-> @@ -209,12 +209,7 @@ static int meson_gxl_config_intr(struct phy_device *phydev)
->                 if (ret)
->                         return ret;
->
-> -               val = INTSRC_ANEG_PR
-> -                       | INTSRC_PARALLEL_FAULT
-> -                       | INTSRC_ANEG_LP_ACK
-> -                       | INTSRC_LINK_DOWN
-> -                       | INTSRC_REMOTE_FAULT
-> -                       | INTSRC_ANEG_COMPLETE;
-> +               val = INTSRC_LINK_DOWN | INTSRC_ANEG_COMPLETE;
->                 ret = phy_write(phydev, INTSRC_MASK, val);
->         } else {
->                 val = 0;
-> @@ -240,7 +235,10 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
->         if (irq_status == 0)
->                 return IRQ_NONE;
->
-> -       phy_trigger_machine(phydev);
-> +       if (irq_status & INTSRC_ANEG_COMPLETE)
-> +               phy_queue_state_machine(phydev, msecs_to_jiffies(100));
-> +       else
-> +               phy_trigger_machine(phydev);
->
->         return IRQ_HANDLED;
->  }
-> --
-> 2.35.1
-
-I did a lot of testing with this patch, and it seems to improve things.
-To me it completely resolves the original issue which was more easily
-reproducible where I would see "Link is Up" but the interface did not
-really work.
-At least in over a thousand jobs, that never reproduced again with this patch.
-
-I do see a different issue now, but it is even less frequent and
-harder to reproduce. In those over a thousand jobs, I have seen it
-only about 4 times.
-The difference is that now when the issue happens, the link is not
-even reported as Up. The output is a bit different than the original
-one, but it is consistently the same output in all instances where it
-reproduced. Looks like this (note that there is no longer Link is
-Down/Link is Up):
-
-[    2.186151] meson8b-dwmac c9410000.ethernet eth0: PHY
-[0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
-[    2.191582] meson8b-dwmac c9410000.ethernet eth0: Register
-MEM_TYPE_PAGE_POOL RxQ-0
-[    2.208713] meson8b-dwmac c9410000.ethernet eth0: No Safety
-Features support found
-[    2.210673] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
-[    2.218083] meson8b-dwmac c9410000.ethernet eth0: configuring for
-phy/rmii link mode
-[   22.227444] Waiting up to 100 more seconds for network.
-[   42.231440] Waiting up to 80 more seconds for network.
-[   62.235437] Waiting up to 60 more seconds for network.
-[   82.239437] Waiting up to 40 more seconds for network.
-[  102.243439] Waiting up to 20 more seconds for network.
-[  122.243446] Sending DHCP requests ...
-[  130.113944] random: fast init done
-[  134.219441] ... timed out!
-[  194.559562] IP-Config: Retrying forever (NFS root)...
-[  194.624630] meson8b-dwmac c9410000.ethernet eth0: PHY
-[0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
-[  194.630739] meson8b-dwmac c9410000.ethernet eth0: Register
-MEM_TYPE_PAGE_POOL RxQ-0
-[  194.649138] meson8b-dwmac c9410000.ethernet eth0: No Safety
-Features support found
-[  194.651113] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
-[  194.657931] meson8b-dwmac c9410000.ethernet eth0: configuring for
-phy/rmii link mode
-[  196.313602] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
-100Mbps/Full - flow control off
-[  196.339463] Sending DHCP requests ., OK
-...
 
 
-I don't remember seeing an output like this one in the previous tests.
-Is there any further improvement we can do to the patch based on this?
+On 05.03.22 23:12, Sebastian Andrzej Siewior wrote:
+> Since commit
+>     baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any context.")
+> 
+> the function netif_rx() can be used in preemptible/thread context as
+> well as in interrupt context.
+> 
+> Use netif_rx().
+> 
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
 
-Thanks
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
 
-Erico
+Thanks for the effort Sebastian!
+
+So git blame would not find me anymore for introducing netif_rx_ni() in 
+commit 481a8199142c0 from 2009 ;-)
+
+Best regards,
+Oliver
+
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: linux-can@vger.kernel.org
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>   drivers/net/can/dev/dev.c     | 2 +-
+>   drivers/net/can/slcan.c       | 2 +-
+>   drivers/net/can/spi/hi311x.c  | 6 +++---
+>   drivers/net/can/spi/mcp251x.c | 4 ++--
+>   drivers/net/can/vcan.c        | 2 +-
+>   drivers/net/can/vxcan.c       | 2 +-
+>   net/can/af_can.c              | 2 +-
+>   7 files changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
+> index c192f25f96956..e7ab45f1c43b2 100644
+> --- a/drivers/net/can/dev/dev.c
+> +++ b/drivers/net/can/dev/dev.c
+> @@ -154,7 +154,7 @@ static void can_restart(struct net_device *dev)
+>   
+>   	cf->can_id |= CAN_ERR_RESTARTED;
+>   
+> -	netif_rx_ni(skb);
+> +	netif_rx(skb);
+>   
+>   restart:
+>   	netdev_dbg(dev, "restarted\n");
+> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+> index 27783fbf011fc..ec294d0c5722c 100644
+> --- a/drivers/net/can/slcan.c
+> +++ b/drivers/net/can/slcan.c
+> @@ -221,7 +221,7 @@ static void slc_bump(struct slcan *sl)
+>   	if (!(cf.can_id & CAN_RTR_FLAG))
+>   		sl->dev->stats.rx_bytes += cf.len;
+>   
+> -	netif_rx_ni(skb);
+> +	netif_rx(skb);
+>   }
+>   
+>   /* parse tty input stream */
+> diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
+> index 664b8f14d7b05..a5b2952b8d0ff 100644
+> --- a/drivers/net/can/spi/hi311x.c
+> +++ b/drivers/net/can/spi/hi311x.c
+> @@ -356,7 +356,7 @@ static void hi3110_hw_rx(struct spi_device *spi)
+>   
+>   	can_led_event(priv->net, CAN_LED_EVENT_RX);
+>   
+> -	netif_rx_ni(skb);
+> +	netif_rx(skb);
+>   }
+>   
+>   static void hi3110_hw_sleep(struct spi_device *spi)
+> @@ -677,7 +677,7 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+>   			tx_state = txerr >= rxerr ? new_state : 0;
+>   			rx_state = txerr <= rxerr ? new_state : 0;
+>   			can_change_state(net, cf, tx_state, rx_state);
+> -			netif_rx_ni(skb);
+> +			netif_rx(skb);
+>   
+>   			if (new_state == CAN_STATE_BUS_OFF) {
+>   				can_bus_off(net);
+> @@ -718,7 +718,7 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
+>   				cf->data[6] = hi3110_read(spi, HI3110_READ_TEC);
+>   				cf->data[7] = hi3110_read(spi, HI3110_READ_REC);
+>   				netdev_dbg(priv->net, "Bus Error\n");
+> -				netif_rx_ni(skb);
+> +				netif_rx(skb);
+>   			}
+>   		}
+>   
+> diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+> index d23edaf224204..fc747bff5eeb2 100644
+> --- a/drivers/net/can/spi/mcp251x.c
+> +++ b/drivers/net/can/spi/mcp251x.c
+> @@ -740,7 +740,7 @@ static void mcp251x_hw_rx(struct spi_device *spi, int buf_idx)
+>   
+>   	can_led_event(priv->net, CAN_LED_EVENT_RX);
+>   
+> -	netif_rx_ni(skb);
+> +	netif_rx(skb);
+>   }
+>   
+>   static void mcp251x_hw_sleep(struct spi_device *spi)
+> @@ -987,7 +987,7 @@ static void mcp251x_error_skb(struct net_device *net, int can_id, int data1)
+>   	if (skb) {
+>   		frame->can_id |= can_id;
+>   		frame->data[1] = data1;
+> -		netif_rx_ni(skb);
+> +		netif_rx(skb);
+>   	} else {
+>   		netdev_err(net, "cannot allocate error skb\n");
+>   	}
+> diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
+> index c42f18845b02a..a15619d883ec2 100644
+> --- a/drivers/net/can/vcan.c
+> +++ b/drivers/net/can/vcan.c
+> @@ -80,7 +80,7 @@ static void vcan_rx(struct sk_buff *skb, struct net_device *dev)
+>   	skb->dev       = dev;
+>   	skb->ip_summed = CHECKSUM_UNNECESSARY;
+>   
+> -	netif_rx_ni(skb);
+> +	netif_rx(skb);
+>   }
+>   
+>   static netdev_tx_t vcan_tx(struct sk_buff *skb, struct net_device *dev)
+> diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
+> index 47ccc15a3486b..556f1a12ec9a0 100644
+> --- a/drivers/net/can/vxcan.c
+> +++ b/drivers/net/can/vxcan.c
+> @@ -63,7 +63,7 @@ static netdev_tx_t vxcan_xmit(struct sk_buff *skb, struct net_device *dev)
+>   	skb->ip_summed  = CHECKSUM_UNNECESSARY;
+>   
+>   	len = cfd->can_id & CAN_RTR_FLAG ? 0 : cfd->len;
+> -	if (netif_rx_ni(skb) == NET_RX_SUCCESS) {
+> +	if (netif_rx(skb) == NET_RX_SUCCESS) {
+>   		srcstats->tx_packets++;
+>   		srcstats->tx_bytes += len;
+>   		peerstats = &peer->stats;
+> diff --git a/net/can/af_can.c b/net/can/af_can.c
+> index cce2af10eb3ea..1fb49d51b25d6 100644
+> --- a/net/can/af_can.c
+> +++ b/net/can/af_can.c
+> @@ -284,7 +284,7 @@ int can_send(struct sk_buff *skb, int loop)
+>   	}
+>   
+>   	if (newskb)
+> -		netif_rx_ni(newskb);
+> +		netif_rx(newskb);
+>   
+>   	/* update statistics */
+>   	pkg_stats->tx_frames++;
