@@ -2,185 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A454CEC88
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 18:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D9964CED34
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 19:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbiCFRak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 12:30:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58798 "EHLO
+        id S232935AbiCFSbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 13:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233937AbiCFRaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 12:30:39 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8508A4B1E4;
-        Sun,  6 Mar 2022 09:29:46 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id q20so5546247wmq.1;
-        Sun, 06 Mar 2022 09:29:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1zzNgf433hyjGkgzGz6Qpkm1fu9BPDmLsvmtuyA914E=;
-        b=husxF0wgW3KVw8HHmc98ry3UwO3cSwMAsqHJyO4MgtxAxeufK+7y2BeH03igmgNIYy
-         YGKXxafZ+HCiiOYn5iWnL45ZiK5P5qmQhfvzQUdMv8XnbxVw4NmicfE/ckFegBlVPzHP
-         +HecN91dxbexme3px6k8x6X4D9Fy1+KNBeJ9HxUW8BG9ycrXWdHwVI8FpToThfKf5bA4
-         iyTqnw0M9zo/Ug+iJK3B7ekNl03in/sdcd9d9kSrS/WFKXugBW8LAE3p7KEcFCG0dIDl
-         pjbADMkd1pBc2co/tVujHq/UxhozjyE28LAoa3VPoHFwkNDCeV3icBhx/Zwxs3NIT3XN
-         Grfw==
+        with ESMTP id S232855AbiCFSbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 13:31:53 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7346C21E1C
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 10:31:00 -0800 (PST)
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 224363F616
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 18:30:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646591454;
+        bh=TA8KjR6S17gXFGKtkIb2JMGZEDPFAMBrDvNRC4af/Ko=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=uCQu9DwxFebbTlhXAnenuN23+NppyFNvBQfZ87ZVeRHQSdo59Wcl0W9ocFiMaJ+bl
+         ymIY7XrmM+zJVHcx28YwKxtWyKuQl80EN1+z+WoVupt0oxkSHww6CDKfnw8XJ9H1E5
+         93Yq/xILuT7vh00BXnUoqQ0dSUmKe5MVSzJnrmUv0Z3nl5E3YhuE8DEc2j8cGSPorD
+         R3hnsUQXxAAvnrk7UXLZSXRuydPrgFyud/qwrjrPAgfr9qnkuhu4Apy7ImcDqXt4I5
+         y/PyOMcvpwu2hZsI0OoKE6vukn146RWzXMKV8tMFeYCWDTs3/Nfo+4YjysVT+WEh/s
+         tRFKiyBVdY3Fg==
+Received: by mail-pf1-f197.google.com with SMTP id n135-20020a628f8d000000b004e16d5bdcdbso9007656pfd.20
+        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 10:30:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1zzNgf433hyjGkgzGz6Qpkm1fu9BPDmLsvmtuyA914E=;
-        b=vgANla/2WVET3B1MrwZ3PqGs+9k8ADJWUIrpykaL2UfvweuZxE3qAGoMqlXQspyCDC
-         sv/MZCKikYYHrhLc/hQZjq3dZ1blJ64BIEtdDu2+NV1KG+eLmDiSL14Z4O3XRknOSqby
-         N71Fu2rsoBMPd9hzPr4kv+m2cXduz1/b8o/7Cu1XUat51biE3bAEZvWXNe7/4aV9EqL4
-         ZOyoN9z6Krbw26xCZI5+pAqeevSorxnVDpkKhffyjI6ox8/lJC30YynrKGeO27nWMwqH
-         rZ/jWuu5J25Z/u3S80j+QLnEdwzbPDRJazeoCOkzddBWnEUE20lJbPpaPIc+Fj3qLvyU
-         FLsg==
-X-Gm-Message-State: AOAM533tJwgfUEt6552uMqMWg6AoucUJP1Tfp9ePauJnI4ghYz9Dn3q1
-        lPFplYM8u3OiciMlGygeZBU=
-X-Google-Smtp-Source: ABdhPJxv8EhzkcCbfdntaHmwy4Jd8RoldAVIB1QgPaTElDWpOXKEwbIbY02Pd40OmJSAXoN6cfWLfQ==
-X-Received: by 2002:a05:600c:4e0a:b0:37b:c548:622a with SMTP id b10-20020a05600c4e0a00b0037bc548622amr15944416wmq.55.1646587785100;
-        Sun, 06 Mar 2022 09:29:45 -0800 (PST)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id v5-20020adfe4c5000000b001edc1e5053esm9332016wrm.82.2022.03.06.09.29.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:29:44 -0800 (PST)
-Date:   Sun, 6 Mar 2022 18:29:42 +0100
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH 10/10] selftest/bpf: Add kprobe_multi test for bpf_cookie
- values
-Message-ID: <YiTvht+4yyFghc+s@krava>
-References: <20220222170600.611515-1-jolsa@kernel.org>
- <20220222170600.611515-11-jolsa@kernel.org>
- <CAEf4BzZW-W5PcNmB2PoRE-70e1FjqpE-EJKgxfj2SsvjwdBjRA@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=TA8KjR6S17gXFGKtkIb2JMGZEDPFAMBrDvNRC4af/Ko=;
+        b=AG+XDl3J4yCPvEOR95WiteVK4Ey5bo1Ilpom5qaWkKFxalA1rhF1XLP1nlw/fjaE81
+         yWh1tAbGu7aER/peABZWDlDfLuKRtlYnPJt6NcoFCShV7RU6SmVlJHVFheIHtF8oigWZ
+         BIl3YcYJiOPwN0w1UzsP6SZQhKnMt+U9cBvElRJbNrIvDgtmlt0kIrzyrimEpWyhRwHa
+         e9Pa0zZ3N5EIVOtDYUHPp/w4D/0K0oLRX/xBzU57o+WkGxBPzbqbIumo8BO205X9E5pF
+         0tHdY9B3TWdFEY8Rb72FMiq4VT3KkV2Vq7GrXUdkXqiRnyesj16NapkjABmmiK1eBrft
+         vAvg==
+X-Gm-Message-State: AOAM5333qMErMYZDClBLbG3HT/AncPIeKCaSOH4hcyF47FEnuH2xV2EZ
+        dU2eh2/cECVcpj8EgX1DsPmxVd4hBw8f0WJ3A2H9Hu6Wila4kVLDa13th6al9VFlo28G2Ily2gG
+        8B8V+Ptz2ckZ+hsAUUTic5336tjWAhrO6iQ==
+X-Received: by 2002:a63:1651:0:b0:342:b566:57c4 with SMTP id 17-20020a631651000000b00342b56657c4mr6944386pgw.258.1646591452551;
+        Sun, 06 Mar 2022 10:30:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyQi8U+TTTetLTi4EWqCjwCcAlhxeEPHIymhU/wDHDR2O7G9m5BX8Y+01rkdeWUn6VVZa4lUg==
+X-Received: by 2002:a63:1651:0:b0:342:b566:57c4 with SMTP id 17-20020a631651000000b00342b56657c4mr6944366pgw.258.1646591452194;
+        Sun, 06 Mar 2022 10:30:52 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id t8-20020a6549c8000000b00372eb3a7fb3sm9566731pgs.92.2022.03.06.10.30.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 06 Mar 2022 10:30:51 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id A8A2960DD1; Sun,  6 Mar 2022 10:30:50 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id A0E109FAC3;
+        Sun,  6 Mar 2022 10:30:50 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Lianjie Zhang <zhanglianjie@uniontech.com>
+cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Veaceslav Falico <vfalico@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] bonding: helper macro __ATTR_RO to make code more clear
+In-reply-to: <20220306082808.85844-1-zhanglianjie@uniontech.com>
+References: <20220306082808.85844-1-zhanglianjie@uniontech.com>
+Comments: In-reply-to Lianjie Zhang <zhanglianjie@uniontech.com>
+   message dated "Sun, 06 Mar 2022 16:28:08 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZW-W5PcNmB2PoRE-70e1FjqpE-EJKgxfj2SsvjwdBjRA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <24907.1646591450.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Sun, 06 Mar 2022 10:30:50 -0800
+Message-ID: <24908.1646591450@famine>
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 04, 2022 at 03:11:26PM -0800, Andrii Nakryiko wrote:
-> On Tue, Feb 22, 2022 at 9:08 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Adding bpf_cookie test for programs attached by kprobe_multi links.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  .../selftests/bpf/prog_tests/bpf_cookie.c     | 72 +++++++++++++++++++
-> >  .../bpf/progs/kprobe_multi_bpf_cookie.c       | 62 ++++++++++++++++
-> >  2 files changed, 134 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-> > index cd10df6cd0fc..edfb9f8736c6 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-> > @@ -7,6 +7,7 @@
-> >  #include <unistd.h>
-> >  #include <test_progs.h>
-> >  #include "test_bpf_cookie.skel.h"
-> > +#include "kprobe_multi_bpf_cookie.skel.h"
-> >
-> >  /* uprobe attach point */
-> >  static void trigger_func(void)
-> > @@ -63,6 +64,75 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
-> >         bpf_link__destroy(retlink2);
-> >  }
-> >
-> > +static void kprobe_multi_subtest(void)
-> > +{
-> > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
-> > +       int err, prog_fd, link1_fd = -1, link2_fd = -1;
-> > +       LIBBPF_OPTS(bpf_test_run_opts, topts);
-> 
-> consistency ftw, LIBBPF_OPTS
+Lianjie Zhang <zhanglianjie@uniontech.com> wrote:
 
-ok
+>Signed-off-by: Lianjie Zhang <zhanglianjie@uniontech.com>
 
-> 
-> 
-> > +       struct kprobe_multi_bpf_cookie *skel = NULL;
-> > +       __u64 addrs[8], cookies[8];
-> > +
-> 
-> [..]
-> 
-> > diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
-> > new file mode 100644
-> > index 000000000000..d6f8454ba093
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/kprobe_multi_bpf_cookie.c
-> > @@ -0,0 +1,62 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <linux/bpf.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_tracing.h>
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +extern const void bpf_fentry_test1 __ksym;
-> > +extern const void bpf_fentry_test2 __ksym;
-> > +extern const void bpf_fentry_test3 __ksym;
-> > +extern const void bpf_fentry_test4 __ksym;
-> > +extern const void bpf_fentry_test5 __ksym;
-> > +extern const void bpf_fentry_test6 __ksym;
-> > +extern const void bpf_fentry_test7 __ksym;
-> > +extern const void bpf_fentry_test8 __ksym;
-> > +
-> > +/* No tests, just to trigger bpf_fentry_test* through tracing test_run */
-> > +SEC("fentry/bpf_modify_return_test")
-> > +int BPF_PROG(test1)
-> > +{
-> > +       return 0;
-> > +}
-> > +
-> > +__u64 test2_result = 0;
-> > +
-> > +SEC("kprobe.multi/bpf_fentry_tes??")
-> > +int test2(struct pt_regs *ctx)
-> > +{
-> > +       __u64 cookie = bpf_get_attach_cookie(ctx);
-> > +       __u64 addr = bpf_get_func_ip(ctx);
-> > +
-> > +       test2_result += (const void *) addr == &bpf_fentry_test1 && cookie == 1;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test2 && cookie == 2;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test3 && cookie == 3;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test4 && cookie == 4;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test5 && cookie == 5;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test6 && cookie == 6;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test7 && cookie == 7;
-> > +       test2_result += (const void *) addr == &bpf_fentry_test8 && cookie == 8;
-> 
-> this is not parallel mode friendly
-> 
-> let's filter by pid, but also it's best to do count locally and just
-> assign it (so that multiple calls of the program still produce the
-> same value, instead of constantly increasing global variable with each
-> run)
+	I'm ok with the change, but this needs a sentence or two in the
+commit log message to explain what's going on, so that future readers of
+the log don't have to read the diff to figure out why this change makes
+sense.
 
-ah I did not think of the paralel run, right, will change
+	-J
 
-thanks,
-jirka
+>diff --git a/drivers/net/bonding/bond_sysfs_slave.c b/drivers/net/bonding=
+/bond_sysfs_slave.c
+>index 6a6cdd0bb258..69b0a3751dff 100644
+>--- a/drivers/net/bonding/bond_sysfs_slave.c
+>+++ b/drivers/net/bonding/bond_sysfs_slave.c
+>@@ -15,14 +15,8 @@ struct slave_attribute {
+> 	ssize_t (*show)(struct slave *, char *);
+> };
+>
+>-#define SLAVE_ATTR(_name, _mode, _show)				\
+>-const struct slave_attribute slave_attr_##_name =3D {		\
+>-	.attr =3D {.name =3D __stringify(_name),			\
+>-		 .mode =3D _mode },				\
+>-	.show	=3D _show,					\
+>-};
+> #define SLAVE_ATTR_RO(_name)					\
+>-	SLAVE_ATTR(_name, 0444, _name##_show)
+>+const struct slave_attribute slave_attr_##_name =3D __ATTR_RO(_name)
+>
+> static ssize_t state_show(struct slave *slave, char *buf)
+> {
+>--
+>2.20.1
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
