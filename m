@@ -2,301 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F674CEA50
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 10:38:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4E04CEA5B
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 10:41:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233234AbiCFJiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 04:38:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
+        id S229686AbiCFJlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 04:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233212AbiCFJiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 04:38:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12ADD13CE2;
-        Sun,  6 Mar 2022 01:37:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBDB6103C;
-        Sun,  6 Mar 2022 09:37:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5407C340EC;
-        Sun,  6 Mar 2022 09:37:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646559474;
-        bh=33xTofm5tNJfVFvrdxFoHym3nFCdtF5+sqI7opLuv3M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UGqS2FkWPBkDFnYXfG70XW8rrO/XVoGtZYtqtqr+V/2h8g7OQG5rRAdK4/1RCpuEx
-         4xwfIY9tfcaZYGQgmrRK6ut80mQEbRRMx85+aBVMPmR5DVd7q88Qc/0I9wPSQNmo4Z
-         +BtRNqMDi6Q+N5xqIOZWQpeGl2qqtXWAuuo+h9p6WfKMzC1kfGGgOJP7Lz6UYfPXps
-         R7irDlkTmHA7fSrMeBL81s7rJ7QbltT9OL0H1IttWmqcInzv3bn9pqd3dmLHE51XHy
-         qKA5ZBFAj7UF0MIBrpF/jimqOWgHL7ucWGE1Lvt+EZ/KD+Ll7iJUVbBGeDu5IWIzjl
-         b5yMhYHAjHVMA==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v9 11/11] fprobe: Add a selftest for fprobe
-Date:   Sun,  6 Mar 2022 18:37:48 +0900
-Message-Id: <164655946801.1674510.4687155136966760019.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164655933970.1674510.3809060481512713846.stgit@devnote2>
-References: <164655933970.1674510.3809060481512713846.stgit@devnote2>
-User-Agent: StGit/0.19
+        with ESMTP id S229447AbiCFJlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 04:41:51 -0500
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831A8443F1
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 01:40:59 -0800 (PST)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2d6d0cb5da4so133909687b3.10
+        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 01:40:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IbHyYTr6WOPJjB6Gi+P7cukHb81trN1p7PDNUlogpq0=;
+        b=ULSSmk/qS6K+NUV9dXKDoKW48orew9LWfGZ1Cay/PkA+Mdf3Ct2cpAD5r4lfzceYmJ
+         Wl3CwJg9d5TDzlXloE8ym4AdZhp3s6pKva8mY7Q1I5fXzH5qgx0y5HtPipp9+WarkXU+
+         /0ufDpuHq2ZEZondl02FCAyeqc97Iq0AEsuB68CiDAGvazAf+j3YwVMuoyypj6xVcTq6
+         OsU8UB4JsQmhBMwXpY2PIt7h2BXWzx91K7cRVD1qFCB5NzndCADnFW9MkbmYVAM0IJUI
+         HOULKjSH6tiWhFK2A7tZRb2FvPlo1QIRyhiBkgdCx9M/nxfP7J45ldwO8b6otY8mKScD
+         usow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IbHyYTr6WOPJjB6Gi+P7cukHb81trN1p7PDNUlogpq0=;
+        b=GdzSp4wltJF9g4tWCUgdTKSpF+MpeI8RYNpnJXnuxjww3n6J7mXZv34SAzzCXoPNe0
+         awsbP3ryoigpFEYllnSd8Fua/Kpsl6xOxxeElWBPe68P9dQXKYfnSzQOH4hIWRZc5mad
+         vVKV4NOdKhMhMoFL37AYJEThpANNIIwj9EDjDmJugITx1q+nX8ZrMTQh1SfN7LzVNinT
+         LBTW8vtXgqw/djru/2ky75PnCHAwAFCtfdtLoqOTclIsVvNio8Y38/kLVSdQpzM9nW10
+         wuLVZ/2cqH2Bpd3gOxSFuHEVmrh5SfFHHFXncpEqT7qif0WZuLKIcjvDLuP0Y0/KLTU2
+         HzPg==
+X-Gm-Message-State: AOAM533MAfQXze4N0qCGD9biCmFiDW/XmxPy0/Y2jndJzeVtZIuJlVZQ
+        DVYp5G60OeZKdnirV3pxuWUu2cZH6S7hFZs/C10=
+X-Google-Smtp-Source: ABdhPJxGHlUXwba52RmTK6Cc/YUTsTVchbtsUg2P2U70IppClc6ePUHTgfFCfjBEzN9w52V2RDjWTrl5gNHkDeOtC/Q=
+X-Received: by 2002:a0d:f507:0:b0:2dc:348e:54af with SMTP id
+ e7-20020a0df507000000b002dc348e54afmr4604951ywf.204.1646559658793; Sun, 06
+ Mar 2022 01:40:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
+ <1jczjzt05k.fsf@starbuckisacylon.baylibre.com> <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
+ <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com> <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+ <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com> <1j8rts76te.fsf@starbuckisacylon.baylibre.com>
+ <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
+In-Reply-To: <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
+From:   Erico Nunes <nunes.erico@gmail.com>
+Date:   Sun, 6 Mar 2022 10:40:47 +0100
+Message-ID: <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
+Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
+ at boot
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a KUnit based selftest for fprobe interface.
+On Wed, Mar 2, 2022 at 5:35 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> When using polling the time difference between aneg complete and
+> PHY state machine run is random in the interval 0 .. 1s.
+> Hence there's a certain chance that the difference is too small
+> to avoid the issue.
+>
+> > If I understand the proposed patch correctly, it is mostly about the phy
+> > IRQ. Since I reproduce without the IRQ, I suppose it is not the
+> > problem we where looking for (might still be a problem worth fixing -
+> > the phy is not "rock-solid" when it comes to aneg - I already tried
+> > stabilising it a few years ago)
+>
+> Below is a slightly improved version of the test patch. It doesn't sleep
+> in the (threaded) interrupt handler and lets the workqueue do it.
+>
+> Maybe Amlogic is aware of a potentially related silicon issue?
+>
+> >
+> > TBH, It bothers me that I reproduced w/o the IRQ. The idea makes
+> > sense :/
+> >
+> >>
+> [...]
+> >
+>
+>
+> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+> index 7e7904fee..a3318ae01 100644
+> --- a/drivers/net/phy/meson-gxl.c
+> +++ b/drivers/net/phy/meson-gxl.c
+> @@ -209,12 +209,7 @@ static int meson_gxl_config_intr(struct phy_device *phydev)
+>                 if (ret)
+>                         return ret;
+>
+> -               val = INTSRC_ANEG_PR
+> -                       | INTSRC_PARALLEL_FAULT
+> -                       | INTSRC_ANEG_LP_ACK
+> -                       | INTSRC_LINK_DOWN
+> -                       | INTSRC_REMOTE_FAULT
+> -                       | INTSRC_ANEG_COMPLETE;
+> +               val = INTSRC_LINK_DOWN | INTSRC_ANEG_COMPLETE;
+>                 ret = phy_write(phydev, INTSRC_MASK, val);
+>         } else {
+>                 val = 0;
+> @@ -240,7 +235,10 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+>         if (irq_status == 0)
+>                 return IRQ_NONE;
+>
+> -       phy_trigger_machine(phydev);
+> +       if (irq_status & INTSRC_ANEG_COMPLETE)
+> +               phy_queue_state_machine(phydev, msecs_to_jiffies(100));
+> +       else
+> +               phy_trigger_machine(phydev);
+>
+>         return IRQ_HANDLED;
+>  }
+> --
+> 2.35.1
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v9:
-  - Rename fprobe_target* to fprobe_selftest_target*.
-  - Find the correct expected ip by ftrace_location_range().
-  - Since the ftrace_location_range() is not exposed to module, make
-    this test only for embedded.
-  - Add entry only test.
-  - Reset the fprobe structure before reuse it.
----
- lib/Kconfig.debug |   12 ++++
- lib/Makefile      |    2 +
- lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 188 insertions(+)
- create mode 100644 lib/test_fprobe.c
+I did a lot of testing with this patch, and it seems to improve things.
+To me it completely resolves the original issue which was more easily
+reproducible where I would see "Link is Up" but the interface did not
+really work.
+At least in over a thousand jobs, that never reproduced again with this patch.
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 14b89aa37c5c..ffc469a12afc 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2100,6 +2100,18 @@ config KPROBES_SANITY_TEST
- 
- 	  Say N if you are unsure.
- 
-+config FPROBE_SANITY_TEST
-+	bool "Self test for fprobe"
-+	depends on DEBUG_KERNEL
-+	depends on FPROBE
-+	depends on KUNIT
-+	help
-+	  This option will enable testing the fprobe when the system boot.
-+	  A series of tests are made to verify that the fprobe is functioning
-+	  properly.
-+
-+	  Say N if you are unsure.
-+
- config BACKTRACE_SELF_TEST
- 	tristate "Self test for the backtrace code"
- 	depends on DEBUG_KERNEL
-diff --git a/lib/Makefile b/lib/Makefile
-index 300f569c626b..154008764b16 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
- obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
- obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
- obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-+CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-+obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
- #
- # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
- # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-new file mode 100644
-index 000000000000..ed70637a2ffa
---- /dev/null
-+++ b/lib/test_fprobe.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * test_fprobe.c - simple sanity test for fprobe
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/fprobe.h>
-+#include <linux/random.h>
-+#include <kunit/test.h>
-+
-+#define div_factor 3
-+
-+static struct kunit *current_test;
-+
-+static u32 rand1, entry_val, exit_val;
-+
-+/* Use indirect calls to avoid inlining the target functions */
-+static u32 (*target)(u32 value);
-+static u32 (*target2)(u32 value);
-+static unsigned long target_ip;
-+static unsigned long target2_ip;
-+
-+static noinline u32 fprobe_selftest_target(u32 value)
-+{
-+	return (value / div_factor);
-+}
-+
-+static noinline u32 fprobe_selftest_target2(u32 value)
-+{
-+	return (value / div_factor) + 1;
-+}
-+
-+static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-+	if (ip != target_ip)
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+	entry_val = (rand1 / div_factor);
-+}
-+
-+static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	unsigned long ret = regs_return_value(regs);
-+
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	if (ip != target_ip) {
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-+	} else
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-+	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-+	exit_val = entry_val + div_factor;
-+}
-+
-+/* Test entry only (no rethook) */
-+static void test_fprobe_entry(struct kunit *test)
-+{
-+	struct fprobe fp_entry = {
-+		.entry_handler = fp_entry_handler,
-+	};
-+
-+	current_test = test;
-+
-+	/* Before register, unregister should be failed. */
-+	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-+}
-+
-+static void test_fprobe(struct kunit *test)
-+{
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static void test_fprobe_syms(struct kunit *test)
-+{
-+	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static unsigned long get_ftrace_location(void *func)
-+{
-+	unsigned long size, addr = (unsigned long)func;
-+
-+	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-+		return 0;
-+
-+	return ftrace_location_range(addr, addr + size - 1);
-+}
-+
-+static int fprobe_test_init(struct kunit *test)
-+{
-+	do {
-+		rand1 = prandom_u32();
-+	} while (rand1 <= div_factor);
-+
-+	target = fprobe_selftest_target;
-+	target2 = fprobe_selftest_target2;
-+	target_ip = get_ftrace_location(target);
-+	target2_ip = get_ftrace_location(target2);
-+
-+	return 0;
-+}
-+
-+static struct kunit_case fprobe_testcases[] = {
-+	KUNIT_CASE(test_fprobe_entry),
-+	KUNIT_CASE(test_fprobe),
-+	KUNIT_CASE(test_fprobe_syms),
-+	{}
-+};
-+
-+static struct kunit_suite fprobe_test_suite = {
-+	.name = "fprobe_test",
-+	.init = fprobe_test_init,
-+	.test_cases = fprobe_testcases,
-+};
-+
-+kunit_test_suites(&fprobe_test_suite);
-+
-+MODULE_LICENSE("GPL");
+I do see a different issue now, but it is even less frequent and
+harder to reproduce. In those over a thousand jobs, I have seen it
+only about 4 times.
+The difference is that now when the issue happens, the link is not
+even reported as Up. The output is a bit different than the original
+one, but it is consistently the same output in all instances where it
+reproduced. Looks like this (note that there is no longer Link is
+Down/Link is Up):
 
+[    2.186151] meson8b-dwmac c9410000.ethernet eth0: PHY
+[0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
+[    2.191582] meson8b-dwmac c9410000.ethernet eth0: Register
+MEM_TYPE_PAGE_POOL RxQ-0
+[    2.208713] meson8b-dwmac c9410000.ethernet eth0: No Safety
+Features support found
+[    2.210673] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
+[    2.218083] meson8b-dwmac c9410000.ethernet eth0: configuring for
+phy/rmii link mode
+[   22.227444] Waiting up to 100 more seconds for network.
+[   42.231440] Waiting up to 80 more seconds for network.
+[   62.235437] Waiting up to 60 more seconds for network.
+[   82.239437] Waiting up to 40 more seconds for network.
+[  102.243439] Waiting up to 20 more seconds for network.
+[  122.243446] Sending DHCP requests ...
+[  130.113944] random: fast init done
+[  134.219441] ... timed out!
+[  194.559562] IP-Config: Retrying forever (NFS root)...
+[  194.624630] meson8b-dwmac c9410000.ethernet eth0: PHY
+[0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
+[  194.630739] meson8b-dwmac c9410000.ethernet eth0: Register
+MEM_TYPE_PAGE_POOL RxQ-0
+[  194.649138] meson8b-dwmac c9410000.ethernet eth0: No Safety
+Features support found
+[  194.651113] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
+[  194.657931] meson8b-dwmac c9410000.ethernet eth0: configuring for
+phy/rmii link mode
+[  196.313602] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
+100Mbps/Full - flow control off
+[  196.339463] Sending DHCP requests ., OK
+...
+
+
+I don't remember seeing an output like this one in the previous tests.
+Is there any further improvement we can do to the patch based on this?
+
+Thanks
+
+Erico
