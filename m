@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8BE94CE85F
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 04:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1794CE968
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 06:56:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbiCFDFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Mar 2022 22:05:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        id S232383AbiCFF5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 00:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiCFDFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Mar 2022 22:05:14 -0500
-X-Greylist: delayed 388 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 05 Mar 2022 19:04:21 PST
-Received: from graphic-creation.com (tshirts-print.com [133.242.8.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A81BD75603
-        for <netdev@vger.kernel.org>; Sat,  5 Mar 2022 19:04:21 -0800 (PST)
-Received: from www.graphic-creation.com (localhost [IPv6:::1])
-        by localhost.localdomain (Postfix) with ESMTP id 632662380F2D
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 11:56:46 +0900 (JST)
-Date:   Sun, 6 Mar 2022 02:56:46 +0000
-To:     netdev@vger.kernel.org
-From:   =?UTF-8?B?5qCq5byP5Lya56S+IOOCsOODqeODleOCo+ODg+OCr+OCr+ODquOCqOODvA==?=
-         =?UTF-8?B?44K344On44Oz?= <gcc_sales@mimaki.com>
-Subject: =?UTF-8?B?44K144Oz44OX44Or6KuL5rGC44OV44Kp44O844Og772c5qCq5byP5Lya56S+?=
- =?UTF-8?B?IOOCsOODqeODleOCo+ODg+OCr+OCr+ODquOCqOODvOOCt+ODp+ODsw==?=
-Message-ID: <7b03e857afb8d4f82ded7fd4b5728ad4@www.graphic-creation.com>
-X-Mailer: PHPMailer 5.2.22 (https://github.com/PHPMailer/PHPMailer)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_99,BAYES_999,
-        KHOP_HELO_FCRDNS,SPF_FAIL,SPF_HELO_SOFTFAIL,TVD_SPACE_RATIO_MINFP,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
-        *      [score: 1.0000]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 1.0000]
-        *  0.0 SPF_FAIL SPF: sender does not match SPF record (fail)
-        *      [SPF failed: Please see http://www.openspf.org/Why?s=mfrom;id=gcc_sales%40mimaki.com;ip=133.242.8.35;r=lindbergh.monkeyblade.net]
-        *  0.7 SPF_HELO_SOFTFAIL SPF: HELO does not match SPF record
-        *      (softfail)
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.3 KHOP_HELO_FCRDNS Relay HELO differs from its IP's reverse DNS
-        *  0.6 TVD_SPACE_RATIO_MINFP Space ratio (vertical text obfuscation?)
-X-Spam-Level: *****
+        with ESMTP id S229480AbiCFF5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 00:57:42 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DE94667D;
+        Sat,  5 Mar 2022 21:56:48 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso13886214pjj.2;
+        Sat, 05 Mar 2022 21:56:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=os8w5Gg1D8GDaRBK134jrMfUsM5RiwH/cspVVHfLEfQ=;
+        b=oDkJEYHWqpBGOoCCE+UIkta0bZOXDAt1vnfAyjjFl9bwu6IAOFniMRetXfRr/G2WI0
+         9mfj0iG8Y6FR9eFz/xcah/GolnFa9Tza4oq/vQd5GLHb+0RyCuv7NoSV5Y4LMI6bSAFS
+         P/48xIFk9u1ZXyYxPlF9ab7G2uGcrdtUrSIs6fCrk/eHvr168238nO5yFo1haQkFQhhD
+         KUefk8OiIwe/4ZZXs4hS8rt6O6TjExdIe0jLWbq/SHQzhocBFC+BqPX/jLAQquoknlKo
+         RZawPTU6eF4NpmhUOn1nNtwFwlH1oZ9OZ0N2M445rXqyxfV+BO8uRZ9tAACOSTO7/INI
+         lkqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=os8w5Gg1D8GDaRBK134jrMfUsM5RiwH/cspVVHfLEfQ=;
+        b=UY5YftOWmL4KwmCEyQyci8yAN1U4NmwvhFjarYeKN/0D9X/h6mRUy88K/gSp5Qf0mo
+         woOYPI+BwfvOkawsg40wwvwabhZdeEglrIQBobypByFgp80gjhfgxleoFQM2HASW20fM
+         YxNKuwFZNi/4Pbdo7eiF9K5DMDsxkeXXQ0q6sjwNdW9gS6spiBH0J6mZ5L9+3J3/+P0L
+         dz+pZ7XaFkp5npLnhdavTVn3CIQ7uq3ApcAOMGoz9I+/DpWVRBH7AK4f2qgWx9G+TSYs
+         4XGKjFR6SEhwc1jhGdNKpcav8l5lhLqhU13UBgKm2ELS9GynT+lI/fOYypsWmLkbGZ25
+         3Whg==
+X-Gm-Message-State: AOAM533wQwsxMOiMcXf8k8zRuOvFobBT4B1RzJGEThEf07+z8IIqcjJG
+        VCvXBhbtkcyx3XVe3GLosmeH8cFPdexD
+X-Google-Smtp-Source: ABdhPJxZdk7IzJWMEVpn4XVwv8ZwF9tuF5nBDv2NgRjWXVG+0lW2Sn0USsANGw5+9aIEtNM0RN6GPg==
+X-Received: by 2002:a17:90b:1e43:b0:1bf:920:8a26 with SMTP id pi3-20020a17090b1e4300b001bf09208a26mr18498127pjb.52.1646546207785;
+        Sat, 05 Mar 2022 21:56:47 -0800 (PST)
+Received: from vultr.guest ([107.191.53.97])
+        by smtp.gmail.com with ESMTPSA id d4-20020a17090a8d8400b001bc386dc44bsm14986239pjo.23.2022.03.05.21.56.45
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 05 Mar 2022 21:56:47 -0800 (PST)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     andrew@lunn.ch, rajur@chelsio.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH v2] net: cxgb3: Fix an error code when probing the driver
+Date:   Sun,  6 Mar 2022 05:56:32 +0000
+Message-Id: <1646546192-32737-1-git-send-email-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1646490284-22791-1-git-send-email-zheyuma97@gmail.com>
+References: <1646490284-22791-1-git-send-email-zheyuma97@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mvd465c様、サンプル請求有難う御座います。
-内容を受付ましたので、後程担当者よりご連絡差し上げますのでお待ち下さい。
+During the process of driver probing, probe function should return < 0
+for failure, otherwise kernel will treat value >= 0 as success.
 
-以下の内容を受け付けました。
--------------------------------------------------------------------
+Therefore, the driver should set 'err' to -ENODEV when
+'adapter->registered_device_map' is NULL. Otherwise kernel will assume
+that the driver has been successfully probed and will cause unexpected
+errors.
 
-サンプル名
-昇華生地
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+Changes in v2:
+    - Change the error code
+---
+ drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-郵便番号　：67946
-住　　所　：🍓 Fiona want to meet you! Click here: http://inx.lv/iBw6?64abs 🍓
-
-貴社名　　：mvd465c
-ご担当者名：ur2191x
-フリガナ　：ik35ky
-
-電　話　番　号：653801005083
-メールアドレス：netdev@vger.kernel.org
-
-備考
-36tz4jt
-
--------------------------------------------------------------------
-
-株式会社 グラフィッククリエーション
-〒389-0512
-長野県東御市滋野乙2182-3 ミマキエンジニアリング4棟 1階
-TEL：0268-64-6500
-
-
-このメールは株式会社 グラフィッククリエーションのサンプル請求フォームから送信されました。
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+index bfffcaeee624..0d3325cf2107 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+@@ -3346,6 +3346,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	}
+ 	if (!adapter->registered_device_map) {
+ 		dev_err(&pdev->dev, "could not register any net devices\n");
++		err = -ENODEV;
+ 		goto out_free_dev;
+ 	}
+ 
+-- 
+2.25.1
 
