@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E69954CEA82
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 11:32:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FE2E4CEAA7
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 12:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbiCFKdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 05:33:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
+        id S233223AbiCFLBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 06:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiCFKdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 05:33:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBB92E08F
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 02:32:16 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nQoBF-0004LB-VG; Sun, 06 Mar 2022 11:32:02 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-8f62-2f8a-935c-c311.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:8f62:2f8a:935c:c311])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2747C4379C;
-        Sun,  6 Mar 2022 10:32:00 +0000 (UTC)
-Date:   Sun, 6 Mar 2022 11:31:59 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org
-Subject: Re: [PATCH net-next 2/8] can: Use netif_rx().
-Message-ID: <20220306103159.finurle6fsuuh3dr@pengutronix.de>
-References: <20220305221252.3063812-1-bigeasy@linutronix.de>
- <20220305221252.3063812-3-bigeasy@linutronix.de>
+        with ESMTP id S230380AbiCFLBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 06:01:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC481AD98;
+        Sun,  6 Mar 2022 03:00:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B433361207;
+        Sun,  6 Mar 2022 11:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 050A3C340EE;
+        Sun,  6 Mar 2022 11:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646564411;
+        bh=gQgt51KfbhtelpDvXytR5KCXX7q2eFZ4r67iCAzuZVE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=F7M+q2M+/Bp1OqDCxXByYV+Bgglh/JEACPE59Ou2BAM6RIUM6YJNSKD7goQ5XHLSb
+         Lt5WM9k2XhrcGC5iO3R2ZDALJNyXE77wLt2DYwPA43/ktVpr5i9E/jBmSu5alP/Xj4
+         Hfze9aeqSEZ+p99Oq6UFnGX4FPywzX280C5s87/xlSnCfWfk0DFVWzfh4vWdhRL+qw
+         4w6kdr+ljxlSCFGxFUCAhiqOJgh5L+D0Jvh8Ah/gQAWoZkigrPdUd+GjvfjqXkoyH7
+         fZxSbZ9IWrtNKqPM3/G4MIWfDKwzRf+w33f2v2rAWMQyZa3quC7mSthgyGdk7I1u/z
+         +XytWf75G6Guw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DDAF5F0383A;
+        Sun,  6 Mar 2022 11:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="37qpbsa3ilj53aqo"
-Content-Disposition: inline
-In-Reply-To: <20220305221252.3063812-3-bigeasy@linutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] Revert "net/smc: don't req_notify until all CQEs
+ drained"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164656441090.1458.8729699275971748731.git-patchwork-notify@kernel.org>
+Date:   Sun, 06 Mar 2022 11:00:10 +0000
+References: <20220304091719.48340-1-dust.li@linux.alibaba.com>
+In-Reply-To: <20220304091719.48340-1-dust.li@linux.alibaba.com>
+To:     Dust Li <dust.li@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        guangguan.wang@linux.alibaba.com, leon@kernel.org,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,52 +59,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---37qpbsa3ilj53aqo
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 05.03.2022 23:12:46, Sebastian Andrzej Siewior wrote:
-> Since commit
->    baebdf48c3600 ("net: dev: Makes sure netif_rx() can be invoked in any =
-context.")
->=20
-> the function netif_rx() can be used in preemptible/thread context as
-> well as in interrupt context.
->=20
-> Use netif_rx().
->=20
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: linux-can@vger.kernel.org
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+On Fri,  4 Mar 2022 17:17:19 +0800 you wrote:
+> This reverts commit a505cce6f7cfaf2aa2385aab7286063c96444526.
+> 
+> Leon says:
+>   We already discussed that. SMC should be changed to use
+>   RDMA CQ pool API
+>   drivers/infiniband/core/cq.c.
+>   ib_poll_handler() has much better implementation (tracing,
+>   IRQ rescheduling, proper error handling) than this SMC variant.
+> 
+> [...]
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Here is the summary with links:
+  - [net-next] Revert "net/smc: don't req_notify until all CQEs drained"
+    https://git.kernel.org/netdev/net-next/c/925a24213b5c
 
-regards,
-Marc
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---37qpbsa3ilj53aqo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIkjZ0ACgkQrX5LkNig
-010akQf+Pe/ERk+OrCqRrKodP5Ic/V8uImPdpETHM9mTPUP9lhYNiFQGW25qEhAe
-8SXMU5GqMaVVdTYSgCoIejNGxAC7HeVJL9/H8HOkQBq83AQFvikGYTWKLZ8hn/q1
-2WXLGKAPyGjZ0ra9kNszQrjD2YRu0fe0W5MgmVPtreDczRMq4OuO4DbWAPoc5pqi
-FI/FxRMLaZgIWcacodMtATBlaxi9pQ7x7SWAPYriFgLJJ+S95hVVWqVI5i+XgQHR
-3h4SCTQ6gfsJXg8mwkGrAIENy9p4Nea9TQu7WmlAuHRgqSVmHgxWCs8RQIBpDQvn
-nS8e5yVP36DeXsR1OcyC2h1j9gnKlw==
-=c2C9
------END PGP SIGNATURE-----
-
---37qpbsa3ilj53aqo--
