@@ -2,66 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17BC14CEC65
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 18:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C0FD4CEC79
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 18:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233879AbiCFRGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 12:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
+        id S233883AbiCFR3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 12:29:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiCFRF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 12:05:59 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C64266217
-        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 09:05:07 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 195so11689621pgc.6
-        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 09:05:07 -0800 (PST)
+        with ESMTP id S229445AbiCFR3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 12:29:44 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037CE2613C;
+        Sun,  6 Mar 2022 09:28:52 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id i8so19909632wrr.8;
+        Sun, 06 Mar 2022 09:28:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OTP4QIebzh+EtuZdmsu3pDSobOQVzAynPhluEojjqYs=;
-        b=kxaURlLpkNc/L/mSU+0Kjegs9+UT0cgqIE7Gznd0proRzBDdP1qCejo+jTjzWvxmI9
-         WE4nuHC9YgT2/u8iK9IossqkHZnDTyfOwe0L2HV1Fpw+TUfx+6jTlJ9GfmnthAyOZ06O
-         D+bvz0LZoIuvaBf0QTng311UcQxKgCHvkdBH/oW8DVFxhZTEIVnT9/+mDYQkeAJ4PR9d
-         yqpRKdHGkuZwEb3Lwf+GUKQunSK9d4vWPgU/JECCSp1y8o9rnuyDRWQVTd3x5FYyKo6W
-         y2THZmWGGjnwjw+fZ4iiCfHM8kZhkc2/Loej9ZJ9BOqKVkEDWJ8kUvGQpZiXBVgArFb3
-         k+Zw==
+         :content-disposition:in-reply-to;
+        bh=W4/OOhsYIUeVHmDM2SWsQOWi+B+oFhl/nI7c5RX4BKk=;
+        b=k/G44Yt5DvmreJLgQI3GuAgC3wsb0j+ZJByjP5drkWfERt+YNmstc2W0TTfGm1HxVS
+         3G2VKahdAIEqjtFVK8rujNynCstafulKqH5XtTZLRa2c6jHvSy8v2dPBRKV6QQXkYQ3t
+         HKbY5GdjOKvLFJVrFe6Efa+7pU/nGCOYrS7KHCVzgfmswKjplqS6URV2g8GGrcLa9zpj
+         R7IQevo1KkJxzjSkaeFTWrL3zhA4t4U08BGo4Gc6FJ0b7JMOQaFifVg2IloQy25BDbNa
+         40z9Fq8Ra6Lwt3zV74EBEpiLTaDUjePKwn647y5A4ALQb/qSEJxVN1/E7tOCd2ZcgRPC
+         GJfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OTP4QIebzh+EtuZdmsu3pDSobOQVzAynPhluEojjqYs=;
-        b=YOdHm6dqmy4rkXLvOcwu7UK4SwNSBP7SmOcwv/Oa5JJ9NfcFKL07ge0fp2HtqqkMg2
-         rjy5QePFO2Ojd54S8PqM8oNLcLWSlpFiV8f0E0F772MUI46t13w9xaRvUoXiA8kXvl2L
-         95Go+geHS5hoPj4HguBy6jUgZkNdn4OSGZfY36JThWlWcmcI/B1FLyUVooGprEbcQMvF
-         5+kJWB8d0d9uXLZPx1zs36EnzWwT1msZpOuy3T5PhqKpbrL5SAS5+fa6mTTWx0Z6W4ru
-         Hwm9FX50uS3df/fJD1RTORm8EDuV9zTeZRoj5Dunad/XQwknjsr08UUyV6tK2AUxjsX4
-         Y2bw==
-X-Gm-Message-State: AOAM530mX6fU0GWh2TfcMpZnWCy4h+Ahy9sJkKur7zs7gh+nnND0Zrf2
-        tuOjpxmL9U4SnrAYr9uH7YfN5zpqdJg=
-X-Google-Smtp-Source: ABdhPJzUVLsyhcwJDCMGmpdPjtfwUE2il7IpubKohsJWhsoyzrMTFOMTEyZCe9UJchLCsAGPcETqdQ==
-X-Received: by 2002:a05:6a00:1251:b0:4f1:2a1:3073 with SMTP id u17-20020a056a00125100b004f102a13073mr8911301pfi.72.1646586306966;
-        Sun, 06 Mar 2022 09:05:06 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id h2-20020a056a00218200b004f66d50f054sm12771795pfi.158.2022.03.06.09.05.05
+         :mime-version:content-disposition:in-reply-to;
+        bh=W4/OOhsYIUeVHmDM2SWsQOWi+B+oFhl/nI7c5RX4BKk=;
+        b=pj0MLWLtI54fvuJ6xwrH1x86zH3Rc2ikwlve36eTh8H1dCNfRRZt9bSH1jQlZBC5pu
+         39ptICXuOu0PCcskP88zzO+ib2mCKlHnV2K8UnlAtr/8lT9cj88mARKAbbNtdLMlRSFM
+         iUM9G4p9olUOBLT5S9by7snOeIEFrbxS9Na2LYPQRz8pRozhpCi/kexSoVA82rkkZODI
+         QuxW4ZcFgNmwwuZZm+RvmNcYPGQg7BL/5SyKv+FvqrN1tr0SK0GNPVKJ0cNlWxZsHo/V
+         sKmXRYASmOXx0tvpCj1Fc7x76KN2mGwMwV7yiyPz4VJk8FBRbZ6cUSwTZUhOnptlUZEb
+         HPBQ==
+X-Gm-Message-State: AOAM533P2h4T3ZOCKW3B4UBEiq4H743RfIrIBt9YDZcLzEYHcZSZtlws
+        8ksB33O5nLuZb18XCE1aN7o=
+X-Google-Smtp-Source: ABdhPJy6IOIefZKEVLH85QOwAx1WyN/ui30/FZc13mqplCcQ42ZblD13664bXrW0hVvc2oia4b/ALg==
+X-Received: by 2002:a5d:648f:0:b0:1f0:567b:5619 with SMTP id o15-20020a5d648f000000b001f0567b5619mr5581201wri.66.1646587730449;
+        Sun, 06 Mar 2022 09:28:50 -0800 (PST)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id l5-20020a5d6745000000b001f1e4e40e42sm3504346wrw.77.2022.03.06.09.28.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Mar 2022 09:05:06 -0800 (PST)
-Date:   Sun, 6 Mar 2022 09:05:04 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        mlichvar@redhat.com, vinicius.gomes@intel.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 0/6] ptp: Support hardware clocks with
- additional free running time
-Message-ID: <20220306170504.GE6290@hoboy.vegasvil.org>
-References: <20220306085658.1943-1-gerhard@engleder-embedded.com>
+        Sun, 06 Mar 2022 09:28:50 -0800 (PST)
+Date:   Sun, 6 Mar 2022 18:28:47 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
+Message-ID: <YiTvT0nyWLDvFya+@krava>
+References: <20220222170600.611515-1-jolsa@kernel.org>
+ <20220222170600.611515-3-jolsa@kernel.org>
+ <CAEf4BzadsmOTas7BdF-J+de7AqsoccY1o6e0pUBkRuWH+53DiQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220306085658.1943-1-gerhard@engleder-embedded.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAEf4BzadsmOTas7BdF-J+de7AqsoccY1o6e0pUBkRuWH+53DiQ@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,21 +80,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 06, 2022 at 09:56:52AM +0100, Gerhard Engleder wrote:
-> ptp vclocks require a clock with free running time for the timecounter.
-> Currently only a physical clock forced to free running is supported.
-> If vclocks are used, then the physical clock cannot be synchronized
-> anymore. The synchronized time is not available in hardware in this
-> case. As a result, timed transmission with ETF/TAPRIO hardware support
-> is not possible anymore.
+On Fri, Mar 04, 2022 at 03:11:01PM -0800, Andrii Nakryiko wrote:
 
-NAK.
+SNIP
 
-I don't see why you don't simply provide two PHC instances from this
-one device.
+> > +static int
+> > +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
+> > +                         unsigned long *addrs)
+> > +{
+> > +       unsigned long addr, size;
+> > +       const char **syms;
+> > +       int err = -ENOMEM;
+> > +       unsigned int i;
+> > +       char *func;
+> > +
+> > +       size = cnt * sizeof(*syms);
+> > +       syms = kvzalloc(size, GFP_KERNEL);
+> > +       if (!syms)
+> > +               return -ENOMEM;
+> > +
+> > +       func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> > +       if (!func)
+> > +               goto error;
+> > +
+> > +       if (copy_from_user(syms, usyms, size)) {
+> > +               err = -EFAULT;
+> > +               goto error;
+> > +       }
+> > +
+> > +       for (i = 0; i < cnt; i++) {
+> > +               err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+> > +               if (err == KSYM_NAME_LEN)
+> > +                       err = -E2BIG;
+> > +               if (err < 0)
+> > +                       goto error;
+> > +
+> > +               err = -EINVAL;
+> > +               if (func[0] == '\0')
+> > +                       goto error;
+> 
+> wouldn't empty string be handled by kallsyms_lookup_name?
 
-AFAICT, this series is not needed at all, as the existing API covers
-this use case already.
+it would scan and compare all symbols with empty string,
+so it's better to test for it
 
-Thanks,
-Richard
+jirka
+
+> 
+> > +               addr = kallsyms_lookup_name(func);
+> > +               if (!addr)
+> > +                       goto error;
+> > +               if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+> > +                       size = MCOUNT_INSN_SIZE;
+> > +               addr = ftrace_location_range(addr, addr + size - 1);
+> > +               if (!addr)
+> > +                       goto error;
+> > +               addrs[i] = addr;
+> > +       }
+> > +
+> > +       err = 0;
+> > +error:
+> > +       kvfree(syms);
+> > +       kfree(func);
+> > +       return err;
+> > +}
+> > +
+> 
+> [...]
