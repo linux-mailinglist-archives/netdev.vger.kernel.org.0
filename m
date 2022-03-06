@@ -2,205 +2,357 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D264CEB83
-	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 13:19:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A822B4CEB94
+	for <lists+netdev@lfdr.de>; Sun,  6 Mar 2022 13:56:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233605AbiCFMUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 07:20:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S231734AbiCFM5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 07:57:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233599AbiCFMUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 07:20:05 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C28454BD5;
-        Sun,  6 Mar 2022 04:19:13 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id o1so15287679edc.3;
-        Sun, 06 Mar 2022 04:19:13 -0800 (PST)
+        with ESMTP id S229607AbiCFM5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 07:57:20 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7474241628
+        for <netdev@vger.kernel.org>; Sun,  6 Mar 2022 04:56:27 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id d10so26584961eje.10
+        for <netdev@vger.kernel.org>; Sun, 06 Mar 2022 04:56:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=CDRwvE25IiF9s/w9/nAeUPJ9kRP/a8dQ1EQqJWnNJqc=;
-        b=EdrzebUthBJJJPJdarJbeI8iloEjYFjuRbSd2ciya9du11rLOizxAmjbHHKjP2p03m
-         7QknZsKo7wqrH5BFHAlTKqWCn0Z4/uLxmGpehOkpd+4yPeHjMeK8QQARyJlNHnRA7Y0Z
-         C4ReXM1rkTbzzlNu+z6UeTr7rWIwr7lqgLWOzFereHUrrxo29ppEJYmjfkRYK3abFqck
-         dJ0KwDZEumYqscIZgPXxxt4+VbRtKu5IIpTmoa0MuyogWaenFQ4xNazH+RE/SY8v0LeH
-         2ZCV3VRPXMPCmEXMO+ZTNCvJN0dirOYTU7hOqsP7bGn1G3apwnMtgnaxVDBuzWTOlNAd
-         1Upw==
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=6IUT2JpOQz2LxEAZvtwNhETfaIoKZiOqm5nil9PEULE=;
+        b=gR5qHK82b0cbMkSnt8yA1eZ1EAPkY/xieSnijOc+gBh4DjbBO3Ny7TFqqEwZX2PGie
+         fVoSG1c+XNCQ4Rq0t2y9kPtSYAYwPzcqQ3cJ/vQvcTz2BPpQzfrglLQ0klIoDohFnPf8
+         ovRy1ytutm4ytymGGIXTFxD1SgVjO0dTp+Gfwa/+HS9d+duY9i06hsIH+/oZnyApoKfS
+         V7jP9DBoG/hFjsx7VPfCnVZYa05Qplr3avyvwf/BTduOFJWtppxBmchxVS5zS5VmJ89T
+         w4W+fJFlTd1FuOtIAv4r+t9fgoAoTughrxfUIPMsZb7KHnbYVYJcFGAlzwHZ+QOHQAlD
+         AEhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=CDRwvE25IiF9s/w9/nAeUPJ9kRP/a8dQ1EQqJWnNJqc=;
-        b=f9ZNhEhItjSxqrAY/BbaYO2awb0cIVdjsFTAi1D8Rd8tzT7mU8ku+K5YOKcO0u3alN
-         U/9f+dhJLZWhnjNcDIQH31xrwRowHdO9vfVlVJFS+eGeKNl6N9SThUHcuuJfFUHP3/nI
-         77gt2ypnrGvMj9uelIoY0xsh3RzszC8ItGzx6jM69YHGwtbkdgIiYI5G4EBfa0dTjWto
-         WMgZLAnjOXMbRjJ4OseWTBl+VO8SFzuJzJFi7CkSv78DctiMckLMX1Ewdx3J4yZ9Fxqw
-         RvAvpzxI3AdZ5WONGl1TmKfGwxA/Gan1IwDHfMp6bozRPMy0bLSSUqwHSvqwps8RbLYf
-         jgtw==
-X-Gm-Message-State: AOAM5321pX9veh78+Qo0WK08easmVtOIlZ+4EFXMKjDQX33ArkyWp/rY
-        XSMhgZSaB+jI8x3BAhbM8rU=
-X-Google-Smtp-Source: ABdhPJwfqp4IjHlFES6ZV1NcwigYKBoHwDTIZK35LuSjbpb1R+JvW3pq3BnFzU5E+aoAh04G9Xl70g==
-X-Received: by 2002:a05:6402:6da:b0:3fd:cacb:f4b2 with SMTP id n26-20020a05640206da00b003fdcacbf4b2mr6551900edy.332.1646569151681;
-        Sun, 06 Mar 2022 04:19:11 -0800 (PST)
-Received: from smtpclient.apple ([2a02:8109:9d80:3f6c:ad2a:8957:2c5c:5b7d])
-        by smtp.gmail.com with ESMTPSA id b10-20020a056402278a00b00415b20902a6sm4877295ede.27.2022.03.06.04.19.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Mar 2022 04:19:10 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
- outside the loop
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
-Date:   Sun, 6 Mar 2022 13:19:09 +0100
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <634CBC77-281E-421C-9ED9-DB9E7224E7EA@gmail.com>
-References: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
- <20220304025109.15501-1-xiam0nd.tong@gmail.com>
- <CAHk-=wjesxw9U6JvTw34FREFAsayEE196Fi=VHtJXL8_9wgi=A@mail.gmail.com>
- <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=6IUT2JpOQz2LxEAZvtwNhETfaIoKZiOqm5nil9PEULE=;
+        b=EXKBR/Xxwlot8X8bRvo3Bfo14+P9ecvCyFnjLwIfAW6gfoLU7OljMyCYTLn/IJK+KO
+         cJw10GIE5FSBXqILO/vG32t1BojV2CFygBnkn1UKqtgNt4lFdJf1qCbbgBN4BRdC3Hua
+         llg3wNhqDOyz4vzwMAhlh5bcCi6NCmRfivHF7as0tYgfbOVXv3sajwbqTk+NuFlwGnmq
+         y5RWWlLnqcyOPXitpfs4PRJXJPZMN0kduG3VLnl1+0aAGBYrd+NDgzbcKkMQf8WZB/Ah
+         omWT0Vl4+dYvCipggNaNDHEYnbif1OacJRmm0UQKiZcRySl1bY0+O19Lt94V7AMRVSgZ
+         jflQ==
+X-Gm-Message-State: AOAM5314X7nX2XLiybdvFuuq2ZsjrcWkCUM61PKDQFQmOpKi0A6W16wE
+        4F9Vtfueb1g319C5zIiqGog=
+X-Google-Smtp-Source: ABdhPJw6QSrWGj887HTq+29QOPuGI9MPGlHb309kRr2oEF0TBIcS1pKmbk+bUpvdCfelTc3sm36mvg==
+X-Received: by 2002:a17:907:7b86:b0:6da:8a95:35bf with SMTP id ne6-20020a1709077b8600b006da8a9535bfmr5631438ejc.652.1646571385531;
+        Sun, 06 Mar 2022 04:56:25 -0800 (PST)
+Received: from ?IPV6:2a01:c22:7720:f200:10e7:aa42:9870:907c? (dynamic-2a01-0c22-7720-f200-10e7-aa42-9870-907c.c22.pool.telefonica.de. [2a01:c22:7720:f200:10e7:aa42:9870:907c])
+        by smtp.googlemail.com with ESMTPSA id fx13-20020a170906b74d00b006da9e406786sm3364106ejb.189.2022.03.06.04.56.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 06 Mar 2022 04:56:25 -0800 (PST)
+Message-ID: <435b2a9d-c3c6-a162-331f-9f47f69be5ac@gmail.com>
+Date:   Sun, 6 Mar 2022 13:56:18 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Erico Nunes <nunes.erico@gmail.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev
+References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
+ <1jczjzt05k.fsf@starbuckisacylon.baylibre.com>
+ <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
+ <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com>
+ <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+ <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com>
+ <1j8rts76te.fsf@starbuckisacylon.baylibre.com>
+ <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
+ <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
+ at boot
+In-Reply-To: <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 06.03.2022 10:40, Erico Nunes wrote:
+> On Wed, Mar 2, 2022 at 5:35 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>> When using polling the time difference between aneg complete and
+>> PHY state machine run is random in the interval 0 .. 1s.
+>> Hence there's a certain chance that the difference is too small
+>> to avoid the issue.
+>>
+>>> If I understand the proposed patch correctly, it is mostly about the phy
+>>> IRQ. Since I reproduce without the IRQ, I suppose it is not the
+>>> problem we where looking for (might still be a problem worth fixing -
+>>> the phy is not "rock-solid" when it comes to aneg - I already tried
+>>> stabilising it a few years ago)
+>>
+>> Below is a slightly improved version of the test patch. It doesn't sleep
+>> in the (threaded) interrupt handler and lets the workqueue do it.
+>>
+>> Maybe Amlogic is aware of a potentially related silicon issue?
+>>
+>>>
+>>> TBH, It bothers me that I reproduced w/o the IRQ. The idea makes
+>>> sense :/
+>>>
+>>>>
+>> [...]
+>>>
+>>
+>>
+>> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+>> index 7e7904fee..a3318ae01 100644
+>> --- a/drivers/net/phy/meson-gxl.c
+>> +++ b/drivers/net/phy/meson-gxl.c
+>> @@ -209,12 +209,7 @@ static int meson_gxl_config_intr(struct phy_device *phydev)
+>>                 if (ret)
+>>                         return ret;
+>>
+>> -               val = INTSRC_ANEG_PR
+>> -                       | INTSRC_PARALLEL_FAULT
+>> -                       | INTSRC_ANEG_LP_ACK
+>> -                       | INTSRC_LINK_DOWN
+>> -                       | INTSRC_REMOTE_FAULT
+>> -                       | INTSRC_ANEG_COMPLETE;
+>> +               val = INTSRC_LINK_DOWN | INTSRC_ANEG_COMPLETE;
+>>                 ret = phy_write(phydev, INTSRC_MASK, val);
+>>         } else {
+>>                 val = 0;
+>> @@ -240,7 +235,10 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+>>         if (irq_status == 0)
+>>                 return IRQ_NONE;
+>>
+>> -       phy_trigger_machine(phydev);
+>> +       if (irq_status & INTSRC_ANEG_COMPLETE)
+>> +               phy_queue_state_machine(phydev, msecs_to_jiffies(100));
+>> +       else
+>> +               phy_trigger_machine(phydev);
+>>
+>>         return IRQ_HANDLED;
+>>  }
+>> --
+>> 2.35.1
+> 
+> I did a lot of testing with this patch, and it seems to improve things.
+> To me it completely resolves the original issue which was more easily
+> reproducible where I would see "Link is Up" but the interface did not
+> really work.
+> At least in over a thousand jobs, that never reproduced again with this patch.
+> 
+> I do see a different issue now, but it is even less frequent and
+> harder to reproduce. In those over a thousand jobs, I have seen it
+> only about 4 times.
+> The difference is that now when the issue happens, the link is not
+> even reported as Up. The output is a bit different than the original
+> one, but it is consistently the same output in all instances where it
+> reproduced. Looks like this (note that there is no longer Link is
+> Down/Link is Up):
+> 
+> [    2.186151] meson8b-dwmac c9410000.ethernet eth0: PHY
+> [0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
+> [    2.191582] meson8b-dwmac c9410000.ethernet eth0: Register
+> MEM_TYPE_PAGE_POOL RxQ-0
+> [    2.208713] meson8b-dwmac c9410000.ethernet eth0: No Safety
+> Features support found
+> [    2.210673] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
+> [    2.218083] meson8b-dwmac c9410000.ethernet eth0: configuring for
+> phy/rmii link mode
+> [   22.227444] Waiting up to 100 more seconds for network.
+> [   42.231440] Waiting up to 80 more seconds for network.
+> [   62.235437] Waiting up to 60 more seconds for network.
+> [   82.239437] Waiting up to 40 more seconds for network.
+> [  102.243439] Waiting up to 20 more seconds for network.
+> [  122.243446] Sending DHCP requests ...
+> [  130.113944] random: fast init done
+> [  134.219441] ... timed out!
+> [  194.559562] IP-Config: Retrying forever (NFS root)...
+> [  194.624630] meson8b-dwmac c9410000.ethernet eth0: PHY
+> [0.e40908ff:08] driver [Meson GXL Internal PHY] (irq=48)
+> [  194.630739] meson8b-dwmac c9410000.ethernet eth0: Register
+> MEM_TYPE_PAGE_POOL RxQ-0
+> [  194.649138] meson8b-dwmac c9410000.ethernet eth0: No Safety
+> Features support found
+> [  194.651113] meson8b-dwmac c9410000.ethernet eth0: PTP not supported by HW
+> [  194.657931] meson8b-dwmac c9410000.ethernet eth0: configuring for
+> phy/rmii link mode
+> [  196.313602] meson8b-dwmac c9410000.ethernet eth0: Link is Up -
+> 100Mbps/Full - flow control off
+> [  196.339463] Sending DHCP requests ., OK
+> ...
+> 
+> 
+> I don't remember seeing an output like this one in the previous tests.
+> Is there any further improvement we can do to the patch based on this?
+> 
+> Thanks
+> 
+> Erico
+
+Thanks a lot for your testing efforts, much appreciated.
+You could try the following (quick and dirty) test patch that fully mimics
+the vendor driver as found here:
+https://github.com/khadas/linux/blob/buildroot-aml-4.9/drivers/amlogic/ethernet/phy/amlogic.c
+
+First apply
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=a502a8f04097e038c3daa16c5202a9538116d563
+This patch is in the net tree currently and should show up in linux-next
+beginning of the week.
+
+On top please apply the following (it includes the test patch your working with).
 
 
-> On 6. Mar 2022, at 01:35, Linus Torvalds =
-<torvalds@linux-foundation.org> wrote:
->=20
-> On Sat, Mar 5, 2022 at 1:09 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
->>=20
->> Now, I'd love for the list head entry itself to "declare the type",
->> and solve it that way. That would in many ways be the optimal
->> situation, in that when a structure has that
->>=20
->>        struct list_head xyz;
->>=20
->> entry, it would be lovely to declare *there* what the list entry type
->> is - and have 'list_for_each_entry()' just pick it up that way.
->>=20
->> It would be doable in theory - with some preprocessor trickery [...]
->=20
-> Ok, I decided to look at how that theory looks in real life.
->=20
-> The attached patch does actually work for me. I'm not saying this is
-> *beautiful*, but I made the changes to kernel/exit.c to show how this
-> can be used, and while the preprocessor tricks and the odd "unnamed
-> union with a special member to give the target type" is all kinds of
-> hacky, the actual use case code looks quite nice.
->=20
-> In particular, look at the "good case" list_for_each_entry() =
-transformation:
->=20
->   static int do_wait_thread(struct wait_opts *wo, struct task_struct =
-*tsk)
->   {
->  -     struct task_struct *p;
->  -
->  -     list_for_each_entry(p, &tsk->children, sibling) {
->  +     list_traverse(p, &tsk->children, sibling) {
->=20
-> IOW, it avoided the need to declare 'p' entirely, and it avoids the
-> need for a type, because the macro now *knows* the type of that
-> 'tsk->children' list and picks it out automatically.
->=20
-> So 'list_traverse()' is basically a simplified version of
-> 'list_for_each_entry()'.
->=20
-> That patch also has - as another example - the "use outside the loop"
-> case in mm_update_next_owner(). That is more of a "rewrite the loop
-> cleanly using list_traverse() thing, but it's also quite simple and
-> natural.
->=20
-> One nice part of this approach is that it allows for incremental =
-changes.
->=20
-> In fact, the patch very much is meant to demonstrate exactly that:
-> yes, it converts the uses in kernel/exit.c, but it does *not* convert
-> the code in kernel/fork.c, which still does that old-style traversal:
->=20
->                list_for_each_entry(child, &parent->children, sibling) =
-{
->=20
-> and the kernel/fork.c code continues to work as well as it ever did.
->=20
-> So that new 'list_traverse()' function allows for people to say "ok, I
-> will now declare that list head with that list_traversal_head() macro,
-> and then I can convert 'list_for_each_entry()' users one by one to
-> this simpler syntax that also doesn't allow the list iterator to be
-> used outside the list.
->=20
-> What do people think? Is this clever and useful, or just too subtle
-> and odd to exist?
->=20
-> NOTE! I decided to add that "name of the target head in the target
-> type" to the list_traversal_head() macro, but it's not actually used
-> as is. It's more of a wishful "maybe we could add some sanity checking
-> of the target list entries later".
->=20
-> Comments?
+diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+index c49062ad7..92f94c8be 100644
+--- a/drivers/net/phy/meson-gxl.c
++++ b/drivers/net/phy/meson-gxl.c
+@@ -68,32 +68,19 @@ static int meson_gxl_open_banks(struct phy_device *phydev)
+ 	return phy_write(phydev, TSTCNTL, TSTCNTL_TEST_MODE);
+ }
+ 
+-static void meson_gxl_close_banks(struct phy_device *phydev)
+-{
+-	phy_write(phydev, TSTCNTL, 0);
+-}
+-
+ static int meson_gxl_read_reg(struct phy_device *phydev,
+ 			      unsigned int bank, unsigned int reg)
+ {
+ 	int ret;
+ 
+-	ret = meson_gxl_open_banks(phydev);
+-	if (ret)
+-		goto out;
+-
+ 	ret = phy_write(phydev, TSTCNTL, TSTCNTL_READ |
+ 			FIELD_PREP(TSTCNTL_REG_BANK_SEL, bank) |
+ 			TSTCNTL_TEST_MODE |
+ 			FIELD_PREP(TSTCNTL_READ_ADDRESS, reg));
+ 	if (ret)
+-		goto out;
++		return ret;
+ 
+-	ret = phy_read(phydev, TSTREAD1);
+-out:
+-	/* Close the bank access on our way out */
+-	meson_gxl_close_banks(phydev);
+-	return ret;
++	return phy_read(phydev, TSTREAD1);
+ }
+ 
+ static int meson_gxl_write_reg(struct phy_device *phydev,
+@@ -102,29 +89,28 @@ static int meson_gxl_write_reg(struct phy_device *phydev,
+ {
+ 	int ret;
+ 
+-	ret = meson_gxl_open_banks(phydev);
+-	if (ret)
+-		goto out;
+-
+ 	ret = phy_write(phydev, TSTWRITE, value);
+ 	if (ret)
+-		goto out;
++		return ret;
+ 
+-	ret = phy_write(phydev, TSTCNTL, TSTCNTL_WRITE |
+-			FIELD_PREP(TSTCNTL_REG_BANK_SEL, bank) |
+-			TSTCNTL_TEST_MODE |
+-			FIELD_PREP(TSTCNTL_WRITE_ADDRESS, reg));
++	return phy_write(phydev, TSTCNTL, TSTCNTL_WRITE |
++			 FIELD_PREP(TSTCNTL_REG_BANK_SEL, bank) |
++			 TSTCNTL_TEST_MODE |
++			 FIELD_PREP(TSTCNTL_WRITE_ADDRESS, reg));
+ 
+-out:
+-	/* Close the bank access on our way out */
+-	meson_gxl_close_banks(phydev);
+-	return ret;
+ }
+ 
+ static int meson_gxl_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+ 
++	phy_set_bits(phydev, 0x1b, BIT(12));
++	phy_write(phydev, 0x11, 0x0080);
++
++	meson_gxl_open_banks(phydev);
++
++	ret = meson_gxl_write_reg(phydev, BANK_ANALOG_DSP, 0x17, 0x8e0d);
++
+ 	/* Enable fractional PLL */
+ 	ret = meson_gxl_write_reg(phydev, BANK_BIST, FR_PLL_CONTROL, 0x5);
+ 	if (ret)
+@@ -140,6 +126,10 @@ static int meson_gxl_config_init(struct phy_device *phydev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = meson_gxl_write_reg(phydev, BANK_ANALOG_DSP, 0x18, 0x000c);
++	ret = meson_gxl_write_reg(phydev, BANK_ANALOG_DSP, 0x17, 0x1a0c);
++	ret = meson_gxl_write_reg(phydev, BANK_ANALOG_DSP, 0x1a, 0x6400);
++
+ 	return 0;
+ }
+ 
+@@ -186,7 +176,7 @@ static int meson_gxl_read_status(struct phy_device *phydev)
+ 		if (!(wol & LPI_STATUS_RSV12) ||
+ 		    ((exp & EXPANSION_NWAY) && !(lpa & LPA_LPACK))) {
+ 			/* Looks like aneg failed after all */
+-			phydev_dbg(phydev, "LPA corruption - aneg restart\n");
++			phydev_warn(phydev, "LPA corruption - aneg restart\n");
+ 			return genphy_restart_aneg(phydev);
+ 		}
+ 	}
+@@ -243,11 +233,23 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+ 	    irq_status == INTSRC_ENERGY_DETECT)
+ 		return IRQ_HANDLED;
+ 
+-	phy_trigger_machine(phydev);
++	/* Give PHY some time before MAC starts sending data. This works
++	 * around an issue where network doesn't come up properly.
++	 */
++	if (irq_status & INTSRC_ANEG_COMPLETE)
++		phy_queue_state_machine(phydev, msecs_to_jiffies(100));
++	else
++		phy_trigger_machine(phydev);
+ 
+ 	return IRQ_HANDLED;
+ }
+ 
++static void meson_gxl_link_change_notify(struct phy_device *phydev)
++{
++	if (phydev->state == PHY_RUNNING && phydev->speed == SPEED_100)
++		meson_gxl_write_reg(phydev, BANK_ANALOG_DSP, 0x14, 0xa900);
++}
++
+ static struct phy_driver meson_gxl_phy[] = {
+ 	{
+ 		PHY_ID_MATCH_EXACT(0x01814400),
+@@ -259,6 +261,7 @@ static struct phy_driver meson_gxl_phy[] = {
+ 		.read_status	= meson_gxl_read_status,
+ 		.config_intr	= meson_gxl_config_intr,
+ 		.handle_interrupt = meson_gxl_handle_interrupt,
++		.link_change_notify = meson_gxl_link_change_notify,
+ 		.suspend        = genphy_suspend,
+ 		.resume         = genphy_resume,
+ 	}, {
+-- 
+2.35.1
 
-I guess we could apply this to list_for_each_entry() as well
-once all the uses after the loop are fixed?
-
-I feel like this simply introduces a new set of macros
-(we would also need list_traverse_reverse(), =
-list_traverse_continue_reverse()
-etc) and end up with a second set of macros that do pretty much
-the same as the first one.
-
-I like the way of using list_traversal_head() to only remember the type.
-The interface of list_traverse() is the same as list_for_each_entry() so
-we could just do this with a simple coccinelle script once 'pos' is no
-longer used after the loop:
-
--struct some_struct *pos;
-+list_traversal_head(struct some_struct, pos, target_member);
-
-
-although there are *some* cases where 'pos' is also used separately
-in the function which would need to change, e.g.:
-
-struct some_struct *pos =3D some_variable;
-
-if (pos)
-	// do one thing
-else
-	list_for_each_entry(pos, ..., ...)
-
-
-(I've fixed ~440/450 cases now and I'm chunking it into patch sets right =
-now.
-The once left over are non-obvious code I would need some input on)
-
-Personally I guess I also prefer the name list_for_each_entry() over =
-list_traverse()
-and not having two types of iterators for the same thing at the same =
-time.
-
-
->=20
->                   Linus
-> <patch.diff>
-
-Jakob
 
