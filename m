@@ -2,115 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3624B4D082E
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 21:11:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E2304D084C
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 21:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239317AbiCGUMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 15:12:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
+        id S241727AbiCGU1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 15:27:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238439AbiCGUMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 15:12:23 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03413F8B1
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 12:11:26 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id s8so11223186pfk.12
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 12:11:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vvx0kFH9tXVxtxYZn9Ru7ue2wSOsObKPRZoMefv3ypA=;
-        b=WP9pPxtZahqej1YvJ5yLLRwkhOBmkS5++A/3BkkOPbzH6yq6xa4gsIFJll0ogoqOfN
-         wLgJud4wYZxdFlQD61FenI6Y0wNs36+sxZH7Ajsc3J4vKbulrEJPQjKpRWCXWYebYhsN
-         suRPdRFlHG0CXW9lCGZcG0WAnq+OXhNu7i3qSUx0LK5SQ1oVIItorG0pboGU3L41AXJa
-         q8OBGRj53Vd7zpS1H3niwgASXJkZolKZHSyWIWfAPqODLbwvttPcQWc9eo6NMwa6uo7j
-         qzRi0Eayco/FZcOhURhVkpfBS/VFXt70wDH67LCTJwF4uCBwpqFX8RjcfBBbjY440F9p
-         j5QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vvx0kFH9tXVxtxYZn9Ru7ue2wSOsObKPRZoMefv3ypA=;
-        b=182aMCtTLgRyslfcI51ciNqotaTv1HhZzMSPRMA91Jr7BBuZZgPIPMZvIIJqxdu/07
-         07ZJo+BmbcTv7zRZiZ5Gdl1qHRbVq9t5tXoJLKarVfENZV4mRvMexYkCe6V8JmfbHmrY
-         olR0YDiqOJptNBKEmguT/2PaQfJmHFsIVgR5M7dExQ/P14lcTlqLeuzuLqvwBC6YagWV
-         4oJtANZKMG5WiM0/qz+5/w6/ywuwjAJsBeiokuS3gpeHZTFQoDPinV6TLPO3BZFqSq1A
-         peOZh7Q846XMBQVsWb23uDZnkYu72pEIPw9iKXvXXi9zHedj0hyQ0Q5sk/ykJapEN0pf
-         68lA==
-X-Gm-Message-State: AOAM53022//e1rKXCpLQoem/NsFA3xLWQj1ykWC6l7xoXuu9SMLOaynz
-        HADwJNt18EEx0WY3PgnAiYGcDg==
-X-Google-Smtp-Source: ABdhPJwUGFifg5fcqNsradD84KEB/n8CyBeW5kzgQ2MBUj6Fu4/D6X3lw/bXieTsIl+gGC2rJ+p6yA==
-X-Received: by 2002:a05:6a00:14ca:b0:4cf:1930:9d67 with SMTP id w10-20020a056a0014ca00b004cf19309d67mr14463568pfu.55.1646683886111;
-        Mon, 07 Mar 2022 12:11:26 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id c34-20020a630d22000000b0034cb89e4695sm12854497pgl.28.2022.03.07.12.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 12:11:25 -0800 (PST)
-Date:   Mon, 7 Mar 2022 12:11:23 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     netdev@vger.kernel.org
-Subject: Regression in add xfrm interface
-Message-ID: <20220307121123.1486c035@hermes.local>
+        with ESMTP id S241285AbiCGU1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 15:27:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5945677AB4;
+        Mon,  7 Mar 2022 12:26:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB3C4614E7;
+        Mon,  7 Mar 2022 20:26:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 048F3C340E9;
+        Mon,  7 Mar 2022 20:26:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646684800;
+        bh=9H9QFNhmCz2eZdBLhPXpPRaAobhsiAOUNLcdZ05EXyM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MxcvuleX57/nPXrO8ApcBRcOrlc+72MlMr/FMiYe5gNbsndl5B//ciZu5veeypNG3
+         5rp1qOnneVT/dyjEoJ0pa9igqXY+4YDcp4BsUboM4EQwS4hLUgZZwUPQ/11BwQ/Xil
+         cvzlYPhZdyOaoJPdLV8pOddCqV4R+kRmI3BuEvtyQv59xibmDsblrDvR/0QjKOk6cn
+         9T7tXB0JtwFC4zSknkv7k32jDTjGM5EcMenDcBgCY8IYLCGHdrOYubflIlLgnGGcj4
+         ARVkJYL87VvopJr2OdnE1vVirf1/kKYozqX3Nn4Z/0dErvbT7CihwMkQw5v4chhetH
+         QdfRceysXtV+g==
+Date:   Mon, 7 Mar 2022 12:26:38 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     Eelco Chaudron <echaudro@redhat.com>,
+        patchwork-bot+netdevbpf@kernel.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, dev@openvswitch.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Message-ID: <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There appears to be a regression between 5.10 (Debian 11) and 5.16 (Debian testing)
-kernel in handling of ip link xfrm create. This shows up in the iproute2 testsuite
-which now fails. This is kernel (not iproute2) regression.
+On Mon, 7 Mar 2022 10:49:31 +0200 Roi Dayan wrote:
+> >> I think there is a missing userspace fix. didnt verify yet.
+> >> but in ovs userspace odp-netlink.h created from datapath/linux/compat/include/linux/openvswitch.h
+> >> and that file is not synced the change here.
+> >> So the new enum OVS_KEY_ATTR_IPV6_EXTHDRS is missing and also struct
+> >> ovs_key_ipv6_exthdrs which is needed in lib/udp-util.c
+> >> in struct ovs_flow_key_attr_lens to add expected len for
+> >> OVS_KEY_ATTR_IPV6_EXTHDR.  
+> > 
+> > I guess if this is creating backward compatibility issues, this
+> > patch should be reverted/fixed. As a kmod upgrade should not break
+> > existing deployments. 
+> 
+> it looks like it does. we can't work with ovs without reverting this.
+> can we continue with reverting this commit please?
 
+Sure, can someone ELI5 what the problem is?
 
-Running ip/link/add_type_xfrm.t [iproute2-this/5.16.0-1-amd64]: FAILED
+What's "kmod upgrade" in this context a kernel upgrade or loading 
+a newer module in older kernel? 
 
-
-Good log:
-::::::::::::::
-link/add_type_xfrm.t.iproute2-this.out
-::::::::::::::
-[Testing Add XFRM Interface, With IF-ID]
-tests/ip/link/add_type_xfrm.t: Add dev-ktyXSm xfrm interface succeeded
-tests/ip/link/add_type_xfrm.t: Show dev-ktyXSm xfrm interface succeeded with output:
-2: dev-ktyXSm@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/none  promiscuity 0 minmtu 68 maxmtu 65535 
-    xfrm if_id 0xf addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
-test on: "dev-ktyXSm" [SUCCESS]
-test on: "if_id 0xf" [SUCCESS]
-tests/ip/link/add_type_xfrm.t: Del dev-ktyXSm xfrm interface succeeded
-[Testing Add XFRM Interface, No IF-ID]
-tests/ip/link/add_type_xfrm.t: Add dev-tkUDaA xfrm interface succeeded
-tests/ip/link/add_type_xfrm.t: Show dev-tkUDaA xfrm interface succeeded with output:
-3: dev-tkUDaA@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/none  promiscuity 0 minmtu 68 maxmtu 65535 
-    xfrm if_id 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
-test on: "dev-tkUDaA" [SUCCESS]
-test on: "if_id 0xf" [SUCCESS]
-tests/ip/link/add_type_xfrm.t: Del dev-tkUDaA xfrm interface succeeded
-
-Failed log:
-
-[Testing Add XFRM Interface, With IF-ID]
-tests/ip/link/add_type_xfrm.t: Add dev-pxNsUc xfrm interface succeeded
-tests/ip/link/add_type_xfrm.t: Show dev-pxNsUc xfrm interface succeeded with output:
-2: dev-pxNsUc@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/none  promiscuity 0 minmtu 68 maxmtu 65535 
-    xfrm if_id 0xf addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
-test on: "dev-pxNsUc" [SUCCESS]
-test on: "if_id 0xf" [SUCCESS]
-tests/ip/link/add_type_xfrm.t: Del dev-pxNsUc xfrm interface succeeded
-[Testing Add XFRM Interface, No IF-ID]
-test on: "dev-dSwSKP" [FAILED]
-test on: "if_id 0xf" [FAILED]
-
-
+How can adding a new nl attr break user space? Does the user space
+actually care about the OVS_KEY_ATTR_TUNNEL_INFO wart?
