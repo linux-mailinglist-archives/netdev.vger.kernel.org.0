@@ -2,89 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2011A4D0675
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:26:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8574D067A
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236439AbiCGS1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 13:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55882 "EHLO
+        id S244606AbiCGS1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 13:27:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234218AbiCGS1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:27:01 -0500
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1972492D13
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 10:26:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=RxAW2X7nvwwiYQ+TtxL78u3hQYKl4WGQ8PSgA7Hu+Dg=; b=iV1Y0i5sYQ95EVa+t4oKnyGkMn
-        50iriw1DQmdxgJy9rxXpN9fNq2sybTfb0cwcrp3Heljr0krVqMYXqzelrU0rrZhsPsbvuyp3kj/hX
-        s6AwJMKmnrPZSAPOdFGg/htH1avQJGNYLFdgOwejHVnEQEd5/pt8cyenoEMiNtamDvYM=;
-Received: from p200300daa7204f0005a7b0458a613fd2.dip0.t-ipconnect.de ([2003:da:a720:4f00:5a7:b045:8a61:3fd2] helo=Maecks.lan)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nRI3X-0007w7-Q4
-        for netdev@vger.kernel.org; Mon, 07 Mar 2022 19:26:03 +0100
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Subject: [PATCH 2/2] sch_fq_codel: fix running with classifiers that don't set a classid
-Date:   Mon,  7 Mar 2022 19:26:02 +0100
-Message-Id: <20220307182602.16978-2-nbd@nbd.name>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220307182602.16978-1-nbd@nbd.name>
-References: <20220307182602.16978-1-nbd@nbd.name>
+        with ESMTP id S241487AbiCGS1W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:27:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D88939F1;
+        Mon,  7 Mar 2022 10:26:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2778B8166E;
+        Mon,  7 Mar 2022 18:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722B9C340F4;
+        Mon,  7 Mar 2022 18:26:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646677584;
+        bh=tiM5Uvq+D31XhjJe7+hWNcPkNyAsCyNOhRKy5ex9OS4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZKncCtRmliUj08hyHjNPIch7ZIcVa/2uoOlqtXYHfSGXXt2FIwx3UCD9FmEje7oXy
+         NKqgElEOarYqHJo/nW6N5R1QgRcUSPoWXqNHFx1EAxPr04T1vw5tB8OqEQ3U0DnpyQ
+         ca6Nv+e83arQ9MrGv5O/klgVXR+yLOe3uavLWbMXB5cy6bMd5wwx17GMORE6fVjnHP
+         TFQI0pbgk0MmuJgtClIBhD9ww429rgSPtFcFWTRV1fsE6rF9JDXpsZNqZXX9qS5052
+         Z9qjZ7dWRjXVQyRzzsbw42OEt3SYOG1gzJLH73TYaxoBOQhVLP0Oejw1v0aylcyjvA
+         c0q8YOMJIEMng==
+Received: by mail-yb1-f181.google.com with SMTP id l2so13269860ybe.8;
+        Mon, 07 Mar 2022 10:26:24 -0800 (PST)
+X-Gm-Message-State: AOAM5323Orjrce40RNfFXhW/zI0h9VWQgO7jpdr+Azl0thrKR0a5G81i
+        GIOoCxGet3g0HB3znIsjbbI9RAE9uTty7ruiFuM=
+X-Google-Smtp-Source: ABdhPJwC4K57hPFP1bG+dnJm59ZAitT7BxWTbMHWd5AfT32rDjPYEnJGWS/Lo+o3LgTZFmX9YJOhB9M9DD1oIYiJVSQ=
+X-Received: by 2002:a25:8546:0:b0:61e:1d34:ec71 with SMTP id
+ f6-20020a258546000000b0061e1d34ec71mr8563794ybn.259.1646677583501; Mon, 07
+ Mar 2022 10:26:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-2-benjamin.tissoires@redhat.com> <CAPhsuW4otgwwDN6+xcjPXmZyUDiynEKFtXjaFb-=kjz7HzUmZw@mail.gmail.com>
+ <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com> <YiOWmG2oARiYmRHr@gofer.mess.org>
+In-Reply-To: <YiOWmG2oARiYmRHr@gofer.mess.org>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 7 Mar 2022 10:26:12 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5yitrNMvbx3s=K+a5JDrAj1=F=qWfwVLBPFn+w0EypJg@mail.gmail.com>
+Message-ID: <CAPhsuW5yitrNMvbx3s=K+a5JDrAj1=F=qWfwVLBPFn+w0EypJg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 01/28] bpf: add new is_sys_admin_prog_type() helper
+To:     Sean Young <sean@mess.org>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If no valid classid is provided, fall back to calculating the hash directly,
-in order to avoid dropping packets
+On Sat, Mar 5, 2022 at 8:58 AM Sean Young <sean@mess.org> wrote:
+>
+> On Sat, Mar 05, 2022 at 11:07:04AM +0100, Benjamin Tissoires wrote:
+> > On Sat, Mar 5, 2022 at 12:12 AM Song Liu <song@kernel.org> wrote:
+> > >
+> > > On Fri, Mar 4, 2022 at 9:30 AM Benjamin Tissoires
+> > > <benjamin.tissoires@redhat.com> wrote:
+> > > >
+> > > > LIRC_MODE2 does not really need net_admin capability, but only sys_admin.
+> > > >
+> > > > Extract a new helper for it, it will be also used for the HID bpf
+> > > > implementation.
+> > > >
+> > > > Cc: Sean Young <sean@mess.org>
+> > > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> > > >
+> > > > ---
+> > > >
+> > > > new in v2
+> > > > ---
+> > > >  kernel/bpf/syscall.c | 14 +++++++++++++-
+> > > >  1 file changed, 13 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > > index db402ebc5570..cc570891322b 100644
+> > > > --- a/kernel/bpf/syscall.c
+> > > > +++ b/kernel/bpf/syscall.c
+> > > > @@ -2165,7 +2165,6 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
+> > > >         case BPF_PROG_TYPE_LWT_SEG6LOCAL:
+> > > >         case BPF_PROG_TYPE_SK_SKB:
+> > > >         case BPF_PROG_TYPE_SK_MSG:
+> > > > -       case BPF_PROG_TYPE_LIRC_MODE2:
+> > > >         case BPF_PROG_TYPE_FLOW_DISSECTOR:
+> > > >         case BPF_PROG_TYPE_CGROUP_DEVICE:
+> > > >         case BPF_PROG_TYPE_CGROUP_SOCK:
+> > > > @@ -2202,6 +2201,17 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
+> > > >         }
+> > > >  }
+> > > >
+> > > > +static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
+> > > > +{
+> > > > +       switch (prog_type) {
+> > > > +       case BPF_PROG_TYPE_LIRC_MODE2:
+> > > > +       case BPF_PROG_TYPE_EXT: /* extends any prog */
+> > > > +               return true;
+> > > > +       default:
+> > > > +               return false;
+> > > > +       }
+> > > > +}
+> > >
+> > > I am not sure whether we should do this. This is a behavior change, that may
+> > > break some user space. Also, BPF_PROG_TYPE_EXT is checked in
+> > > is_perfmon_prog_type(), and this change will make that case useless.
+> >
+> > Sure, I can drop it from v3 and make this function appear for HID only.
+>
+> For BPF_PROG_TYPE_LIRC_MODE2, I don't think this change will break userspace.
+> This is called from ir-keytable(1) which is called from udev. It should have
+> all the necessary permissions.
+>
+> In addition, the vast majority IR decoders are non-bpf. bpf ir decoders have
+> very few users at the moment.
+>
+> I am working on completely new userspace tooling which will make extensive
+> use of bpf ir decoding with full lircd and IRP compatibility, but this is not
+> finished yet (see https://github.com/seanyoung/cir).
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- net/sched/sch_fq_codel.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Thanks for these information. I guess change for BPF_PROG_TYPE_LIRC_MODE2
+is ok then. Would you mind ack or review this change (either current version or
+a later version)?
 
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index 839e1235db05..b2a13185bb63 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -88,7 +88,7 @@ static unsigned int fq_codel_classify(struct sk_buff *skb, struct Qdisc *sch,
- 
- 	filter = rcu_dereference_bh(q->filter_list);
- 	if (!filter)
--		return fq_codel_hash(q, skb) + 1;
-+		goto out;
- 
- 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
- 	result = tcf_classify(skb, NULL, filter, &res, false);
-@@ -104,10 +104,13 @@ static unsigned int fq_codel_classify(struct sk_buff *skb, struct Qdisc *sch,
- 			return 0;
- 		}
- #endif
--		if (TC_H_MIN(res.classid) <= q->flows_cnt)
-+		if (TC_H_MIN(res.classid) > 0 &&
-+		    TC_H_MIN(res.classid) <= q->flows_cnt)
- 			return TC_H_MIN(res.classid);
- 	}
--	return 0;
-+
-+out:
-+	return fq_codel_hash(q, skb) + 1;
- }
- 
- /* helper functions : might be changed when/if skb use a standard list_head */
--- 
-2.32.0 (Apple Git-132)
-
+Thanks,
+Song
