@@ -2,160 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DE324D0597
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 18:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 548DA4D05A4
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 18:48:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238166AbiCGRrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 12:47:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
+        id S238379AbiCGRsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 12:48:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244612AbiCGRrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 12:47:07 -0500
-Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD85D95A2D
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 09:46:04 -0800 (PST)
-Received: by mail-vk1-xa2c.google.com with SMTP id j201so8404841vke.11
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 09:46:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WtidhIXpXRBQp7jqEdcMDtJhjAV9/xysWEtk5yEFiM0=;
-        b=htgSeeMvcPSmxMVo6pTQfix9hhCBwizLgu1ZvCSn0QK2xW38o0r0HV/zKuscpnSD9t
-         7F7QjR3bFBigCxv2/ASv2oD3jvN9559QBZPAkXEf4PBzms09W9qw49aADlizNWExNxw9
-         fV8vq3WMtHY2C7p2mWQCsJwm+qaQnIA4AEW8Jowg/rADv/mm4mtkHprV5N3+BJLfmfvZ
-         hci6mvKOJoooj2X9ImB+veGFs90PcEOf8pul9QJ88lBxL3nIrmf+e6VhhUMsAms92Wy5
-         XOsH5C69AhAGNr+9hhgYl7aE6HyYY7zycSVJMVyAIkWE+PYt96Li6FHrmXPzxoHAAEbj
-         hGGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WtidhIXpXRBQp7jqEdcMDtJhjAV9/xysWEtk5yEFiM0=;
-        b=4faui45sP4jHhLwo1OwTflVk6ZhyhKp7JUrN2xk0JNuh9u7V/gipY2bShh/0yt39Vi
-         Rzif2IzrwP98nn63suxXLE0pTUAQb3rvBDZO7sGtuVcKPTLQ4RRDm4zHUDelnXiw3jXL
-         STYflVhs6A/irmkx3AXijhAiBaIEjRcVykQHXQtMFyBvf3sWha8q82vQJA9TCjXyzg9n
-         xn6JQsSSU0b/1ec31Un7zWQy4HxjrSXsuW2P8de9tlBi5xnqP3VHsT2iHUah7uqU9cQ4
-         YXpKglmMPUnv916GKIt32Kl2KzBfE6/WuDc4zdRoED1PPucV4Q1bpLaCteQ97c4XZOgb
-         Cccw==
-X-Gm-Message-State: AOAM532ncVBcILDnSC8BAEXx1k0mYUKJPkqIR7Vv9ROAzO4mXlEXFczL
-        DIsoKlOandK2d1xqit85YxwgwEWAc1DURNOeac/DwFu/kKj2rw==
-X-Google-Smtp-Source: ABdhPJw4xUUBpJtjEnSvJvkSlJMUbkNRxZbMP5J9CCrv5zcHeiCOcnulrSTbiAwrzwLeTeSPR5e3OWLsBsl4rT1O81g=
-X-Received: by 2002:a05:6122:985:b0:32d:a8d5:7b12 with SMTP id
- g5-20020a056122098500b0032da8d57b12mr4557327vkd.3.1646675163640; Mon, 07 Mar
- 2022 09:46:03 -0800 (PST)
+        with ESMTP id S244507AbiCGRsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 12:48:37 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B792511167;
+        Mon,  7 Mar 2022 09:47:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646675262; x=1678211262;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=G4rpL32y1sZlYolgjSTtKzYmS1ss1HKDhqbQQWZrjkU=;
+  b=cmYq62Kb+JTMkkCvpiwry3AZla4E78JXuNwKdPK6eWA1bhrveK+z8Gb/
+   vDkrAbBukXMBKW+ZE1aVmbY9YYoomsPMt896COVEi800M0iVVlpg7Isw/
+   87bep3MmQEHRTAv8YGrvJnnDCqcMW9vYhMfFD9i1VW7/KpbX8VOOYStJ/
+   Jqps5oZpDfrqzQVOMZAebyxYjzGD9EUG90goQPddLy/ZDuS3MrTWE3cqM
+   eIFH/1UE7J/l3UGY3Ka5ZbjaPhNxxraeO6PmapU1cW1HLqQphwqZYl/Mo
+   Bnz9kgHW6DsG0T0Pz47SwssM2McDjzGw3gER8MOWg62gHJz93m7YwKFbI
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="317687109"
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="317687109"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 09:47:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
+   d="scan'208";a="577684539"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga001.jf.intel.com with ESMTP; 07 Mar 2022 09:47:40 -0800
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
+        magnus.karlsson@intel.com, alexandr.lobakin@intel.com,
+        dan.carpenter@oracle.com
+Subject: [PATCH intel-net] ice: fix NULL pointer dereference in ice_update_vsi_tx_ring_stats()
+Date:   Mon,  7 Mar 2022 18:47:39 +0100
+Message-Id: <20220307174739.55899-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <462fa134-bc85-a629-b9c5-8c6ea08b751d@gmail.com>
- <4baebbcb95d84823a7f4ecbe18cbbc3c@AcuMS.aculab.com> <7e75125d-c222-46cf-50b3-c80978cbfff2@gmail.com>
- <20220307080834.35660682@hermes.local>
-In-Reply-To: <20220307080834.35660682@hermes.local>
-From:   Dimitrios Bouras <dimitrios.bouras@gmail.com>
-Date:   Mon, 7 Mar 2022 09:45:52 -0800
-Message-ID: <CAExTYs3tTuLqYByki0JtWheVp=r+r9Xo8F=RryxVq8O+4zJVpw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] eth: Transparently receive IP over LLC/SNAP
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URI_DOTEDU autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 8:08 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Sun, 6 Mar 2022 13:09:03 -0800
-> Dimitrios Bouras <dimitrios.bouras@gmail.com> wrote:
->
-> > On 2022-03-04 11:02 p.m., David Laight wrote:
-> > > From: Dimitrios P. Bouras
-> > >> Sent: 05 March 2022 00:33
-> > >>
-> > >> Practical use cases exist where being able to receive Ethernet packets
-> > >> encapsulated in LLC SNAP is useful, while at the same time encapsulating
-> > >> replies (transmitting back) in LLC SNAP is not required.
-> > > I think you need to be more explicit.
-> > > If received frames have the SNAP header I'd expect transmitted ones
-> > > to need it as well.
-> >
-> > Hi David,
-> >
-> > Yes, in the general case, I agree. In the existing implementation of the
-> > stack,however, (as far as I have researched) there is nothing available to
-> > process IP over LLC/SNAP for Ethernet interfaces.
-> >
-> > In the thread I've quoted in my explanation Alan Cox says so explicitly:
-> > https://lkml.iu.edu/hypermail/linux/kernel/1107.3/01249.html
-> >
-> > Maybe I should change the text to read:
-> >
-> >    Practical use cases exist where being able to receive IP packets
-> >    encapsulated in LLC/SNAP over an Ethernet interface is useful, while
-> >    at the same time encapsulating replies (transmitting back) in LLC/SNAP
-> >    is not required.
-> >
-> > Would that be better? Maybe I should also change the following sentence:
-> >
-> >    Accordingly, this is not an attempt to add full-blown support for IP over
-> >    LLC/SNAP for Ethernet devices, only a "hack" that "just works".
-> >
-> > >> Accordingly, this
-> > >> is not an attempt to add full-blown support for IP over LLC SNAP, only a
-> > >> "hack" that "just works" -- see Alan's comment on the the Linux-kernel
-> > >> list on this subject ("Linux supports LLC/SNAP and various things over it
-> > >> (IPX/Appletalk DDP etc) but not IP over it, as it's one of those standards
-> > >> bodies driven bogosities which nobody ever actually deployed" --
-> > >> http://lkml.iu.edu/hypermail/linux/kernel/1107.3/01249.html).
-> > > IP over SNAP is needed for Token ring networks (esp. 16M ones) where the
-> > > mtu is much larger than 1500 bytes.
-> > >
-> > > It is all too long ago though, I can't remember whether token ring
-> > > tends to bit-reverse the MAC address (like FDDI does) which means you
-> > > can't just bridge ARP packets.
-> > > So you need a better bridge - and that can add/remove some SNAP headers.
-> > I've read that some routers are able to do this but it is out of scope for my
-> > simple patch. The goal is just to be able to receive LLC/SNAP-encapsulated
-> > IP packets over an Ethernet interface.
-> >
-> > >
-> > > ...
-> > >
-> > >     David
-> > >
-> > > -
-> > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > > Registration No: 1397386 (Wales)
-> >
-> > Additional feedback you may have is greatly appreciated.
-> >
-> > Many thanks,
-> > Dimitri
-> >
->
-> The Linux device model is to create a layered net device. See vlan, vxlan, etc.
-> It should be possible to do this with the existing 802 code in Linux, there
-> is some in psnap.c but don't think there is a way to use this for IP.
+It is possible to do NULL pointer dereference in routine that updates
+Tx ring stats. Currently only stats and bytes are updated when ring
+pointer is valid, but later on ring is accessed to propagate gathered Tx
+stats onto VSI stats.
 
-Hi Stephen,
+Change the existing logic to move to next ring when ring is NULL.
 
-Thank you for taking the time to send feedback. Yes, that is the route
-I took initially, looking at how to implement this through existing SNAP
-protocol support. In the end, it was an awful lot of work for a very
-simple requirement -- in  my mind, small is better.
+Fixes: e72bba21355d ("ice: split ice_ring onto Tx/Rx separate structs")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Are there drawbacks to my approach for this very special case that you
-think are detrimental to the device model? As I understand, encapsulated
-IP shouldn't be coming through the Ethernet interface. When I was coding
-and testing this patch I felt it may be justified in the same way as the
-"magic hack" for raw IPX a bit further down in eth_type_trans().
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 289e5c99e313..d3f8b6468b92 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6145,8 +6145,9 @@ ice_update_vsi_tx_ring_stats(struct ice_vsi *vsi,
+ 		u64 pkts = 0, bytes = 0;
+ 
+ 		ring = READ_ONCE(rings[i]);
+-		if (ring)
+-			ice_fetch_u64_stats_per_ring(&ring->syncp, ring->stats, &pkts, &bytes);
++		if (!ring)
++			continue;
++		ice_fetch_u64_stats_per_ring(&ring->syncp, ring->stats, &pkts, &bytes);
+ 		vsi_stats->tx_packets += pkts;
+ 		vsi_stats->tx_bytes += bytes;
+ 		vsi->tx_restart += ring->tx_stats.restart_q;
+-- 
+2.33.1
 
-Looking forward to your additional thoughts or guidance,
-Dimitri
