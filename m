@@ -2,94 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 548DA4D05A4
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 18:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B483A4D05C0
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 18:54:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238379AbiCGRsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 12:48:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
+        id S244070AbiCGRz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 12:55:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244507AbiCGRsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 12:48:37 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B792511167;
-        Mon,  7 Mar 2022 09:47:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646675262; x=1678211262;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=G4rpL32y1sZlYolgjSTtKzYmS1ss1HKDhqbQQWZrjkU=;
-  b=cmYq62Kb+JTMkkCvpiwry3AZla4E78JXuNwKdPK6eWA1bhrveK+z8Gb/
-   vDkrAbBukXMBKW+ZE1aVmbY9YYoomsPMt896COVEi800M0iVVlpg7Isw/
-   87bep3MmQEHRTAv8YGrvJnnDCqcMW9vYhMfFD9i1VW7/KpbX8VOOYStJ/
-   Jqps5oZpDfrqzQVOMZAebyxYjzGD9EUG90goQPddLy/ZDuS3MrTWE3cqM
-   eIFH/1UE7J/l3UGY3Ka5ZbjaPhNxxraeO6PmapU1cW1HLqQphwqZYl/Mo
-   Bnz9kgHW6DsG0T0Pz47SwssM2McDjzGw3gER8MOWg62gHJz93m7YwKFbI
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="317687109"
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="317687109"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 09:47:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,162,1643702400"; 
-   d="scan'208";a="577684539"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga001.jf.intel.com with ESMTP; 07 Mar 2022 09:47:40 -0800
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
-        magnus.karlsson@intel.com, alexandr.lobakin@intel.com,
-        dan.carpenter@oracle.com
-Subject: [PATCH intel-net] ice: fix NULL pointer dereference in ice_update_vsi_tx_ring_stats()
-Date:   Mon,  7 Mar 2022 18:47:39 +0100
-Message-Id: <20220307174739.55899-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
+        with ESMTP id S244269AbiCGRzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 12:55:25 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FFE6E8C5
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 09:54:30 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id r2so806330iod.9
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 09:54:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VDf6OjoGPyJFhKapx4AyJRciN9H+36Y+6ggWjNUCgGw=;
+        b=g5jEDTH2Zh18u2j4X+lLYWA+YuQJpE+IJ4979dqdtHTSLL/btX97xt6ROOfdORrWuu
+         CjOIxhvZuctZbKY05G5P/mfjIAuCvP+T/Vty0DcYkFDiNBUZElk84vP3z38P1+C2dqkM
+         soYX5d3VOGJoyhDqKD8DUXsTzL0Wa9BwjLKm4SGO3DIOZJAyGGQbUSSQ2rFTlM5e0bjR
+         F1ZJfVyDYwFmZTOHGp/nIsRSZcup86yf/6yLQzyKHhbxRTc2a165J6jnGZ9WCR6GAmhI
+         UjEZlFP46A12rojsHUDpLiCfbQsyqyLFqmABHSLGpGxFrRVoh2eWma1F0zE0Z/vrlyDX
+         0qwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VDf6OjoGPyJFhKapx4AyJRciN9H+36Y+6ggWjNUCgGw=;
+        b=0YrxXTr/xwDTlaM13Gyyva6VILp4dWO5wjHsDW0bhWuX1JJIWyvGShmQlYo4fIiq6x
+         Yn1f4fkrQZJ9X4fVpcZXaaZIsPLYvjtDhL2/RqZOBz4H17vhi405vTX1sa2jfpUO39jj
+         3ylWBl0bn7HkRWR4FM0Y8ChWpKcvijGzfobXdfMfQzYMxvTQuIoxHO81Pxe4Y9Elt/2l
+         T8c738dH7Tm6gkmfQ3HoF/9Q5rP4S2E89WAgFD9ug0uU8HfyYgnei7ZDGgvz1LqvZ/Qh
+         edki1Pi58O4/HWH/iR5Sj4OR98j+OWRRGy6FDbpJ+KX/PuDmxeU+CrohSCy+TVFfJpHa
+         qAiQ==
+X-Gm-Message-State: AOAM531hSzBQCh0NiMpi5kxhcT0PKdLyjmrVXzDPnYFH+jgxya/6kA3u
+        n3MBXP37T5qW6RbTrMXpWo3NNbtIeV58lSnXcup1Ew==
+X-Google-Smtp-Source: ABdhPJwWcq/DGO0V+gbpxEQ7JyV6d6TvrmREbZzE8zvJ5h3Jnn+ry33BRxn5nDmpxOYUnXyx7iNzaGfKdh6ZGc17UWk=
+X-Received: by 2002:a02:95cc:0:b0:315:d2b:4412 with SMTP id
+ b70-20020a0295cc000000b003150d2b4412mr11104222jai.259.1646675669518; Mon, 07
+ Mar 2022 09:54:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220306085658.1943-1-gerhard@engleder-embedded.com>
+ <20220306170504.GE6290@hoboy.vegasvil.org> <CANr-f5wNJM4raaXrMA8if8gkUgMRrK7+5beCnpGOzoLu59zwsg@mail.gmail.com>
+ <20220306215032.GA10311@hoboy.vegasvil.org> <20220307143440.GC29247@hoboy.vegasvil.org>
+In-Reply-To: <20220307143440.GC29247@hoboy.vegasvil.org>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Mon, 7 Mar 2022 18:54:19 +0100
+Message-ID: <CANr-f5zyLX1YAW+D4AJn2MBQ8g7e8F+KVDc0GuxL7s9K89Qx_A@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 0/6] ptp: Support hardware clocks with
+ additional free running time
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     yangbo.lu@nxp.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible to do NULL pointer dereference in routine that updates
-Tx ring stats. Currently only stats and bytes are updated when ring
-pointer is valid, but later on ring is accessed to propagate gathered Tx
-stats onto VSI stats.
+> > > How can I cover my use case with the existing API? I had no idea so far.
+> >
+> > Okay, so 2 PHCs doesn't help, but still all you need is:
+> >
+> > 1. a different method to convert time stamps to vclock time base
+> >
+> > 2. a different method for vclocks' gettime
+> >
+> > So let me suggest a much smaller change to the phc/vclock api... stay tuned
+>
+> For #1:
+>
+> On the receive path, the stack calls ptp_convert_timestamp() if the
+> socket has the SOF_TIMESTAMPING_RAW_HARDWARE option.  In that method,
+> you need only get the raw cycle count if supported by the pclock.
+>
+> So instead of:
+>
+>         vclock = info_to_vclock(ptp->info);
+>
+>         ns = ktime_to_ns(hwtstamps->hwtstamp);
+>
+>         spin_lock_irqsave(&vclock->lock, flags);
+>         ns = timecounter_cyc2time(&vclock->tc, ns);
+>         spin_unlock_irqrestore(&vclock->lock, flags);
+>
+> something like this:
+>
+>         vclock = info_to_vclock(ptp->info);
+>
+>         cycles = pclock->ktime_to_cycles(hwtstamps->hwtstamp);
+>
+>         spin_lock_irqsave(&vclock->lock, flags);
+>         ns = timecounter_cyc2time(&vclock->tc, cycles);
+>         spin_unlock_irqrestore(&vclock->lock, flags);
+>
+> This new class method, ktime_to_cycles, can simply do ktime_to_ns() by
+> default for all of the existing drivers, but your special driver can
+> look up the hwtstamp in a cache of {hwtstamp, cycles} pairs.
 
-Change the existing logic to move to next ring when ring is NULL.
+ktime_to_cycles uses hwtstamp as key for the cache lookup. As long as
+the PHC is monotonic, the key is unique. If the time of the PHC is set, then
+the cache would be invalidated. I'm afraid that setting the PHC could lead to
+wrong or missing timestamps. Setting the PHC in hardware, timestamp
+generation in hardware, and cache invalidation in software would need to
+be synchronized somehow.
 
-Fixes: e72bba21355d ("ice: split ice_ring onto Tx/Rx separate structs")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Practically the PHC should be set only once. It would be also ok to use
+vclocks for PTP after PHC has been set. So it should work. But it would
+not be the generic PHC/vclock user space interface anymore.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 289e5c99e313..d3f8b6468b92 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6145,8 +6145,9 @@ ice_update_vsi_tx_ring_stats(struct ice_vsi *vsi,
- 		u64 pkts = 0, bytes = 0;
- 
- 		ring = READ_ONCE(rings[i]);
--		if (ring)
--			ice_fetch_u64_stats_per_ring(&ring->syncp, ring->stats, &pkts, &bytes);
-+		if (!ring)
-+			continue;
-+		ice_fetch_u64_stats_per_ring(&ring->syncp, ring->stats, &pkts, &bytes);
- 		vsi_stats->tx_packets += pkts;
- 		vsi_stats->tx_bytes += bytes;
- 		vsi->tx_restart += ring->tx_stats.restart_q;
--- 
-2.33.1
+> (No need to bloat skbuff by another eight bytes!)
 
+I understand that bloating skbuff shall be prevented. Actually I need
+to find a way
+to generate the correct timestamp within ptp_convert_timestamp and without
+bloating skbuff. The cache is one possibility. What do you think about the
+following idea?
+
+For TX it is known which timestamp is required. So I would have to find a way
+to detect which timestamp shall be filled into hwtstamp.
+
+For RX both timestamps are already available within skbuff, because they are
+stored in front of the Ethernet header by the hardware. So I have to find a way
+to detect the RX case and copy the right timestamp to hwtstamp.
+
+This would prevent the cache and does not bloat skbuff.
+
+> For #2:
+>
+> Similarly, add a new class method, say, pclock.get_cycles that does
+>
+>         if (ptp->info->gettimex64)
+>                 ptp->info->gettimex64(ptp->info, &ts, NULL);
+>         else
+>                 ptp->info->gettime64(ptp->info, &ts);
+>
+> by default, but in your driver will read the special counter.
+
+Looks better than my getfreeruntimex64.
+
+Thanks for your suggestion!
+
+Gerhard
