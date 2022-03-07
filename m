@@ -2,133 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA3A4D06F9
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:53:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 124864D076B
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 20:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244867AbiCGSy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 13:54:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
+        id S244960AbiCGTQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 14:16:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244863AbiCGSy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:54:27 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902B36FA19;
-        Mon,  7 Mar 2022 10:53:31 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id u3so5366666ljd.0;
-        Mon, 07 Mar 2022 10:53:31 -0800 (PST)
+        with ESMTP id S245037AbiCGTQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 14:16:39 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0547DE03
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 11:15:39 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id s25so21953172lji.5
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 11:15:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tG48zlfsIlWWdNAN2VROyEUyP9nwE+RyuWnK+Wi+nbE=;
-        b=hSW9HPyRvQxcoxlM6Ti3yu+7lcVrC32NoquHW9HJano7RmoAh3txW5r8Fwrx9c4bh5
-         vN82VNNNUsiCn/FMhn4Cas5VQ/wMHbkzyL+uPGM6xoknI6Urjj/qXDOSNQ08eEA+s8yP
-         qI3HT5EqYpwM2ybKgn2ErYkeu+/5oAtf0z18ODuPya4NQR1LDpV7W7Hho069moOrw/m2
-         R9DgGMFn1Uu5aPWWHNDBxY+sIqSf9Wi5yjqVX+Ylcpr5iVyT7ejP9HKGGDMOXRgOBBDA
-         sQjCNkb2NfJBLbdbBprhLKJ67QRdZDzU8kbvyF1b4vqt2zq8yXmdYjz9q1i3t6Cn2BW0
-         M61g==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TwTcsRMn5VZVrmgXZDV1J6sFeJgAdw8S2EoV6iZ5xnc=;
+        b=dlpUNu5q4CyzmXtBLA/gOu0GC/00SF7ttDAollAbHZtk5bw2xAtIqb7CwTopnt8lf3
+         AbfnSVPq9xulj/tw8AvoPmKfCZDzXeZNEVEEDbHlLhh/I5bp+zk8upvRu1BNSASuquhE
+         pUQrRqiHujQApoBOt9qnNksqqhPlFfAR59MXs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tG48zlfsIlWWdNAN2VROyEUyP9nwE+RyuWnK+Wi+nbE=;
-        b=s0cx8JeZ/HRHgcDDNC9Ff0BVPy65agAeyJQIDvPoJCPAQSsU7kOTAvDvYBpvFGvFIA
-         HSiikbI3o5dYIJE+zzGOLwRY50oX7jAMtpIvHrPPJqtutfGGNC4Dj7p9qEcIfUkKEAud
-         sSgoioYG/3J3jhaEMSBRGYMHJiZA5TCm1gWqKlBbvZp/plZFbhIo/lqqsPYy6vYBoKUw
-         Cs5fsTcZJyOksjLCv5nhJ1wjf2LFdTFluWpPx6MEWITZ/9S4ik+dfGrv6yxuIRK4njiM
-         DLiiAKgZmEtNMYphzngElt/+4pNvFZ/2yAcGRVSTdq9fCwtb2AP3UvKEH0crkGZ8/6UW
-         mxqw==
-X-Gm-Message-State: AOAM533Rt0nBeUGCZXGhBOUTkdNeYlEn2rto2hoQqm8TNscXc6Ux5xui
-        noiFJBIcIMKi6J8wDO0LNuU=
-X-Google-Smtp-Source: ABdhPJy7vgdlX6mMw01hF7mdZkBKOrFSYrPSdFFrKw04H+LG1RKRKNnP+OzMN3TnJHikOATsjltdww==
-X-Received: by 2002:a2e:bc0c:0:b0:247:ee54:3a84 with SMTP id b12-20020a2ebc0c000000b00247ee543a84mr159091ljf.286.1646679209014;
-        Mon, 07 Mar 2022 10:53:29 -0800 (PST)
-Received: from localhost.localdomain ([94.103.229.107])
-        by smtp.gmail.com with ESMTPSA id o11-20020ac2434b000000b004478421baaesm2517827lfl.6.2022.03.07.10.53.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 10:53:28 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-Subject: [PATCH RFT] can: mcba_usb: properly check endpoint type
-Date:   Mon,  7 Mar 2022 21:53:14 +0300
-Message-Id: <20220307185314.11228-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TwTcsRMn5VZVrmgXZDV1J6sFeJgAdw8S2EoV6iZ5xnc=;
+        b=mru/e9/ZbH7lhKB6gtUF1L3hU9GLFn5B7q81KeYpPlBG9eESnJb9JCpDi2rSENk9hz
+         VH+9NpoZfwq4epegwswjPopQ8iOjYaXNGhnrOutSCmjK0px8ejAiELhf8Ybz3tEiwgi9
+         YrOej7a+0LoWwUxqfqzep3dvg66y1HUDKFODW27VmzJBYQHgyxPkJWCLSL1l/6zNuEjg
+         IUFfy2X9KclPWgfaABHTMqmoz4M3rYB6A7W8MXCSft9jSCmue2HMLHdAvciZhEuGU9uU
+         2gXKZJ9+jx+P0pduqUwt0KJqEmL/eyy65Fclyo+eHriloAySdWjSsTkzNcyDQ0BXsBwO
+         xEXg==
+X-Gm-Message-State: AOAM531AzzSN2zYceO0rZl9VUOWqO9qP3jpi+w0SPyKDcxeABVU44dCz
+        urbq5l44d6pE5EHNYdbx6EvtyTvhR9ZvsQxltoA=
+X-Google-Smtp-Source: ABdhPJz/vDLGyARDUfIAbBrjjkPJApBk7J2mIf/hWdkV14+kcJb1iyz6CgCV60JkMXePlVIMQn5FlA==
+X-Received: by 2002:a2e:bd13:0:b0:244:da2f:ff4d with SMTP id n19-20020a2ebd13000000b00244da2fff4dmr8744414ljq.213.1646680536649;
+        Mon, 07 Mar 2022 11:15:36 -0800 (PST)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
+        by smtp.gmail.com with ESMTPSA id o21-20020a05651205d500b004457562b26csm3004887lfo.193.2022.03.07.11.15.35
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 11:15:35 -0800 (PST)
+Received: by mail-lf1-f53.google.com with SMTP id g39so28009576lfv.10
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 11:15:35 -0800 (PST)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr5310350lja.443.1646680524503; Mon, 07
+ Mar 2022 11:15:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220307150037.GD3293@kadam> <f7ffd78aa68340e1ade6af15fa2f06d8@AcuMS.aculab.com>
+In-Reply-To: <f7ffd78aa68340e1ade6af15fa2f06d8@AcuMS.aculab.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 7 Mar 2022 11:15:07 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjnsmmGdh-SZzaPD=e1rKhoBkQAF3JeVhGvpa=Gax--7g@mail.gmail.com>
+Message-ID: <CAHk-=wjnsmmGdh-SZzaPD=e1rKhoBkQAF3JeVhGvpa=Gax--7g@mail.gmail.com>
+Subject: Re: [PATCH 0/6] Remove usage of list iterator past the loop body
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Jason Gunthorpe <jgg@ziepe.ca>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported warning in usb_submit_urb() which is caused by wrong
-endpoint type. We should check that in endpoint is actually present to
-prevent this warning
+On Mon, Mar 7, 2022 at 7:26 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> I'd write the following new defines (but I might be using
+> the old names here):
 
-Fail log:
+See my email at
 
-usb 5-1: BOGUS urb xfer, pipe 3 != type 1
-WARNING: CPU: 1 PID: 49 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-Modules linked in:
-CPU: 1 PID: 49 Comm: kworker/1:2 Not tainted 5.17.0-rc6-syzkaller-00184-g38f80f42147f #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: usb_hub_wq hub_event
-RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-...
-Call Trace:
- <TASK>
- mcba_usb_start drivers/net/can/usb/mcba_usb.c:662 [inline]
- mcba_usb_probe+0x8a3/0xc50 drivers/net/can/usb/mcba_usb.c:858
- usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
- call_driver_probe drivers/base/dd.c:517 [inline]
+  https://lore.kernel.org/all/CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com/
 
-Reported-and-tested-by: syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
+for what I think is the way forward if we want to do new defines and
+clean up the situation.
 
-Meta comments:
+It's really just an example (and converts two list cases and one
+single file that uses them), so it's not in any way complete.
 
-I am not an usb expert, but looks like this driver uses one
-endpoint for in and out transactions:
+I also has that "-std=gnu11" in the patch so that you can use the
+loop-declared variables - but without the other small fixups for some
+of the things that exposed.
 
-/* MCBA endpoint numbers */
-#define MCBA_USB_EP_IN 1
-#define MCBA_USB_EP_OUT 1
+I'll merge the proper version of the "update C standard version" from
+Arnd early in the 5.18 merge window, but for testing that one file
+example change I sent out the patch like that.
 
-That's why check only for in endpoint is added
-
----
- drivers/net/can/usb/mcba_usb.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-index 77bddff86252..646aac1a8684 100644
---- a/drivers/net/can/usb/mcba_usb.c
-+++ b/drivers/net/can/usb/mcba_usb.c
-@@ -807,6 +807,13 @@ static int mcba_usb_probe(struct usb_interface *intf,
- 	struct mcba_priv *priv;
- 	int err;
- 	struct usb_device *usbdev = interface_to_usbdev(intf);
-+	struct usb_endpoint_descriptor *in;
-+
-+	err = usb_find_common_endpoints(intf->cur_altsetting, &in, NULL, NULL, NULL);
-+	if (err) {
-+		dev_err(&intf->dev, "Can't find endpoints\n");
-+		return -ENODEV;
-+	}
- 
- 	netdev = alloc_candev(sizeof(struct mcba_priv), MCBA_MAX_TX_URBS);
- 	if (!netdev) {
--- 
-2.35.1
-
+          Linus
