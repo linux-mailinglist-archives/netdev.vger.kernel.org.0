@@ -2,70 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 648864CFFE1
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 14:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1154D0025
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 14:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238486AbiCGNXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 08:23:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
+        id S237685AbiCGNgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 08:36:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237892AbiCGNXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 08:23:40 -0500
-Received: from mail-vk1-xa2e.google.com (mail-vk1-xa2e.google.com [IPv6:2607:f8b0:4864:20::a2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C58D2AE1C
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 05:22:46 -0800 (PST)
-Received: by mail-vk1-xa2e.google.com with SMTP id w128so7958986vkd.3
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 05:22:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=SZlflNwJM/FoSzNidwvG3Q12/AiRGSJaNEWCCSkms7g=;
-        b=XdVBI383B7ho7WW4w/CCvU9PzaaB2en3v930GmmMRt5l0aufoWROw/Yy1lfY/iaLy0
-         Hw6P6lPC9TmtHeISphaV63XJMy8rK7sTTyJ9rJQ4ng5sFPHMh4FQH8MWk4pnudnI8PX5
-         vt3sT0LSnXz74LRd+IB+uZqyDAjSm/accgu4qWK7UX3HMkFC5962nAuD/wpt+fET/CIW
-         aSoFng63lIK9/AeU+YN2HhI5fKo4XE+QM25w6++Ud8M5uf7WHKTUKEkxN/u3lYDnh4q1
-         rpeue4aDVdMFad2E7JBGpyfLykFTfSfEbO8AA3jSGe2atr8YbiYm9c1pgLOS6DC+pUmi
-         +luw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=SZlflNwJM/FoSzNidwvG3Q12/AiRGSJaNEWCCSkms7g=;
-        b=ASsNAOlQhyhNPSkUrUG5giqSLJtjnSCh5wTQeUSNKYeFUkHkyAQUFown5IinATFk52
-         t9B+WAz5NjcYxMpgMd9TVXjG8lT3Vy3TfitV+iK2wSodMfR696jvXC1WTp/IrHwKnngN
-         ybduxoDhjisdP0PPbIW8kTFj/Yse7O7eLYddDPeYbSTjlOiK1uH36vnaHWIan1e52Tat
-         BSX3prAet5bbSoWv7f8PKAkhkHeYQQ5XB6uJ0SOzeZARsPhdx/Y1DYf/8+Xa20LO1YxD
-         TvcQo7rztaC0YeHisQ4BszzMa5K3b9lEj5uRv+QWko8wt1ZNlc8mSKip92tPcXUYVnp+
-         uUBQ==
-X-Gm-Message-State: AOAM5331JuzbZqinJ6tuzpnkm4xh3ffwPJwKr3LpIesyOzRii95naWaH
-        bN3Ps6z6kPeCBbi3B0cV7kszMHdw1UQNbODTg58=
-X-Google-Smtp-Source: ABdhPJwK3Q8Xi9PvdL4eWlrJYSB2/+nLsb0Rno0Tsn8Y7Pk1drDW20AZh/s6Hh0QcL+oqTHYvFX2E8xSofMTfmcNEF4=
-X-Received: by 2002:a05:6122:2188:b0:337:4738:581c with SMTP id
- j8-20020a056122218800b003374738581cmr1824498vkd.5.1646659365342; Mon, 07 Mar
- 2022 05:22:45 -0800 (PST)
+        with ESMTP id S233373AbiCGNgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 08:36:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844237CDC7;
+        Mon,  7 Mar 2022 05:35:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22F1BB81243;
+        Mon,  7 Mar 2022 13:35:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4A20C340F6;
+        Mon,  7 Mar 2022 13:35:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646660104;
+        bh=o+SD1cUlsYrZv26Wn6nQ+JaPM+ZNKL19sVgBMH450zM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=a6vgOPrc22ssJhNR/R2TvrMVz82ctGntauMqM18HVgmWudfpPhb15lQTebVYFF/ww
+         gKAv72rD0CB77CDK44cnmG9awNUb3C0KjtkTOlU+bQNhXusETL7tlvrywpG+ZC7y6K
+         eagWJ1rYYBuLqeAwD51lhoK/1KjFHXNuJZS1ktelNtnJyagcRuNAQtb1ZIBCXf2yGS
+         LZ9kpRvFI5kjT+l7B3SpCv0Jnukcsx71Q0IAluQnD8M0kLEHEAWqwNXH8IOmZ+908l
+         ZKmdDHh/fL1MSuuTzUnYlnEzjohV5NVQrnfDEd7dr1/pu+RJJVuSRtvPc+5qLre+n6
+         JoeIvm/AScQXA==
+Received: by mail-ej1-f42.google.com with SMTP id d10so31932971eje.10;
+        Mon, 07 Mar 2022 05:35:04 -0800 (PST)
+X-Gm-Message-State: AOAM531o+5lUN/Afb/mF8KUl4M+ru7ULabyuo/RHUzE17oRbhV4KsSIk
+        ekPvNFyM9VXOH0autgdaRmIWHXJ0B9Dhx+OxSg==
+X-Google-Smtp-Source: ABdhPJxptrtnZf/+9J2q0LL+bGJVCspIpX4l4HtvBxUxmFH6Wwcxw4rGqs98Gg9PPjVDwPXszI++IRx4tvIh7LtQSt0=
+X-Received: by 2002:a17:906:a38e:b0:6da:a1f9:f9ee with SMTP id
+ k14-20020a170906a38e00b006daa1f9f9eemr8679535ejz.27.1646660102959; Mon, 07
+ Mar 2022 05:35:02 -0800 (PST)
 MIME-Version: 1.0
-Sender: davisbrook764@gmail.com
-Received: by 2002:a67:d703:0:0:0:0:0 with HTTP; Mon, 7 Mar 2022 05:22:45 -0800 (PST)
-From:   Hannah Johnson <hannahjohnson8856@gmail.com>
-Date:   Mon, 7 Mar 2022 13:22:45 +0000
-X-Google-Sender-Auth: xpP6XpMevmKfl8_ZE_jFZc7gpds
-Message-ID: <CAE6EjdinCFK==x=yrLA7C1G2+cSUGTzPN96MSUBJ4MV-+k6Oag@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
+References: <164659571791.547857.13375280613389065406@leemhuis.info>
+ <CAHk-=wgYjH_GMvdnNdVOn8m81eBXVykMAZvv_nfh8v_qdyQNvA@mail.gmail.com> <4a28b83b-37ef-1533-563a-39b66c5ff158@leemhuis.info>
+In-Reply-To: <4a28b83b-37ef-1533-563a-39b66c5ff158@leemhuis.info>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 7 Mar 2022 07:34:50 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLHun+X4jMwTbVMmjjETfbP73j52XCwWBj9MJCkpQ41mA@mail.gmail.com>
+Message-ID: <CAL_JsqLHun+X4jMwTbVMmjjETfbP73j52XCwWBj9MJCkpQ41mA@mail.gmail.com>
+Subject: Re: Linux regressions report for mainline [2022-03-06]
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello
-Nice to meet you
-my name is Hannah Johnson i will be glad if we get to know each other more
-better and share pictures i am  expecting your reply
-thank you
+On Mon, Mar 7, 2022 at 1:32 AM Thorsten Leemhuis
+<regressions@leemhuis.info> wrote:
+>
+> On 06.03.22 22:33, Linus Torvalds wrote:
+> > On Sun, Mar 6, 2022 at 11:58 AM Regzbot (on behalf of Thorsten
+> > Leemhuis) <regressions@leemhuis.info> wrote:
+> >>
+> >> ========================================================
+> >> current cycle (v5.16.. aka v5.17-rc), culprit identified
+> >> ========================================================
+> >>
+> >> Follow-up error for the commit fixing "PCIe regression on APM Merlin (aarch64 dev platform) preventing NVME initialization"
+> >> ---------------------------------------------------------------------------------------------------------------------------
+> >> https://linux-regtracking.leemhuis.info/regzbot/regression/Yf2wTLjmcRj+AbDv@xps13.dannf/
+> >> https://lore.kernel.org/stable/Yf2wTLjmcRj%2BAbDv@xps13.dannf/
+> >>
+> >> By dann frazier, 29 days ago; 7 activities, latest 23 days ago; poked 13 days ago.
+> >> Introduced in c7a75d07827a (v5.17-rc1)
+
+Actually, it was introduced over a year ago in 6dce5aa59e0b. It was
+fixed in c7a75d07827a for XGene2, but that *further* broke XGene1
+which was just reported this cycle.
+
+> > Hmm. The culprit may be identified, but it looks like we don't have a
+> > fix for it, so this may be one of those "left for later" things. It
+> > being Xgene, there's a limited number of people who care, I'm afraid.
+> >
+> > Alternatively, maybe 6dce5aa59e0b ("PCI: xgene: Use inbound resources
+> > for setup") should just be reverted as broken?
+>
+> I don't care much, I just hope someone once again will look into this,
+> as this (and the previous) regression are on my list for quite a while
+> already and process once again seems to have slowed down. :-/
+
+It's going to take some more debug patches from me as what's been
+tried so far didn't work and I'm not ready to give up and revert this
+cleanup.
+
+Rob
