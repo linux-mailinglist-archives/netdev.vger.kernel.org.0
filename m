@@ -2,61 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 829954D0261
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 16:03:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D42234D0263
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 16:03:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243638AbiCGPEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 10:04:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        id S231820AbiCGPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 10:04:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243628AbiCGPEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 10:04:10 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB081CFFF
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 07:03:06 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id qt6so32549491ejb.11
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 07:03:06 -0800 (PST)
+        with ESMTP id S243688AbiCGPEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 10:04:11 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A8B1EC57
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 07:03:12 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id s25so20862656lji.5
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 07:03:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1jGYNh9y1jCRU2Ce5sNN/KIt4KeyZCiwBUd3+H3/o08=;
-        b=EPe6VKyTN3nTIzc2Xu7I2TzJ81mO0rAjis5e8dPqpR3ke+IxwnOlBfNPx+2ws/yGE3
-         6N4/8USZpMXGOwMkBkqaPsVFdpV8/CL4M6KipioCaKru2ps8txN/LvRTjfo3odLRts6j
-         fi+KihWJv3uBnoAWDW/kotNPPjMlBie/FtXtowgGvSNW5z1WUt6J+yYac/cEsP5deNzy
-         MA/WWVTVHSo3WhWOdvDyX/xgxHTh5EllYSTqr1Fwj2IiAvONMN961PLJ9mcXqr8FOl2c
-         GrZBmpYQfZ3YXMy3aolMw9hj5Rniup+pGJVxlRmHJbWomoHnT+ZUyYSJXJ315/KKHgwj
-         vM0g==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=/BTt8YfLqIyHV2xz5yac4//kRwc8vucWlkgPD1H5W5U=;
+        b=geSKUfzqH0ywLbmlSI4UD7XWu1DZAlvfys+W7vVP+VziMkRy9OPLCGWNyAdIXt1Bk5
+         h809Vnkn1UErlMBAksU9IxSwTd3AvnT4UYUsCk8Fbj3N7QPq2u4sVhQA/K7918afijZ/
+         +nXawLyl8sKtpITj3idcFoayKBWNTF8YEL15U34F09L97BWaO82jpZjN3qn9i5EP/WcK
+         YqYWxTW8LazUdo+MmCRa9MQupXERDJ2rNoYVtiqDZr8AJPrvVKVP838BI0qFTNRs0JMg
+         L2C3s4WjE0o6b0WRiadxWMjVi1woqYDlUuZc2YWb8XtkniDw4Hj87xdrKekXMDgAW0uC
+         W9aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1jGYNh9y1jCRU2Ce5sNN/KIt4KeyZCiwBUd3+H3/o08=;
-        b=pUW2NlqLW77NXHVZzStXkI+W/dvgwV3tQaeOuyGR+VtZydAPXgNfoSPcrJ5J8i6Z5E
-         lNegqqhTXkyLSF+xYxsBggwTTbhtTheBBFK9cDtT1XoolwhEjKQMMtt6bBEfJWe6Ey7I
-         JyJsf5BtN7rsmvWDgxDUdEeKSYg4MhtZEh7zaj+ixM0rRziGJAxhDSoO1lUCAmvuWyC3
-         Yl01+j9Al3TrtRszUZKiezLvAdCpZumYZv4FqPfOB8qHdf/GKQyeif4ONxZmY/1I5OsG
-         UHGOzsKqvTJByiWndh0AzkV/6bKItI2ggNH5J6djc6LY6+5BItB7RJqcHZgCgTUE7khF
-         33Sw==
-X-Gm-Message-State: AOAM530Qr43v4mm/wBXbYaxwnQW78T5p2M7YvfM/cwhJt0wSyvkSq7zy
-        gZD6a0+i51GzeglqUiYZE/ooJA==
-X-Google-Smtp-Source: ABdhPJxw/ApTPxDn/10PdEkN1SCTAkfYKFxobqWQQuC1vOOuDcHNFUBkcLCxGISX5Csx6MeskjbIMg==
-X-Received: by 2002:a17:907:7f03:b0:6d9:acb2:33ac with SMTP id qf3-20020a1709077f0300b006d9acb233acmr9165596ejc.705.1646665384867;
-        Mon, 07 Mar 2022 07:03:04 -0800 (PST)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id jl2-20020a17090775c200b006dabe8887b8sm3535382ejc.21.2022.03.07.07.03.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 07:03:04 -0800 (PST)
-Message-ID: <4fc171ed-98dd-2574-6373-f58b4b9e036a@blackwall.org>
-Date:   Mon, 7 Mar 2022 17:03:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 net-next 03/10] net: bridge: mst: Support setting and
- reporting MST port states
-Content-Language: en-US
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=/BTt8YfLqIyHV2xz5yac4//kRwc8vucWlkgPD1H5W5U=;
+        b=KSgTApqbiRmZ3UDMjFe7QiufLj5IBV3pjkDyDPokwymxbWo6Q0Qp0ubL6CwNKi7v3p
+         gmqBZRkkUYqCf9qiV1EZmPhZOTIwIYjQ31jd61TGY0UIJhfyjgAEFwhGBQHqkaYAvM90
+         4pnYjRrqJ/0GVGD8YGwpCf3ggm5yPa/AAKbRmRjNWITwUw7kkXbnUZ81IbIWtJvw7WPH
+         /vZO4IYUAv5W5YAtgVpbtlpiL+dgCD4esNAg9qEob2Mn5eaVgOOirhQu51UDED7KmX9U
+         B5KBg0itEZPFDWL2fXvFFCQihPk4xRrhA9emkPvkuS7YbKXhEY1HkvlxZE3jrs7SFawp
+         C/vg==
+X-Gm-Message-State: AOAM532t537mBU4Dgi9XUpHACbwZmwFxUNtfiBPvhlA5HgsZvwcgMG8Y
+        bxBbb6C3Spmh7Tl2TKzFr91NDg==
+X-Google-Smtp-Source: ABdhPJyRIzgTgkB5vzWWj4N/L5SwvNpTpRxtAde1STA6pj+0+6N4W5+mT6ohmIbc8yWzPAk4nV5rOA==
+X-Received: by 2002:a2e:9909:0:b0:244:c10b:3df2 with SMTP id v9-20020a2e9909000000b00244c10b3df2mr7871072lji.288.1646665388327;
+        Mon, 07 Mar 2022 07:03:08 -0800 (PST)
+Received: from wkz-x280 (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id p1-20020a05651238c100b004435d1d47fasm2890905lft.102.2022.03.07.07.03.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 07:03:07 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
         kuba@kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -64,7 +57,6 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
         Russell King <linux@armlinux.org.uk>,
         Petr Machata <petrm@nvidia.com>,
         Cooper Lees <me@cooperlees.com>,
@@ -72,31 +64,35 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Matt Johnston <matt@codeconstruct.com.au>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 03/10] net: bridge: mst: Support setting and
+ reporting MST port states
+In-Reply-To: <5d3acf32-9875-de6d-7495-5e4860fb88f1@nvidia.com>
 References: <20220301100321.951175-1-tobias@waldekranz.com>
  <20220301100321.951175-4-tobias@waldekranz.com>
  <53EED92D-FEAC-4CC6-AF2A-52E73F839AB5@blackwall.org>
- <874k49olix.fsf@waldekranz.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <874k49olix.fsf@waldekranz.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <5d3acf32-9875-de6d-7495-5e4860fb88f1@nvidia.com>
+Date:   Mon, 07 Mar 2022 16:03:07 +0100
+Message-ID: <871qzdolec.fsf@waldekranz.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/03/2022 17:00, Tobias Waldekranz wrote:
-> On Wed, Mar 02, 2022 at 00:19, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+On Tue, Mar 01, 2022 at 17:53, Roopa Prabhu <roopa@nvidia.com> wrote:
+> On 3/1/22 15:19, Nikolay Aleksandrov wrote:
 >> On 1 March 2022 11:03:14 CET, Tobias Waldekranz <tobias@waldekranz.com> wrote:
 >>> Make it possible to change the port state in a given MSTI. This is
 >>> done through a new netlink interface, since the MSTIs are objects in
 >>> their own right. The proposed iproute2 interface would be:
 >>>
->>>    bridge mst set dev <PORT> msti <MSTI> state <STATE>
+>>>     bridge mst set dev <PORT> msti <MSTI> state <STATE>
 >>>
 >>> Current states in all applicable MSTIs can also be dumped. The
 >>> proposed iproute interface looks like this:
@@ -184,41 +180,16 @@ On 07/03/2022 17:00, Tobias Waldekranz wrote:
 >>> +	RTM_SETMST,
 >>> +#define RTM_SETMST	RTM_SETMST
 >>> +
->>
 >> I think you should also update selinux  (see nlmsgtab.c)
 >> I'll think about this one, if there is some nice way to avoid the new rtm types.
->>
->>> 	__RTM_MAX,
->>> #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
->>> };
->>> diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
->>> index f3b8e279b85c..8dea8e7257fd 100644
->>> --- a/net/bridge/br_mst.c
->>> +++ b/net/bridge/br_mst.c
->>> @@ -120,3 +120,247 @@ int br_mst_set_enabled(struct net_bridge *br, unsigned long val)
->>> 	br_opt_toggle(br, BROPT_MST_ENABLED, !!val);
->>> 	return 0;
->>> }
->>> +
->>> +static int br_mst_nl_get_one(struct net_bridge_port *p, struct sk_buff *skb,
->>> +			     struct netlink_callback *cb)
->>> +{
->>> +	struct net_bridge_vlan_group *vg = nbp_vlan_group(p);
->>> +	int err = 0, idx = 0, s_idx = cb->args[1];
->>> +	struct net_bridge_vlan *v;
->>> +	struct br_port_msg *bpm;
->>> +	struct nlmsghdr *nlh;
->>> +	struct nlattr *nest;
->>> +	unsigned long *seen;
->>> +
->>
->> Reverse xmas tree
-> 
-> Both of these lines end at the 28th column. Is there some other
-> tiebreaking mechanism that forces the reverse ordering of nest and seen?
-> 
-> In a variable-width font, the nest declaration does appear shorter. I
-> remember that you did not have your laptop with you, could that be it?
+>
+> yes, since these are all port attributes, seems like 'bridge link set' 
+> should work
+>
+> Tobias, can you pls check if extending RTM_SETLINK (with AF_BRIDGE) is 
+> an option here ?
+>
+> ie via br_setlink
 
-Ah yes, you're right. :) Sorry for the noise.
-
+Yeah that makes sense. Not sure how I convinced myself that I needed a
+separate rtm type for it. I will give it a try. Thanks!
