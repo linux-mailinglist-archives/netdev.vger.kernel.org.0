@@ -2,88 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 764B94D06C3
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA3A4D06F9
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233379AbiCGSpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 13:45:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
+        id S244867AbiCGSy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 13:54:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230425AbiCGSpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:45:13 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE3157493
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 10:44:18 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id g1so14955967pfv.1
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 10:44:18 -0800 (PST)
+        with ESMTP id S244863AbiCGSy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:54:27 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902B36FA19;
+        Mon,  7 Mar 2022 10:53:31 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id u3so5366666ljd.0;
+        Mon, 07 Mar 2022 10:53:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6f70dbBx2b6tLiN0tolPxv+m79V191rOzENNS81Vpd8=;
-        b=HgsR/FmZ/0PkdRs6TsXDVL8chakY3Y7QuXp05/OZUBs5iw3J9zmIpfLe+BicrDMYC8
-         jXwnMJr3wVM8Z3Ut4G66l4XuLFkavo3qC541RpEQff54Jh/Y6KBNlQgtR0q62C2tRO9Q
-         P/sbphffDpdpxnbU+OOTNJxiaf9fuSo3DTJ+MA8TBJ37MRTGBuMnMVkMNIRjt0ecVHw6
-         rZKglptU4pZaFQ/HUuejZy7c9JnK7rv/b1JyQXudiYsiTjI+TczNWydk/h4u7UQKH1TL
-         9PaJxzO/samdBDVCMgARmUieNSmu0YR+gUsSMD04Sp8NKSYuPtjyJ80vxwUs0fsBZS5z
-         xHTg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tG48zlfsIlWWdNAN2VROyEUyP9nwE+RyuWnK+Wi+nbE=;
+        b=hSW9HPyRvQxcoxlM6Ti3yu+7lcVrC32NoquHW9HJano7RmoAh3txW5r8Fwrx9c4bh5
+         vN82VNNNUsiCn/FMhn4Cas5VQ/wMHbkzyL+uPGM6xoknI6Urjj/qXDOSNQ08eEA+s8yP
+         qI3HT5EqYpwM2ybKgn2ErYkeu+/5oAtf0z18ODuPya4NQR1LDpV7W7Hho069moOrw/m2
+         R9DgGMFn1Uu5aPWWHNDBxY+sIqSf9Wi5yjqVX+Ylcpr5iVyT7ejP9HKGGDMOXRgOBBDA
+         sQjCNkb2NfJBLbdbBprhLKJ67QRdZDzU8kbvyF1b4vqt2zq8yXmdYjz9q1i3t6Cn2BW0
+         M61g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6f70dbBx2b6tLiN0tolPxv+m79V191rOzENNS81Vpd8=;
-        b=uJW/6POg6fkaTegnsWicD8OTfYDRjqGo13Ncq19istZGB2eVBU/OB9IuKgkBKampqg
-         MOS0PT97i1dhHqkCBvolfvGcoMcuhrW9OcpUXYhHo01Ksrb0W5JduLc64LN6uIYxAbPh
-         lO9yc1BWBy3dBGY1rmQKzKiIoiBiXRkY1p9eNYnJ9kHHjNwOPEW70V91v9hoYJmLe4ut
-         tVFErzBd8wckncZpRS3X+0Y92rJzEifsRt1JeQsHyM30+/x5kukcYDKzn5Vv71PrHd3k
-         JFtisEHeY3K/jBkq3O400SJBp8QOXlmOnpIC/BQxcFsApBHUxTdpUHpJanJiNkvBd/zj
-         5Gfw==
-X-Gm-Message-State: AOAM530s8k70qb+GJiJq+qtjrxlt/1no1JuQCOto+duk59TuEFKNuHug
-        Gos0/G+xu+qGB/BUtQAqZG4gyq1OZ+Y=
-X-Google-Smtp-Source: ABdhPJzQoKoJs4R1O/NqCjEHo92f4Np+4f9HyRAT09SAhm1jkPxo8kGJCohUrjuJUG76gqOJ/dTZ2Q==
-X-Received: by 2002:a63:8742:0:b0:37c:94b7:4fba with SMTP id i63-20020a638742000000b0037c94b74fbamr10680974pge.507.1646678656993;
-        Mon, 07 Mar 2022 10:44:16 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m8-20020a17090a158800b001bf2cec0377sm821965pja.3.2022.03.07.10.44.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 10:44:16 -0800 (PST)
-Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
- WoL IRQ
-To:     Jeremy Linton <jeremy.linton@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Peter Robinson <pbrobinson@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-References: <20220222095348.2926536-1-pbrobinson@gmail.com>
- <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
- <CALeDE9NGckRoatePdaWFYqHXHcOJ2Xzd4PGLOoNWDibzPB_zXQ@mail.gmail.com>
- <734024dc-dadd-f92d-cbbb-c8dc9c955ec3@gmail.com>
- <CALeDE9Nk8gvCS425pJe5JCgcfSZugSnYwzGOkxhszrBz3Da6Fg@mail.gmail.com>
- <3ae3a9fc-9dd1-00c6-4ae8-a65df3ed225f@gmail.com>
- <CALeDE9PK9JkFkbTc36HOZH8CG8MM3OMhKJ24FKioKF5bspSPkA@mail.gmail.com>
- <6cefe7ca-842b-d3af-0299-588b9307703b@gmail.com>
- <20220223144818.2f9ce725@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <922fab4e-0608-0d46-9379-026a51398b7a@arm.com>
- <e0fbf7c7-c09f-0f39-e53a-3118c1b2f193@redhat.com>
- <6fc548ca-1195-8941-5caa-2e3384debad7@arm.com>
- <de377891-c220-64f8-a0c2-69976d0c8513@gmail.com>
- <4da6b03a-603f-c5e8-2356-e7ecd9756508@arm.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <1d95ecda-75a9-0a66-7f5e-42b986556466@gmail.com>
-Date:   Mon, 7 Mar 2022 10:44:14 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        bh=tG48zlfsIlWWdNAN2VROyEUyP9nwE+RyuWnK+Wi+nbE=;
+        b=s0cx8JeZ/HRHgcDDNC9Ff0BVPy65agAeyJQIDvPoJCPAQSsU7kOTAvDvYBpvFGvFIA
+         HSiikbI3o5dYIJE+zzGOLwRY50oX7jAMtpIvHrPPJqtutfGGNC4Dj7p9qEcIfUkKEAud
+         sSgoioYG/3J3jhaEMSBRGYMHJiZA5TCm1gWqKlBbvZp/plZFbhIo/lqqsPYy6vYBoKUw
+         Cs5fsTcZJyOksjLCv5nhJ1wjf2LFdTFluWpPx6MEWITZ/9S4ik+dfGrv6yxuIRK4njiM
+         DLiiAKgZmEtNMYphzngElt/+4pNvFZ/2yAcGRVSTdq9fCwtb2AP3UvKEH0crkGZ8/6UW
+         mxqw==
+X-Gm-Message-State: AOAM533Rt0nBeUGCZXGhBOUTkdNeYlEn2rto2hoQqm8TNscXc6Ux5xui
+        noiFJBIcIMKi6J8wDO0LNuU=
+X-Google-Smtp-Source: ABdhPJy7vgdlX6mMw01hF7mdZkBKOrFSYrPSdFFrKw04H+LG1RKRKNnP+OzMN3TnJHikOATsjltdww==
+X-Received: by 2002:a2e:bc0c:0:b0:247:ee54:3a84 with SMTP id b12-20020a2ebc0c000000b00247ee543a84mr159091ljf.286.1646679209014;
+        Mon, 07 Mar 2022 10:53:29 -0800 (PST)
+Received: from localhost.localdomain ([94.103.229.107])
+        by smtp.gmail.com with ESMTPSA id o11-20020ac2434b000000b004478421baaesm2517827lfl.6.2022.03.07.10.53.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 10:53:28 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Subject: [PATCH RFT] can: mcba_usb: properly check endpoint type
+Date:   Mon,  7 Mar 2022 21:53:14 +0300
+Message-Id: <20220307185314.11228-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <4da6b03a-603f-c5e8-2356-e7ecd9756508@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -92,239 +70,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/7/22 10:27 AM, Jeremy Linton wrote:
-> Hi,
-> 
-> Sorry about the delay, i'm flipping between a couple different things here.
-> 
-> On 3/4/22 14:12, Florian Fainelli wrote:
->>
->>
->> On 3/4/2022 9:33 AM, Jeremy Linton wrote:
->>> Hi,
->>>
->>> On 3/3/22 14:04, Javier Martinez Canillas wrote:
->>>> Hello Jeremy,
->>>>
->>>> On 3/3/22 21:00, Jeremy Linton wrote:
->>>>> Hi,
->>>>>
->>>>> On 2/23/22 16:48, Jakub Kicinski wrote:
->>>>>> On Wed, 23 Feb 2022 09:54:26 -0800 Florian Fainelli wrote:
->>>>>>>> I have no problems working with you to improve the driver, the
->>>>>>>> problem
->>>>>>>> I have is this is currently a regression in 5.17 so I would like to
->>>>>>>> see something land, whether it's reverting the other patch, landing
->>>>>>>> thing one or another straight forward fix and then maybe revisit as
->>>>>>>> whole in 5.18.
->>>>>>>
->>>>>>> Understood and I won't require you or me to complete this
->>>>>>> investigating
->>>>>>> before fixing the regression, this is just so we understand where it
->>>>>>> stemmed from and possibly fix the IRQ layer if need be. Given what I
->>>>>>> just wrote, do you think you can sprinkle debug prints throughout
->>>>>>> the
->>>>>>> kernel to figure out whether enable_irq_wake() somehow messes up the
->>>>>>> interrupt descriptor of interrupt and test that theory? We can do
->>>>>>> that
->>>>>>> offline if you want.
->>>>>>
->>>>>> Let me mark v2 as Deferred for now, then. I'm not really sure if
->>>>>> that's
->>>>>> what's intended but we have 3 weeks or so until 5.17 is cut so we can
->>>>>> afford a few days of investigating.
->>>>>>
->>>>>> I'm likely missing the point but sounds like the IRQ subsystem treats
->>>>>> IRQ numbers as unsigned so if we pass a negative value "fun" is sort
->>>>>> of expected. Isn't the problem that device somehow comes with wakeup
->>>>>> capable being set already? Isn't it better to make sure device is not
->>>>>> wake capable if there's no WoL irq instead of adding second check?
->>>>>>
->>>>>> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>>>>> b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>>>>> index cfe09117fe6c..7dea44803beb 100644
->>>>>> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>>>>> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->>>>>> @@ -4020,12 +4020,12 @@ static int bcmgenet_probe(struct
->>>>>> platform_device *pdev)
->>>>>>        /* Request the WOL interrupt and advertise suspend if
->>>>>> available */
->>>>>>        priv->wol_irq_disabled = true;
->>>>>> -    if (priv->wol_irq > 0) {
->>>>>> +    if (priv->wol_irq > 0)
->>>>>>            err = devm_request_irq(&pdev->dev, priv->wol_irq,
->>>>>>                           bcmgenet_wol_isr, 0, dev->name, priv);
->>>>>> -        if (!err)
->>>>>> -            device_set_wakeup_capable(&pdev->dev, 1);
->>>>>> -    }
->>>>>> +    else
->>>>>> +        err = -ENOENT;
->>>>>> +    device_set_wakeup_capable(&pdev->dev, !err);
->>>>>>        /* Set the needed headroom to account for any possible
->>>>>>         * features enabling/disabling at runtime
->>>>>>
->>>>>
->>>>>
->>>>> I duplicated the problem on rpi4/ACPI by moving to gcc12, so I have
->>>>> a/b
->>>>> config that is close as I can achieve using gcc11 vs 12 and the one
->>>>> built with gcc12 fails pretty consistently while the gcc11 works.
->>>>>
->>>>
->>>> Did Peter's patch instead of this one help ?
->>>>
->>>
->>> No, it seems to be the same problem. The second irq is registered,
->>> but never seems to fire. There are a couple odd compiler warnings
->>> about infinite recursion in memcpy()/etc I was looking at, but
->>> nothing really pops out. Its like the adapter never gets the command
->>> submissions (although link/up/down appear to be working/etc).
->>
->> There are two "main" interrupt lines which are required and an
->> optional third interrupt line which is the side band Wake-on-LAN
->> interrupt from the second level interrupt controller that aggregates
->> all wake-up sources.
->>
->> The first interrupt line collects the the default RX/TX queue
->> interrupts (ring 16) as well as the MAC link up/down and other
->> interrupts that we are not using. The second interrupt line is only
->> for the TX queues (rings 0 through 3) transmit done completion
->> signaling. Because the driver is multi-queue aware and enabled, the
->> network stack will chose any of those 5 queues before transmitting
->> packets based upon a hash, so if you want to reliably prove/disprove
->> that the second interrupt line is non-functional, you would need to
->> force a given type of packet(s) to use that queue specifically. There
->> is an example on how to do that here:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/multiqueue.rst#n47
->>
->>
->> With that said, please try the following debug patch so we can get
->> more understanding of how we managed to prevent the second interrupt
->> line from getting its interrupt handler serviced. Thanks
-> 
-> Right, I applied your patch to rc7, and it prints the following
-> (trimming uninterresting bits)
-> 
-> 
-> 
-> [    7.044681] bcmgenet BCM6E4E:00: IRQ0: 28 (29), IRQ1: -6 (28), Wol
-> IRQ: 29 (4294967290)
+Syzbot reported warning in usb_submit_urb() which is caused by wrong
+endpoint type. We should check that in endpoint is actually present to
+prevent this warning
 
-OK, my debug patch was a bit messed up in that it should have been:
+Fail log:
 
-+	dev_info(&pdev->dev, "IRQ0: %d (%u), IRQ1: %d (%u), Wol IRQ: %d (%u)\n",
-+		 priv->irq0, priv->irq0, priv->irq1,
-+		 priv->irq1, priv->wol_irq, priv->wol_irq);
+usb 5-1: BOGUS urb xfer, pipe 3 != type 1
+WARNING: CPU: 1 PID: 49 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+Modules linked in:
+CPU: 1 PID: 49 Comm: kworker/1:2 Not tainted 5.17.0-rc6-syzkaller-00184-g38f80f42147f #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: usb_hub_wq hub_event
+RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+...
+Call Trace:
+ <TASK>
+ mcba_usb_start drivers/net/can/usb/mcba_usb.c:662 [inline]
+ mcba_usb_probe+0x8a3/0xc50 drivers/net/can/usb/mcba_usb.c:858
+ usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+ call_driver_probe drivers/base/dd.c:517 [inline]
 
-still, we have the information we want, that is, both IRQ0 and IRQ1 are
-valid with the values 28, 49, however wol_irq is -ENXIO as expected.
+Reported-and-tested-by: syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-So I really do not think that the Wake-on-LAN interrupt has anything to
-do with getting the transmit queue timeout. I have seen reports that it
-look like switching the checksum offload might be responsible for these
-timeouts:
+Meta comments:
 
-https://github.com/raspberrypi/linux/issues/3850
-https://github.com/raspberrypi/linux/issues/3850#issuecomment-698206124
+I am not an usb expert, but looks like this driver uses one
+endpoint for in and out transactions:
 
-If that is the case, would you try the following patch in addition to
-the previous one:
+/* MCBA endpoint numbers */
+#define MCBA_USB_EP_IN 1
+#define MCBA_USB_EP_OUT 1
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 1ff0e9a0998e..5ee92b7f70e4 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -4034,8 +4034,7 @@ static int bcmgenet_probe(struct platform_device
-*pdev)
-        priv->msg_enable = netif_msg_init(-1, GENET_MSG_DEFAULT);
+That's why check only for in endpoint is added
 
-        /* Set default features */
--       dev->features |= NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_HW_CSUM |
--                        NETIF_F_RXCSUM;
-+       dev->features |= NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_RXCSUM;
-        dev->hw_features |= dev->features;
-        dev->vlan_features |= dev->features;
+---
+ drivers/net/can/usb/mcba_usb.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-
-
-
-
-> [    7.064731] bcmgenet BCM6E4E:00: GENET 5.0 EPHY: 0x0000
-> [    8.533639] bcmgenet BCM6E4E:00 enabcm6e4ei0: renamed from eth0
-> [   56.803894] bcmgenet BCM6E4E:00: configuring instance for external
-> RGMII (RX delay)
-> [   56.896851] bcmgenet BCM6E4E:00 enabcm6e4ei0: Link is Down
-> [   60.045071] bcmgenet BCM6E4E:00 enabcm6e4ei0: Link is Up - 1Gbps/Full
-> - flow control off
-> [   60.055872] IPv6: ADDRCONF(NETDEV_CHANGE): enabcm6e4ei0: link becomes
-> ready
-> [   62.283525] ------------[ cut here ]------------
-> [   62.290811] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue
-> 2 timed out
-> [   62.301080] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:529
-> dev_watchdog+0x234/0x240
-> [   62.312220] Modules linked in: nft_fib_inet nft_fib_ipv4 nft_fib_ipv6
-> nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct
-> nft_chain_nat nf_nat ns
-> [   62.370353] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.17.0-rc7G12+ #58
-> [   62.380052] Hardware name: Raspberry Pi Foundation Raspberry Pi 4
-> Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
-> [   62.394151] pstate: 40400005 (nZcv daif +PAN -UAO -TCO -DIT -SSBS
-> BTYPE=--)
-> [   62.404211] pc : dev_watchdog+0x234/0x240
-> [   62.411304] lr : dev_watchdog+0x234/0x240
-> [   62.418371] sp : ffff8000080b3a40
-> [   62.424715] x29: ffff8000080b3a40 x28: ffffdd4ed64c7000 x27:
-> ffff8000080b3b20
-> [   62.434899] x26: ffffdd4ed5f40000 x25: 0000000000000000 x24:
-> ffffdd4ed64cec08
-> [   62.445095] x23: 0000000000000100 x22: ffffdd4ed64c7000 x21:
-> ffff1bd254e58000
-> [   62.455259] x20: 0000000000000002 x19: ffff1bd254e584c8 x18:
-> ffffffffffffffff
-> [   62.465439] x17: 64656d6974203220 x16: 0000000000000001 x15:
-> 6d736e617274203a
-> [   62.475615] x14: 2974656e65676d63 x13: ffffdd4ed51700d8 x12:
-> ffffdd4ed65bd5f0
-> [   62.485787] x11: 00000000ffffffff x10: ffffdd4ed65bd5f0 x9 :
-> ffffdd4ed420c0fc
-> [   62.495978] x8 : 00000000ffffdfff x7 : ffffdd4ed65bd5f0 x6 :
-> 0000000000000001
-> [   62.506173] x5 : 0000000000000000 x4 : ffff1bd2fb7b1408 x3 :
-> ffff1bd2fb7bddb0
-> [   62.516334] x2 : ffff1bd2fb7b1408 x1 : ffff3e842586e000 x0 :
-> 0000000000000044
-> [   62.526520] Call trace:
-> [   62.531969]  dev_watchdog+0x234/0x240
-> [   62.538671]  call_timer_fn+0x3c/0x15c
-> [   62.545331]  __run_timers.part.0+0x288/0x310
-> [   62.552579]  run_timer_softirq+0x48/0x80
-> [   62.559466]  __do_softirq+0x128/0x360
-> [   62.566055]  __irq_exit_rcu+0x138/0x140
-> [   62.572823]  irq_exit_rcu+0x1c/0x30
-> [   62.580799]  el1_interrupt+0x38/0x54
-> [   62.580817]  el1h_64_irq_handler+0x18/0x24
-> [   62.580822]  el1h_64_irq+0x7c/0x80
-> [   62.580827]  arch_cpu_idle+0x18/0x2c
-> [   62.580832]  default_idle_call+0x4c/0x140
-> [   62.580836]  cpuidle_idle_call+0x14c/0x1a0
-> [   62.580844]  do_idle+0xb0/0x100
-> [   62.580849]  cpu_startup_entry+0x30/0x8c
-> [   62.580854]  secondary_start_kernel+0xe4/0x110
-> [   62.580862]  __secondary_switched+0x94/0x98
-> [   62.580871] ---[ end trace 0000000000000000 ]---
-> 
-> It should be noted that the irq0/1/2 numbers are a bit messed up in the
-> patch, but the general idea should be visible here.
-> 
-> The full log is here https://pastebin.centos.org/view/22c2aede
-> 
-> The WOL paths aren't required to trigger this, which is why I questioned
-> the other patch.
-> 
-
-
+diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+index 77bddff86252..646aac1a8684 100644
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -807,6 +807,13 @@ static int mcba_usb_probe(struct usb_interface *intf,
+ 	struct mcba_priv *priv;
+ 	int err;
+ 	struct usb_device *usbdev = interface_to_usbdev(intf);
++	struct usb_endpoint_descriptor *in;
++
++	err = usb_find_common_endpoints(intf->cur_altsetting, &in, NULL, NULL, NULL);
++	if (err) {
++		dev_err(&intf->dev, "Can't find endpoints\n");
++		return -ENODEV;
++	}
+ 
+ 	netdev = alloc_candev(sizeof(struct mcba_priv), MCBA_MAX_TX_URBS);
+ 	if (!netdev) {
 -- 
-Florian
+2.35.1
+
