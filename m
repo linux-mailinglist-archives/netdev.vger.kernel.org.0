@@ -2,85 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7EBA4D0B72
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 697E34D0B88
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:55:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236071AbiCGWvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 17:51:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
+        id S242529AbiCGW4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 17:56:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiCGWvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:51:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B436F497
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 14:50:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E1FF6119B
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 22:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 03C8AC340F3;
-        Mon,  7 Mar 2022 22:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646693411;
-        bh=Tjt+GlGgamz0dKagtjVwMwCrQP8ARVAM0CP8Pw8dHq8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tAtffBTs2HsLTq304HkScyN7G0Bp0BzZkGOsX4F2iKTwyWBw46YZsVBWUYtA8ygkU
-         c1PCh1yLPVq/47bZSK5NQBgHpnQ5PZOGiKxe7R35FFSFJMOhrpAW/nwbeC38HMnaYf
-         /cKe0BSgPYZpFgHsOfhUU/htOH5FxI3vETYM7n38Uc0PHlSv1sDq1d0hs5IGMFVZN2
-         wtfJyWwV5EcmJHd4jDhPPDjAlbbeOrfQvy/W5gAbMKuL+QEDrTrT8v/FVYlbaixYn6
-         LwAnh7bKKLWe7Qrr4yvNb5MZu6ABPWLkUgfdi/98A8WvqLYHKgC73DRYnLfcLdfu2h
-         dGTeeCSnJiQ1A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1FCBF0383A;
-        Mon,  7 Mar 2022 22:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234381AbiCGW4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:56:39 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21B438BED;
+        Mon,  7 Mar 2022 14:55:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XkJHzBoGYjd42n0LjqjVuQ+Gqe3G1cnjzHTE4xVFH0g=; b=XX8eamN6U1ecX+0CvO70mry5jB
+        VuOLX7Nbhjxt/nkGJf5zaSo9OLpgHV2ahJUvQH/bbuvKkX6q5kyS+YeZU6kOivk0COIlw2d7p+ebN
+        fkb67Dx86KjMiM4x/adLmI76rRLVPxbG17OSVyI21lVL/Kwg0BIQVUoesScIjp2uzr10=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nRMGP-009fOm-4H; Mon, 07 Mar 2022 23:55:37 +0100
+Date:   Mon, 7 Mar 2022 23:55:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: tag_dsa: Fix tx from VLAN uppers on
+ non-filtering bridges
+Message-ID: <YiaNaRp64ByP2SFa@lunn.ch>
+References: <20220307110548.812455-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2-next v1] tc: separate action print for filter and
- action dump
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164669341092.30729.11461857343532556078.git-patchwork-notify@kernel.org>
-Date:   Mon, 07 Mar 2022 22:50:10 +0000
-References: <1646359300-15825-1-git-send-email-baowen.zheng@corigine.com>
-In-Reply-To: <1646359300-15825-1-git-send-email-baowen.zheng@corigine.com>
-To:     Baowen Zheng <baowen.zheng@corigine.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, jhs@mojatatu.com, victor@mojatatu.com,
-        simon.horman@corigine.com, roid@nvidia.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307110548.812455-1-tobias@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to iproute2/iproute2-next.git (main)
-by David Ahern <dsahern@kernel.org>:
-
-On Fri,  4 Mar 2022 10:01:40 +0800 you wrote:
-> We need to separate action print for filter and action dump since
-> in action dump, we need to print hardware status and flags. But in
-> filter dump, we do not need to print action hardware status and
-> hardware related flags.
+On Mon, Mar 07, 2022 at 12:05:48PM +0100, Tobias Waldekranz wrote:
+> In this situation (VLAN filtering disabled on br0):
 > 
-> In filter dump, actions hardware status should be same with filter.
-> so we will not print action hardware status in this case.
+>     br0.10
+>      /
+>    br0
+>    / \
+> swp0 swp1
 > 
-> [...]
+> When a frame is transmitted from the VLAN upper, the bridge will send
+> it down to one of the switch ports with forward offloading
+> enabled. This will cause tag_dsa to generate a FORWARD tag. Before
+> this change, that tag would have it's VID set to 10, even though VID
+> 10 is not loaded in the VTU.
+> 
+> Before the blamed commit, the frame would trigger a VTU miss and be
+> forwarded according to the PVT configuration. Now that all fabric
+> ports are in 802.1Q secure mode, the frame is dropped instead.
+> 
+> Therefore, restrict the condition under which we rewrite an 802.1Q tag
+> to a DSA tag. On standalone port's, reuse is always safe since we will
+> always generate FROM_CPU tags in that case. For bridged ports though,
+> we must ensure that VLAN filtering is enabled, which in turn
+> guarantees that the VID in question is loaded into the VTU.
+> 
+> Fixes: d352b20f4174 ("net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Here is the summary with links:
-  - [iproute2-next,v1] tc: separate action print for filter and action dump
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=a93c90c7f2d4
+Thanks Tobias
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Tested-by: Andrew Lunn <andrew@lunn.ch>
 
-
+    Andrew
