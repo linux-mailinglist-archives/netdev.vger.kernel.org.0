@@ -2,81 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414834D07DF
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 20:47:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A064D0808
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 20:57:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245138AbiCGTsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 14:48:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53446 "EHLO
+        id S245219AbiCGT6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 14:58:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245133AbiCGTsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 14:48:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0EB5DA6D;
-        Mon,  7 Mar 2022 11:47:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69EB7B816F4;
-        Mon,  7 Mar 2022 19:47:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 14AEAC340EB;
-        Mon,  7 Mar 2022 19:47:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646682425;
-        bh=wnIHskNDTiWGuOn6SMaYqSAfatEdRhyYgNpNgobbHFg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ME+em3BSiR0V3FiDLe4WlgPoSBcGC5qCbMxstPVPpqdaXAJ9gmiJ/5b6WYrz4sNap
-         i4yWmarXYDCLjAR80lOqZpiVxDCOvblwtuvkD8gL17u6GXmvVlI1tshXwKc/DuaSvb
-         cFUmPID2TY5IeTJA/8KOguIb7D1NyF9l6sqsydRbAcIHhZuAqtf4xZGZ/Xi9pJxm3l
-         0bxYxmFUhN13/KVSwxpjB9Xku1Nrx46QgTke1sgSVHYss2DEo+urvBx/QcPbz4c9yk
-         S7ZTTXyL7lIqPkAV/Lm6GDy7t1+dCBlB6KXciLdS3qwbNvN++xa/TC6fJr+G4F7vtN
-         FKxixISfsWJ0Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F2B9CE6D3DE;
-        Mon,  7 Mar 2022 19:47:04 +0000 (UTC)
-Subject: Re: [GIT PULL] virtio: last minute fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220307060332-mutt-send-email-mst@kernel.org>
-References: <20220307060332-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220307060332-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: 3dd7d135e75cb37c8501ba02977332a2a487dd39
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 06be3029703fed2099b7247c527ab70d75255178
-Message-Id: <164668242498.29310.4137734389077787873.pr-tracker-bot@kernel.org>
-Date:   Mon, 07 Mar 2022 19:47:04 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com, david@redhat.com, jasowang@redhat.com,
-        lkp@intel.com, mail@anirudhrb.com, mst@redhat.com,
-        pasic@linux.ibm.com, sgarzare@redhat.com, si-wei.liu@oracle.com,
-        stable@vger.kernel.org,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        wang.yi59@zte.com.cn, xieyongji@bytedance.com,
-        zhang.min9@zte.com.cn
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S245220AbiCGT6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 14:58:24 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C985C16
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 11:57:29 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id f8so4779029pfj.5
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 11:57:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yPy3WGIpfXIw4vF/Gbdz78c9L/bc3DyXNWdegW9XTp8=;
+        b=kIzRWfsV8/CGjte4CEl9AZP39qtIxTHEhe1WPwqkEeVAld6NdgemoXaHpkERKUG52S
+         lR/Xf7droPJYFBjTvVCQ+M36DeCBkiHs9wHfhg9Oe7YqwTqPtHnrHUKvnJe5YQvvUhp/
+         /a9HoxUDsgGG5Uz+tns94Nfsv5qQrhbyAIT2SBlT/DOO4Dd6dvr5a9AiVJRCz+WTJ78R
+         XFZ7YGiKLTuR5NryA25OCJv7X92lYA6CGuJXHfvxGC+gmz//GhoyBlwaR13AqZL21f1T
+         1yMK6LCBGUSsIIzcLinAHHsTeUxVyoee56MYK8VFgsvdlTq8drVuAXz4nNFmppgMC9T5
+         CWvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yPy3WGIpfXIw4vF/Gbdz78c9L/bc3DyXNWdegW9XTp8=;
+        b=0ESUyIdw2sVRrCDEpbWPjZJWLtZsYIvyPBHB72z66/1U6p3kUwkiM9KHmtgDc+1Xq5
+         EPLHhC2B63esMvmZ0bR6UTm1HpUfHjTUXCjPa4y80n91C3DnTOXxZAPw5iDtg7Ehjmpa
+         56JFMV8mAC+0K8TH0jqWh+vUw60ZC29/1NKWtDBiDhR1g61kV7+PtB4Z1uigla+n/Z/A
+         beb9ec1epoEbuPoDeznQUl8Nw5zgB0Q9tG42jG2CmJ0PMWBEi5NtJdmb2D9SeJv6Q9cQ
+         wmiIMVfuXvwxTqXDq0Foed4fubO0AEGD/+aXkDQM10E9y3E0URmVouvxpEltifMNcGye
+         DtRw==
+X-Gm-Message-State: AOAM530MjQjyJTN4i/CSC6lwCntaheT9PoenTYZOcmreLWKgrl+bk4k4
+        WPR4Mk5sFRDk/r9eJuGsSzxnHLRmUwPfDw==
+X-Google-Smtp-Source: ABdhPJzjOXaRo55Tdk46a/IXl7iRdocIN9R69q/wB9Cnj2VLngqJVDKYEmCLKWOBIam3/mL4Yi40eA==
+X-Received: by 2002:a63:6b02:0:b0:37c:7391:59b1 with SMTP id g2-20020a636b02000000b0037c739159b1mr11349770pgc.123.1646683048683;
+        Mon, 07 Mar 2022 11:57:28 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id lb4-20020a17090b4a4400b001b9b20eabc4sm178770pjb.5.2022.03.07.11.57.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 11:57:28 -0800 (PST)
+Date:   Mon, 7 Mar 2022 11:57:25 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        markzhang@nvidia.com, leonro@nvidia.com
+Subject: Re: [PATCH iproute2 v2 1/2] lib/fs: fix memory leak in
+ get_task_name()
+Message-ID: <20220307115725.48679a0a@hermes.local>
+In-Reply-To: <YiZNNQB727Il+EVN@tc2>
+References: <cover.1646223467.git.aclaudi@redhat.com>
+        <0731f9e5b5ce95ab2da44ac74aa1f79ead9413bf.1646223467.git.aclaudi@redhat.com>
+        <527dab8b-6eba-da17-8cef-2614042c9688@kernel.org>
+        <YiZNNQB727Il+EVN@tc2>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Mon, 7 Mar 2022 06:03:32 -0500:
+On Mon, 7 Mar 2022 19:21:41 +0100
+Andrea Claudi <aclaudi@redhat.com> wrote:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+> On Mon, Mar 07, 2022 at 10:58:37AM -0700, David Ahern wrote:
+> > On 3/2/22 5:28 AM, Andrea Claudi wrote:  
+> > > diff --git a/include/utils.h b/include/utils.h
+> > > index b6c468e9..81294488 100644
+> > > --- a/include/utils.h
+> > > +++ b/include/utils.h
+> > > @@ -307,7 +307,7 @@ char *find_cgroup2_mount(bool do_mount);
+> > >  __u64 get_cgroup2_id(const char *path);
+> > >  char *get_cgroup2_path(__u64 id, bool full);
+> > >  int get_command_name(const char *pid, char *comm, size_t len);
+> > > -char *get_task_name(pid_t pid);
+> > > +int get_task_name(pid_t pid, char *name);
+> > >    
+> > 
+> > changing to an API with an assumed length is not better than the current
+> > situation. Why not just fixup the callers as needed to free the allocation?
+> >  
+> 
+> I actually did that on v1. After Stephen's comment about asprintf(), I
+> got the idea to make get_task_name() similar to get_command_name() and
+> a bit more "user-friendly", so that callers do not need a free().
+> 
+> If you think this is not ideal, I can post a v3 with the necessary fixes
+> to the callers.
+> 
+> Thanks,
+> Andrea
+> 
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/06be3029703fed2099b7247c527ab70d75255178
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+My comment was purely a suggestion not a requirement.
+I have just had issues with complaints from compiler about code not
+checking return value from asprintf, so tend to avoid it.
