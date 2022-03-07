@@ -2,84 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 697E34D0B88
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:55:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF094D0BA1
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 00:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242529AbiCGW4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 17:56:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
+        id S244544AbiCGXDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 18:03:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234381AbiCGW4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:56:39 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21B438BED;
-        Mon,  7 Mar 2022 14:55:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XkJHzBoGYjd42n0LjqjVuQ+Gqe3G1cnjzHTE4xVFH0g=; b=XX8eamN6U1ecX+0CvO70mry5jB
-        VuOLX7Nbhjxt/nkGJf5zaSo9OLpgHV2ahJUvQH/bbuvKkX6q5kyS+YeZU6kOivk0COIlw2d7p+ebN
-        fkb67Dx86KjMiM4x/adLmI76rRLVPxbG17OSVyI21lVL/Kwg0BIQVUoesScIjp2uzr10=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nRMGP-009fOm-4H; Mon, 07 Mar 2022 23:55:37 +0100
-Date:   Mon, 7 Mar 2022 23:55:37 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: tag_dsa: Fix tx from VLAN uppers on
- non-filtering bridges
-Message-ID: <YiaNaRp64ByP2SFa@lunn.ch>
-References: <20220307110548.812455-1-tobias@waldekranz.com>
+        with ESMTP id S234485AbiCGXDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 18:03:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6BE329A6;
+        Mon,  7 Mar 2022 15:02:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86E26611A9;
+        Mon,  7 Mar 2022 23:02:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D472C340E9;
+        Mon,  7 Mar 2022 23:02:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646694170;
+        bh=PZV5P/VX4x5ATn7ldLKm4K3NSamKkdX6+zxYl97iE9o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TSrSJLxqcfNNpg0lY6SXymqhbRDj0o9ABw1HJ5Z49gMjyQ2SJk6dRyKT67r3RDu5l
+         hNUzkB0xs6qKYf/Sz69SnMsyKQaa0wSXBulQDKlUMu/uTGQtAkyN8nExC5Dzf4veiJ
+         xXhrlhA+mvWigoywd7TQBrRcikFAgdIcxV++wU9EbzJN/zzKkfDJtJBe0jX3AEfmrC
+         ceyClnG8N2FOO/zz1GUIMt7D5WqlyRApQHfRsfbfe2Zyu8F4636cUy2MNWl34l6ygz
+         CyUhnDTr7Z38VhEGI1Qqvbif/JT0NJxxcVJxtTtDtabLGfnG705qDSHvxcU7pwlWBL
+         sbyhedPZyJANg==
+Date:   Mon, 7 Mar 2022 15:02:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: Signed-off-by missing for commits in the net-next
+ tree
+Message-ID: <20220307150248.388314c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220307072248.7435feed@canb.auug.org.au>
+References: <20220307072248.7435feed@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307110548.812455-1-tobias@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 12:05:48PM +0100, Tobias Waldekranz wrote:
-> In this situation (VLAN filtering disabled on br0):
+On Mon, 7 Mar 2022 07:22:48 +1100 Stephen Rothwell wrote:
+> Hi all,
 > 
->     br0.10
->      /
->    br0
->    / \
-> swp0 swp1
+> Commits
 > 
-> When a frame is transmitted from the VLAN upper, the bridge will send
-> it down to one of the switch ports with forward offloading
-> enabled. This will cause tag_dsa to generate a FORWARD tag. Before
-> this change, that tag would have it's VID set to 10, even though VID
-> 10 is not loaded in the VTU.
+>   c2b2a1a77f6b ("Bluetooth: Improve skb handling in mgmt_device_connected()")
+>   ba17bb62ce41 ("Bluetooth: Fix skb allocation in mgmt_remote_name() & mgmt_device_connected()")
+>   a6fbb2bf51ad ("Bluetooth: mgmt: Remove unneeded variable")
+>   8cd3c55c629e ("Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()")
+>   3a0318140a6f ("Bluetooth: mgmt: Replace zero-length array with flexible-array member")
 > 
-> Before the blamed commit, the frame would trigger a VTU miss and be
-> forwarded according to the PVT configuration. Now that all fabric
-> ports are in 802.1Q secure mode, the frame is dropped instead.
-> 
-> Therefore, restrict the condition under which we rewrite an 802.1Q tag
-> to a DSA tag. On standalone port's, reuse is always safe since we will
-> always generate FROM_CPU tags in that case. For bridged ports though,
-> we must ensure that VLAN filtering is enabled, which in turn
-> guarantees that the VID in question is loaded into the VTU.
-> 
-> Fixes: d352b20f4174 ("net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports")
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> are missing a Signed-off-by from their committer.
 
-Thanks Tobias
+Would it be possible to add bluetooth trees to linux-next?
 
-Tested-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Marcel, Luiz, Johan, would it help?
