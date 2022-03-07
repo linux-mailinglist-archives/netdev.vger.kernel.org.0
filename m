@@ -2,205 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2E9B4D0607
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:12:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0A94D060D
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:12:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244624AbiCGSM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 13:12:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S244663AbiCGSNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 13:13:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241596AbiCGSM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:12:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA5265813;
-        Mon,  7 Mar 2022 10:12:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B154612D8;
-        Mon,  7 Mar 2022 18:12:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4755C340EF;
-        Mon,  7 Mar 2022 18:12:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646676722;
-        bh=7SnCPkdwsxJGwpkdFqlHuUuDSdeXpOUHPBz01VNaJaE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uEGbH611keqViMtcvSDFfr04yicHxU+HboFesqdEiydQBak3alHEjkzuKTxpzPGla
-         3pMmSIxsb3NxypO7rjoFWjjTNLHIX6nmFSkkH4wZXmF7ZB028kTBBdqOJ/rMbHu+X+
-         BDbhxVhTw8AGyjKAR6vBiPFFfjjzfIMp5ULo9OY1abxANhVz9xryZY0QLs8zNnKN9V
-         g4+k7MheWv5Mt6jQFMEG7lhWbTjj4OG/527rGF+IB1Ll7I+W7w9eaXRQg64lkN748R
-         GXmM4mZyVp82jCm841EXGRBQrdm306+l67gXeZxnBMfLznjcwMshImBfm9vQ0HxsaL
-         +a4fVodNPsHvA==
-Received: by mail-yb1-f170.google.com with SMTP id l2so13190233ybe.8;
-        Mon, 07 Mar 2022 10:12:02 -0800 (PST)
-X-Gm-Message-State: AOAM532L66tU+k/9qKud/syfLhoVLo3D3RjqxA5KEFWSCh0nEWYtBDPV
-        knhJ7ETIHq1kHbQhtaJpk204SoJI3BpcfSI+XoQ=
-X-Google-Smtp-Source: ABdhPJwILUMoOgkBhUjC+vc910B4Xeebwa3HBZyw9YZNJbz9I1ydBkpMbaTWiwiyIzw/MiTvG/mOEQeCZrB2btDc64E=
-X-Received: by 2002:a25:8b81:0:b0:629:17d5:68c1 with SMTP id
- j1-20020a258b81000000b0062917d568c1mr8199079ybl.449.1646676721862; Mon, 07
- Mar 2022 10:12:01 -0800 (PST)
+        with ESMTP id S244662AbiCGSNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:13:36 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD792458F
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 10:12:41 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id h16-20020a4a6f10000000b00320507b9ccfso18805444ooc.7
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 10:12:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4ilbLX/565r9ksOpHmBVHn67RxbleG+IcW1pxbSG8Qg=;
+        b=SEbdyfJS7G4rm3ZbcmpA9hqRy98+wogTqyVdBTPClzrYKkfUa887gRC6X8oKni79ex
+         AHLVysu6nFh76kT6zZvb/8Qngw1Gp9GBYvai2Mi4Tx9TgcKydhn76MHsqBfpaDLSdZV4
+         HCM2Je2WDAHKLt2aPTpgDb/mOzYX+J/iLqxpC777fJJqH8u3Hmtkd3Lrj7u8t9XVlGzQ
+         bd5jz+jWvZZEEYs8+Vxlwxm1o2C1Gvhx8pX0fRgA5AMrGnUAjy1dNcbYir5xSXLAGezq
+         kHh2eDEe+sasQV9/dnRIZ/Q3y5U7VfTV0Zh3KCZgzzZfMWc6Su3ucdsH/AVJtU5PdgOp
+         rtoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4ilbLX/565r9ksOpHmBVHn67RxbleG+IcW1pxbSG8Qg=;
+        b=TEcHoMInzg5+OfQOHtL4sLMbNlQarz2yLCxvHYQtLzwLpzDJL0xAvEVNZQApPNgLLC
+         BnNyXylun4daNc0RT5fa4+1T0sTo2pwEPiPTug9rV4m83ZwZLFGY+7rayxlOUeZz7JbX
+         TRezZeWVGzJ6od/Z4Qf5FiOqskQwdgAQ6PjE0veGCXiuG+yIUL3smrYl8Y2diCd21Sqh
+         p8QhEDjLYPJSGROUtJWyITfNPiRqc3zD2hW7g5C2im8d+1jPFdoJRDXOLuyNqwIGqlzU
+         14fdyzhfUCS8ULgzhsWFrV6TmAvNEQRgD0ALKMLtwMZIK/zZd9yoF5SffeJkKm+lsHQJ
+         b5eQ==
+X-Gm-Message-State: AOAM532jM2P4XlhZXusPqN1XhMDDlYMjh+gtZPrfGODqSHZrkDr82WMq
+        EDjThKygElQxOt50aEe5/TU=
+X-Google-Smtp-Source: ABdhPJzkf7Bxt+Ba6JzuQUpXHpGyXvGQHApzv4qIJXSI5l8U2DWwZDqPuHxUvEIZmiiZJZNd/tMOPA==
+X-Received: by 2002:a05:6870:1613:b0:da:b3f:2b3c with SMTP id b19-20020a056870161300b000da0b3f2b3cmr92321oae.219.1646676761321;
+        Mon, 07 Mar 2022 10:12:41 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.65])
+        by smtp.googlemail.com with ESMTPSA id q6-20020a056870028600b000d9be0ee766sm5130132oaf.57.2022.03.07.10.12.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Mar 2022 10:12:41 -0800 (PST)
+Message-ID: <3f97df10-a70f-786c-d8ca-a03c2fef060e@gmail.com>
+Date:   Mon, 7 Mar 2022 11:12:39 -0700
 MIME-Version: 1.0
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <CAPhsuW5APYjoZWKDkZ9CBZzaF0NfSQQ-OeZSJgDa=wB-5O+Wng@mail.gmail.com> <CAO-hwJJkhxDAhT_cwo=Tkx8_=B-MuS=_enByj1t6GEuXD9Lj5Q@mail.gmail.com>
-In-Reply-To: <CAO-hwJJkhxDAhT_cwo=Tkx8_=B-MuS=_enByj1t6GEuXD9Lj5Q@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 7 Mar 2022 10:11:51 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW54ytOFrpW8+2kTuxNxu+-7JNmybCpbU=uG+un+-Xpw4A@mail.gmail.com>
-Message-ID: <CAPhsuW54ytOFrpW8+2kTuxNxu+-7JNmybCpbU=uG+un+-Xpw4A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/28] Introduce eBPF support for HID devices
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH iproute2 v2 1/2] lib/fs: fix memory leak in
+ get_task_name()
+Content-Language: en-US
+To:     Andrea Claudi <aclaudi@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        markzhang@nvidia.com
+References: <cover.1646223467.git.aclaudi@redhat.com>
+ <0731f9e5b5ce95ab2da44ac74aa1f79ead9413bf.1646223467.git.aclaudi@redhat.com>
+ <YiEPeU8z5Y+qd3+l@unreal> <YiZJzokKojVtEH4S@tc2>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <YiZJzokKojVtEH4S@tc2>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 5, 2022 at 2:23 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
-> > >
-> >
-> > The set looks good so far. I will review the rest later.
-> >
-> > [...]
-> >
-> > A quick note about how we organize these patches. Maybe we can
-> > merge some of these patches like:
->
-> Just to be sure we are talking about the same thing: you mean squash
-> the patch together?
+On 3/7/22 11:07 AM, Andrea Claudi wrote:
+> Thanks for letting me know. I usually rely a lot on Fixes: as iproute2
+> package maintainer, but I'll change my habits if this is the common
+> understanding. Stephen, David, WDYT?
 
-Right, squash some patches together.
-
->
-> >
-> > >   bpf: introduce hid program type
-> > >   bpf/hid: add a new attach type to change the report descriptor
-> > >   bpf/hid: add new BPF type to trigger commands from userspace
-> > I guess the three can merge into one.
-> >
-> > >   HID: hook up with bpf
-> > >   HID: allow to change the report descriptor from an eBPF program
-> > >   HID: bpf: compute only the required buffer size for the device
-> > >   HID: bpf: only call hid_bpf_raw_event() if a ctx is available
-> > I haven't read through all of them, but I guess they can probably merge
-> > as well.
->
-> There are certainly patches that we could squash together (3 and 4
-> from this list into the previous ones), but I'd like to keep some sort
-> of granularity here to not have a patch bomb that gets harder to come
-> back later.
-
-Totally agreed with the granularity of patches. I am not a big fan of patch
-bombs either. :)
-
-I guess the problem I have with the current version is that I don't have a
-big picture of the design while reading through relatively big patches. A
-overview with the following information in the cover letter would be really
-help here:
-  1. How different types of programs are triggered (IRQ, user input, etc.);
-  2. What are the operations and/or outcomes of these programs;
-  3. How would programs of different types (or attach types) interact
-   with each other (via bpf maps? chaining?)
-  4. What's the new uapi;
-  5. New helpers and other logistics
-
-Sometimes, I find the changes to uapi are the key for me to understand the
-patches, and I would like to see one or two patches with all the UAPI
-changes (i.e. bpf_hid_attach_type). However, that may or may not apply to
-this set due to granularity concerns.
-
-Does this make sense?
-
-Thanks,
-Song
-
-
-
-
->
-> >
-> > >   libbpf: add HID program type and API
-> > >   libbpf: add new attach type BPF_HID_RDESC_FIXUP
-> > >   libbpf: add new attach type BPF_HID_USER_EVENT
-> > There 3 can merge, and maybe also the one below
-> > >   libbpf: add handling for BPF_F_INSERT_HEAD in HID programs
->
-> Yeah, the libbpf changes are small enough to not really justify
-> separate patches.
->
-> >
-> > >   samples/bpf: add new hid_mouse example
-> > >   samples/bpf: add a report descriptor fixup
-> > >   samples/bpf: fix bpf_program__attach_hid() api change
-> > Maybe it makes sense to merge these 3?
->
-> Sure, why not.
->
-> >
-> > >   bpf/hid: add hid_{get|set}_data helpers
-> > >   HID: bpf: implement hid_bpf_get|set_data
-> > >   bpf/hid: add bpf_hid_raw_request helper function
-> > >   HID: add implementation of bpf_hid_raw_request
-> > We can have 1 or 2 patches for these helpers
->
-> OK, the patches should be self-contained enough.
->
-> >
-> > >   selftests/bpf: add tests for the HID-bpf initial implementation
-> > >   selftests/bpf: add report descriptor fixup tests
-> > >   selftests/bpf: add tests for hid_{get|set}_data helpers
-> > >   selftests/bpf: add test for user call of HID bpf programs
-> > >   selftests/bpf: hid: rely on uhid event to know if a test device is
-> > >     ready
-> > >   selftests/bpf: add tests for bpf_hid_hw_request
-> > >   selftests/bpf: Add a test for BPF_F_INSERT_HEAD
-> > These selftests could also merge into 1 or 2 patches I guess.
->
-> I'd still like to link them to the granularity of the bpf changes, so
-> I can refer a selftest change to a specific commit/functionality
-> added. But that's just my personal taste, and I can be convinced
-> otherwise. This should give us maybe 4 patches instead of 7.
->
-> >
-> > I understand rearranging these patches may take quite some effort.
-> > But I do feel that's a cleaner approach (from someone doesn't know
-> > much about HID). If you really hate it that way, we can discuss...
-> >
->
-> No worries. I don't mind iterating on the series. IIRC I already
-> rewrote it twice from scratch, and that's when the selftests I
-> introduced in the second rewrite were tremendously helpful :) And
-> honestly I don't think it'll be too much effort to reorder/squash the
-> patches given that the v2 is *very* granular.
->
-> Anyway, I prefer having the reviewers happy so we can have a solid
-> rock API from day 1 than keeping it obscure for everyone and having to
-> deal with design issues forever. So if it takes 10 or 20 revisions to
-> have everybody on the same page, that's fine with me (not that I want
-> to have that many revisions, just that I won't be afraid of the
-> bikeshedding we might have at some point).
->
-> Cheers,
-> Benjamin
->
+I think a Fixes tag is relevant here.
