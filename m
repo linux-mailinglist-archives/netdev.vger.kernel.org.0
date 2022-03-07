@@ -2,97 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDC3D4D0BCF
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 00:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3704D0BEA
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 00:19:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241390AbiCGXPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 18:15:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
+        id S245137AbiCGXUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 18:20:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240859AbiCGXPA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 18:15:00 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FB72E692;
-        Mon,  7 Mar 2022 15:14:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646694845; x=1678230845;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=V7Y1Jcc2LPh+LpFTGHXVo4sV+mrjtBNGrWLXuBAqa3M=;
-  b=kF0upLECKcFmwyT4aeeGMvU7Kg70EhU6ZBEZVwF0MIyZxeMjZeCKT9t0
-   ofXnvP/TFaFlsqyz5SNwRUWzxXhlRb52Ee495dKsPV7eqLNztwW8AydEj
-   1snG4k3daCqLXNOlcKOqkVOEUo4jXRJCMXzVD+UV6e+a9ndCh2o47CF7t
-   IaUlriBGVQzbtCHZYB+5t8XnOKCWGYfZt3tYDG+VagsXuMLaDMBCNpfoI
-   jQTjvmKuX6djZ6yzO5uEne2G5JVnsKkJq37flX6EF8jzJ3Wrfkjm0kGs9
-   N7gnvqvJXBVaXDHRDJuJP744xa5vNhmi4NCWnXmYzckxsozhHu1GqC9MN
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="315246581"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="315246581"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2022 15:14:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; 
-   d="scan'208";a="813416923"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Mar 2022 15:14:02 -0800
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, anthony.l.nguyen@intel.com, kuba@kernel.org,
-        davem@davemloft.net, magnus.karlsson@intel.com,
-        alexandr.lobakin@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH net-next] ice: xsk: fix GCC version checking against pragma unroll presence
-Date:   Tue,  8 Mar 2022 00:13:53 +0100
-Message-Id: <20220307231353.56638-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
+        with ESMTP id S235279AbiCGXUH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 18:20:07 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF6133A2D;
+        Mon,  7 Mar 2022 15:19:11 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KCDtH6pLqz4xvZ;
+        Tue,  8 Mar 2022 10:19:03 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646695148;
+        bh=f6lolPIC5IwKsskdbeaJLI6CQbyWlj670tBD1PrZiFU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rtQsTnf2fM/PW6Yxqdh9+8bGgk+r0/Z7391IQU2irc2Fa2Jiwtndzx1uoOhhDoRqB
+         OY0wy/oCebxT10Wh49bgOfAMeOUg+mFYO6WcSXH5MeZDKqyAEDVjyDFbQ1GwYQ3sKf
+         nzcTKw8YzUetVNmaTGLh8313P1Ny2YBWXLMzZlVbwJFP02dSFrKLIxZ9GA9aHUZXDt
+         uMesZneKQqo0Mha3JoeARnUnHTmeC0TjTeIN9kP1kp7updi5mf9AHWye9Kn/0pMlpL
+         m7GJg6Wi+MbfxPCTrdAG9SoyHlZX4dN94zren4EuywTKQpzmvG4mpwbo/tkfqkydel
+         d1TiTHqym+URQ==
+Date:   Tue, 8 Mar 2022 10:19:03 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: Signed-off-by missing for commits in the net-next
+ tree
+Message-ID: <20220308101903.68e0ba72@canb.auug.org.au>
+In-Reply-To: <20220307150248.388314c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220307072248.7435feed@canb.auug.org.au>
+        <20220307150248.388314c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/Reui66SgsK_ABwD5cryGsg6";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pragma unroll was introduced around GCC 8, whereas current xsk code in
-ice that prepares loop_unrolled_for macro that is based on mentioned
-pragma, compares GCC version against 4, which is wrong and Stephen
-found this out by compiling kernel with GCC 5.4 [0].
+--Sig_/Reui66SgsK_ABwD5cryGsg6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fix this mistake and check if GCC version is >= 8.
+Hi Jakub,
 
-[0]: https://lore.kernel.org/netdev/20220307213659.47658125@canb.auug.org.au/
+On Mon, 7 Mar 2022 15:02:48 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 7 Mar 2022 07:22:48 +1100 Stephen Rothwell wrote:
+> >=20
+> > Commits
+> >=20
+> >   c2b2a1a77f6b ("Bluetooth: Improve skb handling in mgmt_device_connect=
+ed()")
+> >   ba17bb62ce41 ("Bluetooth: Fix skb allocation in mgmt_remote_name() & =
+mgmt_device_connected()")
+> >   a6fbb2bf51ad ("Bluetooth: mgmt: Remove unneeded variable")
+> >   8cd3c55c629e ("Bluetooth: hci_sync: fix undefined return of hci_disco=
+nnect_all_sync()")
+> >   3a0318140a6f ("Bluetooth: mgmt: Replace zero-length array with flexib=
+le-array member")
+> >=20
+> > are missing a Signed-off-by from their committer. =20
+>=20
+> Would it be possible to add bluetooth trees to linux-next?
+>=20
+> Marcel, Luiz, Johan, would it help?
 
-Fixes: 126cdfe1007a ("ice: xsk: Improve AF_XDP ZC Tx and use batching API")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
-This code has not made it to net tree yet, hence sending it against
-net-next and this time I'm not routing it via Tony's queue as it's
-probably a bit urgent?
+I already have
 
- drivers/net/ethernet/intel/ice/ice_xsk.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git
+branch master
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.h b/drivers/net/ethernet/intel/ice/ice_xsk.h
-index 0cbb5793b5b8..123bb98ebfbe 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.h
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.h
-@@ -10,7 +10,7 @@
- 
- #ifdef __clang__
- #define loop_unrolled_for _Pragma("clang loop unroll_count(8)") for
--#elif __GNUC__ >= 4
-+#elif __GNUC__ >= 8
- #define loop_unrolled_for _Pragma("GCC unroll 8") for
- #else
- #define loop_unrolled_for for
--- 
-2.33.1
+in linux-next.  Those commits appeared in the bluetooth and net-next
+trees on the same day (Monday) for me.
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/Reui66SgsK_ABwD5cryGsg6
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmImkucACgkQAVBC80lX
+0GwWJggApMriWmXL058glg0rQD+d+Cgu/IvprAQpgcdBnaQDZ2xzH4hCZmTiBkj7
+evCJlER5qAgEJXVSvrVB635a/J+TcVEO3/wKugyapSrUlYAOSBgedmne2Iy2kmeI
+jjp1gVVlUs2ji2bEiCPcXH+rT6NKk3yHIUeShe8nTieW+6QLjHPyrSTif4rcz63S
+C5+056XdwAkuWh5BxzIazNA6PLr1MFpCBSXd9hmSD35fUjj7B7XesAErN1jZl9w/
+viq9gbc9qv0MqFDLXezbZ3pW+VE3yFLlFnvBsa6mGDXEWOTSszAtBigLr4St657k
+Avzt67XP/dhaFDVmngoHkV4/2zvW8w==
+=Z3y5
+-----END PGP SIGNATURE-----
+
+--Sig_/Reui66SgsK_ABwD5cryGsg6--
