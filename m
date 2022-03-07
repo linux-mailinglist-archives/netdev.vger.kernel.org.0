@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51DD24CFE81
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 13:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D582E4CFE7C
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 13:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239831AbiCGMbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 07:31:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
+        id S237731AbiCGMbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 07:31:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238332AbiCGMbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 07:31:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDAE85BF2;
-        Mon,  7 Mar 2022 04:30:13 -0800 (PST)
+        with ESMTP id S236730AbiCGMbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 07:31:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D1085BEB;
+        Mon,  7 Mar 2022 04:30:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7025BB811CF;
-        Mon,  7 Mar 2022 12:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F3F4DC340F6;
-        Mon,  7 Mar 2022 12:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC84760FED;
+        Mon,  7 Mar 2022 12:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 07B2CC36AE2;
+        Mon,  7 Mar 2022 12:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646656211;
-        bh=llzyS48maLqysavM3QeAfL7dDT3TuzwEEssXQ8p4S+w=;
+        bh=pMA67n9Csz8E5tZQ3OW7VwogqSPNXbNWYTt/Qt8n1/s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BnwfCr/Zw8rTCrAmyx90yVtHM07T4N7HTUhEzGNS50sUAKMOtF/ULO1D5yt2oBzBY
-         Rqgv/XZblAq3wHNvD2OaG/T17Yd9v+dkX7VSc2SDY4w1UHg/CHU8Zj8fOdO73k1jZ0
-         Y2gfQZuoGA+7pz/V80Xj9/qw2Ojq6TyDnGayM99py2UPNZz3BpPq0Noh+dd9kCHgUh
-         99OGJRotPMNpsuYA1XJvt6RB9Gjg4993jQ3hjaI+ptYdv8SocKIlcH/25FnGlEROH9
-         xnKgaW7jgKiZ2ueTMHu+k/G4NxvZRJHO6QRLeUB9/sC9mnxYRUFaIJ1GWhXVK1Wfel
-         CJcZznFoX3FHA==
+        b=NEY5UIfIEJfMeVJ7kv2/Uwv1Ly7Q179boj4eVgqPWich1o5CsJ7D+qsXnnA/67ZDD
+         WH4VVEPVsgy0MP1sW2z+A6fnCvm9tjqDOzxls1blPT6PICca0gYvv+LYHiLho3TwV4
+         DPxF8VnoiRXWELkr4BrYszdoCfeYueeqg2eHm+VYQY4U4yOpxWGzqQBGf61lHZMo4+
+         xVRf9OUhNDt5rCBrCr/+YQv+60/WgW7bqs0Entk0nGcj3TwoS7SosrxLQiwuSVkoSm
+         Kl6VpZZIA2GEl6c69nKeYy08GAh0LoPBTH4kptNYOvo8rHkQ0C4l0EsFFpxDm5mzTW
+         vMRUKVmHHAiHw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2D14F0383A;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DCEE9EAC081;
         Mon,  7 Mar 2022 12:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests: net: fix array_size.cocci warning
+Subject: Re: [PATCH] net: rtnetlink: fix error handling in rtnl_fill_statsinfo()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164665621086.9112.14264718832966100905.git-patchwork-notify@kernel.org>
+Message-Id: <164665621090.9112.14322415575261103193.git-patchwork-notify@kernel.org>
 Date:   Mon, 07 Mar 2022 12:30:10 +0000
-References: <20220305161835.16277-1-guozhengkui@vivo.com>
-In-Reply-To: <20220305161835.16277-1-guozhengkui@vivo.com>
-To:     Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220305181346.697365-1-trix@redhat.com>
+In-Reply-To: <20220305181346.697365-1-trix@redhat.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, idosch@nvidia.com, petrm@nvidia.com,
+        edumazet@google.com, avagin@gmail.com, yajun.deng@linux.dev,
+        johannes.berg@intel.com, cong.wang@bytedance.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -65,20 +65,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sun,  6 Mar 2022 00:18:35 +0800 you wrote:
-> Fit the following coccicheck warning:
-> tools/testing/selftests/net/reuseport_bpf_numa.c:89:28-29:
-> WARNING: Use ARRAY_SIZE.
+On Sat,  5 Mar 2022 10:13:46 -0800 you wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
-> It has been tested with gcc (Debian 8.3.0-6) 8.3.0 on x86_64.
-> 
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> The clang static analyzer reports this issue
+> rtnetlink.c:5481:2: warning: Undefined or garbage
+>   value returned to caller
+>   return err;
+>   ^~~~~~~~~~
 > 
 > [...]
 
 Here is the summary with links:
-  - selftests: net: fix array_size.cocci warning
-    https://git.kernel.org/netdev/net-next/c/0273d10182ec
+  - net: rtnetlink: fix error handling in rtnl_fill_statsinfo()
+    https://git.kernel.org/netdev/net-next/c/57d29a2935c9
 
 You are awesome, thank you!
 -- 
