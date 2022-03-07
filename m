@@ -2,95 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F1D4D0AC2
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:14:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A2A94D0AC3
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343665AbiCGWOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 17:14:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52096 "EHLO
+        id S1343701AbiCGWO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 17:14:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343673AbiCGWOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:14:47 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8F3580C3;
-        Mon,  7 Mar 2022 14:13:51 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id u10so23906845wra.9;
-        Mon, 07 Mar 2022 14:13:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=S4KRc2JPrzXRUzhnhouVf6rWLnTNsy7QJgg90N+SFgg=;
-        b=OJtwXtXx5Eannq7k//Jp5ML1sR9bjgU0QhTwDhoiYjGHJzvyWMKCjsL6808BvtzLX7
-         MsCm1kwWhic6uQ2XcyfXFmqa0/UI0qPdcdwqiu3Q+jCCsbmRv4pdtgatzOZ3qkBkDdSK
-         M62qT+tJqC7J/4A91+1QBiosBt66dMVGT0lNc/NBJ1QO3wKDdUm22UbmqOh0+EX/3CMg
-         IdtfFVzSgrYJyZhXrzvjRa3RD7MyWNiAW0yQlzWHxhPsuxFrUjIxz1ubrg8oRy1hlURO
-         yLJTC9J4X9bIXlj3+yRkucOed8eOecV5OfSJdP2xpJpveTN8hFSgJFJvtKMTDOkZfXUQ
-         kdMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=S4KRc2JPrzXRUzhnhouVf6rWLnTNsy7QJgg90N+SFgg=;
-        b=edQ1riKNDLM3hSPhHy1mq15+WYXnAO6sPO3l4wHGo+TMgCWXNmR/FP8rNo3bm08JTW
-         49nwtms0eMumoaImm2zsO44TYzBCrVyl7/LS/9uHBdTQHoJuneqrovtZUT0VUBSuWrt4
-         E/fvXeQ0GTcqTV6xLJb60O22Kn6VhP25VLzIwZlvWHxAiiArfvl3I9BajDtDTsmTEoou
-         +T879qGFHKl2Fnjyesqu8H0hg9fAYdp0uMzj4hQrWKisH92rQuHjhu86LLa8qnw3agXf
-         BVuZ0zpR0EOI7bas7eiOl9jO+9V/GYLiqxBadZcQ0GYND5Ekli91Dc6oTHBIljtHMll1
-         9sFA==
-X-Gm-Message-State: AOAM530Afh5s2UNz7nPdBfpcpVyIuYAbPhxulX1H11fP3pN3RwuI0OXe
-        gexncZO+mx22ICa45+lgjG0=
-X-Google-Smtp-Source: ABdhPJxuX46N8YfLziPqQK5LGqqqEsE4uEjlh6AByOvMMDk5DZJk92B96+DWQv3THo8a6V4GBZOjJg==
-X-Received: by 2002:adf:eb4d:0:b0:1ed:c1f7:a951 with SMTP id u13-20020adfeb4d000000b001edc1f7a951mr9484235wrn.454.1646691230225;
-        Mon, 07 Mar 2022 14:13:50 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id n4-20020a056000170400b001f1fefa429bsm2741564wrc.8.2022.03.07.14.13.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 14:13:49 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Taras Chornyi <tchornyi@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net: prestera: acl: make read-only array client_map static const
-Date:   Mon,  7 Mar 2022 22:13:49 +0000
-Message-Id: <20220307221349.164585-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1343689AbiCGWO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:14:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EA65714B
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 14:14:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D404A61021
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 22:14:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03778C340E9;
+        Mon,  7 Mar 2022 22:13:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646691240;
+        bh=rRV2eMgod/EtX7+LSTAFQBX1oLGoRhPQe1bwvzy73TA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UG5wZuz2Wru7QmA38qja+IzeAK0n8/mWkE9/eHrGSGs4fsIFPX1T1192w5j0kmWKm
+         ShwBPemf1wzbsscBV3gotFuDvhqarXd1SoYp9TYPnAf6YHdIgqjuXVKErowtGjJu0E
+         yU24tLJO0b6PwjiIOToij4i52EJJxRdaqjsqybm2Afv8pEoNgMXnO7YCdQQVot6r69
+         nCflasngs9qJv3hu+SB1n4RJVCxdKu8RqziPXWUotLfWcTwiKX4tlGXkq0kHSulYKC
+         fM+4D4TavxO+5b51yNgHgexPT8IKDHCDb6iHBH5df4EU8xzC8GSsETEpVVPzG7OUKl
+         MXaHUCMKJ2Ehg==
+Date:   Mon, 7 Mar 2022 14:13:58 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, gospo@broadcom.com
+Subject: Re: [PATCH net-next 3/9] bnxt_en: parse result field when NVRAM
+ package install fails
+Message-ID: <20220307141358.4d52462e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1646470482-13763-4-git-send-email-michael.chan@broadcom.com>
+References: <1646470482-13763-1-git-send-email-michael.chan@broadcom.com>
+        <1646470482-13763-4-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't populate the read-only array client_map  on the stack but
-instead make it static const. Also makes the object code a little
-smaller.
+On Sat,  5 Mar 2022 03:54:36 -0500 Michael Chan wrote:
+> From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+> 
+> Instead of always returning -ENOPKG, decode the firmware error
+> code further when the HWRM_NVM_INSTALL_UPDATE firmware call fails.
+> Return a more suitable error code to userspace and log an error
+> in dmesg.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/ethernet/marvell/prestera/prestera_acl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.c b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-index e4af8a503277..47c899c08951 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
-@@ -91,7 +91,7 @@ static const struct rhashtable_params __prestera_acl_rule_entry_ht_params = {
- 
- int prestera_acl_chain_to_client(u32 chain_index, u32 *client)
- {
--	u32 client_map[] = {
-+	static const u32 client_map[] = {
- 		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_0,
- 		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_1,
- 		PRESTERA_HW_COUNTER_CLIENT_LOOKUP_2
--- 
-2.35.1
-
+devlink fw flashing allows for the msg to be reported directly 
+to the user, that's more friendly than having to scan logs.
