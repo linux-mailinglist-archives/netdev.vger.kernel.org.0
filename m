@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 231694D027F
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 16:10:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A9C4D02B2
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 16:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243664AbiCGPK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 10:10:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S243741AbiCGP0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 10:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243663AbiCGPKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 10:10:55 -0500
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D374FC6C
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 07:09:59 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id ACEAA5C0396;
-        Mon,  7 Mar 2022 10:09:56 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 07 Mar 2022 10:09:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CwWsy+Fx/CIHvLGat
-        i4VgUp0A+WPPu8rkPuEP1C9SCk=; b=HC5n/0PtVIBOCaU4zMdCVrIE3TKW6NLbp
-        8p0hG3Qmof4GJgYwvoFpemuZinTYVKmC/29SFhqKRibsNuZ/LyD64x5+eOnZ+7Si
-        SB34GvUmEfNZr5gZP21PkhfCUfeisPKGyqi43G54ZAnj6eUBqN0KZbF3dUCLeuzi
-        daDTzkDcjeNWH0DfxcvGxGH31o2Q9K4LQRWDkhHR2Mb42d2Camdk86R0LoCwyQ4+
-        yk8JO9Z72m1Kngopba1zyCkWw9D60J6dJFBYfhh0LbISn2MVNd3ZCrnkJz8LTNzB
-        yolBgG1NFidLv612gU7Hjr/+UjvFbG/NRrFSqH7H5N3WwfUsAKIDQ==
-X-ME-Sender: <xms:RCAmYnLZPb09TCp1kpwyUqVkJ3CvBjlofs2AAzSGnWzTdEtnT_1B_A>
-    <xme:RCAmYrIdwL0SLRbPaGfe4YZf_75smVNa7ZPa4rVCTPxb7AJ22ozHMsZc7E1oUU3jn
-    80N-ae4-AJnRoM>
-X-ME-Received: <xmr:RCAmYvvo8hgqZe7U8GQJX4n0P17vDJ9dtR4d81Xi4E_LQ4vxnJAMap_55C6AA-0OfiUaL7OpQ3QTcBW-Qmpc2ndvB38>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddugedgjeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeetveevteehhfeuieekudeiudeuudefvedtfeeghffhudettdehtefhgffhkedu
-    jeenucffohhmrghinhepfhgvughorhgrphhrohhjvggtthdrohhrghenucevlhhushhtvg
-    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
-    tghhrdhorhhg
-X-ME-Proxy: <xmx:RCAmYgYhBpNqvDym_cNt8LFfbLDttEaFGWz8PcLYAeV5jhB8ba4zcg>
-    <xmx:RCAmYuY3E_2COUnFpAnWxxwx6-xLlTvC1bwhsm6FXz3nwGp0EesTiw>
-    <xmx:RCAmYkANVoJhbTUhjlRUd10OPbXbVCb7vDnwy0jCbiJlljTekvLUGQ>
-    <xmx:RCAmYnAKmM_coNnbTfwgVSiRiouESteGeJygt74pvd26DU7QG5vUrw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 7 Mar 2022 10:09:55 -0500 (EST)
-Date:   Mon, 7 Mar 2022 17:09:50 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org
-Subject: Re: [PATCH iproute2-next] configure: Allow command line override of
- toolchain
-Message-ID: <YiYgPnn9wtXbOm0a@shredder>
-References: <20220228015435.1328-1-dsahern@kernel.org>
- <Yh93f0XP0DijocNa@shredder>
- <dfe64c90-88ea-9d85-412e-d2064f3f5e52@kernel.org>
+        with ESMTP id S235406AbiCGP0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 10:26:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A13B90CD9;
+        Mon,  7 Mar 2022 07:25:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68188B815E2;
+        Mon,  7 Mar 2022 15:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B884C340EB;
+        Mon,  7 Mar 2022 15:25:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646666733;
+        bh=BNQWhI2ZZ59vaTrOPgc5ts1aXPYVmELNBcWywiAR6ug=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SnAbyCdbk1hQur6TFu02eVVDcJCVsjO+0vHlxOYZuK08YK0WDdtrP0AY8VMxqnRQx
+         oRs4ngY50FAS0myedFBp7iw5T0zkCCKtxsg41jU5JIOIhChW2pTYVEJ7t7PYYAMQMF
+         j6zFXYzafHCzaTD6CLd/Tf62jEwuUnbmS8eWr91M=
+Date:   Mon, 7 Mar 2022 16:25:30 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Hou Tao <houtao1@huawei.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
+Message-ID: <YiYj6t7uhxZ5cw2t@kroah.com>
+References: <20220307091702.378509770@linuxfoundation.org>
+ <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dfe64c90-88ea-9d85-412e-d2064f3f5e52@kernel.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,35 +65,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 11:11:43AM -0700, David Ahern wrote:
-> On 3/2/22 6:56 AM, Ido Schimmel wrote:
-> > David, are you sure this patch is needed? Even without it I can override
-> > from the command line:
-> > 
-> > $ make V=1 CC=gcc
-> > 
-> > lib
-> > make[1]: Entering directory '/home/idosch/code/iproute2/lib'
-> > gcc -Wall -Wstrict-prototypes  -Wmissing-prototypes -Wmissing-declarations -Wold-style-definition -Wformat=2 -O2 -pipe -I../include -I../include/uapi -DRESOLVE_HOSTNAMES -DLIBDIR=\"/usr/lib\" -DCONFDIR=\"/etc/iproute2\" -DNETNS_RUN_DIR=\"/var/run/netns\" -DNETNS_ETC_DIR=\"/etc/netns\" -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -fPIC   -c -o libgenl.o libgenl.c
-> > ...
-> > 
-> > $ make V=1 CC=clang
-> > 
-> > lib
-> > make[1]: Entering directory '/home/idosch/code/iproute2/lib'
-> > clang -Wall -Wstrict-prototypes  -Wmissing-prototypes -Wmissing-declarations -Wold-style-definition -Wformat=2 -O2 -pipe -I../include -I../include/uapi -DRESOLVE_HOSTNAMES -DLIBDIR=\"/usr/lib\" -DCONFDIR=\"/etc/iproute2\" -DNETNS_RUN_DIR=\"/var/run/netns\" -DNETNS_ETC_DIR=\"/etc/netns\" -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -fPIC   -c -o libgenl.o libgenl.c
-> > 
+On Mon, Mar 07, 2022 at 06:30:18PM +0530, Naresh Kamboju wrote:
+> On Mon, 7 Mar 2022 at 15:07, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > This is the start of the stable review cycle for the 5.15.27 release.
+> > There are 262 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> >
+> > Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+> > Anything received after that time might be too late.
+> >
+> > The whole patch series can be found in one patch at:
+> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.27-rc1.gz
+> > or in the git tree and branch at:
+> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> > and the diffstat can be found below.
+> >
+> > thanks,
+> >
+> > greg k-h
 > 
-> interesting. As I recall the change was needed when I was testing
-> Stephen's patches for a clean compile with clang. Either way, the patch
-> was already merged.
+> 
+> Following build errors/warnings noticed on arm64.
+> 
+> 
+> arch/arm64/net/bpf_jit_comp.c: In function 'build_insn':
+> arch/arm64/net/bpf_jit_comp.c:791:21: error: implicit declaration of
+> function 'bpf_pseudo_func' [-Werror=implicit-function-declaration]
+>   791 |                 if (bpf_pseudo_func(insn))
+>       |                     ^~~~~~~~~~~~~~~
+> cc1: some warnings being treated as errors
 
-I realize it was already merged (wasn't asking for academic purposes),
-but rather wanted you to verify that the patch is not needed on your end
-so that I could revert it. I can build with gcc/clang even without the
-patch. With the patch, the build is broken on Fedora as "yacc" is not a
-build dependency [1]. Verified this with a clean install of Fedora 35:
-Can't build iproute with this patch after running "dnf builddep
-iproute". Builds fine without it.
+Found this one, now dropped.
 
-[1] https://src.fedoraproject.org/rpms/iproute/blob/rawhide/f/iproute.spec#_22
