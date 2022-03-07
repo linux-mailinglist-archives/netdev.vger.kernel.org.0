@@ -2,87 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F28B4D03DB
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 17:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E00CC4D03DF
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 17:17:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240499AbiCGQSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 11:18:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        id S237275AbiCGQSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 11:18:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244125AbiCGQSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 11:18:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC8248E53;
-        Mon,  7 Mar 2022 08:17:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4267860C3E;
-        Mon,  7 Mar 2022 16:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 199FBC340EB;
-        Mon,  7 Mar 2022 16:17:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646669826;
-        bh=g7AkI7UmXjqtWe/0nY3r8R1FTcT6BYIuEgvHT7ed2UA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jS6bdkyhDdnlOXciwJ71UjeRz7uCXsBTwcyBL4m2+vLZ4ALa4/pak7K4FPM7Wq219
-         lKJ1PnYnJxd53MhCWcP+teEm8/DLCWSx7H1oI0yMOWDo62iVT81CcVJ1EaU8c6aPI2
-         VPUBC8hpzXR4POlmZbTWFnkFWCGWBcJIAsDqhphs=
-Date:   Mon, 7 Mar 2022 17:17:03 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Hou Tao <houtao1@huawei.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
-Message-ID: <YiYv/4EIrx4AV6wi@kroah.com>
-References: <20220307091702.378509770@linuxfoundation.org>
- <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
+        with ESMTP id S244075AbiCGQSI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 11:18:08 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A593532FC
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 08:17:14 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id c4so13683622qtx.1
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 08:17:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=c3P4r2Qz0VdfRBuStsXVpcJEgpWE5t0Sgi1SeeHIl+U=;
+        b=qLh1xGHv9ZaTRrZzpqcOoD1+8uHX58u1nMs6oSW6WhrHKmvFia5wivCGIniVm6FgkR
+         iLC0Y8OkeuWmcwx+M3Ed+4lITVZWEEeEUU4MMxItwYA6l6XBHu78SVcuoL+XanMlZgqn
+         MSTaZUPUKKUVPiM1iUOv8DrDZaVExh6oBfzh4uHZ1mYRzM5rYwB8vjDPpGEn4y1CJpbJ
+         0ZTR6D9jGwa8sTXP0cEpkQbga/MUh+0KQBIB3tmfRsl6Lxd/U8Hwf1wRbRmYXPyWehHv
+         erZTkyiJjbds40BgSx9Z6M615FfWyoCBlFOzKvZvXtPZCvh3WxMhmOB+RU5Atx7QBeb9
+         OI8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=c3P4r2Qz0VdfRBuStsXVpcJEgpWE5t0Sgi1SeeHIl+U=;
+        b=ICSxaSVKAasM35WYfel6HKTQskt48ZuJmXONOh12jrMVDDRWAbv2SI2nFdkNKL26pv
+         eY1nNYP/JqATXH3r6OgQwrwYcrf8D+i3aHd/tZ6/SOC+BS/z1jQwZ0AwyDI1ybt967q0
+         R4yXSmxv234hGw01qCGeJwwcm8bPCxzfS3LTGqYS1kYy8rtmGKz1PnLD1vpw8KbI8eu7
+         Oi3qdxEAn79Cmbwnqvn7sqhy1a/t04hlesqYH7K159Ww9UuHrjPUQI7BGds4GHaQ2jQL
+         UavFvq0rmAHQh6mg8Heaz/Bk+NsJwhEiQgt8D+u0P3AstqVw07l2vISXbfgOLq32mJO7
+         AiLA==
+X-Gm-Message-State: AOAM5332NZOfIdKgnlldBCz4HsY9KL3AR2Q3/gOicaqrbGsrlcapWH31
+        hfyRoAVeVokXhqiwXmaAjRRKuCpMOTnwKI3rvSI=
+X-Google-Smtp-Source: ABdhPJxHqRLxeTHutyIHKPk0zXlP00KDJKsdfGnUZdGC8XmAFUiG7PdpmXHxheXLigZ4inYz9C7UHBMv4EGcuSd63xM=
+X-Received: by 2002:a05:622a:58d:b0:2e0:6694:ab1 with SMTP id
+ c13-20020a05622a058d00b002e066940ab1mr4729603qtb.593.1646669833230; Mon, 07
+ Mar 2022 08:17:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Received: by 2002:a05:622a:1354:0:0:0:0 with HTTP; Mon, 7 Mar 2022 08:17:12
+ -0800 (PST)
+Reply-To: fionahill.usa@outlook.com
+From:   Fiona Hill <fernadezl768@gmail.com>
+Date:   Mon, 7 Mar 2022 08:17:12 -0800
+Message-ID: <CA+J-fD71VmnH153pBpOOwkQVsefY4ao=3j5yCYi8g1A5PeopkA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.1 required=5.0 tests=BAYES_05,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 06:30:18PM +0530, Naresh Kamboju wrote:
-> drivers/gpu/drm/mediatek/mtk_dsi.c: In function 'mtk_dsi_host_attach':
-> drivers/gpu/drm/mediatek/mtk_dsi.c:858:28: error: implicit declaration
-> of function 'devm_drm_of_get_bridge'; did you mean
-> 'devm_drm_panel_bridge_add'? [-Werror=implicit-function-declaration]
->   858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
-> dev->of_node, 0, 0);
->       |                            ^~~~~~~~~~~~~~~~~~~~~~
->       |                            devm_drm_panel_bridge_add
-> drivers/gpu/drm/mediatek/mtk_dsi.c:858:26: warning: assignment to
-> 'struct drm_bridge *' from 'int' makes pointer from integer without a
-> cast [-Wint-conversion]
->   858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
-> dev->of_node, 0, 0);
->       |                          ^
-> cc1: some warnings being treated as errors
-
-Offending commit now dropped, thanks.
-
-
-greg k-h
+-- 
+Please with honesty did you receive our message we send to you?
