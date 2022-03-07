@@ -2,82 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B93624D0B17
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:31:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BE0F4D0B1B
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:32:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343741AbiCGWc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 17:32:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
+        id S1343755AbiCGWd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 17:33:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236396AbiCGWcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:32:25 -0500
-Received: from v-zimmta03.u-bordeaux.fr (v-zimmta03.u-bordeaux.fr [147.210.215.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7A22DD68;
-        Mon,  7 Mar 2022 14:31:28 -0800 (PST)
-Received: from v-zimmta03.u-bordeaux.fr (localhost [127.0.0.1])
-        by v-zimmta03.u-bordeaux.fr (Postfix) with ESMTP id EBCB818014AC;
-        Mon,  7 Mar 2022 23:31:26 +0100 (CET)
-Received: from begin.home (lfbn-bor-1-255-114.w90-50.abo.wanadoo.fr [90.50.98.114])
-        by v-zimmta03.u-bordeaux.fr (Postfix) with ESMTPSA id B0F3918014A5;
-        Mon,  7 Mar 2022 23:31:26 +0100 (CET)
-Received: from samy by begin.home with local (Exim 4.95)
-        (envelope-from <samuel.thibault@labri.fr>)
-        id 1nRLt0-00C9Ci-8c;
-        Mon, 07 Mar 2022 23:31:26 +0100
-Date:   Mon, 7 Mar 2022 23:31:26 +0100
-From:   Samuel Thibault <samuel.thibault@labri.fr>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
-Subject: [PATCHv2] SO_ZEROCOPY should return -EOPNOTSUPP rather than -ENOTSUPP
-Message-ID: <20220307223126.djzvg44v2o2jkjsx@begin>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@labri.fr>,
-        davem@davemloft.net, kuba@kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
+        with ESMTP id S232516AbiCGWd0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:33:26 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CE4DEA9;
+        Mon,  7 Mar 2022 14:32:29 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id j17so25675010wrc.0;
+        Mon, 07 Mar 2022 14:32:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DwDl1ku4FUR5Ozi9oblunGojtzeBv0vdXYXme8GlGQY=;
+        b=IUNi9+FI52U0cv+PUG+qweTy8nwwW48D9CMfQGeCE47bUPz2LBvDbUVxBiZIrEeLAz
+         Y7sR06LdemXXT5m4g8hKzaOmFxiEUXwB8mkmWjomvZzIB5RuCLTX5yLhDZQMGeoSXCin
+         qJB0nfLdQ3d1uj7JiN5obuaX9OQ1qVHZbtgdqnQVUiC7yIBS5VZSnVjpuDh4gtkSQFH5
+         wX2ZM8E5srFPFwF+lcgJabZ3d7dspb7oltIkZ0ljVyFShpj4vm+IGO/KrfaLGkXZiTQO
+         SZ4mWbwAP0XXMQ5KLIqe0izjLvsNdT1Jb3g0pZH8nxYtsfj1ISua+a+kyK4tgcubjtt7
+         6PmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DwDl1ku4FUR5Ozi9oblunGojtzeBv0vdXYXme8GlGQY=;
+        b=B3oaGj/E1F0kzWUQ/0AHW8cxfWz8/pzzMfdQhsjbz2Ea5+haR20O0e+9KV1joG/KjO
+         ByqzLLVvIrmii12lhQWDC4mKMn0qgsrDk+YLaHDsNjaroqqNfHTooQq4n2L5qRX6/Iz5
+         3fikP+EN3MkIXX0RdRibk1+40ACYufERAPuXX2lcfb8rsgNtKQUqN+3/xPL7Df5iX2LT
+         ZpmD4cMb97jz5BEHIduy2gWmgAi91buPJPYkE4uPOBRTgCSNXdoEepJM1Luxa78tPLDk
+         hRDlgwpsEAVciN9spBeFKBQG4672voNlBsLX+ke5q+LHZ1cuY0hhhKQ8sJZxZPviCOwB
+         +K7A==
+X-Gm-Message-State: AOAM533bN/dxD8dh1sZiTnsJp+jH+m5ypXBOZ0WGqXU7fKSC0QO0Aplc
+        /JGiJXnh2PLP5iLaVICvzlw=
+X-Google-Smtp-Source: ABdhPJxNaqxuh9UAePJwBUcDhV11+dIihM3RKCeeagx9+lhDMIFNlTBCNlLdHLPx6C1jU9UeY9Qe+Q==
+X-Received: by 2002:a05:6000:2c5:b0:1f0:6657:5601 with SMTP id o5-20020a05600002c500b001f066575601mr10178060wry.629.1646692348638;
+        Mon, 07 Mar 2022 14:32:28 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id p12-20020a056000018c00b001f079518150sm9132760wrx.93.2022.03.07.14.32.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 14:32:28 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] brcmfmac: make the read-only array pktflags static const
+Date:   Mon,  7 Mar 2022 22:32:27 +0000
+Message-Id: <20220307223227.165963-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20170609 (1.8.3)
-X-AV-Checked: ClamAV using ClamSMTP
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ENOTSUPP is documented as "should never be seen by user programs",
-and thus not exposed in <errno.h>, and thus applications cannot safely
-check against it (they get "Unknown error 524" as strerror). We should
-rather return the well-known -EOPNOTSUPP.
+Don't populate the read-only array pktflags on the stack but
+instead make it static const. Also makes the object code a little
+smaller.
 
-This is similar to 2230a7ef5198 ("drop_monitor: Use correct error
-code") and 4a5cdc604b9c ("net/tls: Fix return values to avoid
-ENOTSUPP"), which did not seem to cause problems.
-
-Signed-off-by: Samuel Thibault <samuel.thibault@labri.fr>
-
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
-Difference with v1: use -EOPNOTSUPP instead of -ENOPROTOOPT.
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 4ff806d71921..839eb076afee 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1377,9 +1377,9 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 			if (!(sk_is_tcp(sk) ||
- 			      (sk->sk_type == SOCK_DGRAM &&
- 			       sk->sk_protocol == IPPROTO_UDP)))
--				ret = -ENOTSUPP;
-+				ret = -EOPNOTSUPP;
- 		} else if (sk->sk_family != PF_RDS) {
--			ret = -ENOTSUPP;
-+			ret = -EOPNOTSUPP;
- 		}
- 		if (!ret) {
- 			if (val < 0 || val > 1)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index b2fb9fcacdc9..f0ad1e23f3c8 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -4623,7 +4623,7 @@ s32 brcmf_vif_set_mgmt_ie(struct brcmf_cfg80211_vif *vif, s32 pktflag,
+ 
+ s32 brcmf_vif_clear_mgmt_ies(struct brcmf_cfg80211_vif *vif)
+ {
+-	s32 pktflags[] = {
++	static const s32 pktflags[] = {
+ 		BRCMF_VNDR_IE_PRBREQ_FLAG,
+ 		BRCMF_VNDR_IE_PRBRSP_FLAG,
+ 		BRCMF_VNDR_IE_BEACON_FLAG
+-- 
+2.35.1
+
