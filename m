@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1ED4CEF5D
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 03:12:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F0574CEF5E
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 03:12:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234686AbiCGCNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 21:13:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53648 "EHLO
+        id S234700AbiCGCNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 21:13:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231687AbiCGCNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 21:13:20 -0500
+        with ESMTP id S234689AbiCGCNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 21:13:22 -0500
 Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2099.outbound.protection.outlook.com [40.107.93.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA126FD2E;
-        Sun,  6 Mar 2022 18:12:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7160E5FD5;
+        Sun,  6 Mar 2022 18:12:28 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JI5y7GFsPIx+oNYrQJUEYeJcodNjRIrMtfG0VByaNGEDftMdHk2WDvISqwXCAyxpvvnAvzRrbuK7PGBYi9dOKtugHCHb0MiOUz06a36hxZoLEkq4Q7S4OKMle5y28xZHMfWewyxAz2jO7Hrhqov7Hm+zR87wQGKy60OCNBoYYTBCOz9KKYdaqUEG6OwvGvSccYdBgRwtcconA5ZPyFkYmUb3lsRjvB0pjBmdZX2/FdltNlFA9jlq3ZcYnab7o+Yrd+boRFrDSN+K5+QCv5bgGx12Xp6GfbQqBoYBeS96O0JseScjuTRx/U6835VpFCCmtdMMc6ihGtvhnoL7xeiMAA==
+ b=Sp5in53jzu3wnn/BdskwppXLK5zC1hLjwSi+XzYnXJttrVA/to2DcNE93nJuOzh+KdihQg1aY3KhNoKbc3mCanwpRte+rPcUPSgNUeJBpY/cW8JZNS/0PTbjbExzcm1CHaWyczCo3L2EUc/4oDpRO5iqxVDpDafMKK+QfBeJjLFQEPcpPJiquKomB4osWrCepz6ZgE1zSmZtiDyyWKr//2+gCUfE4Agw7xOmi/576twnOZ4m7Ngp6JKWtETM1ESXw2JKa1V5ukSYMpzLn9KhMQ9eMBwTV8j9G1Ma1Vwxz+Sbyv/dNeIhBtdHcFtFZjNuoSDT0ewLoNUeoQLcWJUcmA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=W3OQJaPrRJ43miCon3QCaPuZcmeyirxtpky4yk/ausA=;
- b=VAiFqd12Fwp2ZemC+/Y04YZjhInzFMoOsCzUf9PZMjbe9iXVskmzqryWPsodB7g8DqiLEK0OIxKYCmQFwX3Hm2bynoWHJRZoQgYmg3x+B7ZiU6f35dziYxAPrjaARgH6MFdqPQh2/oJ7bYDgdC62CSbukR/o9iffL8VlfjvdkAepAlZD+EEm5a/4LyQx/GNislEo7Z4+hoVGhGRlwDdQjd5GeAI5Y5t+g9s3/eKv7LFZQXNUth/3z+gOIsN7REbRgL4K6HfVP2SByDLAKsT8mJN2PVszTgi+3Wb8jX8ZfvbwKfaXiff4xtB4ZlAMBEk6FUL0ulfuCmvvcDGgJI3mSQ==
+ bh=7hJjodq4GG2vfBpX7f0GbXAm1LzTx1uG4qV88Nu7HeQ=;
+ b=SUr4K5r8pOKnOTR60BJagQwDsnRWR5Lgjomris4x4Ob+EXvMcVV1niExf3r2DjUHK1aYqtFHn3P8ao1s2T3ai9p70R4BIgtszy2uwnQFZ1D/1sweuJpfDTOJwXjWTpxSimH0QJfg0JXlcP0YFQi5LCAluYeDyEvzdbjNA2Nmfiw9ZpYxywJUkCkky2KUDr30ExDwxeGTD8ZdFUOCpNilcFxRi8lmamE1COuWZisZzpqQzVENRez3eHwmMYAETHZJBzbI7NRMRrhJVMy/mnloC4FggNc3fC1t4ocnk/Ld1lNZN2TD9QHo2WwBcElYKWX+RW6N3ccbUAnGvoQot1JKyA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W3OQJaPrRJ43miCon3QCaPuZcmeyirxtpky4yk/ausA=;
- b=yWAaITb5tPapVHRXt/H2BIZn9KC5/9x94UPKqUzAicDLCldvhsQ1VzM+KSoRuw2VsvJWsPtnxruNUGyPTc4ko/TVzTs9TGe61VMu6PWCRxsSSjuZDrqPAzmJzPWrz/S2d3WgcSrROm5TpVYZRYHVruzrY83C+YnvbaA/hpeEAzQ=
+ bh=7hJjodq4GG2vfBpX7f0GbXAm1LzTx1uG4qV88Nu7HeQ=;
+ b=gqsP51+Zjnbe3bv5+1Ub96PkqRTXZzM75QTroBJeZ06PnobUEuh8poNK/JcxcLtS6bwIvjmaDTXQfEGFq53F5owCENA4nYwKR944L7degzv35rD+JCX36jigfDN8phZ+m/7p+XD/X2WwY6IuJVoULyxLBUWL/VKq1hzR4bz48wI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by SA2PR10MB4553.namprd10.prod.outlook.com
  (2603:10b6:806:11a::12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Mon, 7 Mar
- 2022 02:12:23 +0000
+ 2022 02:12:24 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.5038.026; Mon, 7 Mar 2022
- 02:12:23 +0000
+ 02:12:24 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
         linux-phy@lists.infradead.org, netdev@vger.kernel.org,
@@ -64,10 +64,12 @@ Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
-Subject: [RFC v7 net-next 00/13] add support for VSC7512 control over SPI
-Date:   Sun,  6 Mar 2022 18:11:55 -0800
-Message-Id: <20220307021208.2406741-1-colin.foster@in-advantage.com>
+Subject: [RFC v7 net-next 01/13] pinctrl: ocelot: allow pinctrl-ocelot to be loaded as a module
+Date:   Sun,  6 Mar 2022 18:11:56 -0800
+Message-Id: <20220307021208.2406741-2-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220307021208.2406741-1-colin.foster@in-advantage.com>
+References: <20220307021208.2406741-1-colin.foster@in-advantage.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MW4PR04CA0174.namprd04.prod.outlook.com
@@ -75,54 +77,54 @@ X-ClientProxiedBy: MW4PR04CA0174.namprd04.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7f44f891-478c-4f66-9f0f-08d9ffdfea90
+X-MS-Office365-Filtering-Correlation-Id: 368ea0e2-ea74-4207-f379-08d9ffdfeb6b
 X-MS-TrafficTypeDiagnostic: SA2PR10MB4553:EE_
-X-Microsoft-Antispam-PRVS: <SA2PR10MB45537BAEEA4B7E3B15FA30F2A4089@SA2PR10MB4553.namprd10.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <SA2PR10MB45535A41F853FF5EFD33E98AA4089@SA2PR10MB4553.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bT8nFUX1K6xiRkFUl+PR6+73hCLFNE2I8NqYqD+qxbawOW0mDgzFwekv+YDM1u/x8nb647q2Dbol21BqUXlkwHrS9LGZfiYSaMihJKkbaeL2/uZoCa8/3dT1WZ963mEKN2ZkX21p7Rf0vy4rJnDQ2n9IvNTPxxYEJQ+cA5QoJywihNljBpouB4WBURYz/xV95PSybUTze+Q+gAL8Zm2oMxcAROHspj4fYY2B5u+l+BbtkIUIu6VaiaRIJmlM70WTfFSLbJE4MllMTbUajfOrVKht4C8NTinZPyflSDdSyPgfzpkd4ElnFQI6Z6VHGe63qTMOn6HVWfPDW6FRfK0kzCvu7UI7EHmtyuZdta4Sc1lj3ckKI56fMmPx+QRp/V8LytLFrTdh6F/mMfgYT83SDtu6UGUhYgH8HyZK88jHBCBW8ykkOofb5Qi9IhaDjDXvh332UaooREwFeL01tSP6YuQWOBhBmOK+R5yKCMw82kZUdZOt+tbhkwBKLw1XHalg3YMo3mThOm7W82n4PmXszdMOk9XAAZLdvi5JgbrgFfezTv41M2SkKE0z3T2QTJzZZ2kSwW9bo8bBnDozx8bbhVA/Cveo/umZYKL8IqdpKVZHfLdO5Y/Ggs8+mEpM5zAWJsTo5iEzO9UN/qSFTrtLGd40ppJ1VMhvu4jF8JPesD6+W+nMXD1uoWB9v2ovbexBX47Yter6Qy9aT9I4S5UwLA==
+X-Microsoft-Antispam-Message-Info: UUbaUn/JSdyNFaOwC0O8EbloTeF5ay9WEMpLR/pXyAZLtjiSSJQ/KgEKS4Fwkrg8Qm9ziRY8oANLflgZrkR54mkUyCW1k8mSpR6SgoD0X4ymQ1kePu6mkyv4tVbeQl6k+j7urV/DT7OXfMUngPi7U7dARFmLwfDmWGvLwkAUir+3YT9+9jU79Y5cCX4NMNv10dvlL4dr3hLWJixM0WDwcuY4m+ULM1eFn7R3ZLMQew6ZfR2LCWv7znJFDMd8m1St6QelsiiadalbzPaW0IpEWZnekW+i0TnDjMw40YBOL7QIGj+T5ZK7GXzCIZHkpafZfESL/ACHkYY36Qr9yFjJq+swJa3q4SRChUdw88ByyPGE06i+oMQYrlLjeDjtr34OyOGNYzwlHHzI/xwMvigcfvEALJFlLFX+2+VIDDxCPiDQVqC0ohetpDNKjNerldpDTizOi+yXJNAUTk687V5O64dvwcaoPBbfNsHA6+XMhJaMw103gXH3R7yY3cuNWejJvQNr8TVAV2Q0EinSVyiDFT3yLNMY2EotedJz1rbuZo9G/CYVS/pWOSV3DK0IbT4m72uM2CwRWdxIRI1/Ip08cXKx84wDLCYirKkUSHkcpcJz6oJelr2vxOqPbEzM5UZXjPLg8AIGnMMLaCUlEWsmpABp80+7KXTenWi+4QqyF6a6ae8qx1APiAeEhZIVRozNwxg5EL27xllpt0AHqWFmbQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(376002)(42606007)(396003)(39830400003)(136003)(346002)(38350700002)(86362001)(508600001)(107886003)(38100700002)(6486002)(54906003)(36756003)(44832011)(6666004)(6506007)(66556008)(66946007)(4326008)(316002)(66476007)(8676002)(6512007)(26005)(186003)(8936002)(83380400001)(52116002)(1076003)(5660300002)(7416002)(2616005)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?f8V6wtOhYrCB7f4T7QgO/3ydAYjAw0LeNa+t8q1ppApaaPWdTraQdnYshjqr?=
- =?us-ascii?Q?XGsvux/KnUjVQ2sIgdUDzxz0l3eTZJBYDZ9kJWeWFmN87bqTIJMGdtgMStzK?=
- =?us-ascii?Q?NXjuMHXz4hmRtGfiUENLl7sb7ngu0Gq0nbi5F7XC/UY9iAdMlCsT4oVV3Xdr?=
- =?us-ascii?Q?dZtddBYd7u9Ne7iFop4ypbCY2KCfo8LEI+irWrbpS32aHTtEPkGMWwMKGyRt?=
- =?us-ascii?Q?R90tdFQMXvYXFpAdjDsQ7CA6kcnP9dBvOtsHVA4dCzo3J85WMNOK9beWrd6y?=
- =?us-ascii?Q?UxlDOarRNmk7faqMOM4ssnU7L+FLTcvjfQvnoU7jmOJ4WwRjDgg4BY3XMGmy?=
- =?us-ascii?Q?B/YJjHPGrGXClWuO9nDY5qSFooEcZthKVEDvUHB/Oglo0QZtBXB7iZTVdzeX?=
- =?us-ascii?Q?KkY0YfPCBaofiZDhIVG7wRxukfw60JRAD7S0uL94hr4WqzZVcRQOwCGJmnH3?=
- =?us-ascii?Q?q+vGO/if/acol5u9+Y5C0eepEVWzfWPmx8xj4LPrSCbQ0P1eWglhar2O8MqT?=
- =?us-ascii?Q?NT/a1H3crOMiY3uCKg8W54TN9L5hCtRRHc8tiEqBkGj98GBoUPohsjpHtdR4?=
- =?us-ascii?Q?xx9MFhhPXA8C5m+zmgoAHQx3YloAqnwRUVuVmrN3/EciQsTnpXuEAOEwfgla?=
- =?us-ascii?Q?1HaQF5Dm7oEV59lihhdMz0SXSSMHwBXHsHG+sdGyFKVycyTVG2sZ0MLHjfE4?=
- =?us-ascii?Q?cSRHbDgReVpEBnjy+BqtmsS/Nq3tNBP1HTwzIqlZ5BuTJ2GoQQxTyzGS5mvb?=
- =?us-ascii?Q?F6i2ISkKg5EjIK1hqsI4/uk6YV+icEANTSxEck4COzXuHqPaUXEnsKE67+VC?=
- =?us-ascii?Q?Vjr24jNcjcKTJMx/ZTgsbpuXjdecvovUpfO3OQ8+XsGTgARnIf7VSTGSmyF8?=
- =?us-ascii?Q?WlojxpjgjGmLRWleWkKaszZWExJdlo1HGf+oFrDCfHhZLqup7rcg0c+AAv5M?=
- =?us-ascii?Q?C/ck1aO3I3qrgAvKBzXh+waSTKRsieDDxPxefU2t8DE+xwsOkh0Ohupb/vjA?=
- =?us-ascii?Q?UGAeYomE8gXxcTHiZZGr71SbqSeS/gvIj1hXMw0uCJf6Syrd9Uw7sLMfy8U5?=
- =?us-ascii?Q?2sXoJJNrgB2aKVlJDB9mliYN6bJd2RV7jtd9eNz3iZ338K9IHGPUMpktdyH8?=
- =?us-ascii?Q?7m2rzzt7s2ytjSNPaOGX++wUZI81dhx1ECWy8HYdl24jk6sKgj9vkPnlUMXh?=
- =?us-ascii?Q?1idto+Oz7Qc9SXFdhplVnI2JYE9oZ815YGFu6WEKk07BhIMn5ZZeueThd0Hb?=
- =?us-ascii?Q?rJj4F5WPVQ7rxqgyvhbsGHWsLw9NhxtUkLJksWYi20NuIIoutDh4aDvC4Lh6?=
- =?us-ascii?Q?xhtbaJIPLBJtuAzcyO5t6/zBZqMQGvUDXZdVcO9R1KeakQdI4JGDNrM+x0Jg?=
- =?us-ascii?Q?cshZF0WLPX6dDUvjTOXO58M59IY+2iW3vTM2UsBisfMeex4JQXXnvuucj5sa?=
- =?us-ascii?Q?peHniSk86jgiF8cTPj1eBxNdvP5jGQ6N+N43pg75jDZmX0y16PZ0/rVu0ORE?=
- =?us-ascii?Q?C7AWvWsAx/FYz+fx67cPNqNpKZgRJ76kY7QdootP0gc4PDCIdZRQyD9WfYMB?=
- =?us-ascii?Q?RE1EQeBNUFfhnKLFW0PcSqmBjyet/swQ3npfa/wYUrc5ol8okE5GtPg3w/lE?=
- =?us-ascii?Q?nnv+mrVf6Wwq4xyh1rB7xi/ly/8lP5H3Lu+bE80c1kypbnKdFlujMPXQeNCd?=
- =?us-ascii?Q?/T9vZQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3qzHTuRyKd1Gm2tnhmtNWP3uve3W0JA1up2TqRyWG+n4XIEceUu362Nn2aUV?=
+ =?us-ascii?Q?FLAMU8x/AFC//eOvodPPBwEGxIt8YCmFG97W2e7fm9Pw+X+F3XItLfsYa3Av?=
+ =?us-ascii?Q?0HEJSO+jixoUoU4Hp2QSHa5s5ql7ROrvb1QFaqCxLfXazBvPCRLNwSNcYk7P?=
+ =?us-ascii?Q?afZMS9hxtFow9Uso1waViy6zlxeRn9BbXbHRYlBJsiv0j0Od+ddoN2SDb5Wb?=
+ =?us-ascii?Q?IpbNGaK8nX1EmnwR4TW4K2nfbpnA03E0WGpWsebHFmNNy7Hu8PG9/SnYMbN6?=
+ =?us-ascii?Q?UFV5mQLGAWD/FdJbqe5WWvEIwg0JRcpyqAzbd2UK9hdIIfg/Bec/OiO+fnV8?=
+ =?us-ascii?Q?pGGwjizDv1iGFvgPgMeKFw/b6e5XqFnRcy0DEARGD/HgCD+DzvRfz+uNsUHt?=
+ =?us-ascii?Q?3pyliewWW2ZWfmjph448Pss1lE9WHGXCzHH/3KKN0XpLZBqRc+Z76/utfaD4?=
+ =?us-ascii?Q?eCc7mZLAgHI+oahAlHBbNZSHWpHj+nl4nFhBy4aKHSm9gAni4nyU+0JGi0y/?=
+ =?us-ascii?Q?YnnPwR3K34UMMYjFDqiIT5PRps+Yvd5sNrespOrtQEFaMH7s5ISX/0eYUqBV?=
+ =?us-ascii?Q?mz7rwCgcamLew3PEzprLQy1xk1DzGtNktWkfOAqBGa1JEjrNkC6ot7wFe43C?=
+ =?us-ascii?Q?JjhdBrzL29AGLVDRUyQepyjUUdcrr0EBnPPzVRt9LbTzKLxUDeHW0pBsYtG/?=
+ =?us-ascii?Q?LYEndrzkA70cNurmbB1/OrnIOAxbXukMmKsH85UsS6GwNBhJWE6iiFBimGDl?=
+ =?us-ascii?Q?Iv1VIL2o9h9jRxdrBZBzk2QZPnT7gXglEUbdmQ0C0MVyOns86afHUwqZDY66?=
+ =?us-ascii?Q?cO9ngu4Jn5sgPsSH1RP/z3mJ5z+hXf6GbriMr1pz9zB2y+xHpZtFzFmn1yoQ?=
+ =?us-ascii?Q?JlQgopNEhAOXR1CoNpxzHUklFVBIb1VNEsjDXD4ezAXLA8hTSjSuY5uTiAPX?=
+ =?us-ascii?Q?x80u9HHK/vVEedk5CM21GaViQIsiyT168g38KebXTGNLqOOAe220lvA9KVch?=
+ =?us-ascii?Q?DrSpId4gQvq922n1KPE6jAD5pVDTHIMpXmffYAaw+2/RwLPXB5BzLuwC0UcC?=
+ =?us-ascii?Q?Qd1lunTE8dQxBdTNs92JiemjFXyrOAslU76mnxvmGc2dTQ5fKkoHAcBJUR+c?=
+ =?us-ascii?Q?2MZIqUM6g0i8AFQsUwRXDqWfR04enbh7/IBGHV3YwxkbprgIDho3I3PwScCj?=
+ =?us-ascii?Q?6gAF3n/PL6dbOaxmmSafm9Hufo9ttxKoCOH7QHqUPVIuE9NepUvmlD/geCC8?=
+ =?us-ascii?Q?Gyr+aw7fNfZQ9YAcDA+ceq3kOrZg6wAjryvZm15+DcE3dXwKskYuZCTz4/cx?=
+ =?us-ascii?Q?8u5+MrMXkKku0J6k7hXl3IUQobtz/YrglG/Vpf7nVkQVl+a0CZrhkUCGuzq6?=
+ =?us-ascii?Q?qvd47N1ciUttdVCVjhbGAxpB+6GhUypN02eG/oZrC4DSUlG6w5Q7pchRivr2?=
+ =?us-ascii?Q?X0gZTBPZgxg+SJGtQCZntkbqO8qipR9XVzq8znOJ+TQOWGUCYtPs097NPJOi?=
+ =?us-ascii?Q?Rstx1I4x8aYhOtSR2EkG4WUlGPPk3UVOL/nDP//E5HqZcmiVcyM6JqOdXpq5?=
+ =?us-ascii?Q?CxjBuzjqBCTl1axiaGqeCnHCVi5OmQYaOIsMSku/jcDJjcfkdanxS9E1XMDh?=
+ =?us-ascii?Q?BPuVV8uyl15Le2WqVAkiTgGbHkjqgsYNXYLVAiupX3P/aXbOKNDWhPwSWRs+?=
+ =?us-ascii?Q?vPx76g=3D=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f44f891-478c-4f66-9f0f-08d9ffdfea90
+X-MS-Exchange-CrossTenant-Network-Message-Id: 368ea0e2-ea74-4207-f379-08d9ffdfeb6b
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 02:12:23.4334
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2022 02:12:24.6833
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sNXfXOtbX61eh6YvI+VjBIoEoLZ4dMMlyzcLWMo/q8JZaDHY2xCAUERhMSXZgh4lYoloU+1Xx7yrZt6HPQFv64fa68J8nFFIhxVM2M55uFo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: M0QwxKWa/0jf93JCN0Q+CuiEt6GXQA4TNzwF9q76J+ScUYMNdu3yHwbLDefdbBT+gu+Osux7/322sAbXOiMPSxQbaRokVuHyu3j2duDdc+c=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4553
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -133,301 +135,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patch set in general is to add support for the VSC7512, and
-eventually the VSC7511, VSC7513 and VSC7514 devices controlled over
-SPI. The driver is believed to be fully functional for the internal
-phy ports (0-3)  on the VSC7512. It is not yet functional for SGMII,
-QSGMII, and SerDes ports.
+Work is being done to allow external control of Ocelot chips. When pinctrl
+drivers are used internally, it wouldn't make much sense to allow them to
+be loaded as modules. In the case where the Ocelot chip is controlled
+externally, this scenario becomes practical.
 
-I have mentioned previously:
-The hardware setup I'm using for development is a beaglebone black, with
-jumpers from SPI0 to the microchip VSC7512 dev board. The microchip dev
-board has been modified to not boot from flash, but wait for SPI. An
-ethernet cable is connected from the beaglebone ethernet to port 0 of
-the dev board.
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/pinctrl/Kconfig          | 2 +-
+ drivers/pinctrl/pinctrl-ocelot.c | 4 ++++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-The relevant sections of the device tree I'm using for the VSC7512 is
-below. Notably the SGPIO LEDs follow link status and speed from network
-triggers.
-
-In order to make this work, I have modified the cpsw driver, and now the
-cpsw_new driver, to allow for frames over 1500 bytes. Otherwise the
-tagging protocol will not work between the beaglebone and the VSC7512. I
-plan to eventually try to get those changes in mainline, but I don't
-want to get distracted from my initial goal. I also had to change
-bonecommon.dtsi to avoid using VLAN 0.
-
-
-Of note: The Felix driver had the ability to register the internal MDIO
-bus. I am no longer using that in the switch driver, it is now an
-additional sub-device under the MFD.
-
-I also made use of IORESOURCE_REG, which removed the "device_is_mfd"
-requirement.
-
-
-/ {
-	vscleds {
-		compatible = "gpio-leds";
-		vscled@0 {
-			label = "port0led";
-			gpios = <&sgpio_out1 0 0 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-			linux,default-trigger = "ocelot-miim0.2.auto-mii:00:link";
-		};
-		vscled@1 {
-			label = "port0led1";
-			gpios = <&sgpio_out1 0 1 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-			linux,default-trigger = "ocelot-miim0.2.auto-mii:00:1Gbps";
-		};
-[ ... ]
-		vscled@71 {
-			label = "port7led1";
-			gpios = <&sgpio_out1 7 1 GPIO_ACTIVE_LOW>;
-			default-state = "off";
-			linux,default-trigger = "ocelot-miim1-mii:07:1Gbps";
-		};
-	};
-};
-
-&spi0 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	status = "okay";
-
-	ocelot-chip@0 {
-		compatible = "mscc,vsc7512_mfd_spi";
-		spi-max-frequency = <2500000>;
-		reg = <0>;
-
-		ethernet-switch@0 {
-			compatible = "mscc,vsc7512-ext-switch";
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				port@0 {
-					reg = <0>;
-					label = "cpu";
-					status = "okay";
-					ethernet = <&mac_sw>;
-					phy-handle = <&sw_phy0>;
-					phy-mode = "internal";
-				};
-
-				port@1 {
-					reg = <1>;
-					label = "swp1";
-					status = "okay";
-					phy-handle = <&sw_phy1>;
-					phy-mode = "internal";
-				};
-			};
-		};
-
-		mdio0: mdio0@0 {
-			compatible = "mscc,ocelot-miim";
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			sw_phy0: ethernet-phy@0 {
-				reg = <0x0>;
-			};
-
-			sw_phy1: ethernet-phy@1 {
-				reg = <0x1>;
-			};
-
-			sw_phy2: ethernet-phy@2 {
-				reg = <0x2>;
-			};
-
-			sw_phy3: ethernet-phy@3 {
-				reg = <0x3>;
-			};
-		};
-
-		mdio1: mdio1@1 {
-			compatible = "mscc,ocelot-miim";
-			pinctrl-names = "default";
-			pinctrl-0 = <&miim1>;
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			sw_phy4: ethernet-phy@4 {
-				reg = <0x4>;
-			};
-
-			sw_phy5: ethernet-phy@5 {
-				reg = <0x5>;
-			};
-
-			sw_phy6: ethernet-phy@6 {
-				reg = <0x6>;
-			};
-
-			sw_phy7: ethernet-phy@7 {
-				reg = <0x7>;
-			};
-
-		};
-
-		gpio: pinctrl@0 {
-			compatible = "mscc,ocelot-pinctrl";
-			gpio-controller;
-			#gpio_cells = <2>;
-			gpio-ranges = <&gpio 0 0 22>;
-
-			led_shift_reg_pins: led-shift-reg-pins {
-				pins = "GPIO_0", "GPIO_1", "GPIO_2", "GPIO_3";
-				function = "sg0";
-			};
-
-			miim1: miim1 {
-				pins = "GPIO_14", "GPIO_15";
-				function = "miim";
-			};
-		};
-
-		sgpio: sgpio {
-			compatible = "mscc,ocelot-sgpio";
-			#address-cells = <1>;
-			#size-cells = <0>;
-			bus-frequency=<12500000>;
-			clocks = <&ocelot_clock>;
-			microchip,sgpio-port-ranges = <0 15>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&led_shift_reg_pins>;
-
-			sgpio_in0: sgpio@0 {
-				compatible = "microchip,sparx5-sgpio-bank";
-				reg = <0>;
-				gpio-controller;
-				#gpio-cells = <3>;
-				ngpios = <64>;
-			};
-
-			sgpio_out1: sgpio@1 {
-				compatible = "microchip,sparx5-sgpio-bank";
-				reg = <1>;
-				gpio-controller;
-				#gpio-cells = <3>;
-				ngpios = <64>;
-			};
-		};
-
-		hsio: syscon {
-			compatible = "mscc,ocelot-hsio", "syscon", "simple-mfd";
-
-			serdes: serdes {
-				compatible = "mscc,vsc7514-serdes";
-				#phy-cells = <2>;
-			};
-		};
-	};
-};
-
-
-RFC history:
-v1 (accidentally named vN)
-	* Initial architecture. Not functional
-	* General concepts laid out
-
-v2
-	* Near functional. No CPU port communication, but control over all
-	external ports
-	* Cleaned up regmap implementation from v1
-
-v3
-	* Functional
-	* Shared MDIO transactions routed through mdio-mscc-miim
-	* CPU / NPI port enabled by way of vsc7512_enable_npi_port /
-	felix->info->enable_npi_port
-	* NPI port tagging functional - Requires a CPU port driver that supports
-	frames of 1520 bytes. Verified with a patch to the cpsw driver
-
-v4
-    * Functional
-    * Device tree fixes
-    * Add hooks for pinctrl-ocelot - some functionality by way of sysfs
-    * Add hooks for pinctrl-microsemi-sgpio - not yet fully functional
-    * Remove lynx_pcs interface for a generic phylink_pcs. The goal here
-    is to have an ocelot_pcs that will work for each configuration of
-    every port.
-
-v5
-    * Restructured to MFD
-    * Several commits were split out, submitted, and accepted
-    * pinctrl-ocelot believed to be fully functional (requires commits
-    from the linux-pinctrl tree)
-    * External MDIO bus believed to be fully functional
-
-v6
-    * Applied several suggestions from the last RFC from Lee Jones. I
-      hope I didn't miss anything.
-    * Clean up MFD core - SPI interaction. They no longer use callbacks.
-    * regmaps get registered to the child device, and don't attempt to
-      get shared. It seems if a regmap is to be shared, that should be
-      solved with syscon, not dev or mfd.
-
-v7
-    * Applied as much as I could from Lee and Vladimir's suggestions. As
-      always, the feedback is greatly appreciated!
-    * Remove "ocelot_spi" container complication
-    * Move internal MDIO bus from ocelot_ext to MFD, with a devicetree
-      change to match
-    * Add initial HSIO support
-    * Switch to IORESOURCE_REG for resource definitions
-
-Colin Foster (13):
-  pinctrl: ocelot: allow pinctrl-ocelot to be loaded as a module
-  pinctrl: microchip-sgpio: allow sgpio driver to be used as a module
-  net: mdio: mscc-miim: add local dev variable to cleanup probe function
-  net: ocelot: add interface to get regmaps when exernally controlled
-  net: mdio: mscc-miim: add ability to be used in a non-mmio
-    configuration
-  pinctrl: ocelot: add ability to be used in a non-mmio configuration
-  pinctrl: microchip-sgpio: add ability to be used in a non-mmio
-    configuration
-  phy: ocelot-serdes: add ability to be used in mfd configuration
-  resource: add define macro for register address resources
-  mfd: ocelot: add support for the vsc7512 chip via spi
-  net: mscc: ocelot: expose ocelot wm functions
-  net: dsa: felix: add configurable device quirks
-  net: dsa: ocelot: add external ocelot switch control
-
- drivers/mfd/Kconfig                        |  24 +
- drivers/mfd/Makefile                       |   3 +
- drivers/mfd/ocelot-core.c                  | 192 +++++++
- drivers/mfd/ocelot-spi.c                   | 313 ++++++++++++
- drivers/mfd/ocelot.h                       |  42 ++
- drivers/net/dsa/ocelot/Kconfig             |  14 +
- drivers/net/dsa/ocelot/Makefile            |   5 +
- drivers/net/dsa/ocelot/felix.c             |   7 +-
- drivers/net/dsa/ocelot/felix.h             |   1 +
- drivers/net/dsa/ocelot/felix_vsc9959.c     |   1 +
- drivers/net/dsa/ocelot/ocelot_ext.c        | 567 +++++++++++++++++++++
- drivers/net/dsa/ocelot/seville_vsc9953.c   |   1 +
- drivers/net/ethernet/mscc/ocelot_devlink.c |  31 ++
- drivers/net/ethernet/mscc/ocelot_vsc7514.c |  28 -
- drivers/net/mdio/mdio-mscc-miim.c          |  49 +-
- drivers/phy/mscc/phy-ocelot-serdes.c       |  11 +
- drivers/pinctrl/Kconfig                    |   4 +-
- drivers/pinctrl/pinctrl-microchip-sgpio.c  |  26 +-
- drivers/pinctrl/pinctrl-ocelot.c           |  35 +-
- include/linux/ioport.h                     |   5 +
- include/soc/mscc/ocelot.h                  |  19 +
- 21 files changed, 1318 insertions(+), 60 deletions(-)
- create mode 100644 drivers/mfd/ocelot-core.c
- create mode 100644 drivers/mfd/ocelot-spi.c
- create mode 100644 drivers/mfd/ocelot.h
- create mode 100644 drivers/net/dsa/ocelot/ocelot_ext.c
-
+diff --git a/drivers/pinctrl/Kconfig b/drivers/pinctrl/Kconfig
+index 6fc56d6598e2..1b367f423ceb 100644
+--- a/drivers/pinctrl/Kconfig
++++ b/drivers/pinctrl/Kconfig
+@@ -311,7 +311,7 @@ config PINCTRL_MICROCHIP_SGPIO
+ 	  LED controller.
+ 
+ config PINCTRL_OCELOT
+-	bool "Pinctrl driver for the Microsemi Ocelot and Jaguar2 SoCs"
++	tristate "Pinctrl driver for the Microsemi Ocelot and Jaguar2 SoCs"
+ 	depends on OF
+ 	depends on HAS_IOMEM
+ 	select GPIOLIB
+diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+index fc969208d904..b6ad3ffb4596 100644
+--- a/drivers/pinctrl/pinctrl-ocelot.c
++++ b/drivers/pinctrl/pinctrl-ocelot.c
+@@ -1778,6 +1778,7 @@ static const struct of_device_id ocelot_pinctrl_of_match[] = {
+ 	{ .compatible = "microchip,lan966x-pinctrl", .data = &lan966x_desc },
+ 	{},
+ };
++MODULE_DEVICE_TABLE(of, ocelot_pinctrl_of_match);
+ 
+ static struct regmap *ocelot_pinctrl_create_pincfg(struct platform_device *pdev)
+ {
+@@ -1866,3 +1867,6 @@ static struct platform_driver ocelot_pinctrl_driver = {
+ 	.probe = ocelot_pinctrl_probe,
+ };
+ builtin_platform_driver(ocelot_pinctrl_driver);
++
++MODULE_DESCRIPTION("Ocelot Chip Pinctrl Driver");
++MODULE_LICENSE("Dual MIT/GPL");
 -- 
 2.25.1
-
-From 3b52c7edd85e8d9c0b6ab43f8682b73d002def6c Mon Sep 17 00:00:00 2001
-From: Colin Foster <colin.foster@in-advantage.com>
-Date: Sun, 6 Mar 2022 17:25:07 -0800
 
