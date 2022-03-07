@@ -2,146 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B27B44CFCCD
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 12:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4542C4CFCEB
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 12:31:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239332AbiCGL3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 06:29:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S238909AbiCGLbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 06:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242099AbiCGL15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 06:27:57 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509A425EB2
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 03:06:39 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id bn33so19830603ljb.6
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 03:06:39 -0800 (PST)
+        with ESMTP id S234772AbiCGLbq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 06:31:46 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20613E0E3
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 03:23:15 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id p9so22674567wra.12
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 03:23:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=WifnMpfCywQgn9v4uMmELkW8tbTMccZxaKxLll5l1aQ=;
-        b=eAnQsrE7cV3O7z0DfiC9M6ePQ7R6Wf/NTn5yUiSvOOMRMEVAWu1841E+H9xmJgYPrg
-         tN2F6ST9n6LKoA9AdoZq0J5wpjIVEfWp3vnZTc/UrhuyKQ2vU7Akwg+8dUTszWGoFo3Q
-         u6Iv51ux37VgNJ9yli65JXJxItOuPM+mZ/sSaxmiUBEhMe8tt50kgxpAW7we+GJM85Z5
-         3sugu20i0n6gsNifr+SyQ2EMmIHwA6hSkAuIkqJHlQQDWEHF763LAYsBeanN/XaPcaOz
-         V9WF8LEUFSw3IkKo8nwFBNzDspCYMH8X9I5uuG5OYg+5+h1vZeQB2BrwKa8zWf27kFtb
-         gl6w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ELMf6ZeJINTJV3po4MpOruvF6GjhpvhBYQF6UO2QeYM=;
+        b=OYrIcdKL/UHPuKUHzU/18wYvMrAtT6AeihrZFvNCiBJkjznB0B9/OSaN6CxFVBsGWc
+         JpD/7LHHSkRTt5cEt9eUliIS/Ca/OOpWr1ev3w5XEb16wIJ+UO2i9j738wo6e3xWHX+3
+         edV5mEnGTtTBV7eFgXuOgEL/FwyzukRuM/wMCJ+QLDzrRVZHZN7khk85OTXmn7DE5Kk1
+         Fb2qWXE2RAU95UxJmDmoILSMkRnIi6y2vuyd93OE5Y5icR31NJap/D8TU0wmrn2ek1k6
+         5+jVP1m+0dsEduMuD2Dgy6ilXRGtv1DmRIMFFQUiDSJEpwPcB5qXXsLLhBrr+BSTKyhC
+         BPiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=WifnMpfCywQgn9v4uMmELkW8tbTMccZxaKxLll5l1aQ=;
-        b=Xw8Xw7LejjZSwSbigPjSUCKo6X65dZgxYrE7d8swCP9EBF4Y5wmUFw54aJmunCJrHz
-         q1cv6xZW9QJUKds58NtbYlHwnKRQtACf04TKg91TDDs/JLS95gNfD9R31N9chUY2q1WE
-         dyRX4xpbnIaTPI1YpIciL6gQ0DLQJSG4IyUy+HoCsndr4b/b397+AHJl0bzmnPOHNf9q
-         zJvpmj3HlB6N6WBcC2AObKTX+B6CwxwQV8G1w6NYkFbakxDIeBpe+qA21LqJt0Pk/pZk
-         hyuqeT258ceTyLG1tWqB24JCExVgGfJ8FZVgqH7HT/XtYU5QoS9fBWxis9lXIXe0vdhy
-         CxKg==
-X-Gm-Message-State: AOAM5304mr0rcIlWsAQBi4vqXEcda00fem3xYFp8x18UTfF8KEAe+SrM
-        ZD3G1luAdoswkg4LYY7xAfJINA==
-X-Google-Smtp-Source: ABdhPJys6R6uyln+J9vxt+xgmUASyxV+ZscA/tTaibo7IdkPflGPTlBL6k5RdlSFPyBwtDa+ZGzI+g==
-X-Received: by 2002:a2e:9f0e:0:b0:244:ddb5:8685 with SMTP id u14-20020a2e9f0e000000b00244ddb58685mr7474369ljk.151.1646651197442;
-        Mon, 07 Mar 2022 03:06:37 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id u17-20020a056512095100b0044381f00805sm2793765lft.139.2022.03.07.03.06.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ELMf6ZeJINTJV3po4MpOruvF6GjhpvhBYQF6UO2QeYM=;
+        b=2EvbiVZ/Y6ViiuZpFSex+I8sTmreTiuXYrkQXaJVRG1acQh56i869qQ+UQn4aF8N+f
+         BVuLlFFoMCvV4Uie59Wc9F4zdesGRHBnQjqxh/mVqW+xGM/xrhDqb6wBQMyt2ZTOHkRr
+         uV7fogGIzTGVmhQvZPWP5uMRaw4fOcYg1hhHVDT2/l2c4evP/VIoiLRC4mvSMtUfh8vO
+         Gq8fccoFnF8vBrmjV8aOc2rpTu/ubxrFXoFVMiewSAuoppCYy4ekBKoRR8b8wL9NfAED
+         XMhL/5VcCHBhjETIyuQ5S0LGVS9ob7ml3ifyPFYy9Bvsk25HgJkrVk36XvYDpSfRS1Ol
+         pjIQ==
+X-Gm-Message-State: AOAM531KpJ/jdMF5alOAJOHao7u9L+K5G02UGgrafZYYAsIigyultIga
+        srOaFV3Ah6k3Kxk+fQL5fJh0R0vifmU=
+X-Google-Smtp-Source: ABdhPJxcWezyvsqFDBHpSwrnFMyHpa7U5+2T9dGVvSd4G+rbB0zChBFXON0hNKILbdbCRwmLnbyu8Q==
+X-Received: by 2002:a05:6000:124b:b0:1f0:4819:fd44 with SMTP id j11-20020a056000124b00b001f04819fd44mr8509072wrx.101.1646652193947;
+        Mon, 07 Mar 2022 03:23:13 -0800 (PST)
+Received: from mde-claranet.. (2a01cb00891a2500bf034605a4dd6496.ipv6.abo.wanadoo.fr. [2a01:cb00:891a:2500:bf03:4605:a4dd:6496])
+        by smtp.gmail.com with ESMTPSA id o16-20020a05600c511000b0038141b4a4edsm21926140wms.38.2022.03.07.03.23.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 03:06:36 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: tag_dsa: Fix tx from VLAN uppers on non-filtering bridges
-Date:   Mon,  7 Mar 2022 12:05:48 +0100
-Message-Id: <20220307110548.812455-1-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 07 Mar 2022 03:23:13 -0800 (PST)
+From:   Maxime de Roucy <maxime.deroucy@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Maxime de Roucy <maxime.deroucy@gmail.com>
+Subject: [PATCH] ipaddress: remove 'label' compatibility with Linux-2.0 net aliases
+Date:   Mon,  7 Mar 2022 12:23:00 +0100
+Message-Id: <20220307112300.27406-1-maxime.deroucy@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220304142441.342f3156@hermes.local>
+References: <20220304142441.342f3156@hermes.local>
 MIME-Version: 1.0
-Organization: Westermo
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In this situation (VLAN filtering disabled on br0):
+As Linux-2.0 is getting old and systemd allows non Linux-2.0 compatible
+aliases to be set, I think iproute2 should be able to manage such
+aliases.
 
-    br0.10
-     /
-   br0
-   / \
-swp0 swp1
-
-When a frame is transmitted from the VLAN upper, the bridge will send
-it down to one of the switch ports with forward offloading
-enabled. This will cause tag_dsa to generate a FORWARD tag. Before
-this change, that tag would have it's VID set to 10, even though VID
-10 is not loaded in the VTU.
-
-Before the blamed commit, the frame would trigger a VTU miss and be
-forwarded according to the PVT configuration. Now that all fabric
-ports are in 802.1Q secure mode, the frame is dropped instead.
-
-Therefore, restrict the condition under which we rewrite an 802.1Q tag
-to a DSA tag. On standalone port's, reuse is always safe since we will
-always generate FROM_CPU tags in that case. For bridged ports though,
-we must ensure that VLAN filtering is enabled, which in turn
-guarantees that the VID in question is loaded into the VTU.
-
-Fixes: d352b20f4174 ("net: dsa: mv88e6xxx: Improve multichip isolation of standalone ports")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Maxime de Roucy <maxime.deroucy@gmail.com>
 ---
- net/dsa/tag_dsa.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ ip/ipaddress.c           | 16 ----------------
+ man/man8/ip-address.8.in |  3 ---
+ 2 files changed, 19 deletions(-)
 
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index c8b4bbd46191..e4b6e3f2a3db 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -127,6 +127,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 				   u8 extra)
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 739b0b9c..a80996ef 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -2349,16 +2349,6 @@ static bool ipaddr_is_multicast(inet_prefix *a)
+ 		return false;
+ }
+ 
+-static bool is_valid_label(const char *dev, const char *label)
+-{
+-	size_t len = strlen(dev);
+-
+-	if (strncmp(label, dev, len) != 0)
+-		return false;
+-
+-	return label[len] == '\0' || label[len] == ':';
+-}
+-
+ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
  {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct net_device *br_dev;
- 	u8 tag_dev, tag_port;
- 	enum dsa_cmd cmd;
- 	u8 *dsa_header;
-@@ -149,7 +150,16 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		tag_port = dp->index;
+ 	struct {
+@@ -2501,12 +2491,6 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
+ 		fprintf(stderr, "Not enough information: \"dev\" argument is required.\n");
+ 		return -1;
  	}
+-	if (l && !is_valid_label(d, l)) {
+-		fprintf(stderr,
+-			"\"label\" (%s) must match \"dev\" (%s) or be prefixed by \"dev\" with a colon.\n",
+-			l, d);
+-		return -1;
+-	}
  
--	if (skb->protocol == htons(ETH_P_8021Q)) {
-+	br_dev = dsa_port_bridge_dev_get(dp);
-+
-+	/* If frame is already 802.1Q tagged, we can convert it to a DSA
-+	 * tag (avoiding a memmove), but only if the port is standalone
-+	 * (in which case we always send FROM_CPU) or if the port's
-+	 * bridge has VLAN filtering enabled (in which case the CPU port
-+	 * will be a member of the VLAN).
-+	 */
-+	if (skb->protocol == htons(ETH_P_8021Q) &&
-+	    (!br_dev || br_vlan_enabled(br_dev))) {
- 		if (extra) {
- 			skb_push(skb, extra);
- 			dsa_alloc_etype_header(skb, extra);
-@@ -166,10 +176,9 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 			dsa_header[2] &= ~0x10;
- 		}
- 	} else {
--		struct net_device *br = dsa_port_bridge_dev_get(dp);
- 		u16 vid;
+ 	if (peer_len == 0 && local_len) {
+ 		if (cmd == RTM_DELADDR && lcl.family == AF_INET && !(lcl.flags & PREFIXLEN_SPECIFIED)) {
+diff --git a/man/man8/ip-address.8.in b/man/man8/ip-address.8.in
+index a614ac64..1846252d 100644
+--- a/man/man8/ip-address.8.in
++++ b/man/man8/ip-address.8.in
+@@ -195,9 +195,6 @@ is derived by setting/resetting the host bits of the interface prefix.
+ .TP
+ .BI label " LABEL"
+ Each address may be tagged with a label string.
+-In order to preserve compatibility with Linux-2.0 net aliases,
+-this string must coincide with the name of the device or must be prefixed
+-with the device name followed by colon.
+ The maximum allowed total length of label is 15 characters.
  
--		vid = br ? MV88E6XXX_VID_BRIDGED : MV88E6XXX_VID_STANDALONE;
-+		vid = br_dev ? MV88E6XXX_VID_BRIDGED : MV88E6XXX_VID_STANDALONE;
- 
- 		skb_push(skb, DSA_HLEN + extra);
- 		dsa_alloc_etype_header(skb, DSA_HLEN + extra);
+ .TP
 -- 
-2.25.1
+2.35.1
 
