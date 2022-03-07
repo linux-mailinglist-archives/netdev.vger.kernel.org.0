@@ -2,152 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8574D067A
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FBD64D0682
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:27:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244606AbiCGS1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 13:27:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
+        id S244561AbiCGS2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 13:28:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241487AbiCGS1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:27:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D88939F1;
-        Mon,  7 Mar 2022 10:26:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2778B8166E;
-        Mon,  7 Mar 2022 18:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722B9C340F4;
-        Mon,  7 Mar 2022 18:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646677584;
-        bh=tiM5Uvq+D31XhjJe7+hWNcPkNyAsCyNOhRKy5ex9OS4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZKncCtRmliUj08hyHjNPIch7ZIcVa/2uoOlqtXYHfSGXXt2FIwx3UCD9FmEje7oXy
-         NKqgElEOarYqHJo/nW6N5R1QgRcUSPoWXqNHFx1EAxPr04T1vw5tB8OqEQ3U0DnpyQ
-         ca6Nv+e83arQ9MrGv5O/klgVXR+yLOe3uavLWbMXB5cy6bMd5wwx17GMORE6fVjnHP
-         TFQI0pbgk0MmuJgtClIBhD9ww429rgSPtFcFWTRV1fsE6rF9JDXpsZNqZXX9qS5052
-         Z9qjZ7dWRjXVQyRzzsbw42OEt3SYOG1gzJLH73TYaxoBOQhVLP0Oejw1v0aylcyjvA
-         c0q8YOMJIEMng==
-Received: by mail-yb1-f181.google.com with SMTP id l2so13269860ybe.8;
-        Mon, 07 Mar 2022 10:26:24 -0800 (PST)
-X-Gm-Message-State: AOAM5323Orjrce40RNfFXhW/zI0h9VWQgO7jpdr+Azl0thrKR0a5G81i
-        GIOoCxGet3g0HB3znIsjbbI9RAE9uTty7ruiFuM=
-X-Google-Smtp-Source: ABdhPJwC4K57hPFP1bG+dnJm59ZAitT7BxWTbMHWd5AfT32rDjPYEnJGWS/Lo+o3LgTZFmX9YJOhB9M9DD1oIYiJVSQ=
-X-Received: by 2002:a25:8546:0:b0:61e:1d34:ec71 with SMTP id
- f6-20020a258546000000b0061e1d34ec71mr8563794ybn.259.1646677583501; Mon, 07
- Mar 2022 10:26:23 -0800 (PST)
+        with ESMTP id S241121AbiCGS2X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:28:23 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF39BD4B
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 10:27:26 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3E16A153B;
+        Mon,  7 Mar 2022 10:27:26 -0800 (PST)
+Received: from [192.168.122.164] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DBA5C3FA45;
+        Mon,  7 Mar 2022 10:27:25 -0800 (PST)
+Message-ID: <4da6b03a-603f-c5e8-2356-e7ecd9756508@arm.com>
+Date:   Mon, 7 Mar 2022 12:27:24 -0600
 MIME-Version: 1.0
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-2-benjamin.tissoires@redhat.com> <CAPhsuW4otgwwDN6+xcjPXmZyUDiynEKFtXjaFb-=kjz7HzUmZw@mail.gmail.com>
- <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com> <YiOWmG2oARiYmRHr@gofer.mess.org>
-In-Reply-To: <YiOWmG2oARiYmRHr@gofer.mess.org>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 7 Mar 2022 10:26:12 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5yitrNMvbx3s=K+a5JDrAj1=F=qWfwVLBPFn+w0EypJg@mail.gmail.com>
-Message-ID: <CAPhsuW5yitrNMvbx3s=K+a5JDrAj1=F=qWfwVLBPFn+w0EypJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 01/28] bpf: add new is_sys_admin_prog_type() helper
-To:     Sean Young <sean@mess.org>
-Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] net: bcmgenet: Return not supported if we don't have a
+ WoL IRQ
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Peter Robinson <pbrobinson@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+References: <20220222095348.2926536-1-pbrobinson@gmail.com>
+ <f79df42b-ff25-edaa-7bf3-00b44b126007@gmail.com>
+ <CALeDE9NGckRoatePdaWFYqHXHcOJ2Xzd4PGLOoNWDibzPB_zXQ@mail.gmail.com>
+ <734024dc-dadd-f92d-cbbb-c8dc9c955ec3@gmail.com>
+ <CALeDE9Nk8gvCS425pJe5JCgcfSZugSnYwzGOkxhszrBz3Da6Fg@mail.gmail.com>
+ <3ae3a9fc-9dd1-00c6-4ae8-a65df3ed225f@gmail.com>
+ <CALeDE9PK9JkFkbTc36HOZH8CG8MM3OMhKJ24FKioKF5bspSPkA@mail.gmail.com>
+ <6cefe7ca-842b-d3af-0299-588b9307703b@gmail.com>
+ <20220223144818.2f9ce725@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <922fab4e-0608-0d46-9379-026a51398b7a@arm.com>
+ <e0fbf7c7-c09f-0f39-e53a-3118c1b2f193@redhat.com>
+ <6fc548ca-1195-8941-5caa-2e3384debad7@arm.com>
+ <de377891-c220-64f8-a0c2-69976d0c8513@gmail.com>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+In-Reply-To: <de377891-c220-64f8-a0c2-69976d0c8513@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 5, 2022 at 8:58 AM Sean Young <sean@mess.org> wrote:
->
-> On Sat, Mar 05, 2022 at 11:07:04AM +0100, Benjamin Tissoires wrote:
-> > On Sat, Mar 5, 2022 at 12:12 AM Song Liu <song@kernel.org> wrote:
-> > >
-> > > On Fri, Mar 4, 2022 at 9:30 AM Benjamin Tissoires
-> > > <benjamin.tissoires@redhat.com> wrote:
-> > > >
-> > > > LIRC_MODE2 does not really need net_admin capability, but only sys_admin.
-> > > >
-> > > > Extract a new helper for it, it will be also used for the HID bpf
-> > > > implementation.
-> > > >
-> > > > Cc: Sean Young <sean@mess.org>
-> > > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> > > >
-> > > > ---
-> > > >
-> > > > new in v2
-> > > > ---
-> > > >  kernel/bpf/syscall.c | 14 +++++++++++++-
-> > > >  1 file changed, 13 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > > > index db402ebc5570..cc570891322b 100644
-> > > > --- a/kernel/bpf/syscall.c
-> > > > +++ b/kernel/bpf/syscall.c
-> > > > @@ -2165,7 +2165,6 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
-> > > >         case BPF_PROG_TYPE_LWT_SEG6LOCAL:
-> > > >         case BPF_PROG_TYPE_SK_SKB:
-> > > >         case BPF_PROG_TYPE_SK_MSG:
-> > > > -       case BPF_PROG_TYPE_LIRC_MODE2:
-> > > >         case BPF_PROG_TYPE_FLOW_DISSECTOR:
-> > > >         case BPF_PROG_TYPE_CGROUP_DEVICE:
-> > > >         case BPF_PROG_TYPE_CGROUP_SOCK:
-> > > > @@ -2202,6 +2201,17 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
-> > > >         }
-> > > >  }
-> > > >
-> > > > +static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
-> > > > +{
-> > > > +       switch (prog_type) {
-> > > > +       case BPF_PROG_TYPE_LIRC_MODE2:
-> > > > +       case BPF_PROG_TYPE_EXT: /* extends any prog */
-> > > > +               return true;
-> > > > +       default:
-> > > > +               return false;
-> > > > +       }
-> > > > +}
-> > >
-> > > I am not sure whether we should do this. This is a behavior change, that may
-> > > break some user space. Also, BPF_PROG_TYPE_EXT is checked in
-> > > is_perfmon_prog_type(), and this change will make that case useless.
-> >
-> > Sure, I can drop it from v3 and make this function appear for HID only.
->
-> For BPF_PROG_TYPE_LIRC_MODE2, I don't think this change will break userspace.
-> This is called from ir-keytable(1) which is called from udev. It should have
-> all the necessary permissions.
->
-> In addition, the vast majority IR decoders are non-bpf. bpf ir decoders have
-> very few users at the moment.
->
-> I am working on completely new userspace tooling which will make extensive
-> use of bpf ir decoding with full lircd and IRP compatibility, but this is not
-> finished yet (see https://github.com/seanyoung/cir).
+Hi,
 
-Thanks for these information. I guess change for BPF_PROG_TYPE_LIRC_MODE2
-is ok then. Would you mind ack or review this change (either current version or
-a later version)?
+Sorry about the delay, i'm flipping between a couple different things here.
 
-Thanks,
-Song
+On 3/4/22 14:12, Florian Fainelli wrote:
+> 
+> 
+> On 3/4/2022 9:33 AM, Jeremy Linton wrote:
+>> Hi,
+>>
+>> On 3/3/22 14:04, Javier Martinez Canillas wrote:
+>>> Hello Jeremy,
+>>>
+>>> On 3/3/22 21:00, Jeremy Linton wrote:
+>>>> Hi,
+>>>>
+>>>> On 2/23/22 16:48, Jakub Kicinski wrote:
+>>>>> On Wed, 23 Feb 2022 09:54:26 -0800 Florian Fainelli wrote:
+>>>>>>> I have no problems working with you to improve the driver, the 
+>>>>>>> problem
+>>>>>>> I have is this is currently a regression in 5.17 so I would like to
+>>>>>>> see something land, whether it's reverting the other patch, landing
+>>>>>>> thing one or another straight forward fix and then maybe revisit as
+>>>>>>> whole in 5.18.
+>>>>>>
+>>>>>> Understood and I won't require you or me to complete this 
+>>>>>> investigating
+>>>>>> before fixing the regression, this is just so we understand where it
+>>>>>> stemmed from and possibly fix the IRQ layer if need be. Given what I
+>>>>>> just wrote, do you think you can sprinkle debug prints throughout the
+>>>>>> kernel to figure out whether enable_irq_wake() somehow messes up the
+>>>>>> interrupt descriptor of interrupt and test that theory? We can do 
+>>>>>> that
+>>>>>> offline if you want.
+>>>>>
+>>>>> Let me mark v2 as Deferred for now, then. I'm not really sure if 
+>>>>> that's
+>>>>> what's intended but we have 3 weeks or so until 5.17 is cut so we can
+>>>>> afford a few days of investigating.
+>>>>>
+>>>>> I'm likely missing the point but sounds like the IRQ subsystem treats
+>>>>> IRQ numbers as unsigned so if we pass a negative value "fun" is sort
+>>>>> of expected. Isn't the problem that device somehow comes with wakeup
+>>>>> capable being set already? Isn't it better to make sure device is not
+>>>>> wake capable if there's no WoL irq instead of adding second check?
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c 
+>>>>> b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+>>>>> index cfe09117fe6c..7dea44803beb 100644
+>>>>> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+>>>>> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+>>>>> @@ -4020,12 +4020,12 @@ static int bcmgenet_probe(struct 
+>>>>> platform_device *pdev)
+>>>>>        /* Request the WOL interrupt and advertise suspend if 
+>>>>> available */
+>>>>>        priv->wol_irq_disabled = true;
+>>>>> -    if (priv->wol_irq > 0) {
+>>>>> +    if (priv->wol_irq > 0)
+>>>>>            err = devm_request_irq(&pdev->dev, priv->wol_irq,
+>>>>>                           bcmgenet_wol_isr, 0, dev->name, priv);
+>>>>> -        if (!err)
+>>>>> -            device_set_wakeup_capable(&pdev->dev, 1);
+>>>>> -    }
+>>>>> +    else
+>>>>> +        err = -ENOENT;
+>>>>> +    device_set_wakeup_capable(&pdev->dev, !err);
+>>>>>        /* Set the needed headroom to account for any possible
+>>>>>         * features enabling/disabling at runtime
+>>>>>
+>>>>
+>>>>
+>>>> I duplicated the problem on rpi4/ACPI by moving to gcc12, so I have a/b
+>>>> config that is close as I can achieve using gcc11 vs 12 and the one
+>>>> built with gcc12 fails pretty consistently while the gcc11 works.
+>>>>
+>>>
+>>> Did Peter's patch instead of this one help ?
+>>>
+>>
+>> No, it seems to be the same problem. The second irq is registered, but 
+>> never seems to fire. There are a couple odd compiler warnings about 
+>> infinite recursion in memcpy()/etc I was looking at, but nothing 
+>> really pops out. Its like the adapter never gets the command 
+>> submissions (although link/up/down appear to be working/etc).
+> 
+> There are two "main" interrupt lines which are required and an optional 
+> third interrupt line which is the side band Wake-on-LAN interrupt from 
+> the second level interrupt controller that aggregates all wake-up sources.
+> 
+> The first interrupt line collects the the default RX/TX queue interrupts 
+> (ring 16) as well as the MAC link up/down and other interrupts that we 
+> are not using. The second interrupt line is only for the TX queues 
+> (rings 0 through 3) transmit done completion signaling. Because the 
+> driver is multi-queue aware and enabled, the network stack will chose 
+> any of those 5 queues before transmitting packets based upon a hash, so 
+> if you want to reliably prove/disprove that the second interrupt line is 
+> non-functional, you would need to force a given type of packet(s) to use 
+> that queue specifically. There is an example on how to do that here:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/multiqueue.rst#n47 
+> 
+> 
+> With that said, please try the following debug patch so we can get more 
+> understanding of how we managed to prevent the second interrupt line 
+> from getting its interrupt handler serviced. Thanks
+
+Right, I applied your patch to rc7, and it prints the following 
+(trimming uninterresting bits)
+
+
+
+[    7.044681] bcmgenet BCM6E4E:00: IRQ0: 28 (29), IRQ1: -6 (28), Wol 
+IRQ: 29 (4294967290)
+[    7.064731] bcmgenet BCM6E4E:00: GENET 5.0 EPHY: 0x0000
+[    8.533639] bcmgenet BCM6E4E:00 enabcm6e4ei0: renamed from eth0
+[   56.803894] bcmgenet BCM6E4E:00: configuring instance for external 
+RGMII (RX delay)
+[   56.896851] bcmgenet BCM6E4E:00 enabcm6e4ei0: Link is Down
+[   60.045071] bcmgenet BCM6E4E:00 enabcm6e4ei0: Link is Up - 1Gbps/Full 
+- flow control off
+[   60.055872] IPv6: ADDRCONF(NETDEV_CHANGE): enabcm6e4ei0: link becomes 
+ready
+[   62.283525] ------------[ cut here ]------------
+[   62.290811] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 
+2 timed out
+[   62.301080] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:529 
+dev_watchdog+0x234/0x240
+[   62.312220] Modules linked in: nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 
+nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct 
+nft_chain_nat nf_nat ns
+[   62.370353] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.17.0-rc7G12+ #58
+[   62.380052] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 
+Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
+[   62.394151] pstate: 40400005 (nZcv daif +PAN -UAO -TCO -DIT -SSBS 
+BTYPE=--)
+[   62.404211] pc : dev_watchdog+0x234/0x240
+[   62.411304] lr : dev_watchdog+0x234/0x240
+[   62.418371] sp : ffff8000080b3a40
+[   62.424715] x29: ffff8000080b3a40 x28: ffffdd4ed64c7000 x27: 
+ffff8000080b3b20
+[   62.434899] x26: ffffdd4ed5f40000 x25: 0000000000000000 x24: 
+ffffdd4ed64cec08
+[   62.445095] x23: 0000000000000100 x22: ffffdd4ed64c7000 x21: 
+ffff1bd254e58000
+[   62.455259] x20: 0000000000000002 x19: ffff1bd254e584c8 x18: 
+ffffffffffffffff
+[   62.465439] x17: 64656d6974203220 x16: 0000000000000001 x15: 
+6d736e617274203a
+[   62.475615] x14: 2974656e65676d63 x13: ffffdd4ed51700d8 x12: 
+ffffdd4ed65bd5f0
+[   62.485787] x11: 00000000ffffffff x10: ffffdd4ed65bd5f0 x9 : 
+ffffdd4ed420c0fc
+[   62.495978] x8 : 00000000ffffdfff x7 : ffffdd4ed65bd5f0 x6 : 
+0000000000000001
+[   62.506173] x5 : 0000000000000000 x4 : ffff1bd2fb7b1408 x3 : 
+ffff1bd2fb7bddb0
+[   62.516334] x2 : ffff1bd2fb7b1408 x1 : ffff3e842586e000 x0 : 
+0000000000000044
+[   62.526520] Call trace:
+[   62.531969]  dev_watchdog+0x234/0x240
+[   62.538671]  call_timer_fn+0x3c/0x15c
+[   62.545331]  __run_timers.part.0+0x288/0x310
+[   62.552579]  run_timer_softirq+0x48/0x80
+[   62.559466]  __do_softirq+0x128/0x360
+[   62.566055]  __irq_exit_rcu+0x138/0x140
+[   62.572823]  irq_exit_rcu+0x1c/0x30
+[   62.580799]  el1_interrupt+0x38/0x54
+[   62.580817]  el1h_64_irq_handler+0x18/0x24
+[   62.580822]  el1h_64_irq+0x7c/0x80
+[   62.580827]  arch_cpu_idle+0x18/0x2c
+[   62.580832]  default_idle_call+0x4c/0x140
+[   62.580836]  cpuidle_idle_call+0x14c/0x1a0
+[   62.580844]  do_idle+0xb0/0x100
+[   62.580849]  cpu_startup_entry+0x30/0x8c
+[   62.580854]  secondary_start_kernel+0xe4/0x110
+[   62.580862]  __secondary_switched+0x94/0x98
+[   62.580871] ---[ end trace 0000000000000000 ]---
+
+It should be noted that the irq0/1/2 numbers are a bit messed up in the 
+patch, but the general idea should be visible here.
+
+The full log is here https://pastebin.centos.org/view/22c2aede
+
+The WOL paths aren't required to trigger this, which is why I questioned 
+the other patch.
+
