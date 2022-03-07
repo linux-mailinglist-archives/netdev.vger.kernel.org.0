@@ -2,97 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9EC24D0B54
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:43:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D22864D0B55
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 23:46:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343841AbiCGWo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 17:44:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
+        id S243292AbiCGWrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 17:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343834AbiCGWoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:44:25 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53E83EB98
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 14:43:30 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id c11so2353426pgu.11
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 14:43:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=SQ3V0TfbXmsRsMhkLQ/sEh6cz/OW5hMEqva4Bmdh220=;
-        b=Y+UIU/JCGWnpErpDKHaIS4BcBNFB7WAu7n+wOSsJqenaFkvle0/QAhEXjUHNM/Gkyt
-         nkFH8OaS1oGbfgs/DHx7SBthOYKdGPJLHUL58TD9Lkdt1syUNoCwqhGAEtdW89juRkJX
-         HLCS35zSLkQx19Oh7DBq6RbmZSzf8Q0f6dX+kotgWaGcuKgcb9EmZcOv41pmQkHxOFGs
-         wnTpqfnPZT4yAL+aSdoJXXGDmh3vGc1PaNe0VsU6BHpEgY3Q64UjlTjlKPj4EqqCcqL/
-         B9R1VQo4MTohMvhQDiQx891Yyfaj3bjLTtUYkc6LEf366Zgexc6rfTJoLwZyyArLWmeE
-         mR1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SQ3V0TfbXmsRsMhkLQ/sEh6cz/OW5hMEqva4Bmdh220=;
-        b=l/7cj5mslr6y0ZEIjA3dsICgftEk7EWSTGkiqMhp1QVpDYhpY5yQePWByrLdRwhlTr
-         NlEltR8IiIYQyYpTqipNhAbTwpTdGZbgYU1kC506RNpZuxv4ZnojuzkX6jaoczlK3VCR
-         kfdppJKUsJMnOgzn0lNCYf3S55Gu2V7HQcwvI8wlZoiuRAEg1K/pAsFECTofdU1olA7l
-         hl/sbozNjvHmXlYcm3upwZ29rYmC9rtBZLRA8qFWn/EOc3H0Gn2OuR0OSjsOsiE6QW7g
-         oBsSYNt0noMcLxywq8uyAXja/77lMAWAjQsF3oQneL5FfzEVrFNGIddIq5A3ztxcHsCW
-         CafQ==
-X-Gm-Message-State: AOAM532i5RnP2CM6Q/JOERBSspwa5Gg1RoTNweLzMf8pzcZ+Lf+dMXch
-        J+4I+IZdbNdcZq+S0UzJqbXfusY3T90=
-X-Google-Smtp-Source: ABdhPJyUuzlDPzJcaGsEBTWIEssN+puEJ+jo+kDNFsVw+CFPzgTSiE6tNutdjBMcrHpe9WDraLHiag==
-X-Received: by 2002:a65:4108:0:b0:36b:ffa6:9c86 with SMTP id w8-20020a654108000000b0036bffa69c86mr11373194pgp.203.1646693010208;
-        Mon, 07 Mar 2022 14:43:30 -0800 (PST)
-Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id p10-20020a637f4a000000b00373a2760775sm12742028pgn.2.2022.03.07.14.43.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Mar 2022 14:43:29 -0800 (PST)
-Message-ID: <195db88f-501a-03f1-3f1c-a33d3358768c@gmail.com>
-Date:   Mon, 7 Mar 2022 14:43:26 -0800
+        with ESMTP id S243189AbiCGWrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 17:47:17 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB7A26D;
+        Mon,  7 Mar 2022 14:46:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 18591CE12A5;
+        Mon,  7 Mar 2022 22:46:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B59C340F3;
+        Mon,  7 Mar 2022 22:46:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646693178;
+        bh=0H6XB46pWYh6xZnaTmcKQn0MM2/ClqZdvLNMr6BJqkk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rtMZcA53GaxsPpz3H1bwL5eT9rsN7fl5bs5guxs34W4ttTLsb+jDmo+ZCzsD5Q1Z+
+         WfuFn2eezBXmbYeiq666HzAW6hjYzKtWgKnkg7VRs1XesXGSs3sf8XaJNc1QzMsJaA
+         HUoviWFPuUcpK+vuOeLiaas261WV1lXfEazfMAN9sd6f/g9Qa/vJ+z3gGAbro+0uIv
+         4CzZ7Xcc2/pzbBO75DpgDFn6QuMVQqjQCPdQFniPEKJN2UM3cWZXCmy3axAOUy0y/H
+         Yq1N/OjS0TSjS5Hr7363ef484SvANz2cXBw6kkPRu9K9hgO/1Nv6JKlL6vraECSFFI
+         miDt/c4FfP9bg==
+Date:   Mon, 7 Mar 2022 14:46:16 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Message-ID: <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 2/2] sch_fq_codel: fix running with classifiers that don't
- set a classid
-Content-Language: en-US
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-References: <20220307182602.16978-1-nbd@nbd.name>
- <20220307182602.16978-2-nbd@nbd.name> <87lexl7axu.fsf@toke.dk>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <87lexl7axu.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 7 Mar 2022 23:14:13 +0100 Ilya Maximets wrote:
+> The main problem is that userspace uses the modified copy of the uapi header
+> which looks like this:
+>   https://github.com/openvswitch/ovs/blob/f77dbc1eb2da2523625cd36922c6fccfcb3f3eb7/datapath/linux/compat/include/linux/openvswitch.h#L357
+> 
+> In short, the userspace view:
+> 
+>   enum ovs_key_attr {
+>       <common attrs>
+> 
+>   #ifdef __KERNEL__
+>       /* Only used within kernel data path. */
+>   #endif
+> 
+>   #ifndef __KERNEL__
+>       /* Only used within userspace data path. */
+>   #endif
+>       __OVS_KEY_ATTR_MAX
+> };
+> 
+> And the kernel view:
+> 
+>   enum ovs_key_attr {
+>       <common attrs>
+> 
+>   #ifdef __KERNEL__
+>       /* Only used within kernel data path. */
+>   #endif
+> 
+>       __OVS_KEY_ATTR_MAX
+>   };
+> 
+> This happened before my time, but the commit where userspace made a wrong
+> turn appears to be this one:
+>   https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
+> The attribute for userspace only was added to the common enum after the
+> OVS_KEY_ATTR_TUNNEL_INFO.   I'm not sure how things didn't fall apart when
+> OVS_KEY_ATTR_NSH was added later (no-one cared that NSH doesn't work, because
+> OVS didn't support it yet?).
+> 
+> In general, any addition of a new attribute into that enumeration leads to
+> inevitable clash between userpsace-only attributes and new kernel attributes.
+> 
+> After the kernel update, kernel provides new attributes to the userspace and
+> userspace tries to parse them as one of the userspace-only attributes and
+> fails.   In our current case userspace is trying to parse OVS_KEY_ATTR_IPV6_EXTHDR
+> as userspace-only OVS_KEY_ATTR_PACKET_TYPE, because they have the same value in the
+> enum, fails and discards the netlink message as malformed.  So, IPv6 is fully
+> broken, because OVS_KEY_ATTR_IPV6_EXTHDR is supplied now with every IPv6 packet
+> that goes to userspace.
+> 
+> We need to unify the view of 'enum ovs_key_attr' between userspace and kernel
+> before we can add any new values to it.
+> 
+> One way to do that should be addition of both userspace-only attributes to the
+> kernel header (and maybe exposing OVS_KEY_ATTR_TUNNEL_INFO too, just to keep
+> it flat and avoid any possible problems in the future).  Any other suggestions
+> are welcome.  But in any case this will require careful testing with existing
+> OVS userspace to avoid any unexpected issues.
+> 
+> Moving forward, I think, userspace OVS should find a way to not have userpsace-only
+> attributes, or have them as a separate enumeration.  But I'm not sure how to do
+> that right now.  Or we'll have to add userspace-only attributes to the kernel
+> uapi before using them.
 
-On 3/7/22 12:41, Toke Høiland-Jørgensen wrote:
-> Felix Fietkau <nbd@nbd.name> writes:
->
->> If no valid classid is provided, fall back to calculating the hash directly,
->> in order to avoid dropping packets
->>
->> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> While I agree that this behaviour makes more sense, it's also a
-> user-facing API change; I suppose there may be filters out there relying
-> on the fact that invalid (or unset) class ID values lead to dropped
-> packets?
+Thanks for the explanation, we can apply a revert if that'd help your
+CI / ongoing development but sounds like the fix really is in user
+space. Expecting netlink attribute lists not to grow is not fair.
 
-
-Indeed.
-
-This part was copied from SFQ, so if we want to (optionally ?) change 
-the behavior,
-
-same change should be applied to SFQ.
-
-
+Since ovs uses genetlink you should be able to dump the policy from 
+the kernel and at least validate that it doesn't overlap.
