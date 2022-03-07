@@ -2,127 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A71D4D03D1
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 17:15:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F28B4D03DB
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 17:17:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239370AbiCGQQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 11:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S240499AbiCGQSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 11:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244079AbiCGQQk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 11:16:40 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154BF47074;
-        Mon,  7 Mar 2022 08:15:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646669741; x=1678205741;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qMFXxfhvtEnIeHrpQBvOSvU8Z2F1O4k3USLqBd25jWw=;
-  b=dT9iv/NUJcpYQfYv70qbQvuJ42w9L5RlqzqxhkT9WWx+yMEBfq62lgWV
-   AQNxHFZgiycmisehThV7wbwTx4w4OesT0CePgVACmTE25k2bCFL4BJT5v
-   wbsF/ZMLycptxotasr0u61xwzCCsAp8LttEZF31N3gdcuZiSl9Gc3n7l+
-   yP92wx3EZonlyDAjC5UfN4Cg2PZ18lM5ILtaz4w4uuniVbTP6VEvSzp3c
-   Nk10p/HmcZIidGJu74VBKpCDl8ES+90nGVv5dRQ0ch6LdHf2yMyFJIG2U
-   Xi2QcEdS7o7+eH/6Z62YvXCSLAghSbonCRH4Ac5Mn57+ClMa9Q1L9mKzN
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,162,1643698800"; 
-   d="scan'208";a="164797058"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Mar 2022 09:15:41 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 7 Mar 2022 09:15:41 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 7 Mar 2022 09:15:37 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next 2/2] net: phy: lan87xx: use genphy_read_master_slave in read_status
-Date:   Mon, 7 Mar 2022 21:45:15 +0530
-Message-ID: <20220307161515.14970-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220307161515.14970-1-arun.ramadoss@microchip.com>
-References: <20220307161515.14970-1-arun.ramadoss@microchip.com>
+        with ESMTP id S244125AbiCGQSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 11:18:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC8248E53;
+        Mon,  7 Mar 2022 08:17:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4267860C3E;
+        Mon,  7 Mar 2022 16:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 199FBC340EB;
+        Mon,  7 Mar 2022 16:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646669826;
+        bh=g7AkI7UmXjqtWe/0nY3r8R1FTcT6BYIuEgvHT7ed2UA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jS6bdkyhDdnlOXciwJ71UjeRz7uCXsBTwcyBL4m2+vLZ4ALa4/pak7K4FPM7Wq219
+         lKJ1PnYnJxd53MhCWcP+teEm8/DLCWSx7H1oI0yMOWDo62iVT81CcVJ1EaU8c6aPI2
+         VPUBC8hpzXR4POlmZbTWFnkFWCGWBcJIAsDqhphs=
+Date:   Mon, 7 Mar 2022 17:17:03 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Hou Tao <houtao1@huawei.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
+Message-ID: <YiYv/4EIrx4AV6wi@kroah.com>
+References: <20220307091702.378509770@linuxfoundation.org>
+ <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To read the master slave configuration of the LAN87xx T1 phy, used the
-generic phy driver genphy_read_master_slave function. Removed the local
-lan87xx_read_master_slave function.
+On Mon, Mar 07, 2022 at 06:30:18PM +0530, Naresh Kamboju wrote:
+> drivers/gpu/drm/mediatek/mtk_dsi.c: In function 'mtk_dsi_host_attach':
+> drivers/gpu/drm/mediatek/mtk_dsi.c:858:28: error: implicit declaration
+> of function 'devm_drm_of_get_bridge'; did you mean
+> 'devm_drm_panel_bridge_add'? [-Werror=implicit-function-declaration]
+>   858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
+> dev->of_node, 0, 0);
+>       |                            ^~~~~~~~~~~~~~~~~~~~~~
+>       |                            devm_drm_panel_bridge_add
+> drivers/gpu/drm/mediatek/mtk_dsi.c:858:26: warning: assignment to
+> 'struct drm_bridge *' from 'int' makes pointer from integer without a
+> cast [-Wint-conversion]
+>   858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
+> dev->of_node, 0, 0);
+>       |                          ^
+> cc1: some warnings being treated as errors
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/microchip_t1.c | 30 +-----------------------------
- 1 file changed, 1 insertion(+), 29 deletions(-)
+Offending commit now dropped, thanks.
 
-diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index 8292f7305805..389df3f4293c 100644
---- a/drivers/net/phy/microchip_t1.c
-+++ b/drivers/net/phy/microchip_t1.c
-@@ -674,34 +674,6 @@ static int lan87xx_cable_test_get_status(struct phy_device *phydev,
- 	return 0;
- }
- 
--static int lan87xx_read_master_slave(struct phy_device *phydev)
--{
--	int rc = 0;
--
--	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
--	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
--
--	rc = phy_read(phydev, MII_CTRL1000);
--	if (rc < 0)
--		return rc;
--
--	if (rc & CTL1000_AS_MASTER)
--		phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
--	else
--		phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
--
--	rc = phy_read(phydev, MII_STAT1000);
--	if (rc < 0)
--		return rc;
--
--	if (rc & LPA_1000MSRES)
--		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
--	else
--		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
--
--	return rc;
--}
--
- static int lan87xx_read_status(struct phy_device *phydev)
- {
- 	int rc = 0;
-@@ -720,7 +692,7 @@ static int lan87xx_read_status(struct phy_device *phydev)
- 	phydev->pause = 0;
- 	phydev->asym_pause = 0;
- 
--	rc = lan87xx_read_master_slave(phydev);
-+	rc = genphy_read_master_slave(phydev);
- 	if (rc < 0)
- 		return rc;
- 
--- 
-2.33.0
 
+greg k-h
