@@ -2,107 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9994D0663
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:22:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B574D066F
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 19:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244764AbiCGSWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 13:22:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        id S244719AbiCGSYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 13:24:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244773AbiCGSWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:22:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EE108300D
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 10:21:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646677308;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pL8XlxrcxydHnx0lCXQyvTaEWxtKk5DHpBUj+AR+U20=;
-        b=TABP+o4zaDNInEWApMlXo/cgmWPL01PjHjKAifDPQjM/4EGBZnvxEx4cba4qPlpNxdEmfz
-        P4Fic3Cy/C7E4sxGl8Hc/7wjgnqFA8mAQWxFUOr8DFNTpCVpp6i7xT5Z3I/2lBjx/yqVUj
-        kd9OQ3Z6CK3uFIjCJz5L2Und34oQ5W4=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-212-f97XbzhYMq2gzbUZjNOTWw-1; Mon, 07 Mar 2022 13:21:47 -0500
-X-MC-Unique: f97XbzhYMq2gzbUZjNOTWw-1
-Received: by mail-ej1-f69.google.com with SMTP id y5-20020a1709060a8500b006da9258a34cso5606417ejf.21
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 10:21:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pL8XlxrcxydHnx0lCXQyvTaEWxtKk5DHpBUj+AR+U20=;
-        b=ua7fqN7X8L5Kw7FgIB3ynXxPkZDh8ZMFYcpYbjlRfbZim9AEKRhOv/pCVVrB6Zsbc8
-         vo5UjOO/kS3O8bOfuhlCG9x6Zt+p0Rb3NJpF5quwdJxPb1ZIHbmxUdhj2KCbv0+nFwSu
-         8rAEhaFhYRjt/xrgAaj4gn1pb1VBdGefVMNks6E4oD3Bf01zgDenxiIZGG6LHbS31lnc
-         WkvKEnp5Ehsh7ObF1vIBZrmgHQdH+Qb8eGzm0H9x9lgWI8D8x95z9nv8jB1z0VrB3G5R
-         S5IGLJzJLqJy/3jsEZCzoV1eLq1T+TAaxMjPwdM0Vux2qdGo0EI1pAcd2RfIMf61KHYD
-         Uoew==
-X-Gm-Message-State: AOAM532MIpcOkY5kbaTS1NK1dt6UEdXMH19Iif7v0C1pk8PM3anORGo2
-        yQp00s7YTP+Bpm9LWRbjAQd0TWjjv8BgBm5xuanXVOqeAx8vsvWCsijrqOB3m5MQPE3QSkMBT5k
-        1PCmubJKQyP3nqZqt
-X-Received: by 2002:aa7:d991:0:b0:416:5f6c:e260 with SMTP id u17-20020aa7d991000000b004165f6ce260mr2735719eds.268.1646677306111;
-        Mon, 07 Mar 2022 10:21:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy0gZZNBeD3BhC5uDKmfAR4j/QKhQu6eO/t5vu1NI3OLxg1yX2k/X6ET8DFKUZyiqqrj+fY6g==
-X-Received: by 2002:aa7:d991:0:b0:416:5f6c:e260 with SMTP id u17-20020aa7d991000000b004165f6ce260mr2735701eds.268.1646677305912;
-        Mon, 07 Mar 2022 10:21:45 -0800 (PST)
-Received: from localhost (net-37-119-159-68.cust.vodafonedsl.it. [37.119.159.68])
-        by smtp.gmail.com with ESMTPSA id k20-20020a170906681400b006da86bef01fsm5025136ejr.79.2022.03.07.10.21.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 10:21:45 -0800 (PST)
-Date:   Mon, 7 Mar 2022 19:21:41 +0100
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        markzhang@nvidia.com, leonro@nvidia.com
-Subject: Re: [PATCH iproute2 v2 1/2] lib/fs: fix memory leak in
- get_task_name()
-Message-ID: <YiZNNQB727Il+EVN@tc2>
-References: <cover.1646223467.git.aclaudi@redhat.com>
- <0731f9e5b5ce95ab2da44ac74aa1f79ead9413bf.1646223467.git.aclaudi@redhat.com>
- <527dab8b-6eba-da17-8cef-2614042c9688@kernel.org>
+        with ESMTP id S234218AbiCGSYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 13:24:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F91085BC2;
+        Mon,  7 Mar 2022 10:23:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCB86132C;
+        Mon,  7 Mar 2022 18:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62EF2C340F9;
+        Mon,  7 Mar 2022 18:23:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646677428;
+        bh=CS4P4e6QC0dUdnxHehPTl5+rFZM2fucKmx3loJHj/iE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Ffv6OZy6+JZpPO3lSvUF9pq/MQsS36/mvR8gcmuk+Ax4+sCL5HmbZFpbeRplVobaX
+         uNTGVxZOSfFpDStLOkY2Gv4T2Og868F09ZW8vaNG0fH0uhJouLy8S/HelBl0W8oUGs
+         r6XwpPfS1g+jBbHLeTKArSQVbyO2/6A60X5PU+LaLw+/mjfjb4jGJk5Uos3OWR2bng
+         9oUinZZFXg0NcSNqwfSXu5+b9gaG3rQTnkt6ohrSeuJ3VDWbRceUgqFFYsu03CEvFO
+         DSK5KHhbnhu/en6xNHrRONQunStl7B/7GAW2sXKhZy90b11FYLG3CaYSUMHfqYfzO4
+         9askWT4WfvERw==
+Received: by mail-yb1-f182.google.com with SMTP id h126so32787865ybc.1;
+        Mon, 07 Mar 2022 10:23:48 -0800 (PST)
+X-Gm-Message-State: AOAM532YvSPIA2K9oIBByh/vonX+E2v2/yma5GiUyuAMNa8C897fbrIc
+        K9DeWFnBFPkAzTe6Le/MattYA4+JQSRsnzFoslY=
+X-Google-Smtp-Source: ABdhPJxqtMkZ9saT/BmU+QIFTsB5APsQLwF9DsDqE1wKcE1TLJ7FHJGyrSsR8flj+fzTBul5Tbm/TOxw6GV9a74dEDk=
+X-Received: by 2002:a05:6902:1ca:b0:624:e2a1:2856 with SMTP id
+ u10-20020a05690201ca00b00624e2a12856mr8958927ybh.389.1646677427301; Mon, 07
+ Mar 2022 10:23:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <527dab8b-6eba-da17-8cef-2614042c9688@kernel.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-2-benjamin.tissoires@redhat.com> <CAPhsuW4otgwwDN6+xcjPXmZyUDiynEKFtXjaFb-=kjz7HzUmZw@mail.gmail.com>
+ <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com>
+In-Reply-To: <CAO-hwJJjDMaTXH9i1UkO7Qy+sbNprDyW67cRp8HryMMWMi5H9w@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 7 Mar 2022 10:23:36 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4wnsd0oQ3a_OqNVw4-0+fJyZm1f+nA1QRBW-pByKDPYg@mail.gmail.com>
+Message-ID: <CAPhsuW4wnsd0oQ3a_OqNVw4-0+fJyZm1f+nA1QRBW-pByKDPYg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 01/28] bpf: add new is_sys_admin_prog_type() helper
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org, Sean Young <sean@mess.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 10:58:37AM -0700, David Ahern wrote:
-> On 3/2/22 5:28 AM, Andrea Claudi wrote:
-> > diff --git a/include/utils.h b/include/utils.h
-> > index b6c468e9..81294488 100644
-> > --- a/include/utils.h
-> > +++ b/include/utils.h
-> > @@ -307,7 +307,7 @@ char *find_cgroup2_mount(bool do_mount);
-> >  __u64 get_cgroup2_id(const char *path);
-> >  char *get_cgroup2_path(__u64 id, bool full);
-> >  int get_command_name(const char *pid, char *comm, size_t len);
-> > -char *get_task_name(pid_t pid);
-> > +int get_task_name(pid_t pid, char *name);
-> >  
-> 
-> changing to an API with an assumed length is not better than the current
-> situation. Why not just fixup the callers as needed to free the allocation?
+On Sat, Mar 5, 2022 at 2:07 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
 >
+> On Sat, Mar 5, 2022 at 12:12 AM Song Liu <song@kernel.org> wrote:
+> >
+> > On Fri, Mar 4, 2022 at 9:30 AM Benjamin Tissoires
+> > <benjamin.tissoires@redhat.com> wrote:
+> > >
+> > > LIRC_MODE2 does not really need net_admin capability, but only sys_admin.
+> > >
+> > > Extract a new helper for it, it will be also used for the HID bpf
+> > > implementation.
+> > >
+> > > Cc: Sean Young <sean@mess.org>
+> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> > >
+> > > ---
+> > >
+> > > new in v2
+> > > ---
+> > >  kernel/bpf/syscall.c | 14 +++++++++++++-
+> > >  1 file changed, 13 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > index db402ebc5570..cc570891322b 100644
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -2165,7 +2165,6 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
+> > >         case BPF_PROG_TYPE_LWT_SEG6LOCAL:
+> > >         case BPF_PROG_TYPE_SK_SKB:
+> > >         case BPF_PROG_TYPE_SK_MSG:
+> > > -       case BPF_PROG_TYPE_LIRC_MODE2:
+> > >         case BPF_PROG_TYPE_FLOW_DISSECTOR:
+> > >         case BPF_PROG_TYPE_CGROUP_DEVICE:
+> > >         case BPF_PROG_TYPE_CGROUP_SOCK:
+> > > @@ -2202,6 +2201,17 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
+> > >         }
+> > >  }
+> > >
+> > > +static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
+> > > +{
+> > > +       switch (prog_type) {
+> > > +       case BPF_PROG_TYPE_LIRC_MODE2:
+> > > +       case BPF_PROG_TYPE_EXT: /* extends any prog */
+> > > +               return true;
+> > > +       default:
+> > > +               return false;
+> > > +       }
+> > > +}
+> >
+> > I am not sure whether we should do this. This is a behavior change, that may
+> > break some user space. Also, BPF_PROG_TYPE_EXT is checked in
+> > is_perfmon_prog_type(), and this change will make that case useless.
+>
+> Sure, I can drop it from v3 and make this function appear for HID only.
+>
+> Regarding BPF_PROG_TYPE_EXT, it was already in both
+> is_net_admin_prog_type() and is_perfmon_prog_type(), so I duplicated
+> it here, but I agree, given that it's already in the first function
+> there, CPA_SYS_ADMIN is already checked.
 
-I actually did that on v1. After Stephen's comment about asprintf(), I
-got the idea to make get_task_name() similar to get_command_name() and
-a bit more "user-friendly", so that callers do not need a free().
-
-If you think this is not ideal, I can post a v3 with the necessary fixes
-to the callers.
-
-Thanks,
-Andrea
-
+I think with current code, a user with CAP_BPF, CAP_NET_ADMIN, and
+CAP_PERFMON (but not CAP_SYS_ADMIN) can load programs of type
+BPF_PROG_TYPE_EXT. But after the patch, the same user will not be
+able to do it. Did I misread it? It is not a common case though.
