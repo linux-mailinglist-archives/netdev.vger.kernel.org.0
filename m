@@ -2,95 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 501C44CFDE9
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 13:13:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B854CFE7E
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 13:30:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237266AbiCGMOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 07:14:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
+        id S240418AbiCGMbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 07:31:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235118AbiCGMOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 07:14:32 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4440C48384
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 04:13:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jH5AYjse+WxNHZmr7RG3+47WmqMY6ScJQoNgOCRWKRc=; b=apx16hHc60W9kgrugYuwOMejnD
-        ZyielHE2YocPyBHLjDvyoYdPr+bUUjA+Zr1vEjp8ZlZOIq/5r84GQL2U238HN69+H+fU1qYRe197d
-        R3qKgYDIzoSp/jcrow0XKS/9tv3SS0DvDGClu4fgJipR7r6OKH+pdigYKuFomIgIrAXScTGEkmAgr
-        /Ydux0eS/1AOMVjJ2GLny39tvjFIfQ4lhQsolLwH/Bwl9MULJywEbXKmB5zmDdMkMQI0b4hsPgKrp
-        iJN+SjdmPUSuBzq5SyzXbst5Ml2/FOrensayrTAn4ib4U0y/CMwPsNs0UT4YOEUf5Rbh/XtjLr7/V
-        xgT5Rhtw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49276 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1nRCF0-0007IU-QW; Mon, 07 Mar 2022 12:13:30 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nRCF0-00CiXD-7q; Mon, 07 Mar 2022 12:13:30 +0000
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH net] net: dsa: mt7530: fix incorrect test in
- mt753x_phylink_validate()
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S239831AbiCGMbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 07:31:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CB585BEB;
+        Mon,  7 Mar 2022 04:30:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52BD0B811CC;
+        Mon,  7 Mar 2022 12:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ED5EBC340F5;
+        Mon,  7 Mar 2022 12:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646656211;
+        bh=HPwXi6u2RxyXpPRxeLThCpw0lecTKeSTLtRjAnp6Cs8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WXgdA2vucVVKGhbcrARYbAoCqySvVnegfhdb3jZ/WZWgdw3BX0oP7q0FnDOOxHy2e
+         uik+sLVf8fOTBGh1/XDtQqoGuKoI5jxgZOiwG/noE68GfQEUwlyutPn3+fy1AwXiea
+         EzthY/kP8pnucMTWUCpmA+py3zxx2C98SouPdl8eg5wJ92FV1yb5FxbPqaN9wlIdYH
+         WKJvgSWulIHCUR8NMNI6FAJH2w05691DuzLqxjPIFQNMfhJky8G3XYL/Hqb1Co54qR
+         +Rw7I1qfsOrMVGasczD3459D1x+8M4E8ztni6osgCA7QaI5VJYmXQdKWwn7HohJggd
+         1cIF+IMWHUmHQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C819DE6D3DE;
+        Mon,  7 Mar 2022 12:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nRCF0-00CiXD-7q@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Mon, 07 Mar 2022 12:13:30 +0000
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: dsa: return success if there was nothing to do
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164665621081.9112.654277203956305910.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Mar 2022 12:30:10 +0000
+References: <20220305171448.692839-1-trix@redhat.com>
+In-Reply-To: <20220305171448.692839-1-trix@redhat.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Discussing one of the tests in mt753x_phylink_validate() with Landen
-Chao confirms that the "||" should be "&&". Fix this.
+Hello:
 
-Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
-As the mt7530 maintainers are not very responsive to my recent two patch
-series, but Landen Chao did state that this should be "&&" not "||", lets
-at least get this patch merged.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Sat,  5 Mar 2022 09:14:48 -0800 you wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> Clang static analysis reports this representative issue
+> dsa.c:486:2: warning: Undefined or garbage value
+>   returned to caller
+>   return err;
+>   ^~~~~~~~~~
+> 
+> [...]
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index ff3c267d0f26..a251bc55727f 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2936,7 +2936,7 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
- 
- 	phylink_set_port_modes(mask);
- 
--	if (state->interface != PHY_INTERFACE_MODE_TRGMII ||
-+	if (state->interface != PHY_INTERFACE_MODE_TRGMII &&
- 	    !phy_interface_mode_is_8023z(state->interface)) {
- 		phylink_set(mask, 10baseT_Half);
- 		phylink_set(mask, 10baseT_Full);
+Here is the summary with links:
+  - net: dsa: return success if there was nothing to do
+    https://git.kernel.org/netdev/net-next/c/cd5169841c49
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
