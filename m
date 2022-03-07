@@ -2,169 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4134C4CEFD7
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 03:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB8A4CEFDC
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 03:57:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbiCGC46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Mar 2022 21:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
+        id S234896AbiCGC6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Mar 2022 21:58:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiCGC45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 21:56:57 -0500
-Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0D849925;
-        Sun,  6 Mar 2022 18:56:04 -0800 (PST)
-Received: by mail-vs1-xe33.google.com with SMTP id g21so15168327vsp.6;
-        Sun, 06 Mar 2022 18:56:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rWo2gGZzgADcS75WrUOeEqsX511pkSnvqcgFQoAG8dM=;
-        b=RWd1FsiSILFwP6sjlQkyCQ/qB4ZZTqobfVUPBIH8mTpMlQdGhgKEfKoKbC9loELSTt
-         u1R9RpUGnDsG1NkzH9ufOsuL1+GLOo8OVy8YhiNYN0UkaESYB5LHh/1gUQWJrhtRERYN
-         EY0qrOLhP6yLp8K03i86B06gKy4oNurW5njgONfjadQIKMJeVASV70O0UVrYFftRDJpR
-         oxv6gRBS58W8Jn6aEy5+Gy37GrShM4POtB7+DLADbbXFSjNT+2krXTaGP/y4+dHvBIuM
-         fzVrRn6ylWdCQcOlhtn2Sdd+rKrgmcnlnMESIRnS3grhxUVJf1n3u+1wgd7JQJnI435x
-         bx6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rWo2gGZzgADcS75WrUOeEqsX511pkSnvqcgFQoAG8dM=;
-        b=QiiOXbbNIUDdoW6hqiNTgkbbVa2wZlzESDaGTkK9uykoFULi558GAgMj8sPuX8lyjH
-         wkbkImsaSXE0dd46tXpBYJ3o+8RgV8YtkxMRPswT2ZMyMQHu0BQtGa6J0niklAgwE7Zc
-         K/ypzSEe8pAfudnmNUaDhOMvDEAXrG1hK2xAs+nECMKFZRb8wjpmcBKl+59ubkIN8F2D
-         UU5m+qujseVCEDbHP5yt5/Ms0jRi/+FwZctS3g70yD707YsdfgITCNHeuhJANOF+CpeP
-         Nm4ryxreyrqrgidHhkUOw+wJ+Nh3Cdb1LcYXVq5K0i/IBisPmXiCtPlJlPWs1F2LfKOk
-         khWg==
-X-Gm-Message-State: AOAM530aSon7mDED5pKRzSLU9L4rX38WMGSIegC7mJbUpMktTwgbjhgW
-        7ClkGaD+2Wdv+/WnjxFhrw1AQbrnBYPA2+9N67f9ExXr4mg=
-X-Google-Smtp-Source: ABdhPJw2ycb5fOnzqOYm0Dxxb77hoIIDqNFo6rYeEt+aV74xJ94JFZA0JOXZ3UMXft3O6wTQItDzDjGabuh1o1VZ79U=
-X-Received: by 2002:a67:c11d:0:b0:30a:a96:9d4a with SMTP id
- d29-20020a67c11d000000b0030a0a969d4amr3184854vsj.69.1646621763955; Sun, 06
- Mar 2022 18:56:03 -0800 (PST)
-MIME-Version: 1.0
-References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-7-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20220223223326.28021-7-ricardo.martinez@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Mon, 7 Mar 2022 05:56:13 +0300
-Message-ID: <CAHNKnsSZ_2DAPQRsa45VZZ1UYD6mga_T0jfX_J+sb1HNCwpOPA@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 06/13] net: wwan: t7xx: Add AT and MBIM WWAN ports
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        chandrashekar.devegowda@intel.com,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        madhusmita.sahu@intel.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229844AbiCGC6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Mar 2022 21:58:17 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882C83AA7C;
+        Sun,  6 Mar 2022 18:57:23 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 226Nvjef021551;
+        Mon, 7 Mar 2022 02:56:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=1eIJSI1NTmItcs+yInRgSiDCvd4xmWyeej3JLoJid00=;
+ b=jv8VDTxl4rByADG0VXUaLiX5/iEzdPz1RlCujzZ/1HHtQbwAUFy/KLa2YZnE0JKTG3It
+ p/zc4ax4K9T7eCskvNPvlc2i+S/zU+tRjwqUMo93yHDwE9+9yprZfbp20ZmQ+maIdFIz
+ 4Nx9FlBZ0JaoquPLPryktNUrhG6gQHwYChm5mDnBaO2whlRWdz8KGv0fMBN+Y+EmOvN4
+ x+1XxhaFJmFp38ur8KX/k3etJKskATqTU6c8YzRmx/gSw+eImDnt1y+JENDadaabYXXR
+ Qla3MKtoTfJ9jKJeSImz1kOKu+l5Now6x3PGP0vnCdeURbn3R52Fv7tSngNH7YdPzEgf 7A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3emsauugyy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Mar 2022 02:56:37 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2272rjs1027309;
+        Mon, 7 Mar 2022 02:56:37 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3emsauugy7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Mar 2022 02:56:36 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2272oglG020550;
+        Mon, 7 Mar 2022 02:56:34 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3ekyg8udmy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Mar 2022 02:56:34 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2272uWlE54985058
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Mar 2022 02:56:32 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EF4335204E;
+        Mon,  7 Mar 2022 02:56:31 +0000 (GMT)
+Received: from sig-9-65-93-47.ibm.com (unknown [9.65.93.47])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id AA16752052;
+        Mon,  7 Mar 2022 02:56:29 +0000 (GMT)
+Message-ID: <40db9f74fd3c9c7b660e3a203c5a6eda08736d5b.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 0/9] bpf-lsm: Extend interoperability with IMA
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     KP Singh <kpsingh@kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>,
+        Florent Revest <revest@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-integrity <linux-integrity@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Florent Revest <revest@google.com>,
+        Kees Cook <keescook@chromium.org>
+Date:   Sun, 06 Mar 2022 21:56:29 -0500
+In-Reply-To: <CAADnVQKfh3Z1DXJ3PEjFheQWEDFOKQjuyx+pkvqe6MXEmo7YHQ@mail.gmail.com>
+References: <20220302111404.193900-1-roberto.sassu@huawei.com>
+         <20220302222056.73dzw5lnapvfurxg@ast-mbp.dhcp.thefacebook.com>
+         <fe1d17e7e7d4b5e4cdeb9f96f5771ded23b7c8f0.camel@linux.ibm.com>
+         <CACYkzJ4fmJ4XtC6gx6k_Gjq0n5vjSJyq=L--H-Eho072HJoywA@mail.gmail.com>
+         <04d878d4b2441bb8a579a4191d8edc936c5a794a.camel@linux.ibm.com>
+         <CACYkzJ5RNDV582yt1xCZ8AQUW6v_o0Dtoc_XAQN1GXnoOmze6Q@mail.gmail.com>
+         <b6bf8463c1b370a5b5c9987ae1312fd930d36785.camel@linux.ibm.com>
+         <CAADnVQKfh3Z1DXJ3PEjFheQWEDFOKQjuyx+pkvqe6MXEmo7YHQ@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 1i1lsDYxbujpiuUY5lO0IzHm1pdBsxDU
+X-Proofpoint-ORIG-GUID: 9Vu05vBnzLx42nhBLQjdsKV_lX1PuNqU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-06_09,2022-03-04_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 mlxlogscore=999 clxscore=1015 mlxscore=0 lowpriorityscore=0
+ phishscore=0 spamscore=0 bulkscore=0 suspectscore=0 priorityscore=1501
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203070013
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 1:35 AM Ricardo Martinez
-<ricardo.martinez@linux.intel.com> wrote:
-> From: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
->
-> Adds AT and MBIM ports to the port proxy infrastructure.
-> The initialization method is responsible for creating the corresponding
-> ports using the WWAN framework infrastructure. The implemented WWAN port
-> operations are start, stop, and TX.
+On Thu, 2022-03-03 at 14:39 -0800, Alexei Starovoitov wrote:
 
-[skipped]
+> . There is no such thing as "eBPF modules". There are BPF programs.
+> They cannot be signed the same way as kernel modules.
+> We've been working on providing a way to sign them for more
+> than a year now. That work is still ongoing.
+> 
+> . IMA cannot be used for integrity check of BPF programs for the same
+> reasons why kernel module like signing cannot be used.
 
-> +static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
-> +{
-> +       struct t7xx_port *port_private = wwan_port_get_drvdata(port);
-> +       size_t actual_len, alloc_size, txq_mtu = CLDMA_MTU;
-> +       struct t7xx_port_static *port_static;
-> +       unsigned int len, i, packets;
-> +       struct t7xx_fsm_ctl *ctl;
-> +       enum md_state md_state;
-> +
-> +       len = skb->len;
-> +       if (!len || !port_private->rx_length_th || !port_private->chan_enable)
-> +               return -EINVAL;
-> +
-> +       port_static = port_private->port_static;
-> +       ctl = port_private->t7xx_dev->md->fsm_ctl;
-> +       md_state = t7xx_fsm_get_md_state(ctl);
-> +       if (md_state == MD_STATE_WAITING_FOR_HS1 || md_state == MD_STATE_WAITING_FOR_HS2) {
-> +               dev_warn(port_private->dev, "Cannot write to %s port when md_state=%d\n",
-> +                        port_static->name, md_state);
-> +               return -ENODEV;
-> +       }
-> +
-> +       alloc_size = min_t(size_t, txq_mtu, len + CCCI_HEADROOM);
-> +       actual_len = alloc_size - CCCI_HEADROOM;
-> +       packets = DIV_ROUND_UP(len, txq_mtu - CCCI_HEADROOM);
-> +
-> +       for (i = 0; i < packets; i++) {
-> +               struct ccci_header *ccci_h;
-> +               struct sk_buff *skb_ccci;
-> +               int ret;
-> +
-> +               if (packets > 1 && packets == i + 1) {
-> +                       actual_len = len % (txq_mtu - CCCI_HEADROOM);
-> +                       alloc_size = actual_len + CCCI_HEADROOM;
-> +               }
+I assume the issue isn't where the signature is stored (e.g. appended,
+xattr), but of calculating the hash.  Where is the discussion taking
+place?   Are there any summaries of what has been discussed?
 
-Why do you track the packet number? Why not track the offset in the
-passed data? E.g.:
+FYI, IMA isn't limited to measuring files.  Support was added for
+buffer measurements (e.g kexec boot command line, certificates) and
+measuring kernel critical data (e.g. SELinux in memory policy & state,
+device mapper).
 
-for (off = 0; off < len; off += chunklen) {
-    chunklen = min(len - off, CLDMA_MTU - sizeof(struct ccci_header);
-    skb_ccci = alloc_skb(chunklen + sizeof(struct ccci_header), ...);
-    skb_put_data(skb_ccci, skb->data + off, chunklen);
-    /* Send skb_ccci */
-}
+thanks,
 
-> +               skb_ccci = __dev_alloc_skb(alloc_size, GFP_KERNEL);
-> +               if (!skb_ccci)
-> +                       return -ENOMEM;
-> +
-> +               ccci_h = skb_put(skb_ccci, sizeof(*ccci_h));
-> +               t7xx_ccci_header_init(ccci_h, 0, actual_len + sizeof(*ccci_h),
-> +                                     port_static->tx_ch, 0);
-> +               skb_put_data(skb_ccci, skb->data + i * (txq_mtu - CCCI_HEADROOM), actual_len);
-> +               t7xx_port_proxy_set_tx_seq_num(port_private, ccci_h);
-> +
-> +               ret = t7xx_port_send_skb_to_md(port_private, skb_ccci);
-> +               if (ret) {
-> +                       dev_kfree_skb_any(skb_ccci);
-> +                       dev_err(port_private->dev, "Write error on %s port, %d\n",
-> +                               port_static->name, ret);
-> +                       return ret;
-> +               }
-> +
-> +               port_private->seq_nums[MTK_TX]++;
+Mimi
 
-Sequence number tracking as well as CCCI header construction are
-common operations, so why not move them to t7xx_port_send_skb_to_md()?
-
-> +       }
-> +
-> +       dev_kfree_skb(skb);
-> +       return 0;
-> +}
-
---
-Sergey
