@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C8F4CFF56
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 13:59:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F564CFF61
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 14:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242675AbiCGNAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 08:00:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        id S242612AbiCGNB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 08:01:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242687AbiCGNAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 08:00:21 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2EB6A012
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 04:59:25 -0800 (PST)
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B875C3F5FB
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 12:59:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646657962;
-        bh=jMtPmKSRUvUYtvTflv22KoBJEK0aUxzC1RIZwVEFX+k=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=SscUP25uz8ljqWf4ezAy/ruR+aIkGZFlx5xUt0nRONDVsnIgPw1ZYua8VTEtkRIDn
-         /EDplfM0U2kKR85BM/vCHvSNxrX+61u5K5vnW+edaKPX84ibx3ve938dE15QSL+4yI
-         WVqw20XKnpHBuSCtyK83aBc/x1kDHrrcS+rR43vG7ptlBIc89Kl1ybG6JgO8syQOxJ
-         xuuDfKCDgn7R7i8hhqBvfaVTey2BbURHbHpE0nOR6u2y82/PdF5mX04JkGPeigrRMz
-         8eKPLO2Ywm5nlOTu+JrB/r7nt28xZS2vIiekgjN/CHhn3jeC8HEfRFs6RdENHyJt42
-         fMKZwyhYaGuew==
-Received: by mail-pj1-f72.google.com with SMTP id y1-20020a17090a644100b001bc901aba0dso6219406pjm.8
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 04:59:22 -0800 (PST)
+        with ESMTP id S240325AbiCGNB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 08:01:26 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B2B8A32A
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 05:00:30 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id g1so30741491ybe.4
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 05:00:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cV/iRWpEISoBT8RqYrC9Loyzy60WPxJLdJrpUBpn9N4=;
+        b=LVb++RVBZfne8vu4GpNufR3TESTWg0xLaPgW4a8mWdgu+RsfCq0eSp7KjWLVehEZMi
+         Nqc9VQ04sWEuTzePC1BAc92teVEUvdGyPyD24J9VgfOlza/1uyEZeVS4Rz+ev0Kg+g+w
+         mVMXXPm1QDuom6dMCjngUykQ4yCV1nwKEqJwjVs8PmDIVYk7pJ+0X9Fc1Ucm82OLgzKY
+         rFrdY08sjABSAp4mH5xB7Jz6UfirJs2eorbxcisS7cxmYySScStHT7AH6YMGEz0Mv4jA
+         x4/UXhyzWP0afg9vP2AQLMwR4es9LiI26n22K0Fn0iAsm4g/NOcto86FXEk64Rn1bgyX
+         7uHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jMtPmKSRUvUYtvTflv22KoBJEK0aUxzC1RIZwVEFX+k=;
-        b=TtXyuA7F0fLtKUI+QSMk2nIttEe7mhch92tT5kd2AVXreuzmYtynL6cIp1qdWwxzv4
-         gnu1og4WY/H1e933mPfq5Miyn/0oXJE9am9dRWUKc38HKjYuoli/z+IhxK7I5mTfyEjy
-         87ftequOr4ESuQ2XEf+nGdf1qy0DCwR9dztdba6oENBEzB8eYpSNerloo87GUA6kKbw8
-         9MrnuVPVQzHhh3I2wXvGyOoRpocbm5rkUtIOtZD0R7VwNxHZODAPlFlo7YHB0BSWeNkJ
-         0x5UKc/H7JFQJc8AM4Nh5RP10/ONFijbg1MiOKyJeuPjnknGu2PlexeHjoIRJwdHBO7j
-         pAUg==
-X-Gm-Message-State: AOAM5312Rs/k+2ZszxayIpcCtcLmtzdE9vqCISKydb1YGL7e8qe1BhBD
-        DdyCeokD0OOiRhsapyaiyE6swrrct1ydZYzJaysaFyycBqpaDOxGqXrHIM5HhmuZLAn/6i3JBOt
-        FjbFzudAMSUVmGKyk90nfUdS+F0ps8d8Qgw==
-X-Received: by 2002:a05:6a00:124f:b0:4c0:6242:c14e with SMTP id u15-20020a056a00124f00b004c06242c14emr12392484pfi.83.1646657958309;
-        Mon, 07 Mar 2022 04:59:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwUGtcuE9+d9RFrcMdWxp59VW+xrbfIIprtBnMCCjgc9FCOCuS/oZygQdQTPUWW2SQOzqsgIQ==
-X-Received: by 2002:a05:6a00:124f:b0:4c0:6242:c14e with SMTP id u15-20020a056a00124f00b004c06242c14emr12392447pfi.83.1646657957964;
-        Mon, 07 Mar 2022 04:59:17 -0800 (PST)
-Received: from localhost.localdomain (59-115-216-226.dynamic-ip.hinet.net. [59.115.216.226])
-        by smtp.gmail.com with ESMTPSA id oj2-20020a17090b4d8200b001bef79ea006sm17545682pjb.29.2022.03.07.04.59.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 04:59:17 -0800 (PST)
-From:   Chris Chiu <chris.chiu@canonical.com>
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Chiu <chris.chiu@canonical.com>
-Subject: [PATCH 2/2] rtl8xxxu: fill up txrate info for gen1 chips
-Date:   Mon,  7 Mar 2022 20:58:52 +0800
-Message-Id: <20220307125852.13606-3-chris.chiu@canonical.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220307125852.13606-1-chris.chiu@canonical.com>
-References: <20220307125852.13606-1-chris.chiu@canonical.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cV/iRWpEISoBT8RqYrC9Loyzy60WPxJLdJrpUBpn9N4=;
+        b=CTzqmKSDKST/dsyfxqrWGNMYQPBksAqn9xi1oN1OpRtuUr8wLBoyRJpFz7gDbnryD2
+         axNrft4qORfe+aJN5p9Ka2+Mdwv6ZebfyjUu02zzl54qOoRPZRG1CWJr0OFZtEW+quNT
+         JRvvm+NZ9fr92tZRKX0ZMTc+Pmg1+BGeqrPR7fTk0TfWq3GhjGPsjTxw/7S2KwuJRIKQ
+         qF6jMk5pJmlQeAdRv/RJ+JjBIrrsVED1erMhUboiPX5rAtwGBPCJ0lnCU/gE8D+B/Tcn
+         rw2xm8a/faeBwBVKQmjkt7QhiHHBN4rFvp2nFjGebfEpmuzbK0BABMjpGLyCI2u2asLz
+         UTfw==
+X-Gm-Message-State: AOAM530fuBpWqXp6nsNlK0LPQI+bRasKI4UkWNR5YnhK+V5wbUW7mpMQ
+        yWW5NS/6kq21PNFVyMRc0KGWF7py+74L9Y3KtT/rYQ==
+X-Google-Smtp-Source: ABdhPJz7y/I54piNlQLkLmG1TBL8cO2TtZqqA/3TeporXhO/Ll4av+9Oeyrz2ZsqrqwcxxAf9U2afKUDEFHXjPyXHVY=
+X-Received: by 2002:a25:5090:0:b0:628:b76b:b9d3 with SMTP id
+ e138-20020a255090000000b00628b76bb9d3mr7938482ybb.128.1646658029569; Mon, 07
+ Mar 2022 05:00:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20220307091702.378509770@linuxfoundation.org>
+In-Reply-To: <20220307091702.378509770@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 7 Mar 2022 18:30:18 +0530
+Message-ID: <CA+G9fYtXE1TvxtXZPw++ZkGAUZ4f1rD1tBkMsDb33jsm-C1OZw@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/262] 5.15.27-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, dri-devel@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Hou Tao <houtao1@huawei.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -80,113 +79,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL8188CUS/RTL8192CU(gen1) don't support rate adatptive report hence
-no real txrate info can be retrieved. The vendor driver reports the
-highest rate in HT capabilities from the IEs to avoid empty txrate.
-This commit initiates the txrate information with the highest supported
-rate negotiated with AP. The gen2 chip keeps update the txrate from
-the rate adaptive reports, and gen1 chips at least have non-NULL txrate
-after associated.
+On Mon, 7 Mar 2022 at 15:07, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.27 release.
+> There are 262 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 09 Mar 2022 09:16:25 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.27-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
----
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 59 +++++++++++++++++++
- 1 file changed, 59 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index d225a1257530..285acf303e3d 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4473,6 +4473,35 @@ void rtl8xxxu_gen1_init_aggregation(struct rtl8xxxu_priv *priv)
- 	priv->rx_buf_aggregation = 1;
- }
- 
-+static struct ieee80211_rate rtl8xxxu_legacy_ratetable[] = {
-+	{.bitrate = 10, .hw_value = 0x00,},
-+	{.bitrate = 20, .hw_value = 0x01,},
-+	{.bitrate = 55, .hw_value = 0x02,},
-+	{.bitrate = 110, .hw_value = 0x03,},
-+	{.bitrate = 60, .hw_value = 0x04,},
-+	{.bitrate = 90, .hw_value = 0x05,},
-+	{.bitrate = 120, .hw_value = 0x06,},
-+	{.bitrate = 180, .hw_value = 0x07,},
-+	{.bitrate = 240, .hw_value = 0x08,},
-+	{.bitrate = 360, .hw_value = 0x09,},
-+	{.bitrate = 480, .hw_value = 0x0a,},
-+	{.bitrate = 540, .hw_value = 0x0b,},
-+};
-+
-+static void rtl8xxxu_desc_to_mcsrate(u16 rate, u8 *mcs, u8 *nss)
-+{
-+	if (rate <= DESC_RATE_54M)
-+		return;
-+
-+	if (rate >= DESC_RATE_MCS0 && rate <= DESC_RATE_MCS15) {
-+		if (rate < DESC_RATE_MCS8)
-+			*nss = 1;
-+		else
-+			*nss = 2;
-+		*mcs = rate - DESC_RATE_MCS0;
-+	}
-+}
-+
- static void rtl8xxxu_set_basic_rates(struct rtl8xxxu_priv *priv, u32 rate_cfg)
- {
- 	struct ieee80211_hw *hw = priv->hw;
-@@ -4534,9 +4563,12 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 	struct rtl8xxxu_priv *priv = hw->priv;
- 	struct device *dev = &priv->udev->dev;
- 	struct ieee80211_sta *sta;
-+	struct rtl8xxxu_ra_report *rarpt;
- 	u32 val32;
- 	u8 val8;
- 
-+	rarpt = &priv->ra_report;
-+
- 	if (changed & BSS_CHANGED_ASSOC) {
- 		dev_dbg(dev, "Changed ASSOC: %i!\n", bss_conf->assoc);
- 
-@@ -4545,6 +4577,10 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 		if (bss_conf->assoc) {
- 			u32 ramask;
- 			int sgi = 0;
-+			u8 highest_rate;
-+			u8 mcs = 0, nss = 0;
-+			u32 bit_rate;
-+
- 
- 			rcu_read_lock();
- 			sta = ieee80211_find_sta(vif, bss_conf->bssid);
-@@ -4569,6 +4605,29 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 				sgi = 1;
- 			rcu_read_unlock();
- 
-+			highest_rate = fls(ramask) - 1;
-+			if (highest_rate < DESC_RATE_MCS0) {
-+				rarpt->txrate.legacy =
-+				rtl8xxxu_legacy_ratetable[highest_rate].bitrate;
-+			} else {
-+				rtl8xxxu_desc_to_mcsrate(highest_rate,
-+							 &mcs, &nss);
-+				rarpt->txrate.flags |= RATE_INFO_FLAGS_MCS;
-+
-+				rarpt->txrate.mcs = mcs;
-+				rarpt->txrate.nss = nss;
-+
-+				if (sgi) {
-+					rarpt->txrate.flags |=
-+						RATE_INFO_FLAGS_SHORT_GI;
-+				}
-+
-+				rarpt->txrate.bw |= RATE_INFO_BW_20;
-+			}
-+			bit_rate = cfg80211_calculate_bitrate(&rarpt->txrate);
-+			rarpt->bit_rate = bit_rate;
-+			rarpt->desc_rate = highest_rate;
-+
- 			priv->vif = vif;
- 			priv->rssi_level = RTL8XXXU_RATR_STA_INIT;
- 
--- 
-2.20.1
+Following build errors/warnings noticed on arm64.
 
+
+arch/arm64/net/bpf_jit_comp.c: In function 'build_insn':
+arch/arm64/net/bpf_jit_comp.c:791:21: error: implicit declaration of
+function 'bpf_pseudo_func' [-Werror=implicit-function-declaration]
+  791 |                 if (bpf_pseudo_func(insn))
+      |                     ^~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+
+
+drivers/gpu/drm/mediatek/mtk_dsi.c: In function 'mtk_dsi_host_attach':
+drivers/gpu/drm/mediatek/mtk_dsi.c:858:28: error: implicit declaration
+of function 'devm_drm_of_get_bridge'; did you mean
+'devm_drm_panel_bridge_add'? [-Werror=implicit-function-declaration]
+  858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
+dev->of_node, 0, 0);
+      |                            ^~~~~~~~~~~~~~~~~~~~~~
+      |                            devm_drm_panel_bridge_add
+drivers/gpu/drm/mediatek/mtk_dsi.c:858:26: warning: assignment to
+'struct drm_bridge *' from 'int' makes pointer from integer without a
+cast [-Wint-conversion]
+  858 |         dsi->next_bridge = devm_drm_of_get_bridge(dev,
+dev->of_node, 0, 0);
+      |                          ^
+cc1: some warnings being treated as errors
+
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+Build log [1].
+
+--
+Linaro LKFT
+https://lkft.linaro.org
+
+[1] https://builds.tuxbuild.com/263ZKyWWLLcPGRbiZwIEZw3wvXX/
