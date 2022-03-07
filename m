@@ -2,194 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D42234D0263
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 16:03:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 231694D027F
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 16:10:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbiCGPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 10:04:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50356 "EHLO
+        id S243664AbiCGPK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 10:10:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243688AbiCGPEL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 10:04:11 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A8B1EC57
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 07:03:12 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id s25so20862656lji.5
-        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 07:03:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=/BTt8YfLqIyHV2xz5yac4//kRwc8vucWlkgPD1H5W5U=;
-        b=geSKUfzqH0ywLbmlSI4UD7XWu1DZAlvfys+W7vVP+VziMkRy9OPLCGWNyAdIXt1Bk5
-         h809Vnkn1UErlMBAksU9IxSwTd3AvnT4UYUsCk8Fbj3N7QPq2u4sVhQA/K7918afijZ/
-         +nXawLyl8sKtpITj3idcFoayKBWNTF8YEL15U34F09L97BWaO82jpZjN3qn9i5EP/WcK
-         YqYWxTW8LazUdo+MmCRa9MQupXERDJ2rNoYVtiqDZr8AJPrvVKVP838BI0qFTNRs0JMg
-         L2C3s4WjE0o6b0WRiadxWMjVi1woqYDlUuZc2YWb8XtkniDw4Hj87xdrKekXMDgAW0uC
-         W9aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=/BTt8YfLqIyHV2xz5yac4//kRwc8vucWlkgPD1H5W5U=;
-        b=KSgTApqbiRmZ3UDMjFe7QiufLj5IBV3pjkDyDPokwymxbWo6Q0Qp0ubL6CwNKi7v3p
-         gmqBZRkkUYqCf9qiV1EZmPhZOTIwIYjQ31jd61TGY0UIJhfyjgAEFwhGBQHqkaYAvM90
-         4pnYjRrqJ/0GVGD8YGwpCf3ggm5yPa/AAKbRmRjNWITwUw7kkXbnUZ81IbIWtJvw7WPH
-         /vZO4IYUAv5W5YAtgVpbtlpiL+dgCD4esNAg9qEob2Mn5eaVgOOirhQu51UDED7KmX9U
-         B5KBg0itEZPFDWL2fXvFFCQihPk4xRrhA9emkPvkuS7YbKXhEY1HkvlxZE3jrs7SFawp
-         C/vg==
-X-Gm-Message-State: AOAM532t537mBU4Dgi9XUpHACbwZmwFxUNtfiBPvhlA5HgsZvwcgMG8Y
-        bxBbb6C3Spmh7Tl2TKzFr91NDg==
-X-Google-Smtp-Source: ABdhPJyRIzgTgkB5vzWWj4N/L5SwvNpTpRxtAde1STA6pj+0+6N4W5+mT6ohmIbc8yWzPAk4nV5rOA==
-X-Received: by 2002:a2e:9909:0:b0:244:c10b:3df2 with SMTP id v9-20020a2e9909000000b00244c10b3df2mr7871072lji.288.1646665388327;
-        Mon, 07 Mar 2022 07:03:08 -0800 (PST)
-Received: from wkz-x280 (a124.broadband3.quicknet.se. [46.17.184.124])
-        by smtp.gmail.com with ESMTPSA id p1-20020a05651238c100b004435d1d47fasm2890905lft.102.2022.03.07.07.03.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 07:03:07 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 03/10] net: bridge: mst: Support setting and
- reporting MST port states
-In-Reply-To: <5d3acf32-9875-de6d-7495-5e4860fb88f1@nvidia.com>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-4-tobias@waldekranz.com>
- <53EED92D-FEAC-4CC6-AF2A-52E73F839AB5@blackwall.org>
- <5d3acf32-9875-de6d-7495-5e4860fb88f1@nvidia.com>
-Date:   Mon, 07 Mar 2022 16:03:07 +0100
-Message-ID: <871qzdolec.fsf@waldekranz.com>
+        with ESMTP id S243663AbiCGPKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 10:10:55 -0500
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D374FC6C
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 07:09:59 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id ACEAA5C0396;
+        Mon,  7 Mar 2022 10:09:56 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 07 Mar 2022 10:09:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CwWsy+Fx/CIHvLGat
+        i4VgUp0A+WPPu8rkPuEP1C9SCk=; b=HC5n/0PtVIBOCaU4zMdCVrIE3TKW6NLbp
+        8p0hG3Qmof4GJgYwvoFpemuZinTYVKmC/29SFhqKRibsNuZ/LyD64x5+eOnZ+7Si
+        SB34GvUmEfNZr5gZP21PkhfCUfeisPKGyqi43G54ZAnj6eUBqN0KZbF3dUCLeuzi
+        daDTzkDcjeNWH0DfxcvGxGH31o2Q9K4LQRWDkhHR2Mb42d2Camdk86R0LoCwyQ4+
+        yk8JO9Z72m1Kngopba1zyCkWw9D60J6dJFBYfhh0LbISn2MVNd3ZCrnkJz8LTNzB
+        yolBgG1NFidLv612gU7Hjr/+UjvFbG/NRrFSqH7H5N3WwfUsAKIDQ==
+X-ME-Sender: <xms:RCAmYnLZPb09TCp1kpwyUqVkJ3CvBjlofs2AAzSGnWzTdEtnT_1B_A>
+    <xme:RCAmYrIdwL0SLRbPaGfe4YZf_75smVNa7ZPa4rVCTPxb7AJ22ozHMsZc7E1oUU3jn
+    80N-ae4-AJnRoM>
+X-ME-Received: <xmr:RCAmYvvo8hgqZe7U8GQJX4n0P17vDJ9dtR4d81Xi4E_LQ4vxnJAMap_55C6AA-0OfiUaL7OpQ3QTcBW-Qmpc2ndvB38>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddugedgjeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeetveevteehhfeuieekudeiudeuudefvedtfeeghffhudettdehtefhgffhkedu
+    jeenucffohhmrghinhepfhgvughorhgrphhrohhjvggtthdrohhrghenucevlhhushhtvg
+    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
+    tghhrdhorhhg
+X-ME-Proxy: <xmx:RCAmYgYhBpNqvDym_cNt8LFfbLDttEaFGWz8PcLYAeV5jhB8ba4zcg>
+    <xmx:RCAmYuY3E_2COUnFpAnWxxwx6-xLlTvC1bwhsm6FXz3nwGp0EesTiw>
+    <xmx:RCAmYkANVoJhbTUhjlRUd10OPbXbVCb7vDnwy0jCbiJlljTekvLUGQ>
+    <xmx:RCAmYnAKmM_coNnbTfwgVSiRiouESteGeJygt74pvd26DU7QG5vUrw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 7 Mar 2022 10:09:55 -0500 (EST)
+Date:   Mon, 7 Mar 2022 17:09:50 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org
+Subject: Re: [PATCH iproute2-next] configure: Allow command line override of
+ toolchain
+Message-ID: <YiYgPnn9wtXbOm0a@shredder>
+References: <20220228015435.1328-1-dsahern@kernel.org>
+ <Yh93f0XP0DijocNa@shredder>
+ <dfe64c90-88ea-9d85-412e-d2064f3f5e52@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dfe64c90-88ea-9d85-412e-d2064f3f5e52@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 17:53, Roopa Prabhu <roopa@nvidia.com> wrote:
-> On 3/1/22 15:19, Nikolay Aleksandrov wrote:
->> On 1 March 2022 11:03:14 CET, Tobias Waldekranz <tobias@waldekranz.com> wrote:
->>> Make it possible to change the port state in a given MSTI. This is
->>> done through a new netlink interface, since the MSTIs are objects in
->>> their own right. The proposed iproute2 interface would be:
->>>
->>>     bridge mst set dev <PORT> msti <MSTI> state <STATE>
->>>
->>> Current states in all applicable MSTIs can also be dumped. The
->>> proposed iproute interface looks like this:
->>>
->>> $ bridge mst
->>> port              msti
->>> vb1               0
->>> 		    state forwarding
->>> 		  100
->>> 		    state disabled
->>> vb2               0
->>> 		    state forwarding
->>> 		  100
->>> 		    state forwarding
->>>
->>> The preexisting per-VLAN states are still valid in the MST
->>> mode (although they are read-only), and can be queried as usual if one
->>> is interested in knowing a particular VLAN's state without having to
->>> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
->>> bound to MSTI 100):
->>>
->>> $ bridge -d vlan
->>> port              vlan-id
->>> vb1               10
->>> 		    state forwarding mcast_router 1
->>> 		  20
->>> 		    state disabled mcast_router 1
->>> 		  30
->>> 		    state disabled mcast_router 1
->>> 		  40
->>> 		    state forwarding mcast_router 1
->>> vb2               10
->>> 		    state forwarding mcast_router 1
->>> 		  20
->>> 		    state forwarding mcast_router 1
->>> 		  30
->>> 		    state forwarding mcast_router 1
->>> 		  40
->>> 		    state forwarding mcast_router 1
->>>
->>> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
->>> ---
->>> include/uapi/linux/if_bridge.h |  16 +++
->>> include/uapi/linux/rtnetlink.h |   5 +
->>> net/bridge/br_mst.c            | 244 +++++++++++++++++++++++++++++++++
->>> net/bridge/br_netlink.c        |   3 +
->>> net/bridge/br_private.h        |   4 +
->>> 5 files changed, 272 insertions(+)
->>>
->>> diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
->>> index b68016f625b7..784482527861 100644
->>> --- a/include/uapi/linux/if_bridge.h
->>> +++ b/include/uapi/linux/if_bridge.h
->>> @@ -785,4 +785,20 @@ enum {
->>> 	__BRIDGE_QUERIER_MAX
->>> };
->>> #define BRIDGE_QUERIER_MAX (__BRIDGE_QUERIER_MAX - 1)
->>> +
->>> +enum {
->>> +	BRIDGE_MST_UNSPEC,
->>> +	BRIDGE_MST_ENTRY,
->>> +	__BRIDGE_MST_MAX,
->>> +};
->>> +#define BRIDGE_MST_MAX (__BRIDGE_MST_MAX - 1)
->>> +
->>> +enum {
->>> +	BRIDGE_MST_ENTRY_UNSPEC,
->>> +	BRIDGE_MST_ENTRY_MSTI,
->>> +	BRIDGE_MST_ENTRY_STATE,
->>> +	__BRIDGE_MST_ENTRY_MAX,
->>> +};
->>> +#define BRIDGE_MST_ENTRY_MAX (__BRIDGE_MST_ENTRY_MAX - 1)
->>> +
->>> #endif /* _UAPI_LINUX_IF_BRIDGE_H */
->>> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
->>> index 0970cb4b1b88..4a48f3ce862c 100644
->>> --- a/include/uapi/linux/rtnetlink.h
->>> +++ b/include/uapi/linux/rtnetlink.h
->>> @@ -192,6 +192,11 @@ enum {
->>> 	RTM_GETTUNNEL,
->>> #define RTM_GETTUNNEL	RTM_GETTUNNEL
->>>
->>> +	RTM_GETMST = 124 + 2,
->>> +#define RTM_GETMST	RTM_GETMST
->>> +	RTM_SETMST,
->>> +#define RTM_SETMST	RTM_SETMST
->>> +
->> I think you should also update selinux  (see nlmsgtab.c)
->> I'll think about this one, if there is some nice way to avoid the new rtm types.
->
-> yes, since these are all port attributes, seems like 'bridge link set' 
-> should work
->
-> Tobias, can you pls check if extending RTM_SETLINK (with AF_BRIDGE) is 
-> an option here ?
->
-> ie via br_setlink
+On Sat, Mar 05, 2022 at 11:11:43AM -0700, David Ahern wrote:
+> On 3/2/22 6:56 AM, Ido Schimmel wrote:
+> > David, are you sure this patch is needed? Even without it I can override
+> > from the command line:
+> > 
+> > $ make V=1 CC=gcc
+> > 
+> > lib
+> > make[1]: Entering directory '/home/idosch/code/iproute2/lib'
+> > gcc -Wall -Wstrict-prototypes  -Wmissing-prototypes -Wmissing-declarations -Wold-style-definition -Wformat=2 -O2 -pipe -I../include -I../include/uapi -DRESOLVE_HOSTNAMES -DLIBDIR=\"/usr/lib\" -DCONFDIR=\"/etc/iproute2\" -DNETNS_RUN_DIR=\"/var/run/netns\" -DNETNS_ETC_DIR=\"/etc/netns\" -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -fPIC   -c -o libgenl.o libgenl.c
+> > ...
+> > 
+> > $ make V=1 CC=clang
+> > 
+> > lib
+> > make[1]: Entering directory '/home/idosch/code/iproute2/lib'
+> > clang -Wall -Wstrict-prototypes  -Wmissing-prototypes -Wmissing-declarations -Wold-style-definition -Wformat=2 -O2 -pipe -I../include -I../include/uapi -DRESOLVE_HOSTNAMES -DLIBDIR=\"/usr/lib\" -DCONFDIR=\"/etc/iproute2\" -DNETNS_RUN_DIR=\"/var/run/netns\" -DNETNS_ETC_DIR=\"/etc/netns\" -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -DHAVE_SETNS -DHAVE_HANDLE_AT -DHAVE_SELINUX -DHAVE_ELF -DHAVE_LIBMNL -DNEED_STRLCPY -DHAVE_LIBCAP -fPIC   -c -o libgenl.o libgenl.c
+> > 
+> 
+> interesting. As I recall the change was needed when I was testing
+> Stephen's patches for a clean compile with clang. Either way, the patch
+> was already merged.
 
-Yeah that makes sense. Not sure how I convinced myself that I needed a
-separate rtm type for it. I will give it a try. Thanks!
+I realize it was already merged (wasn't asking for academic purposes),
+but rather wanted you to verify that the patch is not needed on your end
+so that I could revert it. I can build with gcc/clang even without the
+patch. With the patch, the build is broken on Fedora as "yacc" is not a
+build dependency [1]. Verified this with a clean install of Fedora 35:
+Can't build iproute with this patch after running "dnf builddep
+iproute". Builds fine without it.
+
+[1] https://src.fedoraproject.org/rpms/iproute/blob/rawhide/f/iproute.spec#_22
