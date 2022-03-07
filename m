@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0887D4D0881
-	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 21:39:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F424D08A5
+	for <lists+netdev@lfdr.de>; Mon,  7 Mar 2022 21:42:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245302AbiCGUkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 15:40:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
+        id S232791AbiCGUmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 15:42:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245305AbiCGUkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 15:40:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472F470849;
-        Mon,  7 Mar 2022 12:39:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 005ACB81706;
-        Mon,  7 Mar 2022 20:39:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B852C340FF;
-        Mon,  7 Mar 2022 20:39:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646685548;
-        bh=2AJXQfaXAVGMfsXh7g2oy6EAKDefCtmzA26vSc+eQ2E=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=dpuYYw1i4ooZDW0rFRlF7JnE6b/MvLRIK6HG6LsUQ1FvxFdwzOXmCi8mB4FRhZd/b
-         44CiaGrvcl273QzJilYHOJPErc+iWys3knkYpuoXZ4JaMqMyJyM8twGOQtgm+He+dx
-         EeU57aROywzhEu2YrOiWMOnGHQjQs+g2rDYPiAfKG0RawHqUI2mpu9cqxMlSbANswh
-         81ebZrZ4OYNOyMvbIVwzcPDtpveoPaJ985h9NGgUtYQM9eLDgnIGM43r9KdTd2kp+m
-         fmbtOgqdwejdVpsSXM2onxr2j+lYppHU+JOB1WKD0yrsiUHNMiwnV+5tqQ5xL2qp6U
-         Ec5CewIrT2hFg==
-From:   Mark Brown <broonie@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        kuninori.morimoto.gx@renesas.com
-Cc:     ast@kernel.org, f.suligoi@asem.it, songliubraving@fb.com,
-        kafai@fb.com, lgirdwood@gmail.com, linux-kernel@vger.kernel.org,
-        kpsingh@kernel.org, yhs@fb.com, netdev@vger.kernel.org,
-        andrii@kernel.org, tiwai@suse.com, alsa-devel@alsa-project.org,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        bpf@vger.kernel.org, perex@perex.cz
-In-Reply-To: <20220302062844.46869-1-jiasheng@iscas.ac.cn>
-References: <20220302062844.46869-1-jiasheng@iscas.ac.cn>
-Subject: Re: [PATCH v3] ASoC: fsi: Add check for clk_enable
-Message-Id: <164668554489.3137316.16865303001337424021.b4-ty@kernel.org>
-Date:   Mon, 07 Mar 2022 20:39:04 +0000
+        with ESMTP id S232105AbiCGUmD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 15:42:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23F217C7BF
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 12:41:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646685667;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=65DoVEa1W2s4mlgCk5N1pF5mtpcjUybZoVdasl9gBZA=;
+        b=eRYoHPmX++QGw5jEw0xFbTM7OqcMjSqBDEJnuaIBXXk9SWUPozvnDdVoVN4Cw3Vjb4J6z8
+        uGm2X6pX7hyS74Bkkcx0wczqPOdcPSoFCxBI7cXk8IpcYwPScFVJihpNCBQTmOdmS/Wngo
+        t7/Ts9CCak+606Qmb7MYjdyAdl/TMFc=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-190-FAK7Vr8VMHiIERNQCBRwow-1; Mon, 07 Mar 2022 15:41:05 -0500
+X-MC-Unique: FAK7Vr8VMHiIERNQCBRwow-1
+Received: by mail-ej1-f70.google.com with SMTP id hx13-20020a170906846d00b006db02e1a307so2467570ejc.2
+        for <netdev@vger.kernel.org>; Mon, 07 Mar 2022 12:41:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=65DoVEa1W2s4mlgCk5N1pF5mtpcjUybZoVdasl9gBZA=;
+        b=OafaWqd6tsSYIFKkJ/KfGWGZfXMu40YWMiSVDJQlZgNU/BxdSHIzjdmhXJtrRpPHPX
+         cKQKimQKg2zGJ/OST5MtV2eJMjik9zARd71BOmOn3q8e/aJBAMpXRp7BpiCDKj7AwcUc
+         eNWJ6xijLmyMbrNuLOwXC48ElE5/WCkNdtwn8sZuiRsdnMnsbatKUjNahvtVt9aX/aqj
+         MAeyFbZ2xSKGAA2lBelnHPQigKpHhIaZ9t57pw+65qbLYBJEbXxDmSOeMbYwMA7sEbiv
+         ioMxSwQfU/BeZXyDuqWhlllvTHA5uqTrxdvFqYsa3VjbnoLfSZSSXMpEoW9TcqLsRFxh
+         Nk1g==
+X-Gm-Message-State: AOAM530ss4aiEABb5Dq2CsvlN5ipwm5RWsBDuPjn8R2kmMNkTy6AEKaw
+        enUTUueLeOfpzmnJMZu0KQcQ1/fxR37mVQnYVpK26jfI+j7GNvcuErLUl30WrSj1AvuIVBUCYEt
+        2xRVGLnVTzVjOjqmu
+X-Received: by 2002:a05:6402:369b:b0:416:5aa6:1584 with SMTP id ej27-20020a056402369b00b004165aa61584mr3891023edb.28.1646685663612;
+        Mon, 07 Mar 2022 12:41:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx6F8MiIRe03TOCJmXfREpBtaXRtN9Fc6/IFwvRcBQFF1wB1dRNGnFvV4ZmAdwxfIVKbbQJeA==
+X-Received: by 2002:a05:6402:369b:b0:416:5aa6:1584 with SMTP id ej27-20020a056402369b00b004165aa61584mr3890994edb.28.1646685663106;
+        Mon, 07 Mar 2022 12:41:03 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u9-20020a170906124900b006ce88a505a1sm5240692eja.179.2022.03.07.12.41.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 12:41:02 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E9060132007; Mon,  7 Mar 2022 21:41:01 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/2] sch_fq_codel: fix running with classifiers that
+ don't set a classid
+In-Reply-To: <20220307182602.16978-2-nbd@nbd.name>
+References: <20220307182602.16978-1-nbd@nbd.name>
+ <20220307182602.16978-2-nbd@nbd.name>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 07 Mar 2022 21:41:01 +0100
+Message-ID: <87lexl7axu.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Mar 2022 14:28:44 +0800, Jiasheng Jiang wrote:
-> As the potential failure of the clk_enable(),
-> it should be better to check it and return error
-> if fails.
-> 
-> 
+Felix Fietkau <nbd@nbd.name> writes:
 
-Applied to
+> If no valid classid is provided, fall back to calculating the hash directly,
+> in order to avoid dropping packets
+>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+While I agree that this behaviour makes more sense, it's also a
+user-facing API change; I suppose there may be filters out there relying
+on the fact that invalid (or unset) class ID values lead to dropped
+packets?
 
-Thanks!
+-Toke
 
-[1/1] ASoC: fsi: Add check for clk_enable
-      commit: 405afed8a728f23cfaa02f75bbc8bdd6b7322123
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
