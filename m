@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 277AE4D1326
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 10:15:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E904D1327
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 10:15:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345290AbiCHJQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 04:16:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
+        id S1345288AbiCHJQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 04:16:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345279AbiCHJQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 04:16:30 -0500
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00041.outbound.protection.outlook.com [40.107.0.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2584140A16
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 01:15:34 -0800 (PST)
+        with ESMTP id S233068AbiCHJQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 04:16:31 -0500
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10065.outbound.protection.outlook.com [40.107.1.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1F840A2C
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 01:15:35 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HR/hF/XiZ4obqzcvhLaP6jSRS4TzMSCK8tBJ+WrqpTuGztZIHDLDqfeVRUUmAkOt7bvicunSKio21kiameseuAd1t8Lw0Z+zPtX5FXKRQEvbvipZx21n3RfQLsy00dnhtf+iPuI8W1Dj9spYR1X3ocNlJF7UKMFUeGIYk7RlwPtjHrN3zqKi4wXrG1VV2xC3tfkZ/PYnAJ2O6c30plM/pNl6+MSsvCohysKyfkbTldQFmBqVMskzVTbeBVNsvwQkEPrFrtPHJmebBwgG6/7ac4BXPW9d4iNTzv8YW7X7LBWaXAPdkKLhXQbiRZiciHTvcFs8jiO8ZFmrGpKqCbVsIA==
+ b=JQ+FDGEq9Ru2fH6AU8Ac6jaebRBfScMf/Seet135qzt0AXYgn2VwTBpdcfzkX6NStHbhvVRtW4B0lXPW/elwllaR6C7aKoQqj7CCxwNL/65YneR0TUEsUU+vJOwN0m+GQte3tpL1sJU6zlils0gb19v5BoE0Q3gAmqD7wG5hmfw9wc6DKh9IbMeMZLk9erM7aphs3TRPL3Aogw/4Sx4SSOiQxB0MSPkVU+bv2UMIvs3TmZVxz2GG2hRxXkm3WlzzhuroUCqQ8LXn5di4HNLu1BIH4rcG+VktpeQKjyBpzX+aipmhG0oOOeHCQpDfiYXqSE05s0HUNX4GGJg99MsQ5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3PaQlf1YGm2I9Np5TGYcd0fogH0WEtPPLgagPY7SmhI=;
- b=g7jHS96Tv4vH7Pqu50ElV86tV33Y/BvwImiwJtA/5UgR6mQwiT9Uoyy7LqO/+z1D5PmVtowneouaRHpRlhCEXWCxrgnwK/RgEr441F01tpIGe+guK7GjkGPzA/0x/ZpN7n6zZlW0i85iIBz5awke7ycEj1vDcrGkWmuMiVKfiedSVzwTAHXTY4ycfUc4HSIWdNDRzTJ5wgmraGNLxBuNarK11WQ1B0X/l2g49qxtodOvynYVE2j0veYOskmKrABkSAe7ftIQwEloNkW9kRj3zZNvPzh9/G6PUC7mKvfB5RBU7tktSjyIYVzFPktRoqnkL2qsv9xaAwRFrYYlp0QPzQ==
+ bh=PihEpc/1sR1vrmlrigxVvbfDAHNjvx+5wozgvZ95gZY=;
+ b=ewecKn6pUyTIuvZiCtFIgzhzxfRkrukIWF7jhT6G9SGgjERpUl54F494zzKdZrxEW0byuushKDMIkJhGRvMJEeV5IRm/bcGIMNzGHCMJXKTjAFwFOifTQb0g7/GzCuzXh33bDrpV9qZt08RnDgAhgvYxKptR2YArMRCqHKqYk6e38ICz0dz/iIWEXzgeP8NHJmQT1BwGWRTqLubHAok4fLb5FO2bEoDMrhB78JArmeMjFY8YAITiitRtyKjUx1aTlOZpI0wbSAPNpD7aXpYGyoJcmrhJiCUslT01P28sQwwT/NR8fS+dEvizI+rnMagTU9wKzvSiMkuonihV02XVsQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3PaQlf1YGm2I9Np5TGYcd0fogH0WEtPPLgagPY7SmhI=;
- b=SZlSFekDWseMtG2AQb6XBpgJ3YkxOoXNzdTgO3G/QmliXjsZYXzmd/EwNA1yQFt58WZ11Ue0Wu8v97OGKTH23NlhkPYkfzdYOJJ7OiQB/y+nY96nmJScaAcrSLe7oWc6FM6dqRqCYfJPXkYJLk/X/A+qDDXQM3AKtDg/KYp94qw=
+ bh=PihEpc/1sR1vrmlrigxVvbfDAHNjvx+5wozgvZ95gZY=;
+ b=AYUqCD0SSFfiJXgfraIMtWxbiGy/n8NBlhOkjw2M7rpIVKuVa/J42Gae5Ohuc0yhHZqlzcYr9tCILvlmaLGQ1RzazU4pjPkjijeN1IFXzp+f7ngOvhnsbnS7Z+Ptba85+c6pjXHkjyQb3/EFW0d/MCNQqihUS3MoBo2U79/evqQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PAXPR04MB9303.eurprd04.prod.outlook.com (2603:10a6:102:2b7::22) with
+ by VE1PR04MB6461.eurprd04.prod.outlook.com (2603:10a6:803:120::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.26; Tue, 8 Mar
- 2022 09:15:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
+ 2022 09:15:33 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36%5]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
- 09:15:31 +0000
+ 09:15:32 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -51,9 +51,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH net-next 3/6] net: dsa: felix: drop "bool change" from felix_set_tag_protocol
-Date:   Tue,  8 Mar 2022 11:15:12 +0200
-Message-Id: <20220308091515.4134313-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 4/6] net: dsa: be mostly no-op in dsa_slave_set_mac_address when down
+Date:   Tue,  8 Mar 2022 11:15:13 +0200
+Message-Id: <20220308091515.4134313-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308091515.4134313-1-vladimir.oltean@nxp.com>
 References: <20220308091515.4134313-1-vladimir.oltean@nxp.com>
@@ -64,54 +64,54 @@ X-ClientProxiedBy: AS9PR06CA0347.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 53c97b69-ee88-4e2c-6c79-08da00e431a0
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9303:EE_
-X-Microsoft-Antispam-PRVS: <PAXPR04MB9303D760ACE7A3918E563FD2E0099@PAXPR04MB9303.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: ff078a0e-73df-4f71-72f5-08da00e4326d
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6461:EE_
+X-Microsoft-Antispam-PRVS: <VE1PR04MB64618E72078D66494B6A91CFE0099@VE1PR04MB6461.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8LjUq2c7jwgdgNWCKLnX0P34mCOHZhV9t8KbCE3lBX2a0Op3MFI9FZ6X3g2U3Tf7nSBRfUD7Hoeyo+jW/P3Q90FqomDufgOLWtIfYo1gMEyZg2EcdL3h/X3J6VwcUJf2hNn7bTyEhh9n6MATxNFW+Q9xXpeYlu1WsvsZUnzmkblysUobP644I2jMCzQb2d1F5OomyLo+oTTtxzGXW8GqSqcpKlKWNngyyr+UKox0sUM1M0jYwEfjsXH/G++SN0KStVojaa/wS1qGYYqliunhiaAg+MpGvUUNoDJ1YWe10Bwio4RN9MIBGt1iUTzBXF3CfpXpQr0UmdUONTInjykE4zVmLCQ/4EJTwMkn3j1YBnY4IQhPALemso3IKyXp3+OE2cdheq4W7OHqBojHjMiUMGSvnLh5OsIBK/i/yU2yKbTLrUB2nwKiw+ZRrXE3vtWEpXBQGIBvzNHMTm2eeu61/JtgIDGnCeBSAUSxmSTZtpUR4LUrOYrpSG7ybaWs3Oagj0NERJQnghx69afNaLMFAmvHD7MhSBM9/LQ3uk7M6I3PLqC0sO5p5Qth04NXbo6x6hZTuqgpia7vYiQIP6D1a4fPovdYLQubI3yqsE5DDAFQJJ2p1gcdQUmIYkteX0tb6+YyRi/dfAvWNOTJPiI+xefrz1khoMwEhxLuk0kOR99jOA+oZvNs8685ItD/eZwUlr+bh2PSfksWmpTx8sRB/A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(66476007)(66556008)(6512007)(86362001)(8676002)(4326008)(44832011)(66946007)(316002)(186003)(5660300002)(83380400001)(54906003)(8936002)(6916009)(1076003)(26005)(36756003)(7416002)(6486002)(6506007)(38350700002)(508600001)(2906002)(6666004)(38100700002)(52116002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: oxse3yYqG2MPPyVG7gMrwD37yuqgf9op+rcvOMgodeR9X7LIy4IyQsAz8hDbl2EVqY3wIqeu+/ujQyUhTAtRRG0AZjmcCucD0SxagnCTqhm/pIm1OhuquMIjzn8K3gmmSUBqwJFYiWcqVhpNy2W3v3W1cs146hZqNLZDO+k5d+Wg4iqpVLpVePRXJjyG8mWPO1twezcPyfKhjS91seUgS2DFXtP8/YIkXEQObWurEXysSwWDb2nb5JXOjwXY2fS0km9dl2ZBogPXf0e/b4RZ0PhrS0VplWSzgD1YUzNHo5YWyUOn/Z8l14rg1Q4FPWHpAtv6lyBTetVin+k0g9gKhqrdk3ovrvi/FiV4GBpLclOscP3NTghQ9L8YgGNtNHVceG/8SBFDivJK3RZRJq9j7Is/gfoDpuOtu1FAyoISs1qXpWEXqU4u2JOVz7+0400IXpAPa+1yg9vrVdk8DFkSo1cs7nl4nkXS93sk6AFoAzGysqjaLX2kwcqUpTdETGaJCZI17RGvaRnjvXpBTW78K7OTjz42oYM5gsKLeLSyuB9gxIhkoa3NpSnBD9lpoGlytvhEZv4nQGN+/jehgJ9/X8Xv/06MaID6AY61KFLzEQ/vy9nx5hlnPVjuiTycKIXK0X1xWeeuoGD9G60w+4fYY9IZhuh5gLQCNBx0kmp7QpD82gLxGCA1XfmfqG5u1ScveWY+kost9Ean4WEfKLzwMg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(186003)(26005)(508600001)(2616005)(316002)(54906003)(6916009)(6512007)(86362001)(66556008)(66476007)(44832011)(66946007)(52116002)(6506007)(8676002)(4326008)(36756003)(2906002)(5660300002)(38100700002)(6666004)(38350700002)(6486002)(8936002)(7416002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EUsGSLZvF7dWzFrPPzyL6ToUs2bWJUS/nJgfrsBSaLe2YGWrvBu09cfjJ5au?=
- =?us-ascii?Q?MpLXgPuUoZz1b/Dfm++Z30DPEwdd8AV1aYQmWYjfOtjM5czPgTAEeVHbTt/g?=
- =?us-ascii?Q?rF6fqy4mus05VrjZMPvQ46Oje0NV+Wvqfet3pWD1QmiIEPGCbM9ZbiWa30KK?=
- =?us-ascii?Q?S4OiTlzZBsdHQnOSFs1m5vCu95/tD0pbA81uJ62mDuolLK/N+wOm56bisiWp?=
- =?us-ascii?Q?kzjJpYkooexPjpVOHn++JEmUM9VXgpgFptSmD5qYBRxWWXkHgT7HJNmAyoLv?=
- =?us-ascii?Q?p9xFa85s+nD1VVIRKPCBUhH6fdBrTPnjLIaWUBO84K3h4E5t7B5kqwh2xaPg?=
- =?us-ascii?Q?RWpMjA+aVsaWzL/B2btBbey3i06FcQpCGTrLgtaZ8JbOi2HbOSZQOqf4lnva?=
- =?us-ascii?Q?4pLP1gf53WCCNEArm+nzfgssX8gMzasgezkaHHjcbBOEALgTKOYEjKS7l1CR?=
- =?us-ascii?Q?R4eDyrlwJFR1pVS49mFrlL0LjEACM3GisUeDgrsq5i78eiHebC7XnJ8cey16?=
- =?us-ascii?Q?pgUvHN4dB5r43PMDuDRR0UCXKb2JjUjvDpkq/+m4RVo1SpJRXMzYAuYngONr?=
- =?us-ascii?Q?QlhGrUzADXr5xcJYoAhIM1pMLD7zmJsl9gcyatTMKGk6Hq5tsevLtc0J/C7d?=
- =?us-ascii?Q?mlnJ7LiJNAwGNczccNCSNQ6kL+ASaOnAjOnvom2QpJhm7/Qqeh8JJaX05p1n?=
- =?us-ascii?Q?+yqdeR+sH0BYJ7hq1Hp09BadanhmniWIbjtgiJZ6cprk6kYGLYzNlAkG26uC?=
- =?us-ascii?Q?rxhCgfS3pGhgksKRCKbzx7A8EbvyrCbb2iMNSuxAanHAvEErI16cxCLJVpYf?=
- =?us-ascii?Q?GEKrnSVMIsDEucUswGxy/IJT9zCv6TR1WbEBcfHfRVErz4oESO19Y+9uPzSk?=
- =?us-ascii?Q?0kBgkH/TFJN66/WE3lUzq6Kwmomzy1PgVS/b1D5E1REOx5mC34EPzcRUdlRm?=
- =?us-ascii?Q?dQNkxRdLmf+ILgo9XklIjF8WclXLl22j3jyYLr9VoR73kd1foDEGgJAz5g/F?=
- =?us-ascii?Q?Kysn8Z5B0RkgV07qetSMNsKeB9EjdyDIQycDJhES7svuv7WSLC/vxwO8UdDc?=
- =?us-ascii?Q?95XGo30H4GYp97hPGdd2C5QoqiSkKhra7QHi+rUiC8bDrKub+Zz9UprkND1C?=
- =?us-ascii?Q?95WgWxjIM7cIha4Od1aTWKNtY+4AaIHl34OlejPmOg3n7PU9q0jp2evlUGvn?=
- =?us-ascii?Q?LbBnTjnAPyVSbIAFxCWLQ5mb6kr3H5pmBD/yGlBZNq7v/r7WjCfTJiEOZyt1?=
- =?us-ascii?Q?kn3HXhoZagUOhXDlzl9rEASOkFj24IwQsSZb+0Ooy2pgpDOH/OezInfXLE9g?=
- =?us-ascii?Q?83OcZp0ix3yVpmILPTShcXqYPn6CdwJAFVnieQVhsbED0/H8XCEts545u7iF?=
- =?us-ascii?Q?JSh5YaY5WdHWOjiLq8vzml+kKolqKXJqJBjFIUX+kIH3wsYJ9stFTdpV89Nl?=
- =?us-ascii?Q?52MJ3quCLbraIrcFqdqXVEiId+7v+ra7LrP89cmC2wEdcXLlyRz8U8q2OOW4?=
- =?us-ascii?Q?fH/pRCyICCezQsCEpiQFKd9msG4LGWutorVrL/1+bVBtdGSw3568FPw24BnV?=
- =?us-ascii?Q?rUlXYYBIH5WojfTV3escv1yw29X+RnY58EuoKyAFxVg3UiaheeVgsx82zTMT?=
- =?us-ascii?Q?xSMPe9HCw76LwB4xEHxVGJo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?++G2tzDObwkjzF2tAYqYGtpGq7YsxbJuVsRwSpVJp+lRFoSJNzzw/inUBgeh?=
+ =?us-ascii?Q?QfwPD60W/DET7ioyucEs8NFNrmcboBIu16Dbv4B4LQiblbhm00KFmXfO+adW?=
+ =?us-ascii?Q?ha8DPk1AQC6illDZEj52U1xbNrPFSanh5dLwJHyN4j5CjflgpdLV3UDdXWzE?=
+ =?us-ascii?Q?ZqvwcE48mtGuuN1cWKkCB2Fgpt8agsEqS2NReEPmRSUND4YjbEXogbSoXv7I?=
+ =?us-ascii?Q?VRyvsd4S2NPvuSbNuJfnSPIiWj2Rv9pwBwvgY8EjStpA7G6SYuSYHizzzBVW?=
+ =?us-ascii?Q?BkwyTUS8zQtgGphcS4AhltfseLdUKkHfQm/22KIot18WkQ7A1tMK8BQlPl9Y?=
+ =?us-ascii?Q?InEou/TvvBdei0MBk/D97tFLhAkSmYjD89Xlg81apO9gksjn4pUE5vRrqd6g?=
+ =?us-ascii?Q?a128BiAT3dhRuuTNW5JMIRCB82SaozSO8Tw1HBcdQTrelCi0YbTGWdEyWPjf?=
+ =?us-ascii?Q?ip4Rr2+eXpsRjpc1sKp9n/YGNfvZvOUo7t7grPpKprV5a6B6LHymxI11t88z?=
+ =?us-ascii?Q?Vf55ONUypSTUtJm01A8Ajpr5xvxziiOxNOsvn1rvkr2Jrbd9L7GR8iUB4Eun?=
+ =?us-ascii?Q?7hQNFk7Z74DLMrNMDItdKgdg/a5aHKEp4GYLrLQpJCpsYqlgJ01IebYNUTXw?=
+ =?us-ascii?Q?VKAUOEOa8hUg9S8inzuKsgGHOkZmMGoMNZKvSs1PLPxc3IO7qnRwwVGGCllr?=
+ =?us-ascii?Q?IF9nztmGhDK0rtZB1zzYDFsB3uoc8VH1LVtLPxBLqq/S5p/5su0PruTrd6a9?=
+ =?us-ascii?Q?VBQJxYGmN+2diPcqb+b2cJhG44Zq64Qu3BcJZ5j9oLq68cglxIl/IyCebNvO?=
+ =?us-ascii?Q?LJDU1SP71pRxNO8ipoi9yPQavOFv42vsFLcOhr81kgDgW5lYIEGVXy6E4MHT?=
+ =?us-ascii?Q?lGV4V5bDtHaHHqvzKOdpiurzbR4W0L5pNPxQFQ2u2+fYs2gez3La5cMcVJvS?=
+ =?us-ascii?Q?iIRmHuR5CEnwxYKJ0d62hu/WsTgHVsGjPCQLVcvOAYqk3IPHPSE/uFA2z5+D?=
+ =?us-ascii?Q?sAhxdrBm9Uy7hL0rcLvOqzV+Po6kZfKIVUL5n6c4/Gj8awz/8zrzPxHGIJF7?=
+ =?us-ascii?Q?rzmv6/0DR3niX+9dKgofRwgOS14qdmLPq450sWkaSHtuQsrUjzDJID3E6PBH?=
+ =?us-ascii?Q?w0lxeCfhA32ce36aDTRXZzsAz2qNMEisdav+SiLJcLuRTFNH/+KFSJUZf0Sx?=
+ =?us-ascii?Q?CK49ZFQszLo+/cGGsBwo4BdHRyvsK5yEgN8Jd1zBE8fEdnWLhwsV/DYqF7kq?=
+ =?us-ascii?Q?Xml8QInUo+gAdcP5J02v1o0s9WRCZ31v58TA9RRAkGLhL6lpWFxp2zV692NQ?=
+ =?us-ascii?Q?nAJlz5YLCZODpMPsbAZi81vqTJ4/9qADvWWh+Q7r9CXaMzP7khv9I5aPCwBL?=
+ =?us-ascii?Q?ZqLEXH1UvaZ1vqODNHfYS9R3a3PRsWpW2+UV8aS8G/jDlPA3JYw7MKl6DXjz?=
+ =?us-ascii?Q?aoQzpH4qChVyO3+VjIQe+0NG2gS6Hz/1DH9PizcTAwlxzRMWyc6dCuZFa0Ee?=
+ =?us-ascii?Q?ljnWn6Q4ivOWCdkYq1380kJuirhdJFF0hDNfCJIfLiB/YLs2GL8aWMYJrRGa?=
+ =?us-ascii?Q?U0DUOg0+HSsYgemqvV5hK+DFL5jLlCEiSq35IXiUPTKsrfXQyfUlrRSvQGE+?=
+ =?us-ascii?Q?1EHF2+4NDoUgiBanCgtFUUI=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53c97b69-ee88-4e2c-6c79-08da00e431a0
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff078a0e-73df-4f71-72f5-08da00e4326d
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 09:15:31.3674
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 09:15:32.8204
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LBu7lQhLEU2wW6a9aRoqhugh2RxvUhoQ3uvCearuIujDiwakPK3c6tIQyBiku4cwS8O4gXECRuoCykekgYDfjw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB9303
+X-MS-Exchange-CrossTenant-UserPrincipalName: WKkLggfrYN2sn845LFImncozQrKsqUBMjAM5MFU6GSg6p5gvSCxgb/Yqw5W3AvcziqG6EGhDjqHOqmUHhcDRfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6461
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -122,157 +122,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We no longer need the workaround in the felix driver to avoid calling
-dsa_port_walk_fdbs() when &dp->fdbs is an uninitialized list, because
-that list is now initialized from all call paths of felix_set_tag_protocol().
+Since the slave unicast address is synced to hardware and to the DSA
+master during dsa_slave_open(), this means that a call to
+dsa_slave_set_mac_address() while the slave interface is down will
+result to a call to dsa_port_standalone_host_fdb_del() and to
+dev_uc_del() for the MAC address while there was no previous
+dsa_port_standalone_host_fdb_add() or dev_uc_add().
 
+This is a partial revert of the blamed commit below, which was too
+aggressive.
+
+Fixes: 35aae5ab9121 ("net: dsa: remove workarounds for changing master promisc/allmulti only while up")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c | 65 ++++++++++++++--------------------
- 1 file changed, 26 insertions(+), 39 deletions(-)
+ net/dsa/slave.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 7cc67097948b..2c58031e209c 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -460,7 +460,7 @@ static int felix_update_trapping_destinations(struct dsa_switch *ds,
- 	return 0;
- }
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 42436ac6993b..a61a7c54af20 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -305,6 +305,12 @@ static int dsa_slave_set_mac_address(struct net_device *dev, void *a)
+ 	if (!is_valid_ether_addr(addr->sa_data))
+ 		return -EADDRNOTAVAIL;
  
--static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu, bool change)
-+static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
- {
- 	struct ocelot *ocelot = ds->priv;
- 	struct dsa_port *dp;
-@@ -488,19 +488,15 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu, bool change)
- 	if (err)
- 		return err;
++	/* If the port is down, the address isn't synced yet to hardware or
++	 * to the DSA master, so there is nothing to change.
++	 */
++	if (!(dev->flags & IFF_UP))
++		goto out_change_dev_addr;
++
+ 	if (dsa_switch_supports_uc_filtering(ds)) {
+ 		err = dsa_port_standalone_host_fdb_add(dp, addr->sa_data, 0);
+ 		if (err)
+@@ -323,6 +329,7 @@ static int dsa_slave_set_mac_address(struct net_device *dev, void *a)
+ 	if (dsa_switch_supports_uc_filtering(ds))
+ 		dsa_port_standalone_host_fdb_del(dp, dev->dev_addr, 0);
  
--	if (change) {
--		err = dsa_port_walk_fdbs(ds, cpu,
--					 felix_migrate_fdbs_to_tag_8021q_port);
--		if (err)
--			goto out_tag_8021q_unregister;
-+	err = dsa_port_walk_fdbs(ds, cpu, felix_migrate_fdbs_to_tag_8021q_port);
-+	if (err)
-+		goto out_tag_8021q_unregister;
- 
--		err = dsa_port_walk_mdbs(ds, cpu,
--					 felix_migrate_mdbs_to_tag_8021q_port);
--		if (err)
--			goto out_migrate_fdbs;
-+	err = dsa_port_walk_mdbs(ds, cpu, felix_migrate_mdbs_to_tag_8021q_port);
-+	if (err)
-+		goto out_migrate_fdbs;
- 
--		felix_migrate_flood_to_tag_8021q_port(ds, cpu);
--	}
-+	felix_migrate_flood_to_tag_8021q_port(ds, cpu);
- 
- 	err = felix_update_trapping_destinations(ds, true);
- 	if (err)
-@@ -518,13 +514,10 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu, bool change)
- 	return 0;
- 
- out_migrate_flood:
--	if (change)
--		felix_migrate_flood_to_npi_port(ds, cpu);
--	if (change)
--		dsa_port_walk_mdbs(ds, cpu, felix_migrate_mdbs_to_npi_port);
-+	felix_migrate_flood_to_npi_port(ds, cpu);
-+	dsa_port_walk_mdbs(ds, cpu, felix_migrate_mdbs_to_npi_port);
- out_migrate_fdbs:
--	if (change)
--		dsa_port_walk_fdbs(ds, cpu, felix_migrate_fdbs_to_npi_port);
-+	dsa_port_walk_fdbs(ds, cpu, felix_migrate_fdbs_to_npi_port);
- out_tag_8021q_unregister:
- 	dsa_tag_8021q_unregister(ds);
- 	return err;
-@@ -599,33 +592,27 @@ static void felix_npi_port_deinit(struct ocelot *ocelot, int port)
- 	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 1);
- }
- 
--static int felix_setup_tag_npi(struct dsa_switch *ds, int cpu, bool change)
-+static int felix_setup_tag_npi(struct dsa_switch *ds, int cpu)
- {
- 	struct ocelot *ocelot = ds->priv;
- 	int err;
- 
--	if (change) {
--		err = dsa_port_walk_fdbs(ds, cpu,
--					 felix_migrate_fdbs_to_npi_port);
--		if (err)
--			return err;
-+	err = dsa_port_walk_fdbs(ds, cpu, felix_migrate_fdbs_to_npi_port);
-+	if (err)
-+		return err;
- 
--		err = dsa_port_walk_mdbs(ds, cpu,
--					 felix_migrate_mdbs_to_npi_port);
--		if (err)
--			goto out_migrate_fdbs;
-+	err = dsa_port_walk_mdbs(ds, cpu, felix_migrate_mdbs_to_npi_port);
-+	if (err)
-+		goto out_migrate_fdbs;
- 
--		felix_migrate_flood_to_npi_port(ds, cpu);
--	}
-+	felix_migrate_flood_to_npi_port(ds, cpu);
- 
- 	felix_npi_port_init(ocelot, cpu);
++out_change_dev_addr:
+ 	eth_hw_addr_set(dev, addr->sa_data);
  
  	return 0;
- 
- out_migrate_fdbs:
--	if (change)
--		dsa_port_walk_fdbs(ds, cpu,
--				   felix_migrate_fdbs_to_tag_8021q_port);
-+	dsa_port_walk_fdbs(ds, cpu, felix_migrate_fdbs_to_tag_8021q_port);
- 
- 	return err;
- }
-@@ -638,17 +625,17 @@ static void felix_teardown_tag_npi(struct dsa_switch *ds, int cpu)
- }
- 
- static int felix_set_tag_protocol(struct dsa_switch *ds, int cpu,
--				  enum dsa_tag_protocol proto, bool change)
-+				  enum dsa_tag_protocol proto)
- {
- 	int err;
- 
- 	switch (proto) {
- 	case DSA_TAG_PROTO_SEVILLE:
- 	case DSA_TAG_PROTO_OCELOT:
--		err = felix_setup_tag_npi(ds, cpu, change);
-+		err = felix_setup_tag_npi(ds, cpu);
- 		break;
- 	case DSA_TAG_PROTO_OCELOT_8021Q:
--		err = felix_setup_tag_8021q(ds, cpu, change);
-+		err = felix_setup_tag_8021q(ds, cpu);
- 		break;
- 	default:
- 		err = -EPROTONOSUPPORT;
-@@ -692,9 +679,9 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
- 
- 	felix_del_tag_protocol(ds, cpu, old_proto);
- 
--	err = felix_set_tag_protocol(ds, cpu, proto, true);
-+	err = felix_set_tag_protocol(ds, cpu, proto);
- 	if (err) {
--		felix_set_tag_protocol(ds, cpu, old_proto, true);
-+		felix_set_tag_protocol(ds, cpu, old_proto);
- 		return err;
- 	}
- 
-@@ -1393,7 +1380,7 @@ static int felix_setup(struct dsa_switch *ds)
- 		/* The initial tag protocol is NPI which always returns 0, so
- 		 * there's no real point in checking for errors.
- 		 */
--		felix_set_tag_protocol(ds, dp->index, felix->tag_proto, false);
-+		felix_set_tag_protocol(ds, dp->index, felix->tag_proto);
- 		break;
- 	}
- 
 -- 
 2.25.1
 
