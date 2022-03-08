@@ -2,177 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 613AF4D220D
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 20:54:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4352E4D2266
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 21:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345500AbiCHTys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 14:54:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S1350186AbiCHURU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 15:17:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235196AbiCHTys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 14:54:48 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F00049F09
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 11:53:51 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id g26so39902720ybj.10
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 11:53:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4wTTz8ZXhShueL+d5PTkPe5oHWQmfzMgiAzN5z6Rr+M=;
-        b=l6xeFM9bowlni/gpVmFZkeZAZRHRnZlX07CKSTl4oZ8AUjoL3uyQV8CRTerCh+qM4Q
-         s13/JRpFCmqEe+zeFiXDhXet5+NgPZ/54zzQJrdvd89bkBoiog8hC3jMcdEKOzrRzPVU
-         KfI5tzpU4TWmZRcAk5/OaDtqOE+WgEyTU4uDjvZU/pNNU1qbuF63iw01fujBOFOKYLQ9
-         IGvXDVXvSeJLa8epYN0wdOztf+gDQPPP7POw+QZ1h74P3mS7oyUEQ4Bm8AymjOWhBB77
-         0vCf+nIuMlSOCIN94J591bsdHZqOMhm1yU+fPWhg+zA/xD2Y8MVKMERR+tJUC1AL+oa8
-         fHww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4wTTz8ZXhShueL+d5PTkPe5oHWQmfzMgiAzN5z6Rr+M=;
-        b=NXEQoZ8bW8KWCU3CJG9vixPuAildjOEEmDuy2MEbWxP6M9kRjeAvm7tu4DcRa483YU
-         xiVMeIyPBjXUCaP76lud7bxg7sssbWIti3x5EqERTT26e/4SGGpY/rObrirpEs2K8WOZ
-         Ix7Se8WkTdmgVkW8GzLSGq3S6Y4pEUOviCTHHGrBYbts004BuFI7O+I5nitJhEF2sVMG
-         /LQb8XypbDeccusTpfRSU2QYgjP+L3KKTQOfThCeuwvYN8lavJlJGdHzx5aoBV0L4OOc
-         jdGqfm2ES3xeMwLSPUlYO59uqrollk4SWEvKWbq17eW2TX081d4vxcRrjaaQIkeIvJwU
-         bA+g==
-X-Gm-Message-State: AOAM531fVID5RTT2DtV/W160z8pliiW3aINmNncZS0CUnYAffffcd2FD
-        RQYgdpnyJzunm4Bc22UK1MnImHaZUs5Yj/jMMNm2Rk668u1IxPqX
-X-Google-Smtp-Source: ABdhPJx+uTcQgkQq27AK9B7ARoAooIH07EDUdqZVpXRo8MGtxwdUV7nBc5PDDKAx8t2mO1pmTWXMiDuE+KV3YQ8J7Bk=
-X-Received: by 2002:a05:6902:1347:b0:629:1863:9dc6 with SMTP id
- g7-20020a056902134700b0062918639dc6mr13434070ybu.36.1646769229975; Tue, 08
- Mar 2022 11:53:49 -0800 (PST)
+        with ESMTP id S241412AbiCHURT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 15:17:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C08517CC;
+        Tue,  8 Mar 2022 12:16:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92226B81D5A;
+        Tue,  8 Mar 2022 20:16:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0C03C340EB;
+        Tue,  8 Mar 2022 20:16:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646770579;
+        bh=gqVTI0Earsk3wt4nHqKF6EnPaBx7xvGbyLzj+Sb2WrQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SwPHRtfLpLZE44ei1shuZ2BCxJXhsHaHOoqNq6GtrBTvmMRFMCaDBYLduKKRFw8Gk
+         VZQZGrOfgEX/vkHV5+IUiCy8lOb2EU3NhzgHiag60p0skh2l6K+tebxce+xDfo/g9+
+         5RelUJ3r0uw48JGmr16HBVmHLAe7gmCMKnHQuX6laxvgKgQlg2Ey4yPe1/OJTDkXJk
+         udHWWwGKzyySFfrEqXiervueUrxkpHFrQJwharEZQpZg2u+4wFku5/9T6MXCi/Ag5C
+         92EMAVD+cQspts0Fu9tEUK0gMldcXWg/iOWdX4gfgMtX//mRlae0eScBXJiaRIqiOw
+         auqAu6Knl95gg==
+Date:   Tue, 8 Mar 2022 12:16:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "pshelar@ovn.org" <pshelar@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+Message-ID: <20220308121617.3f638793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <6f0feae8-ecb4-ca1d-133e-1013ce9e8b4f@ovn.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+        <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+        <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
+        <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
+        <20220308081731.3588b495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <6f0feae8-ecb4-ca1d-133e-1013ce9e8b4f@ovn.org>
 MIME-Version: 1.0
-References: <20220308030348.258934-1-kuba@kernel.org> <CANn89iLoWOdLQWB0PeTtbOtzkAT=cWgzy5_RXqqLchZu1GziZw@mail.gmail.com>
- <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com>
-In-Reply-To: <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 8 Mar 2022 11:53:38 -0800
-Message-ID: <CANn89iL0XWF8aavPFnTrRazV9T5fZtn3xJXrEb07HTdrM=rykw@mail.gmail.com>
-Subject: Re: [RFC net-next] tcp: allow larger TSO to be built under overload
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 1:08 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Eric Dumazet
-> > Sent: 08 March 2022 03:50
-> ...
-> >         /* Goal is to send at least one packet per ms,
-> >          * not one big TSO packet every 100 ms.
-> >          * This preserves ACK clocking and is consistent
-> >          * with tcp_tso_should_defer() heuristic.
-> >          */
-> > -       segs = max_t(u32, bytes / mss_now, min_tso_segs);
-> > -
-> > -       return segs;
-> > +       return max_t(u32, bytes / mss_now, min_tso_segs);
-> >  }
->
-> Which is the common side of that max_t() ?
-> If it is mon_tso_segs it might be worth avoiding the
-> divide by coding as:
->
->         return bytes > mss_now * min_tso_segs ? bytes / mss_now : min_tso_segs;
->
+On Tue, 8 Mar 2022 20:33:12 +0100 Ilya Maximets wrote:
+> On 3/8/22 17:17, Jakub Kicinski wrote:
+> > On Tue, 8 Mar 2022 15:12:45 +0100 Ilya Maximets wrote:  
+> >> Yes, that is something that I had in mind too.  The only thing that makes
+> >> me uncomfortable is OVS_KEY_ATTR_TUNNEL_INFO = 30 here.  Even though it
+> >> doesn't make a lot of difference, I'd better keep the kernel-only attributes
+> >> at the end of the enumeration.  Is there a better way to handle kernel-only
+> >> attribute?  
+> > 
+> > My thought was to leave the kernel/userspace only types "behind" to
+> > avoid perpetuating the same constructs.
+> > 
+> > Johannes's point about userspace to userspace messages makes the whole
+> > thing a little less of an aberration.
+> > 
+> > Is there a reason for the types to be hidden under __KERNEL__? 
+> > Or someone did that in a misguided attempt to save space in attr arrays
+> > when parsing?  
+> 
+> My impression is that OVS_KEY_ATTR_TUNNEL_INFO was hidden from the
+> user space just because it's not supposed to ever be used by the
+> user space application.  Pravin or Jesse should know for sure.
 
-I think the common case is when the divide must happen.
-Not sure if this really matters with current cpus.
+Hard to make any assumptions about what user space that takes 
+the liberty of re-defining kernel uAPI types will or will not
+do ;) The only way to be safe would be to actively reject the
+attr ID on the kernel side. Unless user space uses the same
+exact name for something else IMHO hiding the value doesn't
+afford us any extra protection.
 
-Jakub, Neal, I am going to send a patch for net-next.
+> >> I agree with that.  
+> > 
+> > Should we add the user space types to the kernel header and remove the
+> > ifdef __KERNEL__ around TUNNEL_INFO, then?  
+> 
+> I don't think we need to actually define them, but we may list them
+> in the comment.  I'm OK with either option though.
+> 
+> For the removal of ifdef __KERNEL__, that might be a good thing to do.
+> I'm just not sure what are the best practices here.
+> We'll need to make some code changes in user space to avoid warnings
+> about not all the enum members being used in 'switch'es.  But that's
+> not a problem.
 
-In conjunction with BIG TCP, this gives a considerable boost of performance.
+Presumably only as the headers are updated? IOW we would not break 
+the build for older sources?
 
+> If you think that having a flat enum without 'ifdef's is a viable
+> option from a kernel's point of view, I'm all for it.
+> 
+> Maybe something like this (only checked that this compiles; 29 and
+> 30 are correct numbers of these userspace attributes):
 
-Before:
-otrv5:/home/google/edumazet# nstat -n;./super_netperf 600 -H otrv6 -l
-20 -- -K dctcp -q 20000000;nstat|egrep
-"TcpInSegs|TcpOutSegs|TcpRetransSegs|Delivered"
-  96005
-TcpInSegs                       15649381           0.0
-TcpOutSegs                      58659574           0.0  # Average of
-3.74 4K segments per TSO packet
-TcpExtTCPDelivered              58655240           0.0
-TcpExtTCPDeliveredCE            21                 0.0
+It's a bit of an uncharted territory, hard to say what's right.
+It may be a little easier to code up the rejection if we have 
+the types defined (which I think we need to do in
+__parse_flow_nlattrs()? seems OvS does its own nla parsing?)
 
-After:
-otrv5:/home/google/edumazet# nstat -n;./super_netperf 600 -H otrv6 -l
-20 -- -K dctcp -q 20000000;nstat|egrep
-"TcpInSegs|TcpOutSegs|TcpRetransSegs|Delivered"
-  96046
-TcpInSegs                       1445864            0.0
-TcpOutSegs                      58885065           0.0   # Average of
-40.72 4K segments per TSO packet
-TcpExtTCPDelivered              58880873           0.0
-TcpExtTCPDeliveredCE            28                 0.0
+Johannes, any preference?
 
--> 1,445,864 ACK packets instead of 15,649,381
-And about 25 % of cpu cycles saved, according to perf stat
+> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> index 9d1710f20505..86bc951be5bc 100644
+> --- a/include/uapi/linux/openvswitch.h
+> +++ b/include/uapi/linux/openvswitch.h
+> @@ -351,11 +351,19 @@ enum ovs_key_attr {
+>  	OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+>  	OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+>  	OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+> -	OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>  
+> -#ifdef __KERNEL__
+> -	OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+> -#endif
+> +	/* User space decided to squat on types 29 and 30.  They are listed
+> +	 * below, but should not be sent to the kernel:
+> +	 *
+> +	 * OVS_KEY_ATTR_PACKET_TYPE,   be32 packet type
+> +	 * OVS_KEY_ATTR_ND_EXTENSIONS, IPv6 Neighbor Discovery extensions
+> +	 *
+> +	 * WARNING: No new types should be added unless they are defined
+> +	 *          for both kernel and user space (no 'ifdef's).  It's hard
+> +	 *          to keep compatibility otherwise. */
+> +	OVS_KEY_ATTR_TUNNEL_INFO = 31,  /* struct ip_tunnel_info.
+> +					   For in-kernel use only. */
+> +	OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>  	__OVS_KEY_ATTR_MAX
+>  };
+>  
+> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+> index 8b4124820f7d..315064bada3e 100644
+> --- a/net/openvswitch/flow_netlink.c
+> +++ b/net/openvswitch/flow_netlink.c
+> @@ -346,7 +346,7 @@ size_t ovs_key_attr_size(void)
+>  	/* Whenever adding new OVS_KEY_ FIELDS, we should consider
+>  	 * updating this function.
+>  	 */
+> -	BUILD_BUG_ON(OVS_KEY_ATTR_TUNNEL_INFO != 30);
+> +	BUILD_BUG_ON(OVS_KEY_ATTR_MAX != 32);
+>  
+>  	return    nla_total_size(4)   /* OVS_KEY_ATTR_PRIORITY */
+>  		+ nla_total_size(0)   /* OVS_KEY_ATTR_TUNNEL */
+> ---
+> 
+> Thoughts?
+> 
+> The same change can be ported to the user-space header, but with
+> types actually defined and not part of the comment.  It may look
+> like this: https://pastebin.com/k8UWEZtR  (without IPV6_EXTHDRS yet).
+> For the future, we'll try to find a way to define them in a separate
+> enum or will define them dynamically based on the policy dumped from
+> the currently running kernel. In any case no new userspace-only types
+> should be defined in that enum.
 
- Performance counter stats for './super_netperf 600 -H otrv6 -l 20 --
--K dctcp -q 20000000':
-
-         66,895.00 msec task-clock                #    2.886 CPUs
-utilized
-         1,312,687      context-switches          # 19623.389 M/sec
-             5,645      cpu-migrations            #   84.387 M/sec
-           942,412      page-faults               # 14088.139 M/sec
-   203,672,224,410      cycles                    # 3044700.936 GHz
-               (83.40%)
-    18,933,350,691      stalled-cycles-frontend   #    9.30% frontend
-cycles idle     (83.46%)
-   138,500,001,318      stalled-cycles-backend    #   68.00% backend
-cycles idle      (83.38%)
-    53,694,300,814      instructions              #    0.26  insn per
-cycle
-                                                  #    2.58  stalled
-cycles per insn  (83.30%)
-     9,100,155,390      branches                  # 136038439.770
-M/sec               (83.26%)
-       152,331,123      branch-misses             #    1.67% of all
-branches          (83.47%)
-
-      23.180309488 seconds time elapsed
-
--->
-
- Performance counter stats for './super_netperf 600 -H otrv6 -l 20 --
--K dctcp -q 20000000':
-
-         48,964.30 msec task-clock                #    2.103 CPUs
-utilized
-           184,903      context-switches          # 3776.305 M/sec
-             3,057      cpu-migrations            #   62.434 M/sec
-           940,615      page-faults               # 19210.338 M/sec
-   152,390,738,065      cycles                    # 3112301.652 GHz
-               (83.61%)
-    11,603,675,527      stalled-cycles-frontend   #    7.61% frontend
-cycles idle     (83.49%)
-   120,240,493,440      stalled-cycles-backend    #   78.90% backend
-cycles idle      (83.30%)
-    37,106,498,492      instructions              #    0.24  insn per
-cycle
-                                                  #    3.24  stalled
-cycles per insn  (83.47%)
-     5,968,256,846      branches                  # 121890712.483
-M/sec               (83.25%)
-        88,743,145      branch-misses             #    1.49% of all
-branches          (83.24%)
-
-      23.284583305 seconds time elapsed
