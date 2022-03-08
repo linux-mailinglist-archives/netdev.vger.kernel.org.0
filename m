@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B224D14CC
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 11:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 488A64D14FC
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 11:43:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345878AbiCHKbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 05:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
+        id S1345838AbiCHKoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 05:44:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245724AbiCHKbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 05:31:37 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9516242EF5;
-        Tue,  8 Mar 2022 02:30:41 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id o1so22749288edc.3;
-        Tue, 08 Mar 2022 02:30:41 -0800 (PST)
+        with ESMTP id S235914AbiCHKop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 05:44:45 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EBF41303;
+        Tue,  8 Mar 2022 02:43:47 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id b8so16769833pjb.4;
+        Tue, 08 Mar 2022 02:43:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tYotIQtVF5XPHG/2k4UETbG/SQ0kI6Pzodt53Ep40a8=;
-        b=VNj1DyuZ9ao36J47REAMw34AlX/wp5hah4VfJzWWyG86ubJPbQIkOFNUMHw7ehZDBC
-         M6Y1DOGknHOjHQ5g+1KT4EF3mUxJADclSSEcbEiuop1rx6AmTCOdH5OfCKSJe5Qxo/cI
-         R6Sp3yt2GyLhh2PX9RESxFGkNVsEd1o+b8qPR+d5QSkp97FAWc0/Sfhz3w6elCU79sae
-         PBelu/n9K4fqq7ORtE6mPjrqnWvsFzrLnEldRkHt2BLy0q+vRMV5FsYJaBr/2K1HBNw+
-         VJUE34RGaxGz6BuFtYAKUSJJrHBj3fXT5NR+gp0iAoRtVZS5ZEaorsF9vlM993nuZAd6
-         g9LA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kVG0kf5foVe3hmr29o5GrRkYkCpLk23FIIa7/Ch95rM=;
+        b=qkS3qbfEay2oO+bJ7agoouaRbAinfT0Kb9++JSZjVeDI7efUDPFveFdENLmqpoodpy
+         sAHmO1GBYEjJjdshPGMDGwYQtzfLST3WOywx+nzQlmLIbqmkQCtMOJU2Crmsrhp9/BPy
+         uzERFM0UW2fId8T1AbhKmWHZkCcGy3IL8pIpLwGJh9ezaQpJ1ajcaGQ1OfBKEY22KU7F
+         DT1dE1YPA3rTmAx6//NsqmjsYgnKF+mjNaCRIAdj1atw6FfzbZ1jC/6yGbj112JkLO8S
+         AxJf4xewxUf/UX1mNMxwXYJsL9BH0vVob6kA548rrvKNlozd9HG4a57x6TehGDHbkbtC
+         a8Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tYotIQtVF5XPHG/2k4UETbG/SQ0kI6Pzodt53Ep40a8=;
-        b=J7qBp/Xe0f47/7XWYO8xQXhV6anyLf32A44n4PRpT6aMsaKuqyXfF/ncNbIILsFqnM
-         5p+Ck7KsDCvj2FZgV+wvTx31YSGLtOF91QuppianB29926ofjyfgNLs5g5MxGD35yh83
-         s/KdMIIhq4aTeUqXtNcI3tueJbAxA7P990TFCJBC5D4pXUULYvgBN3KYh/9ov9UCD+bC
-         2miD9Bw/T1f4tggxJt8sX9t8p8Drx+1GeEwcNOlq4IlNc7UgfdCspjAXUEEBw7BcffaI
-         IMTSy+mTiXkpqgOY6uu8fE9sejvf93GbNSNxCWY6Kz/PxIipNSEJR0SgRzeeLDVuXrHg
-         KmyQ==
-X-Gm-Message-State: AOAM533Tbc3SGXTEY9ibvircZoeM6nzkolMC3hNYV1MlDm25A8fVtPbn
-        lHnDZwQOFxYxQ/q+ZesKj/c=
-X-Google-Smtp-Source: ABdhPJxZlpvszIcXr52D0kizLh5f3rZYQrmHYuC8il/GvI86pVH0zCNpJebjG36qLXX0ZNNKb60VvA==
-X-Received: by 2002:a50:da89:0:b0:413:adb1:cf83 with SMTP id q9-20020a50da89000000b00413adb1cf83mr15282645edj.158.1646735439932;
-        Tue, 08 Mar 2022 02:30:39 -0800 (PST)
-Received: from felia.fritz.box (200116b82626c9000cc91df728b27ead.dip.versatel-1u1.de. [2001:16b8:2626:c900:cc9:1df7:28b2:7ead])
-        by smtp.gmail.com with ESMTPSA id q10-20020aa7cc0a000000b0040f826f09fdsm7381826edt.81.2022.03.08.02.30.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kVG0kf5foVe3hmr29o5GrRkYkCpLk23FIIa7/Ch95rM=;
+        b=nQPvXLfQi8SPDw4tntu/ebpQirSUGmr0PIFmO1L8ZksENeQcrIw8pAegPyji2ow13s
+         bHYRjgUneRNVCBXm7uPHqnkOERjPPKvq4j9fnJtUotKYfKU1nON80jikqf+tN5fZ0zyS
+         4f4UYT20nCUmEANWFw588HOK3kCuoXkX9RAwmyOAZcw9UEc8AYc0AIs1SlGc6T2n7zrT
+         gxTNMiLNA5DVK/KbOdXL7+zob7Jer/jxEZYXub9ZlM5e4jFSoGhIdlZCzv03MF7O6i2M
+         V7eJ5LXKcGgOGUlwl5NZhdb8XvDJjdYAAs4ZI4HOq9csaIvulDEujsa2YewN+U4fIpsd
+         kVnw==
+X-Gm-Message-State: AOAM532nhM7QOJtsiCfkmNZWu/gIui7s40jxmT1uLb50dBj0ebAIa+UU
+        p+oS7tNjl1dw9k9wJ7RDiQ1KnTC/QYey0/L1
+X-Google-Smtp-Source: ABdhPJwRFxwTt9GHPixKsjKE5eWxu+NxvBZb3wvWFzW4iKxyKr999BOU/oqXVvwXW3t1MW36ewlAlw==
+X-Received: by 2002:a17:902:e848:b0:151:e3a5:b609 with SMTP id t8-20020a170902e84800b00151e3a5b609mr11000504plg.137.1646736227405;
+        Tue, 08 Mar 2022 02:43:47 -0800 (PST)
+Received: from baaz ([49.36.203.74])
+        by smtp.gmail.com with ESMTPSA id q22-20020a056a00085600b004f397d1f3b5sm20327837pfk.171.2022.03.08.02.43.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 02:30:39 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: rectify entry for REALTEK RTL83xx SMI DSA ROUTER CHIPS
-Date:   Tue,  8 Mar 2022 11:30:27 +0100
-Message-Id: <20220308103027.32191-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 08 Mar 2022 02:43:46 -0800 (PST)
+Date:   Tue, 8 Mar 2022 16:13:40 +0530
+From:   Muhammad Falak R Wani <falakreyaz@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] samples/bpf: fix broken bpf programs due to
+ function inlining
+Message-ID: <YiczXPnQakMwNEbX@baaz>
+References: <20220306121535.156276-1-falakreyaz@gmail.com>
+ <CAEf4BzYmVo9rw1Ys0ZufQFA=f7sy+dP=d9L9rmGS5L91qV1K+A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYmVo9rw1Ys0ZufQFA=f7sy+dP=d9L9rmGS5L91qV1K+A@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -76,37 +78,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 429c83c78ab2 ("dt-bindings: net: dsa: realtek: convert to YAML
-schema, add MDIO") converts realtek-smi.txt to realtek.yaml, but missed to
-adjust its reference in MAINTAINERS.
-
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
-
-Repair this file reference in REALTEK RTL83xx SMI DSA ROUTER CHIPS.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-applies cleanly on next-20220308
-
-David, please pick this minor non-urgent clean-up patch for net-next.
-
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 38cdf9aadfe4..8c7e40e1215e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16638,7 +16638,7 @@ REALTEK RTL83xx SMI DSA ROUTER CHIPS
- M:	Linus Walleij <linus.walleij@linaro.org>
- M:	Alvin Šipraga <alsi@bang-olufsen.dk>
- S:	Maintained
--F:	Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
-+F:	Documentation/devicetree/bindings/net/dsa/realtek.yaml
- F:	drivers/net/dsa/realtek/*
- 
- REALTEK WIRELESS DRIVER (rtlwifi family)
--- 
-2.17.1
-
+On Mon, Mar 07, 2022 at 10:11:36PM -0800, Andrii Nakryiko wrote:
+> On Sun, Mar 6, 2022 at 4:15 AM Muhammad Falak R Wani
+> <falakreyaz@gmail.com> wrote:
+> >
+> > commit: "be6bfe36db17 block: inline hot paths of blk_account_io_*()"
+> > inlines the function `blk_account_io_done`. As a result we can't attach a
+> > kprobe to the function anymore. Use `__blk_account_io_done` instead.
+> >
+> > Signed-off-by: Muhammad Falak R Wani <falakreyaz@gmail.com>
+> > ---
+> >  samples/bpf/task_fd_query_kern.c | 2 +-
+> >  samples/bpf/tracex3_kern.c       | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/samples/bpf/task_fd_query_kern.c b/samples/bpf/task_fd_query_kern.c
+> > index c821294e1774..186ac0a79c0a 100644
+> > --- a/samples/bpf/task_fd_query_kern.c
+> > +++ b/samples/bpf/task_fd_query_kern.c
+> 
+> samples/bpf/task_fd_query_user.c also needs adjusting, no? Have you
+> tried running those samples?
+Aplologies, I ran the `tracex3` program, but missed to verify `task_fd_query`. Should I send a V2
+where I modify only the `tracex3` ?
