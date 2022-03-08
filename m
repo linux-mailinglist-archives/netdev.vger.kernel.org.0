@@ -2,101 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B454D1707
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 13:15:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1C44D1743
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 13:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346744AbiCHMPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 07:15:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
+        id S231381AbiCHM24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 07:28:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346732AbiCHMPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 07:15:50 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A46A43ED1;
-        Tue,  8 Mar 2022 04:14:54 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: aratiu)
-        with ESMTPSA id EC43A1F43C2C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646741693;
-        bh=5+4CFM6veuq5rDnjMnbblwZsgeeLINo0x7U43XEkG9c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IuRYrUkUF0SCi0ER2nCHqEw02YkcL/vPTUhWSs79ZyitkMk0dynGcY39jBfxLIiaZ
-         hmf9tTBEZf1t1e6xosUT5h1Su28aKNtYQeAP2kKvAAfO5dHgAslutstLuwA3QIQNUN
-         zkRYUuUbl4pZTho63yPNAiMvo/5ikHBr/CvcBxefFVs2Jtj14kwJdWJwYO5WJxRZI/
-         r6eHwi2RPudIMXeXHSAaMlntMUlBToduBaM0nYcDWprzdmx+9zp5m4QFPSnBZTqiyn
-         uQvI+dkLx6F0gD6mHFxqn6mS0ilxypk2AS+BR1mtR2DAR1CtxcG1+bV5y+GHU3ltKx
-         25knDK62+s5UQ==
-From:   Adrian Ratiu <adrian.ratiu@collabora.com>
-To:     netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kernel@collabora.com,
-        linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Manoj Gupta <manojgupta@chromium.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH bpf v2] tools: fix unavoidable GCC call in Clang builds
-Date:   Tue,  8 Mar 2022 14:14:28 +0200
-Message-Id: <20220308121428.81735-1-adrian.ratiu@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S244994AbiCHM2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 07:28:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48967657F
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 04:27:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646742477;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9pf/IVqL8yE3g13OAwcuAVKQfPo53FP6ApFVilX1pcQ=;
+        b=Xaz6E9FHXNT6J8nKCeQJmJE9R8IQ+9Z+J8IXOZYBlK+atQseyg5fLkrUqOs4cTviXAFNTy
+        vzEsf/eACI5+G4c29XbHiKpdoOUyhhxHZy9VfkjjcKkmZ81fvHp3gpsrTLESjCXA7tlqnd
+        7hmmWiN9N8seC1pxM0u2a9ki4P9aCd0=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-220-sdzBmpDFNture1Dt_UnGNQ-1; Tue, 08 Mar 2022 07:27:53 -0500
+X-MC-Unique: sdzBmpDFNture1Dt_UnGNQ-1
+Received: by mail-ed1-f70.google.com with SMTP id n11-20020aa7c68b000000b0041641550e11so4144768edq.8
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 04:27:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9pf/IVqL8yE3g13OAwcuAVKQfPo53FP6ApFVilX1pcQ=;
+        b=mmYb0oGe89Fl66hG5CcPXWo7/9DHspBWe1HEbVocSv+fEybLj/18Vp8Koj5LsANrNj
+         hTyHOqamHxArwTqsU8LG6WRP3kXh+aYpW7+ErkAz7q/bhbA2Y/TxFhfQmv/Sge0SynhT
+         y2DrXBauYDS/CmsRhb8WPHhA63sBKQbFHPCpmLhm26bsTw/XPtQFDKxwdJ6jImXhxeSa
+         FMJDmU9gxjOBeXxQy9LA8v4kxTatbucoI3g+pj7eM242egrs6Fk3GzFiSp/ikUSVB27/
+         ct3E26aIEq71cYl/3eWezWosogZ2lDOMvM3wLJL5rUyrRi0Z403poJPCqXGTdUDs1yGZ
+         a7dg==
+X-Gm-Message-State: AOAM5328V+taVs5X5iPk6hFDewZ9biwZZHB5Ldx7dfRkmpqRUNbwA9ua
+        2Mt17zvsirwhPedSR2W+wBiv0bVkNH3dKArntFuvWZXQRiJE4eGuprLk9+JgKYjgQ/bzibRkoWD
+        uysHNolOnjYkliR4E
+X-Received: by 2002:a17:907:7242:b0:6da:b561:d523 with SMTP id ds2-20020a170907724200b006dab561d523mr13282179ejc.118.1646742471610;
+        Tue, 08 Mar 2022 04:27:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyRLddVnWaTYQ7CEcx+H/uBDYSK5MuBK5kvSFUyJcedIYo1CrA8Y49v9huSdkQH7zA4WWcJdw==
+X-Received: by 2002:a17:907:7242:b0:6da:b561:d523 with SMTP id ds2-20020a170907724200b006dab561d523mr13282150ejc.118.1646742471316;
+        Tue, 08 Mar 2022 04:27:51 -0800 (PST)
+Received: from redhat.com ([2.55.138.228])
+        by smtp.gmail.com with ESMTPSA id p24-20020a1709061b5800b006da6435cedcsm5786231ejg.132.2022.03.08.04.27.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 04:27:50 -0800 (PST)
+Date:   Tue, 8 Mar 2022 07:27:47 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Lee Jones <lee.jones@linaro.org>, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220308071718-mutt-send-email-mst@kernel.org>
+References: <20220307191757.3177139-1-lee.jones@linaro.org>
+ <YiZeB7l49KC2Y5Gz@kroah.com>
+ <YicPXnNFHpoJHcUN@google.com>
+ <Yicalf1I6oBytbse@kroah.com>
+ <Yicer3yGg5rrdSIs@google.com>
+ <YicolvcbY9VT6AKc@kroah.com>
+ <20220308055003-mutt-send-email-mst@kernel.org>
+ <YidBz7SxED2ii1Lh@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YidBz7SxED2ii1Lh@kroah.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ChromeOS and Gentoo we catch any unwanted mixed Clang/LLVM
-and GCC/binutils usage via toolchain wrappers which fail builds.
-This has revealed that GCC is called unconditionally in Clang
-configured builds to populate GCC_TOOLCHAIN_DIR.
+On Tue, Mar 08, 2022 at 12:45:19PM +0100, Greg KH wrote:
+> On Tue, Mar 08, 2022 at 05:55:58AM -0500, Michael S. Tsirkin wrote:
+> > On Tue, Mar 08, 2022 at 10:57:42AM +0100, Greg KH wrote:
+> > > On Tue, Mar 08, 2022 at 09:15:27AM +0000, Lee Jones wrote:
+> > > > On Tue, 08 Mar 2022, Greg KH wrote:
+> > > > 
+> > > > > On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
+> > > > > > On Mon, 07 Mar 2022, Greg KH wrote:
+> > > > > > 
+> > > > > > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
+> > > > > > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
+> > > > > > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
+> > > > > > > > during virtqueue clean-up and we mitigate the reported issues.
+> > > > > > > > 
+> > > > > > > > Also WARN() as a precautionary measure.  The purpose of this is to
+> > > > > > > > capture possible future race conditions which may pop up over time.
+> > > > > > > > 
+> > > > > > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
+> > > > > > > > 
+> > > > > > > > Cc: <stable@vger.kernel.org>
+> > > > > > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+> > > > > > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > > > > > > > ---
+> > > > > > > >  drivers/vhost/vhost.c | 10 ++++++++++
+> > > > > > > >  1 file changed, 10 insertions(+)
+> > > > > > > > 
+> > > > > > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > > > > > > > index 59edb5a1ffe28..ef7e371e3e649 100644
+> > > > > > > > --- a/drivers/vhost/vhost.c
+> > > > > > > > +++ b/drivers/vhost/vhost.c
+> > > > > > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+> > > > > > > >  	int i;
+> > > > > > > >  
+> > > > > > > >  	for (i = 0; i < dev->nvqs; ++i) {
+> > > > > > > > +		/* No workers should run here by design. However, races have
+> > > > > > > > +		 * previously occurred where drivers have been unable to flush
+> > > > > > > > +		 * all work properly prior to clean-up.  Without a successful
+> > > > > > > > +		 * flush the guest will malfunction, but avoiding host memory
+> > > > > > > > +		 * corruption in those cases does seem preferable.
+> > > > > > > > +		 */
+> > > > > > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
+> > > > > > > 
+> > > > > > > So you are trading one syzbot triggered issue for another one in the
+> > > > > > > future?  :)
+> > > > > > > 
+> > > > > > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
+> > > > > > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
+> > > > > > > you want that to happen?
+> > > > > > 
+> > > > > > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
+> > > > > 
+> > > > > Has it changed?  Last I looked, it did trigger on WARN_* calls, which
+> > > > > has resulted in a huge number of kernel fixes because of that.
+> > > > 
+> > > > Everything is customisable in syzkaller, so maybe there are specific
+> > > > builds which panic_on_warn enabled, but none that I'm involved with
+> > > > do.
+> > > 
+> > > Many systems run with panic-on-warn (i.e. the cloud), as they want to
+> > > drop a box and restart it if anything goes wrong.
+> > > 
+> > > That's why syzbot reports on WARN_* calls.  They should never be
+> > > reachable by userspace actions.
+> > > 
+> > > > Here follows a topical example.  The report above in the Link: tag
+> > > > comes with a crashlog [0].  In there you can see the WARN() at the
+> > > > bottom of vhost_dev_cleanup() trigger many times due to a populated
+> > > > (non-flushed) worker list, before finally tripping the BUG() which
+> > > > triggers the report:
+> > > > 
+> > > > [0] https://syzkaller.appspot.com/text?tag=CrashLog&x=16a61fce700000
+> > > 
+> > > Ok, so both happens here.  But don't add a warning for something that
+> > > can't happen.  Just handle it and move on.  It looks like you are
+> > > handling it in this code, so please drop the WARN_ON().
+> > > 
+> > > thanks,
+> > > 
+> > > greg k-h
+> > 
+> > Hmm. Well this will mean if we ever reintroduce the bug then
+> > syzkaller will not catch it for us :( And the bug is there,
+> > it just results in a hard to reproduce error for userspace.
+> 
+> Is this an error you can recover from in the kernel?
+>  What is userspace
+> supposed to know with this information when it sees it?
 
-Allow the user to override CLANG_CROSS_FLAGS to avoid the GCC
-call - in our case we set the var directly in the ebuild recipe.
+IIUC we are talking about a use after free here since we somehow
+managed to have a pointer to the device in a worker while
+device is being destroyed.
 
-In theory Clang could be able to autodetect these settings so
-this logic could be removed entirely, but in practice as the
-commit cebdb7374577 ("tools: Help cross-building with clang")
-mentions, this does not always work, so giving distributions
-more control to specify their flags & sysroot is beneficial.
+That's the point of the warning as use after free is hard to debug. You
+ask can we recover from a use after free? 
 
-Suggested-by: Manoj Gupta <manojgupta@chromium.com>
-Suggested-by: Nathan Chancellor <nathan@kernel.org>
-Acked-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Adrian Ratiu <adrian.ratiu@collabora.com>
----
-Changes in v2:
-  * Replaced variable override GCC_TOOLCHAIN_DIR -> CLANG_CROSS_FLAGS
----
- tools/scripts/Makefile.include | 4 ++++
- 1 file changed, 4 insertions(+)
+As regards to the added lock, IIUC it kind of shifts the use after free
+window to later and since we zero out some of the memory just before we
+free it, it's a bit more likely to recover.  I would still like to see
+some more analysis on why the situation is always better than it was
+before though.
 
-diff --git a/tools/scripts/Makefile.include b/tools/scripts/Makefile.include
-index 79d102304470..b9b1deacc4eb 100644
---- a/tools/scripts/Makefile.include
-+++ b/tools/scripts/Makefile.include
-@@ -89,6 +89,9 @@ ifeq ($(CC_NO_CLANG), 1)
- EXTRA_WARNINGS += -Wstrict-aliasing=3
- 
- else ifneq ($(CROSS_COMPILE),)
-+# allow userspace to override CLANG_CROSS_FLAGS to specify their own
-+# sysroots and flags or to avoid the GCC call in pure Clang builds
-+ifeq ($(CLANG_CROSS_FLAGS),)
- CLANG_CROSS_FLAGS := --target=$(notdir $(CROSS_COMPILE:%-=%))
- GCC_TOOLCHAIN_DIR := $(dir $(shell which $(CROSS_COMPILE)gcc 2>/dev/null))
- ifneq ($(GCC_TOOLCHAIN_DIR),)
-@@ -96,6 +99,7 @@ CLANG_CROSS_FLAGS += --prefix=$(GCC_TOOLCHAIN_DIR)$(notdir $(CROSS_COMPILE))
- CLANG_CROSS_FLAGS += --sysroot=$(shell $(CROSS_COMPILE)gcc -print-sysroot)
- CLANG_CROSS_FLAGS += --gcc-toolchain=$(realpath $(GCC_TOOLCHAIN_DIR)/..)
- endif # GCC_TOOLCHAIN_DIR
-+endif # CLANG_CROSS_FLAGS
- CFLAGS += $(CLANG_CROSS_FLAGS)
- AFLAGS += $(CLANG_CROSS_FLAGS)
- endif # CROSS_COMPILE
--- 
-2.35.1
+> > Not sure what to do here. Export panic_on_warn flag to modules
+> > and check it here?
+> 
+> Hah, no, never do that :)
+> 
+> thanks,
+> 
+> greg k-h
 
