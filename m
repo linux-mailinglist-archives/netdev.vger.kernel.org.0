@@ -2,125 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 828B44D0EB9
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 05:38:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 013204D0ED4
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 05:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245096AbiCHEjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 23:39:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42772 "EHLO
+        id S233169AbiCHEqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 23:46:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237826AbiCHEi6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 23:38:58 -0500
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD85C13DFB;
-        Mon,  7 Mar 2022 20:38:02 -0800 (PST)
-Received: by mail-lf1-f46.google.com with SMTP id r4so4376607lfr.1;
-        Mon, 07 Mar 2022 20:38:02 -0800 (PST)
+        with ESMTP id S231371AbiCHEqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 23:46:14 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6DB2F034;
+        Mon,  7 Mar 2022 20:45:18 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id 132so15406172pga.5;
+        Mon, 07 Mar 2022 20:45:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yp4XOV099+8KsjwVQiajLdJYpcZJrSJVKo5Wf41XMi8=;
+        b=QHI84cHVmSwSoO2tyNVe5iGb4gKbOv/ABZag9JmtRrCyTwa23g+0au1vFyxpIoBk5Q
+         OetNzX8dNPvw/wse4800/DYsCnGgvhBiXEl6e/4cUhtYzNwD/vgg1wMOkhpHRPxAB4NY
+         p32TR/wU+dtlg4BqxOGRXn+Nj4wLYjVJgM+g9eQuqJMJutwgvv/ZNW2RrBKDL6+kaOle
+         pz2uUhhAcqVwbyZDb6q2EI6KPhEzUrjaK/5EKG7zJPY5fK8Y7cYXuGor/A4I5aqtRl4H
+         unG1l6g0tH/ng1JxAMlKoKqKYaokYj3finNdBfvMmaH1QGl4y4emn/fqDWueAEy6OLEQ
+         v+eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ExE8WvfRjxN7qDY8jPSgjg/R7OV7shYgJVHpiWtF5B0=;
-        b=tdrCw6g87eglfm0a6/hBiFuro00rigVnHLE7JJf/bv2MCV7vhVr1lxyS/Bxr2N6KBX
-         rODTDU50jQM+v5+nu+4AR7fPYUtCxLufBqOodY5EzB3GUdES6idwTpK6qIEsXRTm6sYN
-         NwhGHwZmHKsml8YywguTaIphOcgBP3AVvwf1t5kytrL/DBVP+9TktHBgReijY8pqTZaU
-         NhZLy9zx343W2OpW2rQ2N9YoZ0TYrahxDEWm9qBE2qymb1H8BcWG8zX2wR9ooLtavaZy
-         +LX0UsxzZigtjV+2xNvsfA51/LsiQJ2Z8U+NKAkVzLSaHoVxSVJi3VqiEGtX4IBvdb+k
-         BZIQ==
-X-Gm-Message-State: AOAM531dH+/IfOJFTLYS/RxDXEzf4uteFimRg60kDjPAuENaxsGm0PIl
-        jTEJqbGJC5a64zc3HeDHLKWI+mBUCJA8P9r8Y3Y=
-X-Google-Smtp-Source: ABdhPJyphz/S/llS9OXnB/IurzYXJDmlGfTZKEoTxw80c268tGE+fz0VLXvl7vov35bB6OfbZPIvONAnX1pU3axlf4c=
-X-Received: by 2002:a05:6512:2109:b0:448:2706:7bcb with SMTP id
- q9-20020a056512210900b0044827067bcbmr8121880lfr.528.1646714280654; Mon, 07
- Mar 2022 20:38:00 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yp4XOV099+8KsjwVQiajLdJYpcZJrSJVKo5Wf41XMi8=;
+        b=xHaY9DqIrLnNy695Uyk9CJefE39B+iOmMLqVd4ev1JUm2IdSYamWL/O7r4l9maUQhz
+         u2/OXiQjCmzvOO6sDH8cFLidQMLqUXYj5d0iL5UwshE6R395s2XEe9fNbKlKq/QY0uh7
+         HKJdd+DHU0IF/kz8zr7emOaYUD9Gi248chfYdlngcj460kYFLBzGDsE3qhGThD+0oxcU
+         JfaiJgSBRCJSos6Zh71T1QypLoDhC7frO//Ftm9BrHGzro0iZ/Idevzp6asLUAvMcc5j
+         K8EsUvRrT4gunQnknDDAGDuQGiZUHd7GEZmPxp7jjfyAMBq8fOWe35G+OyMVWJfyEUeC
+         km+Q==
+X-Gm-Message-State: AOAM530FX88o9RQdXxbIUdIDeMMleLxZKZ/+cbJb0vg0stH/+hMqpu4o
+        Kyu8HdYLcmXHwGwVRadKED8=
+X-Google-Smtp-Source: ABdhPJw3KNVBabWHI90FOifMwoskaCmEEWI2OlnSyaCuukWxxfkGwDHTtACAaEbDyKPg3A1X6wGTVA==
+X-Received: by 2002:a65:554e:0:b0:34d:f721:7fef with SMTP id t14-20020a65554e000000b0034df7217fefmr12753728pgr.476.1646714718231;
+        Mon, 07 Mar 2022 20:45:18 -0800 (PST)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id g12-20020a056a0023cc00b004f707cc97f9sm5174022pfc.52.2022.03.07.20.45.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 20:45:17 -0800 (PST)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     quentin@isovalent.com
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com,
+        ytcoode@gmail.com
+Subject: [PATCH bpf-next v2] bpf: Clean up Makefile of bpf preload
+Date:   Tue,  8 Mar 2022 12:43:39 +0800
+Message-Id: <20220308044339.458876-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <56b9dab5-6a3d-58ff-69c9-7abaabf41d05@isovalent.com>
+References: <56b9dab5-6a3d-58ff-69c9-7abaabf41d05@isovalent.com>
 MIME-Version: 1.0
-References: <20220304232832.764156-1-namhyung@kernel.org> <38f99862-e5f4-0688-b5ef-43fa6584b823@fb.com>
-In-Reply-To: <38f99862-e5f4-0688-b5ef-43fa6584b823@fb.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Mon, 7 Mar 2022 20:37:49 -0800
-Message-ID: <CAM9d7cgHLDYVR-cJjw8xpWr9DvWR_C91hBiMN+eMNPB9UtROXg@mail.gmail.com>
-Subject: Re: [RFC] A couple of issues on BPF callstack
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Eugene Loh <eugene.loh@oracle.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The trailing slash in LIBBPF_SRCS is redundant, it should be removed.
 
-On Sat, Mar 5, 2022 at 4:28 PM Yonghong Song <yhs@fb.com> wrote:
-> On 3/4/22 3:28 PM, Namhyung Kim wrote:
-> > More important thing to me is the content of the (perf) callchain.  If
-> > the event has __PERF_SAMPLE_CALLCHAIN_EARLY, it will have context info
-> > like PERF_CONTEXT_KERNEL.  So user might or might not see it depending
-> > on whether the perf_event set with precise_ip and SAMPLE_CALLCHAIN.
-> > This doesn't look good.
->
-> Patch 7b04d6d60fcf ("bpf: Separate bpf_get_[stack|stackid] for
-> perf events BPF") tried to fix __PERF_SAMPLE_CALLCHAIN_EARLY issue
-> for bpf_get_stack[id]() helpers.
+But to simplify the Makefile further, we can set LIBBPF_INCLUDE to
+$(srctree)/tools/lib directly, thus the LIBBPF_SRCS variable is unused
+and can be removed.
 
-Right.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+v1->v2: get rid of LIBBPF_SRCS
 
-> The helpers will check whether event->attr.sample_type has
-> __PERF_SAMPLE_CALLCHAIN_EARLY encoded or not, based on which
-> the stacks will be retrieved accordingly.
-> Did you any issue here?
+ kernel/bpf/preload/Makefile | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-It changes stack trace results by adding perf contexts like
-PERF_CONTEXT_KERNEL and PERF_CONTEXT_USER.
-Without __PERF_SAMPLE_CALLCHAIN_EARLY, I don't see those.
+diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
+index 167534e3b0b4..7284782981bf 100644
+--- a/kernel/bpf/preload/Makefile
++++ b/kernel/bpf/preload/Makefile
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-LIBBPF_SRCS = $(srctree)/tools/lib/bpf/
+-LIBBPF_INCLUDE = $(LIBBPF_SRCS)/..
++LIBBPF_INCLUDE = $(srctree)/tools/lib
+ 
+ obj-$(CONFIG_BPF_PRELOAD_UMD) += bpf_preload.o
+ CFLAGS_bpf_preload_kern.o += -I $(LIBBPF_INCLUDE)
+-- 
+2.35.1
 
-> >
-> > After all, I think it'd be really great if we can skip those
-> > uninteresting info easily.  Maybe we could add a flag to skip BPF code
->
-> We cannot just skip those callchains with __PERF_SAMPLE_CALLCHAIN_EARLY.
-> There are real use cases for it.
-
-I'm not saying that I want to skip all the callchains.
-What I want is a way to avoid those perf context info
-in the callchains so that I can make sure to have the
-same stack traces in a known code path regardless
-of the event attribute and cpu vendors - as far as I know
-__PERF_SAMPLE_CALLCHAIN_EARLY is enabled on Intel cpus only.
-
->
-> > perf context, and even some scheduler code from the trace respectively
-> > like in stack_trace_consume_entry_nosched().
->
-> A flag for the bpf_get_stack[id]() helpers? It is possible. It would be
-> great if you can detail your use case here and how a flag could help
-> you.
-
-Yep, something like BPF_F_SKIP_BPF_STACK.
-
-In my case, I collect a callchain in a tracepoint to find its caller.
-And I want to have a short call stack depth for a performance reason.
-But the every 3 or 4 entries are already filled by BPF code and
-I want to skip them.  I know that I can set it with skip mask but
-having a hard coded value can be annoying since it might be
-changed by different compilers, kernel version or configurations.
-
-Similarly, I think it'd be useful to skip some scheduler functions
-like __schedule when collecting stack traces in sched_switch.
-
-Thanks,
-Namhyung
