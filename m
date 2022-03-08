@@ -2,53 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B7FA4D1CC5
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:06:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB9FE4D1CF2
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:14:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348144AbiCHQHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 11:07:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49460 "EHLO
+        id S1345399AbiCHQPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 11:15:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348141AbiCHQHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:07:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED28506ED;
-        Tue,  8 Mar 2022 08:06:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEBF761700;
-        Tue,  8 Mar 2022 16:06:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E95C340EB;
-        Tue,  8 Mar 2022 16:06:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646755600;
-        bh=SzMKhNQ5lQgLCj4MtTg1AA64E4vnZL1Bd6/sbl/i9/o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bCEJImAk10jIGT06538PWfpo8F5Kzfd/HrG2syJDv8iPvyVhb7R8lUi4xBi+EJsfN
-         Net7iYUAcO2qeVKcyNGmVdnir6v3tnOY/HNWoPoRzJ/CbbLqqdkbWfhlvIUjlKw95S
-         lvNNoiX6G2PMePkuegZd/KJ13SNiSqjz2uiiUvi4JeqzsAmKhEKC0vpAFE/OQgKxmP
-         RclibLu4je9fDLl7hCRhCEwaPbCsJeog7afWLOraLzKwAlS/df5huYzj4l06RTVJFc
-         2UwsroHI9o1BzIp4zAyoE3FfsNwAab/tW+H6rYTceAcuw3Ltnqh8LYkj5qBbKTAWzJ
-         o1LKxdsUVpncA==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, brouer@redhat.com, toke@redhat.com,
-        pabeni@redhat.com, echaudro@redhat.com,
-        lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com,
-        andrii@kernel.org
-Subject: [PATCH v4 bpf-next 3/3] veth: allow jumbo frames in xdp mode
-Date:   Tue,  8 Mar 2022 17:06:00 +0100
-Message-Id: <930b1ad3d84f7ca5a41ba75571f9146a932c5394.1646755129.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1646755129.git.lorenzo@kernel.org>
-References: <cover.1646755129.git.lorenzo@kernel.org>
+        with ESMTP id S239312AbiCHQPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:15:31 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9D250B23;
+        Tue,  8 Mar 2022 08:14:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646756075; x=1678292075;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LR5CCv6Q3aBeORtqOyOOhZCKfF2QDO9kvzAaK6wB20k=;
+  b=ks2GICwVXdh1L3I3MutzB917xG/tdK2Mk8F1urr1sTBoLCLl07XRT2td
+   16PW7cQBRlIFAznS46DcprsuqbiO3ri+Xluo0rMxBY41EblqhQEHB0a/R
+   yfcJ0MB42EbBZIFJP6KoyQlVowu+FhzkLyuljo6/EoZfEZEGkkpYyhaCY
+   UE4Yh29HkaSUowkPBUN7jpAhiNyeTD0Xi9KnF1tAoXssMrspJ+nfgIoyv
+   6Xc6RDdf/ZpPObczS53YFfVwWGc/2m9PqUMUTbG0roTBpjf2dbVqu7vtk
+   Gd1blTK/AtcTdDCObAB9Qa7b4tyOYJZp51hPdWXgSuPcg9eHkMhafcCWY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="253554926"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="253554926"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 08:11:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="711580048"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 08 Mar 2022 08:11:31 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRcQt-0001fZ-5b; Tue, 08 Mar 2022 16:11:31 +0000
+Date:   Wed, 9 Mar 2022 00:10:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     zhenwei pi <pizhenwei@bytedance.com>
+Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        lei he <helei.sig11@bytedance.com>,
+        Gonglei <arei.gonglei@huawei.com>
+Subject: [mst-vhost:vhost 28/60] nios2-linux-ld:
+ virtio_crypto_akcipher_algs.c:undefined reference to `rsa_parse_pub_key'
+Message-ID: <202203090014.ulENdnAQ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,91 +64,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow increasing the MTU over page boundaries on veth devices
-if the attached xdp program declares to support xdp fragments.
-Enable NETIF_F_ALL_TSO when the device is running in xdp mode.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
+head:   c5f633abfd09491ae7ecbc7fcfca08332ad00a8b
+commit: 8a75f36b5d7a48f1c5a0b46638961c951ec6ecd9 [28/60] virtio-crypto: implement RSA algorithm
+config: nios2-randconfig-p002-20220308 (https://download.01.org/0day-ci/archive/20220309/202203090014.ulENdnAQ-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?id=8a75f36b5d7a48f1c5a0b46638961c951ec6ecd9
+        git remote add mst-vhost https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
+        git fetch --no-tags mst-vhost vhost
+        git checkout 8a75f36b5d7a48f1c5a0b46638961c951ec6ecd9
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   nios2-linux-ld: drivers/crypto/virtio/virtio_crypto_akcipher_algs.o: in function `virtio_crypto_rsa_set_key':
+   virtio_crypto_akcipher_algs.c:(.text+0x4bc): undefined reference to `rsa_parse_priv_key'
+   virtio_crypto_akcipher_algs.c:(.text+0x4bc): relocation truncated to fit: R_NIOS2_CALL26 against `rsa_parse_priv_key'
+>> nios2-linux-ld: virtio_crypto_akcipher_algs.c:(.text+0x4e8): undefined reference to `rsa_parse_pub_key'
+   virtio_crypto_akcipher_algs.c:(.text+0x4e8): relocation truncated to fit: R_NIOS2_CALL26 against `rsa_parse_pub_key'
+
 ---
- drivers/net/veth.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 47b21b1d2fd9..c5a2dc2b2e4b 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -293,8 +293,7 @@ static int veth_forward_skb(struct net_device *dev, struct sk_buff *skb,
- /* return true if the specified skb has chances of GRO aggregation
-  * Don't strive for accuracy, but try to avoid GRO overhead in the most
-  * common scenarios.
-- * When XDP is enabled, all traffic is considered eligible, as the xmit
-- * device has TSO off.
-+ * When XDP is enabled, all traffic is considered eligible.
-  * When TSO is enabled on the xmit device, we are likely interested only
-  * in UDP aggregation, explicitly check for that if the skb is suspected
-  * - the sock_wfree destructor is used by UDP, ICMP and XDP sockets -
-@@ -302,11 +301,13 @@ static int veth_forward_skb(struct net_device *dev, struct sk_buff *skb,
-  */
- static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
- 					 const struct net_device *rcv,
-+					 const struct veth_rq *rq,
- 					 const struct sk_buff *skb)
- {
--	return !(dev->features & NETIF_F_ALL_TSO) ||
--		(skb->destructor == sock_wfree &&
--		 rcv->features & (NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD));
-+	return rcu_access_pointer(rq->xdp_prog) ||
-+	       !(dev->features & NETIF_F_ALL_TSO) ||
-+	       (skb->destructor == sock_wfree &&
-+		rcv->features & (NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD));
- }
- 
- static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
-@@ -335,7 +336,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
- 		 * Don't bother with napi/GRO if the skb can't be aggregated
- 		 */
- 		use_napi = rcu_access_pointer(rq->napi) &&
--			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
-+			   veth_skb_is_eligible_for_gro(dev, rcv, rq, skb);
- 	}
- 
- 	skb_tx_timestamp(skb);
-@@ -1525,9 +1526,14 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 			goto err;
- 		}
- 
--		max_mtu = PAGE_SIZE - VETH_XDP_HEADROOM -
--			  peer->hard_header_len -
--			  SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+		max_mtu = SKB_WITH_OVERHEAD(PAGE_SIZE - VETH_XDP_HEADROOM) -
-+			  peer->hard_header_len;
-+		/* Allow increasing the max_mtu if the program supports
-+		 * XDP fragments.
-+		 */
-+		if (prog->aux->xdp_has_frags)
-+			max_mtu += PAGE_SIZE * MAX_SKB_FRAGS;
-+
- 		if (peer->mtu > max_mtu) {
- 			NL_SET_ERR_MSG_MOD(extack, "Peer MTU is too large to set XDP");
- 			err = -ERANGE;
-@@ -1549,7 +1555,7 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 		}
- 
- 		if (!old_prog) {
--			peer->hw_features &= ~NETIF_F_GSO_SOFTWARE;
-+			peer->hw_features &= ~NETIF_F_GSO_FRAGLIST;
- 			peer->max_mtu = max_mtu;
- 		}
- 	}
-@@ -1560,7 +1566,7 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 				veth_disable_xdp(dev);
- 
- 			if (peer) {
--				peer->hw_features |= NETIF_F_GSO_SOFTWARE;
-+				peer->hw_features |= NETIF_F_GSO_FRAGLIST;
- 				peer->max_mtu = ETH_MAX_MTU;
- 			}
- 		}
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
