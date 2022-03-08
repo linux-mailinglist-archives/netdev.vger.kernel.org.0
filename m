@@ -2,110 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1314D2404
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 23:12:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3834D240E
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 23:14:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344087AbiCHWML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 17:12:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S1350629AbiCHWPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 17:15:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiCHWML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 17:12:11 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E43947AEA;
-        Tue,  8 Mar 2022 14:11:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646777473; x=1678313473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kQ5srqxv0waYBab8nwYT1ubD1rarswGHiGwSxhd9OF8=;
-  b=etZFsZ2Wig4gasV5YZAuGDzJyrEZmJC0VvZ7qosJ+W8piWzJQGk5/F0x
-   3C9xmhSR2vcyZGu0x2TOnkiL7IbuwutMZAuPmevAsmkaduKlY/8JWriPW
-   Q8M++YpWNDBtAWbfWW1tuFGXSPrU78nH8OGBPw9QfmZT0wLzdU8Uu+FEU
-   2/tK8btvGLuHd5CwggHjFsi7xAYjVTLL+n4OHSJo7+ryp3tqc6ANbP0vK
-   QNAOJ4JPsbCd6rFmYMO9O9/7Vlr4JALhs4xV2THFY0USlHeePUKWOPVkJ
-   XYeOklkK2/CPtgkYjQFJz9RZFrrAGwAEb42bRV4ilwF4FBf/idJihLiku
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
-   d="scan'208";a="165010573"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 15:11:12 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Mar 2022 15:11:11 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 8 Mar 2022 15:11:11 -0700
-Date:   Tue, 8 Mar 2022 23:14:04 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
-References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
- <20220304093418.31645-3-Divya.Koppera@microchip.com>
- <YiILJ3tXs9Sba42B@lunn.ch>
- <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YiYD2kAFq5EZhU+q@lunn.ch>
- <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
+        with ESMTP id S1345557AbiCHWPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 17:15:08 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FEF4C43C;
+        Tue,  8 Mar 2022 14:14:11 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: aratiu)
+        with ESMTPSA id 769851F44332
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1646777649;
+        bh=oH9umuyNaE5/U4zhMjdsDxOXvye3XmzP5z4EoQRHZWk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=DjssUUiC8YUIrd9O+MeyiYKjRux86b4SDaOCG60RS5oPKGznX7Q8bA+NxxisCugxY
+         TJNghTwbXGz4K5GcOuufZX+w0KFjzm4O4/3E4WckLww/C2gZiF0uO4w/k2gOOlBUrz
+         ibMLHh6s1evlK46ar22OEjUsNN6VY8eF55GH0tu/7bT5p1L0qbd1564PBQEnkSA9fx
+         W+7FJkIhc1BlcO3T9kxQr1zGUvieubbQO0PiotBzNWFtcEtULDWxMuvAzmrUSnHGBj
+         NLWlRUa1erDiqJS46MGYexhaBwXGT8Q8BNubpSwENaWjSHVzlz2qLtOEgxa4M5taEr
+         Z3ReoAe7OhMlw==
+From:   Adrian Ratiu <adrian.ratiu@collabora.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kernel@collabora.com,
+        linux-kernel@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Manoj Gupta <manojgupta@chromium.com>,
+        Nathan Chancellor <nathan@kernel.org>, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf v2] tools: fix unavoidable GCC call in Clang builds
+In-Reply-To: <6e82ffbb-ebc8-30e8-2326-95712578ee07@iogearbox.net>
+References: <20220308121428.81735-1-adrian.ratiu@collabora.com>
+ <6e82ffbb-ebc8-30e8-2326-95712578ee07@iogearbox.net>
+Date:   Wed, 09 Mar 2022 00:14:06 +0200
+Message-ID: <87fsnsrt1t.fsf@ryzen9.i-did-not-set--mail-host-address--so-tickle-me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YiecBKGhVui1Gtb/@lunn.ch>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; format=flowed
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/08/2022 19:10, Andrew Lunn wrote:
+Hello Daniel,
+
+On Tue, 08 Mar 2022, Daniel Borkmann <daniel@iogearbox.net> wrote:
+> On 3/8/22 1:14 PM, Adrian Ratiu wrote: 
+>> In ChromeOS and Gentoo we catch any unwanted mixed Clang/LLVM 
+>> and GCC/binutils usage via toolchain wrappers which fail 
+>> builds.  This has revealed that GCC is called unconditionally 
+>> in Clang configured builds to populate GCC_TOOLCHAIN_DIR. 
+>> Allow the user to override CLANG_CROSS_FLAGS to avoid the GCC 
+>> call - in our case we set the var directly in the ebuild 
+>> recipe.   In theory Clang could be able to autodetect these 
+>> settings so this logic could be removed entirely, but in 
+>> practice as the commit cebdb7374577 ("tools: Help 
+>> cross-building with clang") mentions, this does not always 
+>> work, so giving distributions more control to specify their 
+>> flags & sysroot is beneficial.   Suggested-by: Manoj Gupta 
+>> <manojgupta@chromium.com> Suggested-by: Nathan Chancellor 
+>> <nathan@kernel.org> Acked-by: Nathan Chancellor 
+>> <nathan@kernel.org> Signed-off-by: Adrian Ratiu 
+>> <adrian.ratiu@collabora.com> --- Changes in v2: 
+>>    * Replaced variable override GCC_TOOLCHAIN_DIR -> 
+>>    CLANG_CROSS_FLAGS 
 > 
-> > > So this is a function of the track length between the MAC and the PHY?
-> >
-> > Nope.
-> > This latency represents the time it takes for the frame to travel from RJ45
-> > module to the timestamping unit inside the PHY. To be more precisely,
-> > the timestamping unit will do the timestamp when it detects the end of
-> > the start of the frame. So it represents the time from when the frame
-> > reaches the RJ45 to when the end of start of the frame reaches the
-> > timestamping unit inside the PHY.
-> 
-> I must be missing something here. How do you measure the latency
-> difference for a 1 meter cable vs a 100m cable?
+> As I understand it from [0] and given we're late in the cycle, 
+> this is targeted for bpf-next not bpf, right? 
+>
 
-In the same way because the end result will be the same.
-Lets presume that the cable introduce a 5ns latency per meter.
-So, if we use a 1m cable and the mean path delay is 11, then
-the latency is 11 - 5.
-If we use a 100m cable then the mean path delay will be 506(if is not
-506 then is something wrong) then the latency is 506 - 500.
+Yes, let's target this for bpf-next. The issue was introduced in 
+the 5.17 cycle but indeed it's late. I can do a stable backport to 
+5.17 after it releases.
 
-> Does 100m cable plus 1cm of track from the RJ45 to the PHY make a difference
-> compared to 100m cable plus 1.5cm of track?
+Thanks,
+Adrian
 
-In that case I don't think you will see any difference.
-
-> Isn't this error all just in the noise?
-
-I am not sure I follow this question.
-
-> 
->    Andrew
-
--- 
-/Horatiu
+> Thanks,
+> Daniel
+>
+>    [0] https://lore.kernel.org/lkml/87czjk4osi.fsf@ryzen9.i-did-not-set--mail-host-address--so-tickle-me/
