@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BACE34D1323
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 10:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C824D132A
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 10:15:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345287AbiCHJQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 04:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
+        id S1345317AbiCHJQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 04:16:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344104AbiCHJQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 04:16:29 -0500
+        with ESMTP id S238795AbiCHJQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 04:16:30 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70041.outbound.protection.outlook.com [40.107.7.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA0E4091D
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 01:15:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBCD40A1F
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 01:15:34 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=erZtnPWeVwQ8Tr1vMbyWdqIxexZQRoG0eXS3Wp27SWkPXH2ZtXNCcB3hYDyBR7nrvpZd1xGa+vDGHSa6Ww7jmBjci7Zhjumg7uEDqPmxf8tiES6FoVKLL4YJpSiildLdU0jWot8ZTpIKgl7ZcBYr9OdDeHCe8YaNNyZSyvpaf6cNm8z2SclvD1+B0WKbhFlpVtlqYEtR0OzjMSOwofUPhs6qS5OR8Avawt7nGLcvnRChVoDVW10E/b4uTOtUtPs4sYaNSy6t3DSa2e4f/GyX9Y+n7HfEAmSWZmKhBPTc4owtQvM+0kqSR7D9snGc2ibXklq186MKMlKgYHoi6AW57w==
+ b=nIPp7aWn44Aj+xcfpjP+qxhMB+7Yi3gunq8XmkWWwDJPare1IrNfvGiv9pC+y4riIq3LArY41/MELhE9UvbZnwhwuQHysFSLOoqag4+2IJwVC91Ci2dSErj/gB6VSU9Mr2AXNZp7FePjOITZKjpHoJEJiGF/8anAcbR7v/J1t1ZKoEMdRPvXQAs9BHGObnj4D7FPhkY53HwuF4Qh1SRj++rZu5CO60H8B6YOPuHmOL2CEZM3eFWI3fo+EKBNO2Cpv3R7ODUaWn38QvG6ygG2iF5PZjteN8VjL3aGT14DgMc6Rm+JtWtl4cmIuLj/AgzQGDunJ5ijIDV6Efygh2udeA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KnZ4JYKtp7FvriArNCrv6/fkUzIXprY2OsWXnaQOG1E=;
- b=W4GoCG2sZAWLOje6hUOG9AQVzX0vTaq+Ees99x27dk00eW/5edZ9WHFYuNECPFStkTPQ65Y9+ldh1GsoS20QSXt0CfxhadmAvielRJZl5UG4LPPddnGL+d1VIlOBcc7JjnIdcgTnFOoSb29EVCHYHX6kN/BLfbkOQ7LjnJLpbjT5fzNwuS1ivMTFDCTi8jkABFuLYByQpwoOHzGwZvWUtAvlYn+yJciUYylEpCSYXAOViL1HRT8crZJjxlNB0K1lppQqBg0u9mm14B0KJbk7lpY7sEAXvmk5yXnAaKGrN1UGXD68Wh3bwY5lUL7i38VzD4VYZlZGgOdYyuvWu+GMgA==
+ bh=kgbBQzb5GgBdzgH8vQBgnLRO/XieSshlQdcpXlyiqR0=;
+ b=RHbCcHFlW/0t/0G0TuvDeAWefoobAj1jTNWTmJYQpVhyNcNAOR77usU+pxbwj67o594wcS5I/RaQesSbK9Wlb7VSAtll0MaUxWsCvumZ8LYsyYV7swMuiZOPPhTDtZWpUz5BD8wx2N4VbsTyXvwx4UIe4FPYyhU+sdBWpANBBTAIvFclEcy+00iWaTMoX2c6sipU73cSYAkRqtVVz6n9IW0OKweVZ7YEWGVeOHvpBsG8bSLpUnDoI57+9Pae9wYRY3hR+h5QDrAJ4obAHYKYHpVv7dJZJXSXBVU6d+SloRTeCHRPiEoeH0+SD4MogCZCBI058peIOGTRbvP8Cifp/w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KnZ4JYKtp7FvriArNCrv6/fkUzIXprY2OsWXnaQOG1E=;
- b=UKCOInPicjIXOT+z9/3o1tm8J4LZXTUqKzaFN46DEUh6DeXtddvGLJmOcxbDkoVf26oVTv17H2u1yZsmGHvGFH7EWKSVznKIJjWfFt4Q4LggZdJN4SreKY8SQSOTaz5aBD/NPNMHt9N2eROhRmWdOQWnU9cKzgjhNlElS6tAGbw=
+ bh=kgbBQzb5GgBdzgH8vQBgnLRO/XieSshlQdcpXlyiqR0=;
+ b=E8Iv/+wBTITHwfPc0KiKReTKXdKuVFun9prtEp1k3d0EXpIs2XzT3rX/ZMdqlr3vexaOqM0xCllVmZBNMgN5skKzac/YOVQAXtt/tvWtVj+Hnhaml+pNdwpgKB8GaS+OWXfoC2T5gSdW0hZVYltnxRRiXkM5KPma9yCX5w49CSI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM0PR04MB4243.eurprd04.prod.outlook.com (2603:10a6:208:66::29) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Tue, 8 Mar
- 2022 09:15:28 +0000
+ 2022 09:15:29 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::ac0c:d5d:aaa9:36%5]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
- 09:15:28 +0000
+ 09:15:29 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -51,9 +51,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>
-Subject: [PATCH net-next 1/6] net: dsa: warn if port lists aren't empty in dsa_port_teardown
-Date:   Tue,  8 Mar 2022 11:15:10 +0200
-Message-Id: <20220308091515.4134313-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/6] net: dsa: move port lists initialization to dsa_port_touch
+Date:   Tue,  8 Mar 2022 11:15:11 +0200
+Message-Id: <20220308091515.4134313-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220308091515.4134313-1-vladimir.oltean@nxp.com>
 References: <20220308091515.4134313-1-vladimir.oltean@nxp.com>
@@ -64,53 +64,53 @@ X-ClientProxiedBy: AS9PR06CA0347.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 588cd0dd-36e1-4151-eab6-08da00e42ff0
+X-MS-Office365-Filtering-Correlation-Id: 6f21a51a-d51e-4fe0-1a22-08da00e430a6
 X-MS-TrafficTypeDiagnostic: AM0PR04MB4243:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR04MB424360A71AC28D3AB54664D9E0099@AM0PR04MB4243.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <AM0PR04MB4243AF48F1686391935D2B90E0099@AM0PR04MB4243.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MLxkX9Nd2V+6OjeXgJI6ggyGn+hy8Jjo4L5+hgi7APtLZv5dzf7+zTnHRUWXsCNRVDFUl53wOjvPO7VFo9YpRa2Slxsv/fw34IsSAAHc1oJoxdw78sVsWRy3ZC8f6WdufE/W+nVxMRfRyAI3NIpfZgc7gNEPOIKNkyJ81pVPN+oDFQajGXrYtM/WjFo29jl3dv+QI7SDGaBOQg9xYv66TTS0AWOqqpdtt1TprUWzXp+3T8wUP2ST5YwzTBwJjRxnWzfPn5r8TVfIrzS5u/VCNPCLmcqN6RphXGpCj0wdzOk8yb/XwLb3bstJz4LLCzFwDNVYjI493AvbE+06FH5cwW87JXhlD/kdmdQ3UeLEWvu6nE2uWbAdymwCKHInj8PsXQdUtUWMUsLRUCMqvyv8lqpioteYlHgm4NRh9w7VXLnUNYYhjvlQrdwVYT7OMbIWX61CDjGN/PG59WOf7ySeybR/NalgShneoNPIBOyqZjjjNpTegVYfXajZxZrjupEk5b3Cc4c4wVsFSidVcZLeIQezqwWIL94Ww6IgEvi3Aj5E0/qh0LxFoCvmox7uWItO4Byupl+FmZ4jAJ+b3ZTZX9MfMwFdfezuDaEGPjepxArj6F18BuTb2PUGQLb+tBGiOMlXd9q72nDTMudOuX1TIyGNpXe6m8eiZy42nH7hbG/5nvu+mTDt/AQ4MPfa84MGVXIC8ERqvcK7/HeyPWLX2w==
+X-Microsoft-Antispam-Message-Info: HEUTaROYnDxB2YzHFQI85KafEIfujd3pmi8SnAdIGw9S8Qp5mfT+Xt+tcN/5VWpX/EYiNEbQmdRKREal1eiP5zQK1f1IkyhIpUQZp+iEbwB6044Ikf6OM4HRaEKcwE2HYh+5X9BRiYrgoWPYzZfT9szlJl4biRrhfxDtO6m5AUrH4dUcQXGiOVYoGLBtM66J80j0Qo7lEuxyNl3pLT5Np5+lwG7zqM3JRqxPNMxAeoClu7gg94uY67Gm6Sm/YwIihZY1rmk4cU4pHBs+/23tBnMQmwvpVh0mgwbuSb3VRFLAabEZ/C2wbeUPByWrcANGOGH/huTL6IT/35BqI6+83YGOFf+NGmv3tacZnv0Ef6YLF8AdzTAdqGo5hPEsndcKaX34mEXqiQjxXf7wJ0ruVZ7w3ueWwrTzemi30iyh4XHvbWLqnftzoNATSKNF87W8FsadCtMGH6RQf0/dd6y3BkLI77qYatD1D5ZDxx777EKnrB6EEdhq71sh5y99DPqSBNHg5hJ3YDLB9zD/+HWt/7nAybC6ppUnIeHyzCo8DlLrjJ3hendliLdkA6gZO4PKOi7FEqZeTl3FrH/VaK+q/Y4DY5GfYU9vX3xkSlexxCl9xLegN5jLJbCfm1N1IiNkCSROGTd4kd1ksyF56GrNxeF12v/3DJ+hafPeeQLnqzhgnT55v///Cg4somwVWIwba2GC6debK3aJ2qh3qgHDHw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(44832011)(498600001)(8936002)(7416002)(5660300002)(6666004)(6512007)(6506007)(38350700002)(86362001)(38100700002)(2906002)(4326008)(36756003)(8676002)(52116002)(6916009)(83380400001)(186003)(26005)(54906003)(2616005)(1076003)(66946007)(66476007)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SsoksN1OtD1SNMHnZzlkGhAxKnVdgYqWMNb7jLzkgJawXxejUFmm3X4DQzCy?=
- =?us-ascii?Q?ZrlFI0V919fQijCVN0DnVG0QuDjGyFyF6T+n+KzAwHrBT1WG0bNI7cI1g041?=
- =?us-ascii?Q?nG0vQ4a333L4MLc3y1Ya6Dw6xMFuvERFqRFZwd5bssion8LHy156Nw44ChZq?=
- =?us-ascii?Q?U5Ql24AKOolHvOVjsHSS1H/NkoziB2yrL7c6zTYHsegrKCIikz+65rfj6iIT?=
- =?us-ascii?Q?ZfkXuHEEC/v9MRw2+fcVpHe9PQLxXAEotJW1oBwS2tQM2ksPnC1OFZVSRd8k?=
- =?us-ascii?Q?VOQugw84Fd5WEEko1uzZEv0ip89t7DMQM+W5zDd3vPQMJhvHVjiHFnBNLMU+?=
- =?us-ascii?Q?3WtFU4jx9iJ4CTL1v+1vKAZPAEEh2zAaO6l7mseG8ifhloG4gSV6AWtdz9H0?=
- =?us-ascii?Q?Ns2HcAXEk6ukYeX8HpfcanmiZoECvXMH3dgIuyc4MrsOyk0oJSrUMS9v0smA?=
- =?us-ascii?Q?mAa9ZjAGUwerkDeAcpXZFH5rfv6Wts/DBtTbT8JcN22/Qz+vRfdXJMt5x1Ic?=
- =?us-ascii?Q?CnX2ure4JPVwxh648oW9LzImoVtcqh5/3YkpdWaPCRwRowt2dOPYPfio7Oms?=
- =?us-ascii?Q?lkhPUJ2OhRo+1Gyz1jJQfRkAe6dWfbLUeeEx3aIBNghTt4MRshyU9sh3Aa45?=
- =?us-ascii?Q?D0H0hKnI+qUmIDOTyljvGqgIeTjOeoKDNt3XoN5FiudP1SxDe/i/CWPQjjGZ?=
- =?us-ascii?Q?KUCartpLHis1BVnidCT4ekq2835WNFTAQhXUmUZ2A2pzphrW5/ypYv4LtI+R?=
- =?us-ascii?Q?hZIp7FTp9HK96k9qFwAVbArL9CxUNqDaz729b8VbzoLWCe332E5mApNckrVs?=
- =?us-ascii?Q?OQEHAaH3VnkMU6pU5GJoKxd0pIXVAFjvJ7eQzQwxxD1wxHthVfWPJnWbFoKJ?=
- =?us-ascii?Q?RbeA4T3l2s1+tQOtd5YbegpujuOMEspNmOZH18vCjX31RMoAbipPGb/q5nmi?=
- =?us-ascii?Q?O0bFmMgrLkwGcJogUDBiBiHWac4xF1JwaOngIw8ZV3VzmO7N5YyafOgcIL0G?=
- =?us-ascii?Q?4WYRK3NADLl/n93XP43Tmm0o2xmh56rS5bRjPfwuHRZuSH9EfZIaLODHVhVm?=
- =?us-ascii?Q?OyJQ3CefJP3gLFq5q6z0S1a23YuVUdip9fGFdBOM7CXOCc0SLSs2kikguO9p?=
- =?us-ascii?Q?FIKdcP9FBUqPucFVp5bFXe/U68N93Z8S0nGCVJBRFfpKKC0ETTfGdZeZCqXj?=
- =?us-ascii?Q?pGPqD2PT8ll8oRuhESzWBraFmmIVA5+e59DHw2gl9/w0uTeqfHZe30pwmXA8?=
- =?us-ascii?Q?AR34Z525fM2gPUYA85jt0os/QnBLCOP1LwYD8IPo/u3iKh6X48kh41FfgqgJ?=
- =?us-ascii?Q?r6Kqpxvs490ViSB8Sf9UmgcKjjnSJoXQHihS20VS2xQSeoCDv/FRds9RkKZX?=
- =?us-ascii?Q?OimSfC26Yir6WcnLxxGE3/etnK+YfD8n6LuOfwr8GtZqzrrD5FsM61/LBFmO?=
- =?us-ascii?Q?XJ2U8f8v1CJMaJDb/fJNpD8X8DYGuugGhjgsOISfm4I+MrNN+DQAE6AsyUm7?=
- =?us-ascii?Q?hRIcJeKrdlTMOz9/3xeYyYmTu+jXOLFDo4cGKvP83r3m7Bv1TIOkXGie4Jb4?=
- =?us-ascii?Q?qsDZf10mfGxYQLzO7nu2GeAvzyvka2ecpWYG09a/QOJl+1t3N/AFXOAkpMfa?=
- =?us-ascii?Q?qHhv/L3exOiWOpnwiD5ngd8=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?f/mJqIIjCbtQkket2jIQgPZn2sbNa2WTGZR3ft5+QYw/T1IpEXk5HZGbd5zS?=
+ =?us-ascii?Q?7O23qvyK/i/xHFD3kyN6NMvHf0xAOon0bpAKb4x9vQR1wU7MGIZKHO+tSlLz?=
+ =?us-ascii?Q?qWxuJP3zHRcQdCceYBOyTOhW2kXsAzqbsQma6y8+PhNPemVbCTtlX1WGb5el?=
+ =?us-ascii?Q?Zr9rLyXNShyIPK3parRUXhmAJDQpO2Od2alGzLXnxWIR8MKDNozPwbeNHK/l?=
+ =?us-ascii?Q?p0NGswX8b1M3VlLWTF7wU461iLNFFObDztzE2KLQZkJRAB8HiHNx40Hp2+rB?=
+ =?us-ascii?Q?FBEWqCqbUvRLcaU7YQLrq18fXKY4g64O/spkvknklUAi1/hFTIoGsBqtsZwj?=
+ =?us-ascii?Q?SV5CxE5QvBccYev3kINcZ2A76qSZm1tqlopOgjojLFjkORoDFIWqY3pHsLkQ?=
+ =?us-ascii?Q?XERdXYZedZNMjLTgTrdY5FJuEmMtDSR20UrcK6AkehvGzgnhHVrW9S/LR71L?=
+ =?us-ascii?Q?Wth7tlryP2fo7qDAjpC3spClbFdWZj0db2bXkfhjIU3xO3njSqGVqk0UrYUY?=
+ =?us-ascii?Q?mLRlrdrH6NBeTvbTkf0ysBJkRkFqayWxWvUAJZj/qYv1f4CipzYx7dVBaSJr?=
+ =?us-ascii?Q?Uvl6rjTAnLJOuq2+eE4Sx5HFB0niaDwIeF1M1fbO1GCShD0ShY2xlSVaLyfM?=
+ =?us-ascii?Q?WsiLVtef6eEJbICq/8Vnq+13yo7VZuFS6cv5FgQW2G151xCr6F7qkuY37YiL?=
+ =?us-ascii?Q?j+H9iWTR/LxcQzYn/J2V9PajYngbE18t+jwK1KPn45224Lpz8uMmj4NP8k3K?=
+ =?us-ascii?Q?T/FQ6KC5JloMN+xrSWyhMrPvpnM5VbSQSxxlUudakB5jsxjLKS26zL2semJN?=
+ =?us-ascii?Q?y851lcqogyR18mvFJHl2Lf3U59CbmqKIzwztI7OR4tHcz0tAqT6Dl6ni+RF9?=
+ =?us-ascii?Q?AnzF0AlRrPndVrcx9m8/05BMGhBooWV5eqCwUMk3grmSaQdeV5kKh8NeJLys?=
+ =?us-ascii?Q?BrqOLY3Byosj44yY9htdPZeY8jFFQ7llJVfjXMhSQvTANckRsRiZNtuEpQWL?=
+ =?us-ascii?Q?HKTeFcKRishKgDLog6zwvI4octeYFMfWoenN1vn78XpKqKFkZ0ik6VVmk0ue?=
+ =?us-ascii?Q?KCFzvaiEk2RTV6DHMhR8RbRXluKLkCN7mzQ6HphaMBcE187rBvv2+WdymanK?=
+ =?us-ascii?Q?Q80NYIMurxinynvb7vQ9wwflt195xcRabgcRc9g5iFRe7jZBxwBuIKdcWzhb?=
+ =?us-ascii?Q?d1gg1AQlIioShktVhiFOhI5PWROsytrplNCIglN3l4n2gkPgQt+JQXSOqbYG?=
+ =?us-ascii?Q?iSQwRUaGXVYe4U9SyK0J/fo4iLUgZhJoP3QV2GHtHEq3ZHtYZuh2K5Cqklqd?=
+ =?us-ascii?Q?kz4GCNB4EcyvrkCaTUnHFnYNaqVUf9mUU7NCFTAhirbdtxdhSfsUafA/DhM3?=
+ =?us-ascii?Q?hjw0738ljHWvIqTBbXyMO5hcl5+kzqnC37L8meikAsNl8DklDTQSqV/uT/Wy?=
+ =?us-ascii?Q?hIEk5ZTOOotpQSvmGi4DxXdlnMeV5EJNgOA17iXr1jv7nNz4HeJQr+dl2Ujr?=
+ =?us-ascii?Q?0I31ON3+L/CnOKqu9AvYXMczqKGMXOWnKEkK9u1g7/97Gvl/Bl8zmzsu7Zd2?=
+ =?us-ascii?Q?nm4kPbmWpY70kTKwWpu2ZGGT6iiczyV+a16/3IrSNEex0MHanRmBQJ3UsBvU?=
+ =?us-ascii?Q?fFWd22kazyubPwQ+etkvLU4=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 588cd0dd-36e1-4151-eab6-08da00e42ff0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f21a51a-d51e-4fe0-1a22-08da00e430a6
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 09:15:28.4926
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2022 09:15:29.6800
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pXlRaIEkmLLmroOa/jAqUVpF/YJ6fy4cTPSrCCG+D0H5GHsCDNFeLwyzWL99sUAKZACEJEJnMidITyrQM3yHCQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7J/4JTZv49wbEeOFsmFyYR+Ta/GxGqDeVE/ttfeSAYeMo0rOvLdptXcaF3d+PCtwVEnIHceaJn9GKl92Pz7+2A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4243
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -122,62 +122,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There has been recent work towards matching each switchdev object
-addition with a corresponding deletion.
+&cpu_db->fdbs and &cpu_db->mdbs may be uninitialized lists during some
+call paths of felix_set_tag_protocol().
 
-Therefore, having elements in the fdbs, mdbs, vlans lists at the time of
-a shared (DSA, CPU) port's teardown is indicative of a bug somewhere
-else, and not something that is to be expected.
+There was an attempt to avoid calling dsa_port_walk_fdbs() during setup
+by using a "bool change" in the felix driver, but this doesn't work when
+the tagging protocol is defined in the device tree, and a change is
+triggered by DSA at pseudo-runtime:
 
-We shouldn't try to silently paper over that. Instead, print a warning
-and a stack trace.
+dsa_tree_setup_switches
+-> dsa_switch_setup
+   -> dsa_switch_setup_tag_protocol
+      -> ds->ops->change_tag_protocol
+dsa_tree_setup_ports
+-> dsa_port_setup
+   -> &dp->fdbs and &db->mdbs only get initialized here
 
-This change is a prerequisite for moving the initialization/teardown of
-these lists. Make it clear that clearing the lists isn't needed.
+So it seems like the only way to fix this is to move the initialization
+of these lists earlier.
 
+dsa_port_touch() is called from dsa_switch_touch_ports() which is called
+from dsa_switch_parse_of(), and this runs completely before
+dsa_tree_setup(). Similarly, dsa_switch_release_ports() runs after
+dsa_tree_teardown().
+
+Fixes: f9cef64fa23f ("net: dsa: felix: migrate host FDB and MDB entries when changing tag proto")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/dsa2.c | 19 +++----------------
- 1 file changed, 3 insertions(+), 16 deletions(-)
+ net/dsa/dsa2.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index afea4f7a41c0..396ea0b4291a 100644
+index 396ea0b4291a..bef1aaa7ec1c 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -568,9 +568,7 @@ static void dsa_port_teardown(struct dsa_port *dp)
- {
- 	struct devlink_port *dlp = &dp->devlink_port;
- 	struct dsa_switch *ds = dp->ds;
--	struct dsa_mac_addr *a, *tmp;
- 	struct net_device *slave;
--	struct dsa_vlan *v, *n;
+@@ -457,12 +457,6 @@ static int dsa_port_setup(struct dsa_port *dp)
+ 	if (dp->setup)
+ 		return 0;
  
- 	if (!dp->setup)
- 		return;
-@@ -601,20 +599,9 @@ static void dsa_port_teardown(struct dsa_port *dp)
+-	mutex_init(&dp->addr_lists_lock);
+-	mutex_init(&dp->vlans_lock);
+-	INIT_LIST_HEAD(&dp->fdbs);
+-	INIT_LIST_HEAD(&dp->mdbs);
+-	INIT_LIST_HEAD(&dp->vlans);
+-
+ 	if (ds->ops->port_setup) {
+ 		err = ds->ops->port_setup(ds, dp->index);
+ 		if (err)
+@@ -599,10 +593,6 @@ static void dsa_port_teardown(struct dsa_port *dp)
  		break;
  	}
  
--	list_for_each_entry_safe(a, tmp, &dp->fdbs, list) {
--		list_del(&a->list);
--		kfree(a);
--	}
+-	WARN_ON(!list_empty(&dp->fdbs));
+-	WARN_ON(!list_empty(&dp->mdbs));
+-	WARN_ON(!list_empty(&dp->vlans));
 -
--	list_for_each_entry_safe(a, tmp, &dp->mdbs, list) {
--		list_del(&a->list);
--		kfree(a);
--	}
--
--	list_for_each_entry_safe(v, n, &dp->vlans, list) {
--		list_del(&v->list);
--		kfree(v);
--	}
-+	WARN_ON(!list_empty(&dp->fdbs));
-+	WARN_ON(!list_empty(&dp->mdbs));
-+	WARN_ON(!list_empty(&dp->vlans));
- 
  	dp->setup = false;
  }
+ 
+@@ -1361,6 +1351,11 @@ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
+ 	dp->ds = ds;
+ 	dp->index = index;
+ 
++	mutex_init(&dp->addr_lists_lock);
++	mutex_init(&dp->vlans_lock);
++	INIT_LIST_HEAD(&dp->fdbs);
++	INIT_LIST_HEAD(&dp->mdbs);
++	INIT_LIST_HEAD(&dp->vlans);
+ 	INIT_LIST_HEAD(&dp->list);
+ 	list_add_tail(&dp->list, &dst->ports);
+ 
+@@ -1699,6 +1694,9 @@ static void dsa_switch_release_ports(struct dsa_switch *ds)
+ 	struct dsa_port *dp, *next;
+ 
+ 	dsa_switch_for_each_port_safe(dp, next, ds) {
++		WARN_ON(!list_empty(&dp->fdbs));
++		WARN_ON(!list_empty(&dp->mdbs));
++		WARN_ON(!list_empty(&dp->vlans));
+ 		list_del(&dp->list);
+ 		kfree(dp);
+ 	}
 -- 
 2.25.1
 
