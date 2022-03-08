@@ -2,336 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 856674D15D4
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 12:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A694D15D8
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 12:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234013AbiCHLLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 06:11:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S1346363AbiCHLLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 06:11:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346342AbiCHLLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 06:11:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D0041FA3;
-        Tue,  8 Mar 2022 03:10:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CDDB615F5;
-        Tue,  8 Mar 2022 11:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18475C340EB;
-        Tue,  8 Mar 2022 11:10:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646737809;
-        bh=4np2dBOfdrhAvWSD0KrpvtH6KlUzllFx8wV9gxXS/ko=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mTeTLm69xM0xa4qMxTaw/sYNPPnnMtKZJlMMKsvx9VNarTGA2MKTeA3fk81s/WTf4
-         YriMb4UFcXU3ONJ+5LWXg0oGWPg63zKueDV6PYiGz5aviQqme5BmFuK9SPY6pPfXb+
-         pUDwtxtkhoknI/rkBZa0+axx9B/TY9LDP4H1U5epHXplpco9Xa2mZuRPyfeoboonsK
-         3vdz+Tb/X0MmZCdaeVPwOWCMYfCqzq6bG7wdFq57zMmOdkm4SEEe0LgdeGxT8K7qr/
-         taiYfbDiPNLb0K2uwom62wBbdV4lZjWaxup2++kFtUPZLlD0ATkjgfETt+jARZmNz2
-         isiP9QnRx495g==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v10 08/12] fprobe: Add exit_handler support
-Date:   Tue,  8 Mar 2022 20:10:05 +0900
-Message-Id: <164673780458.1984170.17549412262886313681.stgit@devnote2>
+        with ESMTP id S1346321AbiCHLLe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 06:11:34 -0500
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2509C45060;
+        Tue,  8 Mar 2022 03:10:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=FR44s
+        W/93AnOynT8YortolDQmhxdwDJugx6homStZRM=; b=OC0XVlzJrZvmckrxWWt6v
+        VMkhI8LQVYi2rUmTr1nw5HXOjZ7Ag3bjbYdrjrS4mh1r6hSknOB5P6zTE5BF9vzI
+        8YS9rCFwAXqRvENwZrdt+s7jK3Lsb5wHr4RaocN2bV3/QJxqA73WzuJ0WFqNIIrQ
+        brqB8Q5sMZy7emoDnvXjvY=
+Received: from localhost.localdomain (unknown [218.106.182.227])
+        by smtp1 (Coremail) with SMTP id GdxpCgAHV3CPOSdiEZZBCg--.8441S4;
+        Tue, 08 Mar 2022 19:10:17 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] net: arc_emac: Fix use after free in arc_mdio_probe()
+Date:   Tue,  8 Mar 2022 19:10:05 +0800
+Message-Id: <20220308111005.4953-1-niejianglei2021@163.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164673771096.1984170.8155877393151850116.stgit@devnote2>
-References: <164673771096.1984170.8155877393151850116.stgit@devnote2>
-User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-CM-TRANSID: GdxpCgAHV3CPOSdiEZZBCg--.8441S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr43CrWxXrWrKw4UZry5urg_yoW8XrW8pa
+        yDu3srC3s2vw4jgw4kAay8Z343tayrJry09FyIvw4Yq3Wavr1fCrW7KFWDuw1UKFsYkF1a
+        yan7Za4rAF98Jw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zR4E_iUUUUU=
+X-Originating-IP: [218.106.182.227]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiPhm9jFxBqhITpQAAsF
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add exit_handler to fprobe. fprobe + rethook allows us to hook the kernel
-function return. The rethook will be enabled only if the
-fprobe::exit_handler is set.
+If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
+the "bus". But bus->name is still used in the next line, which will lead
+to a use after free.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v10:
-  - Call rethook_hook() with mcount context flag.
- Changes in v7:
-  - Fix unregister_fprobe() to ensure the rethook handlers are
-    finished when it returns.
-  - Update Kconfig help.
- Changes in v6:
-  - Update according to the fprobe update.
- Changes in v5:
-  - Add dependency for HAVE_RETHOOK.
- Changes in v4:
-  - Check fprobe is disabled in the exit handler.
- Changes in v3:
-  - Make sure to clear rethook->data before free.
-  - Handler checks the data is not NULL.
-  - Free rethook only if the rethook is using.
----
- include/linux/fprobe.h |    6 ++
- kernel/trace/Kconfig   |    9 ++--
- kernel/trace/fprobe.c  |  116 ++++++++++++++++++++++++++++++++++++++++++++++--
- 3 files changed, 122 insertions(+), 9 deletions(-)
+We can fix it by putting the bus->name in a local variable and then use
+the name in the error message without referring to bus to avoid the uaf.
 
-diff --git a/include/linux/fprobe.h b/include/linux/fprobe.h
-index 2ba099aff041..8eefec2b485e 100644
---- a/include/linux/fprobe.h
-+++ b/include/linux/fprobe.h
-@@ -5,13 +5,16 @@
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
+index 9acf589b1178..33fd63d227ef 100644
+--- a/drivers/net/ethernet/arc/emac_mdio.c
++++ b/drivers/net/ethernet/arc/emac_mdio.c
+@@ -134,6 +134,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	struct device_node *np = priv->dev->of_node;
+ 	struct mii_bus *bus;
+ 	int error;
++	const char *name = "Synopsys MII Bus";
  
- #include <linux/compiler.h>
- #include <linux/ftrace.h>
-+#include <linux/rethook.h>
- 
- /**
-  * struct fprobe - ftrace based probe.
-  * @ops: The ftrace_ops.
-  * @nmissed: The counter for missing events.
-  * @flags: The status flag.
-+ * @rethook: The rethook data structure. (internal data)
-  * @entry_handler: The callback function for function entry.
-+ * @exit_handler: The callback function for function exit.
-  */
- struct fprobe {
- #ifdef CONFIG_FUNCTION_TRACER
-@@ -25,7 +28,10 @@ struct fprobe {
- #endif
- 	unsigned long		nmissed;
- 	unsigned int		flags;
-+	struct rethook		*rethook;
-+
- 	void (*entry_handler)(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
-+	void (*exit_handler)(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
- };
- 
- #define FPROBE_FL_DISABLED	1
-diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-index e75504e42ab8..99dd4ca63d68 100644
---- a/kernel/trace/Kconfig
-+++ b/kernel/trace/Kconfig
-@@ -251,11 +251,14 @@ config FPROBE
- 	bool "Kernel Function Probe (fprobe)"
- 	depends on FUNCTION_TRACER
- 	depends on DYNAMIC_FTRACE_WITH_REGS
-+	depends on HAVE_RETHOOK
-+	select RETHOOK
- 	default n
- 	help
--	  This option enables kernel function probe (fprobe) based on ftrace,
--	  which is similar to kprobes, but probes only for kernel function
--	  entries and it can probe multiple functions by one fprobe.
-+	  This option enables kernel function probe (fprobe) based on ftrace.
-+	  The fprobe is similar to kprobes, but probes only for kernel function
-+	  entries and exits. This also can probe multiple functions by one
-+	  fprobe.
- 
- 	  If unsure, say N.
- 
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 7e8ceee339a0..38073632bfe4 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -8,12 +8,22 @@
- #include <linux/fprobe.h>
- #include <linux/kallsyms.h>
- #include <linux/kprobes.h>
-+#include <linux/rethook.h>
- #include <linux/slab.h>
- #include <linux/sort.h>
- 
-+#include "trace.h"
-+
-+struct fprobe_rethook_node {
-+	struct rethook_node node;
-+	unsigned long entry_ip;
-+};
-+
- static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
- 			   struct ftrace_ops *ops, struct ftrace_regs *fregs)
- {
-+	struct fprobe_rethook_node *fpr;
-+	struct rethook_node *rh;
- 	struct fprobe *fp;
- 	int bit;
- 
-@@ -30,10 +40,37 @@ static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
- 	if (fp->entry_handler)
- 		fp->entry_handler(fp, ip, ftrace_get_regs(fregs));
- 
-+	if (fp->exit_handler) {
-+		rh = rethook_try_get(fp->rethook);
-+		if (!rh) {
-+			fp->nmissed++;
-+			goto out;
-+		}
-+		fpr = container_of(rh, struct fprobe_rethook_node, node);
-+		fpr->entry_ip = ip;
-+		rethook_hook(rh, ftrace_get_regs(fregs), true);
-+	}
-+
-+out:
- 	ftrace_test_recursion_unlock(bit);
- }
- NOKPROBE_SYMBOL(fprobe_handler);
- 
-+static void fprobe_exit_handler(struct rethook_node *rh, void *data,
-+				struct pt_regs *regs)
-+{
-+	struct fprobe *fp = (struct fprobe *)data;
-+	struct fprobe_rethook_node *fpr;
-+
-+	if (!fp || fprobe_disabled(fp))
-+		return;
-+
-+	fpr = container_of(rh, struct fprobe_rethook_node, node);
-+
-+	fp->exit_handler(fp, fpr->entry_ip, regs);
-+}
-+NOKPROBE_SYMBOL(fprobe_exit_handler);
-+
- /* Convert ftrace location address from symbols */
- static unsigned long *get_ftrace_locations(const char **syms, int num)
- {
-@@ -77,6 +114,48 @@ static void fprobe_init(struct fprobe *fp)
- 	fp->ops.flags |= FTRACE_OPS_FL_SAVE_REGS;
- }
- 
-+static int fprobe_init_rethook(struct fprobe *fp, int num)
-+{
-+	int i, size;
-+
-+	if (num < 0)
-+		return -EINVAL;
-+
-+	if (!fp->exit_handler) {
-+		fp->rethook = NULL;
-+		return 0;
-+	}
-+
-+	/* Initialize rethook if needed */
-+	size = num * num_possible_cpus() * 2;
-+	if (size < 0)
-+		return -E2BIG;
-+
-+	fp->rethook = rethook_alloc((void *)fp, fprobe_exit_handler);
-+	for (i = 0; i < size; i++) {
-+		struct rethook_node *node;
-+
-+		node = kzalloc(sizeof(struct fprobe_rethook_node), GFP_KERNEL);
-+		if (!node) {
-+			rethook_free(fp->rethook);
-+			fp->rethook = NULL;
-+			return -ENOMEM;
-+		}
-+		rethook_add_node(fp->rethook, node);
-+	}
-+	return 0;
-+}
-+
-+static void fprobe_fail_cleanup(struct fprobe *fp)
-+{
-+	if (fp->rethook) {
-+		/* Don't need to cleanup rethook->handler because this is not used. */
-+		rethook_free(fp->rethook);
-+		fp->rethook = NULL;
-+	}
-+	ftrace_free_filter(&fp->ops);
-+}
-+
- /**
-  * register_fprobe() - Register fprobe to ftrace by pattern.
-  * @fp: A fprobe data structure to be registered.
-@@ -90,6 +169,7 @@ static void fprobe_init(struct fprobe *fp)
-  */
- int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter)
- {
-+	struct ftrace_hash *hash;
- 	unsigned char *str;
- 	int ret, len;
- 
-@@ -114,10 +194,21 @@ int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter
- 			goto out;
+ 	bus = mdiobus_alloc();
+ 	if (!bus)
+@@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	priv->bus = bus;
+ 	bus->priv = priv;
+ 	bus->parent = priv->dev;
+-	bus->name = "Synopsys MII Bus";
++	bus->name = name;
+ 	bus->read = &arc_mdio_read;
+ 	bus->write = &arc_mdio_write;
+ 	bus->reset = &arc_mdio_reset;
+@@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	if (error) {
+ 		mdiobus_free(bus);
+ 		return dev_err_probe(priv->dev, error,
+-				     "cannot register MDIO bus %s\n", bus->name);
++				     "cannot register MDIO bus %s\n", name);
  	}
  
--	ret = register_ftrace_function(&fp->ops);
-+	/* TODO:
-+	 * correctly calculate the total number of filtered symbols
-+	 * from both filter and notfilter.
-+	 */
-+	hash = fp->ops.local_hash.filter_hash;
-+	if (WARN_ON_ONCE(!hash))
-+		goto out;
-+
-+	ret = fprobe_init_rethook(fp, (int)hash->count);
-+	if (!ret)
-+		ret = register_ftrace_function(&fp->ops);
-+
- out:
- 	if (ret)
--		ftrace_free_filter(&fp->ops);
-+		fprobe_fail_cleanup(fp);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(register_fprobe);
-@@ -145,12 +236,15 @@ int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num)
- 	fprobe_init(fp);
- 
- 	ret = ftrace_set_filter_ips(&fp->ops, addrs, num, 0, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = fprobe_init_rethook(fp, num);
- 	if (!ret)
- 		ret = register_ftrace_function(&fp->ops);
- 
- 	if (ret)
--		ftrace_free_filter(&fp->ops);
--
-+		fprobe_fail_cleanup(fp);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(register_fprobe_ips);
-@@ -201,10 +295,20 @@ int unregister_fprobe(struct fprobe *fp)
- 	if (!fp || fp->ops.func != fprobe_handler)
- 		return -EINVAL;
- 
-+	/*
-+	 * rethook_free() starts disabling the rethook, but the rethook handlers
-+	 * may be running on other processors at this point. To make sure that all
-+	 * current running handlers are finished, call unregister_ftrace_function()
-+	 * after this.
-+	 */
-+	if (fp->rethook)
-+		rethook_free(fp->rethook);
-+
- 	ret = unregister_ftrace_function(&fp->ops);
-+	if (ret < 0)
-+		return ret;
- 
--	if (!ret)
--		ftrace_free_filter(&fp->ops);
-+	ftrace_free_filter(&fp->ops);
- 
- 	return ret;
- }
+ 	return 0;
+-- 
+2.25.1
 
