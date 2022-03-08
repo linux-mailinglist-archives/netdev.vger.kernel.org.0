@@ -2,114 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7101E4D24C3
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 00:19:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C74CD4D25D8
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbiCHXUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 18:20:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
+        id S229987AbiCIBHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 20:07:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiCHXUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 18:20:00 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30939E54E
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 15:18:58 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2dc28791ecbso4942447b3.4
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 15:18:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eendtF7O1jT4ZpjoFlzKIyJ4YNYGYwK/GXLvyJ/A4B0=;
-        b=rWZalxpbNZkyKJTe0k9BvpqyDA6xyuUWEczrB/MzwuKjD1dqeAAJkFpYG7Rd9qHBVI
-         9egVQB3Iqk6Yv8xdg7MOdOWlKJf8Bl///qOS2RrGkcf7tuQqO7GKtNtRpFai3hWY6CIj
-         PdsqqLhM+fW9R/dQKoJLgJmXGkkJ6vdgjFgwjIVieW3QjrE0/bx8WpSD1cI9vPSNATBc
-         eTaJ+V/aflZrW3st1K5SLYbO8UU5nTaSksOPkX+FZE/jl1cK6PSF2tDtkwdxvvuaFSsf
-         KcE5YGkbsORk7mrWPkeM/Q63MD6UHFU/ztOn42tOJhBr/m/VyQfnHJfzyJXX29ubQMRk
-         7BNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eendtF7O1jT4ZpjoFlzKIyJ4YNYGYwK/GXLvyJ/A4B0=;
-        b=wT4W+bzpF2oywOi/Q4vyNM1b8W/PrI2noETJuW+kB/zsesX1PTjpqBXBL7fOBK7mNm
-         gQbfq8585iSU211YBJb/XNGRNLW7BPFX7orLAZuqbrp+EaW2rQyCo2dtgznWT0nq7d6B
-         8rn1GFRPCWl3DtHMIvujaMOiInczcdUAAwKZ6JvIXpqn1bilGTVw7q2h5Ae+BqkVjTfz
-         ZEGS8wLOyBQT1Gh7+HMtGGxEElW1A5xztsnxmVNcEytqqy8+q51Ecds/uQps1lBzYpaU
-         OXvoT6DGdLZISTO3FRZ+YxioVv5mYRC3W1ZWfuhOKO0vWJuLE9Ammu74uYt80ttbBBPe
-         FsZw==
-X-Gm-Message-State: AOAM53213WKNJJyUF6k88zkh+AkrmSspX1vLrUg00Gp4dViYU5WR1105
-        GyoQ90/XYwpXwkU6VV9HOxr30lB0bmW0EwHSJBJ/YQ==
-X-Google-Smtp-Source: ABdhPJyxNvJB5rMyTyEHv+H72i/rock+GNdS99gSt/QH7EFnMLXaTPsW8vasGCJ6GKScN3VQe205u1vwaNdV7any5Mw=
-X-Received: by 2002:a81:1043:0:b0:2dc:289f:9533 with SMTP id
- 64-20020a811043000000b002dc289f9533mr14625066ywq.467.1646781516920; Tue, 08
- Mar 2022 15:18:36 -0800 (PST)
+        with ESMTP id S229983AbiCIBHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:07:15 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06F5D2240;
+        Tue,  8 Mar 2022 16:47:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=PXnF7xsg0OHmYSnSkaojnPw+kchBbwd7FnMF7nPOl9U=; b=hxwj8ZfHgideD0FeK4cxhmnIKt
+        CcfdqsPVOJh+YEuqUrIx25ppVNhTORh3V3ZxpkhD0b6V83+Op77NqDLRHo+35Cr6swl0+/doQY6Y3
+        ukV059i3641PXzTfxJpy0ycHHiNelFPQ+5lw5kL+fwxYK6pYAa464nFXn1qjsLoNxB1I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nRjNu-009sFO-3G; Wed, 09 Mar 2022 00:36:54 +0100
+Date:   Wed, 9 Mar 2022 00:36:54 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Divya.Koppera@microchip.com, netdev@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
+        richardcochran@gmail.com, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Madhuri.Sripada@microchip.com,
+        Manohar.Puri@microchip.com
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <YifoltDp4/Fs+9op@lunn.ch>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
 MIME-Version: 1.0
-References: <20220308212531.752215-1-jeffreyjilinux@gmail.com> <d1b25466-6f83-591e-39a6-8fdbd56846fb@kernel.org>
-In-Reply-To: <d1b25466-6f83-591e-39a6-8fdbd56846fb@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 8 Mar 2022 15:18:25 -0800
-Message-ID: <CANn89iKvP-8VpOrf_ppVVgsd4kQtAEFWkBVxKW4BP+rtu_Egrw@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next] net-core: add rx_otherhost_dropped counter
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Brian Vazquez <brianvv@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        jeffreyji <jeffreyji@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 2:51 PM David Ahern <dsahern@kernel.org> wrote:
->
-> On 3/8/22 2:25 PM, Jeffrey Ji wrote:
-> > diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> > index 95f7bb052784..8b87ea99904b 100644
-> > --- a/net/ipv4/ip_input.c
-> > +++ b/net/ipv4/ip_input.c
-> > @@ -451,6 +451,7 @@ static struct sk_buff *ip_rcv_core(struct sk_buff *skb, struct net *net)
-> >        * that it receives, do not try to analyse it.
-> >        */
-> >       if (skb->pkt_type == PACKET_OTHERHOST) {
-> > +             atomic_long_inc(&skb->dev->rx_otherhost_dropped);
-> >               drop_reason = SKB_DROP_REASON_OTHERHOST;
-> >               goto drop;
-> >       }
-> > diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> > index 5b5ea35635f9..5624c937f87f 100644
-> > --- a/net/ipv6/ip6_input.c
-> > +++ b/net/ipv6/ip6_input.c
-> > @@ -150,6 +150,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
-> >       struct inet6_dev *idev;
-> >
-> >       if (skb->pkt_type == PACKET_OTHERHOST) {
-> > +             atomic_long_inc(&skb->dev->rx_otherhost_dropped);
-> >               kfree_skb(skb);
-> >               return NULL;
-> >       }
->
-> that's an expensive packet counter for a common path (e.g., hosting
-> environments).
+On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
+> The 03/08/2022 19:10, Andrew Lunn wrote:
+> > 
+> > > > So this is a function of the track length between the MAC and the PHY?
+> > >
+> > > Nope.
+> > > This latency represents the time it takes for the frame to travel from RJ45
+> > > module to the timestamping unit inside the PHY. To be more precisely,
+> > > the timestamping unit will do the timestamp when it detects the end of
+> > > the start of the frame. So it represents the time from when the frame
+> > > reaches the RJ45 to when the end of start of the frame reaches the
+> > > timestamping unit inside the PHY.
+> > 
+> > I must be missing something here. How do you measure the latency
+> > difference for a 1 meter cable vs a 100m cable?
+> 
+> In the same way because the end result will be the same.
 
-This was the reason for the initial patch, using SNMP stat, being per cpu.
+The latency from the RJ45 to the PHY will be the same. But the latency
+from the link peer PHY to the local PHY will be much more, 500ns. In
+order for this RJ45 to PHY delay to be meaningful, don't you also need
+to know the length of the cable? Is there a configuration knob
+somewhere for the cable length?
 
-Adding per-device per-cpu data for this counter will increase cost of
-netdevice dismantle phase,
-and increase time for ndo_get_stats64(), especially on hosts with 256
-or 512 cpus.
+I'm assuming the ptp protocol does not try to measure the cable delay,
+since if it did, there would be no need to know the RJ45-PHY delay, it
+would be part of that.
+
+> > Isn't this error all just in the noise?
+> 
+> I am not sure I follow this question.
+
+At minimum, you expect to have a 1m cable. The RJ45-PHY track length
+is maybe 2cm? So 2% of the overall length. So you are trying to
+correct the error this 2% causes. If you have a 100m cable, 0.02% is
+RJ45-PHY part that you are trying to correct the error on. These
+numbers seem so small, it seems pointless. It only seems to make sense
+if you know the length of the cable, and to an accuracy of a few cm.
+
+   Andrew
