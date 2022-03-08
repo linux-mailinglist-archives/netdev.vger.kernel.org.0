@@ -2,230 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 699CB4D1511
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 11:47:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B554D1513
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 11:47:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345990AbiCHKr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 05:47:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        id S1345964AbiCHKsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 05:48:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345972AbiCHKrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 05:47:53 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA758433B1;
-        Tue,  8 Mar 2022 02:46:56 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1D2CE100004;
-        Tue,  8 Mar 2022 10:46:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646736411;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5A0zb4t9NXxV/TMbvKkfhk1i5aXlwJ1eBjKZ196vADw=;
-        b=QAcpC7UOVQQjqSs91NJW2+VCDoq3TnKdHl4jLJSH5l9639UITKRZ+hnIXGUwkA7FTpmZtE
-        f/d8Sho9KDa5p/EEeIn/ikh/KehI2UnszSLfxKcNzNtMyhskCrHRcIaBRksz7IMOUgoqNl
-        I9pGEsSVGrGi5pXTlwV2KRDDT6Ou0EvCfNWVyGQO05FWahk2Mcnnh221SJSCTIQssrAC22
-        0VfEFm8JybHj33hiaRG9uVSrdBwySo6/mBtmhG63aJXbdU4pf6EgS/DRTN69Q5P49uDcGF
-        tWaQLjl7wkf5YiP0M8zNEvwgvnnNfUt+Xjy9vBF7Uj6/Ukvu+haxTTbIg4r6wA==
-Date:   Tue, 8 Mar 2022 11:45:24 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <20220308114524.4cd4b308@fixe.home>
-In-Reply-To: <20220224154040.2633a4e4@fixe.home>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
-        <20220224154040.2633a4e4@fixe.home>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        with ESMTP id S229622AbiCHKsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 05:48:33 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23605FFE
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 02:47:35 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nRXNG-0006Eh-Tp; Tue, 08 Mar 2022 11:47:26 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nRXNF-00FLy7-Nj; Tue, 08 Mar 2022 11:47:25 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 1/1] net: dsa: microchip: ksz9477: implement MTU configuration
+Date:   Tue,  8 Mar 2022 11:47:24 +0100
+Message-Id: <20220308104724.3659317-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Thu, 24 Feb 2022 15:40:40 +0100,
-Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> a =C3=A9crit :
+This chips supports two ways to configure max MTU size:
+- by setting SW_LEGAL_PACKET_DISABLE bit: if this bit is 0 allowed packed size
+  will be between 64 and bytes 1518. If this bit is 1, it will accept
+  packets up to 2000 bytes.
+- by setting SW_JUMBO_PACKET bit. If this bit is set, the chip will
+  ignore SW_LEGAL_PACKET_DISABLE value and use REG_SW_MTU__2 register to
+  configure MTU size.
 
-> Hi,
->=20
-> As stated at the beginning of the cover letter, the PCIe card I'm
-> working on uses a lan9662 SoC. This card is meant to be used an
-> ethernet switch with 2 x RJ45 ports and 2 x 10G SFPs. The lan966x SoCs
-> can be used in two different ways:
->=20
->  - It can run Linux by itself, on ARM64 cores included in the SoC. This
->    use-case of the lan966x is currently being upstreamed, using a
->    traditional Device Tree representation of the lan996x HW blocks [1]
->    A number of drivers for the different IPs of the SoC have already
->    been merged in upstream Linux.
->=20
->  - It can be used as a PCIe endpoint, connected to a separate platform
->    that acts as the PCIe root complex. In this case, all the devices
->    that are embedded on this SoC are exposed through PCIe BARs and the
->    ARM64 cores of the SoC are not used. Since this is a PCIe card, it
->    can be plugged on any platform, of any architecture supporting PCIe.
->=20
-> The goal of this effort is to enable this second use-case, while
-> allowing the re-use of the existing drivers for the different devices
-> part of the SoC.
->=20
-> Following a first round of discussion, here are some clarifications on
-> what problem this series is trying to solve and what are the possible
-> choices to support this use-case.
->=20
-> Here is the list of devices that are exposed and needed to make this
-> card work as an ethernet switch:
->  - lan966x-switch
->  - reset-microchip-sparx5
->  - lan966x_serdes
->  - reset-microchip-lan966x-phy
->  - mdio-mscc-miim
->  - pinctrl-lan966x
->  - atmel-flexcom
->  - i2c-at91
->  - i2c-mux
->  - i2c-mux-pinctrl
->  - sfp
->  - clk-lan966x
->=20
-> All the devices on this card are "self-contained" and do not require
-> cross-links with devices that are on the host (except to demux IRQ but
-> this is something easy to do). These drivers already exists and are
-> using of_* API to register controllers, get properties and so on.
->=20
-> The challenge we're trying to solve is how can the PCI driver for this
-> card re-use the existing drivers, and using which hardware
-> representation to instantiate all those drivers.
->=20
-> Although this series only contained the modifications for the I2C
-> subsystem all the subsystems that are used or needed by the previously
-> listed driver have also been modified to have support for fwnode. This
-> includes the following subsystems:
-> - reset
-> - clk
-> - pinctrl
-> - syscon
-> - gpio
-> - pinctrl
-> - phy
-> - mdio
-> - i2c
->=20
-> The first feedback on this series does not seems to reach a consensus
-> (to say the least) on how to do it cleanly so here is a recap of the
-> possible solutions, either brought by this series or mentioned by
-> contributors:
->=20
-> 1) Describe the card statically using swnode
->=20
-> This is the approach that was taken by this series. The devices are
-> described using the MFD subsystem with mfd_cells. These cells are
-> attached with a swnode which will be used as a primary node in place of
-> ACPI or OF description. This means that the device description
-> (properties and references) is conveyed entirely in the swnode. In order
-> to make these swnode usable with existing OF based subsystems, the
-> fwnode API can be used in needed subsystems.
->=20
-> Pros:
->  - Self-contained in the driver.
->  - Will work on all platforms no matter the firmware description.
->  - Makes the subsystems less OF-centric.
->=20
-> Cons:
->  - Modifications are required in subsystems to support fwnode
->    (mitigated by the fact it makes to subsystems less OF-centric).
->  - swnode are not meant to be used entirely as primary nodes.
->  - Specifications for both ACPI and OF must be handled if using fwnode
->    API.
->=20
-> 2) Use SSDT overlays
->=20
-> Andy mentioned that SSDT overlays could be used. This overlay should
-> match the exact configuration that is used (ie correct PCIe bus/port
-> etc). It requires the user to write/modify/compile a .asl file and load
-> it using either EFI vars, custom initrd or via configfs. The existing
-> drivers would also need more modifications to work with ACPI. Some of
-> them might even be harder (if not possible) to use since there is no
-> ACPI support for the subsystems they are using .
->=20
-> Pros:
->  - Can't really find any for this one
->=20
-> Cons:
->  - Not all needed subsystems have appropriate ACPI bindings/support
->    (reset, clk, pinctrl, syscon).
->  - Difficult to setup for the user (modify/compile/load .aml file).
->  - Not portable between machines, as the SSDT overlay need to be
->    different depending on how the PCI device is connected to the
->    platform.
->=20
-> 3) Use device-tree overlays
->=20
-> This solution was proposed by Andrew and could potentially allows to
-> keep all the existing device-tree infrastructure and helpers. A
-> device-tree overlay could be loaded by the driver and applied using
-> of_overlay_fdt_apply(). There is some glue to make this work but it
-> could potentially be possible. Mark have raised some warnings about
-> using such device-tree overlays on an ACPI enabled platform.
->=20
-> Pros:
->  - Reuse all the existing OF infrastructure, no modifications at all on
->    drivers and subsystems.
->  - Could potentially lead to designing a generic driver for PCI devices
->    that uses a composition of other drivers.
->=20
-> Cons:
->  - Might not the best idea to mix it with ACPI.
->  - Needs CONFIG_OF, which typically isn't enabled today on most x86
->    platforms.
->  - Loading DT overlays on non-DT platforms is not currently working. It
->    can be addressed, but it's not necessarily immediate.
->=20
-> My preferred solutions would be swnode or device-tree overlays but
-> since there to is no consensus on how to add this support, how
-> can we go on with this series ?
->=20
-> Thanks,
->=20
-> [1]
-> https://lore.kernel.org/linux-arm-kernel/20220210123704.477826-1-michael@=
-walle.cc/
->=20
+Current driver has disabled SW_JUMBO_PACKET bit and activates
+SW_LEGAL_PACKET_DISABLE. So the switch will pass all packets up to 2000 without
+any way to configure it.
 
-Does anybody have some other advices or recommendation regarding
-this RFC ? It would be nice to have more feedback on the solution that
-might e preferred to support this use-case.
+By providing port_change_mtu we are switch to SW_JUMBO_PACKET way and will
+be able to configure MTU up to ~9000.
 
-Thanks,
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v3:
+- do more testing and fix mtu configuration
+changes v2:
+- rename max_mtu to max_frame and new_mtu to frame_size
+- use max() instead of if(>)
+---
+ drivers/net/dsa/microchip/ksz9477.c     | 35 +++++++++++++++++++++++--
+ drivers/net/dsa/microchip/ksz9477_reg.h |  3 +++
+ drivers/net/dsa/microchip/ksz_common.h  |  1 +
+ 3 files changed, 37 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 94ad6d9504f4..3673a4d20b37 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -182,6 +182,29 @@ static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
+ 			   bits, set ? bits : 0);
+ }
+ 
++static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
++{
++	struct ksz_device *dev = ds->priv;
++	u16 frame_size, max_frame = 0;
++	int i;
++
++	frame_size = mtu + ETH_HLEN + ETH_FCS_LEN;
++
++	/* Cache the per-port MTU setting */
++	dev->ports[port].max_frame = frame_size;
++
++	for (i = 0; i < dev->port_cnt; i++)
++		max_frame = max(max_frame, dev->ports[i].max_frame);
++
++	return regmap_update_bits(dev->regmap[1], REG_SW_MTU__2,
++				  REG_SW_MTU_MASK, max_frame);
++}
++
++static int ksz9477_max_mtu(struct dsa_switch *ds, int port)
++{
++	return KSZ9477_MAX_FRAME_SIZE - ETH_HLEN - ETH_FCS_LEN;
++}
++
+ static int ksz9477_wait_vlan_ctrl_ready(struct ksz_device *dev)
+ {
+ 	unsigned int val;
+@@ -1416,8 +1439,14 @@ static int ksz9477_setup(struct dsa_switch *ds)
+ 	/* Do not work correctly with tail tagging. */
+ 	ksz_cfg(dev, REG_SW_MAC_CTRL_0, SW_CHECK_LENGTH, false);
+ 
+-	/* accept packet up to 2000bytes */
+-	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_LEGAL_PACKET_DISABLE, true);
++	/* Enable REG_SW_MTU__2 reg by setting SW_JUMBO_PACKET */
++	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_JUMBO_PACKET, true);
++
++	/* Now we can configure default MTU value */
++	ret = regmap_update_bits(dev->regmap[1], REG_SW_MTU__2, REG_SW_MTU_MASK,
++				 ETH_FRAME_LEN + ETH_FCS_LEN);
++	if (ret)
++		return ret;
+ 
+ 	ksz9477_config_cpu_port(ds);
+ 
+@@ -1464,6 +1493,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_mirror_add	= ksz9477_port_mirror_add,
+ 	.port_mirror_del	= ksz9477_port_mirror_del,
+ 	.get_stats64		= ksz9477_get_stats64,
++	.port_change_mtu	= ksz9477_change_mtu,
++	.port_max_mtu		= ksz9477_max_mtu,
+ };
+ 
+ static u32 ksz9477_get_port_addr(int port, int offset)
+diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
+index 16939f29faa5..0bd58467181f 100644
+--- a/drivers/net/dsa/microchip/ksz9477_reg.h
++++ b/drivers/net/dsa/microchip/ksz9477_reg.h
+@@ -176,6 +176,7 @@
+ #define REG_SW_MAC_ADDR_5		0x0307
+ 
+ #define REG_SW_MTU__2			0x0308
++#define REG_SW_MTU_MASK			GENMASK(13, 0)
+ 
+ #define REG_SW_ISP_TPID__2		0x030A
+ 
+@@ -1662,4 +1663,6 @@
+ /* 148,800 frames * 67 ms / 100 */
+ #define BROADCAST_STORM_VALUE		9969
+ 
++#define KSZ9477_MAX_FRAME_SIZE		9000
++
+ #endif /* KSZ9477_REGS_H */
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 4ff0a159ce3c..fa39ee73cbd2 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -41,6 +41,7 @@ struct ksz_port {
+ 
+ 	struct ksz_port_mib mib;
+ 	phy_interface_t interface;
++	u16 max_frame;
+ };
+ 
+ struct ksz_device {
+-- 
+2.30.2
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
