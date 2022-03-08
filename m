@@ -2,149 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85CA14D1E08
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:58:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1809B4D1E18
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 18:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237635AbiCHQ7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 11:59:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45072 "EHLO
+        id S240427AbiCHRGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 12:06:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237630AbiCHQ7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:59:16 -0500
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C038834BA2;
-        Tue,  8 Mar 2022 08:58:18 -0800 (PST)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nRdA8-00060e-O6; Tue, 08 Mar 2022 17:58:16 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nRdA8-0000D9-Gl; Tue, 08 Mar 2022 17:58:16 +0100
-Subject: Re: [PATCH bpf-next] bpf: select proper size for bpf_prog_pack
-To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     ast@kernel.org, andrii@kernel.org, kernel-team@fb.com,
-        edumazet@google.com
-References: <20220304184320.3424748-1-song@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c0be971d-c03e-abcb-83fd-d0b087e38780@iogearbox.net>
-Date:   Tue, 8 Mar 2022 17:58:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S233214AbiCHRGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 12:06:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D893517E3
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 09:05:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646759121;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=S277s+u2rqdJ8zpPIKQm647HReat/J2T6qWQYoT71G8=;
+        b=QUJr7y3BuG9Nn28+vdfeFdopyi595E9udxV47hf8v6gNze9bodGb06WqtT/GakczHHT5Am
+        TIkQdObGF5OPHpoe1rJxKsPGphaGaKJ2Doo3PiCOY1EFSStcY1S0X4HgvikhtLhCIpkYG+
+        TdM2iZx4X2nYWgK61yLv65SGDKAE3lM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-117-36yXs4J7Nm6ZP9-lSZiWYw-1; Tue, 08 Mar 2022 12:05:20 -0500
+X-MC-Unique: 36yXs4J7Nm6ZP9-lSZiWYw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D433A1006AA8;
+        Tue,  8 Mar 2022 17:05:18 +0000 (UTC)
+Received: from tc2.redhat.com (unknown [10.39.195.236])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A947A106D5BD;
+        Tue,  8 Mar 2022 17:05:17 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com,
+        markzhang@nvidia.com, leonro@nvidia.com
+Subject: [PATCH iproute2 v3 0/2] fix memory leak in get_task_name()
+Date:   Tue,  8 Mar 2022 18:04:55 +0100
+Message-Id: <cover.1646750928.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20220304184320.3424748-1-song@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26475/Tue Mar  8 10:31:43 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/4/22 7:43 PM, Song Liu wrote:
-> Using HPAGE_PMD_SIZE as the size for bpf_prog_pack is not ideal in some
-> cases. Specifically, for NUMA systems, __vmalloc_node_range requires
-> PMD_SIZE * num_online_nodes() to allocate huge pages. Also, if the system
-> does not support huge pages (i.e., with cmdline option nohugevmalloc), it
-> is better to use PAGE_SIZE packs.
-> 
-> Add logic to select proper size for bpf_prog_pack. This solution is not
-> ideal, as it makes assumption about the behavior of module_alloc and
-> __vmalloc_node_range. However, it appears to be the easiest solution as
-> it doesn't require changes in module_alloc and vmalloc code.
-> 
+This series fixes some memory leaks related to the usage of the
+get_task_name() function from lib/fs.c.
 
-nit: Fixes tag?
+Patch 2/2 addresses a coverity warning related to this memory leak,
+making the code a bit more readable by humans and coverity.
 
-> Signed-off-by: Song Liu <song@kernel.org>
-[...]
->   
-> +static size_t bpf_prog_pack_size = -1;
-> +
-> +static inline int bpf_prog_chunk_count(void)
-> +{
-> +	WARN_ON_ONCE(bpf_prog_pack_size == -1);
-> +	return bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE;
-> +}
-> +
->   static DEFINE_MUTEX(pack_mutex);
->   static LIST_HEAD(pack_list);
->   
->   static struct bpf_prog_pack *alloc_new_pack(void)
->   {
->   	struct bpf_prog_pack *pack;
-> +	size_t size;
-> +	void *ptr;
->   
-> -	pack = kzalloc(sizeof(*pack) + BITS_TO_BYTES(BPF_PROG_CHUNK_COUNT), GFP_KERNEL);
-> -	if (!pack)
-> +	if (bpf_prog_pack_size == -1) {
-> +		/* Test whether we can get huge pages. If not just use
-> +		 * PAGE_SIZE packs.
-> +		 */
-> +		size = PMD_SIZE * num_online_nodes();
-> +		ptr = module_alloc(size);
-> +		if (ptr && is_vm_area_hugepages(ptr)) {
-> +			bpf_prog_pack_size = size;
-> +			goto got_ptr;
-> +		} else {
-> +			bpf_prog_pack_size = PAGE_SIZE;
-> +			vfree(ptr);
-> +		}
-> +	}
-> +
-> +	ptr = module_alloc(bpf_prog_pack_size);
-> +	if (!ptr)
->   		return NULL;
-> -	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
-> -	if (!pack->ptr) {
-> -		kfree(pack);
-> +got_ptr:
-> +	pack = kzalloc(struct_size(pack, bitmap, BITS_TO_LONGS(bpf_prog_chunk_count())),
-> +		       GFP_KERNEL);
-> +	if (!pack) {
-> +		vfree(ptr);
->   		return NULL;
->   	}
-> -	bitmap_zero(pack->bitmap, BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE);
-> +	pack->ptr = ptr;
-> +	bitmap_zero(pack->bitmap, bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE);
->   	list_add_tail(&pack->list, &pack_list);
->   
->   	set_vm_flush_reset_perms(pack->ptr);
-> -	set_memory_ro((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
-> -	set_memory_x((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
-> +	set_memory_ro((unsigned long)pack->ptr, bpf_prog_pack_size / PAGE_SIZE);
-> +	set_memory_x((unsigned long)pack->ptr, bpf_prog_pack_size / PAGE_SIZE);
->   	return pack;
->   }
->   
-> @@ -864,7 +886,7 @@ static void *bpf_prog_pack_alloc(u32 size)
->   	unsigned long pos;
->   	void *ptr = NULL;
->   
-> -	if (size > BPF_PROG_MAX_PACK_PROG_SIZE) {
-> +	if (size > bpf_prog_pack_size) {
->   		size = round_up(size, PAGE_SIZE);
->   		ptr = module_alloc(size);
->   		if (ptr) {
+Changelog:
+----------
+v2 -> v3
+- Use a better API for get_task_name(), passing to it a buffer and its
+  lenght just like get_command_name().
 
-What happens if the /very first/ program requests an allocation size of >PAGE_SIZE? Wouldn't
-this result in OOB write?
+v1 -> v2
+- on Stephen's suggestion, drop asprintf() and use a local var for path;
+  additionally drop %m from fscanf to not allocate memory, and resort to
+  a param to return task name to the caller.
+- patch 2/3 of the original series is no more needed.
 
-The 'size > bpf_prog_pack_size' is initially skipped due to -1 but then the module_alloc()
-won't return a huge page, so we redo the allocation with bpf_prog_pack_size as PAGE_SIZE and
-return a pointer into this pack?
+Andrea Claudi (2):
+  lib/fs: fix memory leak in get_task_name()
+  rdma: make RES_PID and RES_KERN_NAME alternative to each other
 
-Thanks,
-Daniel
+ include/utils.h |  2 +-
+ ip/iptuntap.c   | 17 ++++++++++-------
+ lib/fs.c        | 23 +++++++++++++----------
+ rdma/res-cmid.c | 18 +++++++++---------
+ rdma/res-cq.c   | 17 +++++++++--------
+ rdma/res-ctx.c  | 16 ++++++++--------
+ rdma/res-mr.c   | 15 ++++++++-------
+ rdma/res-pd.c   | 17 +++++++++--------
+ rdma/res-qp.c   | 16 ++++++++--------
+ rdma/res-srq.c  | 17 +++++++++--------
+ rdma/stat.c     | 14 +++++++++-----
+ 11 files changed, 93 insertions(+), 79 deletions(-)
+
+-- 
+2.35.1
+
