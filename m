@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87DCF4D0C6A
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 01:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBEF84D0C6C
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 01:05:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234220AbiCHAF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 19:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
+        id S240884AbiCHAGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 19:06:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233412AbiCHAF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 19:05:56 -0500
+        with ESMTP id S233412AbiCHAGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 19:06:33 -0500
 Received: from smtp8.emailarray.com (smtp8.emailarray.com [65.39.216.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A34C34BA8
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 16:05:00 -0800 (PST)
-Received: (qmail 97133 invoked by uid 89); 8 Mar 2022 00:04:59 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4024D13FBD
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 16:05:38 -0800 (PST)
+Received: (qmail 98289 invoked by uid 89); 8 Mar 2022 00:05:37 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp8.emailarray.com with SMTP; 8 Mar 2022 00:04:59 -0000
+  by smtp8.emailarray.com with SMTP; 8 Mar 2022 00:05:37 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
         kernel-team@fb.com
-Subject: [PATCH net-next v2] ptp: ocp: correct label for error path
-Date:   Mon,  7 Mar 2022 16:04:58 -0800
-Message-Id: <20220308000458.2166-1-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v2 0/2] ptp: ocp: update devlink information
+Date:   Mon,  7 Mar 2022 16:05:33 -0800
+Message-Id: <20220308000536.2278-1-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -38,37 +38,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When devlink_register() was removed from the error path, the
-corresponding label was not updated.   Rename the label for
-readability puposes, no functional change.
+Both of these patches update the information displayed via devlink.
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/ptp/ptp_ocp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v1 -> v2: remove board.manufacture information
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index aaefca6c2422..5e3e06acaf87 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -2608,7 +2608,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	err = pci_enable_device(pdev);
- 	if (err) {
- 		dev_err(&pdev->dev, "pci_enable_device\n");
--		goto out_unregister;
-+		goto out_free;
- 	}
- 
- 	bp = devlink_priv(devlink);
-@@ -2654,7 +2654,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	pci_set_drvdata(pdev, NULL);
- out_disable:
- 	pci_disable_device(pdev);
--out_unregister:
-+out_free:
- 	devlink_free(devlink);
- 	return err;
- }
+Jonathan Lemon (2):
+  ptp: ocp: add nvmem interface for accessing eeprom
+  ptp: ocp: Update devlink firmware display path.
+
+ drivers/ptp/ptp_ocp.c | 233 +++++++++++++++++++++++++-----------------
+ 1 file changed, 140 insertions(+), 93 deletions(-)
+
 -- 
 2.31.1
 
