@@ -2,157 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E70414D0CB7
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 01:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4650A4D0CEE
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 01:44:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242619AbiCHAYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 19:24:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52100 "EHLO
+        id S235916AbiCHApX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 19:45:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233945AbiCHAYh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 19:24:37 -0500
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE89525C77;
-        Mon,  7 Mar 2022 16:23:41 -0800 (PST)
-Received: by mail-yb1-f177.google.com with SMTP id w16so34443597ybi.12;
-        Mon, 07 Mar 2022 16:23:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=03ctwj9JfxishKI39lNFiwkYLQyUapkTIk7JVqkzfkU=;
-        b=zKJGEt9vPbDi9AxSJRPEiXt54gw8S06NkdAlIKo9thJOASWmbWUoIYKT25YEGbZKW5
-         ZfAXDXcaE8lLUDxqqcOl76yiXbb1+tNuMmhKdCAzR+uE0Mci0n527YQsNOZ/5heRl87+
-         YjOOvesXiDKiTd1dhvRuMjIFUa84RLRRFsbi/wGv2oeD7QEd79Eq/dRKuLMdddJVq1jK
-         iNP+epzZZdKBxmWkKbr5Fu5Svp8eaZKuFdIP+E47Rd1Oy4HNolIrdbU81gW56mVEtEr4
-         rn2NZdEZa0w8F7IP2vSxYwxTXRgJgKNzNXjsM6wm+8Xw4oRjYx9sAUjYJIfCH9dIkBFh
-         l36g==
-X-Gm-Message-State: AOAM531+uC+Al/hbKS/FwUpS9jg/2bXDEQ75+TB4fgEcDDWMTE/bUdT7
-        UUhrNhVZEWU0Eg4UE/jCBfmUPE7nqV/d/bpkkeobEtylCGSHEjkM
-X-Google-Smtp-Source: ABdhPJxLu300z9a/o98cTmbZ2qcZxeyW0M8rKMBVCZB7FHLVKHRM6U9Mf+BY2vrb6JX3S422aKKaYaDnQfSrOvYSiGI=
-X-Received: by 2002:a25:d10d:0:b0:628:f428:dafe with SMTP id
- i13-20020a25d10d000000b00628f428dafemr9423935ybg.630.1646699020879; Mon, 07
- Mar 2022 16:23:40 -0800 (PST)
+        with ESMTP id S234669AbiCHApW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 19:45:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4A53FD8A
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 16:44:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F9ACB8172C
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 00:44:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B092C340E9;
+        Tue,  8 Mar 2022 00:44:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646700264;
+        bh=laT+zMk59rlQfkEIc4qvtrau4ulE5KJqTGdoapFYUUw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gEUTvrOaUFzbkTKpVtvxC8+BGZQ2019I6G5Ay+o/33tkJE1JGzZcHl3Nz8S8a3OAj
+         4cAYVVYoj98D8YfKUOkyPPUMvZO1q7p6VaisTuMIQhjoVwJ11pMcwRN5CjuMWpCHjr
+         66fVq43Xm++dbajsAaNWAbFwr4GJS7p3xWKUoz107SkhRsBUQEQJFsxBxZVyh3QBH9
+         mQb2XAa3HHq1JET9vP/xNnjLhnWbZQgsF3XIjfhYuaYxtwW+SWfqvOVRpKvs8lwW7U
+         Pmma/TpjnIxhMIBAsBBapchYTmaO2bZ6ySQHQQcOVxgdRO5+QNjLukyphPeWUVWXMW
+         6h+i1aEBeMNmw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, dsahern@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] skb: make drop reason booleanable
+Date:   Mon,  7 Mar 2022 16:44:21 -0800
+Message-Id: <20220308004421.237826-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220307185314.11228-1-paskripkin@gmail.com>
-In-Reply-To: <20220307185314.11228-1-paskripkin@gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 8 Mar 2022 09:23:31 +0900
-Message-ID: <CAMZ6RqKEALqGSh-tr_jTbQWca0wHK7t96yR3N-r625pbM4cUSw@mail.gmail.com>
-Subject: Re: [PATCH RFT] can: mcba_usb: properly check endpoint type
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Yasushi SHOJI <yashi@spacecubics.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
+We have a number of cases where function returns drop/no drop
+decision as a boolean. Now that we want to report the reason
+code as well we have to pass extra output arguments.
 
-> [PATCH RFT] can: mcba_usb: properly check endpoint type
-It is RFC, not RFT :)
-I guess you went on some manual editing. Next time, you can just let
-git add the tag for you by doing:
-| git format-patch --rfc ...
+We can make the reason code evaluate correctly as bool.
 
+I believe we're good to reorder the reasons as they are
+reported to user space as strings.
 
-On Tue. 8 Mar 2022, 03:53, Pavel Skripkin <paskripkin@gmail.com> wrote:
-> Syzbot reported warning in usb_submit_urb() which is caused by wrong
-> endpoint type. We should check that in endpoint is actually present to
-> prevent this warning
->
-> Fail log:
->
-> usb 5-1: BOGUS urb xfer, pipe 3 != type 1
-> WARNING: CPU: 1 PID: 49 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-> Modules linked in:
-> CPU: 1 PID: 49 Comm: kworker/1:2 Not tainted 5.17.0-rc6-syzkaller-00184-g38f80f42147f #0
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-> Workqueue: usb_hub_wq hub_event
-> RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-> ...
-> Call Trace:
->  <TASK>
->  mcba_usb_start drivers/net/can/usb/mcba_usb.c:662 [inline]
->  mcba_usb_probe+0x8a3/0xc50 drivers/net/can/usb/mcba_usb.c:858
->  usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
->  call_driver_probe drivers/base/dd.c:517 [inline]
->
-> Reported-and-tested-by: syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-> Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
->
-> Meta comments:
->
-> I am not an usb expert, but looks like this driver uses one
-> endpoint for in and out transactions:
->
-> /* MCBA endpoint numbers */
-> #define MCBA_USB_EP_IN 1
-> #define MCBA_USB_EP_OUT 1
->
-> That's why check only for in endpoint is added
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v2: use Eric's suggestion for the name, indeed better than mine
+---
+ include/linux/skbuff.h |  1 +
+ include/net/tcp.h      | 21 +++++++++++----------
+ net/ipv4/tcp.c         | 21 +++++++++------------
+ net/ipv4/tcp_ipv4.c    | 12 +++++++-----
+ net/ipv6/tcp_ipv6.c    | 11 +++++++----
+ 5 files changed, 35 insertions(+), 31 deletions(-)
 
-MCBA_USB_EP_{IN,OUT} are respectively used in usb_rcvbulkpipe()
-and usb_sndbulkpipe().  I invite you to have a look at what those
-macros do and you will understand that these returns two different
-pipes:
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 34f572271c0c..26538ceb4b01 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -314,6 +314,7 @@ struct sk_buff;
+  * used to translate the reason to string.
+  */
+ enum skb_drop_reason {
++	SKB_NOT_DROPPED_YET = 0,
+ 	SKB_DROP_REASON_NOT_SPECIFIED,	/* drop reason is not specified */
+ 	SKB_DROP_REASON_NO_SOCKET,	/* socket not found */
+ 	SKB_DROP_REASON_PKT_TOO_SMALL,	/* packet size is too small */
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index d486d7b6112d..ee8237b58e1d 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1674,10 +1674,11 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
+ 		return NULL;
+ 	return __tcp_md5_do_lookup(sk, l3index, addr, family);
+ }
+-bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+-			  enum skb_drop_reason *reason,
+-			  const void *saddr, const void *daddr,
+-			  int family, int dif, int sdif);
++
++enum skb_drop_reason
++tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
++		     const void *saddr, const void *daddr,
++		     int family, int dif, int sdif);
+ 
+ 
+ #define tcp_twsk_md5_key(twsk)	((twsk)->tw_md5_key)
+@@ -1688,13 +1689,13 @@ tcp_md5_do_lookup(const struct sock *sk, int l3index,
+ {
+ 	return NULL;
+ }
+-static inline bool tcp_inbound_md5_hash(const struct sock *sk,
+-					const struct sk_buff *skb,
+-					enum skb_drop_reason *reason,
+-					const void *saddr, const void *daddr,
+-					int family, int dif, int sdif)
++
++static inline enum skb_drop_reason
++tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
++		     const void *saddr, const void *daddr,
++		     int family, int dif, int sdif);
+ {
+-	return false;
++	return SKB_NOT_DROPPED_YET;
+ }
+ #define tcp_twsk_md5_key(twsk)	NULL
+ #endif
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 33f20134e3f1..b5f032958b2c 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4434,10 +4434,10 @@ int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *ke
+ EXPORT_SYMBOL(tcp_md5_hash_key);
+ 
+ /* Called with rcu_read_lock() */
+-bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+-			  enum skb_drop_reason *reason,
+-			  const void *saddr, const void *daddr,
+-			  int family, int dif, int sdif)
++enum skb_drop_reason
++tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
++		     const void *saddr, const void *daddr,
++		     int family, int dif, int sdif)
+ {
+ 	/*
+ 	 * This gets called for each TCP segment that arrives
+@@ -4464,18 +4464,16 @@ bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+ 
+ 	/* We've parsed the options - do we have a hash? */
+ 	if (!hash_expected && !hash_location)
+-		return false;
++		return SKB_NOT_DROPPED_YET;
+ 
+ 	if (hash_expected && !hash_location) {
+-		*reason = SKB_DROP_REASON_TCP_MD5NOTFOUND;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5NOTFOUND);
+-		return true;
++		return SKB_DROP_REASON_TCP_MD5NOTFOUND;
+ 	}
+ 
+ 	if (!hash_expected && hash_location) {
+-		*reason = SKB_DROP_REASON_TCP_MD5UNEXPECTED;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5UNEXPECTED);
+-		return true;
++		return SKB_DROP_REASON_TCP_MD5UNEXPECTED;
+ 	}
+ 
+ 	/* check the signature */
+@@ -4483,7 +4481,6 @@ bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+ 						 NULL, skb);
+ 
+ 	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
+-		*reason = SKB_DROP_REASON_TCP_MD5FAILURE;
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+ 		if (family == AF_INET) {
+ 			net_info_ratelimited("MD5 Hash failed for (%pI4, %d)->(%pI4, %d)%s L3 index %d\n",
+@@ -4497,9 +4494,9 @@ bool tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+ 					saddr, ntohs(th->source),
+ 					daddr, ntohs(th->dest), l3index);
+ 		}
+-		return true;
++		return SKB_DROP_REASON_TCP_MD5FAILURE;
+ 	}
+-	return false;
++	return SKB_NOT_DROPPED_YET;
+ }
+ EXPORT_SYMBOL(tcp_inbound_md5_hash);
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 411357ad9757..81694a354110 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1965,9 +1965,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		struct sock *nsk;
+ 
+ 		sk = req->rsk_listener;
+-		if (unlikely(tcp_inbound_md5_hash(sk, skb, &drop_reason,
+-						  &iph->saddr, &iph->daddr,
+-						  AF_INET, dif, sdif))) {
++		drop_reason = tcp_inbound_md5_hash(sk, skb,
++						   &iph->saddr, &iph->daddr,
++						   AF_INET, dif, sdif);
++		if (unlikely(drop_reason)) {
+ 			sk_drops_add(sk, skb);
+ 			reqsk_put(req);
+ 			goto discard_it;
+@@ -2041,8 +2042,9 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		goto discard_and_relse;
+ 	}
+ 
+-	if (tcp_inbound_md5_hash(sk, skb, &drop_reason, &iph->saddr,
+-				 &iph->daddr, AF_INET, dif, sdif))
++	drop_reason = tcp_inbound_md5_hash(sk, skb, &iph->saddr,
++					   &iph->daddr, AF_INET, dif, sdif);
++	if (drop_reason)
+ 		goto discard_and_relse;
+ 
+ 	nf_reset_ct(skb);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index cb2bb7d2e907..13678d3908fa 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1632,8 +1632,10 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		struct sock *nsk;
+ 
+ 		sk = req->rsk_listener;
+-		if (tcp_inbound_md5_hash(sk, skb, &drop_reason, &hdr->saddr,
+-					 &hdr->daddr, AF_INET6, dif, sdif)) {
++		drop_reason = tcp_inbound_md5_hash(sk, skb,
++						   &hdr->saddr, &hdr->daddr,
++						   AF_INET6, dif, sdif);
++		if (drop_reason) {
+ 			sk_drops_add(sk, skb);
+ 			reqsk_put(req);
+ 			goto discard_it;
+@@ -1704,8 +1706,9 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		goto discard_and_relse;
+ 	}
+ 
+-	if (tcp_inbound_md5_hash(sk, skb, &drop_reason, &hdr->saddr,
+-				 &hdr->daddr, AF_INET6, dif, sdif))
++	drop_reason = tcp_inbound_md5_hash(sk, skb, &hdr->saddr, &hdr->daddr,
++					   AF_INET6, dif, sdif);
++	if (drop_reason)
+ 		goto discard_and_relse;
+ 
+ 	if (tcp_filter(sk, skb)) {
+-- 
+2.34.1
 
-https://elixir.bootlin.com/linux/latest/source/include/linux/usb.h#L1964
-
-In other words, ep_in and ep_out are some indexes of a different
-entity and do not conflict with each other.
-
-> ---
->  drivers/net/can/usb/mcba_usb.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-> index 77bddff86252..646aac1a8684 100644
-> --- a/drivers/net/can/usb/mcba_usb.c
-> +++ b/drivers/net/can/usb/mcba_usb.c
-> @@ -807,6 +807,13 @@ static int mcba_usb_probe(struct usb_interface *intf,
->         struct mcba_priv *priv;
->         int err;
->         struct usb_device *usbdev = interface_to_usbdev(intf);
-> +       struct usb_endpoint_descriptor *in;
-> +
-> +       err = usb_find_common_endpoints(intf->cur_altsetting, &in, NULL, NULL, NULL);
-
-If you go this direction, then please use
-usb_find_common_endpoint() to retrieve the value of both ep_in
-and ep_out and use them instead of MCBA_USB_EP_{IN,OUT}
-
-> +       if (err) {
-> +               dev_err(&intf->dev, "Can't find endpoints\n");
-> +               return -ENODEV;
-
-return ret;
-
-Please keep the error code of usb_find_common_endpoint().
-
-> +       }
->
->
->
->         netdev = alloc_candev(sizeof(struct mcba_priv), MCBA_MAX_TX_URBS);
->         if (!netdev) {
-
-
-Yours sincerely,
-Vincent Mailhol
