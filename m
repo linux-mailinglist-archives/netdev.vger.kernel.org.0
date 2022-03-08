@@ -2,101 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C74CD4D25D8
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:14:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E7E4D2570
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:14:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbiCIBHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 20:07:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
+        id S230042AbiCIBKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 20:10:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiCIBHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:07:15 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06F5D2240;
-        Tue,  8 Mar 2022 16:47:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PXnF7xsg0OHmYSnSkaojnPw+kchBbwd7FnMF7nPOl9U=; b=hxwj8ZfHgideD0FeK4cxhmnIKt
-        CcfdqsPVOJh+YEuqUrIx25ppVNhTORh3V3ZxpkhD0b6V83+Op77NqDLRHo+35Cr6swl0+/doQY6Y3
-        ukV059i3641PXzTfxJpy0ycHHiNelFPQ+5lw5kL+fwxYK6pYAa464nFXn1qjsLoNxB1I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nRjNu-009sFO-3G; Wed, 09 Mar 2022 00:36:54 +0100
-Date:   Wed, 9 Mar 2022 00:36:54 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Divya.Koppera@microchip.com, netdev@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
-        richardcochran@gmail.com, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, Madhuri.Sripada@microchip.com,
-        Manohar.Puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <YifoltDp4/Fs+9op@lunn.ch>
-References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
- <20220304093418.31645-3-Divya.Koppera@microchip.com>
- <YiILJ3tXs9Sba42B@lunn.ch>
- <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YiYD2kAFq5EZhU+q@lunn.ch>
- <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
- <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+        with ESMTP id S230481AbiCIBJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:09:38 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4B414CCB9
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 16:52:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646787142; x=1678323142;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=n0dzLKkaR7hYKB0JOh/UwC/MQUW1jH/QEvRJ25S7Vec=;
+  b=ibhVjldrEv9vlvGPd1+/gEFEuD9zn/KfSMVWNzlArbRO/jSuQzCgESjE
+   pkLCwfcPrvjxmKdNcbSxmwSh1eSomDVWjNcluIUdSAiCKlOhWV2yXr6jh
+   KNUgc13FHjCXEGjL7hAQhBzr5/mZsQHbm7I1s1xn/qGw35ItW0WNUsOqL
+   Xa11ZHReIC4t2VXTdDvCCrcQoVDO92yUrbHh53pD7WEkMZ2ocas/0QFLH
+   u+sdBTrgpJrV8qfjH6i807eWZhwyeKA5wMWqIEuS0MUpllAV5NX8A9lz0
+   xTSJ6mbb6M+OWEhwnC+1jpF+mqcpi6eOz2r6Mslt+liHAT7CnJ2blzykA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341273480"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="341273480"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 15:44:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="537778697"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga007.jf.intel.com with ESMTP; 08 Mar 2022 15:44:54 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net v2 0/7][pull request] Intel Wired LAN Driver Updates 2022-03-08
+Date:   Tue,  8 Mar 2022 15:45:06 -0800
+Message-Id: <20220308234513.1089152-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
-> The 03/08/2022 19:10, Andrew Lunn wrote:
-> > 
-> > > > So this is a function of the track length between the MAC and the PHY?
-> > >
-> > > Nope.
-> > > This latency represents the time it takes for the frame to travel from RJ45
-> > > module to the timestamping unit inside the PHY. To be more precisely,
-> > > the timestamping unit will do the timestamp when it detects the end of
-> > > the start of the frame. So it represents the time from when the frame
-> > > reaches the RJ45 to when the end of start of the frame reaches the
-> > > timestamping unit inside the PHY.
-> > 
-> > I must be missing something here. How do you measure the latency
-> > difference for a 1 meter cable vs a 100m cable?
-> 
-> In the same way because the end result will be the same.
+This series contains updates to iavf, i40e, and ice drivers.
 
-The latency from the RJ45 to the PHY will be the same. But the latency
-from the link peer PHY to the local PHY will be much more, 500ns. In
-order for this RJ45 to PHY delay to be meaningful, don't you also need
-to know the length of the cable? Is there a configuration knob
-somewhere for the cable length?
+Michal ensures netdev features are properly updated to reflect VLAN
+changes received from PF and adds an additional flag for MSI-X
+reinitialization as further differentiation of reinitialization
+operations is needed for iavf.
 
-I'm assuming the ptp protocol does not try to measure the cable delay,
-since if it did, there would be no need to know the RJ45-PHY delay, it
-would be part of that.
+Jake stops disabling of VFs due to failed virtchannel responses for
+i40e and ice driver.
 
-> > Isn't this error all just in the noise?
-> 
-> I am not sure I follow this question.
+Dave moves MTU event notification to the service task to prevent issues
+with RTNL lock for ice.
 
-At minimum, you expect to have a 1m cable. The RJ45-PHY track length
-is maybe 2cm? So 2% of the overall length. So you are trying to
-correct the error this 2% causes. If you have a 100m cable, 0.02% is
-RJ45-PHY part that you are trying to correct the error on. These
-numbers seem so small, it seems pointless. It only seems to make sense
-if you know the length of the cable, and to an accuracy of a few cm.
+Christophe Jaillet corrects an allocation to GFP_ATOMIC instead of
+GFP_KERNEL for ice.
 
-   Andrew
+Jedrzej fixes the value for link speed comparison which was preventing
+the requested value from being set for ice.
+---
+v2: Correct recipients (add netdev), specifically for patch 2
+
+Note: This will conflict when merging with net-next. Resolution:
+
+diff --cc drivers/net/ethernet/intel/ice/ice.h
+index dc42ff92dbad,3121f9b04f59..000000000000
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@@ -484,10 -481,9 +484,11 @@@ enum ice_pf_flags
+        ICE_FLAG_LEGACY_RX,
+        ICE_FLAG_VF_TRUE_PROMISC_ENA,
+        ICE_FLAG_MDD_AUTO_RESET_VF,
+ +      ICE_FLAG_VF_VLAN_PRUNING,
+        ICE_FLAG_LINK_LENIENT_MODE_ENA,
+        ICE_FLAG_PLUG_AUX_DEV,
++       ICE_FLAG_MTU_CHANGED,
+ +      ICE_FLAG_GNSS,                  /* GNSS successfully initialized */
+        ICE_PF_FLAGS_NBITS              /* must be last */
+  };
+
+The following are changes since commit e5417cbf7ab5df1632e68fe7d9e6331fc0e7dbd6:
+  net: dsa: mt7530: fix incorrect test in mt753x_phylink_validate()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Christophe JAILLET (1):
+  ice: Don't use GFP_KERNEL in atomic context
+
+Dave Ertman (1):
+  ice: Fix error with handling of bonding MTU
+
+Jacob Keller (2):
+  i40e: stop disabling VFs due to PF error responses
+  ice: stop disabling VFs due to PF error responses
+
+Jedrzej Jagielski (1):
+  ice: Fix curr_link_speed advertised speed
+
+Michal Maloszewski (2):
+  iavf: Fix handling of vlan strip virtual channel messages
+  iavf: Fix adopting new combined setting
+
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    |  6 +-
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 57 +++----------------
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |  5 --
+ drivers/net/ethernet/intel/iavf/iavf.h        |  1 +
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 13 +++--
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 40 +++++++++++++
+ drivers/net/ethernet/intel/ice/ice.h          |  1 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 31 +++++-----
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 18 ------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  3 -
+ 11 files changed, 76 insertions(+), 101 deletions(-)
+
+-- 
+2.31.1
+
