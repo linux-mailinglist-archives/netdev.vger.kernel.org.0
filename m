@@ -2,126 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 150444D2016
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 19:22:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D56FB4D2035
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 19:26:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349547AbiCHSXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 13:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
+        id S1349676AbiCHS0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 13:26:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349582AbiCHSW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 13:22:57 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B7556C36;
-        Tue,  8 Mar 2022 10:22:00 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id d62so21889102iog.13;
-        Tue, 08 Mar 2022 10:22:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=s/aSiwa4OsaHjuhB4cvErlX8E1QGHNTboTB9+HLwgwM=;
-        b=BoYmw4Rvgt6yhXyB4+VaRBsgw0ePcMEN6wWZRJOPq0es17z7AeBjjcA8YmH0IBehdv
-         lkScxEgiLLYR35oagmriDRJn+6HOQ7xEyN6QmEDu9XqC5ldLetKIRN51ulKxsdqMMOwh
-         DF6D1320yOVQmRBhXS32wKqt0RGJuDb5OHKwK8eRVEeChIard+JPBoLbRrgfxXTfIIFF
-         gS9mp1Z5/cCmj+qZRVpoGVaKwwKQ3ZIdS+lljZfuwbdt70KPLy2p2V9JA5QjS5Qb5Hi+
-         jF4KRxoWC5tuvO0jJET3YdkwQpRQahzoPXuh4QX9PURGUwG/o9P8vTg/7DvibxJpXBv3
-         JvgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s/aSiwa4OsaHjuhB4cvErlX8E1QGHNTboTB9+HLwgwM=;
-        b=aQim8hBY8635MRPkxSJE0xECGZ3zFRkln1wm3pLPIwDQIagnX07MQGFtHym8WJQkLp
-         +XXUlrk0Pl6QHTvRcrlHXfk4/Hz11+rfww8FfS9wkFlJvfNoAbRdO3EDCwSYFIydkCTO
-         o+347glSuQrDSnKcjuRz7WGv+HVEFA0/2BCGYJrBsOaV8Y5/L+RlHwNIXymsUtAqsonn
-         lYlGtIV+WVpBBDcpPJCCMeTBU36L4KwcySAHZhrwsX1cNK/Se0QNAPURtppldUZ1qhu9
-         enKWrzygW3XyFr9edKorb7PFyhxTY4n6LLsIV5RsXmFFzPpoTenTGcUuUB46vpd37VGO
-         xO5A==
-X-Gm-Message-State: AOAM5313xTvLWwOYX7d/Obqbw3+zMsNU71OWPsc5RWrrJiX/J1s96Gm3
-        d0C6Thn8WHJCxYcGSWmoHhNabD4bRpzOqA==
-X-Google-Smtp-Source: ABdhPJy/s5NdsXuzzi8pgnnpYVqjxwKV0qqx6sRD/Oy+zF12aUgXpmdGwFA5KAa469//b1DAiqNS+w==
-X-Received: by 2002:a05:6638:240d:b0:314:dd3c:81cc with SMTP id z13-20020a056638240d00b00314dd3c81ccmr16419365jat.287.1646763720041;
-        Tue, 08 Mar 2022 10:22:00 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.65])
-        by smtp.googlemail.com with ESMTPSA id r9-20020a056e0219c900b002c5ffafa701sm12672716ill.79.2022.03.08.10.21.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 10:21:59 -0800 (PST)
-Message-ID: <d5a67e6a-6e1b-8f69-8d2a-e05708dfa3c9@gmail.com>
-Date:   Tue, 8 Mar 2022 11:21:58 -0700
+        with ESMTP id S1349652AbiCHS0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 13:26:45 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A99725C75;
+        Tue,  8 Mar 2022 10:25:39 -0800 (PST)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 45EF160008;
+        Tue,  8 Mar 2022 18:25:33 +0000 (UTC)
+Message-ID: <1eca594f-ec8c-b54a-92f3-e561fa049015@ovn.org>
+Date:   Tue, 8 Mar 2022 19:25:31 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH net] selftests: pmtu.sh: Kill tcpdump processes launched
- by subshell.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     i.maximets@ovn.org, dev@openvswitch.org,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
 Content-Language: en-US
-To:     Guillaume Nault <gnault@redhat.com>,
-        David Miller <davem@davemloft.net>,
+To:     Roi Dayan <roid@nvidia.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org
-References: <0378c55466d8d1f7b6d99d581811d49429e1f4e7.1646691728.git.gnault@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <0378c55466d8d1f7b6d99d581811d49429e1f4e7.1646691728.git.gnault@redhat.com>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+ <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+ <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+ <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+ <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+ <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+ <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+ <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
+ <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
+ <c9f43e92-8a32-cf0e-78d7-1ab36950021c@nvidia.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+In-Reply-To: <c9f43e92-8a32-cf0e-78d7-1ab36950021c@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/7/22 3:38 PM, Guillaume Nault wrote:
-> The cleanup() function takes care of killing processes launched by the
-> test functions. It relies on variables like ${tcpdump_pids} to get the
-> relevant PIDs. But tests are run in their own subshell, so updated
-> *_pids values are invisible to other shells. Therefore cleanup() never
-> sees any process to kill:
+On 3/8/22 15:39, Roi Dayan wrote:
 > 
-> $ ./tools/testing/selftests/net/pmtu.sh -t pmtu_ipv4_exception
-> TEST: ipv4: PMTU exceptions                                         [ OK ]
-> TEST: ipv4: PMTU exceptions - nexthop objects                       [ OK ]
 > 
-> $ pgrep -af tcpdump
-> 6084 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
-> 6085 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
-> 6086 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
-> 6087 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
-> 6088 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
-> 6089 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
-> 6090 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
-> 6091 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
-> 6228 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
-> 6229 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
-> 6230 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
-> 6231 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
-> 6232 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
-> 6233 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
-> 6234 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
-> 6235 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
+> On 2022-03-08 4:12 PM, Ilya Maximets wrote:
+>> On 3/8/22 09:21, Johannes Berg wrote:
+>>> On Mon, 2022-03-07 at 21:45 -0800, Jakub Kicinski wrote:
+>>>>
+>>>> Let me add some people I associate with genetlink work in my head
+>>>> (fairly or not) to keep me fair here.
+>>>
+>>> :)
+>>>
+>>>> It's highly unacceptable for user space to straight up rewrite kernel
+>>>> uAPI types
+>>>>
+>>>
+>>> Agree.
+>>
+>> I 100% agree with that and will work on the userspace part to make sure
+>> we're not adding anything to the kernel uAPI types.
+>>
+>> FWIW, the quick grep over usespace code shows similar problem with a few
+>> other types, but they are less severe, because they are provided as part
+>> of OVS actions and kernel doesn't send anything that wasn't previously
+>> set by userspace in that case.  There still might be a problem during the
+>> downgrade of the userspace while kernel configuration remains intact,
+>> but that is not a common scenario.  Will work on fixing that in userspace.
+>> No need to change the kernel uAPI for these, IMO.
+>>
 > 
-> Fix this by running cleanup() in the context of the test subshell.
-> Now that each test cleans the environment after completion, there's no
-> need for calling cleanup() again when the next test starts. So let's
-> drop it from the setup() function. This is okay because cleanup() is
-> also called when pmtu.sh starts, so even the first test starts in a
-> clean environment.
-> 
-> Note: PAUSE_ON_FAIL is still evaluated before cleanup(), so one can
-> still inspect the test environment upon failure when using -p.
-> 
-> Fixes: a92a0a7b8e7c ("selftests: pmtu: Simplify cleanup and namespace names")
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> ---
->  tools/testing/selftests/net/pmtu.sh | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
+> since its rc7 we end up with kernel and ovs broken with each other.
+> can we revert the kernel patches anyway and introduce them again later
+> when ovs userspace is also updated?
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+I don't think this patch is part of 5-17-rc7.  AFAICT, it's a candidate
+for 5.18, so we should still have a bit of time.  Am I missing something?
 
-
+Best regards, Ilya Maximets.
