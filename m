@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E504D18DC
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 14:12:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76CCE4D18DA
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 14:12:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347039AbiCHNMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 08:12:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        id S234899AbiCHNMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 08:12:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234606AbiCHNMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 08:12:24 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAB6488B6;
-        Tue,  8 Mar 2022 05:11:21 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id m2so11046481pll.0;
-        Tue, 08 Mar 2022 05:11:21 -0800 (PST)
+        with ESMTP id S1347064AbiCHNMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 08:12:30 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FCA48E4C;
+        Tue,  8 Mar 2022 05:11:23 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id m2so11046567pll.0;
+        Tue, 08 Mar 2022 05:11:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6X23AJzOcszEUYA+Oc8WYhr7w/7aeKWJdCFlxFdfbxc=;
-        b=QzDOs9yQq9R1CZFP5kH/i37OmN2DriXgh+Uc29/28MK52/n2BNL5T+LpOEtCkDH1wT
-         SArng9TL/tXBv+Z80bt9GxJnPhLPtlJphCtIvRp0gdbabeClqLN5OJJWkW3w2ZTfWwQa
-         Rnjfw7mAFLLj9wTWH+Eh6SOwOz0vOv1IZ2Ez9Hdj3Lib06/AoNebKC9gEtTDUdNrv4NQ
-         9DcZx2G8SWEzn6bao5aEaUSzUNDhlZZ1d3NO0Rldf6bomrFxx1CFs1Xa9YnCHp8zH9iB
-         t5155kTpOmXdPuCwsVILsy5c1hsx6nSVXhy04JPx1GbVRQYFwe+KylhvR1CA514F2xZd
-         3C/A==
+        bh=3u3VsA3Fi5wDkVLbct/DeOE8XIO9r5bCMklz39tC+30=;
+        b=d3xMfPnSj9DUQxDjtQLyi+itK0WX3JodAeZCw3xPBtkpGMEM+aD8bzj6wZwCzhWcHZ
+         kt5w7qKQK3TtStKQ3oT5qOYPzVp+cM1eosOYmB4siu0vBKluYV91Do7HgnXDEzhnVvWj
+         /WVDgwGVTkUWcEoOPTIW8t2SQAfmnpXJiVWedbMFSLl9wZeb1olWm/3CDgl9nqVXGaK7
+         1l6LV05YKWWBgXJBMIoPk8gJTEYnCZFusR5ixA0BtXVZJAfPp6gJtnzkg3aQPwjfKaqG
+         3o+ON2B1FO4YimaKwPZj1bBFt+nJn4+/9+rHZp7yv1OvuJ13QO4UOZGSb9B2++pmQ4vx
+         9ALg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6X23AJzOcszEUYA+Oc8WYhr7w/7aeKWJdCFlxFdfbxc=;
-        b=G7uo/XXQehS2HJszpfZTnuqtAcr8oCVBolH9/xMu3y05Lb0tnx1km5sNug3rSo2c5e
-         Cuh2U+3Zm5/FoO63TXJVV7QYkzHIMAwe6s8Gs91UdnpkGGrWJJQSn9KcBhI0FEfw6g4G
-         OgFWJWlSm8YK5ZBU6yE0JCsxBjTpvd1nGceWK8YCpvu8Lyuo3E/Ez1LMrQxSnZHswSJq
-         s8+3SZXKZSUXAIAMQPzmV7P6rLV+iSOCq60RNRZh3nnm82TrxWgOfq8IYvlWie+Vz8qr
-         n80qEXyLk6i64dQuXcOdHlqK6O04TlMrs1gkBLSFzqTgYaxQcSPlGk5ssGz1IHiXNLCZ
-         XHaw==
-X-Gm-Message-State: AOAM530SSWe8Jun2y/rDFnh6IWe5wl2t2seGzqPp1TOMYbqjnDcL51Nj
-        sub75A0zUunVWmfqqZiVRms=
-X-Google-Smtp-Source: ABdhPJxKOq3e10aQ1RmNw8ArFeArmumS9bRFdOU8RkbwmtWaG0AV0PF5C3HqteolvWr6aJIng6XTbQ==
-X-Received: by 2002:a17:90a:4fa2:b0:1bd:383a:2b6b with SMTP id q31-20020a17090a4fa200b001bd383a2b6bmr4727275pjh.108.1646745080990;
-        Tue, 08 Mar 2022 05:11:20 -0800 (PST)
+        bh=3u3VsA3Fi5wDkVLbct/DeOE8XIO9r5bCMklz39tC+30=;
+        b=LA3uWsLE1HvBLU200/beBDdNvg1cYENKHzlSJ3uLVt9JOI59YrQzRkLHdNRPJ/+RII
+         FFHifp477D8PijtZ7+rHiwYA03JiRF9bgOnL0KxTMSMm1/UyO5rnxwE3c9M6Yr9Qs6Lo
+         P3GHWscWM7QaX/bbYTSwrl9IBFkbSf3OSAEucXqlZLdZ45S0rYLN4fTYRPlHvd10sveL
+         ebYgtcAKIIHbup7iDA4bzOryRXQgqcNFR1l4vGCEN8JOo2OuqrGeDD4kAgFoXrS0D+Er
+         wrsK+6R2Bo9tNyW5NzNTubdrQVgC4Aph8SSuAkpbNChKWoQCGJ8rgejxqtQyM0Is+4Ny
+         5uag==
+X-Gm-Message-State: AOAM531iKbNTYPgm8Zdu4pKldvBXhVUrw4hjqbT18yEL2WAF4N/YcNxI
+        zOdm8Tk5/tp7EP2ClNjrsRo=
+X-Google-Smtp-Source: ABdhPJzwC/En9lunCH8+wURsQQ1/FmGWLsc3MnOR1uRl1atGtzR7v2u8iVEpo0GJyAqsYIshW6NEaQ==
+X-Received: by 2002:a17:902:f68f:b0:151:fbf5:db45 with SMTP id l15-20020a170902f68f00b00151fbf5db45mr4536477plg.60.1646745082822;
+        Tue, 08 Mar 2022 05:11:22 -0800 (PST)
 Received: from vultr.guest ([149.248.19.67])
-        by smtp.gmail.com with ESMTPSA id s20-20020a056a00179400b004f709998d13sm7378598pfg.10.2022.03.08.05.11.19
+        by smtp.gmail.com with ESMTPSA id s20-20020a056a00179400b004f709998d13sm7378598pfg.10.2022.03.08.05.11.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 05:11:20 -0800 (PST)
+        Tue, 08 Mar 2022 05:11:22 -0800 (PST)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -57,9 +57,9 @@ To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         guro@fb.com
 Cc:     linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
         Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH RFC 5/9] mm: add methord to charge percpu address
-Date:   Tue,  8 Mar 2022 13:10:52 +0000
-Message-Id: <20220308131056.6732-6-laoar.shao@gmail.com>
+Subject: [PATCH RFC 6/9] bpf: add a helper to find map by id
+Date:   Tue,  8 Mar 2022 13:10:53 +0000
+Message-Id: <20220308131056.6732-7-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220308131056.6732-1-laoar.shao@gmail.com>
 References: <20220308131056.6732-1-laoar.shao@gmail.com>
@@ -75,89 +75,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a methord to charge or uncharge a percpu address.
-It is similar to free_percpu except that it doesn't touch the related
-pages while does account only.
+A new helper bpf_map_idr_find() is introduced for later use.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- include/linux/percpu.h |  1 +
- mm/percpu.c            | 50 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 51 insertions(+)
+ kernel/bpf/syscall.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/percpu.h b/include/linux/percpu.h
-index f1ec5ad..1a65221 100644
---- a/include/linux/percpu.h
-+++ b/include/linux/percpu.h
-@@ -128,6 +128,7 @@ extern int __init pcpu_page_first_chunk(size_t reserved_size,
- extern void __percpu *__alloc_percpu_gfp(size_t size, size_t align, gfp_t gfp) __alloc_size(1);
- extern void __percpu *__alloc_percpu(size_t size, size_t align) __alloc_size(1);
- extern void free_percpu(void __percpu *__pdata);
-+void charge_percpu(void __percpu *__pdata, bool charge);
- extern phys_addr_t per_cpu_ptr_to_phys(void *addr);
- 
- #define alloc_percpu_gfp(type, gfp)					\
-diff --git a/mm/percpu.c b/mm/percpu.c
-index ea28db2..22fc0ff 100644
---- a/mm/percpu.c
-+++ b/mm/percpu.c
-@@ -2309,6 +2309,56 @@ void free_percpu(void __percpu *ptr)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 3b50fcb..68fea3b 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3474,6 +3474,21 @@ static int bpf_prog_get_fd_by_id(const union bpf_attr *attr)
+ 	return fd;
  }
- EXPORT_SYMBOL_GPL(free_percpu);
  
-+void charge_percpu(void __percpu *ptr, bool charge)
++static struct bpf_map *bpf_map_idr_find(unsigned long id)
 +{
-+	int bit_off, off, bits, size, end;
-+	struct obj_cgroup *objcg;
-+	struct pcpu_chunk *chunk;
-+	unsigned long flags;
-+	void *addr;
++	void *map;
 +
-+	WARN_ON(!in_task());
++	spin_lock_bh(&map_idr_lock);
++	map = idr_find(&map_idr, id);
++	if (map)
++		map = __bpf_map_inc_not_zero(map, true);
++	else
++		map = ERR_PTR(-ENOENT);
++	spin_unlock_bh(&map_idr_lock);
 +
-+	if (!ptr)
-+		return;
-+
-+	addr = __pcpu_ptr_to_addr(ptr);
-+	spin_lock_irqsave(&pcpu_lock, flags);
-+	chunk = pcpu_chunk_addr_search(addr);
-+	off = addr - chunk->base_addr;
-+	objcg = chunk->obj_cgroups[off >> PCPU_MIN_ALLOC_SHIFT];
-+	if (!objcg) {
-+		spin_unlock_irqrestore(&pcpu_lock, flags);
-+		return;
-+	}
-+
-+	bit_off = off / PCPU_MIN_ALLOC_SIZE;
-+	/* find end index */
-+	end = find_next_bit(chunk->bound_map, pcpu_chunk_map_bits(chunk),
-+			bit_off + 1);
-+	bits = end - bit_off;
-+	size = bits * PCPU_MIN_ALLOC_SIZE;
-+
-+	if (charge) {
-+		obj_cgroup_get(objcg);
-+		obj_cgroup_charge(objcg, GFP_KERNEL, size * num_possible_cpus());
-+		rcu_read_lock();
-+		mod_memcg_state(obj_cgroup_memcg(objcg), MEMCG_PERCPU_B,
-+			(size * num_possible_cpus()));
-+		rcu_read_unlock();
-+	} else {
-+		obj_cgroup_uncharge(objcg, size * num_possible_cpus());
-+		rcu_read_lock();
-+		mod_memcg_state(obj_cgroup_memcg(objcg), MEMCG_PERCPU_B,
-+			-(size * num_possible_cpus()));
-+		rcu_read_unlock();
-+		obj_cgroup_put(objcg);
-+	}
-+
-+	spin_unlock_irqrestore(&pcpu_lock, flags);
++	return map;
 +}
-+EXPORT_SYMBOL(charge_percpu);
 +
- bool __is_kernel_percpu_address(unsigned long addr, unsigned long *can_addr)
- {
- #ifdef CONFIG_SMP
+ #define BPF_MAP_GET_FD_BY_ID_LAST_FIELD open_flags
+ 
+ static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+@@ -3494,14 +3509,7 @@ static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+ 	if (f_flags < 0)
+ 		return f_flags;
+ 
+-	spin_lock_bh(&map_idr_lock);
+-	map = idr_find(&map_idr, id);
+-	if (map)
+-		map = __bpf_map_inc_not_zero(map, true);
+-	else
+-		map = ERR_PTR(-ENOENT);
+-	spin_unlock_bh(&map_idr_lock);
+-
++	map = bpf_map_idr_find(id);
+ 	if (IS_ERR(map))
+ 		return PTR_ERR(map);
+ 
 -- 
 1.8.3.1
 
