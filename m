@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B69E4D18D9
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 14:12:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23BA24D18D7
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 14:12:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347067AbiCHNMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 08:12:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        id S1346651AbiCHNMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 08:12:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347040AbiCHNM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 08:12:27 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADF148884;
-        Tue,  8 Mar 2022 05:11:26 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id c11so4023354pgu.11;
-        Tue, 08 Mar 2022 05:11:26 -0800 (PST)
+        with ESMTP id S229804AbiCHNM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 08:12:28 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F1C488A0;
+        Tue,  8 Mar 2022 05:11:28 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id 132so16430349pga.5;
+        Tue, 08 Mar 2022 05:11:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lr/CFIp00pEF/BEp0dXxqdNW/AI45azIAndxyHO9fEc=;
-        b=JB0q4IHcXTozLToE7J/d1F6oTslE6YdOVpdWGhqprivSKxigjke87oe7Q/SAuyYUeH
-         WGJhQaBuZ3HVQClkwYFjPKSRzgp4emV2L1P9SSaiybKpW76EN96/bTPE61IvacYCCbPu
-         2tnyx9h8AlAdJPTWgHaw0h6UrUPrZ543f9QNEfkMR0fTECuDmx4tQ3zxfQqOJsCk8sVk
-         DYKKS+Xgd/h2MU2mxDUrjhR88QnzZGpZMmDwkqIWWmQrDT1ib7gRT6txscX8hGM0D7a6
-         uqP4aOAJ9FLNxpLxK1WiRTAVv86fU6Cfs15ePd+M+iOUp7u+I0QzoTVPdqbLiMfI4jIW
-         wpSg==
+        bh=bgJJlFnbXaRCIAYL5SQZwRZJIW6MmhaiowbOp4O3M1Y=;
+        b=BTNwJVlZtiizxAYf1GqUM418mm4KpUgPRAZTqG8USzvhC/zyC+HUN65jCkTRLcPE2y
+         HC/PH3SHk9dp5WMPyxiDG5XVzxxSlmltP5UJbf0EkQf2S+Fe/dbRT+enxXvZFxiN82Ow
+         wtRn7eF5edcKUjmFS8ZTggAfNGUZIjzpxJkhs9p29fupdSUaEbpaDnj9IFnIf9Oxvwsh
+         ZyaZyxh5UI7oo1CvxNcIyaVnuS8Z/p8OJadCY6UL6fhmjwrhb0OmPoQ35tw6WiG7nTCm
+         KzeezESmY6izJJ+jz5rSydmReEB289qVpYWBJ6imgVnyOlsLHG0l1gGjNvR2wWVYoxix
+         t9DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lr/CFIp00pEF/BEp0dXxqdNW/AI45azIAndxyHO9fEc=;
-        b=DEKs1ZUQhBacW2MSbjDCwWwcwbyLZ5gH21aaIHH9LKqa+cXaHnCtK4Oi2MiYbGcSe4
-         1PANkP6q7k2F47ixA7tl53z+xVt3NAtQkj208q0r/ufh1sDi8ri7uQEDF8dkC73sHN6o
-         N/stkV4lgxqNND9fQFhnqZ/FORIsFo2iAeJZoh9UrXZYJDCFnBJ0Ru3FL79m6J07eVbZ
-         ZHgfwbZcgdjacpsBFvkDtmhY9bYs8xgItBJQltPwVIWxbmluibGtZOEDafcSK2LvrpU/
-         Bxs14dfZpfsyPFevVoxdDP3oagF+Sg7DYdI8a7yGdOEsWXoeVduBU1H1vfWBq5vxdfjH
-         SFtg==
-X-Gm-Message-State: AOAM5323NzjLIKGrKJ6ak/c1HBvw85zRKNn4HICA2L6dqD7CXuxgXyih
-        IdFr4F8BjLfz7qifptcexKsMvwF96pJNXzVUZxg=
-X-Google-Smtp-Source: ABdhPJyOlCtmyFx3M63Qe/Lo+ROqOvjtLMDDMPcSoi5Quoxet+iI8DibJx/wB3rOKVChv0jQxhwF4w==
-X-Received: by 2002:a05:6a00:198f:b0:4f6:c0e4:207d with SMTP id d15-20020a056a00198f00b004f6c0e4207dmr17968238pfl.82.1646745086059;
-        Tue, 08 Mar 2022 05:11:26 -0800 (PST)
+        bh=bgJJlFnbXaRCIAYL5SQZwRZJIW6MmhaiowbOp4O3M1Y=;
+        b=aTSeHa5vF2f8fiPxIRCqR9TnMXjw89rUEr3C0uXg9XT93uiEEnRz2u5J2K+mAM6U/G
+         Or5DpH4djKBCMP8rKEmSHOH2qbDmw319x3gUY8WQXJ6TroTMXMDLJeA1bIjO0j+tCgT+
+         T4bW3Yex8Si8amxY1DMib5ETk/3rj1kmzek5jopqQKNJctN/VFSndsaJrsL/+EU5MQnX
+         ceEpXyQj67GnpWa1RzxjlAVOPlNR4AUYxD08quxck07RuSELCrflZJBbCWaOhOzf8jgz
+         NffOF2/8YlTZlKoi7IxMF7yiSdId/DLiQSeh6QM3pFlJhiTowsYhO/HGde+MQvOPnko1
+         3xYA==
+X-Gm-Message-State: AOAM530AJTtoqkpPGBHYzWlEBiAQUQp4kgO16BKC49jLcCFceOXEXjiZ
+        qT/MGI6+6iFucbuoOz7v48E=
+X-Google-Smtp-Source: ABdhPJxcfF7dzcGyqjiKeRaKXA6W9nGPA0uFJq/5jcaGXg7/O7wJRtUT++VsWLtNLmrzXp07AhJYEg==
+X-Received: by 2002:aa7:8882:0:b0:4df:7b9e:1ccb with SMTP id z2-20020aa78882000000b004df7b9e1ccbmr18056424pfe.41.1646745087617;
+        Tue, 08 Mar 2022 05:11:27 -0800 (PST)
 Received: from vultr.guest ([149.248.19.67])
-        by smtp.gmail.com with ESMTPSA id s20-20020a056a00179400b004f709998d13sm7378598pfg.10.2022.03.08.05.11.24
+        by smtp.gmail.com with ESMTPSA id s20-20020a056a00179400b004f709998d13sm7378598pfg.10.2022.03.08.05.11.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 05:11:25 -0800 (PST)
+        Tue, 08 Mar 2022 05:11:27 -0800 (PST)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -57,9 +57,9 @@ To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         guro@fb.com
 Cc:     linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
         Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH RFC 8/9] bpf: make bpf_map_{save, release}_memcg public
-Date:   Tue,  8 Mar 2022 13:10:55 +0000
-Message-Id: <20220308131056.6732-9-laoar.shao@gmail.com>
+Subject: [PATCH RFC 9/9] bpf: support recharge for hash map
+Date:   Tue,  8 Mar 2022 13:10:56 +0000
+Message-Id: <20220308131056.6732-10-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220308131056.6732-1-laoar.shao@gmail.com>
 References: <20220308131056.6732-1-laoar.shao@gmail.com>
@@ -75,90 +75,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These two helpers will be used in map specific files later.
+This patch supports recharge for hash map. We have already known how the
+hash map is allocated and freed, we can also know how to charge and
+uncharge the hash map. Firstly, we need to uncharge it from the old
+memcg, then charge it to the current memcg. The old memcg must be an
+offline memcg.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- include/linux/bpf.h  | 21 +++++++++++++++++++++
- kernel/bpf/syscall.c | 19 -------------------
- 2 files changed, 21 insertions(+), 19 deletions(-)
+ kernel/bpf/hashtab.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index fca274e..2f3f092 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -23,6 +23,7 @@
- #include <linux/slab.h>
- #include <linux/percpu-refcount.h>
- #include <linux/bpfptr.h>
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 6587796..4d103f1 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -10,6 +10,7 @@
+ #include <linux/random.h>
+ #include <uapi/linux/btf.h>
+ #include <linux/rcupdate_trace.h>
 +#include <linux/memcontrol.h>
- 
- struct bpf_verifier_env;
- struct bpf_verifier_log;
-@@ -209,6 +210,26 @@ struct bpf_map {
- 	} owner;
- };
- 
-+#ifdef CONFIG_MEMCG_KMEM
-+static inline void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+	map->memcg = get_mem_cgroup_from_mm(current->mm);
-+}
-+
-+static inline void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+	mem_cgroup_put(map->memcg);
-+}
-+#else
-+static inline void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+}
-+
-+static inline void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+}
-+#endif
-+
- static inline bool map_value_has_spin_lock(const struct bpf_map *map)
- {
- 	return map->spin_lock_off >= 0;
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 85456f1..7b4cbe7 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -414,16 +414,6 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock)
+ #include "percpu_freelist.h"
+ #include "bpf_lru_list.h"
+ #include "map_in_map.h"
+@@ -1466,6 +1467,36 @@ static void htab_map_free(struct bpf_map *map)
+ 	kfree(htab);
  }
  
- #ifdef CONFIG_MEMCG_KMEM
--static void bpf_map_save_memcg(struct bpf_map *map)
--{
--	map->memcg = get_mem_cgroup_from_mm(current->mm);
--}
--
--static void bpf_map_release_memcg(struct bpf_map *map)
--{
--	mem_cgroup_put(map->memcg);
--}
--
- void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
- 			   int node)
++static bool htab_map_recharge_memcg(struct bpf_map *map)
++{
++	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
++	struct mem_cgroup *old = map->memcg;
++	int i;
++
++	if (!old)
++		return false;
++
++	/* Only process offline memcg */
++	if (old == root_mem_cgroup || old->kmemcg_id >= 0)
++		return false;
++
++	bpf_map_release_memcg(map);
++	kcharge(htab, false);
++	kvcharge(htab->buckets, false);
++	charge_percpu(htab->extra_elems, false);
++	for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++)
++		charge_percpu(htab->map_locked[i], false);
++
++	kcharge(htab, true);
++	kvcharge(htab->buckets, true);
++	charge_percpu(htab->extra_elems, true);
++	for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++)
++		charge_percpu(htab->map_locked[i], true);
++	bpf_map_save_memcg(map);
++
++	return true;
++}
++
+ static void htab_map_seq_show_elem(struct bpf_map *map, void *key,
+ 				   struct seq_file *m)
  {
-@@ -461,15 +451,6 @@ void __percpu *bpf_map_alloc_percpu(const struct bpf_map *map, size_t size,
- 
- 	return ptr;
- }
--
--#else
--static void bpf_map_save_memcg(struct bpf_map *map)
--{
--}
--
--static void bpf_map_release_memcg(struct bpf_map *map)
--{
--}
- #endif
- 
- /* called from workqueue */
+@@ -2111,6 +2142,7 @@ static int bpf_for_each_hash_elem(struct bpf_map *map, bpf_callback_t callback_f
+ 	.map_alloc_check = htab_map_alloc_check,
+ 	.map_alloc = htab_map_alloc,
+ 	.map_free = htab_map_free,
++	.map_recharge_memcg = htab_map_recharge_memcg,
+ 	.map_get_next_key = htab_map_get_next_key,
+ 	.map_release_uref = htab_map_free_timers,
+ 	.map_lookup_elem = htab_map_lookup_elem,
+@@ -2133,6 +2165,7 @@ static int bpf_for_each_hash_elem(struct bpf_map *map, bpf_callback_t callback_f
+ 	.map_alloc_check = htab_map_alloc_check,
+ 	.map_alloc = htab_map_alloc,
+ 	.map_free = htab_map_free,
++	.map_recharge_memcg = htab_map_recharge_memcg,
+ 	.map_get_next_key = htab_map_get_next_key,
+ 	.map_release_uref = htab_map_free_timers,
+ 	.map_lookup_elem = htab_lru_map_lookup_elem,
+@@ -2258,6 +2291,7 @@ static void htab_percpu_map_seq_show_elem(struct bpf_map *map, void *key,
+ 	.map_alloc_check = htab_map_alloc_check,
+ 	.map_alloc = htab_map_alloc,
+ 	.map_free = htab_map_free,
++	.map_recharge_memcg = htab_map_recharge_memcg,
+ 	.map_get_next_key = htab_map_get_next_key,
+ 	.map_lookup_elem = htab_percpu_map_lookup_elem,
+ 	.map_lookup_and_delete_elem = htab_percpu_map_lookup_and_delete_elem,
+@@ -2278,6 +2312,7 @@ static void htab_percpu_map_seq_show_elem(struct bpf_map *map, void *key,
+ 	.map_alloc_check = htab_map_alloc_check,
+ 	.map_alloc = htab_map_alloc,
+ 	.map_free = htab_map_free,
++	.map_recharge_memcg = htab_map_recharge_memcg,
+ 	.map_get_next_key = htab_map_get_next_key,
+ 	.map_lookup_elem = htab_lru_percpu_map_lookup_elem,
+ 	.map_lookup_and_delete_elem = htab_lru_percpu_map_lookup_and_delete_elem,
 -- 
 1.8.3.1
 
