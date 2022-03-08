@@ -2,134 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5822F4D1CB0
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5C54D1CBF
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233290AbiCHQEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 11:04:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S1348100AbiCHQH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 11:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245280AbiCHQEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:04:08 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2304BB93
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 08:03:10 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id qt6so40254020ejb.11
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 08:03:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZOGsVLXImYpGczi6NE7BO5N3OHzaeF1uhsS78EYxSuM=;
-        b=E6b9InFXW+CKXWGY1GAWIXi7fMfuIOpLHx05oOaSGgn50n+XmijPsJfWRkyWm0TUn6
-         mBH+cBUVD6kJdxX4PP47r/N4HryE904B+VSOUN5Yz/NhVuuB4pYdDp6vflgD4dBfuhhq
-         ShwQ71JH9cEC3PFtJD+indVszQRE4XtVX1mt5naVp43GFtcDR36jDplhZq/pFZZF3zPu
-         8HgX1msx8T/KO85w6Ks1nI94N9sIvax77qwflNL3UjoMZPsLaxBmckDqusngA0nPrzyY
-         KMNW5L0fs4XAtTpASkXYA1mPa6zYAnaKOKA/WsgvwVV+iDFc3IyOMzbc0TMe8cu7NYgw
-         fCYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZOGsVLXImYpGczi6NE7BO5N3OHzaeF1uhsS78EYxSuM=;
-        b=jOyg94e2V6HjDphh/F3rBPL5CP1OozrGGiMghxua2VATpPZ7f0P5FlywIg15NM6RrN
-         mtFwn09qt2uax/cZ04vJfP0nK7WX9X6zbcvlLLzKsQ9uX46B8FoL9IYYyybrKwaEOYDu
-         0bOXxuo4DjOhEFVWewQilP0WfEEtEzj/XP2ED+wtQkunCiIXlB5qAc7oQqR1eQf3IBpt
-         iUDeV5U1jYTW2YEJlNdt8XgeZ5UOF/9abphEgxuoVGKjAH1YnLYi38WB03S7VHckPE1i
-         aWtIOKisM6UJduV6v1qPhOLoZ2wFiAdB0qlPigt1y1dT8+/TSFcG+Q5QuQ5Vv4jb/OxM
-         ZdHA==
-X-Gm-Message-State: AOAM532cQ7h1WnAWtnnVBqEdNxYmbatM8+gC2HOXLytOV+c+xjMunmlL
-        +lyWJ4JEvsWeDJ45AmBBH00=
-X-Google-Smtp-Source: ABdhPJyxo+o1aQMVOSHYkW/WpTfLGR//09wX2gcrH40QCKxYhlrro5SdQXIZ8z9tRQD2KXbKs79Rjg==
-X-Received: by 2002:a17:906:7056:b0:6d6:dd99:f2a4 with SMTP id r22-20020a170906705600b006d6dd99f2a4mr13627214ejj.43.1646755389036;
-        Tue, 08 Mar 2022 08:03:09 -0800 (PST)
-Received: from [192.168.0.110] ([77.126.183.254])
-        by smtp.gmail.com with ESMTPSA id y18-20020aa7ca12000000b0041677910461sm830581eds.53.2022.03.08.08.03.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 08:03:08 -0800 (PST)
-Message-ID: <f227a1a2-dfdf-4d56-6a2a-99dc2bd28ba5@gmail.com>
-Date:   Tue, 8 Mar 2022 18:03:05 +0200
+        with ESMTP id S1348096AbiCHQH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:07:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F505047B;
+        Tue,  8 Mar 2022 08:06:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7053B81AEC;
+        Tue,  8 Mar 2022 16:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680C4C340EB;
+        Tue,  8 Mar 2022 16:06:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646755587;
+        bh=iWt8F3PP3Y0EBEvmC0EddrSPdSJcpg+HzIjWpvsvdHA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=elVt3W0Y4rY3cZk4sohym2G3wqmuFgwSNQzZGPkYBq+Q/ES8S53CQtHLMImJhDchw
+         NpWS+objbRP3E0o8MnHxfJkH/V6IzIxisSF6KqPrEkS8tBoAfeXEulPUGcnmyUERys
+         POBWAuZeTZ9FLHVwT6E9z2miCHC8P3+nyXPv3VceT+b5dlo/teF1ScGpB9ZsyPgcpC
+         Mmju2GUPKd5YstBJHALqVBrlQEoRb+zeipXUhhc4cwDwLw+tlzepRIESC+9dnKvON1
+         0ujFNI9SbtpfrG47yMk4QR2m9+xODhpWBGBtgwVUqbGzgZPDqUHRQmgFv8SRmrWhcI
+         Sqqc/dbBCET5A==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, brouer@redhat.com, toke@redhat.com,
+        pabeni@redhat.com, echaudro@redhat.com,
+        lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com,
+        andrii@kernel.org
+Subject: [PATCH v4 bpf-next 0/3] introduce xdp frags support to veth driver
+Date:   Tue,  8 Mar 2022 17:05:57 +0100
+Message-Id: <cover.1646755129.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 net-next 13/14] mlx4: support BIG TCP packets
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Coco Li <lixiaoyan@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20220303181607.1094358-1-eric.dumazet@gmail.com>
- <20220303181607.1094358-14-eric.dumazet@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220303181607.1094358-14-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Introduce xdp frags support to veth driver in order to allow increasing the mtu
+over the page boundary if the attached xdp program declares to support xdp
+fragments. Enable NETIF_F_ALL_TSO when the device is running in xdp mode.
+This series has been tested running xdp_router_ipv4 sample available in the
+kernel tree redirecting tcp traffic from veth pair into the mvneta driver.
 
+Changes since v3:
+- introduce a check on max_mtu for xdp mode in veth_xdp_set()
+Changes since v2:
+- move rcu_access_pointer() check in veth_skb_is_eligible_for_gro
 
-On 3/3/2022 8:16 PM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> mlx4 supports LSOv2 just fine.
-> 
-> IPv6 stack inserts a temporary Hop-by-Hop header
-> with JUMBO TLV for big packets.
-> 
-> We need to ignore the HBH header when populating TX descriptor.
-> 
-> Tested:
-> 
-> Before: (not enabling bigger TSO/GRO packets)
-> 
-> ip link set dev eth0 gso_ipv6_max_size 65536 gro_ipv6_max_size 65536
-> 
-> netperf -H lpaa18 -t TCP_RR -T2,2 -l 10 -Cc -- -r 70000,70000
-> MIGRATED TCP REQUEST/RESPONSE TEST from ::0 (::) port 0 AF_INET6 to lpaa18.prod.google.com () port 0 AF_INET6 : first burst 0 : cpu bind
-> Local /Remote
-> Socket Size   Request Resp.  Elapsed Trans.   CPU    CPU    S.dem   S.dem
-> Send   Recv   Size    Size   Time    Rate     local  remote local   remote
-> bytes  bytes  bytes   bytes  secs.   per sec  % S    % S    us/Tr   us/Tr
-> 
-> 262144 540000 70000   70000  10.00   6591.45  0.86   1.34   62.490  97.446
-> 262144 540000
-> 
-> After: (enabling bigger TSO/GRO packets)
-> 
-> ip link set dev eth0 gso_ipv6_max_size 185000 gro_ipv6_max_size 185000
-> 
-> netperf -H lpaa18 -t TCP_RR -T2,2 -l 10 -Cc -- -r 70000,70000
-> MIGRATED TCP REQUEST/RESPONSE TEST from ::0 (::) port 0 AF_INET6 to lpaa18.prod.google.com () port 0 AF_INET6 : first burst 0 : cpu bind
-> Local /Remote
-> Socket Size   Request Resp.  Elapsed Trans.   CPU    CPU    S.dem   S.dem
-> Send   Recv   Size    Size   Time    Rate     local  remote local   remote
-> bytes  bytes  bytes   bytes  secs.   per sec  % S    % S    us/Tr   us/Tr
-> 
-> 262144 540000 70000   70000  10.00   8383.95  0.95   1.01   54.432  57.584
-> 262144 540000
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Tariq Toukan <tariqt@nvidia.com>
-> ---
->   .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 ++
->   drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++++++++----
->   2 files changed, 41 insertions(+), 9 deletions(-)
-> 
+Changes since v1:
+- always consider skb paged are non-writable
+- fix tpt issue with sctp
+- always use napi if we are running in xdp mode in veth_xmit
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Lorenzo Bianconi (3):
+  net: veth: account total xdp_frame len running ndo_xdp_xmit
+  veth: rework veth_xdp_rcv_skb in order to accept non-linear skb
+  veth: allow jumbo frames in xdp mode
 
-Thanks.
+ drivers/net/veth.c | 206 ++++++++++++++++++++++++++++++---------------
+ include/net/xdp.h  |  14 +++
+ net/core/xdp.c     |   1 +
+ 3 files changed, 152 insertions(+), 69 deletions(-)
+
+-- 
+2.35.1
+
