@@ -2,236 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 026014D1AA0
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 15:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B4F4D1AB5
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 15:38:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347487AbiCHOca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 09:32:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        id S1347521AbiCHOiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 09:38:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235428AbiCHOc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 09:32:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A00714C401
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 06:31:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646749890;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=11rSMqkt5h4J9wgWOO8VPCq+RX8Ja7zQktk67NCGg1A=;
-        b=U8rH7HV5a9L/7jy/JocptcvQP2sQA3xAr2R0v7lT+RDErw8zfBnKBhLa14/PODB/PLiZcc
-        HbTgf/YLeSF8bWEEHSNAS8hrlpApGD2HjUMNH20GPcUPW6FW+RP+6kR9b8taROGgDfPT91
-        g3KJD/bJ6XEScfHzhPFjeaBJJ6BqI9U=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-648-XXrGHj3wPuyYiOv_p6NCnw-1; Tue, 08 Mar 2022 09:31:28 -0500
-X-MC-Unique: XXrGHj3wPuyYiOv_p6NCnw-1
-Received: by mail-ed1-f71.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so10710924edb.2
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 06:31:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=11rSMqkt5h4J9wgWOO8VPCq+RX8Ja7zQktk67NCGg1A=;
-        b=QHawqOwLkfjMxx0KxpDrfPIU+h+GpWXiR7T/sPye72x8AlQ87fNiVeH8hwqKrhRZoK
-         8wYV4yMsqVZQbc/wr7h7Ag9CwyEp9cAksEJHb8xRXhUkHepoOUUdg3MG5m2bqPxWhUxa
-         9craKvCxnsLz/rWnJEDP+KSZW9G09vK85A/g9wyNS50HOpueqcGT33iDjWwhUFzNOdOq
-         KhOHJwdxVPrIJqMd4SiaxjoV7seOZRG0kdJROuXWl8CG5iAtLhOV8zfxZhihYtItVxPp
-         hWrmIXSNff5YZ5K3YH0OA0cq0vBhv1k6V9UK33UoZuGuAHBHnAqpjXr208q8DZRuTjnC
-         enIg==
-X-Gm-Message-State: AOAM533YFNtE3YpcfkIGddq3GtgRahISEY90LYNTIVBhSQ6izm0v5A1u
-        z+BtaM3M11WV/HrdKv3gLNZFNOY7qfU3d+8OuRM03mpT+UorD9fOEDZTcQ5ZFnsTg921xZEZgrb
-        A30DaEbBLsoYYtD13
-X-Received: by 2002:a17:907:9691:b0:6d1:711d:9050 with SMTP id hd17-20020a170907969100b006d1711d9050mr14189782ejc.755.1646749887115;
-        Tue, 08 Mar 2022 06:31:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz9TM63YED6kWCsyd9Q1X/xwPSpTCvLWHajMO/2ixeFbzuUTm7V1cblirjITbwrjBFrAZTAOA==
-X-Received: by 2002:a17:907:9691:b0:6d1:711d:9050 with SMTP id hd17-20020a170907969100b006d1711d9050mr14189739ejc.755.1646749886623;
-        Tue, 08 Mar 2022 06:31:26 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056402524400b00415b90801edsm7898726edd.57.2022.03.08.06.31.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 06:31:25 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C053C1928C6; Tue,  8 Mar 2022 15:31:24 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1347516AbiCHOit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 09:38:49 -0500
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130044.outbound.protection.outlook.com [40.107.13.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A467DED8;
+        Tue,  8 Mar 2022 06:37:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H9LkwuvVltMLAS6JtVicitWzUtHyJX9gLM5NkIBKnGqpmS9cgoQB6FRaZvaBoy1QVxRgkL3otO6SOQ0cwf9tft0BQt97czSdnfjh1nNW7QAR04P01PklojQbL6+eInr8gGy2dz3LiXfH+NlqL3FeP+ej3q/9D4YEFcplkF91tOPpLVRR6Ddk0SqrUTqtMmgzhh+xmbZo9xzBsHZ7napYZWzOIcmzSd/+ZakXyK/iByCMMIR1VNq3b8JVRED8VCu1sOIo0PMKhEbzST3/WuHTrx5oOp/ssJvN/sCHjqb7EaVXHYAbwICc18w2gyVB39iHx8aag3YrytmYIs3DonpROA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K6N7QV2Iy5S4oVXkugQ0gWNqn3buGD0PSB3m3l0TRsI=;
+ b=Ct3KhTVPoPnw2rL10jjwM0Jvz6b7yDNn7ZawN34ZdwbH7FUCRaopmjq6ganao6spBMMBJ5zpY1I/TS6ZgGoPIjERcXWmXnSitKyTZ8LOfNfGQ7c8JZPRTaDikhQJ7ssxHj/VEKj689GKBmziI8jMGFs8lT4+KF/EAIPxfpDgThO+FPV1mUCpJ2aqDwh5nP0FaVH/QVkFhJNoAf9jA7Jp6B1/X0QwIqA2hd9PjvlH5ZhjhWtlNbGXkkdDNvk27nU9OkLP/K88kYSXD/vzZMKtD6EwJm6w9N3P0T3vdfZ7wcPxmpFN25HRQWPbPbVmkxSUDri9uCOtUbXd7MZFhCUeZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K6N7QV2Iy5S4oVXkugQ0gWNqn3buGD0PSB3m3l0TRsI=;
+ b=nrn1G+TxXYylqrl2b2OqNLS3bgjPPiiJRhaGb+XxqODRdlRPHD796+Gfwe8JmEUc0iLRTh/NlGtSpP4ohcgFBXkeoCJ5ROmV+B5FZgN/5ssoF3qv9P4kkykx4pLplRJugEg6EH4mKAWePzPNSMzzGVKtvF9kEoCFP10rfXiGeIg=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DU2PR04MB8808.eurprd04.prod.outlook.com (2603:10a6:10:2e3::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
+ 2022 14:37:47 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::ac0c:d5d:aaa9:36%5]) with mapi id 15.20.5038.027; Tue, 8 Mar 2022
+ 14:37:47 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Hector Martin <marcan@marcan.st>,
+        Angela Czubak <acz@semihalf.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v9 1/5] bpf: Add "live packet" mode for XDP in
- BPF_PROG_RUN
-In-Reply-To: <20220308013517.b7xyhqainqmc255o@kafai-mbp.dhcp.thefacebook.com>
-References: <20220306223404.60170-1-toke@redhat.com>
- <20220306223404.60170-2-toke@redhat.com>
- <20220308013517.b7xyhqainqmc255o@kafai-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 08 Mar 2022 15:31:24 +0100
-Message-ID: <877d94y0qr.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
+Subject: Re: [RFC v7 net-next 10/13] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Thread-Topic: [RFC v7 net-next 10/13] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Thread-Index: AQHYMcjTRgIrF6Xyik+JLHWvUw480qy1kJUA
+Date:   Tue, 8 Mar 2022 14:37:47 +0000
+Message-ID: <20220308143746.w5ccuk3mvzdzno2x@skbuf>
+References: <20220307021208.2406741-1-colin.foster@in-advantage.com>
+ <20220307021208.2406741-11-colin.foster@in-advantage.com>
+In-Reply-To: <20220307021208.2406741-11-colin.foster@in-advantage.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0601c4b9-e8cd-4729-2299-08da011136f0
+x-ms-traffictypediagnostic: DU2PR04MB8808:EE_
+x-microsoft-antispam-prvs: <DU2PR04MB8808AEC7BC1C0D4EA2D582DEE0099@DU2PR04MB8808.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yWJDzc6Bj0e2QtnIU49/jvlhNw1/EqaLjxeoYIOklbRtUJlako4xBuAHIAF92VeYuUozTjjcZmF0rvsjO/UayfFj6wNxWfZLVxaErNcq7wqSQbjNbUct8Lsb4k6dqBF6kEA5zdvAKvy2eAaLelRWOtaXEndDkaCw07zNTGPPs+ZgNHaf/LQavXe0fDm6RGOxq2JfFH0dFz1cywis+ujhS0QiCZ9sboGpKrlPEKEC9pAgfvXbEIOsHNaAn/f9klCgErQfsfxaJbSWrBLGpfI0blCsn5OCvAjzK7zBaQoXgwBLDFA4XmJzawZk90TP47q5thuMTGzmT1ClUpux0Y9RG/E/KeMox23nxPsnCHFya76bDqkS27zVURW4NYrpuv7Hw/O/ArTkrpnjLTXAePVwAlj8btD2XmujR/0Z5WPFzSkLh5HmvKDlEdsa5dwciHfmBPJG1QhuO6vq18tHXTbx/upoQKP8TCvaTJdxN9KhwAiW0QrgO78LeC7H4PIVGW6tORsl90EadtuOIwqsPurts210TgvVdz+8d1E5i6LvToSU6P2TpEoBBu8Yanxkdth92lbcTNfIZhP+ywWtSqW1NtKedcezHt0edpnFQRylGNK+1l/Ptqn2wl59zl+VvIerun3+ho36D3uwMFgmdpZvoHgCsysHtky6ppfhlQcalNfCgorj8+MxveESoCaHpdUnDB9HKSv6XtBPjIKANNDKzw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(91956017)(2906002)(6506007)(6512007)(9686003)(66476007)(66446008)(64756008)(66556008)(76116006)(66946007)(6486002)(8676002)(4326008)(33716001)(508600001)(122000001)(71200400001)(38100700002)(86362001)(38070700005)(316002)(6916009)(54906003)(83380400001)(1076003)(186003)(44832011)(7416002)(5660300002)(26005)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OoxMPvJmXYhX7PmS06wCEt3wjcE+3M0NmYs4khVlKU2G5rhOPm28oShssNjz?=
+ =?us-ascii?Q?pnZl/bTNJ4/pZmXAX9daIEQVSNpbwTg3T8zbDK1oybi1jABNKvJ2NpejmceT?=
+ =?us-ascii?Q?GjHHSaFH74xCKeCALxhR2v2Koxgz+NEDcQr1HYovKOJdZ3Z2AA4Z+VYDqvpM?=
+ =?us-ascii?Q?yxqXzXgPzYy1ANQw7NycsMTJZAJyYDDklwO4DdHGJBr+8ES5XMLzM1twiA2n?=
+ =?us-ascii?Q?HIdcpzbVT1cTnyvkhKJekZUbAlh9Nuz/c+bEpZueLXKXxCuwd2VTFEP6N8YB?=
+ =?us-ascii?Q?1yUkYtDBbBKsBoyHRaltmWXT8rL5s/N36VK8YlaObdZG/B418G87lM4Utncg?=
+ =?us-ascii?Q?njYYupp8lOukeMXWYmCBODpIoZ+Moffd8+OjG3nwG/yr5tSGldXNgmjWrsQS?=
+ =?us-ascii?Q?K75L2ioqVLlVOy28hupT4tHqLo40QMlNTQG2i+Dnd0y1xKHx0+YBop3cORFp?=
+ =?us-ascii?Q?TWd9PDTezS4O9QFJon3JT6nYdc06umNLrqU3xltxfqPZafdKwhh6z/wAvvQK?=
+ =?us-ascii?Q?6ObqMv9HPJ+vHgB9OG/Vz6uD3XMXObcSSNvvvzlXPnplrmmVuKqP5k6FOPG0?=
+ =?us-ascii?Q?Z2zaELv1y3QdZUPU2HdcAst3zcPfRF7a/Z1Kq2KrvJDWlB1TMGXKHBLNc37c?=
+ =?us-ascii?Q?ozin9CVVqk2H8+JcYBTz+hwvxGhszhCmYFv4RWcnQ/Q1s4z+S2vz2MeoTQmZ?=
+ =?us-ascii?Q?Z8K0Y1ZIlmwjWpB8jp3j9YdVNe90gf1chfTkCE0SdBCE0x/E4AC/LQ4dEPSR?=
+ =?us-ascii?Q?M1/WyPOehb8IzAlwa9XFYDxL5DoxEd1+LnsBlraxivNUEp1tYuQnAyKnUxFt?=
+ =?us-ascii?Q?Q05saq9XlD9JV2qdJZvZsj2STHPWKtw0ithiMek5j444kOltOUBUMnxRLcTv?=
+ =?us-ascii?Q?uXZS1S6GSpSxkmWtAcWRUAdcUMuwvjQy1QrZ06ZiwDeB2YWgYpwt73lsY8os?=
+ =?us-ascii?Q?9adyL0vk2JKlfaSpw/7wISz0xizllomH7VuA+/ZKvaCIXpWwjyccZqWmRHkY?=
+ =?us-ascii?Q?LLmi+RTAkICTuT82GRMwHRnSM7GOZGHxjeo4ClCdbiUWYpk8P0ZI52NfQkXC?=
+ =?us-ascii?Q?2RX6h3yjZ4Hj2xZRNWVzR2YsRB9C7ExCc+sE7++GhtLKJcDFkiMEeo8ijSAj?=
+ =?us-ascii?Q?YqLDR4shhyJQLGW7iZOLbhBkJnA/j1QFNqHo/44X3a8zQ9ylV2RKPR7GQVOI?=
+ =?us-ascii?Q?sQaDHT9mbtS8vyuEgpN+zCSeeNUrZDtX++XgfUkB7t2p8YWPCb49nIehrYik?=
+ =?us-ascii?Q?/SgkF/V17V3INFQub8kfZI9Kj5ORc6TFKSRthRr62IDDhTtOqHmD0o5KqLTE?=
+ =?us-ascii?Q?Vsdlv7ZiPouAeImxZFwhSmPUlSESXYE98YemJLAi/YmpFBncfsU21UlShaj6?=
+ =?us-ascii?Q?WWyuNVaeUyD70utA5YsPuBWIKxVz0EW/8ryzo9Pn1HfDr3c8T1Mn4W7yUaSc?=
+ =?us-ascii?Q?xN0qzW58ubWJDBVNq9LGYfwX1Al9PwiPKd2g3QCryxzlZMmZyBBlMonRXyq1?=
+ =?us-ascii?Q?izbAlbEMNSg9qHrYsQBavNPAtxHlWtdIBL9YjmmfYm0ps7Co4dLRO2uKbqS8?=
+ =?us-ascii?Q?BWzXHvbwnc7/l1P4MTmbslYl6cssfFeh71IZePfzfzb2pXC2UIuNowOz8kBL?=
+ =?us-ascii?Q?cMJXDV00oG/nS7uJm4aFEqY=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <87CFB6BD52C3E54BABAD961CA6C0D3EE@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0601c4b9-e8cd-4729-2299-08da011136f0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2022 14:37:47.3500
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ewe8pgSjU0iZBw/jrRI63ct3Vwe14ln3sByaxHZafQI3/c9h/kSpSZBicAJDutdgomliWOCc7Vp0+tpx1JJuGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8808
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau <kafai@fb.com> writes:
+On Sun, Mar 06, 2022 at 06:12:05PM -0800, Colin Foster wrote:
+> The VSC7512 is a networking chip that contains several peripherals. Many =
+of
+> these peripherals are currently supported by the VSC7513 and VSC7514 chip=
+s,
+> but those run on an internal CPU. The VSC7512 lacks this CPU, and must be
+> controlled externally.
+>=20
+> Utilize the existing drivers by referencing the chip as an MFD. Add suppo=
+rt
+> for the two MDIO buses, the internal phys, pinctrl, serial GPIO, and HSIO=
+.
+>=20
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
+> +#define VSC7512_MIIM0_RES_START	0x7107009c
+> +#define VSC7512_MIIM0_RES_SIZE	0x24
+> +
+> +#define VSC7512_MIIM1_RES_START	0x710700c0
+> +#define VSC7512_MIIM1_RES_SIZE	0x24
+> +
+> +#define VSC7512_PHY_RES_START	0x710700f0
+> +#define VSC7512_PHY_RES_SIZE	0x4
+> +
+> +#define VSC7512_HSIO_RES_START	0x710d0000
+> +#define VSC7512_HSIO_RES_SIZE	0x10000
+> +
+> +#define VSC7512_GPIO_RES_START	0x71070034
+> +#define VSC7512_GPIO_RES_SIZE	0x6c
+> +
+> +#define VSC7512_SIO_RES_START	0x710700f8
+> +#define VSC7512_SIO_RES_SIZE	0x100
+> +
+> +static const struct resource vsc7512_gcb_resource =3D
+> +	DEFINE_RES_REG_NAMED(VSC7512_GCB_RES_START, VSC7512_GCB_RES_SIZE,
+> +			     "devcpu_gcb_chip_regs");
+> +static const struct resource vsc7512_miim0_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_MIIM0_RES_START, VSC7512_MIIM0_RES_SIZE,
+> +			     "gcb_miim0"),
+> +	DEFINE_RES_REG_NAMED(VSC7512_PHY_RES_START, VSC7512_PHY_RES_SIZE,
+> +			     "gcb_phy"),
+> +};
+> +
+> +static const struct resource vsc7512_miim1_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_MIIM1_RES_START, VSC7512_MIIM1_RES_SIZE,
+> +			     "gcb_miim1"),
+> +};
+> +
+> +static const struct resource vsc7512_hsio_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE,
+> +			     "hsio"),
+> +};
+> +
+> +static const struct resource vsc7512_pinctrl_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_GPIO_RES_START, VSC7512_GPIO_RES_SIZE,
+> +			     "gcb_gpio"),
+> +};
+> +
+> +static const struct resource vsc7512_sgpio_resources[] =3D {
+> +	DEFINE_RES_REG_NAMED(VSC7512_SIO_RES_START, VSC7512_SIO_RES_SIZE,
+> +			     "gcb_sio"),
+> +};
+> +
+> +static const struct mfd_cell vsc7512_devs[] =3D {
+> +	{
+> +		.name =3D "ocelot-pinctrl",
+> +		.of_compatible =3D "mscc,ocelot-pinctrl",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_pinctrl_resources),
+> +		.resources =3D vsc7512_pinctrl_resources,
+> +	}, {
+> +		.name =3D "ocelot-sgpio",
+> +		.of_compatible =3D "mscc,ocelot-sgpio",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_sgpio_resources),
+> +		.resources =3D vsc7512_sgpio_resources,
+> +	}, {
+> +		.name =3D "ocelot-miim0",
+> +		.of_compatible =3D "mscc,ocelot-miim",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_miim0_resources),
+> +		.resources =3D vsc7512_miim0_resources,
+> +	}, {
+> +		.name =3D "ocelot-miim1",
+> +		.of_compatible =3D "mscc,ocelot-miim",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_miim1_resources),
+> +		.resources =3D vsc7512_miim1_resources,
 
-> On Sun, Mar 06, 2022 at 11:34:00PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> index 4eebea830613..a36065872882 100644
->> --- a/include/uapi/linux/bpf.h
->> +++ b/include/uapi/linux/bpf.h
->> @@ -1232,6 +1232,10 @@ enum {
->>=20=20
->>  /* If set, run the test on the cpu specified by bpf_attr.test.cpu */
->>  #define BPF_F_TEST_RUN_ON_CPU	(1U << 0)
->> +/* Guaranteed to be rejected in XDP tests (for probing) */
->> +#define BPF_F_TEST_XDP_RESERVED	(1U << 1)
->> +/* If set, XDP frames will be transmitted after processing */
->> +#define BPF_F_TEST_XDP_LIVE_FRAMES	(1U << 2)
->>=20=20
->>  /* type for BPF_ENABLE_STATS */
->>  enum bpf_stats_type {
->> @@ -1393,6 +1397,7 @@ union bpf_attr {
->>  		__aligned_u64	ctx_out;
->>  		__u32		flags;
->>  		__u32		cpu;
->> +		__u32		batch_size;
->>  	} test;
->>=20=20
->>  	struct { /* anonymous struct used by BPF_*_GET_*_ID */
->
-> [ ... ]
->
->> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
->> index db402ebc5570..9beb585be5a6 100644
->> --- a/kernel/bpf/syscall.c
->> +++ b/kernel/bpf/syscall.c
->> @@ -3336,7 +3336,7 @@ static int bpf_prog_query(const union bpf_attr *at=
-tr,
->>  	}
->>  }
->>=20=20
->> -#define BPF_PROG_TEST_RUN_LAST_FIELD test.cpu
->> +#define BPF_PROG_TEST_RUN_LAST_FIELD test.batch_size
-> Instead of adding BPF_F_TEST_XDP_RESERVED,
-> probing by non-zero batch_size (=3D=3D 1) should be as good?
+I'm looking at mfd_match_of_node_to_dev() and I don't really understand
+how the first MDIO bus matches the first mfd_cell's resources, and the
+second MDIO bus the second mfd_cell? By order of definition?
 
-Hmm, yeah, good point; added the RESERVED flag before the batch_size;
-guess it's not needed anymore.
-
-> [ ... ]
->
->> +static int xdp_test_run_batch(struct xdp_test_data *xdp, struct bpf_pro=
-g *prog,
->> +			      u32 repeat)
->> +{
->> +	struct bpf_redirect_info *ri =3D this_cpu_ptr(&bpf_redirect_info);
->> +	int err =3D 0, act, ret, i, nframes =3D 0, batch_sz;
->> +	struct xdp_frame **frames =3D xdp->frames;
->> +	struct xdp_page_head *head;
->> +	struct xdp_frame *frm;
->> +	bool redirect =3D false;
->> +	struct xdp_buff *ctx;
->> +	struct page *page;
->> +
->> +	batch_sz =3D min_t(u32, repeat, xdp->batch_size);
->> +
->> +	local_bh_disable();
->> +	xdp_set_return_frame_no_direct();
->> +
->> +	for (i =3D 0; i < batch_sz; i++) {
->> +		page =3D page_pool_dev_alloc_pages(xdp->pp);
->> +		if (!page) {
->> +			err =3D -ENOMEM;
->> +			goto out;
->> +		}
->> +
->> +		head =3D phys_to_virt(page_to_phys(page));
->> +		reset_ctx(head);
->> +		ctx =3D &head->ctx;
->> +		frm =3D &head->frm;
->> +		xdp->frame_cnt++;
->> +
->> +		act =3D bpf_prog_run_xdp(prog, ctx);
->> +
->> +		/* if program changed pkt bounds we need to update the xdp_frame */
->> +		if (unlikely(ctx_was_changed(head))) {
->> +			err =3D xdp_update_frame_from_buff(ctx, frm);
->> +			if (err) {
->> +				xdp_return_buff(ctx);
->> +				continue;
->> +			}
->> +		}
->> +
->> +		switch (act) {
->> +		case XDP_TX:
->> +			/* we can't do a real XDP_TX since we're not in the
->> +			 * driver, so turn it into a REDIRECT back to the same
->> +			 * index
->> +			 */
->> +			ri->tgt_index =3D xdp->dev->ifindex;
->> +			ri->map_id =3D INT_MAX;
->> +			ri->map_type =3D BPF_MAP_TYPE_UNSPEC;
->> +			fallthrough;
->> +		case XDP_REDIRECT:
->> +			redirect =3D true;
->> +			err =3D xdp_do_redirect_frame(xdp->dev, ctx, frm, prog);
-> err of the previous iteration is over written.
->
->> +			if (err)
->> +				xdp_return_buff(ctx);
->> +			break;
->> +		case XDP_PASS:
->> +			frames[nframes++] =3D frm;
->> +			break;
->> +		default:
->> +			bpf_warn_invalid_xdp_action(NULL, prog, act);
->> +			fallthrough;
->> +		case XDP_DROP:
->> +			xdp_return_buff(ctx);
->> +			break;
->> +		}
->> +	}
->> +
->> +out:
->> +	if (redirect)
->> +		xdp_do_flush();
->> +	if (nframes) {
->> +		ret =3D xdp_recv_frames(frames, nframes, xdp->skbs, xdp->dev);
->> +		if (ret)
->> +			err =3D ret;
-> but here is trying to avoid over writing the err if possible.
->
->> +	}
->> +
->> +	xdp_clear_return_frame_no_direct();
->> +	local_bh_enable();
->> +	return err;
-> so only err happens in the last iteration will break the loop in
-> bpf_test_run_xdp_live()?
-
-Ah, excellent catch. This is also an artefact of earlier revisions where
-any error would break the loop. Since that is no longer the case, we
-should only propagate fatal errors (i.e., memory allocation errors
-during the run); will fix!
-
--Toke
-
+> +	}, {
+> +		.name =3D "ocelot-serdes",
+> +		.of_compatible =3D "mscc,vsc7514-serdes",
+> +		.num_resources =3D ARRAY_SIZE(vsc7512_hsio_resources),
+> +		.resources =3D vsc7512_hsio_resources,
+> +	},
+> +};
+> +
+> +int ocelot_core_init(struct ocelot_core *core)
+> +{
+> +	struct device *dev =3D core->dev;
+> +	int ret;
+> +
+> +	dev_set_drvdata(dev, core);
+> +
+> +	core->gcb_regmap =3D ocelot_devm_regmap_init(core, dev,
+> +						   &vsc7512_gcb_resource);
+> +	if (IS_ERR(core->gcb_regmap))
+> +		return -ENOMEM;
+> +
+> +	ret =3D ocelot_reset(core);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to reset device: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * A chip reset will clear the SPI configuration, so it needs to be don=
+e
+> +	 * again before we can access any registers
+> +	 */
+> +	ret =3D ocelot_spi_initialize(core);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to initialize SPI interface: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, vsc7512_devs,
+> +				   ARRAY_SIZE(vsc7512_devs), NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to add sub-devices: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(ocelot_core_init);
+> --=20
+> 2.25.1
+>=
