@@ -2,186 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8974D1860
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 13:55:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 235144D18CA
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 14:11:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234750AbiCHMzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 07:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        id S1346116AbiCHNMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 08:12:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbiCHMzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 07:55:53 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D83F473A6;
-        Tue,  8 Mar 2022 04:54:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646744097; x=1678280097;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=kdnmKZjKO5VRAIwMntb/gulIExnwu9u0Td0Peo7UhkY=;
-  b=VnTYyKM2OmttfGKZ5byLrb2UvQci1XBKztsQ54U5MTOyyjeoisUGYU11
-   KWg+SPYFTO5pVWSoNP68tyRIcuR9HeI+3LOTBBzE7ut9rNJR0yjN3oCZT
-   vrx2ALfmd1cQLDPgrOhsCU2hJ1gg3m7wCh0zZV+CJSBCwftH31Rxolq/d
-   K2xoNBmA8Yun4F1TImGPOnX8h5ZVmBaWuUrUQ7/UtRMT7O0Of6CBf8Y+R
-   f6kVLqLdGcZQ6mT7SDSM2aPEn1pNrqNNAYhdsUNoD4LeXfvnbqm+4D5tz
-   bJfV9OsP0dwoUodt7jHFvNLKLtES+1or/bc9P4Ex7UbQ/M2hYiiMz5uQF
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254402850"
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="254402850"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 04:54:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,164,1643702400"; 
-   d="scan'208";a="513095643"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga006.jf.intel.com with ESMTP; 08 Mar 2022 04:54:57 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 04:54:56 -0800
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 04:54:56 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Tue, 8 Mar 2022 04:54:56 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.107)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Tue, 8 Mar 2022 04:54:55 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QqSFn1Yc432YLIztKAsPXleRYw28sdXky0iB75ihuohzOfNT/fa7w7rfBsRnuzDspbJpC49H5NOtjhyl3jVWY1O2vpY+m6mYCJDOt/X0wTwTHYii1jykyBtFLf4HBpVcToottumVMhixqhIQZBVx6Ca1XZQ/5dkG3wUkJHoTamJ5DgNqdzDtpwU4QGiXZhRq345asZYEl7XcIiOR58bV5Z/f3RUixnNQMatNCQN5XoyZmQikQodFkP4VGdCs7rudKJGr8lV3hMk5RHm5GA5FTia0i7akJCnjH6GKdLx2SFxAKL66/0HrlVSTimeO0ggXF8JF423vhaUtXE7OJ42vaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hbuv2BQ1ozSDP9FU5tmSOgnvrCr/C596rEUgZDgg1co=;
- b=Low/16sIX9pf+anE2hr9Grt3ID0TercIklaGPpHnHTY+KqkkKnjEfIPR2z+Dzk7g9pcv5Kryf4D+EG+26FVf2vGgFTC0B0ufDwD20DblQgGTt9BcVfxDsTF+i7XTNvnxBm1vn1lu2A7fbxBPOgfcLjv6VVYPu/NW7dyyR8xfB94r9dNhxHbUgELwoX1+H0oboKYU66TiGva5YBazuvqzUYY3/2cVg+mu1vMwtZ8+SGOGUFc49Otc7wlrhW9FB9d5RlwzE8xgyoyqbRJDAO3RN0vSX/hTbMO0Bh9BuRGXVDmeKj+WeXJSrrAzFpzXIkE3+eiuRJHHFciNZSFemCLPHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
- by MN2PR11MB4477.namprd11.prod.outlook.com (2603:10b6:208:17a::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Tue, 8 Mar
- 2022 12:54:52 +0000
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::44af:c21:2bed:47b5]) by BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::44af:c21:2bed:47b5%6]) with mapi id 15.20.5038.023; Tue, 8 Mar 2022
- 12:54:52 +0000
-From:   "G, GurucharanX" <gurucharanx.g@intel.com>
-To:     "trix@redhat.com" <trix@redhat.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH] i40e: little endian only valid
- checksums
-Thread-Topic: [Intel-wired-lan] [PATCH] i40e: little endian only valid
- checksums
-Thread-Index: AQHYLjUcRh1Npl6lGUO4UA1iqVy98Ky1es2g
-Date:   Tue, 8 Mar 2022 12:54:52 +0000
-Message-ID: <BYAPR11MB33679CF5EBB178871DBB63BAFC099@BYAPR11MB3367.namprd11.prod.outlook.com>
-References: <20220302125702.358999-1-trix@redhat.com>
-In-Reply-To: <20220302125702.358999-1-trix@redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 07085e7d-eed7-4232-44c4-08da0102d684
-x-ms-traffictypediagnostic: MN2PR11MB4477:EE_
-x-microsoft-antispam-prvs: <MN2PR11MB4477548816C07540B75F7400FC099@MN2PR11MB4477.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 92yjt4vk94SwsrowmX2Q86WFPj5rAr4Fmot9xEMMLcn/vKVnvCIro9aLZJT/8wxG+hLdup1CoFOpap5TzWQZyOhBQyryuOXkDtrZeiNRMcqJcAl7M2NTEq4/uVaK5GceNkCLGVibMixXn04RiTn25lESV28TBPd9Bt/fkM0sUChr/XlH7nNuMWOZsBQZgVrVStbwQMW/qO/0ly9G4A0/e5SwF75aeN+NvUAnJq3gANzNjhgglqAdAiC61C9PabPORBd26r/hKdaW6F02mPOXvzcbz1EKrwlVgNgd4c11VfkrxvjxHL9ZWGGo0VRAwt7tj48UWi84QrO4EtohmQyZXMzox/T01qh1eVZw0FL3WrwWZBtOLYx6IIjlAJhF7DsisUA+dk6yuDVs37vW1YStcz6IWw8KBmabjSuodK1h3k/F0kCGGwGmJDxYsehFfeMV0tkGy4tx279Ubc8fQ3MFfpw0lO61RSkTC/3gR4TlCCE8h3ulyZwbSxDQ5yHXgQ34CDcwWF1MmvEUG++4xyFy1KulKadWjf9CG3g4kNROpalt+HRJaQbnAToiqiDajHaJKZS8+w76R69xmyEKtaNu+Ub75Wqyrv4gImqgnmMLFqdxKnaTLqDkQpM+PtOChjyUE/eYsrLZR+FsjViZOw8T2sZt8O5ceH51EX017WopHCnoa9PQveQ9j++kk3jA1aJMhMK2eJ1JgyJbUzLaDJeAZw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66446008)(6506007)(7696005)(55236004)(53546011)(86362001)(33656002)(52536014)(8936002)(5660300002)(508600001)(4744005)(9686003)(66556008)(2906002)(26005)(186003)(4326008)(8676002)(66476007)(64756008)(76116006)(66946007)(38100700002)(110136005)(38070700005)(55016003)(122000001)(82960400001)(316002)(71200400001)(54906003)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TL8Y5XwtSZz+INANjJd3liJgzSJc8TwbeAgrRWuei3IXfNrZrXsLHre7YGyP?=
- =?us-ascii?Q?l36IC66fURgNowWYXbOm1KglOZVfMgQyDPPkc8owLW+zUzi0CC9NPCM9NVrJ?=
- =?us-ascii?Q?i2L82qA2YRl82mlYJcKc3THoSEjwES0+eeer8uty6srMOvJbqFMhv/ZHMryS?=
- =?us-ascii?Q?cCB/VqurKoLa5Gj1zwi8Pqg8bkCgsym00GPaZ2j3vLBgetwSuJ8HdbScTE/w?=
- =?us-ascii?Q?rvTboW3CntxxETpw1B4h6N1Q454b8xFPeFtrihPXONCThKr+YqdMaH6FA20v?=
- =?us-ascii?Q?xgHcQehENe3oaBraLLkyhKJ91lOoNThPp92ze2aR0xrS8qS3grjnD/bn4vAZ?=
- =?us-ascii?Q?bHWcfurkasG2WFv6OR89uDxPv+6c1k/O0vNLimx5Xz5TaRDq040DKcsLNtao?=
- =?us-ascii?Q?Z+ZlpD/sy10aSnEwTvmmFfTE4Ckjpy29o4XNCTH8ml8KnJ4hytz0MHEgqkbr?=
- =?us-ascii?Q?xg9SmLCKiCUx8tlBhVCSVOUyF5F8BxvQUa9ddwjeJUxht6MaZmSNbv2Ni4Ny?=
- =?us-ascii?Q?n3f7Rwxw6xX443Wv8c2fYsB5W5ONUK2pUEmRfQduY69WCutPercHw47EKbXe?=
- =?us-ascii?Q?QtQo6/VX5HMog6ixEh4OkhOtxcJue++UEm244sg5vTvb/ecVAVwgYTmkute9?=
- =?us-ascii?Q?1JUZw8T/7Kf77BoygaFW1xTgPITnIcqklDtoJpw/zsbhIz0NPn8v5YQmgFQe?=
- =?us-ascii?Q?MDXyGyB2CCLcwcOhsU36gVWKNXFqcw1FZbj4Fr9LINovKj87uX1ym9CVT4bX?=
- =?us-ascii?Q?6AKegovfXzdlRlD/DbnvhgBWYWmPKy8TIJvyzB7QXcHV56qeeetOnfkicTgm?=
- =?us-ascii?Q?Pnhlf7sPmkuxMp4K2KMziZ39mH1JfrG4fQFOV3WDJ5rMGkQbcrTXqlO8Oxg/?=
- =?us-ascii?Q?8xHkcfkbYLtCOzRNU0tdQw2JMYvApsLqiXo3KG/OKPKujrCG81fPCxNFlDG6?=
- =?us-ascii?Q?vPPSLqjpqy5Dy8OhPgSt7DmYVkbd7OS3SVoCJr/R9tRultUtowao+3eIp/EP?=
- =?us-ascii?Q?kiHaaIrWZGOP02CL2RXivGjQlSRiDx/Pv0hpxyvt0Y8uzXEhbNK20JNsHhtM?=
- =?us-ascii?Q?OZNeudwastGyUkImXPTV4Kp6ofz8RQgV2xtFKscPdge2W56yTXd0cBzSlSgO?=
- =?us-ascii?Q?cx0ck1g8mkIki7wgKqfBNTzWM7vhQbxyu81oTnYO5NrnAKWMffWbhLNhcgTz?=
- =?us-ascii?Q?isTeaIJVDIFyh6L6STLJ6qEe6fbpPZg1fzUN/OcJe1Yr31tJWefV+nAVRavN?=
- =?us-ascii?Q?1wS0+lU5S0LbpHZntEBq4dkyR7JvaOg4B6cUFszm/HIBiUET9glPaVuoDVA7?=
- =?us-ascii?Q?kbmbYU2/2shik4LoWUmZWAr0PbDjTYzNp3oIQ6OunYQQpYv1NmgyyOXvqc/n?=
- =?us-ascii?Q?pXvg3rX6dwVLpDKLZxbWpbEoURVvpydc+Sc8yGkRNkfBvEulkY1HdbO2Cd1w?=
- =?us-ascii?Q?bKGQKFwTmdP6BmN2XP1ogzDv0KyZ04OjRu6ucpOo8qYQ4T1v6KXirpTzYmoL?=
- =?us-ascii?Q?xz02uJ1huApuqySqzwzaQZPIsjsezjEGkgE0D4ZKwwK8lu+YPXmKO0d4HiG7?=
- =?us-ascii?Q?k4btVTlU8qoky3Vb5D6i3EW+QYmYvzI95Me86VO8toCLxXQJDjzF6qXhgYfI?=
- =?us-ascii?Q?Qg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1346781AbiCHNMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 08:12:13 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3A948888;
+        Tue,  8 Mar 2022 05:11:13 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id t5so17307999pfg.4;
+        Tue, 08 Mar 2022 05:11:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FWHoEDvTIm7rBvwEUghaQtZQ/73G/plTVtfrSbmEWvI=;
+        b=aO8AWuyBW+FGjwJNfokItf5Bd00b1q7qnTiFFonK1BjqfezPqKbnHa/jMJGN6MmxoZ
+         dHoZKF4paoTNGOFL2G0ZJ3cuHNIxCQ2vY56aRHxEp2tUEMXLENWUihR/qm0Vt8gpoD/L
+         Zzi2dYgMJZU9kvFL0gG3Z2Df9zPsxkJ/1LQSAK4wzqf3aROKmBPWXo/56ouxOei4JSrK
+         +Dc82qJYFY8//Xe1JOld+9gyi2x6eynJSFtc6mNvj0Ilnpsmy6Kt9V6KDhOtBSeIS8bW
+         sSUajbIxZ8zpTcaqPBqgnoN11yNnIymT5esT4tylEKEa9KOeo+aydJpT3HNI17Dl9cZf
+         Tk2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FWHoEDvTIm7rBvwEUghaQtZQ/73G/plTVtfrSbmEWvI=;
+        b=IkKHETLIV50jFkZaaATISEPxb/dKSNUsyhBh14a4fhb0h5MaLyzjRSuhND6oLV+mLL
+         sS43v6M8ymu8MbvkmYaCDFqO6M8+iEq+pbfqzuFIEfd7hlhOSgWFXedOswi59yK+oEdg
+         7+CGFYzgZ1QND2UIt2Im5hzx/zpKHc/NyuRrrx/ULBhrRYQdfYfyyjy8PG7rMUs5DM3g
+         1UcZeA4a6XQOgbgtrhxTJg6i3PS75QcpecMtA/ytOopKW5VD8hCKB3hRCy7fuTqCe0cJ
+         K610VZvqPsw60DE2Io9pLc8NFBOSfJbzj99mbfT6fSlDXce0otrU/VCXkuwLuTAjaZij
+         oGkw==
+X-Gm-Message-State: AOAM533vfaClyaJdO3gb+/ht6tudcc2QYO1hpfgXokcm2EQx7fVfxat3
+        ua5Mr/UUVrC19Xh8Mn7V+VM=
+X-Google-Smtp-Source: ABdhPJwyIRTWrPyxTPT7YsRSDCDgLumfxmx4Mzp5VoY99Hl0IQKI/wf0l5ZJBc2Yls/RuUFicBLz2g==
+X-Received: by 2002:a63:6942:0:b0:380:153e:63f9 with SMTP id e63-20020a636942000000b00380153e63f9mr11962961pgc.212.1646745073125;
+        Tue, 08 Mar 2022 05:11:13 -0800 (PST)
+Received: from vultr.guest ([149.248.19.67])
+        by smtp.gmail.com with ESMTPSA id s20-20020a056a00179400b004f709998d13sm7378598pfg.10.2022.03.08.05.11.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 05:11:12 -0800 (PST)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        akpm@linux-foundation.org, cl@linux.com, penberg@kernel.org,
+        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, mhocko@kernel.org, vdavydov.dev@gmail.com,
+        guro@fb.com
+Cc:     linux-mm@kvack.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH RFC 0/9] bpf, mm: recharge bpf memory from offline memcg
+Date:   Tue,  8 Mar 2022 13:10:47 +0000
+Message-Id: <20220308131056.6732-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07085e7d-eed7-4232-44c4-08da0102d684
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2022 12:54:52.5495
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0gSa/vl+cNWklJhMMa49WdlcX7tw0CBm4rqDGffH+r+m2+mx2LWNfPq6UwCjtu/p+bYCH16E8ey7u7qA2HzqSw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4477
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When we use memcg to limit the containers which load bpf progs and maps,
+we find there is an issue that the lifecycle of container and bpf are not
+always the same, because we may pin the maps and progs while update the
+container only. So once the container which has alreay pinned progs and
+maps is restarted, the pinned progs and maps are no longer charged to it
+any more. In other words, this kind of container can steal memory from the
+host, that is not expected by us. This patchset means to resolve this
+issue.
 
+After the container is restarted, the old memcg which is charged by the
+pinned progs and maps will be offline but won't be freed until all of the
+related maps and progs are freed. If we want to charge these bpf memory to
+the new started memcg, we should uncharge them from the offline memcg first
+and then charge it to the new one. As we have already known how the bpf
+memroy is allocated and freed, we can also know how to charge and uncharge
+it. This pathset implements various charge and uncharge methords for these
+memory.
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> trix@redhat.com
-> Sent: Wednesday, March 2, 2022 6:27 PM
-> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; davem@davemloft.net; kuba@kernel.org
-> Cc: netdev@vger.kernel.org; intel-wired-lan@lists.osuosl.org; linux-
-> kernel@vger.kernel.org; Tom Rix <trix@redhat.com>
-> Subject: [Intel-wired-lan] [PATCH] i40e: little endian only valid checksu=
-ms
->=20
-> From: Tom Rix <trix@redhat.com>
->=20
-> The calculation of the checksum can fail.
-> So move converting the checksum to little endian
-> to inside the return status check.
->=20
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_nvm.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->=20
+Regarding how to do the recharge, we decide to implement new bpf syscalls
+to do it. With the new implemented bpf syscall, the agent running in the
+container can use it to do the recharge. As of now we only implement it for
+the bpf hash maps. Below is a simple example how to do the recharge,
 
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
-ntel)
+====
+int main(int argc, char *argv[])
+{
+	union bpf_attr attr = {};
+	int map_id;
+	int pfd;
+
+	if (argc < 2) {
+		printf("Pls. give a map id \n");
+		exit(-1);
+	}
+
+	map_id = atoi(argv[1]);
+	attr.map_id = map_id;
+	pfd = syscall(SYS_bpf, BPF_MAP_RECHARGE, &attr, sizeof(attr));
+	if (pfd < 0)
+		perror("BPF_MAP_RECHARGE");
+
+	return 0;
+}
+
+====
+
+Patch #1 and #2 is for the observability, with which we can easily check
+whether the bpf maps is charged to a memcg and whether the memcg is offline.
+Patch #3, #4 and #5 is for the charge and uncharge methord for vmalloc-ed,
+kmalloc-ed and percpu memory.
+Patch #6~#9 implements the recharge of bpf hash map, which is mostly used
+by our bpf services. The other maps hasn't been implemented yet. The bpf progs
+hasn't been implemented neither.
+
+This pathset is still a POC now, with limited testing. Any feedback is
+welcomed.
+
+Yafang Shao (9):
+  bpftool: fix print error when show bpf man
+  bpftool: show memcg info of bpf map
+  mm: add methord to charge kmalloc-ed address
+  mm: add methord to charge vmalloc-ed address
+  mm: add methord to charge percpu address
+  bpf: add a helper to find map by id
+  bpf: add BPF_MAP_RECHARGE syscall
+  bpf: make bpf_map_{save, release}_memcg public
+  bpf: support recharge for hash map
+
+ include/linux/bpf.h            | 23 +++++++++++++
+ include/linux/percpu.h         |  1 +
+ include/linux/slab.h           |  2 ++
+ include/linux/vmalloc.h        |  1 +
+ include/uapi/linux/bpf.h       | 10 ++++++
+ kernel/bpf/hashtab.c           | 35 ++++++++++++++++++++
+ kernel/bpf/syscall.c           | 73 ++++++++++++++++++++++++++----------------
+ mm/percpu.c                    | 50 +++++++++++++++++++++++++++++
+ mm/slab.c                      |  6 ++++
+ mm/slob.c                      |  6 ++++
+ mm/slub.c                      | 32 ++++++++++++++++++
+ mm/util.c                      |  9 ++++++
+ mm/vmalloc.c                   | 29 +++++++++++++++++
+ tools/bpf/bpftool/map.c        |  9 +++---
+ tools/include/uapi/linux/bpf.h |  1 +
+ 15 files changed, 254 insertions(+), 33 deletions(-)
+
+-- 
+1.8.3.1
+
