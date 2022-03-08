@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F064D1044
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 07:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F09FF4D1048
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 07:30:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240426AbiCHGbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 01:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
+        id S244660AbiCHGbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 01:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232068AbiCHGbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 01:31:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F195C3C73C;
-        Mon,  7 Mar 2022 22:30:11 -0800 (PST)
+        with ESMTP id S243525AbiCHGbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 01:31:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6EC3C731;
+        Mon,  7 Mar 2022 22:30:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DE5E6159E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 993A2B8163C;
+        Tue,  8 Mar 2022 06:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 416C2C340F6;
         Tue,  8 Mar 2022 06:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 78978C340EC;
-        Tue,  8 Mar 2022 06:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646721010;
-        bh=oQ18lgNoYFU+P1cuSECSbe2PiBEyVyLpvsuYeCOz6PM=;
+        s=k20201202; t=1646721011;
+        bh=amHobqnmxSrruYg/xzEG3Ri5SrOTXrYTuXAU8nd4rr8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZkPIrJblLZTek7xgTxZOiEoj8198nEYDj/5BIR1L679c1wn2CCwd3UQJbUeOIAYEp
-         Zigt0BMDXO9o8eAlqCHGs4ETqTHbDSEziUSAJp8ZLajSkE76FStys7AIJyOpDxHapF
-         ozXYweBZTwwjkAjNXuHow8aUfoMy5dWlE86jcIwBaqRYVMFArGHu8U/lU4vVAiVZ9F
-         /uLCbqE37hRNpdNVlleJmIV0pLQog6nMtix1ScGrnpxqqMVJJxdW1NdNZfRzbuBetL
-         p6lIpO3Xb4e+9xtuUIUGFAb5vDXyDXYRCuqRUzrxwHafCPrQACi0YA1vZfdDNtzir9
-         F/EduwZrwCfdg==
+        b=AlrsDfjMwD7rQUt6T8Jfcm8D44C/yMEgmkHTMnemGD1d1pDOi8hwJSPKAkKCIOQqe
+         7SpNNWpiROf+GO549DQJpaVM5OVTSo1bYmbjDo6JBr8PUZvIfMjLESnX359l7Wo8Rv
+         VMc8alpm2VsEr+eV8h11xGSKiWq0ks+PCnEftuXX/Z/O7tgfsKciH6mBq1Pn5nEj7/
+         9XTyZn1y3f/tjDb5ah1qSg0sn4AT+S9nCuO4SAnHAE8wCBso0KxDGjfdXinaay4a3M
+         xUCcHrLdtOhGqoo447MfyeusxfSEWAp5mz3Q2SBP6Cl+H76LDpgJDhdJ+dwoeh2BPE
+         LMLaewMTXgcvw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5B6F4F0383B;
-        Tue,  8 Mar 2022 06:30:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2AEB5E6D3DE;
+        Tue,  8 Mar 2022 06:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] bpf: Remove redundant slash
+Subject: Re: [PATCH v2] net: cxgb3: Fix an error code when probing the driver
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164672101036.16776.9038565963181298704.git-patchwork-notify@kernel.org>
-Date:   Tue, 08 Mar 2022 06:30:10 +0000
-References: <20220305161013.361646-1-ytcoode@gmail.com>
-In-Reply-To: <20220305161013.361646-1-ytcoode@gmail.com>
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        quentin@isovalent.com, netdev@vger.kernel.org,
+Message-Id: <164672101117.16776.14954414066959843384.git-patchwork-notify@kernel.org>
+Date:   Tue, 08 Mar 2022 06:30:11 +0000
+References: <1646546192-32737-1-git-send-email-zheyuma97@gmail.com>
+In-Reply-To: <1646546192-32737-1-git-send-email-zheyuma97@gmail.com>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     andrew@lunn.ch, rajur@chelsio.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -61,20 +59,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun,  6 Mar 2022 00:10:13 +0800 you wrote:
-> The trailing slash of LIBBPF_SRCS is redundant, remove it.
+On Sun,  6 Mar 2022 05:56:32 +0000 you wrote:
+> During the process of driver probing, probe function should return < 0
+> for failure, otherwise kernel will treat value >= 0 as success.
 > 
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> ---
->  kernel/bpf/preload/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Therefore, the driver should set 'err' to -ENODEV when
+> 'adapter->registered_device_map' is NULL. Otherwise kernel will assume
+> that the driver has been successfully probed and will cause unexpected
+> errors.
+> 
+> [...]
 
 Here is the summary with links:
-  - [bpf-next] bpf: Remove redundant slash
-    https://git.kernel.org/bpf/bpf-next/c/4989135a8533
+  - [v2] net: cxgb3: Fix an error code when probing the driver
+    https://git.kernel.org/netdev/net-next/c/69adcb988a06
 
 You are awesome, thank you!
 -- 
