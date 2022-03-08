@@ -2,126 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD4644D1568
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 12:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D2D4D159F
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 12:05:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346123AbiCHLDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 06:03:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
+        id S1346203AbiCHLG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 06:06:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346117AbiCHLDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 06:03:32 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B4C60D6
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 03:02:33 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 622E93F60F
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 11:02:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646737352;
-        bh=cmIEv3+2duqaZszEh7bUQ4/zmJnqkg7ujOQpTYxWoCc=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=YbyzsTi8IUMfoNvd4XdLE1JGIxR09hgvQbmpguSJ4SQWTHldKKt2CKO8TJ6LI5Kpz
-         0wFdjfXfNXqulHCdWhVkWlQiLnwVDmHWzTOE2k41plCGnM+7Hlun8uu0PfjXo0AA/F
-         tNfDjtRghXsvJLrWLwkIx5aGby6LY8ffl5T8hgyGayPhrjzkmwDjgjFHAVCyJvPjYB
-         ZbmVtMfxHQzG8uwIULYlIsGEiJG38tjNG7PCPk8aWttDcyzBDDT3G/cmh/AiuAFuVz
-         iP9R0o7nuTItNvlzz4mPzr4q+7kVhqsfQvlNZ0nhjBQmBYniwFn/zos1L3lFtEnFz0
-         rJjPNftPNpi5A==
-Received: by mail-ed1-f71.google.com with SMTP id da28-20020a056402177c00b00415ce4b20baso9476222edb.17
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 03:02:32 -0800 (PST)
+        with ESMTP id S245546AbiCHLG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 06:06:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31A6D44771
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 03:05:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646737531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FCTl0NyGnslmoDNlbPArwT49YkiFqe8KOOW4Ouvu6mc=;
+        b=IuZGtZcwY/KFRNZJ3QpnIkJPkviOfS3S9HLXKPOpljk95NayY0imQdbIghDNaduY72Z1zl
+        plMFcfrUOe3RXYbaTk9m37hV96EHFRhT+wnZMFPfKKqmbSffeP8Md5xATDdUxnJGM+ZVaT
+        YQnTYCrnVXt6XCxixt4BeyrxaADe0f0=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-426-j1cRv1OaM2S-kyE02S0FFA-1; Tue, 08 Mar 2022 06:05:30 -0500
+X-MC-Unique: j1cRv1OaM2S-kyE02S0FFA-1
+Received: by mail-ed1-f71.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso10360385edt.20
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 03:05:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cmIEv3+2duqaZszEh7bUQ4/zmJnqkg7ujOQpTYxWoCc=;
-        b=7OcmB+mDWv0mmCF7NkWQP5c9rD9fRsjQzUxSPjKhibz4q/3UnRNcKYnFuCf9aQ4TwW
-         o7gM4+Q2gzK5CgZPWUVOl5PYotV6+FLzkIwPa9gsFteVpDhyf9N4PSlAu/i8rEBsWEov
-         PAn8VrJXrgU8Z1ZHk9ktEEMKogoUUOSp29wHMHABhWsihmN1RhAQFHGkZFm/SX8la1M8
-         OF0LxtVtjVmTEuI7Xzf4Ud51sOBvO2peJY0pk9PaYekWUTW3RSJFckVRudLbnUIFquG/
-         dQV9FuEekyz7KJaMT49qYIZyz2Xbv1tdFQiQYBlXkvK3CjweWbVwnmUM7nU4W4lCd8Jd
-         xbkg==
-X-Gm-Message-State: AOAM532wcFCF/p6u50KUUvUntP4Iz3bXARFtEMmunw4oLyMexUUioWI2
-        WUU9AVgwmyb/YR6lI5RTa52NehhhfYXL5zu0Cos9PIqgdJyPH13btrtKQfChPHR8e9R0gjVOhU8
-        +uUxmij9Pj/P387HPIP0hw+r0r4SR7cm4cQ==
-X-Received: by 2002:a50:ee83:0:b0:416:63c:3dd2 with SMTP id f3-20020a50ee83000000b00416063c3dd2mr15418703edr.361.1646737351840;
-        Tue, 08 Mar 2022 03:02:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx3p9DGak2cIN3Oy9Pu0jBYckHw9+LyOxxPiom+Z6kSsNDhhsbDrANi6ehjTkjpzIfTQQ7yrA==
-X-Received: by 2002:a50:ee83:0:b0:416:63c:3dd2 with SMTP id f3-20020a50ee83000000b00416063c3dd2mr15418664edr.361.1646737351463;
-        Tue, 08 Mar 2022 03:02:31 -0800 (PST)
-Received: from [192.168.0.143] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm4069130ejb.220.2022.03.08.03.02.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 03:02:30 -0800 (PST)
-Message-ID: <bbb7e8fa-757a-64c6-640e-c24bf3e56b82@canonical.com>
-Date:   Tue, 8 Mar 2022 12:02:29 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FCTl0NyGnslmoDNlbPArwT49YkiFqe8KOOW4Ouvu6mc=;
+        b=lNsITz+MNxIxQH2lc4CcW3JhtTTrGD/UAP+puqzi25IM4iwQpW6EM33V9Q2ecsu+G3
+         RADWhJjKojngm1coaaypspTRfIdvLwku/emRHkEKQ8HWJLzHM4Wlw8nbs2enB7ujIe5X
+         KwWXa35eR+0XJ+B3fxvdaaELIoleZsHJdv9Mc+Th2fPvUQy1uanidqG0I3U3tXNncvPI
+         GMYSxkNyk3JXgbigjQ+ftvpLK4omR6cheHepX2rip3utnKpA+atOEomAQqUY5NErxrYu
+         TE8LyfuhiAW1X8KLAzl+BfXM6Fubsm0jp4ml2PN0+dEjQcUeswRf+Grc172yh3HBP6yu
+         qa1w==
+X-Gm-Message-State: AOAM533w4CiuCekucTKqBfh22PctV0IJXqi9kMXOo06E+IaG+wL0I8Gh
+        P7fJqaa2/zJcgy1oWlOaWEJQ3RYOC9Eoih3git8XJHU7d/wXsk3nUJyd0+bTqt06ljDENAzUoLV
+        rrNUpdJxePRHa+duA
+X-Received: by 2002:a17:907:2d22:b0:6da:91fe:15a5 with SMTP id gs34-20020a1709072d2200b006da91fe15a5mr13286736ejc.448.1646737528845;
+        Tue, 08 Mar 2022 03:05:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwgv7cglanKYuGFfnW0Rf0VAUYwA4cx1PX1P0MLrG9UedzvWygSn4/xGLczSKDMdkoHZTSdZQ==
+X-Received: by 2002:a17:907:2d22:b0:6da:91fe:15a5 with SMTP id gs34-20020a1709072d2200b006da91fe15a5mr13286713ejc.448.1646737528603;
+        Tue, 08 Mar 2022 03:05:28 -0800 (PST)
+Received: from redhat.com ([2.55.138.228])
+        by smtp.gmail.com with ESMTPSA id y12-20020a50eb8c000000b00410f02e577esm7525742edr.7.2022.03.08.03.05.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 03:05:28 -0800 (PST)
+Date:   Tue, 8 Mar 2022 06:05:24 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Lee Jones <lee.jones@linaro.org>, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
+ whilst still in use
+Message-ID: <20220308060210-mutt-send-email-mst@kernel.org>
+References: <20220307191757.3177139-1-lee.jones@linaro.org>
+ <YiZeB7l49KC2Y5Gz@kroah.com>
+ <YicPXnNFHpoJHcUN@google.com>
+ <Yicalf1I6oBytbse@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 5/9] ARM: dts: exynos: fix ethernet node name for
- different odroid boards
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Scott Branden <sbranden@broadcom.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     kernel@pengutronix.de, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20220216074927.3619425-1-o.rempel@pengutronix.de>
- <20220216074927.3619425-6-o.rempel@pengutronix.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220216074927.3619425-6-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yicalf1I6oBytbse@kroah.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/02/2022 08:49, Oleksij Rempel wrote:
-> The node name of Ethernet controller should be "ethernet" instead of
-> "usbether" as required by Ethernet controller devicetree schema:
->  Documentation/devicetree/bindings/net/ethernet-controller.yaml
+On Tue, Mar 08, 2022 at 09:57:57AM +0100, Greg KH wrote:
+> > > And what happens if the mutex is locked _RIGHT_ after you checked it?
+> > > You still have a race...
+> > 
+> > No, we miss a warning that one time.  Memory is still protected.
 > 
-> This patch can potentially affect boot loaders patching against full
-> node path instead of using device aliases.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  arch/arm/boot/dts/exynos4412-odroidu3.dts       | 2 +-
->  arch/arm/boot/dts/exynos4412-odroidx.dts        | 2 +-
->  arch/arm/boot/dts/exynos5410-odroidxu.dts       | 2 +-
->  arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts | 2 +-
->  arch/arm/boot/dts/exynos5422-odroidxu3.dts      | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
-> 
+> Then don't warn on something that doesn't matter.  This line can be
+> dropped as there's nothing anyone can do about it, right?
 
-Hi Oleksij,
+I mean, the reason I wanted the warning is because there's a kernel
+bug, and it will break userspace. warning is just telling us this.
+is the bug reacheable from userspace? if we knew that we won't
+need the lock ...
 
-Both Exynos patches look good, unfortunately I forgot about them a week
-ago when I was preparing late pull request and now it is too late for
-this cycle. I will pick them up after the merge window. Sorry, for this.
+-- 
+MST
 
-Best regards,
-Krzysztof
