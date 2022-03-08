@@ -2,232 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 603904D1E3D
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 18:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 418674D1E55
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 18:17:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237619AbiCHRMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 12:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
+        id S1348577AbiCHRST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 12:18:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348606AbiCHRMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 12:12:41 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCAA4C428
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 09:11:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646759504; x=1678295504;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=C3IfuYK1cwwBXbpNHExzoGd3lzVIhzCotVgayzudtBE=;
-  b=BID6u6BQxZklSJJLJHvCXcuHnEXgK5iIUqbHSzEYWRQRtyCeVipBk9Cq
-   8FXijEWwnMBD7BCkRRZfnpCIinnECwmgwWYCzCjZKgZQWzcCywprWrLSp
-   nKbRUxpmitaC5QIVwr1heOVmfK612Ezk0XJ+G8ePS8EdJIHeymoT+CR7S
-   T6opaHIc3JpQNWr3NSLJ+33t48K0HdqShdUW3JFazW71GoKhGCYyNjx20
-   kPXBpLCy1s68u9+RKngU91pu/rc8+EUlvK6q6pU8GcipCdNLam7F/FExn
-   49WA3f3Q48Agbkp36ltYZjqxGHXEAODTD0SsTMYhbfFKq9ZGaaeoZtejI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="317972888"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="317972888"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 09:11:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="611069479"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Mar 2022 09:11:43 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Slawomir Mrozowicz <slawomirx.mrozowicz@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 3/3] ixgbevf: add disable link state
-Date:   Tue,  8 Mar 2022 09:11:55 -0800
-Message-Id: <20220308171155.408896-4-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220308171155.408896-1-anthony.l.nguyen@intel.com>
-References: <20220308171155.408896-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S236966AbiCHRSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 12:18:18 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6333852E72;
+        Tue,  8 Mar 2022 09:17:21 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id bi12so27666599ejb.3;
+        Tue, 08 Mar 2022 09:17:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QN4f7aRfMRy6jjFzTVyfXHZqX7kSLQSGCV4hl7xnDdo=;
+        b=TT73bdraUoPqY7Hv+qcsEXvwe+EPtjpOa3Yf+DT5eiC4TWS06FVOn80zFlJHx+XfjO
+         HguK1F3joiuVeYAOw5LFJLlteZCqzS8icf1jQbPWBtJEmz4JOOo48IbWPYWPlpu0RvdM
+         ZBAF6fPOAU8yO37GY9qmsU6je89NUxuMHbXqiL8EY+ZCiGMrdqWoO6UHehNCVGOdtvkJ
+         yllpIFosLxW9z+uLFDPpMA+VVkp5PqdrC1EEETGnHsXoQ0VtaMH6F9t9tuEOtiJJn4m0
+         titviv4dUsAN5hh2TmPeXxxAmKgz9RtbBLEtnbwRo6fchg+nsh0XZOUkPIM96bPNBwI/
+         Dv3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QN4f7aRfMRy6jjFzTVyfXHZqX7kSLQSGCV4hl7xnDdo=;
+        b=b4RcROCN6lG6Asq1+QngFRcBrFq0yRNCzrMN6LYqDdzW5fnScaCzfmEBunotWhfUZn
+         ad+OkDnoIbVpu8h0o1SwinLJsZjGRyfUe65pdkn0jlww1NkA3T42adtrFQH15KfT9kbo
+         ypvdxgQQU4J/J5yHrNEtrVbp0rYt4SyarHwrTmk3xmc+Ijqcz127sf/4ZLHa91I7okVN
+         ooalAlOC9U4EUnJyGPpS5KkmHKx9EIqfGigZAhxjz5k51WzY3NHyaiiUI/3UPX/kfmDS
+         SBSLuJh1H3NhT7f+EmENQtDqAvAyOG7BReiqr88kshJgapNlehCSBWvMbWd/Owq0dgrV
+         N0CA==
+X-Gm-Message-State: AOAM532PQy3ewSM/zc8HqMvbwdiD06FzvFtHMI5gD5L1GAVfvZGB5HkD
+        mgCUe+EFkA9yTHzueXsJ004=
+X-Google-Smtp-Source: ABdhPJxKq7B8zhwV1jSOt8K6TnNnJ9hfc2/PfFK1D2149KXccg1yauJo46R0dZqYgRXN+Czl48JNLQ==
+X-Received: by 2002:a17:906:d29b:b0:6da:9e4d:bb7c with SMTP id ay27-20020a170906d29b00b006da9e4dbb7cmr14859587ejb.155.1646759839575;
+        Tue, 08 Mar 2022 09:17:19 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id z16-20020a05640240d000b004165f6ce23bsm2312585edb.24.2022.03.08.09.17.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 09:17:19 -0800 (PST)
+Date:   Tue, 8 Mar 2022 19:17:17 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 04/10] net: bridge: mst: Notify switchdev
+ drivers of VLAN MSTI migrations
+Message-ID: <20220308171717.s2hqp6raoe5gcgtl@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
+ <20220301100321.951175-5-tobias@waldekranz.com>
+ <20220303205921.sxb52jzw4jcdj6m7@skbuf>
+ <87y21kna9r.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87y21kna9r.fsf@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Slawomir Mrozowicz <slawomirx.mrozowicz@intel.com>
+On Tue, Mar 08, 2022 at 09:01:04AM +0100, Tobias Waldekranz wrote:
+> On Thu, Mar 03, 2022 at 22:59, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > On Tue, Mar 01, 2022 at 11:03:15AM +0100, Tobias Waldekranz wrote:
+> >> Whenever a VLAN moves to a new MSTI, send a switchdev notification so
+> >> that switchdevs can...
+> >> 
+> >> ...either refuse the migration if the hardware does not support
+> >> offloading of MST...
+> >> 
+> >> ..or track a bridge's VID to MSTI mapping when offloading is
+> >> supported.
+> >> 
+> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> >> ---
+> >>  include/net/switchdev.h   | 10 +++++++
+> >>  net/bridge/br_mst.c       | 15 +++++++++++
+> >>  net/bridge/br_switchdev.c | 57 +++++++++++++++++++++++++++++++++++++++
+> >>  3 files changed, 82 insertions(+)
+> >> 
+> >> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+> >> index 3e424d40fae3..39e57aa5005a 100644
+> >> --- a/include/net/switchdev.h
+> >> +++ b/include/net/switchdev.h
+> >> @@ -28,6 +28,7 @@ enum switchdev_attr_id {
+> >>  	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
+> >>  	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
+> >>  	SWITCHDEV_ATTR_ID_MRP_PORT_ROLE,
+> >> +	SWITCHDEV_ATTR_ID_VLAN_MSTI,
+> >>  };
+> >>  
+> >>  struct switchdev_brport_flags {
+> >> @@ -35,6 +36,14 @@ struct switchdev_brport_flags {
+> >>  	unsigned long mask;
+> >>  };
+> >>  
+> >> +struct switchdev_vlan_attr {
+> >> +	u16 vid;
+> >> +
+> >> +	union {
+> >> +		u16 msti;
+> >> +	};
+> >
+> > Do you see other VLAN attributes that would be added in the future, such
+> > as to justify making this a single-element union from the get-go?
+> 
+> I could imagine being able to control things like multicast snooping on
+> a per-VLAN basis. Being able to act as a multicast router in one VLAN
+> but not another.
+> 
+> > Anyway if that is the case, we're lacking an id for the attribute type,
+> > so we'd end up needing to change drivers when a second union element
+> > appears. Otherwise they'd all expect an u16 msti.
+> 
+> My idea was that `enum switchdev_attr_id` would hold all of that
+> information. In this example SWITCHDEV_ATTR_ID_VLAN_MSTI, denotes both
+> that `vlan_attr` is the valid member of `u` and that `msti` is the valid
+> member of `vlan_attr`. If we add SWITCHDEV_ATTR_ID_VLAN_SNOOPING, that
+> would point to both `vlan_attr` and a new `bool snooping` in the union.
+> 
+> Do you think we should just have a SWITCHDEV_ATTR_ID_VLAN_ATTR for all
+> per-VLAN attributes and then have a separate union?
 
-Add possibility to disable link state if it is administratively
-disabled in PF.
+It's the first nested union that I see, and a bit confusing.
 
-It is part of the general functionality that allows the PF driver
-to control the state of the virtual link VF devices.
+I think it would be better if we had a
 
-Signed-off-by: Slawomir Mrozowicz <slawomirx.mrozowicz@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ixgbevf/ixgbevf.h  |  2 +
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 11 ++++-
- drivers/net/ethernet/intel/ixgbevf/mbx.h      |  2 +
- drivers/net/ethernet/intel/ixgbevf/vf.c       | 42 +++++++++++++++++++
- drivers/net/ethernet/intel/ixgbevf/vf.h       |  1 +
- 5 files changed, 57 insertions(+), 1 deletion(-)
+struct switchdev_vlan_attr_msti {
+	u16 vid;
+	u16 msti;
+};
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf.h b/drivers/net/ethernet/intel/ixgbevf/ixgbevf.h
-index e257390a4f6a..149c733fcc2b 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf.h
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf.h
-@@ -387,6 +387,8 @@ struct ixgbevf_adapter {
- 	u32 *rss_key;
- 	u8 rss_indir_tbl[IXGBEVF_X550_VFRETA_SIZE];
- 	u32 flags;
-+	bool link_state;
-+
- #define IXGBEVF_FLAGS_LEGACY_RX		BIT(1)
- 
- #ifdef CONFIG_XFRM
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index 84222ec2393c..55b87bc3a938 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -2298,7 +2298,9 @@ static void ixgbevf_negotiate_api(struct ixgbevf_adapter *adapter)
- static void ixgbevf_up_complete(struct ixgbevf_adapter *adapter)
- {
- 	struct net_device *netdev = adapter->netdev;
-+	struct pci_dev *pdev = adapter->pdev;
- 	struct ixgbe_hw *hw = &adapter->hw;
-+	bool state;
- 
- 	ixgbevf_configure_msix(adapter);
- 
-@@ -2311,6 +2313,11 @@ static void ixgbevf_up_complete(struct ixgbevf_adapter *adapter)
- 
- 	spin_unlock_bh(&adapter->mbx_lock);
- 
-+	state = adapter->link_state;
-+	hw->mac.ops.get_link_state(hw, &adapter->link_state);
-+	if (state && state != adapter->link_state)
-+		dev_info(&pdev->dev, "VF is administratively disabled\n");
-+
- 	smp_mb__before_atomic();
- 	clear_bit(__IXGBEVF_DOWN, &adapter->state);
- 	ixgbevf_napi_enable_all(adapter);
-@@ -3081,6 +3088,8 @@ static int ixgbevf_sw_init(struct ixgbevf_adapter *adapter)
- 	adapter->tx_ring_count = IXGBEVF_DEFAULT_TXD;
- 	adapter->rx_ring_count = IXGBEVF_DEFAULT_RXD;
- 
-+	adapter->link_state = true;
-+
- 	set_bit(__IXGBEVF_DOWN, &adapter->state);
- 	return 0;
- 
-@@ -3313,7 +3322,7 @@ static void ixgbevf_watchdog_subtask(struct ixgbevf_adapter *adapter)
- 
- 	ixgbevf_watchdog_update_link(adapter);
- 
--	if (adapter->link_up)
-+	if (adapter->link_up && adapter->link_state)
- 		ixgbevf_watchdog_link_is_up(adapter);
- 	else
- 		ixgbevf_watchdog_link_is_down(adapter);
-diff --git a/drivers/net/ethernet/intel/ixgbevf/mbx.h b/drivers/net/ethernet/intel/ixgbevf/mbx.h
-index 7346ccf014a5..835bbcc5cc8e 100644
---- a/drivers/net/ethernet/intel/ixgbevf/mbx.h
-+++ b/drivers/net/ethernet/intel/ixgbevf/mbx.h
-@@ -100,6 +100,8 @@ enum ixgbe_pfvf_api_rev {
- #define IXGBE_VF_IPSEC_ADD	0x0d
- #define IXGBE_VF_IPSEC_DEL	0x0e
- 
-+#define IXGBE_VF_GET_LINK_STATE 0x10 /* get vf link state */
-+
- /* length of permanent address message returned from PF */
- #define IXGBE_VF_PERMADDR_MSG_LEN	4
- /* word in permanent address message with the current multicast type */
-diff --git a/drivers/net/ethernet/intel/ixgbevf/vf.c b/drivers/net/ethernet/intel/ixgbevf/vf.c
-index 61d8970c6d1d..68fc32e36e88 100644
---- a/drivers/net/ethernet/intel/ixgbevf/vf.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/vf.c
-@@ -584,6 +584,46 @@ static s32 ixgbevf_hv_update_xcast_mode(struct ixgbe_hw *hw, int xcast_mode)
- 	return -EOPNOTSUPP;
- }
- 
-+/**
-+ * ixgbevf_get_link_state_vf - Get VF link state from PF
-+ * @hw: pointer to the HW structure
-+ * @link_state: link state storage
-+ *
-+ * Returns state of the operation error or success.
-+ */
-+static s32 ixgbevf_get_link_state_vf(struct ixgbe_hw *hw, bool *link_state)
-+{
-+	u32 msgbuf[2];
-+	s32 ret_val;
-+	s32 err;
-+
-+	msgbuf[0] = IXGBE_VF_GET_LINK_STATE;
-+	msgbuf[1] = 0x0;
-+
-+	err = ixgbevf_write_msg_read_ack(hw, msgbuf, msgbuf, 2);
-+
-+	if (err || (msgbuf[0] & IXGBE_VT_MSGTYPE_FAILURE)) {
-+		ret_val = IXGBE_ERR_MBX;
-+	} else {
-+		ret_val = 0;
-+		*link_state = msgbuf[1];
-+	}
-+
-+	return ret_val;
-+}
-+
-+/**
-+ * ixgbevf_hv_get_link_state_vf - * Hyper-V variant - just a stub.
-+ * @hw: unused
-+ * @link_state: unused
-+ *
-+ * Hyper-V variant; there is no mailbox communication.
-+ */
-+static s32 ixgbevf_hv_get_link_state_vf(struct ixgbe_hw *hw, bool *link_state)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- /**
-  *  ixgbevf_set_vfta_vf - Set/Unset VLAN filter table address
-  *  @hw: pointer to the HW structure
-@@ -968,6 +1008,7 @@ static const struct ixgbe_mac_operations ixgbevf_mac_ops = {
- 	.set_rar		= ixgbevf_set_rar_vf,
- 	.update_mc_addr_list	= ixgbevf_update_mc_addr_list_vf,
- 	.update_xcast_mode	= ixgbevf_update_xcast_mode,
-+	.get_link_state		= ixgbevf_get_link_state_vf,
- 	.set_uc_addr		= ixgbevf_set_uc_addr_vf,
- 	.set_vfta		= ixgbevf_set_vfta_vf,
- 	.set_rlpml		= ixgbevf_set_rlpml_vf,
-@@ -985,6 +1026,7 @@ static const struct ixgbe_mac_operations ixgbevf_hv_mac_ops = {
- 	.set_rar		= ixgbevf_hv_set_rar_vf,
- 	.update_mc_addr_list	= ixgbevf_hv_update_mc_addr_list_vf,
- 	.update_xcast_mode	= ixgbevf_hv_update_xcast_mode,
-+	.get_link_state		= ixgbevf_hv_get_link_state_vf,
- 	.set_uc_addr		= ixgbevf_hv_set_uc_addr_vf,
- 	.set_vfta		= ixgbevf_hv_set_vfta_vf,
- 	.set_rlpml		= ixgbevf_hv_set_rlpml_vf,
-diff --git a/drivers/net/ethernet/intel/ixgbevf/vf.h b/drivers/net/ethernet/intel/ixgbevf/vf.h
-index 54158dac8707..b4eef5b6c172 100644
---- a/drivers/net/ethernet/intel/ixgbevf/vf.h
-+++ b/drivers/net/ethernet/intel/ixgbevf/vf.h
-@@ -39,6 +39,7 @@ struct ixgbe_mac_operations {
- 	s32 (*init_rx_addrs)(struct ixgbe_hw *);
- 	s32 (*update_mc_addr_list)(struct ixgbe_hw *, struct net_device *);
- 	s32 (*update_xcast_mode)(struct ixgbe_hw *, int);
-+	s32 (*get_link_state)(struct ixgbe_hw *hw, bool *link_state);
- 	s32 (*enable_mc)(struct ixgbe_hw *);
- 	s32 (*disable_mc)(struct ixgbe_hw *);
- 	s32 (*clear_vfta)(struct ixgbe_hw *);
--- 
-2.31.1
+and different structures for other, future VLAN attributes. Basically
+keep a 1:1 mapping between an attribute id and a union.
 
+> >> +};
+> >> +
+> >>  struct switchdev_attr {
+> >>  	struct net_device *orig_dev;
+> >>  	enum switchdev_attr_id id;
+> >> @@ -50,6 +59,7 @@ struct switchdev_attr {
+> >>  		u16 vlan_protocol;			/* BRIDGE_VLAN_PROTOCOL */
+> >>  		bool mc_disabled;			/* MC_DISABLED */
+> >>  		u8 mrp_port_role;			/* MRP_PORT_ROLE */
+> >> +		struct switchdev_vlan_attr vlan_attr;	/* VLAN_* */
+> >>  	} u;
+> >>  };
+> >>  
+> >> diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
+> >> index 8dea8e7257fd..aba603675165 100644
+> >> --- a/net/bridge/br_mst.c
+> >> +++ b/net/bridge/br_mst.c
+> >> @@ -7,6 +7,7 @@
+> >>   */
+> >>  
+> >>  #include <linux/kernel.h>
+> >> +#include <net/switchdev.h>
+> >>  
+> >>  #include "br_private.h"
+> >>  
+> >> @@ -65,9 +66,23 @@ static void br_mst_vlan_sync_state(struct net_bridge_vlan *pv, u16 msti)
+> >>  
+> >>  int br_mst_vlan_set_msti(struct net_bridge_vlan *mv, u16 msti)
+> >>  {
+> >> +	struct switchdev_attr attr = {
+> >> +		.id = SWITCHDEV_ATTR_ID_VLAN_MSTI,
+> >> +		.flags = SWITCHDEV_F_DEFER,
+> >
+> > Is the bridge spinlock held (atomic context), or otherwise why is
+> > SWITCHDEV_F_DEFER needed here?
+> 
+> Nope, just copypasta. In fact, it shouldn't be needed when setting the
+> state either, as you can only change the state via a netlink message. I
+> will remove it.
+> 
+> >> +		.orig_dev = mv->br->dev,
+> >> +		.u.vlan_attr = {
+> >> +			.vid = mv->vid,
+> >> +			.msti = msti,
+> >> +		},
+> >> +	};
+> >>  	struct net_bridge_vlan_group *vg;
+> >>  	struct net_bridge_vlan *pv;
+> >>  	struct net_bridge_port *p;
+> >> +	int err;
+> >> +
+> >> +	err = switchdev_port_attr_set(mv->br->dev, &attr, NULL);
+> >
+> > Treating a "VLAN attribute" as a "port attribute of the bridge" is
+> > pushing the taxonomy just a little, but I don't have a better suggestion.
+> 
+> Isn't there prior art here? I thought things like VLAN filtering already
+> worked like this?
+
+Hmm, I can think of VLAN filtering as being an attribute of the bridge
+device, but 'which MSTI does VLAN X belong to' is an attribute of the
+VLAN (in itself a switchdev object, i.e. something countable).
+
+If the prior art would apply as straightforward as you say, then we'd be
+replaying the VLAN MSTIs together with the other port attributes - in
+"pull" mode, in dsa_port_switchdev_sync_attrs(), rather than in "push"
+mode with the rest of the objects - in nbp_switchdev_sync_objs().
+But we're not doing that.
+
+To prove that there is a difference between VLAN filtering as a port
+property of the bridge device, and VLAN MSTIs (or other per-VLAN global
+bridge options), consider this.
+You create a bridge, add 10 VLANs on br0, enable VLAN filtering, then
+delete the 10 VLANs and re-create them. The bridge is still VLAN
+filtering.
+So VLAN filtering is a property of the bridge.
+
+Next you create a bridge, add 10 VLANs on br0, run your new command:
+'bridge vlan global set dev br0 vid <VID> msti <MSTI>'
+then delete the 10 VLANs and create them back.
+Their MSTI is 0, not what was set via the bridge vlan global options...
+Because the MSTI is a property of the VLANs, not of the bridge.
+
+A real port attribute wouldn't behave like that.
+
+At least this is what I understand from your patch set, I haven't run it;
+sorry if I'm mistaken about something, but I can't find a clearer way to
+express what I find strange.
+
+Anyway, I'll stop uselessly commenting here - I can understand the
+practical reasons why you wouldn't want to bother expanding the taxonomy
+to describe this for what it really is - an "object attribute" of sorts -
+because a port attribute for the bridge device has the call path you
+need already laid out, including replication towards all bridge ports.
