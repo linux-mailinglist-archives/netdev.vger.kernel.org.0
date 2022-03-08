@@ -2,79 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E53F64D1627
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 12:22:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3FFE4D1685
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 12:44:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346439AbiCHLXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 06:23:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
+        id S243257AbiCHLpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 06:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346530AbiCHLW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 06:22:56 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED8646164;
-        Tue,  8 Mar 2022 03:22:00 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id g3so11782024edu.1;
-        Tue, 08 Mar 2022 03:22:00 -0800 (PST)
+        with ESMTP id S1346695AbiCHLpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 06:45:36 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4033E5D7;
+        Tue,  8 Mar 2022 03:44:36 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id x5so24036190edd.11;
+        Tue, 08 Mar 2022 03:44:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=c+rvaRPglsdjCivkAUDo1zGQCcIIdAVOXsTQ+b3U1eU=;
-        b=eseSg3gO+h/WvBzk8rHM8vEeplHFFSPvnISVegXP8IIJiZCcnzEQYyKbh4+9dP8AE5
-         Qj3EdGyvLx/4sVjgcMFAbWRfId2FhrgNBZgtJ0X2qCyc51JG+hg3yplFDYb2fBzamJAQ
-         6MfeEjNncMY45sNgvFXEF/ll/p5aTEmHhn+KcrRzfwX4qLiLZxvbVmKEOK+mQNPHrjUC
-         9NIPbLunXD+FESfsntzHENX9cdwvhLddR0GrIMPMWXnuMUrX32OZxSZVfSGzFGl36ARi
-         JPX2PtM1eStZ+7jatS9466HRnQlOH+npvgfCizjbUOt6ogC2AoDkltYcxO3YIrHcDaxF
-         S10Q==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=JMRbz6J1yWshdN+XM2gYkyrpKd4K5wvxuv5/wGGiQFc=;
+        b=OKM75JlRjWvWpwoYf1E0yHZch86+h4aKV1Tj1Zt/TVB6Wg6FBJL1axc55dc0CodgRu
+         civSLGEB/uQ8FErK0LBEaCNcC9FcRCWqNXmA7WBCFOqqA5RhhkKYrGpGF58nrDEwLOdU
+         XE9nDRx8gUPU83ih4io9MlShh2My8VtsZ8yzi+SePDKF8uAy/dtihvmpHRIIBMl6EdYu
+         m0zLAs4HvYrxmaN+SNqmtMTEWtcksgm9A+WDIOVXPnTuBt4gQGyqD3oHK+La3ls7K6Jz
+         D0VPEaE6hRJggWYbqubE7AyXpZDYq3LfhBq8GLIewJlkJOkclDTB0MVzrtokyzfSvhco
+         lxwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=c+rvaRPglsdjCivkAUDo1zGQCcIIdAVOXsTQ+b3U1eU=;
-        b=4W4xa8E67AN8avlhNz+W4MSUngRu5tXT8XkVy1qb3CGAV7XmjHH3GWI+wj2O+scwZ4
-         KKnVorKlNVs/TJbzRiEqzoF10HhQcvxve4lroLdSOyhMsuW3VbpkkCW3joGzWwRy5EIS
-         YRYQ/QG8E+yFYGf84xMjwyibmxwoBJE3Yl1yHPjgUEpwlBW9f7J7g4sSNbbty0BVHrH3
-         GQxE+n3oVjFJkItz98QOP5L1UWA0t5R92lzNZ40XtCMYejbVqod4vLro++Y5xyArdYvQ
-         3SwdNsjXDGn/8HLL7uKlfYFapW64LqiNJllfNB3+X4PQ/oNtdyMhAYwa6BcRp24llgxA
-         v/GA==
-X-Gm-Message-State: AOAM531BL2/QzjQ+64+w37kXOVy+QtRBt32EwUX56VVW4BeMZ8lurs6j
-        MIIu90rb0+GpNGHNVoyq8EE=
-X-Google-Smtp-Source: ABdhPJyZEf6Mycjwi3XGLk0/LoHIRa79uwoByVgnNfLv4FkoMPZSH04fTXlGXFc09jGZmUuS9DgAvA==
-X-Received: by 2002:a05:6402:2987:b0:414:39b0:7fc1 with SMTP id eq7-20020a056402298700b0041439b07fc1mr15519948edb.214.1646738518909;
-        Tue, 08 Mar 2022 03:21:58 -0800 (PST)
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=JMRbz6J1yWshdN+XM2gYkyrpKd4K5wvxuv5/wGGiQFc=;
+        b=uJkQjmFnxbFEOyg+7RmlFy/Jfy7nyUv4B/T5izVcA/D/V5kMiNxUs2SZKJ9bA7n76u
+         ZCKXym1/A1XITwN3DaLSoUND9FYg7gHBHfOu8DoHxQXDG9osIBsvKX0gsWhEM9szOF4S
+         EJ1+hKR2Z3A1g/CZP+eBk8Tn0UKmSo57qeGnOiCNHkVsQfUZRG/E94jPeN/vQhTWiOqR
+         vlOYnXg3IgJ33mt1asreVlZt4VVH0XSY7f//8CBPb4//O3PAWPB89kz8sVJ1RulQfwde
+         lwZ0lkUNKDp7kD5k4bwviuvmP2NBq5sucC6FVPK40iB5KGtfVc5WuUhpaica/7sICpMH
+         8XUQ==
+X-Gm-Message-State: AOAM5332smgcNPgON7tSevRCWEfBWOQuAyWiv+D5uj5Ih+rHiOvmGROK
+        mAh1PQb1Kh2A56wME4TsvkY=
+X-Google-Smtp-Source: ABdhPJynjbtLJHmlzmzSALzgeprNdMLWfvq3lyyL11wapuPi1rffKj6gVUedEWAiSb+GbE3XbdLmQQ==
+X-Received: by 2002:a50:9d47:0:b0:40f:9d3d:97b6 with SMTP id j7-20020a509d47000000b0040f9d3d97b6mr15545850edk.392.1646739875071;
+        Tue, 08 Mar 2022 03:44:35 -0800 (PST)
 Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id g22-20020a170906395600b006cec40b9cf0sm5757828eje.92.2022.03.08.03.21.57
+        by smtp.gmail.com with ESMTPSA id r6-20020a1709064d0600b006da7ca3e514sm5734108eju.208.2022.03.08.03.44.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 03:21:58 -0800 (PST)
-Date:   Tue, 8 Mar 2022 13:21:56 +0200
+        Tue, 08 Mar 2022 03:44:34 -0800 (PST)
+Date:   Tue, 8 Mar 2022 13:44:33 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 1/1] net: dsa: microchip: ksz9477: implement
- MTU configuration
-Message-ID: <20220308112156.6s2ssnkhifxuuw2w@skbuf>
-References: <20220223233833.mjknw5ko7hpxj3go@skbuf>
- <20220224045936.GB4594@pengutronix.de>
- <20220224093329.hssghouq7hmgxvwb@skbuf>
- <20220224093827.GC4594@pengutronix.de>
- <20220224094657.jzhvi67ryhuipor4@skbuf>
- <20220225114740.GA27407@pengutronix.de>
- <20220225115802.bvjd54cwwk6hjyfa@skbuf>
- <20220225125430.GB27407@pengutronix.de>
- <20220225163543.vnqlkltgmwf4vlmm@skbuf>
- <20220308100644.GA5189@pengutronix.de>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: rectify entry for REALTEK RTL83xx SMI DSA
+ ROUTER CHIPS
+Message-ID: <20220308114433.ucxenhxoq2grty4k@skbuf>
+References: <20220308103027.32191-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220308100644.GA5189@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220308103027.32191-1-lukas.bulwahn@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -85,52 +79,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 11:06:44AM +0100, Oleksij Rempel wrote:
-> > > > I was saying:
-> > > > 
-> > > > ip link set lan1 up
-> > > > ip link add link lan1 name lan1.5 type vlan id 5
-> > > > ip addr add 172.17.0.2/24 dev lan1.5 && ip link set lan1.5 up
-> > > > iperf3 -c 172.17.0.10
-> > > 
-> > > It works.
-> > 
-> > This is akin to saying that without any calls to ksz9477_change_mtu(),
-> > just writing VLAN_ETH_FRAME_LEN + ETH_FCS_LEN into REG_SW_MTU__2 is
-> > sufficient to get VLAN-tagged MTU-sized packets to pass through the CPU
-> > port and the lan1 user port.
-> > 
-> > So my question is: is this necessary?
-> > 
-> > 	if (dsa_is_cpu_port(ds, port))
-> > 		new_mtu += KSZ9477_INGRESS_TAG_LEN;
-> > 
+On Tue, Mar 08, 2022 at 11:30:27AM +0100, Lukas Bulwahn wrote:
+> Commit 429c83c78ab2 ("dt-bindings: net: dsa: realtek: convert to YAML
+> schema, add MDIO") converts realtek-smi.txt to realtek.yaml, but missed to
+> adjust its reference in MAINTAINERS.
 > 
-> No.
+> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+> broken reference.
 > 
-> I did some extra tests with following results: REG_SW_MTU__2 should be
-> configured to 1518 to pass 1514 frame. Independent if the frame is
-> passed between external ports or external to CPU port. So, I assume,
-> ETH_FRAME_LEN + ETH_FCS_LEN should be used instead of VLAN_ETH_FRAME_LEN
-> + ETH_FCS_LEN. Correct?
+> Repair this file reference in REALTEK RTL83xx SMI DSA ROUTER CHIPS.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
 
-Oleksij, to be clear, I only had an issue with consistency.
-You were adding KSZ9477_INGRESS_TAG_LEN during ksz9477_change_mtu() but
-not during initial setup. That prompted the question: is that particular
-member of the sum needed or not? Either it's needed in both places, or
-in none.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Then, apart from removing KSZ9477_INGRESS_TAG_LEN, you've also made an
-unsolicited change (subtracted VLAN_HLEN from the value programmed to
-hardware) without a clear confirmation that you understand what this
-does, and without explicitly saying that the iperf3 test above still
-works with this formula applied.
-
-Since the VLAN header is part of L2, it means that a port configured for
-MTU 1500 must also support VLAN-tagged packets with an L2 payload of
-1500 octets. 1500 + ETH_HLEN + VLAN_HLEN == 1518 octets.
-And since you need to add ETH_HLEN + ETH_FCS_LEN, I have an unconfirmed
-hunch that VLAN_HLEN is also needed for the case above.
-
-So, I'm sorry for being paranoid, but you aren't really giving me a
-choice but to ask again, and again.
+> applies cleanly on next-20220308
+> 
+> David, please pick this minor non-urgent clean-up patch for net-next.
+> 
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 38cdf9aadfe4..8c7e40e1215e 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16638,7 +16638,7 @@ REALTEK RTL83xx SMI DSA ROUTER CHIPS
+>  M:	Linus Walleij <linus.walleij@linaro.org>
+>  M:	Alvin Šipraga <alsi@bang-olufsen.dk>
+>  S:	Maintained
+> -F:	Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
+> +F:	Documentation/devicetree/bindings/net/dsa/realtek.yaml
+>  F:	drivers/net/dsa/realtek/*
+>  
+>  REALTEK WIRELESS DRIVER (rtlwifi family)
+> -- 
+> 2.17.1
+> 
