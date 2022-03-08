@@ -2,93 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8A44D1139
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 08:43:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 979CE4D114E
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 08:50:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344689AbiCHHnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 02:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
+        id S233753AbiCHHvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 02:51:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344678AbiCHHnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 02:43:49 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380363878D;
-        Mon,  7 Mar 2022 23:42:53 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id k92so7282673pjh.5;
-        Mon, 07 Mar 2022 23:42:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=VMEKwBiD/5CmwbAtof2z8GMwXPO9FueLZUgikJXVEAk=;
-        b=mxs5OdtHR3i8lji4+csXfWtvPd+Ajo3T2V05avIkmU6rDqFNnOiOkK3M3y11qlmZL0
-         bDEdDKOHvihmcW0iN0A7L2RT6fTgRNxrGN2Mjc0rXIUGPoXRb4ZrgJm02EFy7mxdKbE7
-         tL11ddv1JI1kBccAlq4+2P0AVhiEzFYsFRobQjogMRC9UdbvsQTxaIXRQ5AbKTJQyWjk
-         FLtw8bso0FgAcjAEt531gugQxIH5jc13K3DZlHsbCpZBNZuibmyhQUyj96SMUc0dDdZT
-         T0WKxdpqoze0O/LIFW95RF7p+IQNSAB7naPqMbqOKL+h9wqDUVGiV2kLWN44nZsPzD47
-         nOJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=VMEKwBiD/5CmwbAtof2z8GMwXPO9FueLZUgikJXVEAk=;
-        b=aDM2ABACy7CTfB7hvSIvqh8AlbM5fmpK4COkwjxio9zCjSF8Olj9Lzsz4MFUQQVRrv
-         ZH9qGHI5RuHOvefCRKWRC/JE1aD9waMf8WxU2CTzmzswfAWhKnPNpt2Ng4WoGzFs/0py
-         22h35h+xUVBRK4HaTuIt9+FLOHBRuqRqWyydw9X7xN6AMcpsLVedW1L5x/uuso6bOyhT
-         mZP74j9nhlUt25MkyecIVcdqXGz7NAEHk/bqjZCdWvmmdhbjID7dD0/jIAgFUZZ+/UGA
-         AWAkLaCbO1cBqFRh7ebRrsCs0pVWeFSEwpWE9DaocdMxGU4ndf3qCXiGspVBNpWJfKLg
-         06kw==
-X-Gm-Message-State: AOAM530sHqT3US4tBcxDg3Mf7R5Yc7Y7splRrsr3gxjlEqEpNQVOAEJK
-        0b7lbW9ygLLOgGDBRDSqtyw=
-X-Google-Smtp-Source: ABdhPJxCIJOSRGFFK97b/cGmwGW3M1OLE5e8Oy7VsJLf+f47DIdwZKPAToBOfmmwwjCSpEJTSzQFQg==
-X-Received: by 2002:a17:902:d2c9:b0:151:e08b:1442 with SMTP id n9-20020a170902d2c900b00151e08b1442mr11277025plc.5.1646725372737;
-        Mon, 07 Mar 2022 23:42:52 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id h16-20020a17090a055000b001bf5ad0e45esm1709772pjf.43.2022.03.07.23.42.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Mar 2022 23:42:52 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] net: marvell: prestera: Add missing of_node_put() in prestera_switch_set_base_mac_addr
-Date:   Tue,  8 Mar 2022 07:42:47 +0000
-Message-Id: <20220308074247.26332-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231175AbiCHHvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 02:51:14 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA7833A20
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 23:50:17 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 75128204E5;
+        Tue,  8 Mar 2022 08:50:15 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 4QEDGo2_B0hf; Tue,  8 Mar 2022 08:50:14 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id C8B13201A0;
+        Tue,  8 Mar 2022 08:50:14 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id C32D880004A;
+        Tue,  8 Mar 2022 08:50:14 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Tue, 8 Mar 2022 08:50:14 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 8 Mar
+ 2022 08:50:13 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id BBF1F3182E92; Tue,  8 Mar 2022 08:50:13 +0100 (CET)
+Date:   Tue, 8 Mar 2022 08:50:13 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     David Ahern <dsahern@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>, Eyal Birger <eyal.birger@gmail.com>,
+        Antony Antony <antony.antony@secunet.com>
+Subject: Re: Regression in add xfrm interface
+Message-ID: <20220308075013.GD1791239@gauss3.secunet.de>
+References: <20220307121123.1486c035@hermes.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220307121123.1486c035@hermes.local>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This node pointer is returned by of_find_compatible_node() with
-refcount incremented. Calling of_node_put() to aovid the refcount leak.
+On Mon, Mar 07, 2022 at 12:11:23PM -0800, Stephen Hemminger wrote:
+> There appears to be a regression between 5.10 (Debian 11) and 5.16 (Debian testing)
+> kernel in handling of ip link xfrm create. This shows up in the iproute2 testsuite
+> which now fails. This is kernel (not iproute2) regression.
+> 
+> 
+> Running ip/link/add_type_xfrm.t [iproute2-this/5.16.0-1-amd64]: FAILED
+> 
+> 
+> Good log:
+> ::::::::::::::
+> link/add_type_xfrm.t.iproute2-this.out
+> ::::::::::::::
+> [Testing Add XFRM Interface, With IF-ID]
+> tests/ip/link/add_type_xfrm.t: Add dev-ktyXSm xfrm interface succeeded
+> tests/ip/link/add_type_xfrm.t: Show dev-ktyXSm xfrm interface succeeded with output:
+> 2: dev-ktyXSm@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/none  promiscuity 0 minmtu 68 maxmtu 65535 
+>     xfrm if_id 0xf addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+> test on: "dev-ktyXSm" [SUCCESS]
+> test on: "if_id 0xf" [SUCCESS]
+> tests/ip/link/add_type_xfrm.t: Del dev-ktyXSm xfrm interface succeeded
+> [Testing Add XFRM Interface, No IF-ID]
+> tests/ip/link/add_type_xfrm.t: Add dev-tkUDaA xfrm interface succeeded
+> tests/ip/link/add_type_xfrm.t: Show dev-tkUDaA xfrm interface succeeded with output:
+> 3: dev-tkUDaA@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/none  promiscuity 0 minmtu 68 maxmtu 65535 
+>     xfrm if_id 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+> test on: "dev-tkUDaA" [SUCCESS]
+> test on: "if_id 0xf" [SUCCESS]
+> tests/ip/link/add_type_xfrm.t: Del dev-tkUDaA xfrm interface succeeded
+> 
+> Failed log:
+> 
+> [Testing Add XFRM Interface, With IF-ID]
+> tests/ip/link/add_type_xfrm.t: Add dev-pxNsUc xfrm interface succeeded
+> tests/ip/link/add_type_xfrm.t: Show dev-pxNsUc xfrm interface succeeded with output:
+> 2: dev-pxNsUc@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>     link/none  promiscuity 0 minmtu 68 maxmtu 65535 
+>     xfrm if_id 0xf addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+> test on: "dev-pxNsUc" [SUCCESS]
+> test on: "if_id 0xf" [SUCCESS]
+> tests/ip/link/add_type_xfrm.t: Del dev-pxNsUc xfrm interface succeeded
+> [Testing Add XFRM Interface, No IF-ID]
 
-Fixes: 501ef3066c89 ("net: marvell: prestera: Add driver for Prestera family ASIC devices")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/net/ethernet/marvell/prestera/prestera_main.c | 1 +
- 1 file changed, 1 insertion(+)
+No IF-ID is an invalid configuration, the interface does not work
+with IF-IF 0. Such an interface will blackhole all packets routed
+to it. That is because policies and states with no IF-ID are meant
+for a setup without xfrm interfaces, they will not match the interface.
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index cad93f747d0c..73cd0a4b7291 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -554,6 +554,7 @@ static int prestera_switch_set_base_mac_addr(struct prestera_switch *sw)
- 		dev_info(prestera_dev(sw), "using random base mac address\n");
- 	}
- 	of_node_put(base_mac_np);
-+	of_node_put(np);
- 
- 	return prestera_hw_switch_mac_set(sw, sw->base_mac);
- }
--- 
-2.17.1
+Unfortunately we did not catch this invalid configuration from the
+beginning and userspace seems to use (or do some tests tests with)
+xfrm interfaces with IF-ID 0. In that case, I fear we eventually
+have to revert the cange that catches the invalid configuration.
 
