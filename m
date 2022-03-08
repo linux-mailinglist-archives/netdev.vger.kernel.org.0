@@ -2,158 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 751484D0E27
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 03:58:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6024D0E31
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 04:03:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243437AbiCHC7T convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Mar 2022 21:59:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
+        id S235096AbiCHDEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 22:04:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241906AbiCHC7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 21:59:18 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EF603914A
-        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 18:58:22 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-230-RAzJzQoSOG-PkwXfrfam0w-1; Tue, 08 Mar 2022 02:58:19 +0000
-X-MC-Unique: RAzJzQoSOG-PkwXfrfam0w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Tue, 8 Mar 2022 02:58:18 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Tue, 8 Mar 2022 02:58:18 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Tadeusz Struk' <tadeusz.struk@linaro.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-Subject: RE: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
-Thread-Topic: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
-Thread-Index: AQHYMn/TZOkDvut8fEivb26qHFvt1ay0yvXA
-Date:   Tue, 8 Mar 2022 02:58:18 +0000
-Message-ID: <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
-References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
-In-Reply-To: <20220308000146.534935-1-tadeusz.struk@linaro.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229681AbiCHDEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 22:04:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2DB3D1C3
+        for <netdev@vger.kernel.org>; Mon,  7 Mar 2022 19:03:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D1746150F
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 03:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FD34C340E9;
+        Tue,  8 Mar 2022 03:03:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646708630;
+        bh=+Wg+GQ0YZXU6bAedvnfGwOsFxIfaG1caXtnjgIuSXjM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VYblVSTTUmJJ9u2Zr59ZOphKrLZNRpzZLFlUjDCstV0TZ+n1W+cYnfl6NDBuAyHh7
+         0Zs8VaRVTncic7+axb51PkrDfAnUItFTN91+qTIeMUNA1wuK7QM8xHKKBV8eTT+Wtn
+         BKieK4xsUQmpo2su70UI94eqBe30PXOI6QCl/KbAyJ2WLCRbCeVhrFJmqQdbSaN4f8
+         FrdDdzUvRt5ul9TSC5PZIV8lFSObaHx5mJ+l+J8fghYqAIaEjS5NtGqxwbyr0koUa8
+         3esNByfPTlVApSeNeJGr7/zfecHYLg6dT8j2SiHHBRdr81BGE2GNUdr/KOw9zxI68/
+         x3dJ5brr6WhcA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, willemb@google.com, ncardwell@google.com,
+        ycheng@google.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [RFC net-next] tcp: allow larger TSO to be built under overload
+Date:   Mon,  7 Mar 2022 19:03:48 -0800
+Message-Id: <20220308030348.258934-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tadeusz Struk
-> Sent: 08 March 2022 00:02
-> 
-> Syzbot found a kernel bug in the ipv6 stack:
-> LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-> 
-> The reproducer triggers it by sending an invalid message via sendmmsg() call,
-> which triggers skb_over_panic, and crashes the kernel:
-> 
-> skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-> head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-> dev:<NULL>
-> 
-> ------------[ cut here ]------------
-> kernel BUG at net/core/skbuff.c:113!
-> PREEMPT SMP KASAN
-> CPU: 1 PID: 1818 Comm: repro Not tainted 5.17.0-rc7-dirty #9
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
-> RIP: 0010:skb_panic+0x173/0x175
-> RSP: 0018:ffffc900015bf3b8 EFLAGS: 00010282
-> RAX: 0000000000000090 RBX: ffff88810e848c80 RCX: 0000000000000000
-> RDX: ffff88810fd84300 RSI: ffffffff814fa5ef RDI: fffff520002b7e69
-> RBP: ffffc900015bf420 R08: 0000000000000090 R09: 0000000000000000
-> R10: ffffffff814f55f4 R11: 203a666675626b73 R12: ffffffff855bff80
-> R13: ffffffff84647fb4 R14: 0000000000010027 R15: ffffffff855bf420
-> FS:  0000000000c8b3c0(0000) GS:ffff88811b100000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000020000040 CR3: 0000000106b68000 CR4: 0000000000150ea0
-> Call Trace:
->  <TASK>
->  skb_put.cold+0x23/0x23
->  __ip6_append_data.isra.0.cold+0x396/0xe3a
->  ip6_append_data+0x1e5/0x320
->  rawv6_sendmsg.cold+0x1618/0x2ba9
->  inet_sendmsg+0x9e/0xe0
->  sock_sendmsg+0xd7/0x130
->  ____sys_sendmsg+0x381/0x8a0
->  ___sys_sendmsg+0x100/0x170
->  __sys_sendmmsg+0x26c/0x3b7
->  __x64_sys_sendmmsg+0xb2/0xbd
->  do_syscall_64+0x35/0xb0
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> The reproducer can be found here:
-> LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-> This can be fixed by increasing the alloclen in case it is smaller than
-> fraglen in __ip6_append_data().
-> 
-> 
-> Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-> ---
->  net/ipv6/ip6_output.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> index 4788f6b37053..622345af323e 100644
-> --- a/net/ipv6/ip6_output.c
-> +++ b/net/ipv6/ip6_output.c
-> @@ -1629,6 +1629,13 @@ static int __ip6_append_data(struct sock *sk,
->  				err = -EINVAL;
->  				goto error;
->  			}
-> +			if (unlikely(alloclen < fraglen)) {
-> +				if (printk_ratelimit())
-> +					pr_warn("%s: wrong alloclen: %d, fraglen: %d",
-> +						__func__, alloclen, fraglen);
-> +				alloclen = fraglen;
-> +			}
-> +
+We observed Tx-heavy workloads causing softirq overload because
+with increased load and therefore latency the pacing rates fall,
+pushing TCP to generate smaller and smaller TSO packets.
 
-Except that is a valid case, see a few lines higher:
+It seems reasonable to allow larger packets to be built when
+system is under stress. TCP already uses the
 
-				alloclen = min_t(int, fraglen, MAX_HEADER);
-				pagedlen = fraglen - alloclen;
+  this_cpu_ksoftirqd() == current
 
-You need to report the input values that cause the problem later on.
+condition as an indication of overload for TSQ scheduling.
 
-	David
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+Sending as an RFC because it seems reasonable, but really
+I haven't run any large scale testing, yet. Bumping
+tcp_min_tso_segs to prevent overloads is okay but it
+seems like we can do better since we only need coarser
+pacing once disaster strikes?
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+The downsides are that users may have already increased
+the value to what's needed during overload, or applied
+the same logic in out-of-tree CA algo implementations
+(only BBR implements ca_ops->min_tso_segs() upstream).
+---
+ net/ipv4/tcp_output.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 2319531267c6..815ef4ffc39d 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1967,7 +1967,13 @@ static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+ 	 * This preserves ACK clocking and is consistent
+ 	 * with tcp_tso_should_defer() heuristic.
+ 	 */
+-	segs = max_t(u32, bytes / mss_now, min_tso_segs);
++	segs = bytes / mss_now;
++	if (segs < min_tso_segs) {
++		segs = min_tso_segs;
++		/* Allow larger packets under stress */
++		if (this_cpu_ksoftirqd() == current)
++			segs *= 2;
++	}
+ 
+ 	return segs;
+ }
+-- 
+2.34.1
 
