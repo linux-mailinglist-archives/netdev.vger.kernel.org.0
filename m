@@ -2,130 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42C414D1C24
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 16:43:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 896FB4D1BEE
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 16:40:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347846AbiCHPo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 10:44:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
+        id S243045AbiCHPlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 10:41:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347938AbiCHPoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 10:44:25 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDCF35DF2
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 07:43:27 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id o8so16797706pgf.9
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 07:43:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=NKwIWMJN7+i0XAg6jLVO6Lxt5C5EwTCBUXnqdpcor6s=;
-        b=fnXsdHWHw7mUsqGMsNQNYtwM7WylTiW27BpmCbqF6a95dLCwqgprMTmy8V63gQPQbb
-         NGmTURhW09sZZieeNdO1PTsTT3kfjlYZev9v2Dd8g788Zwc3ZQGO9PB8zjvRR1Y8lVkL
-         RQADxtnVDXTyS93mSxYM8hZSMbuKYd+FvzHg5EeEXO8g8X0/x/QnHuForGl/gyKs1wyY
-         Q0PefRyAz8WKQpft4VUqB1vEvNuVNJVXzAu3y5b6IvETnV1nwiSbOIqwEI0zDC1QO73+
-         ijFdkRVbtkV2OoxqTiGG2GGgcEdUUVidzsEIgV4wq79lVTUmkWahXHyR24x8SGfc8bv1
-         WgDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=NKwIWMJN7+i0XAg6jLVO6Lxt5C5EwTCBUXnqdpcor6s=;
-        b=CYgcXMQ4VK6E6HPZhzRvqUCo04/begXKVXTUtRYN03KrnjXOtGhItvbr2osx4pQNOy
-         skHgJsmdQnf/DRazfqsVrv97nxT98Ctz3G3CzRBX9tPOmgOjJTrtsXLQhcU/+VVvKFH0
-         sG2lE8xXFk2n+mgj5Xd/1eucPZUATilkzqYDB9ygDVKNt7KNOMuICFVokILdMiilBI0B
-         N8wj27w22EyNKUeNFhB+O02mRe0zAGz6WSDOrj1sao5GUllfTKH8q3sK7tn3UHgc5npi
-         e50tQlNtOK7IAGuWonZxDzWgFbxEml4QAdLG6u1xNcQRsTBcz/vSOhZCbncoYyOP+ywz
-         7IfQ==
-X-Gm-Message-State: AOAM531yW9+72vQ9jyVdGAiBwwg84L41wQD1vtEXuavkpccDx5sdVfy9
-        6bGezZHXssBjzMCAmoWPdX4QbQ==
-X-Google-Smtp-Source: ABdhPJwiFpX6DdpatCjywFz/zgNVGeCJCOcO+1z4NGPqQXYELIrHV0oRR8uxO502R5Zie6fawLTSqw==
-X-Received: by 2002:a63:d642:0:b0:378:a4c2:7b94 with SMTP id d2-20020a63d642000000b00378a4c27b94mr14559338pgj.218.1646754207291;
-        Tue, 08 Mar 2022 07:43:27 -0800 (PST)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id nl9-20020a17090b384900b001bccf96588dsm3534648pjb.46.2022.03.08.07.43.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 07:43:27 -0800 (PST)
-Message-ID: <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
-Date:   Tue, 8 Mar 2022 07:43:25 -0800
+        with ESMTP id S1345898AbiCHPlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 10:41:50 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365B14ECD4;
+        Tue,  8 Mar 2022 07:40:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646754054; x=1678290054;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NzNzwhD5Vp7SgosRFhjzNuPWzbCIrT4UeOhxKam0WG4=;
+  b=NGOiX0Fd9hrBl+o/4/zVCLvz6J1wwLig9uUeFbEphxRuXedKxIBG4vr+
+   CAK0VGZaCi9cM10o2U9E2IXSfhUc+N+0U73be8Xh2CMFDnqpN/rGbutjT
+   4wvc8K2SdaD4gwSBRSSlVR5lsVT2TTafIvIuJskiaKRB2CuhIvtIaMyHv
+   giCxOlY7jP/l7zwXmcB0AdHzm+r5oo85Y78igu1Q/TG+YWwx4963CDXuj
+   G8iRCAu8xb/7GIWF8aL/uwxatgKl+/+GWQ+iDCTPmLvNrdO91Gl6zrUjX
+   OXp8TXKOOobxxUi/JRMCnjXq4QOHOpXixZHIR7FHJgLw8R3PJpWkMUMuw
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
+   d="scan'208";a="164948629"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 08:40:53 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 8 Mar 2022 08:40:53 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 8 Mar 2022 08:40:53 -0700
+Date:   Tue, 8 Mar 2022 16:43:45 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+References: <20220304093418.31645-1-Divya.Koppera@microchip.com>
+ <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
- <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: Re: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
-In-Reply-To: <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <YidgHT8CLWrmhbTW@lunn.ch>
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
-On 3/7/22 18:58, David Laight wrote:
->> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
->> index 4788f6b37053..622345af323e 100644
->> --- a/net/ipv6/ip6_output.c
->> +++ b/net/ipv6/ip6_output.c
->> @@ -1629,6 +1629,13 @@ static int __ip6_append_data(struct sock *sk,
->>   				err = -EINVAL;
->>   				goto error;
->>   			}
->> +			if (unlikely(alloclen < fraglen)) {
->> +				if (printk_ratelimit())
->> +					pr_warn("%s: wrong alloclen: %d, fraglen: %d",
->> +						__func__, alloclen, fraglen);
->> +				alloclen = fraglen;
->> +			}
->> +
-> Except that is a valid case, see a few lines higher:
-> 
-> 				alloclen = min_t(int, fraglen, MAX_HEADER);
-> 				pagedlen = fraglen - alloclen;
-> 
-> You need to report the input values that cause the problem later on.
+Hi Andrew,
 
-OK, but in this case it falls into the first if block:
-https://elixir.bootlin.com/linux/v5.17-rc7/source/net/ipv6/ip6_output.c#L1606
-where alloclen is assigned the value of mtu.
-The values in this case are just before the alloc_skb() are:
+The 03/08/2022 14:54, Andrew Lunn wrote:
+> 
+> > > Thanks for the reply, but you did not answer my question:
+> > >
+> > >   Does this mean the hardware itself cannot tell you it is missing the
+> > >   needed hardware?
+> > >
+> > > Don't you have different IDs in register 2 and 3 for those devices with clock
+> > > register and those without?
+> > >
+> >
+> 
+> > The purpose of this option is, if both PHY and MAC supports
+> > timestamping then always timestamping is done in PHY.  If
+> > timestamping need to be done in MAC we need a way to stop PHY
+> > timestamping. If this flag is used then timestamping is taken care
+> > by MAC.
+> 
+> This is not a valid use of DT, since this is configuration, not
+> describing the hardware. There has been recent extension in the UAPI
+> to allow user space to do this configuration. Please look at that
+> work.
 
-alloclen = 1480
-alloc_extra = 136
-datalen = 64095
-fragheaderlen = 1480
-fraglen = 65575
-transhdrlen = 0
-mtu = 1480
+Ah ... now we have found Richard patch series.
+So we will remove this option and once Richard's patch series will be
+accepted we will use that.
+
+> 
+> > Sorry I answered wrong. Latency values vary depending on the position of PHY in board.
+> > We have used this PHY in different hardware's, where latency values differs based on PHY positioning.
+> > So we used latency option in DTS file.
+> > If you have other ideas or I'm wrong please let me know?
+> 
+> So this is a function of the track length between the MAC and the PHY?
+
+Nope.
+This latency represents the time it takes for the frame to travel from RJ45
+module to the timestamping unit inside the PHY. To be more precisely,
+the timestamping unit will do the timestamp when it detects the end of
+the start of the frame. So it represents the time from when the frame
+reaches the RJ45 to when the end of start of the frame reaches the
+timestamping unit inside the PHY.
+
+And because each board manufacture could put the same PHY but in
+different places, then each of them would have a different latency.
+That is the main reason why we put this latencies in the DT and not put
+them inside the driver. Because we think each board manufacture will
+need to use different values.
+
+Another reason is that we want the board manufacture to determine these
+values and not the end users. I have seen that also Richard commenting
+on this, saying that the latencies should not be in DT.
+Currently I don't know where else they can be. I know that ptp4l has
+these option in SW to update the ingress/egress latencies but if someone
+else is running another application, what will they do?
+
+> How do you determine these values?
+
+This is a little bit more complicated.
+So first you will need a device that you know already that is
+calibrated. Then you connect the device that you want to calibrate to
+the calibrated one with a known length cable. We presume that there is a
+5ns delay per meter of the cable. And then basically we run ptp4l on
+each device where the master will be the calibrated one and the slave
+will be the device that will be calibrated. When we run ptp4l we can see
+mean path delay, and we subtract the delay introduced by the cable(5ns)
+and then we take this value and divided by 2. And then
+the result is added to the current rx latency and subtracted from tx
+latency.
+This is how we have calculated the values.
+
+> There is no point having
+> configuration values if you don't document how to determine what value
+> should be used.
+
+I agree, we should do a better job at this and also explaining what
+these values represent. Definitely we will do that in the next patch.
+
+> 
+>        Andrew
 
 -- 
-Thanks,
-Tadeusz
+/Horatiu
