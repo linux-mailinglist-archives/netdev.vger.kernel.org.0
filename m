@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CADD4D2398
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 22:49:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A69024D2391
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 22:49:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350541AbiCHVsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 16:48:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
+        id S1350544AbiCHVsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 16:48:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350534AbiCHVsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 16:48:16 -0500
+        with ESMTP id S1350535AbiCHVsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 16:48:17 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4188554A3
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 13:47:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349B7554B1
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 13:47:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646776039; x=1678312039;
+  t=1646776040; x=1678312040;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=upZnuL9o5gbwESwldHYTCi8wS/m5269IkZ2mDCgxPjE=;
-  b=G3rBlbN0Qfc2DwLWe9inGT36XM2Sgm9TzaMAS9EIdP1AscP7TD6oZdGG
-   BDUFpfPfGoeXkQ66w6bX2EI+0bM9GVXUbc8Tq1eI/fhRwWOdbwIaLXWrH
-   kscoBFejWOr6f/6OV5jG0LcBGdi/gxFgKgYxpFu0tHWxAoL4m5cVKank1
-   L7ZtKMCkyLJcPf251rUeQ8yjY9EOZYViPIkbjd810jSOXWxoPj5Z4eOMf
-   vtQqsjiHMnj+LZ3UDIeVLsua6yk+oJbIlMTLdtg6CxQOh+X6PYCctLi9u
-   xxNcTMRBbwGVemdPnoYj/MsUHMUqKDUA9oRtrnAt5pt1qFDZRGUitGPcs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318050844"
+  bh=LZMPDqO641mMvp+aEvJh8ZF28+WvTuVrznKMthO7hOs=;
+  b=CPNMHhs7R9QvVgcv/C1pZJ1IhAJ7UyKkHLWwObTB8n5RyexWBb2ngLm5
+   qJ6h7I/JTANjHH0k1Q//wO0OAGrqytoUyTki8k/6SR9SE0AWN0f1RU5J1
+   P4JGpSZaZt12h7coiN0gySFFiGMnrvkfAoeb8FOTwsRSDK0kUm4q1nRJp
+   qTcswlBuzEIDKM8IiH0g78+36rXCC830+DMsIG2O/7rkVSSS0X4l2zeM2
+   KeECS/OEDZwgfFWoRc3v7fnZiFd+XmRAK8TkwcJGcpa8Zy83v+BrpK0qV
+   /aUEfRHHpR9J4PdtO68bW+L74z6nhC5ZRFxTzGTBXDDQGxuJ6RT3xAzFI
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318050847"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="318050844"
+   d="scan'208";a="318050847"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:47:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="553811434"
+   d="scan'208";a="553811442"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 08 Mar 2022 13:47:17 -0800
+  by orsmga008.jf.intel.com with ESMTP; 08 Mar 2022 13:47:18 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 4/7] ice: stop disabling VFs due to PF error responses
-Date:   Tue,  8 Mar 2022 13:47:33 -0800
-Message-Id: <20220308214736.884443-5-anthony.l.nguyen@intel.com>
+Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, Jonathan Toppins <jtoppins@redhat.com>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH net 5/7] ice: Fix error with handling of bonding MTU
+Date:   Tue,  8 Mar 2022 13:47:34 -0800
+Message-Id: <20220308214736.884443-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220308214736.884443-1-anthony.l.nguyen@intel.com>
 References: <20220308214736.884443-1-anthony.l.nguyen@intel.com>
@@ -60,103 +60,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Dave Ertman <david.m.ertman@intel.com>
 
-The ice_vc_send_msg_to_vf function has logic to detect "failure"
-responses being sent to a VF. If a VF is sent more than
-ICE_DFLT_NUM_INVAL_MSGS_ALLOWED then the VF is marked as disabled.
-Almost identical logic also existed in the i40e driver.
+When a bonded interface is destroyed, .ndo_change_mtu can be called
+during the tear-down process while the RTNL lock is held.  This is a
+problem since the auxiliary driver linked to the LAN driver needs to be
+notified of the MTU change, and this requires grabbing a device_lock on
+the auxiliary_device's dev.  Currently this is being attempted in the
+same execution context as the call to .ndo_change_mtu which is causing a
+dead-lock.
 
-This logic was added to the ice driver in commit 1071a8358a28 ("ice:
-Implement virtchnl commands for AVF support") which itself copied from
-the i40e implementation in commit 5c3c48ac6bf5 ("i40e: implement virtual
-device interface").
+Move the notification of the changed MTU to a separate execution context
+(watchdog service task) and eliminate the "before" notification.
 
-Neither commit provides a proper explanation or justification of the
-check. In fact, later commits to i40e changed the logic to allow
-bypassing the check in some specific instances.
-
-The "logic" for this seems to be that error responses somehow indicate a
-malicious VF. This is not really true. The PF might be sending an error
-for any number of reasons such as lack of resources, etc.
-
-Additionally, this causes the PF to log an info message for every failed
-VF response which may confuse users, and can spam the kernel log.
-
-This behavior is not documented as part of any requirement for our
-products and other operating system drivers such as the FreeBSD
-implementation of our drivers do not include this type of check.
-
-In fact, the change from dev_err to dev_info in i40e commit 18b7af57d9c1
-("i40e: Lower some message levels") explains that these messages
-typically don't actually indicate a real issue. It is quite likely that
-a user who hits this in practice will be very confused as the VF will be
-disabled without an obvious way to recover.
-
-We already have robust malicious driver detection logic using actual
-hardware detection mechanisms that detect and prevent invalid device
-usage. Remove the logic since its not a documented requirement and the
-behavior is not intuitive.
-
-Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Fixes: 348048e724a0e ("ice: Implement iidc operations")
+Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+Tested-by: Jonathan Toppins <jtoppins@redhat.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c   | 18 ------------------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h   |  3 ---
- 2 files changed, 21 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h      |  1 +
+ drivers/net/ethernet/intel/ice/ice_main.c | 29 +++++++++++------------
+ 2 files changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 408f78e3eb13..1be3cd4b2bef 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -2182,24 +2182,6 @@ ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 473b1f6be9de..3121f9b04f59 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -483,6 +483,7 @@ enum ice_pf_flags {
+ 	ICE_FLAG_MDD_AUTO_RESET_VF,
+ 	ICE_FLAG_LINK_LENIENT_MODE_ENA,
+ 	ICE_FLAG_PLUG_AUX_DEV,
++	ICE_FLAG_MTU_CHANGED,
+ 	ICE_PF_FLAGS_NBITS		/* must be last */
+ };
  
- 	dev = ice_pf_to_dev(pf);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index f3c346e13b7a..6fc6514eb007 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2258,6 +2258,17 @@ static void ice_service_task(struct work_struct *work)
+ 	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
+ 		ice_plug_aux_dev(pf);
  
--	/* single place to detect unsuccessful return values */
--	if (v_retval) {
--		vf->num_inval_msgs++;
--		dev_info(dev, "VF %d failed opcode %d, retval: %d\n", vf->vf_id,
--			 v_opcode, v_retval);
--		if (vf->num_inval_msgs > ICE_DFLT_NUM_INVAL_MSGS_ALLOWED) {
--			dev_err(dev, "Number of invalid messages exceeded for VF %d\n",
--				vf->vf_id);
--			dev_err(dev, "Use PF Control I/F to enable the VF\n");
--			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
--			return -EIO;
--		}
--	} else {
--		vf->num_valid_msgs++;
--		/* reset the invalid counter, if a valid message is received. */
--		vf->num_inval_msgs = 0;
--	}
++	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
++		struct iidc_event *event;
++
++		event = kzalloc(sizeof(*event), GFP_KERNEL);
++		if (event) {
++			set_bit(IIDC_EVENT_AFTER_MTU_CHANGE, event->type);
++			ice_send_event_to_aux(pf, event);
++			kfree(event);
++		}
++	}
++
+ 	ice_clean_adminq_subtask(pf);
+ 	ice_check_media_subtask(pf);
+ 	ice_check_for_hang_subtask(pf);
+@@ -6822,7 +6833,6 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+-	struct iidc_event *event;
+ 	u8 count = 0;
+ 	int err = 0;
+ 
+@@ -6857,14 +6867,6 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 		return -EBUSY;
+ 	}
+ 
+-	event = kzalloc(sizeof(*event), GFP_KERNEL);
+-	if (!event)
+-		return -ENOMEM;
 -
- 	aq_ret = ice_aq_send_msg_to_vf(&pf->hw, vf->vf_id, v_opcode, v_retval,
- 				       msg, msglen, NULL);
- 	if (aq_ret && pf->hw.mailboxq.sq_last_status != ICE_AQ_RC_ENOSYS) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 752487a1bdd6..8f27255cc0cc 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -14,7 +14,6 @@
- #define ICE_MAX_MACADDR_PER_VF		18
+-	set_bit(IIDC_EVENT_BEFORE_MTU_CHANGE, event->type);
+-	ice_send_event_to_aux(pf, event);
+-	clear_bit(IIDC_EVENT_BEFORE_MTU_CHANGE, event->type);
+-
+ 	netdev->mtu = (unsigned int)new_mtu;
  
- /* Malicious Driver Detection */
--#define ICE_DFLT_NUM_INVAL_MSGS_ALLOWED		10
- #define ICE_MDD_EVENTS_THRESHOLD		30
+ 	/* if VSI is up, bring it down and then back up */
+@@ -6872,21 +6874,18 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 		err = ice_down(vsi);
+ 		if (err) {
+ 			netdev_err(netdev, "change MTU if_down err %d\n", err);
+-			goto event_after;
++			return err;
+ 		}
  
- /* Static VF transaction/status register def */
-@@ -134,8 +133,6 @@ struct ice_vf {
- 	unsigned int max_tx_rate;	/* Maximum Tx bandwidth limit in Mbps */
- 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
+ 		err = ice_up(vsi);
+ 		if (err) {
+ 			netdev_err(netdev, "change MTU if_up err %d\n", err);
+-			goto event_after;
++			return err;
+ 		}
+ 	}
  
--	u64 num_inval_msgs;		/* number of continuous invalid msgs */
--	u64 num_valid_msgs;		/* number of valid msgs detected */
- 	unsigned long vf_caps;		/* VF's adv. capabilities */
- 	u8 num_req_qs;			/* num of queue pairs requested by VF */
- 	u16 num_mac;
+ 	netdev_dbg(netdev, "changed MTU to %d\n", new_mtu);
+-event_after:
+-	set_bit(IIDC_EVENT_AFTER_MTU_CHANGE, event->type);
+-	ice_send_event_to_aux(pf, event);
+-	kfree(event);
++	set_bit(ICE_FLAG_MTU_CHANGED, pf->flags);
+ 
+ 	return err;
+ }
 -- 
 2.31.1
 
