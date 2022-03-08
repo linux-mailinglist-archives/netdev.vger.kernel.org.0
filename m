@@ -2,134 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72A2A4D2412
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 23:15:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B679B4D243E
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 23:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350642AbiCHWQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 17:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51000 "EHLO
+        id S1350729AbiCHW1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 17:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350595AbiCHWQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 17:16:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E203546B3
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 14:15:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646777708;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6nIHOJmJA+rkjvbg8O1o1KH0J2z0YqG4K70ZRzEJTXc=;
-        b=aKHQeQcGLsSV7wZF+hUASjuVUffkP39f7RXVIAMut7HlrL4mk77j1rV3zOFzCPkVZrLDTS
-        Vd+M2r16Vjheh7shMBFHgoA2hsQ00+5nWN73Nim9QoLC60Z8X0+wFJejv6cHfINh8NaqAB
-        XivCuI0ousLxXzXraQ8mRcGs3EtqYx4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-_Cimn6tkOsWYSrDsRvgMOw-1; Tue, 08 Mar 2022 17:15:07 -0500
-X-MC-Unique: _Cimn6tkOsWYSrDsRvgMOw-1
-Received: by mail-wm1-f69.google.com with SMTP id l13-20020a7bcf0d000000b0038982c6bf8fso298386wmg.7
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 14:15:07 -0800 (PST)
+        with ESMTP id S1350767AbiCHW1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 17:27:10 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C75758818
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 14:26:13 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id l2so622707ybe.8
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 14:26:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UQq3SynHbfzQIPYNpHUBmUwyHOpCXtYVid9TkLiPR84=;
+        b=E32rxw7TwTeERB6Hx9tI93nh9RhodTuf08u4JMSLpFnTRwa5HB/QUkia6t0hSg8CmC
+         qg0X6//kY3vOukaS2O3j1/esFs2h6zNz9BCS3Q2IsxlaUzGF45wNig1XYSytmxl1HExp
+         /DXaTIzKkxjghiz51Ly8IfVpM8jHAewmNPi71YltNCQspq9ul9FsfogA+Y91PIJSF4WB
+         yiv2RitaWdOL0X+RkTtwPAo3pvbRjRn/yD9clJ1VHL58G2NM93NnCa7+e+WDV7Kk66aM
+         h/qWrtoIrTZvqCiPAJgafdU6S/l0OkzcxQnHsrtWA2glngwBUfuTWfBXKjfBkC896VaY
+         82tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6nIHOJmJA+rkjvbg8O1o1KH0J2z0YqG4K70ZRzEJTXc=;
-        b=74zb7GxBEONcCK/YCcObnmenxutJnOsi/U/OCQ1R87wCJyrRPEyDvaeBg7KjzWZbs9
-         pGhUtzEF83RnZVAUUH+ORowMGC4dSD3NePyBlUNzNVISmPzkKgaF4LHj3IUQsI1q1UKH
-         2/i0fBafJW+5y4CGS4F981ubcBhxQJSwbZQPJ4daCkCdffCoCMUw9sikCKmMzDCx+8BD
-         bFbq4ZOBJv7OqVqBcMD0uQjH/zx3D1IctgiK6zBho9q62XJex2WqzGZYN2IPxjheimCK
-         h1LOmy6J+GO80vIn6s5l6Q4GrrCd2bepJ8wWXylwLruSksi7CAr/zKGAXff4l1rRkdm6
-         95iQ==
-X-Gm-Message-State: AOAM5308bd4OhoQtY/l7bARploP/p4sGmAv663bcq3nBxsxZeTLKzMso
-        Jp0T/lXVYpMBTgDVMW+5mY6EaEfQgL+A6kpbhuAnERtBOKxLw/CC/PmS0AxhkR5Jxr1yT3ep+U2
-        lcxM+DIvSDaqb7Gd8
-X-Received: by 2002:a5d:61ca:0:b0:1f0:22ef:bb9f with SMTP id q10-20020a5d61ca000000b001f022efbb9fmr14177715wrv.56.1646777706060;
-        Tue, 08 Mar 2022 14:15:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzUAdR2fAB8NkHsGlS31dTIoi/XqT+nhHeo0/XxxKYEYFt+c1zOjvRcGUy9zE1VzDBSBimJzA==
-X-Received: by 2002:a5d:61ca:0:b0:1f0:22ef:bb9f with SMTP id q10-20020a5d61ca000000b001f022efbb9fmr14177703wrv.56.1646777705864;
-        Tue, 08 Mar 2022 14:15:05 -0800 (PST)
-Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
-        by smtp.gmail.com with ESMTPSA id a17-20020a5d5091000000b001edb61b2687sm126364wrt.63.2022.03.08.14.15.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 14:15:05 -0800 (PST)
-Date:   Tue, 8 Mar 2022 23:15:03 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH net 2/2] selftests: pmtu.sh: Kill nettest processes launched
- in subshell.
-Message-ID: <55cb9255471e73eaa481779329d9d47c430dbd0a.1646776561.git.gnault@redhat.com>
-References: <cover.1646776561.git.gnault@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UQq3SynHbfzQIPYNpHUBmUwyHOpCXtYVid9TkLiPR84=;
+        b=TXgOY+KYpMnT+sqDrK+dS3oAhodRQ7vu3P/Uw2yFg0iMtPyP+vKzYwZV2AhDBLEgRk
+         k/Y9wAjUE607M5sKf1WBf+iRZHf6rX6bd/HyPYZSZZr1bVAn6cE+mYwmxw1i/iEwvV6t
+         8u3RHP73pjCz4/rcJgUQOEKtmAzUj//05q3pI8bQGDnuzoZpDbMSM6+YMB37fndFhcI9
+         /UkECpu45Ra65tcXRvRxdnaHohzk597QHVAXEU9conryqFFfbs5DaTCToo2loagMRvuy
+         pW51S/cP062AY3X5Oo1uhm37ayXEM11syTsac+M///0AOxJ3LaTelBWacm2Pwiw+11S6
+         Updg==
+X-Gm-Message-State: AOAM533MJxMZYl1vyzlj0kWAId4cqk2mMcnm3p2Zvx9e9Ya1oJIHwQc5
+        8/rwpJfi//WIxPHnoH7nPIU3oIN3jIDUwXLDqAeRGA==
+X-Google-Smtp-Source: ABdhPJxdFmHSXXiq2p5wb8jOLNSlAFnQZfQbcB1N5/vvNpwKaIJOcWtim+yYBSZr022nArIozxcAkKA1xlEUFgt93/w=
+X-Received: by 2002:a25:d9c7:0:b0:628:be42:b671 with SMTP id
+ q190-20020a25d9c7000000b00628be42b671mr14210828ybg.387.1646778372203; Tue, 08
+ Mar 2022 14:26:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1646776561.git.gnault@redhat.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220308030348.258934-1-kuba@kernel.org> <CANn89iLoWOdLQWB0PeTtbOtzkAT=cWgzy5_RXqqLchZu1GziZw@mail.gmail.com>
+ <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com> <CANn89iL0XWF8aavPFnTrRazV9T5fZtn3xJXrEb07HTdrM=rykw@mail.gmail.com>
+ <218fd4946208411b90ac77cfcf7aa643@AcuMS.aculab.com>
+In-Reply-To: <218fd4946208411b90ac77cfcf7aa643@AcuMS.aculab.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 8 Mar 2022 14:26:01 -0800
+Message-ID: <CANn89iK9AoGsXDhoFKY5H_d-tZ7QGv4qjsyk6MZnd9=aZxHuog@mail.gmail.com>
+Subject: Re: [RFC net-next] tcp: allow larger TSO to be built under overload
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using "run_cmd <command> &", then "$!" refers to the PID of the
-subshell used to run <command>, not the command itself. Therefore
-nettest_pids actually doesn't contain the list of the nettest commands
-running in the background. So cleanup() can't kill them and the nettest
-processes run until completion (fortunately they have a 5s timeout).
+On Tue, Mar 8, 2022 at 2:12 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Eric Dumazet
+> > Sent: 08 March 2022 19:54
+> ..
+> > > Which is the common side of that max_t() ?
+> > > If it is mon_tso_segs it might be worth avoiding the
+> > > divide by coding as:
+> > >
+> > >         return bytes > mss_now * min_tso_segs ? bytes / mss_now : min_tso_segs;
+> > >
+> >
+> > I think the common case is when the divide must happen.
+> > Not sure if this really matters with current cpus.
+>
+> Last document I looked at still quoted considerable latency
+> for integer divide on x86-64.
+> If you get a cmov then all the instructions will just get
+> queued waiting for the divide to complete.
+> But a branch could easily get mispredicted.
+> That is likely to hit ppc - which I don't think has a cmov?
+>
+> OTOH if the divide is in the ?: bit nothing probably depends
+> on it for a while - so the latency won't matter.
+>
+> Latest figures I have are for skylakeX
+>          u-ops            latency 1/throughput
+> DIV   r8 10 10 p0 p1 p5 p6  23        6
+> DIV  r16 10 10 p0 p1 p5 p6  23        6
+> DIV  r32 10 10 p0 p1 p5 p6  26        6
+> DIV  r64 36 36 p0 p1 p5 p6 35-88    21-83
+> IDIV  r8 11 11 p0 p1 p5 p6  24        6
+> IDIV r16 10 10 p0 p1 p5 p6  23        6
+> IDIV r32 10 10 p0 p1 p5 p6  26        6
+> IDIV r64 57 57 p0 p1 p5 p6 42-95    24-90
+>
+> Broadwell is a bit slower.
+> Note that 64bit divide is really horrid.
+>
+> I think that one will be 32bit - so 'only' 26 clocks
+> latency.
+>
+> AMD Ryzen is a lot better for 64bit divides:
+>                ltncy  1/thpt
+> DIV   r8/m8  1 13-16 13-16
+> DIV  r16/m16 2 14-21 14-21
+> DIV  r32/m32 2 14-30 14-30
+> DIV  r64/m64 2 14-46 14-45
+> IDIV  r8/m8  1 13-16 13-16
+> IDIV r16/m16 2 13-21 14-22
+> IDIV r32/m32 2 14-30 14-30
+> IDIV r64/m64 2 14-47 14-45
+> But less pipelining for 32bit ones.
+>
+> Quite how those tables actually affect real code
+> is another matter - but they are guidelines about
+> what is possible (if you can get the u-ops executed
+> on the right ports).
+>
 
-Fix this by defining a new command for running processes in the
-background, for which "$!" really refers to the PID of the command run.
-
-Also, double quote variables on the modified lines, to avoid shellcheck
-warnings.
-
-Fixes: ece1278a9b81 ("selftests: net: add ESP-in-UDP PMTU test")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- tools/testing/selftests/net/pmtu.sh | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 2e8972573d91..694732e4b344 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -374,6 +374,16 @@ run_cmd() {
- 	return $rc
- }
- 
-+run_cmd_bg() {
-+	cmd="$*"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "    COMMAND: %s &\n" "${cmd}"
-+	fi
-+
-+	$cmd 2>&1 &
-+}
-+
- # Find the auto-generated name for this namespace
- nsname() {
- 	eval echo \$NS_$1
-@@ -670,10 +680,10 @@ setup_nettest_xfrm() {
- 	[ ${1} -eq 6 ] && proto="-6" || proto=""
- 	port=${2}
- 
--	run_cmd ${ns_a} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
-+	run_cmd_bg "${ns_a}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
- 	nettest_pids="${nettest_pids} $!"
- 
--	run_cmd ${ns_b} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
-+	run_cmd_bg "${ns_b}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
- 	nettest_pids="${nettest_pids} $!"
- }
- 
--- 
-2.21.3
-
+Thanks, I think I will make sure that we use the 32bit divide then,
+because compiler might not be smart enough to detect both operands are < ~0U
