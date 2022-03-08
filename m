@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A69024D2391
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 22:49:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EEC4D2393
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 22:49:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350544AbiCHVsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 16:48:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S1350547AbiCHVsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 16:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350535AbiCHVsR (ORCPT
+        with ESMTP id S1350536AbiCHVsR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 16:48:17 -0500
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349B7554B1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60838554B2
         for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 13:47:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646776040; x=1678312040;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LZMPDqO641mMvp+aEvJh8ZF28+WvTuVrznKMthO7hOs=;
-  b=CPNMHhs7R9QvVgcv/C1pZJ1IhAJ7UyKkHLWwObTB8n5RyexWBb2ngLm5
-   qJ6h7I/JTANjHH0k1Q//wO0OAGrqytoUyTki8k/6SR9SE0AWN0f1RU5J1
-   P4JGpSZaZt12h7coiN0gySFFiGMnrvkfAoeb8FOTwsRSDK0kUm4q1nRJp
-   qTcswlBuzEIDKM8IiH0g78+36rXCC830+DMsIG2O/7rkVSSS0X4l2zeM2
-   KeECS/OEDZwgfFWoRc3v7fnZiFd+XmRAK8TkwcJGcpa8Zy83v+BrpK0qV
-   /aUEfRHHpR9J4PdtO68bW+L74z6nhC5ZRFxTzGTBXDDQGxuJ6RT3xAzFI
+  bh=Fx25nLMetq/iNuCJ7i1SBSABreZkqtIM3Ip/QYbe25E=;
+  b=mqNm+IOmhcM9yqmmhZViOWPi3V5yz1sxrRdxhI/yhuWg6iMShFlFsIus
+   BX2afBpxdWgYfCxHvfLQlkRL8+PiQ5IRNMigctlJPm06CpHwUQLCnheK2
+   z/BA2MQnzb0UpQ/atZ7imdexCBUH9aB27EvSK9SzU2z7G193kdUjjAWlU
+   JIBv/+2pyiQmY2905LHB/O2sjei9R3A5m5GdAoyPxtCxGMNGd5sMGsuHv
+   zBJd3RFH4fCr6vtAgLMdQnrfeI6Jh2uIqoizQyob2vnfl3Vo8nNogRTRU
+   dhuMiuIpwLocEP5vJjJMHUhDfzJPSI8H1WXOiqAK7oVmAoBt04ePYddgs
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318050847"
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="318050852"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="318050847"
+   d="scan'208";a="318050852"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 13:47:18 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="553811442"
+   d="scan'208";a="553811446"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga008.jf.intel.com with ESMTP; 08 Mar 2022 13:47:18 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Jonathan Toppins <jtoppins@redhat.com>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net 5/7] ice: Fix error with handling of bonding MTU
-Date:   Tue,  8 Mar 2022 13:47:34 -0800
-Message-Id: <20220308214736.884443-6-anthony.l.nguyen@intel.com>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        david.m.ertman@intel.com,
+        Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
+Subject: [PATCH net 6/7] ice: Don't use GFP_KERNEL in atomic context
+Date:   Tue,  8 Mar 2022 13:47:35 -0800
+Message-Id: <20220308214736.884443-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220308214736.884443-1-anthony.l.nguyen@intel.com>
 References: <20220308214736.884443-1-anthony.l.nguyen@intel.com>
@@ -60,111 +61,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-When a bonded interface is destroyed, .ndo_change_mtu can be called
-during the tear-down process while the RTNL lock is held.  This is a
-problem since the auxiliary driver linked to the LAN driver needs to be
-notified of the MTU change, and this requires grabbing a device_lock on
-the auxiliary_device's dev.  Currently this is being attempted in the
-same execution context as the call to .ndo_change_mtu which is causing a
-dead-lock.
+ice_misc_intr() is an irq handler. It should not sleep.
 
-Move the notification of the changed MTU to a separate execution context
-(watchdog service task) and eliminate the "before" notification.
+Use GFP_ATOMIC instead of GFP_KERNEL when allocating some memory.
 
-Fixes: 348048e724a0e ("ice: Implement iidc operations")
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-Tested-by: Jonathan Toppins <jtoppins@redhat.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Fixes: 348048e724a0 ("ice: Implement iidc operations")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h      |  1 +
- drivers/net/ethernet/intel/ice/ice_main.c | 29 +++++++++++------------
- 2 files changed, 15 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 473b1f6be9de..3121f9b04f59 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -483,6 +483,7 @@ enum ice_pf_flags {
- 	ICE_FLAG_MDD_AUTO_RESET_VF,
- 	ICE_FLAG_LINK_LENIENT_MODE_ENA,
- 	ICE_FLAG_PLUG_AUX_DEV,
-+	ICE_FLAG_MTU_CHANGED,
- 	ICE_PF_FLAGS_NBITS		/* must be last */
- };
- 
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index f3c346e13b7a..6fc6514eb007 100644
+index 6fc6514eb007..83e3e8aae6cf 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2258,6 +2258,17 @@ static void ice_service_task(struct work_struct *work)
- 	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
- 		ice_plug_aux_dev(pf);
+@@ -3034,7 +3034,7 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 		struct iidc_event *event;
  
-+	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
-+		struct iidc_event *event;
-+
-+		event = kzalloc(sizeof(*event), GFP_KERNEL);
-+		if (event) {
-+			set_bit(IIDC_EVENT_AFTER_MTU_CHANGE, event->type);
-+			ice_send_event_to_aux(pf, event);
-+			kfree(event);
-+		}
-+	}
-+
- 	ice_clean_adminq_subtask(pf);
- 	ice_check_media_subtask(pf);
- 	ice_check_for_hang_subtask(pf);
-@@ -6822,7 +6833,6 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
--	struct iidc_event *event;
- 	u8 count = 0;
- 	int err = 0;
- 
-@@ -6857,14 +6867,6 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
- 		return -EBUSY;
- 	}
- 
--	event = kzalloc(sizeof(*event), GFP_KERNEL);
--	if (!event)
--		return -ENOMEM;
--
--	set_bit(IIDC_EVENT_BEFORE_MTU_CHANGE, event->type);
--	ice_send_event_to_aux(pf, event);
--	clear_bit(IIDC_EVENT_BEFORE_MTU_CHANGE, event->type);
--
- 	netdev->mtu = (unsigned int)new_mtu;
- 
- 	/* if VSI is up, bring it down and then back up */
-@@ -6872,21 +6874,18 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
- 		err = ice_down(vsi);
- 		if (err) {
- 			netdev_err(netdev, "change MTU if_down err %d\n", err);
--			goto event_after;
-+			return err;
- 		}
- 
- 		err = ice_up(vsi);
- 		if (err) {
- 			netdev_err(netdev, "change MTU if_up err %d\n", err);
--			goto event_after;
-+			return err;
- 		}
- 	}
- 
- 	netdev_dbg(netdev, "changed MTU to %d\n", new_mtu);
--event_after:
--	set_bit(IIDC_EVENT_AFTER_MTU_CHANGE, event->type);
--	ice_send_event_to_aux(pf, event);
--	kfree(event);
-+	set_bit(ICE_FLAG_MTU_CHANGED, pf->flags);
- 
- 	return err;
- }
+ 		ena_mask &= ~ICE_AUX_CRIT_ERR;
+-		event = kzalloc(sizeof(*event), GFP_KERNEL);
++		event = kzalloc(sizeof(*event), GFP_ATOMIC);
+ 		if (event) {
+ 			set_bit(IIDC_EVENT_CRIT_ERR, event->type);
+ 			/* report the entire OICR value to AUX driver */
 -- 
 2.31.1
 
