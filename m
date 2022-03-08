@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4165B4D1A4E
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 15:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 100C34D1A54
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 15:23:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235235AbiCHOWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 09:22:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
+        id S235094AbiCHOYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 09:24:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230433AbiCHOWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 09:22:44 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241594B413;
-        Tue,  8 Mar 2022 06:21:48 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id bi12so26484836ejb.3;
-        Tue, 08 Mar 2022 06:21:48 -0800 (PST)
+        with ESMTP id S230433AbiCHOYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 09:24:36 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85E447AEE;
+        Tue,  8 Mar 2022 06:23:38 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id q17so24704019edd.4;
+        Tue, 08 Mar 2022 06:23:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=eiuLq9YhRrYN0FpJ7mTqNGyJkUH/vrr7SSWu39B1rkk=;
-        b=DHPRtv8bf5XL0wSnjyq/223qiCx2+c0HD4LGpwpDw8yQYqAcbEFl1AUh9EDG4oUVX0
-         FdBkiFBEyU++sUleXZPCAYnocTqhZkx+rT/2jCAnEMIBw7NgQ0lYxsleIODTOzOFTNM7
-         0o8r10K0yVy9pMJUPI6F2/BUoEJN4kW9G4WEBF3ST1J/+lG0TinTXDXjR5xSwrZ4uhFr
-         rf/c2M8oA2VAlued+b28tvqO+FQGY60kB5ZgbBfLTWeWkt4Wju39LlabLBVubH3TFuzl
-         EI/wyZ840EeWv9ALhewWyGBOm1lvNZYehQ4u5EwN+UL0r/quBRRqapDUOwxSMn+ej00T
-         FalA==
+        bh=EWTDePeT9c6La97u9wbH4GX9FAATzBXHG6ctqZCvpd8=;
+        b=SwqxHt+CEM8U7jF/UK1QRxl5zaWGz+Rpz4kjl8tvUvDaBAc0cOanxW07D6pncov5FM
+         gkd2qQwI0YwO6fv6KGfwWTdIhmXVP5unai0Qp+omUXb+WQ5xFptNlsN3Il9kPfrWZRuD
+         CeAlmjr+WCW5YMTmeG1wxqXSlw5Y8rfh6YOqPMT3r7liiLMwwk7MPSOlCqq5FNhp5spZ
+         +bgyq/QIo2p0dq9S8g0ec/FDVJJD89jCSGDGpl+fJBco42+cQIKend21tWdBKmt4J3wO
+         +vBMgEKph46t0L6FqdMWxfStycIg/UlleEu+fPcXuYPcf15ut2tI1yFpYukWA4Y99cq0
+         wetw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=eiuLq9YhRrYN0FpJ7mTqNGyJkUH/vrr7SSWu39B1rkk=;
-        b=lYP+eM3i9GQGgyRlZa5w+Kd1r3dCCmumy+OuAA+Tftuv4ohcKijWXsOPvhmG1hoGlU
-         CRcZXBrQ7sECLvv3DGeSqh3kUOYU4KhGmuy1v4EYX15IUIK32GDQEbb0MNhBl73UTEao
-         OGEgK5N/5R5GD6jAwXD2bMWt0iqUzeLVBOy5U2u24Bqg5QXPiNKgG3utba86B+/QYpAe
-         4XNzF23waSGiLhpx71WTJWqjd0CaK/+dEPK8dk980Bvwv/9rFad8IxWRhInHB54RcxqK
-         xFzOq3OPTYtWoo762VyTHyFOwF/ygEYcBQ6O2H0yjcND5fpO9UXgUBJv+ZeBP82ByCzz
-         tJgg==
-X-Gm-Message-State: AOAM530vc5bWgW2TcjCH3GlihIq0GCXQELr0FGEmyBo0W2sETZ2k0LOZ
-        wgbtIkaOQDhGFkCEZu6dlLU=
-X-Google-Smtp-Source: ABdhPJzSIpzp3q880unq3ypBGGnte9cfn22Luoe7SMZKsULuoMfoloIXXT6MbLLn+mfJEfI7MooDNQ==
-X-Received: by 2002:a17:907:7b9e:b0:6db:2b7f:3024 with SMTP id ne30-20020a1709077b9e00b006db2b7f3024mr8522631ejc.29.1646749306525;
-        Tue, 08 Mar 2022 06:21:46 -0800 (PST)
+        bh=EWTDePeT9c6La97u9wbH4GX9FAATzBXHG6ctqZCvpd8=;
+        b=yVi16mZr87jj1MElEFulv7aLWUIczzorKfy2OsnTasZuzTvlFxSmBgpUmQoCEXMBUN
+         vpfTKa/fvKxkg30hLPapnm7dYaUo46dQGQi4InVNj+6lL8KALTEOx2KEMJdVhaPKq/i1
+         WpTVN71N/HbzHCFn8hzz51IwZTnEkIE1qNVBP50uWJrvJTaUDPm7twkuMjY1HD0sXNiL
+         q/QjjEsFobTT9MiYLTdiOtA6XNrUpnnJchi0yumkO0iDOlmwQekEzhHrtsiEOO+dn0gM
+         tZDSKcLxJLTdkccratK65KWcEcrXCBsmQ6EQcAE72w5ddwfUgxAqkRt1uoEp6uwVKTTH
+         U/1A==
+X-Gm-Message-State: AOAM5309a3rJmNy5plStQKOexG2Xn5T/kX8gmgBmCoR7qqtx8EiPXgri
+        V5iz0/jhGSA32I1+ivJlMgo=
+X-Google-Smtp-Source: ABdhPJzK8eDtdQLsY2k88vsdbhPp3EbvokltEUVWoGn1cx3RxrX/AsjFlMtrSnnw23OOfx1ddoRO/g==
+X-Received: by 2002:a50:fd8e:0:b0:415:fe34:f03 with SMTP id o14-20020a50fd8e000000b00415fe340f03mr16318601edt.310.1646749417260;
+        Tue, 08 Mar 2022 06:23:37 -0800 (PST)
 Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id m10-20020a056402510a00b00415eee901c0sm7018115edd.61.2022.03.08.06.21.45
+        by smtp.gmail.com with ESMTPSA id s14-20020aa7cb0e000000b00410bf015567sm7483195edt.92.2022.03.08.06.23.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Mar 2022 06:21:46 -0800 (PST)
-Date:   Tue, 8 Mar 2022 15:21:43 +0100
+        Tue, 08 Mar 2022 06:23:36 -0800 (PST)
+Date:   Tue, 8 Mar 2022 15:23:34 +0100
 From:   Jiri Olsa <olsajiri@gmail.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
+        Masami Hiramatsu <mhiramat@redhat.com>,
+        Yucong Sun <fallentree@fb.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         lkml <linux-kernel@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -61,17 +63,18 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
-Message-ID: <Yidmd3I2eHoZo/Wv@krava>
+Subject: Re: [PATCH 08/10] libbpf: Add bpf_program__attach_kprobe_opts
+ support for multi kprobes
+Message-ID: <Yidm5vcehK7k1B2O@krava>
 References: <20220222170600.611515-1-jolsa@kernel.org>
- <20220222170600.611515-3-jolsa@kernel.org>
- <CAEf4BzadsmOTas7BdF-J+de7AqsoccY1o6e0pUBkRuWH+53DiQ@mail.gmail.com>
- <YiTvT0nyWLDvFya+@krava>
- <CAEf4BzaJoa=N4LgT55oraJkJtBds4BmKBCpJ1wmyqZCfjdo3Pw@mail.gmail.com>
+ <20220222170600.611515-9-jolsa@kernel.org>
+ <CAEf4Bza0qRAzA7WmtPD4US4Kur3qf3X+LC5uowr_H3Y-_pLfCA@mail.gmail.com>
+ <YiTvdMGi6GA7i2Ex@krava>
+ <CAEf4BzZZy6XSb2naSam+W=_wY6JviX6Vz30N7mSg=xYZW_TxQA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzaJoa=N4LgT55oraJkJtBds4BmKBCpJ1wmyqZCfjdo3Pw@mail.gmail.com>
+In-Reply-To: <CAEf4BzZZy6XSb2naSam+W=_wY6JviX6Vz30N7mSg=xYZW_TxQA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,56 +85,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 05:23:34PM -0800, Andrii Nakryiko wrote:
-> On Sun, Mar 6, 2022 at 9:28 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+On Mon, Mar 07, 2022 at 05:28:54PM -0800, Andrii Nakryiko wrote:
+> On Sun, Mar 6, 2022 at 9:29 AM Jiri Olsa <olsajiri@gmail.com> wrote:
 > >
-> > On Fri, Mar 04, 2022 at 03:11:01PM -0800, Andrii Nakryiko wrote:
-> >
-> > SNIP
-> >
-> > > > +static int
-> > > > +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
-> > > > +                         unsigned long *addrs)
-> > > > +{
-> > > > +       unsigned long addr, size;
-> > > > +       const char **syms;
-> > > > +       int err = -ENOMEM;
-> > > > +       unsigned int i;
-> > > > +       char *func;
-> > > > +
-> > > > +       size = cnt * sizeof(*syms);
-> > > > +       syms = kvzalloc(size, GFP_KERNEL);
-> > > > +       if (!syms)
-> > > > +               return -ENOMEM;
-> > > > +
-> > > > +       func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
-> > > > +       if (!func)
-> > > > +               goto error;
-> > > > +
-> > > > +       if (copy_from_user(syms, usyms, size)) {
-> > > > +               err = -EFAULT;
-> > > > +               goto error;
-> > > > +       }
-> > > > +
-> > > > +       for (i = 0; i < cnt; i++) {
-> > > > +               err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
-> > > > +               if (err == KSYM_NAME_LEN)
-> > > > +                       err = -E2BIG;
-> > > > +               if (err < 0)
-> > > > +                       goto error;
-> > > > +
-> > > > +               err = -EINVAL;
-> > > > +               if (func[0] == '\0')
-> > > > +                       goto error;
+> > On Fri, Mar 04, 2022 at 03:11:19PM -0800, Andrii Nakryiko wrote:
+> > > On Tue, Feb 22, 2022 at 9:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > >
+> > > > Adding support to bpf_program__attach_kprobe_opts to attach kprobes
+> > > > to multiple functions.
+> > > >
+> > > > If the kprobe program has BPF_TRACE_KPROBE_MULTI as expected_attach_type
+> > > > it will use the new kprobe_multi link to attach the program. In this case
+> > > > it will use 'func_name' as pattern for functions to attach.
+> > > >
+> > > > Adding also new section types 'kprobe.multi' and kretprobe.multi'
+> > > > that allows to specify wildcards (*?) for functions, like:
+> > > >
+> > > >   SEC("kprobe.multi/bpf_fentry_test*")
+> > > >   SEC("kretprobe.multi/bpf_fentry_test?")
+> > > >
+> > > > This will set kprobe's expected_attach_type to BPF_TRACE_KPROBE_MULTI,
+> > > > and attach it to functions provided by the function pattern.
+> > > >
+> > > > Using glob_match from selftests/bpf/test_progs.c and adding support to
+> > > > match '?' based on original perf code.
+> > > >
+> > > > Cc: Masami Hiramatsu <mhiramat@redhat.com>
+> > > > Cc: Yucong Sun <fallentree@fb.com>
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >  tools/lib/bpf/libbpf.c | 130 +++++++++++++++++++++++++++++++++++++++--
+> > > >  1 file changed, 125 insertions(+), 5 deletions(-)
+> > > >
 > > >
-> > > wouldn't empty string be handled by kallsyms_lookup_name?
+> > > [...]
+> > >
+> > > > +static struct bpf_link *
+> > > > +attach_kprobe_multi_opts(const struct bpf_program *prog,
+> > > > +                  const char *func_pattern,
+> > > > +                  const struct bpf_kprobe_opts *kopts)
+> > > > +{
+> > > > +       DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
+> > >
+> > > nit: just LIBBPF_OPTS
 > >
-> > it would scan and compare all symbols with empty string,
-> > so it's better to test for it
+> > ok
+> >
+> > >
+> > >
+> > > > +       struct kprobe_multi_resolve res = {
+> > > > +               .name = func_pattern,
+> > > > +       };
+> > > > +       struct bpf_link *link = NULL;
+> > > > +       char errmsg[STRERR_BUFSIZE];
+> > > > +       int err, link_fd, prog_fd;
+> > > > +       bool retprobe;
+> > > > +
+> > > > +       err = libbpf_kallsyms_parse(resolve_kprobe_multi_cb, &res);
+> > >
+> > > hm... I think as a generic API we should support three modes of
+> > > specifying attachment target:
+> > >
+> > >
+> > > 1. glob-based (very convenient, I agree)
+> > > 2. array of function names (very convenient when I know specific set
+> > > of functions)
+> > > 3. array of addresses (advanced use case, so probably will be rarely used).
+> > >
+> > >
+> > >
+> > > So I wonder if it's better to have a separate
+> > > bpf_program__attach_kprobe_multi() API for this, instead of doing both
+> > > inside bpf_program__attach_kprobe()...
+> > >
+> > > In such case bpf_program__attach_kprobe() could either fail if
+> > > expected attach type is BPF_TRACE_KPROBE_MULTI or it can redirect to
+> > > attach_kprobe_multi with func_name as a pattern or just single
+> > > function (let's think which one makes more sense)
+> > >
+> > > Let's at least think about this
+> >
+> > I think it would make the code more clear, how about this:
+> >
+> >         struct bpf_kprobe_multi_opts {
+> >                 /* size of this struct, for forward/backward compatiblity */
+> >                 size_t sz;
+> >
+> >                 const char **funcs;
 > 
-> I don't mind, but it seems like kallsyms_lookup_name() should be made
-> smarter than that instead, no?
+> naming nit: func_names (to oppose it to "func_pattern")? Or just
+> "names" to be in line with "addrs" (but then "pattern" instead of
+> "func_pattern"? with kprobe it's always about functions, so this
+> "func_" everywhere is a bit redundant)
 
-true, I'll do that
+ok
 
+> 
+> >                 const unsigned long *addrs;
+> >                 const u64 *cookies;
+> >                 int cnt;
+> 
+> nit: let's use size_t
+
+ok
+
+> 
+> 
+> >                 bool retprobe;
+> >                 size_t :0;
+> >         };
+> >
+> >         bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
+> >                                               const char *pattern,
+> >                                               const struct bpf_kprobe_multi_opts *opts);
+> >
+> >
+> > if pattern is NULL we'd use opts data:
+> >
+> >         bpf_program__attach_kprobe_multi_opts(prog, "ksys_*", NULL);
+> >         bpf_program__attach_kprobe_multi_opts(prog, NULL, &opts);
+> >
+> > to have '2. array of function names' as direct function argument,
+> > we'd need to add 'cnt' as well, so I think it's better to have it
+> > in opts, and have just pattern for quick/convenient call without opts
+> >
+> 
+> yeah, naming pattern as direct argument for common use case makes
+> sense. Let's go with this scheme
+
+great, I'll make the changes
+
+thanks,
 jirka
