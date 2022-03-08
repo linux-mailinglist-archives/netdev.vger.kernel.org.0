@@ -2,95 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9FE4D1CF2
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABD84D1CDF
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 17:11:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345399AbiCHQPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 11:15:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
+        id S232999AbiCHQMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 11:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239312AbiCHQPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:15:31 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9D250B23;
-        Tue,  8 Mar 2022 08:14:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646756075; x=1678292075;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LR5CCv6Q3aBeORtqOyOOhZCKfF2QDO9kvzAaK6wB20k=;
-  b=ks2GICwVXdh1L3I3MutzB917xG/tdK2Mk8F1urr1sTBoLCLl07XRT2td
-   16PW7cQBRlIFAznS46DcprsuqbiO3ri+Xluo0rMxBY41EblqhQEHB0a/R
-   yfcJ0MB42EbBZIFJP6KoyQlVowu+FhzkLyuljo6/EoZfEZEGkkpYyhaCY
-   UE4Yh29HkaSUowkPBUN7jpAhiNyeTD0Xi9KnF1tAoXssMrspJ+nfgIoyv
-   6Xc6RDdf/ZpPObczS53YFfVwWGc/2m9PqUMUTbG0roTBpjf2dbVqu7vtk
-   Gd1blTK/AtcTdDCObAB9Qa7b4tyOYJZp51hPdWXgSuPcg9eHkMhafcCWY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="253554926"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="253554926"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 08:11:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="711580048"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 08 Mar 2022 08:11:31 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRcQt-0001fZ-5b; Tue, 08 Mar 2022 16:11:31 +0000
-Date:   Wed, 9 Mar 2022 00:10:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     zhenwei pi <pizhenwei@bytedance.com>
-Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        lei he <helei.sig11@bytedance.com>,
-        Gonglei <arei.gonglei@huawei.com>
-Subject: [mst-vhost:vhost 28/60] nios2-linux-ld:
- virtio_crypto_akcipher_algs.c:undefined reference to `rsa_parse_pub_key'
-Message-ID: <202203090014.ulENdnAQ-lkp@intel.com>
+        with ESMTP id S1348227AbiCHQMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 11:12:05 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0439850B2A
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 08:11:07 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id r13so40368119ejd.5
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 08:11:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SbxuD1tl20domxWOehSZ8fJftX11yDf/ZZR/EJ7SZrA=;
+        b=xJSdRLK6rX9iEpNpbynXa3kQwTAxTSJNJIEVGLYDU3so027WMlIz0h2P7sUEtJEGCg
+         qltlF5xkBcSyVRYaAWUpfUbS7P5TsVoZt/h+E3eSeTimQn/xw+n6et7tuvGrcg2k4qJO
+         y7UskzFCElyFItlj5/CtgJo95gdsGHPNZHp/ppF3R4eg2xkbauwT3HwALZZ8myVsE+qX
+         8f1VvQ18jShYfrKD8xTXEWDjspqSdK4hZZNun/dCUUL787F/PECqTJ6XYqpG5WVp6CgU
+         Vaval1bwJl/UV+izJAf0vvHjvcFvz1FT+dVXFd2vUKr2vq+G4MA7dsVn7c96c7iD116C
+         W1jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SbxuD1tl20domxWOehSZ8fJftX11yDf/ZZR/EJ7SZrA=;
+        b=Mwx3YHtkKB6z4EzeHAsapB4ufHO65GRtKSxiConaCUi6BpF1pxEvH1H6+FgsEfXMH+
+         y05e+rjTMEywSOm2RlPR/0Q48aALKnSGnOOE89oxxyMc9vS7ska16jXSNmjTVurxNBVP
+         0gRF6IGGj5JZkXGAKHdu+aHiZISXnheJ7dYNxRZr18ioRTDiS+8P/SHNc6YP7+4Ahusk
+         eIlasOoJaHpgLiEso12vxfUrarFzbWqzScENeljFoGy9n+vFqO6PGqvX1ewk+eMajDuh
+         AY8EIiiN1M/s6oScmKHn9KOdtYlaTJqS+mciHb7Yylnte9OyGjyc/wiA5r/yGKNSQxab
+         bxdg==
+X-Gm-Message-State: AOAM533QdzdhlXbRJSuIDSCPDvdY1Z54QdJu1IkpAa+z+lyunw6ZdVIL
+        5VkbV7+IgNnlemzTHf5UcS35Mm5XJziBFfyP+OI=
+X-Google-Smtp-Source: ABdhPJyxVzOzvGvdYdp+ahLuHf9DYxGAc6dvxOGqkP+g2Y7DnDrEofiMMhqKXU4RyT9gEeFBxTIGWQ==
+X-Received: by 2002:a17:907:7659:b0:6da:a62f:8c1d with SMTP id kj25-20020a170907765900b006daa62f8c1dmr13642301ejc.453.1646755866333;
+        Tue, 08 Mar 2022 08:11:06 -0800 (PST)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id ky5-20020a170907778500b006d1b2dd8d4csm6072617ejc.99.2022.03.08.08.11.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 08:11:05 -0800 (PST)
+Message-ID: <70f81f09-0b18-43c2-206d-c31c518dab4d@blackwall.org>
+Date:   Tue, 8 Mar 2022 18:11:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH iproute2-next 1/2] bridge: support for controlling
+ flooding of broadcast per port
+Content-Language: en-US
+To:     Joachim Wiberg <troglobit@gmail.com>, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+References: <20220308132915.2610480-1-troglobit@gmail.com>
+ <20220308132915.2610480-2-troglobit@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220308132915.2610480-2-troglobit@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
-head:   c5f633abfd09491ae7ecbc7fcfca08332ad00a8b
-commit: 8a75f36b5d7a48f1c5a0b46638961c951ec6ecd9 [28/60] virtio-crypto: implement RSA algorithm
-config: nios2-randconfig-p002-20220308 (https://download.01.org/0day-ci/archive/20220309/202203090014.ulENdnAQ-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?id=8a75f36b5d7a48f1c5a0b46638961c951ec6ecd9
-        git remote add mst-vhost https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-        git fetch --no-tags mst-vhost vhost
-        git checkout 8a75f36b5d7a48f1c5a0b46638961c951ec6ecd9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+On 08/03/2022 15:29, Joachim Wiberg wrote:
+> Add per-port support for controlling flooding of broadcast traffic.
+> Similar to unicast and multcast flooding that already exist.
+> 
+> Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+> ---
+>  bridge/link.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   nios2-linux-ld: drivers/crypto/virtio/virtio_crypto_akcipher_algs.o: in function `virtio_crypto_rsa_set_key':
-   virtio_crypto_akcipher_algs.c:(.text+0x4bc): undefined reference to `rsa_parse_priv_key'
-   virtio_crypto_akcipher_algs.c:(.text+0x4bc): relocation truncated to fit: R_NIOS2_CALL26 against `rsa_parse_priv_key'
->> nios2-linux-ld: virtio_crypto_akcipher_algs.c:(.text+0x4e8): undefined reference to `rsa_parse_pub_key'
-   virtio_crypto_akcipher_algs.c:(.text+0x4e8): relocation truncated to fit: R_NIOS2_CALL26 against `rsa_parse_pub_key'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Nice, thanks for adding this. Please also update ip/iplink_bridge_slave.c and the
+respective docs with the bcast flag, it already supports the other two.
