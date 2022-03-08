@@ -2,64 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6484F4D1BE3
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 16:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04FD64D1B42
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 16:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347824AbiCHPjt convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Mar 2022 10:39:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
+        id S237601AbiCHPCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 10:02:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347901AbiCHPiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 10:38:01 -0500
-X-Greylist: delayed 28341 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Mar 2022 07:37:03 PST
-Received: from WIN-DRN3GQNLLII.home (unknown [79.132.193.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938294EA20;
-        Tue,  8 Mar 2022 07:37:03 -0800 (PST)
-Received: from [156.96.56.93] ([156.96.56.93]) by home with
- MailEnable ESMTPA; Tue, 8 Mar 2022 10:03:21 +0330
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S235737AbiCHPCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 10:02:50 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BACB4D9C9;
+        Tue,  8 Mar 2022 07:01:54 -0800 (PST)
+Date:   Tue, 8 Mar 2022 16:01:51 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646751713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5fedSGjHcH2Pyb/TyydAXfUcpZ6zhhEWbSLM4LLfaJs=;
+        b=e0PFZjnsd8UhNp+w5LekBjKRzVA+cpxK8FjnddwfyFYkRChCq3rRnY9oUFEjpc5OZlf/y4
+        15OIS7N1igTusZyZGYVSXCZW3qNZriR9jHcwSl3xJSwZzupFAIbIrf/mSSZqPRtLMkr7iu
+        kHB0T2qFJp55fqsmfuGuSBjLWzIClw0m+s8NVotoUkNHXohVk0ULM2XSNzyQbPLHV4PZyZ
+        q5zCR4kchb6QAbVwEvpIUEZ49DgoN8HZH9DrHJ0SPMD8SaoOpJPtez91wSyKsQOJh9pItX
+        +j4NzBxo8nFJI8VuXxBqp/gOqe22eeHizRexczeDf6LG/enoPlchiFyC6n6TKQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646751713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5fedSGjHcH2Pyb/TyydAXfUcpZ6zhhEWbSLM4LLfaJs=;
+        b=Xy2TuEnXPbSgNWdtiEWiDezGB5BFzz1zeIhu6o/0AIOrdkjqI671qCWDrf9DdBkCcjjIyq
+        OUFSFzXQQTIYdeDg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Wright Feng <wright.feng@infineon.com>,
+        brcm80211-dev-list.pdl@broadcom.com, linux-wireless@vger.kernel.org
+Subject: Re: [PATCH net-next 6/8] wireless: brcmfmac: Use netif_rx().
+Message-ID: <Yidv35TjGKHf8zNi@linutronix.de>
+References: <20220305221252.3063812-1-bigeasy@linutronix.de>
+ <20220305221252.3063812-7-bigeasy@linutronix.de>
+ <c1ad3ee6-af16-77a1-e34d-91b2040dd8c9@broadcom.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Bitcoin Deposit
-To:     Recipients <noreply@nationalsoft.net>
-From:   "Thomas Singh" <noreply@nationalsoft.net>
-Date:   Mon, 07 Mar 2022 22:32:31 -0800
-Message-ID: <82438C86CCCB4D6A85CCD42EEC75D2E7.MAI@home>
-X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_99,BAYES_999,
-        LOTS_OF_MONEY,RCVD_IN_SBL,RDNS_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_RED,VFY_ACCT_NORDNS autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.0 URIBL_RED Contains an URL listed in the URIBL redlist
-        *      [URIs: tatcoin.net]
-        *  0.1 RCVD_IN_SBL RBL: Received via a relay in Spamhaus SBL
-        *      [156.96.56.93 listed in zen.spamhaus.org]
-        *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
-        *      [score: 1.0000]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 1.0000]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.8 RDNS_NONE Delivered to internal network by a host with no rDNS
-        *  3.0 VFY_ACCT_NORDNS Verify your account to a poorly-configured MTA
-        *      - probable phishing
-X-Spam-Level: *******
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <c1ad3ee6-af16-77a1-e34d-91b2040dd8c9@broadcom.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello: Dave Franklin
+On 2022-03-08 15:59:50 [+0100], Arend van Spriel wrote:
+> Looks good to me but that commit only seems to exist in net-next repo. So
+> you want to take this patch through the net-next repo as well?
 
-   As requested we have deposited the 18 BTC which amount to
-($782,742.24 USD) as per request by you. Please login with below 
-details to confirm your BTC balance.
+No need, DaveM took care of everything.
 
-Website:    : www.tatcoin.net
-Customer ID : 51047802
-Password    : reamsicle725#!
+> Regards,
+> Arend
 
-Confirm your account balance.
+Sebastian
