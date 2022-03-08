@@ -2,124 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 343F44D0F43
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 06:45:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EAB74D0F76
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 06:49:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245254AbiCHFqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 00:46:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S232809AbiCHFuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 00:50:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232397AbiCHFqt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 00:46:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE613BBD1;
-        Mon,  7 Mar 2022 21:45:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A73B61574;
-        Tue,  8 Mar 2022 05:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81AF1C340EB;
-        Tue,  8 Mar 2022 05:45:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646718352;
-        bh=Y8xpjnCaZqjpKAi6LH7psa4XoBGA667VBgBc+PH2nLU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mx31lcmtoMKA2ZBo/RU8iqV+gJN1S6CXEHizj1ptrPAsEWcD+SctSZK3N7b9x3/xe
-         POuXp8Eo72XT3OIykVrom6BbZ/Zyi1xNzV/1520yN5alcXPInUABF3+4+ACw493ewC
-         FhvPmRDtFyVK33kDjnnZYz9kzl1apHU00BOLGcYPnqRAAJQODDFz20RzCOrUBLG3Ko
-         ja/APFTJXnAt5dXeh77V/T4/kymHSNvIf6mJ9DIrMF1cu497Qta9bBxA3ED945YaGt
-         Hy2K3PjUVGkxDXPvNdC9blAwRS/Wk1LtRxI/mI09nmGNt+JzECmMIr0KYoxllvS6hv
-         hJj8s8lfkj0dg==
-Date:   Mon, 7 Mar 2022 21:45:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Roi Dayan <roid@nvidia.com>, dev@openvswitch.org,
-        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        David Ahern <dsahern@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
- extension header support
-Message-ID: <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
-References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
-        <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
-        <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
-        <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
-        <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
-        <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
-        <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
-        <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+        with ESMTP id S231348AbiCHFt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 00:49:59 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421BDB90;
+        Mon,  7 Mar 2022 21:49:04 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id b16so5429075ioz.3;
+        Mon, 07 Mar 2022 21:49:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SvVgbRCoJ3f3R8rD30iOqtOeMBt+aEK3x/P1jvJWyPI=;
+        b=WnL4Knf6KMVhNEW/jjZQUyVqydDR4r9W+bhJRiwnc6ypRXg9DWVjqCRP1coza9I+bp
+         ZEtnyk1/NBcnL4OMKzGk+FOtWcHMaSaTBXVrif97u5DWAvxAmSXeeibZDdnzT11JutAq
+         6Dhs0frsKMVXVmaaxGDbiOgQf0u4XnBB3Z8xbo7u/1r5ymNd3AWbK4hq901Hy8/g5HNS
+         lYN13c27xgdNjaQOaQKkOL7MnJGrKmqAQ7Rzco9DQQnp9RZcJ+CvOGu39OsRfhKDIoc+
+         XfixZkWjDxrFPndgEl4SFMuGsPh+KwxqmD0rPX7Iw1zC4PUKsVIKK3dml1Ox0MbECbfn
+         Cwwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SvVgbRCoJ3f3R8rD30iOqtOeMBt+aEK3x/P1jvJWyPI=;
+        b=0V24ypAkXL7wFDBL0Y9a53WfHSu+2CICSyoeRCzUgc/oAua+Oh7a0ftTLs988ZRK3L
+         4LfZN2P+xgPOaal2GtalyXVuBPUk3Ykk75om4uD/GLMtteWYvi+zBECirJCMX6AZDiRY
+         iL3LG0zO9XmdmXbOQbcsMaSw9peSwxuKFkV0oTEjvsFEVoZyJ64SZqWuRbm7Ih5w2gqy
+         0NvWBBdwjan/0Yp4hSnE9HMvqTxlcm9Bg+KI1QvbdZco6PE/tr4Zomr+nJpbMiRdyL4h
+         u9JiiJRUrwqXx6UGZEfwSPe6H1p2OvR3drY+Q7qhg0DCZotlmtIj4m3zAAZrRiIPlbAp
+         zUUQ==
+X-Gm-Message-State: AOAM533zzIHqjpHkuSPg5MWr42uzkgZq5GkWBUC954v3plqkldTjIMte
+        7L67y3+zr0xRnN3gRPeb02eost364oARAkjc2qw=
+X-Google-Smtp-Source: ABdhPJz48Pz1mxWQzVhSmNLbDFPR4fF7OL88EG2lz+h6tIDjPeifjK+06dDlqOUafYzeN7PuWNswzBoEz3hcYFcE0xM=
+X-Received: by 2002:a05:6602:185a:b0:645:d914:35e9 with SMTP id
+ d26-20020a056602185a00b00645d91435e9mr4399871ioi.154.1646718543541; Mon, 07
+ Mar 2022 21:49:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220306234311.452206-1-memxor@gmail.com>
+In-Reply-To: <20220306234311.452206-1-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 7 Mar 2022 21:48:52 -0800
+Message-ID: <CAEf4BzaPhtUGhR1vTSNGVLAudA7fUDWqZZFDfFvHXi2MOdrN5w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 0/5] Introduce bpf_packet_pointer helper
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Lorenz Bauer <linux@lmb.io>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Mar 2022 01:04:00 +0100 Ilya Maximets wrote:
-> > Thanks for the explanation, we can apply a revert if that'd help your
-> > CI / ongoing development but sounds like the fix really is in user
-> > space. Expecting netlink attribute lists not to grow is not fair.  
-> 
-> I don't think it was intentional, just a careless mistake.  Unfortunately,
-> all OVS binaries built during the last 5 years rely on that unwanted
-> expectation (re-build will also not help as they are using a copy of the
-> uAPI header and the clash will be there anyway).  If we want to keep them
-> working, kernel uAPI has to be carefully updated with current userspace-only
-> attributes before we add any new ones.  That is not great, but I don't see
-> any other option right now that doesn't require code changes in userspace.
-> 
-> I'd say that we need to revert the current patch and re-introduce it
-> later when the uAPI problem is sorted out.  This way we will avoid blocking
-> the net-next testing and will also avoid problems in case the uAPI changes
-> are not ready at the moment of the new kernel release.
-> 
-> What do you think?
+On Sun, Mar 6, 2022 at 3:43 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>
+> Expose existing 'bpf_xdp_pointer' as a BPF helper named 'bpf_packet_pointer'
+> returning a packet pointer with a fixed immutable range. This can be useful to
+> enable DPA without having to use memcpy (currently the case in
+> bpf_xdp_load_bytes and bpf_xdp_store_bytes).
+>
+> The intended usage to read and write data for multi-buff XDP is:
+>
+>         int err = 0;
+>         char buf[N];
+>
+>         off &= 0xffff;
+>         ptr = bpf_packet_pointer(ctx, off, sizeof(buf), &err);
+>         if (unlikely(!ptr)) {
+>                 if (err < 0)
+>                         return XDP_ABORTED;
+>                 err = bpf_xdp_load_bytes(ctx, off, buf, sizeof(buf));
+>                 if (err < 0)
+>                         return XDP_ABORTED;
+>                 ptr = buf;
+>         }
+>         ...
+>         // Do some stores and loads in [ptr, ptr + N) region
+>         ...
+>         if (unlikely(ptr == buf)) {
+>                 err = bpf_xdp_store_bytes(ctx, off, buf, sizeof(buf));
+>                 if (err < 0)
+>                         return XDP_ABORTED;
+>         }
+>
+> Note that bpf_packet_pointer returns a PTR_TO_PACKET, not PTR_TO_MEM, because
+> these pointers need to be invalidated on clear_all_pkt_pointers invocation, and
+> it is also more meaningful to the user to see return value as R0=pkt.
+>
+> This series is meant to collect feedback on the approach, next version can
+> include a bpf_skb_pointer and exposing it as bpf_packet_pointer helper for TC
+> hooks, and explore not resetting range to zero on r0 += rX, instead check access
+> like check_mem_region_access (var_off + off < range), since there would be no
+> data_end to compare against and obtain a new range.
+>
+> The common name and func_id is supposed to allow writing generic code using
+> bpf_packet_pointer that works for both XDP and TC programs.
+>
+> Please see the individual patches for implementation details.
+>
 
-Let me add some people I associate with genetlink work in my head
-(fairly or not) to keep me fair here.
+Joanne is working on a "bpf_dynptr" framework that will support
+exactly this feature, in addition to working with dynamically
+allocated memory, working with memory of statically unknown size (but
+safe and checked at runtime), etc. And all that within a generic
+common feature implemented uniformly within the verifier. E.g., it
+won't need any of the custom bits of logic added in patch #2 and #3.
+So I'm thinking that instead of custom-implementing a partial case of
+bpf_dynptr just for skb and xdp packets, let's maybe wait for dynptr
+and do it only once there?
 
-It's highly unacceptable for user space to straight up rewrite kernel
-uAPI types but if it already happened the only fix is something like:
+See also my ARG_CONSTANT comment. It seems like a pretty common thing
+where input constant is used to characterize some pointer returned
+from the helper (e.g., bpf_ringbuf_reserve() case), and we'll need
+that for bpf_dynptr for exactly this "give me direct access of N
+bytes, if possible" case. So improving/generalizing it now before
+dynptr lands makes a lot of sense, outside of bpf_packet_pointer()
+feature itself.
 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 9d1710f20505..ab6755621e02 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -351,11 +351,16 @@ enum ovs_key_attr {
-        OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
-        OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
-        OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
--       OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
- 
- #ifdef __KERNEL__
-        OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
- #endif
-+       /* User space decided to squat on types 30 and 31 */
-+       OVS_KEY_ATTR_IPV6_EXTHDRS = 32, /* struct ovs_key_ipv6_exthdr */
-+       /* WARNING: <scary warning to avoid the problem coming back> */
-+
-        __OVS_KEY_ATTR_MAX
- };
-
-
-right?
-
-> > Since ovs uses genetlink you should be able to dump the policy from 
-> > the kernel and at least validate that it doesn't overlap.  
-> 
-> That is interesting.  Indeed, this functionality can be used to detect
-> problems or to define userspace-only attributes in runtime based on the
-> kernel reply.  Thanks for the pointer!
+> Kumar Kartikeya Dwivedi (5):
+>   bpf: Add ARG_SCALAR and ARG_CONSTANT
+>   bpf: Introduce pkt_uid concept for PTR_TO_PACKET
+>   bpf: Introduce bpf_packet_pointer helper to do DPA
+>   selftests/bpf: Add verifier tests for pkt pointer with pkt_uid
+>   selftests/bpf: Update xdp_adjust_frags to use bpf_packet_pointer
+>
+>  include/linux/bpf.h                           |   4 +
+>  include/linux/bpf_verifier.h                  |   9 +-
+>  include/uapi/linux/bpf.h                      |  12 ++
+>  kernel/bpf/verifier.c                         |  97 ++++++++++--
+>  net/core/filter.c                             |  48 +++---
+>  tools/include/uapi/linux/bpf.h                |  12 ++
+>  .../bpf/prog_tests/xdp_adjust_frags.c         |  46 ++++--
+>  .../bpf/progs/test_xdp_update_frags.c         |  46 ++++--
+>  tools/testing/selftests/bpf/verifier/xdp.c    | 146 ++++++++++++++++++
+>  9 files changed, 358 insertions(+), 62 deletions(-)
+>
+> --
+> 2.35.1
+>
