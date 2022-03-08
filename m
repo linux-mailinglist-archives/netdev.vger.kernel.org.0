@@ -2,52 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E257F4D2208
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 20:53:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 613AF4D220D
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 20:54:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347442AbiCHTyK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Mar 2022 14:54:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
+        id S1345500AbiCHTys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 14:54:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235196AbiCHTyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 14:54:09 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C09C35DEA
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 11:53:12 -0800 (PST)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 228IooNT024938
-        for <netdev@vger.kernel.org>; Tue, 8 Mar 2022 11:53:12 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3enu25xybk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 11:53:12 -0800
-Received: from twshared33837.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 11:53:10 -0800
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 9C70D1D8EF47; Tue,  8 Mar 2022 11:53:04 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <edumazet@google.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH v2 bpf-next] bpf: select proper size for bpf_prog_pack
-Date:   Tue, 8 Mar 2022 11:53:03 -0800
-Message-ID: <20220308195303.556765-1-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S235196AbiCHTys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 14:54:48 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F00049F09
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 11:53:51 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id g26so39902720ybj.10
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 11:53:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4wTTz8ZXhShueL+d5PTkPe5oHWQmfzMgiAzN5z6Rr+M=;
+        b=l6xeFM9bowlni/gpVmFZkeZAZRHRnZlX07CKSTl4oZ8AUjoL3uyQV8CRTerCh+qM4Q
+         s13/JRpFCmqEe+zeFiXDhXet5+NgPZ/54zzQJrdvd89bkBoiog8hC3jMcdEKOzrRzPVU
+         KfI5tzpU4TWmZRcAk5/OaDtqOE+WgEyTU4uDjvZU/pNNU1qbuF63iw01fujBOFOKYLQ9
+         IGvXDVXvSeJLa8epYN0wdOztf+gDQPPP7POw+QZ1h74P3mS7oyUEQ4Bm8AymjOWhBB77
+         0vCf+nIuMlSOCIN94J591bsdHZqOMhm1yU+fPWhg+zA/xD2Y8MVKMERR+tJUC1AL+oa8
+         fHww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4wTTz8ZXhShueL+d5PTkPe5oHWQmfzMgiAzN5z6Rr+M=;
+        b=NXEQoZ8bW8KWCU3CJG9vixPuAildjOEEmDuy2MEbWxP6M9kRjeAvm7tu4DcRa483YU
+         xiVMeIyPBjXUCaP76lud7bxg7sssbWIti3x5EqERTT26e/4SGGpY/rObrirpEs2K8WOZ
+         Ix7Se8WkTdmgVkW8GzLSGq3S6Y4pEUOviCTHHGrBYbts004BuFI7O+I5nitJhEF2sVMG
+         /LQb8XypbDeccusTpfRSU2QYgjP+L3KKTQOfThCeuwvYN8lavJlJGdHzx5aoBV0L4OOc
+         jdGqfm2ES3xeMwLSPUlYO59uqrollk4SWEvKWbq17eW2TX081d4vxcRrjaaQIkeIvJwU
+         bA+g==
+X-Gm-Message-State: AOAM531fVID5RTT2DtV/W160z8pliiW3aINmNncZS0CUnYAffffcd2FD
+        RQYgdpnyJzunm4Bc22UK1MnImHaZUs5Yj/jMMNm2Rk668u1IxPqX
+X-Google-Smtp-Source: ABdhPJx+uTcQgkQq27AK9B7ARoAooIH07EDUdqZVpXRo8MGtxwdUV7nBc5PDDKAx8t2mO1pmTWXMiDuE+KV3YQ8J7Bk=
+X-Received: by 2002:a05:6902:1347:b0:629:1863:9dc6 with SMTP id
+ g7-20020a056902134700b0062918639dc6mr13434070ybu.36.1646769229975; Tue, 08
+ Mar 2022 11:53:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: ndVKW2R_b9LDmYlGV6Rf4tPOBWnBwOVt
-X-Proofpoint-ORIG-GUID: ndVKW2R_b9LDmYlGV6Rf4tPOBWnBwOVt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-08_08,2022-03-04_01,2022-02-23_01
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <20220308030348.258934-1-kuba@kernel.org> <CANn89iLoWOdLQWB0PeTtbOtzkAT=cWgzy5_RXqqLchZu1GziZw@mail.gmail.com>
+ <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com>
+In-Reply-To: <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 8 Mar 2022 11:53:38 -0800
+Message-ID: <CANn89iL0XWF8aavPFnTrRazV9T5fZtn3xJXrEb07HTdrM=rykw@mail.gmail.com>
+Subject: Re: [RFC net-next] tcp: allow larger TSO to be built under overload
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,182 +69,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using HPAGE_PMD_SIZE as the size for bpf_prog_pack is not ideal in some
-cases. Specifically, for NUMA systems, __vmalloc_node_range requires
-PMD_SIZE * num_online_nodes() to allocate huge pages. Also, if the system
-does not support huge pages (i.e., with cmdline option nohugevmalloc), it
-is better to use PAGE_SIZE packs.
+On Tue, Mar 8, 2022 at 1:08 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Eric Dumazet
+> > Sent: 08 March 2022 03:50
+> ...
+> >         /* Goal is to send at least one packet per ms,
+> >          * not one big TSO packet every 100 ms.
+> >          * This preserves ACK clocking and is consistent
+> >          * with tcp_tso_should_defer() heuristic.
+> >          */
+> > -       segs = max_t(u32, bytes / mss_now, min_tso_segs);
+> > -
+> > -       return segs;
+> > +       return max_t(u32, bytes / mss_now, min_tso_segs);
+> >  }
+>
+> Which is the common side of that max_t() ?
+> If it is mon_tso_segs it might be worth avoiding the
+> divide by coding as:
+>
+>         return bytes > mss_now * min_tso_segs ? bytes / mss_now : min_tso_segs;
+>
 
-Add logic to select proper size for bpf_prog_pack. This solution is not
-ideal, as it makes assumption about the behavior of module_alloc and
-__vmalloc_node_range. However, it appears to be the easiest solution as
-it doesn't require changes in module_alloc and vmalloc code.
+I think the common case is when the divide must happen.
+Not sure if this really matters with current cpus.
 
-Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
-Signed-off-by: Song Liu <song@kernel.org>
+Jakub, Neal, I am going to send a patch for net-next.
 
----
-Changes v1 => v2:
-1. Fix case with first program > PAGE_SIZE. (Daniel)
-2. Add Fixes tag.
-3. Remove a inline to avoid netdev/source_inline error.
----
- kernel/bpf/core.c | 75 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 51 insertions(+), 24 deletions(-)
+In conjunction with BIG TCP, this gives a considerable boost of performance.
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index ab630f773ec1..f039c1f7e5dd 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -33,6 +33,7 @@
- #include <linux/extable.h>
- #include <linux/log2.h>
- #include <linux/bpf_verifier.h>
-+#include <linux/nodemask.h>
- 
- #include <asm/barrier.h>
- #include <asm/unaligned.h>
-@@ -814,15 +815,9 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
-  * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
-  * to host BPF programs.
-  */
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
--#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
--#else
--#define BPF_PROG_PACK_SIZE	PAGE_SIZE
--#endif
- #define BPF_PROG_CHUNK_SHIFT	6
- #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
- #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
--#define BPF_PROG_CHUNK_COUNT	(BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
- 
- struct bpf_prog_pack {
- 	struct list_head list;
-@@ -830,30 +825,59 @@ struct bpf_prog_pack {
- 	unsigned long bitmap[];
- };
- 
--#define BPF_PROG_MAX_PACK_PROG_SIZE	BPF_PROG_PACK_SIZE
- #define BPF_PROG_SIZE_TO_NBITS(size)	(round_up(size, BPF_PROG_CHUNK_SIZE) / BPF_PROG_CHUNK_SIZE)
- 
-+static size_t bpf_prog_pack_size = -1;
-+
-+static int bpf_prog_chunk_count(void)
-+{
-+	WARN_ON_ONCE(bpf_prog_pack_size == -1);
-+	return bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE;
-+}
-+
- static DEFINE_MUTEX(pack_mutex);
- static LIST_HEAD(pack_list);
- 
-+static size_t select_bpf_prog_pack_size(void)
-+{
-+	size_t size;
-+	void *ptr;
-+
-+	size = PMD_SIZE * num_online_nodes() - 1;
-+	ptr = module_alloc(size);
-+
-+	/* Test whether we can get huge pages. If not just use PAGE_SIZE
-+	 * packs.
-+	 */
-+	if (!ptr || !is_vm_area_hugepages(ptr))
-+		size = PAGE_SIZE;
-+
-+	vfree(ptr);
-+	return size;
-+}
-+
- static struct bpf_prog_pack *alloc_new_pack(void)
- {
- 	struct bpf_prog_pack *pack;
-+	void *ptr;
- 
--	pack = kzalloc(sizeof(*pack) + BITS_TO_BYTES(BPF_PROG_CHUNK_COUNT), GFP_KERNEL);
--	if (!pack)
-+	ptr = module_alloc(bpf_prog_pack_size);
-+	if (!ptr)
- 		return NULL;
--	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
--	if (!pack->ptr) {
--		kfree(pack);
-+
-+	pack = kzalloc(struct_size(pack, bitmap, BITS_TO_LONGS(bpf_prog_chunk_count())),
-+		       GFP_KERNEL);
-+	if (!pack) {
-+		vfree(ptr);
- 		return NULL;
- 	}
--	bitmap_zero(pack->bitmap, BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE);
-+	pack->ptr = ptr;
-+	bitmap_zero(pack->bitmap, bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE);
- 	list_add_tail(&pack->list, &pack_list);
- 
- 	set_vm_flush_reset_perms(pack->ptr);
--	set_memory_ro((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
--	set_memory_x((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
-+	set_memory_ro((unsigned long)pack->ptr, bpf_prog_pack_size / PAGE_SIZE);
-+	set_memory_x((unsigned long)pack->ptr, bpf_prog_pack_size / PAGE_SIZE);
- 	return pack;
- }
- 
-@@ -864,7 +888,11 @@ static void *bpf_prog_pack_alloc(u32 size)
- 	unsigned long pos;
- 	void *ptr = NULL;
- 
--	if (size > BPF_PROG_MAX_PACK_PROG_SIZE) {
-+	mutex_lock(&pack_mutex);
-+	if (bpf_prog_pack_size == -1)
-+		bpf_prog_pack_size = select_bpf_prog_pack_size();
-+
-+	if (size > bpf_prog_pack_size) {
- 		size = round_up(size, PAGE_SIZE);
- 		ptr = module_alloc(size);
- 		if (ptr) {
-@@ -872,13 +900,12 @@ static void *bpf_prog_pack_alloc(u32 size)
- 			set_memory_ro((unsigned long)ptr, size / PAGE_SIZE);
- 			set_memory_x((unsigned long)ptr, size / PAGE_SIZE);
- 		}
--		return ptr;
-+		goto out;
- 	}
--	mutex_lock(&pack_mutex);
- 	list_for_each_entry(pack, &pack_list, list) {
--		pos = bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
-+		pos = bitmap_find_next_zero_area(pack->bitmap, bpf_prog_chunk_count(), 0,
- 						 nbits, 0);
--		if (pos < BPF_PROG_CHUNK_COUNT)
-+		if (pos < bpf_prog_chunk_count())
- 			goto found_free_area;
- 	}
- 
-@@ -904,12 +931,12 @@ static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
- 	unsigned long pos;
- 	void *pack_ptr;
- 
--	if (hdr->size > BPF_PROG_MAX_PACK_PROG_SIZE) {
-+	if (hdr->size > bpf_prog_pack_size) {
- 		module_memfree(hdr);
- 		return;
- 	}
- 
--	pack_ptr = (void *)((unsigned long)hdr & ~(BPF_PROG_PACK_SIZE - 1));
-+	pack_ptr = (void *)((unsigned long)hdr & ~(bpf_prog_pack_size - 1));
- 	mutex_lock(&pack_mutex);
- 
- 	list_for_each_entry(tmp, &pack_list, list) {
-@@ -926,8 +953,8 @@ static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
- 	pos = ((unsigned long)hdr - (unsigned long)pack_ptr) >> BPF_PROG_CHUNK_SHIFT;
- 
- 	bitmap_clear(pack->bitmap, pos, nbits);
--	if (bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
--				       BPF_PROG_CHUNK_COUNT, 0) == 0) {
-+	if (bitmap_find_next_zero_area(pack->bitmap, bpf_prog_chunk_count(), 0,
-+				       bpf_prog_chunk_count(), 0) == 0) {
- 		list_del(&pack->list);
- 		module_memfree(pack->ptr);
- 		kfree(pack);
--- 
-2.30.2
 
+Before:
+otrv5:/home/google/edumazet# nstat -n;./super_netperf 600 -H otrv6 -l
+20 -- -K dctcp -q 20000000;nstat|egrep
+"TcpInSegs|TcpOutSegs|TcpRetransSegs|Delivered"
+  96005
+TcpInSegs                       15649381           0.0
+TcpOutSegs                      58659574           0.0  # Average of
+3.74 4K segments per TSO packet
+TcpExtTCPDelivered              58655240           0.0
+TcpExtTCPDeliveredCE            21                 0.0
+
+After:
+otrv5:/home/google/edumazet# nstat -n;./super_netperf 600 -H otrv6 -l
+20 -- -K dctcp -q 20000000;nstat|egrep
+"TcpInSegs|TcpOutSegs|TcpRetransSegs|Delivered"
+  96046
+TcpInSegs                       1445864            0.0
+TcpOutSegs                      58885065           0.0   # Average of
+40.72 4K segments per TSO packet
+TcpExtTCPDelivered              58880873           0.0
+TcpExtTCPDeliveredCE            28                 0.0
+
+-> 1,445,864 ACK packets instead of 15,649,381
+And about 25 % of cpu cycles saved, according to perf stat
+
+ Performance counter stats for './super_netperf 600 -H otrv6 -l 20 --
+-K dctcp -q 20000000':
+
+         66,895.00 msec task-clock                #    2.886 CPUs
+utilized
+         1,312,687      context-switches          # 19623.389 M/sec
+             5,645      cpu-migrations            #   84.387 M/sec
+           942,412      page-faults               # 14088.139 M/sec
+   203,672,224,410      cycles                    # 3044700.936 GHz
+               (83.40%)
+    18,933,350,691      stalled-cycles-frontend   #    9.30% frontend
+cycles idle     (83.46%)
+   138,500,001,318      stalled-cycles-backend    #   68.00% backend
+cycles idle      (83.38%)
+    53,694,300,814      instructions              #    0.26  insn per
+cycle
+                                                  #    2.58  stalled
+cycles per insn  (83.30%)
+     9,100,155,390      branches                  # 136038439.770
+M/sec               (83.26%)
+       152,331,123      branch-misses             #    1.67% of all
+branches          (83.47%)
+
+      23.180309488 seconds time elapsed
+
+-->
+
+ Performance counter stats for './super_netperf 600 -H otrv6 -l 20 --
+-K dctcp -q 20000000':
+
+         48,964.30 msec task-clock                #    2.103 CPUs
+utilized
+           184,903      context-switches          # 3776.305 M/sec
+             3,057      cpu-migrations            #   62.434 M/sec
+           940,615      page-faults               # 19210.338 M/sec
+   152,390,738,065      cycles                    # 3112301.652 GHz
+               (83.61%)
+    11,603,675,527      stalled-cycles-frontend   #    7.61% frontend
+cycles idle     (83.49%)
+   120,240,493,440      stalled-cycles-backend    #   78.90% backend
+cycles idle      (83.30%)
+    37,106,498,492      instructions              #    0.24  insn per
+cycle
+                                                  #    3.24  stalled
+cycles per insn  (83.47%)
+     5,968,256,846      branches                  # 121890712.483
+M/sec               (83.25%)
+        88,743,145      branch-misses             #    1.49% of all
+branches          (83.24%)
+
+      23.284583305 seconds time elapsed
