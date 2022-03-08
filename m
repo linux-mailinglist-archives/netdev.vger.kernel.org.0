@@ -2,48 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E7E4D2570
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0734D2563
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbiCIBKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 20:10:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        id S230162AbiCIBKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 20:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230481AbiCIBJi (ORCPT
+        with ESMTP id S230482AbiCIBJi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:09:38 -0500
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4B414CCB9
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 16:52:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20A814AC8A
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 16:52:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646787142; x=1678323142;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=n0dzLKkaR7hYKB0JOh/UwC/MQUW1jH/QEvRJ25S7Vec=;
-  b=ibhVjldrEv9vlvGPd1+/gEFEuD9zn/KfSMVWNzlArbRO/jSuQzCgESjE
-   pkLCwfcPrvjxmKdNcbSxmwSh1eSomDVWjNcluIUdSAiCKlOhWV2yXr6jh
-   KNUgc13FHjCXEGjL7hAQhBzr5/mZsQHbm7I1s1xn/qGw35ItW0WNUsOqL
-   Xa11ZHReIC4t2VXTdDvCCrcQoVDO92yUrbHh53pD7WEkMZ2ocas/0QFLH
-   u+sdBTrgpJrV8qfjH6i807eWZhwyeKA5wMWqIEuS0MUpllAV5NX8A9lz0
-   xTSJ6mbb6M+OWEhwnC+1jpF+mqcpi6eOz2r6Mslt+liHAT7CnJ2blzykA
+  t=1646787143; x=1678323143;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IQ2wSSA2qJVx5CtVJn3XuYsaQYlOV6v9am/rX9j8WYs=;
+  b=mVnnv+THqSGyOqBmLmaiW4kRolDXiBUT7SpoVCgO/9k0wJyVWeXiqHFR
+   Dtx1nv2ym2U6aZkTrB1stjoCfyhpVqolsOkt/GLe8IAAHP0cY5I15RtkE
+   RewpVfNUJm23vM6pmFVgC0wxjxLT72fF/MP3xyBhqEKpxXeEw3D6i2bbx
+   bskIKk/8nFvU13iYn8YfhMbJnNbJzZzpUxCb1+JJyc6sIhpD3KL1mr+gY
+   KOyYFP6j2l3JNG1/KN6qKHOTqG+2+YFzpVtP30TJH0BUH1P1TT0SGHsJC
+   xSh9eudEpa1wxKtCHzbdnkc7Xl04jXQi60gudBjRHwzGrN5ICsgykx9DE
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341273480"
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341273484"
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="341273480"
+   d="scan'208";a="341273484"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 15:44:54 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="537778697"
+   d="scan'208";a="537778701"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga007.jf.intel.com with ESMTP; 08 Mar 2022 15:44:54 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH net v2 0/7][pull request] Intel Wired LAN Driver Updates 2022-03-08
-Date:   Tue,  8 Mar 2022 15:45:06 -0800
-Message-Id: <20220308234513.1089152-1-anthony.l.nguyen@intel.com>
+Cc:     Michal Maloszewski <michal.maloszewski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        sassmann@redhat.com, Norbert Ciosek <norbertx.ciosek@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net v2 1/7] iavf: Fix handling of vlan strip virtual channel messages
+Date:   Tue,  8 Mar 2022 15:45:07 -0800
+Message-Id: <20220308234513.1089152-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220308234513.1089152-1-anthony.l.nguyen@intel.com>
+References: <20220308234513.1089152-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -56,80 +61,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to iavf, i40e, and ice drivers.
+From: Michal Maloszewski <michal.maloszewski@intel.com>
 
-Michal ensures netdev features are properly updated to reflect VLAN
-changes received from PF and adds an additional flag for MSI-X
-reinitialization as further differentiation of reinitialization
-operations is needed for iavf.
+Modify netdev->features for vlan stripping based on virtual
+channel messages received from the PF. Change is needed
+to synchronize vlan strip status between PF sysfs and iavf ethtool.
 
-Jake stops disabling of VFs due to failed virtchannel responses for
-i40e and ice driver.
-
-Dave moves MTU event notification to the service task to prevent issues
-with RTNL lock for ice.
-
-Christophe Jaillet corrects an allocation to GFP_ATOMIC instead of
-GFP_KERNEL for ice.
-
-Jedrzej fixes the value for link speed comparison which was preventing
-the requested value from being set for ice.
+Fixes: 5951a2b9812d ("iavf: Fix VLAN feature flags after VFR")
+Signed-off-by: Norbert Ciosek <norbertx.ciosek@intel.com>
+Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
-v2: Correct recipients (add netdev), specifically for patch 2
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-Note: This will conflict when merging with net-next. Resolution:
-
-diff --cc drivers/net/ethernet/intel/ice/ice.h
-index dc42ff92dbad,3121f9b04f59..000000000000
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@@ -484,10 -481,9 +484,11 @@@ enum ice_pf_flags
-        ICE_FLAG_LEGACY_RX,
-        ICE_FLAG_VF_TRUE_PROMISC_ENA,
-        ICE_FLAG_MDD_AUTO_RESET_VF,
- +      ICE_FLAG_VF_VLAN_PRUNING,
-        ICE_FLAG_LINK_LENIENT_MODE_ENA,
-        ICE_FLAG_PLUG_AUX_DEV,
-+       ICE_FLAG_MTU_CHANGED,
- +      ICE_FLAG_GNSS,                  /* GNSS successfully initialized */
-        ICE_PF_FLAGS_NBITS              /* must be last */
-  };
-
-The following are changes since commit e5417cbf7ab5df1632e68fe7d9e6331fc0e7dbd6:
-  net: dsa: mt7530: fix incorrect test in mt753x_phylink_validate()
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
-
-Christophe JAILLET (1):
-  ice: Don't use GFP_KERNEL in atomic context
-
-Dave Ertman (1):
-  ice: Fix error with handling of bonding MTU
-
-Jacob Keller (2):
-  i40e: stop disabling VFs due to PF error responses
-  ice: stop disabling VFs due to PF error responses
-
-Jedrzej Jagielski (1):
-  ice: Fix curr_link_speed advertised speed
-
-Michal Maloszewski (2):
-  iavf: Fix handling of vlan strip virtual channel messages
-  iavf: Fix adopting new combined setting
-
- .../net/ethernet/intel/i40e/i40e_debugfs.c    |  6 +-
- .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 57 +++----------------
- .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |  5 --
- drivers/net/ethernet/intel/iavf/iavf.h        |  1 +
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 13 +++--
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 40 +++++++++++++
- drivers/net/ethernet/intel/ice/ice.h          |  1 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |  2 +-
- drivers/net/ethernet/intel/ice/ice_main.c     | 31 +++++-----
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 18 ------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  3 -
- 11 files changed, 76 insertions(+), 101 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+index 88844d68e150..5263cefe46f5 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+@@ -1834,6 +1834,22 @@ void iavf_request_reset(struct iavf_adapter *adapter)
+ 	adapter->current_op = VIRTCHNL_OP_UNKNOWN;
+ }
+ 
++/**
++ * iavf_netdev_features_vlan_strip_set - update vlan strip status
++ * @netdev: ptr to netdev being adjusted
++ * @enable: enable or disable vlan strip
++ *
++ * Helper function to change vlan strip status in netdev->features.
++ */
++static void iavf_netdev_features_vlan_strip_set(struct net_device *netdev,
++						const bool enable)
++{
++	if (enable)
++		netdev->features |= NETIF_F_HW_VLAN_CTAG_RX;
++	else
++		netdev->features &= ~NETIF_F_HW_VLAN_CTAG_RX;
++}
++
+ /**
+  * iavf_virtchnl_completion
+  * @adapter: adapter structure
+@@ -2057,8 +2073,18 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 			}
+ 			break;
+ 		case VIRTCHNL_OP_ENABLE_VLAN_STRIPPING:
++			dev_warn(&adapter->pdev->dev, "Changing VLAN Stripping is not allowed when Port VLAN is configured\n");
++			/* Vlan stripping could not be enabled by ethtool.
++			 * Disable it in netdev->features.
++			 */
++			iavf_netdev_features_vlan_strip_set(netdev, false);
++			break;
+ 		case VIRTCHNL_OP_DISABLE_VLAN_STRIPPING:
+ 			dev_warn(&adapter->pdev->dev, "Changing VLAN Stripping is not allowed when Port VLAN is configured\n");
++			/* Vlan stripping could not be disabled by ethtool.
++			 * Enable it in netdev->features.
++			 */
++			iavf_netdev_features_vlan_strip_set(netdev, true);
+ 			break;
+ 		default:
+ 			dev_err(&adapter->pdev->dev, "PF returned error %d (%s) to our request %d\n",
+@@ -2312,6 +2338,20 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 		spin_unlock_bh(&adapter->adv_rss_lock);
+ 		}
+ 		break;
++	case VIRTCHNL_OP_ENABLE_VLAN_STRIPPING:
++		/* PF enabled vlan strip on this VF.
++		 * Update netdev->features if needed to be in sync with ethtool.
++		 */
++		if (!v_retval)
++			iavf_netdev_features_vlan_strip_set(netdev, true);
++		break;
++	case VIRTCHNL_OP_DISABLE_VLAN_STRIPPING:
++		/* PF disabled vlan strip on this VF.
++		 * Update netdev->features if needed to be in sync with ethtool.
++		 */
++		if (!v_retval)
++			iavf_netdev_features_vlan_strip_set(netdev, false);
++		break;
+ 	default:
+ 		if (adapter->current_op && (v_opcode != adapter->current_op))
+ 			dev_warn(&adapter->pdev->dev, "Expected response %d from PF, received %d\n",
 -- 
 2.31.1
 
