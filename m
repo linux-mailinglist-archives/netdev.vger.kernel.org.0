@@ -2,91 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3704D243F
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 23:27:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4573D4D2471
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 23:42:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238475AbiCHW2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 17:28:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
+        id S1350802AbiCHWnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 17:43:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350822AbiCHW2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 17:28:05 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4014F583B8;
-        Tue,  8 Mar 2022 14:27:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646778428; x=1678314428;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7l6jxbKbZmfdRAwe6nmc8SY4mZKw+uHcQDJK850rraA=;
-  b=BRVJwWwbiEWNDfB3L/yAaGn9clgPfU9STD6kDGrH+AzQlkuMl7ojV7tq
-   vC3us92cLSu773/f2naMMepVo5vOY8Lhf8p33z9mB2xS8gzbKugpEmCp4
-   Ebk3p2vUjzeJ6T4TYwZaQoGQv2Dz3oaJ4WrikEMugY2Jx/BdhKM98b/bH
-   gN/mBj/RJXDkeY+5KHKCHEhEjSlExJ/rRfIH7Que5SsvjT10gj1bTf6S7
-   88kAnFXe+k8OsFyvAQI+an8vMci8x0yEiToAepaLEXEuMXlVIE93OYxdF
-   ghPDw4sbb65MvGCcIYZTfeUrkdiG7o7qnxobwWs2CX9dx2MCR9fC9D2dY
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,165,1643698800"; 
-   d="scan'208";a="156181155"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Mar 2022 15:27:07 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 8 Mar 2022 15:27:07 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 8 Mar 2022 15:27:07 -0700
-Date:   Tue, 8 Mar 2022 23:30:00 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Message-ID: <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
-References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
- <YifMSUA/uZoPnpf1@lunn.ch>
+        with ESMTP id S1350808AbiCHWnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 17:43:43 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738DE24593
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 14:42:46 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id x200so715281ybe.6
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 14:42:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Kh32Ual640h2CnLXOYhYVRAACk5OudVIxthkvItKp0=;
+        b=L0xMOX4eOBAX8KzLqeViHuwBDG6Pqh4FmfIq0V9YMOttBaCfKftWMBRBAnswSvVFh/
+         FrVDgv0jUsCqPgtsEVJJE88yMM0VSatxB0L+1Hie27O6xnszrkowR6s0eOf/yxx9SZXu
+         MKYOypt7vHfILzxA83fBwEuCGc4p3U2vY8SgZB90sNXiyMTklkrS8p8IlRTM7m19Kuo0
+         mINnIBKul6wNFECut/+OpasMrm6rUXsNBCN94ukvzlzGj2Rd8KZm5MdNjzgWd1foz8/l
+         Vczp6qyQhcbqAJK41tgFCwX6XpGkgUdz5XE6soFBRYrD+PMn63jGnil3BnjYJBOSCcHO
+         Y/mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Kh32Ual640h2CnLXOYhYVRAACk5OudVIxthkvItKp0=;
+        b=cl+k3Dl/eYLI8vEAQZUKuyvZxSLMRuueQ4P7/u1gAsUqngfO5Kb9r1ckESSaeGS2Ze
+         tD9dVi/kPyjsoZCKpWeNw1AWY0MIYA3tkD70VGzsngWEZFxa/sFxYm5fWCjzagsLviiQ
+         wAwj/I2IKodI5o7ipunj1tSPmIH/6mlMP4qqMJWMl7kAYNeW8/vO3sds3ydS9iOqOIjT
+         9gKvgypLo3aiqtrayH/M65B46ECglF5NjjyOR5spWL3XAT0bih4mefFdCCxzOjnr42hf
+         Cd1I3D9gosF48sB9TO9qmiCpiP5mRP7vJKnufRp07j1zSN1LM78JFkM3TSuz2/Da8F2r
+         T46g==
+X-Gm-Message-State: AOAM531UGshOPv76ZfmSrbfOsHE0jU1lV8g+v9Dz2fzKC5WLU/HPhXsq
+        bECVFI9SxoEj0DVtsaro7X6yse1+UOqn8ay4fWQsDA==
+X-Google-Smtp-Source: ABdhPJxoYz7qJviFM0TMN10rQ3WtEx/02NdYWLEXBjt1hVUIwWjpsKqmdEbAPndOfnEYfr3a3cJ4PY0tRyC/a9j5swE=
+X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr14002194ybq.407.1646779365281;
+ Tue, 08 Mar 2022 14:42:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <YifMSUA/uZoPnpf1@lunn.ch>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+References: <20220308030348.258934-1-kuba@kernel.org> <CANn89iLoWOdLQWB0PeTtbOtzkAT=cWgzy5_RXqqLchZu1GziZw@mail.gmail.com>
+ <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com> <CANn89iL0XWF8aavPFnTrRazV9T5fZtn3xJXrEb07HTdrM=rykw@mail.gmail.com>
+ <218fd4946208411b90ac77cfcf7aa643@AcuMS.aculab.com> <CANn89iK9AoGsXDhoFKY5H_d-tZ7QGv4qjsyk6MZnd9=aZxHuog@mail.gmail.com>
+In-Reply-To: <CANn89iK9AoGsXDhoFKY5H_d-tZ7QGv4qjsyk6MZnd9=aZxHuog@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 8 Mar 2022 14:42:34 -0800
+Message-ID: <CANn89iJUzrrJgriSWfbaPKZDoevBnzhshB-3YLpv8oWB+oMLug@mail.gmail.com>
+Subject: Re: [RFC net-next] tcp: allow larger TSO to be built under overload
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/08/2022 22:36, Andrew Lunn wrote:
-> 
-> >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
-> >  {
-> > -     u32 val;
-> > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
-> > +     int ret = 0;
-> >
-> > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
-> > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
-> > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
-> > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
-> > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
-> > +             if (time_after(jiffies, time)) {
-> > +                     ret = -ETIMEDOUT;
-> > +                     break;
-> > +             }
-> 
-> Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
-> explicitly supports that.
+On Tue, Mar 8, 2022 at 2:26 PM Eric Dumazet <edumazet@google.com> wrote:
+>
 
-I have tried but it didn't improve. It was the same as before.
+>
+> Thanks, I think I will make sure that we use the 32bit divide then,
+> because compiler might not be smart enough to detect both operands are < ~0U
 
-> 
->     Andrew
+BTW, it seems the compiler (clang for me) is smart enough.
 
--- 
-/Horatiu
+bytes = min_t(unsigned long, bytes, sk->sk_gso_max_size);
+return max_t(u32, bytes / mss_now, min_tso_segs);
+
+Compiler is using the divide by 32bit operation (div %ecx)
+
+If you remove the min_t() clamping, and only keep:
+
+return max_t(u32, bytes / mss_now, min_tso_segs);
+
+Then clang makes a special case if bytes >= (1UL<<32)
+
+    790d: 48 89 c2              mov    %rax,%rdx
+    7910: 48 c1 ea 20          shr    $0x20,%rdx
+    7914: 74 07                je     791d <tcp_tso_autosize+0x4d>
+    7916: 31 d2                xor    %edx,%edx
+    7918: 48 f7 f1              div    %rcx
+  # More expensive divide
+    791b: eb 04                jmp    7921 <tcp_tso_autosize+0x51>
+    791d: 31 d2                xor    %edx,%edx
+    791f: f7 f1                div    %ecx
+
+    7921: 44 39 c0              cmp    %r8d,%eax
+    7924: 44 0f 47 c0          cmova  %eax,%r8d
+    7928: 44 89 c0              mov    %r8d,%eax
+    792b: 5d                    pop    %rbp
+    792c: c3                    ret
