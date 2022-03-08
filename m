@@ -2,133 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8828C4D1062
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 07:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C63134D106E
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 07:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241639AbiCHGm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 01:42:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
+        id S244931AbiCHGoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 01:44:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231614AbiCHGm0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 01:42:26 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4563983B;
-        Mon,  7 Mar 2022 22:41:29 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KCQcX0YzLz9sSr;
-        Tue,  8 Mar 2022 14:37:48 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 8 Mar 2022 14:41:27 +0800
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Subject: IPv4 saddr do not match with selected output device in double default
- gateways scene
-To:     David Miller <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, <ja@ssi.bg>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Message-ID: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-Date:   Tue, 8 Mar 2022 14:41:27 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S232815AbiCHGoL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 01:44:11 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C026313D03;
+        Mon,  7 Mar 2022 22:43:15 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id iv12so12486566qvb.6;
+        Mon, 07 Mar 2022 22:43:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hbbtVtfgY5XvdgyEKM2lyoXP1CHPb/nDUKbxx1lHKqY=;
+        b=PQKF+49Ik9bxA8mSEa5sexJObC41jR0DWC11DO7tn3XGbhMqXnFnY4C3udmd31Spry
+         DWGVqeCMIauYpJOF2m20RELKoyWV+VU4pOZXEh7W7V6Rvk+e5mJuScNU/JBYmqBZ14ye
+         3q986RDDnGOfL8+3SSGWoTtDnnGiKB3n355Qn5BuNsk6FuH/4AS4GISpzvjQ3owNbfqZ
+         VohcbU6h8avOn8lC7Qta7rMphoUI7cqP0bUVel8INNLNjrm2EIUGz7F9BYnrYkAi4KT5
+         p+iaDY1K6P36UPuCiqqYlr2qCBuFNhHgMFNN+FmC52OtFsaQEhiLJSKxZeUNM3/i6hz6
+         nr+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hbbtVtfgY5XvdgyEKM2lyoXP1CHPb/nDUKbxx1lHKqY=;
+        b=kx0uvTQsdwP9bdtZh7Q0GogJFAgHXOkgBEn7FpjeZzF6WKp5CTibU5fkot9UL5FAcf
+         7tvp3UDQrHWsa5Jk+zIwmeJJ7HThQTtxYvGKi7Jk0zOZrfXxOjXmcF0lCT8E85XDO8Kw
+         OGiC7wsvwFoSidiZGZYQYRzKmn0pjoKI/mu/OpGfZm46PAYFteOUzZ76Z/p4n7i+MiEE
+         kcE+C1RNlcyeKUk+tQO3HfnL+BYenm5dYrmcD2orrcfFZYk+bzsbJSTpqN/Mpx2aqnsB
+         kIw6ekX4gUz6GK6mnbbG96r7ziS1DO0QG04T/ITzW8KEfsL/kg2HuzDGIUL+CCvQZVsv
+         NuOg==
+X-Gm-Message-State: AOAM531w9g/bQ6z7eRxhyOfL4cllqt1kSjqX67XNcTIRYNEDWZpc/fYC
+        7hqqbiDzmXtpqjuhU5m/+Ns=
+X-Google-Smtp-Source: ABdhPJxDX6+XAizbu2jewMgsBNvkmFC30QfQfnvgP7RQknBQ6Vfr6ZHV/TpqKUgihlcx00a000vxyA==
+X-Received: by 2002:a05:6214:5297:b0:435:7a09:1eb9 with SMTP id kj23-20020a056214529700b004357a091eb9mr8186496qvb.127.1646721794954;
+        Mon, 07 Mar 2022 22:43:14 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l13-20020a37a20d000000b0067d17b656acsm463030qke.78.2022.03.07.22.43.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 22:43:14 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net:mcf8390: Use platform_get_irq() to get the interrupt
+Date:   Tue,  8 Mar 2022 06:43:09 +0000
+Message-Id: <20220308064309.2078172-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create VLAN devices and add default gateways with following commands:
+From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 
-# ip link add link eth2 dev eth2.71 type vlan id 71
-# ip link add link eth2 dev eth2.72 type vlan id 72
-# ip addr add 192.168.71.41/24 dev eth2.71
-# ip addr add 192.168.72.41/24 dev eth2.72
-# ip link set eth2.71 up
-# ip link set eth2.72 up
-# route add -net default gw 192.168.71.1 dev eth2.71
-# route add -net default gw 192.168.72.1 dev eth2.72
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
 
-Add a nameserver configuration in the following file:
-# cat /etc/resolv.conf
-nameserver 8.8.8.8
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
 
-Use the following command trigger DNS packet:
-# ping www.baidu.com
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
 
-Assume the above test machine is client.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+---
+ drivers/net/ethernet/8390/mcf8390.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Of course, we should also create VLAN devices in peer server as following:
+diff --git a/drivers/net/ethernet/8390/mcf8390.c b/drivers/net/ethernet/8390/mcf8390.c
+index e320cccba61a..90cd7bdf06f5 100644
+--- a/drivers/net/ethernet/8390/mcf8390.c
++++ b/drivers/net/ethernet/8390/mcf8390.c
+@@ -405,12 +405,12 @@ static int mcf8390_init(struct net_device *dev)
+ static int mcf8390_probe(struct platform_device *pdev)
+ {
+ 	struct net_device *dev;
+-	struct resource *mem, *irq;
++	struct resource *mem;
+ 	resource_size_t msize;
+-	int ret;
++	int ret, irq;
+ 
+-	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (irq == NULL) {
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
+ 		dev_err(&pdev->dev, "no IRQ specified?\n");
+ 		return -ENXIO;
+ 	}
+@@ -433,7 +433,7 @@ static int mcf8390_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	platform_set_drvdata(pdev, dev);
+ 
+-	dev->irq = irq->start;
++	dev->irq = irq;
+ 	dev->base_addr = mem->start;
+ 
+ 	ret = mcf8390_init(dev);
+-- 
+2.25.1
 
-# ip link add link eth2 dev eth2.71 type vlan id 71
-# ip link add link eth2 dev eth2.72 type vlan id 72
-# ip addr add 192.168.71.1/24 dev eth2.71
-# ip addr add 192.168.72.1/24 dev eth2.72
-# ip link set eth2.71 up
-# ip link set eth2.72 up
-
-We capture packets with tcpdump in client machine when ping:
-# tcpdump -i eth2 -vne
-...
-20:30:22.996044 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25407, offset 0, flags [DF], proto UDP (17), length 59)
-    192.168.72.41.42666 > 8.8.8.8.domain: 58562+ A? www.baidu.com. (31)
-20:30:22.996125 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25408, offset 0, flags [DF], proto UDP (17), length 59)
-    192.168.72.41.42666 > 8.8.8.8.domain: 25803+ AAAA? www.baidu.com. (31)
-...
-
-We can find that IPv4 saddr "192.168.72.41" do not match with selected VLAN device "eth2.71".
-
-I tracked the related processes, and found that user space program uses connect() firstly, then sends UDP packet.
-
-The problem happens in the connect() process. Analysis as following with codes:
-
-static inline struct rtable *ip_route_connect(struct flowi4 *fl4,
-					      __be32 dst, __be32 src, u32 tos,
-					      int oif, u8 protocol,
-					      __be16 sport, __be16 dport,
-					      struct sock *sk)
-{
-	struct net *net = sock_net(sk);
-	struct rtable *rt;
-
-	ip_route_connect_init(fl4, dst, src, tos, oif, protocol,
-			      sport, dport, sk);
-
-	if (!dst || !src) {
-
-		/* rtable and fl4 are matched after the first __ip_route_output_key().
-		 * rtable->dst.dev->name == "eth2.72" && rtable->rt_gw4 == 0x148a8c0
-		 * fl4->saddr == 0x2948a8c0
-		 */
-		rt = __ip_route_output_key(net, fl4);
-		if (IS_ERR(rt))
-			return rt;
-		ip_rt_put(rt);
-		flowi4_update_output(fl4, oif, tos, fl4->daddr, fl4->saddr);
-	}
-	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
-
-	/* rtable and fl4 do not match after the second __ip_route_output_key().
-	 * rtable->dst.dev->name == "eth2.71" && rtable->rt_gw4 == 0x147a8c0
-	 * fl4->saddr == 0x2948a8c0
-	 */
-	return ip_route_output_flow(net, fl4, sk);
-}
-
-Deep tracking, it because fa->fa_default has changed in fib_select_default() after first __ip_route_output_key() process,
-and a new fib_nh is selected in fib_select_default() within the second __ip_route_output_key() process but not update flowi4.
-So the phenomenon described at the beginning happens.
-
-Does it a kernel bug or a user problem? If it is a kernel bug, is there any good solution?
