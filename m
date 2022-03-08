@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A91A4D0D75
-	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 02:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 462EC4D0D7A
+	for <lists+netdev@lfdr.de>; Tue,  8 Mar 2022 02:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238937AbiCHBYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Mar 2022 20:24:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
+        id S1344247AbiCHBYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Mar 2022 20:24:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236912AbiCHBYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 20:24:38 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDF626E0;
-        Mon,  7 Mar 2022 17:23:42 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id 9so12944544ily.11;
-        Mon, 07 Mar 2022 17:23:42 -0800 (PST)
+        with ESMTP id S244440AbiCHBYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Mar 2022 20:24:42 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECBD36B74;
+        Mon,  7 Mar 2022 17:23:46 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id 195so19366684iou.0;
+        Mon, 07 Mar 2022 17:23:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hDD4kejVrYrdIp/0ION3LJ6B/27HmC/bJYw40UoeBx4=;
-        b=ZGkrtym8ExhEtic8ReBzJQtL2O5rKwNPGqMJtygnWTgkzBwxEhWeDmtTWy2ETLi3mN
-         UFh5969wG6VbfGOTwDrL1gyrbBeQZFK7hitiTUDKy5Sioe46/vQ51mUDKGlVSfytxwsf
-         G/7x743YkeUhVNfJXKhpgeO2wwvjNB3V44NMZ/7PhFRU/Qpp0aesilmHabJWf9gYKlh8
-         bDse0ot4gaQHB0rF5anWxySiEBcAMX9fY+npd9KMLF+m5Tik9GR531n7MHC84W6x1m9T
-         VN6I5U0fJwcJjBODekEOhFp75pNs/eBmAmw5Wa8qvvGPj/gZM0UFsXXaooOI6cV7PP5B
-         gTXw==
+        bh=T43xTctFC06+IvvNRgWW3jUe2sO2yp0ufRBV/py3MXw=;
+        b=kiKcK2YpfvFn3oO0o40P1uMFgki9KGMM3dZiID8QamCI3VezliGDzOMmQhEQO1XlL7
+         5BJqXmiRlReKajJFgTGSK87t5cNHpglDfxbaLJlcs2hehRRsAwNT0G19e7vKwKVaEkYS
+         JilFIW1znWBXPk7U7XLiEr4bVrPxxXu6x+cJs5r4VAv1EFdN0T5i5oWkhFpFcdz0M952
+         oprbIM+s/sBmFEDGeP+T75nJDh06sYPi3So70LizG9nwphtqGOeE8QNBmWmm0zOE5lGB
+         /5U4YP89Hc/12yFKO0EyoCqyfP2kDq0w1/M5MHECoaAmdcfkM/zd/8RvYYZZ0RufeWsd
+         Doqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hDD4kejVrYrdIp/0ION3LJ6B/27HmC/bJYw40UoeBx4=;
-        b=6EXmJ3fXcYI07MwKo/UtoXfTpiH78bM9ASgO7uoVXTKYWl25MLMQdm6+tmX/3jZxYa
-         vgkpROc4uoOznFrBWvB4fw/i+IgcKxHyfuVpGxXKAuYkFoFo4bI1Qg8J2C7qWtIReESe
-         nrPMgjpzESQ7S9aZnv7lD1UFF0e/L1SQ8INzoiye1UaUAe9C99NthVTQJ6TRUQrgOqFn
-         Md78N9BvQQew8SKbu3BRGBs7tA3dmyVgxy+to3xyHMal5idGyJcO60UCkPJVz6UGg69s
-         J1kyox/ojvD7LJwWsBCHuBKe2/aTnufMVvBjf7haxYL1TVpLykl3JIoLdYiR+3YPf1iR
-         KhRg==
-X-Gm-Message-State: AOAM531wJhtYNsDzPTsUdAyw3EkQOBj2cFhymoFsUqan2zahR4zchaTC
-        q88Oro35TL8es1LgI6tj1QYe/DJMFM8OJ0XNEU9wAGe/1Ic=
-X-Google-Smtp-Source: ABdhPJwRurygy4RQRycJdCJr7s5FtaeABHS4hYUFZnGF2gK8fp0EupK6GsG7uOTvSo4SQBq7NyQfddXbXf3aDcBf2Hk=
-X-Received: by 2002:a92:d241:0:b0:2c6:d22:27cf with SMTP id
- v1-20020a92d241000000b002c60d2227cfmr13630674ilg.98.1646702622050; Mon, 07
- Mar 2022 17:23:42 -0800 (PST)
+        bh=T43xTctFC06+IvvNRgWW3jUe2sO2yp0ufRBV/py3MXw=;
+        b=6EnTCDcdHGCbt2ESRc6yfCFINWvTJipV9H/Z1ueYqanE7cN2SzBJhsoNQsXRHfQ/0x
+         OWtMgUUW/6oQV90gC/XLCQiDTMbiX14lT4lojeZ10cS7YQBZmninI8Tq+9edTAi82j9b
+         zSeDN+pDvnjdGwU5cgatnKPRR+KKthP8Fdxueb2PaWXclW7OINvIrHMkvW/goVHJNGOf
+         auCylJc6E4osVsu78h6Gd8EC3BP22XkDWtCo12KaarsXr6NIJZO1bGRBjCvOqJBHrr3B
+         8PyxxicWOec3SkP5WLcF7By/g9JMYzeSAEKrBgs7WxWMh94uhH607G+fKFUufx+0XqcP
+         5QBg==
+X-Gm-Message-State: AOAM530prUSf1iYxrK2OjOoq/0bHHGV0aOJfFUCC9QZX/cHGIGGFIPUE
+        ZEgKOxVMuOrhJrs6bsti6mG97de0hw+mGikOvUobAkCg3Uw=
+X-Google-Smtp-Source: ABdhPJwhIcqMKpNylL3zv3XM9W73cQYDRf3dSJNxea+E5pT7H54YUued6xDDoel51h0vn23YJKQnUEJfU91gaqYVc+w=
+X-Received: by 2002:a02:aa85:0:b0:314:c152:4c89 with SMTP id
+ u5-20020a02aa85000000b00314c1524c89mr13094712jai.93.1646702626158; Mon, 07
+ Mar 2022 17:23:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220222170600.611515-1-jolsa@kernel.org> <20220222170600.611515-6-jolsa@kernel.org>
- <CAEf4Bzab_crw+e_POJ39E+JkBDG4WJQqDGz-8Gz_JOt0rYnigA@mail.gmail.com> <YiTvY2Ly/XWICP2H@krava>
-In-Reply-To: <YiTvY2Ly/XWICP2H@krava>
+References: <20220222170600.611515-1-jolsa@kernel.org> <20220222170600.611515-3-jolsa@kernel.org>
+ <CAEf4BzadsmOTas7BdF-J+de7AqsoccY1o6e0pUBkRuWH+53DiQ@mail.gmail.com> <YiTvT0nyWLDvFya+@krava>
+In-Reply-To: <YiTvT0nyWLDvFya+@krava>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Mar 2022 17:23:31 -0800
-Message-ID: <CAEf4BzatkcxOdttWc92GYF7SY09nYk26RgpKsLGpd4fqX7my+Q@mail.gmail.com>
-Subject: Re: [PATCH 05/10] bpf: Add cookie support to programs attached with
- kprobe multi link
+Date:   Mon, 7 Mar 2022 17:23:34 -0800
+Message-ID: <CAEf4BzaJoa=N4LgT55oraJkJtBds4BmKBCpJ1wmyqZCfjdo3Pw@mail.gmail.com>
+Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
 To:     Jiri Olsa <olsajiri@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -76,110 +75,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 6, 2022 at 9:29 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+On Sun, Mar 6, 2022 at 9:28 AM Jiri Olsa <olsajiri@gmail.com> wrote:
 >
-> On Fri, Mar 04, 2022 at 03:11:08PM -0800, Andrii Nakryiko wrote:
-> > On Tue, Feb 22, 2022 at 9:07 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > >
-> > > Adding support to call bpf_get_attach_cookie helper from
-> > > kprobe programs attached with kprobe multi link.
-> > >
-> > > The cookie is provided by array of u64 values, where each
-> > > value is paired with provided function address or symbol
-> > > with the same array index.
-> > >
-> > > Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >  include/linux/sort.h           |   2 +
-> > >  include/uapi/linux/bpf.h       |   1 +
-> > >  kernel/trace/bpf_trace.c       | 103 ++++++++++++++++++++++++++++++++-
-> > >  lib/sort.c                     |   2 +-
-> > >  tools/include/uapi/linux/bpf.h |   1 +
-> > >  5 files changed, 107 insertions(+), 2 deletions(-)
-> > >
-> >
-> > [...]
-> >
-> > >  BPF_CALL_1(bpf_get_attach_cookie_trace, void *, ctx)
-> > >  {
-> > >         struct bpf_trace_run_ctx *run_ctx;
-> > > @@ -1297,7 +1312,9 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > >                         &bpf_get_func_ip_proto_kprobe_multi :
-> > >                         &bpf_get_func_ip_proto_kprobe;
-> > >         case BPF_FUNC_get_attach_cookie:
-> > > -               return &bpf_get_attach_cookie_proto_trace;
-> > > +               return prog->expected_attach_type == BPF_TRACE_KPROBE_MULTI ?
-> > > +                       &bpf_get_attach_cookie_proto_kmulti :
-> > > +                       &bpf_get_attach_cookie_proto_trace;
-> > >         default:
-> > >                 return bpf_tracing_func_proto(func_id, prog);
-> > >         }
-> > > @@ -2203,6 +2220,9 @@ struct bpf_kprobe_multi_link {
-> > >         struct bpf_link link;
-> > >         struct fprobe fp;
-> > >         unsigned long *addrs;
-> > > +       struct bpf_run_ctx run_ctx;
-> >
-> > clever, I like it! Keep in mind, though, that this trick can only be
-> > used here because this run_ctx is read-only (I'd leave the comment
-> > here about this, I didn't realize immediately that this approach can't
-> > be used for run_ctx that needs to be modified).
+> On Fri, Mar 04, 2022 at 03:11:01PM -0800, Andrii Nakryiko wrote:
 >
-> hum, I don't see it at the moment.. I'll check on that and add the
-> comment or come up with more questions ;-)
-
-if run_ctx is used to store some information, it has to be per program
-execution (private to a single bpf program run, just like bpf
-program's stack). So you can't just reuse bpf_link for that, because
-bpf_link is shared across all CPUs and thus (potentially) across
-multiple simultaneous prog runs
-
+> SNIP
 >
+> > > +static int
+> > > +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
+> > > +                         unsigned long *addrs)
+> > > +{
+> > > +       unsigned long addr, size;
+> > > +       const char **syms;
+> > > +       int err = -ENOMEM;
+> > > +       unsigned int i;
+> > > +       char *func;
+> > > +
+> > > +       size = cnt * sizeof(*syms);
+> > > +       syms = kvzalloc(size, GFP_KERNEL);
+> > > +       if (!syms)
+> > > +               return -ENOMEM;
+> > > +
+> > > +       func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> > > +       if (!func)
+> > > +               goto error;
+> > > +
+> > > +       if (copy_from_user(syms, usyms, size)) {
+> > > +               err = -EFAULT;
+> > > +               goto error;
+> > > +       }
+> > > +
+> > > +       for (i = 0; i < cnt; i++) {
+> > > +               err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+> > > +               if (err == KSYM_NAME_LEN)
+> > > +                       err = -E2BIG;
+> > > +               if (err < 0)
+> > > +                       goto error;
+> > > +
+> > > +               err = -EINVAL;
+> > > +               if (func[0] == '\0')
+> > > +                       goto error;
 > >
-> > > +       u64 *cookies;
-> > > +       u32 cnt;
-> > >  };
-> > >
-
-[...]
-
-> >
-> > >  {
-> > >         do {
-> > >  #ifdef CONFIG_64BIT
-> > > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> > > index 6c66138c1b9b..d18996502aac 100644
-> > > --- a/tools/include/uapi/linux/bpf.h
-> > > +++ b/tools/include/uapi/linux/bpf.h
-> > > @@ -1482,6 +1482,7 @@ union bpf_attr {
-> > >                         struct {
-> > >                                 __aligned_u64   syms;
-> > >                                 __aligned_u64   addrs;
-> > > +                               __aligned_u64   cookies;
-> >
-> > looks a bit weird to change layout of UAPI. That's not really a
-> > problem, because both patches will land at the same time. But if you
-> > move flags and cnt to the front of the struct it would a bit better.
+> > wouldn't empty string be handled by kallsyms_lookup_name?
 >
-> I was following your previous comment:
->   https://lore.kernel.org/bpf/CAEf4BzbPeQbURZOD93TgPudOk3JD4odsZ9uwriNkrphes9V4dg@mail.gmail.com/
->
+> it would scan and compare all symbols with empty string,
+> so it's better to test for it
 
-yeah, I didn't anticipate the cookies change at that time, but now it
-became obvious
+I don't mind, but it seems like kallsyms_lookup_name() should be made
+smarter than that instead, no?
 
-> I like the idea that syms/addrs/cookies stay together,
-> because they are all related to cnt.. but yes, it's
-> 'breaking' KABI in between these patches
+
 >
 > jirka
 >
 > >
+> > > +               addr = kallsyms_lookup_name(func);
+> > > +               if (!addr)
+> > > +                       goto error;
+> > > +               if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+> > > +                       size = MCOUNT_INSN_SIZE;
+> > > +               addr = ftrace_location_range(addr, addr + size - 1);
+> > > +               if (!addr)
+> > > +                       goto error;
+> > > +               addrs[i] = addr;
+> > > +       }
+> > > +
+> > > +       err = 0;
+> > > +error:
+> > > +       kvfree(syms);
+> > > +       kfree(func);
+> > > +       return err;
+> > > +}
+> > > +
 > >
-> > >                                 __u32           cnt;
-> > >                                 __u32           flags;
-> > >                         } kprobe_multi;
-> > > --
-> > > 2.35.1
-> > >
+> > [...]
