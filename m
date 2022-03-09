@@ -2,176 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 636464D2EE1
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D77A84D2F1B
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232732AbiCIMP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 07:15:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
+        id S232224AbiCIMfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 07:35:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232721AbiCIMPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:15:53 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2046310E06C;
-        Wed,  9 Mar 2022 04:14:54 -0800 (PST)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KDB0m66rszBrk7;
-        Wed,  9 Mar 2022 20:12:56 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
- (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Mar
- 2022 20:14:51 +0800
-From:   Hou Tao <houtao1@huawei.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        KP Singh <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next 4/4] selftests/bpf: Test subprog jit when toggle bpf_jit_harden repeatedly
-Date:   Wed, 9 Mar 2022 20:33:21 +0800
-Message-ID: <20220309123321.2400262-5-houtao1@huawei.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220309123321.2400262-1-houtao1@huawei.com>
-References: <20220309123321.2400262-1-houtao1@huawei.com>
+        with ESMTP id S232781AbiCIMfD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:35:03 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD85142365
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 04:34:04 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id bt26so3494650lfb.3
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 04:34:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=6txNCeY7AWJJpx/yE4XWczovluzseEoRTqfdbPHgl6Y=;
+        b=WGpR67gBQ8gAU2eCmA4H7YDUVHMf394plNC9HCqxgWGuclZO6jI6O0pa0RQPWzCmSJ
+         DtnC6SqZzEGeIaiJGkcL8hNnizVSHOYP8dj/jxqkYnJkDujsjDLgcy18JZIkvyDkRjpO
+         OaEWXhnK6kYy0JsGTIOOrEtivNm5lyWqbZ5mY/t/aU14qEjsQj8BlC3zmXoAFyhc5vNn
+         vy/cekghDxvoSBPNnTeou369ZWTL+Ov4NOK1jM8Mecd4o/2bAVektJa9Oa6jHCbyXSxC
+         Xa29ueJS02RYH9ax+OnQ7/iS70BEShlveZWUSQenHpoGjqbLXz+rfh5nHAzoq9PKmmpe
+         mIjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=6txNCeY7AWJJpx/yE4XWczovluzseEoRTqfdbPHgl6Y=;
+        b=zB3GVCBDhlq6WfQ6zMeuy02ZHGsDVZ2kS6DCeoN+4sIKVshjQYeaZqgeYAc8ZNyImK
+         PdGcX7YMShX5NHhBj1lx0SlkEFduC1JPelPwq4ULtf4Q4I66alrBqMNwS8/IyPbuOncu
+         6lq7oiJZ05zsiOw4PUPC/bOHVM+Q0SF4hXYLWWsvUmOcUBVkzWR1+8Uf8n54zKcRbxZt
+         z2/hvoNtGD9vCsXXxq46CWoz/scFAO+ANLifhADL39U9RJ8QLkVhD7RY061i/wjpendi
+         6k6x8DyMnmexnRJ+ePtYfeSHgLHFFmMo2ImO58fekV5PpIXiL5u1X1ruwZIZngJbEYJD
+         Mi5w==
+X-Gm-Message-State: AOAM532cl/P3xIAO01zFbrEpD0mtcjytUe99acJciAHfm4ZgzBcETCCw
+        8PgRGXcsdGOmh6pRO/xfr3o=
+X-Google-Smtp-Source: ABdhPJzn4+UXKrM7+vL+Pv0MFk6bNHRLfGxgmEA6RxlhfVpkZov/D/wPojyqYN7IB0hn20yeH6/OBA==
+X-Received: by 2002:a05:6512:3d05:b0:448:39b8:d5ef with SMTP id d5-20020a0565123d0500b0044839b8d5efmr6153811lfv.595.1646829242705;
+        Wed, 09 Mar 2022 04:34:02 -0800 (PST)
+Received: from wbg (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id m12-20020a056512114c00b00443ffe02a1fsm373716lfg.281.2022.03.09.04.34.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 04:34:01 -0800 (PST)
+From:   Joachim Wiberg <troglobit@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Subject: Re: [PATCH iproute2-next v2 4/6] man: ip-link: document new bcast_flood flag on bridge ports
+In-Reply-To: <20220308232812.5dc9e7f5@hermes.local>
+References: <20220309071716.2678952-1-troglobit@gmail.com> <20220309071716.2678952-5-troglobit@gmail.com> <20220308232812.5dc9e7f5@hermes.local>
+Date:   Wed, 09 Mar 2022 13:34:01 +0100
+Message-ID: <875yon9ufa.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When bpf_jit_harden is toggled between 0 and 2, subprog jit may fail
-due to inconsistent twice read values of bpf_jit_harden during jit. So
-add a test to ensure the problem is fixed.
+On Tue, Mar 08, 2022 at 23:28, Stephen Hemminger <stephen@networkplumber.org> wrote:
+> Minor nit, would be better to put options in alphabetical order in document.
+> Certainly not splitting the two mcast options.
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
----
- .../selftests/bpf/prog_tests/subprogs.c       | 77 ++++++++++++++++---
- 1 file changed, 68 insertions(+), 9 deletions(-)
+Ah, of course!  I'll fix it up in a v3 later today, thanks!
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/subprogs.c b/tools/testing/selftests/bpf/prog_tests/subprogs.c
-index 3f3d2ac4dd57..903f35a9e62e 100644
---- a/tools/testing/selftests/bpf/prog_tests/subprogs.c
-+++ b/tools/testing/selftests/bpf/prog_tests/subprogs.c
-@@ -1,32 +1,83 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2020 Facebook */
- #include <test_progs.h>
--#include <time.h>
- #include "test_subprogs.skel.h"
- #include "test_subprogs_unused.skel.h"
+ /J
  
--static int duration;
-+struct toggler_ctx {
-+	int fd;
-+	bool stop;
-+};
- 
--void test_subprogs(void)
-+static void *toggle_jit_harden(void *arg)
-+{
-+	struct toggler_ctx *ctx = arg;
-+	char two = '2';
-+	char zero = '0';
-+
-+	while (!ctx->stop) {
-+		lseek(ctx->fd, SEEK_SET, 0);
-+		write(ctx->fd, &two, sizeof(two));
-+		lseek(ctx->fd, SEEK_SET, 0);
-+		write(ctx->fd, &zero, sizeof(zero));
-+	}
-+
-+	return NULL;
-+}
-+
-+static void test_subprogs_with_jit_harden_toggling(void)
-+{
-+	struct toggler_ctx ctx;
-+	pthread_t toggler;
-+	int err;
-+	unsigned int i, loop = 10;
-+
-+	ctx.fd = open("/proc/sys/net/core/bpf_jit_harden", O_RDWR);
-+	if (!ASSERT_GE(ctx.fd, 0, "open bpf_jit_harden"))
-+		return;
-+
-+	ctx.stop = false;
-+	err = pthread_create(&toggler, NULL, toggle_jit_harden, &ctx);
-+	if (!ASSERT_OK(err, "new toggler"))
-+		goto out;
-+
-+	/* Make toggler thread to run */
-+	usleep(1);
-+
-+	for (i = 0; i < loop; i++) {
-+		struct test_subprogs *skel = test_subprogs__open_and_load();
-+
-+		if (!ASSERT_OK_PTR(skel, "skel open"))
-+			break;
-+		test_subprogs__destroy(skel);
-+	}
-+
-+	ctx.stop = true;
-+	pthread_join(toggler, NULL);
-+out:
-+	close(ctx.fd);
-+}
-+
-+static void test_subprogs_alone(void)
- {
- 	struct test_subprogs *skel;
- 	struct test_subprogs_unused *skel2;
- 	int err;
- 
- 	skel = test_subprogs__open_and_load();
--	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+	if (!ASSERT_OK_PTR(skel, "skel_open"))
- 		return;
- 
- 	err = test_subprogs__attach(skel);
--	if (CHECK(err, "skel_attach", "failed to attach skeleton: %d\n", err))
-+	if (!ASSERT_OK(err, "skel attach"))
- 		goto cleanup;
- 
- 	usleep(1);
- 
--	CHECK(skel->bss->res1 != 12, "res1", "got %d, exp %d\n", skel->bss->res1, 12);
--	CHECK(skel->bss->res2 != 17, "res2", "got %d, exp %d\n", skel->bss->res2, 17);
--	CHECK(skel->bss->res3 != 19, "res3", "got %d, exp %d\n", skel->bss->res3, 19);
--	CHECK(skel->bss->res4 != 36, "res4", "got %d, exp %d\n", skel->bss->res4, 36);
-+	ASSERT_EQ(skel->bss->res1, 12, "res1");
-+	ASSERT_EQ(skel->bss->res2, 17, "res2");
-+	ASSERT_EQ(skel->bss->res3, 19, "res3");
-+	ASSERT_EQ(skel->bss->res4, 36, "res4");
- 
- 	skel2 = test_subprogs_unused__open_and_load();
- 	ASSERT_OK_PTR(skel2, "unused_progs_skel");
-@@ -35,3 +86,11 @@ void test_subprogs(void)
- cleanup:
- 	test_subprogs__destroy(skel);
- }
-+
-+void test_subprogs(void)
-+{
-+	if (test__start_subtest("subprogs_alone"))
-+		test_subprogs_alone();
-+	if (test__start_subtest("subprogs_and_jit_harden"))
-+		test_subprogs_with_jit_harden_toggling();
-+}
--- 
-2.29.2
-
