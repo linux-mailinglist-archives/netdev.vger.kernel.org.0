@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7664D346B
+	by mail.lfdr.de (Postfix) with ESMTP id EF7134D346C
 	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232686AbiCIQZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:25:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        id S235399AbiCIQZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:25:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238178AbiCIQVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:21:31 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF761092
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:20:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646842817; x=1678378817;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FqnTi3KjDSx6QBLtOUGTWob6LUz8Rp6UWNEEH6D6DnA=;
-  b=lfDfZNgLVlHWRigRnLakajChxVnnUdr1R85KP0CkbaivNN1zKlJXAENa
-   rTo2DVbpo5sR/iFgPmPLuIA8ZPZ0cJ9FhIhr/IxdKRF/hy4PsQS7viDwA
-   rIUca2SRP5BOg+b/ZZVwYgJf5dDNBtTox6YI4C1COCZ1xMzNkx7O2fJk9
-   m8jNEhDK3MI9Ksn4n4VnVS0macZkR25q83Od1ojWIbJoT4RXdaLktreMs
-   PBMIGHIED0vWRyrrIxhqCYABmpu6cLjs90hBE/gZj0VXzdfFX+cwwMUaP
-   omjhs68hoscrPmX1glfKEe2RXjzGx4WVLYeTtSbyPmx5SKxifPcYJxu8i
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="234963077"
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="234963077"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 08:20:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
-   d="scan'208";a="632655513"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 Mar 2022 08:20:16 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nRz2t-0003Wq-HV; Wed, 09 Mar 2022 16:20:15 +0000
-Date:   Thu, 10 Mar 2022 00:19:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>
-Subject: [net-next:master 192/194] include/net/tcp.h:1694:1: warning:
- 'tcp_inbound_md5_hash' used but never defined
-Message-ID: <202203100028.PDew5dU4-lkp@intel.com>
+        with ESMTP id S234042AbiCIQWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:22:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00AF1EAEB;
+        Wed,  9 Mar 2022 08:21:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 465B56194C;
+        Wed,  9 Mar 2022 16:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA1EC340E8;
+        Wed,  9 Mar 2022 16:21:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646842891;
+        bh=97Nn50gt58l93v/9KvAPm/j6wwDc3B/WHx2XjMzWcM4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NsM7/PejihgS50t5LhctRNJjQjlvPAmlPx4NN7RnhH+Ysco5unSYfgTG7YLcV3vpT
+         ggyh9uGHHshcUrIxhxr3Txz4x+mDSM10VZOUWIYmMF0bI235HA0SIktFGspY6RvKPO
+         UmW5WGCQbfJNcOjn/PQ0B6hNZob7uSLkR3XY4ij2qZcUUCjRQxvJP1B7YA/nnK4Itj
+         dDPDpXiDdrV/pIBPM/y8CCvuU9LDciePlP3Itp63Uh3cfLRGQFOuEtU5SNH+6o2R4v
+         eZuuAbgWHmlbq5OLFPRcxmr94YKmhUPkhORqmvZMGEDUyORKgHnIE2C2Wr03fSCEIx
+         UHDVsSDAItrvQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Golan Ben Ami <golan.ben.ami@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ilan.peer@intel.com,
+        miriam.rachel.korenblit@intel.com, mordechay.goodstein@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 18/24] iwlwifi: don't advertise TWT support
+Date:   Wed,  9 Mar 2022 11:19:37 -0500
+Message-Id: <20220309161946.136122-18-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
+References: <20220309161946.136122-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,48 +60,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   40bb09c87f0b00c991f6c2fb367f0a2711760332
-commit: 1330b6ef3313fcec577d2b020c290dc8b9f11f1a [192/194] skb: make drop reason booleanable
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220310/202203100028.PDew5dU4-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=1330b6ef3313fcec577d2b020c290dc8b9f11f1a
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next master
-        git checkout 1330b6ef3313fcec577d2b020c290dc8b9f11f1a
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash net/core/ net/ipv4/
+From: Golan Ben Ami <golan.ben.ami@intel.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 1db5fcbba2631277b78d7f8aff99c9607d29f6d8 ]
 
-All warnings (new ones prefixed by >>):
+Some APs misbehave when TWT is used and cause our firmware to crash.
+We don't know a reasonable way to detect and work around this problem
+in the FW yet.  To prevent these crashes, disable TWT in the driver by
+stopping to advertise TWT support.
 
-   In file included from net/ipv4/tcp_ipv4.c:64:
-   include/net/tcp.h:1697:1: error: expected identifier or '(' before '{' token
-    1697 | {
-         | ^
->> include/net/tcp.h:1694:1: warning: 'tcp_inbound_md5_hash' used but never defined
-    1694 | tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
-         | ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/tcp_inbound_md5_hash +1694 include/net/tcp.h
-
-  1692	
-  1693	static inline enum skb_drop_reason
-> 1694	tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
-  1695			     const void *saddr, const void *daddr,
-  1696			     int family, int dif, int sdif);
-> 1697	{
-  1698		return SKB_NOT_DROPPED_YET;
-  1699	}
-  1700	#define tcp_twsk_md5_key(twsk)	NULL
-  1701	#endif
-  1702	
-
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215523
+Signed-off-by: Golan Ben Ami <golan.ben.ami@intel.com>
+[reworded the commit message]
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20220301072926.153969-1-luca@coelho.fi
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c | 3 +--
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
+index 475f951d4b1e..fc40cca096c2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
+@@ -541,8 +541,7 @@ static const struct ieee80211_sband_iftype_data iwl_he_capa[] = {
+ 			.has_he = true,
+ 			.he_cap_elem = {
+ 				.mac_cap_info[0] =
+-					IEEE80211_HE_MAC_CAP0_HTC_HE |
+-					IEEE80211_HE_MAC_CAP0_TWT_REQ,
++					IEEE80211_HE_MAC_CAP0_HTC_HE,
+ 				.mac_cap_info[1] =
+ 					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
+ 					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 750217393f48..56c7a68a6491 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -295,7 +295,6 @@ static const u8 he_if_types_ext_capa_sta[] = {
+ 	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
+ 	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
+ 	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
+-	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
+ };
+ 
+ static const struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
+-- 
+2.34.1
+
