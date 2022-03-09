@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EAFA4D3D09
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 022544D3CFE
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238695AbiCIWdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 17:33:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
+        id S238704AbiCIWdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 17:33:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238699AbiCIWdt (ORCPT
+        with ESMTP id S238702AbiCIWdt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:33:49 -0500
-Received: from smtp8.emailarray.com (smtp8.emailarray.com [65.39.216.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700843B00C
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:32:44 -0800 (PST)
-Received: (qmail 18058 invoked by uid 89); 9 Mar 2022 22:32:42 -0000
+Received: from smtp3.emailarray.com (smtp3.emailarray.com [65.39.216.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8268210CF3D
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:32:45 -0800 (PST)
+Received: (qmail 24349 invoked by uid 89); 9 Mar 2022 22:32:44 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp8.emailarray.com with SMTP; 9 Mar 2022 22:32:42 -0000
+  by smtp3.emailarray.com with SMTP; 9 Mar 2022 22:32:44 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com,
         kernel-team@fb.com
-Subject: [PATCH net-next v1 03/10] ptp: ocp: Rename output selector 'GNSS' to 'GNSS1'
-Date:   Wed,  9 Mar 2022 14:32:30 -0800
-Message-Id: <20220309223237.34507-4-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v1 04/10] ptp: ocp: Add GND and VCC output selectors
+Date:   Wed,  9 Mar 2022 14:32:31 -0800
+Message-Id: <20220309223237.34507-5-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220309223237.34507-1-jonathan.lemon@gmail.com>
 References: <20220309223237.34507-1-jonathan.lemon@gmail.com>
@@ -40,54 +40,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As there are may be 2 GNSS outputs, rename the first one for clarity.
-This also works around a parsing issue when specifying selectors.
+These will provide constant outputs.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/ptp/ptp_ocp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 53b11c7f8fa0..c85ba3812b25 100644
+index c85ba3812b25..d2df28a52926 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -339,7 +339,7 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
-  * 0: TS3 (and PPS)
-  * 1: TS0
-  * 2: TS1
-- * 3: GNSS
-+ * 3: GNSS1
-  * 4: GNSS2
-  * 5: MAC
-  * 6: TS2
-@@ -540,7 +540,7 @@ static struct ocp_selector ptp_ocp_sma_out[] = {
- 	{ .name = "10Mhz",	.value = 0x00 },
- 	{ .name = "PHC",	.value = 0x01 },
- 	{ .name = "MAC",	.value = 0x02 },
--	{ .name = "GNSS",	.value = 0x04 },
-+	{ .name = "GNSS1",	.value = 0x04 },
+@@ -544,6 +544,8 @@ static struct ocp_selector ptp_ocp_sma_out[] = {
  	{ .name = "GNSS2",	.value = 0x08 },
  	{ .name = "IRIG",	.value = 0x10 },
  	{ .name = "DCF",	.value = 0x20 },
-@@ -2288,7 +2288,7 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 	if (bp->ts0) {
- 		ts_reg = bp->ts0->mem;
- 		on = ioread32(&ts_reg->enable);
--		src = "GNSS";
-+		src = "GNSS1";
- 		seq_printf(s, "%7s: %s, src: %s\n", "TS0",
- 			   on ? " ON" : "OFF", src);
- 	}
-@@ -2371,7 +2371,7 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 		else if (val & 0x02)
- 			src = "MAC";
- 		else if (val & 0x04)
--			src = "GNSS";
-+			src = "GNSS1";
- 		else
- 			src = "----";
- 	} else {
++	{ .name = "GND",        .value = 0x2000 },
++	{ .name = "VCC",        .value = 0x4000 },
+ 	{ }
+ };
+ 
 -- 
 2.31.1
 
