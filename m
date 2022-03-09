@@ -2,82 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF194D3BA7
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 22:03:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78C184D3BAE
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 22:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235694AbiCIVEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 16:04:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        id S236876AbiCIVF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 16:05:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiCIVEe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 16:04:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E358935240;
-        Wed,  9 Mar 2022 13:03:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0389C61A74;
-        Wed,  9 Mar 2022 21:03:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF41AC340E8;
-        Wed,  9 Mar 2022 21:03:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646859813;
-        bh=OcrV5azfQFTJQc6og+7xhBeiB30HvqTIYzMyp9F7t2o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GwC+mlky5WDv+hgPz4JGzC13hH+nx5jE80JAiLmK6xXfpCn3QGRh+PU7TQ0AqIFzD
-         hg7+8RzJ2zz1k+Ue4bFReKzn3s+erH2ejpPt+fNOHtcBXbor3sp7eSshGqZUK0TqW9
-         T/NXobudWvS0coKBwzC9sKiQRlfUyXU4Zh2UncywRGK3GO32T85vNitpJwvHHwZTyX
-         HsNlGjiYuGCO5Vg06Cr5j9U8ylQpdxTzftyLyaRogsCrEVOW3KKxN64dXMtwkftO9l
-         yZgXmsruK3lmeixn3lnP1CqlCzypEp3Z9q/Ddu8VHiF642ivqkiRjagss1W3hmFek/
-         xZzq1jA4UqS1A==
-Date:   Wed, 9 Mar 2022 13:03:31 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH net] xdp: xdp_mem_allocator can be NULL in
- trace_mem_connect().
-Message-ID: <20220309130331.0f28ab36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YikSiGjkOtM7zMkM@linutronix.de>
-References: <YiC0BwndXiwxGDNz@linutronix.de>
-        <875yovdtm4.fsf@toke.dk>
-        <YiDM0WRlWuM2jjNJ@linutronix.de>
-        <87y21l7lmr.fsf@toke.dk>
-        <YiZIEVTRMQVYe8DP@linutronix.de>
-        <87sfrt7i1i.fsf@toke.dk>
-        <20220309091508.4e48511f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YikSiGjkOtM7zMkM@linutronix.de>
+        with ESMTP id S234458AbiCIVF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 16:05:58 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5246F543D
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 13:04:58 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id y22so4493022eds.2
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 13:04:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=WF5uaCx5pmP5JX00+D6eM3lqNw9uHLykZUlLYCW0P94=;
+        b=pBssSHtqJ3GHfnXCagspkMeb1FLvSrigdCSjwEUL/I6u0bWka05gHXuYYNxMI9rphQ
+         7PPvmnlrS7MTUHgpp60ha8HMFxGloV4Mf6eMQW/226fX3BI++EJibG1egtYlCYKkF8fm
+         9ExlgOtqchacYMVfei10qogWH6kyVNHMzKH+1kxsja3W96S0YW3vDDyWDXw+V0iciHgh
+         BD4aATLWrKxjZK7nzoMTmw5CWLxjSeeo6Ia/nVR+AZe9TBh7b/5/TkAvcHl/PGaFKarL
+         l3oRsoFCKhfsoWzfAHy21C6DJ1zOrl1FLUqDv+QNKZk9gwVXd7iXxVDdyGX2K+tHPp99
+         yO3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=WF5uaCx5pmP5JX00+D6eM3lqNw9uHLykZUlLYCW0P94=;
+        b=vWFnUe6jiAICikoIPuevl3AZjEbAecmvNlGOAlIg+s0HGjn6v0x0+2mcFidtIqU3FM
+         uQKnaydUbaWHGu/3gCQPtQj0gvU7JOi8hc5EhhPEQYLXk/C9x631h7Y5yVKBbwNC3nDc
+         FvLT71+7cN2e3+uZMX4KMDM22BuAFzKkj78dYA76Eo9wGW4kYao3S8zh4LX8Y9mPOFoq
+         KRAb51k0t1YIqAcwUK1QYXGn/vFm9HX5tjezd4j54Sx+W2WosqCkt288w4i/HjnY4xpx
+         eoBGYs/DM1MUke1FtKfIGPXmSDUzjQ/n1ufsF/GNIfWJeqWlZRSAPnnin6S45PNk6veU
+         CHgw==
+X-Gm-Message-State: AOAM530UB9C2J5xe2bzuAfMTJUpLrq5k660xS+7fbOg4MO1TDHxzN8dj
+        ctX41bWeHxYxWjdfiutS53E=
+X-Google-Smtp-Source: ABdhPJyp5mxviqtMbA4kMNRShBPCiGJmb4vHPX46WP1NIXbPD3e4/lbbcT3rIHTP/GFzv39ZS0UPYw==
+X-Received: by 2002:a50:d592:0:b0:415:e599:4166 with SMTP id v18-20020a50d592000000b00415e5994166mr1291406edi.195.1646859897467;
+        Wed, 09 Mar 2022 13:04:57 -0800 (PST)
+Received: from ?IPV6:2a01:c22:7793:600:9d6a:7788:3389:da6c? (dynamic-2a01-0c22-7793-0600-9d6a-7788-3389-da6c.c22.pool.telefonica.de. [2a01:c22:7793:600:9d6a:7788:3389:da6c])
+        by smtp.googlemail.com with ESMTPSA id x18-20020a05640226d200b00416a502c147sm606601edd.10.2022.03.09.13.04.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 13:04:54 -0800 (PST)
+Message-ID: <e3473452-a1f9-efcf-5fdd-02b6f44c3fcd@gmail.com>
+Date:   Wed, 9 Mar 2022 22:04:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] net: phy: meson-gxl: improve link-up behavior
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 21:48:08 +0100 Sebastian Andrzej Siewior wrote:
-> On 2022-03-09 09:15:08 [-0800], Jakub Kicinski wrote:
-> > Was the patch posted? This seems to be a 5.17 thing, so it'd be really
-> > really good if the fix was in net by tomorrow morning! :S  
-> 
-> Just posted v2.
+Sometimes the link comes up but no data flows. This patch fixes
+this behavior. It's not clear what's the root cause of the issue.
 
-Perfect, thank you!
+According to the tests one other link-up issue remains.
+In very rare cases the link isn't even reported as up.
+
+Fixes: 84c8f773d2dc ("net: phy: meson-gxl: remove the use of .ack_callback()")
+Tested-by: Erico Nunes <nunes.erico@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/meson-gxl.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+index c49062ad7..73f7962a3 100644
+--- a/drivers/net/phy/meson-gxl.c
++++ b/drivers/net/phy/meson-gxl.c
+@@ -243,7 +243,13 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+ 	    irq_status == INTSRC_ENERGY_DETECT)
+ 		return IRQ_HANDLED;
+ 
+-	phy_trigger_machine(phydev);
++	/* Give PHY some time before MAC starts sending data. This works
++	 * around an issue where network doesn't come up properly.
++	 */
++	if (!(irq_status & INTSRC_LINK_DOWN))
++		phy_queue_state_machine(phydev, msecs_to_jiffies(100));
++	else
++		phy_trigger_machine(phydev);
+ 
+ 	return IRQ_HANDLED;
+ }
+-- 
+2.35.1
+
