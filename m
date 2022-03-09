@@ -2,129 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50FCA4D3134
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBFD4D3138
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:46:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233615AbiCIOqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 09:46:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
+        id S233599AbiCIOqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 09:46:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiCIOqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:46:34 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F43A13CA02
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 06:45:35 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nRxZ6-00016d-RG; Wed, 09 Mar 2022 15:45:24 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nRxZ5-0001o8-Uy; Wed, 09 Mar 2022 15:45:23 +0100
-Date:   Wed, 9 Mar 2022 15:45:23 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, paskripkin@gmail.com
-Subject: Re: net: asix: best way to handle orphan PHYs
-Message-ID: <20220309144523.GE15680@pengutronix.de>
-References: <20220309121835.GA15680@pengutronix.de>
- <YiisJogt/WO5gLId@lunn.ch>
+        with ESMTP id S233654AbiCIOql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:46:41 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311E617E35B
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 06:45:43 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id u10so4794923ybd.9
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 06:45:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DDxwxI7sXDfb+b36liCBjMX3NW7CAhbvcM5a4UCs5v4=;
+        b=i7W91ZT+engSvxyFtitwW4zJoC2KJUH7GAoAeYnyBpSwStQEEQ/Bt2ZPndrmmXFsaO
+         SsLBfPJbwfzEbp/wz46GBMErlD2L2WZEIImm7VsCRGt1X07GsDEyM1coyhR8i6mnOUu4
+         9wso3n2Bs4AjvFg0MP2q34vrvW1lLTiXpwegmpTr3Mp9LEawsZSMB+Ks1eJWqJLQRDWS
+         XyYIB3ObyHBjVVcM2iujZ5q7d0vXuDd7kbHHFsl0PJy4R3LYLrpZOsflS+3lJrOE1Yf4
+         XF3nQi6sxWKYxDM72bwcjYM0g6t+haBgmTB1M136HKO8++mbKENP5zHOBuvsy3Scw6uU
+         rOBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DDxwxI7sXDfb+b36liCBjMX3NW7CAhbvcM5a4UCs5v4=;
+        b=TX2YXfsUqeD21fFGy3im/lFswjHf3WKtXszjLAUTvGVh1Cg8yuMPxg0RiM8p0J+SAQ
+         IYkjL2R8/ZeNjsfbrzAS0X3v19J0vYAyd1YuXq5DmGquST7Zs2U2xN8wI0/IKExE48Xb
+         EE6NvB5+GvDaMnIxz6o5utDsqG8qRSJ2uAc5cxxKEGGk8ggar4dd8o5lRElZvZSEJ6dH
+         IPmHhz+ZgzZSUFL0myZZXnM88U4bgFdOYBOUdsrmsIle23FQC59xc5y+0Tq3P/C2E9Oz
+         3inxfhOlZ+gHYIEmL1w/jxugk1PNLldK/YlPqo831XY/wBqstuL8IEHt+LIJG7Ngk4iM
+         KLcw==
+X-Gm-Message-State: AOAM530eQqTu5LvLKIrGQ1dXG88uSbnjZEUCvq8+bd/qz6TIzoAfgrpW
+        GP8JawRaHfGjScnHM+fNvqECfkkQpECka3DOepE=
+X-Google-Smtp-Source: ABdhPJyJ4ZlBOxxqgJg5t84MuLjlLqtsmqVAaSTchLmm8kQRhAwvtLzf/tmkTFVdgMHjStEAfGt8JYiqQwzL0WNk4qg=
+X-Received: by 2002:a05:6902:603:b0:625:989:c675 with SMTP id
+ d3-20020a056902060300b006250989c675mr16523687ybt.470.1646837142397; Wed, 09
+ Mar 2022 06:45:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YiisJogt/WO5gLId@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 14:34:30 up 88 days, 22:20, 90 users,  load average: 2.55, 1.39,
- 0.69
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
+ <1jczjzt05k.fsf@starbuckisacylon.baylibre.com> <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
+ <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com> <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+ <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com> <1j8rts76te.fsf@starbuckisacylon.baylibre.com>
+ <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com> <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
+ <435b2a9d-c3c6-a162-331f-9f47f69be5ac@gmail.com>
+In-Reply-To: <435b2a9d-c3c6-a162-331f-9f47f69be5ac@gmail.com>
+From:   Erico Nunes <nunes.erico@gmail.com>
+Date:   Wed, 9 Mar 2022 15:45:31 +0100
+Message-ID: <CAK4VdL28nWstiS09MYq5nbtiL+aMbNc=Hzv5F0-VMuNKmX9R+Q@mail.gmail.com>
+Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
+ at boot
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Sun, Mar 6, 2022 at 1:56 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> You could try the following (quick and dirty) test patch that fully mimics
+> the vendor driver as found here:
+> https://github.com/khadas/linux/blob/buildroot-aml-4.9/drivers/amlogic/ethernet/phy/amlogic.c
+>
+> First apply
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=a502a8f04097e038c3daa16c5202a9538116d563
+> This patch is in the net tree currently and should show up in linux-next
+> beginning of the week.
+>
+> On top please apply the following (it includes the test patch your working with).
 
-On Wed, Mar 09, 2022 at 02:31:18PM +0100, Andrew Lunn wrote:
-> On Wed, Mar 09, 2022 at 01:18:35PM +0100, Oleksij Rempel wrote:
-> > Hello all,
-> > 
-> > I have ASIX based USB Ethernet adapter with two PHYs: internal and
-> > external. The internal PHY is enabled by default and there seems to be
-> > no way to disable internal PHY on the MAC level without affecting the
-> > external PHY.
-> > 
-> > What is the preferred method to suspend internal PHY?
-> > Currently I have following options:
-> > - suspend PHY in the probe function of the PHY driver
-> > - get the phydev in the MAC driver and call phy_suspend()
-> > - whisper magic numbers from the MAC driver directly this the MDIO bus.
-> > 
-> > Are there other options?
-> 
-> Hi Oleksij
-> 
-> Can you unique identity this device? Does it have a custom VID:PID?
+I triggered test jobs with this configuration (latest mainline +
+a502a8f0409 + test patch for vendor driver behaviour), and the results
+are pretty much the same as with the previous test patch from this
+thread only.
+That is, I never got the issue with non-functional link up anymore,
+but I get the (rare) issue with link not going up.
+The reproducibility is still extremely low, in the >1% range.
 
-No, currently it has generic VID:PID.
+So at this point, I'm not sure how much more effort to invest into
+this. Given the rate is very low and the fallback is it will just
+reset the link and proceed to work, I think the situation would
+already be much better with the solution from that test patch being
+merged. If you propose that as a patch separately, I'm happy to test
+the final submitted patch again and provide feedback there. Or if
+there is another solution to try, I can try with that too.
 
-> It seems like suspending it in the PHY driver would be messy. How do
-> you identify the PHY is part of your devices and should be suspended?
+Thanks
 
-EEPROM provides information, which PHY address should be used. If
-address is 0x10, it is internal PHY. Different parts of ASIX driver use
-this logic.
 
-> Doing it from the MAC driver seems better, your identification
-> information is close to hand.
-> 
-> I would avoid the magic numbers, since phy_suspend() makes it clear
-> what you are doing.
-> 
-> Is there one MDIO bus with two devices, or two MDIO busses?  If there
-> are two busses, you could maybe add an extra flag to the bus structure
-> you pass to mdiobus_register() which indicates it should suspend all
-> PHY it finds on the bus during enumeration of the bus. Generally we
-> don't want this, if the PHY has link already we want to keep it, to
-> avoid the 1.5s delay causes by autoneg. But if we know the PHYs on the
-> bus are not going to be used, it would be a good point to suspend
-> them.
-
-It is one MDIO bus with multiple PHYs one of them is the internal PHY.
-ax88772 seems to provide way to put the PHY to reset from one of MAC
-register. See drivers/net/usb/asix_devices.c
-ax88772_hw_reset()
-  if (priv->embd_phy)
-    ...
-  else
-    asix_sw_reset(dev, AX_SWRESET_IPPD | AX_SWRESET_PRL,
-
-But this way is not working for the ax88772b variant.
-
-Ok, so if phy_suspend() is the preffered way, I need to get phydev
-without attaching it. Correct? Do we already have some helpers to do it?
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Erico
