@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C41954D3048
+	by mail.lfdr.de (Postfix) with ESMTP id 786374D3047
 	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 14:45:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232912AbiCINqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 08:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
+        id S232911AbiCINqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 08:46:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232807AbiCINqS (ORCPT
+        with ESMTP id S232835AbiCINqS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 08:46:18 -0500
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567D517B8B1;
-        Wed,  9 Mar 2022 05:45:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE4D17B8B8;
+        Wed,  9 Mar 2022 05:45:18 -0800 (PST)
 Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KDD1h3RFfz67gYW;
-        Wed,  9 Mar 2022 21:43:52 +0800 (CST)
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KDD1Z3HVNz6H6mm;
+        Wed,  9 Mar 2022 21:43:46 +0800 (CST)
 Received: from mscphispre00059.huawei.com (10.123.71.64) by
  fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Wed, 9 Mar 2022 14:45:14 +0100
+ 15.1.2308.21; Wed, 9 Mar 2022 14:45:16 +0100
 From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 To:     <mic@digikod.net>
 CC:     <willemdebruijn.kernel@gmail.com>,
         <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
         <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
         <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
-Subject: [RFC PATCH v4 05/15] landlock: unmask_layers() function refactoring
-Date:   Wed, 9 Mar 2022 21:44:49 +0800
-Message-ID: <20220309134459.6448-6-konstantin.meskhidze@huawei.com>
+Subject: [RFC PATCH v4 06/15] landlock: landlock_add_rule syscall refactoring
+Date:   Wed, 9 Mar 2022 21:44:50 +0800
+Message-ID: <20220309134459.6448-7-konstantin.meskhidze@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
 References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
@@ -49,176 +49,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unmask_layers() helper function moves to ruleset.c and
-rule_type argument is added. This modification supports
-implementing new rule types into next landlock versions.
+Landlock_add_rule syscall was refactored to support new
+rule types in future Landlock versions. Add_rule_path_beneath()
+helper was added to support current filesystem rules. It is called
+by the switch case.
 
 Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 ---
 
 Changes since v3:
 * Split commit.
-* Refactoring landlock_unmask_layers functions.
+* Refactoring landlock_add_rule syscall.
 
 ---
- security/landlock/fs.c      | 67 +++++++++----------------------------
- security/landlock/ruleset.c | 44 ++++++++++++++++++++++++
- security/landlock/ruleset.h |  5 +++
- 3 files changed, 64 insertions(+), 52 deletions(-)
+ security/landlock/syscalls.c | 95 ++++++++++++++++++++----------------
+ 1 file changed, 53 insertions(+), 42 deletions(-)
 
-diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-index 1497948d754f..75ebdce5cd16 100644
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -178,51 +178,6 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+index 5931b666321d..8c0f6165fe3a 100644
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -274,54 +274,13 @@ static int get_path_from_fd(const s32 fd, struct path *const path)
  	return err;
  }
 
--/* Access-control management */
--
--static inline u64 unmask_layers(
--		const struct landlock_ruleset *const domain,
--		const struct path *const path, const u32 access_request,
--		u64 layer_mask)
--{
--	const struct landlock_rule *rule;
--	const struct inode *inode;
--	size_t i;
--
--	if (d_is_negative(path->dentry))
--		/* Ignore nonexistent leafs. */
--		return layer_mask;
--	inode = d_backing_inode(path->dentry);
--	rcu_read_lock();
--	rule = landlock_find_rule(domain,
--			(uintptr_t)rcu_dereference(landlock_inode(inode)->object),
--			LANDLOCK_RULE_PATH_BENEATH);
--	rcu_read_unlock();
--	if (!rule)
--		return layer_mask;
--
--	/*
--	 * An access is granted if, for each policy layer, at least one rule
--	 * encountered on the pathwalk grants the requested accesses,
--	 * regardless of their position in the layer stack.  We must then check
--	 * the remaining layers for each inode, from the first added layer to
--	 * the last one.
--	 */
--	for (i = 0; i < rule->num_layers; i++) {
--		const struct landlock_layer *const layer = &rule->layers[i];
--		const u64 layer_level = BIT_ULL(layer->level - 1);
--
--		/* Checks that the layer grants access to the full request. */
--		if ((layer->access & access_request) == access_request) {
--			layer_mask &= ~layer_level;
--
--			if (layer_mask == 0)
--				return layer_mask;
--		}
--	}
--	return layer_mask;
--}
--
- static int check_access_path(const struct landlock_ruleset *const domain,
- 		const struct path *const path, u32 access_request)
+-/**
+- * sys_landlock_add_rule - Add a new rule to a ruleset
+- *
+- * @ruleset_fd: File descriptor tied to the ruleset that should be extended
+- *		with the new rule.
+- * @rule_type: Identify the structure type pointed to by @rule_attr (only
+- *             LANDLOCK_RULE_PATH_BENEATH for now).
+- * @rule_attr: Pointer to a rule (only of type &struct
+- *             landlock_path_beneath_attr for now).
+- * @flags: Must be 0.
+- *
+- * This system call enables to define a new rule and add it to an existing
+- * ruleset.
+- *
+- * Possible returned errors are:
+- *
+- * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
+- * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+- *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
+- *   accesses);
+- * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
+- * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
+- *   member of @rule_attr is not a file descriptor as expected;
+- * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
+- *   @rule_attr is not the expected file descriptor type (e.g. file open
+- *   without O_PATH);
+- * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+- * - EFAULT: @rule_attr inconsistency.
+- */
+-SYSCALL_DEFINE4(landlock_add_rule,
+-		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
+-		const void __user *const, rule_attr, const __u32, flags)
++static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_attr)
  {
-@@ -268,15 +223,23 @@ static int check_access_path(const struct landlock_ruleset *const domain,
- 	 */
- 	while (true) {
- 		struct dentry *parent_dentry;
-+		const struct inode *inode;
-+		struct landlock_object *object_ptr;
+ 	struct landlock_path_beneath_attr path_beneath_attr;
+ 	struct path path;
+ 	struct landlock_ruleset *ruleset;
+ 	int res, err;
 
--		layer_mask = unmask_layers(domain, &walker_path,
--				access_request, layer_mask);
--		if (layer_mask == 0) {
--			/* Stops when a rule from each layer grants access. */
--			allowed = true;
--			break;
-+		/* Ignore nonexistent leafs. */
-+		if (!d_is_negative(walker_path.dentry)) {
-+
-+			inode = d_backing_inode(walker_path.dentry);
-+			object_ptr = landlock_inode(inode)->object;
-+			layer_mask = landlock_unmask_layers(domain, object_ptr,
-+							access_request, layer_mask,
-+							LANDLOCK_RULE_PATH_BENEATH);
-+			if (layer_mask == 0) {
-+				/* Stops when a rule from each layer grants access. */
-+				allowed = true;
-+				break;
-+			}
- 		}
+-	if (!landlock_initialized)
+-		return -EOPNOTSUPP;
 -
- jump_up:
- 		if (walker_path.dentry == walker_path.mnt->mnt_root) {
- 			if (follow_up(&walker_path)) {
-diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
-index f2baa1c96b16..7179b10f3538 100644
---- a/security/landlock/ruleset.c
-+++ b/security/landlock/ruleset.c
-@@ -582,3 +582,47 @@ const struct landlock_rule *landlock_find_rule(
- 	}
- 	return NULL;
+-	/* No flag for now. */
+-	if (flags)
+-		return -EINVAL;
+-
+-	if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
+-		return -EINVAL;
+-
+ 	/* Copies raw user space buffer, only one type for now. */
+ 	res = copy_from_user(&path_beneath_attr, rule_attr,
+ 			sizeof(path_beneath_attr));
+@@ -367,6 +326,58 @@ SYSCALL_DEFINE4(landlock_add_rule,
+ 	return err;
  }
-+
-+/* Access-control management */
-+u64 landlock_unmask_layers(const struct landlock_ruleset *const domain,
-+			   const struct landlock_object *object_ptr,
-+			   const u32 access_request, u64 layer_mask,
-+			   const u16 rule_type)
+
++/**
++ * sys_landlock_add_rule - Add a new rule to a ruleset
++ *
++ * @ruleset_fd: File descriptor tied to the ruleset that should be extended
++ *		with the new rule.
++ * @rule_type: Identify the structure type pointed to by @rule_attr (only
++ *             LANDLOCK_RULE_PATH_BENEATH for now).
++ * @rule_attr: Pointer to a rule (only of type &struct
++ *             landlock_path_beneath_attr for now).
++ * @flags: Must be 0.
++ *
++ * This system call enables to define a new rule and add it to an existing
++ * ruleset.
++ *
++ * Possible returned errors are:
++ *
++ * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
++ * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
++ *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
++ *   accesses);
++ * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
++ * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
++ *   member of @rule_attr is not a file descriptor as expected;
++ * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
++ *   @rule_attr is not the expected file descriptor type (e.g. file open
++ *   without O_PATH);
++ * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
++ * - EFAULT: @rule_attr inconsistency.
++ */
++SYSCALL_DEFINE4(landlock_add_rule,
++		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
++		const void __user *const, rule_attr, const __u32, flags)
 +{
-+	const struct landlock_rule *rule;
-+	size_t i;
++	int err;
++
++	if (!landlock_initialized)
++		return -EOPNOTSUPP;
++
++	/* No flag for now. */
++	if (flags)
++		return -EINVAL;
 +
 +	switch (rule_type) {
 +	case LANDLOCK_RULE_PATH_BENEATH:
-+		rcu_read_lock();
-+		rule = landlock_find_rule(domain,
-+			(uintptr_t)rcu_dereference(object_ptr),
-+			LANDLOCK_RULE_PATH_BENEATH);
-+		rcu_read_unlock();
++		err = add_rule_path_beneath(ruleset_fd, rule_attr);
 +		break;
++	default:
++		err = -EINVAL;
 +	}
-+
-+	if (!rule)
-+		return layer_mask;
-+
-+	/*
-+	 * An access is granted if, for each policy layer, at least one rule
-+	 * encountered on the pathwalk grants the requested accesses,
-+	 * regardless of their position in the layer stack.  We must then check
-+	 * the remaining layers for each inode, from the first added layer to
-+	 * the last one.
-+	 */
-+	for (i = 0; i < rule->num_layers; i++) {
-+		const struct landlock_layer *const layer = &rule->layers[i];
-+		const u64 layer_level = BIT_ULL(layer->level - 1);
-+
-+		/* Checks that the layer grants access to the full request. */
-+		if ((layer->access & access_request) == access_request) {
-+			layer_mask &= ~layer_level;
-+
-+			if (layer_mask == 0)
-+				return layer_mask;
-+		}
-+	}
-+	return layer_mask;
++	return err;
 +}
-diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
-index 088b8d95f653..0a7d4b1f51fd 100644
---- a/security/landlock/ruleset.h
-+++ b/security/landlock/ruleset.h
-@@ -183,4 +183,9 @@ void landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
-
- u32 landlock_get_fs_access_mask(const struct landlock_ruleset *ruleset, u16 mask_level);
-
-+u64 landlock_unmask_layers(const struct landlock_ruleset *const domain,
-+			   const struct landlock_object *object_ptr,
-+			   const u32 access_request, u64 layer_mask,
-+			   const u16 rule_type);
 +
- #endif /* _SECURITY_LANDLOCK_RULESET_H */
+ /* Enforcement */
+
+ /**
 --
 2.25.1
 
