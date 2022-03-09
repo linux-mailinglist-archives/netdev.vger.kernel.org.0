@@ -2,208 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69FA84D2C3E
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:36:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0860D4D2C71
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:47:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiCIJh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:37:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
+        id S230052AbiCIJsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 04:48:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiCIJh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:37:27 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83EF16F95B;
-        Wed,  9 Mar 2022 01:36:27 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6j1lsR_1646818580;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6j1lsR_1646818580)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Mar 2022 17:36:21 +0800
-Message-ID: <1646818559.1648765-11-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v7 25/26] virtio_net: set the default max ring size by find_vqs()
-Date:   Wed, 9 Mar 2022 17:35:59 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-26-xuanzhuo@linux.alibaba.com>
- <d7ec6eed-d692-091b-a438-1ae1cc5ee614@redhat.com>
-In-Reply-To: <d7ec6eed-d692-091b-a438-1ae1cc5ee614@redhat.com>
+        with ESMTP id S232291AbiCIJr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:47:59 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F938169230
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 01:46:59 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id q5so2187021ljb.11
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 01:46:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fungible.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OIfAuT6YNE8NGkL8XN7GggHrn6CO/cybivtUIaLshhw=;
+        b=O8UbKb5uabc61APjtD0gOoeCaZ5LM75A4APq2KQgRwxHp6RpbNUuBAysSRxq/K6UV2
+         D5Vl/zGOaH+WiituOEZJOC9oNvccyTVa94CmDH4RsL/H1a9Z6bKrRFrJidU9hjiWGW7t
+         E0vK07enAr/nRAobtKonD6z2G+csehx+oW6H8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OIfAuT6YNE8NGkL8XN7GggHrn6CO/cybivtUIaLshhw=;
+        b=tPf+PFb1mTJqAfzulmES3u0NCX4qBDBmcPPLuS1wWpulGozxoij2yl3pAfvniczyWV
+         jFsPrQLDY16AKg23HK5LF+/hbiB3+41fCe+dK4FRSVse3UBy3lfbq8NDnwyi3ZhYsXKb
+         COloK4ceCVawPBPBUNKbPphym1wTeJ+WUEUZss6VHgBpngqOFQVotQ+ms0tLia+MiQsO
+         ABX4kGL+ZyKGB5hlGKw1VgPcZ9foyt9AYg+pNtPYgNN9iWo4RvGghQ12sQSNrfWly0PL
+         ploom8o0qsviKn0mrhwsaGWsWtNt440nxSx5VIMKwjUvs4IkWF8DSc93cnR6ux9tFA2N
+         0bhA==
+X-Gm-Message-State: AOAM531uONGITb0Hx/G0VbCsbQOgzZizQrhYxdQCK8qPX5sy9Veiwf7v
+        XISrhcBoCoB7oR40Im/cU8aGdVQAYuWodCU6YwBDKtzDAMUYoA==
+X-Google-Smtp-Source: ABdhPJzjr7prweZBZSj2ZIlp8wGBiqnXNLCwiLV9S0y24yW5kYAIAPdsSnRZm1oNr78+z1y6jp00mh36nGOGjPqgrJg=
+X-Received: by 2002:a05:651c:19a4:b0:247:df0d:17f8 with SMTP id
+ bx36-20020a05651c19a400b00247df0d17f8mr11362648ljb.100.1646819217559; Wed, 09
+ Mar 2022 01:46:57 -0800 (PST)
+MIME-Version: 1.0
+References: <20220308045321.2843-1-dmichail@fungible.com> <20220308221407.5f26332b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220308221407.5f26332b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+Date:   Wed, 9 Mar 2022 01:46:44 -0800
+Message-ID: <CAOkoqZ=mPesf-PYDW-Aoq=nMrdfY-RDdJGgWYk48oja_OVxoNw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/fungible: Fix local_memory_node error
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 17:28:21 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Tue, Mar 8, 2022 at 10:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
-> > Use virtio_find_vqs_ctx_size() to specify the maximum ring size of tx,
-> > rx at the same time.
+> On Mon,  7 Mar 2022 20:53:21 -0800 Dimitris Michailidis wrote:
+> > Stephen Rothwell reported the following failure on powerpc:
 > >
-> >                           | rx/tx ring size
-> > -------------------------------------------
-> > speed =3D=3D UNKNOWN or < 10G| 1024
-> > speed < 40G              | 4096
-> > speed >=3D 40G             | 8192
+> > ERROR: modpost: ".local_memory_node"
+> > [drivers/net/ethernet/fungible/funeth/funeth.ko] undefined!
 > >
-> > Call virtnet_update_settings() once before calling init_vqs() to update
-> > speed.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > AFAICS this is because local_memory_node() is a non-inline non-exported
+> > function when CONFIG_HAVE_MEMORYLESS_NODES=y. It is also the wrong API
+> > to get a CPU's memory node. Use cpu_to_mem() in the two spots it's used.
+>
+> Can the ids actually not match? I'm asking because nobody else is doing
+> the cpu -> mem node conversions.
+
+They can differ if CONFIG_HAVE_MEMORYLESS_NODES=y and the machine has
+memoryless nodes. That config is only offered by IA64 and powerpc so I
+guess there are just a few machines where they can differ. It is true
+that cpu_to_mem() calls aren't common but the related call
+numa_mem_id(), the special case for the local CPU, is easier to find.
+For example, page pools's default preferred node is numa_mem_id()
+rather than numa_node_id().
+
+> > Fixes: ee6373ddf3a9 ("net/funeth: probing and netdev ops")
+> > Fixes: db37bc177dae ("net/funeth: add the data path")
+> > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
 > > ---
-> >   drivers/net/virtio_net.c | 42 ++++++++++++++++++++++++++++++++++++----
-> >   1 file changed, 38 insertions(+), 4 deletions(-)
+> >  drivers/net/ethernet/fungible/funeth/funeth_main.c | 2 +-
+> >  drivers/net/ethernet/fungible/funeth/funeth_txrx.h | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
 > >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index ffff323dcef0..f1bdc6ce21c3 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -2977,6 +2977,29 @@ static unsigned int mergeable_min_buf_len(struct=
- virtnet_info *vi, struct virtqu
-> >   		   (unsigned int)GOOD_PACKET_LEN);
-> >   }
+> > diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
+> > index c58b10c216ef..67dd02ed1fa3 100644
+> > --- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
+> > +++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
+> > @@ -253,7 +253,7 @@ static struct fun_irq *fun_alloc_qirq(struct funeth_priv *fp, unsigned int idx,
+> >       int cpu, res;
 > >
-> > +static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
-> > +{
-> > +	u32 i, rx_size, tx_size;
-> > +
-> > +	if (vi->speed =3D=3D SPEED_UNKNOWN || vi->speed < SPEED_10000) {
-> > +		rx_size =3D 1024;
-> > +		tx_size =3D 1024;
-> > +
-> > +	} else if (vi->speed < SPEED_40000) {
-> > +		rx_size =3D 1024 * 4;
-> > +		tx_size =3D 1024 * 4;
-> > +
-> > +	} else {
-> > +		rx_size =3D 1024 * 8;
-> > +		tx_size =3D 1024 * 8;
-> > +	}
-> > +
-> > +	for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> > +		sizes[rxq2vq(i)] =3D rx_size;
-> > +		sizes[txq2vq(i)] =3D tx_size;
-> > +	}
-> > +}
-> > +
-> >   static int virtnet_find_vqs(struct virtnet_info *vi)
-> >   {
-> >   	vq_callback_t **callbacks;
-> > @@ -2984,6 +3007,7 @@ static int virtnet_find_vqs(struct virtnet_info *=
-vi)
-> >   	int ret =3D -ENOMEM;
-> >   	int i, total_vqs;
-> >   	const char **names;
-> > +	u32 *sizes;
-> >   	bool *ctx;
+> >       cpu = cpumask_local_spread(idx, node);
+> > -     node = local_memory_node(cpu_to_node(cpu));
+> > +     node = cpu_to_mem(cpu);
 > >
-> >   	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
-> > @@ -3011,10 +3035,15 @@ static int virtnet_find_vqs(struct virtnet_info=
- *vi)
-> >   		ctx =3D NULL;
-> >   	}
+> >       irq = kzalloc_node(sizeof(*irq), GFP_KERNEL, node);
+> >       if (!irq)
+> > diff --git a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+> > index 7aed0561aeac..04c9f91b7489 100644
+> > --- a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+> > +++ b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+> > @@ -239,7 +239,7 @@ static inline void fun_txq_wr_db(const struct funeth_txq *q)
 > >
-> > +	sizes =3D kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
-> > +	if (!sizes)
-> > +		goto err_sizes;
-> > +
-> >   	/* Parameters for control virtqueue, if any */
-> >   	if (vi->has_cvq) {
-> >   		callbacks[total_vqs - 1] =3D NULL;
-> >   		names[total_vqs - 1] =3D "control";
-> > +		sizes[total_vqs - 1] =3D 0;
->
->
-> Nit: Do we need a sane value for the control vq? (e.g 64)
-
-
-I think it can.
-
-Thanks.
-
->
-> Thanks
->
->
-> >   	}
+> >  static inline int fun_irq_node(const struct fun_irq *p)
+> >  {
+> > -     return local_memory_node(cpu_to_node(cpumask_first(&p->affinity_mask)));
+> > +     return cpu_to_mem(cpumask_first(&p->affinity_mask));
+> >  }
 > >
-> >   	/* Allocate/initialize parameters for send/receive virtqueues */
-> > @@ -3029,8 +3058,10 @@ static int virtnet_find_vqs(struct virtnet_info =
-*vi)
-> >   			ctx[rxq2vq(i)] =3D true;
-> >   	}
-> >
-> > -	ret =3D virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
-> > -				  names, ctx, NULL);
-> > +	virtnet_config_sizes(vi, sizes);
-> > +
-> > +	ret =3D virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
-> > +				       names, ctx, NULL, sizes);
-> >   	if (ret)
-> >   		goto err_find;
-> >
-> > @@ -3050,6 +3081,8 @@ static int virtnet_find_vqs(struct virtnet_info *=
-vi)
-> >
-> >
-> >   err_find:
-> > +	kfree(sizes);
-> > +err_sizes:
-> >   	kfree(ctx);
-> >   err_ctx:
-> >   	kfree(names);
-> > @@ -3368,6 +3401,9 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >   		vi->curr_queue_pairs =3D num_online_cpus();
-> >   	vi->max_queue_pairs =3D max_queue_pairs;
-> >
-> > +	virtnet_init_settings(dev);
-> > +	virtnet_update_settings(vi);
-> > +
-> >   	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
-> >   	err =3D init_vqs(vi);
-> >   	if (err)
-> > @@ -3380,8 +3416,6 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >   	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
-> >   	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
-> >
-> > -	virtnet_init_settings(dev);
-> > -
-> >   	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
-> >   		vi->failover =3D net_failover_create(vi->dev);
-> >   		if (IS_ERR(vi->failover)) {
+> >  int fun_rxq_napi_poll(struct napi_struct *napi, int budget);
 >
