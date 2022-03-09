@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF4CB4D2BB8
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:22:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 950D94D2BC6
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:23:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232008AbiCIJXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:23:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        id S232021AbiCIJYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 04:24:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232109AbiCIJXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:23:05 -0500
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4A316E7E5;
-        Wed,  9 Mar 2022 01:22:02 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R761e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6j1jVj_1646817715;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6j1jVj_1646817715)
+        with ESMTP id S231297AbiCIJYD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:24:03 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0D66C1C2;
+        Wed,  9 Mar 2022 01:23:03 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6iwYED_1646817777;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6iwYED_1646817777)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Mar 2022 17:21:57 +0800
-Message-ID: <1646817687.2614713-4-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v7 05/26] virtio_ring: split: extract the logic of init vq and attach vring
-Date:   Wed, 9 Mar 2022 17:21:27 +0800
+          Wed, 09 Mar 2022 17:22:58 +0800
+Message-ID: <1646817741.6086373-5-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v7 08/26] virtio_ring: extract the logic of freeing vring
+Date:   Wed, 9 Mar 2022 17:22:21 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
@@ -51,9 +51,9 @@ Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-6-xuanzhuo@linux.alibaba.com>
- <85dde6ed-cdf1-61e4-6f05-d3e2477b9e35@redhat.com>
-In-Reply-To: <85dde6ed-cdf1-61e4-6f05-d3e2477b9e35@redhat.com>
+ <20220308123518.33800-9-xuanzhuo@linux.alibaba.com>
+ <aa24df8c-787a-0db5-7b16-60adcb86ab0c@redhat.com>
+In-Reply-To: <aa24df8c-787a-0db5-7b16-60adcb86ab0c@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -66,72 +66,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 15:36:59 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Wed, 9 Mar 2022 15:51:13 +0800, Jason Wang <jasowang@redhat.com> wrote:
 >
-> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:34, Xuan Zhuo =E5=86=99=E9=81=93:
-> > Split the logic of split assignment vq into three parts.
+> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Introduce vring_free() to free the vring of vq.
 > >
-> > 1. The assignment passed from the function parameter
-> > 2. The part that attaches vring to vq. -- __vring_virtqueue_attach_spli=
-t()
-> > 3. The part that initializes vq to a fixed value --
-> >     __vring_virtqueue_init_split()
-> >
-> > This feature is required for subsequent virtuqueue reset vring
+> > Prevent double free by setting vq->reset.
 > >
 > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > > ---
-> >   drivers/virtio/virtio_ring.c | 111 +++++++++++++++++++++--------------
-> >   1 file changed, 67 insertions(+), 44 deletions(-)
+> >   drivers/virtio/virtio_ring.c | 25 ++++++++++++++++++++-----
+> >   include/linux/virtio.h       |  8 ++++++++
+> >   2 files changed, 28 insertions(+), 5 deletions(-)
 > >
 > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index d32793615451..dc6313b79305 100644
+> > index b5a9bf4f45b3..e0422c04c903 100644
 > > --- a/drivers/virtio/virtio_ring.c
 > > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -2196,34 +2196,40 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+> > @@ -2442,14 +2442,10 @@ struct virtqueue *vring_new_virtqueue(unsigned =
+int index,
 > >   }
-> >   EXPORT_SYMBOL_GPL(vring_interrupt);
+> >   EXPORT_SYMBOL_GPL(vring_new_virtqueue);
 > >
-> > -/* Only available for split ring */
-> > -struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > -					struct vring vring,
-> > -					struct virtio_device *vdev,
-> > -					bool weak_barriers,
-> > -					bool context,
-> > -					bool (*notify)(struct virtqueue *),
-> > -					void (*callback)(struct virtqueue *),
-> > -					const char *name)
-> > +static int __vring_virtqueue_attach_split(struct vring_virtqueue *vq,
-> > +					  struct virtio_device *vdev,
-> > +					  struct vring vring)
+> > -void vring_del_virtqueue(struct virtqueue *_vq)
+> > +static void __vring_free(struct virtqueue *_vq)
 > >   {
-> > -	struct vring_virtqueue *vq;
-> > +	vq->vq.num_free =3D vring.num;
+> >   	struct vring_virtqueue *vq =3D to_vvq(_vq);
 > >
-> > -	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED))
-> > -		return NULL;
-> > +	vq->split.vring =3D vring;
-> > +	vq->split.queue_dma_addr =3D 0;
-> > +	vq->split.queue_size_in_bytes =3D 0;
+> > -	spin_lock(&vq->vq.vdev->vqs_list_lock);
+> > -	list_del(&_vq->list);
+> > -	spin_unlock(&vq->vq.vdev->vqs_list_lock);
+> > -
+> >   	if (vq->we_own_ring) {
+> >   		if (vq->packed_ring) {
+> >   			vring_free_queue(vq->vq.vdev,
+> > @@ -2480,6 +2476,25 @@ void vring_del_virtqueue(struct virtqueue *_vq)
+> >   		kfree(vq->split.desc_state);
+> >   		kfree(vq->split.desc_extra);
+> >   	}
+> > +}
+> > +
+> > +static void vring_free(struct virtqueue *vq)
+> > +{
+> > +	__vring_free(vq);
+> > +	vq->reset =3D VIRTIO_VQ_RESET_STEP_VRING_RELEASE;
+> > +}
+> > +
+> > +void vring_del_virtqueue(struct virtqueue *_vq)
+> > +{
+> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > +
+> > +	spin_lock(&vq->vq.vdev->vqs_list_lock);
+> > +	list_del(&_vq->list);
+> > +	spin_unlock(&vq->vq.vdev->vqs_list_lock);
+> > +
+> > +	if (_vq->reset !=3D VIRTIO_VQ_RESET_STEP_VRING_RELEASE)
+> > +		__vring_free(_vq);
+> > +
+> >   	kfree(vq);
+> >   }
+> >   EXPORT_SYMBOL_GPL(vring_del_virtqueue);
+> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > index d59adc4be068..e3714e6db330 100644
+> > --- a/include/linux/virtio.h
+> > +++ b/include/linux/virtio.h
+> > @@ -10,6 +10,13 @@
+> >   #include <linux/mod_devicetable.h>
+> >   #include <linux/gfp.h>
 > >
-> > -	vq =3D kmalloc(sizeof(*vq), GFP_KERNEL);
-> > -	if (!vq)
-> > -		return NULL;
-> > +	vq->split.desc_state =3D kmalloc_array(vring.num,
-> > +					     sizeof(struct vring_desc_state_split), GFP_KERNEL);
-> > +	if (!vq->split.desc_state)
-> > +		goto err_state;
-> >
-> > +	vq->split.desc_extra =3D vring_alloc_desc_extra(vq, vring.num);
-> > +	if (!vq->split.desc_extra)
-> > +		goto err_extra;
+> > +enum virtio_vq_reset_step {
+> > +	VIRTIO_VQ_RESET_STEP_NONE,
+> > +	VIRTIO_VQ_RESET_STEP_DEVICE,
+> > +	VIRTIO_VQ_RESET_STEP_VRING_RELEASE,
+> > +	VIRTIO_VQ_RESET_STEP_VRING_ATTACH,
+> > +};
 >
 >
-> So this contains stuffs more than just attach. I wonder if it's better
-> to split the allocation out to an dedicated helper (we have dedicated
-> helper to allocate vring).
+> This part looks not related to the subject.
+>
+> And it needs detail documentation on this.
+>
+> But I wonder how useful it is, anyway we can check the reset status via
+> transport specific way and in the future we may want to do more than
+> just resizing (e.g PASID).
 
-I will try in next version.
+
+I will try and remove it from here.
 
 Thanks.
 
@@ -140,122 +160,15 @@ Thanks.
 >
 >
 > > +
-> > +	memset(vq->split.desc_state, 0, vring.num *
-> > +	       sizeof(struct vring_desc_state_split));
-> > +	return 0;
-> > +
-> > +err_extra:
-> > +	kfree(vq->split.desc_state);
-> > +err_state:
-> > +	return -ENOMEM;
-> > +}
-> > +
-> > +static void __vring_virtqueue_init_split(struct vring_virtqueue *vq,
-> > +					 struct virtio_device *vdev)
-> > +{
-> >   	vq->packed_ring =3D false;
-> > -	vq->vq.callback =3D callback;
-> > -	vq->vq.vdev =3D vdev;
-> > -	vq->vq.name =3D name;
-> > -	vq->vq.num_free =3D vring.num;
-> > -	vq->vq.index =3D index;
-> >   	vq->we_own_ring =3D false;
-> > -	vq->notify =3D notify;
-> > -	vq->weak_barriers =3D weak_barriers;
-> >   	vq->broken =3D false;
-> >   	vq->last_used_idx =3D 0;
-> >   	vq->event_triggered =3D false;
-> > @@ -2234,50 +2240,67 @@ struct virtqueue *__vring_new_virtqueue(unsigne=
-d int index,
-> >   	vq->last_add_time_valid =3D false;
-> >   #endif
+> >   /**
+> >    * virtqueue - a queue to register buffers for sending or receiving.
+> >    * @list: the chain of virtqueues for this device
+> > @@ -33,6 +40,7 @@ struct virtqueue {
+> >   	unsigned int num_free;
+> >   	unsigned int num_max;
+> >   	void *priv;
+> > +	enum virtio_vq_reset_step reset;
+> >   };
 > >
-> > -	vq->indirect =3D virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC=
-) &&
-> > -		!context;
-> >   	vq->event =3D virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
-> >
-> >   	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
-> >   		vq->weak_barriers =3D false;
-> >
-> > -	vq->split.queue_dma_addr =3D 0;
-> > -	vq->split.queue_size_in_bytes =3D 0;
-> > -
-> > -	vq->split.vring =3D vring;
-> >   	vq->split.avail_flags_shadow =3D 0;
-> >   	vq->split.avail_idx_shadow =3D 0;
-> >
-> >   	/* No callback?  Tell other side not to bother us. */
-> > -	if (!callback) {
-> > +	if (!vq->vq.callback) {
-> >   		vq->split.avail_flags_shadow |=3D VRING_AVAIL_F_NO_INTERRUPT;
-> >   		if (!vq->event)
-> >   			vq->split.vring.avail->flags =3D cpu_to_virtio16(vdev,
-> >   					vq->split.avail_flags_shadow);
-> >   	}
-> >
-> > -	vq->split.desc_state =3D kmalloc_array(vring.num,
-> > -			sizeof(struct vring_desc_state_split), GFP_KERNEL);
-> > -	if (!vq->split.desc_state)
-> > -		goto err_state;
-> > -
-> > -	vq->split.desc_extra =3D vring_alloc_desc_extra(vq, vring.num);
-> > -	if (!vq->split.desc_extra)
-> > -		goto err_extra;
-> > -
-> >   	/* Put everything in free lists. */
-> >   	vq->free_head =3D 0;
-> > -	memset(vq->split.desc_state, 0, vring.num *
-> > -			sizeof(struct vring_desc_state_split));
-> > +}
-> > +
-> > +/* Only available for split ring */
-> > +struct virtqueue *__vring_new_virtqueue(unsigned int index,
-> > +					struct vring vring,
-> > +					struct virtio_device *vdev,
-> > +					bool weak_barriers,
-> > +					bool context,
-> > +					bool (*notify)(struct virtqueue *),
-> > +					void (*callback)(struct virtqueue *),
-> > +					const char *name)
-> > +{
-> > +	struct vring_virtqueue *vq;
-> > +	int err;
-> > +
-> > +	if (virtio_has_feature(vdev, VIRTIO_F_RING_PACKED))
-> > +		return NULL;
-> > +
-> > +	vq =3D kmalloc(sizeof(*vq), GFP_KERNEL);
-> > +	if (!vq)
-> > +		return NULL;
-> > +
-> > +	vq->vq.callback =3D callback;
-> > +	vq->vq.vdev =3D vdev;
-> > +	vq->vq.name =3D name;
-> > +	vq->vq.index =3D index;
-> > +	vq->notify =3D notify;
-> > +	vq->weak_barriers =3D weak_barriers;
-> > +	vq->indirect =3D virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC=
-) &&
-> > +		!context;
-> > +
-> > +	err =3D __vring_virtqueue_attach_split(vq, vdev, vring);
-> > +	if (err)
-> > +		goto err;
-> > +
-> > +	__vring_virtqueue_init_split(vq, vdev);
-> >
-> >   	spin_lock(&vdev->vqs_list_lock);
-> >   	list_add_tail(&vq->vq.list, &vdev->vqs);
-> >   	spin_unlock(&vdev->vqs_list_lock);
-> > -	return &vq->vq;
-> >
-> > -err_extra:
-> > -	kfree(vq->split.desc_state);
-> > -err_state:
-> > +	return &vq->vq;
-> > +err:
-> >   	kfree(vq);
-> >   	return NULL;
-> >   }
+> >   int virtqueue_add_outbuf(struct virtqueue *vq,
 >
