@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3984D348D
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:25:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D3A4D3496
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:26:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbiCIQZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        id S230250AbiCIQZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:25:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237958AbiCIQVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:21:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1221014EF69;
-        Wed,  9 Mar 2022 08:17:37 -0800 (PST)
+        with ESMTP id S238079AbiCIQVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:21:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03828151C44;
+        Wed,  9 Mar 2022 08:18:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A4C261926;
-        Wed,  9 Mar 2022 16:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA1DC340EC;
-        Wed,  9 Mar 2022 16:17:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACBC3B82206;
+        Wed,  9 Mar 2022 16:18:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB794C340EC;
+        Wed,  9 Mar 2022 16:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842656;
-        bh=UqwiPp2qBmb+7tKFdE0+ShqjTMU9taITEwrPGtd63H8=;
+        s=k20201202; t=1646842695;
+        bh=zRZO4C73CEe0cGTlpqWmGRS66SbFnS+B8DijLjV/NHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hxucHaLffSUSn5RCqXd5Wgrdwvd9eVwYiezZgyJVp6kguh+rkkpxGYxhAkhryLU56
-         ue+nHKkpcPT4Gl1Iz86RH8Wzf5OKyGqA23/s5Mt+V4SWdD0oE+ny6m6DYMxf0l5Eur
-         QX4tv+BYMia9WySfJnyY/TFVIOrRW4nLi1xFyC1M/vYNjZjRrZwLozYJt451vLAA+E
-         BXyvjGGDPZkowRpHjg2/FhdnPbMgrgKnra2xT2gTrCnqV8l7xztTYlM4YD8IxyU3vI
-         wAmhv1ZRS/N46emWvHM4qiIMUlxYNKOhOn7TxGQ2tcIqIamDh/4kk/QMcPpKtzAQQW
-         4q3BK8xtTQ5Pw==
+        b=cSHSE9fmZPc1azfuokomLCeWmE4/tFzQtRU1xP+Sh+22YVmN6TaTpkh3wj9Zo6VUs
+         ND9e+DAxke8dQZVpTQd5AU23/eBH6xXUoTk7VBI5EVnbNaxd8BvzNNL3nLvMepof4G
+         PJTDNPouGJk7pAgmTRLHppdSluWrYKElkY1U/mZGGTCui772zvMblTBJLoQEBAJesv
+         S3hopsu8H+niOxVA5ZJ9EBoHYecRGd/MRzJlN2Z9umbG4lHVz0b9LFYOoWH6sI+piP
+         Hz828jpZtH+KqeJqkAvNeJU4kx1Ke3Hgh/HmhT/J9uc36jSFqcibxDnH+b9qqwILqq
+         y4hHceVnjFm9g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yan Yan <evitayan@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 04/27] xfrm: Fix xfrm migrate issues when address family changes
-Date:   Wed,  9 Mar 2022 11:16:41 -0500
-Message-Id: <20220309161711.135679-4-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 11/27] mac80211: refuse aggregations sessions before authorized
+Date:   Wed,  9 Mar 2022 11:16:48 -0500
+Message-Id: <20220309161711.135679-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
 References: <20220309161711.135679-1-sashal@kernel.org>
@@ -57,56 +57,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yan Yan <evitayan@google.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
+[ Upstream commit a6bce78262f5dd4b50510f0aa47f3995f7b185f3 ]
 
-xfrm_migrate cannot handle address family change of an xfrm_state.
-The symptons are the xfrm_state will be migrated to a wrong address,
-and sending as well as receiving packets wil be broken.
+If an MFP station isn't authorized, the receiver will (or
+at least should) drop the action frame since it's a robust
+management frame, but if we're not authorized we haven't
+installed keys yet. Refuse attempts to start a session as
+they'd just time out.
 
-This commit fixes it by breaking the original xfrm_state_clone
-method into two steps so as to update the props.family before
-running xfrm_init_state. As the result, xfrm_state's inner mode,
-outer mode, type and IP header length in xfrm_state_migrate can
-be updated with the new address family.
-
-Tested with additions to Android's kernel unit test suite:
-https://android-review.googlesource.com/c/kernel/tests/+/1885354
-
-Signed-off-by: Yan Yan <evitayan@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220203201528.ff4d5679dce9.I34bb1f2bc341e161af2d6faf74f91b332ba11285@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_state.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ net/mac80211/agg-tx.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 291236d7676f..f7bfa1916968 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1578,9 +1578,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
- 	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
+diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
+index 74a878f213d3..1deb3d874a4b 100644
+--- a/net/mac80211/agg-tx.c
++++ b/net/mac80211/agg-tx.c
+@@ -9,7 +9,7 @@
+  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
+  * Copyright 2007-2010, Intel Corporation
+  * Copyright(c) 2015-2017 Intel Deutschland GmbH
+- * Copyright (C) 2018 - 2021 Intel Corporation
++ * Copyright (C) 2018 - 2022 Intel Corporation
+  */
  
--	if (xfrm_init_state(x) < 0)
--		goto error;
--
- 	x->props.flags = orig->props.flags;
- 	x->props.extra_flags = orig->props.extra_flags;
+ #include <linux/ieee80211.h>
+@@ -626,6 +626,14 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
+ 		return -EINVAL;
+ 	}
  
-@@ -1667,6 +1664,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
- 	if (!xc)
- 		return NULL;
- 
-+	xc->props.family = m->new_family;
++	if (test_sta_flag(sta, WLAN_STA_MFP) &&
++	    !test_sta_flag(sta, WLAN_STA_AUTHORIZED)) {
++		ht_dbg(sdata,
++		       "MFP STA not authorized - deny BA session request %pM tid %d\n",
++		       sta->sta.addr, tid);
++		return -EINVAL;
++	}
 +
-+	if (xfrm_init_state(xc) < 0)
-+		goto error;
-+
- 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
- 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
- 
+ 	/*
+ 	 * 802.11n-2009 11.5.1.1: If the initiating STA is an HT STA, is a
+ 	 * member of an IBSS, and has no other existing Block Ack agreement
 -- 
 2.34.1
 
