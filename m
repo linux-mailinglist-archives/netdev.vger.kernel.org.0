@@ -2,93 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CBF14D374F
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF1B4D36CB
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:44:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236970AbiCIRCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 12:02:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
+        id S237555AbiCIRFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 12:05:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236997AbiCIRBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:01:55 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCB01662D7;
-        Wed,  9 Mar 2022 08:50:34 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id x5so3623019edd.11;
-        Wed, 09 Mar 2022 08:50:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=idcrIwJK7fv1u+7sZxPAu9s/3XQBSoZ4lKPrU7eypvY=;
-        b=KAbNH7RFZU0IFVTEIfD5beiz4M/f7a5r4KvxR4aOJUOz0/EhqD4d+uQv1ua0Mp5j+Z
-         H6AwMswXpXDWAQwJkfPPiEHURc+zvge67kQd3uDEwckdBMvi8izjzX3wNgA+cW/EbCXJ
-         CdDZCZ8SAnWkyYy6Dan7R7VQDR8xmcTY7bCmJx6FT0CCYzn47t+SYnolS/4aX3iDn8o7
-         YaLiofiaT1KXp+uvBuwDEyBvNJziZ50zkOv5GDbJWrwRDGQzOd5i24qkWGx/kOxx+knM
-         ZBrUltdk/YbV/nLH4O+HHTGTC2aBTTfhLTj0ELaNhBgWRUSfbxxUYnu1Drg3Qui0ttb7
-         KFKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=idcrIwJK7fv1u+7sZxPAu9s/3XQBSoZ4lKPrU7eypvY=;
-        b=SY13b6tk00JOFrTSPuwAvhjQL7kWdekz5v5p4rj4hvjW+T+2sU1h+4AAB6mHJbbRY+
-         j8DCvaBpAJTFBFUhjraZVhv2GXtQ2AXXNRowY9WyXkNvVZ4BcsI5SoX16xAv5djEVKiu
-         8gv1BCxeA6bgPxc2z2RnO3isjVDreOb2TZxxoszwr6BB2aUpE8Y1d+gkycsYGxJvjuYg
-         wW9yuF4sSOGq0u5kXHS7RX97gZ2Tm1J0h6hn1w6y0BSifz9seILS5Y9xtyYXKnf9xuyX
-         viV84ESjKQj7+Fji1WVABQIoU4Fsu2N4TvUXdHd96c/ccph0tZzWWuMLxV/wVjFXUZLO
-         Ateg==
-X-Gm-Message-State: AOAM530B+iUaSBL6vTgMPsKLKIrwHzVTqkiBYqRg7rIWMl/zm5V7lFkA
-        4W/GZcf9vKTWzzJqB8ezjnCnTeSJ7Pmqf34gTsY=
-X-Google-Smtp-Source: ABdhPJwU0XjsVoaNhPHrZb9HZjY0WszBLpO5VvlqeYE6B/5Nog0HNksBCUflkAQcMwh+XdrGYDQcMMeczRSfaK4QOa4=
-X-Received: by 2002:a50:9d0f:0:b0:416:95a3:1611 with SMTP id
- v15-20020a509d0f000000b0041695a31611mr337493ede.77.1646844632418; Wed, 09 Mar
- 2022 08:50:32 -0800 (PST)
+        with ESMTP id S239253AbiCIREt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:04:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C224D616
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:54:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 986FA61B45
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 16:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A5FC340EC;
+        Wed,  9 Mar 2022 16:54:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646844849;
+        bh=I28x4vPF6t0uPnVCoRS7Xy/BBFkl8YasGtd2HqBon0w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aBB/J2GWubmu81Xw8+Hj0tol8yKUu6oIJUzVAufx4pIriWsFEXub8PYQRoidt/c/z
+         dSVZqNVi8mbn7pVTFJbzd3ZeH/F43u6rdvZOoXtJjHxVDDR7N2WptT1owojV2pSrxP
+         WhunHJglU8+lz+xSs1tMlhRB3UZM+jO1uxVXe8+BQQGGqdEHPLB3mUGl4MkBwd8RHr
+         qe1Wy3IUN45UvDm4svyS2fVnXEAppR4pbEs38ihPVvtPMItn7hW/xuNM+PbtRbtqqz
+         UtL3EyfjJeyW/e9iFILjSmW1qGA8efFbWRSxDvZ18hi81pVDytpPn2D7mL64sbKdMs
+         SOM8LE36UQhZw==
+Date:   Wed, 9 Mar 2022 08:54:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Subject: Re: [RFC net-next] tcp: allow larger TSO to be built under overload
+Message-ID: <20220309085407.3ffd2851@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CADVnQykz55R-UVu4RbP=uYBaK309X7oCpDk=JyUy=VudJ7z+ZA@mail.gmail.com>
+References: <20220308030348.258934-1-kuba@kernel.org>
+        <CANn89iLoWOdLQWB0PeTtbOtzkAT=cWgzy5_RXqqLchZu1GziZw@mail.gmail.com>
+        <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com>
+        <CANn89iL0XWF8aavPFnTrRazV9T5fZtn3xJXrEb07HTdrM=rykw@mail.gmail.com>
+        <20220308161821.45cb17bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CADVnQykz55R-UVu4RbP=uYBaK309X7oCpDk=JyUy=VudJ7z+ZA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220305204720.2978554-1-festevam@gmail.com> <12992128.uLZWGnKmhe@steina-w>
-In-Reply-To: <12992128.uLZWGnKmhe@steina-w>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Wed, 9 Mar 2022 13:50:20 -0300
-Message-ID: <CAOMZO5B=btQKAT5HKBTfJRFc880ygzOLWN=65DdAHdce18QxTw@mail.gmail.com>
-Subject: Re: (EXT) [PATCH v2 net] smsc95xx: Ignore -ENODEV errors when device
- is unplugged
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, fntoth@gmail.com,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Marek Vasut <marex@denx.de>, Fabio Estevam <festevam@denx.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Wed, 9 Mar 2022 11:42:24 -0500 Neal Cardwell wrote:
+> > SGTM! The change may cause increased burstiness, or is that unlikely?
+> > I'm asking to gauge risk / figure out appropriate roll out plan.  
+> 
+> In theory it could cause increased burstiness in some scenarios, but
+> in practice we have used this min_rtt-based TSO autosizing component
+> in production for about two years, where we see improvements in load
+> tests and no problems seen in production.
 
-On Wed, Mar 9, 2022 at 11:02 AM Alexander Stein
-<alexander.stein@ew.tq-group.com> wrote:
-
-> Oh BTW, is this queued for stable? Which versions? If 'Fixes: a049a30fc27c
-> ("net: usb: Correct PHY handling of smsc95xx")' is the indicator, it's not
-> enough. This errors also shows up on v5.15.27 and is fixed with this patch.
-
-("net: usb: Correct PHY handling of smsc95xx")' is also present in 5.15:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/log/drivers/net/usb/smsc95xx.c?h=v5.15.27
-
-so the fix should land in 5.15 too.
-
-For 5.10, when the fix reaches Linus' tree, then I will ping
-Dave/Jakub/Greg to apply the 3 latest smsc95xx commits
-to 5.10 stable tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/log/drivers/net/usb/smsc95xx.c?id=c70c453abcbf
-
-I have been running 5.10 + the 3 commits above and no more smsc95xx
-errors are seen.
+Perfect, sounds safe to put it in the next point release here, then.
+Thank you!
