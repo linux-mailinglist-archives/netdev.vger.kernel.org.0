@@ -2,79 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 148754D3D03
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315444D3D37
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:42:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237314AbiCIWfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 17:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
+        id S238823AbiCIWnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 17:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232123AbiCIWf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:35:29 -0500
-Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB51121685
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:34:29 -0800 (PST)
-Received: (qmail 24358 invoked by uid 89); 9 Mar 2022 22:34:28 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 9 Mar 2022 22:34:28 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com,
-        kernel-team@fb.com
-Subject: [PATCH net-next] ptp: ocp: add UPF_NO_THRE_TEST flag for serial ports
-Date:   Wed,  9 Mar 2022 14:34:27 -0800
-Message-Id: <20220309223427.34745-1-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S233564AbiCIWnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:43:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92716122218;
+        Wed,  9 Mar 2022 14:42:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3112561C31;
+        Wed,  9 Mar 2022 22:42:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 93856C340F4;
+        Wed,  9 Mar 2022 22:42:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646865726;
+        bh=VGrK/lY6hU91nS5eVUxRG/6vvQWkMFm7/XqjabM4iBM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d2+Net85QYOU8xxkVAQeCemAQdyU5STf58cQNGynZzCbCcrEhM4xYMfnkuHRC5ZcN
+         hwu9HIuwDu4StwB8Nh22hqekvXxp2dSnO6pHbodhLWtB8tw1IfiwRn7hCYEoxZgeZn
+         123Z85kzYIPVL+5x/anaeuysh9lAV9p+ltGfEifCuZiARNAvUu0v5MH2LrfdpQBdKi
+         AI+4jBU7phD1Gs1fTuiRKUTektLPYgcgiOQsxvdxlDaEvT/BdBawLOZSAlb44G4xfb
+         7yLp3gH/NI3zk2xIX1lMkI/GqkBZodMqVF+FOfdBYmbo88eIPu/4y1ZIsraZPZjJ2o
+         2nMKLLy42BZhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 72002E7BB08;
+        Wed,  9 Mar 2022 22:42:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next v11 0/5] Add support for transmitting packets using
+ XDP in bpf_prog_run()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164686572644.6474.17558582597165654953.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Mar 2022 22:42:06 +0000
+References: <20220309105346.100053-1-toke@redhat.com>
+In-Reply-To: <20220309105346.100053-1-toke@redhat.com>
+To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+?=@ci.codeaurora.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+Hello:
 
-The serial port driver attempts to test for correct THRE behavior
-on startup.  However, it does this by disabling interrupts, and
-then intentionally trying to trigger an interrupt in order to see
-if the IIR bit is set in the UART.
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-However, in this FPGA design, the UART interrupt is generated
-through the MSI vector, so when interrupts are re-enabled after
-the test, the DMAR-IR reports an unhandled IRTE entry, since
-no irq handler is installed at this point - it is installed
-after the test.
+On Wed,  9 Mar 2022 11:53:41 +0100 you wrote:
+> This series adds support for transmitting packets using XDP in
+> bpf_prog_run(), by enabling a new mode "live packet" mode which will handle
+> the XDP program return codes and redirect the packets to the stack or other
+> devices.
+> 
+> The primary use case for this is testing the redirect map types and the
+> ndo_xdp_xmit driver operation without an external traffic generator. But it
+> turns out to also be useful for creating a programmable traffic generator
+> in XDP, as well as injecting frames into the stack. A sample traffic
+> generator, which was included in previous versions of the series, but now
+> moved to xdp-tools, transmits up to 9 Mpps/core on my test machine.
+> 
+> [...]
 
-This only happens on the /second/ open of the UART, since on the
-first open, the x86_vector has installed and activated by the
-driver probe, and is correctly handled.  When the serial port is
-closed for the first time, this vector is deactivated and removed,
-leading to this error.
+Here is the summary with links:
+  - [bpf-next,v11,1/5] bpf: Add "live packet" mode for XDP in BPF_PROG_RUN
+    https://git.kernel.org/bpf/bpf-next/c/b530e9e1063e
+  - [bpf-next,v11,2/5] Documentation/bpf: Add documentation for BPF_PROG_RUN
+    https://git.kernel.org/bpf/bpf-next/c/1a7551f15097
+  - [bpf-next,v11,3/5] libbpf: Support batch_size option to bpf_prog_test_run
+    https://git.kernel.org/bpf/bpf-next/c/24592ad1ab18
+  - [bpf-next,v11,4/5] selftests/bpf: Move open_netns() and close_netns() into network_helpers.c
+    https://git.kernel.org/bpf/bpf-next/c/a30338840fa5
+  - [bpf-next,v11,5/5] selftests/bpf: Add selftest for XDP_REDIRECT in BPF_PROG_RUN
+    https://git.kernel.org/bpf/bpf-next/c/55fcacca3646
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/ptp/ptp_ocp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 36c09269a12d..64cc92c2426b 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -1752,7 +1752,7 @@ ptp_ocp_serial_line(struct ptp_ocp *bp, struct ocp_resource *r)
- 	uart.port.mapbase = pci_resource_start(pdev, 0) + r->offset;
- 	uart.port.irq = pci_irq_vector(pdev, r->irq_vec);
- 	uart.port.uartclk = 50000000;
--	uart.port.flags = UPF_FIXED_TYPE | UPF_IOREMAP;
-+	uart.port.flags = UPF_FIXED_TYPE | UPF_IOREMAP | UPF_NO_THRE_TEST;
- 	uart.port.type = PORT_16550A;
- 
- 	return serial8250_register_8250_port(&uart);
+You are awesome, thank you!
 -- 
-2.31.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
