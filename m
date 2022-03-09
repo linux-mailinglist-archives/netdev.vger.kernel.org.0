@@ -2,164 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 644A44D2C82
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F404D2C8D
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbiCIJvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:51:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
+        id S232318AbiCIJxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 04:53:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbiCIJvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:51:31 -0500
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9E6169230;
-        Wed,  9 Mar 2022 01:50:30 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6j5yrf_1646819424;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6j5yrf_1646819424)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Mar 2022 17:50:25 +0800
-Message-ID: <1646819291.9191294-12-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v7 26/26] virtio_net: support set_ringparam
-Date:   Wed, 9 Mar 2022 17:48:11 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-27-xuanzhuo@linux.alibaba.com>
- <bd27898f-59bc-215b-bb84-14582b12cb16@redhat.com>
-In-Reply-To: <bd27898f-59bc-215b-bb84-14582b12cb16@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S232301AbiCIJxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:53:13 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D1816F973
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 01:52:15 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4A4B83F79C
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 09:52:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646819533;
+        bh=U75FRdLGbZ3F+BR5tg2Db57c8QbYtEzo66rlGoHxRKA=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=gTKaCzf8axqkYnK61BsdDpcMM28luPO81aTRtsHy0UP6f4Fh3Lo3ScP2s8IYE97WQ
+         8so6JQkTsoDu7dPLT7Of/pvHOOLs0mklZZtnAJ2o5QJxIzLewHS+ldCKMg+dCWgeU0
+         qeHLy2KV3HjiPDeefCqzcr3BE319IOW3+/VFqfHBgIxK4APjPNOPavkPdODcs6mh5+
+         3mTgislXzrXoccWMvb8RhPAGI41n3aF3e1jLhdtv9wkNP1mOVP5w7kA+GkL0oKdu9W
+         XlBm9yKVD01v0Gna44udhglojdjh+KB6KhQg/I1DI7CAgor2sBVBjaHzhgpjs5VdxV
+         2VVLbRC7uVVuQ==
+Received: by mail-ej1-f72.google.com with SMTP id q22-20020a1709064cd600b006db14922f93so1014413ejt.7
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 01:52:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U75FRdLGbZ3F+BR5tg2Db57c8QbYtEzo66rlGoHxRKA=;
+        b=xZWao5zxCYx5tVHGQ/kO+V8EQcm2gvQ/gTYCdd4FCReyKCBpk2CkfLBYcxyRL2+ZV4
+         emycveXJajxhscSgSKDOlYHqPFmxjBFYTpx7n5PNoH0Gvv4CxY7D2FxFl03Dc5Ev1G5T
+         eGRxD9Dd37VjnWUefSnxbP9zacelNkoRd4aQHJxCyOMKtuJbvGpBw/8Q3UfNwz2hCYGv
+         NC2LI1P9HDtPJaJcZbDbEHkcfclqw6Xw8FXlkJlUKq4UASCp4ze8+L615bTQ9ulB0V6d
+         +ZzpeW0KsFRWo2ucguB3CSTren9LxfFrCdVUvsu0b1h2axKtxCeQjvrseKuFWAmkMIg4
+         5GmQ==
+X-Gm-Message-State: AOAM531rgCqcHhKxARStUyHrjGPlOIJzFMWQtPmfl2AEQ+3O9Q4/ZxSz
+        JT9wZ6587xBf7iCL5NB0DpiQBCw59GM06ulNGjX9xBY+BHMTeImwRyT7E/MMx009vl0OlNX5ztv
+        qOEPOKsf5y+W86zV+qPmvh6ItFz3KvkcELw==
+X-Received: by 2002:a17:906:d1c4:b0:6d5:83bb:f58a with SMTP id bs4-20020a170906d1c400b006d583bbf58amr17198187ejb.672.1646819532932;
+        Wed, 09 Mar 2022 01:52:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxypo8WhHmI7QrJIfEnzBsw31JbIstN4NTAsHC8a7RLBqVyTNgRad9/mbPcfeKtI/FKHnDF1Q==
+X-Received: by 2002:a17:906:d1c4:b0:6d5:83bb:f58a with SMTP id bs4-20020a170906d1c400b006d583bbf58amr17198172ejb.672.1646819532666;
+        Wed, 09 Mar 2022 01:52:12 -0800 (PST)
+Received: from [192.168.0.144] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id mp33-20020a1709071b2100b006db6dea7f9dsm373267ejc.168.2022.03.09.01.52.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 01:52:12 -0800 (PST)
+Message-ID: <cbdd5e41-7538-6d8f-344a-54a816c6d511@canonical.com>
+Date:   Wed, 9 Mar 2022 10:52:11 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] NFC: port100: fix use-after-free in port100_send_complete
+Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>, sameo@linux.intel.com,
+        thierry.escande@linux.intel.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
+References: <20220308185007.6987-1-paskripkin@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220308185007.6987-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 17:29:28 +0800, Jason Wang <jasowang@redhat.com> wrote:
->
-> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
-> > Support set_ringparam based on virtio queue reset.
-> >
-> > The rx,tx_pending required to be passed must be power of 2.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/net/virtio_net.c | 47 ++++++++++++++++++++++++++++++++++++++++
-> >   1 file changed, 47 insertions(+)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index f1bdc6ce21c3..1fa2d632a994 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -2290,6 +2290,52 @@ static void virtnet_get_ringparam(struct net_dev=
-ice *dev,
-> >   	ring->tx_pending =3D virtqueue_get_vring_size(vi->sq[0].vq);
-> >   }
-> >
-> > +static int virtnet_set_ringparam(struct net_device *dev,
-> > +				 struct ethtool_ringparam *ring,
-> > +				 struct kernel_ethtool_ringparam *kernel_ring,
-> > +				 struct netlink_ext_ack *extack)
-> > +{
-> > +	struct virtnet_info *vi =3D netdev_priv(dev);
-> > +	u32 rx_pending, tx_pending;
-> > +	struct receive_queue *rq;
-> > +	struct send_queue *sq;
-> > +	int i, err;
-> > +
-> > +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
-> > +		return -EINVAL;
->
->
-> Any chance that we may hit this EINVAL?
+On 08/03/2022 19:50, Pavel Skripkin wrote:
+> Syzbot reported UAF in port100_send_complete(). The root case is in
+> missing usb_kill_urb() calls on error handling path of ->probe function.
+> 
+> port100_send_complete() accesses devm allocated memory which will be
+> freed on probe failure. We should kill this urbs before returning an
+> error from probe function to prevent reported use-after-free
+> 
+> Fail log:
+> 
+> BUG: KASAN: use-after-free in port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
+> Read of size 1 at addr ffff88801bb59540 by task ksoftirqd/2/26
+> ...
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+>  __kasan_report mm/kasan/report.c:442 [inline]
+>  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+>  port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
+>  __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
+> 
+> ...
+> 
+> Allocated by task 1255:
+>  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>  kasan_set_track mm/kasan/common.c:45 [inline]
+>  set_alloc_info mm/kasan/common.c:436 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+>  __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
+>  alloc_dr drivers/base/devres.c:116 [inline]
+>  devm_kmalloc+0x96/0x1d0 drivers/base/devres.c:823
+>  devm_kzalloc include/linux/device.h:209 [inline]
+>  port100_probe+0x8a/0x1320 drivers/nfc/port100.c:1502
+> 
+> Freed by task 1255:
+>  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+>  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+>  ____kasan_slab_free mm/kasan/common.c:366 [inline]
+>  ____kasan_slab_free+0xff/0x140 mm/kasan/common.c:328
+>  kasan_slab_free include/linux/kasan.h:236 [inline]
+>  __cache_free mm/slab.c:3437 [inline]
+>  kfree+0xf8/0x2b0 mm/slab.c:3794
+>  release_nodes+0x112/0x1a0 drivers/base/devres.c:501
+>  devres_release_all+0x114/0x190 drivers/base/devres.c:530
+>  really_probe+0x626/0xcc0 drivers/base/dd.c:670
+> 
+> Reported-and-tested-by: syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
+> Fixes: 0347a6ab300a ("NFC: port100: Commands mechanism implementation")
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+>  drivers/nfc/port100.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
+> index d7db1a0e6be1..00d8ea6dcb5d 100644
+> --- a/drivers/nfc/port100.c
+> +++ b/drivers/nfc/port100.c
+> @@ -1612,7 +1612,9 @@ static int port100_probe(struct usb_interface *interface,
+>  	nfc_digital_free_device(dev->nfc_digital_dev);
+>  
+>  error:
+> +	usb_kill_urb(dev->in_urb);
+>  	usb_free_urb(dev->in_urb);
+> +	usb_kill_urb(dev->out_urb);
+>  	usb_free_urb(dev->out_urb);
+>  	usb_put_dev(dev->udev);
 
-This is definitely not the case at present.
 
-I think this can be kept, this makes sense.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-I can remove it in the next version if you think it should be removed.
+Thanks, this looks good. I think I saw similar patterns also in other
+drivers, e.g. pn533. I will check it later, but if you have spare time,
+feel free to investigate.
 
-Thanks.
+Similar cases (unresolved):
+https://syzkaller.appspot.com/bug?extid=1dc8b460d6d48d7ef9ca
+https://syzkaller.appspot.com/bug?extid=abd2e0dafb481b621869
+https://syzkaller.appspot.com/bug?extid=dbec6695a6565a9c6bc0
 
->
-> Thanks
->
->
-> > +
-> > +	rx_pending =3D virtqueue_get_vring_size(vi->rq[0].vq);
-> > +	tx_pending =3D virtqueue_get_vring_size(vi->sq[0].vq);
-> > +
-> > +	if (ring->rx_pending =3D=3D rx_pending &&
-> > +	    ring->tx_pending =3D=3D tx_pending)
-> > +		return 0;
-> > +
-> > +	if (ring->rx_pending > virtqueue_get_vring_max_size(vi->rq[0].vq))
-> > +		return -EINVAL;
-> > +
-> > +	if (ring->tx_pending > virtqueue_get_vring_max_size(vi->sq[0].vq))
-> > +		return -EINVAL;
-> > +
-> > +	for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> > +		rq =3D vi->rq + i;
-> > +		sq =3D vi->sq + i;
-> > +
-> > +		if (ring->tx_pending !=3D tx_pending) {
-> > +			err =3D virtnet_tx_vq_reset(vi, sq, ring->tx_pending);
-> > +			if (err)
-> > +				return err;
-> > +		}
-> > +
-> > +		if (ring->rx_pending !=3D rx_pending) {
-> > +			err =3D virtnet_rx_vq_reset(vi, rq, ring->rx_pending);
-> > +			if (err)
-> > +				return err;
-> > +		}
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> >
-> >   static void virtnet_get_drvinfo(struct net_device *dev,
-> >   				struct ethtool_drvinfo *info)
-> > @@ -2523,6 +2569,7 @@ static const struct ethtool_ops virtnet_ethtool_o=
-ps =3D {
-> >   	.get_drvinfo =3D virtnet_get_drvinfo,
-> >   	.get_link =3D ethtool_op_get_link,
-> >   	.get_ringparam =3D virtnet_get_ringparam,
-> > +	.set_ringparam =3D virtnet_set_ringparam,
-> >   	.get_strings =3D virtnet_get_strings,
-> >   	.get_sset_count =3D virtnet_get_sset_count,
-> >   	.get_ethtool_stats =3D virtnet_get_ethtool_stats,
->
+
+Best regards,
+Krzysztof
