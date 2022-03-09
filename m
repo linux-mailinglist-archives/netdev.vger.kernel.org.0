@@ -2,134 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 280784D2D4A
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 11:43:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 118A34D2D66
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 11:50:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbiCIKnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 05:43:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
+        id S231263AbiCIKvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 05:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231266AbiCIKmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 05:42:45 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D2AA0BDC
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 02:41:46 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id r13so3983926ejd.5
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 02:41:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m4VrXG1u9PSPi29/nnX9W+bO/TRsNh6XDIYIk2mU1Js=;
-        b=jXfg3KHiEOvY1F9oec7uwFAPDDwZ1a9yed5s+CV5dezf+LQ48hrfz7kc4NJg/nXd9n
-         oXMYmoMSvlYegv3DyTzw21rMv5j5RzvLJ7nUOL1d6+aGp7WcoWfE8kS5l8mN1w7KZC/D
-         9w2vvSymrkgxZsTGZotZHFxCgcc+ikT1h15rKt+qbIRmnamc6g6fkCCYIemYPTuk8Jgv
-         m5wooof0UBNQA9gXzELsqcI33xQYxxV3Ggjq5P7EpZkJnJV29RnGWre7XeUdQ76ijf3a
-         UvJAymozoKqvJm+lCOirH5VTp/DkhG5M2/bEhAdSy7i7Y0d17NVKPIsuVpFsXh4EUr4/
-         ZmEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m4VrXG1u9PSPi29/nnX9W+bO/TRsNh6XDIYIk2mU1Js=;
-        b=LAWNQPTvm/kHgLEnVLrrXOuSA5QInzZZqCGKX7DplDzN6I/op+mEWQuL3vCb/q5fSL
-         5uFQJsbTSiTgDDVZm68+oiQ97XD2Q5k5kn/rB7f65IeVCO4h60gnXea0E2JXVHU9kE8p
-         c4bibgEx2wdqjZfo2mWOuu9j+0BMtR2V3MYCzniluXzKDYdPXDi/GEEy8m2LuA2E04kX
-         pVMal/Msr3KXLKrzieXMg0cxXHAnblVNMGrDDSPATHqCHMISbpSCbhSoycdfWNI5Cw/G
-         DOX/1e8El5Lf1WH4dCIOEx+8M7DlD+P4mBsa/mtCEKWT0okhlM6jNyvPqFSusB/ZOgdX
-         PT6Q==
-X-Gm-Message-State: AOAM532M9QVQPc6dygHXW2KKR0zpT13Do6/DWKlN/cgwFn/wXY63dU5I
-        e2XJzRCqMc/AkNeEUWeMFkSVkcwg3LQ=
-X-Google-Smtp-Source: ABdhPJyD7AdSirVWS2UAM8ZvnbZJLDmGZqI2HNy9EridV3MYhVFhEZH3t6hAW6P9aDI5nRxEKijsyg==
-X-Received: by 2002:a17:906:b288:b0:6da:825e:a2ee with SMTP id q8-20020a170906b28800b006da825ea2eemr16656277ejz.254.1646822505140;
-        Wed, 09 Mar 2022 02:41:45 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id jl2-20020a17090775c200b006dabe8887b8sm573296ejc.21.2022.03.09.02.41.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 02:41:44 -0800 (PST)
-Date:   Wed, 9 Mar 2022 12:41:43 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net] net: dsa: silence fdb errors when unsupported
-Message-ID: <20220309104143.gmoks5aceq3dtmci@skbuf>
-References: <E1nRtfI-00EnmD-I8@rmk-PC.armlinux.org.uk>
+        with ESMTP id S229962AbiCIKvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 05:51:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12B2F68FD
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 02:50:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D236617B9
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 10:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B9482C340EE;
+        Wed,  9 Mar 2022 10:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646823011;
+        bh=3Dvssk1nwkKURgWhwZV1kKPwFgZ3VzHCGD6msoMjSDY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sBVl3SMUVoI40AEEF0P1E61gNsmLfvcsMZEibxvbcUFeCuwA4iz8hbv5r/dvR23Yp
+         1odgQ3uDRd9QgjTzJbozGQpmaxXmzdTaze08LO9i0ArLjVGT3aY9hiZa97kXqdq/tD
+         P/YJ0pFemQlt6+C/xsxi6r99NeRFQehJniEsj8tI//ayGidhYix6Hy2Fz63LiUdvo2
+         aNP5qG//LNlPTLQKvruhciRIPlRnRgqGGG3UqDuEODVvDsIIoqt2d/Xfr9l0NNZ/8Z
+         z2rxCwOM+tWXPYK1jGevivTvqKKWqGJXFk0mQZBbOuArZvSg8lPhMIWNYfKhiP/sIs
+         NST6roxT82Vew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9DB13E7BB08;
+        Wed,  9 Mar 2022 10:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1nRtfI-00EnmD-I8@rmk-PC.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 1/7] iavf: Fix handling of vlan strip virtual channel
+ messages
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164682301164.2489.3475199917504058485.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Mar 2022 10:50:11 +0000
+References: <20220308234513.1089152-2-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220308234513.1089152-2-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, michal.maloszewski@intel.com,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        norbertx.ciosek@intel.com, konrad0.jankowski@intel.com
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Russell,
+Hello:
 
-On Wed, Mar 09, 2022 at 10:35:32AM +0000, Russell King (Oracle) wrote:
-> When booting with a Marvell 88e6xxx switch, the kernel spits out a
-> load of:
-> 
-> [    7.820996] mv88e6085 f1072004.mdio-mii:04: port 3 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> [    7.835717] mv88e6085 f1072004.mdio-mii:04: port 2 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> [    7.851090] mv88e6085 f1072004.mdio-mii:04: port 1 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> [    7.968594] mv88e6085 f1072004.mdio-mii:04: port 0 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> [    8.035408] mv88e6085 f1072004.mdio-mii:04: port 3 failed to add aa:bb:cc:dd:ee:ff vid XYZ3 to fdb: -95
-> 
-> while the switch is being setup. Comments in the Marvell DSA driver
-> indicate that "switchdev expects -EOPNOTSUPP to honor software VLANs"
-> in mv88e6xxx_port_db_load_purge() so this error code should not be
-> treated as an error.
-> 
-> Fixes: 3dc80afc5098 ("net: dsa: introduce a separate cross-chip notifier type for host FDBs")
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
-> Hi,
-> 
-> I noticed these errors booting 5.16 on my Clearfog platforms with a
-> Marvell DSA switch. It appears that the switch continues to work
-> even though these errors are logged in the kernel log, so this patch
-> merely silences the errors, but I'm unsure this is the right thing
-> to do.
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Can you please confirm that these errors have disappeared on net-next?
+On Tue,  8 Mar 2022 15:45:07 -0800 you wrote:
+> From: Michal Maloszewski <michal.maloszewski@intel.com>
+> 
+> Modify netdev->features for vlan stripping based on virtual
+> channel messages received from the PF. Change is needed
+> to synchronize vlan strip status between PF sysfs and iavf ethtool.
+> 
+> Fixes: 5951a2b9812d ("iavf: Fix VLAN feature flags after VFR")
+> Signed-off-by: Norbert Ciosek <norbertx.ciosek@intel.com>
+> Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
+> Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> 
+> [...]
 
-> 
->  net/dsa/slave.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index 22241afcac81..e8f4a59022a8 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -2411,7 +2411,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
->  		else
->  			err = dsa_port_fdb_add(dp, switchdev_work->addr,
->  					       switchdev_work->vid);
-> -		if (err) {
-> +		if (err && err != -EOPNOTSUPP) {
->  			dev_err(ds->dev,
->  				"port %d failed to add %pM vid %d to fdb: %d\n",
->  				dp->index, switchdev_work->addr,
-> @@ -2428,7 +2428,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
->  		else
->  			err = dsa_port_fdb_del(dp, switchdev_work->addr,
->  					       switchdev_work->vid);
-> -		if (err) {
-> +		if (err && err != -EOPNOTSUPP) {
->  			dev_err(ds->dev,
->  				"port %d failed to delete %pM vid %d from fdb: %d\n",
->  				dp->index, switchdev_work->addr,
-> -- 
-> 2.30.2
-> 
+Here is the summary with links:
+  - [net,v2,1/7] iavf: Fix handling of vlan strip virtual channel messages
+    https://git.kernel.org/netdev/net/c/2cf29e558948
+  - [net,v2,2/7] iavf: Fix adopting new combined setting
+    https://git.kernel.org/netdev/net/c/57d03f5608c3
+  - [net,v2,3/7] i40e: stop disabling VFs due to PF error responses
+    https://git.kernel.org/netdev/net/c/5710ab791665
+  - [net,v2,4/7] ice: stop disabling VFs due to PF error responses
+    https://git.kernel.org/netdev/net/c/79498d5af8e4
+  - [net,v2,5/7] ice: Fix error with handling of bonding MTU
+    https://git.kernel.org/netdev/net/c/97b0129146b1
+  - [net,v2,6/7] ice: Don't use GFP_KERNEL in atomic context
+    https://git.kernel.org/netdev/net/c/3d97f1afd8d8
+  - [net,v2,7/7] ice: Fix curr_link_speed advertised speed
+    https://git.kernel.org/netdev/net/c/ad35ffa252af
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
