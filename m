@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CF44D28C4
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 07:11:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEC84D28CA
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 07:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbiCIGLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 01:11:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
+        id S229921AbiCIGOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 01:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiCIGLq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 01:11:46 -0500
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E25108BE7;
-        Tue,  8 Mar 2022 22:10:49 -0800 (PST)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22961L6m005753;
-        Tue, 8 Mar 2022 22:10:31 -0800
+        with ESMTP id S229918AbiCIGOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 01:14:15 -0500
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EA015E6C9;
+        Tue,  8 Mar 2022 22:13:17 -0800 (PST)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 228MGBbQ004129;
+        Tue, 8 Mar 2022 22:12:59 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
  subject : message-id : references : content-type :
  content-transfer-encoding : in-reply-to : mime-version; s=facebook;
- bh=pBWlWJblbqB4wa3QuvewtV9ZMMRKBIfeMIFrRxbFtD4=;
- b=WQngDhNeMMu/lqJ4h6wOwDE20MScX1z96Iw0UHeZVE+WYld8kxYxz9qdhCAGv9YhsWlf
- v4hFsgNlZpVy8MX8Ohqg0pbo+bSt2xptsQdc0aUiMdUYbZwGG9PifshD9eFg0jDD5TaG
- CSiWvJHAXe4hNxqyiey4euKfMiqoxvQMIKE= 
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2170.outbound.protection.outlook.com [104.47.58.170])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3eppkk014j-1
+ bh=Z2uP0/DUrtQVnPLSd6maa6PwZ+Ev7ngg1wqjlYv8hqI=;
+ b=hBPZ45KvMoHRNiJbHN6XYtrZEV25rvnNzZ8GLDyDVQYSEp9uRdNeGORwNA2oTW06RWLy
+ pX1hb8yX7fFCAq0ABtU1DEJkJbI4B7HBf8ObczbIO/M97R3llOdDMkugQnJdyKTMa4q3
+ XU9o0OgE4J8MXHLatAlthYwHX58odjU8ZOk= 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2174.outbound.protection.outlook.com [104.47.58.174])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3epfssj5vq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Mar 2022 22:10:31 -0800
+        Tue, 08 Mar 2022 22:12:59 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WSILocufxALjfH3MKzyWTc3Ag8GTrMA3pNxFtSuZbu2/nEaMwK9jhwbaFDSW/7IOLCfmkUH6m3MTSE5QF1sjcbaTu2uly4rfUpezxTxHItsXsoZfoJ8n28TbxhH5f4Uw9o3imQEJo16wiJ6VsdTmsfLP0qIFTlJ4rF2CGCqVKQz/Gw6cXdO7ur30ORdjnN7q5CQFCsPiAAcuZQObTei/ourK8NXvg8wAacem8HxNV8wr24qy95eNPX0moTr4/sFiXp2fyHbgWrhM4v5ITjcAqZHENodvqaWvnqD1PUREuZ5agdM74Bhjbo5Y9jvwgRKBa2KKxDN9ROj7yoRWyKFR0Q==
+ b=CObi0bHBGK937v/ttRq0EwY28/nhK8s/mR2Djs+qm+mFpeNe6/JftW76c7NITHkqnMdycodFWWIQooqZN40n9vba0OgOFL4HzxLZmekJ8DANI7fs0+5h/3yMqBVNAqp64hruEMdMT/t8X1ExD5u7P9KaDb9cbE2S0Ww7yjFi7eGDciZy25Hq5d5utBgCjbnM34Htv39wSdr7Z4eXDzZNQPiWT4kBGUXe4YXBXpZ3xnjYmAKscPkBJ9Qwu+sjkROVKenKtAzP4TfDMMuOW2GVrRFz4TwYMS0uYz/SajlR2uJDfQIHlQ6Jh2q6jeOVPNrjRm2DbGLMVJsXisUvMnl3Ig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vNAvIrZnpD3HixfGWXtk9y7KwewzxUaZ9zxH3W7O2oc=;
- b=gWTjERBDEVgjBV6BASt96ZcMrpRTWijcJQ6dsjNHVTDBsdX0zLXotxgg2ZwFlymyVORx6GZXjSivJGlP4c0GqEiKvAsxAyZ26UFrvPORhDJuT3sicVqTFZ+1B/WEG+HhHT+WdNdLmsbYiJS8bCFAd3mVvEAgjE6R6YgLuGYgpqBmzOIdLCSB6Omfm2vxiOz4B2y6+8DzleMQalDdiYOb4zv0/4291EIPm6iZJQD9hl6LaBF80lp6/RPB8gjhXgjYULrLVBpRGkTjTxcwHjyJ2oJbvOcMtZXK6GkCrxdck0lIM+XdwD92eaXYdmp56kwYW7wP7apsxNJeps7vdMbz+g==
+ bh=3f2y8kad+waotwGCxPk6/YakBZyZI83+Nr6Bri8JGF8=;
+ b=bpNHjV4psvIdzZGXCAm8m+ey4jbETYZa9djGubS/IlJ1Oo+1VKr2IE2/DgvsodS4qMSVFwlVrblK3d+43NPfgq+QSzGYAWps7IfctYjwMNwcq/0NUo9vHJHZqcd827AXmw5VErbFKvtoF76LEImE2MRMWw3HKJNvXwrUQQHD7cOZeBqyN3bYJUlvFTJ8/P2tLUEiDwqUKRIFCcVBH/KU1BuFj+EKqbAc6TkY4HrN7HA9d2W/ex9rtHTuvFj5xqaOlENHCXU4FsXZgJ2DwX9qwJwQOjqd8IW4v9FG628ato1WJ6lFSBfJwRZSU2178COSbSzhv7k7vGVB4RAMm27PyQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
@@ -42,89 +42,89 @@ Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
  by SN7PR15MB4173.namprd15.prod.outlook.com (2603:10b6:806:10f::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
- 2022 06:10:29 +0000
+ 2022 06:12:57 +0000
 Received: from SA1PR15MB5016.namprd15.prod.outlook.com
  ([fe80::1d2d:7a0f:fa57:cbdd]) by SA1PR15MB5016.namprd15.prod.outlook.com
  ([fe80::1d2d:7a0f:fa57:cbdd%7]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
- 06:10:23 +0000
-Date:   Tue, 8 Mar 2022 22:10:19 -0800
+ 06:12:57 +0000
+Date:   Tue, 8 Mar 2022 22:12:54 -0800
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v10 1/5] bpf: Add "live packet" mode for XDP in
- BPF_PROG_RUN
-Message-ID: <20220309061018.wn5tddiguywdeyra@kafai-mbp.dhcp.thefacebook.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v10 0/5] Add support for transmitting packets
+ using XDP in bpf_prog_run()
+Message-ID: <20220309061254.lbz7no6hxjphr34w@kafai-mbp.dhcp.thefacebook.com>
 References: <20220308145801.46256-1-toke@redhat.com>
- <20220308145801.46256-2-toke@redhat.com>
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220308145801.46256-2-toke@redhat.com>
-X-ClientProxiedBy: MW4P221CA0009.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:303:8b::14) To SA1PR15MB5016.namprd15.prod.outlook.com
+In-Reply-To: <20220308145801.46256-1-toke@redhat.com>
+X-ClientProxiedBy: CO1PR15CA0106.namprd15.prod.outlook.com
+ (2603:10b6:101:21::26) To SA1PR15MB5016.namprd15.prod.outlook.com
  (2603:10b6:806:1db::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ff4d5859-ecdb-4271-b0f1-08da01937ea2
+X-MS-Office365-Filtering-Correlation-Id: 7aa2fc45-418f-4310-700f-08da0193db11
 X-MS-TrafficTypeDiagnostic: SN7PR15MB4173:EE_
-X-Microsoft-Antispam-PRVS: <SN7PR15MB4173B6E4B2D4F43BE4140E4BD50A9@SN7PR15MB4173.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <SN7PR15MB4173363ECB86B2CCF020820CD50A9@SN7PR15MB4173.namprd15.prod.outlook.com>
 X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QvfGiE8blHr2KS2HoqRypMyZpcynIJybsvQG4d1Vm4VeElPdju0DHMlOh3PMKVKvM3QBuhqpGX2pay5gOJptiWCS0QbR66AOMbYHvpEoxnfPhu9BsZ24JVn4xcBCYoEWBduLW5UKUJ+7Jrfw0Vn+DJUWrxjB8jQD3k5hsONXJneFUQIU8TioFd4orJpx/crIbYvjVNkrvwVXzkfT/pI1dxUHjUscoWZgd9WnvFuO7UxB30RKUGD4q2g1agtXAjSpwCiw5KxaQGlWDWZFWiHZHU57ot4Knz3c8HPI5oGzSlYZv7QtT13HC7ZG/ZHqXONjpO3ysh1CfT3AgOrQnlCGfNX2g7TjTEDdpUX4vt4cySFjTa/kn+WGRyXnhkX99JvEsfVjz7+Bx1y6NYZjuFtoIAzjH6JALXrhyLr55VCqJ3uwOzgyVUgM34Cc/CKCVBVPPGwhmBeCxP9HX+0Huf0MJOE1y8nJE8l2OY+jZ2TAO6YT9jEqGIwkCb/QumsTe47LeZ9NLeK/hjEC+HyG4zl3jT8uh6mlH0f3MCJ3dJhfu+LPLe82vh/hFGIjzBva10Pkx35SmqBd7jHZUk3uomrA3MZ5WlRCGIcklt9E9I6vgEFWDvLQ0T1+TaycY7vaWlOsgw9LvBOxp8HjibAKE4o9Xw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(6512007)(9686003)(86362001)(186003)(38100700002)(316002)(54906003)(1076003)(6916009)(66574015)(7416002)(6486002)(83380400001)(66556008)(66476007)(8676002)(66946007)(4326008)(508600001)(52116002)(5660300002)(8936002)(6666004)(6506007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: APnwC2C583pPZJDVhumg+JYr1+cQE3p7D7PG+dVEnrrexfsW0KeKnT5a3rjjzSrfo2Gw6I6S1L2NY0nDkEvIHP2y7FcYb8ow5tQItXYF9c15Ji4wJhHwzbHLfX4j6cviCCRSpX/U/jQpXfzysxwWM0yde+g5HU2dip447HOHcE50kuGN6VcWKk9Jw2xdtRZOj5cBD2qD0B+9YLvaSF3OQVk/t0Ye09yFCX72pp7yIvHlG+0zBFzPjwsundLEUK+9rzL0ADfOhau8xeq+H5hxKdqObcVZI0tQ9rEQ6Sqj9HdpiFAkF1wgGoRDBqDaWy6f332O871Vyv4xxz+IW+hIJ7iqkjmgOSuf/BCd1M4iB+ALsjM9tDdkTroso9r0FMIkEFe37nbVVMGJE8q3L6BIObvzAHFaLALy6/xFXKRQs0cL7/kaLOCJkmb8YwaEQ5dqvB7LoKRlIEWT3P1dbdWuxddKzOAfQUNIhDKNg6WnKzb55hSaYCoBHyGwPLt68zgpipLq/AKFL2FVdtcYEZIJWmrkI1Zwt3eQ6WHYUfqB0ZCj9CbmWfxiAXrIkMwFdjWlyiNEWs3u1qtm0ML71sKYnoaOF74xmKUxs+voVPbl0WlxDea+iKYlOhiL1HPK50pDa20DTRvaIuQ4b9lfi5qmYw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(6512007)(9686003)(86362001)(186003)(38100700002)(316002)(54906003)(1076003)(6916009)(66574015)(7416002)(6486002)(66556008)(66476007)(8676002)(66946007)(4326008)(508600001)(52116002)(5660300002)(8936002)(6666004)(6506007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?IXiSQo7P22TNKEEvkXvNd/7LQqcw7oOMSZ7BZHbqluw03w8KsMna8Wy6kt?=
- =?iso-8859-1?Q?Fh18BzhZ98AGLeexuOzZusdocJMG+fkRQTw5MJqLG8Qeu7W3g0/riI5nZV?=
- =?iso-8859-1?Q?9jzBt/m8u1KQdTepkxQXMc/fyAxDsqVhanz3Gija9CE4cEgrbr67Bi9hT1?=
- =?iso-8859-1?Q?2fXVMgbW1LEt5mCyc95n7JhW4ZYZlvjvwsLVvVSsNL4I9x2dXhQg/sY0LC?=
- =?iso-8859-1?Q?muzZHThF+HPq2BEQ03LQ0FGXsH0SGZPX2LVarPxzK2g8EOdlrZzJeXKmab?=
- =?iso-8859-1?Q?ccwiF8fEJ7pyHkEr40d+GWSi1CR7oi4Ffi7Xq32N+2ipLioNXKUu7GVWom?=
- =?iso-8859-1?Q?gY8QkKJ04SATAGbdnDWA3cqNaK8SPDBfjpV9Sde3dfvkE2V+FOlZLGyDQ7?=
- =?iso-8859-1?Q?nN8Eqa/uv/EQiIYGr5Oqy58/jiIsFVl23JabDDcTAIkMW28R1JwJn2XxRn?=
- =?iso-8859-1?Q?R1Kv3dSkxn2iPuGLwe1r2t4nLCbhJ5bN7EWMNrgVWg76a8rH8BOUHf34kW?=
- =?iso-8859-1?Q?C87FKa+xXbHdx5W/cm2D4wmftG+DGM1jcTm1rwD0aQbAKknJColqkptYSm?=
- =?iso-8859-1?Q?XoIKyfoTxttw74HRu6o5xjrs0Uobyh0j1z0pYvVMYYHGo/A7tMo1kGwvna?=
- =?iso-8859-1?Q?WM26tHmELLvZ3zEza6/VKofF35aEwqGERKs9PRN0hG4PWpuIlAcdTo2tj8?=
- =?iso-8859-1?Q?60AMbXa78h1pLczIaOnLZjQAjKTEGmC+WuAXas04grHdolOOAr88x0CYl0?=
- =?iso-8859-1?Q?0a4rhcQ9dyRsKNG0eZp2U2Z7g3DKYunr9raY7p1Z0DyDvsr1iMct5baPrR?=
- =?iso-8859-1?Q?XK3NExBXHllZU62GF2HlgzoxH0K+wgm1YI7mmsCGd0g+NBTa9h0+qtU1xZ?=
- =?iso-8859-1?Q?sRGdpPCW/MbStjqPX07gy91cD2hk+RRWyGjUU8Hu8FD7zn2edZJQdU8emc?=
- =?iso-8859-1?Q?rwTTGq+LTdUDa+7Q7C9TS5nZ6sHAAsGVbaFtnd3+5vM2fJtMqscN7/x/2E?=
- =?iso-8859-1?Q?heQBC05IhPQRMyTBCTPjCqvNoSXkPtTFo7fND9fjGk9iYeCThxfLps5R+5?=
- =?iso-8859-1?Q?OqV8QnBMPSEBYn5sc4ckeZ2AjGMafZjd7YhfJbi55d0vpYH9yOZI8PG3hH?=
- =?iso-8859-1?Q?s1FZyE4eInTiLi9+TchxIeEESPTXKxf2hN3BjRR5CVOr1clreD6S5jjFnH?=
- =?iso-8859-1?Q?sjSWOuwxTofizc0cZpP8zC8GgdYHL5Fz5J4x1R0IvAE2LIwGY2oTifSefo?=
- =?iso-8859-1?Q?wDHNyvf1YyE/0K4TEDpCpLq5grcmHuvRo01kmGZ/yvj/bUQ4ImdrVcIM7n?=
- =?iso-8859-1?Q?yBe3cgRxkm+6qL1x9WN67Q68dUtXmef+CErdaMUdu1a35F5knSIfhm6jSw?=
- =?iso-8859-1?Q?CoZKMZZFUOPCN9JHfylt/txpQGY6WaCRT3jgTTtQnnxpVkCOiiFgcWdF+t?=
- =?iso-8859-1?Q?Bw0IcvI2GO1bQqjrYemAjbE/fFzlpsbYchQGrUe18zSxeBOee0gT3LemVf?=
- =?iso-8859-1?Q?Cmr3FNsShfNfmrpxnxU4dyACYbX3qZUcHu8oJt/hmnLUKiN6+NM9hi5yNS?=
- =?iso-8859-1?Q?BdTkno+yr2MFz+Peuux+z5iSEL4QT69ev6Lz4HMme+bkMx+shohhktIvsG?=
- =?iso-8859-1?Q?s5ivi3KLIbvGDcBaZBlVZ+y4qg/WDqq3fQ?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?f7wd5uYyK+RASBmz1Yfar9fpn9TKumUxiEy0UPOy/rLM4UIj8MBj7qb8J0?=
+ =?iso-8859-1?Q?wfSsGmuCehYN+7XUxDzOT98BZqyDnBivvjtMHPUjW37sQ5zSabOXQgUJAm?=
+ =?iso-8859-1?Q?r2lDzGOMtpqrdYT84eU3K8yuwi1McuHk3QcnwcPa5H93v+Ez6a2bShSTgt?=
+ =?iso-8859-1?Q?8GbsGp+NJEjIvEO+W59Ie7CiNFzGNjO5kjwhOrpeQutA4pHpJCf6olCuK5?=
+ =?iso-8859-1?Q?eodlykb6tanzIHCiT//hdJcZ/6+2tvD3vIyv1zuv0dAhTJ2VOeXR8rtC8u?=
+ =?iso-8859-1?Q?kbDM1o3ox73rVOe5KO61pdC5556RS0rTjSfz81tbN4042KGkx1aMjLQY7+?=
+ =?iso-8859-1?Q?fUoQJlCmqEEKgDa0hop1j9sTezT8ta50tKZ/zPTKjfAYd8b9h/x70abKvo?=
+ =?iso-8859-1?Q?HFtQuQSDwPnje8x7hPS8KHJdQfD2KbJXNKdxmpPKD9GJCeUDN2gP1PMkPC?=
+ =?iso-8859-1?Q?qa18+xLzc+mMdWv1l9ORZ4zPI7qgl0yGCrvpe3nsmyZYarrTxHHU3AdnOs?=
+ =?iso-8859-1?Q?RNS0+njEYUriARdZOR+rrgOlbqBwvNHGTwgmYmDMoqy7PrOUHbg0xBZDhe?=
+ =?iso-8859-1?Q?mf4VBMkDkkJVeEgASgECMgGY5SUNUySmHuvj2nsVqBWt6RZeNLB2jK+saX?=
+ =?iso-8859-1?Q?yzcM7AqldkqAh0JkCC/D99pX9Lv49T5QFT58NT02bByfiC8lohSkRIqbL1?=
+ =?iso-8859-1?Q?bzbVrFdyGx7cC9QSszlgxdev6CMWK+1UXsnIg9L0Zyh8BKFs/kvIk0woRl?=
+ =?iso-8859-1?Q?zv8BTl/NsKTum502qbqcl2hmAUcYBtrf9HiOVs41Z8UeYad5eBYX7Hb5F6?=
+ =?iso-8859-1?Q?qkoPkcVoBkGwJGmR/eJlN/ZFP10iCLBliofgC+Lhi8QTNsFOR1LfprBkYI?=
+ =?iso-8859-1?Q?SlTu31TS9R9osJuI8bVCy2J3Dv74h3QV/8hjGLjpbKdDFX9d2XRlWLLM5T?=
+ =?iso-8859-1?Q?mij7T4b9pCdzSZ3h2bTzr12557NfojQPhLFPwuoorXHlL9oOfdei3/5Uk+?=
+ =?iso-8859-1?Q?Xxf8ekwzhO3vd8RxF0wNMjsk2nWckFSvEly6JK4Yi8a9xW7uyNDh4qWhLJ?=
+ =?iso-8859-1?Q?7jxoUgpjtRhp+HL04KF5iHXmaXFk5nzuBMwaHErqi/avzrvNNv2wk95gSt?=
+ =?iso-8859-1?Q?/NsYx695PG6SILPDUEvFAr15mzxSNqYKFCYzWyyLA6JQMgTCfS+uCkpvEi?=
+ =?iso-8859-1?Q?KArHiiu6S6yNCV6htNvUeYT18ZSNLWY6eL4gq5oGLHKpkX1tEzvooiQEN+?=
+ =?iso-8859-1?Q?5IApGCSMVeTDvDMfjpws2rIm8MKo9mZ0tjavpU+0XYtOokBkC8tnBoioTu?=
+ =?iso-8859-1?Q?ezhGmkWvJ/tZATEYgPPiKQ9FS6ZgQSey36EjHclxjiZA/z04Mzn/XYdiKH?=
+ =?iso-8859-1?Q?smRDnR70sIy8s3Dyud7NmJVhee6EgsplXJmJiKCMLHnlXVrC3lJr0rHZtE?=
+ =?iso-8859-1?Q?SxtgeokH04xv4YxnbETx/yKBTEDrWyITCAqHdPG5Ev8NbZmIw1nW7g4doC?=
+ =?iso-8859-1?Q?Of08UPMN5ihDtmR2Ps3+UKbGssfrB99dO6nGxyt2OQfjXqW/lO29DcVI8k?=
+ =?iso-8859-1?Q?nkO7jw0h+eWhkC0u2yAdHLTxfZPZoX6CBHP8aQVIfrdng4Y6AHi37R8lqk?=
+ =?iso-8859-1?Q?zqur84OyXXv9Ha1ZQ9oRMnwJXM1PpgAi11wqnPbR/xiNEqD4aiWEDyCQ?=
+ =?iso-8859-1?Q?=3D=3D?=
 X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff4d5859-ecdb-4271-b0f1-08da01937ea2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7aa2fc45-418f-4310-700f-08da0193db11
 X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 06:10:22.9787
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 06:12:57.6800
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o/seTBrr9aJkpwVKkad8wEjOAs5Q01B2LYyNeXmCwkRgA1BRxHlf1QEhWao1TVtM
+X-MS-Exchange-CrossTenant-UserPrincipalName: +qfFkPRFnFUrWZRV3MJF8T+7Q18OrLJaU96EZ0kl14mlYtW/ppA4hD5MWpfOZkK/
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR15MB4173
-X-Proofpoint-ORIG-GUID: byXCow3EJ0tVv6tgemxbQoAUQd3w7Dof
-X-Proofpoint-GUID: byXCow3EJ0tVv6tgemxbQoAUQd3w7Dof
+X-Proofpoint-ORIG-GUID: 4q0hFapsKWYwb932P2GyiSkbERfr-NYv
+X-Proofpoint-GUID: 4q0hFapsKWYwb932P2GyiSkbERfr-NYv
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-09_02,2022-03-04_01,2022-02-23_01
@@ -138,116 +138,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 03:57:57PM +0100, Toke Høiland-Jørgensen wrote:
-> +static int xdp_test_run_batch(struct xdp_test_data *xdp, struct bpf_prog *prog,
-> +			      u32 repeat)
-> +{
-> +	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> +	int err = 0, act, ret, i, nframes = 0, batch_sz;
-> +	struct xdp_frame **frames = xdp->frames;
-> +	struct xdp_page_head *head;
-> +	struct xdp_frame *frm;
-> +	bool redirect = false;
-> +	struct xdp_buff *ctx;
-> +	struct page *page;
-> +
-> +	batch_sz = min_t(u32, repeat, xdp->batch_size);
-> +
-> +	local_bh_disable();
-> +	xdp_set_return_frame_no_direct();
-> +
-> +	for (i = 0; i < batch_sz; i++) {
-> +		page = page_pool_dev_alloc_pages(xdp->pp);
-> +		if (!page) {
-> +			err = -ENOMEM;
-> +			goto out;
-> +		}
-> +
-> +		head = phys_to_virt(page_to_phys(page));
-> +		reset_ctx(head);
-> +		ctx = &head->ctx;
-> +		frm = &head->frm;
-> +		xdp->frame_cnt++;
-> +
-> +		act = bpf_prog_run_xdp(prog, ctx);
-> +
-> +		/* if program changed pkt bounds we need to update the xdp_frame */
-> +		if (unlikely(ctx_was_changed(head))) {
-> +			ret = xdp_update_frame_from_buff(ctx, frm);
-> +			if (ret) {
-> +				xdp_return_buff(ctx);
-> +				continue;
-> +			}
-> +		}
-> +
-> +		switch (act) {
-> +		case XDP_TX:
-> +			/* we can't do a real XDP_TX since we're not in the
-> +			 * driver, so turn it into a REDIRECT back to the same
-> +			 * index
-> +			 */
-> +			ri->tgt_index = xdp->dev->ifindex;
-> +			ri->map_id = INT_MAX;
-> +			ri->map_type = BPF_MAP_TYPE_UNSPEC;
-> +			fallthrough;
-> +		case XDP_REDIRECT:
-> +			redirect = true;
-> +			ret = xdp_do_redirect_frame(xdp->dev, ctx, frm, prog);
-> +			if (ret)
-> +				xdp_return_buff(ctx);
-> +			break;
-> +		case XDP_PASS:
-> +			frames[nframes++] = frm;
-> +			break;
-> +		default:
-> +			bpf_warn_invalid_xdp_action(NULL, prog, act);
-> +			fallthrough;
-> +		case XDP_DROP:
-> +			xdp_return_buff(ctx);
-> +			break;
-> +		}
-> +	}
-> +
-> +out:
-> +	if (redirect)
-> +		xdp_do_flush();
-> +	if (nframes)
-> +		err = xdp_recv_frames(frames, nframes, xdp->skbs, xdp->dev);
-This may overwrite the -ENOMEM with 0.
+On Tue, Mar 08, 2022 at 03:57:56PM +0100, Toke Høiland-Jørgensen wrote:
+> This series adds support for transmitting packets using XDP in
+> bpf_prog_run(), by enabling a new mode "live packet" mode which will handle
+> the XDP program return codes and redirect the packets to the stack or other
+> devices.
+> 
+> The primary use case for this is testing the redirect map types and the
+> ndo_xdp_xmit driver operation without an external traffic generator. But it
+> turns out to also be useful for creating a programmable traffic generator
+> in XDP, as well as injecting frames into the stack. A sample traffic
+> generator, which was included in previous versions of the series, but now
+> moved to xdp-tools, transmits up to 9 Mpps/core on my test machine.
+> 
+> To transmit the frames, the new mode instantiates a page_pool structure in
+> bpf_prog_run() and initialises the pages to contain XDP frames with the
+> data passed in by userspace. These frames can then be handled as though
+> they came from the hardware XDP path, and the existing page_pool code takes
+> care of returning and recycling them. The setup is optimised for high
+> performance with a high number of repetitions to support stress testing and
+> the traffic generator use case; see patch 1 for details.
+> 
+> v10:
+> - Only propagate memory allocation errors from xdp_test_run_batch()
+Other than a case in patch 1.  The set lgtm.
 
-Others lgtm.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-> +
-> +	xdp_clear_return_frame_no_direct();
-> +	local_bh_enable();
-> +	return err;
-> +}
-> +
-> +static int bpf_test_run_xdp_live(struct bpf_prog *prog, struct xdp_buff *ctx,
-> +				 u32 repeat, u32 batch_size, u32 *time)
-> +
-> +{
-> +	struct xdp_test_data xdp = { .batch_size = batch_size };
-> +	struct bpf_test_timer t = { .mode = NO_MIGRATE };
-> +	int ret;
-> +
-> +	if (!repeat)
-> +		repeat = 1;
-> +
-> +	ret = xdp_test_run_setup(&xdp, ctx);
-> +	if (ret)
-> +		return ret;
-> +
-> +	bpf_test_timer_enter(&t);
-> +	do {
-> +		xdp.frame_cnt = 0;
-> +		ret = xdp_test_run_batch(&xdp, prog, repeat - t.i);
-> +		if (unlikely(ret < 0))
-> +			break;
-> +	} while (bpf_test_timer_continue(&t, xdp.frame_cnt, repeat, &ret, time));
-> +	bpf_test_timer_leave(&t);
-> +
-> +	xdp_test_run_teardown(&xdp);
-> +	return ret;
-> +}
-> +
+> - Get rid of BPF_F_TEST_XDP_RESERVED; batch_size can be used to probe
+> - Check that batch_size is unset in non-XDP test_run funcs
+> - Lower the number of repetitions in the selftest to 10k
+> - Count number of recycled pages in the selftest
+> - Fix a few other nits from Martin, carry forward ACKs
