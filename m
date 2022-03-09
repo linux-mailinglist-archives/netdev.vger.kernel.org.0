@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3166B4D2BCC
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E3274D2BD4
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:25:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231767AbiCIJ0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:26:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
+        id S232026AbiCIJ0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 04:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbiCIJ0W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:26:22 -0500
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08B114E96B;
-        Wed,  9 Mar 2022 01:25:22 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R321e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6jFhsP_1646817915;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6jFhsP_1646817915)
+        with ESMTP id S230377AbiCIJ0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:26:43 -0500
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA0D158798;
+        Wed,  9 Mar 2022 01:25:43 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6j9G9H_1646817937;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6j9G9H_1646817937)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Mar 2022 17:25:16 +0800
-Message-ID: <1646817847.746638-6-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v7 09/26] virtio_ring: split: implement virtqueue_reset_vring_split()
-Date:   Wed, 9 Mar 2022 17:24:07 +0800
+          Wed, 09 Mar 2022 17:25:38 +0800
+Message-ID: <1646817926.9029093-7-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v7 13/26] virtio: queue_reset: struct virtio_config_ops add callbacks for queue_reset
+Date:   Wed, 9 Mar 2022 17:25:26 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
@@ -51,9 +51,9 @@ Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
         kvm@vger.kernel.org, bpf@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-10-xuanzhuo@linux.alibaba.com>
- <512de020-b36e-8473-69c8-8b3925fbb6c1@redhat.com>
-In-Reply-To: <512de020-b36e-8473-69c8-8b3925fbb6c1@redhat.com>
+ <20220308123518.33800-14-xuanzhuo@linux.alibaba.com>
+ <a3782384-c7e5-b0b3-6529-3aa3b8b589de@redhat.com>
+In-Reply-To: <a3782384-c7e5-b0b3-6529-3aa3b8b589de@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
@@ -67,158 +67,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 15:55:44 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Wed, 9 Mar 2022 16:47:11 +0800, Jason Wang <jasowang@redhat.com> wrote:
 >
 > =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
-> > virtio ring supports reset.
+> > Performing reset on a queue is divided into four steps:
 > >
-> > Queue reset is divided into several stages.
+> >   1. reset_vq()                     - notify the device to reset the qu=
+eue
+> >   2. virtqueue_detach_unused_buf()  - recycle the buffer submitted
+> >   3. virtqueue_reset_vring()        - reset the vring (may re-alloc)
+> >   4. enable_reset_vq()              - mmap vring to device, and enable =
+the queue
 > >
-> > 1. notify device queue reset
-> > 2. vring release
-> > 3. attach new vring
-> > 4. notify device queue re-enable
-> >
-> > After the first step is completed, the vring reset operation can be
-> > performed. If the newly set vring num does not change, then just reset
-> > the vq related value.
-> >
-> > Otherwise, the vring will be released and the vring will be reallocated.
-> > And the vring will be attached to the vq. If this process fails, the
-> > function will exit, and the state of the vq will be the vring release
-> > state. You can call this function again to reallocate the vring.
-> >
-> > In addition, vring_align, may_reduce_num are necessary for reallocating
-> > vring, so they are retained when creating vq.
+> > So add two callbacks reset_vq, enable_reset_vq to struct
+> > virtio_config_ops.
 > >
 > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > > ---
-> >   drivers/virtio/virtio_ring.c | 69 ++++++++++++++++++++++++++++++++++++
-> >   1 file changed, 69 insertions(+)
+> >   include/linux/virtio_config.h | 11 +++++++++++
+> >   1 file changed, 11 insertions(+)
 > >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index e0422c04c903..148fb1fd3d5a 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -158,6 +158,12 @@ struct vring_virtqueue {
-> >   			/* DMA address and size information */
-> >   			dma_addr_t queue_dma_addr;
-> >   			size_t queue_size_in_bytes;
-> > +
-> > +			/* The parameters for creating vrings are reserved for
-> > +			 * creating new vrings when enabling reset queue.
-> > +			 */
-> > +			u32 vring_align;
-> > +			bool may_reduce_num;
-> >   		} split;
-> >
-> >   		/* Available for packed ring */
-> > @@ -217,6 +223,12 @@ struct vring_virtqueue {
-> >   #endif
-> >   };
-> >
-> > +static void vring_free(struct virtqueue *vq);
-> > +static void __vring_virtqueue_init_split(struct vring_virtqueue *vq,
-> > +					 struct virtio_device *vdev);
-> > +static int __vring_virtqueue_attach_split(struct vring_virtqueue *vq,
-> > +					  struct virtio_device *vdev,
-> > +					  struct vring vring);
-> >
-> >   /*
-> >    * Helpers.
-> > @@ -1012,6 +1024,8 @@ static struct virtqueue *vring_create_virtqueue_s=
-plit(
-> >   		return NULL;
-> >   	}
-> >
-> > +	to_vvq(vq)->split.vring_align =3D vring_align;
-> > +	to_vvq(vq)->split.may_reduce_num =3D may_reduce_num;
-> >   	to_vvq(vq)->split.queue_dma_addr =3D vring.dma_addr;
-> >   	to_vvq(vq)->split.queue_size_in_bytes =3D vring.queue_size_in_bytes;
-> >   	to_vvq(vq)->we_own_ring =3D true;
-> > @@ -1019,6 +1033,59 @@ static struct virtqueue *vring_create_virtqueue_=
-split(
-> >   	return vq;
-> >   }
-> >
-> > +static int virtqueue_reset_vring_split(struct virtqueue *_vq, u32 num)
-> > +{
+> > diff --git a/include/linux/virtio_config.h b/include/linux/virtio_confi=
+g.h
+> > index 4d107ad31149..d51906b1389f 100644
+> > --- a/include/linux/virtio_config.h
+> > +++ b/include/linux/virtio_config.h
+> > @@ -74,6 +74,15 @@ struct virtio_shm_region {
+> >    * @set_vq_affinity: set the affinity for a virtqueue (optional).
+> >    * @get_vq_affinity: get the affinity for a virtqueue (optional).
+> >    * @get_shm_region: get a shared memory region based on the index.
+> > + * @reset_vq: reset a queue individually (optional).
+> > + *	vq: the virtqueue
+> > + *	Returns 0 on success or error status
+> > + *	Caller should guarantee that the vring is not accessed by any funct=
+ions
+> > + *	of virtqueue.
 >
 >
-> So what this function does is to resize the virtqueue actually, I
-> suggest to rename it as virtqueue_resize_split().
+> We probably need to be more accurate here:
+>
+> 1) reset_vq will guarantee that the callbacks are disabled or synchronized
+> 2) except for the callback, the caller should guarantee ...
 
 OK.
-
->
->
-> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
-> > +	struct virtio_device *vdev =3D _vq->vdev;
-> > +	struct vring_split vring;
-> > +	int err;
-> > +
-> > +	if (num > _vq->num_max)
-> > +		return -E2BIG;
-> > +
-> > +	switch (vq->vq.reset) {
-> > +	case VIRTIO_VQ_RESET_STEP_NONE:
-> > +		return -ENOENT;
-> > +
-> > +	case VIRTIO_VQ_RESET_STEP_VRING_ATTACH:
-> > +	case VIRTIO_VQ_RESET_STEP_DEVICE:
-> > +		if (vq->split.vring.num =3D=3D num || !num)
-> > +			break;
-> > +
-> > +		vring_free(_vq);
-> > +
-> > +		fallthrough;
-> > +
-> > +	case VIRTIO_VQ_RESET_STEP_VRING_RELEASE:
-> > +		if (!num)
-> > +			num =3D vq->split.vring.num;
-> > +
-> > +		err =3D vring_create_vring_split(&vring, vdev,
-> > +					       vq->split.vring_align,
-> > +					       vq->weak_barriers,
-> > +					       vq->split.may_reduce_num, num);
-> > +		if (err)
-> > +			return -ENOMEM;
->
->
-> We'd better need a safe fallback here like:
->
-> If we can't allocate new memory, we can keep using the current one.
-> Otherwise an ethtool -G fail may make the device not usable.
->
-> This could be done by not freeing the old vring and virtqueue states
-> until new is allocated.
-
-I've been thinking the same thing for the past two days.
-
->
->
-> > +
-> > +		err =3D __vring_virtqueue_attach_split(vq, vdev, vring.vring);
-> > +		if (err) {
-> > +			vring_free_queue(vdev, vring.queue_size_in_bytes,
-> > +					 vring.queue,
-> > +					 vring.dma_addr);
-> > +			return -ENOMEM;
-> > +		}
-> > +
-> > +		vq->split.queue_dma_addr =3D vring.dma_addr;
-> > +		vq->split.queue_size_in_bytes =3D vring.queue_size_in_bytes;
-> > +	}
-> > +
-> > +	__vring_virtqueue_init_split(vq, vdev);
-> > +	vq->we_own_ring =3D true;
->
->
-> This seems wrong, we have the transport (rproc/mlxtbf) that allocate the
-> vring by themselves. I think we need to fail the resize for we_own_ring
-> =3D=3D false.
-
-Oh, it turns out that we_own_ring is for this purpose.
 
 Thanks.
 
@@ -226,23 +117,20 @@ Thanks.
 > Thanks
 >
 >
->
-> > +	vq->vq.reset =3D VIRTIO_VQ_RESET_STEP_VRING_ATTACH;
-> > +
-> > +	return 0;
-> > +}
-> > +
+> > + * @enable_reset_vq: enable a reset queue
+> > + *	vq: the virtqueue
+> > + *	Returns 0 on success or error status
+> > + *	If reset_vq is set, then enable_reset_vq must also be set.
+> >    */
+> >   typedef void vq_callback_t(struct virtqueue *);
+> >   struct virtio_config_ops {
+> > @@ -100,6 +109,8 @@ struct virtio_config_ops {
+> >   			int index);
+> >   	bool (*get_shm_region)(struct virtio_device *vdev,
+> >   			       struct virtio_shm_region *region, u8 id);
+> > +	int (*reset_vq)(struct virtqueue *vq);
+> > +	int (*enable_reset_vq)(struct virtqueue *vq);
+> >   };
 > >
-> >   /*
-> >    * Packed ring specific functions - *_packed().
-> > @@ -2317,6 +2384,8 @@ static int __vring_virtqueue_attach_split(struct =
-vring_virtqueue *vq,
-> >   static void __vring_virtqueue_init_split(struct vring_virtqueue *vq,
-> >   					 struct virtio_device *vdev)
-> >   {
-> > +	vq->vq.reset =3D VIRTIO_VQ_RESET_STEP_NONE;
-> > +
-> >   	vq->packed_ring =3D false;
-> >   	vq->we_own_ring =3D false;
-> >   	vq->broken =3D false;
+> >   /* If driver didn't advertise the feature, it will never appear. */
 >
