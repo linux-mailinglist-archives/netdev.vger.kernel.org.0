@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AADFD4D3D05
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 391F04D3D01
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238709AbiCIWd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S238711AbiCIWd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 9 Mar 2022 17:33:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35526 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238710AbiCIWdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:33:50 -0500
+        with ESMTP id S238678AbiCIWdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:33:51 -0500
 Received: from smtp4.emailarray.com (smtp4.emailarray.com [65.39.216.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01D312150B
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:32:49 -0800 (PST)
-Received: (qmail 42607 invoked by uid 89); 9 Mar 2022 22:32:48 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249AD275F4
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:32:50 -0800 (PST)
+Received: (qmail 43149 invoked by uid 89); 9 Mar 2022 22:32:49 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 9 Mar 2022 22:32:48 -0000
+  by smtp4.emailarray.com with SMTP; 9 Mar 2022 22:32:49 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com,
         kernel-team@fb.com
-Subject: [PATCH net-next v1 07/10] ptp: ocp: Program the signal generators via PTP_CLK_REQ_PEROUT
-Date:   Wed,  9 Mar 2022 14:32:34 -0800
-Message-Id: <20220309223237.34507-8-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v1 08/10] ptp: ocp: Add 4 frequency counters
+Date:   Wed,  9 Mar 2022 14:32:35 -0800
+Message-Id: <20220309223237.34507-9-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220309223237.34507-1-jonathan.lemon@gmail.com>
 References: <20220309223237.34507-1-jonathan.lemon@gmail.com>
@@ -40,183 +40,270 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The signal generators can be programmed either via the sysfs
-file or through a PTP_CLK_REQ_PEROUT ioctl request.
+Input signals can be steered to any of the frequency counters.
+The counter measures the frequency over a number of seconds:
+
+  echo 0 > freq1/seconds  = turns off measurement
+  echo 1 > freq1/seconds  = sets period & turns on measurment.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 103 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 94 insertions(+), 9 deletions(-)
+ drivers/ptp/ptp_ocp.c | 172 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 165 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index f457809879a5..3c8550677369 100644
+index 3c8550677369..bd03a3cfd251 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -331,6 +331,8 @@ static int ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r);
- static irqreturn_t ptp_ocp_ts_irq(int irq, void *priv);
- static irqreturn_t ptp_ocp_signal_irq(int irq, void *priv);
- static int ptp_ocp_ts_enable(void *priv, u32 req, bool enable);
-+static int ptp_ocp_signal_from_perout(struct ptp_ocp *bp, int gen,
-+				      struct ptp_perout_request *req);
- static int ptp_ocp_signal_enable(void *priv, u32 req, bool enable);
- static int ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr);
- 
-@@ -866,13 +868,27 @@ ptp_ocp_enable(struct ptp_clock_info *ptp_info, struct ptp_clock_request *rq,
- 		ext = bp->pps;
- 		break;
- 	case PTP_CLK_REQ_PEROUT:
--		if (on &&
--		    (rq->perout.period.sec != 1 || rq->perout.period.nsec != 0))
--			return -EINVAL;
--		/* This is a request for 1PPS on an output SMA.
--		 * Allow, but assume manual configuration.
--		 */
--		return 0;
-+		switch (rq->perout.index) {
-+		case 0:
-+			/* This is a request for 1PPS on an output SMA.
-+			 * Allow, but assume manual configuration.
-+			 */
-+			if (on && (rq->perout.period.sec != 1 ||
-+				   rq->perout.period.nsec != 0))
-+				return -EINVAL;
-+			return 0;
-+		case 1:
-+		case 2:
-+		case 3:
-+		case 4:
-+			req = rq->perout.index - 1;
-+			ext = bp->signal_out[req];
-+			err = ptp_ocp_signal_from_perout(bp, req, &rq->perout);
-+			if (err)
-+				return err;
-+			break;
-+		}
-+		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -884,6 +900,24 @@ ptp_ocp_enable(struct ptp_clock_info *ptp_info, struct ptp_clock_request *rq,
- 	return err;
- }
- 
-+static int
-+ptp_ocp_verify(struct ptp_clock_info *ptp_info, unsigned pin,
-+	       enum ptp_pin_function func, unsigned chan)
-+{
-+	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-+	char buf[16];
-+
-+	if (func != PTP_PF_PEROUT)
-+		return -EOPNOTSUPP;
-+
-+	if (chan)
-+		sprintf(buf, "OUT: GEN%d", chan);
-+	else
-+		sprintf(buf, "OUT: PHC");
-+
-+	return ptp_ocp_sma_store(bp, buf, pin + 1);
-+}
-+
- static const struct ptp_clock_info ptp_ocp_clock_info = {
- 	.owner		= THIS_MODULE,
- 	.name		= KBUILD_MODNAME,
-@@ -894,9 +928,10 @@ static const struct ptp_clock_info ptp_ocp_clock_info = {
- 	.adjfine	= ptp_ocp_null_adjfine,
- 	.adjphase	= ptp_ocp_null_adjphase,
- 	.enable		= ptp_ocp_enable,
-+	.verify		= ptp_ocp_verify,
- 	.pps		= true,
- 	.n_ext_ts	= 4,
--	.n_per_out	= 1,
-+	.n_per_out	= 5,
+@@ -199,6 +199,15 @@ struct signal_reg {
+ 	u32	repeat_count;
  };
  
- static void
-@@ -1463,6 +1498,30 @@ ptp_ocp_signal_set(struct ptp_ocp *bp, int gen, struct ptp_ocp_signal *s)
- 	return 0;
- }
++struct frequency_reg {
++	u32	ctrl;
++	u32	status;
++};
++#define FREQ_STATUS_VALID	BIT(31)
++#define FREQ_STATUS_ERROR	BIT(30)
++#define FREQ_STATUS_OVERRUN	BIT(29)
++#define FREQ_STATUS_MASK	(BIT(24) - 1)
++
+ struct ptp_ocp_flash_info {
+ 	const char *name;
+ 	int pci_offset;
+@@ -244,6 +253,7 @@ struct ocp_attr_group {
+ };
+ #define OCP_CAP_BASIC	BIT(0)
+ #define OCP_CAP_SIGNAL	BIT(1)
++#define OCP_CAP_FREQ	BIT(2)
  
-+static int
-+ptp_ocp_signal_from_perout(struct ptp_ocp *bp, int gen,
-+			   struct ptp_perout_request *req)
+ struct ptp_ocp_signal {
+ 	ktime_t		period;
+@@ -274,6 +284,7 @@ struct ptp_ocp {
+ 	struct dcf_master_reg	__iomem *dcf_out;
+ 	struct dcf_slave_reg	__iomem *dcf_in;
+ 	struct tod_reg		__iomem *nmea_out;
++	struct frequency_reg	__iomem *freq_in[4];
+ 	struct ptp_ocp_ext_src	*signal_out[4];
+ 	struct ptp_ocp_ext_src	*pps;
+ 	struct ptp_ocp_ext_src	*ts0;
+@@ -575,6 +586,22 @@ static struct ocp_resource ocp_fb_resource[] = {
+ 			},
+ 		},
+ 	},
++	{
++		OCP_MEM_RESOURCE(freq_in[0]),
++		.offset = 0x01200000, .size = 0x10000,
++	},
++	{
++		OCP_MEM_RESOURCE(freq_in[1]),
++		.offset = 0x01210000, .size = 0x10000,
++	},
++	{
++		OCP_MEM_RESOURCE(freq_in[2]),
++		.offset = 0x01220000, .size = 0x10000,
++	},
++	{
++		OCP_MEM_RESOURCE(freq_in[3]),
++		.offset = 0x01230000, .size = 0x10000,
++	},
+ 	{
+ 		.setup = ptp_ocp_fb_board_init,
+ 	},
+@@ -613,13 +640,17 @@ static struct ocp_selector ptp_ocp_clock[] = {
+ #define SMA_DISABLE		0x10000
+ 
+ static struct ocp_selector ptp_ocp_sma_in[] = {
+-	{ .name = "10Mhz",	.value = 0x00 },
+-	{ .name = "PPS1",	.value = 0x01 },
+-	{ .name = "PPS2",	.value = 0x02 },
+-	{ .name = "TS1",	.value = 0x04 },
+-	{ .name = "TS2",	.value = 0x08 },
+-	{ .name = "IRIG",	.value = 0x10 },
+-	{ .name = "DCF",	.value = 0x20 },
++	{ .name = "10Mhz",	.value = 0x0000 },
++	{ .name = "PPS1",	.value = 0x0001 },
++	{ .name = "PPS2",	.value = 0x0002 },
++	{ .name = "TS1",	.value = 0x0004 },
++	{ .name = "TS2",	.value = 0x0008 },
++	{ .name = "IRIG",	.value = 0x0010 },
++	{ .name = "DCF",	.value = 0x0020 },
++	{ .name = "FREQ1",	.value = 0x0100 },
++	{ .name = "FREQ2",	.value = 0x0200 },
++	{ .name = "FREQ3",	.value = 0x0400 },
++	{ .name = "FREQ4",	.value = 0x0800 },
+ 	{ .name = "None",	.value = SMA_DISABLE },
+ 	{ }
+ };
+@@ -1833,6 +1864,8 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
+ 	ver = bp->fw_version & 0xffff;
+ 	if (ver >= 19)
+ 		bp->fw_cap |= OCP_CAP_SIGNAL;
++	if (ver >= 20)
++		bp->fw_cap |= OCP_CAP_FREQ;
+ 
+ 	ptp_ocp_tod_init(bp);
+ 	ptp_ocp_nmea_out_init(bp);
+@@ -2428,6 +2461,73 @@ static EXT_ATTR_RO(signal, start, 1);
+ static EXT_ATTR_RO(signal, start, 2);
+ static EXT_ATTR_RO(signal, start, 3);
+ 
++static ssize_t
++seconds_store(struct device *dev, struct device_attribute *attr,
++	      const char *buf, size_t count)
 +{
-+	struct ptp_ocp_signal s = { };
++	struct dev_ext_attribute *ea = to_ext_attr(attr);
++	struct ptp_ocp *bp = dev_get_drvdata(dev);
++	int idx = (uintptr_t)ea->var;
++	u32 val;
++	int err;
 +
-+	s.polarity = bp->signal[gen].polarity;
-+	s.period = ktime_set(req->period.sec, req->period.nsec);
-+	if (!s.period)
-+		return 0;
-+
-+	if (req->flags & PTP_PEROUT_DUTY_CYCLE) {
-+		s.pulse = ktime_set(req->on.sec, req->on.nsec);
-+		s.duty = ktime_divns(s.pulse * 100, s.period);
-+	}
-+
-+	if (req->flags & PTP_PEROUT_PHASE)
-+		s.phase = ktime_set(req->phase.sec, req->phase.nsec);
-+	else
-+		s.start = ktime_set(req->start.sec, req->start.nsec);
-+
-+	return ptp_ocp_signal_set(bp, gen, &s);
-+}
-+
- static int
- ptp_ocp_signal_enable(void *priv, u32 req, bool enable)
- {
-@@ -1738,11 +1797,32 @@ ptp_ocp_sma_init(struct ptp_ocp *bp)
- 	}
- }
- 
-+static int
-+ptp_ocp_fb_set_pins(struct ptp_ocp *bp)
-+{
-+	struct ptp_pin_desc *config;
-+	int i;
-+
-+	config = kzalloc(sizeof(*config) * 4, GFP_KERNEL);
-+	if (!config)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < 4; i++) {
-+		sprintf(config[i].name, "sma%d", i + 1);
-+		config[i].index = i;
-+	}
-+
-+	bp->ptp_info.n_pins = 4;
-+	bp->ptp_info.pin_config = config;
-+
-+	return 0;
-+}
-+
- /* FB specific board initializers; last "resource" registered. */
- static int
- ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- {
--	int ver;
-+	int ver, err;
- 
- 	bp->flash_start = 1024 * 4096;
- 	bp->eeprom_map = fb_eeprom_map;
-@@ -1759,6 +1839,10 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	ptp_ocp_sma_init(bp);
- 	ptp_ocp_signal_init(bp);
- 
-+	err = ptp_ocp_fb_set_pins(bp);
++	err = kstrtou32(buf, 0, &val);
 +	if (err)
 +		return err;
++	if (val > 0xff)
++		return -EINVAL;
 +
- 	return ptp_ocp_init_clock(bp);
++	if (val)
++		val = (val << 8) | 0x1;
++
++	iowrite32(val, &bp->freq_in[idx]->ctrl);
++
++	return count;
++}
++
++static ssize_t
++seconds_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct dev_ext_attribute *ea = to_ext_attr(attr);
++	struct ptp_ocp *bp = dev_get_drvdata(dev);
++	int idx = (uintptr_t)ea->var;
++	u32 val;
++
++	val = ioread32(&bp->freq_in[idx]->ctrl);
++	if (val & 1)
++		val = (val >> 8) & 0xff;
++	else
++		val = 0;
++
++	return sysfs_emit(buf, "%u\n", val);
++}
++static EXT_ATTR_RW(freq, seconds, 0);
++static EXT_ATTR_RW(freq, seconds, 1);
++static EXT_ATTR_RW(freq, seconds, 2);
++static EXT_ATTR_RW(freq, seconds, 3);
++
++static ssize_t
++frequency_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct dev_ext_attribute *ea = to_ext_attr(attr);
++	struct ptp_ocp *bp = dev_get_drvdata(dev);
++	int idx = (uintptr_t)ea->var;
++	u32 val;
++
++	val = ioread32(&bp->freq_in[idx]->status);
++	if (val & FREQ_STATUS_ERROR)
++		return sysfs_emit(buf, "error\n");
++	if (val & FREQ_STATUS_OVERRUN)
++		return sysfs_emit(buf, "overrun\n");
++	if (val & FREQ_STATUS_VALID)
++		return sysfs_emit(buf, "%lu\n", val & FREQ_STATUS_MASK);
++	return 0;
++}
++static EXT_ATTR_RO(freq, frequency, 0);
++static EXT_ATTR_RO(freq, frequency, 1);
++static EXT_ATTR_RO(freq, frequency, 2);
++static EXT_ATTR_RO(freq, frequency, 3);
++
+ static ssize_t
+ serialnum_show(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+@@ -2687,6 +2787,26 @@ DEVICE_SIGNAL_GROUP(gen2, 1);
+ DEVICE_SIGNAL_GROUP(gen3, 2);
+ DEVICE_SIGNAL_GROUP(gen4, 3);
+ 
++#define _DEVICE_FREQ_GROUP_ATTRS(_nr)					\
++	static struct attribute *fb_timecard_freq##_nr##_attrs[] = {	\
++		&dev_attr_freq##_nr##_seconds.attr.attr,		\
++		&dev_attr_freq##_nr##_frequency.attr.attr,		\
++		NULL,							\
++	}
++
++#define DEVICE_FREQ_GROUP(_name, _nr)					\
++	_DEVICE_FREQ_GROUP_ATTRS(_nr);					\
++	static const struct attribute_group				\
++			fb_timecard_freq##_nr##_group = {		\
++		.name = #_name,						\
++		.attrs = fb_timecard_freq##_nr##_attrs,			\
++}
++
++DEVICE_FREQ_GROUP(freq1, 0);
++DEVICE_FREQ_GROUP(freq2, 1);
++DEVICE_FREQ_GROUP(freq3, 2);
++DEVICE_FREQ_GROUP(freq4, 3);
++
+ static struct attribute *fb_timecard_attrs[] = {
+ 	&dev_attr_serialnum.attr,
+ 	&dev_attr_gnss_sync.attr,
+@@ -2715,6 +2835,10 @@ static const struct ocp_attr_group fb_timecard_groups[] = {
+ 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal1_group },
+ 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal2_group },
+ 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal3_group },
++	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq0_group },
++	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq1_group },
++	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq2_group },
++	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq3_group },
+ 	{ },
+ };
+ 
+@@ -2779,6 +2903,36 @@ _signal_summary_show(struct seq_file *s, struct ptp_ocp *bp, int nr)
+ 	seq_printf(s, " start:%llu\n", signal->start);
  }
  
-@@ -3236,6 +3320,7 @@ ptp_ocp_detach(struct ptp_ocp *bp)
- 		pci_free_irq_vectors(bp->pdev);
- 	if (bp->ptp)
- 		ptp_clock_unregister(bp->ptp);
-+	kfree(bp->ptp_info.pin_config);
- 	device_unregister(&bp->dev);
- }
++static void
++_frequency_summary_show(struct seq_file *s, int nr,
++			struct frequency_reg __iomem *reg)
++{
++	char label[8];
++	bool on;
++	u32 val;
++
++	if (!reg)
++		return;
++
++	sprintf(label, "FREQ%d", nr);
++	val = ioread32(&reg->ctrl);
++	on = val & 1;
++	val = (val >> 8) & 0xff;
++	seq_printf(s, "%7s: %s, sec:%u",
++		   label,
++		   on ? " ON" : "OFF",
++		   val);
++
++	val = ioread32(&reg->status);
++	if (val & FREQ_STATUS_ERROR)
++		seq_printf(s, ", error");
++	if (val & FREQ_STATUS_OVERRUN)
++		seq_printf(s, ", overrun");
++	if (val & FREQ_STATUS_VALID)
++		seq_printf(s, ", freq %lu Hz", val & FREQ_STATUS_MASK);
++	seq_printf(s, "  reg:%x\n", val);
++}
++
+ static int
+ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ {
+@@ -2886,6 +3040,10 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ 		for (i = 0; i < 4; i++)
+ 			_signal_summary_show(s, bp, i);
  
++	if (bp->fw_cap & OCP_CAP_FREQ)
++		for (i = 0; i < 4; i++)
++			_frequency_summary_show(s, i, bp->freq_in[i]);
++
+ 	if (bp->irig_out) {
+ 		ctrl = ioread32(&bp->irig_out->ctrl);
+ 		on = ctrl & IRIG_M_CTRL_ENABLE;
 -- 
 2.31.1
 
