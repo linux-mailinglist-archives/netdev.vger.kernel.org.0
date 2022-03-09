@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 238354D3C37
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 22:39:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 377294D3C3D
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 22:39:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238421AbiCIVjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 16:39:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S238426AbiCIVjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 16:39:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238426AbiCIVjQ (ORCPT
+        with ESMTP id S238427AbiCIVjQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 16:39:16 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797F16D944
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D36D6C953
         for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 13:38:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C9A8ECE212A
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE8DC340EC;
-        Wed,  9 Mar 2022 21:38:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21784B823D6
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:38:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A93DC36AE2;
+        Wed,  9 Mar 2022 21:38:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646861893;
-        bh=PyRl6nqzlTZEYxCT5aGiZsdVMdVnRXIqZ5igCjL2eoc=;
+        bh=TAF5dELiNuKujxB6OaO9ZRXNt4qhx4wQCiG7Vfk8MLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p2FA1FpVBhWdzNEzE2QJR4aV/tpnE+FpjF7MxurQIhbBPhxF+RGErf0T4tG/ZQtCI
-         k8aRoLbMJWOnMZDV4hwpDnFHv0anuvmE6i5VCxZ38O0yb0wNncKRwrxtAK1K3CnP1z
-         Vb+70dHF1pEG6EGWSFdPmRoz2/hLFOwDrIwpbt7cjLyUdTVPhegpmkVibyUrZc3weo
-         r4EQKtdpty1RgvaOyOi1zSC3QRDMUr1/8rGis1/02x+qZhkzDJ7iIkH0RkG8bWvMyz
-         aapADuMsGAAzwxVIMrNNCCVrDr69aYmzC89lH3oLgH7hA1ho4/8zNqQstYA11C320P
-         lc1Q/0YZxrERw==
+        b=p13K/eKcO4gyDgp0mSfw/laIzpQins+ZA5y+xuU/ScCvs64X6CCtfhibZCFPpXeKu
+         6kDTlTI3Bm73jqwm2Vu2SPM8Xe5/6moWqzwoivRpD1eqPAHKPK2Rm506N3Bx00Vg+c
+         xP8SONGsplWar7HMmHfsmvL4Yc2PGrTtfLnHGv0mKMGr8nscgiEPJJGUS32IGT/y4y
+         5EtyBJHtpXJbi02zqM7xDX5hZ+4orBvAtGCQOLmh8EqQKaWqnw3tUArXN/S/+71GVN
+         5mx7+XDTIVjolQWt+tKHjbO8OEaAQnJmNnh0MR1DfjsXK90fEb9iy4nbtGF/T+U/FU
+         y71qBv84xdzdw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Alex Vesker <valex@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 13/16] net/mlx5: DR, Fix handling of different actions on the same STE in STEv1
-Date:   Wed,  9 Mar 2022 13:37:52 -0800
-Message-Id: <20220309213755.610202-14-saeed@kernel.org>
+Subject: [net-next 14/16] net/mlx5: DR, Rename action modify fields to reflect naming in HW spec
+Date:   Wed,  9 Mar 2022 13:37:53 -0800
+Message-Id: <20220309213755.610202-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309213755.610202-1-saeed@kernel.org>
 References: <20220309213755.610202-1-saeed@kernel.org>
@@ -57,54 +57,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Fix handling of various conditions in set_actions_rx/tx that check
-whether different actions can be on the same STE.
+As preparation for supporting ConnectX-7, rename action modify fields
+steering registers from arbitrary names to the names that reflect the
+corresponding naming and location of the steering registers in HW.
+These registers mapping has changed in ConnectX-7, so the renaming allows
+to keep track of their mapping better.
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c    | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c   | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
-index 0326ab67c978..d273d3b4fb1a 100644
+index d273d3b4fb1a..4a7b038dd15d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
-@@ -533,7 +533,6 @@ static void dr_ste_v1_set_actions_tx(struct mlx5dr_domain *dmn,
- 		dr_ste_v1_set_pop_vlan(last_ste, action, attr->vlans.count);
- 		action_sz -= DR_STE_ACTION_SINGLE_SZ;
- 		action += DR_STE_ACTION_SINGLE_SZ;
--		allow_modify_hdr = false;
- 	}
+@@ -121,12 +121,12 @@ enum {
+ 	DR_STE_V1_ACTION_MDFY_FLD_CFG_HDR_0_1		= 0x70,
+ 	DR_STE_V1_ACTION_MDFY_FLD_METADATA_2_CQE	= 0x7b,
+ 	DR_STE_V1_ACTION_MDFY_FLD_GNRL_PURPOSE		= 0x7c,
+-	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_2		= 0x8c,
+-	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_3		= 0x8d,
+-	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_4		= 0x8e,
+-	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_5		= 0x8f,
+-	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_6		= 0x90,
+-	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_7		= 0x91,
++	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_2_0		= 0x8c,
++	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_2_1		= 0x8d,
++	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_1_0		= 0x8e,
++	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_1_1		= 0x8f,
++	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_0_0		= 0x90,
++	DR_STE_V1_ACTION_MDFY_FLD_REGISTER_0_1		= 0x91,
+ };
  
- 	if (action_type_set[DR_ACTION_TYP_CTR])
-@@ -677,13 +676,12 @@ static void dr_ste_v1_set_actions_rx(struct mlx5dr_domain *dmn,
- 			dr_ste_v1_arr_init_next_match(&last_ste, added_stes, attr->gvmi);
- 			action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
- 			action_sz = DR_STE_ACTION_TRIPLE_SZ;
--			allow_modify_hdr = false;
--			allow_ctr = false;
- 		}
- 
- 		dr_ste_v1_set_pop_vlan(last_ste, action, attr->vlans.count);
- 		action_sz -= DR_STE_ACTION_SINGLE_SZ;
- 		action += DR_STE_ACTION_SINGLE_SZ;
-+		allow_ctr = false;
- 	}
- 
- 	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
-@@ -731,9 +729,9 @@ static void dr_ste_v1_set_actions_rx(struct mlx5dr_domain *dmn,
- 			action = MLX5_ADDR_OF(ste_mask_and_match_v1, last_ste, action);
- 			action_sz = DR_STE_ACTION_TRIPLE_SZ;
- 			allow_modify_hdr = true;
--			allow_ctr = false;
- 		}
- 		dr_ste_v1_set_counter_id(last_ste, attr->ctr_id);
-+		allow_ctr = false;
- 	}
- 
- 	if (action_type_set[DR_ACTION_TYP_L2_TO_TNL_L2]) {
+ static const struct mlx5dr_ste_action_modify_field dr_ste_v1_action_modify_field_arr[] = {
+@@ -223,22 +223,22 @@ static const struct mlx5dr_ste_action_modify_field dr_ste_v1_action_modify_field
+ 		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_METADATA_2_CQE, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_0] = {
+-		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_6, .start = 0, .end = 31,
++		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_0_0, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_1] = {
+-		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_7, .start = 0, .end = 31,
++		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_0_1, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_2] = {
+-		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_4, .start = 0, .end = 31,
++		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_1_0, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_3] = {
+-		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_5, .start = 0, .end = 31,
++		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_1_1, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_4] = {
+-		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_2, .start = 0, .end = 31,
++		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_2_0, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_METADATA_REG_C_5] = {
+-		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_3, .start = 0, .end = 31,
++		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_REGISTER_2_1, .start = 0, .end = 31,
+ 	},
+ 	[MLX5_ACTION_IN_FIELD_OUT_TCP_SEQ_NUM] = {
+ 		.hw_field = DR_STE_V1_ACTION_MDFY_FLD_TCP_MISC_0, .start = 0, .end = 31,
 -- 
 2.35.1
 
