@@ -2,103 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B474D28CE
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4604D28CF
 	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 07:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbiCIGPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 01:15:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S229912AbiCIGP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 01:15:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiCIGPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 01:15:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B6D13D0F
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 22:14:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D00C261910
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 06:14:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DFC5C340EE;
-        Wed,  9 Mar 2022 06:14:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646806448;
-        bh=Yw0OjAsWj2rUufahRiFBlL8z1E5oIx32FptBFXAyzDA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d4er+efWY1vWpYk/q45m3u1Qxz7QE5FcQ2w/UEZEh5iynMh0dZReJwu7/CYq4FBZ3
-         ahp3a/iW0++Ul+mVy6H6/fAgB5/8hf0NH7ssssBKNXTWH3J8XHRWxis1a8abA8ZLLo
-         5zhqyTq+IY58HdEjJch+Gmmo7yPVIJ965fXo7/jmBuWRQnH0JsS0XOMa2dDXHhGfBH
-         0/YGu69F/lBRRY7y6mxU/t1DdXLYhbXniFm499BCIcUHkc4opclDWXSF2l7fhw1r+Y
-         E2SXAZ4c4SrT/kDKzE9oAmbpJFAy7Ed1xOfFtlXJwvTU+fveSA/ydgfwyaqWp1U2oj
-         9EydtNaWse1Uw==
-Date:   Tue, 8 Mar 2022 22:14:07 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH net-next] net/fungible: Fix local_memory_node error
-Message-ID: <20220308221407.5f26332b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220308045321.2843-1-dmichail@fungible.com>
-References: <20220308045321.2843-1-dmichail@fungible.com>
+        with ESMTP id S229588AbiCIGP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 01:15:28 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A72159E8F
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 22:14:30 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id r7so1933565lfc.4
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 22:14:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=h4AlH+3r/gzg5eX46nstzBZnKDJn8S0D2QNOkvCeT5E=;
+        b=RxGccc0tqALdhPUlf46vKxglJyQBIk59Z4YoNZLKWzS4TO+ZIu5E9Nh+x93Jo9yElg
+         ZtzD48+2GBUd+4Is4EXWzkk9z83J69G1e1oHaClmkfYc8mCTVe32/2v5cXdMFotMJ8EG
+         /0oA94GBYWL9BVmL69dLCZNHp1gOixKRgGjn9j6+HiyWSeR7jPg3gpMYTVI0iJJppZvs
+         TcDhJWnx/lEx88zMGeljPtKTin/U5YhIQVwwE4iFLSnHz8R87vNbzWgUwTxKGr3DTMwu
+         O8zbT5WCG1AchM+WJaQMlWRxX8XUf0vqxzOP9uOvqimCoo9mzYq+FvhbgRqAwymA3ah+
+         oILA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=h4AlH+3r/gzg5eX46nstzBZnKDJn8S0D2QNOkvCeT5E=;
+        b=ptX8TdHxDZHN2xWSJDCRZXD6uVz9NavFes7N+9WjkLyQqoPIlj/OxSrAkiatVAK95e
+         1Wt81AjdVdMM2F9WU7O9ysC9DOZgmAKiW/X4W5bMmfYE0TN/dWIOcnWXDkXAIwSvXU1f
+         B8MV5kE9CeOcB2bR15QXoXE0A+O23+ndX5sUVugxFagN0z1CfTnyjhsEerYCSoNrBrhU
+         vvAxJDyF9sbJnBeAZrwxXpjZaF2grfNkxngR4BcGu+PRle8Vm1v4w3p6yxPfs+8bbkoS
+         3/MzneAaRlw6DqM43Ht9dieztLtiWYK1X7mYBRrmusrJlncJdfye8XqRzAGe5EJwmSy8
+         f6xg==
+X-Gm-Message-State: AOAM531QyBibCUvlxI2hhgUr3qdzMcDXJivNRaAXaEJTxgogbrfqo+4D
+        agoaF+OiLT9fzTJKDzGOmH5XJYEu4uM=
+X-Google-Smtp-Source: ABdhPJzUO9keSbo03Tz/Jme8ck8MTOfY67O5LEj3brCaviTPHQz9o61EkjJB+rfH9thZM/Kb++S8XA==
+X-Received: by 2002:a05:6512:38a9:b0:443:3b0a:9cec with SMTP id o9-20020a05651238a900b004433b0a9cecmr13682835lft.12.1646806468211;
+        Tue, 08 Mar 2022 22:14:28 -0800 (PST)
+Received: from wbg (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id u16-20020a196a10000000b0044662feaa4esm208247lfu.53.2022.03.08.22.14.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 22:14:27 -0800 (PST)
+From:   Joachim Wiberg <troglobit@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH iproute2-next 1/2] bridge: support for controlling flooding of broadcast per port
+In-Reply-To: <70f81f09-0b18-43c2-206d-c31c518dab4d@blackwall.org>
+References: <20220308132915.2610480-1-troglobit@gmail.com> <20220308132915.2610480-2-troglobit@gmail.com> <70f81f09-0b18-43c2-206d-c31c518dab4d@blackwall.org>
+Date:   Wed, 09 Mar 2022 07:14:26 +0100
+Message-ID: <878rtjabzx.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Mar 2022 20:53:21 -0800 Dimitris Michailidis wrote:
-> Stephen Rothwell reported the following failure on powerpc:
-> 
-> ERROR: modpost: ".local_memory_node"
-> [drivers/net/ethernet/fungible/funeth/funeth.ko] undefined!
-> 
-> AFAICS this is because local_memory_node() is a non-inline non-exported
-> function when CONFIG_HAVE_MEMORYLESS_NODES=y. It is also the wrong API
-> to get a CPU's memory node. Use cpu_to_mem() in the two spots it's used.
+On Tue, Mar 08, 2022 at 18:11, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> On 08/03/2022 15:29, Joachim Wiberg wrote:
+>> Add per-port support for controlling flooding of broadcast traffic.
+>> Similar to unicast and multcast flooding that already exist.
+> Nice, thanks for adding this. Please also update ip/iplink_bridge_slave.c and the
+> respective docs with the bcast flag, it already supports the other two.
 
-Can the ids actually not match? I'm asking because nobody else is doing
-the cpu -> mem node conversions.
+Aha, there are knobs and levers over there too!  OK, will do :-)
 
-> Fixes: ee6373ddf3a9 ("net/funeth: probing and netdev ops")
-> Fixes: db37bc177dae ("net/funeth: add the data path")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
-> ---
->  drivers/net/ethernet/fungible/funeth/funeth_main.c | 2 +-
->  drivers/net/ethernet/fungible/funeth/funeth_txrx.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> index c58b10c216ef..67dd02ed1fa3 100644
-> --- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> +++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> @@ -253,7 +253,7 @@ static struct fun_irq *fun_alloc_qirq(struct funeth_priv *fp, unsigned int idx,
->  	int cpu, res;
->  
->  	cpu = cpumask_local_spread(idx, node);
-> -	node = local_memory_node(cpu_to_node(cpu));
-> +	node = cpu_to_mem(cpu);
->  
->  	irq = kzalloc_node(sizeof(*irq), GFP_KERNEL, node);
->  	if (!irq)
-> diff --git a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
-> index 7aed0561aeac..04c9f91b7489 100644
-> --- a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
-> +++ b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
-> @@ -239,7 +239,7 @@ static inline void fun_txq_wr_db(const struct funeth_txq *q)
->  
->  static inline int fun_irq_node(const struct fun_irq *p)
->  {
-> -	return local_memory_node(cpu_to_node(cpumask_first(&p->affinity_mask)));
-> +	return cpu_to_mem(cpumask_first(&p->affinity_mask));
->  }
->  
->  int fun_rxq_napi_poll(struct napi_struct *napi, int budget);
-
+ /J
+ 
