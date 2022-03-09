@@ -2,45 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C0754D3474
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:25:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9355E4D347E
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:25:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234411AbiCIQZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:25:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        id S231951AbiCIQZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:25:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238099AbiCIQVR (ORCPT
+        with ESMTP id S238112AbiCIQVR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:21:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DB7151D2B;
-        Wed,  9 Mar 2022 08:18:31 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E981520C8;
+        Wed,  9 Mar 2022 08:18:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CC606195C;
-        Wed,  9 Mar 2022 16:18:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D6C3C340F3;
-        Wed,  9 Mar 2022 16:18:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7497B82212;
+        Wed,  9 Mar 2022 16:18:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5560AC340EC;
+        Wed,  9 Mar 2022 16:18:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842710;
-        bh=94Eezw0rkaghiNp0XtbPiQ+zQlAXCbVMeFdXKfkMh5s=;
+        s=k20201202; t=1646842717;
+        bh=5nw7cHt/RTx/pOOhvfo54s8PdS6J/svkQh4QT7q+nsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C6LT1CmR0bVDarGjCQscOX3e9yz6PuHfBl0WPjllTU0mSB5YnaJQpxJ27DYNufMey
-         4qlVhYoACC+m2VwYpAH/CFub3XmaweOMRZbUbi7WU/8qVTm3Cm4bBVn4t8fw/rgHTQ
-         3tRJzMhYg/CQ7lFfvFhKSrJSOFmE9QTlhsFGu6Rvgv75vwJQIvJ33ikS8UB95l1L4u
-         nOpCoXub6l2IbswKHG8MS86auduDp1Zg8f/Rj7bp3cmgmj+bzBv5HGXkGRMKrwb4bj
-         /yDRjRFovIgscpAyKrsOVMpzj12UbYPSipJ4ijaG0PfEfV+gHbqHsRbzR1omWrNQ8j
-         oX3ETFYEOqZ5w==
+        b=GukQMC97WCrzAVZhWvKq5okxJCfazL+a7s3G8EmohL41lMUOYwhgKlTdR3eTuHQXj
+         u7q/NTDMFtYKjr4gpoKnyi5cBOFVZRoiXkHuTILYAZnfTSz1k2CSbjuWNt5FqEjDNq
+         pRhie7+uLxu3b9EjZLwmslpSy8X+wYaw0vYUl2kF2zmL5lo1nBXW4mxfTq3uv+zKuj
+         zNH7YL5WptzdA1htWGW41a9mfBvUJROokWohBjotsGWKZag3XnnGWkQIa5bi6WDlwg
+         kzXP29jGvUtpDEB/4o3BKwhSNW0jTDyTx9SpR1Jnw7Uw2mb15vOVRbUYYkePAV2hAe
+         x4aqqBJoMGH7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 14/27] Bluetooth: hci_core: Fix leaking sent_cmd skb
-Date:   Wed,  9 Mar 2022 11:16:51 -0500
-Message-Id: <20220309161711.135679-14-sashal@kernel.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Pavel Machek <pavel@denx.de>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, kuba@kernel.org, stefan.maetje@esd.eu,
+        mailhol.vincent@wanadoo.fr, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 15/27] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
+Date:   Wed,  9 Mar 2022 11:16:52 -0500
+Message-Id: <20220309161711.135679-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309161711.135679-1-sashal@kernel.org>
 References: <20220309161711.135679-1-sashal@kernel.org>
@@ -58,32 +61,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit dd3b1dc3dd050f1f47cd13e300732852414270f8 ]
+[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
 
-sent_cmd memory is not freed before freeing hci_dev causing it to leak
-it contents.
+Register the CAN device only when all the necessary initialization is
+completed. This patch makes sure all the data structures and locks are
+initialized before registering the CAN device.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Pavel Machek <pavel@denx.de>
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/rcar/rcar_canfd.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 6c00ce302f09..1c8fb27b155a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3969,6 +3969,7 @@ void hci_release_dev(struct hci_dev *hdev)
- 	hci_dev_unlock(hdev);
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 137eea4c7bad..4871428859fd 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1716,15 +1716,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
  
- 	ida_simple_remove(&hci_index_ida, hdev->id);
-+	kfree_skb(hdev->sent_cmd);
- 	kfree(hdev);
- }
- EXPORT_SYMBOL(hci_release_dev);
+ 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
+ 		       RCANFD_NAPI_WEIGHT);
++	spin_lock_init(&priv->tx_lock);
++	devm_can_led_init(ndev);
++	gpriv->ch[priv->channel] = priv;
+ 	err = register_candev(ndev);
+ 	if (err) {
+ 		dev_err(&pdev->dev,
+ 			"register_candev() failed, error %d\n", err);
+ 		goto fail_candev;
+ 	}
+-	spin_lock_init(&priv->tx_lock);
+-	devm_can_led_init(ndev);
+-	gpriv->ch[priv->channel] = priv;
+ 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
+ 	return 0;
+ 
 -- 
 2.34.1
 
