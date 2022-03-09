@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F2E4D3482
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:25:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7664D346B
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234492AbiCIQZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:25:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
+        id S232686AbiCIQZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:25:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238460AbiCIQWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:22:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7813A5;
-        Wed,  9 Mar 2022 08:21:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA1261926;
-        Wed,  9 Mar 2022 16:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E384EC340F3;
-        Wed,  9 Mar 2022 16:21:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842880;
-        bh=18sop7HHeHWk2N9tOaxxTwb116X8umHAw2ytwpnKPGs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYtLvgTJLxiMmeqCQT/vN6heovbBXanmo3fIiuJNqk1dkWBhYPEXcTlbZMmhdCUeE
-         7ULuNdIOUsCU6NEh/adXMmCsZLazTOBMF9WSgSjzQolw/rA1ViUENElG3OtQlp0bz3
-         Pmt/+Yb2aNmWkeg8yhCLY01aRw6ve+JtyGUJOfSrtmHH06zGrZnWPfIskMoZQgWzi5
-         QGz09ofUnyScg3cxuR7vGgIv/1kgILu5jLnswk3mPgKXsJWt8rG0U0DMw/IzxBLbGr
-         ir2p9QEgaHTwLI0ltbHjvPojhWji0obP+GrCuG5NDgo2B2nwYqbHU+ycjaD89KE5lW
-         l4+GBavRoI8tg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, 3chas3@gmail.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/24] atm: firestream: check the return value of ioremap() in fs_init()
-Date:   Wed,  9 Mar 2022 11:19:35 -0500
-Message-Id: <20220309161946.136122-16-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
-References: <20220309161946.136122-1-sashal@kernel.org>
+        with ESMTP id S238178AbiCIQVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:21:31 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF761092
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:20:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646842817; x=1678378817;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=FqnTi3KjDSx6QBLtOUGTWob6LUz8Rp6UWNEEH6D6DnA=;
+  b=lfDfZNgLVlHWRigRnLakajChxVnnUdr1R85KP0CkbaivNN1zKlJXAENa
+   rTo2DVbpo5sR/iFgPmPLuIA8ZPZ0cJ9FhIhr/IxdKRF/hy4PsQS7viDwA
+   rIUca2SRP5BOg+b/ZZVwYgJf5dDNBtTox6YI4C1COCZ1xMzNkx7O2fJk9
+   m8jNEhDK3MI9Ksn4n4VnVS0macZkR25q83Od1ojWIbJoT4RXdaLktreMs
+   PBMIGHIED0vWRyrrIxhqCYABmpu6cLjs90hBE/gZj0VXzdfFX+cwwMUaP
+   omjhs68hoscrPmX1glfKEe2RXjzGx4WVLYeTtSbyPmx5SKxifPcYJxu8i
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="234963077"
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="234963077"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 08:20:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,167,1643702400"; 
+   d="scan'208";a="632655513"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 09 Mar 2022 08:20:16 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRz2t-0003Wq-HV; Wed, 09 Mar 2022 16:20:15 +0000
+Date:   Thu, 10 Mar 2022 00:19:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>
+Subject: [net-next:master 192/194] include/net/tcp.h:1694:1: warning:
+ 'tcp_inbound_md5_hash' used but never defined
+Message-ID: <202203100028.PDew5dU4-lkp@intel.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,34 +61,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
+head:   40bb09c87f0b00c991f6c2fb367f0a2711760332
+commit: 1330b6ef3313fcec577d2b020c290dc8b9f11f1a [192/194] skb: make drop reason booleanable
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220310/202203100028.PDew5dU4-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=1330b6ef3313fcec577d2b020c290dc8b9f11f1a
+        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+        git fetch --no-tags net-next master
+        git checkout 1330b6ef3313fcec577d2b020c290dc8b9f11f1a
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash net/core/ net/ipv4/
 
-[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The function ioremap() in fs_init() can fail, so its return value should
-be checked.
+All warnings (new ones prefixed by >>):
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+   In file included from net/ipv4/tcp_ipv4.c:64:
+   include/net/tcp.h:1697:1: error: expected identifier or '(' before '{' token
+    1697 | {
+         | ^
+>> include/net/tcp.h:1694:1: warning: 'tcp_inbound_md5_hash' used but never defined
+    1694 | tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+         | ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +/tcp_inbound_md5_hash +1694 include/net/tcp.h
+
+  1692	
+  1693	static inline enum skb_drop_reason
+> 1694	tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
+  1695			     const void *saddr, const void *daddr,
+  1696			     int family, int dif, int sdif);
+> 1697	{
+  1698		return SKB_NOT_DROPPED_YET;
+  1699	}
+  1700	#define tcp_twsk_md5_key(twsk)	NULL
+  1701	#endif
+  1702	
+
 ---
- drivers/atm/firestream.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index 3bc3c314a467..4f67404fe64c 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -1676,6 +1676,8 @@ static int fs_init(struct fs_dev *dev)
- 	dev->hw_base = pci_resource_start(pci_dev, 0);
- 
- 	dev->base = ioremap(dev->hw_base, 0x1000);
-+	if (!dev->base)
-+		return 1;
- 
- 	reset_chip (dev);
-   
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
