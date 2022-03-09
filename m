@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 896AE4D3AE4
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 21:15:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1F764D3AE2
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 21:15:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238010AbiCIUQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 15:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
+        id S238061AbiCIUQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 15:16:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238104AbiCIUQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 15:16:28 -0500
+        with ESMTP id S238105AbiCIUQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 15:16:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1405C45539
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA45A76CF
         for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 12:15:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3DF4B82167
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 20:15:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F594C340F5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F77CB81FE1
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 20:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B918DC340F6;
         Wed,  9 Mar 2022 20:15:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646856926;
-        bh=dgE3YUnRAnzBIaI0paRcGhNsBQkSna81OAJbsNZsrxY=;
+        s=k20201202; t=1646856927;
+        bh=B8gXPz5FRlreJlgBWtBMuR1ZsAfKLg0Allw/e1+DrrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8gHGLME2NZjZgcTHy0/+72wDcvWAlUFoh3l5Z50eCnjorN7h97eXTSUQ/nyRo/04
-         8Juk8fWKzA1T6aINN7VhEfZjo4uU/QdFp9ffsbz5etOXUObhfSFI/JeDiGrfqsba27
-         ZJ2Umm6mu7V404vZ3V0OdOrZIsORSk074gZ5vkiORnsjIkshXAUE272LRcO/V8Fe26
-         y+1AqmbL/XKeIxskkVmewiidk0YeB2Q+GmlkWm0OOJWQnIuS/HL05yob2Ax6GQzVEZ
-         hc4CmJCzEpzU86hCsV733gph9JX6fPWqdDJFQTp07M6Pzkw5g1ixeu8WmawkuAJbkA
-         ncxdQO39pnjbw==
+        b=fEP+HIW1+xfveIe1u6gBwnkFX4BEHOBg+C7jFyBjHOA8hdBkhtxMMGxpg8t3tlzDi
+         oqPHWc99HtwIwoQTLG0KmViSnpvkuavrc0p/5Q5pnWNlnbrTPnxNv9Ev5Hd7c3MxJk
+         FXywnsp/5N6/Kad2j7vmVnw4YvGvlUHppHI/zGWXgZLK0uF+sPbf0yTBcs6Z790ZIp
+         YdzxOPL1jK58zTeiQ81HpseIJSNtsoHE+5MAqoOsArQMzGi8b9wDOZBjcoRKzwlay3
+         ZX/4ZuoXDQoqaJTq10iO8OQKISyAyd7cMQAIl1bawUz3TGAyiIeKiOv8yf4EFeTE8g
+         zSrn20hukhPjg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Ben Ben-Ishay <benishay@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 4/5] net/mlx5e: Lag, Only handle events from highest priority multipath entry
-Date:   Wed,  9 Mar 2022 12:15:16 -0800
-Message-Id: <20220309201517.589132-5-saeed@kernel.org>
+Subject: [net 5/5] net/mlx5e: SHAMPO, reduce TIR indication
+Date:   Wed,  9 Mar 2022 12:15:17 -0800
+Message-Id: <20220309201517.589132-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309201517.589132-1-saeed@kernel.org>
 References: <20220309201517.589132-1-saeed@kernel.org>
@@ -55,53 +54,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Ben Ben-Ishay <benishay@nvidia.com>
 
-There could be multiple multipath entries but changing the port affinity
-for each one doesn't make much sense and there should be a default one.
-So only track the entry with lowest priority value.
-The commit doesn't affect existing users with a single entry.
+SHAMPO is an RQ / WQ feature, an indication was added to the TIR in the
+first place to enforce suitability between connected TIR and RQ, this
+enforcement does not exist in current the Firmware implementation and was
+redundant in the first place.
 
-Fixes: 544fe7c2e654 ("net/mlx5e: Activate HW multipath and handle port affinity based on FIB events")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
+Fixes: 83439f3c37aa ("net/mlx5e: Add HW-GRO offload")
+Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tir.c  | 3 ---
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 3 +--
+ include/linux/mlx5/mlx5_ifc.h                     | 1 -
+ 3 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-index 1ca01a5b6cdd..626aa60b6099 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-@@ -126,6 +126,10 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 		return;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c
+index da169b816665..d4239e3b3c88 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tir.c
+@@ -88,9 +88,6 @@ void mlx5e_tir_builder_build_packet_merge(struct mlx5e_tir_builder *builder,
+ 			 (MLX5E_PARAMS_DEFAULT_LRO_WQE_SZ - rough_max_l2_l3_hdr_sz) >> 8);
+ 		MLX5_SET(tirc, tirc, lro_timeout_period_usecs, pkt_merge_param->timeout);
+ 		break;
+-	case MLX5E_PACKET_MERGE_SHAMPO:
+-		MLX5_SET(tirc, tirc, packet_merge_mask, MLX5_TIRC_PACKET_MERGE_MASK_SHAMPO);
+-		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index bf80fb612449..3667f5ef5990 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3616,8 +3616,7 @@ static int set_feature_hw_gro(struct net_device *netdev, bool enable)
+ 		goto out;
  	}
  
-+	/* Handle multipath entry with lower priority value */
-+	if (mp->mfi && mp->mfi != fi && fi->fib_priority >= mp->mfi->fib_priority)
-+		return;
-+
- 	/* Handle add/replace event */
- 	nhs = fib_info_num_path(fi);
- 	if (nhs == 1) {
-@@ -135,12 +139,13 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 			int i = mlx5_lag_dev_get_netdev_idx(ldev, nh_dev);
+-	err = mlx5e_safe_switch_params(priv, &new_params,
+-				       mlx5e_modify_tirs_packet_merge_ctx, NULL, reset);
++	err = mlx5e_safe_switch_params(priv, &new_params, NULL, NULL, reset);
+ out:
+ 	mutex_unlock(&priv->state_lock);
+ 	return err;
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 5743f5b3414b..49a48d7709ac 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -3434,7 +3434,6 @@ enum {
+ enum {
+ 	MLX5_TIRC_PACKET_MERGE_MASK_IPV4_LRO  = BIT(0),
+ 	MLX5_TIRC_PACKET_MERGE_MASK_IPV6_LRO  = BIT(1),
+-	MLX5_TIRC_PACKET_MERGE_MASK_SHAMPO    = BIT(2),
+ };
  
- 			if (i < 0)
--				i = MLX5_LAG_NORMAL_AFFINITY;
--			else
--				++i;
-+				return;
- 
-+			i++;
- 			mlx5_lag_set_port_affinity(ldev, i);
- 		}
-+
-+		mp->mfi = fi;
- 		return;
- 	}
- 
+ enum {
 -- 
 2.35.1
 
