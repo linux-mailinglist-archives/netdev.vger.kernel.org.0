@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4E304D39EF
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:19:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 420C54D39FC
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiCITS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 14:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        id S237484AbiCITSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 14:18:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238090AbiCITSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:18:14 -0500
+        with ESMTP id S238240AbiCITSZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:18:25 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA14184630
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:16:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65C7144F5A
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:17:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646853408; x=1678389408;
+  t=1646853420; x=1678389420;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KjwpKHKPk6DxsM4E4JAU6Iqx3U6k1OqYhwwTVEAH2c4=;
-  b=egABPi+9MyhatTBfKaq4Ktfz28TeJqIyy2OG9dPwIzi/NrAnLog4Jcr0
-   N3lvWXBDgsjuLTxAS7t+gUIEyIUzAptQXOC25qY63YVJgEQxEsDI50vZB
-   pjc2f0tdgblOQ9ZY+iE6S25p9hPdOs1tFSdUU8ialozQw50A1stm0BcuN
-   mhoNB++blutjDklAzjrXicm5CtQhbikSwx+Xrbptc6W8jEPOXIxsiiL3k
-   ynpBr40wwMLDJL1pxham6TDqk/6rqiqM6vVmxMKmuuYO05PZGkAojzz4Q
-   OpzpTPXyYd0k8hcJ/gALyuJcdGTlJDFnRVSruCUN4lsnU7ull2axJ4Ggp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237235264"
+  bh=e1t+Jz+5OGZSeGtd0kR9Wcxg+MZK1NVvBjKN3QGmv2w=;
+  b=CCPQNNaI04GvTuGUU/nZKhEV0ebTl8wN1jV1sCgZCeswO+Bl5IW3jDdm
+   lvYK5pDVHI80E6DV1XyAlHPJWu/BKArHeZcyrk7C09ze4yRg/8S5na1E1
+   PPHjSetlmsxMwS/16HzBQo7WIlzDcPVK9VRfN/wQbSwSSIOd+e2Dhvhuu
+   VZjtfditichKH8YnbPxNx2U1rQLoSIudsByIvb1sorCLw6+QAMf3MN7pI
+   blakSvuhJOm6NgbCO2tlXc/T5NqYsEWlNIra+7ffr+k5qRGKPpuRhgQ9V
+   JyPNp7GvSQFP61PboDXbW4w46Ve73kTfB3MnFhmatZ8YTxzQ9qvByiOp5
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237235265"
 X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="237235264"
+   d="scan'208";a="237235265"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:16:46 -0800
 X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="495957052"
+   d="scan'208";a="495957053"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.194.198])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:16:45 -0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:16:46 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        davem@davemloft.net, kuba@kernel.org, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 01/10] selftests: mptcp: drop msg argument of chk_csum_nr
-Date:   Wed,  9 Mar 2022 11:16:27 -0800
-Message-Id: <20220309191636.258232-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 02/10] selftests: mptcp: join: define tests groups once
+Date:   Wed,  9 Mar 2022 11:16:28 -0800
+Message-Id: <20220309191636.258232-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309191636.258232-1-mathew.j.martineau@linux.intel.com>
 References: <20220309191636.258232-1-mathew.j.martineau@linux.intel.com>
@@ -59,115 +58,211 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-This patch dropped the msg argument of chk_csum_nr, to unify chk_csum_nr
-with other chk_*_nr functions.
+When adding a new tests group, it has to be defined in multiple places:
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+- in the all_tests() function
+- in the 'usage()' function
+- in the getopts: short option + what to do when the option is used
+
+Because it is easy to forget one of them, it is useful to have to define
+them only once.
+
+Note: only using an associative array would simplify the code but the
+entries are stored in a hashtable and iterating over the different items
+doesn't give the same order as the one used in the declaration of this
+array. Because we want to run these tests in the same order as before, a
+"simple" array is used first.
+
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- .../testing/selftests/net/mptcp/mptcp_join.sh | 26 +++++++++----------
- 1 file changed, 12 insertions(+), 14 deletions(-)
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 141 ++++++------------
+ 1 file changed, 47 insertions(+), 94 deletions(-)
 
 diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index ee435948d130..194c4420220e 100755
+index 194c4420220e..8dc50b480152 100755
 --- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
 +++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -16,6 +16,7 @@ capture=0
- checksum=0
- ip_mptcp=0
- check_invert=0
-+validate_checksum=0
+@@ -19,6 +19,7 @@ check_invert=0
+ validate_checksum=0
  init=0
  
++declare -A all_tests
  TEST_COUNT=0
-@@ -60,6 +61,7 @@ init_partial()
- 	done
+ nr_blank=40
  
- 	check_invert=0
-+	validate_checksum=$checksum
- 
- 	#  ns1              ns2
- 	# ns1eth1    ns2eth1
-@@ -192,6 +194,8 @@ reset_with_checksum()
- 
- 	ip netns exec $ns1 sysctl -q net.mptcp.checksum_enabled=$ns1_enable
- 	ip netns exec $ns2 sysctl -q net.mptcp.checksum_enabled=$ns2_enable
-+
-+	validate_checksum=1
+@@ -2380,27 +2381,6 @@ implicit_tests()
+ 	wait
  }
  
- reset_with_allow_join_id0()
-@@ -853,9 +857,8 @@ dump_stats()
- 
- chk_csum_nr()
+-all_tests()
+-{
+-	subflows_tests
+-	subflows_error_tests
+-	signal_address_tests
+-	link_failure_tests
+-	add_addr_timeout_tests
+-	remove_tests
+-	add_tests
+-	ipv6_tests
+-	v4mapped_tests
+-	backup_tests
+-	add_addr_ports_tests
+-	syncookies_tests
+-	checksum_tests
+-	deny_join_id0_tests
+-	fullmesh_tests
+-	fastclose_tests
+-	implicit_tests
+-}
+-
+ # [$1: error message]
+ usage()
  {
--	local msg=${1:-""}
--	local csum_ns1=${2:-0}
--	local csum_ns2=${3:-0}
-+	local csum_ns1=${1:-0}
-+	local csum_ns2=${2:-0}
- 	local count
- 	local dump_stats
- 	local allow_multi_errors_ns1=0
-@@ -870,12 +873,7 @@ chk_csum_nr()
- 		csum_ns2=${csum_ns2:1}
+@@ -2410,23 +2390,12 @@ usage()
  	fi
  
--	if [ ! -z "$msg" ]; then
--		printf "%03u" "$TEST_COUNT"
--	else
--		echo -n "   "
--	fi
--	printf " %-36s %s" "$msg" "sum"
-+	printf "%-${nr_blank}s %s" " " "sum"
- 	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}'`
- 	[ -z "$count" ] && count=0
- 	if [ "$count" != $csum_ns1 -a $allow_multi_errors_ns1 -eq 0 ] ||
-@@ -1064,7 +1062,7 @@ chk_join_nr()
- 	fi
- 	[ "${dump_stats}" = 1 ] && dump_stats
- 	if [ $checksum -eq 1 ]; then
--		chk_csum_nr "" $csum_ns1 $csum_ns2
-+		chk_csum_nr $csum_ns1 $csum_ns2
- 		chk_fail_nr $fail_nr $fail_nr
- 		chk_rst_nr $rst_nr $rst_nr
- 	fi
-@@ -2181,28 +2179,28 @@ checksum_tests()
- 	pm_nl_set_limits $ns1 0 1
- 	pm_nl_set_limits $ns2 0 1
- 	run_tests $ns1 $ns2 10.0.1.1
--	chk_csum_nr "checksum test 0 0"
-+	chk_join_nr "checksum test 0 0" 0 0 0
- 
- 	# checksum test 1 1
- 	reset_with_checksum 1 1
- 	pm_nl_set_limits $ns1 0 1
- 	pm_nl_set_limits $ns2 0 1
- 	run_tests $ns1 $ns2 10.0.1.1
--	chk_csum_nr "checksum test 1 1"
-+	chk_join_nr "checksum test 1 1" 0 0 0
- 
- 	# checksum test 0 1
- 	reset_with_checksum 0 1
- 	pm_nl_set_limits $ns1 0 1
- 	pm_nl_set_limits $ns2 0 1
- 	run_tests $ns1 $ns2 10.0.1.1
--	chk_csum_nr "checksum test 0 1"
-+	chk_join_nr "checksum test 0 1" 0 0 0
- 
- 	# checksum test 1 0
- 	reset_with_checksum 1 0
- 	pm_nl_set_limits $ns1 0 1
- 	pm_nl_set_limits $ns2 0 1
- 	run_tests $ns1 $ns2 10.0.1.1
--	chk_csum_nr "checksum test 1 0"
-+	chk_join_nr "checksum test 1 0" 0 0 0
+ 	echo "mptcp_join usage:"
+-	echo "  -f subflows_tests"
+-	echo "  -e subflows_error_tests"
+-	echo "  -s signal_address_tests"
+-	echo "  -l link_failure_tests"
+-	echo "  -t add_addr_timeout_tests"
+-	echo "  -r remove_tests"
+-	echo "  -a add_tests"
+-	echo "  -6 ipv6_tests"
+-	echo "  -4 v4mapped_tests"
+-	echo "  -b backup_tests"
+-	echo "  -p add_addr_ports_tests"
+-	echo "  -k syncookies_tests"
+-	echo "  -S checksum_tests"
+-	echo "  -d deny_join_id0_tests"
+-	echo "  -m fullmesh_tests"
+-	echo "  -z fastclose_tests"
+-	echo "  -I implicit_tests"
++
++	local key
++	for key in "${!all_tests[@]}"; do
++		echo "  -${key} ${all_tests[${key}]}"
++	done
++
+ 	echo "  -c capture pcap files"
+ 	echo "  -C enable data checksum"
+ 	echo "  -i use ip mptcp"
+@@ -2436,59 +2405,43 @@ usage()
  }
  
- deny_join_id0_tests()
+ 
++# Use a "simple" array to force an specific order we cannot have with an associative one
++all_tests_sorted=(
++	f@subflows_tests
++	e@subflows_error_tests
++	s@signal_address_tests
++	l@link_failure_tests
++	t@add_addr_timeout_tests
++	r@remove_tests
++	a@add_tests
++	6@ipv6_tests
++	4@v4mapped_tests
++	b@backup_tests
++	p@add_addr_ports_tests
++	k@syncookies_tests
++	S@checksum_tests
++	d@deny_join_id0_tests
++	m@fullmesh_tests
++	z@fastclose_tests
++	I@implicit_tests
++)
++
++all_tests_args=""
++all_tests_names=()
++for subtests in "${all_tests_sorted[@]}"; do
++	key="${subtests%@*}"
++	value="${subtests#*@}"
++
++	all_tests_args+="${key}"
++	all_tests_names+=("${value}")
++	all_tests[${key}]="${value}"
++done
++
+ tests=()
+-while getopts 'fesltra64bpkdmchzICSi' opt; do
++while getopts "${all_tests_args}cCih" opt; do
+ 	case $opt in
+-		f)
+-			tests+=(subflows_tests)
+-			;;
+-		e)
+-			tests+=(subflows_error_tests)
+-			;;
+-		s)
+-			tests+=(signal_address_tests)
+-			;;
+-		l)
+-			tests+=(link_failure_tests)
+-			;;
+-		t)
+-			tests+=(add_addr_timeout_tests)
+-			;;
+-		r)
+-			tests+=(remove_tests)
+-			;;
+-		a)
+-			tests+=(add_tests)
+-			;;
+-		6)
+-			tests+=(ipv6_tests)
+-			;;
+-		4)
+-			tests+=(v4mapped_tests)
+-			;;
+-		b)
+-			tests+=(backup_tests)
+-			;;
+-		p)
+-			tests+=(add_addr_ports_tests)
+-			;;
+-		k)
+-			tests+=(syncookies_tests)
+-			;;
+-		S)
+-			tests+=(checksum_tests)
+-			;;
+-		d)
+-			tests+=(deny_join_id0_tests)
+-			;;
+-		m)
+-			tests+=(fullmesh_tests)
+-			;;
+-		z)
+-			tests+=(fastclose_tests)
+-			;;
+-		I)
+-			tests+=(implicit_tests)
++		["${all_tests_args}"])
++			tests+=("${all_tests[${opt}]}")
+ 			;;
+ 		c)
+ 			capture=1
+@@ -2509,11 +2462,11 @@ while getopts 'fesltra64bpkdmchzICSi' opt; do
+ done
+ 
+ if [ ${#tests[@]} -eq 0 ]; then
+-	all_tests
+-else
+-	for subtests in "${tests[@]}"; do
+-		"${subtests}"
+-	done
++	tests=("${all_tests_names[@]}")
+ fi
+ 
++for subtests in "${tests[@]}"; do
++	"${subtests}"
++done
++
+ exit $ret
 -- 
 2.35.1
 
