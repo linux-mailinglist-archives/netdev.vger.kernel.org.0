@@ -2,166 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 283DA4D2ADB
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 09:47:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A5D4D2ADE
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 09:48:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiCIIsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 03:48:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        id S230466AbiCIItR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 03:49:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbiCIIse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 03:48:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CA9A1AF3A
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 00:47:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646815652;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9ffS413S/InwxV5O0x2uo8HI1Zzb6CIePH7gzRiVJ4s=;
-        b=Rwu3uEKXiY3vULpMLR0RIcM/P/wSI4F1NJkTUIWktGlJU9Eq3ESjd4L3dsZfrDYzMFMEuN
-        WSfhYG63Qw8+iDjrwvNPVNglT7dr36vvxpvvWk+Id7csxdHqd6zzDHe9yuyoEE1QBCzq3G
-        CVOFoQNo3X1fRk4PA40/BpLQXE0EbeU=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-GlGlhdW4Ok-Dp2CIkrTZhA-1; Wed, 09 Mar 2022 03:47:31 -0500
-X-MC-Unique: GlGlhdW4Ok-Dp2CIkrTZhA-1
-Received: by mail-pj1-f69.google.com with SMTP id p5-20020a17090a748500b001bee6752974so1176216pjk.8
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 00:47:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9ffS413S/InwxV5O0x2uo8HI1Zzb6CIePH7gzRiVJ4s=;
-        b=ce4gsabguUPVm+W7NaLGv2L0xIwzM8+PVIbqaIOEDxFiBlPBEECmkPd6je2ZjIyE+4
-         Q0WO55w531L7xtsi7UWuSLhAFmSPHvXAUbZa7aWjfOWPsOum/zhx7J5+bab6c6IRE1j6
-         XQdTW9WGYiuUDKNvp2qtA6KRBTk548VYPSsCFgmJz9B4BHXZyiCoPN1Ovf1mPq7B35Lw
-         SYgPEX1fT4pYj8NBuK1OfFGkYhweRVEUTVMva6ZYvz0H+itkZkgi6BKKTsa37RQqJQX3
-         GlmzBILMLrWbrng9e74qpCl3W/APyDzvSp2/byONfaDG//NRI5pcP1vBSelyMlc9GueL
-         cLnQ==
-X-Gm-Message-State: AOAM530K19DC9+BtCw2YYT4BoVrjA0Vf80Qst3eaCt+bYeFSTz+jZ9cq
-        8n+bmXrMZ28fYVIIS1JMg9XysEydoK4heeOy0U6ppOHWbucJWufww5eiXkvpuL8k8P7kUNg70qE
-        Jo9OwBLRLiZRUhJoj
-X-Received: by 2002:a63:4756:0:b0:373:e14b:5848 with SMTP id w22-20020a634756000000b00373e14b5848mr17589442pgk.337.1646815649953;
-        Wed, 09 Mar 2022 00:47:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy8AxlCNXVWTVj7iH9SvFqBnT+ALE8NBgyTqiezfIt6S/mnWP42+w8t2ODBwFju+xJKaGATOA==
-X-Received: by 2002:a63:4756:0:b0:373:e14b:5848 with SMTP id w22-20020a634756000000b00373e14b5848mr17589411pgk.337.1646815649649;
-        Wed, 09 Mar 2022 00:47:29 -0800 (PST)
-Received: from [10.72.12.183] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l17-20020a637011000000b0037d5eac87e3sm1577760pgc.18.2022.03.09.00.47.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 00:47:29 -0800 (PST)
-Message-ID: <a3782384-c7e5-b0b3-6529-3aa3b8b589de@redhat.com>
-Date:   Wed, 9 Mar 2022 16:47:11 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH v7 13/26] virtio: queue_reset: struct virtio_config_ops
- add callbacks for queue_reset
-Content-Language: en-US
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        with ESMTP id S230175AbiCIItQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 03:49:16 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2056.outbound.protection.outlook.com [40.107.96.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16008EDF25
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 00:48:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cs63Sl0a+We5IShPzPd0HddBZlzq4+wU8yPYLQRdMSrX8mGCvZ67EO4tJjlsC4ze/pbZlAZGGlO2U9L0OOmY4A6snR+vDiegcgt8pX08KG+oLnyhUL6NwLvt8HK7Lr3q9Dq9RLwJHFBDEFmIah7E1bgH8Rtnoz3g9gMzW/ChkoapF9Isg2sCMWr5ynjV5tLUUyTLNzUXWpmZbDgER1Ald3NmQ5wqjYIzSVOqs9oKmmmazo8Xk0wHDbY42SH+J1cY/plce9bmEjdy2iM5Rb8DbaJ5ya9jdqTQh/XpBXAm/G8rRbYqFcc4Qp5YWHC7wNLjQOuGqFK+xiyBpEBWxer8TA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Usvg+8RaO2ppirDrCbaQ8P66yWREHeoG0D/tAkl7SyA=;
+ b=XQGftaBRZ9dGol6RMTpIsSUbb6p+pM55oJW8xFOPTTTxVXw5v6HNGudLxDkc1OtZBy2FXenxAu/ycG7ShwVH1PqgugXIZjHIKWhQP9BioLrLRxxL4Rx8bLmgOiMs5yCZFK2ukk/nxsvrscFAh8YRRT82jqEy6S4mlKCSynZk6HhilpSnVW0/XIA++QAWC3oX64oT9Y738KV5ajqJQ6a6GSpTb8JIZQaj1lS9HuKrruX8/qCXwFa31qWM3mFL+c5cWEFuNTYR5dSCgy4Dt5Keizlcj/FdKG7eju0rprs34YGsMOpIXmKlFLLCcUONDbYRlI9d6Vco94fCEshgaPfeSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Usvg+8RaO2ppirDrCbaQ8P66yWREHeoG0D/tAkl7SyA=;
+ b=FKv3rWe/tM4cNAlb2hZTqWTjutLEKsyh9g9sibyzYwquG1njnMs+0w91sTetskl+xekkPsZLc5HpVnNVvB5Yvizx3Y3ULkgEbrr76VWSuj4RwMF8gt6F7mfbfogn3/orZ+NEzeWvwjgG7eO2XbSAP5F2aRe8yvBY+Vfw3h6bNBxxENMZes6ix4fc13fryrzwr0m0vBtuXm8SKIT23uy9Uvy6v+T0aWMgO3lKnPfkfokmhcnV10I3QfJAM+zemrZ2iQ+gsfJFUWHvgvRtDtnGFUJHglKNneH/24gKPajFquS7h/FojaRYba43osxPRyKAbq4hRMafyXUEXz7fu8RHjg==
+Received: from DM4PR12MB5150.namprd12.prod.outlook.com (2603:10b6:5:391::23)
+ by BN6PR12MB1522.namprd12.prod.outlook.com (2603:10b6:405:11::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Wed, 9 Mar
+ 2022 08:48:16 +0000
+Received: from DM4PR12MB5150.namprd12.prod.outlook.com
+ ([fe80::9b8:7073:5693:8d06]) by DM4PR12MB5150.namprd12.prod.outlook.com
+ ([fe80::9b8:7073:5693:8d06%4]) with mapi id 15.20.5038.029; Wed, 9 Mar 2022
+ 08:48:16 +0000
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org
-References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-14-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220308123518.33800-14-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>, Gal Pressman <gal@nvidia.com>
+Subject: Revive zerocopy TLS sendfile
+Thread-Topic: Revive zerocopy TLS sendfile
+Thread-Index: AdgzkfCGHjaXzry5QEaFbeqmEGyenA==
+Date:   Wed, 9 Mar 2022 08:48:16 +0000
+Message-ID: <DM4PR12MB5150C0ACA2781ABD70DB99E8DC0A9@DM4PR12MB5150.namprd12.prod.outlook.com>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d7fc322e-6c62-4844-3a6e-08da01a98d89
+x-ms-traffictypediagnostic: BN6PR12MB1522:EE_
+x-microsoft-antispam-prvs: <BN6PR12MB152207DDDD6CDA1B681BABD9DC0A9@BN6PR12MB1522.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FFjhfZZEULjiii2AXyiB5pXHWmAfFnKfLfpmV3Gf/Zgka+NNqIdGlTNv5WZegO5/n2k8KMV0eki6Cqtya0teLBgILfW8as3/rDWR4bqY3IKn0GoGv3zFA2klw4rYmjQCaG0fMPqWxANHqsZ/9W7zIW1STw8f1HI5od5ggYv9h/6MicW2KFVcd2BByxX7ZXbpACwwoyqsZ5WoRuIKEjA6VHMjPi6L3bk2rxi5i2xlzVuGFSiJuKXtatbAoGYYAZ5wkUk7z0pSDkXHX55VKPgxSGXrIoi9Mz3Tjj049dVUQNZoe9UPM9W2x2i7EiAloh8TVrNrzUKYBx8Hh74YHMW3BHXyTbjhBwb7+x9pbI7fHaCq4I+ENw1PJnzQSiQ8pGfOqR2/Y6RlEt9BCR4jSYuy8fDV1DA45MT5CAb0v8pC2tI5MjimjEFAtFbsmzvY4f1mfzmuZUUkRLXY26MnSg6BPEjV6hosbrpJLsgiD+lUNQdYpPLE6jji8J+uCq6Sv0Vyl1VB4uc9Ot4FZYPcv/QiXXg+k9CiY6EUz5WynrSw5OyoGPfQe0q9fTSlXw5Dt7EAcRvx3yB48j4I6Whig4ehV4Fk8qVR/yzxWdvl2AFPywscfcAjem5ybD60INhlFvwbJ3D0Ey73DxWWXfyrufov0deoMCw8RSlIGrRuutWFmzdeLaw6JxI0/Lt+N77EvJMe16jRtkyK9Tn6FOp1HcWgNkfatj85Aovd2v+jC41pU5+/3MDk27hSIXgDxDZ59FsN6MG9xTfWWr2QTiT0JoqrVdM4pAcsHdXTupuyyLS2IFM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5150.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(66476007)(4326008)(8676002)(66946007)(66446008)(64756008)(76116006)(66556008)(122000001)(33656002)(52536014)(8936002)(110136005)(38100700002)(54906003)(316002)(55016003)(2906002)(186003)(6506007)(7696005)(107886003)(9686003)(71200400001)(966005)(508600001)(3480700007)(38070700005)(83380400001)(86362001)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OZ64JLT/PSwLwc7gYA/kuVNGoxT34oo3qdMRIvwGlrRZp2nUzjdoy5ZfAmeQ?=
+ =?us-ascii?Q?GMbMRhkeZ+kKNv5p7Bvl+ajRb9QVPYx38btGvBuMWWI6MclfhvxLhGyTapPe?=
+ =?us-ascii?Q?/pSElEZscg9XKH8e9boyp7lO+8t2PTLdMc+WITJP7inKGCKJkPWvL93Ygx2Y?=
+ =?us-ascii?Q?a2neRbIOJvawYcvvIcr3bxZXQ4fY49MBeDXENFxTR2tRJDQE2YixX9NU1wBp?=
+ =?us-ascii?Q?l7+vIX81D6DX5634ts4TDcF8eorlq3nUWm74/+VDg2xOVCXuw5AHNfyTpUze?=
+ =?us-ascii?Q?kTFEtl16fFjBmWVswXiwk7MJEtN0B/futbGF2STotBXxDKfnbvAw4GYEjyaq?=
+ =?us-ascii?Q?1nhixEQrcvUHX8VyWK8x/pYy46SePjTQ9k69zqhR9kfk5Xj0Aon5XNsuGhPy?=
+ =?us-ascii?Q?+Z2I1MkB1qfEH33vt7bg5n59NYAihTJFoCLYLpgBueMcUFCNqNgYKyqRqvBU?=
+ =?us-ascii?Q?8SW2iEog3VxpGLwLfSiT1coZg0XsMmkRK1o4WSHZyjKesfeMGmre7GYsO+aO?=
+ =?us-ascii?Q?OEuRSVKcwinGzKFuQrh/ts3LKGEpx2eqNP9qVe2R0h7tVnd8SIf7RYRHmd+v?=
+ =?us-ascii?Q?6chxW79g4DVsuX8SLUmGJPf022EoYAmrg3HRHd0neqarPVyJNX7sHqOeyE1p?=
+ =?us-ascii?Q?no9S2rUWDVoUI9d6nG4GaaSFG/Oqqo/mY/4CflBkzHaHf1kx9D1ccDgXHSww?=
+ =?us-ascii?Q?QjchzktQRupbnwbkyf/thAg516pYX7UWXuJ+L7y4hg+K+3wJmJuSg/FAclOS?=
+ =?us-ascii?Q?bysNOex7Bqq+BuHkiIqJXSeffd6im2yrirLy0wzcMFqIKhvsVGQTLMzJ/MDa?=
+ =?us-ascii?Q?kMblUH5nWFSg4SzzrGf+mgHO3AzjHmrP40UmK7bONCkKPOtdp9hmk7gcztNQ?=
+ =?us-ascii?Q?8OcR+hRO2a/9uWvdZnDy9ei6thFeDC0pRJKCC2hMlbjVezT4ClrFkO4z51SZ?=
+ =?us-ascii?Q?UHD4pcBLE/nXtw6MOwU6Jx/COTXw2YW2JkIOiCXDUXesFu21Lg2lGuZzXDPv?=
+ =?us-ascii?Q?+uIvGZjp//wOOg2x2+PgUg0fkfc1qeCrFH8USfsXACC9IC5uWcGuu0D3klVy?=
+ =?us-ascii?Q?GHNl5by6LDbsqChzOAzsiH99Oc8/b5YOtC5XCrl9ddTNLp0HByKP5cUZRIXE?=
+ =?us-ascii?Q?0SlndJuyTO73lXwetvIWMRBTIq9y/CyJ/DJpE0dsNk/ly/HqzMqBYtO2rMEP?=
+ =?us-ascii?Q?qJTlBPoTVZE/sB9V0yS6qjjIo8Wz8YMPxdCKOGKA9/Rujn/e3lUVQzySRuXS?=
+ =?us-ascii?Q?5r6eoi6RQx9KcFsliAPA/0obDR+j17lwtTI07m09uVU5xfxLj8/1tsme1h3c?=
+ =?us-ascii?Q?Ce7tE6KxV6SsYBKQrVVApBDfhK8xwOLFu840Minmc69/612MDHpH+bMnV0vL?=
+ =?us-ascii?Q?AiIkkgROtoVoTX8QTE63B3GpuBF2ZLdF6bQ6qxmoV+jXvdlqPwooz/KJzwPT?=
+ =?us-ascii?Q?NkQEl2D2jZEz37ehUTZ/hkremWl2E1HDCn+kTJsn9d+VBU24QYlxFdZdCBnA?=
+ =?us-ascii?Q?05ZUUpvOwqa7GBk/BctzL7pktp4o6LpfcUPwSmLFhSHxQqNmjy4VHiOGuCki?=
+ =?us-ascii?Q?If3uPPT1LiZJSdvVrcf1U5zLLxM5KHf4vmgAnqdno2n9VOZnfQn9c4K0UZc2?=
+ =?us-ascii?Q?mu18/sw2EW0UIlk/8SfN5h8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5150.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7fc322e-6c62-4844-3a6e-08da01a98d89
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2022 08:48:16.1403
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: miDwspgHe/o1QOTub1w4TOQMXVJvV3HgAUtaseCkpFVEgXpsQ2m0O5JSBHpCt9CJuwma8s8aXqAgT0W9ZPBDEQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1522
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-在 2022/3/8 下午8:35, Xuan Zhuo 写道:
-> Performing reset on a queue is divided into four steps:
->
->   1. reset_vq()                     - notify the device to reset the queue
->   2. virtqueue_detach_unused_buf()  - recycle the buffer submitted
->   3. virtqueue_reset_vring()        - reset the vring (may re-alloc)
->   4. enable_reset_vq()              - mmap vring to device, and enable the queue
->
-> So add two callbacks reset_vq, enable_reset_vq to struct
-> virtio_config_ops.
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->   include/linux/virtio_config.h | 11 +++++++++++
->   1 file changed, 11 insertions(+)
->
-> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-> index 4d107ad31149..d51906b1389f 100644
-> --- a/include/linux/virtio_config.h
-> +++ b/include/linux/virtio_config.h
-> @@ -74,6 +74,15 @@ struct virtio_shm_region {
->    * @set_vq_affinity: set the affinity for a virtqueue (optional).
->    * @get_vq_affinity: get the affinity for a virtqueue (optional).
->    * @get_shm_region: get a shared memory region based on the index.
-> + * @reset_vq: reset a queue individually (optional).
-> + *	vq: the virtqueue
-> + *	Returns 0 on success or error status
-> + *	Caller should guarantee that the vring is not accessed by any functions
-> + *	of virtqueue.
+We would like to revive the discussion on zerocopy sendfile support for
+TLS offload:
 
+https://lore.kernel.org/all/1594551195-3579-1-git-send-email-borisp@mellano=
+x.com/
 
-We probably need to be more accurate here:
+I believe we can resolve the concern about correctness vs performance
+expressed in the previous discussion.
 
-1) reset_vq will guarantee that the callbacks are disabled or synchronized
-2) except for the callback, the caller should guarantee ...
+Historically, sendfile implementations for TCP and TLS allow changing
+the underlying file while sending it. The connection is not disrupted,
+but besides that there aren't many guarantees: the contents of the
+received file may be a mix of the old and new versions (a lost middle
+packet may be retransmitted with the new data, after the packets
+following it were received with the old data). The goal is to preserve
+this behavior for all existing users.
 
-Thanks
+Zerocopy TLS sendfile provides even fewer guarantees: if a part of a TLS
+record is being retransmitted on TCP level, while the file is being
+changed, the receiver may get a TLS record with bad signature and close
+the connection. That means we can't simply replace the current behavior
+with zerocopy.
 
+On the other hand, even with such a limitation, zerocopy TLS sendfile is
+extremely useful in a very common use case of serving static files over
+HTTPS. Web files normally have formats that become damaged and useless
+after arbitrary partial updates. From that perspective, receiving a
+damaged file or closing the connection is equally bad for the client.
+Admins should normally avoid updating static files without stopping the
+server, but even if they don't follow this recommendation, zerocopy
+itself doesn't impair user experience compared to regular sendfile. At
+the same time, it boosts the TX speed by up to 25% and reduces CPU load
+by up to 12.5%.
 
-> + * @enable_reset_vq: enable a reset queue
-> + *	vq: the virtqueue
-> + *	Returns 0 on success or error status
-> + *	If reset_vq is set, then enable_reset_vq must also be set.
->    */
->   typedef void vq_callback_t(struct virtqueue *);
->   struct virtio_config_ops {
-> @@ -100,6 +109,8 @@ struct virtio_config_ops {
->   			int index);
->   	bool (*get_shm_region)(struct virtio_device *vdev,
->   			       struct virtio_shm_region *region, u8 id);
-> +	int (*reset_vq)(struct virtqueue *vq);
-> +	int (*enable_reset_vq)(struct virtqueue *vq);
->   };
->   
->   /* If driver didn't advertise the feature, it will never appear. */
+Given that we would like to keep the current sendfile behavior for all
+existing users, while still being able to use acceleration of zerocopy
+in applicable scenarios, I suggest considering including zerocopy TLS
+sendfile as an opt-in feature. The default will always be non-zerocopy,
+and there will be no global sysctl knob to change it, so that it won't
+be possible to break existing applications. The users willing to use
+zerocopy deliberately will set a flag, for example, by setsockopt (or
+any other mechanism).
 
+Most importantly, there is no concern of violating kernel integrity. The
+userspace won't be able to crash the kernel or bypass protection using
+the new feature. It also won't be able to trick the kernel into
+transmitting some data that the userspace can't send using a regular TCP
+socket.
+
+What do you think about these points? Does zerocopy TLS sendfile have a
+future in the kernel as an opt-in feature?
+
+Thanks,
+Max
