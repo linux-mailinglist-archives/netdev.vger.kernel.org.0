@@ -2,47 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99A704D3590
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:42:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F58F4D3636
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230513AbiCIQg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:36:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
+        id S236464AbiCIQfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:35:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239506AbiCIQck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:32:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242F844758;
-        Wed,  9 Mar 2022 08:27:54 -0800 (PST)
+        with ESMTP id S239350AbiCIQc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:32:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66D75C67C;
+        Wed,  9 Mar 2022 08:27:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBBC4619CC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD178619CB;
+        Wed,  9 Mar 2022 16:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB24C340E8;
         Wed,  9 Mar 2022 16:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7809C340EC;
-        Wed,  9 Mar 2022 16:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646843224;
-        bh=9UTHSdHsMxTSqtDc4h9uay8BvRiMDiW4mvc8DvxMn4Q=;
+        s=k20201202; t=1646843228;
+        bh=QCLclt6Podyl2puOmDCwjqlOCtweKVJusbddgI3eqP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pwXVeeA4VEkYitGQ7EuZfuhxiOltGhsxZHAa4CSVZgPgpnkC2N3J8+kmUH7r92der
-         tgp4zh5otkae16qDzswRr6r+KHQMafYwWcm83/XeEzxhgo1eyt2oudd3lHdLklyiUj
-         vFoJF8vcWKtvaSxldQAFaY/iJOQeTAwc5FPosabb8dzr46x0c9UjEGuCFq12tSdQW6
-         aW2xrFcckfAbemzc6zJOC+5Ujjj2SrdNfte9NG3awL7P5YFPMjO4wNlnGmu72Gkp3d
-         gnrRx2YwC6N1+68wV8OVqXFZMlRPsCajLpa77REpYT/8Z63ai4ezxYm6JJgxoGJGA5
-         HZL80q+wyAxiQ==
+        b=tIAW+lo7vhusB6KoDLoW3jWYN/m3VtExOALBBDl19X06X4b+9EcntmAYgr2ZmPtEA
+         J8JcApzk9eCFWMN2YprM+KjecSnc2ZzwiB0rB7ZjepCBa9Ed1GvcwVD4dau6xIPGFc
+         rY7NTeHQ5yd9vgOkS8YFsP+f0kUMwSPsmvWZ64Znyx8Qnly5r2EMbpbIjb3JK5pK5r
+         2BlR6elHsxAniqXj535EvacB66QtH/cvnU/3as+F4rc2stPsG6v5LZ5JR9qp5St9zp
+         PCQewoO40GgOD8v+8wE2aoHNC5tdR7TtYjSe/AKpxgMmgJOFiZWlLXuazJWwbvAJGL
+         +xwVxBg3EDztQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 09/12] tcp: make tcp_read_sock() more robust
-Date:   Wed,  9 Mar 2022 11:26:14 -0500
-Message-Id: <20220309162618.137226-9-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, ecree.xilinx@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/12] sfc: extend the locking on mcdi->seqno
+Date:   Wed,  9 Mar 2022 11:26:15 -0500
+Message-Id: <20220309162618.137226-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309162618.137226-1-sashal@kernel.org>
 References: <20220309162618.137226-1-sashal@kernel.org>
@@ -60,48 +58,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
+[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
 
-If recv_actor() returns an incorrect value, tcp_read_sock()
-might loop forever.
+seqno could be read as a stale value outside of the lock. The lock is
+already acquired to protect the modification of seqno against a possible
+race condition. Place the reading of this value also inside this locking
+to protect it against a possible race condition.
 
-Instead, issue a one time warning and make sure to make progress.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index c9f6f28e54f3..a0fd9ef2d2c6 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1657,11 +1657,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 				if (!copied)
- 					copied = used;
- 				break;
--			} else if (used <= len) {
--				seq += used;
--				copied += used;
--				offset += used;
- 			}
-+			if (WARN_ON_ONCE(used > len))
-+				used = len;
-+			seq += used;
-+			copied += used;
-+			offset += used;
-+
- 			/* If recv_actor drops the lock (e.g. TCP splice
- 			 * receive) the skb pointer might be invalid when
- 			 * getting here: tcp_collapse might have deleted it
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index 3df872f56289..040b52affe19 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -167,9 +167,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
+ 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
+ 	spin_lock_bh(&mcdi->iface_lock);
+ 	++mcdi->seqno;
++	seqno = mcdi->seqno & SEQ_MASK;
+ 	spin_unlock_bh(&mcdi->iface_lock);
+ 
+-	seqno = mcdi->seqno & SEQ_MASK;
+ 	xflags = 0;
+ 	if (mcdi->mode == MCDI_MODE_EVENTS)
+ 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
 -- 
 2.34.1
 
