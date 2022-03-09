@@ -2,416 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F24CA4D3015
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 14:39:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A164D3028
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 14:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232986AbiCINkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 08:40:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
+        id S233291AbiCINoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 08:44:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233239AbiCINkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 08:40:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3FF4C7A7
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 05:39:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6264EB81EE7
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 13:39:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6A8C340F3;
-        Wed,  9 Mar 2022 13:39:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646833174;
-        bh=G0CCOVbWmzhW0tHkuDqe6bf+H74Cfh1K8XIE00D7N9g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B1gBmmr3/TmjIV3MftWgUpRHrNnN0PaCTQSs/5GFKlMhRUL4PmdNDgDOo4m/PaEJN
-         9B9KG5M3rzZqyuaAs0HfyNXLv9woWpEytiE1syiyesG3YfotQ5dCD4rzuz9K+7MwxE
-         GNnDjH3GAImeUeewWWzTkLwfo68vdzwNXZA2n/RvQQDnAORffB5Mp83TBumEGlyga1
-         oOYGRx8ircfUVACBEmAajl11CkldTflDfx+sOgUIQX39RW5Y6H3gmclNQQzs7GAmBS
-         gF6cJm4RrPnZE/0a9iOl494VcLEOtqespGwuSWyICrWStvrCPM2poUFsdW1hF6BttK
-         I0nvfxVe3Hhmw==
-Date:   Wed, 9 Mar 2022 15:39:30 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com, markzhang@nvidia.com
-Subject: Re: [PATCH iproute2 v2 1/2] lib/fs: fix memory leak in
- get_task_name()
-Message-ID: <YiiuEu/2+f5Ur4Mu@unreal>
-References: <cover.1646223467.git.aclaudi@redhat.com>
- <0731f9e5b5ce95ab2da44ac74aa1f79ead9413bf.1646223467.git.aclaudi@redhat.com>
- <YiEPeU8z5Y+qd3+l@unreal>
- <YiZJzokKojVtEH4S@tc2>
+        with ESMTP id S233278AbiCINoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 08:44:14 -0500
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DCDEF090;
+        Wed,  9 Mar 2022 05:43:14 -0800 (PST)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id CF06D200003;
+        Wed,  9 Mar 2022 13:43:07 +0000 (UTC)
+Message-ID: <9b6e166e-fd10-4242-1ad9-a6ab1ddb0c95@ovn.org>
+Date:   Wed, 9 Mar 2022 14:43:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiZJzokKojVtEH4S@tc2>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     i.maximets@ovn.org, Johannes Berg <johannes@sipsolutions.net>,
+        dev@openvswitch.org, Toms Atteka <cpp.code.lv@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, David Ahern <dsahern@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "pshelar@ovn.org" <pshelar@ovn.org>
+Content-Language: en-US
+To:     Roi Dayan <roid@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+References: <20220224005409.411626-1-cpp.code.lv@gmail.com>
+ <164578561098.13834.14017896440355101001.git-patchwork-notify@kernel.org>
+ <3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com>
+ <50d6ce3d-14bb-205e-55da-5828b10224e8@nvidia.com>
+ <57996C97-5845-425B-9B13-7F33EE05D704@redhat.com>
+ <26b924fb-ed26-bb3f-8c6b-48edac825f73@nvidia.com>
+ <20220307122638.215427b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3a96b606-c3aa-c39b-645e-a3af0c82e44b@ovn.org>
+ <20220307144616.05317297@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <45aed9cd-ba65-e2e7-27d7-97e3f9de1fb8@ovn.org>
+ <20220307214550.2d2c26a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <5bec02cb6a640cafd65c946e10ee4eda99eb4d9c.camel@sipsolutions.net>
+ <e55b1963-14d8-63af-de8e-1b1a8f569a6e@ovn.org>
+ <20220308081731.3588b495@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <6f0feae8-ecb4-ca1d-133e-1013ce9e8b4f@ovn.org>
+ <20220308121617.3f638793@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <81250230-a845-b03f-6600-b716c02f5137@nvidia.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6
+ extension header support
+In-Reply-To: <81250230-a845-b03f-6600-b716c02f5137@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 07:07:10PM +0100, Andrea Claudi wrote:
-> Hi Leon,
-> Thanks for your review.
+On 3/9/22 08:49, Roi Dayan wrote:
 > 
-> On Thu, Mar 03, 2022 at 08:56:57PM +0200, Leon Romanovsky wrote:
-> > On Wed, Mar 02, 2022 at 01:28:47PM +0100, Andrea Claudi wrote:
-> > > asprintf() allocates memory which is not freed on the error path of
-> > > get_task_name(), thus potentially leading to memory leaks.
-> > 
-> > Not really, memory is released when the application exits, which is the
-> > case here.
-> >
 > 
-> That's certainly true. However this is still a leak in the time frame
-> between get_task_name function call and the application exit. For
-> example:
-> 
-> $ ip -d -b - << EOF
-> tuntap show
-> monitor
-> EOF
-> 
-> calls get_task_name one or more time (once for each tun interface), and
-> leaks memory indefinitely, if ip is not interrupted in some way.
-> 
-> Of course this is a corner case, and the leaks should anyway be small.
-> However I cannot see this as a good reason not to fix it.
-> 
-> > > 
-> > > Rework get_task_name() and avoid asprintf() usage and memory allocation,
-> > > returning the task string to the caller using an additional char*
-> > > parameter.
-> > > 
-> > > Fixes: 81bfd01a4c9e ("lib: move get_task_name() from rdma")
-> > 
-> > As I was told before, in netdev Fixes means that it is a bug that
-> > affects users. This is not the case here.
-> 
-> Thanks for letting me know. I usually rely a lot on Fixes: as iproute2
-> package maintainer, but I'll change my habits if this is the common
-> understanding. Stephen, David, WDYT?
-> 
-> > 
-> > > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> > > ---
-> > >  include/utils.h |  2 +-
-> > >  ip/iptuntap.c   | 17 ++++++++++-------
+> On 2022-03-08 10:16 PM, Jakub Kicinski wrote:
+>> On Tue, 8 Mar 2022 20:33:12 +0100 Ilya Maximets wrote:
+>>> On 3/8/22 17:17, Jakub Kicinski wrote:
+>>>> On Tue, 8 Mar 2022 15:12:45 +0100 Ilya Maximets wrote:
+>>>>> Yes, that is something that I had in mind too.  The only thing that makes
+>>>>> me uncomfortable is OVS_KEY_ATTR_TUNNEL_INFO = 30 here.  Even though it
+>>>>> doesn't make a lot of difference, I'd better keep the kernel-only attributes
+>>>>> at the end of the enumeration.  Is there a better way to handle kernel-only
+>>>>> attribute?
+>>>>
+>>>> My thought was to leave the kernel/userspace only types "behind" to
+>>>> avoid perpetuating the same constructs.
+>>>>
+>>>> Johannes's point about userspace to userspace messages makes the whole
+>>>> thing a little less of an aberration.
+>>>>
+>>>> Is there a reason for the types to be hidden under __KERNEL__?
+>>>> Or someone did that in a misguided attempt to save space in attr arrays
+>>>> when parsing?
+>>>
+>>> My impression is that OVS_KEY_ATTR_TUNNEL_INFO was hidden from the
+>>> user space just because it's not supposed to ever be used by the
+>>> user space application.  Pravin or Jesse should know for sure.
+>>
+>> Hard to make any assumptions about what user space that takes
+>> the liberty of re-defining kernel uAPI types will or will not
+>> do ;) The only way to be safe would be to actively reject the
+>> attr ID on the kernel side. Unless user space uses the same
+>> exact name for something else IMHO hiding the value doesn't
+>> afford us any extra protection.
+>>
+>>>>> I agree with that.
+>>>>
+>>>> Should we add the user space types to the kernel header and remove the
+>>>> ifdef __KERNEL__ around TUNNEL_INFO, then?
+>>>
+>>> I don't think we need to actually define them, but we may list them
+>>> in the comment.  I'm OK with either option though.
+>>>
+>>> For the removal of ifdef __KERNEL__, that might be a good thing to do.
+>>> I'm just not sure what are the best practices here.
+>>> We'll need to make some code changes in user space to avoid warnings
+>>> about not all the enum members being used in 'switch'es.  But that's
+>>> not a problem.
+>>
+>> Presumably only as the headers are updated? IOW we would not break
+>> the build for older sources?
 
-Ahh, sorry, I missed this user.
-So yes, Fixes is needed here.
+Yep.  OVS doesn't use kernel header directly, so the change will be
+needed only when the header in OVS repo is updated.  Current/older
+sources will be fine.
 
-Thanks
+>>
+>>> If you think that having a flat enum without 'ifdef's is a viable
+>>> option from a kernel's point of view, I'm all for it.
+>>>
+>>> Maybe something like this (only checked that this compiles; 29 and
+>>> 30 are correct numbers of these userspace attributes):
+>>
+>> It's a bit of an uncharted territory, hard to say what's right.
+>> It may be a little easier to code up the rejection if we have
+>> the types defined (which I think we need to do in
+>> __parse_flow_nlattrs()? seems OvS does its own nla parsing?)
 
-> > >  lib/fs.c        | 20 ++++++++++----------
-> > >  rdma/res-cmid.c |  8 +++++---
-> > >  rdma/res-cq.c   |  8 +++++---
-> > >  rdma/res-ctx.c  |  7 ++++---
-> > >  rdma/res-mr.c   |  7 ++++---
-> > >  rdma/res-pd.c   |  8 +++++---
-> > >  rdma/res-qp.c   |  7 ++++---
-> > >  rdma/res-srq.c  |  7 ++++---
-> > >  rdma/stat.c     |  5 ++++-
-> > >  11 files changed, 56 insertions(+), 40 deletions(-)
-> > 
-> > Honestly, I don't see any need in both patches.
-> > 
-> > Thanks
-> > 
-> > > 
-> > > diff --git a/include/utils.h b/include/utils.h
-> > > index b6c468e9..81294488 100644
-> > > --- a/include/utils.h
-> > > +++ b/include/utils.h
-> > > @@ -307,7 +307,7 @@ char *find_cgroup2_mount(bool do_mount);
-> > >  __u64 get_cgroup2_id(const char *path);
-> > >  char *get_cgroup2_path(__u64 id, bool full);
-> > >  int get_command_name(const char *pid, char *comm, size_t len);
-> > > -char *get_task_name(pid_t pid);
-> > > +int get_task_name(pid_t pid, char *name);
-> > >  
-> > >  int get_rtnl_link_stats_rta(struct rtnl_link_stats64 *stats64,
-> > >  			    struct rtattr *tb[]);
-> > > diff --git a/ip/iptuntap.c b/ip/iptuntap.c
-> > > index 385d2bd8..2ae6b1a1 100644
-> > > --- a/ip/iptuntap.c
-> > > +++ b/ip/iptuntap.c
-> > > @@ -321,14 +321,17 @@ static void show_processes(const char *name)
-> > >  			} else if (err == 2 &&
-> > >  				   !strcmp("iff", key) &&
-> > >  				   !strcmp(name, value)) {
-> > > -				char *pname = get_task_name(pid);
-> > > -
-> > > -				print_string(PRINT_ANY, "name",
-> > > -					     "%s", pname ? : "<NULL>");
-> > > +				SPRINT_BUF(pname);
-> > > +
-> > > +				if (get_task_name(pid, pname)) {
-> > > +					print_string(PRINT_ANY, "name",
-> > > +						     "%s", "<NULL>");
-> > > +				} else {
-> > > +					print_string(PRINT_ANY, "name",
-> > > +						     "%s", pname);
-> > > +				}
-> > >  
-> > > -				print_uint(PRINT_ANY, "pid",
-> > > -					   "(%d)", pid);
-> > > -				free(pname);
-> > > +				print_uint(PRINT_ANY, "pid", "(%d)", pid);
-> > >  			}
-> > >  
-> > >  			free(key);
-> > > diff --git a/lib/fs.c b/lib/fs.c
-> > > index f6f5f8a0..03df0f6a 100644
-> > > --- a/lib/fs.c
-> > > +++ b/lib/fs.c
-> > > @@ -342,25 +342,25 @@ int get_command_name(const char *pid, char *comm, size_t len)
-> > >  	return 0;
-> > >  }
-> > >  
-> > > -char *get_task_name(pid_t pid)
-> > > +int get_task_name(pid_t pid, char *name)
-> > >  {
-> > > -	char *comm;
-> > > +	char path[PATH_MAX];
-> > >  	FILE *f;
-> > >  
-> > >  	if (!pid)
-> > > -		return NULL;
-> > > +		return -1;
-> > >  
-> > > -	if (asprintf(&comm, "/proc/%d/comm", pid) < 0)
-> > > -		return NULL;
-> > > +	if (snprintf(path, sizeof(path), "/proc/%d/comm", pid) >= sizeof(path))
-> > > +		return -1;
-> > >  
-> > > -	f = fopen(comm, "r");
-> > > +	f = fopen(path, "r");
-> > >  	if (!f)
-> > > -		return NULL;
-> > > +		return -1;
-> > >  
-> > > -	if (fscanf(f, "%ms\n", &comm) != 1)
-> > > -		comm = NULL;
-> > > +	if (fscanf(f, "%s\n", name) != 1)
-> > > +		return -1;
-> > >  
-> > >  	fclose(f);
-> > >  
-> > > -	return comm;
-> > > +	return 0;
-> > >  }
-> > > diff --git a/rdma/res-cmid.c b/rdma/res-cmid.c
-> > > index bfaa47b5..3475349d 100644
-> > > --- a/rdma/res-cmid.c
-> > > +++ b/rdma/res-cmid.c
-> > > @@ -159,8 +159,11 @@ static int res_cm_id_line(struct rd *rd, const char *name, int idx,
-> > >  		goto out;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > > @@ -199,8 +202,7 @@ static int res_cm_id_line(struct rd *rd, const char *name, int idx,
-> > >  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
-> > >  	newline(rd);
-> > >  
-> > > -out:	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > > +out:
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/res-cq.c b/rdma/res-cq.c
-> > > index 9e7c4f51..5ed455ea 100644
-> > > --- a/rdma/res-cq.c
-> > > +++ b/rdma/res-cq.c
-> > > @@ -84,8 +84,11 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
-> > >  		goto out;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > > @@ -123,8 +126,7 @@ static int res_cq_line(struct rd *rd, const char *name, int idx,
-> > >  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
-> > >  	newline(rd);
-> > >  
-> > > -out:	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > > +out:
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/res-ctx.c b/rdma/res-ctx.c
-> > > index 30afe97a..fbd52dd5 100644
-> > > --- a/rdma/res-ctx.c
-> > > +++ b/rdma/res-ctx.c
-> > > @@ -18,8 +18,11 @@ static int res_ctx_line(struct rd *rd, const char *name, int idx,
-> > >  		return MNL_CB_ERROR;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > > @@ -48,8 +51,6 @@ static int res_ctx_line(struct rd *rd, const char *name, int idx,
-> > >  	newline(rd);
-> > >  
-> > >  out:
-> > > -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/res-mr.c b/rdma/res-mr.c
-> > > index 1bf73f3a..6a59d9e4 100644
-> > > --- a/rdma/res-mr.c
-> > > +++ b/rdma/res-mr.c
-> > > @@ -47,8 +47,11 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
-> > >  		goto out;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > > @@ -87,8 +90,6 @@ static int res_mr_line(struct rd *rd, const char *name, int idx,
-> > >  	newline(rd);
-> > >  
-> > >  out:
-> > > -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/res-pd.c b/rdma/res-pd.c
-> > > index df538010..a51bb634 100644
-> > > --- a/rdma/res-pd.c
-> > > +++ b/rdma/res-pd.c
-> > > @@ -34,8 +34,11 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
-> > >  			nla_line[RDMA_NLDEV_ATTR_RES_UNSAFE_GLOBAL_RKEY]);
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > > @@ -76,8 +79,7 @@ static int res_pd_line(struct rd *rd, const char *name, int idx,
-> > >  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
-> > >  	newline(rd);
-> > >  
-> > > -out:	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > > +out:
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/res-qp.c b/rdma/res-qp.c
-> > > index a38be399..575e0529 100644
-> > > --- a/rdma/res-qp.c
-> > > +++ b/rdma/res-qp.c
-> > > @@ -146,8 +146,11 @@ static int res_qp_line(struct rd *rd, const char *name, int idx,
-> > >  		goto out;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > > @@ -179,8 +182,6 @@ static int res_qp_line(struct rd *rd, const char *name, int idx,
-> > >  	print_driver_table(rd, nla_line[RDMA_NLDEV_ATTR_DRIVER]);
-> > >  	newline(rd);
-> > >  out:
-> > > -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/res-srq.c b/rdma/res-srq.c
-> > > index 3038c352..945109fc 100644
-> > > --- a/rdma/res-srq.c
-> > > +++ b/rdma/res-srq.c
-> > > @@ -174,8 +174,11 @@ static int res_srq_line(struct rd *rd, const char *name, int idx,
-> > >  		return MNL_CB_ERROR;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > >  				nla_line[RDMA_NLDEV_ATTR_RES_PID]))
-> > > @@ -228,8 +231,6 @@ static int res_srq_line(struct rd *rd, const char *name, int idx,
-> > >  	newline(rd);
-> > >  
-> > >  out:
-> > > -	if (nla_line[RDMA_NLDEV_ATTR_RES_PID])
-> > > -		free(comm);
-> > >  	return MNL_CB_OK;
-> > >  }
-> > >  
-> > > diff --git a/rdma/stat.c b/rdma/stat.c
-> > > index adfcd34a..a63b70a4 100644
-> > > --- a/rdma/stat.c
-> > > +++ b/rdma/stat.c
-> > > @@ -248,8 +248,11 @@ static int res_counter_line(struct rd *rd, const char *name, int index,
-> > >  		return MNL_CB_OK;
-> > >  
-> > >  	if (nla_line[RDMA_NLDEV_ATTR_RES_PID]) {
-> > > +		SPRINT_BUF(b);
-> > > +
-> > >  		pid = mnl_attr_get_u32(nla_line[RDMA_NLDEV_ATTR_RES_PID]);
-> > > -		comm = get_task_name(pid);
-> > > +		if (!get_task_name(pid, b))
-> > > +			comm = b;
-> > >  	}
-> > >  	if (rd_is_filtered_attr(rd, "pid", pid,
-> > >  				nla_line[RDMA_NLDEV_ATTR_RES_PID]))
-> > > -- 
-> > > 2.35.1
-> > > 
-> > 
+Ack.  And, yes, __parse_flow_nlattrs() seems to be the right spot.
+OVS has lots of nested attributes with some special treatment in a
+few cases and dependency tracking, AFAICT, so it parses attributes
+on it's own.  Is there a better way?
+
+>>
+>> Johannes, any preference?
+>>
+>>> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+>>> index 9d1710f20505..86bc951be5bc 100644
+>>> --- a/include/uapi/linux/openvswitch.h
+>>> +++ b/include/uapi/linux/openvswitch.h
+>>> @@ -351,11 +351,19 @@ enum ovs_key_attr {
+>>>       OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+>>>       OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+>>>       OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+>>> -    OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>>>   -#ifdef __KERNEL__
+>>> -    OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+>>> -#endif
+>>> +    /* User space decided to squat on types 29 and 30.  They are listed
+>>> +     * below, but should not be sent to the kernel:
+>>> +     *
+>>> +     * OVS_KEY_ATTR_PACKET_TYPE,   be32 packet type
+>>> +     * OVS_KEY_ATTR_ND_EXTENSIONS, IPv6 Neighbor Discovery extensions
+>>> +     *
+>>> +     * WARNING: No new types should be added unless they are defined
+>>> +     *          for both kernel and user space (no 'ifdef's).  It's hard
+>>> +     *          to keep compatibility otherwise. */
+>>> +    OVS_KEY_ATTR_TUNNEL_INFO = 31,  /* struct ip_tunnel_info.
+>>> +                       For in-kernel use only. */
+>>> +    OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+>>>       __OVS_KEY_ATTR_MAX
+>>>   };
 > 
+> so why not again just flat enum without ifdefs and without values
+> commented out? even if we leave values in comments like above it doesn't
+> mean the userspace won't use them by mistake and send to the kernel.
+> but the kernel will probably ignore as not being used and at least
+> there won't be a conflict again even if by mistake.. and it's easiest
+> to read.
+
+OK.  Seems like we have some votes and a reason (explicit reject) to have
+them defined.  This will also make current user space and kernel definitions
+equal.  Let me put together a patch and we'll continue the discussion there.
+
+> 
+>>>   diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+>>> index 8b4124820f7d..315064bada3e 100644
+>>> --- a/net/openvswitch/flow_netlink.c
+>>> +++ b/net/openvswitch/flow_netlink.c
+>>> @@ -346,7 +346,7 @@ size_t ovs_key_attr_size(void)
+>>>       /* Whenever adding new OVS_KEY_ FIELDS, we should consider
+>>>        * updating this function.
+>>>        */
+>>> -    BUILD_BUG_ON(OVS_KEY_ATTR_TUNNEL_INFO != 30);
+>>> +    BUILD_BUG_ON(OVS_KEY_ATTR_MAX != 32);
+>>>         return    nla_total_size(4)   /* OVS_KEY_ATTR_PRIORITY */
+>>>           + nla_total_size(0)   /* OVS_KEY_ATTR_TUNNEL */
+>>> ---
+>>>
+>>> Thoughts?
+>>>
+>>> The same change can be ported to the user-space header, but with
+>>> types actually defined and not part of the comment.  It may look
+>>> like this: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpastebin.com%2Fk8UWEZtR&amp;data=04%7C01%7Croid%40nvidia.com%7C3f34544168c14459f44608da01408358%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637823673860054963%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=HYfuir9d21MFFxPibJz%2FppfxsylDMLz0CZIOcSCLQQw%3D&amp;reserved=0  (without IPV6_EXTHDRS yet).
+>>> For the future, we'll try to find a way to define them in a separate
+>>> enum or will define them dynamically based on the policy dumped from
+>>> the currently running kernel. In any case no new userspace-only types
+>>> should be defined in that enum.
+>>
+
