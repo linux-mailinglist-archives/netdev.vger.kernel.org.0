@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C82AA4D34B5
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:26:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A1A4D34C7
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 17:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233274AbiCIQ0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:26:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S230197AbiCIQ0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235407AbiCIQXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:23:39 -0500
+        with ESMTP id S235345AbiCIQX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:23:56 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25565C084B;
-        Wed,  9 Mar 2022 08:21:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8A6141FD7;
+        Wed,  9 Mar 2022 08:21:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB78961981;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7072361977;
+        Wed,  9 Mar 2022 16:21:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C3C5C340E8;
         Wed,  9 Mar 2022 16:21:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D13C340F5;
-        Wed,  9 Mar 2022 16:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646842909;
-        bh=OQdhJ2GZ5rK4QlrPcNeTaZV+1fFScNNo3kD9q3ZRwbM=;
+        s=k20201202; t=1646842912;
+        bh=nKlrg4WLNzAY8c1UW0u3z2lgSy1eTQph437UIaSbeFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s3A8oibTsf9GZ83M7PYeNnigTUuTfhMKoqLy/Zp8n3zQmnovNc8uYFfiqS1FaRug4
-         6j6YKhdNslx7pAUSLswN7OX5t/PrOsd46jchqy57JovR8gxusKyxrCg/7S3uWJlC6b
-         uZhXgTb98Pte/Wh5I59FlSm9NAAV9Yb/OBYwc5tMzkfVa4rZwpViUP9PrtMSONd6bv
-         xbSUFnoUNH8XvTCE0/dj5nt5I0Vc5dYL2CFUKJ6ZyaW6B9qqSOYgBfiLv0tNRZacsC
-         SpZ7OGQQhzrolkRMQBDh3mRuCYbQ+wQzsg5oRRYwQQD+DGdo0A4mZuYLlZyURAoGoK
-         7ap+v9fnlvURQ==
+        b=dEdLXYaz2//LVXqtuHPHiUvir11A+yWwULziTbKXVLS6zTG4XyhLX2/bCRQU2Dv6k
+         kYbI0juatpVxTKwPBwhsEH5YV+k6wJ2jM6q0Y5BWL3f7hiepPpO5ZlHrMIAsjTZE9W
+         oW73mMbrg/JYF2TrobGCZZPtZPAidhD3eiLTfgsMVfOGepvyBng8Okq3oppGEYUFBI
+         0P3+xzBWk5XgJAI4CTrjuysCk7GtPC17fnNFoZ+8NQhZ6i1s50qEH3MGPN+CadJtJy
+         XRke2vqF+0OHbShd6MgA+fMe40KFryPiEXo4uyoP0fwVaLNzJnxkyCsF78t7gilnQZ
+         3a6mi3eJGvTCg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, ecree.xilinx@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 22/24] sfc: extend the locking on mcdi->seqno
-Date:   Wed,  9 Mar 2022 11:19:41 -0500
-Message-Id: <20220309161946.136122-22-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, rmody@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 23/24] bnx2: Fix an error message
+Date:   Wed,  9 Mar 2022 11:19:42 -0500
+Message-Id: <20220309161946.136122-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220309161946.136122-1-sashal@kernel.org>
 References: <20220309161946.136122-1-sashal@kernel.org>
@@ -58,38 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
+[ Upstream commit 8ccffe9ac3239e549beaa0a9d5e1a1eac94e866c ]
 
-seqno could be read as a stale value outside of the lock. The lock is
-already acquired to protect the modification of seqno against a possible
-race condition. Place the reading of this value also inside this locking
-to protect it against a possible race condition.
+Fix an error message and report the correct failing function.
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ drivers/net/ethernet/broadcom/bnx2.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index be6bfd6b7ec7..50baf62b2cbc 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -163,9 +163,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
- 	spin_lock_bh(&mcdi->iface_lock);
- 	++mcdi->seqno;
-+	seqno = mcdi->seqno & SEQ_MASK;
- 	spin_unlock_bh(&mcdi->iface_lock);
- 
--	seqno = mcdi->seqno & SEQ_MASK;
- 	xflags = 0;
- 	if (mcdi->mode == MCDI_MODE_EVENTS)
- 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 8c83973adca5..9d70d908c064 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8212,7 +8212,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
+ 		rc = dma_set_coherent_mask(&pdev->dev, persist_dma_mask);
+ 		if (rc) {
+ 			dev_err(&pdev->dev,
+-				"pci_set_consistent_dma_mask failed, aborting\n");
++				"dma_set_coherent_mask failed, aborting\n");
+ 			goto err_out_unmap;
+ 		}
+ 	} else if ((rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) != 0) {
 -- 
 2.34.1
 
