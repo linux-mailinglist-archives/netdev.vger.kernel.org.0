@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF9C4D3A41
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:25:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620214D3A32
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237976AbiCITZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 14:25:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
+        id S237919AbiCITZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 14:25:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237930AbiCITY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:24:56 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2246126ACC
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:23:33 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id g17so5593014lfh.2
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 11:23:33 -0800 (PST)
+        with ESMTP id S237952AbiCITY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:24:58 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E2B30F4D
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:23:34 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id q10so4641848ljc.7
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 11:23:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=o9BL2aq+Glp2GiaLr9E4laerFqbm/h9Uz40Nep85fZU=;
-        b=O4Zxp7e1PLWFxMQITyMkHGc4MzqEMWDLA+nTEH7yyL7IPOW+Gqyvz0J3XtyJ6+1LDU
-         Aj7o9gPRxZfI9fX0R0/a8J+GMgY5cO7FGP2gh5WCKBuqwkJ+pm4rbt3rpDnqzCICWNYi
-         CBRbPx/4o5Jvsj+jyZh739E5rmwm8U7stE9PnejKFP+VS7JLFMlxDCw1acx6ablO11TI
-         Pw1Bf55kJCVV9B09oJI+hJMdEbHSzJkelrZEFCkNNuvcU24Fo08L3sa+RbaQwK8lRYOe
-         4ewkMMBMAa9gpu/Xu3gQgC+1DEFGf+SGC6Whu4j+1biOFUs0DoaF94GPYWF/cXVg/DPt
-         rwxg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=vKI9hOdRsycB1cOoFMiddNOLZ6leR1+qJXbgkTLjIxg=;
+        b=b0zyAMSwqjswXu2qnYP44TBhVg4dB1wl0SnCuKfWudYlyHHmsUfK75AxIy/EIbmH+y
+         tVhFAGLeUI50R03HZwKbHyXSqsJY/RZA9nro7P1YSpSWglRUlwZtF8CL1tPhEORT78zO
+         S4V2GYGIEoezzGwiqZUu5GkBkgiRAycsDP51sLq8E0A2+E6NvtmugCTl4mN6s66RyTvM
+         /xeF5s/zaEh/3QVlaKGiwD0a73b3WX8JYi4W7/CWTHTqbmVHrM0bHl5x+60yCB8mKjSu
+         u7E+fEICcwVjkNxc1S6SeEW0xWLfkdw6bIUQEs5mWuuo7cFtzvpkF9vIXqWR7n4EyJxd
+         oLOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=o9BL2aq+Glp2GiaLr9E4laerFqbm/h9Uz40Nep85fZU=;
-        b=WTyS8EfRAEO6waRi+UZAOWQdRIj2lZmWpJV/Nc9ta2LeHvtlBa4c+zl3F3VzqVZJae
-         iA4Df+C0nxn/aae1IhRdy+Y9FU+9lHdXjHVEWQOdE5bbpASYb7SpVFrmp5hxI7xBrya2
-         hbx/vy3te0TKcLceCzErdyg9TleCZGNHXCBMieBTBzoX8shIZ4YmzTPENy8sjdRCkG7S
-         5EfmWnSdU3kJh6MKG3z8X51gaXBErSm80lUhpor6t13fh3NU1665xk9O1dL/qaoIsq2+
-         N5xRi0Q9zK2i58KZT/XEZLzNHBV+8E4tOx/2fFAD3iE9boGUHq8mhgyHexuabnUALgKY
-         BOxA==
-X-Gm-Message-State: AOAM532Fin3//Fb4f/Xv/7AQRtqbKAuB8ctIv+JI8eBJxUdQuvnVV9i2
-        wctvNeZ23kGGX1h35GfoCHXAReCE9UVkRg==
-X-Google-Smtp-Source: ABdhPJzwOLecmQQ2wcTvAqBvG+eJx7Y5RRu7ES1sw0LNMQHBQtjQMJbNuIkKw3BkVcrD7Nh8rU9JMQ==
-X-Received: by 2002:a05:6512:2185:b0:448:5d78:d283 with SMTP id b5-20020a056512218500b004485d78d283mr685316lft.221.1646853810805;
-        Wed, 09 Mar 2022 11:23:30 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=vKI9hOdRsycB1cOoFMiddNOLZ6leR1+qJXbgkTLjIxg=;
+        b=5qeLpU7iuCUnigk2CTqMjKExkMGMwnr7RZ9fOqIQfoZpznvYykklBC3WAt/2Do8SHp
+         hYaG4Aj6jTrCUCkFWeuzukWiTlgK1apkbJpfur2uV/6qNNJRDZHjVR1s3x2pPvxCJ7Te
+         ys9ybfllJq0KlQjr2zXlZk0Vbq/MAQw+0J/YGFRf8le6TWspXLaRbIxdT8I2eJC7YSWe
+         QjPbC1SOoD1u3CD5qY6eAgJevmLTsEsdhkRvSgU83uhMDilCk5KMuE8OSCuIvXu3K8WV
+         tdD1BEmz6sNyrdxP/oOtDFrN7YSX+WlugCBNVth9Uk5/XRRVCTma1wMK6zoWuThlbmRo
+         OQ2g==
+X-Gm-Message-State: AOAM530BIluO9OtZqAfUHkjyUDKvhW79mHOiZB+L8+VwsPm4jqd+DDN3
+        h0NCHtptRfNdK4j4g0EunceyPmlUz9PaGQ==
+X-Google-Smtp-Source: ABdhPJzY/MB6CxYwLXSOQQYBXM10BOcT493/Ar4NIq2HnNnpBpWYkRF+XA+7KYMuZanNHbcHcP1y+Q==
+X-Received: by 2002:a2e:2202:0:b0:248:684:4476 with SMTP id i2-20020a2e2202000000b0024806844476mr691421lji.64.1646853812433;
+        Wed, 09 Mar 2022 11:23:32 -0800 (PST)
 Received: from wbg.labs.westermo.se (h-98-128-229-222.NA.cust.bahnhof.se. [98.128.229.222])
-        by smtp.gmail.com with ESMTPSA id f11-20020a19dc4b000000b0044389008f64sm540691lfj.164.2022.03.09.11.23.28
+        by smtp.gmail.com with ESMTPSA id f11-20020a19dc4b000000b0044389008f64sm540691lfj.164.2022.03.09.11.23.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 11:23:29 -0800 (PST)
+        Wed, 09 Mar 2022 11:23:31 -0800 (PST)
 From:   Joachim Wiberg <troglobit@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Joachim Wiberg <troglobit@gmail.com>
-Subject: [PATCH iproute2-next v3 0/7] bridge: support for controlling broadcast flooding per port
-Date:   Wed,  9 Mar 2022 20:23:09 +0100
-Message-Id: <20220309192316.2918792-1-troglobit@gmail.com>
+Subject: [PATCH iproute2-next v3 1/7] bridge: support for controlling flooding of broadcast per port
+Date:   Wed,  9 Mar 2022 20:23:10 +0100
+Message-Id: <20220309192316.2918792-2-troglobit@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220309192316.2918792-1-troglobit@gmail.com>
+References: <20220309192316.2918792-1-troglobit@gmail.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
@@ -70,45 +72,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add per-port support for controlling flooding of broadcast traffic.
+Similar to unicast and multcast flooding that already exist.
 
-this patch set address a slight omission in controlling broadcast
-flooding per bridge port, which the bridge has had support for a good
-while now.
+Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+---
+ bridge/link.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-v3:
-  - Move bcast_flood option in manual files to before the mcast_flood
-    option, instead of breaking the two mcast options.  Unfortunately
-    the other options are not alphabetically sorted, so this was the
-    least worst option. (Stephen)
-  - Add missing closing " for 'bridge mdb show' in bridge(8) SYNOPSIS
-v2:
-  - Add bcast_flood also to ip/iplink_bridge_slave.c (Nik)
-  - Update man page for ip-link(8) with new bcast_flood flag
-  - Update mcast_flood in same man page slightly
-  - Fix minor weird whitespace issues causing sudden line breaks
-v1:
-  - Add bcast_flood to bridge/link.c
-  - Update man page for bridge(8) with bcast_flood for brports
-
-Best regards
- /Joachim
-
-Joachim Wiberg (7):
-  bridge: support for controlling flooding of broadcast per port
-  man: bridge: document new bcast_flood flag for bridge ports
-  man: bridge: add missing closing " in bridge show mdb
-  ip: iplink_bridge_slave: support for broadcast flooding
-  man: ip-link: document new bcast_flood flag on bridge ports
-  man: ip-link: mention bridge port's default mcast_flood state
-  man: ip-link: whitespace fixes to odd line breaks mid sentence
-
- bridge/link.c            | 13 +++++++++++++
- ip/iplink_bridge_slave.c |  9 +++++++++
- man/man8/bridge.8        |  8 +++++++-
- man/man8/ip-link.8.in    | 20 +++++++++++++-------
- 4 files changed, 42 insertions(+), 8 deletions(-)
-
+diff --git a/bridge/link.c b/bridge/link.c
+index bc7837a9..407dc8ea 100644
+--- a/bridge/link.c
++++ b/bridge/link.c
+@@ -153,6 +153,9 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
+ 		if (prtb[IFLA_BRPORT_MCAST_FLOOD])
+ 			print_on_off(PRINT_ANY, "mcast_flood", "mcast_flood %s ",
+ 				     rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_FLOOD]));
++		if (prtb[IFLA_BRPORT_BCAST_FLOOD])
++			print_on_off(PRINT_ANY, "bcast_flood", "bcast_flood %s ",
++				     rta_getattr_u8(prtb[IFLA_BRPORT_BCAST_FLOOD]));
+ 		if (prtb[IFLA_BRPORT_MCAST_TO_UCAST])
+ 			print_on_off(PRINT_ANY, "mcast_to_unicast", "mcast_to_unicast %s ",
+ 				     rta_getattr_u8(prtb[IFLA_BRPORT_MCAST_TO_UCAST]));
+@@ -265,6 +268,7 @@ static void usage(void)
+ 		"                               [ learning_sync {on | off} ]\n"
+ 		"                               [ flood {on | off} ]\n"
+ 		"                               [ mcast_flood {on | off} ]\n"
++		"                               [ bcast_flood {on | off} ]\n"
+ 		"                               [ mcast_to_unicast {on | off} ]\n"
+ 		"                               [ neigh_suppress {on | off} ]\n"
+ 		"                               [ vlan_tunnel {on | off} ]\n"
+@@ -296,6 +300,7 @@ static int brlink_modify(int argc, char **argv)
+ 	__s8 flood = -1;
+ 	__s8 vlan_tunnel = -1;
+ 	__s8 mcast_flood = -1;
++	__s8 bcast_flood = -1;
+ 	__s8 mcast_to_unicast = -1;
+ 	__s8 isolated = -1;
+ 	__s8 hairpin = -1;
+@@ -354,6 +359,11 @@ static int brlink_modify(int argc, char **argv)
+ 			mcast_flood = parse_on_off("mcast_flood", *argv, &ret);
+ 			if (ret)
+ 				return ret;
++		} else if (strcmp(*argv, "bcast_flood") == 0) {
++			NEXT_ARG();
++			bcast_flood = parse_on_off("bcast_flood", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "mcast_to_unicast") == 0) {
+ 			NEXT_ARG();
+ 			mcast_to_unicast = parse_on_off("mcast_to_unicast", *argv, &ret);
+@@ -456,6 +466,9 @@ static int brlink_modify(int argc, char **argv)
+ 	if (mcast_flood >= 0)
+ 		addattr8(&req.n, sizeof(req), IFLA_BRPORT_MCAST_FLOOD,
+ 			 mcast_flood);
++	if (bcast_flood >= 0)
++		addattr8(&req.n, sizeof(req), IFLA_BRPORT_BCAST_FLOOD,
++			 bcast_flood);
+ 	if (mcast_to_unicast >= 0)
+ 		addattr8(&req.n, sizeof(req), IFLA_BRPORT_MCAST_TO_UCAST,
+ 			 mcast_to_unicast);
 -- 
 2.25.1
 
