@@ -2,130 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6A1B4D3597
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:42:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23E2E4D36F8
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:44:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236592AbiCIRLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 12:11:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        id S236878AbiCIRRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 12:17:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236588AbiCIRLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:11:00 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AFF38794;
-        Wed,  9 Mar 2022 09:03:54 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id c25so1570955edj.13;
-        Wed, 09 Mar 2022 09:03:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=k141GwidNXRjahdS4nq6wClv46C5Je0axvt+W5lVMQk=;
-        b=PdiEj+1Aa51J+awk55tE9/R3W0LIoQGtcEoKk9RtW5aNNQqg24erRB0bCZXjETVH+H
-         NXhO1TaxSzmwuzxfs2+bIzZHdfGWKO6NLXGZjEOKiVDbB24HEUbAObdXvHvyt+7P0Nxj
-         ufe+DHxvaGvH/P1e6uBxVTDUaryB7BnJV9ie1kmBDJAr3kwHftc7MOWcgP2pMq2FgSPA
-         UEtNdjoZOxFTqcXMRlaHsr+2WEhhvpP/qKyAw+no8NrN+DjhLdaB9ZfyNlICJGqIvn3O
-         YwdFkGTH6q9R4kMZs4hIhrCCgJ4u/x+EWIZMx+jPC4LsHrHsqBpRxuSqotPjhah/GN9o
-         LRdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=k141GwidNXRjahdS4nq6wClv46C5Je0axvt+W5lVMQk=;
-        b=OHEXsCVwMGm1SXfFgeRn2f0hHHHae/2uRb3w4HqLB318aNBJ6fs+LQcJBAYasWA3KD
-         ON5J11sBkrqZBf7pAE3DkYur1LUrANtm246Jdd5MXlao4P4l9NHsIcOBGjDj0Qzq+lpS
-         mEhJXyIM8f5YyAE18xSPkfnxyhsDOsJEZ5jC/db7siNPxdX9Y22tfecRgdRxLNRtKArL
-         EGzC3Yqi8yBUXh5cAUQA2Qn3ETj1pnTW7oAf/ymj3TAgZU7TBTQ/wzkVTavoihef5aNh
-         ynLaSaDvETcQqEllqjhNkWg5WEFgqRufIAYSuIsGZm67PdKFz91IQ1K2xu7qadNwD7j5
-         jeGQ==
-X-Gm-Message-State: AOAM530T2HBKB/sjYsuyfOjZOYzlEP+9qbV9tAjU4FtXmrhPFLHAo392
-        jyxjZUFDM926v4VK1M6o/8o=
-X-Google-Smtp-Source: ABdhPJzH1n/dW6F/FfDqnkYKpsgEVC3b/FyC5pynSjuvTOkiGMKVlb6ljXIZfTPGC9OhdXoe4m5d1w==
-X-Received: by 2002:aa7:c6d7:0:b0:415:a0fc:1dcd with SMTP id b23-20020aa7c6d7000000b00415a0fc1dcdmr432777eds.266.1646845432914;
-        Wed, 09 Mar 2022 09:03:52 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id yy18-20020a170906dc1200b006d6e5c75029sm913693ejb.187.2022.03.09.09.03.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 09:03:52 -0800 (PST)
-Date:   Wed, 9 Mar 2022 19:03:50 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 06/10] net: dsa: Pass VLAN MSTI migration
- notifications to driver
-Message-ID: <20220309170350.fzp3d6jjpiskdhqv@skbuf>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-7-tobias@waldekranz.com>
- <20220303222942.dkz7bfuagkv7hbpp@skbuf>
- <87pmmvm8ll.fsf@waldekranz.com>
+        with ESMTP id S237135AbiCIRRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:17:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70065CF3B5;
+        Wed,  9 Mar 2022 09:15:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F15AEB82229;
+        Wed,  9 Mar 2022 17:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC9FC340E8;
+        Wed,  9 Mar 2022 17:15:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646846110;
+        bh=SkM8iGSGYhgOrIRJdrVqhWJ2hKO7IhD4kGpAJ6LqKt4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SbUK4DFBP2PrFAFmiPEvsEutUFrVrh3/zaMf+HSp7Fuk+SmIYazUGgzuCP27Wtuxi
+         KSblCR77Lva4Rk7SJiCI8G60pjpk/7MI+9+LbJGr8UAcZajU0DbEIylqV6qKWYEGYo
+         4wrFhkSpB2Ojtdh2Ru54sJ2VbOj6F6Dcis8lJdZ5TPr3NVBJ71SK8Un2oncRWnh5nB
+         nIe9lPYE/IcME30vI2xeWlvdBchUb7Ca0QK0pY4GE7qs1B1/W0nH0APSMLHQrMgi1Q
+         OgHnqGW6R7Eba5iR9YGMCzueMG9TnDiFHgLmjJadIZm74x2fxUXhsBx0rDfcZMVcax
+         KIgHL0fASyfcw==
+Date:   Wed, 9 Mar 2022 09:15:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH net] xdp: xdp_mem_allocator can be NULL in
+ trace_mem_connect().
+Message-ID: <20220309091508.4e48511f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87sfrt7i1i.fsf@toke.dk>
+References: <YiC0BwndXiwxGDNz@linutronix.de>
+        <875yovdtm4.fsf@toke.dk>
+        <YiDM0WRlWuM2jjNJ@linutronix.de>
+        <87y21l7lmr.fsf@toke.dk>
+        <YiZIEVTRMQVYe8DP@linutronix.de>
+        <87sfrt7i1i.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pmmvm8ll.fsf@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 04:47:02PM +0100, Tobias Waldekranz wrote:
-> >> +int dsa_port_vlan_msti(struct dsa_port *dp, const struct switchdev_attr *attr)
-> >> +{
-> >> +	struct dsa_switch *ds = dp->ds;
-> >> +
-> >> +	if (!ds->ops->vlan_msti_set)
-> >> +		return -EOPNOTSUPP;
-> >> +
-> >> +	return ds->ops->vlan_msti_set(ds, attr);
+On Mon, 07 Mar 2022 19:07:37 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
+>=20
+> > On 2022-03-07 17:50:04 [+0100], Toke H=C3=B8iland-J=C3=B8rgensen wrote:=
+ =20
+> >>=20
+> >> Right, looking at the code again, the id is only assigned in the path
+> >> that doesn't return NULL from __xdp_reg_mem_model().
+> >>=20
+> >> Given that the trace points were put in specifically to be able to pair
+> >> connect/disconnect using the IDs, I don't think there's any use to
+> >> creating the events if there's no ID, so I think we should fix it by
+> >> skipping the trace event entirely if xdp_alloc is NULL. =20
 > >
-> > I guess this doesn't need to be a cross-chip notifier event for all
-> > switches, because replication to all bridge ports is handled by
-> > switchdev_handle_port_attr_set(). Ok. But isn't it called too many times
-> > per switch?
-> 
-> It is certainly called more times than necessary. But I'm not aware of
-> any way to limit it. Just as with other bridge-global settings like
-> ageing timeout, the bridge will just replicate the event to each port,
-> not knowing whether some of them belong to the same underlying ASIC or
-> not.
-> 
-> We could leverage hwdoms in the bridge to figure that out, but then:
+> > This sounds like a reasonable explanation. If nobody disagrees then I
+> > post a new patch tomorrow and try to recycle some of what you wrote :) =
+=20
+>=20
+> SGTM :)
 
-Hmm, uncalled for. Also, not sure how it helps (it just plain doesn't
-work, as you've pointed out below yourself).
-
-> 
-> - Drivers that do not implement forward offloading would miss out on
->   this optimization. Unfortunate but not a big deal.
-> - Since DSA presents multi-chip trees as a single switchdev, the DSA
->   layer would have to replicate the event out to each device. Doable,
->   but feels like a series of its own.
-
-I've mentally walked through the alternatives and I don't see a practical
-alternative than letting the driver cut out the duplicate calls.
-
-Maybe it's worth raising awareness by adding a comment above the
-dsa_switch_ops :: vlan_msti_set definition that drivers should be
-prepared to handle such calls.
-
-Case in point, in mv88e6xxx_vlan_msti_set() you could avoid some useless
-MDIO transactions (a call to mv88e6xxx_vtu_loadpurge) with a simple
-"if (vlan.sid != new_sid)" check. Basically just go through a refcount
-bump followed by an immediate drop.
+Was the patch posted? This seems to be a 5.17 thing, so it'd be really
+really good if the fix was in net by tomorrow morning! :S
