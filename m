@@ -2,107 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E84674D2B90
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 351524D2B94
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbiCIJOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
+        id S231919AbiCIJP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 04:15:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231263AbiCIJOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:14:37 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E15B3F339
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 01:13:36 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9CA453F60B
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 09:13:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1646817214;
-        bh=DWve8mUzjjNi/DaGPnOk7W3TtiB3wUxX/ugKfBnsP20=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=gPQuIz9S15FrfE4hSaPrPJ7ItBAJ2RWh5SR6aH79lK4NBe5WsLG9yJTDzltEa76B6
-         +pT2NImiu8nv6da4yL3rWaQRz0BAAx541W1YJ0afdbnGraBIEulxs94FKyRBDlXMN3
-         VZG9XgzXTJ+zg67yANpDvP2ivjQQ68rX+nV+9S1C9mcE4IkggPN8LGkR58tTd7NGSl
-         FKNOOglFSheu20xek9NIUGTBcFoZnp/iDgmuwEAvssJqoRAXMYeKUmCnfcu9ku4Dkf
-         bH7cNdcgy/oBWNM9SjL4msOJKBl/AByoNmIOrmoIhTUP5cQdC/Ui6dXUSBmT5HItn5
-         USEqszgErdZ0A==
-Received: by mail-ed1-f69.google.com with SMTP id cm27-20020a0564020c9b00b004137effc24bso945529edb.10
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 01:13:34 -0800 (PST)
+        with ESMTP id S231685AbiCIJP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:15:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3A4C157233
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 01:14:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646817296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sc9oWQ1T35bRoFzTSlgzenvWUozmVf90/ZtKZIwMHUs=;
+        b=EKDNhhxOZjbWhJTtS+5mu33ZxOh0SeHPZqD+cVEut5kfNE0s5AjOfpjguJ2GDhEjKWN+RS
+        /HJM6vDYpIsezzr6gZwxNd01AtqjvtJFvR9nr1JZr0ebyix6xSqAViqHf4xQaYVbi2rGfG
+        enLTGSFPvPAA4fmkIJ2gprJVLPynKmQ=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-380-3g9qussLMH60DMAfC4I8GA-1; Wed, 09 Mar 2022 04:14:55 -0500
+X-MC-Unique: 3g9qussLMH60DMAfC4I8GA-1
+Received: by mail-pj1-f69.google.com with SMTP id j10-20020a17090a7e8a00b001bbef243093so3442529pjl.1
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 01:14:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=DWve8mUzjjNi/DaGPnOk7W3TtiB3wUxX/ugKfBnsP20=;
-        b=nzvI5ek2LZrwVPhBrV9M/d+mIuHJCfuAQln/hEmkiO/kVgpwqljh+4yboc8y51Yp7g
-         7sG32j2+J++2Cp4LbNphJ5ZB0IGvJdJxiXb77xWyn636WGsAA+Dhr1MQdxDxfS71/v6f
-         oe4uKoISdFzDrSCenDBLA/pFaOrj/fH07MVBRfkpH1GDhxQnwtSCK1tV8eLp8TKRofzd
-         t6stYHNfHTthm0FYo5mCA5XGdRecpB+zdM+024mLZHWeZQYvagz6KuRF76MeK0eKtfWu
-         CVqj6gV3J87SoPfRFGnsP17zdMw8KWGy1BcTMzA4/fMyl62v7w19TBzBvb57dEs4+gjF
-         r+tw==
-X-Gm-Message-State: AOAM533hCgZbVTyK3OVslhhw0QpZngcKDmL7KUv8gxtFaXD8GAZXTWeY
-        /+BA3KY0GBNVjyYieGY/0ISNdaRpKjwCFkD0QnEekonHf9Zpzjl5CWLN/wBi8Z/ld2HQpXuYlWp
-        T3bhGQOUriBTM+EfL/YOfnGhpL+QnE3orkA==
-X-Received: by 2002:a17:907:7849:b0:6d5:87bd:5602 with SMTP id lb9-20020a170907784900b006d587bd5602mr16471508ejc.349.1646817214166;
-        Wed, 09 Mar 2022 01:13:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyaayiRmg6jlQ9OnyXmW7jxsQHTWWXcd8Bg4GTp0MUrRybx25RZqMcDfYHZw8faWNI/n5LJoA==
-X-Received: by 2002:a17:907:7849:b0:6d5:87bd:5602 with SMTP id lb9-20020a170907784900b006d587bd5602mr16471490ejc.349.1646817213950;
-        Wed, 09 Mar 2022 01:13:33 -0800 (PST)
-Received: from [192.168.68.108] (p5087f509.dip0.t-ipconnect.de. [80.135.245.9])
-        by smtp.gmail.com with ESMTPSA id k3-20020a05640212c300b0041605b2d9c1sm513258edx.58.2022.03.09.01.13.33
+        bh=sc9oWQ1T35bRoFzTSlgzenvWUozmVf90/ZtKZIwMHUs=;
+        b=dbyaJ6BITM8u6kDKL4KkpLRp0NBc4zoUFrE9IKSStJFu/c754Lh5upJk4twrUgrGzI
+         9hz7GvfMdVsNZCp8OwB2P5xgJd+beyvlauRtZF3Tjrh+8Nc2aVZIZOvhPDDpcJw3oZCZ
+         QUDvI2wzIcdpGyvGlhzXs3pzTFbGqRXLzPhcYwcOzl3PZjd3FvJiN+82+6VZIdeSAq+t
+         RSICsk3eHAqzOuriQo6B6hZNXfB+3fdCy3Kj1xGKbplp1d2q6QXrCzchW1r7VEzutECS
+         U+FTYxOzpM4V8d/Porab4ORr+X/0Vg50sxycsPkL2IRtQES2hqR1qJNT5i5AvW4V4UxC
+         qdNg==
+X-Gm-Message-State: AOAM530apmQwA0iSzk3Q9NdMNJcjnChcHTiPL+ZwFsfo1fZjLzRlyUNP
+        2wMybinBHh1GV2Q1ek2i5DrNGxOKd09q8Lcp7GXWX08f2SERmrSWCZsBB3w6r9AD2+GKN004LMA
+        5nPS97krD33bKgiki
+X-Received: by 2002:a17:90b:1b43:b0:1bf:6180:367a with SMTP id nv3-20020a17090b1b4300b001bf6180367amr9413279pjb.172.1646817294425;
+        Wed, 09 Mar 2022 01:14:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJybmsMuEBcxZ7oYSDw9tPVnvRoFjWIEzgnMTihTr3NYtzJOE9wVfTp/SLtdAOZZcYSLhnlPZw==
+X-Received: by 2002:a17:90b:1b43:b0:1bf:6180:367a with SMTP id nv3-20020a17090b1b4300b001bf6180367amr9413201pjb.172.1646817294071;
+        Wed, 09 Mar 2022 01:14:54 -0800 (PST)
+Received: from [10.72.12.183] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h17-20020a63df51000000b0036b9776ae5bsm1721846pgj.85.2022.03.09.01.14.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Mar 2022 01:13:33 -0800 (PST)
-Message-ID: <8e6684df-7b6e-ccb5-b123-2dc8337442bd@canonical.com>
-Date:   Wed, 9 Mar 2022 10:13:32 +0100
+        Wed, 09 Mar 2022 01:14:53 -0800 (PST)
+Message-ID: <7ff78ff8-bdd0-bb5e-1cea-cf1126226feb@redhat.com>
+Date:   Wed, 9 Mar 2022 17:14:34 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: netdevsim: fix byte order on ipsec debugfs file
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v7 24/26] virtio_net: support rx/tx queue reset
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <20220308135106.890270-1-kleber.souza@canonical.com>
- <20220308215851.397817bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Kleber Souza <kleber.souza@canonical.com>
-In-Reply-To: <20220308215851.397817bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org
+References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
+ <20220308123518.33800-25-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220308123518.33800-25-xuanzhuo@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09.03.22 06:58, Jakub Kicinski wrote:
-> On Tue,  8 Mar 2022 14:51:06 +0100 Kleber Sacilotto de Souza wrote:
->> When adding a new xfrm state, the data provided via struct xfrm_state
->> is stored in network byte order. This needs to be taken into
->> consideration when exporting the SAs data to userspace via debugfs,
->> otherwise the content will depend on the system endianness. Fix this by
->> converting all multi-byte fields from network to host order.
->>
->> Also fix the selftest script which was expecting the data as exported by
->> a little-endian system, which was inverted.
->>
->> Fixes: 7699353da875 ("netdevsim: add ipsec offload testing")
->> Fixes: 2766a11161cc ("selftests: rtnetlink: add ipsec offload API test")
->> Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
-> 
-> Then the struct members need to have the correct types,
-> as is this patch adds sparse warnings (build with C=1).
 
-Hi Jakub,
+在 2022/3/8 下午8:35, Xuan Zhuo 写道:
+> This patch implements the reset function of the rx, tx queues.
+>
+> Based on this function, it is possible to modify the ring num of the
+> queue. And quickly recycle the buffer in the queue.
+>
+> In the process of the queue disable, in theory, as long as virtio
+> supports queue reset, there will be no exceptions.
+>
+> However, in the process of the queue enable, there may be exceptions due to
+> memory allocation.  In this case, vq is not available, but we still have
+> to execute napi_enable(). Because napi_disable is similar to a lock,
+> napi_enable must be called after calling napi_disable.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>   drivers/net/virtio_net.c | 107 +++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 107 insertions(+)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 409a8e180918..ffff323dcef0 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -251,6 +251,11 @@ struct padded_vnet_hdr {
+>   	char padding[4];
+>   };
+>   
+> +static void virtnet_sq_free_unused_bufs(struct virtnet_info *vi,
+> +					struct send_queue *sq);
+> +static void virtnet_rq_free_unused_bufs(struct virtnet_info *vi,
+> +					struct receive_queue *rq);
+> +
+>   static bool is_xdp_frame(void *ptr)
+>   {
+>   	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
+> @@ -1369,6 +1374,9 @@ static void virtnet_napi_enable(struct virtqueue *vq, struct napi_struct *napi)
+>   {
+>   	napi_enable(napi);
+>   
+> +	if (vq->reset)
+> +		return;
+> +
 
-Thank you for the review. I'll fix it and send a v2 shortly.
 
-Kleber
+Let's WARN_ONCE() here?
+
+
+>   	/* If all buffers were filled by other side before we napi_enabled, we
+>   	 * won't get another interrupt, so process any outstanding packets now.
+>   	 * Call local_bh_enable after to trigger softIRQ processing.
+> @@ -1413,6 +1421,10 @@ static void refill_work(struct work_struct *work)
+>   		struct receive_queue *rq = &vi->rq[i];
+>   
+>   		napi_disable(&rq->napi);
+> +		if (rq->vq->reset) {
+> +			virtnet_napi_enable(rq->vq, &rq->napi);
+> +			continue;
+> +		}
+
+
+This seems racy and it's a hint that we need sync with the refill work 
+during reset like what we did in virtnet_close():
+
+         /* Make sure refill_work doesn't re-enable napi! */
+         cancel_delayed_work_sync(&vi->refill);
+
+
+>   		still_empty = !try_fill_recv(vi, rq, GFP_KERNEL);
+>   		virtnet_napi_enable(rq->vq, &rq->napi);
+>   
+> @@ -1523,6 +1535,9 @@ static void virtnet_poll_cleantx(struct receive_queue *rq)
+>   	if (!sq->napi.weight || is_xdp_raw_buffer_queue(vi, index))
+>   		return;
+>   
+> +	if (sq->vq->reset)
+> +		return;
+
+
+It looks to me we'd better either WARN or just remove this. Since it 
+looks like a workaround for the un-synchronized NAPI somehow.
+
+
+> +
+>   	if (__netif_tx_trylock(txq)) {
+>   		do {
+>   			virtqueue_disable_cb(sq->vq);
+> @@ -1769,6 +1784,98 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+>   	return NETDEV_TX_OK;
+>   }
+>   
+> +static int virtnet_rx_vq_reset(struct virtnet_info *vi,
+> +			       struct receive_queue *rq, u32 ring_num)
+
+
+It's better to rename this as virtnet_rx_resize().
+
+
+> +{
+> +	int err;
+> +
+> +	/* stop napi */
+> +	napi_disable(&rq->napi);
+> +
+
+
+Here, as discussed above, we need synchronize with the refill work.
+
+
+> +	/* reset the queue */
+> +	err = virtio_reset_vq(rq->vq);
+> +	if (err)
+> +		goto err;
+
+
+Btw, most comment of this function seems useless since code already 
+explain themselves.
+
+
+> +
+> +	/* free bufs */
+> +	virtnet_rq_free_unused_bufs(vi, rq);
+> +
+> +	/* reset vring. */
+> +	err = virtqueue_reset_vring(rq->vq, ring_num);
+> +	if (err)
+> +		goto err;
+> +
+> +	/* enable reset queue */
+> +	err = virtio_enable_resetq(rq->vq);
+> +	if (err)
+> +		goto err;
+> +
+> +	/* fill recv */
+> +	if (!try_fill_recv(vi, rq, GFP_KERNEL))
+> +		schedule_delayed_work(&vi->refill, 0);
+> +
+> +	/* enable napi */
+> +	virtnet_napi_enable(rq->vq, &rq->napi);
+> +	return 0;
+> +
+> +err:
+> +	netdev_err(vi->dev,
+> +		   "reset rx reset vq fail: rx queue index: %ld err: %d\n",
+> +		   rq - vi->rq, err);
+> +	virtnet_napi_enable(rq->vq, &rq->napi);
+> +	return err;
+> +}
+> +
+> +static int virtnet_tx_vq_reset(struct virtnet_info *vi,
+> +			       struct send_queue *sq, u32 ring_num)
+> +{
+
+
+It looks to me it's better to rename this as "virtnet_rx_resize()"
+
+
+> +	struct netdev_queue *txq;
+> +	int err, qindex;
+> +
+> +	qindex = sq - vi->sq;
+> +
+> +	txq = netdev_get_tx_queue(vi->dev, qindex);
+> +	__netif_tx_lock_bh(txq);
+> +
+> +	/* stop tx queue and napi */
+> +	netif_stop_subqueue(vi->dev, qindex);
+> +	virtnet_napi_tx_disable(&sq->napi);
+
+
+There's no need to hold tx lock for napi disable.
+
+Thanks
+
+
+> +
+> +	__netif_tx_unlock_bh(txq);
+> +
+> +	/* reset the queue */
+> +	err = virtio_reset_vq(sq->vq);
+> +	if (err) {
+> +		netif_start_subqueue(vi->dev, qindex);
+> +		goto err;
+> +	}
+> +
+> +	/* free bufs */
+> +	virtnet_sq_free_unused_bufs(vi, sq);
+> +
+> +	/* reset vring. */
+> +	err = virtqueue_reset_vring(sq->vq, ring_num);
+> +	if (err)
+> +		goto err;
+> +
+> +	/* enable reset queue */
+> +	err = virtio_enable_resetq(sq->vq);
+> +	if (err)
+> +		goto err;
+> +
+> +	/* start tx queue and napi */
+> +	netif_start_subqueue(vi->dev, qindex);
+> +	virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
+> +	return 0;
+> +
+> +err:
+> +	netdev_err(vi->dev,
+> +		   "reset tx reset vq fail: tx queue index: %ld err: %d\n",
+> +		   sq - vi->sq, err);
+> +	virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
+> +	return err;
+> +}
+> +
+>   /*
+>    * Send command via the control virtqueue and check status.  Commands
+>    * supported by the hypervisor, as indicated by feature bits, should
+
