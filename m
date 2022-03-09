@@ -2,77 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D77A84D2F1B
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:34:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4A544D2F70
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232224AbiCIMfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 07:35:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        id S232865AbiCIMvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 07:51:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232781AbiCIMfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:35:03 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD85142365
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 04:34:04 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id bt26so3494650lfb.3
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 04:34:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=6txNCeY7AWJJpx/yE4XWczovluzseEoRTqfdbPHgl6Y=;
-        b=WGpR67gBQ8gAU2eCmA4H7YDUVHMf394plNC9HCqxgWGuclZO6jI6O0pa0RQPWzCmSJ
-         DtnC6SqZzEGeIaiJGkcL8hNnizVSHOYP8dj/jxqkYnJkDujsjDLgcy18JZIkvyDkRjpO
-         OaEWXhnK6kYy0JsGTIOOrEtivNm5lyWqbZ5mY/t/aU14qEjsQj8BlC3zmXoAFyhc5vNn
-         vy/cekghDxvoSBPNnTeou369ZWTL+Ov4NOK1jM8Mecd4o/2bAVektJa9Oa6jHCbyXSxC
-         Xa29ueJS02RYH9ax+OnQ7/iS70BEShlveZWUSQenHpoGjqbLXz+rfh5nHAzoq9PKmmpe
-         mIjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=6txNCeY7AWJJpx/yE4XWczovluzseEoRTqfdbPHgl6Y=;
-        b=zB3GVCBDhlq6WfQ6zMeuy02ZHGsDVZ2kS6DCeoN+4sIKVshjQYeaZqgeYAc8ZNyImK
-         PdGcX7YMShX5NHhBj1lx0SlkEFduC1JPelPwq4ULtf4Q4I66alrBqMNwS8/IyPbuOncu
-         6lq7oiJZ05zsiOw4PUPC/bOHVM+Q0SF4hXYLWWsvUmOcUBVkzWR1+8Uf8n54zKcRbxZt
-         z2/hvoNtGD9vCsXXxq46CWoz/scFAO+ANLifhADL39U9RJ8QLkVhD7RY061i/wjpendi
-         6k6x8DyMnmexnRJ+ePtYfeSHgLHFFmMo2ImO58fekV5PpIXiL5u1X1ruwZIZngJbEYJD
-         Mi5w==
-X-Gm-Message-State: AOAM532cl/P3xIAO01zFbrEpD0mtcjytUe99acJciAHfm4ZgzBcETCCw
-        8PgRGXcsdGOmh6pRO/xfr3o=
-X-Google-Smtp-Source: ABdhPJzn4+UXKrM7+vL+Pv0MFk6bNHRLfGxgmEA6RxlhfVpkZov/D/wPojyqYN7IB0hn20yeH6/OBA==
-X-Received: by 2002:a05:6512:3d05:b0:448:39b8:d5ef with SMTP id d5-20020a0565123d0500b0044839b8d5efmr6153811lfv.595.1646829242705;
-        Wed, 09 Mar 2022 04:34:02 -0800 (PST)
-Received: from wbg (a124.broadband3.quicknet.se. [46.17.184.124])
-        by smtp.gmail.com with ESMTPSA id m12-20020a056512114c00b00443ffe02a1fsm373716lfg.281.2022.03.09.04.34.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 04:34:01 -0800 (PST)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Subject: Re: [PATCH iproute2-next v2 4/6] man: ip-link: document new bcast_flood flag on bridge ports
-In-Reply-To: <20220308232812.5dc9e7f5@hermes.local>
-References: <20220309071716.2678952-1-troglobit@gmail.com> <20220309071716.2678952-5-troglobit@gmail.com> <20220308232812.5dc9e7f5@hermes.local>
-Date:   Wed, 09 Mar 2022 13:34:01 +0100
-Message-ID: <875yon9ufa.fsf@gmail.com>
+        with ESMTP id S230167AbiCIMvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:51:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3771A997C;
+        Wed,  9 Mar 2022 04:50:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81210619E1;
+        Wed,  9 Mar 2022 12:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D5638C340F4;
+        Wed,  9 Mar 2022 12:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646830210;
+        bh=I6ozOdglKxYbxHYFDFEkcL7osJhYjFDadHAfNPgMPFI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cGlkfYnpR/eAABCt2nS59oAeCyM60fcONQKj7SwKoaBj4ZNcyfKL8KcNY/qQceRpM
+         C5RuSyJIxuC0NUVTCwJCsYrBJKFaBNRznFtoxt35vKJXC9FlFInaxj4yZCDgbvwyM/
+         cTBO0hMp7SljK1ODE6OiYBSj6AcJ+HSczZD7QOxF2+M3vgFWxVOsA9nqqTdSfpjed1
+         mJCfUUmiFC6m8Wfsj5OoLGBiXkB/DYwcOsBcojfWS7ZzEQ2e4Be1Cjg8ay0J6brBG6
+         SoUJoBpgofDL/HZgfdhg2SmV2KxUacWKQluWVkkQYB3sh+ynNh4ZN9btkZ8GRQlLE3
+         pIBuSbIIegs9w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B6B74E7BB08;
+        Wed,  9 Mar 2022 12:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ax25: Fix NULL pointer dereference in ax25_kill_by_device
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164683021074.2371.639793018206811147.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Mar 2022 12:50:10 +0000
+References: <20220308081223.15919-1-duoming@zju.edu.cn>
+In-Reply-To: <20220308081223.15919-1-duoming@zju.edu.cn>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, jreuter@yaina.de
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 23:28, Stephen Hemminger <stephen@networkplumber.org> wrote:
-> Minor nit, would be better to put options in alphabetical order in document.
-> Certainly not splitting the two mcast options.
+Hello:
 
-Ah, of course!  I'll fix it up in a v3 later today, thanks!
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
- /J
- 
+On Tue,  8 Mar 2022 16:12:23 +0800 you wrote:
+> When two ax25 devices attempted to establish connection, the requester use ax25_create(),
+> ax25_bind() and ax25_connect() to initiate connection. The receiver use ax25_rcv() to
+> accept connection and use ax25_create_cb() in ax25_rcv() to create ax25_cb, but the
+> ax25_cb->sk is NULL. When the receiver is detaching, a NULL pointer dereference bug
+> caused by sock_hold(sk) in ax25_kill_by_device() will happen. The corresponding
+> fail log is shown below:
+> 
+> [...]
+
+Here is the summary with links:
+  - ax25: Fix NULL pointer dereference in ax25_kill_by_device
+    https://git.kernel.org/netdev/net/c/71171ac8eb34
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
