@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 642594D3118
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FFB94D311C
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:39:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233588AbiCIOjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 09:39:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
+        id S233580AbiCIOjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 09:39:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233586AbiCIOja (ORCPT
+        with ESMTP id S233587AbiCIOja (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:39:30 -0500
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2069.outbound.protection.outlook.com [40.107.21.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBD9124C32;
-        Wed,  9 Mar 2022 06:38:27 -0800 (PST)
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80048.outbound.protection.outlook.com [40.107.8.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B14D123BEA;
+        Wed,  9 Mar 2022 06:38:25 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Owbpe5/FqH7oPmAra0N5Vf3YwLslSTRCBNqKX3e6LlkEMuNeJU8ttbgNSngXIFlJQ7PEWcnpwC70Ou8Z+3fyIn1ezpCMG5/ZNT7GqqthNQ33g/q8rzds2KcMVgfDxB2htzjNapSkfCjlmIgv8GsBiuysJlHf6ewC+LYJ9c/HCx/tVTYqhS9iVRUtD7PjRpcOVe/jeYYQjYY44S+a1khtVw2JgHKhC1NZrmmYMZMYD9jKWMEaGWlvht7YT47wf7hk1hgRV7O9d6HBPw7/EIbxREFEtsu26GDIjlw+KjgHUO4h4EgLTl8h1yb3Q38/Q0R6MD3g6UFMb4Xc2e0CztrW6A==
+ b=IU7k8iB56YM250avr3TIYWG0uQTEu6F6lBa8Tzx06PsFrwaSK6EgqOyYhAn6hJt/SybwYcp6RvPLeqWJ5wZyiAPZeeZbzgHzyuqVAgvbb1JuYfH3V9I03GQzXeuAiu3hxxnmyggeCN1DE4mFimSMFOKkj/IRtVwPHXtQEYjR3LoutvQNyuDJWd8O5wsjIdpfr/KfJITOroTuIG59/72MdtkWwANDu/44ZUzHwQyX8q+r9oWW13XodVFW+uSiGPGyOzdxr8QsyH3dZKwr+fum2met7Rqi/aZfR9YHUREEoYUVJ8LZbDieb2Wc49EzcSR52q4KxWeBxpdohnpWZ8HaKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j8KAOoskIsZHU92TeE8ybyMh//n3srX1ri3s42vsitg=;
- b=K5knUig1CDeg4qmba/aTkyCTgjRZIxNi7NIi7QrOfSfHIocnpV02Nz7VjeBcvfpcyhqgzCclV2fKZgxfyFiZJbMIpJxWwV5j4Ij4JtD8C5KCNf6deYYfNkJCg5DXjtmp3aftnJIGJqQtwQpdlVGauSW8a0b6KoZKbwgsPfzhxbfTXnHIElIqjBWf/6ryd86gHCmbM2XSZ3hlw8C9+9paK7IjmCc8HXTmfWKcfFmLK8ac/zBBmn8qMVqVcy6JXvYDjM+HeZhaxRrRocsfCEI9UmqB3IXnpTZR2DoLOy21jq79B3pFcdZ5J1PvG39OmAg+fuuBERuJ0zapf9ZDv4wD8g==
+ bh=tO/kRJD7bEAKhxWaAZ0Ql2B+wW+lUHUVDjmD452KiP4=;
+ b=X/yjTiymbAF0k+AXg/8WUOoIkK/fJQ868O5DX7ZyFVwW5yjW0M1Tt+V78t9EeDDfk4lfvAkZYxshfxrHvFxN0ROPMrh1zk+hSmdYIPd8M+gehfTUAN3a07QcfojFw+mfG1FRXCbhQQqAsc63Veg8ksxbXG03jeByR9heAIHNSY/9ghzscqbY7oM4yjSwuYb34dHmeSHVuIq3+AnEi1MuJFUY/H2qgxRpMeXwu3AhZ/npTJ/P8ugxzGx+DSnLIgXpp1yNZhuMJmHlDwuIrptMkJ/7DDSnsPU6ywucBo8aK9XO4F3lukpFTt+YoOeZMHE7UJ2LCtJfNM1gXNWjf/aTyw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j8KAOoskIsZHU92TeE8ybyMh//n3srX1ri3s42vsitg=;
- b=b2TfTemLLEnzQRFBswLcfQTdowcD6G9z/qHQ3Koqy8V44LSxadhFHfVzub23tCRIbuska4lbCZSt6IbjwIYswmcSLnyFA1dANlrhlVU7s2q80bFuG8yws8GoGk9NE8+IwuFr46tHbKBJG8jS9podGDBKFgMsFCdkSSd0kgrPlQk=
+ bh=tO/kRJD7bEAKhxWaAZ0Ql2B+wW+lUHUVDjmD452KiP4=;
+ b=N/rNtTAaEzFZoplXZO/vQYPn8bHZdo1CpilD/VmO3cFdTZ9ARHl0girJHkIrAqonDyX8f+I+kBxzMIw/AxVU91M3cGufWBKQ9M6cO70gx0V7IwN/zjO1Fubsa64zJv4LKKdbDD5pthKeVh/v8Ga+XDxA1XXrEBritMUTY/yyaSY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
- by VI1PR04MB6094.eurprd04.prod.outlook.com (2603:10a6:803:f4::16) with
+ by AM9PR04MB8129.eurprd04.prod.outlook.com (2603:10a6:20b:3ea::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.21; Wed, 9 Mar
- 2022 14:38:22 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
+ 2022 14:38:23 +0000
 Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
  ([fe80::c58c:4cac:5bf9:5579]) by AM9PR04MB8555.eurprd04.prod.outlook.com
  ([fe80::c58c:4cac:5bf9:5579%7]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
- 14:38:22 +0000
+ 14:38:23 +0000
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
         leoyang.li@nxp.com, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 5/8] dpaa2-mac: retrieve API version and detect features
-Date:   Wed,  9 Mar 2022 16:37:48 +0200
-Message-Id: <20220309143751.3362678-6-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 6/8] dpaa2-mac: move setting up supported_interfaces into a function
+Date:   Wed,  9 Mar 2022 16:37:49 +0200
+Message-Id: <20220309143751.3362678-7-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220309143751.3362678-1-ioana.ciornei@nxp.com>
 References: <20220309143751.3362678-1-ioana.ciornei@nxp.com>
@@ -57,51 +57,54 @@ X-ClientProxiedBy: AM0PR02CA0187.eurprd02.prod.outlook.com
  (2603:10a6:20b:436::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4c04da0e-2bd7-4ed6-9664-08da01da75ec
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6094:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6094B8C5E36702114D80BE20E00A9@VI1PR04MB6094.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 1fb66cdd-ca7b-4dbd-a6a0-08da01da7674
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8129:EE_
+X-Microsoft-Antispam-PRVS: <AM9PR04MB8129E12622D1E02D8BA5DC3EE00A9@AM9PR04MB8129.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8X3hlA0WkD0Cn1pnyfW++0ePzPea/x0ivX7kY71C1mxCnL84IbnYfNTLvIfBVZROPaWR4sMY58YqcC1tA28IDm2Y59QHczkGFLsnN/E+Gu2hVYrzfGXgbj8kzr+yFheusSpOT5kgnyiUeDcA17ile8BQXX2mR+PezTYVT9iyT1KcQ3PeGhO1TANLW8ErMPbwA3qkT+CoAI8QaHtgIpGi9aMPV+4UX0AcMVAz1jleNCrRSoylqw3msG9XNSK09MP8HJTGKTgyCAXm7l3GEeR0/lFyxZm7XKd8iKwN9XRZRJDi1eO+xxOkKJy/SHrClj0mAyJze8XI3wZQokzItwug7kNUUcQzdWfObE7mzMtDxIQzOJH63jthqJW0jNPoVjPF3bgcanEleyTBvs8Gm9ME2qBIw1b2FSE5+JoN8poTDh7PQckmw4whUX0/HA4ZKxqjVMUdpHFhhPTaW7tpjJRN9r1MyT5esOLZlIJPEv75nueUfopmsQaRlGsHRjNUJIWXwTZ9sDdoQ+wf5GQsosbGBJSw+XQudITJWS3GFXED3WgKqjGVIx/ibPjX3euFxar4qYj65//eGh3LgxMgZV2Rle6/DjLd5BtEDH+4zuDiEZRJcPz37MQOX1ecbzkKODtEEdwLna3Rs8WjgtadyjlSGk/C3yJCasHYh4Zy0/0Bdc+suW7Jr5aYow0Vbn6BoLI2k9uXlfmyGJcWze2bSbjVvQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(6506007)(6512007)(8676002)(6486002)(2906002)(66946007)(186003)(4326008)(86362001)(66476007)(66556008)(38350700002)(38100700002)(36756003)(316002)(8936002)(26005)(1076003)(2616005)(44832011)(5660300002)(83380400001)(52116002)(508600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 33668CGSz5HzOpZyr4jFIDYYgxw+QiBHW3GmraHGFM+milgiSp3QB9iJ5FQnVgDxelG03huAFU7v8xgBlvKduslhoUXBRn0BqmeVjzAXquzmXOzsRcMjNyppjXI6sSmRUqwKPptEedgDThlSMO/Wg1RYCNYLXHBk/P22CV1CroL1it2CT7V4ND7I9nbSAoNsNbC4WdyzYF+aZplB2aA4OYGxq0RRPn3FH/k2J/LylV9jEvjeBmPo+S3Ho66Aq856vRryn/3Qt4jiCEl8ZHjjuB1unOaoItSlZzG79uydAA9xvjtVyvfcUI6oPrtwdIcxbgaaGcHhy530Q9yCEEpcJjNjj6QCjBqEF6ov+K7qBNLGauxahcxActi3Hj9g6z/Et5uqk8mgwFVjueD7Ucvss6NuKy16a+pQcmETvwxbc6ST+PertLdYt4dyPTavIjpBIw8Em7VXnfeNm7fOFLt+8qJB7PkB2vzAYug8Iw1vsGTnAKEO8FI6sRf3wL+qvatTJhtVCYQUV9ri2aZhYSvQIP4SKhTRczK7QISYlQ6VCbyGiD2PmWaFkHM0xzCgHCXe5cFltxfksYGeI5d+7sqdV6Ev9KMQRak6zF/I9kkvxjOwvil4OXFoeuqyjlT8nb1y0DKbaoHDQbMxG2E00aVNwH/yMrB6w0OH+GVLaMqNEHlVtjOOz5Sh2iV76SyvyLBkMTZf3yS/mUOEB+3LP0dH/A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(5660300002)(2906002)(498600001)(26005)(1076003)(6486002)(2616005)(86362001)(83380400001)(38350700002)(38100700002)(44832011)(52116002)(6506007)(6512007)(186003)(66946007)(8676002)(8936002)(4326008)(66476007)(36756003)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dDCOKDf3XRjAyZnDFinfNT/yGX144iSa7h+CmBJcu/jqfYLcAFgbFBONWYUX?=
- =?us-ascii?Q?v/S+lcETaa9ObnHUaK8uL4F7r4NtAuwp1zSixpmtYYJhsPmOdTvrmRApjSW3?=
- =?us-ascii?Q?0oUdl/eM/ZwXaDSjdQWT1SZHe23SZWc0CJOVAnHSkDssWl0B76R62jGpTosl?=
- =?us-ascii?Q?BqVlAzTOW+i23sOxGLB3Wp3MUNq0ebKWjrJ+maLGC/gcmyHAif4bbzCGxTKe?=
- =?us-ascii?Q?4Imk7Uy+SppCR8OUl2pNRFl7KTaX/Rkt+NNM656H9gRwh7b0tF39hhjFe82J?=
- =?us-ascii?Q?ECWGXqGZfMD2ruEixr4aKTr36h2sG+/jNjCbT+nfGuTi3AOZVlG9/n44cf1S?=
- =?us-ascii?Q?UKuKhbhwC7kmv3bNB8QiSsLuqHNuaNs06VfTzRZQfO987RTvplCMSha/13Pb?=
- =?us-ascii?Q?2Mhi1U4QeY5i5hotNBEl1shZzP4hqwiMPcWjJZ7GTN/S6qZLlrqfi5CTlIuj?=
- =?us-ascii?Q?PW11bFvSPDAhz2rlfzRdYY4LHUSx5wrcCJmyOVzmsFQq3CCXY1X2nV1gfM1v?=
- =?us-ascii?Q?LJmRonb9AmoaDyQc8iTiinpMOvexlpLwi8XB9u60KDTsbsNsErHlSSy+GWKV?=
- =?us-ascii?Q?ifU5Ed36Wi+sIQ5XP700lKSqDhnOumNdMXIfBI2T+DU8/fzYVrEfXFSz4xrQ?=
- =?us-ascii?Q?TxAbDG0gUNyIy8CJNFOpnqi7HVpiYIban4HEFkVc+K9hSlSZZ8T2mOlIe7AQ?=
- =?us-ascii?Q?PcVxOzt3tJUmTzSCeM0PvOJ2ZHEZYuzsJrlkZFV+GjqHCIIeoQFcyil64cuI?=
- =?us-ascii?Q?KxnNvCzvV0J6Ls+AEzOI+ThUmS3r/2gsHYejRKeKTgRZSPdwbPdUpyQg95Rq?=
- =?us-ascii?Q?fvOtiLlTeR84xmUnaivirLq1Wj2awz5TeULSypLPFs8eY4e1eBOk1Ruo231S?=
- =?us-ascii?Q?i7auO51BDYDNwVRDOmoA76eDz20xjJkQYPdjMekzSLTaCJ+WS4q9tfO3Fke7?=
- =?us-ascii?Q?l+3muz/R0CNiZWLGc/m0256/9Yw0zp3Rw2YMfxT7NWQO4RUMDCSlrqSq2a1S?=
- =?us-ascii?Q?uVkvBtKJtTDa1/W2eQ+WQqCfqw9DgEAfAq0ri2gcCqYtoXrsIuip63Nr9BZL?=
- =?us-ascii?Q?klJFCmKivaz5yWjUQLlI/r5B3DIbCrpcGygU61WSgKXagrZkZK8ARcqJnwmI?=
- =?us-ascii?Q?l5mgil0HBQwWSe/PE1/smVlvTOPMR0bqxdfJ6H+sAFxNhl+CFHwkG+b/wzHx?=
- =?us-ascii?Q?SCkQriJtq40RfDVQr8tslURrowWlzkHHNRNr4PtDQsjmTQ2ktE53Ya8ZQeXm?=
- =?us-ascii?Q?qD4fqvj2OSR/LkTjy+f0flNxCJ6Wo63jBlNNBBjxXxxn9JnrMh22TAnl6Oc1?=
- =?us-ascii?Q?HRQ40nQWrLw6wa/WROB4cG53QOFZnsKcMLk7IFQ4Z6zREsn3FCwBOHWtq1LN?=
- =?us-ascii?Q?ivjavrH4/UUmfF3C3JF3d2k+/BfX66/OTYdnAIigae8WNfQ5fhcDQEsd+MAl?=
- =?us-ascii?Q?rV4pyT6gu6s4o7peLa/r4MyzcC6n/MagK37cjYU5wKT0WAnjbB6bGg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uXw0v04eoIR7+WY+2nz5AWu4rH5NoLpqUEXNzA89NUhylEF3TJ7cdQlJR1Eh?=
+ =?us-ascii?Q?y0Dtl2ufOpv3hJxKi86aCVOr7Cg8ZEsn0V1sjhFvzT1T55zX62d1DXV+RMxQ?=
+ =?us-ascii?Q?vlurhr2IquQDLPHkw/zzvhs6odDdZZbllcBSS4NyAtolsqdrZ1GH0rUyQ6r/?=
+ =?us-ascii?Q?coqAC5fPaFxJjViDYc0Qi2ZaeNrgofQRhMPDiOy8EZ34AhcsikdvUiv08BVt?=
+ =?us-ascii?Q?gwHAuAJcNUtZj8Ze48zOwWFfc0rRU4nl/NI2Ky9tjx6xwe5hO9UHsJPT43q0?=
+ =?us-ascii?Q?x7WpvWCUM+6SfoF/SStfiPwSRJ4XqewkjIcXpbAaMatvEGNm3wmF0EpmAq12?=
+ =?us-ascii?Q?31LrSOI/Fckdp3kQiHf1yNJJ9V+URZQtZrhhoF/xQuzQJte0eI2OW4x03jDe?=
+ =?us-ascii?Q?58Hvktouw1Q6T2KGXqlBRyJ29lFdk26mBs3Uv9efmtUjyZykhrwakIlyNql0?=
+ =?us-ascii?Q?SEzLdbN0GGIyY90bj1A9zn2xooZyBBVR5/kQ9uBmGtb22sbGGHK4Vgf/OVnz?=
+ =?us-ascii?Q?d17vMOB9l2zEtv+zMIfkyX8P7WtyPQHpGYFveSL3BFcSIr6sn5JrsbOkZZw5?=
+ =?us-ascii?Q?+M0O1rZSZ0WPkgM13iNI0pLo5eMMUSzXaVwokcF+vxxKhwLvyMUrC8S/7cXQ?=
+ =?us-ascii?Q?t43kiK6OHSJlasdMfI66sUwamGHq7WX2qtOeI+376OInud56XpgSuC5/xg49?=
+ =?us-ascii?Q?h/Xe4cMhwGjz+bss0/dIu4u6r2IF4tWUfvsCZI0Of9yNbCmNyiMs4Kyocy3A?=
+ =?us-ascii?Q?9AlPx7Q4XcL4olITvXhfrxfruHTDqX6Nxi/n5E969ILE6JjeVLzQDMknhyMt?=
+ =?us-ascii?Q?Vvx8SZ0gHITfE35jXOqAM8onIxcMIubQCr3WcRwJVtyqwqY+BDMrW7obCCMI?=
+ =?us-ascii?Q?auVCTAWlrz1gxaRRb7wD8D5TvhW6EhL58VkuyfUdjjv4HeeOcOKIVh5nKVmM?=
+ =?us-ascii?Q?8mMJMyamb8YVgCnL6oSQbQ7jhZi4BHFCSg0PcmUUL6QaVYcjAKEE3zFRN3kR?=
+ =?us-ascii?Q?ugzQEPGgCN8snHx4xa/6ebnMGs2whM/rPDARy2u1f5TJ1DVKSfYDfGHORmLf?=
+ =?us-ascii?Q?deDqGyKQYVBuPLtM34PpfGNgTuYgFskUoK1q6qcp35Fj1nUquc+3sRS1exb8?=
+ =?us-ascii?Q?66ygtdLmHiENquYQV+e03M13zDX8Q8pFL7nHqs/cNZYPnAmTEFOsadABZmoG?=
+ =?us-ascii?Q?r54ti5qucNd4JMfwXxf7qtoa3PFxFP1YF4m9Lr5PjUsaM6Uh0S3kZaMeHNR5?=
+ =?us-ascii?Q?6gcm3w5SdhgkJHDgpyx+9PO/f9KbM1WCHyep+C/nXVF+t0X+cNQ8gHUKPVRm?=
+ =?us-ascii?Q?4jRAI7hcRDJ0a04ZvsDT+UqzS2Tt/lLDAPXPVsgwmgj/H6ezFtFptMCNwpzo?=
+ =?us-ascii?Q?RlFXtyIAe6hyXpoaFEpVq82ghfNiT5HC2TdqmwuhkQH5q502fiZAvpGfp7TV?=
+ =?us-ascii?Q?/nTvrPUJ1CuhT4sId8179mYUOIZmcY4rJikvQMQljRK4ezAxAFA0F7g3gHAo?=
+ =?us-ascii?Q?ozp+moKRDicJ+4YWwocGGm8DVLZtWNXpU1HxVV8FdUexUIgRsAcDQiGB0He9?=
+ =?us-ascii?Q?PKkeGs2PfDr7gdWrJK0MxnGpWB/Mc+29d735CaamaYJw7wdbayfRSGMTTihG?=
+ =?us-ascii?Q?1JbtW9GJWvJS7ys73XSgkls=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c04da0e-2bd7-4ed6-9664-08da01da75ec
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fb66cdd-ca7b-4dbd-a6a0-08da01da7674
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 14:38:22.0377
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 14:38:23.0075
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nzQeZ/+7QSDtYQM/LKFvSdn+eWB0fLhqtUxDmAFoTV+SVRHTT2Abg0dxwDyMnNOywkbyCcoIqYxaxavmqdnlIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6094
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0NxumsSDO5RHojZFESR/GklqCdjm2t+CwRSEYj93+qea1dFFuo+FRnw7NtnGAxsfyEJL61LUVINudfZtYe8FHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8129
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -112,78 +115,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Retrieve the API version running on the firmware and based on it detect
-which features are available for usage.
-The first one to be listed is the capability to change the MAC protocol
-at runtime.
+The logic to setup the supported interfaces will get annotated based on
+what the configuration of the SerDes PLLs supports. Move the current
+setup into a separate function just to try to keep it clean.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 30 +++++++++++++++++++
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |  2 ++
- 2 files changed, 32 insertions(+)
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 43 +++++++++++--------
+ 1 file changed, 24 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 521f036d1c00..c4a49bf10156 100644
+index c4a49bf10156..e6e758eaafea 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -11,6 +11,28 @@
- #define phylink_to_dpaa2_mac(config) \
- 	container_of((config), struct dpaa2_mac, phylink_config)
- 
-+#define DPMAC_PROTOCOL_CHANGE_VER_MAJOR		4
-+#define DPMAC_PROTOCOL_CHANGE_VER_MINOR		8
-+
-+#define DPAA2_MAC_FEATURE_PROTOCOL_CHANGE	BIT(0)
-+
-+static int dpaa2_mac_cmp_ver(struct dpaa2_mac *mac,
-+			     u16 ver_major, u16 ver_minor)
-+{
-+	if (mac->ver_major == ver_major)
-+		return mac->ver_minor - ver_minor;
-+	return mac->ver_major - ver_major;
-+}
-+
-+static void dpaa2_mac_detect_features(struct dpaa2_mac *mac)
-+{
-+	mac->features = 0;
-+
-+	if (dpaa2_mac_cmp_ver(mac, DPMAC_PROTOCOL_CHANGE_VER_MAJOR,
-+			      DPMAC_PROTOCOL_CHANGE_VER_MINOR) >= 0)
-+		mac->features |= DPAA2_MAC_FEATURE_PROTOCOL_CHANGE;
-+}
-+
- static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
- {
- 	*if_mode = PHY_INTERFACE_MODE_NA;
-@@ -359,6 +381,14 @@ int dpaa2_mac_open(struct dpaa2_mac *mac)
- 		goto err_close_dpmac;
+@@ -257,6 +257,29 @@ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
  	}
+ }
  
-+	err = dpmac_get_api_version(mac->mc_io, 0, &mac->ver_major, &mac->ver_minor);
-+	if (err) {
-+		netdev_err(net_dev, "dpmac_get_api_version() = %d\n", err);
-+		goto err_close_dpmac;
++static void dpaa2_mac_set_supported_interfaces(struct dpaa2_mac *mac)
++{
++	/* We support the current interface mode, and if we have a PCS
++	 * similar interface modes that do not require the SerDes lane to be
++	 * reconfigured.
++	 */
++	__set_bit(mac->if_mode, mac->phylink_config.supported_interfaces);
++	if (mac->pcs) {
++		switch (mac->if_mode) {
++		case PHY_INTERFACE_MODE_1000BASEX:
++		case PHY_INTERFACE_MODE_SGMII:
++			__set_bit(PHY_INTERFACE_MODE_1000BASEX,
++				  mac->phylink_config.supported_interfaces);
++			__set_bit(PHY_INTERFACE_MODE_SGMII,
++				  mac->phylink_config.supported_interfaces);
++			break;
++
++		default:
++			break;
++		}
 +	}
++}
 +
-+	dpaa2_mac_detect_features(mac);
-+
- 	/* Find the device node representing the MAC device and link the device
- 	 * behind the associated netdev to it.
- 	 */
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-index 1331a8477fe4..d2e51d21c80c 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
-@@ -17,6 +17,8 @@ struct dpaa2_mac {
- 	struct net_device *net_dev;
- 	struct fsl_mc_io *mc_io;
- 	struct dpmac_attr attr;
-+	u16 ver_major, ver_minor;
-+	unsigned long features;
+ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ {
+ 	struct net_device *net_dev = mac->net_dev;
+@@ -305,25 +328,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 		MAC_10FD | MAC_100FD | MAC_1000FD | MAC_2500FD | MAC_5000FD |
+ 		MAC_10000FD;
  
- 	struct phylink_config phylink_config;
- 	struct phylink *phylink;
+-	/* We support the current interface mode, and if we have a PCS
+-	 * similar interface modes that do not require the PLLs to be
+-	 * reconfigured.
+-	 */
+-	__set_bit(mac->if_mode, mac->phylink_config.supported_interfaces);
+-	if (mac->pcs) {
+-		switch (mac->if_mode) {
+-		case PHY_INTERFACE_MODE_1000BASEX:
+-		case PHY_INTERFACE_MODE_SGMII:
+-			__set_bit(PHY_INTERFACE_MODE_1000BASEX,
+-				  mac->phylink_config.supported_interfaces);
+-			__set_bit(PHY_INTERFACE_MODE_SGMII,
+-				  mac->phylink_config.supported_interfaces);
+-			break;
+-
+-		default:
+-			break;
+-		}
+-	}
++	dpaa2_mac_set_supported_interfaces(mac);
+ 
+ 	phylink = phylink_create(&mac->phylink_config,
+ 				 dpmac_node, mac->if_mode,
 -- 
 2.33.1
 
