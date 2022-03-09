@@ -2,105 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 238B84D30E7
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:19:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BADE14D30FC
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:27:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232574AbiCIOTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 09:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
+        id S232662AbiCIO2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 09:28:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232063AbiCIOTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:19:54 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9554BB0A0
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 06:18:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ifRGWr1umLtvonEG/HbluMF/Dz9MoNH6zVKBDbzB+iY=; b=hqmkH0/ufNym4gw2fIvwkOoH79
-        f3Q6jiHCMH6oPgHuNgJZV3SArVpSx9wmCTTtTPk4eIwHFaXWWKsdzfUxqjsjxgrn3AnnJqTPsQoor
-        IW+bO2wkMPUwZHFshL7JrE4l1gtLl58rqB3AS+4IXO9qY7EuxXj9/lTnK8zZIxNI8wrmQSw3F7Ozy
-        jJVcT4n5L2xKjXJ6tNFkApoWmfpaNKOGOGp++FHzRO4ZJK52hurR05zYrPVLCQWjviLWmzmDGVd2J
-        XkrYaQ8qQeG6xNz2dLHPvxVeFFN8ZSsYhrtTKog3hOM64AjcvlKdPu5HuwAhdCBqfe0Ro+F0Cv7AW
-        zYABzoKQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57740)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nRx9O-0001vN-KI; Wed, 09 Mar 2022 14:18:50 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nRx9M-00080e-Tp; Wed, 09 Mar 2022 14:18:48 +0000
-Date:   Wed, 9 Mar 2022 14:18:48 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229703AbiCIO2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:28:49 -0500
+X-Greylist: delayed 99655 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 06:27:50 PST
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A59B14996F;
+        Wed,  9 Mar 2022 06:27:47 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 42BD320000C;
+        Wed,  9 Mar 2022 14:27:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1646836066;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=U3b9JKl+whxxFYER3+TbWqGu0XYGvAJiDu3r8aHo2Kk=;
+        b=LFg2jACWoHBQY2aeNvIgN2QI5L64yld51sDWlQT0r7EDxCVirhSx1V07kh0kTXzJVCEGXh
+        +pGHXmK5GzeZ1BVQu0C4bT7ZbDEQXbmcgRtDUyWN7fzJZhcQcZqYFplv4g7vAs5GABV8RE
+        1JfO+bsp8ZwbF/U+rA67FDF4RaNZ9TxxqnY2ndvOTxigQjxvcCmbu/Js6D+ajNdZM/75Ng
+        /OWZrH75xu3Dd14pIdY7zYzf8zIEdvVx87JoLktEUHPUQzF3AFJehDteGy7OdPEeqaUWhj
+        SlO+AOZyCGbyFDTDd7mmVUgMIurNcHrdMHgdP9/Yon3Agp4MsJJNfBDUlyL/8w==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net] net: dsa: silence fdb errors when unsupported
-Message-ID: <Yii3SH7/mF7QmXO1@shell.armlinux.org.uk>
-References: <E1nRtfI-00EnmD-I8@rmk-PC.armlinux.org.uk>
- <20220309104143.gmoks5aceq3dtmci@skbuf>
+        "Andrew F . Davis" <afd@ti.com>, Dan Murphy <dmurphy@ti.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+Subject: [PATCH] net: phy: DP83822: clear MISR2 register to disable interrupts
+Date:   Wed,  9 Mar 2022 15:22:28 +0100
+Message-Id: <20220309142228.761153-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220309104143.gmoks5aceq3dtmci@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 12:41:43PM +0200, Vladimir Oltean wrote:
-> Hello Russell,
-> 
-> On Wed, Mar 09, 2022 at 10:35:32AM +0000, Russell King (Oracle) wrote:
-> > When booting with a Marvell 88e6xxx switch, the kernel spits out a
-> > load of:
-> > 
-> > [    7.820996] mv88e6085 f1072004.mdio-mii:04: port 3 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> > [    7.835717] mv88e6085 f1072004.mdio-mii:04: port 2 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> > [    7.851090] mv88e6085 f1072004.mdio-mii:04: port 1 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> > [    7.968594] mv88e6085 f1072004.mdio-mii:04: port 0 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
-> > [    8.035408] mv88e6085 f1072004.mdio-mii:04: port 3 failed to add aa:bb:cc:dd:ee:ff vid XYZ3 to fdb: -95
-> > 
-> > while the switch is being setup. Comments in the Marvell DSA driver
-> > indicate that "switchdev expects -EOPNOTSUPP to honor software VLANs"
-> > in mv88e6xxx_port_db_load_purge() so this error code should not be
-> > treated as an error.
-> > 
-> > Fixes: 3dc80afc5098 ("net: dsa: introduce a separate cross-chip notifier type for host FDBs")
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > ---
-> > Hi,
-> > 
-> > I noticed these errors booting 5.16 on my Clearfog platforms with a
-> > Marvell DSA switch. It appears that the switch continues to work
-> > even though these errors are logged in the kernel log, so this patch
-> > merely silences the errors, but I'm unsure this is the right thing
-> > to do.
-> 
-> Can you please confirm that these errors have disappeared on net-next?
+MISR1 was cleared twice but the original author intention was probably
+to clear MISR1 & MISR2 to completely disable interrupts. Fix it to
+clear MISR2.
 
-net-next: no warnings
-v5.17-rc7: warnings
-v5.16: warnings
+Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/net/phy/dp83822.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So, it looks like we need a patch for 5.17-rc7 and 5.16-stable to fix
-this. Do you have a better suggestion than my patch?
-
-Thanks.
-
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index 211b5476a6f5..ce17b2af3218 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -274,7 +274,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
+ 		if (err < 0)
+ 			return err;
+ 
+-		err = phy_write(phydev, MII_DP83822_MISR1, 0);
++		err = phy_write(phydev, MII_DP83822_MISR2, 0);
+ 		if (err < 0)
+ 			return err;
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1
+
