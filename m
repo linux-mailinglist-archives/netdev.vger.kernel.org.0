@@ -2,166 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC944D309D
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 14:57:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91BA34D30B8
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:02:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbiCIN46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 08:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        id S233299AbiCIOD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 09:03:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231553AbiCIN45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 08:56:57 -0500
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2104.outbound.protection.outlook.com [40.107.102.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B0A17C400
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 05:55:58 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ikEN7BzeSqhyrSf/yPIGOEqO67yjWGwT+kyCmoGTJx4+8c6DOZooFo4No1Z+21uQgJkmCdHcobOzeZaAjXRiLlgrnTWYDoU/ejQ/UaSGHvWJHbg88cbz6RyooAkbOUMFLrgGquwBlQXrm/QJBimWM+70vx7w16zvnCqMB8j29MvHqovwoTiJ8dUChVcNxHsT3RuIj1X0GDKWZlXvxYidwyQznr+uGHYWdWujXv6y4bo90jsljzLYnTKv8zxsxJq6/jiroBgIaimkkA3oDp4TDrwDB4QJhAEoRobfjhU2vBXjiTTAsMWepgPtt+FLomKMOn1T3IBIC+ZJ1YN28gEhSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=y8ETpw6wzwX6VWiy/fQg0xP9imdYlcQEH1BnKvw8b/Y=;
- b=gcCrXaa3DzlOkn383hg+uFYvF4KFh4zr41H4pNT8NlQfM658WMvBAGyygKRde3uGM7kYZuugByy5/p7lkCTeO6QwuqiM6Aw4h/I64tW5qXZJDYcy8kpbiMwqS6jXWHgc2JzZDY03CSf6wEPOFQM1IdMafrgJ//MCwQzvze1XrbrsgoY+znWdPFolWXSE5FegiCQTV+2h81TqjuSWwxw9p0UxqxwqNmYeHiuNwHTRMv7DnSKF2BUGSh5t6DNIiZqJDbbIEovrvd5RXsALIJcwnct/iwYbl/h2ZO1UvxnZ1py331VlPZrjXiGO4rUT5JYSimXv0EGXF8yaIV5dLcFKvw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231370AbiCIOD1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:03:27 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D1817775A;
+        Wed,  9 Mar 2022 06:02:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y8ETpw6wzwX6VWiy/fQg0xP9imdYlcQEH1BnKvw8b/Y=;
- b=bZJp/gMh5YJSfMv9kxorsOo3ZKZe+2rykdLIbGeK8wTVWinWJgFLU2xhCbKCipZO0Pv/i2y60yO/9xQJoXabzTV1gHTVX0U+kBYPnXzoZEfH/LrvurHh4ckpfj/ul3E7BgykS7hsi/ECOLWMCLp9NKQx+GxbT4R1NmQzhBzptDc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CO1PR13MB4885.namprd13.prod.outlook.com (2603:10b6:303:f1::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.7; Wed, 9 Mar
- 2022 13:55:55 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5061.018; Wed, 9 Mar 2022
- 13:55:54 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next] nfp: xsk: fix a warning when allocating rx rings
-Date:   Wed,  9 Mar 2022 14:55:33 +0100
-Message-Id: <20220309135533.10162-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.20.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM0PR04CA0108.eurprd04.prod.outlook.com
- (2603:10a6:208:be::49) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1646834546; x=1678370546;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LTxdiNpFejVAD+uMWALB7dTjcsr4xpqevBRg8y/ihnk=;
+  b=AnEVMQkT3f5UQGcvYiWmv5ZNp0xRDQE6uI3phalnixQ2OmQYMpjlQe4Q
+   pu1DbuMKCri3R8HYxMdbYekqewpRfYNdtlLNL4l5z/MEQT7cy7/mv9GTU
+   rcW7ZhWHOMG2DMDgrKvNzv3ehtNzc4vw4MelVCxRa1R7wsAsJTS97OI+F
+   XRs29CLIsfAFvWSqbqgyxuPPX3LII0Ki/lEXDzQTX2AZGsEOizry2MQXW
+   Pl1XfI3e9VsNX4CHfXhEFJqvNtcEftjGNuqRx+Y1L6tJenvKAK30ELwYX
+   yPRXHIQhMZI6M0Xr/yphYO5WDpa2iLVqg31PjF8NinrpRSfN9O8GwcmN9
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643670000"; 
+   d="scan'208";a="22557990"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 09 Mar 2022 15:02:24 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Wed, 09 Mar 2022 15:02:24 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Wed, 09 Mar 2022 15:02:24 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1646834544; x=1678370544;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LTxdiNpFejVAD+uMWALB7dTjcsr4xpqevBRg8y/ihnk=;
+  b=mBwayN8HFoJftjrf8AGANLjDMKCoNMhDOFoLpjNliweql2Qt3yXCBlUL
+   W9hk57nKqYHuXTrY7CebAxYSdD4o0YR+PIkHN+LDROLloGwm7cjpbVNcM
+   FxQmeh/nLQTPp1wosEobBowCNYlFXICnqEy4ZlVx4seZehsn4DnBcM3MP
+   ay2JiosL1OiYThPJHk/lVkPXBsX4c23NJHHDxgXm5R0NFvTVU9DCPJMwt
+   TeJJEBGuCAE6nWhhofZZtI4W53PfmlmdHmAdgm/rB0Z89Db4iSnMQc8G5
+   xeOxMyL82TLp3PtZ4VwZhfkQUh9IT86R57+FMz5WJilqXY8Cy1LX/2tZt
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,167,1643670000"; 
+   d="scan'208";a="22557989"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 09 Mar 2022 15:02:24 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 2270D280065;
+        Wed,  9 Mar 2022 15:02:24 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     kuba@kernel.org, Fabio Estevam <festevam@gmail.com>
+Cc:     steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com,
+        fntoth@gmail.com, martyn.welch@collabora.com, andrew@lunn.ch,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org, marex@denx.de,
+        Fabio Estevam <festevam@denx.de>
+Subject: Re: (EXT) [PATCH v2 net] smsc95xx: Ignore -ENODEV errors when device is unplugged
+Date:   Wed, 09 Mar 2022 15:02:21 +0100
+Message-ID: <12992128.uLZWGnKmhe@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20220305204720.2978554-1-festevam@gmail.com>
+References: <20220305204720.2978554-1-festevam@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a7da308d-de2d-4c00-871e-08da01d4878b
-X-MS-TrafficTypeDiagnostic: CO1PR13MB4885:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR13MB48851A06DCE647450D8584DFE80A9@CO1PR13MB4885.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FgM8ULTQXTt9Ri5xi2a64W2hBNg1cwVhU8E2wwFsdzv752QlHSXhw3W4dWhLMdiMs+bc/S4gvAG29dltrxle92Jg5xMTuSU7MQdYdm4oqBXXqpQ8VAfmV27KZXQrObVuZLEs1aYKiPR5PdCWgxG3jC5iPS0NRWNMDGC05+goQDAuD4MMzmH3A1aa4zkm3h6yJvDgZIDR/0U8Df83xEfchEUAPCEPJGJmsjJrSsgsnRiQ2YCu/BKb91LzgD8o/v4IzNRUEOwep5GNeY1hJN0QuoFDz6Nvi8C5T2JV9Yg7vbMjJbhryDSpLwPVGJHGr/uXkounHUoVRQdo4SUdDCQMB9qW2VBOglrVRIxDqaf2YdPuMkiPKCkErc8OmInp/a4044BYlHJBGYeXtTgM1AdIqH34/bJ3+5GTZSuKVgYBXG3MeJXhRGhhaKZ38t8NLtai1ORcbm2lNvsBjC4sh/rk54GZHpyKFI4Wb38ii5DGxxGduYg+MP1jwXdBFapiRByAFMt5RHJEjJsCsQlAv+ul9QndgbpM9vwzYXfdsTwvfqGetYTSltO0p10GTncE6wyvCipay0PQQGMBLGe+rKKRinQEMwYS+Wb1rFPNpj/ZRCTf3kFhFlNbk7KpAE4CSBQJYbK4Hjdv+ma/sOoVWFVSIeMiqrXX1/Eo9yph7zb3I3p2nocS3k4eIsj6LyW9Hpe7Yh/hXDcFeK9ICOaGHqVPkg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(396003)(39840400004)(136003)(376002)(366004)(52116002)(36756003)(44832011)(6512007)(6666004)(5660300002)(83380400001)(6506007)(1076003)(186003)(2616005)(107886003)(2906002)(86362001)(8936002)(38100700002)(316002)(508600001)(6486002)(54906003)(110136005)(4326008)(66946007)(66556008)(8676002)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N1VNNHphVWlzSDUxMTBtUldUeTk0bzVmWThDUnpQVDZmZmtlT3JTb3BDdmpL?=
- =?utf-8?B?TklzdlBVQ1dsampNUnBsaTVvNldLc0k5d0ZVSEZGUHJoRzVHYXRFSmxCWDZq?=
- =?utf-8?B?NnlYRllWU1l5WjdzdmFPd2dnejlpVjkrSi9YNUxEcDhkY292TmdyZjJlaFQx?=
- =?utf-8?B?L1RIZnFLY2QzUW9LUXM3QmVvVXMxOFE5VmpvRkMyOWJHUU5sWEhSMjk1akVN?=
- =?utf-8?B?SHVDR0JiVmFxYjJrNi9UdU5nODE5NGNObmFZZzVYVUxoUjB2ZnF2bDEvNFNk?=
- =?utf-8?B?TGd2d2ZyN2lCd0d4U3pqWVVKK254UGtoZ0M1V0dKL2p5ME9rVi9sUFZNU1Qz?=
- =?utf-8?B?MkFtK0VsT0tISzBWK2lyRFhFVmxQOWRBdjh1SmpKSElGeUtaYzIvajFrVE5r?=
- =?utf-8?B?aDI1UmorbUxBZ3o0VnUrK1NybjU1UzVCZ2ZXcENoMGNoNWRTd0ltSXlSR2RL?=
- =?utf-8?B?UXByd0NUMUZnZkdxLzB2Q3o5ZTRJTDRjWlhzdUZlYThBK25Ed0thSjZlL2Mw?=
- =?utf-8?B?eG5PenRNZG9sNnVTMG03NjJwVDBxNThBRlpkQ2gySldCbEJxMUVnWVBMTnVW?=
- =?utf-8?B?TmRlMnlleWRtRWliZ2REU2phMWpVUjU5TWNlR3FJeCtReTJJMWo5NWU2ZDdK?=
- =?utf-8?B?QVRMZHJFSVFFcHBweHhvL0p4NURuSDk5NS8xc0VZV3hCZk43YW5oVUt6RHVB?=
- =?utf-8?B?Y2N6cUdoMGxMd3prcUMvQlFPOTZNYjhMUS9TclE3M01DUmJ5S0YyekxvRVBn?=
- =?utf-8?B?UHdZUFNUeFQwNjcwV3g4cTFFNTRnaCtCd0FjNEpabjRkUnlmUVU3NEgvL3NB?=
- =?utf-8?B?WVVJUk5lalc5d1h2RVozL2tOZms2MXNhR1QzenQxRUtGbWRJRG9UNGQrY0VK?=
- =?utf-8?B?Q1RUMkVIbFcvN3V0L3VUMDEvUzU3QnpTZ0ZUVDhhVitUSDVtRytFSHFxZTM2?=
- =?utf-8?B?bGNsQlZkcG1GNi9XNUN3SW55OHk0L2R6TDFDTEFTSEVEVkVZSWZ1cUExdnp0?=
- =?utf-8?B?Yy9zT3B5eXljWEN4aExDdjZLdXVINWdUWENUaWI1K3Rxd1AyL2MwdDErSE1K?=
- =?utf-8?B?R1EzdEZoa08ydmhBQ3gwN25yWklVQ3RnRmVHV1A0VkwyL1dXd2hDNXE1SUJy?=
- =?utf-8?B?ck1Ycm1aV242ckJMQitnSE9mejhrODZvbk0zR3BVUEtBWno0SXNCNW1uUk1z?=
- =?utf-8?B?TU1SYmVVWGRyWlRVMmd1L2h4aWw1cEUvNG93eHVDbnc1d3pYaGl2ZTltYkFu?=
- =?utf-8?B?Q0V0VXFHbVlyVitUOU1tVEFrSTd5TkhqNjNlanlPRWRBdDVhVXY2TFZ2c2ZS?=
- =?utf-8?B?VWZUbCtNeTdxc0JkZHlyQUZCbyt5S2NVV0dGWC9RZ29lMlNqQkYzK201aHht?=
- =?utf-8?B?cEhHbFlRbjYrQXJQRllVeHZkQTB6M2xwcm9DSzZXbXFGcGRqQVM4eWxMMlhI?=
- =?utf-8?B?akRSOXVoUnkvMEcvNDRaQTNoVk5KY3JUSENmSGFrZVpEaHdtVVc0OFFES0Fh?=
- =?utf-8?B?VC9pWU1CbUhDbFgwaUFBZmV1dTlUeGpwRFVuTlJWbjR4M2hSb0gwYnNxNzlN?=
- =?utf-8?B?bFkzbUUvZlMzNUlwejRjSytTdzM0Uk95U2c0bGZaYkI4NjNwQnN2akRSaHJM?=
- =?utf-8?B?K3NWMEtBaEkvRGViOXl6cXlwNFVLVktxT0lCMHNZOFNCbGFWZ0F5dHh6QlQr?=
- =?utf-8?B?ak5UQmUwclNYSXd2WEpocUFhZXpBLzVVT2N2UHhMdTVvamU1U3YrUVdyaDl3?=
- =?utf-8?B?M1IwN3BKUnBCblgwK0hqamxVc2NZRmdTaTdDZjB3NHhMNE04NTcvZnlXWVJs?=
- =?utf-8?B?WldxeUVGMFlhN0N5ZWVoTUxSVjR5OC82Y04vUmlkeFpzbU93RlpyaS9GRzhO?=
- =?utf-8?B?azlydEU5QytIL05tSlprTlByazd6c05GMVhmSXpJM3dBOGdOcURmSThna1Nr?=
- =?utf-8?B?WjluOCtFM2oreVhrcit5NTk3d2dKMUxJL0R3RHVZVDNQNlRtQkhiWWl5amx1?=
- =?utf-8?B?MEx1MG1sd2hmWWhZVlhWWnBxdVh4OUhYUzhvUFp2aVI2Q2JPQ25UZXF4SUtt?=
- =?utf-8?B?Q08yUWZsQzQ4ZUY1WWl6bnRLV3ZPQ0pDZTM0dz09?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7da308d-de2d-4c00-871e-08da01d4878b
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 13:55:54.8077
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WHG3qXy42e+EfVqJ+MkchKQiBv7huzhCYMM123UX99cClhAjsp/5XONAfZpwVHvCdtNjTgcRBieogZiVPzLJSr1o9fQUN+884OGtxesh9Ws=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4885
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
+Am Samstag, 5. M=E4rz 2022, 21:47:20 CET schrieb Fabio Estevam:
+> From: Fabio Estevam <festevam@denx.de>
+>=20
+> According to Documentation/driver-api/usb/URB.rst when a device
+> is unplugged usb_submit_urb() returns -ENODEV.
+>=20
+> This error code propagates all the way up to usbnet_read_cmd() and
+> usbnet_write_cmd() calls inside the smsc95xx.c driver during
+> Ethernet cable unplug, unbind or reboot.
+>=20
+> This causes the following errors to be shown on reboot, for example:
+>=20
+> ci_hdrc ci_hdrc.1: remove, state 1
+> usb usb2: USB disconnect, device number 1
+> usb 2-1: USB disconnect, device number 2
+> usb 2-1.1: USB disconnect, device number 3
+> smsc95xx 2-1.1:1.0 eth1: unregister 'smsc95xx' usb-ci_hdrc.1-1.1, smsc95xx
+> USB 2.0 Ethernet smsc95xx 2-1.1:1.0 eth1: Failed to read reg index
+> 0x00000114: -19
+> smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
+> smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
+> smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
+> smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
+> smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
+> smsc95xx 2-1.1:1.0 eth1: hardware isn't capable of remote wakeup
+> usb 2-1.4: USB disconnect, device number 4
+> ci_hdrc ci_hdrc.1: USB bus 2 deregistered
+> ci_hdrc ci_hdrc.0: remove, state 4
+> usb usb1: USB disconnect, device number 1
+> ci_hdrc ci_hdrc.0: USB bus 1 deregistered
+> imx2-wdt 30280000.watchdog: Device shutdown: Expect reboot!
+> reboot: Restarting system
+>=20
+> Ignore the -ENODEV errors inside __smsc95xx_mdio_read() and
+> __smsc95xx_phy_wait_not_busy() and do not print error messages
+> when -ENODEV is returned.
+>=20
+> Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+> Signed-off-by: Fabio Estevam <festevam@denx.de>
 
-Previous commits introduced AF_XDP zero-copy support, in which
-we need register different mem model for xdp_rxq when AF_XDP
-zero-copy is enabled or not. And this should be done after xdp_rxq
-info is registered, which is not needed for ctrl port, otherwise
-there complaints warnings: "Missing register, driver bug".
+Oh BTW, is this queued for stable? Which versions? If 'Fixes: a049a30fc27c=
+=20
+("net: usb: Correct PHY handling of smsc95xx")' is the indicator, it's not=
+=20
+enough. This errors also shows up on v5.15.27 and is fixed with this patch.
 
-Fix this by not registering mem model for ctrl port, just like we
-don't register xdp_rxq info for ctrl port.
+Regards,
+Alexander
 
-Fixes: 6402528b7a0b ("nfp: xsk: add AF_XDP zero-copy Rx and Tx support")
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+> ---
+> Changes since v1:
+> - Added 'net' annotation - Andrew
+> - Added Fixes tag - Andrew
+> - Avoided undefined 'buf' behaviour in __smsc95xx_read_reg() - Andrew
+>=20
+>  drivers/net/usb/smsc95xx.c | 28 ++++++++++++++++++++--------
+>  1 file changed, 20 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+> index b17bff6a1015..e5b744851146 100644
+> --- a/drivers/net/usb/smsc95xx.c
+> +++ b/drivers/net/usb/smsc95xx.c
+> @@ -84,9 +84,10 @@ static int __must_check __smsc95xx_read_reg(struct usb=
+net
+> *dev, u32 index, ret =3D fn(dev, USB_VENDOR_REQUEST_READ_REGISTER, USB_DI=
+R_IN
+>=20
+>  		 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+>=20
+>  		 0, index, &buf, 4);
+> -	if (unlikely(ret < 0)) {
+> -		netdev_warn(dev->net, "Failed to read reg index 0x%08x:=20
+%d\n",
+> -			    index, ret);
+> +	if (ret < 0) {
+> +		if (ret !=3D -ENODEV)
+> +			netdev_warn(dev->net, "Failed to read reg=20
+index 0x%08x: %d\n",
+> +				    index, ret);
+>  		return ret;
+>  	}
+>=20
+> @@ -116,7 +117,7 @@ static int __must_check __smsc95xx_write_reg(struct
+> usbnet *dev, u32 index, ret =3D fn(dev, USB_VENDOR_REQUEST_WRITE_REGISTER,
+> USB_DIR_OUT
+>=20
+>  		 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+>=20
+>  		 0, index, &buf, 4);
+> -	if (unlikely(ret < 0))
+> +	if (ret < 0 && ret !=3D -ENODEV)
+>  		netdev_warn(dev->net, "Failed to write reg index 0x%08x:=20
+%d\n",
+>  			    index, ret);
+>=20
+> @@ -159,6 +160,9 @@ static int __must_check
+> __smsc95xx_phy_wait_not_busy(struct usbnet *dev, do {
+>  		ret =3D __smsc95xx_read_reg(dev, MII_ADDR, &val, in_pm);
+>  		if (ret < 0) {
+> +			/* Ignore -ENODEV error during disconnect()=20
+*/
+> +			if (ret =3D=3D -ENODEV)
+> +				return 0;
+>  			netdev_warn(dev->net, "Error reading=20
+MII_ACCESS\n");
+>  			return ret;
+>  		}
+> @@ -194,7 +198,8 @@ static int __smsc95xx_mdio_read(struct usbnet *dev, i=
+nt
+> phy_id, int idx, addr =3D mii_address_cmd(phy_id, idx, MII_READ_ |
+> MII_BUSY_);
+>  	ret =3D __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+>  	if (ret < 0) {
+> -		netdev_warn(dev->net, "Error writing MII_ADDR\n");
+> +		if (ret !=3D -ENODEV)
+> +			netdev_warn(dev->net, "Error writing=20
+MII_ADDR\n");
+>  		goto done;
+>  	}
+>=20
+> @@ -206,7 +211,8 @@ static int __smsc95xx_mdio_read(struct usbnet *dev, i=
+nt
+> phy_id, int idx,
+>=20
+>  	ret =3D __smsc95xx_read_reg(dev, MII_DATA, &val, in_pm);
+>  	if (ret < 0) {
+> -		netdev_warn(dev->net, "Error reading MII_DATA\n");
+> +		if (ret !=3D -ENODEV)
+> +			netdev_warn(dev->net, "Error reading=20
+MII_DATA\n");
+>  		goto done;
+>  	}
+>=20
+> @@ -214,6 +220,10 @@ static int __smsc95xx_mdio_read(struct usbnet *dev, =
+int
+> phy_id, int idx,
+>=20
+>  done:
+>  	mutex_unlock(&dev->phy_mutex);
+> +
+> +	/* Ignore -ENODEV error during disconnect() */
+> +	if (ret =3D=3D -ENODEV)
+> +		return 0;
+>  	return ret;
+>  }
+>=20
+> @@ -235,7 +245,8 @@ static void __smsc95xx_mdio_write(struct usbnet *dev,
+> int phy_id, val =3D regval;
+>  	ret =3D __smsc95xx_write_reg(dev, MII_DATA, val, in_pm);
+>  	if (ret < 0) {
+> -		netdev_warn(dev->net, "Error writing MII_DATA\n");
+> +		if (ret !=3D -ENODEV)
+> +			netdev_warn(dev->net, "Error writing=20
+MII_DATA\n");
+>  		goto done;
+>  	}
+>=20
+> @@ -243,7 +254,8 @@ static void __smsc95xx_mdio_write(struct usbnet *dev,
+> int phy_id, addr =3D mii_address_cmd(phy_id, idx, MII_WRITE_ | MII_BUSY_);
+>  	ret =3D __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+>  	if (ret < 0) {
+> -		netdev_warn(dev->net, "Error writing MII_ADDR\n");
+> +		if (ret !=3D -ENODEV)
+> +			netdev_warn(dev->net, "Error writing=20
+MII_ADDR\n");
+>  		goto done;
+>  	}
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index d5ff80a62882..67a87fdf7564 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -2622,11 +2622,12 @@ nfp_net_rx_ring_alloc(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring)
- 				       rx_ring->idx, rx_ring->r_vec->napi.napi_id);
- 		if (err < 0)
- 			return err;
--	}
- 
--	err = xdp_rxq_info_reg_mem_model(&rx_ring->xdp_rxq, mem_type, NULL);
--	if (err)
--		goto err_alloc;
-+		err = xdp_rxq_info_reg_mem_model(&rx_ring->xdp_rxq,
-+						 mem_type, NULL);
-+		if (err)
-+			goto err_alloc;
-+	}
- 
- 	rx_ring->cnt = dp->rxd_cnt;
- 	rx_ring->size = array_size(rx_ring->cnt, sizeof(*rx_ring->rxds));
--- 
-2.20.1
+
+
 
