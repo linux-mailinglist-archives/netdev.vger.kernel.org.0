@@ -2,165 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 657ED4D37B5
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4014D3725
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:44:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236700AbiCIQgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:36:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42124 "EHLO
+        id S235250AbiCIQhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:37:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238243AbiCIQbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:31:23 -0500
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538F7195300
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:25:46 -0800 (PST)
-Received: by mail-qv1-xf34.google.com with SMTP id b12so2406424qvk.1
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 08:25:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KhUHOxH3TVkg1oL6+sgIw9Yjx/KJiYaJ9b23Nx6yhHM=;
-        b=a/KwrIQhyIY8fG4uI8xSX99420l5Iq4Usm5tw71yJcLsbaLqtS/YgpHs76UEuRCq4e
-         gvBRjXTCU/vi0iOrarRBmmGtD9YlOVSApq9MJlD1TsFiyLKYP4qAntiPZWK7Cu6yH+r2
-         Mlt5cUMzpIyqXz2zyUXkaILAB/Pw2JmU6tWBHNhwdjpvVzqMS3pc9ov1EZJfPz1f7szq
-         dLPiv6EHz4KxtX5QcEuYfub/3M8Xsd9+fP9Z6t/+OtmZhTa5V2c3nPv3yJRUUJpeAkCp
-         OtlH+KoIDvGbtVVpSwUlstl/BkodrLEtZDkrsfbU6OzfizH/QphrIcWZajQ1WG+FEZGV
-         KVLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KhUHOxH3TVkg1oL6+sgIw9Yjx/KJiYaJ9b23Nx6yhHM=;
-        b=ySBOPo6o3QorFJ3+286CAhkIfGZX5eFbBRE5B1a+yHRNYejCeZhR2G8jtlpRq6BALp
-         0NZEYz5YKy5LDT4m1qcIMr0buCIz5QE51K1WiJ+0sYnc26DfaJoyohfgQdv2b9Sbrbm0
-         3f6OjPMwaQQB8EzOehalcGbRJKCkhYRrosBVR7VYJtyIbTft3R6RmCtpjk6htTGa/OIS
-         yVYo0PhZ0Cx1Yxrc4cnpmcGbDotskUiC2rwOC++WyFJFTslDxBokzigScdiwpx05G3Fm
-         IYI+igZrD+TW/oRfkg0CqVmDZtnYxsMJ8sWbMDuqvBgI5U7H6XdVKu+URuoioLTrOgB6
-         dj8A==
-X-Gm-Message-State: AOAM532QSU/FDR+0WLcz4z6UtYyglZngir5huYEF+ZKpTEPZUAhz7GNG
-        8Jma7N4y2lz+zbiE8ZoIvMWEYx0UsrPd971/MCDeFw==
-X-Google-Smtp-Source: ABdhPJyc0NxLElJkSpB8BUB2hM38Sdn7GgdWs+UuoKD3LfYAQD0vBycKKZc4vTXabsyTqSkxL4OCshyPI8l0LdlOAns=
-X-Received: by 2002:a05:6214:2623:b0:435:a50f:7e89 with SMTP id
- gv3-20020a056214262300b00435a50f7e89mr429657qvb.62.1646843144189; Wed, 09 Mar
- 2022 08:25:44 -0800 (PST)
+        with ESMTP id S234340AbiCIQdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:33:52 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A96376E06;
+        Wed,  9 Mar 2022 08:29:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646843160;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=Uq80fOiGqpSIpwp9BdSSfbQcuCBRb30aYGTDHn4N09c=;
+    b=VgCPa6fg5PmIfnCObiaXGdc1Fq5FiOFuYVHYeJ/Oy8QmxuJl6Qshy5DkeSmSA3Wml8
+    r9sDlGGbFgGs9i+ZP+SuLIbi9Se5D7Ehfjqbo5mPsLt9xk39H+daEhopHQ7KJku2IsPU
+    FMPzEbM900pFBerXxI/vP/0jSnPkjahUWoC2iY3jCHBMyNlRTvQvK9qguaCNEGVngM99
+    myrTZeeFIpZg3Bh0hwCD3RBhls0YsisjZhgrOHbFNE6CZeAIYGPmccGQLkHUEyHvWjuv
+    MKa5TaRTtgidolIWEPAxaO/jUbcG1AIesMcgMqHzMFLoAM8hzFLn9Y6M0N2seeQSmlZR
+    4BcA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/87J3I0="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp05-03.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.40.1 AUTH)
+    with ESMTPSA id 646b0ey29GPxJW3
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Wed, 9 Mar 2022 17:25:59 +0100 (CET)
+Date:   Wed, 9 Mar 2022 17:25:59 +0100 (CET)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, wsa@kernel.org,
+        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
+        mkl@pengutronix.de, kuba@kernel.org, socketcan@hartkopp.net,
+        geert@linux-m68k.org, kieran.bingham@ideasonboard.com
+Message-ID: <616372185.25555.1646843159934@webmail.strato.com>
+In-Reply-To: <CAMZ6RqK_39QmvZAjBZhoH2qbbmws9ac4JgrayR=d5m5p+e39XA@mail.gmail.com>
+References: <20220209163806.18618-1-uli+renesas@fpond.eu>
+ <20220209163806.18618-2-uli+renesas@fpond.eu>
+ <CAMZ6RqK_39QmvZAjBZhoH2qbbmws9ac4JgrayR=d5m5p+e39XA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] can: rcar_canfd: Add support for r8a779a0 SoC
 MIME-Version: 1.0
-References: <20220309015757.2532973-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220309015757.2532973-1-eric.dumazet@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 9 Mar 2022 11:25:28 -0500
-Message-ID: <CADVnQyngH=CW_RLXQHiLbii6-zDeCKYP05zP=cta95KVoaF4ng@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: adjust TSO packet sizes based on min_rtt
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>, Kevin Yang <yyd@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev39
+X-Originating-Client: open-xchange-appsuite
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 8:58 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> Back when tcp_tso_autosize() and TCP pacing were introduced,
-> our focus was really to reduce burst sizes for long distance
-> flows.
->
-> The simple heuristic of using sk_pacing_rate/1024 has worked
-> well, but can lead to too small packets for hosts in the same
-> rack/cluster, when thousands of flows compete for the bottleneck.
->
-> Neal Cardwell had the idea of making the TSO burst size
-> a function of both sk_pacing_rate and tcp_min_rtt()
->
-> Indeed, for local flows, sending bigger bursts is better
-> to reduce cpu costs, as occasional losses can be repaired
-> quite fast.
->
-> This patch is based on Neal Cardwell implementation
-> done more than two years ago.
-> bbr is adjusting max_pacing_rate based on measured bandwidth,
-> while cubic would over estimate max_pacing_rate.
->
-> /proc/sys/net/ipv4/tcp_tso_rtt_log can be used to tune or disable
-> this new feature, in logarithmic steps.
->
-> Tested:
->
-> 100Gbit NIC, two hosts in the same rack, 4K MTU.
-> 600 flows rate-limited to 20000000 bytes per second.
->
-> Before patch: (TSO sizes would be limited to 20000000/1024/4096 -> 4 segments per TSO)
->
-> ~# echo 0 >/proc/sys/net/ipv4/tcp_tso_rtt_log
-> ~# nstat -n;perf stat ./super_netperf 600 -H otrv6 -l 20 -- -K dctcp -q 20000000;nstat|egrep "TcpInSegs|TcpOutSegs|TcpRetransSegs|Delivered"
->   96005
->
->  Performance counter stats for './super_netperf 600 -H otrv6 -l 20 -- -K dctcp -q 20000000':
->
->          65,945.29 msec task-clock                #    2.845 CPUs utilized
->          1,314,632      context-switches          # 19935.279 M/sec
->              5,292      cpu-migrations            #   80.249 M/sec
->            940,641      page-faults               # 14264.023 M/sec
->    201,117,030,926      cycles                    # 3049769.216 GHz                   (83.45%)
->     17,699,435,405      stalled-cycles-frontend   #    8.80% frontend cycles idle     (83.48%)
->    136,584,015,071      stalled-cycles-backend    #   67.91% backend cycles idle      (83.44%)
->     53,809,530,436      instructions              #    0.27  insn per cycle
->                                                   #    2.54  stalled cycles per insn  (83.36%)
->      9,062,315,523      branches                  # 137422329.563 M/sec               (83.22%)
->        153,008,621      branch-misses             #    1.69% of all branches          (83.32%)
->
->       23.182970846 seconds time elapsed
->
-> TcpInSegs                       15648792           0.0
-> TcpOutSegs                      58659110           0.0  # Average of 3.7 4K segments per TSO packet
-> TcpExtTCPDelivered              58654791           0.0
-> TcpExtTCPDeliveredCE            19                 0.0
->
-> After patch:
->
-> ~# echo 9 >/proc/sys/net/ipv4/tcp_tso_rtt_log
-> ~# nstat -n;perf stat ./super_netperf 600 -H otrv6 -l 20 -- -K dctcp -q 20000000;nstat|egrep "TcpInSegs|TcpOutSegs|TcpRetransSegs|Delivered"
->   96046
->
->  Performance counter stats for './super_netperf 600 -H otrv6 -l 20 -- -K dctcp -q 20000000':
->
->          48,982.58 msec task-clock                #    2.104 CPUs utilized
->            186,014      context-switches          # 3797.599 M/sec
->              3,109      cpu-migrations            #   63.472 M/sec
->            941,180      page-faults               # 19214.814 M/sec
->    153,459,763,868      cycles                    # 3132982.807 GHz                   (83.56%)
->     12,069,861,356      stalled-cycles-frontend   #    7.87% frontend cycles idle     (83.32%)
->    120,485,917,953      stalled-cycles-backend    #   78.51% backend cycles idle      (83.24%)
->     36,803,672,106      instructions              #    0.24  insn per cycle
->                                                   #    3.27  stalled cycles per insn  (83.18%)
->      5,947,266,275      branches                  # 121417383.427 M/sec               (83.64%)
->         87,984,616      branch-misses             #    1.48% of all branches          (83.43%)
->
->       23.281200256 seconds time elapsed
->
-> TcpInSegs                       1434706            0.0
-> TcpOutSegs                      58883378           0.0  # Average of 41 4K segments per TSO packet
-> TcpExtTCPDelivered              58878971           0.0
-> TcpExtTCPDeliveredCE            9664               0.0
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
+Thanks for your review!
 
-Thanks, Eric!
+> On 02/14/2022 8:10 AM Vincent MAILHOL <mailhol.vincent@wanadoo.fr> wrote:
+> > -#define RCANFD_GERFL_ERR(gpriv, x)     ((x) & (RCANFD_GERFL_EEF1 |\
+> > -                                       RCANFD_GERFL_EEF0 | RCANFD_GERFL_MES |\
+> > -                                       (gpriv->fdmode ?\
+> > -                                        RCANFD_GERFL_CMPOF : 0)))
+> > +#define RCANFD_GERFL_ERR(x)            ((x) & (reg_v3u(gpriv, RCANFD_GERFL_EEF0_7, \
+> > +                                       RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1) | \
+> > +                                       RCANFD_GERFL_MES | ((gpriv)->fdmode ? \
+> > +                                       RCANFD_GERFL_CMPOF : 0)))
+> 
+> Instead of packing everything on the right, I suggest putting in a bit more air.
+> Something like that:
+> 
+> #define RCANFD_GERFL_ERR(x)                                             \
+>         ((x) & (reg_v3u(gpriv, RCANFD_GERFL_EEF0_7,                     \
+>                         RCANFD_GERFL_EEF0 | RCANFD_GERFL_EEF1) |        \
+>                 RCANFD_GERFL_MES |                                      \
+>                 ((gpriv)->fdmode ? RCANFD_GERFL_CMPOF : 0)))
+> 
+> Same comment applies to other macros.
 
-Reviewed-by: Neal Cardwell <ncardwell@google.com>
+That does indeed look a lot better.
 
-neal
+> >  /* Helper functions */
+> > +static inline bool is_v3u(struct rcar_canfd_global *gpriv)
+> > +{
+> > +       return gpriv->chip_id == RENESAS_R8A779A0;
+> > +}
+> > +
+> > +static inline u32 reg_v3u(struct rcar_canfd_global *gpriv,
+> > +                         u32 v3u, u32 not_v3u)
+> > +{
+> > +       return is_v3u(gpriv) ? v3u : not_v3u;
+> > +}
+> 
+> Nitpick but I would personally prefer if is_v3u() and reg_v3u()
+> were declared before the macros in which they are being used.
+
+So would I, but that would require extensive reshuffling of the code, which I think is not worth the effort for such a minor issue.
+
+> > +               if (is_v3u(gpriv)) {
+> > +                       cfg = (RCANFD_NCFG_NTSEG1(tseg1) |
+> > +                              RCANFD_NCFG_NBRP(brp) |
+> > +                              RCANFD_NCFG_NSJW(sjw) |
+> > +                              RCANFD_NCFG_NTSEG2(tseg2));
+> > +               } else {
+> > +                       cfg = (RCANFD_CFG_TSEG1(tseg1) |
+> > +                              RCANFD_CFG_BRP(brp) |
+> > +                              RCANFD_CFG_SJW(sjw) |
+> > +                              RCANFD_CFG_TSEG2(tseg2));
+> > +               }
+> 
+> Nitpick: can't you use one of your reg_v3u() functions here?
+> |        cfg = reg_v3u(gpriv, ..., ...)?
+
+Technically yes, but I think of reg_v3u() as choosing between two register layouts, and this is something else.
+
+CU
+Uli
