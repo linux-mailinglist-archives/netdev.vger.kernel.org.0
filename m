@@ -2,102 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FFEB4D2CA1
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:58:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC6B4D2CAB
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 11:00:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbiCIJ7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:59:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
+        id S232365AbiCIKA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 05:00:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232346AbiCIJ7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:59:01 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAB599A9BF
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 01:58:02 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-197-9BvwLLeYNEeOm-asGhaVog-1; Wed, 09 Mar 2022 09:57:59 +0000
-X-MC-Unique: 9BvwLLeYNEeOm-asGhaVog-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Wed, 9 Mar 2022 09:57:58 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Wed, 9 Mar 2022 09:57:57 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Horatiu Vultur' <horatiu.vultur@microchip.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: RE: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Thread-Topic: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Thread-Index: AQHYMzupXSXwX/KYxk6M6s+NBOrfjay2FJiQgACwQ4CAAAv90A==
-Date:   Wed, 9 Mar 2022 09:57:57 +0000
-Message-ID: <45a9f88b140d44af8522e7d8a6abcbbf@AcuMS.aculab.com>
-References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
- <YifMSUA/uZoPnpf1@lunn.ch>
- <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
- <c85c188f9074456e92e9c4f8d8290ec2@AcuMS.aculab.com>
- <20220309091129.b5q3gtiuqlk5skka@soft-dev3-1.localhost>
-In-Reply-To: <20220309091129.b5q3gtiuqlk5skka@soft-dev3-1.localhost>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S231266AbiCIKAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 05:00:55 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7FF16F970;
+        Wed,  9 Mar 2022 01:59:55 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6jAtL._1646819988;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6jAtL._1646819988)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Mar 2022 17:59:49 +0800
+Message-ID: <1646819926.6046128-13-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v7 21/26] virtio: add helper virtio_find_vqs_ctx_size()
+Date:   Wed, 9 Mar 2022 17:58:46 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
+ <20220308123518.33800-22-xuanzhuo@linux.alibaba.com>
+ <f1fb522d-74ce-a642-7768-deaad76aeddc@redhat.com>
+In-Reply-To: <f1fb522d-74ce-a642-7768-deaad76aeddc@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogJ0hvcmF0aXUgVnVsdHVyJw0KPiBTZW50OiAwOSBNYXJjaCAyMDIyIDA5OjExDQo+IA0K
-PiBUaGUgMDMvMDgvMjAyMiAyMjo0NiwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiA+DQo+ID4gRnJv
-bTogSG9yYXRpdSBWdWx0dXINCj4gPiA+IFNlbnQ6IDA4IE1hcmNoIDIwMjIgMjI6MzANCj4gPiA+
-DQo+ID4gPiBUaGUgMDMvMDgvMjAyMiAyMjozNiwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+ID4gPiA+
-DQo+ID4gPiA+ID4gIHN0YXRpYyBpbnQgbGFuOTY2eF9wb3J0X2lual9yZWFkeShzdHJ1Y3QgbGFu
-OTY2eCAqbGFuOTY2eCwgdTggZ3JwKQ0KPiA+ID4gPiA+ICB7DQo+ID4gPiA+ID4gLSAgICAgdTMy
-IHZhbDsNCj4gPiA+ID4gPiArICAgICB1bnNpZ25lZCBsb25nIHRpbWUgPSBqaWZmaWVzICsgdXNl
-Y3NfdG9famlmZmllcyhSRUFETF9USU1FT1VUX1VTKTsNCj4gPiA+ID4gPiArICAgICBpbnQgcmV0
-ID0gMDsNCj4gPiA+ID4gPg0KPiA+ID4gPiA+IC0gICAgIHJldHVybiByZWFkeF9wb2xsX3RpbWVv
-dXRfYXRvbWljKGxhbjk2NnhfcG9ydF9pbmpfc3RhdHVzLCBsYW45NjZ4LCB2YWwsDQo+ID4gPiA+
-ID4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgUVNfSU5KX1NUQVRVU19G
-SUZPX1JEWV9HRVQodmFsKSAmIEJJVChncnApLA0KPiA+ID4gPiA+IC0gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIFJFQURMX1NMRUVQX1VTLCBSRUFETF9USU1FT1VUX1VTKTsN
-Cj4gPiA+ID4gPiArICAgICB3aGlsZSAoIShsYW5fcmQobGFuOTY2eCwgUVNfSU5KX1NUQVRVUykg
-Jg0KPiA+ID4gPiA+ICsgICAgICAgICAgICAgIFFTX0lOSl9TVEFUVVNfRklGT19SRFlfU0VUKEJJ
-VChncnApKSkpIHsNCj4gPiA+ID4gPiArICAgICAgICAgICAgIGlmICh0aW1lX2FmdGVyKGppZmZp
-ZXMsIHRpbWUpKSB7DQo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIHJldCA9IC1FVElN
-RURPVVQ7DQo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIGJyZWFrOw0KPiA+ID4gPiA+
-ICsgICAgICAgICAgICAgfQ0KPiA+ID4gPg0KPiA+ID4gPiBEaWQgeW91IHRyeSBzZXR0aW5nIFJF
-QURMX1NMRUVQX1VTIHRvIDA/IHJlYWR4X3BvbGxfdGltZW91dF9hdG9taWMoKQ0KPiA+ID4gPiBl
-eHBsaWNpdGx5IHN1cHBvcnRzIHRoYXQuDQo+ID4gPg0KPiA+ID4gSSBoYXZlIHRyaWVkIGJ1dCBp
-dCBkaWRuJ3QgaW1wcm92ZS4gSXQgd2FzIHRoZSBzYW1lIGFzIGJlZm9yZS4NCj4gPg0KPiA+IEhv
-dyBtYW55IHRpbWVzIHJvdW5kIHRoZSBsb29wIGlzIGl0IGdvaW5nID8NCj4gDQo+IEluIHRoZSB0
-ZXN0cyB0aGF0IEkgaGF2ZSBkb25lLCBJIGhhdmUgbmV2ZXIgc2VlbiBlbnRlcmluZyBpbiB0aGUg
-bG9vcC4NCg0KSW4gd2hpY2ggY2FzZSBJJ2QgZG8gYW4gaW5pdGlhbCBzdGF0dXMgY2hlY2sgYmVm
-b3JlIGV2ZW4NCmZhZmZpbmcgd2l0aCAnamlmZmllcycuDQoNCkl0IG1pZ2h0IGV2ZW4gYmUgdGhh
-dCB0aGUgc3RhdHVzIHJlYWQgaXMgc28gc2xvdyB0aGF0IHNwYWNlDQppcyBhbHdheXMgYXZhaWxh
-YmxlIGJ5IHRoZSB0aW1lIGl0IGlzIHByb2Nlc3NlZC4NClBDSWUgcmVhZHMgY2FuIGJlIGhvcnJp
-Ymx5IHNsb3cuDQpJbnRvIG91ciBmZ3BhIHRoZXkgZW5kIHVwIGJlaW5nIHNsb3dlciB0aGFuIG9s
-ZCBJU0EgYnVzIGN5Y2xlcy4NClByb2JhYmx5IHNldmVyYWwgdGhvdXNhbmQgY3B1IGNsb2Nrcy4N
-Cg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2Fk
-LCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5v
-OiAxMzk3Mzg2IChXYWxlcykNCg==
+On Wed, 9 Mar 2022 17:04:12 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Introduce helper virtio_find_vqs_ctx_size() to call find_vqs and specify
+> > the maximum size of each vq ring.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >   include/linux/virtio_config.h | 12 ++++++++++++
+> >   1 file changed, 12 insertions(+)
+> >
+> > diff --git a/include/linux/virtio_config.h b/include/linux/virtio_confi=
+g.h
+> > index 5157524d8036..921d8610db0c 100644
+> > --- a/include/linux/virtio_config.h
+> > +++ b/include/linux/virtio_config.h
+> > @@ -233,6 +233,18 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev=
+, unsigned nvqs,
+> >   				      desc, NULL);
+> >   }
+> >
+> > +static inline
+> > +int virtio_find_vqs_ctx_size(struct virtio_device *vdev, u32 nvqs,
+> > +				 struct virtqueue *vqs[],
+> > +				 vq_callback_t *callbacks[],
+> > +				 const char * const names[],
+> > +				 const bool *ctx, struct irq_affinity *desc,
+> > +				 u32 sizes[])
+> > +{
+> > +	return vdev->config->find_vqs(vdev, nvqs, vqs, callbacks, names, ctx,
+> > +				      desc, sizes);
+> > +}
+>
+>
+> Do we need to convert all the open coded direct call to find_vqs() other
+> than net?
 
+
+Do you mean calling find_vqs without a helper? The kernel doesn't do that
+anymore.
+
+Thanks.
+
+
+>
+> Thanks
+>
+>
+> > +
+> >   /**
+> >    * virtio_reset_vq - reset a queue individually
+> >    * @vq: the virtqueue
+>
