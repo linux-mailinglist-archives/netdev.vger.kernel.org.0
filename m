@@ -2,117 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2E74D30D9
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 238B84D30E7
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 15:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233440AbiCIOOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 09:14:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        id S232574AbiCIOTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 09:19:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231860AbiCIOOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:14:53 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2E35C342
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 06:13:53 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id g3so3065155edu.1
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 06:13:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A1IxllUWaN7M8mx21dfIKX1VrykAWot/sHa98wBQT+A=;
-        b=L2bBXpPVmc82ygCZ7z8gnJsvj2t4AfL/jqUl4OvN1XQk2L6+2wlK8D6LIBkvqUE8P4
-         RmzjV+XkULYlr5raJtBvhSAbJEdlKBa2wHWNRiE3YuqLC8ZBY3TrrsAvcOGPSkbHllse
-         lILxQ0Es5W/RJgYmOTubM43ttbv93+1Gw4+jNKSDz2FnVyu1zul3IHTu15JT/ulvGkQU
-         yUiAmZTS7mjiFv41hbFJIe1O6nZm7/xF2aHRNGHxk7Fiu9aosyIF5PoJ7qkvMFrrM+a4
-         tA0gnOB66+z5WfL4gbnyL+PcAAtXX+hs2sIdRmpGtgue3PzzBrqcRcLVPFukgrKQp7l3
-         5DvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A1IxllUWaN7M8mx21dfIKX1VrykAWot/sHa98wBQT+A=;
-        b=Rcou+M+EHM0Hh+ESJ50mRyuBlCSIV0wRUt8tYcfkuqzoCUMK3PaM68eM0w3EechoI7
-         en7zCjv8g1NOt0/jNgzvXLQo9f3YLpUUOlTm5nw8aOXMHNcPdQGT46HsAmywtWKjSOAS
-         aebcOL53DZSDUbCfnK5b0yZnwsz7fCZJGUWRdKDV34/UKaKNTmx2iB+j949V7jpRaEPo
-         Z+wm1Crf35eD5FZiXAt4xRbtlFHhkS5JS7blVfAimoFPkvoaHDrs7ykr4n1egDovnQ+e
-         /nFwOPtz3mlo9hmi2hoBAZ8rKdJCJxYgTSRfMRvmRl55uGtXYPgdeJdTKJyOS5LYkBh0
-         ontA==
-X-Gm-Message-State: AOAM532f7+QsrDiwCy55bF6voRsRI7QyUc3JMkCKtT6NhDkDciB0TXrs
-        DIm1puaJJYagoahBFKAnx7pzsoc0K9rrxYMI/tnaCA==
-X-Google-Smtp-Source: ABdhPJySrQ6B+L5HnD8/slntL7k8ts+U73zWZkhM1HNH/f46jETe4YG7D6nRIk9NQIhO+k4c93d6ZGAKiX5t9c6+V1o=
-X-Received: by 2002:a05:6402:6da:b0:3fd:cacb:f4b2 with SMTP id
- n26-20020a05640206da00b003fdcacbf4b2mr21291908edy.332.1646835232001; Wed, 09
- Mar 2022 06:13:52 -0800 (PST)
+        with ESMTP id S232063AbiCIOTy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 09:19:54 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9554BB0A0
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 06:18:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ifRGWr1umLtvonEG/HbluMF/Dz9MoNH6zVKBDbzB+iY=; b=hqmkH0/ufNym4gw2fIvwkOoH79
+        f3Q6jiHCMH6oPgHuNgJZV3SArVpSx9wmCTTtTPk4eIwHFaXWWKsdzfUxqjsjxgrn3AnnJqTPsQoor
+        IW+bO2wkMPUwZHFshL7JrE4l1gtLl58rqB3AS+4IXO9qY7EuxXj9/lTnK8zZIxNI8wrmQSw3F7Ozy
+        jJVcT4n5L2xKjXJ6tNFkApoWmfpaNKOGOGp++FHzRO4ZJK52hurR05zYrPVLCQWjviLWmzmDGVd2J
+        XkrYaQ8qQeG6xNz2dLHPvxVeFFN8ZSsYhrtTKog3hOM64AjcvlKdPu5HuwAhdCBqfe0Ro+F0Cv7AW
+        zYABzoKQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57740)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nRx9O-0001vN-KI; Wed, 09 Mar 2022 14:18:50 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nRx9M-00080e-Tp; Wed, 09 Mar 2022 14:18:48 +0000
+Date:   Wed, 9 Mar 2022 14:18:48 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net] net: dsa: silence fdb errors when unsupported
+Message-ID: <Yii3SH7/mF7QmXO1@shell.armlinux.org.uk>
+References: <E1nRtfI-00EnmD-I8@rmk-PC.armlinux.org.uk>
+ <20220309104143.gmoks5aceq3dtmci@skbuf>
 MIME-Version: 1.0
-References: <20220309054706.2857266-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220309054706.2857266-1-eric.dumazet@gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Wed, 9 Mar 2022 09:13:15 -0500
-Message-ID: <CACSApvZ1wyP6vRFujZOxwF1277OwHmLsxa6Hi-gFt9xzKnuCwA@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: autocork: take MSG_EOR hint into consideration
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309104143.gmoks5aceq3dtmci@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 12:47 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> tcp_should_autocork() is evaluating if it makes senses
-> to not immediately send current skb, hoping that
-> user space will add more payload on it by the
-> time TCP stack reacts to upcoming TX completions.
->
-> If current skb got MSG_EOR mark, then we know
-> that no further data will be added, it is therefore
-> futile to wait.
->
-> SOF_TIMESTAMPING_TX_ACK will become a bit more accurate,
-> if prior packets are still in qdisc/device queues.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> Cc: Willem de Bruijn <willemb@google.com>
+On Wed, Mar 09, 2022 at 12:41:43PM +0200, Vladimir Oltean wrote:
+> Hello Russell,
+> 
+> On Wed, Mar 09, 2022 at 10:35:32AM +0000, Russell King (Oracle) wrote:
+> > When booting with a Marvell 88e6xxx switch, the kernel spits out a
+> > load of:
+> > 
+> > [    7.820996] mv88e6085 f1072004.mdio-mii:04: port 3 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
+> > [    7.835717] mv88e6085 f1072004.mdio-mii:04: port 2 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
+> > [    7.851090] mv88e6085 f1072004.mdio-mii:04: port 1 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
+> > [    7.968594] mv88e6085 f1072004.mdio-mii:04: port 0 failed to add aa:bb:cc:dd:ee:ff vid XYZ1 to fdb: -95
+> > [    8.035408] mv88e6085 f1072004.mdio-mii:04: port 3 failed to add aa:bb:cc:dd:ee:ff vid XYZ3 to fdb: -95
+> > 
+> > while the switch is being setup. Comments in the Marvell DSA driver
+> > indicate that "switchdev expects -EOPNOTSUPP to honor software VLANs"
+> > in mv88e6xxx_port_db_load_purge() so this error code should not be
+> > treated as an error.
+> > 
+> > Fixes: 3dc80afc5098 ("net: dsa: introduce a separate cross-chip notifier type for host FDBs")
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> > Hi,
+> > 
+> > I noticed these errors booting 5.16 on my Clearfog platforms with a
+> > Marvell DSA switch. It appears that the switch continues to work
+> > even though these errors are logged in the kernel log, so this patch
+> > merely silences the errors, but I'm unsure this is the right thing
+> > to do.
+> 
+> Can you please confirm that these errors have disappeared on net-next?
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+net-next: no warnings
+v5.17-rc7: warnings
+v5.16: warnings
 
-Thanks for catching this!
+So, it looks like we need a patch for 5.17-rc7 and 5.16-stable to fix
+this. Do you have a better suggestion than my patch?
 
-> ---
->  net/ipv4/tcp.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 33f20134e3f19c1cd8a4046a2f88533693a9a912..b6a03a121e7694e3e8cc5b4f47b7954a341c966e 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -688,7 +688,8 @@ static bool tcp_should_autocork(struct sock *sk, struct sk_buff *skb,
->         return skb->len < size_goal &&
->                sock_net(sk)->ipv4.sysctl_tcp_autocorking &&
->                !tcp_rtx_queue_empty(sk) &&
-> -              refcount_read(&sk->sk_wmem_alloc) > skb->truesize;
-> +              refcount_read(&sk->sk_wmem_alloc) > skb->truesize &&
-> +              tcp_skb_can_collapse_to(skb);
->  }
->
->  void tcp_push(struct sock *sk, int flags, int mss_now,
-> --
-> 2.35.1.616.g0bdcbb4464-goog
->
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
