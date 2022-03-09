@@ -2,54 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A6C4D3970
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:03:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC91A4D396F
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:03:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237182AbiCITEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 14:04:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
+        id S233327AbiCITEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 14:04:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237183AbiCITEB (ORCPT
+        with ESMTP id S237184AbiCITEB (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:04:01 -0500
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47014DA85A;
-        Wed,  9 Mar 2022 11:03:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC2AEB336
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:03:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646852580; x=1678388580;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=D0z9GoD253sfAGu6XuCPx0+iysd91jMKa61FyfjAFcw=;
-  b=MvrhtKVSzTDe+zXkNQDvG3G4bckL7kWAfkr1XbgxuYuU0gkaxGi0w4hB
-   kiKZTlBtW7ZUZeWYuANouzesEFOB+pne4Ur0X1JcUJKVAmqbq5FAJKuqS
-   YGY4nSsr5AMUu2rRx3S/f9pPWX+/1rK+YUk4e4wqkMUU7Koxx8NxYPTKm
-   Rm+n/2qDL2U3VKw5Rjn2gpPh6/1ia4d+680KpO8JAvkSqNDip6oOHmWkp
-   9GUz6kIDhk0yaTbRhw/DlCaZH6xfbOHy1PHtjk6lkIXRVuRNRUQBWGM79
-   9WCzPkKgk3N196Mu5tityt1flt2xEih8eRm4vwzRU4Fbl7kG/Y93djORa
+  bh=Ab6KiXSpznr4jY0F65dmhERcatnoATIBQxO7OgGcFpA=;
+  b=TSDyakm+xu2eWnv7WMjBlMuhmDTAnqQ42lVqs/6Wh1MC0bHBhKmz4Wu3
+   wY/SOsuDYUGeuK24BO1X4Qu6Azj+oDoyLQexyXqLemOYJOjxHV02ic/hY
+   11eC3bCfINXXsnSMCcU09P5SwyvyKTujzXM0D/4EEe+y6DY2teJhuqqvb
+   ZtnTYkBojuStTI9SxoU95BQ0OrFOj/fAchWDyavxQyqA4sOS8Jif5areK
+   3l4YOvJk7He4yE+4j3zq0gTZR9TNoH9m5L6Foklefc16NDfLo96ULdaON
+   V+EX+9dvn+fxCP6/NvDpKQlLbX3T/2c+N9AO8Qdk+m/sEFK9Q+mCTooB6
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="341494160"
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="341494165"
 X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="341494160"
+   d="scan'208";a="341494165"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:02:59 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="781188766"
+   d="scan'208";a="781188770"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 09 Mar 2022 11:02:58 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 09 Mar 2022 11:02:59 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+Cc:     Amritha Nambiar <amritha.nambiar@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, bpf@vger.kernel.org,
-        andrii@kernel.org, kpsingh@kernel.org, kafai@fb.com, yhs@fb.com,
-        songliubraving@fb.com,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>
-Subject: [PATCH net-next 4/5] ice: avoid XDP checks in ice_clean_tx_irq()
-Date:   Wed,  9 Mar 2022 11:03:14 -0800
-Message-Id: <20220309190315.1380414-5-anthony.l.nguyen@intel.com>
+        sudheer.mogilappagari@intel.com, sridhar.samudrala@intel.com,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Subject: [PATCH net-next 5/5] ice: Add support for outer dest MAC for ADQ tunnels
+Date:   Wed,  9 Mar 2022 11:03:15 -0800
+Message-Id: <20220309190315.1380414-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220309190315.1380414-1-anthony.l.nguyen@intel.com>
 References: <20220309190315.1380414-1-anthony.l.nguyen@intel.com>
@@ -65,46 +61,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Amritha Nambiar <amritha.nambiar@intel.com>
 
-Commit 9610bd988df9 ("ice: optimize XDP_TX workloads") introduced Tx IRQ
-cleaning routine dedicated for XDP rings. Currently it is impossible to
-call ice_clean_tx_irq() against XDP ring, so it is safe to drop
-ice_ring_is_xdp() calls in there.
+TC flower does not support matching on user specified
+outer MAC address for tunnels. For ADQ tunnels, the driver
+adds outer destination MAC address as lower netdev's
+active unicast MAC address to filter out packets with
+unrelated MAC address being delivered to ADQ VSIs.
 
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>  (A Contingent Worker at Intel)
+Example:
+- create tunnel device
+ip l add $VXLAN_DEV type vxlan id $VXLAN_VNI dstport $VXLAN_PORT \
+dev $PF
+- add TC filter (in ADQ mode)
+
+$tc filter add dev $VXLAN_DEV protocol ip parent ffff: flower \
+ dst_ip $INNER_DST_IP ip_proto tcp dst_port $INNER_DST_PORT \
+ enc_key_id $VXLAN_VNI hw_tc $ADQ_TC
+
+Note: Filters with wild-card tunnel ID (when user does not
+specify tunnel key) are also supported.
+
+Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_txrx.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 32 ++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 853f57a9589a..f9bf008471c9 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -223,8 +223,7 @@ static bool ice_clean_tx_irq(struct ice_tx_ring *tx_ring, int napi_budget)
- 	struct ice_tx_buf *tx_buf;
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index 424c74ca7d69..fedc310c376c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -24,6 +24,9 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
+ 	if (flags & ICE_TC_FLWR_FIELD_TENANT_ID)
+ 		lkups_cnt++;
  
- 	/* get the bql data ready */
--	if (!ice_ring_is_xdp(tx_ring))
--		netdev_txq_bql_complete_prefetchw(txring_txq(tx_ring));
-+	netdev_txq_bql_complete_prefetchw(txring_txq(tx_ring));
++	if (flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC)
++		lkups_cnt++;
++
+ 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
+ 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4 |
+ 		     ICE_TC_FLWR_FIELD_ENC_SRC_IPV6 |
+@@ -148,6 +151,15 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
+ 		}
+ 	}
  
- 	tx_buf = &tx_ring->tx_buf[i];
- 	tx_desc = ICE_TX_DESC(tx_ring, i);
-@@ -313,10 +312,6 @@ static bool ice_clean_tx_irq(struct ice_tx_ring *tx_ring, int napi_budget)
- 	tx_ring->next_to_clean = i;
++	if (flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC) {
++		list[i].type = ice_proto_type_from_mac(false);
++		ether_addr_copy(list[i].h_u.eth_hdr.dst_addr,
++				hdr->l2_key.dst_mac);
++		ether_addr_copy(list[i].m_u.eth_hdr.dst_addr,
++				hdr->l2_mask.dst_mac);
++		i++;
++	}
++
+ 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
+ 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4)) {
+ 		list[i].type = ice_proto_type_from_ipv4(false);
+@@ -1064,12 +1076,24 @@ ice_handle_tclass_action(struct ice_vsi *vsi,
+ 	 * this code won't do anything
+ 	 * 2. For non-tunnel, if user didn't specify MAC address, add implicit
+ 	 * dest MAC to be lower netdev's active unicast MAC address
++	 * 3. For tunnel,  as of now TC-filter through flower classifier doesn't
++	 * have provision for user to specify outer DMAC, hence driver to
++	 * implicitly add outer dest MAC to be lower netdev's active unicast
++	 * MAC address.
+ 	 */
+-	if (!(fltr->flags & ICE_TC_FLWR_FIELD_DST_MAC)) {
+-		ether_addr_copy(fltr->outer_headers.l2_key.dst_mac,
+-				main_vsi->netdev->dev_addr);
+-		eth_broadcast_addr(fltr->outer_headers.l2_mask.dst_mac);
++	if (fltr->tunnel_type != TNL_LAST &&
++	    !(fltr->flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC))
++		fltr->flags |= ICE_TC_FLWR_FIELD_ENC_DST_MAC;
++
++	if (fltr->tunnel_type == TNL_LAST &&
++	    !(fltr->flags & ICE_TC_FLWR_FIELD_DST_MAC))
+ 		fltr->flags |= ICE_TC_FLWR_FIELD_DST_MAC;
++
++	if (fltr->flags & (ICE_TC_FLWR_FIELD_DST_MAC |
++			   ICE_TC_FLWR_FIELD_ENC_DST_MAC)) {
++		ether_addr_copy(fltr->outer_headers.l2_key.dst_mac,
++				vsi->netdev->dev_addr);
++		memset(fltr->outer_headers.l2_mask.dst_mac, 0xff, ETH_ALEN);
+ 	}
  
- 	ice_update_tx_ring_stats(tx_ring, total_pkts, total_bytes);
--
--	if (ice_ring_is_xdp(tx_ring))
--		return !!budget;
--
- 	netdev_tx_completed_queue(txring_txq(tx_ring), total_pkts, total_bytes);
- 
- #define TX_WAKE_THRESHOLD ((s16)(DESC_NEEDED * 2))
+ 	/* validate specified dest MAC address, make sure either it belongs to
 -- 
 2.31.1
 
