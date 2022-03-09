@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C85B4D280B
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 06:01:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 360274D287C
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 06:35:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229528AbiCIFCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 00:02:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
+        id S229696AbiCIFg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 00:36:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiCIFC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 00:02:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB9610BBC9;
-        Tue,  8 Mar 2022 21:01:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDCD66189F;
-        Wed,  9 Mar 2022 05:01:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD7EC340E8;
-        Wed,  9 Mar 2022 05:01:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646802090;
-        bh=u9AmhLjdiMXokE3skjPX/ILUo3bIn8slqzpW3UOIBlA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Ru9BR2NmSn2/u7Ecwepa5h03WaDRzPvnoHxzDKws3BGyKBx19D8fsYu3cUwUeVGSU
-         WFLjc5s2ikPFp2FimuYhyt3tmbdWG+yKEQC24QGJeiZA8TbZerfqKyYczV5swN3/16
-         Ka1Mf3l99L4NnOlBo3M2KOk5ZLOtm70aZavnFUMdCuESwsLC/ffBeEz6p1BKBtzQCO
-         NGsj2TPRb+KOA5UO5fkz5h0QPRJvW5EogZ+z41LK5HyKoGoKk5j1WoYufKaKfZDke2
-         5w83RohUFDDJLuMGkI1HCmDShSJ558YDfiaBjRcD3l5Zw2lVDJnNW+8DCpOWd/r8do
-         yJzLbqG1GyPCw==
-Message-ID: <ff2e1007-5883-5178-6415-326d6ae69c34@kernel.org>
-Date:   Tue, 8 Mar 2022 22:01:27 -0700
+        with ESMTP id S229502AbiCIFg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 00:36:27 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CCA149966;
+        Tue,  8 Mar 2022 21:35:29 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id eq14so1221448qvb.3;
+        Tue, 08 Mar 2022 21:35:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rMWVx69slUxdMBkJoGlbP/cK/UUy/WgqXolJWODJNJI=;
+        b=miIJeeXOZ26m9nKSOMODNuWEJlRXmuLyA/KvDD4RXVBQOm8Z+vCp8rzaJRn3vW6riC
+         SEOFY0J8Dgj+aDuuDujfZDB19Ajpj0ADIEeOxscBKWRVvmKvp6+hMBEXHqrBAoqoUkmy
+         WDYQAags5fzS5LSneH366PXjLGCZrW4+YtmXHf28huTZ54sew8cp3tszf5XJ2OUZRDBS
+         HPQ0Ho31deurJQ4jNeKa8sQeyRMnl9RLaki5ImfxQMfTztfA5hFjBLSSiEFHingfrvpt
+         6HgKRmQ4/sxo8To8D/t920McfJR28HPHmruWNeCOx+vAfGsTsoU6UwRcTssmMjMA+J6A
+         FaSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rMWVx69slUxdMBkJoGlbP/cK/UUy/WgqXolJWODJNJI=;
+        b=M7K21nBioiW8gIeBn9ymWIdcyxNrtHMFTh+DZCwYK2w3GJQyhbkLYE6HvU9WLQ7Gtt
+         7F5B1Egt+5bR/zLWVLNrZMjiaOsY+VOthGcrAaQLt+XmFHpSAj/fkQO9kVykbyQfVIS8
+         7I2ZiEjN51Dnzd9QM6z4xeLwxWaEahhyr2fHTRjmGzWztrz8ajiCIS6HBpYWdS6ZHbcp
+         eLTTdCyKILS5Z3dUKkCH6GWpT9wzZq1q7cqXGTBVOLinkgr/NxIXC0SODWhyfZQDIvxz
+         p0EPBzoigxvSk8qxVq3sSevn2536q9r63vVInx0Y0VOZUJNDQCw5Ca/Sbh2h5RRVM2sT
+         mPuA==
+X-Gm-Message-State: AOAM530LVhF7VvgAmcfpWmHxfZtyFFXJuBp+0COddrN8RSdlTZ38JvvV
+        rxdpTpuotRSv7oPcG7rReuE=
+X-Google-Smtp-Source: ABdhPJys2RVmbyGtcByT+knJyfG1+0rR2k3s0/w0elWwfRFqaZJS7ZKELcfQNn229emZmY4GjiJtnQ==
+X-Received: by 2002:a0c:d692:0:b0:432:3605:6192 with SMTP id k18-20020a0cd692000000b0043236056192mr14965909qvi.90.1646804128279;
+        Tue, 08 Mar 2022 21:35:28 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 186-20020a370cc3000000b0067d36e3481dsm302648qkm.17.2022.03.08.21.35.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 21:35:27 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     toke@toke.dk
+Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ath9k: Use platform_get_irq() to get the interrupt
+Date:   Wed,  9 Mar 2022 05:35:21 +0000
+Message-Id: <20220309053521.2081129-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
-Content-Language: en-US
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
- <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
- <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
- <66463e26-8564-9f58-ce41-9a2843891d1a@kernel.org>
- <45522c89-a3b4-4b98-232b-9c69470124a3@linaro.org>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <45522c89-a3b4-4b98-232b-9c69470124a3@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,23 +70,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/8/22 12:46 PM, Tadeusz Struk wrote:
-> That fails in the same way:
-> 
-> skbuff: skb_over_panic: text:ffffffff83e7b48b len:65575 put:65575
-> head:ffff888101f8a000 data:ffff888101f8a088 tail:0x100af end:0x6c0
-> dev:<NULL>
-> ------------[ cut here ]------------
-> kernel BUG at net/core/skbuff.c:113!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 0 PID: 1852 Comm: repro Not tainted
-> 5.17.0-rc7-00020-gea4424be1688-dirty #19
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
-> RIP: 0010:skb_panic+0x173/0x175
-> 
-> I'm not sure how it supposed to help since it doesn't change the
-> alloclen at all.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-alloclen is a function of fraglen and fraglen is a function of datalen.
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
 
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
+
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/net/wireless/ath/ath9k/ahb.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/ahb.c b/drivers/net/wireless/ath/ath9k/ahb.c
+index cdefb8e2daf1..9cd12b20b18d 100644
+--- a/drivers/net/wireless/ath/ath9k/ahb.c
++++ b/drivers/net/wireless/ath/ath9k/ahb.c
+@@ -98,13 +98,9 @@ static int ath_ahb_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (res == NULL) {
+-		dev_err(&pdev->dev, "no IRQ resource found\n");
+-		return -ENXIO;
+-	}
+-
+-	irq = res->start;
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
+ 
+ 	ath9k_fill_chanctx_ops();
+ 	hw = ieee80211_alloc_hw(sizeof(struct ath_softc), &ath9k_ops);
+-- 
+2.25.1
 
