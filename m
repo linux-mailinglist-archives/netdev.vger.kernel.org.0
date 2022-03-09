@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 749D54D2EDE
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:15:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 636464D2EE1
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:15:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232724AbiCIMPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 07:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51894 "EHLO
+        id S232732AbiCIMP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 07:15:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232720AbiCIMPx (ORCPT
+        with ESMTP id S232721AbiCIMPx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:15:53 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAB610E04D;
-        Wed,  9 Mar 2022 04:14:53 -0800 (PST)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KD9xQ2bG0zbcGD;
-        Wed,  9 Mar 2022 20:10:02 +0800 (CST)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2046310E06C;
+        Wed,  9 Mar 2022 04:14:54 -0800 (PST)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KDB0m66rszBrk7;
+        Wed,  9 Mar 2022 20:12:56 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Mar
@@ -32,9 +32,9 @@ CC:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Jakub Kicinski <kuba@kernel.org>,
         KP Singh <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next 3/4] bpf: Fix net.core.bpf_jit_harden race
-Date:   Wed, 9 Mar 2022 20:33:20 +0800
-Message-ID: <20220309123321.2400262-4-houtao1@huawei.com>
+Subject: [PATCH bpf-next 4/4] selftests/bpf: Test subprog jit when toggle bpf_jit_harden repeatedly
+Date:   Wed, 9 Mar 2022 20:33:21 +0800
+Message-ID: <20220309123321.2400262-5-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220309123321.2400262-1-houtao1@huawei.com>
 References: <20220309123321.2400262-1-houtao1@huawei.com>
@@ -54,95 +54,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is the bpf_jit_harden counterpart to commit 60b58afc96c9 ("bpf: fix
-net.core.bpf_jit_enable race"). bpf_jit_harden will be tested twice
-for each subprog if there are subprogs in bpf program and constant
-blinding may increase the length of program, so when running
-"./test_progs -t subprogs" and toggling bpf_jit_harden between 0 and 2,
-jit_subprogs may fail because constant blinding increases the length
-of subprog instructions during extra passs.
-
-So cache the value of bpf_jit_blinding_enabled() during program
-allocation, and use the cached value during constant blinding, subprog
-JITing and args tracking of tail call.
+When bpf_jit_harden is toggled between 0 and 2, subprog jit may fail
+due to inconsistent twice read values of bpf_jit_harden during jit. So
+add a test to ensure the problem is fixed.
 
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- include/linux/filter.h | 1 +
- kernel/bpf/core.c      | 3 ++-
- kernel/bpf/verifier.c  | 5 +++--
- 3 files changed, 6 insertions(+), 3 deletions(-)
+ .../selftests/bpf/prog_tests/subprogs.c       | 77 ++++++++++++++++---
+ 1 file changed, 68 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index f3a913229edd..605c8456467b 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -566,6 +566,7 @@ struct bpf_prog {
- 				gpl_compatible:1, /* Is filter GPL compatible? */
- 				cb_access:1,	/* Is control block accessed? */
- 				dst_needed:1,	/* Do we need dst entry? */
-+				blinding_requested:1, /* needs constant blinding */
- 				blinded:1,	/* Was blinded */
- 				is_func:1,	/* program is a bpf function */
- 				kprobe_override:1, /* Do we override a kprobe? */
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index a1841e11524c..a4b5fb095261 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -105,6 +105,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
- 	fp->aux = aux;
- 	fp->aux->prog = fp;
- 	fp->jit_requested = ebpf_jit_enabled();
-+	fp->blinding_requested = bpf_jit_blinding_enabled(fp);
+diff --git a/tools/testing/selftests/bpf/prog_tests/subprogs.c b/tools/testing/selftests/bpf/prog_tests/subprogs.c
+index 3f3d2ac4dd57..903f35a9e62e 100644
+--- a/tools/testing/selftests/bpf/prog_tests/subprogs.c
++++ b/tools/testing/selftests/bpf/prog_tests/subprogs.c
+@@ -1,32 +1,83 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2020 Facebook */
+ #include <test_progs.h>
+-#include <time.h>
+ #include "test_subprogs.skel.h"
+ #include "test_subprogs_unused.skel.h"
  
- 	INIT_LIST_HEAD_RCU(&fp->aux->ksym.lnode);
- 	mutex_init(&fp->aux->used_maps_mutex);
-@@ -1382,7 +1383,7 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
- 	struct bpf_insn *insn;
- 	int i, rewritten;
+-static int duration;
++struct toggler_ctx {
++	int fd;
++	bool stop;
++};
  
--	if (!bpf_jit_blinding_enabled(prog) || prog->blinded)
-+	if (!prog->blinding_requested || prog->blinded)
- 		return prog;
- 
- 	clone = bpf_prog_clone_create(prog, GFP_USER);
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 885e515cf83f..ec4780bd44f1 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -13024,6 +13024,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- 		func[i]->aux->name[0] = 'F';
- 		func[i]->aux->stack_depth = env->subprog_info[i].stack_depth;
- 		func[i]->jit_requested = 1;
-+		func[i]->blinding_requested = prog->blinding_requested;
- 		func[i]->aux->kfunc_tab = prog->aux->kfunc_tab;
- 		func[i]->aux->kfunc_btf_tab = prog->aux->kfunc_btf_tab;
- 		func[i]->aux->linfo = prog->aux->linfo;
-@@ -13150,6 +13151,7 @@ static int jit_subprogs(struct bpf_verifier_env *env)
- out_undo_insn:
- 	/* cleanup main prog to be interpreted */
- 	prog->jit_requested = 0;
-+	prog->blinding_requested = 0;
- 	for (i = 0, insn = prog->insnsi; i < prog->len; i++, insn++) {
- 		if (!bpf_pseudo_call(insn))
- 			continue;
-@@ -13243,7 +13245,6 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+-void test_subprogs(void)
++static void *toggle_jit_harden(void *arg)
++{
++	struct toggler_ctx *ctx = arg;
++	char two = '2';
++	char zero = '0';
++
++	while (!ctx->stop) {
++		lseek(ctx->fd, SEEK_SET, 0);
++		write(ctx->fd, &two, sizeof(two));
++		lseek(ctx->fd, SEEK_SET, 0);
++		write(ctx->fd, &zero, sizeof(zero));
++	}
++
++	return NULL;
++}
++
++static void test_subprogs_with_jit_harden_toggling(void)
++{
++	struct toggler_ctx ctx;
++	pthread_t toggler;
++	int err;
++	unsigned int i, loop = 10;
++
++	ctx.fd = open("/proc/sys/net/core/bpf_jit_harden", O_RDWR);
++	if (!ASSERT_GE(ctx.fd, 0, "open bpf_jit_harden"))
++		return;
++
++	ctx.stop = false;
++	err = pthread_create(&toggler, NULL, toggle_jit_harden, &ctx);
++	if (!ASSERT_OK(err, "new toggler"))
++		goto out;
++
++	/* Make toggler thread to run */
++	usleep(1);
++
++	for (i = 0; i < loop; i++) {
++		struct test_subprogs *skel = test_subprogs__open_and_load();
++
++		if (!ASSERT_OK_PTR(skel, "skel open"))
++			break;
++		test_subprogs__destroy(skel);
++	}
++
++	ctx.stop = true;
++	pthread_join(toggler, NULL);
++out:
++	close(ctx.fd);
++}
++
++static void test_subprogs_alone(void)
  {
- 	struct bpf_prog *prog = env->prog;
- 	enum bpf_attach_type eatype = prog->expected_attach_type;
--	bool expect_blinding = bpf_jit_blinding_enabled(prog);
- 	enum bpf_prog_type prog_type = resolve_prog_type(prog);
- 	struct bpf_insn *insn = prog->insnsi;
- 	const struct bpf_func_proto *fn;
-@@ -13407,7 +13408,7 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
- 			insn->code = BPF_JMP | BPF_TAIL_CALL;
+ 	struct test_subprogs *skel;
+ 	struct test_subprogs_unused *skel2;
+ 	int err;
  
- 			aux = &env->insn_aux_data[i + delta];
--			if (env->bpf_capable && !expect_blinding &&
-+			if (env->bpf_capable && !prog->blinding_requested &&
- 			    prog->jit_requested &&
- 			    !bpf_map_key_poisoned(aux) &&
- 			    !bpf_map_ptr_poisoned(aux) &&
+ 	skel = test_subprogs__open_and_load();
+-	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++	if (!ASSERT_OK_PTR(skel, "skel_open"))
+ 		return;
+ 
+ 	err = test_subprogs__attach(skel);
+-	if (CHECK(err, "skel_attach", "failed to attach skeleton: %d\n", err))
++	if (!ASSERT_OK(err, "skel attach"))
+ 		goto cleanup;
+ 
+ 	usleep(1);
+ 
+-	CHECK(skel->bss->res1 != 12, "res1", "got %d, exp %d\n", skel->bss->res1, 12);
+-	CHECK(skel->bss->res2 != 17, "res2", "got %d, exp %d\n", skel->bss->res2, 17);
+-	CHECK(skel->bss->res3 != 19, "res3", "got %d, exp %d\n", skel->bss->res3, 19);
+-	CHECK(skel->bss->res4 != 36, "res4", "got %d, exp %d\n", skel->bss->res4, 36);
++	ASSERT_EQ(skel->bss->res1, 12, "res1");
++	ASSERT_EQ(skel->bss->res2, 17, "res2");
++	ASSERT_EQ(skel->bss->res3, 19, "res3");
++	ASSERT_EQ(skel->bss->res4, 36, "res4");
+ 
+ 	skel2 = test_subprogs_unused__open_and_load();
+ 	ASSERT_OK_PTR(skel2, "unused_progs_skel");
+@@ -35,3 +86,11 @@ void test_subprogs(void)
+ cleanup:
+ 	test_subprogs__destroy(skel);
+ }
++
++void test_subprogs(void)
++{
++	if (test__start_subtest("subprogs_alone"))
++		test_subprogs_alone();
++	if (test__start_subtest("subprogs_and_jit_harden"))
++		test_subprogs_with_jit_harden_toggling();
++}
 -- 
 2.29.2
 
