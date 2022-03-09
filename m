@@ -2,216 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C984D3B24
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 21:34:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A2ED4D3B41
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 21:42:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234565AbiCIUe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 15:34:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
+        id S236566AbiCIUnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 15:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbiCIUe5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 15:34:57 -0500
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50083.outbound.protection.outlook.com [40.107.5.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D063B84C;
-        Wed,  9 Mar 2022 12:33:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F9MeIClDaPaH0jRXsdzhspQMdphUYcaqigDU8T+QX6YvfJjOd8W8PC452zJAQZ80I1XYt/unfJH0AvNw2grhFq9nwT6Cn5WiAid1Bdx2ixPbKpUxkTbnVVAHtBR3QJhdnA9mIsKTxyozz60E6U7KWFuYrtSZ02kR8dyx99nNIqL2Tu3923Ssna9H6GuJ6EqK/jsCo8c3pg5B5wSVjDOTXkuVX0nmP491/Zn9yujYuskJ6ifopqhfiWtrUGuix4IyTpXQdvPR1XyyMTGUY2hQJQJvqyN88tEAOmuEQ7ma1EhuLCXzoGlWcS1LaIZDzHK10iukULZUM30I3S407bG1+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9hdEcx5zYIgcuXV9rWaUZA4J4Je4KxG/et53Yk5XhPQ=;
- b=le070eJDSYzeMSfJB6gS+wuPUSYwhGFsTbbuzEbToAJUQsUS0zynvAum25uhQQ3m5PXpi1xgcSZFo5yhlvT2N27GNnHDUh10JFpSV95NEQBtUmBxECAYTzzgeVBl9uuBdbeGRfCZUcDepKUFNUVU4wU/IwKuFCw/i6b6hH92GQVh3KD1nKE5PaeoTGegNSIwm3bJdg3mjFRpJdaDh5bw5n4WhcnfLA4fxrCbAaSjlbXzgAV4NhphZofHHWgM180+RTf9FAmXbDM5rnga7xNArcCH2BFtvZrCOmdL45B7UURNh9mH+AciM+mlLpIcW5J5y2mfs4oTbYvRBX4QkTRWYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9hdEcx5zYIgcuXV9rWaUZA4J4Je4KxG/et53Yk5XhPQ=;
- b=ejt81+IC74lJKQ5WCgpqzoqnThxoGPuNssv4GsUPZZARMQ3Xd4YXbl95E3LyjEwdMx5CyScDUgk/JlL1nL5u6vtSflmbe4MT75QouT2eA+6RpEbbRPSTcWevwsMiH/rqrngFZ9ZoKfwxfusWAqXCn3Puw5ePEuvdw0dq7XLZzQQ=
-Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
- by AM0PR04MB5426.eurprd04.prod.outlook.com (2603:10a6:208:120::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
- 2022 20:33:50 +0000
-Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
- ([fe80::c58c:4cac:5bf9:5579]) by AM9PR04MB8555.eurprd04.prod.outlook.com
- ([fe80::c58c:4cac:5bf9:5579%7]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
- 20:33:50 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Hongxing Zhu <hongxing.zhu@nxp.com>
-Subject: Re: [PATCH net-next v2 7/8] dpaa2-mac: configure the SerDes phy on a
- protocol change
-Thread-Topic: [PATCH net-next v2 7/8] dpaa2-mac: configure the SerDes phy on a
- protocol change
-Thread-Index: AQHYM9sO7LQ5YQGFC0CDkYQNpN7Iy6y3ZEAAgAAeAQA=
-Date:   Wed, 9 Mar 2022 20:33:50 +0000
-Message-ID: <20220309203350.qzqgbu6hmb5hiamn@skbuf>
-References: <20220309172748.3460862-1-ioana.ciornei@nxp.com>
- <20220309172748.3460862-8-ioana.ciornei@nxp.com>
- <Yij2AlJte0bG7eJr@shell.armlinux.org.uk>
-In-Reply-To: <Yij2AlJte0bG7eJr@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 26abdf11-861c-426f-c8a5-08da020c1ee9
-x-ms-traffictypediagnostic: AM0PR04MB5426:EE_
-x-microsoft-antispam-prvs: <AM0PR04MB5426F0721F40BF12D04CDD81E00A9@AM0PR04MB5426.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Cljqg4bkHCI6sUhBBIBB/lHu+2gVHJ5b8x7WnpOTgcFp3ttYAFdVYswu7z8fwlZfzB2Hx7DCsYLdt/QCs0hzhh17NpIfAK7y27/4ix6h6AXtiHZuSeOIMqRy4R68gObNMloCQGX1AhtF48Cg8R8vHyWbw5JpxHJswa6OD9fhXW0rp9TR0u4SvWwBm4qeXp8m00sKrZOZaxQQEDMKyVKcj8YH0MuuQJYJODBRlMfjRXWcxnyV/nLvTBMwH6P6V+9viuXS0No2bgPhrU9m5Z4G0TVtqqmS3htyApzCUaymY3Iur1PEanXCL3h95uMjjk5agfAEAlih7OADN22TDUYVGDkk4NjMJnbt3hNl87EBf5Z/Ht5UtTy13zmTm/hnp5Xr9DU8t2dDaPYPStSgi8al7vEhY/9m0yln7ZmI4+5giptASQtOUnrlvXcdKCn/Qc2clYhyaVfuPp/tspG3P+ntF8LVMJzruJ3B4MSU/fbhpLnPDwmYPDWfFCM27GcN11Y2R4QmseEsCDzcza+CtMQYuHCVu3qP0LCy/YTETuLwjsvMF7bRHcnTgX8pXooicYi9V9mh9jk7ui2j+tpafzdD8r+nQx73MX+oYxYln+CNcFJdU/ETGE57I5P6q4oL1HX/p23GbmXXRDA54Gqt+MTVQ0y+SfPfw1yzi9zhFLI0Z8KMbc/Z1zLNJuNietFsaKDG/ZENhJ8mbU3KGsdrmxkoDg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(26005)(33716001)(1076003)(186003)(6486002)(6512007)(6506007)(54906003)(71200400001)(122000001)(38070700005)(9686003)(86362001)(38100700002)(498600001)(83380400001)(6916009)(2906002)(76116006)(66946007)(66446008)(66556008)(91956017)(8936002)(44832011)(7416002)(8676002)(4326008)(64756008)(66476007)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hKh4GPJ1//x4dXqAbsuEtxAsmQsDGiMM7CKFHR5Z3MP6SXgV1q1HJ3UNH3cq?=
- =?us-ascii?Q?RlIrW27m6/BLtQhKGnYXyDo9fZXNFMsTHA8a8UOdn2MBrgGv9CUQAJn+Nwbq?=
- =?us-ascii?Q?AKiEAx6dQf66uUnx9GtssR6qEkt3I3a8Lyb5LoAkR7DLE2Wq7f1DrOxy5+nF?=
- =?us-ascii?Q?QbMAdf4eNfvZM4fTjC4qnVRDeLQchkvVTmK2SxyRsnDlmYyRydbOVP6DvZns?=
- =?us-ascii?Q?+wsN02fvmf6ltJO0Nd0zT8O4q8f0w+qqhFRMNEVk+4sFFJYwBwDX5nZTm9my?=
- =?us-ascii?Q?VolDS+9Ozq98re5bGgtvCsaFkUHghxscnizCiUUPjR8dU4PO7lC68txVr00D?=
- =?us-ascii?Q?1+LcCX/+WnFANu/k0Qrn9Si6d2e2Q2wBhe54LH11M1yFDnhNhwNPH/q+kFWC?=
- =?us-ascii?Q?jQjYATRFg2hrFZavB98Ssy289brm/+JkRua18JrUjZ4jSB+1S68ZiJ0Htv9p?=
- =?us-ascii?Q?1a/9gpCL3wuJw/TD56SqLF7qDSL1ZsanrFqKZkkhjl5DC/2DBEV/aCRWN8Dd?=
- =?us-ascii?Q?q7ndBi8DWPpcL/TM7tzTUbHvDPU+oKYr718rHOWLGrOoN4IMU4VojoqZv8S+?=
- =?us-ascii?Q?x+XsnDk42SaRAkz/7w9jHdmHiMCzTWuv9Y1lxHHI7EO2g4VQO89C8Ym3+HGD?=
- =?us-ascii?Q?hJd6qIs8A/VrKBsOkuBOi2fsazItdNq+99VcI9VVCxgYTY0VvtWLfYHDNhKI?=
- =?us-ascii?Q?eKIgAEibN9QItkySZUxJ7Q6xxQ5o1cKJmoeeyagAajzceOnYK13/e7B5p4fo?=
- =?us-ascii?Q?Wiy8ac3meIy/PuMLpuZcRJUmwc/i/kdq2nopveBzJlxEzxP2LqTzr3Ab5FWk?=
- =?us-ascii?Q?ft0WbAWjsA3re1bw7Fl2BYDbkyLBBSvniPt/lebTQGET5FrttMlw8Gj3i0gu?=
- =?us-ascii?Q?CTD4D1JaK3Jo2YDwq8vvPqm3JisQCL2m23ZF/c2ij998PzKj5kk1ffcCoRFp?=
- =?us-ascii?Q?1gdDyhRD+qHdx8knbjowkT9w9vwEAGHotJOH9xiPQo4i6sSCd66Kjp/OSozq?=
- =?us-ascii?Q?vQivM3pGt7A28nsbarDxk1pDlXXYpCiUdv2ybnm19kGOxVgGbsDfKr546Uzb?=
- =?us-ascii?Q?Mxu8KZwam/aouICXQ74RTapV60wVByB0DiK8+Ik2xQPcNVOM3UI+IeIyR7ZW?=
- =?us-ascii?Q?/musFN4XyzZ7goFXqKF+B5plUFQ/sR6TZZKKEbTgVPvK7Hz+I5INzRP22Gt2?=
- =?us-ascii?Q?GeGdwgx/w5E/wFKkBSKM8R71eJds+gH04wWNlTMsW3e99H2teWAZbGfFI6O/?=
- =?us-ascii?Q?FA+5+G+gMzRGN+wfxlqTpYjMwux7i9lBbcFfDs0lW9mYV3TXsVTi4JNHfMR5?=
- =?us-ascii?Q?hKQHz8hPG8EJt88/uW6F0BoJR2vbXBO8dRMWphg/6lwyyDt4lkwc1pab89xw?=
- =?us-ascii?Q?v0uH0cnHBZUNF1wh65FfQRIkL4mLYXYuqjaTNOw3TLAnR+Ntd68hpmw80pwN?=
- =?us-ascii?Q?gCS8eotk5kQ1gKFV4Z/3Kj7ihAkQgSRGSKCMnKq8TDs7RaHLyMiXAZVibOpi?=
- =?us-ascii?Q?6wgQkBUYrzxCRY5U6k1B5qboRawfhSX2TBtXEKokFEfkum9slHnXLDeas6Vp?=
- =?us-ascii?Q?+rbgZsBkk1dUUxk/rQJjmM494LKNBxKVu2/tA0Th1tH/TVSghpd4a0f2Am2S?=
- =?us-ascii?Q?lFK4jgnEtuCqZ42s71nRXJI=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <03773CB7A032044F9FFADFD2AAA28D7A@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S234374AbiCIUnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 15:43:11 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05114D9F8
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 12:42:11 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id q7-20020a7bce87000000b00382255f4ca9so4189285wmj.2
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 12:42:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=aSOCxd0O0AlSABEw2+WmMslTuNXzOT8psYUKdCBZjow=;
+        b=iDcQWsrBUQBbOYpkdV/CKJL8qJq5WWMmLaX1Qzg+fJOoD2jytPJDY7x1Az2iaD1WIP
+         UOXtgCvsRC8f4nVQFEO6lUFkEWq2gsgVHQ5q9RSXlcJUNj8cxEVoXBKDLazyevhQYLZq
+         ce/g6buwwH7nstsQOJkuU1tk3Zl7BaLGCIEovkxHTpISFK+W4DowavUXX6bqokYAykWu
+         lEDwcAOkIn22scFP/WqhKCep3FLwxOW75H5aQHsWeKbFXSvYXbg0eBK4K2/sZYn4uwi5
+         h10BTo9eBedCvGMAJE4YgRvhm2efV+HnZXG+gCXZEVHiYYG1USxmldmohtySVC+pX+1F
+         yYqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=aSOCxd0O0AlSABEw2+WmMslTuNXzOT8psYUKdCBZjow=;
+        b=gUhMKH5urGlT4No+iBcRxrnCMir7cOukvCWW05Kv8bTZjTTubQJi4nPw0QyiEHlT5C
+         FvrhS47d/D0a8jwh8SuC2LiZkEaJ8Cwopp20/EvVv0+l3AMsLEKnS+GPsmy21TfSSBjk
+         MEcM8vG62FyGra2xKwrYkY7JFoWqtAr0+RgtnvBHe434kv6EpP4nC/aHIW9YiuXnJ/UG
+         6md/r2PcJbPftIXcAMTHLGjtwYv/c5MOD2rba137egzwQocPK//l5fB3zgkyEPPT2qM5
+         tg3eRxgve1q0YZfEjt/ZRh7KbP/1m8xqgO7KjoUd6bFSyH44WewDRJOwJ8RnjKTStsCH
+         X0tA==
+X-Gm-Message-State: AOAM533NwjOIYcYhkUwyo1CMY5n9pxKRrZrVnEI4k01d/1iwE5cxUPCW
+        L69WeD0NITDPZKMLVO6zhMM=
+X-Google-Smtp-Source: ABdhPJyOGhORUyM5EXeW2PmVMEuYS8h2EGD1SJyFy4GGHmjvmuDHXyH+wyKl36U7mJjN9GdoJ0W6CA==
+X-Received: by 2002:a7b:c114:0:b0:381:f7ee:e263 with SMTP id w20-20020a7bc114000000b00381f7eee263mr9091536wmi.30.1646858530342;
+        Wed, 09 Mar 2022 12:42:10 -0800 (PST)
+Received: from ?IPV6:2a01:c22:7793:600:9d6a:7788:3389:da6c? (dynamic-2a01-0c22-7793-0600-9d6a-7788-3389-da6c.c22.pool.telefonica.de. [2a01:c22:7793:600:9d6a:7788:3389:da6c])
+        by smtp.googlemail.com with ESMTPSA id j15-20020a05600c410f00b00389d35f7624sm2351990wmi.0.2022.03.09.12.42.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Mar 2022 12:42:09 -0800 (PST)
+Message-ID: <44006194-eab1-7ae2-3cc8-41c210efd0b1@gmail.com>
+Date:   Wed, 9 Mar 2022 21:42:05 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26abdf11-861c-426f-c8a5-08da020c1ee9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2022 20:33:50.7222
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RwW2zbFz5iLHDTy4xLoZMtstXHwKxLGzQlQfBjPBapMVleWEoWO3uOBBOcl3CZIbC7xRHbponqa4qim2jw7BnQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5426
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Jerome Brunet <jbrunet@baylibre.com>,
+        Erico Nunes <nunes.erico@gmail.com>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev
+References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
+ <1jczjzt05k.fsf@starbuckisacylon.baylibre.com>
+ <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
+ <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com>
+ <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+ <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com>
+ <1j8rts76te.fsf@starbuckisacylon.baylibre.com>
+ <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
+ <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
+ <435b2a9d-c3c6-a162-331f-9f47f69be5ac@gmail.com>
+ <CAK4VdL28nWstiS09MYq5nbtiL+aMbNc=Hzv5F0-VMuNKmX9R+Q@mail.gmail.com>
+ <1j5yonnp1a.fsf@starbuckisacylon.baylibre.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come up
+ at boot
+In-Reply-To: <1j5yonnp1a.fsf@starbuckisacylon.baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 06:46:26PM +0000, Russell King (Oracle) wrote:
-> Hi Ioana,
->=20
+On 09.03.2022 15:57, Jerome Brunet wrote:
+> 
+> On Wed 09 Mar 2022 at 15:45, Erico Nunes <nunes.erico@gmail.com> wrote:
+> 
+>> On Sun, Mar 6, 2022 at 1:56 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>> You could try the following (quick and dirty) test patch that fully mimics
+>>> the vendor driver as found here:
+>>> https://github.com/khadas/linux/blob/buildroot-aml-4.9/drivers/amlogic/ethernet/phy/amlogic.c
+>>>
+>>> First apply
+>>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=a502a8f04097e038c3daa16c5202a9538116d563
+>>> This patch is in the net tree currently and should show up in linux-next
+>>> beginning of the week.
+>>>
+>>> On top please apply the following (it includes the test patch your working with).
+>>
+>> I triggered test jobs with this configuration (latest mainline +
+>> a502a8f0409 + test patch for vendor driver behaviour), and the results
+>> are pretty much the same as with the previous test patch from this
+>> thread only.
+>> That is, I never got the issue with non-functional link up anymore,
+>> but I get the (rare) issue with link not going up.
+>> The reproducibility is still extremely low, in the >1% range.
+> 
+> Low reproducibility means the problem is still there, or at least not
+> understood completly.
+> 
+> I understand the benefit from the user standpoint.
+> 
+> Heiner if you are going to continue from the test patch you sent,
+> I would welcome some explanation with each of the changes.
+> 
+The latest test patch was purely for checking whether we see any
+difference in behavior between vendor driver and the mainlined
+version. It's in no way meant to be applied to mainline.
 
-Hi Russell,
+> We know very little about this IP and I'm not very confortable with
+> tweaking/aligning with AML sdk "blindly" on a driver that has otherwise
+> been working well so far.
+> 
 
-> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > @@ -2077,8 +2077,10 @@ static int dpaa2_eth_open(struct net_device *net=
-_dev)
-> >  		goto enable_err;
-> >  	}
-> > =20
-> > -	if (dpaa2_eth_is_type_phy(priv))
-> > +	if (dpaa2_eth_is_type_phy(priv)) {
-> >  		phylink_start(priv->mac->phylink);
-> > +		dpaa2_mac_start(priv->mac);
->=20
-> Is this safe? Shouldn't dpaa2_mac_start() come before phylink_start()
-> in case phylink determines that the link is somehow already up? I'm
-> a big fan of teardown being in the reverse order of setup so having
-> the start and stop below in the same order just doesn't look right.
+This touches one thing I wanted to ask anyway: Supposedly Amlogic
+didn't develop an own Ethernet PHY, and if they licensed an existing
+IP then it should be similar to some other existing PHY (that may
+have a driver in phylib).
 
-Agree that the teardown being done in the reverse order just looks
-better. I can change it, of course.
+Then what I'll do is submit the following small change that brought
+the error rate significantly down according to Erico's tests.
 
-I didn't really spot any actual problems with how are things now, but it
-would be better to just bring up the SerDes lanes and then call
-phylink_start().
+-       phy_trigger_machine(phydev);
++       if (irq_status & INTSRC_ANEG_COMPLETE)
++               phy_queue_state_machine(phydev, msecs_to_jiffies(100));
++       else
++               phy_trigger_machine(phydev);
 
-> > +static enum dpmac_eth_if dpmac_eth_if_mode(phy_interface_t if_mode)
-> > +{
-> > +	switch (if_mode) {
-> > +	case PHY_INTERFACE_MODE_RGMII:
->=20
-> Shouldn't this also include the other RGMII modes (which, from the MAC
-> point of view, are all synonymous?
->=20
 
-Good point. Thanks for pointing it out.
+> Thx
+> 
+>>
+>> So at this point, I'm not sure how much more effort to invest into
+>> this. Given the rate is very low and the fallback is it will just
+>> reset the link and proceed to work, I think the situation would
+>> already be much better with the solution from that test patch being
+>> merged. If you propose that as a patch separately, I'm happy to test
+>> the final submitted patch again and provide feedback there. Or if
+>> there is another solution to try, I can try with that too.
+>>
+>> Thanks
+>>
+>>
+>> Erico
+> 
 
-> > +static int dpaa2_mac_prepare(struct phylink_config *config, unsigned i=
-nt mode,
-> > +			     phy_interface_t interface)
-> > +{
-> > +	dpaa2_mac_link_down(config, mode, interface);
->=20
-> You should never see a reconfiguration while the link is up. However,
-> if the link is in in-band mode, then obviously the link could come up
-> at any moment, and in that case, forcing it down in mac_prepare() is
-> a good idea - but that forcing needs to be removed in mac_finish()
-> to allow in-band to work again. Not sure that your firmware allows
-> that though, and I'm not convinced that calling the above function
-> achieves any of those guarantees.
->=20
-
-Ok, I didn't know that I this was a guarantee from phylink's part.
-In this case, I can just remove the prepare step, sure.
-
-> > +	/* In case we have access to the SerDes phy/lane, then ask the SerDes
-> > +	 * driver what interfaces are supported based on the current PLL
-> > +	 * configuration.
-> > +	 */
-> > +	for (intf =3D 0; intf < PHY_INTERFACE_MODE_MAX; intf++) {
->=20
-> You probably want to avoid PHY_INTERFACE_MODE_NA here, even though your
-> driver may reject it anyway.
-
-Yes, I'll just start from PHY_INTERFACE_MODE_INTERNAL.
-
-> > -	if (dpaa2_switch_port_is_type_phy(port_priv))
-> > +	if (dpaa2_switch_port_is_type_phy(port_priv)) {
-> >  		phylink_start(port_priv->mac->phylink);
-> > +		dpaa2_mac_start(port_priv->mac);
->=20
-> Same comments as for dpaa2-mac.
-
-Sure. I'll change the order.
-
->=20
-> Thanks!
->=20
-
-Thanks!
-Ioana=
+Heiner
