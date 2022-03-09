@@ -2,287 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5DF4D291D
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 07:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F18E4D2945
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 08:08:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiCIGrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 01:47:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59576 "EHLO
+        id S230226AbiCIHJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 02:09:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbiCIGrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 01:47:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BEA0148653
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 22:46:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646808380;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZRVRzg4ndvIzPu33NbzHcBz6mikHjCXmzmHbidN+vIU=;
-        b=gG4Ou3ZDeEnzRhqGUSkpbAyxYkw1Kgf1RMgnIAxeGkKoFqc5Bt1NDHgE0ZoLT+vEJ3IT3M
-        RkYwRAIb3zY+pJ66aweie/v4GvYxD7WjYMRSqD4zPVG4oAgTGtqphzCI9t8gxEDTXVYQeu
-        o6/0lYMabgHp7MEOftiandMx0TJUa0M=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-MZzinYVRPu67YSPTMg2RTA-1; Wed, 09 Mar 2022 01:46:19 -0500
-X-MC-Unique: MZzinYVRPu67YSPTMg2RTA-1
-Received: by mail-pj1-f69.google.com with SMTP id lt6-20020a17090b354600b001bf5a121802so1032856pjb.1
-        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 22:46:19 -0800 (PST)
+        with ESMTP id S230009AbiCIHJW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 02:09:22 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A855EC5D6
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 23:08:24 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id kx6-20020a17090b228600b001bf859159bfso4414593pjb.1
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 23:08:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mWJtTNJmeP/RkYf6Zf8pmkMb5bFhPbV7XDyvHbGhO3c=;
+        b=hlKBhPtTm5nyyxANFnmujkp4xikruQRGF8Qpp+jKgPAfCuIgAfNxc8zE2oXH2TiIn0
+         LM6SdCPCkj2NTIo+CRDsYthTQFLrpTY7hSb9RDtNzIoNxkvc+c0MZMyOKcuH1nEw4oFm
+         ARTdjwXrzCbT0c6RuuW30l7uXfKTohjMh5co8DSspsRZt5ohNLniktNmVpeOUZrETSFs
+         m3sPLgkwiIpwtiYLa0QAtv8Plumuw0ZTDzhqhOaTx29IvXXpKpegEn04KBiiKno5fdHW
+         gjdbQie03aqsKiViZlSCRIU/uZtxMN0lSdtI5QJUHF0FYq0jr91aH8yEL6P1NxZ0wnTY
+         Ncgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZRVRzg4ndvIzPu33NbzHcBz6mikHjCXmzmHbidN+vIU=;
-        b=XfRZ1mc67h7KZp76V0zk6KxC7tClA1VAcQYWBiYOwHdDN13FF6AEd/qXmqC0AG+Iuk
-         6Pi9M/Bj91AGGcMKsVjugdCZAuGwtll3FYKWwoAdM6e8iBWEs3c/idw1g9NKC3WS831b
-         qWhRGthHZWu+n6u2yvd3fkp4b5dj+540hk7M5TAq6gx6ZUYpOHbZbj55Lpp2jt9jYoY7
-         cbmNY+fknsQjeSEKVCg+trUKTb2vfHi6OdUEdnpqnYpOiGF2OXQgpRdQBP5fGOeaGEvb
-         N/DSOMxv5hElZRmuXuaFpO4Yxb4xkJW3dSfF/pYOXYXM9dQnF7QiqnFuXGNS7GxoLxq0
-         gkwg==
-X-Gm-Message-State: AOAM533Ko6NCT/EtzKBJzOtFT988yQuH4oxr0OyMoYoVoJuise/lrcSr
-        lr23Q9DNsTpdefwGiQcDEpdQrtxdE63+JWgfRgkIND1IjPgSNJod49F725/ncO5YcxUUv/f21mt
-        ekaNJJ8LqZgoPzeig
-X-Received: by 2002:a17:90a:c252:b0:1bc:52a8:cac8 with SMTP id d18-20020a17090ac25200b001bc52a8cac8mr8770706pjx.61.1646808378330;
-        Tue, 08 Mar 2022 22:46:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwCn5oXYtQPYpNPdMU9Bvo1WQfVx7qdQtm4/+iiiL6XGVmBAI7JHTUBwTId/vpyk0ZnEZggTw==
-X-Received: by 2002:a17:90a:c252:b0:1bc:52a8:cac8 with SMTP id d18-20020a17090ac25200b001bc52a8cac8mr8770665pjx.61.1646808378008;
-        Tue, 08 Mar 2022 22:46:18 -0800 (PST)
-Received: from [10.72.12.183] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c3-20020a056a00248300b004f6f729e485sm1396753pfv.127.2022.03.08.22.46.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Mar 2022 22:46:17 -0800 (PST)
-Message-ID: <4b32d0b4-b794-cc1c-25f7-50b5ea6ac25e@redhat.com>
-Date:   Wed, 9 Mar 2022 14:46:01 +0800
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mWJtTNJmeP/RkYf6Zf8pmkMb5bFhPbV7XDyvHbGhO3c=;
+        b=zuQaAmGxD4ZPzednsoxfQR7FYWB+7AM2JBgeLDMPiIBqoyTK/iO7zQu4DzoPA0KJFh
+         0BjDh6ePfA1ySyMy8FV8KO1FrbuQ8fncDpEI5/7JCNTLBAfs7qCQtoCpVqdIrLLYERt4
+         Lyz9Kcyts8slbK3gVNJORNkAbLqnfoqjjQ9YbIzpQQIbW6AErFWAF7hNNhotRYOjrgq9
+         uesMPQaRdWMSlORHLTctjqb1H79tWtSpGYIk9q2pMccx5aVroYDx/OmVhprkX0Ujsg8q
+         zSfwiEHQoMcWoDyqFkmmIJv+kP8WcWlDDF31rhqubps/UPv0x8sTS2L13Mk/izcqzuHB
+         Nv7w==
+X-Gm-Message-State: AOAM533vrV9GOJz2iEl1R1NJK2xKwXjY4Y41TIBpzhPaIM+dG3uta9g7
+        PGEARsWpbSEmz/SJ8ruR9It01Ketw3jgsg==
+X-Google-Smtp-Source: ABdhPJxYgDtcckV0yuUkOlUxTvDdJUk6KWlzLDjeDhYx34OB6jEuBxfNc+2DU2zjAKClxkc2GsMKmA==
+X-Received: by 2002:a17:902:da90:b0:152:57b:5e6e with SMTP id j16-20020a170902da9000b00152057b5e6emr5742654plx.103.1646809703779;
+        Tue, 08 Mar 2022 23:08:23 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id t7-20020a056a0021c700b004f737480bb8sm1396125pfj.4.2022.03.08.23.08.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 23:08:23 -0800 (PST)
+Date:   Tue, 8 Mar 2022 23:08:20 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Antony Antony <antony.antony@secunet.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        David Ahern <dsahern@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>, Eyal Birger <eyal.birger@gmail.com>,
+        Matt Ellison <matt@arroyo.io>
+Subject: Re: Regression in add xfrm interface
+Message-ID: <20220308230820.27145272@hermes.local>
+In-Reply-To: <YidTpIty2fVKTBzM@moon.secunet.de>
+References: <20220307121123.1486c035@hermes.local>
+        <20220308075013.GD1791239@gauss3.secunet.de>
+        <YidTpIty2fVKTBzM@moon.secunet.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH v7 04/26] virtio_ring: split: extract the logic of
- creating vring
-Content-Language: en-US
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org
-References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-5-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220308123518.33800-5-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 8 Mar 2022 14:51:30 +0100
+Antony Antony <antony.antony@secunet.com> wrote:
 
-在 2022/3/8 下午8:34, Xuan Zhuo 写道:
-> Separate the logic of split to create vring queue.
->
-> For the convenience of passing parameters, add a structure
-> vring_split.
->
-> This feature is required for subsequent virtuqueue reset vring.
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->   drivers/virtio/virtio_ring.c | 74 +++++++++++++++++++++++++-----------
->   1 file changed, 51 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index b87130c8f312..d32793615451 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -85,6 +85,13 @@ struct vring_desc_extra {
->   	u16 next;			/* The next desc state in a list. */
->   };
->   
-> +struct vring_split {
-> +	void *queue;
-> +	dma_addr_t dma_addr;
-> +	size_t queue_size_in_bytes;
-> +	struct vring vring;
-> +};
+> Hi Stephen,
+> 
+> As Steffen explained bellow if_id = 0 is likely to cause problems in the long
+> term. Should we revert the commit because it broke userspace tools?
+> 
+> I notice the Debian bug is in a iproute2 testsuite, also it is in Debian testing! How about fixing test case than reverting the kernel commit?
+> 
+> Another option is revert the commit in current kernel development cycle.
+> And send the same fix to ipsec-next without "Fixes" tag.
+> Would that be acceptable for Debian testsuite usecase?
+> 
+> regards,
+> -antony
+> 
+> On Tue, Mar 08, 2022 at 08:50:13 +0100, Steffen Klassert wrote:
+> > On Mon, Mar 07, 2022 at 12:11:23PM -0800, Stephen Hemminger wrote:  
+> > > There appears to be a regression between 5.10 (Debian 11) and 5.16 (Debian testing)
+> > > kernel in handling of ip link xfrm create. This shows up in the iproute2 testsuite
+> > > which now fails. This is kernel (not iproute2) regression.
+> > > 
+> > > 
+> > > Running ip/link/add_type_xfrm.t [iproute2-this/5.16.0-1-amd64]: FAILED
+> > > 
+> > > 
+> > > Good log:
+> > > ::::::::::::::
+> > > link/add_type_xfrm.t.iproute2-this.out
+> > > ::::::::::::::
+> > > [Testing Add XFRM Interface, With IF-ID]
+> > > tests/ip/link/add_type_xfrm.t: Add dev-ktyXSm xfrm interface succeeded
+> > > tests/ip/link/add_type_xfrm.t: Show dev-ktyXSm xfrm interface succeeded with output:
+> > > 2: dev-ktyXSm@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+> > >     link/none  promiscuity 0 minmtu 68 maxmtu 65535 
+> > >     xfrm if_id 0xf addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+> > > test on: "dev-ktyXSm" [SUCCESS]
+> > > test on: "if_id 0xf" [SUCCESS]
+> > > tests/ip/link/add_type_xfrm.t: Del dev-ktyXSm xfrm interface succeeded
+> > > [Testing Add XFRM Interface, No IF-ID]
+> > > tests/ip/link/add_type_xfrm.t: Add dev-tkUDaA xfrm interface succeeded
+> > > tests/ip/link/add_type_xfrm.t: Show dev-tkUDaA xfrm interface succeeded with output:
+> > > 3: dev-tkUDaA@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+> > >     link/none  promiscuity 0 minmtu 68 maxmtu 65535 
+> > >     xfrm if_id 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+> > > test on: "dev-tkUDaA" [SUCCESS]
+> > > test on: "if_id 0xf" [SUCCESS]
+> > > tests/ip/link/add_type_xfrm.t: Del dev-tkUDaA xfrm interface succeeded
+> > > 
+> > > Failed log:
+> > > 
+> > > [Testing Add XFRM Interface, With IF-ID]
+> > > tests/ip/link/add_type_xfrm.t: Add dev-pxNsUc xfrm interface succeeded
+> > > tests/ip/link/add_type_xfrm.t: Show dev-pxNsUc xfrm interface succeeded with output:
+> > > 2: dev-pxNsUc@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+> > >     link/none  promiscuity 0 minmtu 68 maxmtu 65535 
+> > >     xfrm if_id 0xf addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+> > > test on: "dev-pxNsUc" [SUCCESS]
+> > > test on: "if_id 0xf" [SUCCESS]
+> > > tests/ip/link/add_type_xfrm.t: Del dev-pxNsUc xfrm interface succeeded
+> > > [Testing Add XFRM Interface, No IF-ID]  
+> > 
+> > No IF-ID is an invalid configuration, the interface does not work
+> > with IF-IF 0. Such an interface will blackhole all packets routed
+> > to it. That is because policies and states with no IF-ID are meant
+> > for a setup without xfrm interfaces, they will not match the interface.
+> > 
+> > Unfortunately we did not catch this invalid configuration from the
+> > beginning and userspace seems to use (or do some tests tests with)
+> > xfrm interfaces with IF-ID 0. In that case, I fear we eventually
+> > have to revert the cange that catches the invalid configuration.
+> >   
 
+The test is here please update as appropriate:
 
-So this structure will be only used in vring_create_vring_split() which 
-seems not that useful.
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/tree/testsuite/tests/ip/link/add_type_xfrm.t
 
-More see below.
+And was added by:
 
+commit 286446c1e8c7f5f6eca4959015aa9e482b7adb11
+Author: Matt Ellison <matt@arroyo.io>
+Date:   Thu Apr 4 10:08:45 2019 -0400
 
-> +
->   struct vring_virtqueue {
->   	struct virtqueue vq;
->   
-> @@ -915,28 +922,21 @@ static void *virtqueue_detach_unused_buf_split(struct virtqueue *_vq)
->   	return NULL;
->   }
->   
-> -static struct virtqueue *vring_create_virtqueue_split(
-> -	unsigned int index,
-> -	unsigned int num,
-> -	unsigned int vring_align,
-> -	struct virtio_device *vdev,
-> -	bool weak_barriers,
-> -	bool may_reduce_num,
-> -	bool context,
-> -	bool (*notify)(struct virtqueue *),
-> -	void (*callback)(struct virtqueue *),
-> -	const char *name)
-> +static int vring_create_vring_split(struct vring_split *vring,
-> +				    struct virtio_device *vdev,
-> +				    unsigned int vring_align,
-> +				    bool weak_barriers,
-> +				    bool may_reduce_num,
-> +				    u32 num)
+    ip: support for xfrm interfaces
+    
+    Interfaces take a 'if_id' which is an interface id which can be set on
+    an xfrm policy as its interface lookup key (XFRMA_IF_ID).
+    
+    Signed-off-by: Matt Ellison <matt@arroyo.io>
+    Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 
-
-I'd rename this as vring_alloc_queue_split() and let it simply return 
-the address of queue like vring_alloc_queue().
-
-And let it simple accept dma_addr_t *dma_adder instead of vring_split.
-
-
->   {
-> -	struct virtqueue *vq;
->   	void *queue = NULL;
->   	dma_addr_t dma_addr;
->   	size_t queue_size_in_bytes;
-> -	struct vring vring;
->   
->   	/* We assume num is a power of 2. */
->   	if (num & (num - 1)) {
->   		dev_warn(&vdev->dev, "Bad virtqueue length %u\n", num);
-> -		return NULL;
-> +		return -EINVAL;
->   	}
->   
->   	/* TODO: allocate each queue chunk individually */
-> @@ -947,11 +947,11 @@ static struct virtqueue *vring_create_virtqueue_split(
->   		if (queue)
->   			break;
->   		if (!may_reduce_num)
-> -			return NULL;
-> +			return -ENOMEM;
->   	}
->   
->   	if (!num)
-> -		return NULL;
-> +		return -ENOMEM;
->   
->   	if (!queue) {
->   		/* Try to get a single page. You are my only hope! */
-> @@ -959,21 +959,49 @@ static struct virtqueue *vring_create_virtqueue_split(
->   					  &dma_addr, GFP_KERNEL|__GFP_ZERO);
->   	}
->   	if (!queue)
-> -		return NULL;
-> +		return -ENOMEM;
->   
->   	queue_size_in_bytes = vring_size(num, vring_align);
-> -	vring_init(&vring, num, queue, vring_align);
-> +	vring_init(&vring->vring, num, queue, vring_align);
-
-
-It's better to move this to its caller (vring_create_virtqueue_split), 
-so we have rather simple logic below:
-
-
-
-> +
-> +	vring->dma_addr = dma_addr;
-> +	vring->queue = queue;
-> +	vring->queue_size_in_bytes = queue_size_in_bytes;
-> +
-> +	return 0;
-> +}
-> +
-> +static struct virtqueue *vring_create_virtqueue_split(
-> +	unsigned int index,
-> +	unsigned int num,
-> +	unsigned int vring_align,
-> +	struct virtio_device *vdev,
-> +	bool weak_barriers,
-> +	bool may_reduce_num,
-> +	bool context,
-> +	bool (*notify)(struct virtqueue *),
-> +	void (*callback)(struct virtqueue *),
-> +	const char *name)
-> +{
-> +	struct vring_split vring;
-> +	struct virtqueue *vq;
-> +	int err;
-> +
-> +	err = vring_create_vring_split(&vring, vdev, vring_align, weak_barriers,
-> +				       may_reduce_num, num);
-> +	if (err)
-> +		return NULL;
-
-
-queue = vring_alloc_queue_split(vdev, &dma_addr, ...);
-
-if (!queue)
-
-     return -ENOMEM;
-
-vring_init();
-
-...
-
-Thanks
-
-
->   
-> -	vq = __vring_new_virtqueue(index, vring, vdev, weak_barriers, context,
-> +	vq = __vring_new_virtqueue(index, vring.vring, vdev, weak_barriers, context,
->   				   notify, callback, name);
->   	if (!vq) {
-> -		vring_free_queue(vdev, queue_size_in_bytes, queue,
-> -				 dma_addr);
-> +		vring_free_queue(vdev, vring.queue_size_in_bytes, vring.queue,
-> +				 vring.dma_addr);
->   		return NULL;
->   	}
->   
-> -	to_vvq(vq)->split.queue_dma_addr = dma_addr;
-> -	to_vvq(vq)->split.queue_size_in_bytes = queue_size_in_bytes;
-> +	to_vvq(vq)->split.queue_dma_addr = vring.dma_addr;
-> +	to_vvq(vq)->split.queue_size_in_bytes = vring.queue_size_in_bytes;
->   	to_vvq(vq)->we_own_ring = true;
->   
->   	return vq;
 
