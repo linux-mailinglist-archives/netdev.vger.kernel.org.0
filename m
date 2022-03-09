@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D1B4D37B6
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8246A4D3573
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:42:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236167AbiCIRCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 12:02:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
+        id S237003AbiCIRB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 12:01:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237120AbiCIRBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:01:13 -0500
+        with ESMTP id S237223AbiCIRBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:01:15 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496A81B0C6B;
-        Wed,  9 Mar 2022 08:48:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C481B124E;
+        Wed,  9 Mar 2022 08:49:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86D9861B2F;
-        Wed,  9 Mar 2022 16:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B792C340E8;
-        Wed,  9 Mar 2022 16:48:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4168361B2F;
+        Wed,  9 Mar 2022 16:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30ADEC340E8;
+        Wed,  9 Mar 2022 16:49:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646844538;
-        bh=u9TUmMvvL84wKfbpZHbTOVyvCleOTrddQFMEnYbsAs8=;
+        s=k20201202; t=1646844552;
+        bh=R05hXvPBP0MsO+0eUuu6EsT2J6bCxSeBZHf81CbpyFE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jBynXJ68PShWE60lgCRPnxtDdL0QpsfWA+C7u1WG1wJjW8LrrJfvXom9p+tjTWpN7
-         fIpxXfp/pQGo1gfhGIaMjJAePhFrH8sEsy3Dti0ITK0+M6ktTszoiBd+Yik2E+MKXF
-         6na0oE42RmNyFoWjJLsD4f/HF6Am9erTz7nNXEsqPp0WXIgNouHVqvWzL0cMVJ3ead
-         LVXkcDMFpNMlLw51beQjAydvJzuJD6ju9SXCTxgixzcgNeDiBz0u/gpIhSCENqCUb0
-         +GOtMRy99BsG+4k/mMn88GPxDr7bQX+DJYwDveqgnL3qm5gflkysAWhcX5WZWQFBcI
-         YCqJRrmuHjPcw==
-Date:   Wed, 9 Mar 2022 08:48:56 -0800
+        b=gajoMSmIyUiNx17+PuKlBUFal3ZZ0quQUoj7Ltj5KBcXcoLuWqLhJmlUEb/NzbTjE
+         6w70KZVVSj3pA3ThwIy91gCWxREE+25c8PIs5PM7nGKFk7E8rtzIZdDYPfNCEnRsgD
+         2oGxZsWp+nsPLgbhrOxlOk9gOItzTHFAJPy/5R/xYYFIKnmr9q5kb8rGE5cr4yAZ1+
+         iXh2PAp1h81jgbb0wVCJR53u5OtvPlFXmugaCEvof0ebNUp17y1niYEN0pgI2Lwkp4
+         AxKBe8nGcO6MahKVU4AIkrzX++ZYDUpBQYc+VpjgHFYOZOg6Ajp+O5/44zisJnoy7U
+         w2IeBLteoAyXQ==
+Date:   Wed, 9 Mar 2022 08:49:11 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Sasha Levin <sashal@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>, 3chas3@gmail.com,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.16 17/27] atm: firestream: check the return
- value of ioremap() in fs_init()
-Message-ID: <20220309084856.4e6ca9e1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220309161711.135679-17-sashal@kernel.org>
+        Casper Andersson <casper.casan@gmail.com>,
+        Joacim Zetterling <joacim.zetterling@westermo.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH AUTOSEL 5.16 16/27] net: sparx5: Add #include to remove
+ warning
+Message-ID: <20220309084911.2e75d67d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220309161711.135679-16-sashal@kernel.org>
 References: <20220309161711.135679-1-sashal@kernel.org>
-        <20220309161711.135679-17-sashal@kernel.org>
+        <20220309161711.135679-16-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,13 +60,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  9 Mar 2022 11:16:54 -0500 Sasha Levin wrote:
-> From: Jia-Ju Bai <baijiaju1990@gmail.com>
-> 
-> [ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
-> 
-> The function ioremap() in fs_init() can fail, so its return value should
-> be checked.
+On Wed,  9 Mar 2022 11:16:53 -0500 Sasha Levin wrote:
+> main.h uses NUM_TARGETS from main_regs.h, but
+> the missing include never causes any errors
+> because everywhere main.h is (currently)
+> included, main_regs.h is included before.
+> But since it is dependent on main_regs.h
+> it should always be included.
 
-I'd hold off on backporting the bot fixes. They break more than they
-fix.
+This is not fixing anything in the current trees.
