@@ -2,133 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9B74D27C3
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 05:07:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6314D26BF
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 05:06:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiCIB0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 20:26:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        id S230486AbiCIBru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 20:47:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiCIB0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:26:49 -0500
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85B938781;
-        Tue,  8 Mar 2022 17:25:36 -0800 (PST)
-Date:   Tue, 8 Mar 2022 17:09:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646788170;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CoYbkvqX7SVrmA+5dEmgUrCctf3A7Hfs0hhsJiwcdT0=;
-        b=gOilLZsrg582SBBi9rjggwn2nkeTUMgAaVPXGahDrfK6nr5srF19MFNZjwZPFovUzfUX+w
-        5OnnujQ7pg5YPmWDr5O/YCzzJgjcrpky6oPcxiqYOAAwR44pidDSr41LKBMp1jqhHe3GdY
-        7+i+ROgz0Q2xdSaQbnyS9Ff7/xi7v24=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        akpm@linux-foundation.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, mhocko@kernel.org, vdavydov.dev@gmail.com,
-        guro@fb.com, linux-mm@kvack.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH RFC 0/9] bpf, mm: recharge bpf memory from offline memcg
-Message-ID: <Yif+QZbCALQcYrFZ@carbon.dhcp.thefacebook.com>
-References: <20220308131056.6732-1-laoar.shao@gmail.com>
+        with ESMTP id S230473AbiCIBrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:47:49 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A260847AD1;
+        Tue,  8 Mar 2022 17:46:51 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id a5so963833pfv.2;
+        Tue, 08 Mar 2022 17:46:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=B8bBqTwia7wBMwz5hHXZHCzqohNsptzJRrrGwkJNRS8=;
+        b=nwj7tvDCQhT1tTSZYmeFh97v6ljyhYUeGt5xJaI5O+5JHeo06oneSZyrrLp9BGAYNI
+         pMlEUKTuDpYeL6nlBXoq5WGC1p86052RqBGBeaop9vmCRbk8j+OE7kmswBlOQcWUZYqC
+         ozkE/n0IsZrz/0oiZ1k+8RlL1lvSozFFqulT9DKNgIa3kEZU610qd8SVTBLtq01v3rmq
+         Ces/SsF7xuWX4HjoBhGvS8jbozk85pviU83o6Yw1emBgHCO6Kw0O3HDB//5i7xHSKBRF
+         vUQzWla11q3n6eixTOIm4NrDY5rPuED+sdh3H9ZqRREY9VP0fdsNZEEJtJH3avwR9DQA
+         XYeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=B8bBqTwia7wBMwz5hHXZHCzqohNsptzJRrrGwkJNRS8=;
+        b=v0DdGmYv5HUPYgrQ987JVZi1+VnecA/G3OPbP8+uP9WcXUqv4e+a/cF+NaLNg7FoXu
+         HgkAlND6stJBLAM0fJ31vPpU0mV3A74G39Zu/Pzt9mM7tS/RD+EoMjgy3BYPta9KSmVy
+         OBH9nFNeFWPrU77mhop8SbvPgbnvfiWM1jwaHaQU6i2aM1Ir/ZlrZs9d/rzsiAzrxxsC
+         uNqkNuDD7llikinHJ+97sf/hcel0zK5wra+m/WS2v604aMWej+cDSCKeK0FUBQV/CilI
+         OQAzkT30M0jzu8BJbEB7btyLbccoxK1P4re03C3+0Yz0C6ZfaIn2W73F5ccgp8XsdqCs
+         mffw==
+X-Gm-Message-State: AOAM533SasUcdPKCjpC1idsAGoxqEi0E9ylJ46lj10meD4XRj6hpIuxS
+        FrChO2X6eftg9M2RyqnKQl+//7PABbk=
+X-Google-Smtp-Source: ABdhPJzjVo7e2qrmUbNkeL2htyp8gE3ptwnN+rocneGeMxNszSiqfQmZvPVecIgxWwjPCwx68Brb+g==
+X-Received: by 2002:a63:2bc1:0:b0:35e:c54b:3be0 with SMTP id r184-20020a632bc1000000b0035ec54b3be0mr16632074pgr.105.1646790411123;
+        Tue, 08 Mar 2022 17:46:51 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id o185-20020a6341c2000000b0036fb987b25fsm358271pga.38.2022.03.08.17.46.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 17:46:50 -0800 (PST)
+Date:   Tue, 8 Mar 2022 17:46:47 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Divya.Koppera@microchip.com, netdev@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220309014647.GB24366@hoboy.vegasvil.org>
+References: <20220304093418.31645-3-Divya.Koppera@microchip.com>
+ <YiILJ3tXs9Sba42B@lunn.ch>
+ <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+ <YifoltDp4/Fs+9op@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220308131056.6732-1-laoar.shao@gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <YifoltDp4/Fs+9op@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 01:10:47PM +0000, Yafang Shao wrote:
-> When we use memcg to limit the containers which load bpf progs and maps,
-> we find there is an issue that the lifecycle of container and bpf are not
-> always the same, because we may pin the maps and progs while update the
-> container only. So once the container which has alreay pinned progs and
-> maps is restarted, the pinned progs and maps are no longer charged to it
-> any more. In other words, this kind of container can steal memory from the
-> host, that is not expected by us. This patchset means to resolve this
-> issue.
-> 
-> After the container is restarted, the old memcg which is charged by the
-> pinned progs and maps will be offline but won't be freed until all of the
-> related maps and progs are freed. If we want to charge these bpf memory to
-> the new started memcg, we should uncharge them from the offline memcg first
-> and then charge it to the new one. As we have already known how the bpf
-> memroy is allocated and freed, we can also know how to charge and uncharge
-> it. This pathset implements various charge and uncharge methords for these
-> memory.
-> 
-> Regarding how to do the recharge, we decide to implement new bpf syscalls
-> to do it. With the new implemented bpf syscall, the agent running in the
-> container can use it to do the recharge. As of now we only implement it for
-> the bpf hash maps. Below is a simple example how to do the recharge,
-> 
-> ====
-> int main(int argc, char *argv[])
-> {
-> 	union bpf_attr attr = {};
-> 	int map_id;
-> 	int pfd;
-> 
-> 	if (argc < 2) {
-> 		printf("Pls. give a map id \n");
-> 		exit(-1);
-> 	}
-> 
-> 	map_id = atoi(argv[1]);
-> 	attr.map_id = map_id;
-> 	pfd = syscall(SYS_bpf, BPF_MAP_RECHARGE, &attr, sizeof(attr));
-> 	if (pfd < 0)
-> 		perror("BPF_MAP_RECHARGE");
-> 
-> 	return 0;
-> }
-> 
-> ====
-> 
-> Patch #1 and #2 is for the observability, with which we can easily check
-> whether the bpf maps is charged to a memcg and whether the memcg is offline.
-> Patch #3, #4 and #5 is for the charge and uncharge methord for vmalloc-ed,
-> kmalloc-ed and percpu memory.
-> Patch #6~#9 implements the recharge of bpf hash map, which is mostly used
-> by our bpf services. The other maps hasn't been implemented yet. The bpf progs
-> hasn't been implemented neither.
-> 
-> This pathset is still a POC now, with limited testing. Any feedback is
-> welcomed.
+On Wed, Mar 09, 2022 at 12:36:54AM +0100, Andrew Lunn wrote:
 
-Hello Yafang!
+> I'm assuming the ptp protocol does not try to measure the cable delay,
+> since if it did, there would be no need to know the RJ45-PHY delay, it
+> would be part of that.
 
-It's an interesting topic, which goes well beyond bpf. In general, on cgroup
-offlining we either do nothing either recharge pages to the parent cgroup
-(latter is preferred), which helps to release the pinned memcg structure.
+The PTP does indeed measure the cable delay.  With a well tuned
+system, you can tell the copper cable length directly from the
+measured delay.
 
-Your approach raises some questions:
-1) what if the new cgroup is not large enough to contain the bpf map?
-2) does it mean that some userspace app will monitor the state of the cgroup
-which was the original owner of the bpf map and recharge once it's deleted?
-3) what if there are several cgroups are sharing the same map? who will be
-the next owner?
-4) because recharging is fully voluntary, why any application should want to do
-it, if it can just use the memory for free? it doesn't really look as a working
-resource control mechanism.
+The problem with uncorrected PHY time stamps is that they affect the
+boundary point between the node and the network.  A static error there
+will create a path asymmetry that can neither be measured nor
+corrected by the PTP, and a variable error degrades the time signal.
 
-Will reparenting work for your case? If not, can you, please, describe the
-problem you're trying to solve by recharging the memory?
 
-Thanks!
+Thanks,
+Richard
