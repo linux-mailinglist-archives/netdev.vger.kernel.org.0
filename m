@@ -2,128 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE3444D2ECE
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:13:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C7F14D2EEB
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 13:19:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232693AbiCIMOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 07:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
+        id S232267AbiCIMUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 07:20:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbiCIMOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:14:40 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A774EA09;
-        Wed,  9 Mar 2022 04:13:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646828020; x=1678364020;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NxvyaH3e4/PtErqMJQl+2Rz010Co0lkGzj2KC5uXBsM=;
-  b=DhZKW7tS74+F8THhsgLE2oL3MyoGFyzLwl14qPNyeEREKGMfujJcg1QC
-   QD8eCqvv6nepxxcIBDlnZ9+pt8BJzNqgRKDgJnhDukTJazt/G4MiQh0CX
-   bePB1OJjfHDmGxhaglUYheagwe9PAv0/2rZ/a5eynhdX2TCc7To+UTVnZ
-   35dRmA64rpLkkufjEjJpOEbbo5EjG43FnAg0Pnh/GeqG22ATqRpgJYn41
-   W9Diw9R+urP6RCLzdosh0xBRPJZZCNx9t7rousWdPeg2VaIspGMPJ2ygK
-   /t74bu28bYGyQm12xiqdAOR2sH2mSyRHb3vK2lHRkWIKzNTHZCFd+Iel6
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,167,1643698800"; 
-   d="scan'208";a="165084468"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Mar 2022 05:13:40 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Mar 2022 05:13:40 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 9 Mar 2022 05:13:39 -0700
-Date:   Wed, 9 Mar 2022 13:16:32 +0100
-From:   'Horatiu Vultur' <horatiu.vultur@microchip.com>
-To:     David Laight <David.Laight@aculab.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
-Message-ID: <20220309121632.d77v2x27kfaqiuzo@soft-dev3-1.localhost>
-References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
- <YifMSUA/uZoPnpf1@lunn.ch>
- <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
- <c85c188f9074456e92e9c4f8d8290ec2@AcuMS.aculab.com>
- <20220309091129.b5q3gtiuqlk5skka@soft-dev3-1.localhost>
- <45a9f88b140d44af8522e7d8a6abcbbf@AcuMS.aculab.com>
+        with ESMTP id S229514AbiCIMUH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 07:20:07 -0500
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B617312F404;
+        Wed,  9 Mar 2022 04:19:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=79aUx
+        1c7CPT8LgoaiDSdBrkYa0kTdsJauFmLg37A0L0=; b=VoPwc4VTZ8G5D9wgi9/jX
+        JBS9L4MPrTsSb+8aAfvIYuOaRWQY3t7wSBgCx2n7Yo3BYEeUCzPdQ6KRn2iddndf
+        tJBmSaInX5oCUmZ/JC92qIahUdUPMrMvymtXuH8Y7g7av/4+YVUJtGNvMLptDPEC
+        N8AcFML5UuZnbc5fMsr6Mg=
+Received: from localhost.localdomain (unknown [218.106.182.227])
+        by smtp2 (Coremail) with SMTP id GtxpCgDXZW4TmyhiJ7pvBA--.12980S4;
+        Wed, 09 Mar 2022 20:18:35 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     davem@davemloft.net, kuba@kernel.org, caihuoqing@baidu.com,
+        andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] net: arc_emac: Fix use after free in arc_mdio_probe()
+Date:   Wed,  9 Mar 2022 20:18:24 +0800
+Message-Id: <20220309121824.36529-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <45a9f88b140d44af8522e7d8a6abcbbf@AcuMS.aculab.com>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GtxpCgDXZW4TmyhiJ7pvBA--.12980S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr4fXFWUKFW7KFyrCFyrCrg_yoW8Xw4xpa
+        yUu3srA3s2qw1UKF4kAay0v343tayrJryj9FyIvws0qw15Zr1fGrW7KFWq9w1UKF4qkF1a
+        qa1xZFyrAFZ8JwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zR4E_iUUUUU=
+X-Originating-IP: [218.106.182.227]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiDxu+jFUMb4IN1gAAsJ
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/09/2022 09:57, David Laight wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> From: 'Horatiu Vultur'
-> > Sent: 09 March 2022 09:11
-> >
-> > The 03/08/2022 22:46, David Laight wrote:
-> > >
-> > > From: Horatiu Vultur
-> > > > Sent: 08 March 2022 22:30
-> > > >
-> > > > The 03/08/2022 22:36, Andrew Lunn wrote:
-> > > > >
-> > > > > >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
-> > > > > >  {
-> > > > > > -     u32 val;
-> > > > > > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
-> > > > > > +     int ret = 0;
-> > > > > >
-> > > > > > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
-> > > > > > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
-> > > > > > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
-> > > > > > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
-> > > > > > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
-> > > > > > +             if (time_after(jiffies, time)) {
-> > > > > > +                     ret = -ETIMEDOUT;
-> > > > > > +                     break;
-> > > > > > +             }
-> > > > >
-> > > > > Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
-> > > > > explicitly supports that.
-> > > >
-> > > > I have tried but it didn't improve. It was the same as before.
-> > >
-> > > How many times round the loop is it going ?
-> >
-> > In the tests that I have done, I have never seen entering in the loop.
-> 
-> In which case I'd do an initial status check before even
-> faffing with 'jiffies'.
+If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
+the "bus". But bus->name is still used in the next line, which will lead
+to a use after free.
 
-That is a good idea. I will do this change in the next version.
+We can fix it by putting the name in a local variable and make the
+bus->name point to the rodata section "name",then use the name in the
+error message without referring to bus to avoid the uaf.
 
-> 
-> It might even be that the status read is so slow that space
-> is always available by the time it is processed.
-> PCIe reads can be horribly slow.
-> Into our fgpa they end up being slower than old ISA bus cycles.
-> Probably several thousand cpu clocks.
-> 
->         David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
+index 9acf589b1178..87f40c2ba904 100644
+--- a/drivers/net/ethernet/arc/emac_mdio.c
++++ b/drivers/net/ethernet/arc/emac_mdio.c
+@@ -132,6 +132,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ {
+ 	struct arc_emac_mdio_bus_data *data = &priv->bus_data;
+ 	struct device_node *np = priv->dev->of_node;
++	const char *name = "Synopsys MII Bus";
+ 	struct mii_bus *bus;
+ 	int error;
+ 
+@@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	priv->bus = bus;
+ 	bus->priv = priv;
+ 	bus->parent = priv->dev;
+-	bus->name = "Synopsys MII Bus";
++	bus->name = name;
+ 	bus->read = &arc_mdio_read;
+ 	bus->write = &arc_mdio_write;
+ 	bus->reset = &arc_mdio_reset;
+@@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	if (error) {
+ 		mdiobus_free(bus);
+ 		return dev_err_probe(priv->dev, error,
+-				     "cannot register MDIO bus %s\n", bus->name);
++				     "cannot register MDIO bus %s\n", name);
+ 	}
+ 
+ 	return 0;
 -- 
-/Horatiu
+2.25.1
+
