@@ -2,152 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC91A4D396F
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 759BD4D399C
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:12:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbiCITEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 14:04:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
+        id S237104AbiCITNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 14:13:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237184AbiCITEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:04:01 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC2AEB336
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:03:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646852580; x=1678388580;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ab6KiXSpznr4jY0F65dmhERcatnoATIBQxO7OgGcFpA=;
-  b=TSDyakm+xu2eWnv7WMjBlMuhmDTAnqQ42lVqs/6Wh1MC0bHBhKmz4Wu3
-   wY/SOsuDYUGeuK24BO1X4Qu6Azj+oDoyLQexyXqLemOYJOjxHV02ic/hY
-   11eC3bCfINXXsnSMCcU09P5SwyvyKTujzXM0D/4EEe+y6DY2teJhuqqvb
-   ZtnTYkBojuStTI9SxoU95BQ0OrFOj/fAchWDyavxQyqA4sOS8Jif5areK
-   3l4YOvJk7He4yE+4j3zq0gTZR9TNoH9m5L6Foklefc16NDfLo96ULdaON
-   V+EX+9dvn+fxCP6/NvDpKQlLbX3T/2c+N9AO8Qdk+m/sEFK9Q+mCTooB6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="341494165"
-X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="341494165"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:02:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="781188770"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 09 Mar 2022 11:02:59 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Amritha Nambiar <amritha.nambiar@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sudheer.mogilappagari@intel.com, sridhar.samudrala@intel.com,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Subject: [PATCH net-next 5/5] ice: Add support for outer dest MAC for ADQ tunnels
-Date:   Wed,  9 Mar 2022 11:03:15 -0800
-Message-Id: <20220309190315.1380414-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220309190315.1380414-1-anthony.l.nguyen@intel.com>
-References: <20220309190315.1380414-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S235952AbiCITNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:13:31 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392E6BA5
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:12:32 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id u61so6375755ybi.11
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 11:12:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=n5JZG3l5wSabHxVEIH8twRo71vloJ96XZUgmhfr5JbA=;
+        b=YPpwwCpIhoysNSskEjZoEwlL4G4NXKHZGQ25GZpfY0dcBUsy4HbemeirCRBNSJ04av
+         PrlaGd9crBZhKZo/gKFZHDQKejsnx6IlgNba/wJ3lln44Yr4AZOakwXrcX4qORcZU252
+         GD4rJiNoDUUII/2bjqq40X596ASrd3onpkZinRx+50MrZw8qUpTPtcZv3FzJIS7rVpJ6
+         2Vv5D8N3BqTRB9vGug+TB4f1u8h/nSScgvIMZ31j4Y/OrZGgN6ABHnLsBpGxarSPZvwe
+         T7OW1U8Kr1hN/VKQGlTatCS/SrMHXpVxIx5xORexQ4Ix04BU7pnX2AtGHC73KhLhlapy
+         BCFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=n5JZG3l5wSabHxVEIH8twRo71vloJ96XZUgmhfr5JbA=;
+        b=1mzC7N4QmFckg3dWsjemTOwh7/CDi4QSUVErY1gvAl+rD6H1a61sZznq/WX8jMiiOr
+         qCNeA4ReN+06Y6Uzbm9Tlt9kJZssA3qPjYgu1TXQ3RJmIvXQTtVff1i8cf44enViEb3y
+         rl3G6kxcz/PainxOCYxe0JDkljO+J7XBzMEEBUGQOEFEcG4oIrIKu9AzOrkzLZDtYScA
+         4llh+bOAIvlk+cWJeZjFiws17nPRLc8uSnRbh6rlyWusR8hQnq5flhw7MoJLao3gd9sm
+         ImRd4bY2FrPW84gQ7tjRVWAaPukvSzqTCYJ0pn6Tv7Q7JRa9szCGQwdLSzkZ3G9+jTd3
+         hsMA==
+X-Gm-Message-State: AOAM53361bB4zCmVyx37ZflSHK7e18ILQN5m1I1PoxkP3tCTWDGFMJV7
+        jqFY3q/yGRNsQUeVUo3zRTQUmcg2Gc4h9yqBnR8=
+X-Google-Smtp-Source: ABdhPJwlZ2bY9M0fgjoLWKiPzHLkDbKM4VcC8uF4PQOPPt3kcXp7S6LjXSkG2sMERUsc0iS6d16OWqxIIpC5+sT/y9Y=
+X-Received: by 2002:a25:1f04:0:b0:625:3660:a64a with SMTP id
+ f4-20020a251f04000000b006253660a64amr1065099ybf.615.1646853151375; Wed, 09
+ Mar 2022 11:12:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a05:7108:2dc9:0:0:0:0 with HTTP; Wed, 9 Mar 2022 11:12:30
+ -0800 (PST)
+From:   Jack Fred <jackfred0000@gmail.com>
+Date:   Wed, 9 Mar 2022 19:12:30 +0000
+Message-ID: <CAG3RAgjbSi79Y-qzaoz2FJYqH3dRRyeE6y_vxdkfcifDwtV63Q@mail.gmail.com>
+Subject: Dearest
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=1.0 required=5.0 tests=BAYES_20,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amritha Nambiar <amritha.nambiar@intel.com>
+Dearest,
+I sent this message to you before without responding.
+please,confirm this and reply for more
+instruction.(jerryesq22@gmail.com or wilfredesq23@gmail.com)
 
-TC flower does not support matching on user specified
-outer MAC address for tunnels. For ADQ tunnels, the driver
-adds outer destination MAC address as lower netdev's
-active unicast MAC address to filter out packets with
-unrelated MAC address being delivered to ADQ VSIs.
-
-Example:
-- create tunnel device
-ip l add $VXLAN_DEV type vxlan id $VXLAN_VNI dstport $VXLAN_PORT \
-dev $PF
-- add TC filter (in ADQ mode)
-
-$tc filter add dev $VXLAN_DEV protocol ip parent ffff: flower \
- dst_ip $INNER_DST_IP ip_proto tcp dst_port $INNER_DST_PORT \
- enc_key_id $VXLAN_VNI hw_tc $ADQ_TC
-
-Note: Filters with wild-card tunnel ID (when user does not
-specify tunnel key) are also supported.
-
-Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_tc_lib.c | 32 ++++++++++++++++++---
- 1 file changed, 28 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 424c74ca7d69..fedc310c376c 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -24,6 +24,9 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
- 	if (flags & ICE_TC_FLWR_FIELD_TENANT_ID)
- 		lkups_cnt++;
- 
-+	if (flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC)
-+		lkups_cnt++;
-+
- 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
- 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4 |
- 		     ICE_TC_FLWR_FIELD_ENC_SRC_IPV6 |
-@@ -148,6 +151,15 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
- 		}
- 	}
- 
-+	if (flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC) {
-+		list[i].type = ice_proto_type_from_mac(false);
-+		ether_addr_copy(list[i].h_u.eth_hdr.dst_addr,
-+				hdr->l2_key.dst_mac);
-+		ether_addr_copy(list[i].m_u.eth_hdr.dst_addr,
-+				hdr->l2_mask.dst_mac);
-+		i++;
-+	}
-+
- 	if (flags & (ICE_TC_FLWR_FIELD_ENC_SRC_IPV4 |
- 		     ICE_TC_FLWR_FIELD_ENC_DEST_IPV4)) {
- 		list[i].type = ice_proto_type_from_ipv4(false);
-@@ -1064,12 +1076,24 @@ ice_handle_tclass_action(struct ice_vsi *vsi,
- 	 * this code won't do anything
- 	 * 2. For non-tunnel, if user didn't specify MAC address, add implicit
- 	 * dest MAC to be lower netdev's active unicast MAC address
-+	 * 3. For tunnel,  as of now TC-filter through flower classifier doesn't
-+	 * have provision for user to specify outer DMAC, hence driver to
-+	 * implicitly add outer dest MAC to be lower netdev's active unicast
-+	 * MAC address.
- 	 */
--	if (!(fltr->flags & ICE_TC_FLWR_FIELD_DST_MAC)) {
--		ether_addr_copy(fltr->outer_headers.l2_key.dst_mac,
--				main_vsi->netdev->dev_addr);
--		eth_broadcast_addr(fltr->outer_headers.l2_mask.dst_mac);
-+	if (fltr->tunnel_type != TNL_LAST &&
-+	    !(fltr->flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC))
-+		fltr->flags |= ICE_TC_FLWR_FIELD_ENC_DST_MAC;
-+
-+	if (fltr->tunnel_type == TNL_LAST &&
-+	    !(fltr->flags & ICE_TC_FLWR_FIELD_DST_MAC))
- 		fltr->flags |= ICE_TC_FLWR_FIELD_DST_MAC;
-+
-+	if (fltr->flags & (ICE_TC_FLWR_FIELD_DST_MAC |
-+			   ICE_TC_FLWR_FIELD_ENC_DST_MAC)) {
-+		ether_addr_copy(fltr->outer_headers.l2_key.dst_mac,
-+				vsi->netdev->dev_addr);
-+		memset(fltr->outer_headers.l2_mask.dst_mac, 0xff, ETH_ALEN);
- 	}
- 
- 	/* validate specified dest MAC address, make sure either it belongs to
--- 
-2.31.1
-
+WILFRED Esq.
+Telephone +228 96277913
