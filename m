@@ -2,123 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0860D4D2C71
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:47:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 644A44D2C82
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 10:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiCIJsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 04:48:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
+        id S232252AbiCIJvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 04:51:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232291AbiCIJr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:47:59 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F938169230
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 01:46:59 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id q5so2187021ljb.11
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 01:46:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OIfAuT6YNE8NGkL8XN7GggHrn6CO/cybivtUIaLshhw=;
-        b=O8UbKb5uabc61APjtD0gOoeCaZ5LM75A4APq2KQgRwxHp6RpbNUuBAysSRxq/K6UV2
-         D5Vl/zGOaH+WiituOEZJOC9oNvccyTVa94CmDH4RsL/H1a9Z6bKrRFrJidU9hjiWGW7t
-         E0vK07enAr/nRAobtKonD6z2G+csehx+oW6H8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OIfAuT6YNE8NGkL8XN7GggHrn6CO/cybivtUIaLshhw=;
-        b=tPf+PFb1mTJqAfzulmES3u0NCX4qBDBmcPPLuS1wWpulGozxoij2yl3pAfvniczyWV
-         jFsPrQLDY16AKg23HK5LF+/hbiB3+41fCe+dK4FRSVse3UBy3lfbq8NDnwyi3ZhYsXKb
-         COloK4ceCVawPBPBUNKbPphym1wTeJ+WUEUZss6VHgBpngqOFQVotQ+ms0tLia+MiQsO
-         ABX4kGL+ZyKGB5hlGKw1VgPcZ9foyt9AYg+pNtPYgNN9iWo4RvGghQ12sQSNrfWly0PL
-         ploom8o0qsviKn0mrhwsaGWsWtNt440nxSx5VIMKwjUvs4IkWF8DSc93cnR6ux9tFA2N
-         0bhA==
-X-Gm-Message-State: AOAM531uONGITb0Hx/G0VbCsbQOgzZizQrhYxdQCK8qPX5sy9Veiwf7v
-        XISrhcBoCoB7oR40Im/cU8aGdVQAYuWodCU6YwBDKtzDAMUYoA==
-X-Google-Smtp-Source: ABdhPJzjr7prweZBZSj2ZIlp8wGBiqnXNLCwiLV9S0y24yW5kYAIAPdsSnRZm1oNr78+z1y6jp00mh36nGOGjPqgrJg=
-X-Received: by 2002:a05:651c:19a4:b0:247:df0d:17f8 with SMTP id
- bx36-20020a05651c19a400b00247df0d17f8mr11362648ljb.100.1646819217559; Wed, 09
- Mar 2022 01:46:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20220308045321.2843-1-dmichail@fungible.com> <20220308221407.5f26332b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220308221407.5f26332b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Wed, 9 Mar 2022 01:46:44 -0800
-Message-ID: <CAOkoqZ=mPesf-PYDW-Aoq=nMrdfY-RDdJGgWYk48oja_OVxoNw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/fungible: Fix local_memory_node error
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
+        with ESMTP id S230322AbiCIJvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 04:51:31 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9E6169230;
+        Wed,  9 Mar 2022 01:50:30 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6j5yrf_1646819424;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6j5yrf_1646819424)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Mar 2022 17:50:25 +0800
+Message-ID: <1646819291.9191294-12-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v7 26/26] virtio_net: support set_ringparam
+Date:   Wed, 9 Mar 2022 17:48:11 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
+ <20220308123518.33800-27-xuanzhuo@linux.alibaba.com>
+ <bd27898f-59bc-215b-bb84-14582b12cb16@redhat.com>
+In-Reply-To: <bd27898f-59bc-215b-bb84-14582b12cb16@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 8, 2022 at 10:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Wed, 9 Mar 2022 17:29:28 +0800, Jason Wang <jasowang@redhat.com> wrote:
 >
-> On Mon,  7 Mar 2022 20:53:21 -0800 Dimitris Michailidis wrote:
-> > Stephen Rothwell reported the following failure on powerpc:
+> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Support set_ringparam based on virtio queue reset.
 > >
-> > ERROR: modpost: ".local_memory_node"
-> > [drivers/net/ethernet/fungible/funeth/funeth.ko] undefined!
+> > The rx,tx_pending required to be passed must be power of 2.
 > >
-> > AFAICS this is because local_memory_node() is a non-inline non-exported
-> > function when CONFIG_HAVE_MEMORYLESS_NODES=y. It is also the wrong API
-> > to get a CPU's memory node. Use cpu_to_mem() in the two spots it's used.
->
-> Can the ids actually not match? I'm asking because nobody else is doing
-> the cpu -> mem node conversions.
-
-They can differ if CONFIG_HAVE_MEMORYLESS_NODES=y and the machine has
-memoryless nodes. That config is only offered by IA64 and powerpc so I
-guess there are just a few machines where they can differ. It is true
-that cpu_to_mem() calls aren't common but the related call
-numa_mem_id(), the special case for the local CPU, is easier to find.
-For example, page pools's default preferred node is numa_mem_id()
-rather than numa_node_id().
-
-> > Fixes: ee6373ddf3a9 ("net/funeth: probing and netdev ops")
-> > Fixes: db37bc177dae ("net/funeth: add the data path")
-> > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > > ---
-> >  drivers/net/ethernet/fungible/funeth/funeth_main.c | 2 +-
-> >  drivers/net/ethernet/fungible/funeth/funeth_txrx.h | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> >   drivers/net/virtio_net.c | 47 ++++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 47 insertions(+)
 > >
-> > diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> > index c58b10c216ef..67dd02ed1fa3 100644
-> > --- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> > +++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-> > @@ -253,7 +253,7 @@ static struct fun_irq *fun_alloc_qirq(struct funeth_priv *fp, unsigned int idx,
-> >       int cpu, res;
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index f1bdc6ce21c3..1fa2d632a994 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -2290,6 +2290,52 @@ static void virtnet_get_ringparam(struct net_dev=
+ice *dev,
+> >   	ring->tx_pending =3D virtqueue_get_vring_size(vi->sq[0].vq);
+> >   }
 > >
-> >       cpu = cpumask_local_spread(idx, node);
-> > -     node = local_memory_node(cpu_to_node(cpu));
-> > +     node = cpu_to_mem(cpu);
+> > +static int virtnet_set_ringparam(struct net_device *dev,
+> > +				 struct ethtool_ringparam *ring,
+> > +				 struct kernel_ethtool_ringparam *kernel_ring,
+> > +				 struct netlink_ext_ack *extack)
+> > +{
+> > +	struct virtnet_info *vi =3D netdev_priv(dev);
+> > +	u32 rx_pending, tx_pending;
+> > +	struct receive_queue *rq;
+> > +	struct send_queue *sq;
+> > +	int i, err;
+> > +
+> > +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+> > +		return -EINVAL;
+>
+>
+> Any chance that we may hit this EINVAL?
+
+This is definitely not the case at present.
+
+I think this can be kept, this makes sense.
+
+I can remove it in the next version if you think it should be removed.
+
+Thanks.
+
+>
+> Thanks
+>
+>
+> > +
+> > +	rx_pending =3D virtqueue_get_vring_size(vi->rq[0].vq);
+> > +	tx_pending =3D virtqueue_get_vring_size(vi->sq[0].vq);
+> > +
+> > +	if (ring->rx_pending =3D=3D rx_pending &&
+> > +	    ring->tx_pending =3D=3D tx_pending)
+> > +		return 0;
+> > +
+> > +	if (ring->rx_pending > virtqueue_get_vring_max_size(vi->rq[0].vq))
+> > +		return -EINVAL;
+> > +
+> > +	if (ring->tx_pending > virtqueue_get_vring_max_size(vi->sq[0].vq))
+> > +		return -EINVAL;
+> > +
+> > +	for (i =3D 0; i < vi->max_queue_pairs; i++) {
+> > +		rq =3D vi->rq + i;
+> > +		sq =3D vi->sq + i;
+> > +
+> > +		if (ring->tx_pending !=3D tx_pending) {
+> > +			err =3D virtnet_tx_vq_reset(vi, sq, ring->tx_pending);
+> > +			if (err)
+> > +				return err;
+> > +		}
+> > +
+> > +		if (ring->rx_pending !=3D rx_pending) {
+> > +			err =3D virtnet_rx_vq_reset(vi, rq, ring->rx_pending);
+> > +			if (err)
+> > +				return err;
+> > +		}
+> > +	}
+> > +
+> > +	return 0;
+> > +}
 > >
-> >       irq = kzalloc_node(sizeof(*irq), GFP_KERNEL, node);
-> >       if (!irq)
-> > diff --git a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
-> > index 7aed0561aeac..04c9f91b7489 100644
-> > --- a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
-> > +++ b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
-> > @@ -239,7 +239,7 @@ static inline void fun_txq_wr_db(const struct funeth_txq *q)
-> >
-> >  static inline int fun_irq_node(const struct fun_irq *p)
-> >  {
-> > -     return local_memory_node(cpu_to_node(cpumask_first(&p->affinity_mask)));
-> > +     return cpu_to_mem(cpumask_first(&p->affinity_mask));
-> >  }
-> >
-> >  int fun_rxq_napi_poll(struct napi_struct *napi, int budget);
+> >   static void virtnet_get_drvinfo(struct net_device *dev,
+> >   				struct ethtool_drvinfo *info)
+> > @@ -2523,6 +2569,7 @@ static const struct ethtool_ops virtnet_ethtool_o=
+ps =3D {
+> >   	.get_drvinfo =3D virtnet_get_drvinfo,
+> >   	.get_link =3D ethtool_op_get_link,
+> >   	.get_ringparam =3D virtnet_get_ringparam,
+> > +	.set_ringparam =3D virtnet_set_ringparam,
+> >   	.get_strings =3D virtnet_get_strings,
+> >   	.get_sset_count =3D virtnet_get_sset_count,
+> >   	.get_ethtool_stats =3D virtnet_get_ethtool_stats,
 >
