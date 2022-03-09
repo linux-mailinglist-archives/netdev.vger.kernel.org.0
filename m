@@ -2,105 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2254D3CCE
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:21:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF824D3D35
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238610AbiCIWWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 17:22:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S237538AbiCIWmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 17:42:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238607AbiCIWWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:22:00 -0500
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928F6119859;
-        Wed,  9 Mar 2022 14:21:00 -0800 (PST)
-Received: by mail-oi1-f180.google.com with SMTP id h10so4138007oia.4;
-        Wed, 09 Mar 2022 14:21:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=yF9ediEFayMfZ9+RKb1DdVRXctEVXCbctlmQh++NDoU=;
-        b=O8ysOKVGsDFy1drHQ98EfAeupj15+4hTGT5w8p+GU3RswYdEJEcNv7G+CQDnx05p4F
-         4paI2O6JfXJEDWQKo7CVv1/xAqU3Vu+EbEcKnsmBL/MKsv2t04D8talnIIjN64wCS1iO
-         zZp6WDxGgJ1L6G2e3gHKT3Zf6yHLiMEaXdVgw1ileDQqS9NhSLib3t3UQn9onUHESAar
-         EkmQGrGR8xwdDY6VtQfO4sBeqSsCqkViQbzUGVEhv2gsWe5amNAu2LM7bhGb78gCKMMy
-         8KkRiuVP9fNZVuINfKNVKBjClAtGaTcIDiJBa+wzTCD83mRg2QSCm8djid0N+tRZ0OJb
-         qAhg==
-X-Gm-Message-State: AOAM531H4BU/inUGworbUNq/Y227wkDw+M2fayex8QB9VkWEEamw1/vE
-        1eAKDDpoHV21Jsc5T2WJ+g==
-X-Google-Smtp-Source: ABdhPJw+dfId+0ndY8HM1NpzRpBMl/Yi9AFqGIRET9W7tu2Mw2RRu3B73M+BSL7CSoIjQlqwsDaCFw==
-X-Received: by 2002:a05:6808:2394:b0:2d9:d2ad:c85c with SMTP id bp20-20020a056808239400b002d9d2adc85cmr1187861oib.4.1646864459865;
-        Wed, 09 Mar 2022 14:20:59 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o45-20020a9d2230000000b005b2426c3577sm1527948ota.79.2022.03.09.14.20.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 14:20:59 -0800 (PST)
-Received: (nullmailer pid 326443 invoked by uid 1000);
-        Wed, 09 Mar 2022 22:20:55 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     linux-phy@lists.infradead.org, vkoul@kernel.org,
-        davem@davemloft.net, leoyang.li@nxp.com,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, shawnguo@kernel.org, hongxing.zhu@nxp.com,
-        kishon@ti.com, linux@armlinux.org.uk, kuba@kernel.org
-In-Reply-To: <20220309172748.3460862-3-ioana.ciornei@nxp.com>
-References: <20220309172748.3460862-1-ioana.ciornei@nxp.com> <20220309172748.3460862-3-ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next v2 2/8] dt-bindings: phy: add the "fsl,lynx-28g" compatible
-Date:   Wed, 09 Mar 2022 16:20:55 -0600
-Message-Id: <1646864455.145844.326442.nullmailer@robh.at.kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231814AbiCIWmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:42:37 -0500
+X-Greylist: delayed 592 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 14:41:38 PST
+Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [67.231.154.164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80993122216
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:41:38 -0800 (PST)
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id E4EA0241DBF
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 22:31:46 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.178])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6CBB3A0073;
+        Wed,  9 Mar 2022 22:31:45 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2FD2DB00087;
+        Wed,  9 Mar 2022 22:31:45 +0000 (UTC)
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id A880913C2B0;
+        Wed,  9 Mar 2022 14:31:44 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com A880913C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1646865104;
+        bh=H8OnCADPdI063oHQz4NML5NvEHcESHDXM9mqxM4BpDk=;
+        h=From:Subject:To:Cc:Date:From;
+        b=FEU6mT1/jIytkUvYKP+xY0O/DQ19MWZPLhHb6Q48XPEBANqAf7To8OcMSTR5zS9RF
+         3LGelHBBDq8tQyQWWuxvMZKJ1iQEp9r3IaBaS6bKFntqCiv6W5pJudOaSGJ9/xB/IV
+         GUP9bw18GO3ySFzuu2Ne4/ILYNZaVNyIJs735GM0=
+From:   Ben Greear <greearb@candelatech.com>
+Subject: vrf and multicast problem
+To:     netdev <netdev@vger.kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>
+Organization: Candela Technologies
+Message-ID: <1e7b1aec-401d-9e70-564a-4ce96e11e1be@candelatech.com>
+Date:   Wed, 9 Mar 2022 14:31:44 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-MDID: 1646865105-FRPM6SBB7ubS
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 09 Mar 2022 19:27:42 +0200, Ioana Ciornei wrote:
-> Describe the "fsl,lynx-28g" compatible used by the Lynx 28G SerDes PHY
-> driver on Layerscape based SoCs.
-> 
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
-> Changes in v2:
-> 	- none
-> 
->  .../devicetree/bindings/phy/fsl,lynx-28g.yaml | 71 +++++++++++++++++++
->  MAINTAINERS                                   |  1 +
->  2 files changed, 72 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
-> 
+[resend, sorry...sent to wrong mailing list the first time]
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Hello,
 
-yamllint warnings/errors:
+We recently found a somewhat weird problem, and before I go digging into
+the kernel source, I wanted to see if someone had an answer already...
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,lynx-28g.example.dt.yaml: example-0: serdes_phy@1ea0000:reg:0: [0, 32112640, 0, 7728] is too long
-	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,lynx-28g.example.dt.yaml: serdes_phy@1ea0000: #phy-cells:0:0: 0 was expected
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,lynx-28g.example.dt.yaml: serdes_phy@1ea0000: '#address-cells', '#size-cells', 'phy@0', 'phy@1', 'phy@2', 'phy@3', 'phy@4', 'phy@5', 'phy@6', 'phy@7' do not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
+I am binding (SO_BINDTODEVICE) a socket to an Ethernet port that is in a VRF with a second
+interface.  When I try to send mcast traffic out that eth port, nothing is
+seen on the wire.
 
-doc reference errors (make refcheckdocs):
+But, if I set up a similar situation with a single network port in
+a vrf and send multicast, then it does appear to work as I expected.
 
-See https://patchwork.ozlabs.org/patch/1603505
+I am not actually trying to do any mcast routing here, I simply want to send
+out mcast frames from a port that resides inside a vrf.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+Any idea what might be the issue?
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+Thanks,
+Ben
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
