@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E15784D393F
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 19:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7576B4D396B
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236988AbiCISxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 13:53:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
+        id S237143AbiCITEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 14:04:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231330AbiCISxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 13:53:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098AA182BF8;
-        Wed,  9 Mar 2022 10:52:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9038861797;
-        Wed,  9 Mar 2022 18:52:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C080C340E8;
-        Wed,  9 Mar 2022 18:52:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646851938;
-        bh=+DArKuMQB9BQkZlj+Yn2vhSYyPx0dFjihiD/ugKfs0c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pNwOz/O350LawkZ11VLNBaL29p5mLGQfBB9ek/jPonM2muArkMoSvGSE2iq+2g12I
-         /nqelezUJclPT0eBHTnJmhXU1OqI+YF6Qcl9VhqiM75nq9nOXWVdaRfYTT/Gr6IzSk
-         H1U2gADjw9Z4EXphZxYh7qe4CIlRg8louWTLmzdaSNr4SF5WIpBooX1lVRvC9zNzSu
-         KDoNnpgnaS2sSB0TBKejk5kYdEJOBkBuejNt0/vQM5o2mfJEHtXtBp99L9LU9mHDjg
-         6dfRL012U0mlSinfdHoag68biryeVsHI4846od/XzU7Gg7r66SOwpphjJ8se5mWsdk
-         j5pebiOooB5tA==
-Date:   Wed, 9 Mar 2022 20:52:14 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Lee Jones <lee.jones@linaro.org>, mst@redhat.com,
-        jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <Yij3XqLpOu18Kw8A@unreal>
-References: <20220307191757.3177139-1-lee.jones@linaro.org>
- <YiZeB7l49KC2Y5Gz@kroah.com>
- <YicPXnNFHpoJHcUN@google.com>
- <Yicalf1I6oBytbse@kroah.com>
+        with ESMTP id S233594AbiCITEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:04:01 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16E3369E4
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:02:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646852577; x=1678388577;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aKsGy+geiFdWrmZOkUi6SC+jH118B6yqDKy9FtoYqF8=;
+  b=gsjrfImGAr6NUVfjbGXXdpkbvUs8XqPzPXR6HBHaubmA+99qCtd0gcaF
+   1lqeGV8KgqNAbEfPikvQSHKK/QUjQzTRNVV0MxO1pYeo5pQO4YG+APS41
+   eF8UtBlpjOrtXagIAjVPdSfEZXjF3D7aQ6v//UySI1G9D33u/huwAnTp2
+   uFcYi1lwPkwDVaU9jr6jLry73V7KVMb0KOr4W1RkNG9UaM0T5+EDTUXAN
+   lJf083mrETJdieVp7NJz+d66uPdZ9Jg04I+ECQ15sE/xPtNtmEJS0DSDj
+   4zzbzQv0WpjyM5C640anFDLuuEJg954me2/PRsgbjAg6C/E2WhZBw98QH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="341494148"
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="341494148"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:02:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
+   d="scan'208";a="781188744"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga006.fm.intel.com with ESMTP; 09 Mar 2022 11:02:57 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/5][pull request] 100GbE Intel Wired LAN Driver Updates 2022-03-09
+Date:   Wed,  9 Mar 2022 11:03:10 -0800
+Message-Id: <20220309190315.1380414-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yicalf1I6oBytbse@kroah.com>
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,73 +56,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 09:57:57AM +0100, Greg KH wrote:
-> On Tue, Mar 08, 2022 at 08:10:06AM +0000, Lee Jones wrote:
-> > On Mon, 07 Mar 2022, Greg KH wrote:
-> > 
-> > > On Mon, Mar 07, 2022 at 07:17:57PM +0000, Lee Jones wrote:
-> > > > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > > > to vhost_get_vq_desc().  All we have to do here is take the same lock
-> > > > during virtqueue clean-up and we mitigate the reported issues.
-> > > > 
-> > > > Also WARN() as a precautionary measure.  The purpose of this is to
-> > > > capture possible future race conditions which may pop up over time.
-> > > > 
-> > > > Link: https://syzkaller.appspot.com/bug?extid=279432d30d825e63ba00
-> > > > 
-> > > > Cc: <stable@vger.kernel.org>
-> > > > Reported-by: syzbot+adc3cb32385586bec859@syzkaller.appspotmail.com
-> > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > ---
-> > > >  drivers/vhost/vhost.c | 10 ++++++++++
-> > > >  1 file changed, 10 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> > > > index 59edb5a1ffe28..ef7e371e3e649 100644
-> > > > --- a/drivers/vhost/vhost.c
-> > > > +++ b/drivers/vhost/vhost.c
-> > > > @@ -693,6 +693,15 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
-> > > >  	int i;
-> > > >  
-> > > >  	for (i = 0; i < dev->nvqs; ++i) {
-> > > > +		/* No workers should run here by design. However, races have
-> > > > +		 * previously occurred where drivers have been unable to flush
-> > > > +		 * all work properly prior to clean-up.  Without a successful
-> > > > +		 * flush the guest will malfunction, but avoiding host memory
-> > > > +		 * corruption in those cases does seem preferable.
-> > > > +		 */
-> > > > +		WARN_ON(mutex_is_locked(&dev->vqs[i]->mutex));
-> > > 
-> > > So you are trading one syzbot triggered issue for another one in the
-> > > future?  :)
-> > > 
-> > > If this ever can happen, handle it, but don't log it with a WARN_ON() as
-> > > that will trigger the panic-on-warn boxes, as well as syzbot.  Unless
-> > > you want that to happen?
-> > 
-> > No, Syzbot doesn't report warnings, only BUGs and memory corruption.
-> 
-> Has it changed?  Last I looked, it did trigger on WARN_* calls, which
-> has resulted in a huge number of kernel fixes because of that.
-> 
-> > > And what happens if the mutex is locked _RIGHT_ after you checked it?
-> > > You still have a race...
-> > 
-> > No, we miss a warning that one time.  Memory is still protected.
-> 
-> Then don't warn on something that doesn't matter.  This line can be
-> dropped as there's nothing anyone can do about it, right?
+This series contains updates to ice driver only.
 
-Greg, at least two other reviewers said that this line shouldn't be at
-all.
+Martyna implements switchdev filtering on inner EtherType field for
+tunnels.
 
-https://lore.kernel.org/all/CACGkMEsjmCNQPjxPjXL0WUfbMg8ARnumEp4yjUxqznMKR1nKSQ@mail.gmail.com/
-https://lore.kernel.org/all/YiG61RqXFvq%2Ft0fB@unreal/
-https://lore.kernel.org/all/YiETnIcfZCLb63oB@unreal/
+Marcin adds reporting of slowpath statistics for port representors.
 
-Thanks
+Jonathan Toppins changes a non-fatal link error message from warning to
+debug.
 
-> 
-> thanks,
-> 
-> greg k-h
+Maciej removes unnecessary checks in ice_clean_tx_irq().
+
+Amritha adds support for ADQ to match outer destination MAC for tunnels.
+
+The following are changes since commit 7f415828f987fca9651694c7589560e55ffdf9a6:
+  MAINTAINERS: rectify entry for REALTEK RTL83xx SMI DSA ROUTER CHIPS
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Amritha Nambiar (1):
+  ice: Add support for outer dest MAC for ADQ tunnels
+
+Jonathan Toppins (1):
+  ice: change "can't set link" message to dbg level
+
+Maciej Fijalkowski (1):
+  ice: avoid XDP checks in ice_clean_tx_irq()
+
+Marcin Szycik (1):
+  ice: Add slow path offload stats on port representor in switchdev
+
+Martyna Szapar-Mudlaw (1):
+  ice: Add support for inner etype in switchdev
+
+ drivers/net/ethernet/intel/ice/ice.h          |   3 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   6 +-
+ .../ethernet/intel/ice/ice_protocol_type.h    |   2 +
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  55 ++++
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 272 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  47 ++-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   7 +-
+ 8 files changed, 370 insertions(+), 28 deletions(-)
+
+-- 
+2.31.1
+
