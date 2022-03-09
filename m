@@ -2,66 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7D44D27DC
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 05:30:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64D754D27F0
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 05:46:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiCIEXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 23:23:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34996 "EHLO
+        id S229499AbiCIErQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 23:47:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiCIEW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 23:22:58 -0500
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EC6314A075;
-        Tue,  8 Mar 2022 20:21:58 -0800 (PST)
-Received: from [10.130.0.135] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxfxNfKyhio3kFAA--.207S3;
-        Wed, 09 Mar 2022 12:21:52 +0800 (CST)
-Subject: Re: [PATCH bpf-next v3 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable
- in Kconfig
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn>
- <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
- <b2aa5233-282e-004c-1ba3-63417cbccd58@iogearbox.net>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-Message-ID: <c709954e-9232-d719-eeb2-6a05546231b6@loongson.cn>
-Date:   Wed, 9 Mar 2022 12:21:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        with ESMTP id S229449AbiCIErO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 23:47:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACE1BECC57
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 20:46:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646801174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=O9y7hYtf8DIbE/b1LIIjEL5hDziwE2SHgt9FQ5yzHZY=;
+        b=Rw4HgqxFdx9R5XkzimF6Q9vaE+dGRjq1OMXXjp7p85D65q11yr3aRAPXED6Qoe6GjCoD2S
+        sQSpzf87Gil43Ninq0cTK7PoOn9yk/cjLYbmHiDeUkKVnrr/j+vDSBVVqtyj9T3RBGJZiy
+        rwPY3QURaQOEi0scarEuUK/0yqVt9sM=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-295-ih1Ko46-PIiLa44glNcTJw-1; Tue, 08 Mar 2022 23:46:13 -0500
+X-MC-Unique: ih1Ko46-PIiLa44glNcTJw-1
+Received: by mail-pf1-f198.google.com with SMTP id 67-20020a621446000000b004f739ef52f1so889925pfu.0
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 20:46:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=O9y7hYtf8DIbE/b1LIIjEL5hDziwE2SHgt9FQ5yzHZY=;
+        b=deOwC+D9IsIVzYxZxe6n4h5YA6vKwNrMlgCdr9eKSjlJwVsUl2rUaIOBee/uFLxdmh
+         puc3zJ7j1BpPlUnv6z7sLnM6+zs6QH17+Gc4OUezyXMaDZ6JB+wfg6IPBYGPlQ4KlF6B
+         tVoSis1cSyXMSMTbWdBiYxt1VIikybjKWRKwQQwMML2g848tEPkD5+WigQRPAT334R44
+         DKpp2DHkLi/PM5lhoKxeBNGvpyPWzi/rQ2DcHc1iXUL/wFCMgtjxlmDWTwHPtHHRbupO
+         TZJMhsG9AkfO0xNLjf+K5WGje/zQdS0l0ueB2StK5089TpsGo5X4mBCJN9VqglSGi97O
+         7d4g==
+X-Gm-Message-State: AOAM530srvhUkfia1/asBLceEXyd5Ls5QcCHUFWN5xhjgNtDeznRCrSO
+        nc7jPApd0DHStipUjSauBtGYgznvrhxRnZxGvCBHBIgYl5zKx6RYDeWjYBDvmbJN6IGT9FztZHn
+        xazqijiICQ4GjuT0E
+X-Received: by 2002:a17:90a:17ab:b0:1bf:9519:fe86 with SMTP id q40-20020a17090a17ab00b001bf9519fe86mr5407277pja.25.1646801172046;
+        Tue, 08 Mar 2022 20:46:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzNoaLCqq9sRt9psO5uqafOMqGFVYmxmfOSqOlDkq0FsYupDy1WKwY2W2xGCXK65aGhCKiuiQ==
+X-Received: by 2002:a17:90a:17ab:b0:1bf:9519:fe86 with SMTP id q40-20020a17090a17ab00b001bf9519fe86mr5407253pja.25.1646801171689;
+        Tue, 08 Mar 2022 20:46:11 -0800 (PST)
+Received: from [10.72.13.251] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o5-20020a056a00214500b004bd7036b50asm810863pfk.172.2022.03.08.20.46.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Mar 2022 20:46:11 -0800 (PST)
+Message-ID: <2c823fed-8024-39e7-f6f5-176fb518fc1a@redhat.com>
+Date:   Wed, 9 Mar 2022 12:45:57 +0800
 MIME-Version: 1.0
-In-Reply-To: <b2aa5233-282e-004c-1ba3-63417cbccd58@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9DxfxNfKyhio3kFAA--.207S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxWF4fGw4kXFW7Zw1fKF18Grg_yoWrZFW8pw
-        1jqw1xKr97Xr1fKFW7Ca47GF4UGw4jgryDJFs8u3yUZF97ua4kCr40gw1jgF9rZr97Xa1j
-        yrZ5u3WkZa1DWa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9E14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kI
-        c2xKxwCYjI0SjxkI62AI1cAE67vIY487MxkIecxEwVAFwVW8XwCF04k20xvY0x0EwIxGrw
-        CFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE
-        14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2
-        IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxK
-        x2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267
-        AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjGYLDUUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v7 00/26] virtio pci support VIRTIO_F_RING_RESET
+Content-Language: en-US
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org
+References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -69,129 +107,142 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 03/01/2022 07:53 AM, Daniel Borkmann wrote:
-> Hi Tiezhu,
+在 2022/3/8 下午8:34, Xuan Zhuo 写道:
+> The virtio spec already supports the virtio queue reset function. This patch set
+> is to add this function to the kernel. The relevant virtio spec information is
+> here:
 >
-> (patch 1/2 applied so far, thanks!)
+>      https://github.com/oasis-tcs/virtio-spec/issues/124
 >
-> On 2/22/22 10:57 AM, Tiezhu Yang wrote:
->> Currently, only x86, arm64 and s390 select ARCH_WANT_DEFAULT_BPF_JIT,
->> the other archs do not select ARCH_WANT_DEFAULT_BPF_JIT. On the archs
->> without ARCH_WANT_DEFAULT_BPF_JIT, if we want to set bpf_jit_enable to
->> 1 by default, the only way is to enable CONFIG_BPF_JIT_ALWAYS_ON, then
->> the users can not change it to 0 or 2, it seems bad for some users. We
+> Also regarding MMIO support for queue reset, I plan to support it after this
+> patch is passed.
 >
-> Can you elaborate on the "it seems bad for some users" part? What's the
-> concrete
-
-Hi Daniel,
-
-Sorry for the late reply.
-
-I saw the following two similar patches, some users want to set
-bpf_jit_enable to 1 by default, at the same time, they want to
-change it to 0 or 2 to debug, only enable CONFIG_BPF_JIT_DEFAULT_ON
-is a proper way in such a case.
-
-[PATCH bpf-next] bpf: trace jit code when enable BPF_JIT_ALWAYS_ON
-https://lore.kernel.org/bpf/20210326124030.1138964-1-Jianlin.Lv@arm.com/
-
-[PATCH bpf-next] bpf: support bpf_jit_enable=2 for CONFIG_BPF_JIT_ALWAYS_ON
-https://lore.kernel.org/bpf/20211231153550.3807430-1-houtao1@huawei.com/
-
-
-> use case? Also, why not add (e.g. mips) JIT to ARCH_WANT_DEFAULT_BPF_JIT
-> if the
-> CI suite passes with high degree/confidence?
-
-Yes, we can let the specific arch select ARCH_WANT_DEFAULT_BPF_JIT in 
-Kconfig, this commit only gives another chance to enable or disable 
-CONFIG_BPF_JIT_DEFAULT_ON manually when make menuconfig, this is useful
-to debug when develop JIT.
-
+> Performing reset on a queue is divided into four steps:
+>       1. virtio_reset_vq()              - notify the device to reset the queue
+>       2. virtqueue_detach_unused_buf()  - recycle the buffer submitted
+>       3. virtqueue_reset_vring()        - reset the vring (may re-alloc)
+>       4. virtio_enable_resetq()         - mmap vring to device, and enable the queue
 >
->> can select ARCH_WANT_DEFAULT_BPF_JIT for those archs if it is proper,
->> but at least for now, make BPF_JIT_DEFAULT_ON selectable can give them
->> a chance.
->>
->> Additionally, with this patch, under !BPF_JIT_ALWAYS_ON, we can disable
->> BPF_JIT_DEFAULT_ON on the archs with ARCH_WANT_DEFAULT_BPF_JIT when make
->> menuconfig, it seems flexible for some developers.
->>
->> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
->> ---
->>   kernel/bpf/Kconfig | 13 +++++++++++--
->>   1 file changed, 11 insertions(+), 2 deletions(-)
->>
->> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
->> index f3db15a..8521874 100644
->> --- a/kernel/bpf/Kconfig
->> +++ b/kernel/bpf/Kconfig
->> @@ -54,6 +54,7 @@ config BPF_JIT
->>   config BPF_JIT_ALWAYS_ON
->>       bool "Permanently enable BPF JIT and remove BPF interpreter"
->>       depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
->> +    select BPF_JIT_DEFAULT_ON
+> The first part 1-17 of this patch set implements virtio pci's support and API
+> for queue reset. The latter part is to make virtio-net support set_ringparam. Do
+> these things for this feature:
 >
-> Is the above needed if ...
+>        1. virtio-net support rx,tx reset
+>        2. find_vqs() support to special the max size of each vq
+>        3. virtio-net support set_ringparam
 >
->>       help
->>         Enables BPF JIT and removes BPF interpreter to avoid speculative
->>         execution of BPF instructions by the interpreter.
->> @@ -63,8 +64,16 @@ config BPF_JIT_ALWAYS_ON
->>         failure.
->>     config BPF_JIT_DEFAULT_ON
->> -    def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
->> -    depends on HAVE_EBPF_JIT && BPF_JIT
->> +    bool "Enable BPF JIT by default"
->> +    default y if ARCH_WANT_DEFAULT_BPF_JIT
+> #1 -#3 :       prepare
+> #4 -#12:       virtio ring support reset vring of the vq
+> #13-#14:       add helper
+> #15-#17:       virtio pci support reset queue and re-enable
+> #18-#21:       find_vqs() support sizes to special the max size of each vq
+> #23-#24:       virtio-net support rx, tx reset
+> #22, #25, #26: virtio-net support set ringparam
 >
-> ... we retain the prior `default y if ARCH_WANT_DEFAULT_BPF_JIT ||
-> BPF_JIT_ALWAYS_ON` ?
+> Test environment:
+>      Host: 4.19.91
+>      Qemu: QEMU emulator version 6.2.50 (with vq reset support)
+>      Test Cmd:  ethtool -G eth1 rx $1 tx $2; ethtool -g eth1
+>
+>      The default is split mode, modify Qemu virtio-net to add PACKED feature to test
+>      packed mode.
+>
+>
+> Please review. Thanks.
+>
+> v7:
+>    1. fix #6 subject typo
+>    2. fix #6 ring_size_in_bytes is uninitialized
+>    3. check by: make W=12
+>
+> v6:
+>    1. virtio_pci: use synchronize_irq(irq) to sync the irq callbacks
+>    2. Introduce virtqueue_reset_vring() to implement the reset of vring during
+>       the reset process. May use the old vring if num of the vq not change.
+>    3. find_vqs() support sizes to special the max size of each vq
+>
+> v5:
+>    1. add virtio-net support set_ringparam
+>
+> v4:
+>    1. just the code of virtio, without virtio-net
+>    2. Performing reset on a queue is divided into these steps:
+>      1. reset_vq: reset one vq
+>      2. recycle the buffer from vq by virtqueue_detach_unused_buf()
+>      3. release the ring of the vq by vring_release_virtqueue()
+>      4. enable_reset_vq: re-enable the reset queue
+>    3. Simplify the parameters of enable_reset_vq()
+>    4. add container structures for virtio_pci_common_cfg
+>
+> v3:
+>    1. keep vq, irq unreleased
 
-After add
 
-   bool "Enable BPF JIT by default"
+The series became kind of huge.
 
-if use
+I'd suggest to split it into two series.
 
-   default y if ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
+1) refactoring of the virtio_ring to prepare for the resize
+2) the reset support + virtio-net support
 
-under !ARCH_WANT_DEFAULT_BPF_JIT, when enable CONFIG_BPF_JIT_ALWAYS_ON
-manually through make menuconfig, CONFIG_BPF_JIT_DEFAULT_ON is not set
-automatically, it seems not reasonable, but I do not know the reason,
-maybe this is because CONFIG_BPF_JIT_ALWAYS_ON is user selectable rather
-than selected via Kconfig only (like ARCH_WANT_DEFAULT_BPF_JIT), so here
-let BPF_JIT_ALWAYS_ON select BPF_JIT_DEFAULT_ON.
+Thanks
+
 
 >
->> +    depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
+> *** BLURB HERE ***
 >
-> Why is the extra BPF_SYSCALL dependency needed? You could still have
-> this for cBPF->eBPF
-> translations when BPF syscall is compiled out (e.g. seccomp, sock/packet
-> filters, etc).
-
-Sorry, just copy-paste from "config BPF_JIT_ALWAYS_ON".
-
-If BPF_SYSCALL dependency is not needed by BPF_JIT_DEFAULT_ON,
-should we remove BPF_SYSCALL dependency in "config BPF_JIT_ALWAYS_ON"?
-
-Thanks,
-Tiezhu
-
+> Xuan Zhuo (26):
+>    virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
+>    virtio: queue_reset: add VIRTIO_F_RING_RESET
+>    virtio: add helper virtqueue_get_vring_max_size()
+>    virtio_ring: split: extract the logic of creating vring
+>    virtio_ring: split: extract the logic of init vq and attach vring
+>    virtio_ring: packed: extract the logic of creating vring
+>    virtio_ring: packed: extract the logic of init vq and attach vring
+>    virtio_ring: extract the logic of freeing vring
+>    virtio_ring: split: implement virtqueue_reset_vring_split()
+>    virtio_ring: packed: implement virtqueue_reset_vring_packed()
+>    virtio_ring: introduce virtqueue_reset_vring()
+>    virtio_ring: update the document of the virtqueue_detach_unused_buf
+>      for queue reset
+>    virtio: queue_reset: struct virtio_config_ops add callbacks for
+>      queue_reset
+>    virtio: add helper for queue reset
+>    virtio_pci: queue_reset: update struct virtio_pci_common_cfg and
+>      option functions
+>    virtio_pci: queue_reset: extract the logic of active vq for modern pci
+>    virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
+>    virtio: find_vqs() add arg sizes
+>    virtio_pci: support the arg sizes of find_vqs()
+>    virtio_mmio: support the arg sizes of find_vqs()
+>    virtio: add helper virtio_find_vqs_ctx_size()
+>    virtio_net: get ringparam by virtqueue_get_vring_max_size()
+>    virtio_net: split free_unused_bufs()
+>    virtio_net: support rx/tx queue reset
+>    virtio_net: set the default max ring size by find_vqs()
+>    virtio_net: support set_ringparam
 >
->> +    help
->> +      Enables BPF JIT by default to avoid speculative execution of BPF
->> +      instructions by the interpreter.
->> +
->> +      When CONFIG_BPF_JIT_DEFAULT_ON is enabled but
->> CONFIG_BPF_JIT_ALWAYS_ON
->> +      is disabled, /proc/sys/net/core/bpf_jit_enable is set to 1 by
->> default
->> +      and can be changed to 0 or 2.
->>     config BPF_UNPRIV_DEFAULT_OFF
->>       bool "Disable unprivileged BPF by default"
->>
+>   arch/um/drivers/virtio_uml.c             |   2 +-
+>   drivers/net/virtio_net.c                 | 257 ++++++++--
+>   drivers/platform/mellanox/mlxbf-tmfifo.c |   3 +-
+>   drivers/remoteproc/remoteproc_virtio.c   |   2 +-
+>   drivers/s390/virtio/virtio_ccw.c         |   2 +-
+>   drivers/virtio/virtio_mmio.c             |  12 +-
+>   drivers/virtio/virtio_pci_common.c       |  28 +-
+>   drivers/virtio/virtio_pci_common.h       |   3 +-
+>   drivers/virtio/virtio_pci_legacy.c       |   8 +-
+>   drivers/virtio/virtio_pci_modern.c       | 146 +++++-
+>   drivers/virtio/virtio_pci_modern_dev.c   |  36 ++
+>   drivers/virtio/virtio_ring.c             | 584 +++++++++++++++++------
+>   drivers/virtio/virtio_vdpa.c             |   2 +-
+>   include/linux/virtio.h                   |  12 +
+>   include/linux/virtio_config.h            |  74 ++-
+>   include/linux/virtio_pci_modern.h        |   2 +
+>   include/uapi/linux/virtio_config.h       |   7 +-
+>   include/uapi/linux/virtio_pci.h          |  14 +
+>   18 files changed, 979 insertions(+), 215 deletions(-)
+>
+> --
+> 2.31.0
+>
 
