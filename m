@@ -2,67 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAA634D3843
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 19:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA0C4D3852
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 19:01:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235242AbiCIR7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 12:59:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
+        id S231370AbiCISBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 13:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiCIR7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 12:59:12 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFB324BE0
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 09:58:12 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id o64so3431457oib.7
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 09:58:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ty8T93iv0UeEvszlFZ+z3Rm2zy1d4dzF9JOerDbs17g=;
-        b=RHk3lCKZs6wmVvtsNLe05n+rM1IhQNac037eDzxWmNiVqDX4OOkzeaDRHSibrXkrbz
-         lO7sOEeL4zoN0xOxzgc/rEIlmQyx+JG3kJ1V2XBLJ3zKTnx/7SBsVdw/ncjAI7PZifgy
-         n9uyUMfcTo4oqOhF/nnUtxGbDDB8BoHlB6MlqbOSw6aRyN0g701dRx84RW27Ncb8fB4W
-         rBVyk8LZk52kBlwluriSxKHrzdum+Wvx2q4kXDolFFYodEtbHFYYT0B+aP093lolqDek
-         3Z8nijtBO5lEccj2yvjRCYzT8SxeBpUP1cFoTrf/mavfLfFGMKrfvlA9tawyfTXNYadF
-         1rpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ty8T93iv0UeEvszlFZ+z3Rm2zy1d4dzF9JOerDbs17g=;
-        b=KnxW/3z6x4ufPeWt/1ciPS3bztBalgsl3+O80Y1jHhVxrB0byTKuKArpAUi93urDMU
-         GvgKfjqV/JXGyCc0Rq0jCelVg7YOIK3PE2sx/DFHkaf5TGRyCVvH3zOYweOA6Y3fUnq7
-         MPDuwSv4YaXWMDWMvB3yGuuU+fGR6MtVhPalnw6y5A5OC6Y+shmY9wATMLAMMMzrRsqt
-         79lId0SEnpEwlt86f5j1b14U+zspbJBDp/cgUWza5ViaIGGN0aWL8SKLqDrKqUSWV1Vj
-         ugR6y1SZSruHvkQjRyY5PFdFyg6QxCjOV1FYMBX7mE/YXi9LoxbAi9/zEBHssdmd71Yc
-         rhuw==
-X-Gm-Message-State: AOAM533upFm1k016hKJU2XgY1F/fv0gV2l2oC9n3vxtWvCsfrGgr+xQy
-        bZyJl6JPndI+xsMiFEjDOe1Gn8H4QdpDnA==
-X-Google-Smtp-Source: ABdhPJy+eZT5PdnV73toImsLq6l5fcLUucK+nJMuTSPHalvWtSNmORlWNpADo4LW1Tmhj5C7p6u6Ow==
-X-Received: by 2002:a05:6808:1590:b0:2d9:ca75:8edd with SMTP id t16-20020a056808159000b002d9ca758eddmr6692047oiw.189.1646848692058;
-        Wed, 09 Mar 2022 09:58:12 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id bg35-20020a056820082300b0032113f5ef98sm1333758oob.27.2022.03.09.09.58.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 09:58:11 -0800 (PST)
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v3] net: dsa: tag_rtl8_4: fix typo in modalias name
-Date:   Wed,  9 Mar 2022 14:56:42 -0300
-Message-Id: <20220309175641.12943-1-luizluca@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S231278AbiCISBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 13:01:42 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4641310874B;
+        Wed,  9 Mar 2022 10:00:40 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5aef7a.dynamic.kabel-deutschland.de [95.90.239.122])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 1EE3861E64846;
+        Wed,  9 Mar 2022 19:00:39 +0100 (CET)
+Message-ID: <e884cf16-3f98-e9a7-ce96-9028592246cc@molgen.mpg.de>
+Date:   Wed, 9 Mar 2022 19:00:38 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [EXT] Re: [PATCH v2 net-next 1/2] bnx2x: Utilize firmware
+ 7.13.21.0
+Content-Language: en-US
+To:     Manish Chopra <manishc@marvell.com>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        Ariel Elior <aelior@marvell.com>,
+        Alok Prasad <palok@marvell.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>, stable@vger.kernel.org,
+        it+netdev@molgen.mpg.de,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        regressions@lists.linux.dev
+References: <20211217165552.746-1-manishc@marvell.com>
+ <ea05bcab-fe72-4bc2-3337-460888b2c44e@molgen.mpg.de>
+ <BY3PR18MB46129282EBA1F699583134A4AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <BY3PR18MB46129282EBA1F699583134A4AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,30 +55,389 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA_TAG_PROTO_RTL8_4L is not defined. It should be
-DSA_TAG_PROTO_RTL8_4T.
+Dear Manish,
 
-Fixes: cd87fecdedd7 ("net: dsa: tag_rtl8_4: add rtl8_4t trailing variant")
-Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- net/dsa/tag_rtl8_4.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/dsa/tag_rtl8_4.c b/net/dsa/tag_rtl8_4.c
-index 71fec45fd0ea..a593ead7ff26 100644
---- a/net/dsa/tag_rtl8_4.c
-+++ b/net/dsa/tag_rtl8_4.c
-@@ -247,7 +247,7 @@ static const struct dsa_device_ops rtl8_4t_netdev_ops = {
- 
- DSA_TAG_DRIVER(rtl8_4t_netdev_ops);
- 
--MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4L);
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_RTL8_4T);
- 
- static struct dsa_tag_driver *dsa_tag_drivers[] = {
- 	&DSA_TAG_DRIVER_NAME(rtl8_4_netdev_ops),
--- 
-2.35.1
+Am 09.03.22 um 17:46 schrieb Manish Chopra:
+>> -----Original Message-----
+>> From: Paul Menzel <pmenzel@molgen.mpg.de>
+>> Sent: Wednesday, March 9, 2022 9:45 PM
 
+[…]
+
+>> Dear Manish,
+>>
+>>
+>> Am 17.12.21 um 17:55 schrieb Manish Chopra:
+>>> This new firmware addresses few important issues and enhancements as
+>>> mentioned below -
+>>>
+>>> - Support direct invalidation of FP HSI Ver per function ID, required for
+>>>   invalidating FP HSI Ver prior to each VF start, as there is no VF start
+>>> - BRB hardware block parity error detection support for the driver
+>>> - Fix the FCOE underrun flow
+>>> - Fix PSOD during FCoE BFS over the NIC ports after preboot driver
+>>> - Maintains backward compatibility
+>>>
+>>> This patch incorporates this new firmware 7.13.21.0 in bnx2x driver.
+>>>
+>>> Signed-off-by: Manish Chopra <manishc@marvell.com>
+>>> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+>>> Signed-off-by: Alok Prasad <palok@marvell.com>
+>>> Signed-off-by: Ariel Elior <aelior@marvell.com>
+>>> ---
+>>>
+>>> v1->v2:
+>>> ------------
+>>> * Modified the patch such that driver to be backward compatible
+>>>     with older firmware too (New fw v7.13.21.0 on linux-firmware.git
+>>>     enables driver to maintain backward compatibility)
+>>> ---
+>>>    drivers/net/ethernet/broadcom/bnx2x/bnx2x.h        | 11 +++-
+>>>    drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c    |  6 +-
+>>>    .../net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h    |  2 +
+>>>    drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h    |  3 +-
+>>>    drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   | 75 +++++++++++++++-------
+>>>    5 files changed, 69 insertions(+), 28 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+>>> index 2b06d78b..a19dd67 100644
+>>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+>>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+>>> @@ -1850,6 +1850,14 @@ struct bnx2x {
+>>>
+>>>    	/* Vxlan/Geneve related information */
+>>>    	u16 udp_tunnel_ports[BNX2X_UDP_PORT_MAX];
+>>> +
+>>> +#define FW_CAP_INVALIDATE_VF_FP_HSI	BIT(0)
+>>> +	u32 fw_cap;
+>>> +
+>>> +	u32 fw_major;
+>>> +	u32 fw_minor;
+>>> +	u32 fw_rev;
+>>> +	u32 fw_eng;
+>>>    };
+>>>
+>>>    /* Tx queues may be less or equal to Rx queues */ @@ -2525,5 +2533,6
+>>> @@ enum {
+>>>     * Meant for implicit re-load flows.
+>>>     */
+>>>    int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
+>>> -
+>>> +int bnx2x_init_firmware(struct bnx2x *bp); void
+>>> +bnx2x_release_firmware(struct bnx2x *bp);
+>>>    #endif /* bnx2x.h */
+>>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>>> index 54a2334..8d36ebb 100644
+>>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+>>> @@ -2365,10 +2365,8 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp,
+>> u32 load_code, bool print_err)
+>>>    	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
+>>>    	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
+>>>    		/* build my FW version dword */
+>>> -		u32 my_fw = (BCM_5710_FW_MAJOR_VERSION) +
+>>> -			(BCM_5710_FW_MINOR_VERSION << 8) +
+>>> -			(BCM_5710_FW_REVISION_VERSION << 16) +
+>>> -			(BCM_5710_FW_ENGINEERING_VERSION << 24);
+>>> +		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
+>>> +				(bp->fw_rev << 16) + (bp->fw_eng << 24);
+>>>
+>>>    		/* read loaded FW from chip */
+>>>    		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM); diff --git
+>>> a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
+>>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
+>>> index 3f84352..a84d015 100644
+>>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
+>>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h
+>>> @@ -241,6 +241,8 @@
+>>>    	IRO[221].m2))
+>>>    #define XSTORM_VF_TO_PF_OFFSET(funcId) \
+>>>    	(IRO[48].base + ((funcId) * IRO[48].m1))
+>>> +#define XSTORM_ETH_FUNCTION_INFO_FP_HSI_VALID_E2_OFFSET(fid)
+>> 	\
+>>> +	(IRO[386].base + ((fid) * IRO[386].m1))
+>>>    #define COMMON_ASM_INVALID_ASSERT_OPCODE 0x0
+>>>
+>>>    /* eth hsi version */
+>>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
+>>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
+>>> index 622fadc..611efee 100644
+>>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
+>>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h
+>>> @@ -3024,7 +3024,8 @@ struct afex_stats {
+>>>
+>>>    #define BCM_5710_FW_MAJOR_VERSION			7
+>>>    #define BCM_5710_FW_MINOR_VERSION			13
+>>> -#define BCM_5710_FW_REVISION_VERSION		15
+>>> +#define BCM_5710_FW_REVISION_VERSION		21
+>>> +#define BCM_5710_FW_REVISION_VERSION_V15	15
+>>>    #define BCM_5710_FW_ENGINEERING_VERSION		0
+>>>    #define BCM_5710_FW_COMPILE_FLAGS			1
+>>>
+>>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>>> index aec666e..125dafe 100644
+>>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>>> @@ -74,9 +74,19 @@
+>>>    	__stringify(BCM_5710_FW_MINOR_VERSION) "."	\
+>>>    	__stringify(BCM_5710_FW_REVISION_VERSION) "."	\
+>>>    	__stringify(BCM_5710_FW_ENGINEERING_VERSION)
+>>> +
+>>> +#define FW_FILE_VERSION_V15				\
+>>> +	__stringify(BCM_5710_FW_MAJOR_VERSION) "."      \
+>>> +	__stringify(BCM_5710_FW_MINOR_VERSION) "."	\
+>>> +	__stringify(BCM_5710_FW_REVISION_VERSION_V15) "."	\
+>>> +	__stringify(BCM_5710_FW_ENGINEERING_VERSION)
+>>> +
+>>>    #define FW_FILE_NAME_E1		"bnx2x/bnx2x-e1-" FW_FILE_VERSION
+>> ".fw"
+>>>    #define FW_FILE_NAME_E1H	"bnx2x/bnx2x-e1h-"
+>> FW_FILE_VERSION ".fw"
+>>>    #define FW_FILE_NAME_E2		"bnx2x/bnx2x-e2-" FW_FILE_VERSION
+>> ".fw"
+>>> +#define FW_FILE_NAME_E1_V15	"bnx2x/bnx2x-e1-"
+>> FW_FILE_VERSION_V15 ".fw"
+>>> +#define FW_FILE_NAME_E1H_V15	"bnx2x/bnx2x-e1h-"
+>> FW_FILE_VERSION_V15 ".fw"
+>>> +#define FW_FILE_NAME_E2_V15	"bnx2x/bnx2x-e2-"
+>> FW_FILE_VERSION_V15 ".fw"
+>>>
+>>>    /* Time in jiffies before concluding the transmitter is hung */
+>>>    #define TX_TIMEOUT		(5*HZ)
+>>> @@ -747,9 +757,7 @@ static int bnx2x_mc_assert(struct bnx2x *bp)
+>>>    		  CHIP_IS_E1(bp) ? "everest1" :
+>>>    		  CHIP_IS_E1H(bp) ? "everest1h" :
+>>>    		  CHIP_IS_E2(bp) ? "everest2" : "everest3",
+>>> -		  BCM_5710_FW_MAJOR_VERSION,
+>>> -		  BCM_5710_FW_MINOR_VERSION,
+>>> -		  BCM_5710_FW_REVISION_VERSION);
+>>> +		  bp->fw_major, bp->fw_minor, bp->fw_rev);
+>>>
+>>>    	return rc;
+>>>    }
+>>> @@ -12308,6 +12316,15 @@ static int bnx2x_init_bp(struct bnx2x *bp)
+>>>
+>>>    	bnx2x_read_fwinfo(bp);
+>>>
+>>> +	if (IS_PF(bp)) {
+>>> +		rc = bnx2x_init_firmware(bp);
+>>> +
+>>> +		if (rc) {
+>>> +			bnx2x_free_mem_bp(bp);
+>>> +			return rc;
+>>> +		}
+>>> +	}
+>>> +
+>>>    	func = BP_FUNC(bp);
+>>>
+>>>    	/* need to reset chip if undi was active */ @@ -12320,6 +12337,7 @@
+>>> static int bnx2x_init_bp(struct bnx2x *bp)
+>>>
+>>>    		rc = bnx2x_prev_unload(bp);
+>>>    		if (rc) {
+>>> +			bnx2x_release_firmware(bp);
+>>>    			bnx2x_free_mem_bp(bp);
+>>>    			return rc;
+>>>    		}
+>>> @@ -13317,16 +13335,11 @@ static int bnx2x_check_firmware(struct
+>> bnx2x *bp)
+>>>    	/* Check FW version */
+>>>    	offset = be32_to_cpu(fw_hdr->fw_version.offset);
+>>>    	fw_ver = firmware->data + offset;
+>>> -	if ((fw_ver[0] != BCM_5710_FW_MAJOR_VERSION) ||
+>>> -	    (fw_ver[1] != BCM_5710_FW_MINOR_VERSION) ||
+>>> -	    (fw_ver[2] != BCM_5710_FW_REVISION_VERSION) ||
+>>> -	    (fw_ver[3] != BCM_5710_FW_ENGINEERING_VERSION)) {
+>>> +	if (fw_ver[0] != bp->fw_major || fw_ver[1] != bp->fw_minor ||
+>>> +	    fw_ver[2] != bp->fw_rev || fw_ver[3] != bp->fw_eng) {
+>>>    		BNX2X_ERR("Bad FW version:%d.%d.%d.%d. Should be
+>> %d.%d.%d.%d\n",
+>>> -		       fw_ver[0], fw_ver[1], fw_ver[2], fw_ver[3],
+>>> -		       BCM_5710_FW_MAJOR_VERSION,
+>>> -		       BCM_5710_FW_MINOR_VERSION,
+>>> -		       BCM_5710_FW_REVISION_VERSION,
+>>> -		       BCM_5710_FW_ENGINEERING_VERSION);
+>>> +			  fw_ver[0], fw_ver[1], fw_ver[2], fw_ver[3],
+>>> +			  bp->fw_major, bp->fw_minor, bp->fw_rev, bp-
+>>> fw_eng);
+>>>    		return -EINVAL;
+>>>    	}
+>>>
+>>> @@ -13404,34 +13417,51 @@ static void be16_to_cpu_n(const u8
+>> *_source, u8 *_target, u32 n)
+>>>    	     (u8 *)bp->arr, len);					\
+>>>    } while (0)
+>>>
+>>> -static int bnx2x_init_firmware(struct bnx2x *bp)
+>>> +int bnx2x_init_firmware(struct bnx2x *bp)
+>>>    {
+>>> -	const char *fw_file_name;
+>>> +	const char *fw_file_name, *fw_file_name_v15;
+>>>    	struct bnx2x_fw_file_hdr *fw_hdr;
+>>>    	int rc;
+>>>
+>>>    	if (bp->firmware)
+>>>    		return 0;
+>>>
+>>> -	if (CHIP_IS_E1(bp))
+>>> +	if (CHIP_IS_E1(bp)) {
+>>>    		fw_file_name = FW_FILE_NAME_E1;
+>>> -	else if (CHIP_IS_E1H(bp))
+>>> +		fw_file_name_v15 = FW_FILE_NAME_E1_V15;
+>>> +	} else if (CHIP_IS_E1H(bp)) {
+>>>    		fw_file_name = FW_FILE_NAME_E1H;
+>>> -	else if (!CHIP_IS_E1x(bp))
+>>> +		fw_file_name_v15 = FW_FILE_NAME_E1H_V15;
+>>> +	} else if (!CHIP_IS_E1x(bp)) {
+>>>    		fw_file_name = FW_FILE_NAME_E2;
+>>> -	else {
+>>> +		fw_file_name_v15 = FW_FILE_NAME_E2_V15;
+>>> +	} else {
+>>>    		BNX2X_ERR("Unsupported chip revision\n");
+>>>    		return -EINVAL;
+>>>    	}
+>>> +
+>>>    	BNX2X_DEV_INFO("Loading %s\n", fw_file_name);
+>>>
+>>>    	rc = request_firmware(&bp->firmware, fw_file_name, &bp->pdev->dev);
+>>>    	if (rc) {
+>>> -		BNX2X_ERR("Can't load firmware file %s\n",
+>>> -			  fw_file_name);
+>>> -		goto request_firmware_exit;
+>>> +		BNX2X_DEV_INFO("Trying to load older fw %s\n", fw_file_name_v15);
+>>> +
+>>> +		/* try to load prev version */
+>>> +		rc = request_firmware(&bp->firmware, fw_file_name_v15, +&bp->pdev->dev);
+>>> +
+>>> +		if (rc)
+>>> +			goto request_firmware_exit;
+>>> +
+>>> +		bp->fw_rev = BCM_5710_FW_REVISION_VERSION_V15;
+>>> +	} else {
+>>> +		bp->fw_cap |= FW_CAP_INVALIDATE_VF_FP_HSI;
+>>> +		bp->fw_rev = BCM_5710_FW_REVISION_VERSION;
+>>>    	}
+>>>
+>>> +	bp->fw_major = BCM_5710_FW_MAJOR_VERSION;
+>>> +	bp->fw_minor = BCM_5710_FW_MINOR_VERSION;
+>>> +	bp->fw_eng = BCM_5710_FW_ENGINEERING_VERSION;
+>>> +
+>>>    	rc = bnx2x_check_firmware(bp);
+>>>    	if (rc) {
+>>>    		BNX2X_ERR("Corrupt firmware file %s\n", fw_file_name); @@
+>> -13487,7
+>>> +13517,7 @@ static int bnx2x_init_firmware(struct bnx2x *bp)
+>>>    	return rc;
+>>>    }
+>>>
+>>> -static void bnx2x_release_firmware(struct bnx2x *bp)
+>>> +void bnx2x_release_firmware(struct bnx2x *bp)
+>>>    {
+>>>    	kfree(bp->init_ops_offsets);
+>>>    	kfree(bp->init_ops);
+>>> @@ -14004,6 +14034,7 @@ static int bnx2x_init_one(struct pci_dev *pdev,
+>>>    	return 0;
+>>>
+>>>    init_one_freemem:
+>>> +	bnx2x_release_firmware(bp);
+>>>    	bnx2x_free_mem_bp(bp);
+>>>
+>>>    init_one_exit:
+>>
+>> This change was added to Linux in commit b7a49f73059f (bnx2x: Utilize
+>> firmware 7.13.21.0) [1] to Linux v5.17-rc1, and backported to the stable
+>> series, for example, Linux v5.10.95.
+>>
+>> Due to CVE-2022-0847 (Dirty Pipe) [1] we updated systems from, for example,
+>> Linux 5.10.24 to Linux v5.10.103 and noticed that the Broadcom network
+>> devices failed to initialize.
+>>
+>> ```
+>> [   20.477325] bnx2 0000:02:00.0 eth0: Broadcom NetXtreme II BCM5709 1000Base-T (C0) PCI Express found at mem c6000000, IRQ 41, node addr c8:1f:66:cf:34:45
+>> [   20.491782] bnx2 0000:02:00.1 eth1: Broadcom NetXtreme II BCM5709 1000Base-T (C0) PCI Express found at mem c8000000, IRQ 42, node addr c8:1f:66:cf:34:47
+>> [   20.506223] bnx2 0000:03:00.0 eth2: Broadcom NetXtreme II BCM5709 1000Base-T (C0) PCI Express found at mem ca000000, IRQ 43, node addr c8:1f:66:cf:34:49
+>> [   20.520644] bnx2 0000:03:00.1 eth3: Broadcom NetXtreme II BCM5709 1000Base-T (C0) PCI Express found at mem cc000000, IRQ 44, node addr c8:1f:66:cf:34:4b
+>> [   20.534985] bnx2x 0000:45:00.0: msix capability found
+>> [   20.540342] bnx2x 0000:45:00.0: part number 394D4342-31373735-31314131-473331
+>> [   20.548605] bnx2x 0000:45:00.0: Direct firmware load for bnx2x/bnx2x-e1h-7.13.21.0.fw failed with error -2
+>> [   20.558373] bnx2x 0000:45:00.0: Direct firmware load for bnx2x/bnx2x-e1h-7.13.15.0.fw failed with error -2
+>> [   20.568319] bnx2x: probe of 0000:45:00.0 failed with error -2
+>> [   20.574148] bnx2x 0000:45:00.1: msix capability found
+>> [   20.579470] bnx2x 0000:45:00.1: part number 394D4342-31373735-31314131-473331
+>> [   20.587708] bnx2x 0000:45:00.1: Direct firmware load for bnx2x/bnx2x-e1h-7.13.21.0.fw failed with error -2
+>> [   20.597479] bnx2x 0000:45:00.1: Direct firmware load for bnx2x/bnx2x-e1h-7.13.15.0.fw failed with error -2
+>> [   20.607355] bnx2x: probe of 0000:45:00.1 failed with error -2
+>> [   20.613179] bnx2x 0000:46:00.0: msix capability found
+>> [   20.618501] bnx2x 0000:46:00.0: part number 394D4342-31373735-31314131-473331
+>> [   20.626805] bnx2x 0000:46:00.0: Direct firmware load for bnx2x/bnx2x-e1h-7.13.21.0.fw failed with error -2
+>> [   20.636580] bnx2x 0000:46:00.0: Direct firmware load for bnx2x/bnx2x-e1h-7.13.15.0.fw failed with error -2
+>> [   20.646453] bnx2x: probe of 0000:46:00.0 failed with error -2
+>> [   20.652279] bnx2x 0000:46:00.1: msix capability found
+>> [   20.657593] bnx2x 0000:46:00.1: part number 394D4342-31373735-31314131-473331
+>> [   20.665813] bnx2x 0000:46:00.1: Direct firmware load for bnx2x/bnx2x-e1h-7.13.21.0.fw failed with error -2
+>> [   20.675590] bnx2x 0000:46:00.1: Direct firmware load for bnx2x/bnx2x-e1h-7.13.15.0.fw failed with error -2
+>> [   20.685457] bnx2x: probe of 0000:46:00.1 failed with error -2
+>> ```
+>>
+>> Due to reasons, we do not have firmware in the initrd, and the firmware files
+>> are only the root partition in `/lib/firmware`.
+>>
+>> Logging in using other means¹, and removing the PCI devices, and rescanning
+>> brought the devices online.
+>>
+>>       $ echo 1 | sudo tee /sys/bus/pci/devices/0000\:{45,46}\:00.{0,1}/remove
+>>       $ echo 1 | sudo tee /sys/bus/pci/rescan
+>>
+>> Adding the firmware files to the initrd also fixes the issue.
+>>
+>> I didn’t bisect the change, but the refactoring of the init methods looks like the
+>> reason for the change of behavior. As it’s not documented in the commit
+>> message, was that intentional? I think it breaks Linux’ no regression rule, and
+>> the commit (and follow-ups) should be reverted in Linux v5.17 and backed out
+>> from the stable series.
+
+> The whole motivation of sending this v2 was to make FW backward compatible with older FW so that it doesn't break the system if someone updates the kernel,
+> however the initrd case was slipped which was fixed recently with below commit and should already be added to affected stable branches. You may want to apply this commit to resolve the problem.
+> 
+> commit e13ad1443684f7afaff24cf207e85e97885256bd
+> Author: Manish Chopra <manishc@marvell.com>
+> Date:   Wed Feb 23 00:57:20 2022 -0800
+> 
+>      bnx2x: fix driver load from initrd
+> 
+>      Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0") added
+>      new firmware support in the driver with maintaining older firmware
+>      compatibility. However, older firmware was not added in MODULE_FIRMWARE()
+>      which caused missing firmware files in initrd image leading to driver load
+>      failure from initrd. This patch adds MODULE_FIRMWARE() for older firmware
+>      version to have firmware files included in initrd.
+> 
+>      Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+>      Link: https://bugzilla.kernel.org/show_bug.cgi?id=215627
+>      Signed-off-by: Manish Chopra <manishc@marvell.com>
+>      Signed-off-by: Alok Prasad <palok@marvell.com>
+>      Signed-off-by: Ariel Elior <aelior@marvell.com>
+>      Link: https://lore.kernel.org/r/20220223085720.12021-1-manishc@marvell.com
+>      Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+I am aware of this commit, and it’s in Linux 5.10.103, we built and 
+used. It’s not about firmware version 7.13.15.0 not being loaded, but as 
+written, about the code being changed, so the firmware files are 
+required earlier now. For unknown reasons to me `bnx2x_init_firmware()` 
+is now also called in `bnx2x_init_bp()`, which is probably an earlier 
+code path. (I do not know the driver, so please take everything I write 
+with a grain of salt.)
+
+[…]
+
+
+Kind regards,
+
+Paul
+
+
+>> ¹ Why can’t even without proper firmware, the card at least initialize to have a
+>> network connection even if it’s degraded?
