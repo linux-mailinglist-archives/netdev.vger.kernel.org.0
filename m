@@ -2,56 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7800F4D256C
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:14:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 212BD4D25B6
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbiCIBJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 20:09:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55818 "EHLO
+        id S229603AbiCIBCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 20:02:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbiCIBJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:09:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7950614CC8E;
-        Tue,  8 Mar 2022 16:51:55 -0800 (PST)
+        with ESMTP id S229583AbiCIBCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:02:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989A326B5A3;
+        Tue,  8 Mar 2022 16:40:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 133BB6131F;
-        Wed,  9 Mar 2022 00:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F04C340EB;
-        Wed,  9 Mar 2022 00:28:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ED47612F0;
+        Wed,  9 Mar 2022 00:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DFB9C340EB;
+        Wed,  9 Mar 2022 00:40:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646785683;
-        bh=7ts5yK9dKmm0RkdfCHFJSloLAhqqU7Px2Yg0dWLSehQ=;
+        s=k20201202; t=1646786426;
+        bh=td/REnltt/bdfkFO3iQ1pNa5fzMHBJX93HnYjIUNMU0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ATv15O2qyedqsb3YuOb+pBi9rlcdHwsQyp5MYExREL36OJLhpjs0c/jingYsBhxOp
-         LJE+8VdSlqsVvLTNVhILrTD80c0ttZ+b5qUAAQkqoYrO5TQ7achOli2LFW0qh2BfQo
-         zjfSikWfy042N+t+s2LLzcWQ3wkENXY2gRPGmnj6yLTueKYz3ahBZxAWgfdLsvIXad
-         t7zUVoK5dFhH05qJeyOmUQbXdeJBedmg3ZIubEWMYc9fyuv0x9ha4JySgJglhX7ahj
-         W4VZeGq92x4nI014iRF6vWc1Aif/RNO4npy0YZYQpy1u0U8lde62YU46dzALdMvc6l
-         MqQqIJ43/ygvw==
-Date:   Tue, 8 Mar 2022 16:28:02 -0800
+        b=ts0iiMK/LYgr5rc7RY5U3A8NnMAovEaaS73DZr34O+wVOTcSdSKsR1X3z649tFqLE
+         6/FNGf8SK9ISttNNHTCR+nvmP+Jt+viPEfHxxvZgskWyAfutOVHhKAQw7O76sQjhNW
+         ygtEoBhIRsxADOtxPEig3LBtt9Uj8D1a4jik129qzlOj6B+u0KvptshvxHj4rHkshD
+         p95uuimevOO+c39T+i99lUTK83ssNIIAB2eKedUAv20+5jLMjhEB1vVZnW4zfA/5Ce
+         ybW2vwLAG+lk1w9lIGk7vQhhqtaSdh8CEVdyRVvt7wpqoBM/AAgGtm7fDlxEL/4XSP
+         hKwMlyNnQ+mTA==
+Date:   Tue, 8 Mar 2022 16:40:24 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Jeffrey Ji <jeffreyjilinux@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Brian Vazquez <brianvv@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        jeffreyji <jeffreyji@google.com>
-Subject: Re: [PATCH v3 net-next] net-core: add rx_otherhost_dropped counter
-Message-ID: <20220308162802.0ecec1bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iKvP-8VpOrf_ppVVgsd4kQtAEFWkBVxKW4BP+rtu_Egrw@mail.gmail.com>
-References: <20220308212531.752215-1-jeffreyjilinux@gmail.com>
-        <d1b25466-6f83-591e-39a6-8fdbd56846fb@kernel.org>
-        <CANn89iKvP-8VpOrf_ppVVgsd4kQtAEFWkBVxKW4BP+rtu_Egrw@mail.gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <davem@davemloft.net>
+Subject: Re: [PATCH net-next] net: lan966x: Improve the CPU TX bitrate.
+Message-ID: <20220308164024.5f65b426@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
+References: <20220308165727.4088656-1-horatiu.vultur@microchip.com>
+        <YifMSUA/uZoPnpf1@lunn.ch>
+        <20220308223000.vwdc6tk6wa53x64c@soft-dev3-1.localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -65,24 +56,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Mar 2022 15:18:25 -0800 Eric Dumazet wrote:
-> > that's an expensive packet counter for a common path (e.g., hosting
-> > environments).  
+On Tue, 8 Mar 2022 23:30:00 +0100 Horatiu Vultur wrote:
+> > >  static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
+> > >  {
+> > > -     u32 val;
+> > > +     unsigned long time = jiffies + usecs_to_jiffies(READL_TIMEOUT_US);
+> > > +     int ret = 0;
+> > >
+> > > -     return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
+> > > -                                      QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
+> > > -                                      READL_SLEEP_US, READL_TIMEOUT_US);
+> > > +     while (!(lan_rd(lan966x, QS_INJ_STATUS) &
+> > > +              QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))) {
+> > > +             if (time_after(jiffies, time)) {
+> > > +                     ret = -ETIMEDOUT;
+> > > +                     break;
+> > > +             }  
+> > 
+> > Did you try setting READL_SLEEP_US to 0? readx_poll_timeout_atomic()
+> > explicitly supports that.  
 > 
-> This was the reason for the initial patch, using SNMP stat, being per cpu.
-> 
-> Adding per-device per-cpu data for this counter will increase cost of
-> netdevice dismantle phase,
-> and increase time for ndo_get_stats64(), especially on hosts with 256
-> or 512 cpus.
+> I have tried but it didn't improve. It was the same as before.
 
-Two ways to solve this:
- - make dev->pcpu_refcnt point to a structure which holds both
-   refcnt and whatever stats
- - combine these stats into lstats, assuming the netdevs we care
-   about spawning / destroying fast are sw devices anyway;
-   struct rtnl_link_ops can indicate to the core if the driver
-   wants lstats (or just put how many bytes it wants), otherwise 
-   we'd only allocate enough mem for core's stats
-
-Option three - both.
+Huh, is ktime_get() super expensive on that platform?
+jiffies vs ktime seems to be the main difference?
