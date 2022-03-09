@@ -2,178 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF714D3CFD
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 148754D3D03
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238703AbiCIWeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 17:34:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35622 "EHLO
+        id S237314AbiCIWfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 17:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238705AbiCIWdx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:33:53 -0500
-Received: from smtp7.emailarray.com (smtp7.emailarray.com [65.39.216.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47422DD5B
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:32:53 -0800 (PST)
-Received: (qmail 31806 invoked by uid 89); 9 Mar 2022 22:32:52 -0000
+        with ESMTP id S232123AbiCIWf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:35:29 -0500
+Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB51121685
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:34:29 -0800 (PST)
+Received: (qmail 24358 invoked by uid 89); 9 Mar 2022 22:34:28 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp7.emailarray.com with SMTP; 9 Mar 2022 22:32:52 -0000
+  by smtp1.emailarray.com with SMTP; 9 Mar 2022 22:34:28 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com,
         kernel-team@fb.com
-Subject: [PATCH net-next v1 10/10] docs: ABI: Document new timecard sysfs nodes.
-Date:   Wed,  9 Mar 2022 14:32:37 -0800
-Message-Id: <20220309223237.34507-11-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next] ptp: ocp: add UPF_NO_THRE_TEST flag for serial ports
+Date:   Wed,  9 Mar 2022 14:34:27 -0800
+Message-Id: <20220309223427.34745-1-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220309223237.34507-1-jonathan.lemon@gmail.com>
-References: <20220309223237.34507-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
         FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add sysfs nodes for the frequency generator and signal counters.
+From: Jonathan Lemon <bsd@fb.com>
 
-Update SMA selector lists for these, and also add the new
-'None', 'VCC' 'GND' selectors.
+The serial port driver attempts to test for correct THRE behavior
+on startup.  However, it does this by disabling interrupts, and
+then intentionally trying to trigger an interrupt in order to see
+if the IIR bit is set in the UART.
+
+However, in this FPGA design, the UART interrupt is generated
+through the MSI vector, so when interrupts are re-enabled after
+the test, the DMAR-IR reports an unhandled IRTE entry, since
+no irq handler is installed at this point - it is installed
+after the test.
+
+This only happens on the /second/ open of the UART, since on the
+first open, the x86_vector has installed and activated by the
+driver probe, and is correctly handled.  When the serial port is
+closed for the first time, this vector is deactivated and removed,
+leading to this error.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-timecard | 94 +++++++++++++++++++++++-
- 1 file changed, 93 insertions(+), 1 deletion(-)
+ drivers/ptp/ptp_ocp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-timecard b/Documentation/ABI/testing/sysfs-timecard
-index 5bf78486a469..220478156297 100644
---- a/Documentation/ABI/testing/sysfs-timecard
-+++ b/Documentation/ABI/testing/sysfs-timecard
-@@ -37,8 +37,15 @@ Description:	(RO) Set of available destinations (sinks) for a SMA
-                 PPS2   signal is sent to the PPS2 selector
-                 TS1    signal is sent to timestamper 1
-                 TS2    signal is sent to timestamper 2
-+                TS3    signal is sent to timestamper 3
-+                TS4    signal is sent to timestamper 4
-                 IRIG   signal is sent to the IRIG-B module
-                 DCF    signal is sent to the DCF module
-+                FREQ1  signal is sent to frequency counter 1
-+                FREQ2  signal is sent to frequency counter 2
-+                FREQ3  signal is sent to frequency counter 3
-+                FREQ4  signal is sent to frequency counter 4
-+                None   signal input is disabled
-                 =====  ================================================
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 36c09269a12d..64cc92c2426b 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -1752,7 +1752,7 @@ ptp_ocp_serial_line(struct ptp_ocp *bp, struct ocp_resource *r)
+ 	uart.port.mapbase = pci_resource_start(pdev, 0) + r->offset;
+ 	uart.port.irq = pci_irq_vector(pdev, r->irq_vec);
+ 	uart.port.uartclk = 50000000;
+-	uart.port.flags = UPF_FIXED_TYPE | UPF_IOREMAP;
++	uart.port.flags = UPF_FIXED_TYPE | UPF_IOREMAP | UPF_NO_THRE_TEST;
+ 	uart.port.type = PORT_16550A;
  
- What:		/sys/class/timecard/ocpN/available_sma_outputs
-@@ -50,10 +57,16 @@ Description:	(RO) Set of available sources for a SMA output signal.
-                 10Mhz  output is from the 10Mhz reference clock
-                 PHC    output PPS is from the PHC clock
-                 MAC    output PPS is from the Miniature Atomic Clock
--                GNSS   output PPS is from the GNSS module
-+                GNSS1  output PPS is from the first GNSS module
-                 GNSS2  output PPS is from the second GNSS module
-                 IRIG   output is from the PHC, in IRIG-B format
-                 DCF    output is from the PHC, in DCF format
-+                GEN1   output is from frequency generator 1
-+                GEN2   output is from frequency generator 2
-+                GEN3   output is from frequency generator 3
-+                GEN4   output is from frequency generator 4
-+                GND    output is GND
-+                VCC    output is VCC
-                 =====  ================================================
- 
- What:		/sys/class/timecard/ocpN/clock_source
-@@ -75,6 +88,85 @@ Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
- Description:	(RO) Contains the current offset value used by the firmware
- 		for internal disciplining of the atomic clock.
- 
-+What:		/sys/class/timecard/ocpN/freqX
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Optional directory containing the sysfs nodes for
-+		frequency counter <X>.
-+
-+What:		/sys/class/timecard/ocpN/freqX/frequency
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Contains the measured frequency over the specified
-+		measurement period.
-+
-+What:		/sys/class/timecard/ocpN/freqX/seconds
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) Specifies the number of seconds from 0-255 that the
-+		frequency should be measured over.  Write 0 to disable.
-+
-+What:		/sys/class/timecard/ocpN/genX
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Optional directory containing the sysfs nodes for
-+		frequency generator <X>.
-+
-+What:		/sys/class/timecard/ocpN/genX/duty
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Specifies the signal duty cycle as a percentage from 1-99.
-+
-+What:		/sys/class/timecard/ocpN/genX/period
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Specifies the signal period in nanoseconds.
-+
-+What:		/sys/class/timecard/ocpN/genX/phase
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Specifies the signal phase offset in nanoseconds.
-+
-+What:		/sys/class/timecard/ocpN/genX/polarity
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Specifies the signal polarity, either 1 or 0.
-+
-+What:		/sys/class/timecard/ocpN/genX/running
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Either 0 or 1, showing if the signal generator is running.
-+
-+What:		/sys/class/timecard/ocpN/genX/start
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RO) Shows the time in <sec>.<nsec> that the signal generator
-+		started running.
-+
-+What:		/sys/class/timecard/ocpN/genX/signal
-+Date:		March 2022
-+Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
-+Description:	(RW) Used to start the signal generator, and summarize
-+		the current status.
-+
-+		The signal generator may be started by writing the signal
-+		period, followed by the optional signal values.  If the
-+		optional values are not provided, they default to the current
-+		settings, which may be obtained from the other sysfs nodes.
-+
-+		    period [duty [phase [polarity]]]
-+
-+		echo 500000000 > signal       # 1/2 second period
-+		echo 1000000 40 100 > signal
-+		echo 0 > signal               # turn off generator
-+
-+		Period and phase are specified in nanoseconds.  Duty cycle is
-+		a percentage from 1-99.  Polarity is 1 or 0.
-+
-+		Reading this node will return:
-+
-+		    period duty phase polarity start_time
-+
- What:		/sys/class/timecard/ocpN/gnss_sync
- Date:		September 2021
- Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
+ 	return serial8250_register_8250_port(&uart);
 -- 
 2.31.1
 
