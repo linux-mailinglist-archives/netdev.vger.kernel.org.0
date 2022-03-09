@@ -2,57 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B7B4D2519
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:13:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCAE14D2541
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 02:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbiCIBKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Mar 2022 20:10:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
+        id S229874AbiCIBGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Mar 2022 20:06:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiCIBJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:09:38 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B5F14A6FC
-        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 16:52:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646787144; x=1678323144;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=upZnuL9o5gbwESwldHYTCi8wS/m5269IkZ2mDCgxPjE=;
-  b=cY4asAmYe+CCgBqoFMFLIZCNJrHDW87VwABjs9plnr5EAh+OebHBTWWI
-   GP/IhLRboFS9d0amcCD7h/3GYSwjyDPeHyD/hrxD5WJotkmU+JWPAGbEW
-   QOZ1LvvyKJjEtR7Kc0jYm+PFwJkgELbIzAww9QIMg2xxacv+TwpGOLSE7
-   faPh+Zk0lSgBWUOvCnNBK3vQeNcM4E+pqdewcmBqe3UOVrClwAvIKSoyJ
-   +GAJ/7HU5CFZSalhSKQa3KtqbtNKANc/rVk5hvMMo+9/i2xVvaAT62Ze3
-   gnWT7pFqt+IdCleG2XExGlYcA6OtSt896e6qfygDNVdoMVIA5VEZM94/p
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="341273493"
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="341273493"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 15:44:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
-   d="scan'208";a="537778712"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga007.jf.intel.com with ESMTP; 08 Mar 2022 15:44:54 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net v2 4/7] ice: stop disabling VFs due to PF error responses
-Date:   Tue,  8 Mar 2022 15:45:10 -0800
-Message-Id: <20220308234513.1089152-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220308234513.1089152-1-anthony.l.nguyen@intel.com>
-References: <20220308234513.1089152-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229763AbiCIBGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Mar 2022 20:06:08 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30FE145E18;
+        Tue,  8 Mar 2022 16:45:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646786722; x=1678322722;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=keyAJb6A5NPJJZZCWIJLthBI4AdiJa40DZ7S3GIHMrU=;
+  b=LZkhgbglOnIIedL+zx7HWB8iGr38V54updzBUpfDUDWk0tL2ryH8YhJo
+   VjZi1Eq3n9vhxdzXIufTmAEA5mbaRIqimlpBYrjNgpbLxNw6Aw2znMYcF
+   Msty4iozTX/XVi+sc7dXfIgdStfsbn+6pctjv3/QPhVW1Ds+VaXf2DhMT
+   o=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Mar 2022 16:05:12 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 16:05:11 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 8 Mar 2022 16:05:11 -0800
+Received: from [10.111.182.121] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 8 Mar 2022
+ 16:05:10 -0800
+Message-ID: <b69308a5-0d29-6b48-833c-f3eacfe03b08@quicinc.com>
+Date:   Tue, 8 Mar 2022 16:05:09 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] ath10k: Fix error handling in ath10k_setup_msa_resources
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Rakesh Pillai" <pillair@codeaurora.org>,
+        <ath10k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220308070238.19295-1-linmq006@gmail.com>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <20220308070238.19295-1-linmq006@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,103 +68,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+On 3/7/2022 11:02 PM, Miaoqian Lin wrote:
+> The device_node pointer is returned by of_parse_phandle()  with refcount
 
-The ice_vc_send_msg_to_vf function has logic to detect "failure"
-responses being sent to a VF. If a VF is sent more than
-ICE_DFLT_NUM_INVAL_MSGS_ALLOWED then the VF is marked as disabled.
-Almost identical logic also existed in the i40e driver.
+Kalle, can you fix this nit when you apply?  remove extra space after ()
 
-This logic was added to the ice driver in commit 1071a8358a28 ("ice:
-Implement virtchnl commands for AVF support") which itself copied from
-the i40e implementation in commit 5c3c48ac6bf5 ("i40e: implement virtual
-device interface").
+> incremented. We should use of_node_put() on it when done.
+> 
+> This function only calls of_node_put() in the regular path.
+> And it will cause refcount leak in error path.
+> 
+> Fixes: 727fec790ead ("ath10k: Setup the msa resources before qmi init")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>   drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+> index 9513ab696fff..f79dd9a71690 100644
+> --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> @@ -1556,11 +1556,11 @@ static int ath10k_setup_msa_resources(struct ath10k *ar, u32 msa_size)
+>   	node = of_parse_phandle(dev->of_node, "memory-region", 0);
+>   	if (node) {
+>   		ret = of_address_to_resource(node, 0, &r);
+> +		of_node_put(node);
+>   		if (ret) {
+>   			dev_err(dev, "failed to resolve msa fixed region\n");
+>   			return ret;
+>   		}
+> -		of_node_put(node);
+>   
+>   		ar->msa.paddr = r.start;
+>   		ar->msa.mem_size = resource_size(&r);
 
-Neither commit provides a proper explanation or justification of the
-check. In fact, later commits to i40e changed the logic to allow
-bypassing the check in some specific instances.
-
-The "logic" for this seems to be that error responses somehow indicate a
-malicious VF. This is not really true. The PF might be sending an error
-for any number of reasons such as lack of resources, etc.
-
-Additionally, this causes the PF to log an info message for every failed
-VF response which may confuse users, and can spam the kernel log.
-
-This behavior is not documented as part of any requirement for our
-products and other operating system drivers such as the FreeBSD
-implementation of our drivers do not include this type of check.
-
-In fact, the change from dev_err to dev_info in i40e commit 18b7af57d9c1
-("i40e: Lower some message levels") explains that these messages
-typically don't actually indicate a real issue. It is quite likely that
-a user who hits this in practice will be very confused as the VF will be
-disabled without an obvious way to recover.
-
-We already have robust malicious driver detection logic using actual
-hardware detection mechanisms that detect and prevent invalid device
-usage. Remove the logic since its not a documented requirement and the
-behavior is not intuitive.
-
-Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c   | 18 ------------------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h   |  3 ---
- 2 files changed, 21 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 408f78e3eb13..1be3cd4b2bef 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -2182,24 +2182,6 @@ ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
- 
- 	dev = ice_pf_to_dev(pf);
- 
--	/* single place to detect unsuccessful return values */
--	if (v_retval) {
--		vf->num_inval_msgs++;
--		dev_info(dev, "VF %d failed opcode %d, retval: %d\n", vf->vf_id,
--			 v_opcode, v_retval);
--		if (vf->num_inval_msgs > ICE_DFLT_NUM_INVAL_MSGS_ALLOWED) {
--			dev_err(dev, "Number of invalid messages exceeded for VF %d\n",
--				vf->vf_id);
--			dev_err(dev, "Use PF Control I/F to enable the VF\n");
--			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
--			return -EIO;
--		}
--	} else {
--		vf->num_valid_msgs++;
--		/* reset the invalid counter, if a valid message is received. */
--		vf->num_inval_msgs = 0;
--	}
--
- 	aq_ret = ice_aq_send_msg_to_vf(&pf->hw, vf->vf_id, v_opcode, v_retval,
- 				       msg, msglen, NULL);
- 	if (aq_ret && pf->hw.mailboxq.sq_last_status != ICE_AQ_RC_ENOSYS) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 752487a1bdd6..8f27255cc0cc 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -14,7 +14,6 @@
- #define ICE_MAX_MACADDR_PER_VF		18
- 
- /* Malicious Driver Detection */
--#define ICE_DFLT_NUM_INVAL_MSGS_ALLOWED		10
- #define ICE_MDD_EVENTS_THRESHOLD		30
- 
- /* Static VF transaction/status register def */
-@@ -134,8 +133,6 @@ struct ice_vf {
- 	unsigned int max_tx_rate;	/* Maximum Tx bandwidth limit in Mbps */
- 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
- 
--	u64 num_inval_msgs;		/* number of continuous invalid msgs */
--	u64 num_valid_msgs;		/* number of valid msgs detected */
- 	unsigned long vf_caps;		/* VF's adv. capabilities */
- 	u8 num_req_qs;			/* num of queue pairs requested by VF */
- 	u16 num_mac;
--- 
-2.31.1
-
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
