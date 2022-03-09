@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B792C4D2FA7
+	by mail.lfdr.de (Postfix) with ESMTP id 2116D4D2FA5
 	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 14:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbiCINEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 08:04:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
+        id S232931AbiCINEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 08:04:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbiCINED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 08:04:03 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2081.outbound.protection.outlook.com [40.107.220.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDF866F90
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 05:03:04 -0800 (PST)
+        with ESMTP id S231963AbiCINEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 08:04:08 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2075.outbound.protection.outlook.com [40.107.243.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A50566AC9
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 05:03:09 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YWueZZElUj+ikH4ViVVe3P9q+ME9nVl0RRy+6ZriRQKr3Rik+Uoy8yFknYen8wON4FNfZF61xjawRPV/7DVhdxt6AfMuX78Gc69EhexxTS3GET4kjZ7etDSv2EbOOOnLmr0XMrZZ2YTQ532W0kQJxYFYw3hmvygWmX6FgK9wPv+nBLzlbDipmmqPAL1bnob8eIC4V/FKVaJmm0FWfFr2rZwJMUNydT3bQHQ+ydRbrxqaoIg6fvnINW/BOEw3lEx36LwsQ/LnvnKWHuDu+XVFIgdKFo8++RhBJUNumVZQTbkLx+EDHZpTWVlOTrjtyY0bpCv1FS6XQU0mBYjgETqwkQ==
+ b=Ld14CPxBP60iear8FchjBNmPxQbFYy32rlfjYVX7G+zI/U4T33AyPaEQDRw1pZIQ0T9RH82Un88RAltDFUDxIgNJnP1sjHJgO9WbDEP7/7lsoPodXk1ZzKZxO3TlzIwLGXScBOpv4PDhsKuu+Ihmn0Tz9yBc7MP6rqMhRTDjNygch7IXtn2f9jtIteGL9jEH5SBHXakwebQ2yVDB5qh9SVCIfB57OeQj0JrIBIc/vMT+rhTQ+eEt3ZrVQCJ6M9r1KIkuwLHHYUdVZg25KiEQrXAn0rckEwAnaT/eitYKnynYYg1IQ6T/GzMtLOvyvd1a3X01AkSaFZvj97+0wySs+Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lSUDETdFc80kZMuXunIJn43r/+zzAgTGR7Iuzs6s9ms=;
- b=U8RTQ6AA1NL0NnCIiQUSVo+23BzgsyoRl2o5lKaJKd/QZg51erlrOzmYPvIawncgkrN+l+lUiQvf0eBQTrKnW5f2mpOItVmMtzQdydQQLAbV45uEXFsLoD7hq6dqnLb/g0WSeEfyQnTAyjWRj+KcRDnjEbRx5cvU7HQIk7ZILFEbJfKH8hy2DmFHoV5T5ybKJMIoQxD9FxHPM3i3H+Z4FU77FAgfu3yCbOc5DSwh0Ic4CtJDK/DQxbMATmhFg+jCEBSX2yY8SSCEeRMRezXqxIL0PiF/gwPvGPlhAWSk4ygNjKPSX2NLvC0Kwvdlfh/65J4IbGBp572LRXNmMQO10g==
+ bh=+m0hhEiqWR+lJhXWxPiOVcc9YqljxJa7FXxvDy7jIlM=;
+ b=Ap3Y2BGfukh8Rbcmd5aNg14tMefaaNCa+d/sGSgjZl5zC3LOAUBro81MDSJrQkW5LasuzJUkZ0AEOP8ZpKPbwxmLzHsB5aZEh8Zs9yUg29n42pExwxk9/gryP59zZPwR6E3J2qwlQcx0YGmUB4vXVOpI4uXTjGCTxNw/NeTqrotBmA3zpJJPh5ljYREpo5hF2ykG2TPGgjFbGGa0k1b4qk11x6vAX3lvD2pZvt31slUeEBdI9aAMaNObOuE7Cr0OnSuO0i9YYRiHCAI5y4b5B9zzy2r4MRvXO7OpS3I7xEIxLOERZz5eiLRDM7+cEX4+d1CLTreEtLQF0QZ26v1I4g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  12.22.5.234) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lSUDETdFc80kZMuXunIJn43r/+zzAgTGR7Iuzs6s9ms=;
- b=R9mFK9RmcS2ORIjrSMa+m1XUROVRqPRW8iSR2/4XMu5uGACxvP8fWlBkgcDH3ERTAWHRP1j3N/+XSzIZhDJUzOZuE+yuOxRBaP9Ca81Co/9TbnXZ/ujfsYzG6dMxCQFOZfpRs9UFla/OfW4qjK2h4umYim3fBN4lL8VlcOfGJQMg6Mq7bjNuUSSUgonIrhk6Q1eEMHajY+2iZMdxOE4QYUL9B691MCHg3s4fCqYWHo1rtitmnfH+GjWUp/BNKkpkipJt58ws+/Up8/yDiaGqD6mJSNZWMDH9oIzOXPbgUoRkBaDQBofKdq+F1rrE50PJWqvPZD7loCzxNsfniMwkwg==
-Received: from BN9PR03CA0977.namprd03.prod.outlook.com (2603:10b6:408:109::22)
- by CH2PR12MB4889.namprd12.prod.outlook.com (2603:10b6:610:68::16) with
+ bh=+m0hhEiqWR+lJhXWxPiOVcc9YqljxJa7FXxvDy7jIlM=;
+ b=qV7s9ie1ZF/wcfFbQKMi+nfaLDyy3JwcsjTg3eOigGHJm5pX1FulOSu2DyMqqdgneiw+bszl8iW8OPN5T2QG5UdlqSiGVgakdAPAy9hhKe7WaPybrNVOXqxlnZcIz1vqLw49xykSKVoP/VkgGQjx0V2VYEpvrMULbsI4mclGbn8A7+zLwspuw7MBTXbhakfNBEzW7CyeqPMQ/VnMOKoTZ9yB2gPqGKy5QfQl9GPPWooa7mFC+NYISrjXKMj/wq0jVuGf45eAUiUhIBNSkqjU4q/hZnDhmt0wLC9GPGagmgRpn+Xa/QI3UBgWR2chjIgUE0bq/4JUCy3aFvnnvD6lOQ==
+Received: from BN1PR13CA0021.namprd13.prod.outlook.com (2603:10b6:408:e2::26)
+ by MN2PR12MB4799.namprd12.prod.outlook.com (2603:10b6:208:a2::26) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
- 2022 13:03:02 +0000
-Received: from BN8NAM11FT015.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:109:cafe::77) by BN9PR03CA0977.outlook.office365.com
- (2603:10b6:408:109::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Wed, 9 Mar 2022 13:03:02 +0000
+ 2022 13:03:06 +0000
+Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e2:cafe::16) by BN1PR13CA0021.outlook.office365.com
+ (2603:10b6:408:e2::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.7 via Frontend
+ Transport; Wed, 9 Mar 2022 13:03:06 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,52 +47,54 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  12.22.5.234 as permitted sender) receiver=protection.outlook.com;
  client-ip=12.22.5.234; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT015.mail.protection.outlook.com (10.13.176.90) with Microsoft SMTP
+ BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5038.14 via Frontend Transport; Wed, 9 Mar 2022 13:03:02 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
+ 15.20.5038.14 via Frontend Transport; Wed, 9 Mar 2022 13:03:05 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
  (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 9 Mar
- 2022 13:03:01 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 13:03:04 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Wed, 9 Mar 2022
- 05:03:00 -0800
+ 05:03:02 -0800
 Received: from dev-r-vrt-138.mtr.labs.mlnx (10.127.8.10) by mail.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Wed, 9 Mar 2022 05:02:58 -0800
+ Transport; Wed, 9 Mar 2022 05:03:00 -0800
 From:   Roi Dayan <roid@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>,
         "Jakub Kicinski" <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         "Jamal Hadi Salim" <jhs@mojatatu.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next 0/3] flow_offload: add tc vlan push_eth and pop_eth actions
-Date:   Wed, 9 Mar 2022 15:02:53 +0200
-Message-ID: <20220309130256.1402040-1-roid@nvidia.com>
+Subject: [PATCH net-next 1/3] net/sched: add vlan push_eth and pop_eth action to the hardware IR
+Date:   Wed, 9 Mar 2022 15:02:54 +0200
+Message-ID: <20220309130256.1402040-2-roid@nvidia.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220309130256.1402040-1-roid@nvidia.com>
+References: <20220309130256.1402040-1-roid@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 570b2cde-83d9-432e-fc01-08da01cd24bd
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4889:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB4889661C901EA14C971B7167B80A9@CH2PR12MB4889.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: e9b608d6-df75-456a-8c6d-08da01cd26a3
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4799:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB479901A1D5316B6ABF72D6C9B80A9@MN2PR12MB4799.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 58YdpbCpnTAr82+FK64Tz2NwgvQdOKhzCg2fJRbIYTTMvwqcaRg4dbaqfrI2fVG09sFzwRrRc2ruGrAiO2PeT4ol2hbmEXDQ7PDvSVI4OHP9jzjZqCHj8NSkYg1rWQ4AdOtY6Q6grSxr9XjhtaY7VrNnnifs7l7QIeyMJjYxAAYnlqPIl+OuOEWSxmexkJGLnNqpkm/4sC3t0EZNCORGOmiGVIhkg9V1LZFW3XTxf/TZ5sKJSyjY9WCH6n9cU5nKDVKIDsxibUR5jcETOQmwKopBpi596kvHJXXvODwZ5XgG+6/crOVSvlqgmysB+isbvvucYWH2qWbcH0A/bsE9NoVRNXtfjfu6d0HDBVszhPYgfjn8Mmy4E5mdQCqH1oCMv8npt2EmYidzYZJSwBPlIyhg0Gc/+Z7drDcNbaTT2YfJXLGWlFMdlbWzYGkpfe7fq8bn7m4gQghRIfZuMgNOH3E0Ad+JR2QO0ilXoThGpIeRk75A/ZeGDyGfLDGOq8iTG5J6SaprW84r+uO0xLSXpQVgs00nvGZqgsfabg0HyoIpTtEIuG3u7c5QYbNl2xKLVyz6d5kYIiUmmxrAf46l4p7R5/Dy7gd7jpOSDwXVJavqZzRGIuo19Jdiek2sDO91eEST4spBIJUqKiywANujyE5DNim/YufBsmng+v+92WyL/jZ9u1dSEDDfZq3FRR67tZQ7tLA4KLtWHELVA6BsBQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(2906002)(426003)(336012)(86362001)(40460700003)(26005)(186003)(316002)(54906003)(6916009)(1076003)(107886003)(2616005)(36860700001)(81166007)(82310400004)(356005)(83380400001)(70586007)(8676002)(4326008)(70206006)(508600001)(47076005)(36756003)(5660300002)(8936002)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8HMlu6YxPPI7PdhC10UyIKeUyym79eNF37zw6zg3TsBDTyL67F8Yfj3/AjL6WBuOlDEVLvh+Q9thJNhj97OQijC79HcphPyoIb1nE+zBpDOmrKwXXCely0L3RxZZ1zGgNXNHTgXFW92WNQSOviDL3ztGYOJ8dhCax2WBwXkziM1jttxhIzsToyZcUhI1ztMNyv22lokmxTKSOB7k5jzTK4UxPXr25crQEdGEoMIE6DcrOuKaek2ntfRIerN22INbLQLdj2EnmguQRAdnLB7hzpaYTmU4qBNQBxc84cxQPWUkd8WWe8QWXJFax4h4gxY9ouUZy3kOP4FA39t85avjdzv1w+YBviJEbmVqzselclpiHtS2qZDFd49sZi+dGmF056Stf2c8IB22mtHJqC847GUhv41BUWqt+FT/wlyBg/96levdHvCmSHYDq1KQlI0IYpnH9dnkrfrRhrADWmnYyJMxKjVozcVBPB2lrHZaDzij7ZJkmUFUUqEs294hckAw4zxmypOmLL9o2kGJZxkLNny7S61OzNb9ulwU2ZTqem9aB4QRe/fE+v/1r0w4VxgOWCCURUn9eAiFHYpjncYLqLR4eXM+6aWkPYOv2emVXk9Sn4pLbqYEqeqBHV8jM4y3fpQf1gHdyvcWhCv7LWaeJwx/M4zzdoWkjsxWd674qy1NTeHWg+HAuP0mmRRp0mCY+sJ/DsuLhYBtVGQgT7D7Kw==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(4326008)(8936002)(26005)(336012)(6666004)(8676002)(54906003)(40460700003)(1076003)(6916009)(5660300002)(186003)(426003)(83380400001)(36756003)(2906002)(2616005)(81166007)(86362001)(356005)(107886003)(82310400004)(36860700001)(508600001)(70206006)(70586007)(47076005)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 13:03:02.0981
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2022 13:03:05.2803
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 570b2cde-83d9-432e-fc01-08da01cd24bd
+X-MS-Exchange-CrossTenant-Network-Message-Id: e9b608d6-df75-456a-8c6d-08da01cd26a3
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT015.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4889
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4799
 X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -103,32 +105,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Offloading vlan push_eth and pop_eth actions is needed in order to
-correctly offload MPLSoUDP encap and decap flows, this series extends
-the flow offload API to support these actions and updates mlx5 to
-parse them.
+From: Maor Dickman <maord@nvidia.com>
 
-Maor Dickman (3):
-  net/sched: add vlan push_eth and pop_eth action to the hardware IR
-  net/mlx5e: MPLSoUDP decap, use vlan push_eth instead of pedit
-  net/mlx5e: MPLSoUDP encap, support action vlan pop_eth explicitly
+Add vlan push_eth and pop_eth action to the hardware intermediate
+representation model which would subsequently allow it to be used
+by drivers for offload.
 
- .../mellanox/mlx5/core/en/tc/act/act.c        |  7 +++
- .../mellanox/mlx5/core/en/tc/act/act.h        |  2 +
- .../mellanox/mlx5/core/en/tc/act/mirred.c     | 10 ++++
- .../mellanox/mlx5/core/en/tc/act/mpls.c       |  7 ++-
- .../mellanox/mlx5/core/en/tc/act/pedit.c      | 59 +++----------------
- .../mellanox/mlx5/core/en/tc/act/pedit.h      |  3 +-
- .../mellanox/mlx5/core/en/tc/act/vlan.c       | 19 ++++--
- .../mlx5/core/en/tc/act/vlan_mangle.c         |  4 +-
- .../ethernet/mellanox/mlx5/core/en/tc_priv.h  |  1 -
- .../mellanox/mlx5/core/en/tc_tun_encap.c      | 10 ++--
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  1 +
- include/net/flow_offload.h                    |  4 ++
- include/net/tc_act/tc_vlan.h                  | 14 +++++
- net/sched/act_vlan.c                          | 14 +++++
- 14 files changed, 85 insertions(+), 70 deletions(-)
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+---
+ include/net/flow_offload.h   |  4 ++++
+ include/net/tc_act/tc_vlan.h | 14 ++++++++++++++
+ net/sched/act_vlan.c         | 14 ++++++++++++++
+ 3 files changed, 32 insertions(+)
 
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 92267d23083e..2bfa666842c5 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -150,6 +150,8 @@ enum flow_action_id {
+ 	FLOW_ACTION_PPPOE_PUSH,
+ 	FLOW_ACTION_JUMP,
+ 	FLOW_ACTION_PIPE,
++	FLOW_ACTION_VLAN_PUSH_ETH,
++	FLOW_ACTION_VLAN_POP_ETH,
+ 	NUM_FLOW_ACTIONS,
+ };
+ 
+@@ -211,6 +213,8 @@ struct flow_action_entry {
+ 			__be16		proto;
+ 			u8		prio;
+ 		} vlan;
++		unsigned char vlan_push_eth_dst[ETH_ALEN];
++		unsigned char vlan_push_eth_src[ETH_ALEN];
+ 		struct {				/* FLOW_ACTION_MANGLE */
+ 							/* FLOW_ACTION_ADD */
+ 			enum flow_action_mangle_base htype;
+diff --git a/include/net/tc_act/tc_vlan.h b/include/net/tc_act/tc_vlan.h
+index f94b8bc26f9e..8a3422c70f9f 100644
+--- a/include/net/tc_act/tc_vlan.h
++++ b/include/net/tc_act/tc_vlan.h
+@@ -78,4 +78,18 @@ static inline u8 tcf_vlan_push_prio(const struct tc_action *a)
+ 
+ 	return tcfv_push_prio;
+ }
++
++static inline void tcf_vlan_push_dst(unsigned char *dest, const struct tc_action *a)
++{
++	rcu_read_lock();
++	memcpy(dest, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_dst, ETH_ALEN);
++	rcu_read_unlock();
++}
++
++static inline void tcf_vlan_push_src(unsigned char *dest, const struct tc_action *a)
++{
++	rcu_read_lock();
++	memcpy(dest, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_src, ETH_ALEN);
++	rcu_read_unlock();
++}
+ #endif /* __NET_TC_VLAN_H */
+diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
+index 756e2dcde1cd..d27604204f17 100644
+--- a/net/sched/act_vlan.c
++++ b/net/sched/act_vlan.c
+@@ -390,6 +390,14 @@ static int tcf_vlan_offload_act_setup(struct tc_action *act, void *entry_data,
+ 			entry->vlan.proto = tcf_vlan_push_proto(act);
+ 			entry->vlan.prio = tcf_vlan_push_prio(act);
+ 			break;
++		case TCA_VLAN_ACT_POP_ETH:
++			entry->id = FLOW_ACTION_VLAN_POP_ETH;
++			break;
++		case TCA_VLAN_ACT_PUSH_ETH:
++			entry->id = FLOW_ACTION_VLAN_PUSH_ETH;
++			tcf_vlan_push_dst(entry->vlan_push_eth_dst, act);
++			tcf_vlan_push_src(entry->vlan_push_eth_src, act);
++			break;
+ 		default:
+ 			return -EOPNOTSUPP;
+ 		}
+@@ -407,6 +415,12 @@ static int tcf_vlan_offload_act_setup(struct tc_action *act, void *entry_data,
+ 		case TCA_VLAN_ACT_MODIFY:
+ 			fl_action->id = FLOW_ACTION_VLAN_MANGLE;
+ 			break;
++		case TCA_VLAN_ACT_POP_ETH:
++			fl_action->id = FLOW_ACTION_VLAN_POP_ETH;
++			break;
++		case TCA_VLAN_ACT_PUSH_ETH:
++			fl_action->id = FLOW_ACTION_VLAN_PUSH_ETH;
++			break;
+ 		default:
+ 			return -EOPNOTSUPP;
+ 		}
 -- 
 2.34.1
 
