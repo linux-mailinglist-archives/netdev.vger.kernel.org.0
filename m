@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B52444D39E9
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:19:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7D74D39F0
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 20:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236193AbiCITTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 14:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        id S234702AbiCITT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 14:19:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238381AbiCITSa (ORCPT
+        with ESMTP id S238382AbiCITSa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 14:18:30 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB18810F208
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:17:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2302D1107E2
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 11:17:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646853441; x=1678389441;
+  t=1646853443; x=1678389443;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=pwS+P7GhhUTjI45SEYthGKFuL5gNqe6mm6FuLnmZ+bc=;
-  b=b+O+Yonxnj7dNW/beiWvOvmz8TmGoudN+XRC6mMXTf8XoYd7TPBFDqm3
-   vomQVuiTjHvZp6fc/FpZpJ/caBrHFWspQQtb6h1kAw+V4kZz2dclq4r+h
-   b0uJbf+Y+pjBOVckGgZTBgL1dnAQ6BwHdVzTCqQIBf9ijiNIrS0SQWw6U
-   9z0iDR9fbZNZ4DIcAmCuxserOQDohLaClDWF6x6bpuae4jn3e7YfXDiV5
-   yvWkg6mTJLK3jbVSyoxx9hS2vxiWwALU8ziVwsBQIaCy6qB8kKdf1EeWw
-   2Zzo+z0kOlcNLzQMy24GcUvR2kLgCJebWRXwZfdL2Ht5jiEy0gCGqW0MA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237235272"
+  bh=HKPfuNLPeP7ul1ZVKp3YujPPqt7Si2b52xWp2zWhw3U=;
+  b=cN1r71R4gVMqxdUVhFtCUha7JYhWYDD2Fwvp/cL9fF8gwkQDtNhaqFtN
+   oVbpvOBtNy6GUQFuYP1b0N0WeRrUitKrbdeOImXFk+FLfzLxHqsQGu6dD
+   COlTdF96peCJs26iIM5E3bBTdh4VQ7XGee1rOu2QqTKouDGidhwdnDfUY
+   hC2KZ2PK3163HIBTkFrWI9cqli6coxOPPBA9piXTF5QGBQ1sO6AgxNjmD
+   yqfeXsVfbMoy9l1jGjrNHwTemml/D5uV9IWBrK45uWeT5QWM6wSlS1eeR
+   95I5TFxWRYwDXxzNlMlGi6WuuPOydMyR9jHHdgBSydlEr1Z5UK3G/giT4
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237235274"
 X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="237235272"
+   d="scan'208";a="237235274"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:16:46 -0800
 X-IronPort-AV: E=Sophos;i="5.90,168,1643702400"; 
-   d="scan'208";a="495957063"
+   d="scan'208";a="495957066"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.194.198])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2022 11:16:46 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -41,9 +41,9 @@ To:     netdev@vger.kernel.org
 Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
         davem@davemloft.net, kuba@kernel.org, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 08/10] selftests: mptcp: join: clarify local/global vars
-Date:   Wed,  9 Mar 2022 11:16:34 -0800
-Message-Id: <20220309191636.258232-9-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 09/10] selftests: mptcp: join: avoid backquotes
+Date:   Wed,  9 Mar 2022 11:16:35 -0800
+Message-Id: <20220309191636.258232-10-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220309191636.258232-1-mathew.j.martineau@linux.intel.com>
 References: <20220309191636.258232-1-mathew.j.martineau@linux.intel.com>
@@ -60,395 +60,261 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-Some vars are redefined in different places. Best to avoid this
-classical Bash pitfall where variables are accidentally overridden by
-other functions because the proper scope has not been defined.
+As explained on ShellCheck's wiki [1], it is recommended to avoid
+backquotes `...` in favour of parenthesis $(...):
 
-Most issues are with loops: typically 'i' is used in for-loops but if it
-is not global, calling a function from a for-loop also doing a for-loop
-with the same non local 'i' variable causes troubles because the first
-'i' will be assigned to another value. To prevent such issues, the
-iterator variable is now declared as local just before the loop. If it
-is always done like this, issues are avoided.
+> Backtick command substitution `...` is legacy syntax with several
+> issues.
+>
+> - It has a series of undefined behaviors related to quoting in POSIX.
+> - It imposes a custom escaping mode with surprising results.
+> - It's exceptionally hard to nest.
+>
+> $(...) command substitution has none of these problems, and is
+> therefore strongly encouraged.
 
-To distinct between local and non local variables, all non local ones
-are defined at the beginning of the script. The others are now defined
-with the "local" keyword.
+[1] https://www.shellcheck.net/wiki/SC2006
 
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- .../testing/selftests/net/mptcp/mptcp_join.sh | 135 +++++++++++-------
- 1 file changed, 83 insertions(+), 52 deletions(-)
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 66 ++++++++++---------
+ 1 file changed, 34 insertions(+), 32 deletions(-)
 
 diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 5223f2a752b9..d8dc36fcdb56 100755
+index d8dc36fcdb56..f5391d027af2 100755
 --- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
 +++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -9,6 +9,9 @@ cin=""
- cinfail=""
- cinsent=""
- cout=""
-+capout=""
-+ns1=""
-+ns2=""
- ksft_skip=4
- timeout_poll=30
- timeout_test=$((timeout_poll * 2 + 1))
-@@ -51,12 +54,14 @@ init_partial()
- {
- 	capout=$(mktemp)
- 
-+	local rndh
- 	rndh=$(mktemp -u XXXXXX)
- 
- 	ns1="ns1-$rndh"
- 	ns2="ns2-$rndh"
- 
--	for netns in "$ns1" "$ns2";do
-+	local netns
-+	for netns in "$ns1" "$ns2"; do
- 		ip netns add $netns || exit $ksft_skip
- 		ip -net $netns link set lo up
- 		ip netns exec $netns sysctl -q net.mptcp.enabled=1
-@@ -77,6 +82,7 @@ init_partial()
- 	# ns1eth3    ns2eth3
+@@ -83,7 +83,7 @@ init_partial()
  	# ns1eth4    ns2eth4
  
-+	local i
- 	for i in `seq 1 4`; do
+ 	local i
+-	for i in `seq 1 4`; do
++	for i in $(seq 1 4); do
  		ip link add ns1eth$i netns "$ns1" type veth peer name ns2eth$i netns "$ns2"
  		ip -net "$ns1" addr add 10.0.$i.1/24 dev ns1eth$i
-@@ -95,6 +101,7 @@ init_partial()
- 
+ 		ip -net "$ns1" addr add dead:beef:$i::1/64 dev ns1eth$i nodad
+@@ -102,7 +102,7 @@ init_partial()
  init_shapers()
  {
-+	local i
- 	for i in `seq 1 4`; do
+ 	local i
+-	for i in `seq 1 4`; do
++	for i in $(seq 1 4); do
  		tc -n $ns1 qdisc add dev ns1eth$i root netem rate 20mbit delay 1
  		tc -n $ns2 qdisc add dev ns2eth$i root netem rate 20mbit delay 1
-@@ -105,6 +112,7 @@ cleanup_partial()
- {
- 	rm -f "$capout"
- 
-+	local netns
- 	for netns in "$ns1" "$ns2"; do
- 		ip netns del $netns
- 		rm -f /tmp/$netns.{nstat,out}
-@@ -201,7 +209,8 @@ reset_with_cookies()
- {
- 	reset "${1}" || return 1
- 
--	for netns in "$ns1" "$ns2";do
-+	local netns
-+	for netns in "$ns1" "$ns2"; do
- 		ip netns exec $netns sysctl -q net.ipv4.tcp_syncookies=2
  	done
- }
-@@ -276,10 +285,11 @@ print_file_err()
- 
- check_transfer()
- {
--	in=$1
--	out=$2
--	what=$3
-+	local in=$1
-+	local out=$2
-+	local what=$3
- 
-+	local line
- 	cmp -l "$in" "$out" | while read line; do
- 		local arr=($line)
- 
-@@ -301,9 +311,9 @@ check_transfer()
- 
- do_ping()
- {
--	listener_ns="$1"
--	connector_ns="$2"
--	connect_addr="$3"
-+	local listener_ns="$1"
-+	local connector_ns="$2"
-+	local connect_addr="$3"
- 
- 	ip netns exec ${connector_ns} ping -q -c 1 $connect_addr >/dev/null
- 	if [ $? -ne 0 ] ; then
-@@ -314,15 +324,16 @@ do_ping()
- 
- link_failure()
- {
--	ns="$1"
-+	local ns="$1"
- 
- 	if [ -z "$FAILING_LINKS" ]; then
- 		l=$((RANDOM%4))
- 		FAILING_LINKS=$((l+1))
+@@ -969,7 +969,7 @@ chk_csum_nr()
  	fi
  
-+	local l
- 	for l in $FAILING_LINKS; do
--		veth="ns1eth$l"
-+		local veth="ns1eth$l"
- 		ip -net "$ns" link set "$veth" down
- 	done
- }
-@@ -339,9 +350,10 @@ wait_local_port_listen()
- 	local listener_ns="${1}"
- 	local port="${2}"
- 
--	local port_hex i
--
-+	local port_hex
- 	port_hex="$(printf "%04X" "${port}")"
-+
-+	local i
- 	for i in $(seq 10); do
- 		ip netns exec "${listener_ns}" cat /proc/net/tcp* | \
- 			awk "BEGIN {rc=1} {if (\$2 ~ /:${port_hex}\$/ && \$4 ~ /0A/) {rc=0; exit}} END {exit rc}" &&
-@@ -352,7 +364,7 @@ wait_local_port_listen()
- 
- rm_addr_count()
- {
--	ns=${1}
-+	local ns=${1}
- 
- 	ip netns exec ${ns} nstat -as | grep MPTcpExtRmAddr | awk '{print $2}'
- }
-@@ -363,8 +375,8 @@ wait_rm_addr()
- 	local ns="${1}"
- 	local old_cnt="${2}"
- 	local cnt
--	local i
- 
-+	local i
- 	for i in $(seq 10); do
- 		cnt=$(rm_addr_count ${ns})
- 		[ "$cnt" = "${old_cnt}" ] || break
-@@ -404,12 +416,13 @@ pm_nl_add_endpoint()
- {
- 	local ns=$1
- 	local addr=$2
--	local flags
--	local port
--	local dev
--	local id
-+	local flags _flags
-+	local port _port
-+	local dev _dev
-+	local id _id
- 	local nr=2
- 
-+	local p
- 	for p in $@
- 	do
- 		if [ $p = "flags" ]; then
-@@ -572,24 +585,26 @@ filter_tcp_from()
- 
- do_transfer()
- {
--	listener_ns="$1"
--	connector_ns="$2"
--	cl_proto="$3"
--	srv_proto="$4"
--	connect_addr="$5"
--	test_link_fail="$6"
--	addr_nr_ns1="$7"
--	addr_nr_ns2="$8"
--	speed="$9"
--	sflags="${10}"
--
--	port=$((10000+$TEST_COUNT-1))
-+	local listener_ns="$1"
-+	local connector_ns="$2"
-+	local cl_proto="$3"
-+	local srv_proto="$4"
-+	local connect_addr="$5"
-+	local test_link_fail="$6"
-+	local addr_nr_ns1="$7"
-+	local addr_nr_ns2="$8"
-+	local speed="$9"
-+	local sflags="${10}"
-+
-+	local port=$((10000 + TEST_COUNT - 1))
-+	local cappid
- 
- 	:> "$cout"
- 	:> "$sout"
- 	:> "$capout"
- 
- 	if [ $capture -eq 1 ]; then
-+		local capuser
- 		if [ -z $SUDO_USER ] ; then
- 			capuser=""
- 		else
-@@ -643,7 +658,7 @@ do_transfer()
- 				./mptcp_connect -t ${timeout_poll} -l -p $port -s ${srv_proto} \
- 					$extra_args ${local_addr} < "$sin" > "$sout" &
+ 	printf "%-${nr_blank}s %s" " " "sum"
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != $csum_ns1 -a $allow_multi_errors_ns1 -eq 0 ] ||
+ 	   [ "$count" -lt $csum_ns1 -a $allow_multi_errors_ns1 -eq 1 ]; then
+@@ -980,7 +980,7 @@ chk_csum_nr()
+ 		echo -n "[ ok ]"
  	fi
--	spid=$!
-+	local spid=$!
+ 	echo -n " - csum  "
+-	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}'`
++	count=$(ip netns exec $ns2 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != $csum_ns2 -a $allow_multi_errors_ns2 -eq 0 ] ||
+ 	   [ "$count" -lt $csum_ns2 -a $allow_multi_errors_ns2 -eq 1 ]; then
+@@ -1001,7 +1001,7 @@ chk_fail_nr()
+ 	local dump_stats
  
- 	wait_local_port_listen "${listener_ns}" "${port}"
- 
-@@ -666,15 +681,16 @@ do_transfer()
- 					./mptcp_connect -t ${timeout_poll} -p $port -s ${cl_proto} \
- 						$extra_args $connect_addr > "$cout" &
+ 	printf "%-${nr_blank}s %s" " " "ftx"
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPFailTx | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPFailTx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$fail_tx" ]; then
+ 		echo "[fail] got $count MP_FAIL[s] TX expected $fail_tx"
+@@ -1012,7 +1012,7 @@ chk_fail_nr()
  	fi
--	cpid=$!
-+	local cpid=$!
  
- 	# let the mptcp subflow be established in background before
- 	# do endpoint manipulation
- 	[ $addr_nr_ns1 = "0" -a $addr_nr_ns2 = "0" ] || sleep 1
+ 	echo -n " - failrx"
+-	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPFailRx | awk '{print $2}'`
++	count=$(ip netns exec $ns2 nstat -as | grep MPTcpExtMPFailRx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$fail_rx" ]; then
+ 		echo "[fail] got $count MP_FAIL[s] RX expected $fail_rx"
+@@ -1121,7 +1121,7 @@ chk_join_nr()
+ 	fi
  
- 	if [ $addr_nr_ns1 -gt 0 ]; then
-+		local counter=2
-+		local add_nr_ns1
- 		let add_nr_ns1=addr_nr_ns1
--		counter=2
- 		while [ $add_nr_ns1 -gt 0 ]; do
- 			local addr
- 			if is_v6 "${connect_addr}"; then
-@@ -687,13 +703,16 @@ do_transfer()
- 			let add_nr_ns1-=1
- 		done
- 	elif [ $addr_nr_ns1 -lt 0 ]; then
-+		local rm_nr_ns1
- 		let rm_nr_ns1=-addr_nr_ns1
- 		if [ $rm_nr_ns1 -lt 8 ]; then
--			counter=0
-+			local counter=0
-+			local line
- 			pm_nl_show_endpoints ${listener_ns} | while read line; do
- 				local arr=($line)
- 				local nr=0
+ 	printf "%03u %-36s %s" "${TEST_COUNT}" "${title}" "syn"
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinSynRx | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinSynRx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$syn_nr" ]; then
+ 		echo "[fail] got $count JOIN[s] syn expected $syn_nr"
+@@ -1132,8 +1132,8 @@ chk_join_nr()
+ 	fi
  
-+				local i
- 				for i in ${arr[@]}; do
- 					if [ $i = "id" ]; then
- 						if [ $counter -eq $rm_nr_ns1 ]; then
-@@ -715,7 +734,7 @@ do_transfer()
+ 	echo -n " - synack"
+-	with_cookie=`ip netns exec $ns2 sysctl -n net.ipv4.tcp_syncookies`
+-	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinSynAckRx | awk '{print $2}'`
++	with_cookie=$(ip netns exec $ns2 sysctl -n net.ipv4.tcp_syncookies)
++	count=$(ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinSynAckRx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$syn_ack_nr" ]; then
+ 		# simult connections exceeding the limit with cookie enabled could go up to
+@@ -1151,7 +1151,7 @@ chk_join_nr()
+ 	fi
+ 
+ 	echo -n " - ack"
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinAckRx | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinAckRx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$ack_nr" ]; then
+ 		echo "[fail] got $count JOIN[s] ack expected $ack_nr"
+@@ -1184,9 +1184,9 @@ chk_stale_nr()
+ 	local recover_nr
+ 
+ 	printf "%-${nr_blank}s %-18s" " " "stale"
+-	stale_nr=`ip netns exec $ns nstat -as | grep MPTcpExtSubflowStale | awk '{print $2}'`
++	stale_nr=$(ip netns exec $ns nstat -as | grep MPTcpExtSubflowStale | awk '{print $2}')
+ 	[ -z "$stale_nr" ] && stale_nr=0
+-	recover_nr=`ip netns exec $ns nstat -as | grep MPTcpExtSubflowRecover | awk '{print $2}'`
++	recover_nr=$(ip netns exec $ns nstat -as | grep MPTcpExtSubflowRecover | awk '{print $2}')
+ 	[ -z "$recover_nr" ] && recover_nr=0
+ 
+ 	if [ $stale_nr -lt $stale_min ] ||
+@@ -1222,10 +1222,10 @@ chk_add_nr()
+ 	local dump_stats
+ 	local timeout
+ 
+-	timeout=`ip netns exec $ns1 sysctl -n net.mptcp.add_addr_timeout`
++	timeout=$(ip netns exec $ns1 sysctl -n net.mptcp.add_addr_timeout)
+ 
+ 	printf "%-${nr_blank}s %s" " " "add"
+-	count=`ip netns exec $ns2 nstat -as MPTcpExtAddAddr | grep MPTcpExtAddAddr | awk '{print $2}'`
++	count=$(ip netns exec $ns2 nstat -as MPTcpExtAddAddr | grep MPTcpExtAddAddr | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 
+ 	# if the test configured a short timeout tolerate greater then expected
+@@ -1239,7 +1239,7 @@ chk_add_nr()
+ 	fi
+ 
+ 	echo -n " - echo  "
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtEchoAdd | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtEchoAdd | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$echo_nr" ]; then
+ 		echo "[fail] got $count ADD_ADDR echo[s] expected $echo_nr"
+@@ -1251,7 +1251,7 @@ chk_add_nr()
+ 
+ 	if [ $port_nr -gt 0 ]; then
+ 		echo -n " - pt "
+-		count=`ip netns exec $ns2 nstat -as | grep MPTcpExtPortAdd | awk '{print $2}'`
++		count=$(ip netns exec $ns2 nstat -as | grep MPTcpExtPortAdd | awk '{print $2}')
+ 		[ -z "$count" ] && count=0
+ 		if [ "$count" != "$port_nr" ]; then
+ 			echo "[fail] got $count ADD_ADDR[s] with a port-number expected $port_nr"
+@@ -1262,8 +1262,8 @@ chk_add_nr()
  		fi
+ 
+ 		printf "%-${nr_blank}s %s" " " "syn"
+-		count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinPortSynRx |
+-			awk '{print $2}'`
++		count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinPortSynRx |
++			awk '{print $2}')
+ 		[ -z "$count" ] && count=0
+ 		if [ "$count" != "$syn_nr" ]; then
+ 			echo "[fail] got $count JOIN[s] syn with a different \
+@@ -1275,8 +1275,8 @@ chk_add_nr()
+ 		fi
+ 
+ 		echo -n " - synack"
+-		count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinPortSynAckRx |
+-			awk '{print $2}'`
++		count=$(ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinPortSynAckRx |
++			awk '{print $2}')
+ 		[ -z "$count" ] && count=0
+ 		if [ "$count" != "$syn_ack_nr" ]; then
+ 			echo "[fail] got $count JOIN[s] synack with a different \
+@@ -1288,8 +1288,8 @@ chk_add_nr()
+ 		fi
+ 
+ 		echo -n " - ack"
+-		count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinPortAckRx |
+-			awk '{print $2}'`
++		count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinPortAckRx |
++			awk '{print $2}')
+ 		[ -z "$count" ] && count=0
+ 		if [ "$count" != "$ack_nr" ]; then
+ 			echo "[fail] got $count JOIN[s] ack with a different \
+@@ -1301,8 +1301,8 @@ chk_add_nr()
+ 		fi
+ 
+ 		printf "%-${nr_blank}s %s" " " "syn"
+-		count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMismatchPortSynRx |
+-			awk '{print $2}'`
++		count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMismatchPortSynRx |
++			awk '{print $2}')
+ 		[ -z "$count" ] && count=0
+ 		if [ "$count" != "$mis_syn_nr" ]; then
+ 			echo "[fail] got $count JOIN[s] syn with a mismatched \
+@@ -1314,8 +1314,8 @@ chk_add_nr()
+ 		fi
+ 
+ 		echo -n " - ack   "
+-		count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMismatchPortAckRx |
+-			awk '{print $2}'`
++		count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMismatchPortAckRx |
++			awk '{print $2}')
+ 		[ -z "$count" ] && count=0
+ 		if [ "$count" != "$mis_ack_nr" ]; then
+ 			echo "[fail] got $count JOIN[s] ack with a mismatched \
+@@ -1361,7 +1361,7 @@ chk_rm_nr()
  	fi
  
--	flags="subflow"
-+	local flags="subflow"
- 	if [[ "${addr_nr_ns2}" = "fullmesh_"* ]]; then
- 		flags="${flags},fullmesh"
- 		addr_nr_ns2=${addr_nr_ns2:9}
-@@ -726,8 +745,9 @@ do_transfer()
- 	[ $addr_nr_ns1 -gt 0 -a $addr_nr_ns2 -lt 0 ] && sleep 1
- 
- 	if [ $addr_nr_ns2 -gt 0 ]; then
-+		local add_nr_ns2
- 		let add_nr_ns2=addr_nr_ns2
--		counter=3
-+		local counter=3
- 		while [ $add_nr_ns2 -gt 0 ]; do
- 			local addr
- 			if is_v6 "${connect_addr}"; then
-@@ -740,18 +760,21 @@ do_transfer()
- 			let add_nr_ns2-=1
- 		done
- 	elif [ $addr_nr_ns2 -lt 0 ]; then
--		let rm_nr_ns2=-addr_nr_ns2
-+		local rm_nr_ns2
- 		if [ $rm_nr_ns2 -lt 8 ]; then
--			counter=0
-+			local counter=0
-+			local line
- 			pm_nl_show_endpoints ${connector_ns} | while read line; do
- 				local arr=($line)
- 				local nr=0
- 
-+				local i
- 				for i in ${arr[@]}; do
- 					if [ $i = "id" ]; then
- 						if [ $counter -eq $rm_nr_ns2 ]; then
- 							break
- 						fi
-+						local id rm_addr
- 						# rm_addr are serialized, allow the previous one to
- 						# complete
- 						id=${arr[$nr+1]}
-@@ -778,12 +801,16 @@ do_transfer()
- 
- 	if [ ! -z $sflags ]; then
- 		sleep 1
-+
-+		local netns
- 		for netns in "$ns1" "$ns2"; do
-+			local line
- 			pm_nl_show_endpoints $netns | while read line; do
- 				local arr=($line)
- 				local nr=0
- 				local id
- 
-+				local i
- 				for i in ${arr[@]}; do
- 					if [ $i = "id" ]; then
- 						id=${arr[$nr+1]}
-@@ -796,9 +823,9 @@ do_transfer()
+ 	printf "%-${nr_blank}s %s" " " "rm "
+-	count=`ip netns exec $addr_ns nstat -as | grep MPTcpExtRmAddr | awk '{print $2}'`
++	count=$(ip netns exec $addr_ns nstat -as | grep MPTcpExtRmAddr | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$rm_addr_nr" ]; then
+ 		echo "[fail] got $count RM_ADDR[s] expected $rm_addr_nr"
+@@ -1372,7 +1372,7 @@ chk_rm_nr()
  	fi
  
- 	wait $cpid
--	retc=$?
-+	local retc=$?
- 	wait $spid
--	rets=$?
-+	local rets=$?
+ 	echo -n " - rmsf  "
+-	count=`ip netns exec $subflow_ns nstat -as | grep MPTcpExtRmSubflow | awk '{print $2}'`
++	count=$(ip netns exec $subflow_ns nstat -as | grep MPTcpExtRmSubflow | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ -n "$simult" ]; then
+ 		local cnt=$(ip netns exec $addr_ns nstat -as | grep MPTcpExtRmSubflow | awk '{print $2}')
+@@ -1414,7 +1414,7 @@ chk_prio_nr()
+ 	local dump_stats
  
- 	if [ $capture -eq 1 ]; then
- 	    sleep 1
-@@ -848,9 +875,9 @@ do_transfer()
+ 	printf "%-${nr_blank}s %s" " " "ptx"
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPPrioTx | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPPrioTx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$mp_prio_nr_tx" ]; then
+ 		echo "[fail] got $count MP_PRIO[s] TX expected $mp_prio_nr_tx"
+@@ -1425,7 +1425,7 @@ chk_prio_nr()
+ 	fi
  
- make_file()
- {
--	name=$1
--	who=$2
--	size=$3
-+	local name=$1
-+	local who=$2
-+	local size=$3
- 
- 	dd if=/dev/urandom of="$name" bs=1024 count=$size 2> /dev/null
- 	echo -e "\nMPTCP_TEST_FILE_END_MARKER" >> "$name"
-@@ -860,14 +887,16 @@ make_file()
- 
- run_tests()
- {
--	listener_ns="$1"
--	connector_ns="$2"
--	connect_addr="$3"
--	test_linkfail="${4:-0}"
--	addr_nr_ns1="${5:-0}"
--	addr_nr_ns2="${6:-0}"
--	speed="${7:-fast}"
--	sflags="${8:-""}"
-+	local listener_ns="$1"
-+	local connector_ns="$2"
-+	local connect_addr="$3"
-+	local test_linkfail="${4:-0}"
-+	local addr_nr_ns1="${5:-0}"
-+	local addr_nr_ns2="${6:-0}"
-+	local speed="${7:-fast}"
-+	local sflags="${8:-""}"
+ 	echo -n " - prx   "
+-	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPPrioRx | awk '{print $2}'`
++	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtMPPrioRx | awk '{print $2}')
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$mp_prio_nr_rx" ]; then
+ 		echo "[fail] got $count MP_PRIO[s] RX expected $mp_prio_nr_rx"
+@@ -1444,8 +1444,10 @@ chk_link_usage()
+ 	local link=$2
+ 	local out=$3
+ 	local expected_rate=$4
+-	local tx_link=`ip netns exec $ns cat /sys/class/net/$link/statistics/tx_bytes`
+-	local tx_total=`ls -l $out | awk '{print $5}'`
 +
-+	local size
++	local tx_link tx_total
++	tx_link=$(ip netns exec $ns cat /sys/class/net/$link/statistics/tx_bytes)
++	tx_total=$(ls -l $out | awk '{print $5}')
+ 	local tx_rate=$((tx_link * 100 / $tx_total))
+ 	local tolerance=5
  
- 	# The values above 2 are reused to make test files
- 	# with the given sizes (KB)
-@@ -1437,7 +1466,9 @@ wait_attempt_fail()
- 	local ns=$1
- 
- 	while [ $time -lt $timeout_ms ]; do
--		local cnt=$(ip netns exec $ns nstat -as TcpAttemptFails | grep TcpAttemptFails | awk '{print $2}')
-+		local cnt
-+
-+		cnt=$(ip netns exec $ns nstat -as TcpAttemptFails | grep TcpAttemptFails | awk '{print $2}')
- 
- 		[ "$cnt" = 1 ] && return 1
- 		time=$((time + 100))
 -- 
 2.35.1
 
