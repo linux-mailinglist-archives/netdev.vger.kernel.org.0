@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 391F04D3D01
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:34:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6604D3D21
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 23:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238711AbiCIWd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 17:33:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35510 "EHLO
+        id S238786AbiCIWke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 17:40:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238678AbiCIWdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:33:51 -0500
-Received: from smtp4.emailarray.com (smtp4.emailarray.com [65.39.216.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249AD275F4
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:32:50 -0800 (PST)
-Received: (qmail 43149 invoked by uid 89); 9 Mar 2022 22:32:49 -0000
+        with ESMTP id S238779AbiCIWkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 17:40:32 -0500
+X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Mar 2022 14:39:32 PST
+Received: from smtp2.emailarray.com (smtp.emailarray.com [69.28.212.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D6E120F41
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 14:39:32 -0800 (PST)
+Received: (qmail 33272 invoked by uid 89); 9 Mar 2022 22:32:51 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 9 Mar 2022 22:32:49 -0000
+  by smtp2.emailarray.com with SMTP; 9 Mar 2022 22:32:51 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com,
         kernel-team@fb.com
-Subject: [PATCH net-next v1 08/10] ptp: ocp: Add 4 frequency counters
-Date:   Wed,  9 Mar 2022 14:32:35 -0800
-Message-Id: <20220309223237.34507-9-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v1 09/10] ptp: ocp: Add 2 more timestampers
+Date:   Wed,  9 Mar 2022 14:32:36 -0800
+Message-Id: <20220309223237.34507-10-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220309223237.34507-1-jonathan.lemon@gmail.com>
 References: <20220309223237.34507-1-jonathan.lemon@gmail.com>
@@ -40,270 +41,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Input signals can be steered to any of the frequency counters.
-The counter measures the frequency over a number of seconds:
-
-  echo 0 > freq1/seconds  = turns off measurement
-  echo 1 > freq1/seconds  = sets period & turns on measurment.
+The timecard now has 4 general purpose timestampers.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 172 ++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 165 insertions(+), 7 deletions(-)
+ drivers/ptp/ptp_ocp.c | 61 +++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 56 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 3c8550677369..bd03a3cfd251 100644
+index bd03a3cfd251..36c09269a12d 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -199,6 +199,15 @@ struct signal_reg {
- 	u32	repeat_count;
- };
- 
-+struct frequency_reg {
-+	u32	ctrl;
-+	u32	status;
-+};
-+#define FREQ_STATUS_VALID	BIT(31)
-+#define FREQ_STATUS_ERROR	BIT(30)
-+#define FREQ_STATUS_OVERRUN	BIT(29)
-+#define FREQ_STATUS_MASK	(BIT(24) - 1)
-+
- struct ptp_ocp_flash_info {
- 	const char *name;
- 	int pci_offset;
-@@ -244,6 +253,7 @@ struct ocp_attr_group {
- };
- #define OCP_CAP_BASIC	BIT(0)
- #define OCP_CAP_SIGNAL	BIT(1)
-+#define OCP_CAP_FREQ	BIT(2)
- 
- struct ptp_ocp_signal {
- 	ktime_t		period;
-@@ -274,6 +284,7 @@ struct ptp_ocp {
- 	struct dcf_master_reg	__iomem *dcf_out;
- 	struct dcf_slave_reg	__iomem *dcf_in;
- 	struct tod_reg		__iomem *nmea_out;
-+	struct frequency_reg	__iomem *freq_in[4];
- 	struct ptp_ocp_ext_src	*signal_out[4];
- 	struct ptp_ocp_ext_src	*pps;
+@@ -290,6 +290,8 @@ struct ptp_ocp {
  	struct ptp_ocp_ext_src	*ts0;
-@@ -575,6 +586,22 @@ static struct ocp_resource ocp_fb_resource[] = {
- 			},
+ 	struct ptp_ocp_ext_src	*ts1;
+ 	struct ptp_ocp_ext_src	*ts2;
++	struct ptp_ocp_ext_src	*ts3;
++	struct ptp_ocp_ext_src	*ts4;
+ 	struct img_reg __iomem	*image;
+ 	struct ptp_clock	*ptp;
+ 	struct ptp_clock_info	ptp_info;
+@@ -395,7 +397,7 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
+ 	OCP_RES_LOCATION(member), .setup = ptp_ocp_register_ext
+ 
+ /* This is the MSI vector mapping used.
+- * 0: TS3 (and PPS)
++ * 0: PPS (TS5)
+  * 1: TS0
+  * 2: TS1
+  * 3: GNSS1
+@@ -410,6 +412,8 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
+  * 12: Signal Generator 2
+  * 13: Signal Generator 3
+  * 14: Signal Generator 4
++ * 15: TS3
++ * 16: TS4
+  */
+ 
+ static struct ocp_resource ocp_fb_resource[] = {
+@@ -444,11 +448,30 @@ static struct ocp_resource ocp_fb_resource[] = {
+ 			.enable = ptp_ocp_ts_enable,
  		},
  	},
 +	{
-+		OCP_MEM_RESOURCE(freq_in[0]),
-+		.offset = 0x01200000, .size = 0x10000,
++		OCP_EXT_RESOURCE(ts3),
++		.offset = 0x01110000, .size = 0x10000, .irq_vec = 15,
++		.extra = &(struct ptp_ocp_ext_info) {
++			.index = 3,
++			.irq_fcn = ptp_ocp_ts_irq,
++			.enable = ptp_ocp_ts_enable,
++		},
 +	},
 +	{
-+		OCP_MEM_RESOURCE(freq_in[1]),
-+		.offset = 0x01210000, .size = 0x10000,
++		OCP_EXT_RESOURCE(ts4),
++		.offset = 0x01120000, .size = 0x10000, .irq_vec = 16,
++		.extra = &(struct ptp_ocp_ext_info) {
++			.index = 4,
++			.irq_fcn = ptp_ocp_ts_irq,
++			.enable = ptp_ocp_ts_enable,
++		},
 +	},
-+	{
-+		OCP_MEM_RESOURCE(freq_in[2]),
-+		.offset = 0x01220000, .size = 0x10000,
-+	},
-+	{
-+		OCP_MEM_RESOURCE(freq_in[3]),
-+		.offset = 0x01230000, .size = 0x10000,
-+	},
++	/* Timestamp for PHC and/or PPS generator */
  	{
- 		.setup = ptp_ocp_fb_board_init,
- 	},
-@@ -613,13 +640,17 @@ static struct ocp_selector ptp_ocp_clock[] = {
- #define SMA_DISABLE		0x10000
- 
- static struct ocp_selector ptp_ocp_sma_in[] = {
--	{ .name = "10Mhz",	.value = 0x00 },
--	{ .name = "PPS1",	.value = 0x01 },
--	{ .name = "PPS2",	.value = 0x02 },
--	{ .name = "TS1",	.value = 0x04 },
--	{ .name = "TS2",	.value = 0x08 },
--	{ .name = "IRIG",	.value = 0x10 },
--	{ .name = "DCF",	.value = 0x20 },
-+	{ .name = "10Mhz",	.value = 0x0000 },
-+	{ .name = "PPS1",	.value = 0x0001 },
-+	{ .name = "PPS2",	.value = 0x0002 },
-+	{ .name = "TS1",	.value = 0x0004 },
-+	{ .name = "TS2",	.value = 0x0008 },
-+	{ .name = "IRIG",	.value = 0x0010 },
-+	{ .name = "DCF",	.value = 0x0020 },
-+	{ .name = "FREQ1",	.value = 0x0100 },
-+	{ .name = "FREQ2",	.value = 0x0200 },
-+	{ .name = "FREQ3",	.value = 0x0400 },
-+	{ .name = "FREQ4",	.value = 0x0800 },
- 	{ .name = "None",	.value = SMA_DISABLE },
- 	{ }
+ 		OCP_EXT_RESOURCE(pps),
+ 		.offset = 0x010C0000, .size = 0x10000, .irq_vec = 0,
+ 		.extra = &(struct ptp_ocp_ext_info) {
+-			.index = 3,
++			.index = 5,
+ 			.irq_fcn = ptp_ocp_ts_irq,
+ 			.enable = ptp_ocp_ts_enable,
+ 		},
+@@ -647,6 +670,8 @@ static struct ocp_selector ptp_ocp_sma_in[] = {
+ 	{ .name = "TS2",	.value = 0x0008 },
+ 	{ .name = "IRIG",	.value = 0x0010 },
+ 	{ .name = "DCF",	.value = 0x0020 },
++	{ .name = "TS3",	.value = 0x0040 },
++	{ .name = "TS4",	.value = 0x0080 },
+ 	{ .name = "FREQ1",	.value = 0x0100 },
+ 	{ .name = "FREQ2",	.value = 0x0200 },
+ 	{ .name = "FREQ3",	.value = 0x0400 },
+@@ -890,6 +915,12 @@ ptp_ocp_enable(struct ptp_clock_info *ptp_info, struct ptp_clock_request *rq,
+ 			ext = bp->ts2;
+ 			break;
+ 		case 3:
++			ext = bp->ts3;
++			break;
++		case 4:
++			ext = bp->ts4;
++			break;
++		case 5:
+ 			ext = bp->pps;
+ 			break;
+ 		}
+@@ -961,7 +992,7 @@ static const struct ptp_clock_info ptp_ocp_clock_info = {
+ 	.enable		= ptp_ocp_enable,
+ 	.verify		= ptp_ocp_verify,
+ 	.pps		= true,
+-	.n_ext_ts	= 4,
++	.n_ext_ts	= 6,
+ 	.n_per_out	= 5,
  };
-@@ -1833,6 +1864,8 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	ver = bp->fw_version & 0xffff;
- 	if (ver >= 19)
- 		bp->fw_cap |= OCP_CAP_SIGNAL;
-+	if (ver >= 20)
-+		bp->fw_cap |= OCP_CAP_FREQ;
  
- 	ptp_ocp_tod_init(bp);
- 	ptp_ocp_nmea_out_init(bp);
-@@ -2428,6 +2461,73 @@ static EXT_ATTR_RO(signal, start, 1);
- static EXT_ATTR_RO(signal, start, 2);
- static EXT_ATTR_RO(signal, start, 3);
+@@ -3023,12 +3054,28 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ 			   on ? " ON" : "OFF", buf);
+ 	}
  
-+static ssize_t
-+seconds_store(struct device *dev, struct device_attribute *attr,
-+	      const char *buf, size_t count)
-+{
-+	struct dev_ext_attribute *ea = to_ext_attr(attr);
-+	struct ptp_ocp *bp = dev_get_drvdata(dev);
-+	int idx = (uintptr_t)ea->var;
-+	u32 val;
-+	int err;
-+
-+	err = kstrtou32(buf, 0, &val);
-+	if (err)
-+		return err;
-+	if (val > 0xff)
-+		return -EINVAL;
-+
-+	if (val)
-+		val = (val << 8) | 0x1;
-+
-+	iowrite32(val, &bp->freq_in[idx]->ctrl);
-+
-+	return count;
-+}
-+
-+static ssize_t
-+seconds_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct dev_ext_attribute *ea = to_ext_attr(attr);
-+	struct ptp_ocp *bp = dev_get_drvdata(dev);
-+	int idx = (uintptr_t)ea->var;
-+	u32 val;
-+
-+	val = ioread32(&bp->freq_in[idx]->ctrl);
-+	if (val & 1)
-+		val = (val >> 8) & 0xff;
-+	else
-+		val = 0;
-+
-+	return sysfs_emit(buf, "%u\n", val);
-+}
-+static EXT_ATTR_RW(freq, seconds, 0);
-+static EXT_ATTR_RW(freq, seconds, 1);
-+static EXT_ATTR_RW(freq, seconds, 2);
-+static EXT_ATTR_RW(freq, seconds, 3);
-+
-+static ssize_t
-+frequency_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct dev_ext_attribute *ea = to_ext_attr(attr);
-+	struct ptp_ocp *bp = dev_get_drvdata(dev);
-+	int idx = (uintptr_t)ea->var;
-+	u32 val;
-+
-+	val = ioread32(&bp->freq_in[idx]->status);
-+	if (val & FREQ_STATUS_ERROR)
-+		return sysfs_emit(buf, "error\n");
-+	if (val & FREQ_STATUS_OVERRUN)
-+		return sysfs_emit(buf, "overrun\n");
-+	if (val & FREQ_STATUS_VALID)
-+		return sysfs_emit(buf, "%lu\n", val & FREQ_STATUS_MASK);
-+	return 0;
-+}
-+static EXT_ATTR_RO(freq, frequency, 0);
-+static EXT_ATTR_RO(freq, frequency, 1);
-+static EXT_ATTR_RO(freq, frequency, 2);
-+static EXT_ATTR_RO(freq, frequency, 3);
-+
- static ssize_t
- serialnum_show(struct device *dev, struct device_attribute *attr, char *buf)
- {
-@@ -2687,6 +2787,26 @@ DEVICE_SIGNAL_GROUP(gen2, 1);
- DEVICE_SIGNAL_GROUP(gen3, 2);
- DEVICE_SIGNAL_GROUP(gen4, 3);
- 
-+#define _DEVICE_FREQ_GROUP_ATTRS(_nr)					\
-+	static struct attribute *fb_timecard_freq##_nr##_attrs[] = {	\
-+		&dev_attr_freq##_nr##_seconds.attr.attr,		\
-+		&dev_attr_freq##_nr##_frequency.attr.attr,		\
-+		NULL,							\
++	if (bp->ts3) {
++		ts_reg = bp->ts3->mem;
++		on = ioread32(&ts_reg->enable);
++		gpio_input_map(buf, bp, sma_val, 6, NULL);
++		seq_printf(s, "%7s: %s, src: %s\n", "TS3",
++			   on ? " ON" : "OFF", buf);
 +	}
 +
-+#define DEVICE_FREQ_GROUP(_name, _nr)					\
-+	_DEVICE_FREQ_GROUP_ATTRS(_nr);					\
-+	static const struct attribute_group				\
-+			fb_timecard_freq##_nr##_group = {		\
-+		.name = #_name,						\
-+		.attrs = fb_timecard_freq##_nr##_attrs,			\
-+}
++	if (bp->ts4) {
++		ts_reg = bp->ts4->mem;
++		on = ioread32(&ts_reg->enable);
++		gpio_input_map(buf, bp, sma_val, 7, NULL);
++		seq_printf(s, "%7s: %s, src: %s\n", "TS4",
++			   on ? " ON" : "OFF", buf);
++	}
 +
-+DEVICE_FREQ_GROUP(freq1, 0);
-+DEVICE_FREQ_GROUP(freq2, 1);
-+DEVICE_FREQ_GROUP(freq3, 2);
-+DEVICE_FREQ_GROUP(freq4, 3);
-+
- static struct attribute *fb_timecard_attrs[] = {
- 	&dev_attr_serialnum.attr,
- 	&dev_attr_gnss_sync.attr,
-@@ -2715,6 +2835,10 @@ static const struct ocp_attr_group fb_timecard_groups[] = {
- 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal1_group },
- 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal2_group },
- 	{ .cap = OCP_CAP_SIGNAL,    .group = &fb_timecard_signal3_group },
-+	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq0_group },
-+	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq1_group },
-+	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq2_group },
-+	{ .cap = OCP_CAP_FREQ,	    .group = &fb_timecard_freq3_group },
- 	{ },
- };
+ 	if (bp->pps) {
+ 		ts_reg = bp->pps->mem;
+ 		src = "PHC";
+ 		on = ioread32(&ts_reg->enable);
+ 		map = !!(bp->pps_req_map & OCP_REQ_TIMESTAMP);
+-		seq_printf(s, "%7s: %s, src: %s\n", "TS3",
++		seq_printf(s, "%7s: %s, src: %s\n", "TS5",
+ 			   on && map ? " ON" : "OFF", src);
  
-@@ -2779,6 +2903,36 @@ _signal_summary_show(struct seq_file *s, struct ptp_ocp *bp, int nr)
- 	seq_printf(s, " start:%llu\n", signal->start);
- }
- 
-+static void
-+_frequency_summary_show(struct seq_file *s, int nr,
-+			struct frequency_reg __iomem *reg)
-+{
-+	char label[8];
-+	bool on;
-+	u32 val;
-+
-+	if (!reg)
-+		return;
-+
-+	sprintf(label, "FREQ%d", nr);
-+	val = ioread32(&reg->ctrl);
-+	on = val & 1;
-+	val = (val >> 8) & 0xff;
-+	seq_printf(s, "%7s: %s, sec:%u",
-+		   label,
-+		   on ? " ON" : "OFF",
-+		   val);
-+
-+	val = ioread32(&reg->status);
-+	if (val & FREQ_STATUS_ERROR)
-+		seq_printf(s, ", error");
-+	if (val & FREQ_STATUS_OVERRUN)
-+		seq_printf(s, ", overrun");
-+	if (val & FREQ_STATUS_VALID)
-+		seq_printf(s, ", freq %lu Hz", val & FREQ_STATUS_MASK);
-+	seq_printf(s, "  reg:%x\n", val);
-+}
-+
- static int
- ptp_ocp_summary_show(struct seq_file *s, void *data)
- {
-@@ -2886,6 +3040,10 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 		for (i = 0; i < 4; i++)
- 			_signal_summary_show(s, bp, i);
- 
-+	if (bp->fw_cap & OCP_CAP_FREQ)
-+		for (i = 0; i < 4; i++)
-+			_frequency_summary_show(s, i, bp->freq_in[i]);
-+
- 	if (bp->irig_out) {
- 		ctrl = ioread32(&bp->irig_out->ctrl);
- 		on = ctrl & IRIG_M_CTRL_ENABLE;
+ 		map = !!(bp->pps_req_map & OCP_REQ_PPS);
+@@ -3455,6 +3502,10 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+ 		ptp_ocp_unregister_ext(bp->ts1);
+ 	if (bp->ts2)
+ 		ptp_ocp_unregister_ext(bp->ts2);
++	if (bp->ts3)
++		ptp_ocp_unregister_ext(bp->ts3);
++	if (bp->ts4)
++		ptp_ocp_unregister_ext(bp->ts4);
+ 	if (bp->pps)
+ 		ptp_ocp_unregister_ext(bp->pps);
+ 	for (i = 0; i < 4; i++)
+@@ -3511,7 +3562,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	 * allow this - if not all of the IRQ's are returned, skip the
+ 	 * extra devices and just register the clock.
+ 	 */
+-	err = pci_alloc_irq_vectors(pdev, 1, 15, PCI_IRQ_MSI | PCI_IRQ_MSIX);
++	err = pci_alloc_irq_vectors(pdev, 1, 17, PCI_IRQ_MSI | PCI_IRQ_MSIX);
+ 	if (err < 0) {
+ 		dev_err(&pdev->dev, "alloc_irq_vectors err: %d\n", err);
+ 		goto out;
 -- 
 2.31.1
 
