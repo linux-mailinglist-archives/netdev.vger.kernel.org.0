@@ -2,73 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD694D296A
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 08:23:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC7A94D2973
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 08:28:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbiCIHYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 02:24:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40642 "EHLO
+        id S230334AbiCIH3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 02:29:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiCIHYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 02:24:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCD28C7F9;
-        Tue,  8 Mar 2022 23:23:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C373661985;
-        Wed,  9 Mar 2022 07:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B79CC340E8;
-        Wed,  9 Mar 2022 07:23:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646810601;
-        bh=4vUqzSLxU7s7Wud0FXo8FM5vWbg7fksL1QMOdfnMzo4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=cKUmU7FnVEuzwTgINFLniaG5G4O0ir31nOAXpsZ4fgg0LgQvea5EG0ro1aIMKafPJ
-         t5IPK2okseBTM3e0r8z+a+/gDgY6lRzHR631qWNICGHO5bNGKL52oq0VG1wiyZDcx/
-         iasN359v1dLK3SJGdbcui79YIkOPCr5BT8ybDvX8G64mlEe55E41m5+O17zJL0zUyo
-         Ji0W7xmq7MbaPRM5dC819t5hlEN0u0GQbaOyAWKbhBP76I+3kljhL+if+lTvpW0NDx
-         v0UEQiZZoGnSk1xOJ4WLgxvMPISMUeqUZe55zN2eTtZxZS6WGuh7hCsW2dIf4oGCL/
-         zzgyhBQL//0Xg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Rakesh Pillai" <pillair@codeaurora.org>,
-        <ath10k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: Fix error handling in ath10k_setup_msa_resources
-In-Reply-To: <b69308a5-0d29-6b48-833c-f3eacfe03b08@quicinc.com> (Jeff
-        Johnson's message of "Tue, 8 Mar 2022 16:05:09 -0800")
-References: <20220308070238.19295-1-linmq006@gmail.com>
-        <b69308a5-0d29-6b48-833c-f3eacfe03b08@quicinc.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Wed, 09 Mar 2022 09:23:16 +0200
-Message-ID: <87a6dzsi6z.fsf@kernel.org>
+        with ESMTP id S230126AbiCIH3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 02:29:14 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9240622B00
+        for <netdev@vger.kernel.org>; Tue,  8 Mar 2022 23:28:15 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id 6so1297561pgg.0
+        for <netdev@vger.kernel.org>; Tue, 08 Mar 2022 23:28:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tGryQlIw34w2ani09obXo9M34KoKBh4H6bp8Rka7AYQ=;
+        b=f01ug/4W9eCov0JXMol9H6pEOupne+Mp/Ra6SayxkcVUNtDKsAep19b1nr5sM3miOf
+         Z4PDtnBudBJ8i1nAt55vYpMzSEsRRKAWhbMzB/hc2LCxs2J+P3VYAmKXI8eCkHkreqpp
+         eoISxmqAorJHXSNt6M8YroJj4bPcWuBuS0l21DlfI1V3+byUeqkGIO5/3e5PVG3CudQF
+         qAUEy4s7X3hbsM+z4NyIAwrCWf1U2WpS6bJJnDAOcYxLU+ZW4dpTa/KJSImVyYhbHJAe
+         aPRN8h/VFEZvuKDkH9cS46Lz9y3QZAJWl9fB7IDiaQt7HmmYNBBggwdlr83gJBNjhh8v
+         8hWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tGryQlIw34w2ani09obXo9M34KoKBh4H6bp8Rka7AYQ=;
+        b=LWZUUM26SUY0mCgRRszQ0BloGhAqZRcO8dpyIZ3LOUsME8Cqt1nRQXCrWMJN7B9v0c
+         otcoVl6ECRp4IxdcWDGg7tccRH0vU/gzmyg+12PE7ThAaPXN25PIXF37fpqdmz3mrx95
+         cR+RW+KqpmyGHaEpOYTd08IDke3HUv/v+Jd6JeJjDnu+OXEtgd8KfBXLr+yD2iLQOzzZ
+         IOjJaXIPXqXW6O6uUgZAZZU/0bWP8I/A3MpEABfOjkn9QJ7HEM8nx27s63/0ubN6atfv
+         osFO2rDc0IW43bxtIQ2Eyg2/TSD8N4wn2elibrzbboHKvu09/6Gn3lA3R/5oO6otTQaf
+         r6Nw==
+X-Gm-Message-State: AOAM5331PE3sp6QIHN/0PxijOnrE4gnEVQHLTTjKBem6ddBczImFguD4
+        83XBaNqHlG3gXh6MVgIslVBoXQ==
+X-Google-Smtp-Source: ABdhPJyiXCOicAZVfsoCXH5DiJT6jvBSiPpmoWP7GGYtvrQ4uLBgeqzfUu9k2L+7cM/6ZN60Eui5dw==
+X-Received: by 2002:a63:ad49:0:b0:374:916e:46e1 with SMTP id y9-20020a63ad49000000b00374916e46e1mr17476334pgo.18.1646810895007;
+        Tue, 08 Mar 2022 23:28:15 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id t24-20020a056a00139800b004f7586bc170sm1379894pfg.95.2022.03.08.23.28.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Mar 2022 23:28:14 -0800 (PST)
+Date:   Tue, 8 Mar 2022 23:28:12 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Joachim Wiberg <troglobit@gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Subject: Re: [PATCH iproute2-next v2 4/6] man: ip-link: document new
+ bcast_flood flag on bridge ports
+Message-ID: <20220308232812.5dc9e7f5@hermes.local>
+In-Reply-To: <20220309071716.2678952-5-troglobit@gmail.com>
+References: <20220309071716.2678952-1-troglobit@gmail.com>
+        <20220309071716.2678952-5-troglobit@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jeff Johnson <quic_jjohnson@quicinc.com> writes:
+On Wed,  9 Mar 2022 08:17:14 +0100
+Joachim Wiberg <troglobit@gmail.com> wrote:
 
-> On 3/7/2022 11:02 PM, Miaoqian Lin wrote:
->> The device_node pointer is returned by of_parse_phandle()  with refcount
->
-> Kalle, can you fix this nit when you apply?  remove extra space after ()
+> Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+> ---
+>  man/man8/ip-link.8.in | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+> index 19a0c9ca..6dd18f7b 100644
+> --- a/man/man8/ip-link.8.in
+> +++ b/man/man8/ip-link.8.in
+> @@ -2366,6 +2366,8 @@ the following additional arguments are supported:
+>  ] [
+>  .BR mcast_flood " { " on " | " off " }"
+>  ] [
+> +.BR bcast_flood " { " on " | " off " }"
+> +] [
+>  .BR mcast_to_unicast " { " on " | " off " }"
+>  ] [
+>  .BR group_fwd_mask " MASK"
+> @@ -2454,6 +2456,10 @@ option above.
+>  - controls whether a given port will flood multicast traffic for which
+>    there is no MDB entry.
+>  
+> +.BR bcast_flood " { " on " | " off " }"
+> +- controls flooding of broadcast traffic on the given port. By default
+> +this flag is on.
+> +
+>  .BR mcast_to_unicast " { " on " | " off " }"
+>  - controls whether a given port will replicate packets using unicast
+>    instead of multicast. By default this flag is off.
 
-Will do, thanks.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Minor nit, would be better to put options in alphabetical order in document.
+Certainly not splitting the two mcast options.
