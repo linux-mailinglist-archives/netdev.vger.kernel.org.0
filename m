@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D38E4D35C8
+	by mail.lfdr.de (Postfix) with ESMTP id EFF074D35CA
 	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:42:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236329AbiCIQrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:47:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
+        id S236536AbiCIQrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:47:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235962AbiCIQpq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:45:46 -0500
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CFFFCB5B
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:40:53 -0800 (PST)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2dbfe58670cso29643467b3.3
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 08:40:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mMGy96gwds/LgOWS0fSGRPSUvKRInK96S8xDcxzTAyc=;
-        b=L8FrgFxcd6uTRU9jhfZZIvFYaCqgyU03YZXrrtiJ4ySHKJ4oBmhJj9c6WNImcN9olX
-         SK0qHGWVbuQ7QI/pXvorEfwDHp8ApErBV/UsHqh+yPFSUvn8GraYCyyoVt9s9Va2TrmQ
-         8zyolC1o625zRyCYHlVbgXV9GKTQZK8iWj78ynS8wJATRyDTI07adNJC+ao0n+5LHIPm
-         DDj+XXKgqZUEk3h21PqCCqo4QGUBCBHRloqPAsDw4a3gLTv62y7cw56FkU+MmRTaHXND
-         OYJJqi2V4TiYVcS+2B3UZqGHGWTdrIno1nmXY1iH6cbefp4DQfpUBJUAfIzHWCV/ktU5
-         YdpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mMGy96gwds/LgOWS0fSGRPSUvKRInK96S8xDcxzTAyc=;
-        b=0YmHSpmcZoMAN0yiRaYN/CjMfKmXvYXROdGZS00PGD8l1hjuBZyBK8WC599iMG6DeV
-         yMga15+XibBM4tO5CfJ9+6NP7Fh/DX1fOWyw4BU/GDXOBHcVR8/IBq4EZo4rmokwEKXs
-         E7Da2z5utHO63ZUSyWNiW1HEgln2PCZziGM4K+dag411fSvpMkQC74S1WF/EWK/hJnyn
-         kBdkXfCkoW1DHr10mFqWDPoMYZtR8DPfjBnNqUWZETIddy5mhvqD7SgSt3okMU2FB7Xs
-         4BflGDr+lzifAlpRGKGlTp/H+lYf95eJs+VMEAaTrWilnwIuTVyoEVYQ0PuuKv3tQojr
-         9Eog==
-X-Gm-Message-State: AOAM531NA2RnCERPmwWHsXSXZg+oPoNxkigGgzoAXIVU72evJ7gyi2by
-        LhAaXhnQ1hmuOeksLPza5qEdI01mSosGhfK2VNLo8A9AG3pfvw==
-X-Google-Smtp-Source: ABdhPJyu+/dKd00qskeXLjccjdLSM6frQ3A8w+yn1MWsPN1TFBiH4C3/7bLPMOT+4UqJcUo0yDHNAPQ8WCqfiEATNAk=
-X-Received: by 2002:a81:a743:0:b0:2dc:6eab:469a with SMTP id
- e64-20020a81a743000000b002dc6eab469amr552094ywh.332.1646844052637; Wed, 09
- Mar 2022 08:40:52 -0800 (PST)
+        with ESMTP id S236007AbiCIQqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:46:14 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BD01017CE;
+        Wed,  9 Mar 2022 08:41:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B0151CE1F9A;
+        Wed,  9 Mar 2022 16:41:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A9CC340E8;
+        Wed,  9 Mar 2022 16:41:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646844077;
+        bh=xOPUR8kyT5h4mXcbguSKn9aiNBRKhddNfJVl1rQy3Vg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aDXk4FmZ3VLlaVY98dcaZ8yqn6OWfbS4aNnlOVznCs6WpL79lfiz06EiuBpiUQeFU
+         SgilRZ17aLXtLHllnASrLruAXSP3Ig9deEIchWNp7DnYNCy81LLvvth0Telu4y426l
+         uV9nMseH6t0rfH1dkO+M3cUZqI6tmEpvOoPifRJSVEYChYfOY/QHSz+EXiPeyU9BJY
+         o+JXapLiJc8uoW+tsyf8ltqFWVOMGhiUdfYxNSfhcaSZ1V000aGWhQiw+4EktMyLqj
+         uuBKW+5nYYy2TmwHIH989cLaPjnBrAhnbdzSTP4xukSZK4ls30CoeKVdwTGbqB3RmV
+         AeweD7DRYd+yg==
+Date:   Wed, 9 Mar 2022 08:41:15 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Stein <alexander.stein@ew.tq-group.com>
+Cc:     Fabio Estevam <festevam@gmail.com>, steve.glendinning@shawell.net,
+        UNGLinuxDriver@microchip.com, fntoth@gmail.com,
+        martyn.welch@collabora.com, andrew@lunn.ch, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, marex@denx.de,
+        Fabio Estevam <festevam@denx.de>
+Subject: Re: (EXT) [PATCH v2 net] smsc95xx: Ignore -ENODEV errors when
+ device is unplugged
+Message-ID: <20220309084115.05321305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <12992128.uLZWGnKmhe@steina-w>
+References: <20220305204720.2978554-1-festevam@gmail.com>
+        <12992128.uLZWGnKmhe@steina-w>
 MIME-Version: 1.0
-References: <20220309162837.407914-1-kuba@kernel.org>
-In-Reply-To: <20220309162837.407914-1-kuba@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 9 Mar 2022 08:40:41 -0800
-Message-ID: <CANn89iL6gLjLE=1=3ysUwJ3DeTjtCROj5rEvxXkW1xLHGnTf8w@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: fix build problem in tcp_inbound_md5_hash()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 8:28 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Semicolon snuck in, this breaks the build with CONFIG_TCP_MD5SIG=n.
->
-> Fixes: 4be98688274d ("skb: make drop reason booleanable")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->
+On Wed, 09 Mar 2022 15:02:21 +0100 Alexander Stein wrote:
+> > Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+> > Signed-off-by: Fabio Estevam <festevam@denx.de>  
+> 
+> Oh BTW, is this queued for stable? Which versions? If 'Fixes: a049a30fc27c 
+> ("net: usb: Correct PHY handling of smsc95xx")' is the indicator, it's not 
+> enough. This errors also shows up on v5.15.27 and is fixed with this patch.
 
-Vladimir Oltean sent the fix earlier this morning.
-
-Thanks.
+The stable machinery will most likely suck it in automatically.
+The patch should reach Linus tomorrow evening if you want to ping 
+Greg and make sure.
