@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D47B4D36F6
-	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:44:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4BF4D3666
+	for <lists+netdev@lfdr.de>; Wed,  9 Mar 2022 18:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236392AbiCIQrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 11:47:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        id S236064AbiCIQv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 11:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236011AbiCIQqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:46:14 -0500
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E3C12B
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:41:33 -0800 (PST)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2dc242a79beso29347077b3.8
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 08:41:33 -0800 (PST)
+        with ESMTP id S237098AbiCIQso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 11:48:44 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91214A8898
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 08:42:41 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id jq9so2471160qvb.0
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 08:42:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BKX4i6UhtdbagXTE8rWIuHmxawiMbBsl+I43GhvcqbE=;
-        b=OAuioVH8750WTiZVd1Ja/GXYr46ZF1gxUkv4c/rj/5TQgcapPJzRvjXxLP7c4TpGCT
-         GFJ8ZD0KVQNzJqmAh6WYbSTqjgSxbLUrcJ82M7+R7j5cHTegQ5/P9htbDv8mXbD7TjnM
-         UlnJY9V5TtqH+moG/GcQpdLJiGU4NL8GdnNRE7Qs0xGMhBM8An29ki1owm4aJrc6xzdr
-         mj2WH2OuJbJPCiIruuFDTJxJ8BmwSeF0JF6zQYIu/P3wifyMxkt5iRZbose/OqZ8G8AI
-         /s2+ZU19/BUdkoAYMuuczqy8ZkC7WlkrMLNSvPUT3j+uwRsSgeU67im/EIAC+PZg3IId
-         4h1A==
+        bh=japqQLXCRrV8PCyHdjA0uszSf6L92AW4oPss1TXIsWM=;
+        b=YEYF7JoCcxDzDBVSnjS+ga5AgbGOXh4sOcKrKZEU5QBVncPfwSPmg6LSrs/QC3PsLF
+         /+9JFQAn+r9fJl77zBKg9t//yL+2PzT5HBUK787sxVcshza9RNhkfc0a4syrSFT97yik
+         IzPlbHjzk1rg26EZtx3A2dtTgvXyPYLEFqptDLbXKzoazmmrKTZRcEfI3Snhas/lz/uh
+         355WsbRWYPr//soUfvzr2HH/REVZT5pe1CW4uNHno3L42cYvjwHU1foeYcJ1IYPU9XGt
+         5eU8J1np46Q9bAO6+ksigOaMfwzLBbDXNDO8kcZGeUUPDmvbDqqshspO53tUp2Gk+iTK
+         IqVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BKX4i6UhtdbagXTE8rWIuHmxawiMbBsl+I43GhvcqbE=;
-        b=6jnRpB1NsPBNiU5fmbABUnBghMicOi+eNA3jXi+AZTZFI+da3KnnQIJAqtmUN6AL5R
-         MXe7fMc4DMfWn6ZMmYJguN/nSj2dEjdMdwdFvGH4hB8Gz7leWlOppZntlbWP+cXaoz0+
-         XZBwacWM7/GtywMsS+bUmAGOv5BfYhrKE8Yh6WcZV9Xy0lmaEGsRHfYob8SYcUbdh0DS
-         D+vgPyrMz6yVOCAf026Kh/8OpaqsS15Gh21xJbDIMDlw/Sy/f0Bcw+BScdTQz7ELlONS
-         lUNfI9GCWRylxMEGFm+xfKCEmgoglzYiWkcuXmStXkbxIbBCiOWdBBHYYhlWHpOmkxMo
-         HeOw==
-X-Gm-Message-State: AOAM533R2N8DQEfh6QFQLSDuv8+ixnT62WrXRMXGqzgW4mM/DMJI8vER
-        rIRU+J9yhO2Va7ZTSU3xcjh5Jlv/BLM6Py3glFqiRQ==
-X-Google-Smtp-Source: ABdhPJwAs4XpdV35RXepIGWvBpWRbX0/Q9vTJwfWIt9Y4+4qCniz1Af2o5VxYhnfU3bYgS1wv/yMI9i1hd8cydEtTAo=
-X-Received: by 2002:a0d:dd85:0:b0:2dc:5589:763a with SMTP id
- g127-20020a0ddd85000000b002dc5589763amr559815ywe.278.1646844092652; Wed, 09
- Mar 2022 08:41:32 -0800 (PST)
+        bh=japqQLXCRrV8PCyHdjA0uszSf6L92AW4oPss1TXIsWM=;
+        b=gmiO9iKaaZZ1T1Jj/IQ05tNYs9zBo/5mA0SzApLlwLnOxYUtx3OZVuaepBZq1zOBlO
+         69KFMnLVau5M3h6GBdcmox2A+hdAX9wsiiL3z5RnGdWqQhCBBkZMhgvxTuDIbW5SYWJq
+         tK+69N+V/BZzQ6BPKXxLmh2bWFAr2fXYqEJNyAWLrVsqXZ8dLPRniWzfDITN18u/b1pE
+         FF4DltQuHrF7qGURngVN6DwCuN+ZaAvEJDerip+GiclaBrij3QwniwENq8tSpMlq8QE9
+         2mfMmr1kONjn/NtU5tN49/L83ozymoYM2CkZk5bijipeXU1EJdsMFlBFWvsS2uSm7gc0
+         ZlTg==
+X-Gm-Message-State: AOAM532BX8YZw/Rv8Lyi/IUGOd5mOyFSlLEF+shvMRtMpxqLXWpmdQM2
+        ARrSccsMS6iZGGjol3tBqoox/TTui22/Pr3mGfrJ/w==
+X-Google-Smtp-Source: ABdhPJyBFTnJ0QD/X5H8JpxBuFQKo1xSx5xXQfP/XbipAA7zy7gjc3qVOt7xionOjtFksiWbeEzc1bBiWlao4xcDMNw=
+X-Received: by 2002:a05:6214:627:b0:435:cddc:3db0 with SMTP id
+ a7-20020a056214062700b00435cddc3db0mr354477qvx.47.1646844160437; Wed, 09 Mar
+ 2022 08:42:40 -0800 (PST)
 MIME-Version: 1.0
-References: <20220309122012.668986-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220309122012.668986-1-vladimir.oltean@nxp.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 9 Mar 2022 08:41:21 -0800
-Message-ID: <CANn89iKQt2jB8WthN9h+rTogNYjULznyccLXMHhLiv__Qyygyw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: tcp: fix shim definition of tcp_inbound_md5_hash
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>
+References: <20220308030348.258934-1-kuba@kernel.org> <CANn89iLoWOdLQWB0PeTtbOtzkAT=cWgzy5_RXqqLchZu1GziZw@mail.gmail.com>
+ <652afb8e99a34afc86bd4d850c1338e5@AcuMS.aculab.com> <CANn89iL0XWF8aavPFnTrRazV9T5fZtn3xJXrEb07HTdrM=rykw@mail.gmail.com>
+ <20220308161821.45cb17bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220308161821.45cb17bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 9 Mar 2022 11:42:24 -0500
+Message-ID: <CADVnQykz55R-UVu4RbP=uYBaK309X7oCpDk=JyUy=VudJ7z+ZA@mail.gmail.com>
+Subject: Re: [RFC net-next] tcp: allow larger TSO to be built under overload
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Yuchung Cheng <ycheng@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -67,16 +71,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 4:20 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Tue, Mar 8, 2022 at 7:18 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> When CONFIG_TCP_MD5SIG isn't enabled, there is a compilation bug due to
-> the fact that the static inline definition of tcp_inbound_md5_hash() has
-> an unexpected semicolon. Remove it.
+> On Tue, 8 Mar 2022 11:53:38 -0800 Eric Dumazet wrote:
+> > Jakub, Neal, I am going to send a patch for net-next.
+> >
+> > In conjunction with BIG TCP, this gives a considerable boost of performance.
 >
-> Fixes: 1330b6ef3313 ("skb: make drop reason booleanable")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+> SGTM! The change may cause increased burstiness, or is that unlikely?
+> I'm asking to gauge risk / figure out appropriate roll out plan.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+In theory it could cause increased burstiness in some scenarios, but
+in practice we have used this min_rtt-based TSO autosizing component
+in production for about two years, where we see improvements in load
+tests and no problems seen in production.
 
-Thanks!
+neal
