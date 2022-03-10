@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 202534D4C4A
+	by mail.lfdr.de (Postfix) with ESMTP id C151D4D4C4C
 	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244721AbiCJOyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 09:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
+        id S236121AbiCJOyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 09:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245214AbiCJOjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:39:18 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BF62672
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:32:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=t/ci4HxTSIxtB5zk0xbrq5lg/qcvKevxFThZk+qM/nQ=; b=k0jwSr7dXMVTnUZrmq1wK7qIfN
-        9FuUF3sE7ckBbTYnPQWbd9qs1sIxRUh6mbPgI/zErE3RMZp91nflwuzqJGVPCw2qckcuLKth1xgvV
-        B42p04aFI0r/x56zWGR0nDKVVCMoKkp4Jfdu/3y1CBOXOYG1mXE1YquBk2zZF6vYYwgOBT9OxcQ71
-        5LlJLkuKAVdjwOGSPk/sQjREgSKRb1JROpMalcf64dmfoEcmKb4zYYRuRDqkyhpSDlxgfWsXW925V
-        Zz/F4EHeaTDVUOCBMVPPe0Z0uLmKxwtKr+ToZV7rNNYkPo+lzYL005LKNPhjJlNLsnVhMLO9J6bF7
-        1bdHTSDQ==;
-Received: from [2001:4bb8:184:7746:c70:4a89:bc61:2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nSJqC-00D7yY-EU; Thu, 10 Mar 2022 14:32:32 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] tcp: unexport tcp_ca_get_key_by_name and tcp_ca_get_name_by_key
-Date:   Thu, 10 Mar 2022 15:32:29 +0100
-Message-Id: <20220310143229.895319-1-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S1345277AbiCJOlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:41:46 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D1218E40E;
+        Thu, 10 Mar 2022 06:36:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=X8rk1wKGgoot4D0abN1n7B47xEHjhOnmzv7J1avYjn0=; b=tcgNy46d72iV0QSf94ZwkSbPZc
+        fiCNYP4pWJM8c/hJV6i7JGSHbwAcifxMJ5QS248qdiiElDvdtzg0y/Q1EP3mDErc9XjqNUBk7Jcy3
+        R594egyRYg1kQrikaVNnld5cbVTlffScORNO6vcm5TKrGaHoFYXiuCjNuGfKq5G9Wk5I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nSJtv-00A9C3-9m; Thu, 10 Mar 2022 15:36:23 +0100
+Date:   Thu, 10 Mar 2022 15:36:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        david.laight@aculab.com
+Subject: Re: [PATCH net-next v2] net: lan966x: Improve the CPU TX bitrate.
+Message-ID: <YioM5zVqFtFxYhc+@lunn.ch>
+References: <20220310084005.262551-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310084005.262551-1-horatiu.vultur@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both functions are only used by core networking code.
+On Thu, Mar 10, 2022 at 09:40:05AM +0100, Horatiu Vultur wrote:
+> When doing manual injection of the frame, it is required to check if the
+> TX FIFO is ready to accept the next word of the frame. For this we are
+> using 'readx_poll_timeout_atomic', the only problem is that before it
+> actually checks the status, is determining the time when to finish polling
+> the status. Which seems to be an expensive operation.
+> Therefore check the status of the TX FIFO before calling
+> 'readx_poll_timeout_atomic'.
+> Doing this will improve the TX bitrate by ~70%. Because 99% the FIFO is
+> ready by that time. The measurements were done using iperf3.
+> 
+> Before:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.03  sec  55.2 MBytes  46.2 Mbits/sec    0 sender
+> [  5]   0.00-10.04  sec  53.8 MBytes  45.0 Mbits/sec      receiver
+> 
+> After:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.10  sec  95.0 MBytes  78.9 Mbits/sec    0 sender
+> [  5]   0.00-10.11  sec  95.0 MBytes  78.8 Mbits/sec      receiver
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- net/ipv4/tcp_cong.c | 2 --
- 1 file changed, 2 deletions(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index db5831e6c136a..dc95572163df3 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -135,7 +135,6 @@ u32 tcp_ca_get_key_by_name(struct net *net, const char *name, bool *ecn_ca)
- 
- 	return key;
- }
--EXPORT_SYMBOL_GPL(tcp_ca_get_key_by_name);
- 
- char *tcp_ca_get_name_by_key(u32 key, char *buffer)
- {
-@@ -151,7 +150,6 @@ char *tcp_ca_get_name_by_key(u32 key, char *buffer)
- 
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(tcp_ca_get_name_by_key);
- 
- /* Assign choice of congestion control. */
- void tcp_assign_congestion_control(struct sock *sk)
--- 
-2.30.2
-
+    Andrew
