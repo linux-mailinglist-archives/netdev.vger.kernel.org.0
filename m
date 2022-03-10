@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1444D4264
+	by mail.lfdr.de (Postfix) with ESMTP id D85B34D4266
 	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239191AbiCJIXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 03:23:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
+        id S240278AbiCJIXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 03:23:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234545AbiCJIXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:23:09 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D9899698;
-        Thu, 10 Mar 2022 00:22:08 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id 15-20020a17090a098f00b001bef0376d5cso4548828pjo.5;
-        Thu, 10 Mar 2022 00:22:08 -0800 (PST)
+        with ESMTP id S234558AbiCJIXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:23:10 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C15D1301B6;
+        Thu, 10 Mar 2022 00:22:10 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id mm23-20020a17090b359700b001bfceefd8c6so1339992pjb.3;
+        Thu, 10 Mar 2022 00:22:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vxbnybQKpkfay2iHQzcgyktbxlcEBTXr8udywXFflIs=;
-        b=W/3z9Oqdh8/2k2g6SQJMQUoexKyl+RSMUAXa9Zuuya31CAiVULnsn3yGTxZIGoG8ts
-         diUceabMVH9Da0WTMZ7ywZ1qwtG0u43WzVE8RYXfruZQSPZdmsuYbaO0AOA7mqeDRdqg
-         fCbMH1sQ6Ks5lPlROKJ19NzNXpV6MiRW7L0lzScEb32ooKrO/C9hm9eCHeiSXhCWWXZT
-         13U9NQ//BfS9aKJS6Y9I4Lw+szbi+ikvTgqUECIW4svuQWjhQaOAJEbu+diwWS+2nWYS
-         y0w0oEt+WKWrRw0Orl/CmvTMQ2P9/WRdWGYNGv5Pq0R/wqrvHyxdG9m2aL+1X9il91on
-         oTsA==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=z/Mr8oh0sWKEm17KedkzMdcKpYvzoba3uTd2uHZZr9s=;
+        b=X5ihtfVuum0YUKHMU2jEqc/tEzjv6a/y4+REtlgaXQECTGRJCtu/aJJcsq4m7/KfJK
+         UMf4hBdUYJGwVdbYQU94a57SU+/YGmMW5CpdGa+K+enoInnOnlkuQh3oKmJpphJLPZIl
+         g6wHG7Gb7E38d32RU4uxaz0ZXrnkuXDBBwUqkvhJdDUvd92wYPEmD1j8chbQ4sBo78xS
+         +uy4b2cX5ouWwTKYhmfgqn6lWt88VxBQcyZ5pzEofdgRvdjJx0R5iv4xvk6HweHwxP8R
+         L/mhBMQcw/f/ODTz0BevBtf7MG6muzgCjI3QRjpWzHLkYgayzOmhnQDnxJRKbAmQYIn7
+         wF2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=vxbnybQKpkfay2iHQzcgyktbxlcEBTXr8udywXFflIs=;
-        b=f4xv5G1I2n20kU5kdJx7eflbhvygIX08Jn1UAnS0VMNE6D8xr6FZQYb2VhCP8PcjsV
-         V8om95Na9Qy9qDJvTCvIFuwdCuM9i4SrzqTEmT4RliIQpSZmMoHKJVlcq31HOUY3oBRZ
-         xln4vRqdULvipWoAhD/h5K89eIZ988DLS6yymnsl73dXUQRt2XG5Dd1e8J7lUdcLaKRg
-         LmwR/FLyznYswOWwk+nQFzitD5ZMW5M/17V0Y0pzE+tjOdLl+2ZzLuQL42ZGj9DaNWyU
-         U1NhyKjD13Jm9J7xvUrX31WNQtV0OW56fL/lZeROF2F/id0T1W7vS5dBIr7rhhQF5ndt
-         bogw==
-X-Gm-Message-State: AOAM5314o+9j2lq3zSON7pu/+/nstz00Cm43wRD4gBJtsndoOIqiNQ6L
-        9pMzPZDhxazWGCDizXrB8Sw=
-X-Google-Smtp-Source: ABdhPJzWohQvo5vEKV4hAl68MPDykkWW2muYj8ILf8prnZuxRyRz2xPPkTGxLKnCQNcCkJHxfEZGFw==
-X-Received: by 2002:a17:90b:384:b0:1bf:cd0f:81b4 with SMTP id ga4-20020a17090b038400b001bfcd0f81b4mr2873148pjb.199.1646900527902;
-        Thu, 10 Mar 2022 00:22:07 -0800 (PST)
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=z/Mr8oh0sWKEm17KedkzMdcKpYvzoba3uTd2uHZZr9s=;
+        b=Jr5vYbi+27vFnlf0Hpg+G1x5Y3PgAUo5gsbVD7pSdjGH12XqjjioGH1YnWJgcyMtZG
+         f7WkA1qnv80bxblPv9R7E7Khe+q+ZLpnhRBBlJfwk72exXS91rbLUDnsvHIznrmQWELF
+         QFQRw9kL9jhhndkrXV/tt5gPon71dfv/xQb/0n1N8Wxz2kIX23H49jbg5Oow/bLSnAcM
+         DYp33yAbnxC3sqFkRfFsGMl3DEPJGQB8uBiTMGXhZaVF6JbCVj3EZLQcO9iwmc9WWHbq
+         3E2vQ8Y6t5y4NyhSrxwFqMqtfTRcbhsU/GMbymhwLjQbMxjN39z7fGEsVZOM98OHl7jT
+         NQwg==
+X-Gm-Message-State: AOAM532MnYzqx2AjoVEqfgbDvpEBX8sx1kmmqiyV/ZtWTiCjLWoci8r0
+        Vo0x2YDwxZwThhAvfh5dNBzasvU1QRs=
+X-Google-Smtp-Source: ABdhPJxaKvATvJcKM/p3sRrZdAYUBZaW3EkkpE4vAwzzsPiNpXHpRAotjVf4CnOg/RpQyF5KKuyVMg==
+X-Received: by 2002:a17:90b:2092:b0:1be:e373:2ed9 with SMTP id hb18-20020a17090b209200b001bee3732ed9mr3773083pjb.128.1646900529744;
+        Thu, 10 Mar 2022 00:22:09 -0800 (PST)
 Received: from balhae.hsd1.ca.comcast.net ([2601:647:4800:3540:e7f1:5749:9be:64e1])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056a000c8c00b004e1a76f0a8asm5903008pfv.51.2022.03.10.00.22.05
+        by smtp.gmail.com with ESMTPSA id a12-20020a056a000c8c00b004e1a76f0a8asm5903008pfv.51.2022.03.10.00.22.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 00:22:07 -0800 (PST)
+        Thu, 10 Mar 2022 00:22:09 -0800 (PST)
 Sender: Namhyung Kim <namhyung@gmail.com>
 From:   Namhyung Kim <namhyung@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -60,10 +60,12 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Arnaldo Carvalho de Melo <acme@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
         Eugene Loh <eugene.loh@oracle.com>, Hao Luo <haoluo@google.com>
-Subject: [PATCH 1/2] bpf: Adjust BPF stack helper functions to accommodate skip > 0
-Date:   Thu, 10 Mar 2022 00:22:01 -0800
-Message-Id: <20220310082202.1229345-1-namhyung@kernel.org>
+Subject: [PATCH 2/2] bpf/selftests: Test skipping stacktrace
+Date:   Thu, 10 Mar 2022 00:22:02 -0800
+Message-Id: <20220310082202.1229345-2-namhyung@kernel.org>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+In-Reply-To: <20220310082202.1229345-1-namhyung@kernel.org>
+References: <20220310082202.1229345-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,184 +79,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let's say that the caller has storage for num_elem stack frames.  Then,
-the BPF stack helper functions walk the stack for only num_elem frames.
-This means that if skip > 0, one keeps only 'num_elem - skip' frames.
+Add a test case for stacktrace with skip > 0 using a small sized
+buffer.  It didn't support skipping entries greater than or equal to
+the size of buffer and filled the skipped part with 0.
 
-This is because it sets init_nr in the perf_callchain_entry to the end
-of the buffer to save num_elem entries only.  I believe it was because
-the perf callchain code unwound the stack frames until it reached the
-global max size (sysctl_perf_event_max_stack).
-
-However it now has perf_callchain_entry_ctx.max_stack to limit the
-iteration locally.  This simplifies the code to handle init_nr in the
-BPF callstack entries and removes the confusion with the perf_event's
-__PERF_SAMPLE_CALLCHAIN_EARLY which sets init_nr to 0.
-
-Also change the comment on bpf_get_stack() in the header file to be
-more explicit what the return value means.
-
-Based-on-patch-by: Eugene Loh <eugene.loh@oracle.com>
 Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- include/uapi/linux/bpf.h |  4 +--
- kernel/bpf/stackmap.c    | 56 +++++++++++++++++-----------------------
- 2 files changed, 26 insertions(+), 34 deletions(-)
+ .../bpf/prog_tests/stacktrace_map_skip.c      | 72 ++++++++++++++++
+ .../selftests/bpf/progs/stacktrace_map_skip.c | 82 +++++++++++++++++++
+ 2 files changed, 154 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c
+ create mode 100644 tools/testing/selftests/bpf/progs/stacktrace_map_skip.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b0383d371b9a..77f4a022c60c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2975,8 +2975,8 @@ union bpf_attr {
-  *
-  * 			# sysctl kernel.perf_event_max_stack=<new value>
-  * 	Return
-- * 		A non-negative value equal to or less than *size* on success,
-- * 		or a negative error in case of failure.
-+ * 		The non-negative copied *buf* length equal to or less than
-+ * 		*size* on success, or a negative error in case of failure.
-  *
-  * long bpf_skb_load_bytes_relative(const void *skb, u32 offset, void *to, u32 len, u32 start_header)
-  * 	Description
-diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-index 22c8ae94e4c1..2823dcefae10 100644
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -166,7 +166,7 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
- }
- 
- static struct perf_callchain_entry *
--get_callchain_entry_for_task(struct task_struct *task, u32 init_nr)
-+get_callchain_entry_for_task(struct task_struct *task, u32 max_depth)
- {
- #ifdef CONFIG_STACKTRACE
- 	struct perf_callchain_entry *entry;
-@@ -177,9 +177,8 @@ get_callchain_entry_for_task(struct task_struct *task, u32 init_nr)
- 	if (!entry)
- 		return NULL;
- 
--	entry->nr = init_nr +
--		stack_trace_save_tsk(task, (unsigned long *)(entry->ip + init_nr),
--				     sysctl_perf_event_max_stack - init_nr, 0);
-+	entry->nr = stack_trace_save_tsk(task, (unsigned long *)entry->ip,
-+					 max_depth, 0);
- 
- 	/* stack_trace_save_tsk() works on unsigned long array, while
- 	 * perf_callchain_entry uses u64 array. For 32-bit systems, it is
-@@ -191,7 +190,7 @@ get_callchain_entry_for_task(struct task_struct *task, u32 init_nr)
- 		int i;
- 
- 		/* copy data from the end to avoid using extra buffer */
--		for (i = entry->nr - 1; i >= (int)init_nr; i--)
-+		for (i = entry->nr - 1; i >= 0; i--)
- 			to[i] = (u64)(from[i]);
- 	}
- 
-@@ -208,27 +207,19 @@ static long __bpf_get_stackid(struct bpf_map *map,
- {
- 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
- 	struct stack_map_bucket *bucket, *new_bucket, *old_bucket;
--	u32 max_depth = map->value_size / stack_map_data_size(map);
--	/* stack_map_alloc() checks that max_depth <= sysctl_perf_event_max_stack */
--	u32 init_nr = sysctl_perf_event_max_stack - max_depth;
- 	u32 skip = flags & BPF_F_SKIP_FIELD_MASK;
- 	u32 hash, id, trace_nr, trace_len;
- 	bool user = flags & BPF_F_USER_STACK;
- 	u64 *ips;
- 	bool hash_matches;
- 
--	/* get_perf_callchain() guarantees that trace->nr >= init_nr
--	 * and trace-nr <= sysctl_perf_event_max_stack, so trace_nr <= max_depth
--	 */
--	trace_nr = trace->nr - init_nr;
--
--	if (trace_nr <= skip)
-+	if (trace->nr <= skip)
- 		/* skipping more than usable stack trace */
- 		return -EFAULT;
- 
--	trace_nr -= skip;
-+	trace_nr = trace->nr - skip;
- 	trace_len = trace_nr * sizeof(u64);
--	ips = trace->ip + skip + init_nr;
-+	ips = trace->ip + skip;
- 	hash = jhash2((u32 *)ips, trace_len / sizeof(u32), 0);
- 	id = hash & (smap->n_buckets - 1);
- 	bucket = READ_ONCE(smap->buckets[id]);
-@@ -285,8 +276,7 @@ BPF_CALL_3(bpf_get_stackid, struct pt_regs *, regs, struct bpf_map *, map,
- 	   u64, flags)
- {
- 	u32 max_depth = map->value_size / stack_map_data_size(map);
--	/* stack_map_alloc() checks that max_depth <= sysctl_perf_event_max_stack */
--	u32 init_nr = sysctl_perf_event_max_stack - max_depth;
-+	u32 skip = flags & BPF_F_SKIP_FIELD_MASK;
- 	bool user = flags & BPF_F_USER_STACK;
- 	struct perf_callchain_entry *trace;
- 	bool kernel = !user;
-@@ -295,8 +285,12 @@ BPF_CALL_3(bpf_get_stackid, struct pt_regs *, regs, struct bpf_map *, map,
- 			       BPF_F_FAST_STACK_CMP | BPF_F_REUSE_STACKID)))
- 		return -EINVAL;
- 
--	trace = get_perf_callchain(regs, init_nr, kernel, user,
--				   sysctl_perf_event_max_stack, false, false);
-+	max_depth += skip;
-+	if (max_depth > sysctl_perf_event_max_stack)
-+		max_depth = sysctl_perf_event_max_stack;
+diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c
+new file mode 100644
+index 000000000000..bcb244aa3c78
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c
+@@ -0,0 +1,72 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include "stacktrace_map_skip.skel.h"
 +
-+	trace = get_perf_callchain(regs, 0, kernel, user, max_depth,
-+				   false, false);
- 
- 	if (unlikely(!trace))
- 		/* couldn't fetch the stack trace */
-@@ -387,7 +381,7 @@ static long __bpf_get_stack(struct pt_regs *regs, struct task_struct *task,
- 			    struct perf_callchain_entry *trace_in,
- 			    void *buf, u32 size, u64 flags)
- {
--	u32 init_nr, trace_nr, copy_len, elem_size, num_elem;
-+	u32 trace_nr, copy_len, elem_size, num_elem, max_depth;
- 	bool user_build_id = flags & BPF_F_USER_BUILD_ID;
- 	u32 skip = flags & BPF_F_SKIP_FIELD_MASK;
- 	bool user = flags & BPF_F_USER_STACK;
-@@ -412,30 +406,28 @@ static long __bpf_get_stack(struct pt_regs *regs, struct task_struct *task,
- 		goto err_fault;
- 
- 	num_elem = size / elem_size;
--	if (sysctl_perf_event_max_stack < num_elem)
--		init_nr = 0;
--	else
--		init_nr = sysctl_perf_event_max_stack - num_elem;
-+	max_depth = num_elem + skip;
-+	if (sysctl_perf_event_max_stack < max_depth)
-+		max_depth = sysctl_perf_event_max_stack;
- 
- 	if (trace_in)
- 		trace = trace_in;
- 	else if (kernel && task)
--		trace = get_callchain_entry_for_task(task, init_nr);
-+		trace = get_callchain_entry_for_task(task, max_depth);
- 	else
--		trace = get_perf_callchain(regs, init_nr, kernel, user,
--					   sysctl_perf_event_max_stack,
-+		trace = get_perf_callchain(regs, 0, kernel, user, max_depth,
- 					   false, false);
- 	if (unlikely(!trace))
- 		goto err_fault;
- 
--	trace_nr = trace->nr - init_nr;
--	if (trace_nr < skip)
-+	if (trace->nr < skip)
- 		goto err_fault;
- 
--	trace_nr -= skip;
-+	trace_nr = trace->nr - skip;
- 	trace_nr = (trace_nr <= num_elem) ? trace_nr : num_elem;
- 	copy_len = trace_nr * elem_size;
--	ips = trace->ip + skip + init_nr;
++#define TEST_STACK_DEPTH  2
 +
-+	ips = trace->ip + skip;
- 	if (user && user_build_id)
- 		stack_map_get_build_id_offset(buf, ips, trace_nr, user);
- 	else
++void test_stacktrace_map_skip(void)
++{
++	struct stacktrace_map_skip *skel;
++	int control_map_fd, stackid_hmap_fd, stackmap_fd, stack_amap_fd;
++	int err, stack_trace_len;
++	__u32 key, val, duration = 0;
++
++	skel = stacktrace_map_skip__open_and_load();
++	if (CHECK(!skel, "skel_open_and_load", "skeleton open failed\n"))
++		return;
++
++	/* find map fds */
++	control_map_fd = bpf_map__fd(skel->maps.control_map);
++	if (CHECK_FAIL(control_map_fd < 0))
++		goto out;
++
++	stackid_hmap_fd = bpf_map__fd(skel->maps.stackid_hmap);
++	if (CHECK_FAIL(stackid_hmap_fd < 0))
++		goto out;
++
++	stackmap_fd = bpf_map__fd(skel->maps.stackmap);
++	if (CHECK_FAIL(stackmap_fd < 0))
++		goto out;
++
++	stack_amap_fd = bpf_map__fd(skel->maps.stack_amap);
++	if (CHECK_FAIL(stack_amap_fd < 0))
++		goto out;
++
++	err = stacktrace_map_skip__attach(skel);
++	if (CHECK(err, "skel_attach", "skeleton attach failed\n"))
++		goto out;
++
++	/* give some time for bpf program run */
++	sleep(1);
++
++	/* disable stack trace collection */
++	key = 0;
++	val = 1;
++	bpf_map_update_elem(control_map_fd, &key, &val, 0);
++
++	/* for every element in stackid_hmap, we can find a corresponding one
++	 * in stackmap, and vise versa.
++	 */
++	err = compare_map_keys(stackid_hmap_fd, stackmap_fd);
++	if (CHECK(err, "compare_map_keys stackid_hmap vs. stackmap",
++		  "err %d errno %d\n", err, errno))
++		goto out;
++
++	err = compare_map_keys(stackmap_fd, stackid_hmap_fd);
++	if (CHECK(err, "compare_map_keys stackmap vs. stackid_hmap",
++		  "err %d errno %d\n", err, errno))
++		goto out;
++
++	stack_trace_len = TEST_STACK_DEPTH * sizeof(__u64);
++	err = compare_stack_ips(stackmap_fd, stack_amap_fd, stack_trace_len);
++	if (CHECK(err, "compare_stack_ips stackmap vs. stack_amap",
++		  "err %d errno %d\n", err, errno))
++		goto out;
++
++	if (CHECK(skel->bss->failed, "check skip",
++		  "failed to skip some depth: %d", skel->bss->failed))
++		goto out;
++
++out:
++	stacktrace_map_skip__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c b/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c
+new file mode 100644
+index 000000000000..323248b17ae4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c
+@@ -0,0 +1,82 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++#define TEST_STACK_DEPTH         2
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, __u32);
++} control_map SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(max_entries, 16384);
++	__type(key, __u32);
++	__type(value, __u32);
++} stackid_hmap SEC(".maps");
++
++typedef __u64 stack_trace_t[TEST_STACK_DEPTH];
++
++struct {
++	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
++	__uint(max_entries, 16384);
++	__type(key, __u32);
++	__type(value, stack_trace_t);
++} stackmap SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 16384);
++	__type(key, __u32);
++	__type(value, stack_trace_t);
++} stack_amap SEC(".maps");
++
++/* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
++struct sched_switch_args {
++	unsigned long long pad;
++	char prev_comm[TASK_COMM_LEN];
++	int prev_pid;
++	int prev_prio;
++	long long prev_state;
++	char next_comm[TASK_COMM_LEN];
++	int next_pid;
++	int next_prio;
++};
++
++int failed = 0;
++
++SEC("tracepoint/sched/sched_switch")
++int oncpu(struct sched_switch_args *ctx)
++{
++	__u32 max_len = TEST_STACK_DEPTH * sizeof(__u64);
++	__u32 key = 0, val = 0, *value_p;
++	__u64 *stack_p;
++
++	value_p = bpf_map_lookup_elem(&control_map, &key);
++	if (value_p && *value_p)
++		return 0; /* skip if non-zero *value_p */
++
++	/* it should allow skipping whole buffer size entries */
++	key = bpf_get_stackid(ctx, &stackmap, TEST_STACK_DEPTH);
++	if ((int)key >= 0) {
++		/* The size of stackmap and stack_amap should be the same */
++		bpf_map_update_elem(&stackid_hmap, &key, &val, 0);
++		stack_p = bpf_map_lookup_elem(&stack_amap, &key);
++		if (stack_p) {
++			bpf_get_stack(ctx, stack_p, max_len, TEST_STACK_DEPTH);
++			/* it wrongly skipped all the entries and filled zero */
++			if (stack_p[0] == 0)
++				failed = 1;
++		}
++	} else if ((int)key == -14/*EFAULT*/) {
++		/* old kernel doesn't support skipping that many entries */
++		failed = 2;
++	}
++
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.35.1.723.g4982287a31-goog
 
