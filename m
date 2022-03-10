@@ -2,122 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF4A4D5100
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5084D5108
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:59:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238376AbiCJR5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 12:57:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
+        id S241084AbiCJR7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 12:59:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236272AbiCJR52 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:57:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D9481662EC
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 09:56:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646934986;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rkPBo3Z97DCJCmqrebEMdZGQBy/a9FPya5vrhdSYtWI=;
-        b=fpiaaizGCgATxgrfiwzR02xmv/zv8XSEpUscH8sCnGSyD50jeuEE6JHv3T5ZMFLHNo47Aa
-        pINqnLZI0IcQgtQDQmH8p2oaXnROIW8bFDphDW2TCDrzQjjKhKgONWMCKrJcCNw9sXwufO
-        O487KoGToEBWqBkYD9ukU7r/hpOCQPQ=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-477-MafyjCXHMkS-ACUap38Cjg-1; Thu, 10 Mar 2022 12:56:23 -0500
-X-MC-Unique: MafyjCXHMkS-ACUap38Cjg-1
-Received: by mail-qt1-f200.google.com with SMTP id ay12-20020a05622a228c00b002e0659131baso4599185qtb.11
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 09:56:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rkPBo3Z97DCJCmqrebEMdZGQBy/a9FPya5vrhdSYtWI=;
-        b=mweqXBUDDua/ZVjEd9YER8ZPM9ktvQyyvG9L4uAPopwZQY4fkDVILXRY2+NLm2ifLN
-         4FX+yqzLcrMoZZ40mIbSA66dKdpPYLz8UgMYdDcilzmzRSahFAoGlL2FZGSKXRiKer87
-         5v4mJUCUNrx/PhPfVtEaT8GwFh2wRgY5/xju8/TJoZn91be2cbk34/rwKX9M1BSMM1lG
-         PykgoOQwaIhZVPCq8Ku4dboez1OiK4gBp6mQgF+OlReWW1BX8yw5QTiar5mXLE1DJ1nx
-         AemRnrHKLdq4MK76QovlDqBzIecidmS2tbWucsq0K2Cn5vhaZ4T5y7Fo3qWlEfvluVRq
-         BRiA==
-X-Gm-Message-State: AOAM530xgTHspmbsTi8X2sNM+cgB19CIYJ2OIjnIEWmZCEyC5PKsS53a
-        kieLoz6s0YmvtqLx/kXGu88X2uKYOt4m01LxitcuBPiqrIk18N6xmP/DKy2gyWHGDCwmcpgbRsa
-        w0ZjbRuEv1QLfZzhLIsCCAcwMI7jNzSUD
-X-Received: by 2002:a05:620a:17a6:b0:67b:cd:72d0 with SMTP id ay38-20020a05620a17a600b0067b00cd72d0mr3931889qkb.406.1646934982804;
-        Thu, 10 Mar 2022 09:56:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw6gBoE5AIyUGB0jDDVS5NvaCAYKFicqPjbo6Ono52Y1893x8AibQaTsESSBkY/CW41ZRbNkWXV1gxZ2YZELXA=
-X-Received: by 2002:a05:620a:17a6:b0:67b:cd:72d0 with SMTP id
- ay38-20020a05620a17a600b0067b00cd72d0mr3931868qkb.406.1646934982618; Thu, 10
- Mar 2022 09:56:22 -0800 (PST)
+        with ESMTP id S236272AbiCJR7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:59:16 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EDAE448D;
+        Thu, 10 Mar 2022 09:58:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=67s4LA1ACb5RaCvH71SlWaGzAg+v5mOWV/nAyGumpok=; b=Jm1TmqoELDQxuVQwVOGolwc2V/
+        FaOkzoIM2DUYXl5fyzAb4UwHNQgCgzlGbO7raknWw7TEjzgvj3g1TP8YdOiugAJpjJX+oZ+pe64h6
+        F5CptwkCL109LWVOP5XQyFKbHvG9oTzyuDRCICTUriEjuZKuCRDild9x4L27b5UjRDx9EddrNt9ag
+        bmYMNTyLx25LOnkLrPLxkbRIexQa3ir8knQhOzIUdFX7HMy4MW7OGtVkahdQwGdTxD16o3eHHefoz
+        ksvR618YytGFDdq/n3L0uHRVznNCNKBqx7N40tXhZQyMqRbz4ndXJd1P1eIpFUNgvEFxSpibVMxXg
+        /5L75y5A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57774)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nSN3B-0001Wc-HQ; Thu, 10 Mar 2022 17:58:09 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nSN39-0000nD-Kr; Thu, 10 Mar 2022 17:58:07 +0000
+Date:   Thu, 10 Mar 2022 17:58:07 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, kishon@ti.com,
+        vkoul@kernel.org, robh+dt@kernel.org, leoyang.li@nxp.com,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        shawnguo@kernel.org, hongxing.zhu@nxp.com
+Subject: Re: [PATCH net-next v3 2/8] dt-bindings: phy: add the "fsl,lynx-28g"
+ compatible
+Message-ID: <Yio8L2X0Wece2Uxm@shell.armlinux.org.uk>
+References: <20220310145200.3645763-1-ioana.ciornei@nxp.com>
+ <20220310145200.3645763-3-ioana.ciornei@nxp.com>
+ <a32fa8df-bd07-8040-41cd-92484420756d@canonical.com>
 MIME-Version: 1.0
-References: <20201216064818.48239-1-jasowang@redhat.com> <20220224212314.1326-1-gdawar@xilinx.com>
- <20220224212314.1326-17-gdawar@xilinx.com>
-In-Reply-To: <20220224212314.1326-17-gdawar@xilinx.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 10 Mar 2022 18:55:46 +0100
-Message-ID: <CAJaqyWekkJEJufrWGx83eaDj2Osi2E_r=K9rY0Qh+iFb1fJ+yA@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 16/19] vdpa_sim: advertise VIRTIO_NET_F_MTU
-To:     Gautam Dawar <gautam.dawar@xilinx.com>
-Cc:     Gautam Dawar <gdawar@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Tanuj Murlidhar Kamde <tanujk@xilinx.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Longpeng <longpeng2@huawei.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a32fa8df-bd07-8040-41cd-92484420756d@canonical.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:28 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
->
-> We've already reported maximum mtu via config space, so let's
-> advertise the feature.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
-> ---
->  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-> index d5324f6fd8c7..ff22cc56f40b 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-> @@ -26,7 +26,8 @@
->  #define DRV_LICENSE  "GPL v2"
->
->  #define VDPASIM_NET_FEATURES   (VDPASIM_FEATURES | \
-> -                                (1ULL << VIRTIO_NET_F_MAC))
-> +                                (1ULL << VIRTIO_NET_F_MAC) | \
-> +                                (1ULL << VIRTIO_NET_F_MTU));
+On Thu, Mar 10, 2022 at 05:47:31PM +0100, Krzysztof Kozlowski wrote:
+> > +patternProperties:
+> > +  '^phy@[0-9a-f]$':
+> > +    type: object
+> > +    properties:
+> > +      reg:
+> > +        description:
+> > +          Number of the SerDes lane.
+> > +        minimum: 0
+> > +        maximum: 7
+> > +
+> > +      "#phy-cells":
+> > +        const: 0
+> 
+> Why do you need all these children? You just enumerated them, without
+> statuses, resources or any properties. This should be rather just index
+> of lynx-28g phy.
 
-Extra semicolon at the end of macro.
+There is good reason why the Marvell driver does it this way, and that
+is because there are shared registers amongst all the comphys on the
+SoC.
 
-Thanks.
+Where that isn't the case, and there is no other reason, I would suggest
+creating multiple phy modes, one per physical PHY in DT, giving their
+address would be a saner approach. That way, the driver isn't locked
+in to a model of "we have N PHYs which are spaced by such-and-such
+apart", and you don't have this "maximum: 7" thing above either.
 
->
->  #define VDPASIM_NET_VQ_NUM     2
->
-> --
-> 2.25.0
->
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
