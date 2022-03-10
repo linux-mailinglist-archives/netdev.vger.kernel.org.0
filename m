@@ -2,104 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7591F4D5476
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 23:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC4474D549B
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 23:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344350AbiCJWTZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Mar 2022 17:19:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S244881AbiCJWbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 17:31:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244216AbiCJWTY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 17:19:24 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B749B4EF55
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:18:21 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-101-1qRMEwtpO-2LLQYOTwUG6Q-1; Thu, 10 Mar 2022 22:18:18 +0000
-X-MC-Unique: 1qRMEwtpO-2LLQYOTwUG6Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Thu, 10 Mar 2022 22:18:17 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Thu, 10 Mar 2022 22:18:16 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Tadeusz Struk' <tadeusz.struk@linaro.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        with ESMTP id S233618AbiCJWbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 17:31:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116063EBA4;
+        Thu, 10 Mar 2022 14:30:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C16C7B82901;
+        Thu, 10 Mar 2022 22:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A09D3C340E8;
+        Thu, 10 Mar 2022 22:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646951413;
+        bh=iy+o1LnqleDh1BskAEpi+cMnfNXsytjJLxNfLpCVTu0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e5J6+cKAEWI1GK0QG0Voz1ubX9ZfLTcKcmUQyFZhOBQr5x60xj5Rz1rhig0/owiAI
+         5++cIKKhdDFeDRFRK+IqLv0gUvKy3PvemJ2oSrgP3r4FETzdCZUbmlo6Ywe34fyFru
+         0AHlxS0+fc4M/LurSmvdb/a01gBLT7X/fEm8c/kohSwSXbV4sLDSlEMVuC2tVSoasV
+         NaIZBWQFhDq3P+5HN60cERXnO81KkydPZKoFUBIuoACat1RMpvOMgrWAwhtEoC5xqa
+         5LrC2a4p53VTlQj1RI8OuuXjmbyKAYI4SoObQIU+cfVcBvDGw5MNIl69Twu+rB1gdo
+         y8lfcLfwdRFPg==
+Date:   Thu, 10 Mar 2022 14:30:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     davem@davemloft.net,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-Subject: RE: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
-Thread-Topic: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
-Thread-Index: AQHYNMwtn/GFN1e7cUOoZGj2dooiCKy5LxsQ
-Date:   Thu, 10 Mar 2022 22:18:16 +0000
-Message-ID: <d83a4ea5fc794728bf5d2bf6f0d4fce9@AcuMS.aculab.com>
-References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
- <20220310221328.877987-1-tadeusz.struk@linaro.org>
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
+Message-ID: <20220310143011.00c21f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 In-Reply-To: <20220310221328.877987-1-tadeusz.struk@linaro.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
+        <20220310221328.877987-1-tadeusz.struk@linaro.org>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tadeusz Struk
-> Sent: 10 March 2022 22:13
-> 
-> Syzbot found a kernel bug in the ipv6 stack:
-> LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-> The reproducer triggers it by sending a crafted message via sendmmsg()
-> call, which triggers skb_over_panic, and crashes the kernel:
-> 
-> skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-> head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-> dev:<NULL>
-> 
-> Add a check that prevents an invalid packet with MTU equall to the
-> fregment header size to eat up all the space for payload.
+On Thu, 10 Mar 2022 14:13:28 -0800 Tadeusz Struk wrote:
+> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> index 4788f6b37053..6d45112322a0 100644
+> --- a/net/ipv6/ip6_output.c
+> +++ b/net/ipv6/ip6_output.c
+> @@ -1649,6 +1649,16 @@ static int __ip6_append_data(struct sock *sk,
+>  			skb->protocol = htons(ETH_P_IPV6);
+>  			skb->ip_summed = csummode;
+>  			skb->csum = 0;
+> +
+> +			/*
+> +			 *	Check if there is still room for payload
+> +			 */
 
-There probably ought to be a check much earlier that stops
-the option that makes the iphdr being to big being accepted
-in the first place.
+TBH I think the check is self-explanatory. Not worth a banner comment,
+for sure.
 
-Much better to do the check in the option generation code.
+> +			if (fragheaderlen >= mtu) {
+> +				err = -EMSGSIZE;
+> +				kfree_skb(skb);
+> +				goto error;
+> +			}
 
-	David
+Not sure if Willem prefers this placement, but seems like we can lift
+this check out of the loop, as soon as fragheaderlen and mtu are known.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+>  			/* reserve for fragmentation and ipsec header */
+>  			skb_reserve(skb, hh_len + sizeof(struct frag_hdr) +
+>  				    dst_exthdrlen);
