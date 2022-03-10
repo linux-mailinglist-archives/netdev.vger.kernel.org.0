@@ -2,167 +2,493 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 563FC4D512B
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 19:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 700B14D521A
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240694AbiCJSIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 13:08:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
+        id S245395AbiCJSWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 13:22:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239025AbiCJSIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 13:08:05 -0500
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020024.outbound.protection.outlook.com [52.101.61.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28861903F2;
-        Thu, 10 Mar 2022 10:07:03 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PSiB0UXSo64OkiPZCA6G1q9XEhbD7dq8wpmeydm/RyKY9RgNkqYj1SfDvtktAnJ8ad3GqJJr++R7llnSpch3QrDLDazvAGxAQz97xa4f8EwahVk4KMCEqnzY5PRu0umUJCbA9VLf1IiWJUKLY021H8pp6D0mquGbBi736a5+AOmN5thOf1okkr1Z4GRVBXQuAdFk1j04PfQPKFxSGm32yzuq0v9YdRWPCq+5Z43osn1YUujGkLHLMKVVpcTncP4RbqCKiwzDVxgzQn8flXXu2ehdqJHAwcqYDkijWHOuQZlBae7JJoq3wTPK58dlAMCkLvNsO9DKkBnGsDCMhi8gBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xEjAA1MAJAW3I0N3JXpYMAoXY3O6gKzw5ZXtZHitods=;
- b=UyRZ7m0eEPkbMHbA0S4G5lwMfir8IKG8GMcCGLNtB4SI3oC2xwawZ2qvcDaZtv+vcdGlNm6b2z757fQP/iClv1IGEa9Wbes8mg3f+Lgry7/HBRZfMesaVpWs/Es5hRkcKaNxFxqHO3qyiFlghloZ+51MYROwhz+tZwUPCsCgBeQwp5pfNljSwXV0t3j83fSWemxUmpqcuPi/3VhbFcajXNGdHMsYx9q1sGIEFc7dTX180QvAPU9LiVXITBUAGL5xEI0HctN2NyFIrIlpwpO9D9YhfoMDt8pQQLa4/DZqFtKu4ZCrKMhLvGCLKEOoM0AYWdnWQFXpKIo0NzZjk1x12Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xEjAA1MAJAW3I0N3JXpYMAoXY3O6gKzw5ZXtZHitods=;
- b=NolLzZ4+Z3O/kQwoutDJHNUMeIew9z4d7n/4ri3H6JZ6kEEda7wOwkZR2PYZ0oIOqSVoXEWMSRNzYoVQEPI8B0BnhmTPwHtw8OlWbW58wBg9N6nXk8qLTx1B+H6I/33ewpliqbcNBKWY+hp39srCgNY7FYY6mujYEqePhS+Fet4=
-Received: from LV2PR21MB3181.namprd21.prod.outlook.com (2603:10b6:408:175::9)
- by BN6PR21MB1268.namprd21.prod.outlook.com (2603:10b6:405:8::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.8; Thu, 10 Mar
- 2022 18:06:59 +0000
-Received: from LV2PR21MB3181.namprd21.prod.outlook.com
- ([fe80::e8b6:2566:2c71:755b]) by LV2PR21MB3181.namprd21.prod.outlook.com
- ([fe80::e8b6:2566:2c71:755b%4]) with mapi id 15.20.5081.009; Thu, 10 Mar 2022
- 18:06:59 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Saurabh Sengar <ssengar@linux.microsoft.com>,
-        Saurabh Singh Sengar <ssengar@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net: netvsc: remove break after return
-Thread-Topic: [PATCH] net: netvsc: remove break after return
-Thread-Index: AQHYNKTNGNGUVzp3xEutglpO6xfq+6y46Y0A
-Date:   Thu, 10 Mar 2022 18:06:58 +0000
-Message-ID: <LV2PR21MB31819EEE2F0710BC390110A0CA0B9@LV2PR21MB3181.namprd21.prod.outlook.com>
-References: <1646933534-29493-1-git-send-email-ssengar@linux.microsoft.com>
-In-Reply-To: <1646933534-29493-1-git-send-email-ssengar@linux.microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=3f8d6cbf-5f7e-4966-9e21-6065687b3890;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-03-10T18:05:26Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2e24148c-1d38-4c65-884f-08da02c0c522
-x-ms-traffictypediagnostic: BN6PR21MB1268:EE_
-x-ms-exchange-atpmessageproperties: SA|SL
-x-microsoft-antispam-prvs: <BN6PR21MB1268023BC3A27622F02C9AF8CA0B9@BN6PR21MB1268.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: enwfc2NOnQwqFcnw/NFCzh/1+6f2H008fDnnp3w3F3fzxfHLqxwtDBn4rFVeA3jj7Z32diKanfcI25JIq6vqwNQzZRXikC2bAQ50nBIalsxn0MNQqrqB9Xz65seOn25zl12L9G63lXwHzWypXnKePzF1Zn/7MU+tiqoM+g72ZZkqsKMjcwFpuFP29ej0se+dNNGGe2JldQfHiHlUiWlkiW2wA0bYl3/4WsghXb8BQu3Kq+dcFQjXF7Mx7lE4/Y6U5yCFjWLVB+tM+ybRzfwzLofnZwtUNf9ibxjMKKw1OW0EJG61AYkkrSgBUadkvtPeOxrgqNs56SBTq6bFaTiG7g+Tm8W5swRJYiPD4OHKtXRy8FOR6Cm0I71lEjINNacJGAcqCIMATyyoyn0BHwyMitex8+L8qxiusXf90+O1xAYeFOprnveRBzLb39wcgkVt35kyUse/VvgJ7tOn/AYFifC/RxzVxv2W9IPEw7JjKKOZJh0xrCdjRoN78jvA/DOJzMzS9bSdpVGuRtCANQKFxsKBrEshpENrSq/tWHi9DC7Cet5rFZf+a0+1QmtAdmxKecKiU+Dwvuc1K28zF/MacN9ieJsq3NOiUA/0ZRI/W9tC++yvwVQw/ZL8oia5GhazYqj3CV9CDW54Oj0MpnsJI+LYWv/D4kJPyo9gChSbKqOWGeTyarbcMkMycfyPhAV1SjW33cmKZSy2yRdgqdyQvBMJCxqGRbi8a3R8kky7AofuwUmqVLGrkU8gY6hA2x/kU1UfXCekEq+UglS/ot99yg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR21MB3181.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(10290500003)(508600001)(316002)(66476007)(76116006)(8990500004)(9686003)(66556008)(26005)(186003)(66946007)(8936002)(2906002)(38100700002)(86362001)(33656002)(55016003)(6506007)(38070700005)(110136005)(7696005)(5660300002)(82950400001)(921005)(53546011)(66446008)(64756008)(82960400001)(8676002)(71200400001)(122000001)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5zV+x5h/i74t2Mp1MJkKYe9hnEHxYIH+SCyq8RU+TG7190iAAW3EbtvwULr6?=
- =?us-ascii?Q?dNBA22vUZqv2aZ1PR1lJNr/XqXDCU9VeWBzk4ebirR8agWMv9xZTeoJmtJdw?=
- =?us-ascii?Q?FsbGtOiQZz3DQlAUWMpPdNbgU8MJiT9npoC0D5hoMMOj9u74KT3vS/ZTxLUQ?=
- =?us-ascii?Q?h0z3mN1J9LTs2UrNu0qgrdleUiAg0Bf7SQF5g5fv0R6y543TNCe4+8FFO5y8?=
- =?us-ascii?Q?buFFKDGQRxpPSLn90mAJM4gm0NeCErobJp4YJavJMxl0uLfnnQOnRg24DlSk?=
- =?us-ascii?Q?1kfUka1QE6m0gIVvPrzOo7L3DOa3I28KRLDDfJJy2JudjpbTK1TEEhWDJjU+?=
- =?us-ascii?Q?2pQ3HAXsMj/V/WKGX4pjk+1rYGEFyrhSufsIfuzsH4k06uYiZ4gj+2Vpr/mg?=
- =?us-ascii?Q?imWyD5tBPeZsSIWlo2H3nzGcSHRezu4Kj6dK9e9SjLzCVIg7Kpb/Nn/ekB0M?=
- =?us-ascii?Q?YgpEQi+Fd15iMMUYZNPyhtaKNySiDZfL/TU1VwhwYg8g0uQUlA9O04i2+k3B?=
- =?us-ascii?Q?wDV8at0WMTIuVap2y3P7WFz1ePS5qDVM/+1f+/XDyhK2IomLp1Va9qDRPDMA?=
- =?us-ascii?Q?aHMK4ueNk1tQvEEgEgBjBplbWOrNpTjQtOGoyVaAzbPXZ5cutnofx9GrFDPD?=
- =?us-ascii?Q?NU5es40E/lZlGbnPKTECBsugcLI1bp9QQkXcl1w6xoZ5osPuBHCrFHRhmd3X?=
- =?us-ascii?Q?/GtAtmV64regpWPS82dsOpPtBNTaIk/cUrLQHvHdtyEePyaPen/HHBYkD1J+?=
- =?us-ascii?Q?gmE7g272MMXuhE5pvsTxWOB7CMA5Rk0BP3z2k9puPtvd11hKRDYSOhz8tyvD?=
- =?us-ascii?Q?2SfA/kPtD2SPQYD7uVLlgGMFJ4AuUS8HxBI6sU+iv6bHe3sdArbvPBEWL+9J?=
- =?us-ascii?Q?efUK42HeROHWSfRz4p+DnqFUcsHdruD81WKYsFEynetFvVQ/fZOoH5NUyWIQ?=
- =?us-ascii?Q?GMyRjooPD2XSULMInrNjxB58Oms40hcEGDMj62s2OJFP4278vRGH+apqHItS?=
- =?us-ascii?Q?K8fWZnDYzyYk1JECEpyFe/ubfbSBzJjcoz/RkRA3saj3XZgs3ushUfKKNyAo?=
- =?us-ascii?Q?7e0H0cXtugzZSDqhrwgd7YHtsIIKtmFu2Xj21bOkLaFrwhJVJQRQ1ApiVxWe?=
- =?us-ascii?Q?5w0G/4chbgr5lYZGMw8VlU22dNJaURsSGWg4d5dZfdhnwcNWil0EeRvGXe1E?=
- =?us-ascii?Q?Hp5h7D1BbLG/fRXO6PuA0+cSNAdytI+nU0D/n3+Ym9c4MQzbZuJVCoIC/aPY?=
- =?us-ascii?Q?GSOxpDnVnjrazwbdQZlyeYx0n8YjpC1rEAFnujFCHq7U+QgHJa3fPL+22h/V?=
- =?us-ascii?Q?TX9BsmyKWS9RAW5QcjZ7SnUlaKnwMw1ZP+jbrijdm8V628mU4q3A+egridID?=
- =?us-ascii?Q?M0j58SADQ9XcGMzbDPPiIURUE3VkJ6bWueWwUMrT1BIC/uF5ghEYdNSYURzm?=
- =?us-ascii?Q?f2+MocAedkiQkQmausia73q6lD1yov9Y?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S238641AbiCJSW1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 13:22:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26A2E14F28A
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 10:21:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646936484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ko8Hxv+wOkHEO8P3GHGLzU6jnf5Sj58s0cBYq+RkU70=;
+        b=V9JzDv6Kr7j+o05GK6vq918hvZpnmW/rO4YmTDbf63R2q3MEst8AigeF7aOo5/Fmy8bInE
+        KeQE/wZlZh9n87utGOsCu15ENxUCvPV4qCKGnEDHfBp4om0AG7CE/6h7Xfe2hzuF0XpXUG
+        LEga33sySHmBcpcteBD9xB0DbfR4WIU=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-481-aTyGPjpHNCyArlnr-48pjQ-1; Thu, 10 Mar 2022 13:21:22 -0500
+X-MC-Unique: aTyGPjpHNCyArlnr-48pjQ-1
+Received: by mail-qk1-f197.google.com with SMTP id i2-20020a05620a248200b0067b51fa1269so4411553qkn.19
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 10:21:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ko8Hxv+wOkHEO8P3GHGLzU6jnf5Sj58s0cBYq+RkU70=;
+        b=l+uMiPrRD7t/3j+c0NGPgMXm4Cn5uDmIDBVCJvuI0T59jmv0zRI/rT4uFlpcmaZ9i1
+         hvpcFUCZDA4aNjjQO3AHRY6p1SaFBWQGn4WHJkllTb1MYDhpHyugVLJpdviKEqLji+8u
+         TeTJvsvH5pBOJpJ4xxFS4SVkN+Gaq7HJI2h4qax95eeQV0YtEQob7RS7E1wnoCfosqvY
+         nVsmENmTly7c4h/uB/kQil5kkaYaIwz04j6tWg+Krnp0ao+mPG4c4MUkF8fQ1wNERlHA
+         PnbR/hbEOWzIvK4bf53cIaZA43p+idTj34aNrY5Le853Wh/WV7O6LoDad0eO+uhLRcvd
+         Ybrw==
+X-Gm-Message-State: AOAM5303SA0Nr7+CgDlneslx7U2qONO5sEGYXkw98P6gTZq38jZyjj+j
+        +Z/ce94i0L9dJdCPDUMtTzIxVg90p0wPaK8AEKtSQbrI/zBKUo0aNMsZTA/OEB7T2YuVy3StNvw
+        SAEt2ywGU/74i0CST0FFwMtG7Cgk2oNgc
+X-Received: by 2002:a05:6214:dc8:b0:435:c77c:7c56 with SMTP id 8-20020a0562140dc800b00435c77c7c56mr4863422qvt.26.1646936478875;
+        Thu, 10 Mar 2022 10:21:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw0vk7HXMQ5nT1Z+AiLNfCpgzHu4wNmJJhHv76pNCac8DoKlQXyVwbfy/TrfJHqN0hbBb2Z+1bQba3IEMIoicY=
+X-Received: by 2002:a05:6214:dc8:b0:435:c77c:7c56 with SMTP id
+ 8-20020a0562140dc800b00435c77c7c56mr4863387qvt.26.1646936478522; Thu, 10 Mar
+ 2022 10:21:18 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR21MB3181.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e24148c-1d38-4c65-884f-08da02c0c522
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 18:06:58.8948
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kzSxYlD7W9vTT4iKWnwAlzoUhpsKVSnQ39ajs4CbB1v/ihZm0b4GwEuNOxoH0G6v2ec0naxEqOIYLeYI77cnGA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB1268
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <20201216064818.48239-1-jasowang@redhat.com> <20220224212314.1326-1-gdawar@xilinx.com>
+ <20220224212314.1326-20-gdawar@xilinx.com>
+In-Reply-To: <20220224212314.1326-20-gdawar@xilinx.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Thu, 10 Mar 2022 19:20:42 +0100
+Message-ID: <CAJaqyWedCL0sv0qTvROBj7tJS6n11qEhY0kKMeushyGZLQdj=g@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 19/19] vdpasim: control virtqueue support
+To:     Gautam Dawar <gautam.dawar@xilinx.com>
+Cc:     Gautam Dawar <gdawar@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Tanuj Murlidhar Kamde <tanujk@xilinx.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel@vger.kernel.org, kvm list <kvm@vger.kernel.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Saurabh Sengar <ssengar@linux.microsoft.com>
-> Sent: Thursday, March 10, 2022 12:32 PM
-> To: Saurabh Singh Sengar <ssengar@microsoft.com>; Haiyang Zhang <haiyangz=
-@microsoft.com>;
-> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.=
-com>;
-> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>; davem@davemloft.net=
-; kuba@kernel.org;
-> linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.k=
-ernel.org
-> Subject: [PATCH] net: netvsc: remove break after return
->=20
-> In function netvsc_process_raw_pkt for VM_PKT_DATA_USING_XFER_PAGES
-> case there is already a 'return' statement which results 'break'
-> as dead code
->=20
-> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+On Thu, Feb 24, 2022 at 10:29 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
+>
+> This patch introduces the control virtqueue support for vDPA
+> simulator. This is a requirement for supporting advanced features like
+> multiqueue.
+>
+> A requirement for control virtqueue is to isolate its memory access
+> from the rx/tx virtqueues. This is because when using vDPA device
+> for VM, the control virqueue is not directly assigned to VM. Userspace
+> (Qemu) will present a shadow control virtqueue to control for
+> recording the device states.
+>
+> The isolation is done via the virtqueue groups and ASID support in
+> vDPA through vhost-vdpa. The simulator is extended to have:
+>
+> 1) three virtqueues: RXVQ, TXVQ and CVQ (control virtqueue)
+> 2) two virtqueue groups: group 0 contains RXVQ and TXVQ; group 1
+>    contains CVQ
+> 3) two address spaces and the simulator simply implements the address
+>    spaces by mapping it 1:1 to IOTLB.
+>
+> For the VM use cases, userspace(Qemu) may set AS 0 to group 0 and AS 1
+> to group 1. So we have:
+>
+> 1) The IOTLB for virtqueue group 0 contains the mappings of guest, so
+>    RX and TX can be assigned to guest directly.
+> 2) The IOTLB for virtqueue group 1 contains the mappings of CVQ which
+>    is the buffers that allocated and managed by VMM only. So CVQ of
+>    vhost-vdpa is visible to VMM only. And Guest can not access the CVQ
+>    of vhost-vdpa.
+>
+> For the other use cases, since AS 0 is associated to all virtqueue
+> groups by default. All virtqueues share the same mapping by default.
+>
+> To demonstrate the function, VIRITO_NET_F_CTRL_MACADDR is
+> implemented in the simulator for the driver to set mac address.
+>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 > ---
->  drivers/net/hyperv/netvsc.c | 1 -
->  1 file changed, 1 deletion(-)
->=20
-> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-> index e675d10..9442f75 100644
-> --- a/drivers/net/hyperv/netvsc.c
-> +++ b/drivers/net/hyperv/netvsc.c
-> @@ -1630,7 +1630,6 @@ static int netvsc_process_raw_pkt(struct hv_device =
-*device,
->=20
->  	case VM_PKT_DATA_USING_XFER_PAGES:
->  		return netvsc_receive(ndev, net_device, nvchan, desc);
-> -		break;
->=20
->  	case VM_PKT_DATA_INBAND:
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 91 ++++++++++++++++++++++------
+>  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  2 +
+>  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 88 ++++++++++++++++++++++++++-
+>  3 files changed, 161 insertions(+), 20 deletions(-)
+>
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> index 659e2e2e4b0c..59611f18a3a8 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -96,11 +96,17 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
+>  {
+>         int i;
+>
+> -       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
+> +       spin_lock(&vdpasim->iommu_lock);
+> +
+> +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++) {
+>                 vdpasim_vq_reset(vdpasim, &vdpasim->vqs[i]);
+> +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+> +                                &vdpasim->iommu_lock);
+> +       }
+> +
+> +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
+> +               vhost_iotlb_reset(&vdpasim->iommu[i]);
+>
+> -       spin_lock(&vdpasim->iommu_lock);
+> -       vhost_iotlb_reset(vdpasim->iommu);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+>         vdpasim->features = 0;
+> @@ -145,7 +151,7 @@ static dma_addr_t vdpasim_map_range(struct vdpasim *vdpasim, phys_addr_t paddr,
+>         dma_addr = iova_dma_addr(&vdpasim->iova, iova);
+>
+>         spin_lock(&vdpasim->iommu_lock);
+> -       ret = vhost_iotlb_add_range(vdpasim->iommu, (u64)dma_addr,
+> +       ret = vhost_iotlb_add_range(&vdpasim->iommu[0], (u64)dma_addr,
+>                                     (u64)dma_addr + size - 1, (u64)paddr, perm);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+> @@ -161,7 +167,7 @@ static void vdpasim_unmap_range(struct vdpasim *vdpasim, dma_addr_t dma_addr,
+>                                 size_t size)
+>  {
+>         spin_lock(&vdpasim->iommu_lock);
+> -       vhost_iotlb_del_range(vdpasim->iommu, (u64)dma_addr,
+> +       vhost_iotlb_del_range(&vdpasim->iommu[0], (u64)dma_addr,
+>                               (u64)dma_addr + size - 1);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+> @@ -250,8 +256,9 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>         else
+>                 ops = &vdpasim_config_ops;
+>
+> -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, 1,
+> -                                   1, dev_attr->name, false);
+> +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+> +                                   dev_attr->ngroups, dev_attr->nas,
+> +                                   dev_attr->name, false);
+>         if (IS_ERR(vdpasim)) {
+>                 ret = PTR_ERR(vdpasim);
+>                 goto err_alloc;
+> @@ -278,16 +285,20 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>         if (!vdpasim->vqs)
+>                 goto err_iommu;
+>
+> -       vdpasim->iommu = vhost_iotlb_alloc(max_iotlb_entries, 0);
+> +       vdpasim->iommu = kmalloc_array(vdpasim->dev_attr.nas,
+> +                                      sizeof(*vdpasim->iommu), GFP_KERNEL);
+>         if (!vdpasim->iommu)
+>                 goto err_iommu;
+>
+> +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
+> +               vhost_iotlb_init(&vdpasim->iommu[i], 0, 0);
+> +
+>         vdpasim->buffer = kvmalloc(dev_attr->buffer_size, GFP_KERNEL);
+>         if (!vdpasim->buffer)
+>                 goto err_iommu;
+>
+>         for (i = 0; i < dev_attr->nvqs; i++)
+> -               vringh_set_iotlb(&vdpasim->vqs[i].vring, vdpasim->iommu,
+> +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+>                                  &vdpasim->iommu_lock);
+>
+>         ret = iova_cache_get();
+> @@ -401,7 +412,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
+>
+>  static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
+>  {
+> -       return 0;
+> +       /* RX and TX belongs to group 0, CVQ belongs to group 1 */
+> +       if (idx == 2)
+> +               return 1;
+> +       else
+> +               return 0;
+>  }
+>
+>  static u64 vdpasim_get_device_features(struct vdpa_device *vdpa)
+> @@ -539,20 +554,53 @@ static struct vdpa_iova_range vdpasim_get_iova_range(struct vdpa_device *vdpa)
+>         return range;
+>  }
+>
+> +static int vdpasim_set_group_asid(struct vdpa_device *vdpa, unsigned int group,
+> +                                 unsigned int asid)
+> +{
+> +       struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+> +       struct vhost_iotlb *iommu;
+> +       int i;
+> +
+> +       if (group > vdpasim->dev_attr.ngroups)
+> +               return -EINVAL;
+> +
+> +       if (asid > vdpasim->dev_attr.nas)
+> +               return -EINVAL;
+> +
+> +       iommu = &vdpasim->iommu[asid];
+> +
+> +       spin_lock(&vdpasim->lock);
+> +
+> +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
+> +               if (vdpasim_get_vq_group(vdpa, i) == group)
+> +                       vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+> +                                        &vdpasim->iommu_lock);
+> +
+> +       spin_unlock(&vdpasim->lock);
+> +
+> +       return 0;
+> +}
+> +
+>  static int vdpasim_set_map(struct vdpa_device *vdpa, unsigned int asid,
+>                            struct vhost_iotlb *iotlb)
+>  {
+>         struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+>         struct vhost_iotlb_map *map;
+> +       struct vhost_iotlb *iommu;
+>         u64 start = 0ULL, last = 0ULL - 1;
+>         int ret;
+>
+> +       if (asid >= vdpasim->dev_attr.nas)
+> +               return -EINVAL;
+> +
+>         spin_lock(&vdpasim->iommu_lock);
+> -       vhost_iotlb_reset(vdpasim->iommu);
+> +
+> +       iommu = &vdpasim->iommu[asid];
+> +       vhost_iotlb_reset(iommu);
+>
+>         for (map = vhost_iotlb_itree_first(iotlb, start, last); map;
+>              map = vhost_iotlb_itree_next(map, start, last)) {
+> -               ret = vhost_iotlb_add_range(vdpasim->iommu, map->start,
+> +               ret = vhost_iotlb_add_range(iommu, map->start,
+>                                             map->last, map->addr, map->perm);
+>                 if (ret)
+>                         goto err;
+> @@ -561,7 +609,7 @@ static int vdpasim_set_map(struct vdpa_device *vdpa, unsigned int asid,
+>         return 0;
+>
+>  err:
+> -       vhost_iotlb_reset(vdpasim->iommu);
+> +       vhost_iotlb_reset(iommu);
+>         spin_unlock(&vdpasim->iommu_lock);
+>         return ret;
+>  }
+> @@ -573,9 +621,12 @@ static int vdpasim_dma_map(struct vdpa_device *vdpa, unsigned int asid,
+>         struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+>         int ret;
+>
+> +       if (asid >= vdpasim->dev_attr.nas)
+> +               return -EINVAL;
+> +
+>         spin_lock(&vdpasim->iommu_lock);
+> -       ret = vhost_iotlb_add_range_ctx(vdpasim->iommu, iova, iova + size - 1,
+> -                                       pa, perm, opaque);
+> +       ret = vhost_iotlb_add_range_ctx(&vdpasim->iommu[asid], iova,
+> +                                       iova + size - 1, pa, perm, opaque);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+>         return ret;
+> @@ -586,8 +637,11 @@ static int vdpasim_dma_unmap(struct vdpa_device *vdpa, unsigned int asid,
+>  {
+>         struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+>
+> +       if (asid >= vdpasim->dev_attr.nas)
+> +               return -EINVAL;
+> +
+>         spin_lock(&vdpasim->iommu_lock);
+> -       vhost_iotlb_del_range(vdpasim->iommu, iova, iova + size - 1);
+> +       vhost_iotlb_del_range(&vdpasim->iommu[asid], iova, iova + size - 1);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+>         return 0;
+> @@ -611,8 +665,7 @@ static void vdpasim_free(struct vdpa_device *vdpa)
+>         }
+>
+>         kvfree(vdpasim->buffer);
+> -       if (vdpasim->iommu)
+> -               vhost_iotlb_free(vdpasim->iommu);
+> +       vhost_iotlb_free(vdpasim->iommu);
+>         kfree(vdpasim->vqs);
+>         kfree(vdpasim->config);
+>  }
+> @@ -643,6 +696,7 @@ static const struct vdpa_config_ops vdpasim_config_ops = {
+>         .set_config             = vdpasim_set_config,
+>         .get_generation         = vdpasim_get_generation,
+>         .get_iova_range         = vdpasim_get_iova_range,
+> +       .set_group_asid         = vdpasim_set_group_asid,
+>         .dma_map                = vdpasim_dma_map,
+>         .dma_unmap              = vdpasim_dma_unmap,
+>         .free                   = vdpasim_free,
+> @@ -674,6 +728,7 @@ static const struct vdpa_config_ops vdpasim_batch_config_ops = {
+>         .set_config             = vdpasim_set_config,
+>         .get_generation         = vdpasim_get_generation,
+>         .get_iova_range         = vdpasim_get_iova_range,
+> +       .set_group_asid         = vdpasim_set_group_asid,
+>         .set_map                = vdpasim_set_map,
+>         .free                   = vdpasim_free,
+>  };
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+> index 0be7c1e7ef80..622782e92239 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+> @@ -41,6 +41,8 @@ struct vdpasim_dev_attr {
+>         size_t buffer_size;
+>         int nvqs;
+>         u32 id;
+> +       u32 ngroups;
+> +       u32 nas;
+>
+>         work_func_t work_fn;
+>         void (*get_config)(struct vdpasim *vdpasim, void *config);
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+> index ed5ade4ae570..513970c05af2 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+> @@ -26,10 +26,15 @@
+>  #define DRV_LICENSE  "GPL v2"
+>
+>  #define VDPASIM_NET_FEATURES   (VDPASIM_FEATURES | \
+> +                                (1ULL << VIRTIO_NET_F_MTU) | \
 
-Thanks.
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+Why the reorder here?
 
+>                                  (1ULL << VIRTIO_NET_F_MAC) | \
+> -                                (1ULL << VIRTIO_NET_F_MTU));
+> +                                (1ULL << VIRTIO_NET_F_CTRL_VQ) | \
+> +                                (1ULL << VIRTIO_NET_F_CTRL_MAC_ADDR));
+>
+> -#define VDPASIM_NET_VQ_NUM     2
+> +/* 3 virtqueues, 2 address spaces, 2 virtqueue groups */
+> +#define VDPASIM_NET_VQ_NUM     3
+> +#define VDPASIM_NET_AS_NUM     2
+> +#define VDPASIM_NET_GROUP_NUM  2
+>
+>  static void vdpasim_net_complete(struct vdpasim_virtqueue *vq, size_t len)
+>  {
+> @@ -63,6 +68,81 @@ static bool receive_filter(struct vdpasim *vdpasim, size_t len)
+>         return false;
+>  }
+>
+> +static virtio_net_ctrl_ack vdpasim_handle_ctrl_mac(struct vdpasim *vdpasim,
+> +                                                  u8 cmd)
+> +{
+> +       struct vdpasim_virtqueue *cvq = &vdpasim->vqs[2];
+> +       virtio_net_ctrl_ack status = VIRTIO_NET_ERR;
+> +       size_t read;
+> +
+> +       switch (cmd) {
+> +       case VIRTIO_NET_CTRL_MAC_ADDR_SET:
+> +               read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->in_iov,
+> +                                            (void *)vdpasim->config.mac,
 
+This is not valid anymore as config is of type void *. Need to convert
+to virtio_net_config. This also occurs in receive_filter.
+
+You can copy how vdpasim_net_setup_config does it, for example.
+
+Thanks!
+
+> +                                            ETH_ALEN);
+> +               if (read == ETH_ALEN)
+> +                       status = VIRTIO_NET_OK;
+> +               break;
+> +       default:
+> +               break;
+> +       }
+> +
+> +       return status;
+> +}
+> +
+> +static void vdpasim_handle_cvq(struct vdpasim *vdpasim)
+> +{
+> +       struct vdpasim_virtqueue *cvq = &vdpasim->vqs[2];
+> +       virtio_net_ctrl_ack status = VIRTIO_NET_ERR;
+> +       struct virtio_net_ctrl_hdr ctrl;
+> +       size_t read, write;
+> +       int err;
+> +
+> +       if (!(vdpasim->features & (1ULL << VIRTIO_NET_F_CTRL_VQ)))
+> +               return;
+> +
+> +       if (!cvq->ready)
+> +               return;
+> +
+> +       while (true) {
+> +               err = vringh_getdesc_iotlb(&cvq->vring, &cvq->in_iov,
+> +                                          &cvq->out_iov,
+> +                                          &cvq->head, GFP_ATOMIC);
+> +               if (err <= 0)
+> +                       break;
+> +
+> +               read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->in_iov, &ctrl,
+> +                                            sizeof(ctrl));
+> +               if (read != sizeof(ctrl))
+> +                       break;
+> +
+> +               switch (ctrl.class) {
+> +               case VIRTIO_NET_CTRL_MAC:
+> +                       status = vdpasim_handle_ctrl_mac(vdpasim, ctrl.cmd);
+> +                       break;
+> +               default:
+> +                       break;
+> +               }
+> +
+> +               /* Make sure data is wrote before advancing index */
+> +               smp_wmb();
+> +
+> +               write = vringh_iov_push_iotlb(&cvq->vring, &cvq->out_iov,
+> +                                             &status, sizeof(status));
+> +               vringh_complete_iotlb(&cvq->vring, cvq->head, write);
+> +               vringh_kiov_cleanup(&cvq->in_iov);
+> +               vringh_kiov_cleanup(&cvq->out_iov);
+> +
+> +               /* Make sure used is visible before rasing the interrupt. */
+> +               smp_wmb();
+> +
+> +               local_bh_disable();
+> +               if (cvq->cb)
+> +                       cvq->cb(cvq->private);
+> +               local_bh_enable();
+> +       }
+> +}
+> +
+>  static void vdpasim_net_work(struct work_struct *work)
+>  {
+>         struct vdpasim *vdpasim = container_of(work, struct vdpasim, work);
+> @@ -77,6 +157,8 @@ static void vdpasim_net_work(struct work_struct *work)
+>         if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
+>                 goto out;
+>
+> +       vdpasim_handle_cvq(vdpasim);
+> +
+>         if (!txq->ready || !rxq->ready)
+>                 goto out;
+>
+> @@ -162,6 +244,8 @@ static int vdpasim_net_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
+>         dev_attr.id = VIRTIO_ID_NET;
+>         dev_attr.supported_features = VDPASIM_NET_FEATURES;
+>         dev_attr.nvqs = VDPASIM_NET_VQ_NUM;
+> +       dev_attr.ngroups = VDPASIM_NET_GROUP_NUM;
+> +       dev_attr.nas = VDPASIM_NET_AS_NUM;
+>         dev_attr.config_size = sizeof(struct virtio_net_config);
+>         dev_attr.get_config = vdpasim_net_get_config;
+>         dev_attr.work_fn = vdpasim_net_work;
+> --
+> 2.25.0
+>
 
