@@ -2,111 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2F444D523B
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:44:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E184D51A9
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:43:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243549AbiCJS2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 13:28:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S245533AbiCJSqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 13:46:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241941AbiCJS2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 13:28:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00F2F15879D
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 10:27:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646936822;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CSczryzj031VVnO8eJpye9yxAEBMNM6MicTo8SxTACA=;
-        b=eqSDXM8Hx65BCVou3DN/eFTTUxIkXmMeD+PmRYGaB7RYxfJggsxNjuAMi8rdZFb/dBKuXO
-        yDhHFq4c0wD5/6bQxOv5Z3T9etkp8bYP38dVs58Fx6w9+Ej70sni2zmAD/sKeeDZCvhATf
-        S6ztl9I8UBWzD3V+v83TUxtvQUMeA6I=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-600-yGtkZ8M1OMS76ibIAKjx6A-1; Thu, 10 Mar 2022 13:27:01 -0500
-X-MC-Unique: yGtkZ8M1OMS76ibIAKjx6A-1
-Received: by mail-wm1-f69.google.com with SMTP id f24-20020a1c6a18000000b00388874b17a8so2615772wmc.3
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 10:27:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=CSczryzj031VVnO8eJpye9yxAEBMNM6MicTo8SxTACA=;
-        b=XRJmEJc0fzJArp/7cRA30IVv/dRJ3Wbrp7dy0t3L7MOQbJgsSLLNp8ACpgA0IGc93i
-         mvy+cSuKrcViWR1mdB+0tOrmxUqB1/NcatYoIdxgsU+jKhR2xzNQG7blyLMMNphzE3PV
-         +zbFz2Pqetnuc2AkCShduT5F1oRNCz11MENmZVFy0h4pIRzuJTTyAzmeq/3AcXZSsIsu
-         h0q9HEWAQlUvflVS2JL7sOLfHmGl2eweEoo+qbwGhQeAkkLzJqNZl7ezKu79HcWhKlhg
-         2qJZDPnojKLYq2aI67AzDAtDp9rCHhaeXE86L7nYy5DW0to+bQk6vj2kYrlpHrjfdmhw
-         OobQ==
-X-Gm-Message-State: AOAM531woFxha15Ud+AG211nVm0WyzYGYfl77VViAsVUBgjfsK44oSH8
-        f+ywaBs4h6c2+2k2OgFFFty54t39JVuf/4mBLdgJoJJsl4yLpnOwEBUE67S0kvBtKsLRO0bOxAC
-        T13euAQJZ2ufRQSzf
-X-Received: by 2002:a05:600c:694:b0:389:9c6e:c265 with SMTP id a20-20020a05600c069400b003899c6ec265mr4674822wmn.5.1646936819342;
-        Thu, 10 Mar 2022 10:26:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwzxyk/WYa3lWrgxd8M4yVHOBS8nqD6V5EkGQy/tg851C+baCex/bodG+xR2uUh2NI2oewSow==
-X-Received: by 2002:a05:600c:694:b0:389:9c6e:c265 with SMTP id a20-20020a05600c069400b003899c6ec265mr4674811wmn.5.1646936819132;
-        Thu, 10 Mar 2022 10:26:59 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id f13-20020adff8cd000000b001f03439743fsm4796930wrq.75.2022.03.10.10.26.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 10:26:58 -0800 (PST)
-Message-ID: <1542f5746c3b03a735f407d789cf28dd71b02500.camel@redhat.com>
-Subject: Re: [PATCH v3 net-next] net: add per-cpu storage and net->core_stats
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        jeffreyji <jeffreyji@google.com>,
-        Brian Vazquez <brianvv@google.com>
-Date:   Thu, 10 Mar 2022 19:26:57 +0100
-In-Reply-To: <20220310165243.981383-1-eric.dumazet@gmail.com>
-References: <20220310165243.981383-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S236161AbiCJSqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 13:46:10 -0500
+X-Greylist: delayed 547 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 10:45:07 PST
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CF116E7D3;
+        Thu, 10 Mar 2022 10:45:07 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C9AFE3EB76;
+        Thu, 10 Mar 2022 19:35:50 +0100 (CET)
+From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Johannes Berg <johannes.berg@intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Remi Pommarel <repk@triplefau.lt>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
+Subject: [PATCH net] mac80211: fix potential double free on mesh join
+Date:   Thu, 10 Mar 2022 19:35:13 +0100
+Message-Id: <20220310183513.28589-1-linus.luessing@c0d3.blue>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-03-10 at 08:52 -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Before adding yet another possibly contended atomic_long_t,
-> it is time to add per-cpu storage for existing ones:
->  dev->tx_dropped, dev->rx_dropped, and dev->rx_nohandler
-> 
-> Because many devices do not have to increment such counters,
-> allocate the per-cpu storage on demand, so that dev_get_stats()
-> does not have to spend considerable time folding zero counters.
-> 
-> Note that some drivers have abused these counters which
-> were supposed to be only used by core networking stack.
-> 
-> v3: added a READ_ONCE() in netdev_core_stats_alloc() (Paolo)
-> 
-> v2: add a missing include (reported by kernel test robot <lkp@intel.com>)
->     Change in netdev_core_stats_alloc() (Jakub)
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: jeffreyji <jeffreyji@google.com>
-> Reviewed-by: Brian Vazquez <brianvv@google.com>
-> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
+From: Linus Lüssing <ll@simonwunderlich.de>
 
-Thanks for quick turnaround, LGTM!
+While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
+mesh") fixed a memory leak on mesh leave / teardown it introduced a
+potential memory corruption caused by a double free when rejoining the
+mesh:
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+  ieee80211_leave_mesh()
+  -> kfree(sdata->u.mesh.ie);
+  ...
+  ieee80211_join_mesh()
+  -> copy_mesh_setup()
+     -> old_ie = ifmsh->ie;
+     -> kfree(old_ie);
+
+This double free / kernel panics can be reproduced by using wpa_supplicant
+with an encrypted mesh (if set up without encryption via "iw" then
+ifmsh->ie is always NULL, which avoids this issue). And then calling:
+
+  $ iw dev mesh0 mesh leave
+  $ iw dev mesh0 mesh join my-mesh
+
+Note that typically these commands are not used / working when using
+wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
+through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
+where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
+default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
+the memory corruption, too.
+
+The issue was first observed in an application which was not using
+wpa_supplicant but "Senf" instead, which implements its own calls to
+nl80211.
+
+Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
+join function and leaving it solely up to the mesh leave to free the
+mesh IE.
+
+Link: https://gitlab.fit.fraunhofer.de/wiback/senf
+Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
+Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+---
+ net/mac80211/cfg.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 87a208089caf..58ff57dc669c 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2148,14 +2148,12 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
+ 		const struct mesh_setup *setup)
+ {
+ 	u8 *new_ie;
+-	const u8 *old_ie;
+ 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
+ 					struct ieee80211_sub_if_data, u.mesh);
+ 	int i;
+ 
+ 	/* allocate information elements */
+ 	new_ie = NULL;
+-	old_ie = ifmsh->ie;
+ 
+ 	if (setup->ie_len) {
+ 		new_ie = kmemdup(setup->ie, setup->ie_len,
+@@ -2165,7 +2163,6 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
+ 	}
+ 	ifmsh->ie_len = setup->ie_len;
+ 	ifmsh->ie = new_ie;
+-	kfree(old_ie);
+ 
+ 	/* now copy the rest of the setup parameters */
+ 	ifmsh->mesh_id_len = setup->mesh_id_len;
+-- 
+2.34.1
 
