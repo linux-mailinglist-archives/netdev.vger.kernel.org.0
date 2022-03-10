@@ -2,53 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB9B4D54B4
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 23:40:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CBA24D54BF
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 23:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245739AbiCJWlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 17:41:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45434 "EHLO
+        id S1344394AbiCJWnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 17:43:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbiCJWlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 17:41:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA4A186431
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:40:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA39361C04
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 22:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5549DC340EB;
-        Thu, 10 Mar 2022 22:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646952011;
-        bh=xiI64uPCXCCmXExH8vGGE+m13WCYe2BT07WjQcLkTTA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sxhzCghnTeX8JA6lC2FARdoFUJxY7U95buHtdN0bB0O4y2ZHdSNv4V2TQYTfXwOFu
-         GlyCsdsohuH01NfR/Syf5p4cEOeMF8N8DIRBmVWuIPzeQ2gQQA7780AJTsygKhuFSq
-         uzZmR2YNcl+hPBiIw/Y9dEKvnw+pNfka2gFIsqG1n2sL2wrBhncbc92vsiwZK/wR72
-         oYPdfwAyW8Oi5+QRuq5QtCwAatXbm//NFiMLd2ewIM15aeuTu8FcO3emcEceac1Br3
-         ACHInAhw/ajkMgj2mr5yKsyBiQO1+pWZY3uuFwRwUl1sv5KzYok5HP1r+OB0OEc1iP
-         QDid6wIhqz8Aw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 395F0E8DD5B;
-        Thu, 10 Mar 2022 22:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1344402AbiCJWne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 17:43:34 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688C4B53
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:42:31 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso9545778pjb.0
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:42:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=H0dJecyPS2t445Yyuaocacfsz4kMpFTNDFKZg5I5Xqo=;
+        b=i2+4Hhkq0ffVuy/voAgJ7Oie2KiFixt/XYRgrrvr6dmSS6Qob5Wmq9eVqbssVG/Prz
+         NZKOO3RZDuV1X5NCn3/n69tAPp9lX1Q8rfhM9oczaPrXHNiLC7k/Aqdn/AuwHiAldis2
+         G2Gz0IpLA0/WkI4mr0CL1pkAmvljkK0MqjH7oZuZ0AeS0C2qPAhHZGoaVoB3Km3j5tE5
+         1PZkCUi8Sjgri2Mi5KBmQGRAzr0wfrySJPF6OjoYKqatacXrXCJsZ0FohWDwgJKVE04B
+         b7XCJdSrDWHSVxF2XGnY6kwky7gCnRwqeHHuDWF3JvOd1hc/hnbHvT62GCX8HpFGNF4G
+         T0jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=H0dJecyPS2t445Yyuaocacfsz4kMpFTNDFKZg5I5Xqo=;
+        b=HwGrKquO6OxvC4Cdd+SupZtyxa2IL3dsK9t1FzhOYx1fuGujMXkU8RCDcgLnFCSyif
+         9RaxU+HscO0IHKYHZR5up9M3f6IIa2z/7dVeJODxvk9G94YG0mrxHx2RY10kqDOIhUkM
+         uKmyPeO93CYK1ZSQh1tb2a2lhJRkH0nYf2t9EmfPEJSKz4Ix4GDKN55XNkmJe+gQlK2N
+         dEQVaKsBDhXJmCpc0uj9nSjbLgSoxeFSQn8vYPNl/8GIN+ZJ6oziIUlbQf1joTBUEJ6P
+         bwKFR1R1jvqvmzMSbe0AaU5UfbALmjgvb2P6EoG+BGkLb57ryD6CMTkmogXnushJekus
+         JwWQ==
+X-Gm-Message-State: AOAM530zn8cZ4psUvc6Vi2zUYqWv+QTUJJv+D6TnaaXMTvw4FeUN+1rQ
+        xI9Vp3y+BvapMbRLEdi90p4brg==
+X-Google-Smtp-Source: ABdhPJz+HM8Z5oVHOCVhGxstjdd7fA+IbJhbFxh8NNun6SGE5r59isngyOt7OckA9+Vcvc9xTcThVg==
+X-Received: by 2002:a17:902:cccc:b0:14e:e89c:c669 with SMTP id z12-20020a170902cccc00b0014ee89cc669mr7408737ple.58.1646952150727;
+        Thu, 10 Mar 2022 14:42:30 -0800 (PST)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id y10-20020a63b50a000000b0038088a28ec0sm6504255pge.22.2022.03.10.14.42.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 14:42:30 -0800 (PST)
+Message-ID: <62a9b061-1cf5-dff1-c062-a3961de92dca@linaro.org>
+Date:   Thu, 10 Mar 2022 14:42:29 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net 1/5] net/mlx5: Fix size field in bufferx_reg struct
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164695201123.27699.8281743298948152683.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Mar 2022 22:40:11 +0000
-References: <20220309201517.589132-2-saeed@kernel.org>
-In-Reply-To: <20220309201517.589132-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        mohammadkab@nvidia.com, moshe@nvidia.com, saeedm@nvidia.com
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+References: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
+ <20220310221328.877987-1-tadeusz.struk@linaro.org>
+ <20220310143011.00c21f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH v2] net: ipv6: fix skb_over_panic in __ip6_append_data
+In-Reply-To: <20220310143011.00c21f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,39 +87,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 3/10/22 14:30, Jakub Kicinski wrote:
+>> +
+>> +			/*
+>> +			 *	Check if there is still room for payload
+>> +			 */
+> TBH I think the check is self-explanatory. Not worth a banner comment,
+> for sure.
 
-This series was applied to netdev/net.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
+Ok
 
-On Wed,  9 Mar 2022 12:15:13 -0800 you wrote:
-> From: Mohammad Kabat <mohammadkab@nvidia.com>
 > 
-> According to HW spec the field "size" should be 16 bits
-> in bufferx register.
+>> +			if (fragheaderlen >= mtu) {
+>> +				err = -EMSGSIZE;
+>> +				kfree_skb(skb);
+>> +				goto error;
+>> +			}
+> Not sure if Willem prefers this placement, but seems like we can lift
+> this check out of the loop, as soon as fragheaderlen and mtu are known.
 > 
-> Fixes: e281682bf294 ("net/mlx5_core: HW data structs/types definitions cleanup")
-> Signed-off-by: Mohammad Kabat <mohammadkab@nvidia.com>
-> Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> [...]
 
-Here is the summary with links:
-  - [net,1/5] net/mlx5: Fix size field in bufferx_reg struct
-    https://git.kernel.org/netdev/net/c/ac77998b7ac3
-  - [net,2/5] net/mlx5: Fix a race on command flush flow
-    https://git.kernel.org/netdev/net/c/063bd3555954
-  - [net,3/5] net/mlx5: Fix offloading with ESWITCH_IPV4_TTL_MODIFY_ENABLE
-    https://git.kernel.org/netdev/net/c/39bab83b119f
-  - [net,4/5] net/mlx5e: Lag, Only handle events from highest priority multipath entry
-    https://git.kernel.org/netdev/net/c/ad11c4f1d8fd
-  - [net,5/5] net/mlx5e: SHAMPO, reduce TIR indication
-    https://git.kernel.org/netdev/net/c/99a2b9be077a
+He said to check it before the skb_put() and so I did.
+The fragheaderlen is known early, but mtu can be updated inside the loop
+by ip6_append_data_mtu() so I'm not sure we can do the check before that.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Tadeusz
