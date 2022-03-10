@@ -2,122 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 850CD4D4111
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 07:20:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDEC14D414B
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 07:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234865AbiCJGVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 01:21:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45824 "EHLO
+        id S239876AbiCJGnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 01:43:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235429AbiCJGVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 01:21:44 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C04D12B754;
-        Wed,  9 Mar 2022 22:20:43 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id v13so3179703qkv.3;
-        Wed, 09 Mar 2022 22:20:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P9mdgV1XcI8IYrQOmfFrftDWPLsJMx8c+0mnYSxEQCM=;
-        b=XXiqYFo82xt3V6MW1qsaBB6Oip1Rco2s9XFxnj7SyhZ0ERyLa17rMIdWOuffYM5nLE
-         u/EFK89BlbyVPBC6QUQdp1D82F96LgWbCuw+t/7iUtJhgAdtB6q0vP78WEPYPERm3/M4
-         3jn0dFN8GaqFsUPcYBb7m/eKlxCdtG0kF2/QNAVAOl3CwR7AhFcPEVFGz6V435F670Kx
-         pruYGeSL3N7sWCbKPjCJF1VUw5feTZULdckC5Ey4x9lFZokR8I8raEB35HvIb3FSvZRZ
-         TiweK6yo/q2wXzGNtZfVa25r77CWqVNKilBYrrdMyeGIsfmI25hmVTKUVt7J6kpzEWz2
-         u+xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P9mdgV1XcI8IYrQOmfFrftDWPLsJMx8c+0mnYSxEQCM=;
-        b=GC6GO2mrNXeTD1cS0typcw2iFQI5RGcA8fgUeulXDJSnHua+OpqauZB5fAjFL/L8bT
-         Q+ruvqCxUk3HjaWm2Lycrh+keYyBx/9AHgeAwLdTLpzpB7IgO1uHhi3le3DPHwpMy3Vr
-         GaXL70/Vllpyc3tjYl8npJIwW6rIa0vdGFdamMzOjdq1n5hNXhntoQ1QZZM4x0jskQMC
-         dmfpxCLqZYM0FBI2cnd9NaKD+zGzz5zGOqLqUV+RoOPxf1CNL7FoS8ixrCnANB7wblsd
-         yLIj8hpKJ2yK+sFesTLYRDG976BmL6+NbH/FF1m8Kiswm9z+Zzgcpkqy4xZk8Qm3PYtd
-         CoNw==
-X-Gm-Message-State: AOAM531zpvF+J9lGjHPiI8Yz2r1EJEB/V2V0bSuZKQ1bk4Kf2R/GI5em
-        9Bw6CAUckg6FviiF2ePg0/gFJy8R1hU=
-X-Google-Smtp-Source: ABdhPJw3m8kz4Ro/w2SSoJI+eAuokN5vD5axE9OhoEIuf7w47DkNOq0P0kxAx2uX4ou8ke80U7bznQ==
-X-Received: by 2002:a05:620a:200f:b0:67b:3fb7:8784 with SMTP id c15-20020a05620a200f00b0067b3fb78784mr2034196qka.336.1646893242661;
-        Wed, 09 Mar 2022 22:20:42 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f34-20020a05622a1a2200b002e1a35ed1desm2149227qtb.94.2022.03.09.22.20.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 22:20:41 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     sebastian.hesselbarth@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH V2] net: mv643xx_eth: use platform_get_irq() instead of platform_get_resource()
-Date:   Thu, 10 Mar 2022 06:20:35 +0000
-Message-Id: <20220310062035.2084669-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S239864AbiCJGnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 01:43:05 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E30E33B3
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 22:42:05 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 3DF5D201A0;
+        Thu, 10 Mar 2022 07:42:03 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 9F9LUSBrpKC0; Thu, 10 Mar 2022 07:42:02 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 8523B20199;
+        Thu, 10 Mar 2022 07:42:02 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 7F08D80004A;
+        Thu, 10 Mar 2022 07:42:02 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Thu, 10 Mar 2022 07:42:02 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 10 Mar
+ 2022 07:42:01 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 9E8EE31810D1; Thu, 10 Mar 2022 07:42:01 +0100 (CET)
+Date:   Thu, 10 Mar 2022 07:42:01 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Haimin Zhang <tcs.kernel@gmail.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        TCS Robot <tcs_robot@tencent.com>
+Subject: Re: [PATCH v2] af_key: add __GFP_ZERO flag for
+ compose_sadb_supported in function pfkey_register
+Message-ID: <20220310064201.GG1791239@gauss3.secunet.de>
+References: <20220308032028.48779-1-tcs.kernel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220308032028.48779-1-tcs.kernel@gmail.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On Tue, Mar 08, 2022 at 11:20:28AM +0800, Haimin Zhang wrote:
+> From: Haimin Zhang <tcs_kernel@tencent.com>
+> 
+> Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+> to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
+> 1) Function pfkey_register calls compose_sadb_supported to request 
+> a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
+> a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
+> compose_sadb_supported treats the memory as a struct sadb_supported and
+> begins to initialize. But it just initializes the field sadb_supported_len
+> and field sadb_supported_exttype without field sadb_supported_reserved.
+> 
+> Reported-by: TCS Robot <tcs_robot@tencent.com>
+> Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
 
-It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-for requesting IRQ's resources any more, as they can be not ready yet in
-case of DT-booting.
-
-platform_get_irq() instead is a recommended way for getting IRQ even if
-it was not retrieved earlier.
-
-It also makes code simpler because we're getting "int" value right away
-and no conversion from resource to int is required.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
-v1->v2:
-  - Add a space after "net:".
-  - Use WARN_ON instead of BUG_ON
- drivers/net/ethernet/marvell/mv643xx_eth.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-index c31cbbae0eca..34fa5ab21d62 100644
---- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-+++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-@@ -3092,8 +3092,7 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
- 	struct mv643xx_eth_private *mp;
- 	struct net_device *dev;
- 	struct phy_device *phydev = NULL;
--	struct resource *res;
--	int err;
-+	int err, irq;
- 
- 	pd = dev_get_platdata(&pdev->dev);
- 	if (pd == NULL) {
-@@ -3189,9 +3188,10 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
- 	timer_setup(&mp->rx_oom, oom_timer_wrapper, 0);
- 
- 
--	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	BUG_ON(!res);
--	dev->irq = res->start;
-+	irq = platform_get_irq(pdev, 0);
-+	if (WARN_ON(irq < 0))
-+		return irq;
-+	dev->irq = irq;
- 
- 	dev->netdev_ops = &mv643xx_eth_netdev_ops;
- 
--- 
-2.25.1
-
+Applied, thanks a lot!
