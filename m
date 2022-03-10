@@ -2,74 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9284D56FD
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 01:57:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F1E4D57D9
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 03:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345210AbiCKAzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 19:55:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
+        id S1345536AbiCKCDN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Mar 2022 21:03:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345135AbiCKAzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 19:55:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F576A2797;
-        Thu, 10 Mar 2022 16:54:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA35EB829A3;
-        Fri, 11 Mar 2022 00:54:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 70B0BC340E8;
-        Fri, 11 Mar 2022 00:54:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646960079;
-        bh=m0r9HuCb49YnQUW6GAIMeJ1t0TNvENV22bDIKcU1vMU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=UisG592AoeVD8gB75o5RSHPNNPYPF4svx7L0bqGEGM5vvJGeid+GLNOownz2yUJup
-         +KqB6N5uBQ/5L+pIldFZFi3ibtQ/GtGTKb9w3GKzKN2802ENezSXWl2RGrq1TUgfsU
-         XXL3ZxFPzqYcsX6rxd2z0SHNhQpOd+AD8WZHoq56Suvbc99aOut51qmsjEzwo8Diaq
-         CSw0JbEg3QurMDw/dVZDpFNjABTZ6IumjSI0igxGQSYrjR/RF3tkLpweiO6qzCdmxq
-         xmdcIeKVmNrxLMJM2AmwR2gY3G3KvlQpwsDzawzqFIcL5sG11r8T+1w0CjzLuf0OB4
-         NlgUhguCiLjWw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5D481E5D087;
-        Fri, 11 Mar 2022 00:54:39 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.17-rc8
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220311002912.437871-1-kuba@kernel.org>
-References: <20220311002912.437871-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220311002912.437871-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc8
-X-PR-Tracked-Commit-Id: e0ae713023a9d09d6e1b454bdc8e8c1dd32c586e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 186d32bbf034417b40e2b4e773eeb8ef106c16c1
-Message-Id: <164696007937.2789.7626749718559304102.pr-tracker-bot@kernel.org>
-Date:   Fri, 11 Mar 2022 00:54:39 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S235129AbiCKCDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 21:03:11 -0500
+X-Greylist: delayed 17731 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 18:02:08 PST
+Received: from mail.vms-south.vn (mail.vms-south.vn [113.161.141.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 277C01A58CD;
+        Thu, 10 Mar 2022 18:02:08 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.vms-south.vn (Postfix) with ESMTP id D4C583EE377B;
+        Thu, 10 Mar 2022 23:25:33 +0700 (ICT)
+X-Virus-Scanned: amavisd-new at vms-south.vn
+Received: from mail.vms-south.vn ([127.0.0.1])
+        by localhost (mail.vms-south.vn [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id k4UHMQC40ZYJ; Thu, 10 Mar 2022 23:25:33 +0700 (ICT)
+Received: from [156.96.56.93] (unknown [156.96.56.93])
+        by mail.vms-south.vn (Postfix) with ESMTPSA id 4DB293EE37A4;
+        Thu, 10 Mar 2022 22:47:39 +0700 (ICT)
+Content-Type: text/plain; charset="iso-8859-1"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Bitcoin Deposit
+To:     Recipients <kshhmn@vms-south.vn>
+From:   "Thomas Singh" <kshhmn@vms-south.vn>
+Date:   Thu, 10 Mar 2022 07:50:00 -0800
+Message-Id: <20220310154739.4DB293EE37A4@mail.vms-south.vn>
+X-Spam-Status: No, score=2.2 required=5.0 tests=BAYES_50,LOTS_OF_MONEY,
+        RCVD_IN_MSPIKE_H2,RCVD_IN_SBL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_ABUSE_SURBL,URIBL_RED autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 10 Mar 2022 16:29:12 -0800:
+Hello: Dave Franklin
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc8
+   As requested we have deposited the 18 BTC which amount to
+($782,742.24 USD) as per request by you. Please login with below 
+details to confirm your BTC balance.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/186d32bbf034417b40e2b4e773eeb8ef106c16c1
+Website:    : www.tatcoin.net
+Customer ID : 51047802
+Password    : reamsicle725#!
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Confirm your account balance.
