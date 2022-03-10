@@ -2,145 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5534D4AEF
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 15:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EF54D49C8
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 15:52:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243823AbiCJOcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 09:32:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
+        id S243887AbiCJOcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 09:32:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245709AbiCJOau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:30:50 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A032186424;
-        Thu, 10 Mar 2022 06:26:44 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id w12so9704546lfr.9;
-        Thu, 10 Mar 2022 06:26:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=aOR4hwC/LyUI0jjOxT3n02PFkMoRNv160vr8ERq5R5M=;
-        b=TLmdcYdLOXvPkXN9lzSvK+qd50RETYsuhCjwfouchXQvEMmBtGFGKFXlQFT4XjefXR
-         IQpovEbCoHIfttXXAA94M4q+vbatxV4BvpyFSYobDNDTViPh9MJjXheBb8evLNaGNm1N
-         Qt7uCkdRljkUOSX6YC2pU8n8/BAYdqs7DYr+zsNr9lpo3xRnPLrgyog6EaFrsar6ZIQH
-         n5kCTBiudP3pCaM9NEIejnj+QRgKJ+A0lu1kRzusD+MnB/Mgagj3RBbpz+XxMO4ZIv+M
-         m5Zgv+01Urk72PAF+/yLNKdKG/tzpq8FKZzguQVsG6ppY0IDGKafSCGU7k5wsZLvNrUm
-         SYQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=aOR4hwC/LyUI0jjOxT3n02PFkMoRNv160vr8ERq5R5M=;
-        b=jK6euDb5RPMd94Ctr8s1DfQHnUfxfXDM5PiqQSZjnDwuRAvJpOmAYEeqglc8lQDzZ4
-         I5yAQxe324xn4X8AlmNib/2FzbDVRIVGjn863tBXM4TxUMEppV+CNn43244t+9zmhT2X
-         zQD2zcN92pXx3QwLHld/Bj1P95zqfaebxJqBrofxKTRFXJD6uO5m+FSpy8YgD5Bj960v
-         phMN4nfGJsoGxKIfHwXHeFA4MU3VnXQBEKiHz3iQi8CpoOLhV7fq3ozaOl8ldvcmiO9c
-         dv7U65L8S2BeCg8uU4O2vlXaTj5QkwkYm/Fgd91MZOhWhpsqpU7JbCA9A4+stH0cMiIC
-         HtCw==
-X-Gm-Message-State: AOAM532xfK5afSvdwDgyNbZagrIhe/uBNFEFGcpgstXpByvAwaqChlQq
-        0U7hbSF/LKR3ZN1S/C0MsYA=
-X-Google-Smtp-Source: ABdhPJxdb48xfM1I6A57NBB+0VE33vTP/hLoecV0tRu2EiQR4i3oGYbQDIazvv4DmJhtp+HspEJ/lQ==
-X-Received: by 2002:a05:6512:3ba6:b0:448:23de:ca79 with SMTP id g38-20020a0565123ba600b0044823deca79mr3227383lfv.400.1646922400073;
-        Thu, 10 Mar 2022 06:26:40 -0800 (PST)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id r22-20020a2e9956000000b00247f5d1c457sm1090247ljj.126.2022.03.10.06.26.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 06:26:39 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH iproute2-next 0/3] Extend locked port feature with FDB
- locked flag (MAC-Auth/MAB)
-In-Reply-To: <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
-References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
- <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
-Date:   Thu, 10 Mar 2022 15:26:36 +0100
-Message-ID: <86y21hc28z.fsf@gmail.com>
+        with ESMTP id S1343948AbiCJOba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:31:30 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF681ADD54
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:29:08 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nSJms-0005nY-5E
+        for netdev@vger.kernel.org; Thu, 10 Mar 2022 15:29:06 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 930EA47D5E
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:29:05 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 0F7DB47D58;
+        Thu, 10 Mar 2022 14:29:05 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ca65630f;
+        Thu, 10 Mar 2022 14:29:04 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/29] pull-request: can-next 2022-03-10
+Date:   Thu, 10 Mar 2022 15:28:34 +0100
+Message-Id: <20220310142903.341658-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tor, mar 10, 2022 at 16:18, Nikolay Aleksandrov <razor@blackwall.org> wrote:
-> On 10/03/2022 15:36, Hans Schultz wrote:
->> This patch set extends the locked port feature for devices
->> that are behind a locked port, but do not have the ability to
->> authorize themselves as a supplicant using IEEE 802.1X.
->> Such devices can be printers, meters or anything related to
->> fixed installations. Instead of 802.1X authorization, devices
->> can get access based on their MAC addresses being whitelisted.
->> 
->> For an authorization daemon to detect that a device is trying
->> to get access through a locked port, the bridge will add the
->> MAC address of the device to the FDB with a locked flag to it.
->> Thus the authorization daemon can catch the FDB add event and
->> check if the MAC address is in the whitelist and if so replace
->> the FDB entry without the locked flag enabled, and thus open
->> the port for the device.
->> 
->> This feature is known as MAC-Auth or MAC Authentication Bypass
->> (MAB) in Cisco terminology, where the full MAB concept involves
->> additional Cisco infrastructure for authorization. There is no
->> real authentication process, as the MAC address of the device
->> is the only input the authorization daemon, in the general
->> case, has to base the decision if to unlock the port or not.
->> 
->> With this patch set, an implementation of the offloaded case is
->> supplied for the mv88e6xxx driver. When a packet ingresses on
->> a locked port, an ATU miss violation event will occur. When
->> handling such ATU miss violation interrupts, the MAC address of
->> the device is added to the FDB with a zero destination port
->> vector (DPV) and the MAC address is communicated through the
->> switchdev layer to the bridge, so that a FDB entry with the
->> locked flag enabled can be added.
->> 
->> Hans Schultz (3):
->>    net: bridge: add fdb flag to extent locked port feature
->>    net: switchdev: add support for offloading of fdb locked flag
->>    net: dsa: mv88e6xxx: mac-auth/MAB implementation
->> 
->>   drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
->>   drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
->>   drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
->>   drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
->>   drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
->>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
->>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
->>   drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
->>   drivers/net/dsa/mv88e6xxx/port.h              |  1 +
->>   include/net/switchdev.h                       |  3 +-
->>   include/uapi/linux/neighbour.h                |  1 +
->>   net/bridge/br.c                               |  3 +-
->>   net/bridge/br_fdb.c                           | 13 +++-
->>   net/bridge/br_input.c                         | 11 ++-
->>   net/bridge/br_private.h                       |  5 +-
->>   15 files changed, 167 insertions(+), 14 deletions(-)
->>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
->>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
->> 
->
-> This doesn't look like an iproute2 patch-set. I think you've messed the target
-> in the subject.
+Hello Jakub, hello David,
 
-Sorry, complete bummer!
-I have resent it with the correct header.
+this is a pull request of 29 patches for net-next/master.
+
+The first 3 patches are by Oliver Hartkopp, target the CAN ISOTP
+protocol and update the CAN frame sending behavior, and increases the
+max PDU size to 64 kByte.
+
+The next 2 patches are also by Oliver Hartkopp and update the virtual
+VXCAN driver so that CAN frames send into the peer name space show up
+as RX'ed CAN frames.
+
+Vincent Mailhol contributes a patch for the etas_es58x driver to fix a
+false positive dereference uninitialized variable warning.
+
+2 patches by Ulrich Hecht add r8a779a0 SoC support to the rcar_canfd
+driver.
+
+The remaining 21 patches target the gs_usb driver and are by Peter
+Fink, Ben Evans, Eric Evenchick and me. This series cleans up the
+gs-usb driver, documents some bits of the USB ABI used by the widely
+used open source firmware candleLight, adds support for up to 3 CAN
+interfaces per USB device, adds CAN-FD support, adds quirks for some
+hardware and software workarounds and finally adds support for 2 new
+devices.
+
+regards,
+Marc
+
+---
+
+The following changes since commit 3126b731ceb168b3a780427873c417f2abdd5527:
+
+  net: dsa: tag_rtl8_4: fix typo in modalias name (2022-03-09 20:36:24 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.18-20220310
+
+for you to fetch changes up to 0691a4b55c89055c1efb61a7696f4bc6aa5cf630:
+
+  can: gs_usb: add VID/PID for ABE CAN Debugger devices (2022-03-10 09:49:16 +0100)
+
+----------------------------------------------------------------
+linux-can-next-for-5.18-20220310
+
+----------------------------------------------------------------
+Ben Evans (1):
+      can: gs_usb: add VID/PID for ABE CAN Debugger devices
+
+Marc Kleine-Budde (14):
+      can: gs_usb: use consistent one space indention
+      can: gs_usb: fix checkpatch warning
+      can: gs_usb: sort include files alphabetically
+      can: gs_usb: GS_CAN_FLAG_OVERFLOW: make use of BIT()
+      can: gs_usb: rewrap error messages
+      can: gs_usb: rewrap usb_control_msg() and usb_fill_bulk_urb()
+      can: gs_usb: gs_make_candev(): call SET_NETDEV_DEV() after handling all bt_const->feature
+      can: gs_usb: add HW timestamp mode bit
+      can: gs_usb: update GS_CAN_FEATURE_IDENTIFY documentation
+      can: gs_usb: document the USER_ID feature
+      can: gs_usb: document the PAD_PKTS_TO_MAX_PKT_SIZE feature
+      can: gs_usb: gs_usb_probe(): introduce udev and make use of it
+      can: gs_usb: support up to 3 channels per device
+      can: gs_usb: add quirk for CANtact Pro overlapping GS_USB_BREQ value
+
+Oliver Hartkopp (5):
+      can: isotp: add local echo tx processing for consecutive frames
+      can: isotp: set default value for N_As to 50 micro seconds
+      can: isotp: set max PDU size to 64 kByte
+      vxcan: remove sk reference in peer skb
+      vxcan: enable local echo for sent CAN frames
+
+Peter Fink (6):
+      can: gs_usb: use union and FLEX_ARRAY for data in struct gs_host_frame
+      can: gs_usb: add CAN-FD support
+      can: gs_usb: add usb quirk for NXP LPC546xx controllers
+      can: gs_usb: activate quirks for CANtact Pro unconditionally
+      can: gs_usb: add extended bt_const feature
+      can: gs_usb: add VID/PID for CES CANext FD devices
+
+Ulrich Hecht (2):
+      dt-bindings: can: renesas,rcar-canfd: Document r8a779a0 support
+      can: rcar_canfd: Add support for r8a779a0 SoC
+
+Vincent Mailhol (1):
+      can: etas_es58x: es58x_fd_rx_event_msg(): initialize rx_event_msg before calling es58x_check_msg_len()
+
+ .../bindings/net/can/renesas,rcar-canfd.yaml       |   2 +
+ drivers/net/can/rcar/rcar_canfd.c                  | 353 +++++++++-------
+ drivers/net/can/usb/etas_es58x/es58x_fd.c          |   3 +-
+ drivers/net/can/usb/gs_usb.c                       | 446 +++++++++++++++------
+ drivers/net/can/vxcan.c                            |  19 +-
+ include/uapi/linux/can/isotp.h                     |  28 +-
+ net/can/isotp.c                                    | 235 +++++++----
+ 7 files changed, 732 insertions(+), 354 deletions(-)
+
+
