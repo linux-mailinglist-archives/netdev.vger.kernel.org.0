@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCFA4D3DF8
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:17:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D90E4D3DFD
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:17:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238499AbiCJARq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 19:17:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        id S238959AbiCJASE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 19:18:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233455AbiCJARp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:17:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2693995A1F
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 16:16:46 -0800 (PST)
+        with ESMTP id S238954AbiCJARs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:17:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78770123417
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 16:16:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B61EF60B32
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 00:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7938C340F4;
-        Thu, 10 Mar 2022 00:16:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC7E8B82457
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 00:16:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412FEC340F5;
+        Thu, 10 Mar 2022 00:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646871405;
-        bh=5O/rkB729rmQzMZD04rkuIa6C9mXPEns/CgSGmswjUI=;
+        bh=1HWsJbS+ubdgGphGk7e/vp48kRPwQGrsMBQBZrKV1as=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvYL7UWCl+K8/uhkVLw8ha/3CGw6g/uAOHBUni3+VPJXh1baOR6cRevKith7zIgu5
-         jaKCdZYwDLM2ld3gPAHEPGTcEqA2LWyHzgBi1e3EoMhG0w738I1VSJj+f6EOaEMOYZ
-         BRLzZHt9yorDgdhVSohICb2rN4FTyzOhLxzG0zOiOS3xKi76gXRqUao4AKZuvlexM9
-         e/zQxibIYQAdZ5XKs9kbDM8szxsNa7DjrkXbKv4JDOCR0u79fRi93ky08zkTIQw492
-         LDg0Y8iYDhxzb1cYRYAWmtOsZdhZd8Ew2XtIdQhI7GBuwN9zWAoAYp7dj86ozZoIni
-         PM0MqipGiD4pg==
+        b=IhxjkrhEnpeozRILHBrqBONVYtuUP5RWYS0eOOunsKCu4NaiTFZ5zGRl8rhtYSGvv
+         CV69TeKUK02xUZQmdVWAAEITt85bk5TWGG9IdoOIuNEv2dnngd4Lre6nmO+IuMDz09
+         qNeKtjTVMI5GhW9H3IEQi6ad6k6mi3QO4rhmzSxZYzsx5oL07ZyShKeRchWoVDQ/gb
+         OHbqAn6sAmMzQ+Qx/Ue5FoMIeTsxJzLPszNp7etFLv0mVAefo+ovL8FNJtOLTGh30b
+         RavlQtjkJ76WtN8gmNbXMg4Ljq0ZkptzSUHIV8b/Vj2znnvk4r/S+FJFw+OUY8m6Y8
+         5mXsqoZDAFuVg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com
 Cc:     netdev@vger.kernel.org, leonro@nvidia.com, jiri@resnulli.us,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [RFT net-next 1/6] devlink: expose instance locking and add locked port registering
-Date:   Wed,  9 Mar 2022 16:16:27 -0800
-Message-Id: <20220310001632.470337-2-kuba@kernel.org>
+Subject: [RFT net-next 2/6] eth: nfp: wrap locking assertions in helpers
+Date:   Wed,  9 Mar 2022 16:16:28 -0800
+Message-Id: <20220310001632.470337-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220310001632.470337-1-kuba@kernel.org>
 References: <20220310001632.470337-1-kuba@kernel.org>
@@ -53,181 +53,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should be familiar and beneficial to expose devlink instance
-lock to the drivers. This way drivers can block devlink from
-calling them during critical sections without breakneck locking.
+We can replace the PF lock with devlink instance lock in subsequent
+changes. To make the patches easier to comprehend and limit line
+lengths - factor out the existing locking assertions.
 
-Add port helpers, port splitting callbacks will be the first
-target.
-
-Use 'devl_' prefix for "explicitly locked" API. Initial RFC used
-'__devlink' but that's too much typing.
+No functional changes.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/devlink.h | 11 +++++
- net/core/devlink.c    | 99 ++++++++++++++++++++++++++++++++-----------
- 2 files changed, 86 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/main.c  | 4 ++--
+ drivers/net/ethernet/netronome/nfp/nfp_app.c      | 2 +-
+ drivers/net/ethernet/netronome/nfp/nfp_app.h      | 9 +++++++++
+ drivers/net/ethernet/netronome/nfp/nfp_net_repr.c | 4 ++--
+ 4 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 8d5349d2fb68..9de0d091aee9 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1479,6 +1479,17 @@ void *devlink_priv(struct devlink *devlink);
- struct devlink *priv_to_devlink(void *priv);
- struct device *devlink_to_dev(const struct devlink *devlink);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index ac1dcfa1d179..4d960a9641b3 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -266,7 +266,7 @@ nfp_flower_reprs_reify(struct nfp_app *app, enum nfp_repr_type type,
+ 	int i, err, count = 0;
  
-+/* Devlink instance explicit locking */
-+void devl_lock(struct devlink *devlink);
-+void devl_unlock(struct devlink *devlink);
-+void devl_assert_locked(struct devlink *devlink);
-+bool devl_lock_is_held(struct devlink *devlink);
-+
-+int devl_port_register(struct devlink *devlink,
-+		       struct devlink_port *devlink_port,
-+		       unsigned int port_index);
-+void devl_port_unregister(struct devlink_port *devlink_port);
-+
- struct ib_device;
+ 	reprs = rcu_dereference_protected(app->reprs[type],
+-					  lockdep_is_held(&app->pf->lock));
++					  nfp_app_is_locked(app));
+ 	if (!reprs)
+ 		return 0;
  
- struct net *devlink_net(const struct devlink *devlink);
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index fcd9f6d85cf1..c30da1fc023d 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -225,6 +225,37 @@ struct devlink *__must_check devlink_try_get(struct devlink *devlink)
- 	return NULL;
- }
+@@ -295,7 +295,7 @@ nfp_flower_wait_repr_reify(struct nfp_app *app, atomic_t *replies, int tot_repl)
+ 	if (!tot_repl)
+ 		return 0;
  
-+void devl_assert_locked(struct devlink *devlink)
-+{
-+	lockdep_assert_held(&devlink->lock);
-+}
-+EXPORT_SYMBOL_GPL(devl_assert_locked);
-+
-+bool devl_lock_is_held(struct devlink *devlink)
-+{
-+	/* We have to check this at runtime because struct devlink
-+	 * is now private. Normally lock_is_held() should be eliminated
-+	 * as dead code in the caller and we can depend on the linker error.
-+	 */
-+	if (!IS_ENABLED(CONFIG_LOCKDEP))
-+		return WARN_ON_ONCE(true);
-+
-+	return lockdep_is_held(&devlink->lock);
-+}
-+EXPORT_SYMBOL_GPL(devl_lock_is_held);
-+
-+void devl_lock(struct devlink *devlink)
-+{
-+	mutex_lock(&devlink->lock);
-+}
-+EXPORT_SYMBOL_GPL(devl_lock);
-+
-+void devl_unlock(struct devlink *devlink)
-+{
-+	mutex_unlock(&devlink->lock);
-+}
-+EXPORT_SYMBOL_GPL(devl_unlock);
-+
- static struct devlink *devlink_get_from_attrs(struct net *net,
- 					      struct nlattr **attrs)
+-	lockdep_assert_held(&app->pf->lock);
++	assert_nfp_app_locked(app);
+ 	if (!wait_event_timeout(priv->reify_wait_queue,
+ 				atomic_read(replies) >= tot_repl,
+ 				NFP_FL_REPLY_TIMEOUT)) {
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_app.c b/drivers/net/ethernet/netronome/nfp/nfp_app.c
+index 3a973282b2bb..09f250e74dfa 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_app.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_app.c
+@@ -121,7 +121,7 @@ struct nfp_reprs *
+ nfp_reprs_get_locked(struct nfp_app *app, enum nfp_repr_type type)
  {
-@@ -9249,6 +9280,32 @@ static void devlink_port_type_warn_cancel(struct devlink_port *devlink_port)
- 	cancel_delayed_work_sync(&devlink_port->type_warn_dw);
+ 	return rcu_dereference_protected(app->reprs[type],
+-					 lockdep_is_held(&app->pf->lock));
++					 nfp_app_is_locked(app));
  }
  
-+int devl_port_register(struct devlink *devlink,
-+		       struct devlink_port *devlink_port,
-+		       unsigned int port_index)
+ struct nfp_reprs *
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_app.h b/drivers/net/ethernet/netronome/nfp/nfp_app.h
+index 3e9baff07100..60cb8a71e02d 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_app.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_app.h
+@@ -4,10 +4,12 @@
+ #ifndef _NFP_APP_H
+ #define _NFP_APP_H 1
+ 
++#include <linux/lockdep.h>
+ #include <net/devlink.h>
+ 
+ #include <trace/events/devlink.h>
+ 
++#include "nfp_main.h"
+ #include "nfp_net_repr.h"
+ 
+ #define NFP_APP_CTRL_MTU_MAX	U32_MAX
+@@ -174,6 +176,13 @@ struct nfp_app {
+ 	void *priv;
+ };
+ 
++static inline void assert_nfp_app_locked(struct nfp_app *app)
 +{
-+	lockdep_assert_held(&devlink->lock);
-+
-+	if (devlink_port_index_exists(devlink, port_index))
-+		return -EEXIST;
-+
-+	WARN_ON(devlink_port->devlink);
-+	devlink_port->devlink = devlink;
-+	devlink_port->index = port_index;
-+	spin_lock_init(&devlink_port->type_lock);
-+	INIT_LIST_HEAD(&devlink_port->reporter_list);
-+	mutex_init(&devlink_port->reporters_lock);
-+	list_add_tail(&devlink_port->list, &devlink->port_list);
-+	INIT_LIST_HEAD(&devlink_port->param_list);
-+	INIT_LIST_HEAD(&devlink_port->region_list);
-+
-+	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
-+	devlink_port_type_warn_schedule(devlink_port);
-+	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
-+	return 0;
++	lockdep_assert_held(&app->pf->lock);
 +}
-+EXPORT_SYMBOL_GPL(devl_port_register);
 +
- /**
-  *	devlink_port_register - Register devlink port
-  *
-@@ -9266,29 +9323,28 @@ int devlink_port_register(struct devlink *devlink,
- 			  struct devlink_port *devlink_port,
- 			  unsigned int port_index)
++#define nfp_app_is_locked(app)	lockdep_is_held(&(app)->pf->lock)
++
+ void nfp_check_rhashtable_empty(void *ptr, void *arg);
+ bool __nfp_ctrl_tx(struct nfp_net *nn, struct sk_buff *skb);
+ bool nfp_ctrl_tx(struct nfp_net *nn, struct sk_buff *skb);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+index 181ac8e789a3..ba3fa7eac98d 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+@@ -20,7 +20,7 @@ struct net_device *
+ nfp_repr_get_locked(struct nfp_app *app, struct nfp_reprs *set, unsigned int id)
  {
--	mutex_lock(&devlink->lock);
--	if (devlink_port_index_exists(devlink, port_index)) {
--		mutex_unlock(&devlink->lock);
--		return -EEXIST;
--	}
-+	int err;
- 
--	WARN_ON(devlink_port->devlink);
--	devlink_port->devlink = devlink;
--	devlink_port->index = port_index;
--	spin_lock_init(&devlink_port->type_lock);
--	INIT_LIST_HEAD(&devlink_port->reporter_list);
--	mutex_init(&devlink_port->reporters_lock);
--	list_add_tail(&devlink_port->list, &devlink->port_list);
--	INIT_LIST_HEAD(&devlink_port->param_list);
--	INIT_LIST_HEAD(&devlink_port->region_list);
-+	mutex_lock(&devlink->lock);
-+	err = devl_port_register(devlink, devlink_port, port_index);
- 	mutex_unlock(&devlink->lock);
--	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
--	devlink_port_type_warn_schedule(devlink_port);
--	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
--	return 0;
-+	return err;
+ 	return rcu_dereference_protected(set->reprs[id],
+-					 lockdep_is_held(&app->pf->lock));
++					 nfp_app_is_locked(app));
  }
- EXPORT_SYMBOL_GPL(devlink_port_register);
  
-+void devl_port_unregister(struct devlink_port *devlink_port)
-+{
-+	lockdep_assert_held(&devlink_port->devlink->lock);
-+
-+	devlink_port_type_warn_cancel(devlink_port);
-+	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
-+	list_del(&devlink_port->list);
-+	WARN_ON(!list_empty(&devlink_port->reporter_list));
-+	WARN_ON(!list_empty(&devlink_port->region_list));
-+	mutex_destroy(&devlink_port->reporters_lock);
-+}
-+EXPORT_SYMBOL_GPL(devl_port_unregister);
-+
- /**
-  *	devlink_port_unregister - Unregister devlink port
-  *
-@@ -9298,14 +9354,9 @@ void devlink_port_unregister(struct devlink_port *devlink_port)
- {
- 	struct devlink *devlink = devlink_port->devlink;
+ static void
+@@ -476,7 +476,7 @@ nfp_reprs_clean_and_free_by_type(struct nfp_app *app, enum nfp_repr_type type)
+ 	int i;
  
--	devlink_port_type_warn_cancel(devlink_port);
--	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_DEL);
- 	mutex_lock(&devlink->lock);
--	list_del(&devlink_port->list);
-+	devl_port_unregister(devlink_port);
- 	mutex_unlock(&devlink->lock);
--	WARN_ON(!list_empty(&devlink_port->reporter_list));
--	WARN_ON(!list_empty(&devlink_port->region_list));
--	mutex_destroy(&devlink_port->reporters_lock);
- }
- EXPORT_SYMBOL_GPL(devlink_port_unregister);
+ 	reprs = rcu_dereference_protected(app->reprs[type],
+-					  lockdep_is_held(&app->pf->lock));
++					  nfp_app_is_locked(app));
+ 	if (!reprs)
+ 		return;
  
 -- 
 2.34.1
