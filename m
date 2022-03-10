@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8404D4D69
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56DFF4D4D48
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238892AbiCJPV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 10:21:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
+        id S238337AbiCJPZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 10:25:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234361AbiCJPVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:21:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E8870CF6;
-        Thu, 10 Mar 2022 07:20:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED6C6B826AF;
-        Thu, 10 Mar 2022 15:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7D492C340F6;
-        Thu, 10 Mar 2022 15:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646925611;
-        bh=VgsqP+rY/c6yq2avnnBE/Vq4rwW4pjTi03Kq+2PNRQQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PZa8xhVg+lDSiEDBjyTCtiGjZyTSXt8sVQKCRb7orxnlGL5+9kf3WetrD8olpx8uY
-         3CKftXP1Hz5S3B0sTPB3PiGEkpDTxNc28tAosG1aLnU9eny1BpE55U+RM/rleggcuu
-         XF6P4L9hUN04whjogYUNaYxtOfmFBce+WHDmurBAcF8SqreV7rJcPcuJN4vtz/JgIP
-         PtwipzqSZg3E4Xq8dhzf0062Dp0OwKrxi0if8VKjCEoSWNqPSNfeyRp9qZaSAh/O9A
-         e2nYYuOGb6kn1mjltaj2CsF0eMzLQz1jA3CPvllLGueeRGDYfFWkEtLTpQ/P4Ju/p2
-         dp0yHZThc/7QA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5D52EF03841;
-        Thu, 10 Mar 2022 15:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232317AbiCJPZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:25:07 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6BA15722D;
+        Thu, 10 Mar 2022 07:24:03 -0800 (PST)
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nSKdt-000DUs-L2; Thu, 10 Mar 2022 16:23:53 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nSKdt-0007vB-6m; Thu, 10 Mar 2022 16:23:53 +0100
+Subject: Re: [PATCH] bpf: test_run: use kvfree() for memory allocated with
+ kvmalloc()
+To:     Yihao Han <hanyihao@vivo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel@vivo.com, toke@redhat.com
+References: <20220310092828.13405-1-hanyihao@vivo.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b611d5d6-fb8c-0c9d-ca12-7131765001ca@iogearbox.net>
+Date:   Thu, 10 Mar 2022 16:23:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] bpf: initialise retval in bpf_prog_test_run_xdp()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164692561137.14970.12359681643557026664.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Mar 2022 15:20:11 +0000
-References: <20220310110228.161869-1-toke@redhat.com>
-In-Reply-To: <20220310110228.161869-1-toke@redhat.com>
-To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+?=@ci.codeaurora.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, lkp@intel.com,
-        dan.carpenter@oracle.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220310092828.13405-1-hanyihao@vivo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26477/Thu Mar 10 10:34:39 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+[ You have plenty of folks in Cc, just not Toke given b530e9e1063e, so added him. ;) ]
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+On 3/10/22 10:28 AM, Yihao Han wrote:
+> It is allocated with kvmalloc(), the corresponding release function
+> should not be kfree(), use vfree() instead.
 
-On Thu, 10 Mar 2022 12:02:28 +0100 you wrote:
-> The kernel test robot pointed out that the newly added
-> bpf_test_run_xdp_live() runner doesn't set the retval in the caller (by
-> design), which means that the variable can be passed unitialised to
-> bpf_test_finish(). Fix this by initialising the variable properly.
+nit: s/vfree/kvfree/
+
+> Generated by: scripts/coccinelle/api/kfree_mismatch.cocci
+
+Fixed up typo and added Fixes tag before pushing, thanks!
+
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> ---
+>   net/bpf/test_run.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Fixes: b530e9e1063e ("bpf: Add "live packet" mode for XDP in BPF_PROG_RUN")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index 25169908be4a..b7e1e5f61c50 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -196,9 +196,9 @@ static int xdp_test_run_setup(struct xdp_test_data *xdp, struct xdp_buff *orig_c
+>   err_mmodel:
+>   	page_pool_destroy(pp);
+>   err_pp:
+> -	kfree(xdp->skbs);
+> +	kvfree(xdp->skbs);
+>   err_skbs:
+> -	kfree(xdp->frames);
+> +	kvfree(xdp->frames);
+>   	return err;
+>   }
+>   
 > 
-> [...]
-
-Here is the summary with links:
-  - [bpf-next] bpf: initialise retval in bpf_prog_test_run_xdp()
-    https://git.kernel.org/bpf/bpf-next/c/eecbfd976e86
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
 
