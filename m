@@ -2,219 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5A54D5013
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:17:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AE04D507F
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:29:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244422AbiCJRSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 12:18:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46042 "EHLO
+        id S245007AbiCJR2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 12:28:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244481AbiCJRR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:17:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA225186405
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 09:16:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646932615;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+vBaDCvIEZvSxB2vvfgeDxXoY9yQPk8bK+m5bKAq3ls=;
-        b=TjB5TQT3+ICwJVZnKRkjXRSHyqtt7Iyb1o+RtMX3Ygx9ykGg17ZYC/xqGOLMXmP0MaTbvv
-        aiw6Qn9cp42+co2jCmizFerZC0izpks+uDtVkufe7wJ7H2mgYK/x5F+pjQQc8YOJ84jNap
-        GWXtmLJLKx7VGOTrkL8it7T26z8A9pk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-118-6p7-5q2ONC6WsqYnoWuYKg-1; Thu, 10 Mar 2022 12:16:51 -0500
-X-MC-Unique: 6p7-5q2ONC6WsqYnoWuYKg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 387E41091DA0;
-        Thu, 10 Mar 2022 17:16:50 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.39.192.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 981DC101E692;
-        Thu, 10 Mar 2022 17:16:42 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Petr Oros <poros@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] ice: Fix race condition during interface enslave
-Date:   Thu, 10 Mar 2022 18:16:41 +0100
-Message-Id: <20220310171641.3863659-1-ivecera@redhat.com>
+        with ESMTP id S244401AbiCJR2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:28:46 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0BDB3E5F;
+        Thu, 10 Mar 2022 09:27:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646933264; x=1678469264;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UIbApzBbc+Vluf22x9IDYn+1LabeJBGdywRMKw75SoA=;
+  b=wKkZr47gF7MuidYPkJFVO1SfeFHxtEn0Dv1HgddNNb8U8T+4wb6ml9mV
+   UgUarHpeHu2SZP81YVNA/PdxbdYqU64jnKAzBqnifp2zgnlH/nX5NAxuk
+   908hMm2/VtMULusG3cLSNxqX8Y7Nxy5oaNwiZc2DSCJADNctsrW4HB9Mr
+   GEueAyNu4sR/Ii5GD+dcdkx0qNrPwg9304Nj4WQ0iJHIY4Qz3FcNG2lTX
+   sZafgnV9v6WK0n97hH9Op1h54gPfkXBNjJ0DN74eXwpcOmy4zYagLn8ua
+   Pfy2jo3kODjT62t0Gb6G9xDTrlBQC7QGpqrWZ0AF8Lr0E7bgbcXY8/t6+
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,171,1643698800"; 
+   d="scan'208";a="165312186"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 10:27:43 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 10 Mar 2022 10:27:42 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 10:27:36 -0700
+Message-ID: <5e6a9cc0d6c1c6928cafd83fe34c8a545198c3d9.camel@microchip.com>
+Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings
+ for microchip lan937x
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>, <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>,
+        <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>
+Date:   Thu, 10 Mar 2022 22:57:36 +0530
+In-Reply-To: <1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com>
+References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
+         <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
+         <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
+         <ebf1b233da821e2cd3586f403a1cdc2509671cde.camel@microchip.com>
+         <d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com>
+         <1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 5dbbbd01cbba83 ("ice: Avoid RTNL lock when re-creating
-auxiliary device") changes a process of re-creation of aux device
-so ice_plug_aux_dev() is called from ice_service_task() context.
-This unfortunately opens a race window that can result in dead-lock
-when interface has left LAG and immediately enters LAG again.
+Hi Rob/Florian,
 
-Reproducer:
-```
-#!/bin/sh
+On Wed, 2022-03-02 at 17:11 +0530, Prasanna Vengateshan wrote:
+> Hi Rob and Florian,
+> 
+> On Fri, 2022-02-11 at 19:56 -0800, Florian Fainelli wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> > content is safe
+> > 
+> > On 2/9/2022 3:58 AM, Prasanna Vengateshan wrote:
+> > > On Mon, 2022-02-07 at 18:53 -0800, Florian Fainelli wrote:
+> > > > EXTERNAL EMAIL: Do not click links or open attachments unless you know
+> > > > the
+> > > > content is safe
+> > > > 
+> > > > On 2/7/2022 9:21 AM, Prasanna Vengateshan wrote:
+> > > > > Documentation in .yaml format and updates to the MAINTAINERS
+> > > > > Also 'make dt_binding_check' is passed.
+> > > > > 
+> > > > > RGMII internal delay values for the mac is retrieved from
+> > > > > rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
+> > > > > v3 patch series.
+> > > > > https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
+> > > > > 
+> > > > > It supports only the delay value of 0ns and 2ns.
+> > > > > 
+> > > > > Signed-off-by: Prasanna Vengateshan <
+> > > > > prasanna.vengateshan@microchip.com>
+> > > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > > ---
+> > > > >    .../bindings/net/dsa/microchip,lan937x.yaml   | 179
+> > > > > ++++++++++++++++++
+> > > > >    MAINTAINERS                                   |   1 +
+> > > > >    2 files changed, 180 insertions(+)
+> > > > >    create mode 100644
+> > > > > Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> > > > > 
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  mdio:
+> > > > > +    $ref: /schemas/net/mdio.yaml#
+> > > > > +    unevaluatedProperties: false
+> > > > 
+> > > > This should be moved to dsa.yaml since this is about describing the
+> > > > switch's internal MDIO bus controller. This is applicable to any switch,
+> > > > really.
+> > > 
+> > > Thanks for your review and feedback. Do you mean that 'mdio' to be added
+> > > in
+> > > dsa.yaml instead adding here?
+> > 
+> > Yes indeed, since this is a common property of all DSA switches, it can
+> > be defined or not depending on whether the switch does have an internal
+> > MDIO bus controller or not.
+> > 
+> > > 
+> > > > 
+> > > > > +
+> > > > > +patternProperties:
+> > > > > +  "^(ethernet-)?ports$":
+> > > > > +    patternProperties:
+> > > > > +      "^(ethernet-)?port@[0-7]+$":
+> > > > > +        allOf:
+> > > > > +          - if:
+> > > > > +              properties:
+> > > > > +                phy-mode:
+> > > > > +                  contains:
+> > > > > +                    enum:
+> > > > > +                      - rgmii
+> > > > > +                      - rgmii-rxid
+> > > > > +                      - rgmii-txid
+> > > > > +                      - rgmii-id
+> > > > > +            then:
+> > > > > +              properties:
+> > > > > +                rx-internal-delay-ps:
+> > > > > +                  $ref: "#/$defs/internal-delay-ps"
+> > > > > +                tx-internal-delay-ps:
+> > > > > +                  $ref: "#/$defs/internal-delay-ps"
+> > > > 
+> > > > Likewise, this should actually be changed in ethernet-controller.yaml
+> > > 
+> > > There is *-internal-delay-ps property defined for mac in ethernet-
+> > > controller.yaml. Should that be changed like above?
+> > 
+> > It seems to me that these properties override whatever 'phy-mode'
+> > property is defined, but in premise you are right that this is largely
+> > applicable to RGMII only. I seem to recall that the QCA8K driver had
+> > some sort of similar delay being applied even in SGMII mode but I am not
+> > sure if we got to the bottom of this.
+> > 
+> > Please make sure that this does not create regressions for other DTS in
+> > the tree before going with that change in ethernet-controller.yaml.
+> > 
+> 
+> I just tried changing rx-internal-delay-ps & tx-internal-delay-ps on
+> conditional
+> basis like above in the ethernet-controller.yaml and it passed 'make
+> dt_binding_check' as well. 
+> 
+> It would be like below if existing *-internal-delay-ps are removed from
+> ethernet-controller.yaml.
+> 
+> allOf:
+>   - if:
+>       properties:
+>         phy-mode:
+>           contains:
+>             enum:
+>               - rgmii
+>               - rgmii-rxid
+>               - rgmii-txid
+>               - rgmii-id
+>             then:
+>               properties:
+>                 rx-internal-delay-ps:
+>                   description:
+>                     RGMII Receive Clock Delay defined in pico seconds.This is 
+>                     used for controllers that have configurable RX internal 
+>                     delays. If this property is present then the MAC applies 
+>                     the RX delay.
+>                 tx-internal-delay-ps:
+>                   description:
+>                     RGMII Transmit Clock Delay defined in pico seconds.This is
+>                     used for controllers that have configurable TX internal
+>                     delays. If this property is present then the MAC applies
+>                     the TX delay.   
+> 
+> After the above changes, these two properties descriptions are different
+> compare
+> to other properties. So i just wanted to know whether i am following the right
+> approach or are there any other proposal available? Thanks.
+> 
+> Prasanna V
+> 
+Is the above method looking good? Your feedback will be helpful. Thanks.
 
-ip link add lag0 type bond mode 1 miimon 100
-ip link set lag0
-
-for n in {1..10}; do
-        echo Cycle: $n
-        ip link set ens7f0 master lag0
-        sleep 1
-        ip link set ens7f0 nomaster
-done
-```
-
-This results in:
-[20976.208697] Workqueue: ice ice_service_task [ice]
-[20976.213422] Call Trace:
-[20976.215871]  __schedule+0x2d1/0x830
-[20976.219364]  schedule+0x35/0xa0
-[20976.222510]  schedule_preempt_disabled+0xa/0x10
-[20976.227043]  __mutex_lock.isra.7+0x310/0x420
-[20976.235071]  enum_all_gids_of_dev_cb+0x1c/0x100 [ib_core]
-[20976.251215]  ib_enum_roce_netdev+0xa4/0xe0 [ib_core]
-[20976.256192]  ib_cache_setup_one+0x33/0xa0 [ib_core]
-[20976.261079]  ib_register_device+0x40d/0x580 [ib_core]
-[20976.266139]  irdma_ib_register_device+0x129/0x250 [irdma]
-[20976.281409]  irdma_probe+0x2c1/0x360 [irdma]
-[20976.285691]  auxiliary_bus_probe+0x45/0x70
-[20976.289790]  really_probe+0x1f2/0x480
-[20976.298509]  driver_probe_device+0x49/0xc0
-[20976.302609]  bus_for_each_drv+0x79/0xc0
-[20976.306448]  __device_attach+0xdc/0x160
-[20976.310286]  bus_probe_device+0x9d/0xb0
-[20976.314128]  device_add+0x43c/0x890
-[20976.321287]  __auxiliary_device_add+0x43/0x60
-[20976.325644]  ice_plug_aux_dev+0xb2/0x100 [ice]
-[20976.330109]  ice_service_task+0xd0c/0xed0 [ice]
-[20976.342591]  process_one_work+0x1a7/0x360
-[20976.350536]  worker_thread+0x30/0x390
-[20976.358128]  kthread+0x10a/0x120
-[20976.365547]  ret_from_fork+0x1f/0x40
-...
-[20976.438030] task:ip              state:D stack:    0 pid:213658 ppid:213627 flags:0x00004084
-[20976.446469] Call Trace:
-[20976.448921]  __schedule+0x2d1/0x830
-[20976.452414]  schedule+0x35/0xa0
-[20976.455559]  schedule_preempt_disabled+0xa/0x10
-[20976.460090]  __mutex_lock.isra.7+0x310/0x420
-[20976.464364]  device_del+0x36/0x3c0
-[20976.467772]  ice_unplug_aux_dev+0x1a/0x40 [ice]
-[20976.472313]  ice_lag_event_handler+0x2a2/0x520 [ice]
-[20976.477288]  notifier_call_chain+0x47/0x70
-[20976.481386]  __netdev_upper_dev_link+0x18b/0x280
-[20976.489845]  bond_enslave+0xe05/0x1790 [bonding]
-[20976.494475]  do_setlink+0x336/0xf50
-[20976.502517]  __rtnl_newlink+0x529/0x8b0
-[20976.543441]  rtnl_newlink+0x43/0x60
-[20976.546934]  rtnetlink_rcv_msg+0x2b1/0x360
-[20976.559238]  netlink_rcv_skb+0x4c/0x120
-[20976.563079]  netlink_unicast+0x196/0x230
-[20976.567005]  netlink_sendmsg+0x204/0x3d0
-[20976.570930]  sock_sendmsg+0x4c/0x50
-[20976.574423]  ____sys_sendmsg+0x1eb/0x250
-[20976.586807]  ___sys_sendmsg+0x7c/0xc0
-[20976.606353]  __sys_sendmsg+0x57/0xa0
-[20976.609930]  do_syscall_64+0x5b/0x1a0
-[20976.613598]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-
-1. Command 'ip link ... set nomaster' causes that ice_plug_aux_dev()
-   is called from ice_service_task() context, aux device is created
-   and associated device->lock is taken.
-2. Command 'ip link ... set master...' calls ice's notifier under
-   RTNL lock and that notifier calls ice_unplug_aux_dev(). That
-   function tries to take aux device->lock but this is already taken
-   by ice_plug_aux_dev() in step 1
-3. Later ice_plug_aux_dev() tries to take RTNL lock but this is already
-   taken in step 2
-4. Dead-lock
-
-The patch fixes this issue by following changes:
-- Bit ICE_FLAG_PLUG_AUX_DEV is kept to be set during ice_plug_aux_dev()
-  call in ice_service_task()
-- The bit is checked in ice_clear_rdma_cap() and only if it is not set
-  then ice_unplug_aux_dev() is called. If it is set (in other words
-  plugging of aux device was requested and ice_plug_aux_dev() is
-  potentially running) then the function only clears the bit
-- Once ice_plug_aux_dev() call (in ice_service_task) is finished
-  the bit ICE_FLAG_PLUG_AUX_DEV is cleared but it is also checked
-  whether it was already cleared by ice_clear_rdma_cap(). If so then
-  aux device is unplugged.
-
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Co-developed-by: Petr Oros <poros@redhat.com>
-Signed-off-by: Petr Oros <poros@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice.h      | 11 ++++++++++-
- drivers/net/ethernet/intel/ice/ice_main.c | 12 +++++++++++-
- 2 files changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 3121f9b04f59..bea1d1e39fa2 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -898,7 +898,16 @@ static inline void ice_set_rdma_cap(struct ice_pf *pf)
-  */
- static inline void ice_clear_rdma_cap(struct ice_pf *pf)
- {
--	ice_unplug_aux_dev(pf);
-+	/* We can directly unplug aux device here only if the flag bit
-+	 * ICE_FLAG_PLUG_AUX_DEV is not set because ice_unplug_aux_dev()
-+	 * could race with ice_plug_aux_dev() called from
-+	 * ice_service_task(). In this case we only clear that bit now and
-+	 * aux device will be unplugged later once ice_plug_aux_device()
-+	 * called from ice_service_task() finishes (see ice_service_task()).
-+	 */
-+	if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
-+		ice_unplug_aux_dev(pf);
-+
- 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
- 	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 83e3e8aae6cf..493942e910be 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2255,9 +2255,19 @@ static void ice_service_task(struct work_struct *work)
- 		return;
- 	}
- 
--	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
-+	if (test_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags)) {
-+		/* Plug aux device per request */
- 		ice_plug_aux_dev(pf);
- 
-+		/* Mark plugging as done but check whether unplug was
-+		 * requested during ice_plug_aux_dev() call
-+		 * (e.g. from ice_clear_rdma_cap()) and if so then
-+		 * plug aux device.
-+		 */
-+		if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
-+			ice_unplug_aux_dev(pf);
-+	}
-+
- 	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
- 		struct iidc_event *event;
- 
--- 
-2.34.1
+Prasanna V
 
