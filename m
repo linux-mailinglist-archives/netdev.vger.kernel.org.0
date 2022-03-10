@@ -2,77 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D544D3E9C
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 02:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF4C4D3EB4
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 02:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239092AbiCJBP4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Mar 2022 20:15:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
+        id S234662AbiCJB1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 20:27:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233367AbiCJBP4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 20:15:56 -0500
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800E71216AF;
-        Wed,  9 Mar 2022 17:14:55 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id z30so7985947ybi.2;
-        Wed, 09 Mar 2022 17:14:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+InUruY8tQ2+BAFaImHW4QdOeZX6IYvHbk4u3vv089s=;
-        b=Kx2LJ2xM9XepM89x5VhJdml/ZhjSKuhS9A3iUgEAp0MFVQki4WIZSKslR8cbFZ93vJ
-         NALXcA9g0vYvD5dXmzqpKCALzQodHyDEclIalpxaX9b26SrqU1mW41ZuS5tR4giliZwO
-         nRg4bXw+NLWfMS4wwQ1hxQxNRQxWPn5CMp51PizHNENnzrXI39bCjAMgt4OUKeYaimy3
-         +PjjHfcdO8AiK5O4vJmQ6d+vOkxvAUmTnAkDKEOyR7acZw/QXqNvdxSquzUj8LFr/jFY
-         X+gkPClNmKdrfbZ+taUds54F+2j9kDAj4h3LnSQ5vFhVNklJDByjxdMKMXnSpIvMbNXQ
-         N28A==
-X-Gm-Message-State: AOAM532sgDuVy5udbd0YDRmj9tWrH78EwpuaqcGIuaa4aVu7GwLFubq5
-        6JS8iZZUKW9O7Rs0MRLMOd8gz8wBAmYUtyVNeOA=
-X-Google-Smtp-Source: ABdhPJxdzwCvqhe15mU55+WEmQC8lyFUp+DeQqi9+c00ZVfOhM3o/Yy5zp9ZivzeCqX6yGaNBKgDPrzBp9Oi7p72G6g=
-X-Received: by 2002:a25:9f8a:0:b0:628:b9f3:6d2f with SMTP id
- u10-20020a259f8a000000b00628b9f36d2fmr1981622ybq.151.1646874894636; Wed, 09
- Mar 2022 17:14:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20220309162609.3726306-1-uli+renesas@fpond.eu> <20220309162609.3726306-2-uli+renesas@fpond.eu>
-In-Reply-To: <20220309162609.3726306-2-uli+renesas@fpond.eu>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Thu, 10 Mar 2022 10:14:43 +0900
-Message-ID: <CAMZ6RqK=PFOWd++cLzua7R8mGRB1hbwLVrn5t_Mpkr0Tat_frg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] can: rcar_canfd: Add support for r8a779a0 SoC
-To:     Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, wsa@kernel.org,
-        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
-        mkl@pengutronix.de, kuba@kernel.org, socketcan@hartkopp.net,
-        geert@linux-m68k.org, kieran.bingham@ideasonboard.com,
-        horms@verge.net.au
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S230496AbiCJB1M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 20:27:12 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27B8DE02C1;
+        Wed,  9 Mar 2022 17:26:12 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.90,169,1643641200"; 
+   d="scan'208";a="113893486"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 10 Mar 2022 10:26:11 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 80410413CE90;
+        Thu, 10 Mar 2022 10:26:09 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] net: ethernet: ti: davinci_emac: Use platform_get_irq() to get the interrupt
+Date:   Thu, 10 Mar 2022 01:26:06 +0000
+Message-Id: <20220310012606.20217-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 10 mars 2022 à 01:26, Ulrich Hecht <uli+renesas@fpond.eu> wrote:
-> Adds support for the CANFD IP variant in the V3U SoC.
->
-> Differences to controllers in other SoCs are limited to an increase in
-> the number of channels from two to eight, an absence of dedicated
-> registers for "classic" CAN mode, and a number of differences in magic
-> numbers (register offsets and layouts).
->
-> Inspired by BSP patch by Kazuya Mizuguchi.
->
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+allocation of IRQ resources in DT core code, this causes an issue
+when using hierarchical interrupt domains using "interrupts" property
+in the node as this bypasses the hierarchical setup and messes up the
+irq chaining.
 
-Thanks for addressing my comments! v4 looks good to me.
+In preparation for removal of static setup of IRQ resource from DT core
+code use platform_get_irq() for DT users only.
 
-Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+While at it propagate error code in emac_dev_stop() in case
+platform_get_irq_optional() fails.
+
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/net/ethernet/ti/davinci_emac.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 31df3267a01a..4b6aed78d392 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -1604,6 +1604,7 @@ static int emac_dev_stop(struct net_device *ndev)
+ 	int irq_num;
+ 	struct emac_priv *priv = netdev_priv(ndev);
+ 	struct device *emac_dev = &ndev->dev;
++	int ret = 0;
+ 
+ 	/* inform the upper layers. */
+ 	netif_stop_queue(ndev);
+@@ -1618,17 +1619,31 @@ static int emac_dev_stop(struct net_device *ndev)
+ 		phy_disconnect(ndev->phydev);
+ 
+ 	/* Free IRQ */
+-	while ((res = platform_get_resource(priv->pdev, IORESOURCE_IRQ, i))) {
+-		for (irq_num = res->start; irq_num <= res->end; irq_num++)
+-			free_irq(irq_num, priv->ndev);
+-		i++;
++	if (dev_of_node(&priv->pdev->dev)) {
++		do {
++			ret = platform_get_irq_optional(priv->pdev, i);
++			if (ret < 0 && ret != -ENXIO)
++				break;
++			if (ret > 0) {
++				free_irq(ret, priv->ndev);
++			} else {
++				ret = 0;
++				break;
++			}
++		} while (++i);
++	} else {
++		while ((res = platform_get_resource(priv->pdev, IORESOURCE_IRQ, i))) {
++			for (irq_num = res->start; irq_num <= res->end; irq_num++)
++				free_irq(irq_num, priv->ndev);
++			i++;
++		}
+ 	}
+ 
+ 	if (netif_msg_drv(priv))
+ 		dev_notice(emac_dev, "DaVinci EMAC: %s stopped\n", ndev->name);
+ 
+ 	pm_runtime_put(&priv->pdev->dev);
+-	return 0;
++	return ret;
+ }
+ 
+ /**
+-- 
+2.17.1
+
