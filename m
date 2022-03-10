@@ -2,123 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 586FC4D4B9B
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:00:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF2B4D4ADC
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 15:55:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243197AbiCJOVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 09:21:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39274 "EHLO
+        id S242985AbiCJOVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 09:21:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244318AbiCJOTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:19:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63B03172271
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:16:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646921668;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Go8Xs3nn4xJMSXzgfTAf+aN/PVriO9262aZwriGw3dc=;
-        b=f9gUP17noUr5krSG9qsICGKCmSN24s2TGWWzxY4EGNqxRCAiUgDiNhYHFMQNMavVQmoUbl
-        BCKSuUgI+IDeWe+mTQfS1Ghl0yYTmnzeYJWqMVXfY9oWFmTU44JXGk+PPZkaBccFkmnssp
-        +onSfv2z9ZHABxG3pYqvFiPZA6wZd0A=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-155-U9nAp1-9O0-7S0TmhRsCBA-1; Thu, 10 Mar 2022 09:14:27 -0500
-X-MC-Unique: U9nAp1-9O0-7S0TmhRsCBA-1
-Received: by mail-wm1-f69.google.com with SMTP id 3-20020a05600c230300b00384e15ceae4so4110521wmo.7
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:14:25 -0800 (PST)
+        with ESMTP id S245057AbiCJOUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:20:22 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD51B0D16
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:18:50 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id r22so7927868ljd.4
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:18:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=eWVv6eZyJg/+eUaoLT3dUwImTgfJSRuKymGltshbh80=;
+        b=t7ALIPtw3FdXJEbivsDE3RXilGcI4LV6NZYNfsWaSRTH6omQWzDYIA0tmwsHGbNr67
+         egYoSkwO7q3t/m4u4zyTsFoeR+4oUxKD1s8HksaEci2TecLoN7NXYq6TtsnOG+DTMvpo
+         SIaK3KH3enNAKLMC9xa73KIHTlJwf57TUmKQlQ4GbDIVJK8Pr5NXSosQe83VUu4dtNE7
+         d3VZAKYTFYs9mrBebIuNxsc0ZQ4lLxALwlq39XFyL7Yle7Pnq0VhyjD3aFcATyqFdKvE
+         kx6MQ7Bv3ASpRIzZfoV9FBhel6UcyaZ6z1FEWcIFVNTc6Zo4Cn9xtaP9u/7A6VJAuVFe
+         xIug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Go8Xs3nn4xJMSXzgfTAf+aN/PVriO9262aZwriGw3dc=;
-        b=P317T/xJaV12SV1ihhaCK1RB0wO5Pqan5XAVeQdM1Hq+XhyWs65UVEOO4mZjFNQgNh
-         Q84F2EK/Gy/NZ99FWmBp9jdyLkgZphJIGlpOMNcpAJh10BfSswPTEf+zZiCD3fGG+JFi
-         rGhhH3+p96tBGFUxHmd8muElz/rOAfucV3xuomXL+ppaBO45Qjr8l8FDlM7c9XBdrViJ
-         EWbEkePi1nml+O0h0AX6SVox436nYH2kH+9/sfO7vDpCq8wNxfR6h2g/3MVkCPBjW9HI
-         rtFY7BXi8RjOtC6lLygxNjr9ywPtqPQy596NnxNaJppAtBUazH9TAt2GTjh9R0qXSPPm
-         uwIQ==
-X-Gm-Message-State: AOAM533CTXYDpiYUEeu5XEF6iJgK2hBHN20yZeA/BTIOrU30aOGcRQgD
-        K5tStbMFv+k3BtG8e4lKQV3x2gCepMb3wamyF4SGwpLI/5LvUcDMu/1FSslra7YQS2Ss4wXwlx4
-        fVfgY47c0UGHhstM/
-X-Received: by 2002:a7b:c759:0:b0:389:82c6:ac44 with SMTP id w25-20020a7bc759000000b0038982c6ac44mr11566470wmk.168.1646921664193;
-        Thu, 10 Mar 2022 06:14:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyJrE6GOOprlJAb2464K/jVRkVAPfidu7mYv+i734cs8hDz4HbESzpyS0sW35U1EuqGVJzrQw==
-X-Received: by 2002:a7b:c759:0:b0:389:82c6:ac44 with SMTP id w25-20020a7bc759000000b0038982c6ac44mr11566447wmk.168.1646921663950;
-        Thu, 10 Mar 2022 06:14:23 -0800 (PST)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id e18-20020adfdbd2000000b001e4bbbe5b92sm4687989wrj.76.2022.03.10.06.14.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 06:14:23 -0800 (PST)
-Date:   Thu, 10 Mar 2022 15:14:20 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jiyong Park <jiyong@google.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, adelva@google.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] vsock: each transport cycles only on its own sockets
-Message-ID: <20220310141420.lsdchdfcybzmdhnz@sgarzare-redhat>
-References: <20220310135012.175219-1-jiyong@google.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eWVv6eZyJg/+eUaoLT3dUwImTgfJSRuKymGltshbh80=;
+        b=DIPSydNLzwGrn9nXbVri0olDJ3GzVEzDAaKrbaejPIaixOLJ8febX5C6GaccAU/fJv
+         j2mb4XNYpZX1KXIrtHm4k3a1uMfvY9MP34e7OBSBGi3Om74tcxk+Qz24ofMrG25LSS0C
+         bFaVbXAL7T3f5qHYJFkXQ4rwfvSf0hRYSQYy/StpP4mYzwwhElY7bNsoKsTfHU3O6s26
+         7+mTfs/DfHy5ggmC4wRkKR3Si5J0yG/mfdMVx9cmtRWRAumBNrzwAjvTEOH+THnu0mHM
+         0DK1j9BWngzQrlP36UWzLG/l+Fw5KqtBBsR+5S23UxVPLghVXb4ibuN3FAPB6xmAUd8c
+         fsOw==
+X-Gm-Message-State: AOAM5335o+ibKfo03dHfMuoXhMAcrKCh0hT+CygoXzk4KZ5CckcUTnHp
+        4r1FC8Fo2pC0dLT5sBnUhpESIg==
+X-Google-Smtp-Source: ABdhPJxwinz6PetJ7dJRMmCVaeTN7Ts24q7yumXDa7xtozCjI+p6OkvWdIt8sgLgi3gI8hBYO12QAQ==
+X-Received: by 2002:a2e:2f0e:0:b0:246:1a59:8f04 with SMTP id v14-20020a2e2f0e000000b002461a598f04mr3253760ljv.409.1646921928481;
+        Thu, 10 Mar 2022 06:18:48 -0800 (PST)
+Received: from [192.168.51.243] ([78.128.78.220])
+        by smtp.gmail.com with ESMTPSA id bt23-20020a056512261700b00443e7fa1c26sm1000809lfb.261.2022.03.10.06.18.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 06:18:48 -0800 (PST)
+Message-ID: <7ed798dd-49c1-171b-4b72-4e2b2c9c660d@blackwall.org>
+Date:   Thu, 10 Mar 2022 16:18:45 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220310135012.175219-1-jiyong@google.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH iproute2-next 0/3] Extend locked port feature with FDB
+ locked flag (MAC-Auth/MAB)
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 10:50:11PM +0900, Jiyong Park wrote:
->When iterating over sockets using vsock_for_each_connected_socket, make
->sure that a transport filters out sockets that don't belong to the
->transport.
->
->There actually was an issue caused by this; in a nested VM
->configuration, destroying the nested VM (which often involves the
->closing of /dev/vhost-vsock if there was h2g connections to the nested
->VM) kills not only the h2g connections, but also all existing g2h
->connections to the (outmost) host which are totally unrelated.
->
->Tested: Executed the following steps on Cuttlefish (Android running on a
->VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
->connection inside the VM, (2) open and then close /dev/vhost-vsock by
->`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
->session is not reset.
->
->[1] https://android.googlesource.com/device/google/cuttlefish/
->
->Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
->Signed-off-by: Jiyong Park <jiyong@google.com>
->---
->Changes in v3:
->  - Fixed the build error in vmci_transport.c
->Changes in v2:
->  - Squashed into a single patch
->
-> drivers/vhost/vsock.c            | 3 ++-
-> include/net/af_vsock.h           | 3 ++-
-> net/vmw_vsock/af_vsock.c         | 9 +++++++--
-> net/vmw_vsock/virtio_transport.c | 7 +++++--
-> net/vmw_vsock/vmci_transport.c   | 5 ++++-
-> 5 files changed, 20 insertions(+), 7 deletions(-)
+On 10/03/2022 15:36, Hans Schultz wrote:
+> This patch set extends the locked port feature for devices
+> that are behind a locked port, but do not have the ability to
+> authorize themselves as a supplicant using IEEE 802.1X.
+> Such devices can be printers, meters or anything related to
+> fixed installations. Instead of 802.1X authorization, devices
+> can get access based on their MAC addresses being whitelisted.
+> 
+> For an authorization daemon to detect that a device is trying
+> to get access through a locked port, the bridge will add the
+> MAC address of the device to the FDB with a locked flag to it.
+> Thus the authorization daemon can catch the FDB add event and
+> check if the MAC address is in the whitelist and if so replace
+> the FDB entry without the locked flag enabled, and thus open
+> the port for the device.
+> 
+> This feature is known as MAC-Auth or MAC Authentication Bypass
+> (MAB) in Cisco terminology, where the full MAB concept involves
+> additional Cisco infrastructure for authorization. There is no
+> real authentication process, as the MAC address of the device
+> is the only input the authorization daemon, in the general
+> case, has to base the decision if to unlock the port or not.
+> 
+> With this patch set, an implementation of the offloaded case is
+> supplied for the mv88e6xxx driver. When a packet ingresses on
+> a locked port, an ATU miss violation event will occur. When
+> handling such ATU miss violation interrupts, the MAC address of
+> the device is added to the FDB with a zero destination port
+> vector (DPV) and the MAC address is communicated through the
+> switchdev layer to the bridge, so that a FDB entry with the
+> locked flag enabled can be added.
+> 
+> Hans Schultz (3):
+>    net: bridge: add fdb flag to extent locked port feature
+>    net: switchdev: add support for offloading of fdb locked flag
+>    net: dsa: mv88e6xxx: mac-auth/MAB implementation
+> 
+>   drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
+>   drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
+>   drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
+>   drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
+>   drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
+>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
+>   .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
+>   drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
+>   drivers/net/dsa/mv88e6xxx/port.h              |  1 +
+>   include/net/switchdev.h                       |  3 +-
+>   include/uapi/linux/neighbour.h                |  1 +
+>   net/bridge/br.c                               |  3 +-
+>   net/bridge/br_fdb.c                           | 13 +++-
+>   net/bridge/br_input.c                         | 11 ++-
+>   net/bridge/br_private.h                       |  5 +-
+>   15 files changed, 167 insertions(+), 14 deletions(-)
+>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
+>   create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+> 
 
-It seems okay now, I ran my test suite and everything seems to be fine:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
-Thanks,
-Stefano
+This doesn't look like an iproute2 patch-set. I think you've messed the target
+in the subject.
 
