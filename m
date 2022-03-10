@@ -2,233 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 188144D5262
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E9E4D51D0
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:43:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241699AbiCJT23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 14:28:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34520 "EHLO
+        id S1343623AbiCJTet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 14:34:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236880AbiCJT21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 14:28:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF59114076D
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 11:27:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646940442;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p9coYP+KrszVJ1fGBd535mC7HRS8xrMw8GNaRnHQitY=;
-        b=UR7hBBAvAtV1ilf3BTHvacKwDKr6NxymDE2aeslgblzxPqQ3e3hhgwdIJtL3Fhuf5trSwG
-        9qhRz0X8Jb6eFULXBfXk5cBmo6K6qgu+wdcEmW8g9dFHKtHsIab3X5Ih0Ir+Tfb6Jl1N4n
-        AK0OfSqbsFJ87k/d9VyhXt/9hVlhC9c=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-418-ON7luSa_OHWdCW_FKJ0wWA-1; Thu, 10 Mar 2022 14:26:12 -0500
-X-MC-Unique: ON7luSa_OHWdCW_FKJ0wWA-1
-Received: by mail-qv1-f71.google.com with SMTP id n8-20020a0ce488000000b0043519e2750cso5718404qvl.4
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 11:26:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p9coYP+KrszVJ1fGBd535mC7HRS8xrMw8GNaRnHQitY=;
-        b=0k+pVo9henlyS7td5V8IENTxe/YnFh+l+G4qWR9GUp7p0YTL8PeiHyE1NqIG0ojsh6
-         lG3Cf5futrdLVqKJw73i+AOg8BcofKd/0b2rFjQN2/bOGaJvpOA/j/KCge+KYYAdo52T
-         xfjAx+HMADmY3b9BTM+Bii2L5qy/srUYi6IEoH8aE1UrP3ZQTxQrvVQwjc28zo7tWCS5
-         5uvJNXynkYSYgyvHAQpwnpoF2UOd6x7y4LT5GNEKCwVMvARX2zqZyeGY5Mas2SKhJEk4
-         cX8qK0ohgMucOd45yDMHMweZF+iKw7WzY8fHeCQuOwCLOOA0s7FTDVWRBfbWMZ38HdS9
-         1+cQ==
-X-Gm-Message-State: AOAM531jdxh9lLpiOO+nXH2hIbQhxNg4ACIsYtnqctzcK9HCt6DfltH1
-        qyVlxR34vsV6dH2Xr1HnYI30ZSZvbvzVKo4kCGuudmAtFs2s/EdMRQGM96x9yeIb1iRiv8EitBo
-        rS7vV24pTV3eLpCPv
-X-Received: by 2002:a05:620a:16c5:b0:67d:47db:8b50 with SMTP id a5-20020a05620a16c500b0067d47db8b50mr4216842qkn.77.1646940367994;
-        Thu, 10 Mar 2022 11:26:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxWTt9X3fNY0XWma+IQ3fQzwxQiF6AISWw0rtWKaGJCtaDhRstAOr2xE/BDAtTTbtzB9r9mLQ==
-X-Received: by 2002:a05:620a:16c5:b0:67d:47db:8b50 with SMTP id a5-20020a05620a16c500b0067d47db8b50mr4216818qkn.77.1646940367598;
-        Thu, 10 Mar 2022 11:26:07 -0800 (PST)
-Received: from localhost ([37.183.9.66])
-        by smtp.gmail.com with ESMTPSA id h14-20020a05622a170e00b002e1a65754d8sm2698483qtk.91.2022.03.10.11.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 11:26:07 -0800 (PST)
-Date:   Thu, 10 Mar 2022 20:26:04 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
-        pabeni@redhat.com, echaudro@redhat.com, toshiaki.makita1@gmail.com,
-        andrii@kernel.org
-Subject: Re: [PATCH v4 bpf-next 2/3] veth: rework veth_xdp_rcv_skb in order
- to accept non-linear skb
-Message-ID: <YipQzAGMyVbJQyhX@lore-desk>
-References: <cover.1646755129.git.lorenzo@kernel.org>
- <24703dbc3477a4b3aaf908f6226a566d27969f83.1646755129.git.lorenzo@kernel.org>
- <87ee3auk70.fsf@toke.dk>
- <YinkUiv/yC/gJhYZ@lore-desk>
- <87ilsly6db.fsf@toke.dk>
+        with ESMTP id S1343625AbiCJTet (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 14:34:49 -0500
+Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [148.163.129.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076B714F2AF
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 11:33:46 -0800 (PST)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.67.134])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4B7341A0080;
+        Thu, 10 Mar 2022 19:33:45 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0BC77BC006F;
+        Thu, 10 Mar 2022 19:33:45 +0000 (UTC)
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 267F513C2B0;
+        Thu, 10 Mar 2022 11:33:43 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 267F513C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1646940824;
+        bh=2H9gPujdzYaumRU5sWsGVim4r/wqcAVXts+aiI9SLt8=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=DsIjVR2FeBFk9OiBka0HNzFKd0C1DOg6Zf0Vm32eWHIVPf3PnsyL6WKOovyh6ljc1
+         lIDRZdkhO3DaD+cfy2Tso4LnrnCO9+C8dk0lM/NZLhF7+nv0Rf2qHGI5BYHFPYZzGK
+         2hDS6eNDZl4l9KMEmdTAM27q1lLDzfNGahpMFa3k=
+Subject: Re: vrf and multicast problem
+To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
+References: <1e7b1aec-401d-9e70-564a-4ce96e11e1be@candelatech.com>
+ <4c4f21f3-75b5-5099-7ee8-28e3c4d6b465@gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <50f1a384-c312-d6ec-0f42-2b9ce3a48013@candelatech.com>
+Date:   Thu, 10 Mar 2022 11:33:42 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="w72cXKqn55jNfhLL"
-Content-Disposition: inline
-In-Reply-To: <87ilsly6db.fsf@toke.dk>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <4c4f21f3-75b5-5099-7ee8-28e3c4d6b465@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-MDID: 1646940825-QdIC3SIRmfQE
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/9/22 7:54 PM, David Ahern wrote:
+> On 3/9/22 3:31 PM, Ben Greear wrote:
+>> [resend, sorry...sent to wrong mailing list the first time]
+>>
+>> Hello,
+>>
+>> We recently found a somewhat weird problem, and before I go digging into
+>> the kernel source, I wanted to see if someone had an answer already...
+>>
+>> I am binding (SO_BINDTODEVICE) a socket to an Ethernet port that is in a
+>> VRF with a second
+>> interface.  When I try to send mcast traffic out that eth port, nothing is
+>> seen on the wire.
+>>
+>> But, if I set up a similar situation with a single network port in
+>> a vrf and send multicast, then it does appear to work as I expected.
+>>
+>> I am not actually trying to do any mcast routing here, I simply want to
+>> send
+>> out mcast frames from a port that resides inside a vrf.
+>>
+>> Any idea what might be the issue?
+>>
+> 
+> multicast with VRF works. I am not aware of any known issues
 
---w72cXKqn55jNfhLL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I set up a more controlled network to do some more testing.  I have eth2
+on 192.168.100.x/24 network, and eth1 on 172.16.0.1/16.
 
-> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
->=20
-> >> Lorenzo Bianconi <lorenzo@kernel.org> writes:
-> >>=20
-> >> > Introduce veth_convert_xdp_buff_from_skb routine in order to
-> >> > convert a non-linear skb into a xdp buffer. If the received skb
-> >> > is cloned or shared, veth_convert_xdp_buff_from_skb will copy it
-> >> > in a new skb composed by order-0 pages for the linear and the
-> >> > fragmented area. Moreover veth_convert_xdp_buff_from_skb guarantees
-> >> > we have enough headroom for xdp.
-> >> > This is a preliminary patch to allow attaching xdp programs with fra=
-gs
-> >> > support on veth devices.
-> >> >
-> >> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> >>=20
-> >> It's cool that we can do this! A few comments below:
-> >
-> > Hi Toke,
-> >
-> > thx for the review :)
-> >
-> > [...]
-> >
-> >> > +static int veth_convert_xdp_buff_from_skb(struct veth_rq *rq,
-> >> > +					  struct xdp_buff *xdp,
-> >> > +					  struct sk_buff **pskb)
-> >> > +{
-> >>=20
-> >> nit: It's not really "converting" and skb into an xdp_buff, since the
-> >> xdp_buff lives on the stack; so maybe 'veth_init_xdp_buff_from_skb()'?
-> >
-> > I kept the previous naming convention used for xdp_convert_frame_to_buf=
-f()
-> > (my goal would be to move it in xdp.c and reuse this routine for the
-> > generic-xdp use case) but I am fine with
-> > veth_init_xdp_buff_from_skb().
->=20
-> Consistency is probably good, but right now we have functions of the
-> form 'xdp_convert_X_to_Y()' and 'xdp_update_Y_from_X()'. So to follow
-> that you'd have either 'veth_update_xdp_buff_from_skb()' or
-> 'veth_convert_skb_to_xdp_buff()' :)
+I bind the mcast transmitter to eth1:
 
-ack, I am fine with veth_convert_skb_to_xdp_buff()
+193 setsockopt(28, SOL_SOCKET, SO_BINDTODEVICE, "eth1\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+194 setsockopt(28, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+195 bind(28, {sa_family=AF_INET, sin_port=htons(8888), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+196 fcntl(28, F_GETFL)                      = 0x2 (flags O_RDWR)
+197 fcntl(28, F_SETFL, O_ACCMODE|O_NONBLOCK) = 0
+198 setsockopt(28, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
+199 setsockopt(28, SOL_SOCKET, SO_SNDBUF, [64000], 4) = 0
+200 setsockopt(28, SOL_SOCKET, SO_RCVBUF, [128000], 4) = 0
+201 getsockopt(28, SOL_SOCKET, SO_RCVBUF, [256000], [4]) = 0
+202 getsockopt(28, SOL_SOCKET, SO_SNDBUF, [128000], [4]) = 0
+203 write(3, "1646940176442:  BtbitsIpEndpoint"..., 69) = 69
+204 setsockopt(28, SOL_IP, IP_TOS, [0], 4)  = 0
+205 getsockopt(28, SOL_IP, IP_TOS, [0], [4]) = 0
+206 setsockopt(28, SOL_SOCKET, SO_PRIORITY, [0], 4) = 0
+207 getsockopt(28, SOL_SOCKET, SO_PRIORITY, [0], [4]) = 0
+208 write(3, "1646940176442:  UdpEndpBase.cc 2"..., 148) = 148
+209 setsockopt(28, SOL_IP, IP_MULTICAST_IF, [16781484], 4) = 0
+210 setsockopt(28, SOL_IP, IP_MULTICAST_TTL, " ", 1) = 0
 
->=20
-> >> > +	struct sk_buff *skb =3D *pskb;
-> >> > +	u32 frame_sz;
-> >> > =20
-> >> >  	if (skb_shared(skb) || skb_head_is_locked(skb) ||
-> >> > -	    skb_is_nonlinear(skb) || headroom < XDP_PACKET_HEADROOM) {
-> >> > +	    skb_shinfo(skb)->nr_frags) {
-> >>=20
-> >> So this always clones the skb if it has frags? Is that really needed?
-> >
-> > if we look at skb_cow_data(), paged area is always considered not writa=
-ble
->=20
-> Ah, right, did not know that. Seems a bit odd, but OK.
->=20
-> >> Also, there's a lot of memory allocation and copying going on here; ha=
-ve
-> >> you measured the performance?
-> >
-> > even in the previous implementation we always reallocate the skb if the
-> > conditions above are verified so I do not expect any difference in the =
-single
-> > buffer use-case but I will run some performance tests.
->=20
-> No, I wouldn't expect any difference for the single-buffer case, but I
-> would also be interested in how big the overhead is of having to copy
-> the whole jumbo-frame?
+That IP_MULTICAST_IF ioctl should be assigning the IP address of
+eth1.
 
-oh ok, I got what you mean. I guess we can compare the tcp throughput for
-the legacy skb mode (when no program is attached on the veth pair) and xdp=
-=20
-mode (when we load a simple xdp program that just returns xdp_pass) when
-jumbo frames are enabled. I would expect a performance penalty but let's se=
-e.
+But when I sniff, I see the mcast packets going out of eth2:
 
->=20
-> BTW, just noticed one other change - before we had:
->=20
-> > -	headroom =3D skb_headroom(skb) - mac_len;
-> >  	if (skb_shared(skb) || skb_head_is_locked(skb) ||
-> > -	    skb_is_nonlinear(skb) || headroom < XDP_PACKET_HEADROOM) {
->=20
->=20
-> And in your patch that becomes:
->=20
-> > +	} else if (skb_headroom(skb) < XDP_PACKET_HEADROOM &&
-> > +		   pskb_expand_head(skb, VETH_XDP_HEADROOM, 0, GFP_ATOMIC)) {
-> > +		goto drop;
->=20
->=20
-> So the mac_len subtraction disappeared; that seems wrong?
+[root@ct522-63e7 lanforge]# tshark -n -i eth2
+Running as user "root" and group "root". This could be dangerous.
+Capturing on 'eth2'
+     1 0.000000000 192.168.100.28 → 225.5.5.1    LANforge 1514 Seq: 474
+     2 0.060868103 192.168.100.226 → 192.168.100.255 ADwin Config 94
+     3 0.060900503 00:0d:b9:41:6a:90 → ff:ff:ff:ff:ff:ff 0x1111 92 Ethernet II
+     4 0.209523669 192.168.100.28 → 225.5.5.1    LANforge 1514 Seq: 475
 
-we call __skb_push before running veth_convert_xdp_buff_from_skb() in
-veth_xdp_rcv_skb().
+[root@ct522-63e7 lanforge]# ifconfig eth1
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+         inet 172.16.0.1  netmask 255.255.0.0  broadcast 172.16.255.255
+         inet6 fe80::230:18ff:fe01:63e8  prefixlen 64  scopeid 0x20<link>
+         ether 00:30:18:01:63:e8  txqueuelen 1000  (Ethernet)
+         RX packets 1972669  bytes 409744407 (390.7 MiB)
+         RX errors 0  dropped 0  overruns 0  frame 0
+         TX packets 5818525  bytes 7341747933 (6.8 GiB)
+         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+         device memory 0xdf740000-df75ffff
 
->=20
-> >> > +
-> >> > +	if (xdp_buff_has_frags(&xdp))
-> >> > +		skb->data_len =3D skb_shinfo(skb)->xdp_frags_size;
-> >> > +	else
-> >> > +		skb->data_len =3D 0;
-> >>=20
-> >> We can remove entire frags using xdp_adjust_tail, right? Will that get
-> >> propagated in the right way to the skb frags due to the dual use of
-> >> skb_shared_info, or?
-> >
-> > bpf_xdp_frags_shrink_tail() can remove entire frags and it will modify
-> > metadata contained in the skb_shared_info (e.g. nr_frags or the frag
-> > size of the given page). We should consider the data_len field in this
-> > case. Agree?
->=20
-> Right, that's what I assumed; makes sense. But adding a comment
-> mentioning this above the update of data_len might be helpful? :)
+[root@ct522-63e7 lanforge]# ifconfig eth2
+eth2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+         inet 192.168.100.28  netmask 255.255.255.0  broadcast 192.168.100.255
+         inet6 fe80::230:18ff:fe01:63e9  prefixlen 64  scopeid 0x20<link>
+         ether 00:30:18:01:63:e9  txqueuelen 1000  (Ethernet)
+         RX packets 24638831  bytes 8874820766 (8.2 GiB)
+         RX errors 26712  dropped 6596663  overruns 0  frame 16757
+         TX packets 1753211  bytes 370552564 (353.3 MiB)
+         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+         device memory 0xdf720000-df73ffff
 
-ack, will do.
+If I disable VRF and use routing-rules based approach, then it works
+as I expect (mcast frames go out of eth1).
 
-Regards,
-Lorenzo
+We tested back to quite-old kernels with same symptom, so I think it is not
+a regression.
 
->=20
-> -Toke
->=20
+Any suggestions on where to start poking at this in the kernel?
 
---w72cXKqn55jNfhLL
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks,
+Ben
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYipQywAKCRA6cBh0uS2t
-rPGYAQDlcxgaY2m9XC6c6822dEO+IPhSF+xEgbk2koma3IkpUQD9F9XNzLdC3A0M
-oLcRYoTvatt+SO3KHXxxi/GuY8/a5Qo=
-=faou
------END PGP SIGNATURE-----
-
---w72cXKqn55jNfhLL--
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
