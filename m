@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFD74D5306
+	by mail.lfdr.de (Postfix) with ESMTP id B91284D5307
 	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 21:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245032AbiCJUUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 15:20:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S245038AbiCJUUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 15:20:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244937AbiCJUU3 (ORCPT
+        with ESMTP id S244776AbiCJUU3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 15:20:29 -0500
 Received: from smtp2.emailarray.com (smtp.emailarray.com [69.28.212.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DEA181E79
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 12:19:26 -0800 (PST)
-Received: (qmail 76456 invoked by uid 89); 10 Mar 2022 20:19:25 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BA1182BE5
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 12:19:27 -0800 (PST)
+Received: (qmail 76478 invoked by uid 89); 10 Mar 2022 20:19:26 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjgzLjg3) (POLARISLOCAL)  
-  by smtp2.emailarray.com with SMTP; 10 Mar 2022 20:19:25 -0000
+  by smtp2.emailarray.com with SMTP; 10 Mar 2022 20:19:27 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, richardcochran@gmail.com,
         kernel-team@fb.com
-Subject: [PATCH net-next v2 09/10] ptp: ocp: Add 2 more timestampers
-Date:   Thu, 10 Mar 2022 12:19:11 -0800
-Message-Id: <20220310201912.933172-10-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v2 10/10] docs: ABI: Document new timecard sysfs nodes.
+Date:   Thu, 10 Mar 2022 12:19:12 -0800
+Message-Id: <20220310201912.933172-11-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220310201912.933172-1-jonathan.lemon@gmail.com>
 References: <20220310201912.933172-1-jonathan.lemon@gmail.com>
@@ -40,157 +40,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The timecard now has 4 general purpose timestampers.
+Add sysfs nodes for the frequency generator and signal counters.
+
+Update SMA selector lists for these, and also add the new
+'None', 'VCC' 'GND' selectors.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 61 +++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 56 insertions(+), 5 deletions(-)
+ Documentation/ABI/testing/sysfs-timecard | 94 +++++++++++++++++++++++-
+ 1 file changed, 93 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index d2ef4e7fcc47..fc1864c988e4 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -291,6 +291,8 @@ struct ptp_ocp {
- 	struct ptp_ocp_ext_src	*ts0;
- 	struct ptp_ocp_ext_src	*ts1;
- 	struct ptp_ocp_ext_src	*ts2;
-+	struct ptp_ocp_ext_src	*ts3;
-+	struct ptp_ocp_ext_src	*ts4;
- 	struct img_reg __iomem	*image;
- 	struct ptp_clock	*ptp;
- 	struct ptp_clock_info	ptp_info;
-@@ -396,7 +398,7 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
- 	OCP_RES_LOCATION(member), .setup = ptp_ocp_register_ext
+diff --git a/Documentation/ABI/testing/sysfs-timecard b/Documentation/ABI/testing/sysfs-timecard
+index 5bf78486a469..220478156297 100644
+--- a/Documentation/ABI/testing/sysfs-timecard
++++ b/Documentation/ABI/testing/sysfs-timecard
+@@ -37,8 +37,15 @@ Description:	(RO) Set of available destinations (sinks) for a SMA
+                 PPS2   signal is sent to the PPS2 selector
+                 TS1    signal is sent to timestamper 1
+                 TS2    signal is sent to timestamper 2
++                TS3    signal is sent to timestamper 3
++                TS4    signal is sent to timestamper 4
+                 IRIG   signal is sent to the IRIG-B module
+                 DCF    signal is sent to the DCF module
++                FREQ1  signal is sent to frequency counter 1
++                FREQ2  signal is sent to frequency counter 2
++                FREQ3  signal is sent to frequency counter 3
++                FREQ4  signal is sent to frequency counter 4
++                None   signal input is disabled
+                 =====  ================================================
  
- /* This is the MSI vector mapping used.
-- * 0: TS3 (and PPS)
-+ * 0: PPS (TS5)
-  * 1: TS0
-  * 2: TS1
-  * 3: GNSS1
-@@ -411,6 +413,8 @@ static struct ptp_ocp_eeprom_map fb_eeprom_map[] = {
-  * 12: Signal Generator 2
-  * 13: Signal Generator 3
-  * 14: Signal Generator 4
-+ * 15: TS3
-+ * 16: TS4
-  */
+ What:		/sys/class/timecard/ocpN/available_sma_outputs
+@@ -50,10 +57,16 @@ Description:	(RO) Set of available sources for a SMA output signal.
+                 10Mhz  output is from the 10Mhz reference clock
+                 PHC    output PPS is from the PHC clock
+                 MAC    output PPS is from the Miniature Atomic Clock
+-                GNSS   output PPS is from the GNSS module
++                GNSS1  output PPS is from the first GNSS module
+                 GNSS2  output PPS is from the second GNSS module
+                 IRIG   output is from the PHC, in IRIG-B format
+                 DCF    output is from the PHC, in DCF format
++                GEN1   output is from frequency generator 1
++                GEN2   output is from frequency generator 2
++                GEN3   output is from frequency generator 3
++                GEN4   output is from frequency generator 4
++                GND    output is GND
++                VCC    output is VCC
+                 =====  ================================================
  
- static struct ocp_resource ocp_fb_resource[] = {
-@@ -445,11 +449,30 @@ static struct ocp_resource ocp_fb_resource[] = {
- 			.enable = ptp_ocp_ts_enable,
- 		},
- 	},
-+	{
-+		OCP_EXT_RESOURCE(ts3),
-+		.offset = 0x01110000, .size = 0x10000, .irq_vec = 15,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 3,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	{
-+		OCP_EXT_RESOURCE(ts4),
-+		.offset = 0x01120000, .size = 0x10000, .irq_vec = 16,
-+		.extra = &(struct ptp_ocp_ext_info) {
-+			.index = 4,
-+			.irq_fcn = ptp_ocp_ts_irq,
-+			.enable = ptp_ocp_ts_enable,
-+		},
-+	},
-+	/* Timestamp for PHC and/or PPS generator */
- 	{
- 		OCP_EXT_RESOURCE(pps),
- 		.offset = 0x010C0000, .size = 0x10000, .irq_vec = 0,
- 		.extra = &(struct ptp_ocp_ext_info) {
--			.index = 3,
-+			.index = 5,
- 			.irq_fcn = ptp_ocp_ts_irq,
- 			.enable = ptp_ocp_ts_enable,
- 		},
-@@ -648,6 +671,8 @@ static struct ocp_selector ptp_ocp_sma_in[] = {
- 	{ .name = "TS2",	.value = 0x0008 },
- 	{ .name = "IRIG",	.value = 0x0010 },
- 	{ .name = "DCF",	.value = 0x0020 },
-+	{ .name = "TS3",	.value = 0x0040 },
-+	{ .name = "TS4",	.value = 0x0080 },
- 	{ .name = "FREQ1",	.value = 0x0100 },
- 	{ .name = "FREQ2",	.value = 0x0200 },
- 	{ .name = "FREQ3",	.value = 0x0400 },
-@@ -891,6 +916,12 @@ ptp_ocp_enable(struct ptp_clock_info *ptp_info, struct ptp_clock_request *rq,
- 			ext = bp->ts2;
- 			break;
- 		case 3:
-+			ext = bp->ts3;
-+			break;
-+		case 4:
-+			ext = bp->ts4;
-+			break;
-+		case 5:
- 			ext = bp->pps;
- 			break;
- 		}
-@@ -962,7 +993,7 @@ static const struct ptp_clock_info ptp_ocp_clock_info = {
- 	.enable		= ptp_ocp_enable,
- 	.verify		= ptp_ocp_verify,
- 	.pps		= true,
--	.n_ext_ts	= 4,
-+	.n_ext_ts	= 6,
- 	.n_per_out	= 5,
- };
+ What:		/sys/class/timecard/ocpN/clock_source
+@@ -75,6 +88,85 @@ Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
+ Description:	(RO) Contains the current offset value used by the firmware
+ 		for internal disciplining of the atomic clock.
  
-@@ -3025,12 +3056,28 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 			   on ? " ON" : "OFF", buf);
- 	}
- 
-+	if (bp->ts3) {
-+		ts_reg = bp->ts3->mem;
-+		on = ioread32(&ts_reg->enable);
-+		gpio_input_map(buf, bp, sma_val, 6, NULL);
-+		seq_printf(s, "%7s: %s, src: %s\n", "TS3",
-+			   on ? " ON" : "OFF", buf);
-+	}
++What:		/sys/class/timecard/ocpN/freqX
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Optional directory containing the sysfs nodes for
++		frequency counter <X>.
 +
-+	if (bp->ts4) {
-+		ts_reg = bp->ts4->mem;
-+		on = ioread32(&ts_reg->enable);
-+		gpio_input_map(buf, bp, sma_val, 7, NULL);
-+		seq_printf(s, "%7s: %s, src: %s\n", "TS4",
-+			   on ? " ON" : "OFF", buf);
-+	}
++What:		/sys/class/timecard/ocpN/freqX/frequency
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Contains the measured frequency over the specified
++		measurement period.
 +
- 	if (bp->pps) {
- 		ts_reg = bp->pps->mem;
- 		src = "PHC";
- 		on = ioread32(&ts_reg->enable);
- 		map = !!(bp->pps_req_map & OCP_REQ_TIMESTAMP);
--		seq_printf(s, "%7s: %s, src: %s\n", "TS3",
-+		seq_printf(s, "%7s: %s, src: %s\n", "TS5",
- 			   on && map ? " ON" : "OFF", src);
- 
- 		map = !!(bp->pps_req_map & OCP_REQ_PPS);
-@@ -3457,6 +3504,10 @@ ptp_ocp_detach(struct ptp_ocp *bp)
- 		ptp_ocp_unregister_ext(bp->ts1);
- 	if (bp->ts2)
- 		ptp_ocp_unregister_ext(bp->ts2);
-+	if (bp->ts3)
-+		ptp_ocp_unregister_ext(bp->ts3);
-+	if (bp->ts4)
-+		ptp_ocp_unregister_ext(bp->ts4);
- 	if (bp->pps)
- 		ptp_ocp_unregister_ext(bp->pps);
- 	for (i = 0; i < 4; i++)
-@@ -3513,7 +3564,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	 * allow this - if not all of the IRQ's are returned, skip the
- 	 * extra devices and just register the clock.
- 	 */
--	err = pci_alloc_irq_vectors(pdev, 1, 15, PCI_IRQ_MSI | PCI_IRQ_MSIX);
-+	err = pci_alloc_irq_vectors(pdev, 1, 17, PCI_IRQ_MSI | PCI_IRQ_MSIX);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "alloc_irq_vectors err: %d\n", err);
- 		goto out;
++What:		/sys/class/timecard/ocpN/freqX/seconds
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RW) Specifies the number of seconds from 0-255 that the
++		frequency should be measured over.  Write 0 to disable.
++
++What:		/sys/class/timecard/ocpN/genX
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Optional directory containing the sysfs nodes for
++		frequency generator <X>.
++
++What:		/sys/class/timecard/ocpN/genX/duty
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Specifies the signal duty cycle as a percentage from 1-99.
++
++What:		/sys/class/timecard/ocpN/genX/period
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Specifies the signal period in nanoseconds.
++
++What:		/sys/class/timecard/ocpN/genX/phase
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Specifies the signal phase offset in nanoseconds.
++
++What:		/sys/class/timecard/ocpN/genX/polarity
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Specifies the signal polarity, either 1 or 0.
++
++What:		/sys/class/timecard/ocpN/genX/running
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Either 0 or 1, showing if the signal generator is running.
++
++What:		/sys/class/timecard/ocpN/genX/start
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RO) Shows the time in <sec>.<nsec> that the signal generator
++		started running.
++
++What:		/sys/class/timecard/ocpN/genX/signal
++Date:		March 2022
++Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
++Description:	(RW) Used to start the signal generator, and summarize
++		the current status.
++
++		The signal generator may be started by writing the signal
++		period, followed by the optional signal values.  If the
++		optional values are not provided, they default to the current
++		settings, which may be obtained from the other sysfs nodes.
++
++		    period [duty [phase [polarity]]]
++
++		echo 500000000 > signal       # 1/2 second period
++		echo 1000000 40 100 > signal
++		echo 0 > signal               # turn off generator
++
++		Period and phase are specified in nanoseconds.  Duty cycle is
++		a percentage from 1-99.  Polarity is 1 or 0.
++
++		Reading this node will return:
++
++		    period duty phase polarity start_time
++
+ What:		/sys/class/timecard/ocpN/gnss_sync
+ Date:		September 2021
+ Contact:	Jonathan Lemon <jonathan.lemon@gmail.com>
 -- 
 2.31.1
 
