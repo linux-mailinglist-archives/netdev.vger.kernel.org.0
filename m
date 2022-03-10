@@ -2,373 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDCD4D4837
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 14:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F1BE4D4835
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 14:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242504AbiCJNiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 08:38:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
+        id S242452AbiCJNhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 08:37:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242520AbiCJNhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 08:37:55 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B98014F288;
-        Thu, 10 Mar 2022 05:36:54 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id u7so7700211ljk.13;
-        Thu, 10 Mar 2022 05:36:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=07et7HwSY9BHxN5Q8Cx8ST5Jg0BuLcxMuRIlXW2fIcQ=;
-        b=oiwTj4zj/bpdld0rdJ7l4aA8hZ5glc89kRqP0QnNyCZluYkCoMr2ZHgKRbLYpIlps4
-         Gr7TifCN5qkZJPWdG6sgZVZhTGYrVAGZC9Jcdb+BB08/TB0sw/liN1Fcb+7tlgThVI/z
-         yZC/p0Y19ru8KC4xs4mjgGslNHowlcwz4aZF3in3gxZjtr+FogaVOq1TLSpliKtYROnB
-         BFrv3kuuq3if3PdxNGmrN44h0peenKClJSxbpb1gtMLWrkPNavNjKFgBledYPi/8LljV
-         xQqc1vxDfTrm1nxOJHR0Ga9dJhV4N6azZ8SPCZ+ACRscT3axs8CNsLOqKJLyOiKMJr/Z
-         WaTw==
+        with ESMTP id S242474AbiCJNhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 08:37:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D77F14EF73
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 05:36:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646919406;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B8DIEevWYvuYglJFjyQWsQEqu5VB35wMbcBWRZHjc4g=;
+        b=XDEHdF4048zxvnimW5pqMJtsM/v7N1B+Iw210wFEBeOvJ+Yi1VN/LZC2dZn5JknxVuTCvJ
+        C0FqdQhEeOmpoIkukHcTcm0NHl+TYk9foYBtZedOrGuXEyXOh9GC956Xs8ugKxX9h00iY+
+        CUWmhQ5efiUNdAKRK0p1xWIdiLiQgiE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-664-295Nz24IPXORex_crSYilQ-1; Thu, 10 Mar 2022 08:36:44 -0500
+X-MC-Unique: 295Nz24IPXORex_crSYilQ-1
+Received: by mail-wm1-f72.google.com with SMTP id f24-20020a1c6a18000000b00388874b17a8so2309829wmc.3
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 05:36:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=07et7HwSY9BHxN5Q8Cx8ST5Jg0BuLcxMuRIlXW2fIcQ=;
-        b=J2ixs8qsjODNholzQNUlSe8+REMZ6VYu4G1aotGOMp1oMXkxhFtONTQTlWbzee0mvS
-         VzLy8J2aqEuFCXmbzkI/uS7A5/0lLbsAKyDZv5sdI8+soIp0Xr18BJ0nJEkeKP8fbrX2
-         UvPcdUEyjew6LvdlgCY8S68iOnkCscplOJ4hVN1u7ui6IehW0Bn22a+k4yXrYWlfmgVZ
-         r5yKMEJQfulW4iPbBMFO0omlqwHQgGB4zYrAQ7LrLWdtEaJjrjMV5D0bTVRf5T+wDuhK
-         GTCkju+fU22ICMYq3K1dIn9fCP8zFnHrY9w7cY5aotlnrbt4IHJ0xYTQuoXESb0qDm9u
-         c8UA==
-X-Gm-Message-State: AOAM533+mgeubYIC8tTSJqWkBnsQ6Itbbj6kwyFpbYiSqX4/ootH/1cr
-        XJniAGqbNFe+kIh+keyBJeInQqbtgndJOQ==
-X-Google-Smtp-Source: ABdhPJzi9NbyCWfCCRZ0eYDcyw/xNmHRGFODq4kHanZo+Ah7O4MBE7HGqr2iK6AZmQ7NI94cO7EReQ==
-X-Received: by 2002:a2e:9844:0:b0:244:c274:10db with SMTP id e4-20020a2e9844000000b00244c27410dbmr3085062ljj.120.1646919412344;
-        Thu, 10 Mar 2022 05:36:52 -0800 (PST)
-Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id i2-20020a05651c120200b00247d22bc318sm1060299lja.22.2022.03.10.05.36.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=B8DIEevWYvuYglJFjyQWsQEqu5VB35wMbcBWRZHjc4g=;
+        b=ZDLEPmzW6CmWIVre6nF7Ff3GaMaLA+HVJ7xqibIQIuqVv/+msMVEdYA1BlUGkd2G8n
+         SyCdSuDNZ7EU5bag9m1yGkfa5gaxkRsHsztY144NsUpw32qdPBV/Ea0HxDKChUHlNxAe
+         awGgWQd9Fvi9IdIFtOOQ1rBkfpkFUT5CeACBk3fGrltE1p52aW7jY4tXe4AwgPRWI1zL
+         PF/EXtBXGx8oSPTBOC0FZjuhmsnUaL6R1qtHnb+SN/pAFV/YrlkbWV4X8/pPnvLNMPH9
+         H3yW5RJKYkvEw30AmBmNMk6fjhhQ7OUdBV3im0inPiSgdbyd1XEdDnqCSET1ap1WE3dv
+         MIag==
+X-Gm-Message-State: AOAM533C0o0H1v4NfWMb2KzZGqdBkwoJcIYf3zt6MT777Bstwd5ZpyR3
+        Zdt9J3LgRshpq63Ok3bI9XrzTbM1lzi+5ClfPO4+2tEc1by1wvy6SINzOWBn8orArIwF8fBq/R/
+        sCeX/b7QWV+pJY3j8
+X-Received: by 2002:a5d:64af:0:b0:203:88d0:716e with SMTP id m15-20020a5d64af000000b0020388d0716emr2293140wrp.327.1646919403157;
+        Thu, 10 Mar 2022 05:36:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwuoJ4lMptl/9JtRj644DNUVPlOVcLNnwLXnsnQ/usq1lertQQMLVXHPv/RU79B5g3EKng7UA==
+X-Received: by 2002:a5d:64af:0:b0:203:88d0:716e with SMTP id m15-20020a5d64af000000b0020388d0716emr2293118wrp.327.1646919402923;
+        Thu, 10 Mar 2022 05:36:42 -0800 (PST)
+Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
+        by smtp.gmail.com with ESMTPSA id 9-20020a1c0209000000b003868897278asm6818979wmc.23.2022.03.10.05.36.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 05:36:51 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: [PATCH iproute2-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB implementation
-Date:   Thu, 10 Mar 2022 14:36:17 +0100
-Message-Id: <20220310133617.575673-4-schultz.hans+netdev@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
-References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+        Thu, 10 Mar 2022 05:36:42 -0800 (PST)
+Date:   Thu, 10 Mar 2022 14:36:38 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jiyong Park <jiyong@google.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, adelva@google.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] vsock: each transport cycles only on its own sockets
+Message-ID: <20220310133638.qe7eevwsmcbku2mc@sgarzare-redhat>
+References: <20220310132830.88203-1-jiyong@google.com>
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220310132830.88203-1-jiyong@google.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implementation for the Marvell mv88e6xxx chip series, is
-based on handling ATU miss violations occurring when packets
-ingress on a port that is locked. The mac address triggering
-the ATU miss violation is communicated through switchdev to
-the bridge module, which adds a fdb entry with the fdb locked
-flag set.
-Note: The locked port must have learning enabled for the ATU
-miss violation to occur.
+On Thu, Mar 10, 2022 at 10:28:29PM +0900, Jiyong Park wrote:
+>When iterating over sockets using vsock_for_each_connected_socket, make
+>sure that a transport filters out sockets that don't belong to the
+>transport.
+>
+>There actually was an issue caused by this; in a nested VM
+>configuration, destroying the nested VM (which often involves the
+>closing of /dev/vhost-vsock if there was h2g connections to the nested
+>VM) kills not only the h2g connections, but also all existing g2h
+>connections to the (outmost) host which are totally unrelated.
+>
+>Tested: Executed the following steps on Cuttlefish (Android running on a
+>VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+>connection inside the VM, (2) open and then close /dev/vhost-vsock by
+>`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+>session is not reset.
+>
+>[1] https://android.googlesource.com/device/google/cuttlefish/
+>
+>Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+>Signed-off-by: Jiyong Park <jiyong@google.com>
+>---
+>Changes in v2:
+>  - Squashed into a single patch
+>
+> drivers/vhost/vsock.c            | 3 ++-
+> include/net/af_vsock.h           | 3 ++-
+> net/vmw_vsock/af_vsock.c         | 9 +++++++--
+> net/vmw_vsock/virtio_transport.c | 7 +++++--
+> net/vmw_vsock/vmci_transport.c   | 3 ++-
+> 5 files changed, 18 insertions(+), 7 deletions(-)
+>
+>diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>index 37f0b4274113..e6c9d41db1de 100644
+>--- a/drivers/vhost/vsock.c
+>+++ b/drivers/vhost/vsock.c
+>@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+>
+> 	/* Iterating over all connections for all CIDs to find orphans is
+> 	 * inefficient.  Room for improvement here. */
+>-	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+>+	vsock_for_each_connected_socket(&vhost_transport.transport,
+>+					vhost_vsock_reset_orphans);
+>
+> 	/* Don't check the owner, because we are in the release path, so we
+> 	 * need to stop the vsock device in any case.
+>diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+>index ab207677e0a8..f742e50207fb 100644
+>--- a/include/net/af_vsock.h
+>+++ b/include/net/af_vsock.h
+>@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
+> struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
+> 					 struct sockaddr_vm *dst);
+> void vsock_remove_sock(struct vsock_sock *vsk);
+>-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
+>+void vsock_for_each_connected_socket(struct vsock_transport *transport,
+>+				     void (*fn)(struct sock *sk));
+> int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
+> bool vsock_find_cid(unsigned int cid);
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 38baeb189d4e..f04abf662ec6 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
+> }
+> EXPORT_SYMBOL_GPL(vsock_remove_sock);
+>
+>-void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+>+void vsock_for_each_connected_socket(struct vsock_transport *transport,
+>+				     void (*fn)(struct sock *sk))
+> {
+> 	int i;
+>
+>@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+> 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
+> 		struct vsock_sock *vsk;
+> 		list_for_each_entry(vsk, &vsock_connected_table[i],
+>-				    connected_table)
+>+				    connected_table) {
+>+			if (vsk->transport != transport)
+>+				continue;
+>+
+> 			fn(sk_vsock(vsk));
+>+		}
+> 	}
+>
+> 	spin_unlock_bh(&vsock_table_lock);
+>diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>index fb3302fff627..5afc194a58bb 100644
+>--- a/net/vmw_vsock/virtio_transport.c
+>+++ b/net/vmw_vsock/virtio_transport.c
+>@@ -24,6 +24,7 @@
+> static struct workqueue_struct *virtio_vsock_workqueue;
+> static struct virtio_vsock __rcu *the_virtio_vsock;
+> static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
+>+static struct virtio_transport virtio_transport; /* forward declaration */
+>
+> struct virtio_vsock {
+> 	struct virtio_device *vdev;
+>@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
+> 	switch (le32_to_cpu(event->id)) {
+> 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
+> 		virtio_vsock_update_guest_cid(vsock);
+>-		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
+>+		vsock_for_each_connected_socket(&virtio_transport.transport,
+>+						virtio_vsock_reset_sock);
+> 		break;
+> 	}
+> }
+>@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
+> 	synchronize_rcu();
+>
+> 	/* Reset all connected sockets when the device disappear */
+>-	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
+>+	vsock_for_each_connected_socket(&virtio_transport.transport,
+>+					virtio_vsock_reset_sock);
+>
+> 	/* Stop all work handlers to make sure no one is accessing the device,
+> 	 * so we can safely call virtio_reset_device().
+>diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+>index 7aef34e32bdf..735d5e14608a 100644
+>--- a/net/vmw_vsock/vmci_transport.c
+>+++ b/net/vmw_vsock/vmci_transport.c
+>@@ -882,7 +882,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
+> 					 const struct vmci_event_data *e_data,
+> 					 void *client_data)
+> {
+>-	vsock_for_each_connected_socket(vmci_transport_handle_detach);
+>+	vsock_for_each_connected_socket(&vmci_transport,
+>+					vmci_transport_handle_detach);
+> }
+>
+> static void vmci_transport_recv_pkt_work(struct work_struct *work)
 
-Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
- drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
- drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
- drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
- drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
- .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
- .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
- drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
- drivers/net/dsa/mv88e6xxx/port.h              |  1 +
- 9 files changed, 138 insertions(+), 7 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
+This breaks the build of vmci-transport:
 
-diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
-index c8eca2b6f959..3ca57709730d 100644
---- a/drivers/net/dsa/mv88e6xxx/Makefile
-+++ b/drivers/net/dsa/mv88e6xxx/Makefile
-@@ -15,3 +15,4 @@ mv88e6xxx-objs += port_hidden.o
- mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
- mv88e6xxx-objs += serdes.o
- mv88e6xxx-objs += smi.o
-+mv88e6xxx-objs += mv88e6xxx_switchdev.o
-\ No newline at end of file
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 84b90fc36c58..e1b6bd738085 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1714,11 +1714,11 @@ static int mv88e6xxx_vtu_get(struct mv88e6xxx_chip *chip, u16 vid,
- 	return err;
- }
- 
--static int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
--			      int (*cb)(struct mv88e6xxx_chip *chip,
--					const struct mv88e6xxx_vtu_entry *entry,
--					void *priv),
--			      void *priv)
-+int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+		       int (*cb)(struct mv88e6xxx_chip *chip,
-+				 const struct mv88e6xxx_vtu_entry *entry,
-+				 void *priv),
-+		       void *priv)
- {
- 	struct mv88e6xxx_vtu_entry entry = {
- 		.vid = mv88e6xxx_max_vid(chip),
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 30b92a265613..64e8fc470fdf 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -763,6 +763,11 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
- 	mutex_unlock(&chip->reg_lock);
- }
- 
-+int mv88e6xxx_vtu_walk(struct mv88e6xxx_chip *chip,
-+		       int (*cb)(struct mv88e6xxx_chip *chip,
-+				 const struct mv88e6xxx_vtu_entry *entry,
-+				 void *priv),
-+		       void *priv);
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
- 
- #endif /* _MV88E6XXX_CHIP_H */
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
-index 2c1607c858a1..729cc0610d9a 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.h
-+++ b/drivers/net/dsa/mv88e6xxx/global1.h
-@@ -136,6 +136,7 @@
- #define MV88E6XXX_G1_ATU_DATA_TRUNK				0x8000
- #define MV88E6XXX_G1_ATU_DATA_TRUNK_ID_MASK			0x00f0
- #define MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_MASK			0x3ff0
-+#define MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_NO_EGRESS		0x0000
- #define MV88E6XXX_G1_ATU_DATA_STATE_MASK			0x000f
- #define MV88E6XXX_G1_ATU_DATA_STATE_UC_UNUSED			0x0000
- #define MV88E6XXX_G1_ATU_DATA_STATE_UC_AGE_1_OLDEST		0x0001
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-index 40bd67a5c8e9..afa54fe8667e 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
-@@ -12,6 +12,8 @@
- 
- #include "chip.h"
- #include "global1.h"
-+#include "port.h"
-+#include "mv88e6xxx_switchdev.h"
- 
- /* Offset 0x01: ATU FID Register */
- 
-@@ -114,6 +116,18 @@ static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
- 	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_ATU_OP, bit, 0);
- }
- 
-+static int mv88e6xxx_g1_read_atu_violation(struct mv88e6xxx_chip *chip)
-+{
-+	int err;
-+
-+	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
-+				 MV88E6XXX_G1_ATU_OP_BUSY | MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
-+	if (err)
-+		return err;
-+
-+	return mv88e6xxx_g1_atu_op_wait(chip);
-+}
-+
- static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
- {
- 	u16 val;
-@@ -356,11 +370,11 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
- 	int spid;
- 	int err;
- 	u16 val;
-+	u16 fid;
- 
- 	mv88e6xxx_reg_lock(chip);
- 
--	err = mv88e6xxx_g1_atu_op(chip, 0,
--				  MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
-+	err = mv88e6xxx_g1_read_atu_violation(chip);
- 	if (err)
- 		goto out;
- 
-@@ -368,6 +382,10 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
- 	if (err)
- 		goto out;
- 
-+	err = mv88e6xxx_g1_read(chip, MV88E6352_G1_ATU_FID, &fid);
-+	if (err)
-+		goto out;
-+
- 	err = mv88e6xxx_g1_atu_data_read(chip, &entry);
- 	if (err)
- 		goto out;
-@@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
- 				    "ATU miss violation for %pM portvec %x spid %d\n",
- 				    entry.mac, entry.portvec, spid);
- 		chip->ports[spid].atu_miss_violation++;
-+		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
-+			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
-+									    chip->ports[spid].port,
-+									    &entry,
-+									    fid);
-+		if (err)
-+			goto out;
- 	}
- 
- 	if (val & MV88E6XXX_G1_ATU_OP_FULL_VIOLATION) {
-diff --git a/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
-new file mode 100644
-index 000000000000..e0ca452b6f86
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
-@@ -0,0 +1,67 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * mv88e6xxx_switchdev.c
-+ *
-+ *	Authors:
-+ *	Hans J. Schultz		<hans.schultz@westermo.com>
-+ *
-+ */
-+
-+#include <net/switchdev.h>
-+#include "chip.h"
-+#include "global1.h"
-+
-+struct mv88e6xxx_fid_search_ctx {
-+	u16 fid_search;
-+	u16 vid_found;
-+};
-+
-+static int mv88e6xxx_find_vid_on_matching_fid(struct mv88e6xxx_chip *chip,
-+					      const struct mv88e6xxx_vtu_entry *entry,
-+					      void *priv)
-+{
-+	struct mv88e6xxx_fid_search_ctx *ctx = priv;
-+
-+	if (ctx->fid_search == entry->fid) {
-+		ctx->vid_found = entry->vid;
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
-+						  int port,
-+						  struct mv88e6xxx_atu_entry *entry,
-+						  u16 fid)
-+{
-+	struct switchdev_notifier_fdb_info info = {
-+		.addr = entry->mac,
-+		.vid = 0,
-+		.added_by_user = false,
-+		.is_local = false,
-+		.offloaded = true,
-+		.locked = true,
-+	};
-+	struct mv88e6xxx_fid_search_ctx ctx;
-+	struct netlink_ext_ack *extack;
-+	struct net_device *brport;
-+	struct dsa_port *dp;
-+	int err;
-+
-+	ctx.fid_search = fid;
-+	err = mv88e6xxx_vtu_walk(chip, mv88e6xxx_find_vid_on_matching_fid, &ctx);
-+	if (err < 0)
-+		return err;
-+	if (err == 1)
-+		info.vid = ctx.vid_found;
-+	else
-+		return -ENODATA;
-+
-+	dp = dsa_to_port(chip->ds, port);
-+	brport = dsa_port_to_bridge_port(dp);
-+	err = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE, brport, &info.info, extack);
-+	if (err)
-+		return err;
-+	entry->portvec = MV88E6XXX_G1_ATU_DATA_PORT_VECTOR_NO_EGRESS;
-+	return mv88e6xxx_g1_atu_loadpurge(chip, fid, entry);
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
-new file mode 100644
-index 000000000000..127f3098f745
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later
-+ *
-+ * mv88e6xxx_switchdev.h
-+ *
-+ *	Authors:
-+ *	Hans J. Schultz		<hans.schultz@westermo.com>
-+ *
-+ */
-+
-+#ifndef DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_
-+#define DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_
-+
-+#include <net/switchdev.h>
-+
-+int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
-+						  int port,
-+						  struct mv88e6xxx_atu_entry *entry,
-+						  u16 fid);
-+
-+#endif /* DRIVERS_NET_DSA_MV88E6XXX_MV88E6XXX_SWITCHDEV_H_ */
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 795b3128768f..6b375b0caa2c 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -1239,6 +1239,17 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
- 	return err;
- }
- 
-+bool mv88e6xxx_port_is_locked(struct mv88e6xxx_chip *chip, int port)
-+{
-+	u16 reg;
-+
-+	if (mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg))
-+		return false;
-+	if (!(reg & MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK))
-+		return false;
-+	return true;
-+}
-+
- int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
- 			    bool locked)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index e0a705d82019..09ea8f1615bb 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -374,6 +374,7 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid);
- int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid);
- int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid);
- 
-+bool mv88e6xxx_port_is_locked(struct mv88e6xxx_chip *chip, int port);
- int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
- 			    bool locked);
- 
--- 
-2.30.2
+../net/vmw_vsock/vmci_transport.c: In function ‘vmci_transport_qp_resumed_cb’:
+../net/vmw_vsock/vmci_transport.c:885:42: error: ‘vmci_transport’ undeclared (first use in this function)
+   885 |         vsock_for_each_connected_socket(&vmci_transport,
+       |                                          ^~~~~~~~~~~~~~
+../net/vmw_vsock/vmci_transport.c:885:42: note: each undeclared identifier is reported only once for each function it appears in
+
+
+Stefano
 
