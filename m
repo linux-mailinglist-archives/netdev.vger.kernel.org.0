@@ -2,67 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2C04D4348
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 10:17:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8529E4D4375
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 10:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240693AbiCJJSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 04:18:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
+        id S240794AbiCJJ1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 04:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240692AbiCJJSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 04:18:50 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D83B12E16F
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 01:17:45 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id qx21so10587053ejb.13
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 01:17:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QEHGF3hFnWhrmvyYM9T5YXNVJEbx/ibuH5D8nPbNzOs=;
-        b=tld1SrlNpBvdoi+kwKveWhKVY+tltFfLydnEh+b8E40hiDUqlTfA8qkoE136QcCYBZ
-         u0LJR7VkaBJd6dPJdZupfCR91stco+6HAZv1NyUwc+fM0Rmz/hr8tJsjpQDrodVU/XW9
-         R4nw6eGtqLt3xPgUqywCSbUVJVeLLn2ngI3gDxXXUiecLKDcMAki6O7rQodWV7R0hUKA
-         HNe8jqk0XsgY7qpIsGjOVR8CgzLFI/W75PqxbNCJIg3pRY5STnxlYP5T6miWTSQzJm4t
-         /5ypauZQDeDcHJv/0xmmKGqS8HA09lpZdPD7MyWarbydIM1GY28URo2aXPKsy+ISIip+
-         ntYA==
+        with ESMTP id S240755AbiCJJ1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 04:27:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C6BF139CDD
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 01:26:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646904374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OCsR0r9uS0wgpc8xxw/kTKmIAo73y9wex4vgN/HieVo=;
+        b=VfqylWyKhthe2dF9i6R3KY3Sn7SFOMiHGC5sQwZZPhsPpq/0fBgSNyH544DOfziYECEI53
+        kiYxXMpVi8jVoc9GBCZXKFmNxrYd77w7wyBvwnNzTZs/fgGx0F30jc0oC23uChgqU49eIT
+        JGk9m4dzRUq7w8FLbDwwg1/sun46v0s=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-589-eLsmJ7jTMJe190wNva_bqA-1; Thu, 10 Mar 2022 04:26:12 -0500
+X-MC-Unique: eLsmJ7jTMJe190wNva_bqA-1
+Received: by mail-wm1-f69.google.com with SMTP id a26-20020a7bc1da000000b003857205ec7cso2064238wmj.2
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 01:26:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QEHGF3hFnWhrmvyYM9T5YXNVJEbx/ibuH5D8nPbNzOs=;
-        b=0o4dLwLlO8QTr0pZP8I7Y6dh9ffCfT380T5uW3Gphgz7ns+cn5csmftNglWii5hydI
-         aDBX5u/2gOAyfjmP6L3w5uYMvwN8HxuTuGOjF+CXrO/uFlLWNwYNRJIcfUPzAz9PniS2
-         rDqFf4T0cW+NF+6dSHj5oqD9BwuGGcVkDQ+P15/Jas7FDwpKKiIf4+8o/S9YuLnA9pqZ
-         WU8eIuuRdCClMC1ZBmM5gUduaJHLlfk6CxF+j44BkTUnf5lJOGWN6CEmaUNh2OCuP9++
-         UxEP7NwqNYdzrlwzgs+6+Hd3cYQaFDlgPk+Z7AbejfBvRrEXJs3c5r59syJpFGB+uNWr
-         Z6dg==
-X-Gm-Message-State: AOAM531TwHokBDIF01fi/83vnVOqfHhSeOQbDnOsw9IUKjw31GeGfIxz
-        2XqnMAOl1nNcU7BHEa2m2Sox0Q==
-X-Google-Smtp-Source: ABdhPJwvbOtbjAWFDI1HpVDj+MH2qFL15oHdD10hSMTD58H/hS2mT0df/ZaGg9Pk7+VgkiMR+mUaDQ==
-X-Received: by 2002:a17:906:1294:b0:6ce:51b:f213 with SMTP id k20-20020a170906129400b006ce051bf213mr3216493ejb.303.1646903863856;
-        Thu, 10 Mar 2022 01:17:43 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id ce12-20020a170906b24c00b006da824011eesm1584773ejb.166.2022.03.10.01.17.43
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=OCsR0r9uS0wgpc8xxw/kTKmIAo73y9wex4vgN/HieVo=;
+        b=RZhev6bHc7GVq+IsItMbrzQan21q7R3aY1ExSe1gQFdkG0pWifufphCnW/h0u2RNWF
+         qax2TNwOKuVoGWKyAypeI6c2kLN6bHOLLkt/s/AUo87Vu6RPoopMw1vXgo16+2fD75Zg
+         Nx6eBWOvXmLAEwZxNLdGrHStO71okknq3JPXFXEUvilhZloLaeWj8SPhIONAmwMES8ZN
+         3L07ffYlRn/Qw2locZcCHMnC7EEiEOxMIxWCoxnfPZvXH/VCnGVidxEGaZwbv9JtMp8E
+         kqgM/ueHD04l5heOOitfcheh4fT1sh402C/nSsO976pKor3cbiGi/l10P4GNfu0yQQs9
+         kXjA==
+X-Gm-Message-State: AOAM531eYBAzkhm/FVuFZueWu8KjfoSzjclKi0tSDvt94obzVMRWjozH
+        Lyr3j3eLNUfNHZfRSkrDgKvbWKOxxJspzjdX6VnzK1WSPwsPdfzLHSDQO42Oeeq+aRr/+LlAL8z
+        FuTcff6IJ9DXZHTfp
+X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id 98-20020adf816b000000b002037faea245mr2833106wrm.619.1646904371560;
+        Thu, 10 Mar 2022 01:26:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJykeDfBmALn7dIgdVWbFGi07euJkbCT4FwSTVtZq4BSuVbDf0QRpoCOthhfLeTEVLVQW8SAKA==
+X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id 98-20020adf816b000000b002037faea245mr2833092wrm.619.1646904371304;
+        Thu, 10 Mar 2022 01:26:11 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
+        by smtp.gmail.com with ESMTPSA id u14-20020adfed4e000000b001e3323611e5sm3531633wro.26.2022.03.10.01.26.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 01:17:43 -0800 (PST)
-Date:   Thu, 10 Mar 2022 10:17:42 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
-        netdev@vger.kernel.org, leonro@nvidia.com
-Subject: Re: [RFT net-next 4/6] eth: mlxsw: switch to explicit locking for
- port registration
-Message-ID: <YinCNuQO3p0Bkv05@nanopsycho>
-References: <20220310001632.470337-1-kuba@kernel.org>
- <20220310001632.470337-5-kuba@kernel.org>
+        Thu, 10 Mar 2022 01:26:10 -0800 (PST)
+Message-ID: <813acfa36558d355e6b56b17bd6bce1c67f77296.camel@redhat.com>
+Subject: Re: [PATCH v2 net-next] net: add per-cpu storage and net->core_stats
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        jeffreyji <jeffreyji@google.com>,
+        Brian Vazquez <brianvv@google.com>
+Date:   Thu, 10 Mar 2022 10:26:09 +0100
+In-Reply-To: <20220310004603.543196-1-eric.dumazet@gmail.com>
+References: <20220310004603.543196-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310001632.470337-5-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,15 +81,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 10, 2022 at 01:16:30AM CET, kuba@kernel.org wrote:
->Explicitly lock the devlink instance and use devl_ API.
->
->This will be used by the subsequent patch to invoke
->.port_split / .port_unsplit callbacks with devlink
->instance lock held.
->
->Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Hello,
 
-Looks fine. I was about to propose a helpers for the lock/unlock that
-would take mlxsw_core, but I see you are removing most of them in the
-next patch :)
+On Wed, 2022-03-09 at 16:46 -0800, Eric Dumazet wrote:
+> @@ -10282,6 +10282,24 @@ void netdev_stats_to_stats64(struct rtnl_link_stats64 *stats64,
+>  }
+>  EXPORT_SYMBOL(netdev_stats_to_stats64);
+>  
+> +struct net_device_core_stats *netdev_core_stats_alloc(struct net_device *dev)
+> +{
+> +	struct net_device_core_stats __percpu *p;
+> +
+> +	p = alloc_percpu_gfp(struct net_device_core_stats,
+> +			     GFP_ATOMIC | __GFP_NOWARN);
+> +
+> +	if (p && cmpxchg(&dev->core_stats, NULL, p))
+> +		free_percpu(p);
+> +
+> +	p = dev->core_stats;
+
+Don't we need a READ_ONCE() here? if the allocation fails (!p) there is
+no memory barrier.
+
+Thanks!
+
+Paolo
+
