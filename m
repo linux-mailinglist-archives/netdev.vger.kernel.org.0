@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D64844D5329
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 21:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8944D532A
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 21:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245099AbiCJUlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 15:41:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
+        id S245202AbiCJUlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 15:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242722AbiCJUlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 15:41:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F939114FD8;
-        Thu, 10 Mar 2022 12:40:13 -0800 (PST)
+        with ESMTP id S245009AbiCJUlP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 15:41:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEDE115961
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 12:40:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7B04B82826;
-        Thu, 10 Mar 2022 20:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 80881C340F6;
-        Thu, 10 Mar 2022 20:40:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78CF0617CB
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 20:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D855CC340F9;
+        Thu, 10 Mar 2022 20:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646944810;
-        bh=xfQHbaoAF4u120SR34Z2qmU9uJDYA+SUEIKK3v/gzJE=;
+        s=k20201202; t=1646944812;
+        bh=MMhOyu6tnd7hTfAwk4IsBSsp0bwfdLqL5RHOQF14ZlE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Lb50j1+o7sXrB+NeKgElauthiFC4bludZEsp3py2IKT7ZT548ldd9+/Ivx0WR4WaO
-         kuGX9a2YkjLUJ871xnQ+SPo8NlCUPtVCOic3FWG1v/qnqGBCkG7QQD9IZs7hVRoKyN
-         J1nkMAJsMkvEZLJwJad9h7tUepm1gQeb/rwcKo30pWaEIHJzgaL+Fkyjpl1iiH2igD
-         VuccnOSUplfy4yJf95sPWRswxK43027yU0ojFyIFf7zZVHCOj1ZAwClRm5r/J/oxry
-         0d2eMFxwWd/LMIW6a7/DEYlD3UU5E8hSd+eSJ3aYfPoxuYzqZ0l50Dyd/Qzr1P5AfX
-         3JobI4rFi9n9A==
+        b=VOeeTbfMlOScquX1kfxepFCZXIsXT0Q6t88BSBx6kVv/+tEIulyeM/3lKbks4IHXC
+         VIzHKTXZ0/r7kl1b2TBBSxpyg2eU5ROkRvZtnVb56+0AiCxD23VqurNGhdC7q55GgV
+         W2SkRKjv6KdvoQm07mvSw4jFdLCG7/zCQzg4ve2dP0cqDPge98vyAczhzu6A6zortj
+         1KzOY+gG/46R94Vz6BCM5A+Vs9zsfqASskcnqZS7/fMF/hrdYzYIBOQFc9QgwPq1ba
+         PjCjFIJuPjguIOFCrWWZg0EI9YOufMMphMYdodVVNDUsph5cSqhLz30etv5cKw+gWd
+         TLi5IfxN5xkDA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 65857E6D3DE;
-        Thu, 10 Mar 2022 20:40:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C5007F0383E;
+        Thu, 10 Mar 2022 20:40:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: phy: DP83822: clear MISR2 register to disable interrupts
+Subject: Re: [PATCH net-next 00/10] mptcp: selftests: Refactor join tests
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164694481041.30429.9732806133242833339.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Mar 2022 20:40:10 +0000
-References: <20220309142228.761153-1-clement.leger@bootlin.com>
-In-Reply-To: <20220309142228.761153-1-clement.leger@bootlin.com>
-To:     =?utf-8?b?Q2zDqW1lbnQgTMOpZ2VyIDxjbGVtZW50LmxlZ2VyQGJvb3RsaW4uY29tPg==?=@ci.codeaurora.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
-        afd@ti.com, dmurphy@ti.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        miquel.raynal@bootlin.com
+Message-Id: <164694481280.30429.14970887623860574958.git-patchwork-notify@kernel.org>
+Date:   Thu, 10 Mar 2022 20:40:12 +0000
+References: <20220309191636.258232-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220309191636.258232-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -61,22 +58,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  9 Mar 2022 15:22:28 +0100 you wrote:
-> MISR1 was cleared twice but the original author intention was probably
-> to clear MISR1 & MISR2 to completely disable interrupts. Fix it to
-> clear MISR2.
+On Wed,  9 Mar 2022 11:16:26 -0800 you wrote:
+> The mptcp_join.sh selftest is the largest and most complex self test for
+> MPTCP, and it is frequently used by MPTCP developers to reproduce bugs
+> and verify fixes. As it grew in size and execution time, it became more
+> cumbersome to use.
 > 
-> Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> These changes do some much-needed cleanup, and add developer-friendly
+> features to make it easier to see failures and run a subset of the tests
+> when verifying fixes.
 > 
 > [...]
 
 Here is the summary with links:
-  - net: phy: DP83822: clear MISR2 register to disable interrupts
-    https://git.kernel.org/netdev/net/c/37c9d66c9556
+  - [net-next,01/10] selftests: mptcp: drop msg argument of chk_csum_nr
+    https://git.kernel.org/netdev/net-next/c/3c082695e78b
+  - [net-next,02/10] selftests: mptcp: join: define tests groups once
+    https://git.kernel.org/netdev/net-next/c/3afd0280e7d3
+  - [net-next,03/10] selftests: mptcp: join: reset failing links
+    https://git.kernel.org/netdev/net-next/c/e59300ce3ff8
+  - [net-next,04/10] selftests: mptcp: join: option to execute specific tests
+    https://git.kernel.org/netdev/net-next/c/ae7bd9ccecc3
+  - [net-next,05/10] selftests: mptcp: join: alt. to exec specific tests
+    https://git.kernel.org/netdev/net-next/c/c7d49c033de0
+  - [net-next,06/10] selftests: mptcp: join: list failure at the end
+    https://git.kernel.org/netdev/net-next/c/39aab88242a8
+  - [net-next,07/10] selftests: mptcp: join: helper to filter TCP
+    https://git.kernel.org/netdev/net-next/c/3469d72f135a
+  - [net-next,08/10] selftests: mptcp: join: clarify local/global vars
+    https://git.kernel.org/netdev/net-next/c/1e777bd818bd
+  - [net-next,09/10] selftests: mptcp: join: avoid backquotes
+    https://git.kernel.org/netdev/net-next/c/4bfadd7120a1
+  - [net-next,10/10] selftests: mptcp: join: make it shellcheck compliant
+    https://git.kernel.org/netdev/net-next/c/d8d083020530
 
 You are awesome, thank you!
 -- 
