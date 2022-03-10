@@ -2,244 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E6D4D4070
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 05:54:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6994D406C
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 05:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234883AbiCJEzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 23:55:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
+        id S239520AbiCJEzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 23:55:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239525AbiCJEzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 23:55:20 -0500
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027E5129BA3;
-        Wed,  9 Mar 2022 20:54:18 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R761e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V6n5VCi_1646888052;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V6n5VCi_1646888052)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 10 Mar 2022 12:54:13 +0800
-Message-ID: <1646887597.810321-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v7 09/26] virtio_ring: split: implement virtqueue_reset_vring_split()
-Date:   Thu, 10 Mar 2022 12:46:37 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20220308123518.33800-1-xuanzhuo@linux.alibaba.com>
- <20220308123518.33800-10-xuanzhuo@linux.alibaba.com>
- <512de020-b36e-8473-69c8-8b3925fbb6c1@redhat.com>
-In-Reply-To: <512de020-b36e-8473-69c8-8b3925fbb6c1@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233084AbiCJEzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 23:55:18 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5707711C7C6;
+        Wed,  9 Mar 2022 20:54:15 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD1311691;
+        Wed,  9 Mar 2022 20:54:14 -0800 (PST)
+Received: from u200865.usa.arm.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 709183FA27;
+        Wed,  9 Mar 2022 20:54:14 -0800 (PST)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     netdev@vger.kernel.org
+Cc:     opendmb@gmail.com, f.fainelli@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Peter Robinson <pbrobinson@gmail.com>
+Subject: [PATCH] net: bcmgenet: Use stronger register read/writes to assure ordering
+Date:   Wed,  9 Mar 2022 22:53:58 -0600
+Message-Id: <20220310045358.224350-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 15:55:44 +0800, Jason Wang <jasowang@redhat.com> wrote:
->
-> =E5=9C=A8 2022/3/8 =E4=B8=8B=E5=8D=888:35, Xuan Zhuo =E5=86=99=E9=81=93:
-> > virtio ring supports reset.
-> >
-> > Queue reset is divided into several stages.
-> >
-> > 1. notify device queue reset
-> > 2. vring release
-> > 3. attach new vring
-> > 4. notify device queue re-enable
-> >
-> > After the first step is completed, the vring reset operation can be
-> > performed. If the newly set vring num does not change, then just reset
-> > the vq related value.
-> >
-> > Otherwise, the vring will be released and the vring will be reallocated.
-> > And the vring will be attached to the vq. If this process fails, the
-> > function will exit, and the state of the vq will be the vring release
-> > state. You can call this function again to reallocate the vring.
-> >
-> > In addition, vring_align, may_reduce_num are necessary for reallocating
-> > vring, so they are retained when creating vq.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/virtio/virtio_ring.c | 69 ++++++++++++++++++++++++++++++++++++
-> >   1 file changed, 69 insertions(+)
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index e0422c04c903..148fb1fd3d5a 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -158,6 +158,12 @@ struct vring_virtqueue {
-> >   			/* DMA address and size information */
-> >   			dma_addr_t queue_dma_addr;
-> >   			size_t queue_size_in_bytes;
-> > +
-> > +			/* The parameters for creating vrings are reserved for
-> > +			 * creating new vrings when enabling reset queue.
-> > +			 */
-> > +			u32 vring_align;
-> > +			bool may_reduce_num;
-> >   		} split;
-> >
-> >   		/* Available for packed ring */
-> > @@ -217,6 +223,12 @@ struct vring_virtqueue {
-> >   #endif
-> >   };
-> >
-> > +static void vring_free(struct virtqueue *vq);
-> > +static void __vring_virtqueue_init_split(struct vring_virtqueue *vq,
-> > +					 struct virtio_device *vdev);
-> > +static int __vring_virtqueue_attach_split(struct vring_virtqueue *vq,
-> > +					  struct virtio_device *vdev,
-> > +					  struct vring vring);
-> >
-> >   /*
-> >    * Helpers.
-> > @@ -1012,6 +1024,8 @@ static struct virtqueue *vring_create_virtqueue_s=
-plit(
-> >   		return NULL;
-> >   	}
-> >
-> > +	to_vvq(vq)->split.vring_align =3D vring_align;
-> > +	to_vvq(vq)->split.may_reduce_num =3D may_reduce_num;
-> >   	to_vvq(vq)->split.queue_dma_addr =3D vring.dma_addr;
-> >   	to_vvq(vq)->split.queue_size_in_bytes =3D vring.queue_size_in_bytes;
-> >   	to_vvq(vq)->we_own_ring =3D true;
-> > @@ -1019,6 +1033,59 @@ static struct virtqueue *vring_create_virtqueue_=
-split(
-> >   	return vq;
-> >   }
-> >
-> > +static int virtqueue_reset_vring_split(struct virtqueue *_vq, u32 num)
-> > +{
->
->
-> So what this function does is to resize the virtqueue actually, I
-> suggest to rename it as virtqueue_resize_split().
+GCC12 appears to be much smarter about its dependency tracking and is
+aware that the relaxed variants are just normal loads and stores and
+this is causing problems like:
 
-In addition to resize, when num is 0, the function is to reinitialize vq ri=
-ng
-related variables. For example avail_idx_shadow.
+[  210.074549] ------------[ cut here ]------------
+[  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
+[  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
+[  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
+[  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
+[  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
+[  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
+[  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
+[  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  210.161358] pc : dev_watchdog+0x234/0x240
+[  210.161364] lr : dev_watchdog+0x234/0x240
+[  210.161368] sp : ffff8000080a3a40
+[  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
+[  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
+[  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
+[  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
+[  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
+[  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
+[  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
+[  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
+[  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
+[  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
+[  210.269682] Call trace:
+[  210.272133]  dev_watchdog+0x234/0x240
+[  210.275811]  call_timer_fn+0x3c/0x15c
+[  210.279489]  __run_timers.part.0+0x288/0x310
+[  210.283777]  run_timer_softirq+0x48/0x80
+[  210.287716]  __do_softirq+0x128/0x360
+[  210.291392]  __irq_exit_rcu+0x138/0x140
+[  210.295243]  irq_exit_rcu+0x1c/0x30
+[  210.298745]  el1_interrupt+0x38/0x54
+[  210.302334]  el1h_64_irq_handler+0x18/0x24
+[  210.306445]  el1h_64_irq+0x7c/0x80
+[  210.309857]  arch_cpu_idle+0x18/0x2c
+[  210.313445]  default_idle_call+0x4c/0x140
+[  210.317470]  cpuidle_idle_call+0x14c/0x1a0
+[  210.321584]  do_idle+0xb0/0x100
+[  210.324737]  cpu_startup_entry+0x30/0x8c
+[  210.328675]  secondary_start_kernel+0xe4/0x110
+[  210.333138]  __secondary_switched+0x94/0x98
 
-So I think 'reset' is more appropriate.
+The assumption when these were relaxed seems to be that device memory
+would be mapped non reordering, and that other constructs
+(spinlocks/etc) would provide the barriers to assure that packet data
+and in memory rings/queues were ordered with respect to device
+register reads/writes. This itself seems a bit sketchy, but the real
+problem with GCC12 is that it is moving the actual reads/writes around
+at will as though they were independent operations when in truth they
+are not, but the compiler can't know that. When looking at the
+assembly dumps for many of these routines its possible to see very
+clean, but not strictly in program order operations occurring as the
+compiler would be free to do if these weren't actually register
+reads/write operations.
 
-Thanks.
+Its possible to suppress the timeout with a liberal bit of dma_mb()'s
+sprinkled around but the device still seems unable to reliably
+send/receive data. A better plan is to use the safer readl/writel
+everywhere.
 
->
->
-> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
-> > +	struct virtio_device *vdev =3D _vq->vdev;
-> > +	struct vring_split vring;
-> > +	int err;
-> > +
-> > +	if (num > _vq->num_max)
-> > +		return -E2BIG;
-> > +
-> > +	switch (vq->vq.reset) {
-> > +	case VIRTIO_VQ_RESET_STEP_NONE:
-> > +		return -ENOENT;
-> > +
-> > +	case VIRTIO_VQ_RESET_STEP_VRING_ATTACH:
-> > +	case VIRTIO_VQ_RESET_STEP_DEVICE:
-> > +		if (vq->split.vring.num =3D=3D num || !num)
-> > +			break;
-> > +
-> > +		vring_free(_vq);
-> > +
-> > +		fallthrough;
-> > +
-> > +	case VIRTIO_VQ_RESET_STEP_VRING_RELEASE:
-> > +		if (!num)
-> > +			num =3D vq->split.vring.num;
-> > +
-> > +		err =3D vring_create_vring_split(&vring, vdev,
-> > +					       vq->split.vring_align,
-> > +					       vq->weak_barriers,
-> > +					       vq->split.may_reduce_num, num);
-> > +		if (err)
-> > +			return -ENOMEM;
->
->
-> We'd better need a safe fallback here like:
->
-> If we can't allocate new memory, we can keep using the current one.
-> Otherwise an ethtool -G fail may make the device not usable.
->
-> This could be done by not freeing the old vring and virtqueue states
-> until new is allocated.
->
->
-> > +
-> > +		err =3D __vring_virtqueue_attach_split(vq, vdev, vring.vring);
-> > +		if (err) {
-> > +			vring_free_queue(vdev, vring.queue_size_in_bytes,
-> > +					 vring.queue,
-> > +					 vring.dma_addr);
-> > +			return -ENOMEM;
-> > +		}
-> > +
-> > +		vq->split.queue_dma_addr =3D vring.dma_addr;
-> > +		vq->split.queue_size_in_bytes =3D vring.queue_size_in_bytes;
-> > +	}
-> > +
-> > +	__vring_virtqueue_init_split(vq, vdev);
-> > +	vq->we_own_ring =3D true;
->
->
-> This seems wrong, we have the transport (rproc/mlxtbf) that allocate the
-> vring by themselves. I think we need to fail the resize for we_own_ring
-> =3D=3D false.
->
-> Thanks
->
->
->
-> > +	vq->vq.reset =3D VIRTIO_VQ_RESET_STEP_VRING_ATTACH;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >
-> >   /*
-> >    * Packed ring specific functions - *_packed().
-> > @@ -2317,6 +2384,8 @@ static int __vring_virtqueue_attach_split(struct =
-vring_virtqueue *vq,
-> >   static void __vring_virtqueue_init_split(struct vring_virtqueue *vq,
-> >   					 struct virtio_device *vdev)
-> >   {
-> > +	vq->vq.reset =3D VIRTIO_VQ_RESET_STEP_NONE;
-> > +
-> >   	vq->packed_ring =3D false;
-> >   	vq->we_own_ring =3D false;
-> >   	vq->broken =3D false;
->
+Since this partially reverts an older commit, which notes the use of
+the relaxed variants for performance reasons. I would suggest that
+any performance problems with this commit are targeted at relaxing only
+the performance critical code paths after assuring proper barriers.
+
+Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+Reported-by: Peter Robinson <pbrobinson@gmail.com>
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+---
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 87f1056e29ff..e907a2df299c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel_relaxed(value, offset);
++		writel(value, offset);
+ }
+ 
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl_relaxed(offset);
++		return readl(offset);
+ }
+ 
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
+-- 
+2.35.1
+
