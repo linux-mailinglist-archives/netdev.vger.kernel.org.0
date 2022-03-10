@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 226844D40DC
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:47:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0404D40DD
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237121AbiCJFsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 00:48:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S239635AbiCJFsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 00:48:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbiCJFsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:08 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32AAF957C
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:07 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id q13so3914724plk.12
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:07 -0800 (PST)
+        with ESMTP id S234788AbiCJFsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:10 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F69AF957C
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:10 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id r12so3934510pla.1
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tZCe/6ZClLYInlxTeX10U82kuzpN5xGRzTMfGtSXIzo=;
-        b=lqfUBafRW1i7i4xfd/ODCd/l/TeGLRQZpXpQDskafVwKrn3xQ/9wUXS16J3EnN6NwB
-         fultZLh013rlIAGZ+yTCoCkQ/f/sG8dtfOG4ix60z1KzFlorxcgt+p2qxthZEZyXOpQR
-         hoxzQEBD8v4k2lq2AbHdsxkr7tr+R6tNh9hY6AHqIWsqPFCvC18tBJQTpzf1Y5N3c2t/
-         7flQbBB8DHs9p9OgqbS46pFnrFmjtPM3xp6j/Am/MNykEX3kEs2J15u1PLYV8qx0PqKZ
-         y0kee+zpUCWrZOkGw7NZZGIYoHcMTrNDvL92zYk0E21Mx0o4Ncou3EQvsoFX8xOAAHsj
-         IK3Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YrYyHNdzE/bZgTw4/T1DAouhykqpGbQHdq//8INO1ZY=;
+        b=G2OWFJBcSGzie4ZKrS5oi3Bm7hXuQH+HQbukbMQtaw0recZKHC0BrSKUlc+aGlpZjt
+         6pPCxSDSsOjau3NO3pHx59Bm+yR+gERGn7c6Vr6JAnQ5hjuEnhRz6K/HPM9QZ7B0e0cz
+         lU7Soz3ZDOywdoGC10RAr+XXLVN1eti/PUQKFTtLQ925fBbEa3SUtkU10nf0TqNgarOc
+         EZROsFvCnsnTa05dSnLxBsdV93pr7ksJHIqRunbNRPv0LYHLSCgaS4exEUrHJ4zCvbxS
+         xAibBoDQOWblVs7rbjGRskx1CvEWMhApm/pjiCwIwEBxXvrqjRlbnvqwAziDKUasswBC
+         3uqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tZCe/6ZClLYInlxTeX10U82kuzpN5xGRzTMfGtSXIzo=;
-        b=skwskLbl+TLbaFHS7sTkTF5VQeHF2gqSuncQVVNMQuruBEtq33InORJY2nslkCMnaA
-         uUjnepNQY0auhqpRw+8/iHX3ADVDq+QK7S3KkArKLD53YRGM/KtTiGxnlztwBUOD3VCi
-         /3oE0cp4klLZIobaFIcL3AdMbIzWwY7fv6H8IgYZkq1mMCkhg3U2NVP4akw4aRVxu0Ey
-         MZiooRYIBh3SkJlJFU8txAUaMHvsHAiLuoLqNw4/Vb6wS+g8zyCW0JYILUCRifJNsbIY
-         iydZiGSjZWoXR/M7+xiFYJGrg8tXoNZ0ol2T4YDf/glSSx1vtA8q2e7WgcRhYbpAfEV7
-         2NOQ==
-X-Gm-Message-State: AOAM533E4OGkUropIVpmt0eKhGWBAlk4P1Tw9GLxJIalMBoOvreVv99L
-        mAQoGUR382R3Npl//GxNsNA=
-X-Google-Smtp-Source: ABdhPJwC4s55PA8434WgHMPK2JDYgZOG0g+PgMYZ3K8YuMdNbSpEHuLkTZWWBqk/VC+StgO1vcS2Mg==
-X-Received: by 2002:a17:90a:17e6:b0:1be:d65e:82b4 with SMTP id q93-20020a17090a17e600b001bed65e82b4mr3231679pja.166.1646891227453;
-        Wed, 09 Mar 2022 21:47:07 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YrYyHNdzE/bZgTw4/T1DAouhykqpGbQHdq//8INO1ZY=;
+        b=CDw+3lDkCSwVL9kywcoHeceNeDO3rVC2ZuP2h09ZoiNLLY4UEUMKUnH5pidLjhCLh3
+         J4J4fs68s3sYrurNxABMp2dkfRUc6212uxElMhIZkK7DnVIG4qx0ej3EVDzymLhDB1WO
+         Jard4DLdS059GsEP10hSrVMjax3H7yRflRO9RFdR+ywrn//9M0hkACp6TBLabh0EJaeK
+         0Zskas+d9NBPTOsQaKi1cQgK+6vGf6nh65Qm1fKvadstmKnQuMJXfJjU6jNUUvzVfbdp
+         GOl9ONNJs9F+21AWlshM20VT2OGlKVfIVZcM6fBgXOhSpeGY84o2rcoicB574LIEdGIl
+         2J0w==
+X-Gm-Message-State: AOAM533hvPwFbLGNBfO2WmxSFylFPxpNH6t3rn7OPRI8qWedLdu7zsn+
+        62smehpm+p5APjkMCpwbr0A=
+X-Google-Smtp-Source: ABdhPJxQsm4zfbnwfjPiaD3DFOUiSyXy1gAOcsrGwqOujXWmIMs8cN1vtinOB78dCz39Rodnb1O2OQ==
+X-Received: by 2002:a17:90a:fa95:b0:1bc:509f:c668 with SMTP id cu21-20020a17090afa9500b001bc509fc668mr14219281pjb.189.1646891229940;
+        Wed, 09 Mar 2022 21:47:09 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
-        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.06
+        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 21:47:06 -0800 (PST)
+        Wed, 09 Mar 2022 21:47:09 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -55,10 +55,12 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v4 net-next 00/14] tcp: BIG TCP implementation
-Date:   Wed,  9 Mar 2022 21:46:49 -0800
-Message-Id: <20220310054703.849899-1-eric.dumazet@gmail.com>
+Subject: [PATCH v4 net-next 01/14] net: add netdev->tso_ipv6_max_size attribute
+Date:   Wed,  9 Mar 2022 21:46:50 -0800
+Message-Id: <20220310054703.849899-2-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+In-Reply-To: <20220310054703.849899-1-eric.dumazet@gmail.com>
+References: <20220310054703.849899-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -73,103 +75,125 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-This series implements BIG TCP as presented in netdev 0x15:
+Some NIC (or virtual devices) are LSOv2 compatible.
 
-https://netdevconf.info/0x15/session.html?BIG-TCP
+BIG TCP plans using the large LSOv2 feature for IPv6.
 
-Jonathan Corbet made a nice summary: https://lwn.net/Articles/884104/
+New netlink attribute IFLA_TSO_IPV6_MAX_SIZE is defined.
 
-Standard TSO/GRO packet limit is 64KB
+Drivers should use netif_set_tso_ipv6_max_size() to advertize their limit.
 
-With BIG TCP, we allow bigger TSO/GRO packet sizes for IPv6 traffic.
+Unchanged drivers are not allowing big TSO packets to be sent.
 
-Note that this feature is by default not enabled, because it might
-break some eBPF programs assuming TCP header immediately follows IPv6 header.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/linux/netdevice.h          | 10 ++++++++++
+ include/uapi/linux/if_link.h       |  1 +
+ net/core/dev.c                     |  2 ++
+ net/core/rtnetlink.c               |  3 +++
+ tools/include/uapi/linux/if_link.h |  1 +
+ 5 files changed, 17 insertions(+)
 
-While tcpdump recognizes the HBH/Jumbo header, standard pcap filters
-are unable to skip over IPv6 extension headers.
-
-Reducing number of packets traversing networking stack usually improves
-performance, as shown on this experiment using a 100Gbit NIC, and 4K MTU.
-
-'Standard' performance with current (74KB) limits.
-for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
-77           138          183          8542.19    
-79           143          178          8215.28    
-70           117          164          9543.39    
-80           144          176          8183.71    
-78           126          155          9108.47    
-80           146          184          8115.19    
-71           113          165          9510.96    
-74           113          164          9518.74    
-79           137          178          8575.04    
-73           111          171          9561.73    
-
-Now enable BIG TCP on both hosts.
-
-ip link set dev eth0 gro_ipv6_max_size 185000 gso_ipv6_max_size 185000
-for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
-57           83           117          13871.38   
-64           118          155          11432.94   
-65           116          148          11507.62   
-60           105          136          12645.15   
-60           103          135          12760.34   
-60           102          134          12832.64   
-62           109          132          10877.68   
-58           82           115          14052.93   
-57           83           124          14212.58   
-57           82           119          14196.01   
-
-We see an increase of transactions per second, and lower latencies as well.
-
-v4: fix compile error for CONFIG_MLX5_CORE_IPOIB=y in mlx5 (Jakub)
-
-v3: Fixed a typo in RFC number (Alexander)
-    Added Reviewed-by: tags from Tariq on mlx4/mlx5 parts.
-
-v2: Removed the MAX_SKB_FRAGS change, this belongs to a different series.
-    Addressed feedback, for Alexander and nvidia folks.
-
-Coco Li (5):
-  ipv6: add dev->gso_ipv6_max_size
-  ipv6: add GRO_IPV6_MAX_SIZE
-  ipv6: Add hop-by-hop header to jumbograms in ip6_output
-  ipvlan: enable BIG TCP Packets
-  mlx5: support BIG TCP packets
-
-Eric Dumazet (9):
-  net: add netdev->tso_ipv6_max_size attribute
-  tcp_cubic: make hystart_ack_delay() aware of BIG TCP
-  ipv6: add struct hop_jumbo_hdr definition
-  ipv6/gso: remove temporary HBH/jumbo header
-  ipv6/gro: insert temporary HBH/jumbo header
-  net: loopback: enable BIG TCP packets
-  bonding: update dev->tso_ipv6_max_size
-  macvlan: enable BIG TCP Packets
-  mlx4: support BIG TCP packets
-
- drivers/net/bonding/bond_main.c               |  3 +
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 +
- drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++--
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 84 +++++++++++++++----
- drivers/net/ipvlan/ipvlan_main.c              |  1 +
- drivers/net/loopback.c                        |  2 +
- drivers/net/macvlan.c                         |  1 +
- include/linux/ipv6.h                          |  1 +
- include/linux/netdevice.h                     | 32 +++++++
- include/net/ipv6.h                            | 44 ++++++++++
- include/uapi/linux/if_link.h                  |  3 +
- net/core/dev.c                                |  4 +
- net/core/gro.c                                | 20 ++++-
- net/core/rtnetlink.c                          | 33 ++++++++
- net/core/sock.c                               |  6 ++
- net/ipv4/tcp_cubic.c                          |  4 +-
- net/ipv6/ip6_offload.c                        | 56 ++++++++++++-
- net/ipv6/ip6_output.c                         | 22 ++++-
- tools/include/uapi/linux/if_link.h            |  3 +
- 20 files changed, 336 insertions(+), 34 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 29a850a8d4604bb2ac43b582595f301aaa96a0bc..61db67222c47664c179b6a5d3b6f15fdf8a02bdd 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1951,6 +1951,7 @@ enum netdev_ml_priv_type {
+  *	@dev_registered_tracker:	tracker for reference held while
+  *					registered
+  *	@offload_xstats_l3:	L3 HW stats for this netdevice.
++ *	@tso_ipv6_max_size:	Maximum size of IPv6 TSO packets (driver/NIC limit)
+  *
+  *	FIXME: cleanup struct net_device such that network protocol info
+  *	moves out.
+@@ -2289,6 +2290,7 @@ struct net_device {
+ 	netdevice_tracker	watchdog_dev_tracker;
+ 	netdevice_tracker	dev_registered_tracker;
+ 	struct rtnl_hw_stats64	*offload_xstats_l3;
++	unsigned int		tso_ipv6_max_size;
+ };
+ #define to_net_dev(d) container_of(d, struct net_device, dev)
+ 
+@@ -4888,6 +4890,14 @@ static inline void netif_set_gro_max_size(struct net_device *dev,
+ 	WRITE_ONCE(dev->gro_max_size, size);
+ }
+ 
++/* Used by drivers to give their hardware/firmware limit for LSOv2 packets */
++static inline void netif_set_tso_ipv6_max_size(struct net_device *dev,
++					       unsigned int size)
++{
++	dev->tso_ipv6_max_size = size;
++}
++
++
+ static inline void skb_gso_error_unwind(struct sk_buff *skb, __be16 protocol,
+ 					int pulled_hlen, u16 mac_offset,
+ 					int mac_len)
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index ddca20357e7e89b5f204b3117ff3838735535470..c8af031b692e52690a2760e9d79c9462185e2fc9 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -363,6 +363,7 @@ enum {
+ 	IFLA_PARENT_DEV_NAME,
+ 	IFLA_PARENT_DEV_BUS_NAME,
+ 	IFLA_GRO_MAX_SIZE,
++	IFLA_TSO_IPV6_MAX_SIZE,
+ 
+ 	__IFLA_MAX
+ };
+diff --git a/net/core/dev.c b/net/core/dev.c
+index ba69ddf85af6b4543caa91f314caf54794a3a02a..de28f634c18a65d1948a96db5678d38e9c871b1f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10467,6 +10467,8 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 	dev->gso_max_size = GSO_MAX_SIZE;
+ 	dev->gso_max_segs = GSO_MAX_SEGS;
+ 	dev->gro_max_size = GRO_MAX_SIZE;
++	dev->tso_ipv6_max_size = GSO_MAX_SIZE;
++
+ 	dev->upper_level = 1;
+ 	dev->lower_level = 1;
+ #ifdef CONFIG_LOCKDEP
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index a759f9e0a8476538fb41311113daed998a7193fd..ab51b18cdb5d46b87d4a11d2f66a68968ba737d6 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1027,6 +1027,7 @@ static noinline size_t if_nlmsg_size(const struct net_device *dev,
+ 	       + nla_total_size(4) /* IFLA_GSO_MAX_SEGS */
+ 	       + nla_total_size(4) /* IFLA_GSO_MAX_SIZE */
+ 	       + nla_total_size(4) /* IFLA_GRO_MAX_SIZE */
++	       + nla_total_size(4) /* IFLA_TSO_IPV6_MAX_SIZE */
+ 	       + nla_total_size(1) /* IFLA_OPERSTATE */
+ 	       + nla_total_size(1) /* IFLA_LINKMODE */
+ 	       + nla_total_size(4) /* IFLA_CARRIER_CHANGES */
+@@ -1732,6 +1733,7 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+ 	    nla_put_u32(skb, IFLA_GSO_MAX_SEGS, dev->gso_max_segs) ||
+ 	    nla_put_u32(skb, IFLA_GSO_MAX_SIZE, dev->gso_max_size) ||
+ 	    nla_put_u32(skb, IFLA_GRO_MAX_SIZE, dev->gro_max_size) ||
++	    nla_put_u32(skb, IFLA_TSO_IPV6_MAX_SIZE, dev->tso_ipv6_max_size) ||
+ #ifdef CONFIG_RPS
+ 	    nla_put_u32(skb, IFLA_NUM_RX_QUEUES, dev->num_rx_queues) ||
+ #endif
+@@ -1885,6 +1887,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+ 	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
+ 	[IFLA_PARENT_DEV_NAME]	= { .type = NLA_NUL_STRING },
+ 	[IFLA_GRO_MAX_SIZE]	= { .type = NLA_U32 },
++	[IFLA_TSO_IPV6_MAX_SIZE]	= { .type = NLA_U32 },
+ };
+ 
+ static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index e1ba2d51b717b7ac7f06e94ac9791cf4c8a5ab6f..441615c39f0a24eeeb6e27b4ca88031bcc234cf8 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -348,6 +348,7 @@ enum {
+ 	IFLA_PARENT_DEV_NAME,
+ 	IFLA_PARENT_DEV_BUS_NAME,
+ 	IFLA_GRO_MAX_SIZE,
++	IFLA_TSO_IPV6_MAX_SIZE,
+ 
+ 	__IFLA_MAX
+ };
 -- 
 2.35.1.616.g0bdcbb4464-goog
 
