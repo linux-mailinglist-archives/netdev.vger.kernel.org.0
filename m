@@ -2,186 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 834494D5258
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:44:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D79D94D51E0
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 20:43:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245128AbiCJTIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 14:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
+        id S245755AbiCJTID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 14:08:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245755AbiCJTHv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 14:07:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DD9A91704EB
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 11:06:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646939209;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gomJ66m2qIlCZfTfMR2uUo9YuZhsZ2IeOLlcOAVHMx8=;
-        b=cOaoUdzS4qjSkupOrQQxwBV9I3w49cqViUMv5K8Hlc1J9079l8ilX5CMfTw30tAepOYNKT
-        5iuQuIZEsRAj5Lnsf/DDMv7qUGNIJKdTjzjhRRrH4W0ATO59/M3wjs48ExEFh45+1zc9uS
-        8uz2AevqkMFyQBK1NKIsXfx1YY+kfPs=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-553-0KwpklbGMKCcTBdHHNV-Ww-1; Thu, 10 Mar 2022 14:06:47 -0500
-X-MC-Unique: 0KwpklbGMKCcTBdHHNV-Ww-1
-Received: by mail-ed1-f69.google.com with SMTP id z19-20020a50cd13000000b0041693869e9aso3425795edi.14
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 11:06:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=gomJ66m2qIlCZfTfMR2uUo9YuZhsZ2IeOLlcOAVHMx8=;
-        b=PkES4wjmC3yZVhLldk8eodhBsbCTII5bK88UqYIuFKJonVhi2NYv1PXul1me2Nhnrn
-         cUPdUaselTE6Cg5HHxky0BIQomWzvqts/r+jamleSGqDM08DcGk6HCnIi4miYBt0IlIl
-         yg2kwTJ4M2ZmlJgqQwWn+8j5wjS07fPn+iyQmXm+nJWltqFl3P3sX1ZtfmxyRKWq6x0J
-         MC/Jrsp+8AKkEpGhUm2N0y3ouHPeIRnZTd9V0J9/HJzvMDAGEgMThXS7BXd7Ly8qOJkX
-         vNH4XOcFASy+C3Nbv2dW4eMgf6BJGwIlCxGnLlczg9W+3zHaJwNUPnx+fYWahYAHSqdg
-         I/UQ==
-X-Gm-Message-State: AOAM530YuSyDrFDQnGKcXRGW1v1eABfk2ZZ7ccnVSpYQiuLICRadqOH2
-        vYYWiKE+gxsxJVJGXGwKaXHmocpEDvy7IU8YBQn0dNm4776XFUB7wsZmKZmO9QNuMKwkvOWZO8R
-        C9e2UJrHxgS3TdzOI
-X-Received: by 2002:a17:907:392:b0:6da:8608:e09e with SMTP id ss18-20020a170907039200b006da8608e09emr5532695ejb.89.1646939204175;
-        Thu, 10 Mar 2022 11:06:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxiaHEhq5PmuQ5pJpUk7YD48G/C26A5LJOE3qDro5wWyMo7FbML/7K1pzZyXja5yksV3kfa9Q==
-X-Received: by 2002:a17:907:392:b0:6da:8608:e09e with SMTP id ss18-20020a170907039200b006da8608e09emr5532549ejb.89.1646939201654;
-        Thu, 10 Mar 2022 11:06:41 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id q9-20020a170906770900b006d20acf7e2bsm2100313ejm.200.2022.03.10.11.06.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 11:06:40 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 338381A8960; Thu, 10 Mar 2022 20:06:40 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
-        pabeni@redhat.com, echaudro@redhat.com, toshiaki.makita1@gmail.com,
-        andrii@kernel.org
-Subject: Re: [PATCH v4 bpf-next 2/3] veth: rework veth_xdp_rcv_skb in order
- to accept non-linear skb
-In-Reply-To: <YinkUiv/yC/gJhYZ@lore-desk>
-References: <cover.1646755129.git.lorenzo@kernel.org>
- <24703dbc3477a4b3aaf908f6226a566d27969f83.1646755129.git.lorenzo@kernel.org>
- <87ee3auk70.fsf@toke.dk> <YinkUiv/yC/gJhYZ@lore-desk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 10 Mar 2022 20:06:40 +0100
-Message-ID: <87ilsly6db.fsf@toke.dk>
+        with ESMTP id S1343541AbiCJTIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 14:08:01 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2042.outbound.protection.outlook.com [40.107.20.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183F616BF8D;
+        Thu, 10 Mar 2022 11:07:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eJLZjbuppDjKwybeg4pd8Zt5qk+dXgqLZse4IfQWbUioHAS3Du72F7Ib0ZEy5StP1XurZunqUZle7sDe/SDjLblH31q9Q6Hs3SHGHYapXg1p8AoCXLcZtNqa875ki2QKywTJHoeJjPWJgO6ZtHEVj/Lp3zKiH781HfET5yps2Hz3Ing4YOmYQQPYHn92Em+rZl07aic4/P3YE1kB1xpSy6q7sVGi9LFZEmbPa5GbNA1LRhSYmyxJ9+pPr+rx20fxyO5FX4qW7qBxoHtCJ74Q8AevJODp0F3KSUwSMsa35wLLv1yxOCBlNSorkuWPt/pHxAjTfYBo2WtiEXS55AJOSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PYDD+glDZA2fbmHxadN13ftEs6/7OkYP9bNKBKqz6rE=;
+ b=cUeTze4zbbdnEzfZCAufeLx/FO+gHy/9zIXevFEcGhAQ6VIk3hPuHfGocBo/z2bPoOUBegoayw0Us0DUz65Bja6J4dCPyq+TPmO7DCcU3XeNwAtHyUujrAheBKRx4cIXPMApQUcac8waOPeSwLTusc847OtDceTl24auOn7UXbKu9dVtVlWIPDtO3qR0ZO+hCNNAc+EtZz3kBcgrczh+rH57mZaMOVmHuk0O4CpxHw8ceH3GwHq6Nm2vSTAMbUY4ecy4+kJdHIMMdxHRRjCgGlWF/a2HdS+JLYcvE/xTOYBF+sxSdu3+HS1hk96FUJafYQzC4FFNu4As0+l7rOHWDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PYDD+glDZA2fbmHxadN13ftEs6/7OkYP9bNKBKqz6rE=;
+ b=cOlJYXcpAuuPn4htZOrb1f9DdnWFoDpXmlz9kKpkmJ2kypYm0yWHCsjs3v2mwSg8/R4OG15hyJgktxr/G6qW5ufNmpOETcnRLZmtNml2QEKNOsWVA5DdvR9+GxSERhh+t/2HaF7PJo0lIBVOcScVcrPhTyufwnnVj/G5lvLZb2U=
+Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
+ by AM0PR04MB6945.eurprd04.prod.outlook.com (2603:10a6:208:17f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22; Thu, 10 Mar
+ 2022 19:06:58 +0000
+Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
+ ([fe80::c58c:4cac:5bf9:5579]) by AM9PR04MB8555.eurprd04.prod.outlook.com
+ ([fe80::c58c:4cac:5bf9:5579%7]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
+ 19:06:58 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Hongxing Zhu <hongxing.zhu@nxp.com>
+Subject: Re: [PATCH net-next v3 2/8] dt-bindings: phy: add the "fsl,lynx-28g"
+ compatible
+Thread-Topic: [PATCH net-next v3 2/8] dt-bindings: phy: add the "fsl,lynx-28g"
+ compatible
+Thread-Index: AQHYNI5zaHxB4i/pbUitMandv5pwdqy40/SAgAATuoCAABM7gA==
+Date:   Thu, 10 Mar 2022 19:06:57 +0000
+Message-ID: <20220310190657.dvqlp25atdknipdh@skbuf>
+References: <20220310145200.3645763-1-ioana.ciornei@nxp.com>
+ <20220310145200.3645763-3-ioana.ciornei@nxp.com>
+ <a32fa8df-bd07-8040-41cd-92484420756d@canonical.com>
+ <Yio8L2X0Wece2Uxm@shell.armlinux.org.uk>
+In-Reply-To: <Yio8L2X0Wece2Uxm@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 201d905f-fb49-4c29-e052-08da02c92649
+x-ms-traffictypediagnostic: AM0PR04MB6945:EE_
+x-microsoft-antispam-prvs: <AM0PR04MB69457132578B064BC27DB8E1E00B9@AM0PR04MB6945.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zyB2MOM3FR7FnsYFACyXsq2UYaGrcjov7T9nZHLqEijhwXmEvYGgk2uz4Lp3j14stG7zYw4HERjCYy462zBOD5PHk7wlhJtlNpa1WB4SOnwkuQA+f9++B2/4Hotv60Nk8nqz88jmTLfuQhweZ0xBR+E7rGwN6C8RZyW0CbPCBsc4y0fxAZXv0PNR5ZMJsmk0mIpKFZxL3mThGdmRMRfHrUCMtgFpRM0ZrnqggnpJSOQUB/sofmVM9MF2KSuRc/ByUcSTXh/C/Fg5YellXf4OMUjvJbFYhzTcpnCdTJLETzZzBEfn7Dc3gLvioOJyAhqij5E3T8EJZDvq47a76xvWPLfjVDIbwryHVuid3mTxZKx3n0cOfAfVFlzxc1quE4zGXAhTQ51lK4l5+JP0bk4mW+Ok8yenXd77cSmh34dSMTN1zI6loe0eun4rfgnfZpUqEEedAD+lEymgCgDFt2bx8w/bKNxZJm50DQbVgsyabAnWN/O1zeJ3lHE/M6Pc2GQuyFc779w3B96Vft+GX7VmA2KzuPfSLEaij9mOPDy8Lw+rPSpjwp5BqoSJ+PGP73nq/f58RGVOyB0PPWclwTYe1H8zOXY+ClLDEvV2lbhvFIAZIAdQ+2svXO3pFetH0DSQy+Ry1gOADZK+swyher/aDPzDypU6DMknzfFnJHbhQstzf2GQEJSbaN4Pf+P6sg6p976H7Oc7pxDkqVuO2MBTeA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(5660300002)(38100700002)(6512007)(86362001)(8936002)(33716001)(122000001)(44832011)(7416002)(6506007)(186003)(1076003)(26005)(498600001)(71200400001)(66946007)(38070700005)(4326008)(76116006)(83380400001)(2906002)(64756008)(66476007)(8676002)(6916009)(66446008)(66556008)(6486002)(91956017)(54906003)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5W/l0jIjRDiTrerMuqnuhygEEMYlTxuF3Fm3uoC2sEARrX2yvphOG6/rCDM1?=
+ =?us-ascii?Q?Asyi/FjwoHfVUoV5taSS0AcgEYENvrX8unxSrZO3N/b0V2hVthgZmE4e0EoR?=
+ =?us-ascii?Q?Cktez+tWBVYYVEhMSX5+Vu/eJroNpRBaqE6N9JZIYfo9RS4OyQT4j5b6H8mR?=
+ =?us-ascii?Q?sRvd+0xmPYEe7kM6bNis8mAf2CFVtsYX3+mNleyLE7BEfL0heAnneNYE5s2t?=
+ =?us-ascii?Q?QBxp700LuCbDIojrHzevZHCgbh3Qz2qKS0il4NBYAYWX4UeGF/Ecr7f8dCWz?=
+ =?us-ascii?Q?CtKpvSyB0KcBqblCTkIO2aXOQRATmUsW9INsQJeYVuCJPMHk/tV/c7/gYmNG?=
+ =?us-ascii?Q?p/wveutDQ+xuBulLgbRE1bhy5kuBUa6dMgLO0XoL23PVnJ1incv6HuHAT8kv?=
+ =?us-ascii?Q?MXu5froNlZA4xl6YCbc5tpovB9gNo7K87bMsNLA1C4QQM4N99ExaPzMRSl8o?=
+ =?us-ascii?Q?lrlaj2K3ZcZ2Co9BfYJkHy6GPE63aZrDJpzUqbHvBZQq5w222vNvrReKAnVn?=
+ =?us-ascii?Q?P3SW7usCYafKvlvZZEhbdvkHlR5mJ/oXkU5u4gaZPmmXFqyctFauuBPeG9hb?=
+ =?us-ascii?Q?Fqjc9M/v/GfCx+Qgy7nJqxTvFjSqrMBEyzTkZzy29GiNFzPqgBWrktjjm+XT?=
+ =?us-ascii?Q?+dekz8vpqB4ucYzFd5A1xNOTW9HQ/qXxFbMSccqTQAWpapdOJZ4y1LggSfEp?=
+ =?us-ascii?Q?mLQWBF8cXrS3WVNhtWiJJKNNMPDyzRhUgw9efietA835dWVoOOk/ZZopHLR3?=
+ =?us-ascii?Q?bQ52Dfy12KJTmO2ItsAhtXCP3/jNr+KYBMdiRiuTAnnuYpsKtiv3KM9W/75/?=
+ =?us-ascii?Q?N9U2qpFAWveGEa9nmSdkNYtwlYC2tEAh3zyU1TQURXTjaG/9+qE4W5kQ5nLd?=
+ =?us-ascii?Q?YrytcxzIfE3l++7R/62kUQ6+BX+8MoqHaIyrzlGuPUxos/jeJDTN68kkhP3C?=
+ =?us-ascii?Q?Xghe0V0nJeh4TVEw60h77Zbe54tNh0a0PAbAbz4z1tvCz2F2MmZzxp4LaGPP?=
+ =?us-ascii?Q?WbEexMk1BmM/UJ0kbejJjONhVmK2WsApbMZOezFY1XvlUD87K85b9/ed2jIW?=
+ =?us-ascii?Q?KFDlP10939l4tO56qmIV88vHdAakbdOPOWuZZiMtZ6SnIFTy+3VwHG6kEJPw?=
+ =?us-ascii?Q?8bhEqyMDKhAal+rM3/G3oU0bSm0AUnU0AFaborct7FVHAv1hONspAqouLOQ8?=
+ =?us-ascii?Q?yBLlGkcTLWuZV1f516jYXTLZG0KkPirZhXfDoRkWXQ+NnbScmL3LdnG9AXXi?=
+ =?us-ascii?Q?jg/FILDVZWhHA33su+LTalIPr8aWoRuaugsjZBjm2/p+RPwfct0gxCidRu3e?=
+ =?us-ascii?Q?T5610Wz157Md4YMxcdrskwlyGYwIjV0HcGlpMLu33k3GrbzU1ITVRAsBZn3M?=
+ =?us-ascii?Q?M0tTFYb8eQqv5seNiB1Hu/Fnzyb+Q9m2nG/QQIV4mRFy0yey3YW0rpBg5lC9?=
+ =?us-ascii?Q?VGNIHZwfE2cQWujJAxpgLwKcAVHHAlOpBNcQsnQtgww3QJ8eXpL+3w=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <F9D52F26FDD46D48B78BB059DE976449@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 201d905f-fb49-4c29-e052-08da02c92649
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 19:06:57.9779
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JYKgHVNg9XtpvkZinZF5u7y1XELn9R2Nhw3iZvWJ1Rr17ztRQ1TNczPuRAPDbuG0LtHA6e2A7gTz2ck9o7uvUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6945
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+On Thu, Mar 10, 2022 at 05:58:07PM +0000, Russell King (Oracle) wrote:
+> On Thu, Mar 10, 2022 at 05:47:31PM +0100, Krzysztof Kozlowski wrote:
+> > > +patternProperties:
+> > > +  '^phy@[0-9a-f]$':
+> > > +    type: object
+> > > +    properties:
+> > > +      reg:
+> > > +        description:
+> > > +          Number of the SerDes lane.
+> > > +        minimum: 0
+> > > +        maximum: 7
+> > > +
+> > > +      "#phy-cells":
+> > > +        const: 0
+> >=20
+> > Why do you need all these children? You just enumerated them, without
+> > statuses, resources or any properties. This should be rather just index
+> > of lynx-28g phy.
+>=20
+> There is good reason why the Marvell driver does it this way, and that
+> is because there are shared registers amongst all the comphys on the
+> SoC.
+>=20
 
->> Lorenzo Bianconi <lorenzo@kernel.org> writes:
->> 
->> > Introduce veth_convert_xdp_buff_from_skb routine in order to
->> > convert a non-linear skb into a xdp buffer. If the received skb
->> > is cloned or shared, veth_convert_xdp_buff_from_skb will copy it
->> > in a new skb composed by order-0 pages for the linear and the
->> > fragmented area. Moreover veth_convert_xdp_buff_from_skb guarantees
->> > we have enough headroom for xdp.
->> > This is a preliminary patch to allow attaching xdp programs with frags
->> > support on veth devices.
->> >
->> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->> 
->> It's cool that we can do this! A few comments below:
->
-> Hi Toke,
->
-> thx for the review :)
->
-> [...]
->
->> > +static int veth_convert_xdp_buff_from_skb(struct veth_rq *rq,
->> > +					  struct xdp_buff *xdp,
->> > +					  struct sk_buff **pskb)
->> > +{
->> 
->> nit: It's not really "converting" and skb into an xdp_buff, since the
->> xdp_buff lives on the stack; so maybe 'veth_init_xdp_buff_from_skb()'?
->
-> I kept the previous naming convention used for xdp_convert_frame_to_buff()
-> (my goal would be to move it in xdp.c and reuse this routine for the
-> generic-xdp use case) but I am fine with
-> veth_init_xdp_buff_from_skb().
+The Lynx SerDes block also has shared registers between the lanes as
+well as per lane registers.
+For example, I can configure the PLL to be used, the equalization
+parameters etc by using per lane registers but the protocol registers
+are shared among all the lanes.
 
-Consistency is probably good, but right now we have functions of the
-form 'xdp_convert_X_to_Y()' and 'xdp_update_Y_from_X()'. So to follow
-that you'd have either 'veth_update_xdp_buff_from_skb()' or
-'veth_convert_skb_to_xdp_buff()' :)
+> Where that isn't the case, and there is no other reason, I would suggest
+> creating multiple phy modes,
 
->> > +	struct sk_buff *skb = *pskb;
->> > +	u32 frame_sz;
->> >  
->> >  	if (skb_shared(skb) || skb_head_is_locked(skb) ||
->> > -	    skb_is_nonlinear(skb) || headroom < XDP_PACKET_HEADROOM) {
->> > +	    skb_shinfo(skb)->nr_frags) {
->> 
->> So this always clones the skb if it has frags? Is that really needed?
->
-> if we look at skb_cow_data(), paged area is always considered not writable
+I suppose here you intended 'multiple phy nodes', right?
 
-Ah, right, did not know that. Seems a bit odd, but OK.
+> one per physical PHY in DT, giving their
+> address would be a saner approach. That way, the driver isn't locked
+> in to a model of "we have N PHYs which are spaced by such-and-such
+> apart", and you don't have this "maximum: 7" thing above either.
+>=20
 
->> Also, there's a lot of memory allocation and copying going on here; have
->> you measured the performance?
->
-> even in the previous implementation we always reallocate the skb if the
-> conditions above are verified so I do not expect any difference in the single
-> buffer use-case but I will run some performance tests.
+I don't think the model of separate driver instances per lane is
+applicable here.
 
-No, I wouldn't expect any difference for the single-buffer case, but I
-would also be interested in how big the overhead is of having to copy
-the whole jumbo-frame?
-
-BTW, just noticed one other change - before we had:
-
-> -	headroom = skb_headroom(skb) - mac_len;
->  	if (skb_shared(skb) || skb_head_is_locked(skb) ||
-> -	    skb_is_nonlinear(skb) || headroom < XDP_PACKET_HEADROOM) {
-
-
-And in your patch that becomes:
-
-> +	} else if (skb_headroom(skb) < XDP_PACKET_HEADROOM &&
-> +		   pskb_expand_head(skb, VETH_XDP_HEADROOM, 0, GFP_ATOMIC)) {
-> +		goto drop;
-
-
-So the mac_len subtraction disappeared; that seems wrong?
-
->> > +
->> > +	if (xdp_buff_has_frags(&xdp))
->> > +		skb->data_len = skb_shinfo(skb)->xdp_frags_size;
->> > +	else
->> > +		skb->data_len = 0;
->> 
->> We can remove entire frags using xdp_adjust_tail, right? Will that get
->> propagated in the right way to the skb frags due to the dual use of
->> skb_shared_info, or?
->
-> bpf_xdp_frags_shrink_tail() can remove entire frags and it will modify
-> metadata contained in the skb_shared_info (e.g. nr_frags or the frag
-> size of the given page). We should consider the data_len field in this
-> case. Agree?
-
-Right, that's what I assumed; makes sense. But adding a comment
-mentioning this above the update of data_len might be helpful? :)
-
--Toke
-
+Ioana=
