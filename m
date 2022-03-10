@@ -2,210 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51AE04D507F
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D10904D5089
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:29:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245007AbiCJR2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 12:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        id S238572AbiCJRag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 12:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244401AbiCJR2q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:28:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0BDB3E5F;
-        Thu, 10 Mar 2022 09:27:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646933264; x=1678469264;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UIbApzBbc+Vluf22x9IDYn+1LabeJBGdywRMKw75SoA=;
-  b=wKkZr47gF7MuidYPkJFVO1SfeFHxtEn0Dv1HgddNNb8U8T+4wb6ml9mV
-   UgUarHpeHu2SZP81YVNA/PdxbdYqU64jnKAzBqnifp2zgnlH/nX5NAxuk
-   908hMm2/VtMULusG3cLSNxqX8Y7Nxy5oaNwiZc2DSCJADNctsrW4HB9Mr
-   GEueAyNu4sR/Ii5GD+dcdkx0qNrPwg9304Nj4WQ0iJHIY4Qz3FcNG2lTX
-   sZafgnV9v6WK0n97hH9Op1h54gPfkXBNjJ0DN74eXwpcOmy4zYagLn8ua
-   Pfy2jo3kODjT62t0Gb6G9xDTrlBQC7QGpqrWZ0AF8Lr0E7bgbcXY8/t6+
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,171,1643698800"; 
-   d="scan'208";a="165312186"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 10:27:43 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 10 Mar 2022 10:27:42 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 10:27:36 -0700
-Message-ID: <5e6a9cc0d6c1c6928cafd83fe34c8a545198c3d9.camel@microchip.com>
-Subject: Re: [PATCH v8 net-next 01/10] dt-bindings: net: dsa: dt bindings
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>, <robh+dt@kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>,
-        <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>
-Date:   Thu, 10 Mar 2022 22:57:36 +0530
-In-Reply-To: <1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com>
-References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
-         <20220207172204.589190-2-prasanna.vengateshan@microchip.com>
-         <88caec5c-c509-124e-5f6b-22b94f968aea@gmail.com>
-         <ebf1b233da821e2cd3586f403a1cdc2509671cde.camel@microchip.com>
-         <d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com>
-         <1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        with ESMTP id S233084AbiCJRaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:30:35 -0500
+Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3980ED9977;
+        Thu, 10 Mar 2022 09:29:34 -0800 (PST)
+Received: by mail-vs1-xe2f.google.com with SMTP id j128so6741541vsc.9;
+        Thu, 10 Mar 2022 09:29:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5ynLUxPagzbzt73+sF9paCqCmYN+FM9q1F1vpoFV93w=;
+        b=NQ4m4zpK7JYHeuN8wrlffHEew2xy0NU8CSChCo5Qi/kgDuw8qAC3BDLtEZ2koYigjn
+         oWwMmPLxV3YT1hxA11qVLX/KDkZ4G+6uQmEDL/1QNwC0C0dsck0WPZea9DYpn8yyavUP
+         Jks6vVxoDfGgL6mENfnpLpw3bGb6jUfbMzngL+DnQK5TE0J5mJnyBf3nYGeJ9jTMjkgz
+         smOldpJsspaI09QD8cX7FwFIX5BeozTLP2jTH9VDpVcFfsGlCozuCZn6hEgsmDS1r0uZ
+         LkgLs1w1QnebDIy4OOt/3E2n6D8fbDWyQor7R0q9vGY0egU+aa/P+rgbN+5cpBTMGs58
+         UhfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5ynLUxPagzbzt73+sF9paCqCmYN+FM9q1F1vpoFV93w=;
+        b=izd/u3UqnOhfQmXN5PEt8i/jr4b9IOkkntJZ3/U0rtsRTMKkjxABxTKz2HRAsbCdbR
+         6462LQ4Y4poEGCp/3tywN8zfYXJrkpuCIAG5gGGiuCbDx6fLwe1Fx0n2+ZAzBwWOiPBs
+         mODvbLV5vBqOuN+a55fE/h9GJ0ZVO5fqmf8VNdKdCDflPuQONQE7OMKOyZuBLoBQme8P
+         pzmofcsU5euptpY7mO9mtpyQTqpuYDlUn1ufbi41y7xj4pzFmN0OHmutu1yuL0yxiqr2
+         3M0HcXThNyspWUOyIzuvXI/AboaH4gxepsy1KshyefiSE3vuqMYu9wps8Ty90GSpMI3s
+         AdEw==
+X-Gm-Message-State: AOAM532yarHjE6HRPYmzrgb7yyEQGuoLHBk13JU9cXt0LeF+vuo74HI9
+        ydhEfaWg9XKBJDJsTTYKifwVlRV32+QsAHTLCXYtFxhDMR3yuQ==
+X-Google-Smtp-Source: ABdhPJyx6mK0r4fHN/kqz3i9bPwVQ0yzW09NKIiusG+i6tSNQNGT1A+T1wDu1jnzSKhDeZR6uOJui4MRW6Dn0cQyCGY=
+X-Received: by 2002:a67:f2d6:0:b0:320:bd80:d874 with SMTP id
+ a22-20020a67f2d6000000b00320bd80d874mr2672014vsn.52.1646933373203; Thu, 10
+ Mar 2022 09:29:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+References: <20220310045358.224350-1-jeremy.linton@arm.com>
+In-Reply-To: <20220310045358.224350-1-jeremy.linton@arm.com>
+From:   Peter Robinson <pbrobinson@gmail.com>
+Date:   Thu, 10 Mar 2022 17:29:22 +0000
+Message-ID: <CALeDE9OO8VfKbQ-Nz1LgPqZVUhvf-h3dRXSqXPJ=-LDUBR48Lw@mail.gmail.com>
+Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
+ assure ordering
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob/Florian,
+On Thu, Mar 10, 2022 at 4:54 AM Jeremy Linton <jeremy.linton@arm.com> wrote:
+>
+> GCC12 appears to be much smarter about its dependency tracking and is
+> aware that the relaxed variants are just normal loads and stores and
+> this is causing problems like:
+>
+> [  210.074549] ------------[ cut here ]------------
+> [  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
+> [  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
+> [  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
+> [  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
+> [  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
+> [  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
+> [  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
+> [  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  210.161358] pc : dev_watchdog+0x234/0x240
+> [  210.161364] lr : dev_watchdog+0x234/0x240
+> [  210.161368] sp : ffff8000080a3a40
+> [  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
+> [  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
+> [  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
+> [  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
+> [  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
+> [  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
+> [  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
+> [  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
+> [  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
+> [  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
+> [  210.269682] Call trace:
+> [  210.272133]  dev_watchdog+0x234/0x240
+> [  210.275811]  call_timer_fn+0x3c/0x15c
+> [  210.279489]  __run_timers.part.0+0x288/0x310
+> [  210.283777]  run_timer_softirq+0x48/0x80
+> [  210.287716]  __do_softirq+0x128/0x360
+> [  210.291392]  __irq_exit_rcu+0x138/0x140
+> [  210.295243]  irq_exit_rcu+0x1c/0x30
+> [  210.298745]  el1_interrupt+0x38/0x54
+> [  210.302334]  el1h_64_irq_handler+0x18/0x24
+> [  210.306445]  el1h_64_irq+0x7c/0x80
+> [  210.309857]  arch_cpu_idle+0x18/0x2c
+> [  210.313445]  default_idle_call+0x4c/0x140
+> [  210.317470]  cpuidle_idle_call+0x14c/0x1a0
+> [  210.321584]  do_idle+0xb0/0x100
+> [  210.324737]  cpu_startup_entry+0x30/0x8c
+> [  210.328675]  secondary_start_kernel+0xe4/0x110
+> [  210.333138]  __secondary_switched+0x94/0x98
+>
+> The assumption when these were relaxed seems to be that device memory
+> would be mapped non reordering, and that other constructs
+> (spinlocks/etc) would provide the barriers to assure that packet data
+> and in memory rings/queues were ordered with respect to device
+> register reads/writes. This itself seems a bit sketchy, but the real
+> problem with GCC12 is that it is moving the actual reads/writes around
+> at will as though they were independent operations when in truth they
+> are not, but the compiler can't know that. When looking at the
+> assembly dumps for many of these routines its possible to see very
+> clean, but not strictly in program order operations occurring as the
+> compiler would be free to do if these weren't actually register
+> reads/write operations.
+>
+> Its possible to suppress the timeout with a liberal bit of dma_mb()'s
+> sprinkled around but the device still seems unable to reliably
+> send/receive data. A better plan is to use the safer readl/writel
+> everywhere.
+>
+> Since this partially reverts an older commit, which notes the use of
+> the relaxed variants for performance reasons. I would suggest that
+> any performance problems with this commit are targeted at relaxing only
+> the performance critical code paths after assuring proper barriers.
+>
+> Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
+> Reported-by: Peter Robinson <pbrobinson@gmail.com>
+> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Acked-by: Peter Robinson <pbrobinson@gmail.com>
+Tested-by: Peter Robinson <pbrobinson@gmail.com>
 
-On Wed, 2022-03-02 at 17:11 +0530, Prasanna Vengateshan wrote:
-> Hi Rob and Florian,
-> 
-> On Fri, 2022-02-11 at 19:56 -0800, Florian Fainelli wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> > content is safe
-> > 
-> > On 2/9/2022 3:58 AM, Prasanna Vengateshan wrote:
-> > > On Mon, 2022-02-07 at 18:53 -0800, Florian Fainelli wrote:
-> > > > EXTERNAL EMAIL: Do not click links or open attachments unless you know
-> > > > the
-> > > > content is safe
-> > > > 
-> > > > On 2/7/2022 9:21 AM, Prasanna Vengateshan wrote:
-> > > > > Documentation in .yaml format and updates to the MAINTAINERS
-> > > > > Also 'make dt_binding_check' is passed.
-> > > > > 
-> > > > > RGMII internal delay values for the mac is retrieved from
-> > > > > rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
-> > > > > v3 patch series.
-> > > > > https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
-> > > > > 
-> > > > > It supports only the delay value of 0ns and 2ns.
-> > > > > 
-> > > > > Signed-off-by: Prasanna Vengateshan <
-> > > > > prasanna.vengateshan@microchip.com>
-> > > > > Reviewed-by: Rob Herring <robh@kernel.org>
-> > > > > ---
-> > > > >    .../bindings/net/dsa/microchip,lan937x.yaml   | 179
-> > > > > ++++++++++++++++++
-> > > > >    MAINTAINERS                                   |   1 +
-> > > > >    2 files changed, 180 insertions(+)
-> > > > >    create mode 100644
-> > > > > Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-> > > > > 
-> > > > > +    maxItems: 1
-> > > > > +
-> > > > > +  mdio:
-> > > > > +    $ref: /schemas/net/mdio.yaml#
-> > > > > +    unevaluatedProperties: false
-> > > > 
-> > > > This should be moved to dsa.yaml since this is about describing the
-> > > > switch's internal MDIO bus controller. This is applicable to any switch,
-> > > > really.
-> > > 
-> > > Thanks for your review and feedback. Do you mean that 'mdio' to be added
-> > > in
-> > > dsa.yaml instead adding here?
-> > 
-> > Yes indeed, since this is a common property of all DSA switches, it can
-> > be defined or not depending on whether the switch does have an internal
-> > MDIO bus controller or not.
-> > 
-> > > 
-> > > > 
-> > > > > +
-> > > > > +patternProperties:
-> > > > > +  "^(ethernet-)?ports$":
-> > > > > +    patternProperties:
-> > > > > +      "^(ethernet-)?port@[0-7]+$":
-> > > > > +        allOf:
-> > > > > +          - if:
-> > > > > +              properties:
-> > > > > +                phy-mode:
-> > > > > +                  contains:
-> > > > > +                    enum:
-> > > > > +                      - rgmii
-> > > > > +                      - rgmii-rxid
-> > > > > +                      - rgmii-txid
-> > > > > +                      - rgmii-id
-> > > > > +            then:
-> > > > > +              properties:
-> > > > > +                rx-internal-delay-ps:
-> > > > > +                  $ref: "#/$defs/internal-delay-ps"
-> > > > > +                tx-internal-delay-ps:
-> > > > > +                  $ref: "#/$defs/internal-delay-ps"
-> > > > 
-> > > > Likewise, this should actually be changed in ethernet-controller.yaml
-> > > 
-> > > There is *-internal-delay-ps property defined for mac in ethernet-
-> > > controller.yaml. Should that be changed like above?
-> > 
-> > It seems to me that these properties override whatever 'phy-mode'
-> > property is defined, but in premise you are right that this is largely
-> > applicable to RGMII only. I seem to recall that the QCA8K driver had
-> > some sort of similar delay being applied even in SGMII mode but I am not
-> > sure if we got to the bottom of this.
-> > 
-> > Please make sure that this does not create regressions for other DTS in
-> > the tree before going with that change in ethernet-controller.yaml.
-> > 
-> 
-> I just tried changing rx-internal-delay-ps & tx-internal-delay-ps on
-> conditional
-> basis like above in the ethernet-controller.yaml and it passed 'make
-> dt_binding_check' as well. 
-> 
-> It would be like below if existing *-internal-delay-ps are removed from
-> ethernet-controller.yaml.
-> 
-> allOf:
->   - if:
->       properties:
->         phy-mode:
->           contains:
->             enum:
->               - rgmii
->               - rgmii-rxid
->               - rgmii-txid
->               - rgmii-id
->             then:
->               properties:
->                 rx-internal-delay-ps:
->                   description:
->                     RGMII Receive Clock Delay defined in pico seconds.This is 
->                     used for controllers that have configurable RX internal 
->                     delays. If this property is present then the MAC applies 
->                     the RX delay.
->                 tx-internal-delay-ps:
->                   description:
->                     RGMII Transmit Clock Delay defined in pico seconds.This is
->                     used for controllers that have configurable TX internal
->                     delays. If this property is present then the MAC applies
->                     the TX delay.   
-> 
-> After the above changes, these two properties descriptions are different
-> compare
-> to other properties. So i just wanted to know whether i am following the right
-> approach or are there any other proposal available? Thanks.
-> 
-> Prasanna V
-> 
-Is the above method looking good? Your feedback will be helpful. Thanks.
+This fixes the issue I'm seeing on Fedora.
 
-Prasanna V
-
+> ---
+>  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index 87f1056e29ff..e907a2df299c 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+>         if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+>                 __raw_writel(value, offset);
+>         else
+> -               writel_relaxed(value, offset);
+> +               writel(value, offset);
+>  }
+>
+>  static inline u32 bcmgenet_readl(void __iomem *offset)
+> @@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+>         if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+>                 return __raw_readl(offset);
+>         else
+> -               return readl_relaxed(offset);
+> +               return readl(offset);
+>  }
+>
+>  static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
+> --
+> 2.35.1
+>
