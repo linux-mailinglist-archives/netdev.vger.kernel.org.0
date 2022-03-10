@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BBBF4D4439
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8BA4D444A
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:08:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241048AbiCJKHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 05:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50024 "EHLO
+        id S241135AbiCJKJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 05:09:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236145AbiCJKHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 05:07:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F2513C244;
-        Thu, 10 Mar 2022 02:06:01 -0800 (PST)
+        with ESMTP id S232268AbiCJKI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 05:08:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862A91C93C;
+        Thu, 10 Mar 2022 02:07:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26A1DB8257B;
-        Thu, 10 Mar 2022 10:06:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5059C340EC;
-        Thu, 10 Mar 2022 10:05:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C9E2B8258D;
+        Thu, 10 Mar 2022 10:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A2DC340F3;
+        Thu, 10 Mar 2022 10:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646906758;
-        bh=ZB0Y7Z+2Ou6Nqam8tSjvOtOle2fii9Lnw44DFOuOFmI=;
+        s=k20201202; t=1646906873;
+        bh=DAXaxPhIHmB2MF8XpLLIhDWnZYiL+Px39F37xpKSkgA=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=HnELMryBkJ8+AIisKOhSdaaVLncNsWXxhw3J+DhyTsSNEiQ1yy0/+RpFM5l4+P7/a
-         PPiWCiaTwYgpXJx+jmFXCCcVj5oC+G4RjfLYLafQyiQ9+r8abgRodfhPTgrcLj3Ymm
-         P/qr/gzGdfDM8aC+kHGBxArHyDQRVQVZ7lL/oXsUEOtZlkeTFyAHxxkJ1YL5nQtZey
-         VCas8KDqrCADG/vTYi+IO3pk/7+rOKX6HTPVqf7r2seSeBjixNujpAzEAAJlJpMVUm
-         9wP8ASjId5xU2f059mmUH+iEOw+GJyfFg1611Y29uHgtKHKIdc0IIEWEe4xTi4P1BF
-         MC+dY9HYG0ecw==
+        b=e2gkrtlvGZxaRZ7LaGobNndXWLZbv48jZ6KFQEHajqwDhIoBY1Wj8DYgHjzbRRZLs
+         qCzvxa5/5teYQnQmSNwOjIC/3tIQGtIWxJ3RFIcnZc4Y+RJn0kvDLAq2mHnPiM8qMA
+         6s/afH0bF3XJNqCtnucZSZDOZR8grHZ5yVrOjbkchuC+5J2AaIqPffWiVUb6VNSYxu
+         Rk0n4m3G9SOiyoHmEfQl9PqAG6pSU1WXcYT3SPGyPFLRFUN+6oUCnEm8B6PPXuVHZS
+         d6BbrsCe604OvSj/mfLb6vjy3DnUNOUfVF/BRaZs5jhLt8NiD6tr9HATBikGX0yeMh
+         oULJ4ZtLjDqmg==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     Doug Anderson <dianders@chromium.org>
 Cc:     Abhishek Kumar <kuabhs@chromium.org>,
+        kernel test robot <lkp@intel.com>,
+        ath10k <ath10k@lists.infradead.org>, kbuild-all@lists.01.org,
         Rakesh Pillai <pillair@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
         linux-wireless <linux-wireless@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        ath10k <ath10k@lists.infradead.org>,
         netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/2] ath10k: search for default BDF name provided in DT
-References: <20220107200417.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
-        <CAD=FV=W5fHP8K-PcoYWxYHiDWnPUVQQzOzw=REbuJSSqGeVVfg@mail.gmail.com>
-Date:   Thu, 10 Mar 2022 12:05:53 +0200
-In-Reply-To: <CAD=FV=W5fHP8K-PcoYWxYHiDWnPUVQQzOzw=REbuJSSqGeVVfg@mail.gmail.com>
-        (Doug Anderson's message of "Fri, 7 Jan 2022 13:22:45 -0800")
-Message-ID: <87sfrqqfzy.fsf@kernel.org>
+Subject: Re: [PATCH v2 1/2] ath10k: search for default BDF name provided in DT
+References: <20220110231255.v2.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
+        <202201110851.5qAxfQJj-lkp@intel.com>
+        <CACTWRwtCjXbpxkixAyRrmK5gRjWW7fMv5==9j=YcsdN-mnYhJw@mail.gmail.com>
+        <87y23is7cp.fsf@kernel.org>
+        <CAD=FV=W-kJQwBPStsGpNu09dN+QHTEZOgb5sZwZYzWnn_Zhv4A@mail.gmail.com>
+Date:   Thu, 10 Mar 2022 12:07:49 +0200
+In-Reply-To: <CAD=FV=W-kJQwBPStsGpNu09dN+QHTEZOgb5sZwZYzWnn_Zhv4A@mail.gmail.com>
+        (Doug Anderson's message of "Mon, 7 Mar 2022 16:50:05 -0800")
+Message-ID: <87o82eqfwq.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -63,82 +66,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Doug Anderson <dianders@chromium.org> writes:
 
-> Hi,
->
-> On Fri, Jan 7, 2022 at 12:05 PM Abhishek Kumar <kuabhs@chromium.org> wrote:
+> On Fri, Jan 14, 2022 at 6:46 AM Kalle Valo <kvalo@kernel.org> wrote:
 >>
->> There can be cases where the board-2.bin does not contain
->> any BDF matching the chip-id+board-id+variant combination.
->> This causes the wlan probe to fail and renders wifi unusable.
->> For e.g. if the board-2.bin has default BDF as:
->> bus=snoc,qmi-board-id=67 but for some reason the board-id
->> on the wlan chip is not programmed and read 0xff as the
->> default value. In such cases there won't be any matching BDF
->> because the board-2.bin will be searched with following:
->> bus=snoc,qmi-board-id=ff
-
-I just checked, in ath10k-firmware WCN3990/hw1.0/board-2.bin we have
-that entry:
-
-BoardNames[1]: 'bus=snoc,qmi-board-id=ff'
-
->> To address these scenarios, there can be an option to provide
->> fallback default BDF name in the device tree. If none of the
->> BDF names match then the board-2.bin file can be searched with
->> default BDF names assigned in the device tree.
+>> Abhishek Kumar <kuabhs@chromium.org> writes:
 >>
->> The default BDF name can be set as:
->> wifi@a000000 {
->>         status = "okay";
->>         qcom,ath10k-default-bdf = "bus=snoc,qmi-board-id=67";
+>> > On this patch I have a kernel bot warning, which I intend to fix along
+>> > with all the comments and discussion and push out V3. So, any
+>> > comments/next steps are appreciated.
+>>
+>> Please wait my comments before sending v3, I think this is something
+>> which is also needed in ath11k and I need to look at it in detail.
 >
-> Rather than add a new device tree property, wouldn't it be good enough
-> to leverage the existing variant?
+> I'm wondering if you have a timeframe for when you might post your
+> comments. We've landed this patch locally in the Chrome OS kernel
+> tree, but we are always also interested in it landing upstream. If you
+> have ideas for a path forward that'd be keen!
 
-I'm not thrilled either adding this to Device Tree, we should keep the
-bindings as simple as possible.
-
-> Right now I think that the board file contains:
->
-> 'bus=snoc,qmi-board-id=67.bin'
-> 'bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_LAZOR.bin'
-> 'bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_POMPOM.bin'
-> 'bus=snoc,qmi-board-id=67,qmi-chip-id=4320,variant=GO_LAZOR.bin'
-> 'bus=snoc,qmi-board-id=67,qmi-chip-id=4320,variant=GO_POMPOM.bin'
->
-> ...and, on lazor for instance, we have:
->
-> qcom,ath10k-calibration-variant = "GO_LAZOR";
->
-> The problem you're trying to solve is that on some early lazor
-> prototype hardware we didn't have the "board-id" programmed we could
-> get back 0xff from the hardware. As I understand it 0xff always means
-> "unprogrammed".
->
-> It feels like you could just have a special case such that if the
-> hardware reports board ID of 0xff and you don't get a "match" that you
-> could just treat 0xff as a wildcard. That means that you'd see the
-> "variant" in the device tree and pick one of the "GO_LAZOR" entries.
->
-> Anyway, I guess it's up to the people who spend more time in this file
-> which they'd prefer, but that seems like it'd be simple and wouldn't
-> require a bindings addition...
-
-In ath11k we need something similar for that I have been thinking like
-this:
-
-'bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_LAZOR'
-
-'bus=snoc,qmi-board-id=67,qmi-chip-id=320'
-
-'bus=snoc,qmi-board-id=67'
-
-'bus=snoc'
-
-Ie. we drop one attribute at a time and try to find a suitable board
-file. Though I'm not sure if it's possible to find a board file which
-works with many different hardware, but the principle would be at least
-that. Would something like that work in your case?
+You had a good comment on v1 so I replied to that one.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
