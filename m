@@ -2,141 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73C854D3EF6
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 02:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EFBF4D3EFB
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 02:53:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238518AbiCJBwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 20:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59394 "EHLO
+        id S236520AbiCJByo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 20:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236818AbiCJBwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 20:52:23 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A437127D79;
-        Wed,  9 Mar 2022 17:51:22 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KDX3W1HZlz1GCK0;
-        Thu, 10 Mar 2022 09:46:31 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Mar 2022 09:51:20 +0800
-Subject: Re: IPv4 saddr do not match with selected output device in double
- default gateways scene
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-To:     David Miller <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S230445AbiCJByn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 20:54:43 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45629127D71;
+        Wed,  9 Mar 2022 17:53:43 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id z16so3839648pfh.3;
+        Wed, 09 Mar 2022 17:53:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=dLb2n0RcDsJQsrbzpWVQ2xqxk5FmoVIUuzbwO80ccoo=;
+        b=maI1PORr7yUNN7F+N6qrHT/tZYOhkPl4ZDm+KQKIQZFYcNzAW95ZVwxKv//10DGIl7
+         g3o7u+xjnH+lf4EIBJtZ6LZ+4xMBlO5hVj5rSYsl+a/YmxBPhnkhnN6nvNRq6TQR6dib
+         mIFWdzquoNNUR4wyy5caPEc3GQp9NjkSGNRhoX6eEwqvwcvdBBUfuC8lGGSuKVg+Jh+n
+         R8hyx7WTrHZZZ6HPeWBWYyeXFmQwLZnfLN8T2B3I1Subn4XWYslpqknKhTKTg4m2c8so
+         nPtQhQUXjXAY7jye+Sj7yN54pHfdL/5ICrbUzXK781lz8qFvzxIGzcdq+x0oyzZzZNV1
+         gZ+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=dLb2n0RcDsJQsrbzpWVQ2xqxk5FmoVIUuzbwO80ccoo=;
+        b=mssy/48u5MRx5k4N5kaKPZHW1Jg2x1iUcER/NyxdvRQmZGXVPbL4DR9LpUvlzIeCwA
+         OD2uCb8ks/CD1w6wFHG+JjWdpP+1KIXP7QJtOMmj60gzHz4cisiBEVrtFSr57hBrs1RX
+         W5zSNT4WOw4otCV9xcLclvHXRmJdRc2pEbuPfLW9ON3e+VpH2xaPix2fbIDkfcFlqW9w
+         RaXDuJPK3SuCYtVGkIEk0UrkYCXtjkU+I5yAxv4p1kzBFwq1Dzvu0NFZigZY/aigMOZB
+         n89giypcE19tE1YqPoR3u48tlNQn1nhotUY9C14CAykc9tN88HnWuYzvG73EFUKeqPdX
+         ZU2Q==
+X-Gm-Message-State: AOAM531Jr94IKiQm2bUMwyA5Sf3taI4utyunsgTQ0zv1KT7W1heJwNkh
+        hqBU35pMSuiAzQo4ofiNK8Q=
+X-Google-Smtp-Source: ABdhPJyumqgNWoQ7hfqeItdHDUxdMX3gau9P7t5NL5NiPUXNs7T98fAdH1ZRgLljOFNhXsVGgyjAvA==
+X-Received: by 2002:a63:8049:0:b0:380:b83e:9550 with SMTP id j70-20020a638049000000b00380b83e9550mr2113464pgd.97.1646877222798;
+        Wed, 09 Mar 2022 17:53:42 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id w23-20020a627b17000000b004f6cf170070sm4292637pfc.186.2022.03.09.17.53.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 17:53:42 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, <ja@ssi.bg>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-Message-ID: <0de63268-a33b-d514-9457-1332c8aec58e@huawei.com>
-Date:   Thu, 10 Mar 2022 09:51:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-Content-Type: text/plain; charset="gbk"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH net v2] gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
+Date:   Thu, 10 Mar 2022 01:53:13 +0000
+Message-Id: <20220310015313.14938-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <e68aa1f1-233f-6e5b-21a6-0443d565ca65@intel.com>
+References: <e68aa1f1-233f-6e5b-21a6-0443d565ca65@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Create VLAN devices and add default gateways with following commands:
-> 
-> # ip link add link eth2 dev eth2.71 type vlan id 71
-> # ip link add link eth2 dev eth2.72 type vlan id 72
-> # ip addr add 192.168.71.41/24 dev eth2.71
-> # ip addr add 192.168.72.41/24 dev eth2.72
-> # ip link set eth2.71 up
-> # ip link set eth2.72 up
-> # route add -net default gw 192.168.71.1 dev eth2.71
-> # route add -net default gw 192.168.72.1 dev eth2.72
-> 
-> Add a nameserver configuration in the following file:
-> # cat /etc/resolv.conf
-> nameserver 8.8.8.8
-> 
-> Use the following command trigger DNS packet:
-> # ping www.baidu.com
-> 
-> Assume the above test machine is client.
-> 
-> Of course, we should also create VLAN devices in peer server as following:
-> 
-> # ip link add link eth2 dev eth2.71 type vlan id 71
-> # ip link add link eth2 dev eth2.72 type vlan id 72
-> # ip addr add 192.168.71.1/24 dev eth2.71
-> # ip addr add 192.168.72.1/24 dev eth2.72
-> # ip link set eth2.71 up
-> # ip link set eth2.72 up
-> 
-> We capture packets with tcpdump in client machine when ping:
-> # tcpdump -i eth2 -vne
-> ...
-> 20:30:22.996044 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25407, offset 0, flags [DF], proto UDP (17), length 59)
->     192.168.72.41.42666 > 8.8.8.8.domain: 58562+ A? www.baidu.com. (31)
-> 20:30:22.996125 52:54:00:20:23:a9 > 52:54:00:d2:4f:e3, ethertype 802.1Q (0x8100), length 77: vlan 71, p 0, ethertype IPv4, (tos 0x0, ttl 64, id 25408, offset 0, flags [DF], proto UDP (17), length 59)
->     192.168.72.41.42666 > 8.8.8.8.domain: 25803+ AAAA? www.baidu.com. (31)
-> ...
-> 
-> We can find that IPv4 saddr "192.168.72.41" do not match with selected VLAN device "eth2.71".
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-Is there anyone familiar with route/fib realization? And thank you for your warm-hearted help!
+Fixes: 7349a74ea75c ("net: ethernet: gianfar_ethtool: get phc index through drvdata")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+changes in v2:
+- Fix the subject
+---
+ drivers/net/ethernet/freescale/gianfar_ethtool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
-> I tracked the related processes, and found that user space program uses connect() firstly, then sends UDP packet.
-> 
-> The problem happens in the connect() process. Analysis as following with codes:
-> 
-> static inline struct rtable *ip_route_connect(struct flowi4 *fl4,
-> 					      __be32 dst, __be32 src, u32 tos,
-> 					      int oif, u8 protocol,
-> 					      __be16 sport, __be16 dport,
-> 					      struct sock *sk)
-> {
-> 	struct net *net = sock_net(sk);
-> 	struct rtable *rt;
-> 
-> 	ip_route_connect_init(fl4, dst, src, tos, oif, protocol,
-> 			      sport, dport, sk);
-> 
-> 	if (!dst || !src) {
-> 
-> 		/* rtable and fl4 are matched after the first __ip_route_output_key().
-> 		 * rtable->dst.dev->name == "eth2.72" && rtable->rt_gw4 == 0x148a8c0
-> 		 * fl4->saddr == 0x2948a8c0
-> 		 */
-> 		rt = __ip_route_output_key(net, fl4);
-> 		if (IS_ERR(rt))
-> 			return rt;
-> 		ip_rt_put(rt);
-> 		flowi4_update_output(fl4, oif, tos, fl4->daddr, fl4->saddr);
-> 	}
-> 	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
-> 
-> 	/* rtable and fl4 do not match after the second __ip_route_output_key().
-> 	 * rtable->dst.dev->name == "eth2.71" && rtable->rt_gw4 == 0x147a8c0
-> 	 * fl4->saddr == 0x2948a8c0
-> 	 */
-> 	return ip_route_output_flow(net, fl4, sk);
-> }
-> 
-> Deep tracking, it because fa->fa_default has changed in fib_select_default() after first __ip_route_output_key() process,
-> and a new fib_nh is selected in fib_select_default() within the second __ip_route_output_key() process but not update flowi4.
-> So the phenomenon described at the beginning happens.
-> 
-> Does it a kernel bug or a user problem? If it is a kernel bug, is there any good solution?
-> 
+diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
+index ff756265d58f..9a2c16d69e2c 100644
+--- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
++++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
+@@ -1464,6 +1464,7 @@ static int gfar_get_ts_info(struct net_device *dev,
+ 	ptp_node = of_find_compatible_node(NULL, NULL, "fsl,etsec-ptp");
+ 	if (ptp_node) {
+ 		ptp_dev = of_find_device_by_node(ptp_node);
++		of_node_put(ptp_node);
+ 		if (ptp_dev)
+ 			ptp = platform_get_drvdata(ptp_dev);
+ 	}
+-- 
+2.17.1
 
