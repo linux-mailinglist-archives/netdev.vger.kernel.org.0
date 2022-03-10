@@ -2,155 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2FFF4D4EF3
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 17:26:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFBD94D4F5D
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 17:33:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236332AbiCJQ0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 11:26:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
+        id S241669AbiCJQeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 11:34:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239589AbiCJQ0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 11:26:01 -0500
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652E71EEEA;
-        Thu, 10 Mar 2022 08:25:00 -0800 (PST)
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 22AFguH4028439;
-        Thu, 10 Mar 2022 08:24:46 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=UKgZjKuZVNOLU9QBdrkRIneNA3S0t2UU1n3xTMYjems=;
- b=MF8KFUIDFeV4gAGdSC1D2VwmwYDVyl0K64EXty9xb+3T5PqA3gqVLhUpS6hA6VExgj7y
- /bhMxor2Q4FCqUbBWvr5xMyjhnuv3ijE/mZRMsTeW4KsR24d9IIi/+TUfXd33iF0ztne
- 7/qarEc7WTTyW+lZzBFKRtjU8jCEOegTka8= 
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2041.outbound.protection.outlook.com [104.47.66.41])
-        by m0089730.ppops.net (PPS) with ESMTPS id 3eprkfjf7c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 08:24:45 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vg3sP8CNVWy+315lTEN/YsgaOtwonF5XdgTESPsQSKRR6gIKKzZ4G+CeiXyIJDFrOqq0uykTqiBsmpplgX5pMx55228Dr15i0XlZDK4Ix9twPq5yGC/Rbh6MldgYil8cz66f67OzFC77Itr0g6TljA78uLBWv+bxViSa3WJ3KNWHagfrwg+OXvov9dpKYbgvjxlSKF9EEqksFD09P2WuRUQRH97MH12+pQFXmzSpRrw1qHzO9mS09TjahIlgnl+Jdl5FSwFer2GbXgdqdMbSJpU9ekmV0yr3KK38nP2BvY7ajMWTE39nWdoSjIOHjD3Ok0qTkUfn3ewXCs1Ez1kBBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UKgZjKuZVNOLU9QBdrkRIneNA3S0t2UU1n3xTMYjems=;
- b=KoAVQkQ2X3SWIYIm1+koBpJ1X2/4jiOqiEEm+rIX9ZD3FIxM8oz7DPaoNZZDcvrfSrZ2ZWMdzidTqoQkPcrjeNhy24OHv0MOGLkdAuZ9jCNFfrEmhsuGCU3WVUlTPy50CGu5BtmYvxZbTEqZaCOJGTTBKCCkqvTrvg30iukBnzCN78SGTvhTPXlrFLnHE/oVeJ9AEnJBxLg33ibsI47NHEb44Ht1WyR8s9OcBzkcmk5vQJ4frI6qzkJhbLegQjz4k+ST4ieULMG8MTodu8m909sFmzrs+nsIucbj2s5cIHtzf3OXJZtUpLw6eNw7nQ6sF1QkonBEJxcL2XSK+bWlbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by BYAPR15MB3286.namprd15.prod.outlook.com (2603:10b6:a03:110::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.19; Thu, 10 Mar
- 2022 16:24:42 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c5c7:1f39:edaf:9d48]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c5c7:1f39:edaf:9d48%4]) with mapi id 15.20.5061.022; Thu, 10 Mar 2022
- 16:24:42 +0000
-Message-ID: <a7025518-3119-14f7-f761-b6b21cc8c324@fb.com>
-Date:   Thu, 10 Mar 2022 08:24:37 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH bpf-next] bpf: Use offsetofend() to simplify macro
- definition
-Content-Language: en-US
-To:     Yuntao Wang <ytcoode@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S243570AbiCJQeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 11:34:07 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6A5CA0FE;
+        Thu, 10 Mar 2022 08:33:06 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id w12so10355172lfr.9;
+        Thu, 10 Mar 2022 08:33:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=B7oFKopF/ybeQa/teChmQ0Yg8Uh0H2eRFEQBuI2o4kc=;
+        b=I5jVSX/Gy5iKr+6UJuMYJiQ5GXOp4zOsI6dYdUjBQZPcJbPvrY041p13LD1tgt5EIs
+         pZd8OQJdOPhpyZ+ZVntFl3zdgb75JPGzTeZ8+QHdd38MWPWw7QRyS/xXD/SrLY3k50Cx
+         AS3hvkYGyJH9vqTdaWWI5J+lvf1y0QDyswlFbkBHZtbrs4UqYoXyD7RHVXPJcOsmrVIo
+         wxu0pcFU2Kj9K8tSNfuyF2VOQCAY3zK5UWR63MBE3lzviA943i0aNKS4H7LDvoL6CV29
+         NFMjJthhm9s6AKCN5t14VBPKAxm3wpaRoxKAfyqC7vtuq5vhIsX203cka9g0XZxkrFMF
+         EsvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=B7oFKopF/ybeQa/teChmQ0Yg8Uh0H2eRFEQBuI2o4kc=;
+        b=47yZgFeAEpv2kkVVTgEXjqUtxEflhJxaCvSepwZ3A3+cHV9SgDmfWOkld/hx4UJFtF
+         tRYE/rOpiluTecrt/iPpQgDFhtWBXTRa4Xw4jSqazEDAL5yPTJEIkC4/PXLBHO7T96w4
+         KHQ6vaf80q22EdAO0Ix6LnOJ+xDU/X0deKEcRWQUqjVScVBYiLjFt2hgUzFVPfxg1CJp
+         rnqHIk/fm5ZDnu0uUZF4aNxwdEYlUTAMvsXU/bdJdnBNSdNKEAFTQxoIrQSKA1DnuxGb
+         VvS/4g2iiW5Qnzr/iDZkjlUX9rVP2wheTEX4tS0cr+9W9lkpHF0I8eaZaTajGU2AV/2j
+         ZkHA==
+X-Gm-Message-State: AOAM530xpXXhK6n6UsGFnsieUcvk0lwkXsmKEgksDd5CkUMk/ArJet/I
+        TTh17/6vbhT+Yd4SgIkIO6Q=
+X-Google-Smtp-Source: ABdhPJy2kA2giqI3s0O795ZfZbaQTN5FV5T5Cm1zy4crZamsjrvOFiDFiQwT05R97FDOwYMm0kRxAw==
+X-Received: by 2002:ac2:5d70:0:b0:448:5d7b:dcb1 with SMTP id h16-20020ac25d70000000b004485d7bdcb1mr3433923lft.352.1646929984720;
+        Thu, 10 Mar 2022 08:33:04 -0800 (PST)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id m27-20020a056512015b00b00445b827ccf0sm1058774lfo.236.2022.03.10.08.33.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 08:33:04 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220310161518.534544-1-ytcoode@gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220310161518.534544-1-ytcoode@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR14CA0040.namprd14.prod.outlook.com
- (2603:10b6:300:12b::26) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 1/3] net: bridge: add fdb flag to extent locked
+ port feature
+In-Reply-To: <dc47275b-27f8-5de0-ae6e-e82013a03d1f@blackwall.org>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
+ <0eeaf59f-e7eb-7439-3c0a-17e7ac6741f0@blackwall.org>
+ <86v8wles1g.fsf@gmail.com>
+ <e3f57a64-4823-7cf3-0345-3777c44c2fe4@blackwall.org>
+ <8635jp23ez.fsf@gmail.com>
+ <dc47275b-27f8-5de0-ae6e-e82013a03d1f@blackwall.org>
+Date:   Thu, 10 Mar 2022 17:33:01 +0100
+Message-ID: <86tuc5939e.fsf@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e5ac5eb2-fdaa-48a0-b3b6-08da02b27b3d
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3286:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR15MB328626F6B611960914061660D30B9@BYAPR15MB3286.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JBnfz9wXcbfy9s77Hxywmdl+xlx3SnpevGABZMJt5sZB+bQtx6Q3AERfTWbUfwNF2q3aaxdP2tnfkbm/omXV37J/9s9ljsaPu9ChcHN6NaImzk0SFMv/xtFJF4mikount6JybNQeVkz51D2vwUmrOhKxZMh5ArIbGQoghdWoZ611xHaCnW38YVLB2cHBT6yqGb8Z/WvdgdodCvSlE4v/EdrrzuLmny4fao+wjZTbakuXeUrh3NEXHfwOiHihWSQXK5rFytsTvvJUHuIxx+mVNs/eOmaqCGg9UCDyZGotIo/OkoBWUqL3GSe3cK+yimudD1urkiyqvDpoxShIoYMiOGdx+JWVVlzwvHq8xF1WxdL2YQYbCkSsFiyUmVsU+lxbNytLYIu8+CDMGcMFjXBlxaXuGCXzWi6y7h8RKsg4rnqV9D974vzEgNvmuAxuYhQy+JibmA+2CVWJWI6nTPPC062ftityNXgPY7+N0cMIeqFiVzE8H+x1P2tV8b9IXgQ95koUBb8dnRKwxZESG6pUTd8Q08bRiMU/rCpsI4zagZ+LS3i/XvRDx5q5z8bxV5scOKtktRAv9RYoUOvCKToizNZ57nt4ZWS2HQvLc1zdA9yJ0jroK5s5vSgjeK0TGjRik/djhBfEBz8W7ZaP+WI42L2BQOzDUtNzBJOkeT9ojtB/iHrj4xaB3O57Y7ES8JfzXTceW0uVQzE21NYok7Vo1tramByIsXUbszbxX3o6neQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(66476007)(6506007)(8676002)(4326008)(52116002)(53546011)(5660300002)(6486002)(66556008)(110136005)(38100700002)(508600001)(558084003)(6666004)(2906002)(36756003)(8936002)(31686004)(54906003)(2616005)(6512007)(186003)(86362001)(316002)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VTZ0c3g2aUpXcEFPUit6MUNFTWY2YU43ZzQzQ2Y1aXhnUFp3RGs4NVJXbXdK?=
- =?utf-8?B?WkMzSTdXMWRSR3Ezbi95NmJjeXV5VWhyMGZUQ3pBeFgrZ1Zjczlab1Z2MXc3?=
- =?utf-8?B?c3BCY3FtUFc1ZmtXTUVlRmFINUs3bElnakMvSnM2OXVkRHZWLy9lbERWbUdT?=
- =?utf-8?B?d0E3VkpxRGFxSHd0aHZ0SElZTktNd1BncTdkWU14NlFOc0VNS2JuYTBMWGxs?=
- =?utf-8?B?ZGZZMVVPVHZoNnFDcDN5Wk1GcDFmNzhRbHFSUG5KL3cxZ2IxZ0FWeitUOUFi?=
- =?utf-8?B?TDNjaVlVcHFRL0xsTENCNmNoNHlHRklDakpEMVR2bjY3TkdpajJoZzBkZmxx?=
- =?utf-8?B?bTBsQ2IrSG1MckpGTXZDMExYVFMrR1h0U2d5dWxKSWhIRlhSK3MraThNVy9V?=
- =?utf-8?B?QVMyeFNQcGpTWWk5TnVsOFlNN0pTWW1OQWx6encwOHhBOGxwN3NhcEFWRVY5?=
- =?utf-8?B?VlVxUlhGS2gzdG1oVWFxaThaZmRMbzlmWTM2OExEbE50S3BrZGF6bzhGWEdX?=
- =?utf-8?B?cEI4VXB4NUczN2VKSktSWEJhYVJKK3BxMHFjMVpYMDdKTjJkNHozZHJCSkFv?=
- =?utf-8?B?cmQ2Mnk3WGc4R3JaZksvUjcxcFZsUndkZW1hdGNERVE2a2NrU0ZRY2JZOFd5?=
- =?utf-8?B?RklUWWpNWEoyYzJBcHoxRjdxdUk5Wis2amFReXR0Y05YeTdsM2NtWU1GY0hK?=
- =?utf-8?B?YjEyQ0xzejhlNlNnNllyeWdPK2I0NjMrWWxEdjdrRy9zMUFRYnVNU1Mxbnha?=
- =?utf-8?B?c0F5OWlkY0FNRG14WGtDclNEZFhVQk9telhvak5kK3I2OFhab2xWMHNwMDRO?=
- =?utf-8?B?UDhEcmdOMTFuNGJJTU5IVjJyRFltYXdKV0pnTURLV0YvUG1Ha1JyNUFYL05H?=
- =?utf-8?B?WEtMdWNYa1FsSkJ2QmZ3Uk9Kc081UVBSM0RISkE0VlpZMFEzZ0JJTWpyQW4w?=
- =?utf-8?B?d3IxSTY4eWJNU1BvWDE4ZHk0WWYxWU5lVmVodVVmaG5HUW04bDhLTnp0RVd0?=
- =?utf-8?B?Q0lLR3g0ZFU2K2YxRHZaZjdhcTZQMGpGd3U4K1Q2QWxieWwzbGxHaUh2cUtw?=
- =?utf-8?B?TmJZNFBzRWU5bVd6dVhpZks2cDd4WG4yNmpXRENrTFFVejdRRzR2ZFpBa0lM?=
- =?utf-8?B?ZzdHcFBJQ3JWaHQzc2s3QjVPUmRHY1p2eVZDV0hKQXNIR2VLbHZSaFZRZGdE?=
- =?utf-8?B?Tk03MHYzUmROT0twTGV2VnR6UFB1cXQySHp2d25tTnI0OHJHOWtmUjVsUTBq?=
- =?utf-8?B?QW1sK01wRlhZai9tOG02WUNOSzNEakFHdWQ5NTEvRy9VMTlJWUJOeDVSZG12?=
- =?utf-8?B?cWl5Skk0Q0hiVkMzRGJpSGs0RmxlL2hTdzNHbmFjM0wzMnpPOWdGZkFNeHVn?=
- =?utf-8?B?MWRWU2ZXSDJ1M2NhSU94OXlDbVhYdGhxQzJaeFM0ZWt6K1NnK3d5cDV0Ly9K?=
- =?utf-8?B?bFNUQVR1MXV0cTRRcmt3RG5sZytDcTJsbk9CZnJ6MW1KNHJ5dnUveHJVZE9T?=
- =?utf-8?B?c0pUWno4ZHZpUXNQVG5YdVl3dVFETHlOMlVsZFpwTXkwSGExWHJTL3BzWEs4?=
- =?utf-8?B?anBaZW9NL0p2cW9RMU41Q1RjVXhxUm5LNVVNSnc0REtTN0NYWWg2elJhUmRT?=
- =?utf-8?B?L0tkTEV5M0Y3MkkxSkRtQU1KaUtaNTFoMWFwNHIzMjUyWHNSRmdSSm53b1dZ?=
- =?utf-8?B?cGRqbTJUcGhZOHNlTFdEYk5iaHlxSm9VeWR1OGFoVG5HSHhTYVhWNHM0RUR5?=
- =?utf-8?B?YWk2UzUvRlNUc0hVd0g2ZUFoaU5kY3VxbHU5T0JrcEpIVzRwVG0zdmNsSVlH?=
- =?utf-8?B?VXF4VFg3VVNDL0llcFQ0aS9NeU1kMWtucWduc0xEUDdFNlRTNU1QTnpmL3pE?=
- =?utf-8?B?WHhIYlVJaHFKRzlrQ1RSN3B6YU45bUlFeEdNeHhCUm1XaHFDRDMybm5YZjla?=
- =?utf-8?B?OEZwRkVGNlB4L2wvNm13amkwVEdVenBKbUtQY1VjNUJLQkpUUXVELy9FaGVU?=
- =?utf-8?B?aG5xWVBleUpieGRKekphbTJKcEpjNjZzU1RhQUkvWlVQamNsbHRHZkdSSGpB?=
- =?utf-8?B?R1hmL0FRWVF1TXVQNTRWSUtyR0srWTZGL0VTRkJoaCtrb2Z4RmRHWEhTUGJk?=
- =?utf-8?Q?t7ILwaEWB/+Rp0UjXz4bfhxcr?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5ac5eb2-fdaa-48a0-b3b6-08da02b27b3d
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 16:24:42.3140
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iwy9LbBkRa82t+Cd1b0YirejbG1htJPLL20m7tLeOWUR2JqFAZQ2L6gYtZK4I4Nn
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3286
-X-Proofpoint-GUID: 4jf4Ijb8Xbzp8uxeTriAstKjO7MIQSLx
-X-Proofpoint-ORIG-GUID: 4jf4Ijb8Xbzp8uxeTriAstKjO7MIQSLx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-10_06,2022-03-09_01,2022-02-23_01
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On tor, mar 10, 2022 at 18:14, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> On 10/03/2022 18:11, Hans Schultz wrote:
+>> On tor, mar 10, 2022 at 17:57, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>> On 10/03/2022 17:38, Hans Schultz wrote:
+>>>> On tor, mar 10, 2022 at 16:42, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>>>> On 10/03/2022 16:23, Hans Schultz wrote:
+>>>>>> Add an intermediate state for clients behind a locked port to allow for
+>>>>>> possible opening of the port for said clients. This feature corresponds
+>>>>>> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
+>>>>>> latter defined by Cisco.
+>>>>>>
+>>>>>> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+>>>>>> ---
+>>>>>>     include/uapi/linux/neighbour.h |  1 +
+>>>>>>     net/bridge/br_fdb.c            |  6 ++++++
+>>>>>>     net/bridge/br_input.c          | 11 ++++++++++-
+>>>>>>     net/bridge/br_private.h        |  3 ++-
+>>>>>>     4 files changed, 19 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+>>>>>> index db05fb55055e..83115a592d58 100644
+>>>>>> --- a/include/uapi/linux/neighbour.h
+>>>>>> +++ b/include/uapi/linux/neighbour.h
+>>>>>> @@ -208,6 +208,7 @@ enum {
+>>>>>>     	NFEA_UNSPEC,
+>>>>>>     	NFEA_ACTIVITY_NOTIFY,
+>>>>>>     	NFEA_DONT_REFRESH,
+>>>>>> +	NFEA_LOCKED,
+>>>>>>     	__NFEA_MAX
+>>>>>>     };
+>>>>>
+>>>>> Hmm, can you use NDA_FLAGS_EXT instead ?
+>>>>> That should simplify things and reduce the nl size.
+>>>>>
+>>>>
+>>>> I am using NDA_FDB_EXT_ATTRS. NFEA_LOCKED is just the
+>>>> flag as the other flags section is full wrt the normal flags, but maybe it
+>>>> doesn't fit in that section?
+>>>>
+>>>
+>>> Actually wait a second, this is completely wrong use of NDA_FDB_EXT_ATTRS.
+>>> That is a nested attribute, so the code below is wrong. More below..
+>>>
+>>>> I will just note that iproute2 support for parsing nested attributes
+>>>> does not work, thus the BR_FDB_NOTIFY section (lines 150-165) are
+>>>> obsolete with respect to iproute2 as it is now. I cannot rule out that
+>>>> someone has some other tool that can handle this BR_FDB_NOTIFY, but I
+>>>> could not make iproute2 as it stands handle nested attributes. And of
+>>>> course there is no handling of NDA_FDB_EXT_ATTRS in iproute2 now.
+>>>>>>>     #define NFEA_MAX (__NFEA_MAX - 1)
+>>>>>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+>>>>>> index 6ccda68bd473..396dcf3084cf 100644
+>>>>>> --- a/net/bridge/br_fdb.c
+>>>>>> +++ b/net/bridge/br_fdb.c
+>>>>>> @@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+>>>>>>     	struct nda_cacheinfo ci;
+>>>>>>     	struct nlmsghdr *nlh;
+>>>>>>     	struct ndmsg *ndm;
+>>>>>> +	u8 ext_flags = 0;
+>>>>>>     
+>>>>>>     	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
+>>>>>>     	if (nlh == NULL)
+>>>>>> @@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+>>>>>>     		ndm->ndm_flags |= NTF_EXT_LEARNED;
+>>>>>>     	if (test_bit(BR_FDB_STICKY, &fdb->flags))
+>>>>>>     		ndm->ndm_flags |= NTF_STICKY;
+>>>>>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
+>>>>>> +		ext_flags |= 1 << NFEA_LOCKED;
+>>>>>>     
+>>>>>>     	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
+>>>>>>     		goto nla_put_failure;
+>>>>>>     	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
+>>>>>>     		goto nla_put_failure;
+>>>>>> +	if (nla_put_u8(skb, NDA_FDB_EXT_ATTRS, ext_flags))
+>>>>>> +		goto nla_put_failure;
+>>>>>> +
+>>>
+>>> This is wrong. NDA_FDB_EXT_ATTRS is a nested attribute, you can't use it as a u8.
+>>> You need to have this structure:
+>>>    [ NDA_FDB_EXT_ATTRS ]
+>>>     ` [ NFEA_LOCKED ]
+>>>
+>>> But that's why I asked if you could use the NDA_FLAGS_EXT attribute. You can see
+>>> the logic from the neigh code.
+>> 
+>> Ahh yes, NDA_FLAGS_EXT was not there in the 5.15.x kernel I have
+>> originally being making the patches in.
+>> 
+>> I hope that the handling of nested attributes has been fixed in
+>> iproute2. ;-)
+>> 
+>
+> It hasn't been broken, I'm guessing you're having issues with the nested bit being set.
+> Check NLA_F_NESTED and NLA_TYPE_MASK.
+>
 
+Hmmm, then I wonder why I could not make the same code as in the said
+lines (150-165) in br_fdb.c give any parsed attributes in iproute2 under
+tb[NDA_FDB_EXT_ATTR].
 
-On 3/10/22 8:15 AM, Yuntao Wang wrote:
-> Use offsetofend() instead of offsetof() + sizeof() to simplify
-> MIN_BPF_LINEINFO_SIZE macro definition.
-> 
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Did I miss something, or are those lines incorrect?
 
-Acked-by: Yonghong Song <yhs@fb.com>
+>>>
+>>> Also note that you need to account for the new attribute's size in fdb_nlmsg_size().
+>>>
+>>>
+>>>>>>     	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+>>>>>>     	ci.ndm_confirmed = 0;
+>>>>>>     	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
+>>>>>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+>>>>>> index e0c13fcc50ed..897908484b18 100644
+>>>>>> --- a/net/bridge/br_input.c
+>>>>>> +++ b/net/bridge/br_input.c
+>>>>>> @@ -75,6 +75,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>>     	struct net_bridge_mcast *brmctx;
+>>>>>>     	struct net_bridge_vlan *vlan;
+>>>>>>     	struct net_bridge *br;
+>>>>>> +	unsigned long flags = 0;
+>>>>>
+>>>>> Please move this below...
+>>>>>
+>>>>>>     	u16 vid = 0;
+>>>>>>     	u8 state;
+>>>>>>     
+>>>>>> @@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>>     			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+>>>>>>     
+>>>>>>     		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+>>>>>> -		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
+>>>>>> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
+>>>>>> +			if (!fdb_src) {
+>>>>>
+>>>>> ... here where it's only used.
+>>>>>
+>>>>
+>>>> Forgot that one. Shall do!
+>>>>
+>>>>>> +				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
+>>>>>> +				br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
+>>>>>> +			}
+>>>>>>     			goto drop;
+>>>>>> +		} else {
+>>>>>> +			if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags))
+>>>>>> +				goto drop;
+>>>>>> +		}
+>>>>>>     	}
+>>>>>>     
+>>>>>>     	nbp_switchdev_frame_mark(p, skb);
+>>>>>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>>>>>> index 48bc61ebc211..f5a0b68c4857 100644
+>>>>>> --- a/net/bridge/br_private.h
+>>>>>> +++ b/net/bridge/br_private.h
+>>>>>> @@ -248,7 +248,8 @@ enum {
+>>>>>>     	BR_FDB_ADDED_BY_EXT_LEARN,
+>>>>>>     	BR_FDB_OFFLOADED,
+>>>>>>     	BR_FDB_NOTIFY,
+>>>>>> -	BR_FDB_NOTIFY_INACTIVE
+>>>>>> +	BR_FDB_NOTIFY_INACTIVE,
+>>>>>> +	BR_FDB_ENTRY_LOCKED,
+>>>>>>     };
+>>>>>>     
+>>>>>>     struct net_bridge_fdb_key {
