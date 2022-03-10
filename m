@@ -2,62 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D60E4D3E02
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:18:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 842B54D3E21
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:29:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238933AbiCJASx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 19:18:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        id S238902AbiCJA3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 19:29:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235041AbiCJASw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:18:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50861275D7;
-        Wed,  9 Mar 2022 16:17:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C954160C42;
-        Thu, 10 Mar 2022 00:17:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E10EC340E8;
-        Thu, 10 Mar 2022 00:17:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646871471;
-        bh=Rq2mwyKWDPc0/aPTPpGCLWj1Q0Ef1pmZNDNeX7wzLBY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lPEFLuS2je4G+ipns1zUpW/wVgPaMIgCK89wGJWovuSlNjiQcsNDg5wzhAeTtrh1R
-         ijg8UqPAMlnYIRY0oC3RwOz6bp7hkW4ltS2YH1S93/9Yl0Sj9jI7m1PeoBgnZZAq3r
-         Uyqjlj82FpT+OhCI925mZ3rp6ANFbvfMavbSvn7IpkD1rafA3ttkp2xYE2ygeB8gek
-         usvEPu97wb/bpTi/K0cBLKJjjP+Bxv0+EeDiyagRdchff5/qGXIogoj61cK/5SeO7l
-         20Kkc4VPCEiT6VkS6/p3crudhClvHZV0vbtrtngdAMLPkGhETbRdDesTE7YNGpXDvh
-         x/tHQzbhrzElg==
-Date:   Thu, 10 Mar 2022 09:17:45 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v10 12/12] fprobe: Add a selftest for fprobe
-Message-Id: <20220310091745.73580bd6314803cfbf21312d@kernel.org>
-In-Reply-To: <164673784786.1984170.244480726272055433.stgit@devnote2>
-References: <164673771096.1984170.8155877393151850116.stgit@devnote2>
-        <164673784786.1984170.244480726272055433.stgit@devnote2>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S229685AbiCJA3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:29:50 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68D6E2354
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 16:28:50 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id o8so3327374pgf.9
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 16:28:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zv7hiMt195dnN+Ve5h3EgHaTwpPmNJu2sShPemBqYMA=;
+        b=SlQnL7yKAUTb1NNRpp+P2p/CbZ9A+g+4HNuqCFPzmT06ibnGKiupIN+9zHr61WMCl6
+         FZQjDEzA1bbG0LuAtyniVg+L1eqRWJEjF0a362gwA4yaXsSjKnMNqYH/KGz5Ec9vbsJQ
+         Cndb2/qc/rQ6uURrUk2982QdqpvhmVYnus+on1IdyNM0N71/rxN7WIfem7mtE7caKpoS
+         LPaDrJijIogLuClrD2kPPgGKvum2BXLUco6+v/eA+agSBRAuAQ4AnWHxF0cVZhdycfSU
+         XuwyZz2cY4RAOeNHo3vfVa8OXN8mSkFinimsGEwcPAeyBZQ/W3oUq05uQVjR5PoAnIHd
+         2OGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zv7hiMt195dnN+Ve5h3EgHaTwpPmNJu2sShPemBqYMA=;
+        b=MzLy4Vls3N1SeF9diw+VcWQSRnz0J+a9eVI/mgHQ28hAMsAqRBcwrIlekQ7xPneMMG
+         IajTkJxfzFUzfHTDuPKKEbh3XzdzMeQMAniEUfHM1oXafV1Oe5GeObKn88vbKHk9NaLB
+         lpicOqspgDr6rjtyGGzOeMDdkMcIl1gPGmgJ92HXZ80EzhyV/66rZOgvKpT6SvYEIXeu
+         P6dns9BrQSLvgdm46xEL6qjj1rUDTevD4awEMHcK0dvmvU18/eIS4BjSDvvd9fDp9VWs
+         QQe/5A3rq7V57JL1x/R2OPCUru1C+IIJc4pbNNMMsVy15d/R7XI5qmAJfwqczeBJWqaH
+         5dhQ==
+X-Gm-Message-State: AOAM53166b95Sj6ujxqKCRaxUu2EUTpNDuRDU+z9x94o62tKPhxk574+
+        T4opoiuLCVtJ0E+m4OdhF8k=
+X-Google-Smtp-Source: ABdhPJzSaZzC7Hg1/QRRVbk7lWxabbFQKhqa4dUl4cVsdAVNXa9cewpA7nmmoJ9sCmJczoHyux0VGA==
+X-Received: by 2002:a05:6a00:1a42:b0:4c9:f270:1f39 with SMTP id h2-20020a056a001a4200b004c9f2701f39mr2143707pfv.50.1646872130170;
+        Wed, 09 Mar 2022 16:28:50 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
+        by smtp.gmail.com with ESMTPSA id nv4-20020a17090b1b4400b001bf64a39579sm7557660pjb.4.2022.03.09.16.28.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 16:28:49 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v3 net-next 00/14] tcp: BIG TCP implementation
+Date:   Wed,  9 Mar 2022 16:28:32 -0800
+Message-Id: <20220310002846.460907-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,253 +71,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Eric Dumazet <edumazet@google.com>
 
-On Tue,  8 Mar 2022 20:10:48 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
+This series implements BIG TCP as presented in netdev 0x15:
 
-> Add a KUnit based selftest for fprobe interface.
-> 
-> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> ---
->  Changes in v9:
->   - Rename fprobe_target* to fprobe_selftest_target*.
->   - Find the correct expected ip by ftrace_location_range().
->   - Since the ftrace_location_range() is not exposed to module, make
->     this test only for embedded.
->   - Add entry only test.
->   - Reset the fprobe structure before reuse it.
-> ---
->  lib/Kconfig.debug |   12 ++++
->  lib/Makefile      |    2 +
->  lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 188 insertions(+)
->  create mode 100644 lib/test_fprobe.c
-> 
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index 14b89aa37c5c..ffc469a12afc 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -2100,6 +2100,18 @@ config KPROBES_SANITY_TEST
->  
->  	  Say N if you are unsure.
->  
-> +config FPROBE_SANITY_TEST
-> +	bool "Self test for fprobe"
-> +	depends on DEBUG_KERNEL
-> +	depends on FPROBE
-> +	depends on KUNIT
+https://netdevconf.info/0x15/session.html?BIG-TCP
 
-Hmm, this caused a build error with allmodconfig because KUNIT=m but FPROBE_SANITY_TEST=y.
-Let me fix this issue.
+Jonathan Corbet made a nice summary: https://lwn.net/Articles/884104/
 
-Thank you,
+Standard TSO/GRO packet limit is 64KB
 
-> +	help
-> +	  This option will enable testing the fprobe when the system boot.
-> +	  A series of tests are made to verify that the fprobe is functioning
-> +	  properly.
-> +
-> +	  Say N if you are unsure.
-> +
->  config BACKTRACE_SELF_TEST
->  	tristate "Self test for the backtrace code"
->  	depends on DEBUG_KERNEL
-> diff --git a/lib/Makefile b/lib/Makefile
-> index 300f569c626b..154008764b16 100644
-> --- a/lib/Makefile
-> +++ b/lib/Makefile
-> @@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
->  obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
->  obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
->  obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-> +CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-> +obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
->  #
->  # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
->  # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-> diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-> new file mode 100644
-> index 000000000000..ed70637a2ffa
-> --- /dev/null
-> +++ b/lib/test_fprobe.c
-> @@ -0,0 +1,174 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * test_fprobe.c - simple sanity test for fprobe
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/fprobe.h>
-> +#include <linux/random.h>
-> +#include <kunit/test.h>
-> +
-> +#define div_factor 3
-> +
-> +static struct kunit *current_test;
-> +
-> +static u32 rand1, entry_val, exit_val;
-> +
-> +/* Use indirect calls to avoid inlining the target functions */
-> +static u32 (*target)(u32 value);
-> +static u32 (*target2)(u32 value);
-> +static unsigned long target_ip;
-> +static unsigned long target2_ip;
-> +
-> +static noinline u32 fprobe_selftest_target(u32 value)
-> +{
-> +	return (value / div_factor);
-> +}
-> +
-> +static noinline u32 fprobe_selftest_target2(u32 value)
-> +{
-> +	return (value / div_factor) + 1;
-> +}
-> +
-> +static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-> +{
-> +	KUNIT_EXPECT_FALSE(current_test, preemptible());
-> +	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-> +	if (ip != target_ip)
-> +		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-> +	entry_val = (rand1 / div_factor);
-> +}
-> +
-> +static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-> +{
-> +	unsigned long ret = regs_return_value(regs);
-> +
-> +	KUNIT_EXPECT_FALSE(current_test, preemptible());
-> +	if (ip != target_ip) {
-> +		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-> +		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-> +	} else
-> +		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-> +	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-> +	exit_val = entry_val + div_factor;
-> +}
-> +
-> +/* Test entry only (no rethook) */
-> +static void test_fprobe_entry(struct kunit *test)
-> +{
-> +	struct fprobe fp_entry = {
-> +		.entry_handler = fp_entry_handler,
-> +	};
-> +
-> +	current_test = test;
-> +
-> +	/* Before register, unregister should be failed. */
-> +	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-> +	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-> +
-> +	entry_val = 0;
-> +	exit_val = 0;
-> +	target(rand1);
-> +	KUNIT_EXPECT_NE(test, 0, entry_val);
-> +	KUNIT_EXPECT_EQ(test, 0, exit_val);
-> +
-> +	entry_val = 0;
-> +	exit_val = 0;
-> +	target2(rand1);
-> +	KUNIT_EXPECT_NE(test, 0, entry_val);
-> +	KUNIT_EXPECT_EQ(test, 0, exit_val);
-> +
-> +	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-> +}
-> +
-> +static void test_fprobe(struct kunit *test)
-> +{
-> +	struct fprobe fp = {
-> +		.entry_handler = fp_entry_handler,
-> +		.exit_handler = fp_exit_handler,
-> +	};
-> +
-> +	current_test = test;
-> +	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-> +
-> +	entry_val = 0;
-> +	exit_val = 0;
-> +	target(rand1);
-> +	KUNIT_EXPECT_NE(test, 0, entry_val);
-> +	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> +
-> +	entry_val = 0;
-> +	exit_val = 0;
-> +	target2(rand1);
-> +	KUNIT_EXPECT_NE(test, 0, entry_val);
-> +	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> +
-> +	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-> +}
-> +
-> +static void test_fprobe_syms(struct kunit *test)
-> +{
-> +	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-> +	struct fprobe fp = {
-> +		.entry_handler = fp_entry_handler,
-> +		.exit_handler = fp_exit_handler,
-> +	};
-> +
-> +	current_test = test;
-> +	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-> +
-> +	entry_val = 0;
-> +	exit_val = 0;
-> +	target(rand1);
-> +	KUNIT_EXPECT_NE(test, 0, entry_val);
-> +	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> +
-> +	entry_val = 0;
-> +	exit_val = 0;
-> +	target2(rand1);
-> +	KUNIT_EXPECT_NE(test, 0, entry_val);
-> +	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> +
-> +	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-> +}
-> +
-> +static unsigned long get_ftrace_location(void *func)
-> +{
-> +	unsigned long size, addr = (unsigned long)func;
-> +
-> +	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-> +		return 0;
-> +
-> +	return ftrace_location_range(addr, addr + size - 1);
-> +}
-> +
-> +static int fprobe_test_init(struct kunit *test)
-> +{
-> +	do {
-> +		rand1 = prandom_u32();
-> +	} while (rand1 <= div_factor);
-> +
-> +	target = fprobe_selftest_target;
-> +	target2 = fprobe_selftest_target2;
-> +	target_ip = get_ftrace_location(target);
-> +	target2_ip = get_ftrace_location(target2);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct kunit_case fprobe_testcases[] = {
-> +	KUNIT_CASE(test_fprobe_entry),
-> +	KUNIT_CASE(test_fprobe),
-> +	KUNIT_CASE(test_fprobe_syms),
-> +	{}
-> +};
-> +
-> +static struct kunit_suite fprobe_test_suite = {
-> +	.name = "fprobe_test",
-> +	.init = fprobe_test_init,
-> +	.test_cases = fprobe_testcases,
-> +};
-> +
-> +kunit_test_suites(&fprobe_test_suite);
-> +
-> +MODULE_LICENSE("GPL");
-> 
+With BIG TCP, we allow bigger TSO/GRO packet sizes for IPv6 traffic.
 
+Note that this feature is by default not enabled, because it might
+break some eBPF programs assuming TCP header immediately follows IPv6 header.
+
+While tcpdump recognizes the HBH/Jumbo header, standard pcap filters
+are unable to skip over IPv6 extension headers.
+
+Reducing number of packets traversing networking stack usually improves
+performance, as shown on this experiment using a 100Gbit NIC, and 4K MTU.
+
+'Standard' performance with current (74KB) limits.
+for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+77           138          183          8542.19    
+79           143          178          8215.28    
+70           117          164          9543.39    
+80           144          176          8183.71    
+78           126          155          9108.47    
+80           146          184          8115.19    
+71           113          165          9510.96    
+74           113          164          9518.74    
+79           137          178          8575.04    
+73           111          171          9561.73    
+
+Now enable BIG TCP on both hosts.
+
+ip link set dev eth0 gro_ipv6_max_size 185000 gso_ipv6_max_size 185000
+for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+57           83           117          13871.38   
+64           118          155          11432.94   
+65           116          148          11507.62   
+60           105          136          12645.15   
+60           103          135          12760.34   
+60           102          134          12832.64   
+62           109          132          10877.68   
+58           82           115          14052.93   
+57           83           124          14212.58   
+57           82           119          14196.01   
+
+We see an increase of transactions per second, and lower latencies as well.
+
+v3: Fixed a typo in RFC number (Alexander)
+    Added Reviewed-by: tags from Tariq on mlx4/mlx5 parts.
+
+v2: Removed the MAX_SKB_FRAGS change, this belongs to a different series.
+    Addressed feedback, for Alexander and nvidia folks.
+
+Coco Li (5):
+  ipv6: add dev->gso_ipv6_max_size
+  ipv6: add GRO_IPV6_MAX_SIZE
+  ipv6: Add hop-by-hop header to jumbograms in ip6_output
+  ipvlan: enable BIG TCP Packets
+  mlx5: support BIG TCP packets
+
+Eric Dumazet (9):
+  net: add netdev->tso_ipv6_max_size attribute
+  tcp_cubic: make hystart_ack_delay() aware of BIG TCP
+  ipv6: add struct hop_jumbo_hdr definition
+  ipv6/gso: remove temporary HBH/jumbo header
+  ipv6/gro: insert temporary HBH/jumbo header
+  net: loopback: enable BIG TCP packets
+  bonding: update dev->tso_ipv6_max_size
+  macvlan: enable BIG TCP Packets
+  mlx4: support BIG TCP packets
+
+ drivers/net/bonding/bond_main.c               |  3 +
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 +
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 82 +++++++++++++++----
+ drivers/net/ipvlan/ipvlan_main.c              |  1 +
+ drivers/net/loopback.c                        |  2 +
+ drivers/net/macvlan.c                         |  1 +
+ include/linux/ipv6.h                          |  1 +
+ include/linux/netdevice.h                     | 32 ++++++++
+ include/net/ipv6.h                            | 44 ++++++++++
+ include/uapi/linux/if_link.h                  |  3 +
+ net/core/dev.c                                |  4 +
+ net/core/gro.c                                | 20 ++++-
+ net/core/rtnetlink.c                          | 33 ++++++++
+ net/core/sock.c                               |  6 ++
+ net/ipv4/tcp_cubic.c                          |  4 +-
+ net/ipv6/ip6_offload.c                        | 56 ++++++++++++-
+ net/ipv6/ip6_output.c                         | 22 ++++-
+ tools/include/uapi/linux/if_link.h            |  3 +
+ 20 files changed, 334 insertions(+), 34 deletions(-)
 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.35.1.616.g0bdcbb4464-goog
+
