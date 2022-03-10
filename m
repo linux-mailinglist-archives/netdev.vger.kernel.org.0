@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D90584D40E7
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:48:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4572F4D40E8
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:48:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239679AbiCJFsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 00:48:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
+        id S239688AbiCJFs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 00:48:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239673AbiCJFsl (ORCPT
+        with ESMTP id S239681AbiCJFsl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:41 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099DD27FED
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:33 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id o23so3815963pgk.13
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:33 -0800 (PST)
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82BA3CA70
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:35 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id o8so3838274pgf.9
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2qkUWOSjFuJ3SYVMEm+07IQm8DqN/HrdudaxPS5fN9M=;
-        b=m3bPEg5eKAeooeOjFmNBwjk7keCAEpxfefNsBnogmisIHwsPJlMBAW/dzyazILi406
-         yBZGsv3NjhMgeTyUidmAy2msISDet67M0216xnrzWjiYmGokS53FlrUQP7AvW3/FOGvl
-         GGG85vjVawddBY91/qyRK1pkSUZtIUGIxetbNeNMWifz8Kkk/OMCXnpAarhdnKP8zzWX
-         8p+dz9Bx7We8VCEDFuUBx/qwYMqBgi2sQAon6L1TDVNG4dCOPrY+Xfsnp4YFdLPeczSj
-         1uuN2PlbtCh+oaMlcANoJzFwPG9fwGnF4fTMbXIudhc59W59V9u9/O1ccPm269om/qFl
-         HitQ==
+        bh=/ta3iqMA4WzHqEbaAaLOao4IgZivqre/Ol8LyM26FpA=;
+        b=iMYQE5x+V3RM6tZJRIU3VEQN16QxYnNrD+Be882hKV4GsSc0ZXoNSHXIwDY8bVFPk8
+         TEHXtXFMWX94whvf1Sjc2/E7v5UVBgqBqrGRXmgPGeXsQooVmpo5HyvU1JXhthx5B6b9
+         jh/DgJ6wnd3aRgPBVc4WZIMqQaB++r9q9McmHBgxueTPjGrrzEMZxuUSeu+iCKNpcxuN
+         51Hrw5B8BAXg0uZkF40IQUn4tLQZnu1EumqoEYKZqrSmCtP+Kd0fQPH0LFlne9uPSvY8
+         SCQ3Ts3yTAUw0YQ/1g6OJFaeRYXIK+2g2w405eporwZYL+20ti/9n6rCfUwX0vWFUX95
+         dr0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2qkUWOSjFuJ3SYVMEm+07IQm8DqN/HrdudaxPS5fN9M=;
-        b=uXfqreWYllRpaGJm1e7UZUpV8aE/cHrPWMmNHy1ba5toiOcRGSh5v5ADazUAccCqrb
-         /2Bthg8f+1VJDSRe0I5WScsNiMQ6BeYPx+liWp6dTIflrv0e7Hu4X6WvrQ57N/yuAYFZ
-         PldUhdzzKZBiiTNzx5ZV+klRujYxtJOPL3NE407YB6vMFVdNLaAVWHK6ays5my7H9Ysl
-         xdOb8uILVFs3hsIyiReIipIETntEIY2qtOOp2ogafckgKt6MaJqlGL83+MRVYKUFP4ii
-         VdxT4wkGEfPlSNIwbE67T2x0bWfAkQONNmb3X7r6myNrpDjBJEpSxZNfC7Ggb9c97ZNB
-         Yt0A==
-X-Gm-Message-State: AOAM533tKLo1KcPJNZY41Dux1uHYJDNJmXRc7Jzk1N6+ICawv4MxiLbS
-        ebok1mvXq2toIZI2wcZMC+KbvNEK3tM=
-X-Google-Smtp-Source: ABdhPJzAuULemzrVoep+YYZ0f/WgaXl9/e7jy2lgp4iC+Kktq8P/u7ZU9KVyhj2t1RSd/eZqPJZrHg==
-X-Received: by 2002:aa7:8889:0:b0:4f7:7283:e378 with SMTP id z9-20020aa78889000000b004f77283e378mr2041198pfe.36.1646891253383;
-        Wed, 09 Mar 2022 21:47:33 -0800 (PST)
+        bh=/ta3iqMA4WzHqEbaAaLOao4IgZivqre/Ol8LyM26FpA=;
+        b=7Sl6YjH3xIZ4oUkwi/BDFOxJ1JkCOibMGtFjEgoNizbg7cK7POrKEhji/r/Owd7HMT
+         r2WYIWX1mlIwBdvYUVTwYNpQh7MH/cohtubPTK6zOU9hsF3V7KnobOATmzXnuUoXFPz1
+         su6TsECBSDD0tvb3TMxzPJuVbG77P2PN6BbJsVGIgykgg4eIVnGGZy0UOerjqySuPcQx
+         jtGBZu8o9vAlLbKDBA1VDZlfZzqX4wvsnsRMzwfKXMW7rFwUCSoqA/s7SroEBOfB0Qax
+         iAv7wZ0YNbK/nDT2KorG2jenOQcTn9ZNglciPE2mCKqXAE25XdkbwwEAdTA29SEF411Z
+         8iVQ==
+X-Gm-Message-State: AOAM531gUIOEgw3apJYWWFGp0Wg/Bq+G7FVVnSSkC0Gqk25zsoS+ldx+
+        x0NYLZBoXMWB0I+g3Exl0Oo=
+X-Google-Smtp-Source: ABdhPJxP+MfBWjLLexW3/PQS9WJUTMQCbNxjUkjijqga+pq3h36Xpr6ymwrqTITVKsUD5TT/Q/5hOg==
+X-Received: by 2002:a65:6746:0:b0:377:16e2:33a2 with SMTP id c6-20020a656746000000b0037716e233a2mr2731663pgu.47.1646891255167;
+        Wed, 09 Mar 2022 21:47:35 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
-        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.32
+        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 21:47:33 -0800 (PST)
+        Wed, 09 Mar 2022 21:47:34 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -55,10 +55,12 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH v4 net-next 13/14] mlx4: support BIG TCP packets
-Date:   Wed,  9 Mar 2022 21:47:02 -0800
-Message-Id: <20220310054703.849899-14-eric.dumazet@gmail.com>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: [PATCH v4 net-next 14/14] mlx5: support BIG TCP packets
+Date:   Wed,  9 Mar 2022 21:47:03 -0800
+Message-Id: <20220310054703.849899-15-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 In-Reply-To: <20220310054703.849899-1-eric.dumazet@gmail.com>
 References: <20220310054703.849899-1-eric.dumazet@gmail.com>
@@ -74,164 +76,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Coco Li <lixiaoyan@google.com>
 
-mlx4 supports LSOv2 just fine.
+mlx5 supports LSOv2.
 
-IPv6 stack inserts a temporary Hop-by-Hop header
+IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
 with JUMBO TLV for big packets.
 
-We need to ignore the HBH header when populating TX descriptor.
+We need to ignore/skip this HBH header when populating TX descriptor.
 
-Tested:
+Note that ipv6_has_hopopt_jumbo() only recognizes very specific packet
+layout, thus mlx5e_sq_xmit_wqe() is taking care of this layout only.
 
-Before: (not enabling bigger TSO/GRO packets)
+v2: clear hopbyhop in mlx5e_tx_get_gso_ihs()
+v4: fix compile error for CONFIG_MLX5_CORE_IPOIB=y
 
-ip link set dev eth0 gso_ipv6_max_size 65536 gro_ipv6_max_size 65536
-
-netperf -H lpaa18 -t TCP_RR -T2,2 -l 10 -Cc -- -r 70000,70000
-MIGRATED TCP REQUEST/RESPONSE TEST from ::0 (::) port 0 AF_INET6 to lpaa18.prod.google.com () port 0 AF_INET6 : first burst 0 : cpu bind
-Local /Remote
-Socket Size   Request Resp.  Elapsed Trans.   CPU    CPU    S.dem   S.dem
-Send   Recv   Size    Size   Time    Rate     local  remote local   remote
-bytes  bytes  bytes   bytes  secs.   per sec  % S    % S    us/Tr   us/Tr
-
-262144 540000 70000   70000  10.00   6591.45  0.86   1.34   62.490  97.446
-262144 540000
-
-After: (enabling bigger TSO/GRO packets)
-
-ip link set dev eth0 gso_ipv6_max_size 185000 gro_ipv6_max_size 185000
-
-netperf -H lpaa18 -t TCP_RR -T2,2 -l 10 -Cc -- -r 70000,70000
-MIGRATED TCP REQUEST/RESPONSE TEST from ::0 (::) port 0 AF_INET6 to lpaa18.prod.google.com () port 0 AF_INET6 : first burst 0 : cpu bind
-Local /Remote
-Socket Size   Request Resp.  Elapsed Trans.   CPU    CPU    S.dem   S.dem
-Send   Recv   Size    Size   Time    Rate     local  remote local   remote
-bytes  bytes  bytes   bytes  secs.   per sec  % S    % S    us/Tr   us/Tr
-
-262144 540000 70000   70000  10.00   8383.95  0.95   1.01   54.432  57.584
-262144 540000
-
+Signed-off-by: Coco Li <lixiaoyan@google.com>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 ++
- drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++++++++----
- 2 files changed, 41 insertions(+), 9 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 84 +++++++++++++++----
+ 2 files changed, 69 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index c61dc7ae0c056a4dbcf24297549f6b1b5cc25d92..76cb93f5e5240c54f6f4c57e39739376206b4f34 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -3417,6 +3417,9 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
- 	dev->min_mtu = ETH_MIN_MTU;
- 	dev->max_mtu = priv->max_mtu;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index b2ed2f6d4a9208aebfd17fd0c503cd1e37c39ee1..1e51ce1d74486392a26568852c5068fe9047296d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4910,6 +4910,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
  
-+	/* supports LSOv2 packets, 512KB limit has been tested. */
-+	netif_set_tso_ipv6_max_size(dev, 512 * 1024);
-+
- 	mdev->pndev[port] = dev;
- 	mdev->upper[port] = NULL;
+ 	netdev->priv_flags       |= IFF_UNICAST_FLT;
  
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-index 817f4154b86d599cd593876ec83529051d95fe2f..c89b3e8094e7d8cfb11aaa6cc4ad63bf3ad5934e 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-@@ -44,6 +44,7 @@
- #include <linux/ipv6.h>
- #include <linux/moduleparam.h>
- #include <linux/indirect_call_wrapper.h>
++	netif_set_tso_ipv6_max_size(netdev, 512 * 1024);
+ 	mlx5e_set_netdev_dev_addr(netdev);
+ 	mlx5e_ipsec_build_netdev(priv);
+ 	mlx5e_tls_build_netdev(priv);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index 2dc48406cd08d21ff94f665cd61ab9227f351215..b4fc45ba1b347fb9ad0f46b9c091cc45e4d3d84f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -40,6 +40,7 @@
+ #include "en_accel/en_accel.h"
+ #include "en_accel/ipsec_rxtx.h"
+ #include "en/ptp.h"
 +#include <net/ipv6.h>
  
- #include "mlx4_en.h"
- 
-@@ -635,19 +636,28 @@ static int get_real_size(const struct sk_buff *skb,
- 			 struct net_device *dev,
- 			 int *lso_header_size,
- 			 bool *inline_ok,
--			 void **pfrag)
-+			 void **pfrag,
-+			 int *hopbyhop)
+ static void mlx5e_dma_unmap_wqe_err(struct mlx5e_txqsq *sq, u8 num_dma)
  {
- 	struct mlx4_en_priv *priv = netdev_priv(dev);
- 	int real_size;
+@@ -130,23 +131,32 @@ mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 		sq->stats->csum_none++;
+ }
  
- 	if (shinfo->gso_size) {
- 		*inline_ok = false;
--		if (skb->encapsulation)
-+		*hopbyhop = 0;
-+		if (skb->encapsulation) {
- 			*lso_header_size = (skb_inner_transport_header(skb) - skb->data) + inner_tcp_hdrlen(skb);
++/* Returns the number of header bytes that we plan
++ * to inline later in the transmit descriptor
++ */
+ static inline u16
+-mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb)
++mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb, int *hopbyhop)
+ {
+ 	struct mlx5e_sq_stats *stats = sq->stats;
+ 	u16 ihs;
+ 
++	*hopbyhop = 0;
+ 	if (skb->encapsulation) {
+ 		ihs = skb_inner_transport_offset(skb) + inner_tcp_hdrlen(skb);
+ 		stats->tso_inner_packets++;
+ 		stats->tso_inner_bytes += skb->len - ihs;
+ 	} else {
+-		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
++		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
+ 			ihs = skb_transport_offset(skb) + sizeof(struct udphdr);
 -		else
 +		} else {
-+			/* Detects large IPV6 TCP packets and prepares for removal of
-+			 * HBH header that has been pushed by ip6_xmit(),
-+			 * mainly so that tcpdump can dissect them.
-+			 */
-+			if (ipv6_has_hopopt_jumbo(skb))
+ 			ihs = skb_transport_offset(skb) + tcp_hdrlen(skb);
++			if (ipv6_has_hopopt_jumbo(skb)) {
 +				*hopbyhop = sizeof(struct hop_jumbo_hdr);
- 			*lso_header_size = skb_transport_offset(skb) + tcp_hdrlen(skb);
++				ihs -= sizeof(struct hop_jumbo_hdr);
++			}
 +		}
- 		real_size = CTRL_SIZE + shinfo->nr_frags * DS_SIZE +
--			ALIGN(*lso_header_size + 4, DS_SIZE);
-+			ALIGN(*lso_header_size - *hopbyhop + 4, DS_SIZE);
- 		if (unlikely(*lso_header_size != skb_headlen(skb))) {
- 			/* We add a segment for the skb linear buffer only if
- 			 * it contains data */
-@@ -874,6 +884,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
- 	int desc_size;
- 	int real_size;
- 	u32 index, bf_index;
+ 		stats->tso_packets++;
+-		stats->tso_bytes += skb->len - ihs;
++		stats->tso_bytes += skb->len - ihs - *hopbyhop;
+ 	}
+ 
+ 	return ihs;
+@@ -208,6 +218,7 @@ struct mlx5e_tx_attr {
+ 	__be16 mss;
+ 	u16 insz;
+ 	u8 opcode;
++	u8 hopbyhop;
+ };
+ 
+ struct mlx5e_tx_wqe_attr {
+@@ -244,14 +255,16 @@ static void mlx5e_sq_xmit_prepare(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	struct mlx5e_sq_stats *stats = sq->stats;
+ 
+ 	if (skb_is_gso(skb)) {
+-		u16 ihs = mlx5e_tx_get_gso_ihs(sq, skb);
++		int hopbyhop;
++		u16 ihs = mlx5e_tx_get_gso_ihs(sq, skb, &hopbyhop);
+ 
+ 		*attr = (struct mlx5e_tx_attr) {
+ 			.opcode    = MLX5_OPCODE_LSO,
+ 			.mss       = cpu_to_be16(skb_shinfo(skb)->gso_size),
+ 			.ihs       = ihs,
+ 			.num_bytes = skb->len + (skb_shinfo(skb)->gso_segs - 1) * ihs,
+-			.headlen   = skb_headlen(skb) - ihs,
++			.headlen   = skb_headlen(skb) - ihs - hopbyhop,
++			.hopbyhop  = hopbyhop,
+ 		};
+ 
+ 		stats->packets += skb_shinfo(skb)->gso_segs;
+@@ -365,7 +378,8 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	struct mlx5_wqe_eth_seg  *eseg;
+ 	struct mlx5_wqe_data_seg *dseg;
+ 	struct mlx5e_tx_wqe_info *wi;
+-
++	u16 ihs = attr->ihs;
 +	struct ipv6hdr *h6;
- 	__be32 op_own;
- 	int lso_header_size;
- 	void *fragptr = NULL;
-@@ -882,6 +893,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
- 	bool stop_queue;
- 	bool inline_ok;
- 	u8 data_offset;
-+	int hopbyhop;
- 	bool bf_ok;
+ 	struct mlx5e_sq_stats *stats = sq->stats;
+ 	int num_dma;
  
- 	tx_ind = skb_get_queue_mapping(skb);
-@@ -891,7 +903,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
- 		goto tx_drop;
+@@ -379,15 +393,36 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
  
- 	real_size = get_real_size(skb, shinfo, dev, &lso_header_size,
--				  &inline_ok, &fragptr);
-+				  &inline_ok, &fragptr, &hopbyhop);
- 	if (unlikely(!real_size))
- 		goto tx_drop_count;
+ 	eseg->mss = attr->mss;
  
-@@ -944,7 +956,7 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
- 		data = &tx_desc->data;
- 		data_offset = offsetof(struct mlx4_en_tx_desc, data);
- 	} else {
--		int lso_align = ALIGN(lso_header_size + 4, DS_SIZE);
-+		int lso_align = ALIGN(lso_header_size - hopbyhop + 4, DS_SIZE);
- 
- 		data = (void *)&tx_desc->lso + lso_align;
- 		data_offset = offsetof(struct mlx4_en_tx_desc, lso) + lso_align;
-@@ -1009,14 +1021,31 @@ netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev)
- 			((ring->prod & ring->size) ?
- 				cpu_to_be32(MLX4_EN_BIT_DESC_OWN) : 0);
- 
-+		lso_header_size -= hopbyhop;
- 		/* Fill in the LSO prefix */
- 		tx_desc->lso.mss_hdr_size = cpu_to_be32(
- 			shinfo->gso_size << 16 | lso_header_size);
- 
--		/* Copy headers;
--		 * note that we already verified that it is linear */
--		memcpy(tx_desc->lso.header, skb->data, lso_header_size);
- 
-+		if (unlikely(hopbyhop)) {
+-	if (attr->ihs) {
+-		if (skb_vlan_tag_present(skb)) {
+-			eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs + VLAN_HLEN);
+-			mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
++	if (ihs) {
++		u8 *start = eseg->inline_hdr.start;
++
++		if (unlikely(attr->hopbyhop)) {
 +			/* remove the HBH header.
 +			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
 +			 */
-+			memcpy(tx_desc->lso.header, skb->data, ETH_HLEN + sizeof(*h6));
-+			h6 = (struct ipv6hdr *)((char *)tx_desc->lso.header + ETH_HLEN);
++			if (skb_vlan_tag_present(skb)) {
++				mlx5e_insert_vlan(start, skb, ETH_HLEN + sizeof(*h6));
++				ihs += VLAN_HLEN;
++				h6 = (struct ipv6hdr *)(start + sizeof(struct vlan_ethhdr));
++			} else {
++				memcpy(start, skb->data, ETH_HLEN + sizeof(*h6));
++				h6 = (struct ipv6hdr *)(start + ETH_HLEN);
++			}
++			h6->nexthdr = IPPROTO_TCP;
++			/* Copy the TCP header after the IPv6 one */
++			memcpy(h6 + 1,
++			       skb->data + ETH_HLEN + sizeof(*h6) +
++					sizeof(struct hop_jumbo_hdr),
++			       tcp_hdrlen(skb));
++			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
++		} else if (skb_vlan_tag_present(skb)) {
++			mlx5e_insert_vlan(start, skb, ihs);
++			ihs += VLAN_HLEN;
+ 			stats->added_vlan_packets++;
+ 		} else {
+-			eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs);
+-			memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
++			memcpy(start, skb->data, ihs);
+ 		}
++		eseg->inline_hdr.sz |= cpu_to_be16(ihs);
+ 		dseg += wqe_attr->ds_cnt_inl;
+ 	} else if (skb_vlan_tag_present(skb)) {
+ 		eseg->insert.type = cpu_to_be16(MLX5_ETH_WQE_INSERT_VLAN);
+@@ -398,7 +433,7 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	}
+ 
+ 	dseg += wqe_attr->ds_cnt_ids;
+-	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr->ihs,
++	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr->ihs + attr->hopbyhop,
+ 					  attr->headlen, dseg);
+ 	if (unlikely(num_dma < 0))
+ 		goto err_drop;
+@@ -918,12 +953,29 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	eseg->mss = attr.mss;
+ 
+ 	if (attr.ihs) {
+-		memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
++		if (unlikely(attr.hopbyhop)) {
++			struct ipv6hdr *h6;
++
++			/* remove the HBH header.
++			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
++			 */
++			memcpy(eseg->inline_hdr.start, skb->data, ETH_HLEN + sizeof(*h6));
++			h6 = (struct ipv6hdr *)((char *)eseg->inline_hdr.start + ETH_HLEN);
 +			h6->nexthdr = IPPROTO_TCP;
 +			/* Copy the TCP header after the IPv6 one */
 +			memcpy(h6 + 1,
@@ -240,14 +272,17 @@ index 817f4154b86d599cd593876ec83529051d95fe2f..c89b3e8094e7d8cfb11aaa6cc4ad63bf
 +			       tcp_hdrlen(skb));
 +			/* Leave ipv6 payload_len set to 0, as LSO v2 specs request. */
 +		} else {
-+			/* Copy headers;
-+			 * note that we already verified that it is linear
-+			 */
-+			memcpy(tx_desc->lso.header, skb->data, lso_header_size);
++			memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
 +		}
- 		ring->tso_packets++;
+ 		eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
+ 		dseg += wqe_attr.ds_cnt_inl;
+ 	}
  
- 		i = shinfo->gso_segs;
+-	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr.ihs,
++	num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr.ihs + attr.hopbyhop,
+ 					  attr.headlen, dseg);
+ 	if (unlikely(num_dma < 0))
+ 		goto err_drop;
 -- 
 2.35.1.616.g0bdcbb4464-goog
 
