@@ -2,194 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D5634D4DB2
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:57:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E294D4DD7
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238629AbiCJP6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 10:58:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56520 "EHLO
+        id S238725AbiCJP6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 10:58:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232839AbiCJP6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:58:15 -0500
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80085.outbound.protection.outlook.com [40.107.8.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B7C156785;
-        Thu, 10 Mar 2022 07:57:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZTpYLLV+DYl3RFvRybzBoKzrtzZ2TdG+FA07fMOEVd+ub864IqDbwb/Dha/NsWyvzZWja7H6lYPXWfnF1vPP4pchkKe/9pf/wM+jhnFAN3Dxdemp+4qQruxQhFUb8wFl3Ezuh6I3EPaYQpb1nem8gHbQ5NvQhnSfRBDgVyR0P2tEKPe605sUsgnWltP/zNM0kRN8seIheUTPwi9MtqrUQ20HmhzhURfSwZS+4rWkeF7zGUTdsAKhd9FB6YL6XWabCNG8QSpfaVSTpPWDi63W29mJx7jIyO7xhbz0VH5POCetsnphmVpeQVBCjZVziY+17JtscBzAUZgi/yXZJn7oGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TsxEApI6hPYcyN/1X46ZhAmvn/zeVISHDEcN3VM3FNc=;
- b=lBnlB93vg9od4CMfBiRALVcCDVgYHR/G6ejLQ8gJ5Lea5pcMw0Gi1Qa4Dlm2Slw6If2NmhwBr82rNmGYrylTsXbetqdAzv6cz6UCSEaeBEgc0bb7wksDlbD/HFt6KrJP3vis2SBcWaQBY39kTV7B1jcxCvxuDTcTFCfxgaINadSaMpBISMmuhNYDY/W42PKDvGm/REXlDaXqPVOrARnLdz2fVtibtvvocJH3ZnUEeCEybAoP7CMRiM5y9eggPKF1K/tH5KHG9/iKjuJyXa20N7iKtXxJ9X5kkTPK9zmkfD9m3IdxB8UD5IaR9ez9BObI0mdQVeW1kcayNcmE2A6EBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TsxEApI6hPYcyN/1X46ZhAmvn/zeVISHDEcN3VM3FNc=;
- b=QVhh+29YggP23xaiXKSiTIm/mxRhDBIOpTwpmvAaCTf5ubPJhi/CE/EE2VHAoRQLsUgd/ecMQ4PIhh+QTIqqTcUQgnmmLIcWnJ3/mPhw5HrWK1cLhL8nyJTlF4i6qeEqzPh9uzDWGcJNQrFBJLQpd/YrMXXkfuQlF2BG60DdC/Q=
-Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
- by VI1PR0401MB2560.eurprd04.prod.outlook.com (2603:10a6:800:58::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Thu, 10 Mar
- 2022 15:57:10 +0000
-Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
- ([fe80::c58c:4cac:5bf9:5579]) by AM9PR04MB8555.eurprd04.prod.outlook.com
- ([fe80::c58c:4cac:5bf9:5579%7]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
- 15:57:10 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Hongxing Zhu <hongxing.zhu@nxp.com>
-Subject: Re: [PATCH net-next v3 7/8] dpaa2-mac: configure the SerDes phy on a
- protocol change
-Thread-Topic: [PATCH net-next v3 7/8] dpaa2-mac: configure the SerDes phy on a
- protocol change
-Thread-Index: AQHYNI53+CR564NygkStQtKc0yUlqay4t4sAgAAOVoA=
-Date:   Thu, 10 Mar 2022 15:57:10 +0000
-Message-ID: <20220310155709.xfbqjspok2duka3n@skbuf>
-References: <20220310145200.3645763-1-ioana.ciornei@nxp.com>
- <20220310145200.3645763-8-ioana.ciornei@nxp.com>
- <YioTznpNwldCnJpm@shell.armlinux.org.uk>
-In-Reply-To: <YioTznpNwldCnJpm@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6c419575-7f86-4f90-9f93-08da02aea2e4
-x-ms-traffictypediagnostic: VI1PR0401MB2560:EE_
-x-microsoft-antispam-prvs: <VI1PR0401MB2560ED374E1FBB6C5E5BD48CE00B9@VI1PR0401MB2560.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Af4vmasqHg0BtyMIgOEniOpHVkwNHKNnX7TRGm+Dx3toG/R10XJ68f2BPf6frnldBhQRE+FXCBjl3AlRLiN52Y5r2JO/aYMT/N4eUb6jnoP7J486zfCp+c1QehF9oK0jeRClRrj+pOdZ+ahizXfgrXqDAyWYLAY1XpoXLxwWy7zjQM7UoudFQuhcP5Fdsufz3HKkWcPP0JsENCZbRaLi6BGm8nOtWF+Z7CAbNrlY4DeHNa2ZhZkE998AnasRhRtfnPX23vnzSXhpSk1lb0pWKHAPeBSoFEs6gfz37cSY5z7+Jy+amNGMrVzxq4Ks9+SB72306SS5csGNTfeN/TWJmBRKXa8WhvjaqI1+ykKlNiJxHFOPfosHfWYG46ndIGEMEldKUYZeh35kwJY3A8+8rKrPlRB2Lk/cVDEFZTcudqexJpHgNHNa8ni6+S3Vlp4lgtnqKvyNKHmycmvEf3/9hgMJlfl2RBCMoMXBqPPN738n5r9rMEquJHTisYCLiKH2LhPQz2hfHD0oWHGIct8SxXBY5p1HyxHOzsWa0cKcnRrnfvK72TOeIQDoCp3Ewina6dCYe8aOb992lUB/3NR/4BkD2u6sg94GnucPD3UqbnvvKYq08VgEFUgKZO5qlzGCGOQhOcsoE0ouh3JdFphHmKHM3NLJAVhyLxIbK8EJFgKICaMwbJcI0PMuM9emKB/dXzZhDY0jADeWQnQdK0sdDA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(64756008)(66556008)(8676002)(6512007)(6506007)(83380400001)(66946007)(33716001)(66446008)(9686003)(76116006)(38070700005)(6486002)(44832011)(54906003)(86362001)(71200400001)(91956017)(4326008)(38100700002)(5660300002)(7416002)(8936002)(498600001)(2906002)(1076003)(26005)(186003)(122000001)(66476007)(6916009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qDQHg9qWTCZSEZCt5gcmGJeK0RLdtyICuwPbNXg05KTHdBxf9/v/kgjW/ch6?=
- =?us-ascii?Q?b5Aj4ZHy/Fg8NG8CUSxdiun5Y643TWMKEvghQ3bXUcqj1+Ixae+mkfxhH1bP?=
- =?us-ascii?Q?1yxBoI4X28M6c5/N0VRa54cYU3QYZFP71QBMXRx7ENxDzgzydGXTD/DT97pH?=
- =?us-ascii?Q?4OmcUcFqzrhiECGKFF2Dm2Rt4u47lxQXEBVFOqaYxjWQk+Lcssw86oFeKVTj?=
- =?us-ascii?Q?L1fydvc2lnT6IE+e3mz8oSdLeI5x82dru14+EJvfljjLpyFS99q2rZeEpdlt?=
- =?us-ascii?Q?qYRkKOoRG05YHnYfn8w8br3ZKmavj2wkhzcJd4aZC/IOxZB0c3/80qBEELXM?=
- =?us-ascii?Q?3XSXaD58w3j6ppV+J08asZvd48csw6TVkbeUdZvE0ox4MzB+widO1KOjIVgi?=
- =?us-ascii?Q?6r+0c9i4MGojyG0aaMfetbides0/xkh+7Koo2SeYTa/li6sR/HeFDZ0Mll1o?=
- =?us-ascii?Q?NrEVoHaNXkTAHXbvpn8hJufo/b6ubCVBf/hsir8rik4XhoXIhjF8yjmEL06s?=
- =?us-ascii?Q?657DJKma+OHTzmYX6fElKBC4jECEZoT+Mh05cY00SWWiHJECSsa3HekPm1U2?=
- =?us-ascii?Q?HYM1DJ/ifr14hhqvkIYtXkpw6psSGxKoWlAzwLDSymwUWsGONqVgWX6mfGi2?=
- =?us-ascii?Q?4sJxknUlMTGRnKhHsbhHNQxPnUQbnefMtMpIG1CYgFOnIyvfWxKPukJEe8UH?=
- =?us-ascii?Q?+9oR+n/4JGLfwow7BP0jCA8tXsTqzRP6Zg6qdueurHL2o0x4d1hFbUVJu5tR?=
- =?us-ascii?Q?su+C63CpuXkvn9HjQ5Dx0q6Pjicc/SYbN00DwvFoKuCCKWciABWhX/qmLOTK?=
- =?us-ascii?Q?Cihy13zidrv5xKp9EgNCfex9QdrrLAEz/Y9E/WyYSkdixV4YjbnnPux3/s1V?=
- =?us-ascii?Q?ok2uoKABpjsGeUIgsoVnW5cScW3eE1MfwoIA6i8wILLBy4agMaE7BaXX3JxN?=
- =?us-ascii?Q?nIjxioIpJi2DFU2VECZsq5O9v4BpbpEioR+UlbOqhXxMDI6DNZK9o7MtrALP?=
- =?us-ascii?Q?W9NEZs4fj7Ri9N2EFPnjy8I9T5UAdrLKDnTscwzYK/BlfpMNfqyYr1aiYheR?=
- =?us-ascii?Q?qdrklAdT3BpjYWRHTczRHif6TiMmB4wivZw1x74iGr4APtAGdJWOMHQoaA+m?=
- =?us-ascii?Q?eeL/182HwIZnU+AvsLag99nnWqqMGViZrB6cseirm90iqK9TwMGk6TgxPEJ3?=
- =?us-ascii?Q?f+qitZLeht1So9tqKmsj9jKtJ0hr+Kf9cwJv3NHcBR3LBPuzQveKuBW57AZS?=
- =?us-ascii?Q?MFfi1ZLA/qLX7WI0kmaSpUbkWSbobGLSj9Z7OXd0goqYyzdZv5dwCJhSoAy+?=
- =?us-ascii?Q?nvGRxEQ1UzkE9rYIoZoVGPeGnNbi74jTw91cKGFa+Bm80XV/ou+uITprrTD5?=
- =?us-ascii?Q?vQaYNoROxwwtsgkUvq/j7ILyuu3V5EzuhxXKy/OTT14lsJYP3/ISthrbybWP?=
- =?us-ascii?Q?n3DgFgk+MJkclIPVmilo84FiDgdINOpYnoAMdOgb6aGz8bIn+tWvvhE4onVi?=
- =?us-ascii?Q?Et/9o0ql6gavvYO/RHYPKdjCEzzkb9lqhT5LpmwgPVdU8CRhJvJRQIEyT67t?=
- =?us-ascii?Q?wpRGoqIgA8sBNhHeA+9GDGGoTNTGwG9Gq375S91/C5DwWUAgTliHiY+OaeTl?=
- =?us-ascii?Q?JkmOkCA1XvtORq3bOQQXfZQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <EEA4656546607F4489E4BB4C1C06EE7C@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S238682AbiCJP6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:58:31 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F42A26F8
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:57:26 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id r7so10221068lfc.4
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:57:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/3Y7SdvtHwEXMZpktqa2soQUFfSCdXW3oRVPXSTvSbE=;
+        b=tSpqQw0bwEGHuAanvQKc5+pflShk4r3gq7B+rHffAcSv/JOK4oV94jG4z+j5vImUgu
+         yGXSE5E7P2FCs8jftQW0PEl2V2K72yXlkTF8p0lbN64Yc3tRXaLgDrNk4hXU6o81WvQf
+         zMDojsPuHf78Ga6Ig5LITEb/idNmhedGptxc1RCTYU1iF80MEPx+Qg5uGOm1om98zTBN
+         Ok2FIx/yuBhdiAElx+giJpDl8y279vJKucDKO/IWivpKqLFcVMZgIH0s5aPMA4vIoPj3
+         vgEVuu3wMmmTuPOIB6uKw9sKZIPQku4cjeig+ngjdj1OWDQ2ztornt5QRvnc+mI5u7VC
+         Cqqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/3Y7SdvtHwEXMZpktqa2soQUFfSCdXW3oRVPXSTvSbE=;
+        b=tYDIoTTD4ugCUgEZt4tANuvFHQjRE7UBmK7M3U3dpK+OGr8BMspK1Yx0aFOWeGU9UK
+         82wa1g9g4+khG8u/4Y5UfQpgGxt4559n0MtibyMu06zNvIieZVtqCw+qoiu2X+RWjWGg
+         WRH+bEDhHddeCuGIshHNaQltzIYXCDSYBRl3NIIaAigCIirYbtmuFe2d9CztRGvFw1tZ
+         YSqvH5yMj76h91jPLkXzxwmFPIU4yjVFJvStR6kPkOa0D/ifWLMKzWhtzUz2cvsuUEW2
+         TFDul8PVfVfGtm3JeFH1Z7fzRV3glHVBNRjuHpX4d4a8uKGH7UMB+X/jonr00mCKB03o
+         1rhg==
+X-Gm-Message-State: AOAM533taXOresW1klP0CWpO/s/P/kUqrcr4hIUwrjQvN3Y7q4CMTI+r
+        tnCLWcCZoiWdF53hl4yWQ2CCuTvL1Ee2qa0QujI=
+X-Google-Smtp-Source: ABdhPJyrGGFnP3gPCYapzqVJIAt8GXYaRjaqbFCFALzg7lkzWXuKdQPtl/3y98MZd1iij4I13Alkaw==
+X-Received: by 2002:a05:6512:2608:b0:448:35c4:bc9f with SMTP id bt8-20020a056512260800b0044835c4bc9fmr3310862lfb.666.1646927844389;
+        Thu, 10 Mar 2022 07:57:24 -0800 (PST)
+Received: from [192.168.51.243] ([78.128.78.220])
+        by smtp.gmail.com with ESMTPSA id j18-20020a2e8512000000b0024801df115asm1097416lji.109.2022.03.10.07.57.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 07:57:24 -0800 (PST)
+Message-ID: <e3f57a64-4823-7cf3-0345-3777c44c2fe4@blackwall.org>
+Date:   Thu, 10 Mar 2022 17:57:22 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c419575-7f86-4f90-9f93-08da02aea2e4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 15:57:10.5710
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Hx6AKUtsOoaD4ev2KM5KWdKAquTh3UvE7+bduUwLKAOMgkQq5nXUVqZ7NjCHf/Wk3q78OVyLvXjrxDM+ypXTBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2560
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next 1/3] net: bridge: add fdb flag to extent locked
+ port feature
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
+ <0eeaf59f-e7eb-7439-3c0a-17e7ac6741f0@blackwall.org>
+ <86v8wles1g.fsf@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <86v8wles1g.fsf@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 03:05:50PM +0000, Russell King (Oracle) wrote:
-> On Thu, Mar 10, 2022 at 04:51:59PM +0200, Ioana Ciornei wrote:
-> > This patch integrates the dpaa2-eth driver with the generic PHY
-> > infrastructure in order to search, find and reconfigure the SerDes lane=
-s
-> > in case of a protocol change.
-> >=20
-> > On the .mac_config() callback, the phy_set_mode_ext() API is called so
-> > that the Lynx 28G SerDes PHY driver can change the lane's configuration=
-.
-> > In the same phylink callback the MC firmware is called so that it
-> > reconfigures the MAC side to run using the new protocol.
-> >=20
-> > The consumer drivers - dpaa2-eth and dpaa2-switch - are updated to call
-> > the dpaa2_mac_start/stop functions newly added which will
-> > power_on/power_off the associated SerDes lane.
-> >=20
-> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
->=20
-> Looks better, there's a minor thing that I missed, sorry:
->=20
-> > +	if (mac->features & DPAA2_MAC_FEATURE_PROTOCOL_CHANGE &&
-> > +	    !phy_interface_mode_is_rgmii(mac->if_mode) &&
-> > +	    is_of_node(dpmac_node)) {
-> > +		serdes_phy =3D of_phy_get(to_of_node(dpmac_node), NULL);
-> > +
-> > +		if (IS_ERR(serdes_phy)) {
-> > +			if (PTR_ERR(serdes_phy) =3D=3D -ENODEV)
-> > +				serdes_phy =3D NULL;
-> > +			else
-> > +				return PTR_ERR(serdes_phy);
-> > +		} else {
-> > +			phy_init(serdes_phy);
-> > +		}
->=20
-> Would:
-> 		if (PTR_ERR(serdes_phy) =3D=3D -ENODEV)
-> 			serdes_phy =3D NULL;
-> 		else if (IS_ERR(serdes_phy))
-> 			return PTR_ERR(serdes_phy);
-> 		else
-> 			phy_init(serdes_phy);
->=20
+On 10/03/2022 17:38, Hans Schultz wrote:
+> On tor, mar 10, 2022 at 16:42, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>> On 10/03/2022 16:23, Hans Schultz wrote:
+>>> Add an intermediate state for clients behind a locked port to allow for
+>>> possible opening of the port for said clients. This feature corresponds
+>>> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
+>>> latter defined by Cisco.
+>>>
+>>> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+>>> ---
+>>>    include/uapi/linux/neighbour.h |  1 +
+>>>    net/bridge/br_fdb.c            |  6 ++++++
+>>>    net/bridge/br_input.c          | 11 ++++++++++-
+>>>    net/bridge/br_private.h        |  3 ++-
+>>>    4 files changed, 19 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+>>> index db05fb55055e..83115a592d58 100644
+>>> --- a/include/uapi/linux/neighbour.h
+>>> +++ b/include/uapi/linux/neighbour.h
+>>> @@ -208,6 +208,7 @@ enum {
+>>>    	NFEA_UNSPEC,
+>>>    	NFEA_ACTIVITY_NOTIFY,
+>>>    	NFEA_DONT_REFRESH,
+>>> +	NFEA_LOCKED,
+>>>    	__NFEA_MAX
+>>>    };
+>>
+>> Hmm, can you use NDA_FLAGS_EXT instead ?
+>> That should simplify things and reduce the nl size.
+>>
+> 
+> I am using NDA_FDB_EXT_ATTRS. NFEA_LOCKED is just the
+> flag as the other flags section is full wrt the normal flags, but maybe it
+> doesn't fit in that section?
+> 
 
-Yes, it wouldn't be an if inside another if statement.
+Actually wait a second, this is completely wrong use of NDA_FDB_EXT_ATTRS.
+That is a nested attribute, so the code below is wrong. More below..
 
-> be neater? There is no need to check IS_ERR() before testing PTR_ERR().
-> One may also prefer the pointer-comparison approach:
->=20
-> 		if (serdes_phy =3D=3D ERR_PTR(-ENODEV))
->=20
-> to remove any question about PTR_ERR(p) on a !IS_ERR(p) value too, but
-> it really doesn't make any difference.
->=20
-> I suspect this is just a code formatting issue, I'd think the compiler
-> would generate reasonable code either way, so as I said above, it's
-> quite minor.
->=20
+> I will just note that iproute2 support for parsing nested attributes
+> does not work, thus the BR_FDB_NOTIFY section (lines 150-165) are
+> obsolete with respect to iproute2 as it is now. I cannot rule out that
+> someone has some other tool that can handle this BR_FDB_NOTIFY, but I
+> could not make iproute2 as it stands handle nested attributes. And of
+> course there is no handling of NDA_FDB_EXT_ATTRS in iproute2 now.
+> >>>    #define NFEA_MAX (__NFEA_MAX - 1)
+>>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+>>> index 6ccda68bd473..396dcf3084cf 100644
+>>> --- a/net/bridge/br_fdb.c
+>>> +++ b/net/bridge/br_fdb.c
+>>> @@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+>>>    	struct nda_cacheinfo ci;
+>>>    	struct nlmsghdr *nlh;
+>>>    	struct ndmsg *ndm;
+>>> +	u8 ext_flags = 0;
+>>>    
+>>>    	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
+>>>    	if (nlh == NULL)
+>>> @@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+>>>    		ndm->ndm_flags |= NTF_EXT_LEARNED;
+>>>    	if (test_bit(BR_FDB_STICKY, &fdb->flags))
+>>>    		ndm->ndm_flags |= NTF_STICKY;
+>>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
+>>> +		ext_flags |= 1 << NFEA_LOCKED;
+>>>    
+>>>    	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
+>>>    		goto nla_put_failure;
+>>>    	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
+>>>    		goto nla_put_failure;
+>>> +	if (nla_put_u8(skb, NDA_FDB_EXT_ATTRS, ext_flags))
+>>> +		goto nla_put_failure;
+>>> +
 
-As you said, since it's quite minor I am going to wait to see if more
-comments will appear, if not I am going to fix this up in another patch.
+This is wrong. NDA_FDB_EXT_ATTRS is a nested attribute, you can't use it as a u8.
+You need to have this structure:
+  [ NDA_FDB_EXT_ATTRS ]
+   ` [ NFEA_LOCKED ]
 
-Thanks!=
+But that's why I asked if you could use the NDA_FLAGS_EXT attribute. You can see
+the logic from the neigh code.
+
+Also note that you need to account for the new attribute's size in fdb_nlmsg_size().
+
+
+>>>    	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+>>>    	ci.ndm_confirmed = 0;
+>>>    	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
+>>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+>>> index e0c13fcc50ed..897908484b18 100644
+>>> --- a/net/bridge/br_input.c
+>>> +++ b/net/bridge/br_input.c
+>>> @@ -75,6 +75,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>    	struct net_bridge_mcast *brmctx;
+>>>    	struct net_bridge_vlan *vlan;
+>>>    	struct net_bridge *br;
+>>> +	unsigned long flags = 0;
+>>
+>> Please move this below...
+>>
+>>>    	u16 vid = 0;
+>>>    	u8 state;
+>>>    
+>>> @@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>    			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+>>>    
+>>>    		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+>>> -		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
+>>> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
+>>> +			if (!fdb_src) {
+>>
+>> ... here where it's only used.
+>>
+> 
+> Forgot that one. Shall do!
+> 
+>>> +				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
+>>> +				br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
+>>> +			}
+>>>    			goto drop;
+>>> +		} else {
+>>> +			if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags))
+>>> +				goto drop;
+>>> +		}
+>>>    	}
+>>>    
+>>>    	nbp_switchdev_frame_mark(p, skb);
+>>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>>> index 48bc61ebc211..f5a0b68c4857 100644
+>>> --- a/net/bridge/br_private.h
+>>> +++ b/net/bridge/br_private.h
+>>> @@ -248,7 +248,8 @@ enum {
+>>>    	BR_FDB_ADDED_BY_EXT_LEARN,
+>>>    	BR_FDB_OFFLOADED,
+>>>    	BR_FDB_NOTIFY,
+>>> -	BR_FDB_NOTIFY_INACTIVE
+>>> +	BR_FDB_NOTIFY_INACTIVE,
+>>> +	BR_FDB_ENTRY_LOCKED,
+>>>    };
+>>>    
+>>>    struct net_bridge_fdb_key {
+
