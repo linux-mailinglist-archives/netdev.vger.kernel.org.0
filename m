@@ -2,84 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE284D4299
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B495F4D42BD
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:39:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240386AbiCJIe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 03:34:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54164 "EHLO
+        id S240418AbiCJIkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 03:40:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240371AbiCJIeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:34:24 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C448B6007C;
-        Thu, 10 Mar 2022 00:33:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646901164;
-    s=strato-dkim-0002; d=fpond.eu;
-    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=FiKLOzBJqZeT14/Dwh8Jsps9hv2dGAai/3016irFtbc=;
-    b=su15oql55v8tofUD893dgSsq0fPpXxNCJJHApdT7szUBcYJHUWxczku93lIPDoMdA1
-    lk3QftHF7RhSIY0NnIXX53XoRqfeOfVFbcrM9YXZSwRPCCfQMSsY5Pggkbu5PSlsFRJD
-    yAq//o4nTdA8TBUKD5bppT3DTSQvC7BAZXNyjOzDESGGZX4InBvAe7jd+VC8WqK2mPT/
-    GVKa7wN3tcgmhh+A8GevFdH5GA7+RvDXV7tXuMcIFOyB4sh5KUhjpXMtT6qNkvHo136k
-    yQ1eqWB5v7eTnLKWl/+lnoyS3kcrE8UApWSRKYyuAmNjyoSP3b8+vXNZU/NL8k0voO7K
-    ny0A==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/87J3I0="
-X-RZG-CLASS-ID: mo00
-Received: from oxapp05-03.back.ox.d0m.de
-    by smtp-ox.front (RZmta 47.40.1 AUTH)
-    with ESMTPSA id 646b0ey2A8WiKzS
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Thu, 10 Mar 2022 09:32:44 +0100 (CET)
-Date:   Thu, 10 Mar 2022 09:32:44 +0100 (CET)
-From:   Ulrich Hecht <uli@fpond.eu>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, wsa@kernel.org,
-        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
-        kuba@kernel.org, mailhol.vincent@wanadoo.fr,
-        socketcan@hartkopp.net, geert@linux-m68k.org,
-        kieran.bingham@ideasonboard.com, horms@verge.net.au
-Message-ID: <697549723.108632.1646901164630@webmail.strato.com>
-In-Reply-To: <20220310082545.rt6yp3wqsig52qoi@pengutronix.de>
-References: <20220309162609.3726306-1-uli+renesas@fpond.eu>
- <20220310082545.rt6yp3wqsig52qoi@pengutronix.de>
-Subject: Re: [PATCH v4 0/4] can: rcar_canfd: Add support for V3U flavor
+        with ESMTP id S230179AbiCJIkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:40:51 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B34136ED1;
+        Thu, 10 Mar 2022 00:39:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646901587; x=1678437587;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NCJAmap5YXI9l6Z+GDL5+JaEtIVVUsg+cezq3a0cE00=;
+  b=zzzgUKoTndfK1kvorz5DY8c75r8ubStwyP/rjpDdtu4wFs6gwu2GqC9X
+   1f4O++PWW/hU2MszJyyREnSQiZG38wwPFcPnjM8hPXLYpkbt8wLdQasg0
+   3oI/ypTAzOarbG40I9CiLAqrOUAvLUnmgfPf0iHgA4X+EGQKrW2ncOWjf
+   9GKh79iGF7WYeUv2NHnq3uuEDA5GHN+xTaAIY5i8l4uKFvsS62qtTtxCH
+   fL4FSEDbwKynLG/sjIXN75IuJGpHlLAJNeapHN18y9iZEw6hlKltiNSMv
+   FOec11hCUF9FYHDf3vDawaXHIFZQh3D91S3YoKpLl27+djBTeT+PYJlLi
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,169,1643698800"; 
+   d="scan'208";a="88479619"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 01:39:46 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 10 Mar 2022 01:39:46 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 01:39:44 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <david.laight@aculab.com>, <andrew@lunn.ch>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2] net: lan966x: Improve the CPU TX bitrate.
+Date:   Thu, 10 Mar 2022 09:40:05 +0100
+Message-ID: <20220310084005.262551-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.5-Rev39
-X-Originating-Client: open-xchange-appsuite
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When doing manual injection of the frame, it is required to check if the
+TX FIFO is ready to accept the next word of the frame. For this we are
+using 'readx_poll_timeout_atomic', the only problem is that before it
+actually checks the status, is determining the time when to finish polling
+the status. Which seems to be an expensive operation.
+Therefore check the status of the TX FIFO before calling
+'readx_poll_timeout_atomic'.
+Doing this will improve the TX bitrate by ~70%. Because 99% the FIFO is
+ready by that time. The measurements were done using iperf3.
 
-> On 03/10/2022 9:25 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> 
->  
-> On 09.03.2022 17:26:05, Ulrich Hecht wrote:
-> > This adds CANFD support for V3U (R8A779A0) SoCs. The V3U's IP supports up
-> > to eight channels and has some other minor differences to the Gen3 variety:
-> 
-> Should I take the whole series via linux-can/next?
+Before:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.03  sec  55.2 MBytes  46.2 Mbits/sec    0 sender
+[  5]   0.00-10.04  sec  53.8 MBytes  45.0 Mbits/sec      receiver
 
-That would be great, thanks.
+After:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.10  sec  95.0 MBytes  78.9 Mbits/sec    0 sender
+[  5]   0.00-10.11  sec  95.0 MBytes  78.8 Mbits/sec      receiver
 
-CU
-Uli
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+v1->v2
+- check for TX FIFO status before calling readx_poll_timeout_atomic
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 81c01665d01e..e1bcb28039dc 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -185,6 +185,9 @@ static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
+ {
+ 	u32 val;
+ 
++	if (lan_rd(lan966x, QS_INJ_STATUS) & QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))
++		return 0;
++
+ 	return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
+ 					 QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
+ 					 READL_SLEEP_US, READL_TIMEOUT_US);
+-- 
+2.33.0
+
