@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A324D4827
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 14:36:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 838404D4830
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 14:38:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242469AbiCJNhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 08:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        id S242478AbiCJNht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 08:37:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242452AbiCJNhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 08:37:42 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6035B14EF41;
-        Thu, 10 Mar 2022 05:36:40 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id r7so9480096lfc.4;
-        Thu, 10 Mar 2022 05:36:40 -0800 (PST)
+        with ESMTP id S242473AbiCJNhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 08:37:48 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0864A14E97B;
+        Thu, 10 Mar 2022 05:36:47 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id z26so7727300lji.8;
+        Thu, 10 Mar 2022 05:36:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=1DB/xtUlg/bv2cuDVJn+P6RhKyQoRLt8abFtk957r6s=;
-        b=KBGIzYMTJcy4uw8dS+TAg5MvLQFgLkwp2dDT3D+ltBEnHvsAQgnYDBZONyDk4w0Axx
-         PVVD6ezuq5vH+cvZ8jHllKjdd9G/oTQggbuVa29313tGszcpcO5A+42DVTsP4sEtPJHF
-         rFjfeJuRAa5OeLyH49lDkzNLaQ+ThCDPZaQZkOxXNmni4mfRJIJ2M+kpomLff6L1IyaI
-         IU6tc5P1rlt0jsPyBlbYcETV/4IuQE/F2ezJU9KzTltndoCqOhlqnl4s3BW80ekQ1MX4
-         Q9fbbhfYZdo9jE310hgPS9x8zUdqvoRiuNEGZUeWuslxgEBq1cjHHLvNNBpY6gAUvjyL
-         mkWg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=da086JP55rsZQrttnyPrbRnmSrzYkA4tf6FDeCXSGn8=;
+        b=T3pCfhXKeJNPFF0Ywe6LZn1pHA44EqA9YxKjTmKKlVDrLjYJWDLgL/YgInvMe9CI4d
+         y5cbZq+hAcb/sOWKO7QNrlYXygu0vvN3KPsUayvBLomowlmUFcNgmnLhY+rtiZeQnq2j
+         F9pzKkWJn9jdtiWABNokozCAGPie45oFqMO1lWYIAC45t+ljL2JdnCVrC1MHBQeBFfyX
+         ZLeIM1lduvNIlZQKqJpWEF3r2Bhjn7w2hCzgaHiD2pI/evOFLW2Y7drMW4pGtZ8/vYfR
+         Fy3qoxitky7UGvbcRKDh+hR64MjZMKsy88AM+dZlr0WO99jsLbWBEtXP3vcl/XYKRpAy
+         e3gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=1DB/xtUlg/bv2cuDVJn+P6RhKyQoRLt8abFtk957r6s=;
-        b=aQ/aTdoz8SsGIBa2ZNL1QnKjc4bFG9HRdU2RoFtueyiJUSejgwOlLnpPTNxCdGaypP
-         BLO2SH9c1EPBeAjKyMkrIX589ZXo0FjRKq99FoaZZxCmu9FV7tj/iAwXc/OhyQCrWGag
-         mZyOOKJt/EU6IDDKrWfeE9+CRfgmWSPzyuJyZgk9WQ5sDIDP15G2TnZbiz08+J/niiW6
-         p/M6OpM3Qo6Ixuv2fDAo9kVB8YIBbpobV6CvLegfadwictsoo46n/by0tEdOrExCwJqh
-         fXfPBiBROAYC+10o4vupQV2o0t0+TUD/N3fAw95q6jhB+shUDJsiJCFF4YAAoLQmUVDW
-         YQzQ==
-X-Gm-Message-State: AOAM533OEW9xvg2774FewIaaeST3w+x0Vj9oALqgl3hJoYQb16dzZscC
-        vr6UaMhW/DqRz9WeSW7YCsY=
-X-Google-Smtp-Source: ABdhPJy2Fp0IQemgzjdj7RNcr85FsKQiGyYZMQp8zrY1JJ8cAi7qZVOQefmAvKJ21S0Lpl2rnOAR6w==
-X-Received: by 2002:a19:e00e:0:b0:443:127b:558d with SMTP id x14-20020a19e00e000000b00443127b558dmr3016797lfg.396.1646919398432;
-        Thu, 10 Mar 2022 05:36:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=da086JP55rsZQrttnyPrbRnmSrzYkA4tf6FDeCXSGn8=;
+        b=cPiUv3pUgkFXsVjqmmCcQ+BPO4Sd44xhPC+vLBrIGDou4Fc0RL8wbO6XdeP8pjGX41
+         5rp4d/Ch2SbyGlUJQCxxyeNveXUcfRITZQMCR0JMyV8vPbYjpK0v1U311e1uWLKMjIYp
+         aD4NpmuMh/aaOXD0eT+4hZaEh0+549bOOxi8BGtYjINp/j4wzYtl9k9Y8+7DZ+LqzsyJ
+         h0r6Ak744WKE7pxsal7TdW4ZYeL78rodj68nXIwjCwUuxCMlpn159rqrFKfv/5JjgGoS
+         l+9aoeZVh4EYqL/k6ntLXzPO3cPiHuGKujZ01rZhdmKDKle3YbOk5/rXr9ns13Nc2Lb8
+         zMbA==
+X-Gm-Message-State: AOAM532SQX9Ndu6uKTBY2Ic27VMKR2Ywey/yzaFtR0yeXIvhQv92iMHu
+        kTqb/34k38oF3zU3wO84NNU=
+X-Google-Smtp-Source: ABdhPJzMizES4JCUEafTa3GjIxPUTNg/1is32WNPQdEpeGG0FGKWVqDSV1WqeRRKdpXtSbUrHy47Ng==
+X-Received: by 2002:a2e:b386:0:b0:249:1446:4ead with SMTP id f6-20020a2eb386000000b0024914464eadmr1057058lje.263.1646919404870;
+        Thu, 10 Mar 2022 05:36:44 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id i2-20020a05651c120200b00247d22bc318sm1060299lja.22.2022.03.10.05.36.36
+        by smtp.gmail.com with ESMTPSA id i2-20020a05651c120200b00247d22bc318sm1060299lja.22.2022.03.10.05.36.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 05:36:37 -0800 (PST)
+        Thu, 10 Mar 2022 05:36:44 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
@@ -63,10 +63,12 @@ Cc:     netdev@vger.kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
         Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
         bridge@lists.linux-foundation.org
-Subject: [PATCH iproute2-next 0/3] Extend locked port feature with FDB locked flag (MAC-Auth/MAB)
-Date:   Thu, 10 Mar 2022 14:36:14 +0100
-Message-Id: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+Subject: [PATCH iproute2-next 1/3] net: bridge: add fdb flag to extent locked port feature
+Date:   Thu, 10 Mar 2022 14:36:15 +0100
+Message-Id: <20220310133617.575673-2-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
+References: <20220310133617.575673-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
@@ -80,61 +82,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set extends the locked port feature for devices
-that are behind a locked port, but do not have the ability to
-authorize themselves as a supplicant using IEEE 802.1X.
-Such devices can be printers, meters or anything related to
-fixed installations. Instead of 802.1X authorization, devices
-can get access based on their MAC addresses being whitelisted.
+Add an intermediate state for clients behind a locked port to allow for
+possible opening of the port for said clients. This feature corresponds
+to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
+latter defined by Cisco.
 
-For an authorization daemon to detect that a device is trying
-to get access through a locked port, the bridge will add the
-MAC address of the device to the FDB with a locked flag to it.
-Thus the authorization daemon can catch the FDB add event and
-check if the MAC address is in the whitelist and if so replace
-the FDB entry without the locked flag enabled, and thus open
-the port for the device.
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+---
+ include/uapi/linux/neighbour.h |  1 +
+ net/bridge/br_fdb.c            |  6 ++++++
+ net/bridge/br_input.c          | 11 ++++++++++-
+ net/bridge/br_private.h        |  3 ++-
+ 4 files changed, 19 insertions(+), 2 deletions(-)
 
-This feature is known as MAC-Auth or MAC Authentication Bypass
-(MAB) in Cisco terminology, where the full MAB concept involves
-additional Cisco infrastructure for authorization. There is no
-real authentication process, as the MAC address of the device
-is the only input the authorization daemon, in the general
-case, has to base the decision if to unlock the port or not.
-
-With this patch set, an implementation of the offloaded case is
-supplied for the mv88e6xxx driver. When a packet ingresses on
-a locked port, an ATU miss violation event will occur. When
-handling such ATU miss violation interrupts, the MAC address of
-the device is added to the FDB with a zero destination port
-vector (DPV) and the MAC address is communicated through the
-switchdev layer to the bridge, so that a FDB entry with the
-locked flag enabled can be added.
-
-Hans Schultz (3):
-  net: bridge: add fdb flag to extent locked port feature
-  net: switchdev: add support for offloading of fdb locked flag
-  net: dsa: mv88e6xxx: mac-auth/MAB implementation
-
- drivers/net/dsa/mv88e6xxx/Makefile            |  1 +
- drivers/net/dsa/mv88e6xxx/chip.c              | 10 +--
- drivers/net/dsa/mv88e6xxx/chip.h              |  5 ++
- drivers/net/dsa/mv88e6xxx/global1.h           |  1 +
- drivers/net/dsa/mv88e6xxx/global1_atu.c       | 29 +++++++-
- .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c   | 67 +++++++++++++++++++
- .../net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h   | 20 ++++++
- drivers/net/dsa/mv88e6xxx/port.c              | 11 +++
- drivers/net/dsa/mv88e6xxx/port.h              |  1 +
- include/net/switchdev.h                       |  3 +-
- include/uapi/linux/neighbour.h                |  1 +
- net/bridge/br.c                               |  3 +-
- net/bridge/br_fdb.c                           | 13 +++-
- net/bridge/br_input.c                         | 11 ++-
- net/bridge/br_private.h                       |  5 +-
- 15 files changed, 167 insertions(+), 14 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/mv88e6xxx_switchdev.h
-
+diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+index db05fb55055e..83115a592d58 100644
+--- a/include/uapi/linux/neighbour.h
++++ b/include/uapi/linux/neighbour.h
+@@ -208,6 +208,7 @@ enum {
+ 	NFEA_UNSPEC,
+ 	NFEA_ACTIVITY_NOTIFY,
+ 	NFEA_DONT_REFRESH,
++	NFEA_LOCKED,
+ 	__NFEA_MAX
+ };
+ #define NFEA_MAX (__NFEA_MAX - 1)
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 6ccda68bd473..396dcf3084cf 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+ 	struct nda_cacheinfo ci;
+ 	struct nlmsghdr *nlh;
+ 	struct ndmsg *ndm;
++	u8 ext_flags = 0;
+ 
+ 	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
+ 	if (nlh == NULL)
+@@ -125,11 +126,16 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+ 		ndm->ndm_flags |= NTF_EXT_LEARNED;
+ 	if (test_bit(BR_FDB_STICKY, &fdb->flags))
+ 		ndm->ndm_flags |= NTF_STICKY;
++	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
++		ext_flags |= 1 << NFEA_LOCKED;
+ 
+ 	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
+ 		goto nla_put_failure;
+ 	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
+ 		goto nla_put_failure;
++	if (nla_put_u8(skb, NDA_FDB_EXT_ATTRS, ext_flags))
++		goto nla_put_failure;
++
+ 	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+ 	ci.ndm_confirmed = 0;
+ 	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index e0c13fcc50ed..897908484b18 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -75,6 +75,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 	struct net_bridge_mcast *brmctx;
+ 	struct net_bridge_vlan *vlan;
+ 	struct net_bridge *br;
++	unsigned long flags = 0;
+ 	u16 vid = 0;
+ 	u8 state;
+ 
+@@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+ 
+ 		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+-		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
++		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
++			if (!fdb_src) {
++				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
++				br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
++			}
+ 			goto drop;
++		} else {
++			if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags))
++				goto drop;
++		}
+ 	}
+ 
+ 	nbp_switchdev_frame_mark(p, skb);
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 48bc61ebc211..f5a0b68c4857 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -248,7 +248,8 @@ enum {
+ 	BR_FDB_ADDED_BY_EXT_LEARN,
+ 	BR_FDB_OFFLOADED,
+ 	BR_FDB_NOTIFY,
+-	BR_FDB_NOTIFY_INACTIVE
++	BR_FDB_NOTIFY_INACTIVE,
++	BR_FDB_ENTRY_LOCKED,
+ };
+ 
+ struct net_bridge_fdb_key {
 -- 
 2.30.2
 
