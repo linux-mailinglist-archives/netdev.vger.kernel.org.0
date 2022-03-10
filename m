@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2970C4D40DF
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 689DD4D40E1
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:47:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238622AbiCJFsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 00:48:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
+        id S239647AbiCJFsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 00:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239633AbiCJFsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:15 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6499312D080
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:14 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so4282718pjl.4
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:14 -0800 (PST)
+        with ESMTP id S238058AbiCJFsQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:16 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711C8F957C
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:16 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id g19so4206119pfc.9
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=KFD2Eu7ySwZixX0vecWolWD4u1kH+iPN2NO5nEy2DUo=;
-        b=kX8Uz1h+qJ7YQxiHFEjIu9tofBKnPDZEn0fFxXex5jMsx3frJSrhIDiqn/hSPpU8V2
-         ZPUMtcCSIH/UVrGwnLLOsu5yiz9PwpK9IaCFuB/HZmEGBOskVDvf84LAhyWAp9AWB444
-         Qx+Bu9mKrx0vEDcW2vZIqFJ3Aj5s7i6aUgcTREEjoJp9QQU0rQaLFct+ISFdxYWF3j63
-         ilER4BU73oSYS2JZqrVZj250Q9wJzHTFdoY1nc/B8iHYADMfiTkcT+4YgoLBTMrr60hy
-         cVDmyY/thuwI9x0tNYl1d8hZyTfD2D6uOpjajzCdmYZExVrAyTOV2ZUmebdotFwsfq3j
-         QflQ==
+        bh=zmMmAv7X/GTOQMp14Z492/H8MoM1ZZZ0aZt3DTBRw6M=;
+        b=E9I5eo+3RT0CJNCXM9CAdllkH0tAi6tyLnbvxTs23YsV4DPhWjDMgCxZEK+42THR+l
+         ZAM3wnw0NxTaZsn4sXXBIKwkVWMsv5mxArv8mWig004vQMHcGGQtQH8V+ejqYet0iUt+
+         0ZvW0uJiQJrRjuutenQN4uu1ndkBk1ELOqb6B+NOuBLFRZJjY8m+fLZsI3CBgdJPbp08
+         7dJ0EipajhJstmlIHf4ZJ5uwxYMKMbQeD/VoZZFMio4chZPpCHjyKkaYm/e0hduFeGVj
+         sQc90cdHI827uhvcNCqQsSAFUy95QuhQlRNEHSTxCHCYacbaXqD6U20sRjnE+WlXrZbf
+         FPbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KFD2Eu7ySwZixX0vecWolWD4u1kH+iPN2NO5nEy2DUo=;
-        b=UbjzVzMd8u4srSJlIH923g1mhtaymSSI3arhV0e2s9FqWwAPzvcgvvs6SZP85oXb3W
-         dJfZvyaQd2QuCCvQtrXAWW0fCOYcMLRetAutTb6x/HmLae9Dx3+wI2kHlFzJ+oSzjSRR
-         INKrma/nM6pp/ZGcVsDaNfTPNo6l74MVGbUtMK9Qo9efKLIHaCyhS6/uCdnVNbexAkF6
-         m8dgtqmvWWTzqvsfOT5pxb7YK9Mh//nfEYPox8TGCSzT/snyjrBHoymLB9Hdw4UzFr9b
-         ArzrJTQEmGaJq3P2ymW/p9HgoeyH0CwPjwiBndSY3xFLvmar5zEccbLMHKR4tYgWak3J
-         ffXg==
-X-Gm-Message-State: AOAM533afhfDKD551fk8gsI5k/M0euPGcCkNHhSBh92w91iv7GTCEr4S
-        pDlFf26DRhsmmfVTOG8X10o=
-X-Google-Smtp-Source: ABdhPJxOMB79QKOHWSCyjW5SD3gpX3AIh5p0Fd61HQrg15zleuc4DbBgfTRA0TgclHZuqx6HuDelIg==
-X-Received: by 2002:a17:90a:e614:b0:1bf:53e6:46a5 with SMTP id j20-20020a17090ae61400b001bf53e646a5mr14450907pjy.161.1646891233923;
-        Wed, 09 Mar 2022 21:47:13 -0800 (PST)
+        bh=zmMmAv7X/GTOQMp14Z492/H8MoM1ZZZ0aZt3DTBRw6M=;
+        b=K3/Je1BA9P3XhajRsPj6p/4PsxXSGNoUl2ph6HGvMsxi2aH3UtFNqg/c0e41Db6kxS
+         fML6ilLkFhWr3FcjTYzJ6qmxr4qPuQex5jnByxQETJ38qXPPvBIhvFwLyXGDVVPhoaeP
+         BEUPJWuzxEJl3VU+2Bfk5DQoSLvVXbtSkh1JYjZFRL0MGu7XliT9IQqI1pqo3l0qM1zt
+         WH4N2gliTlpEUTI+qn8EUXfvqSizAyc0c9LFUymNz/+bsFkCdE7IbNST0RGeja7SORWc
+         qHuWHunHXednRAEu9ee8V6jVxSsfyICv65fN1CBVWGKHbm/KkAX2ZvmUQZ02/KX89sSW
+         iVBQ==
+X-Gm-Message-State: AOAM530KePZIAAh6X4zWL5OitqLmy2HeLcfMqcpjk103R/P3QJMwQTaa
+        Rq2q29YnWktZFRP7l5tfPMQ=
+X-Google-Smtp-Source: ABdhPJwMWQbzt0m3NdWwmkiES1J/WrNeje5u6KGzd/X4PO/12aP+hlO4Pt2cJ7O2PSnE1uEo9HuFbQ==
+X-Received: by 2002:a63:82c3:0:b0:37c:7976:4dc2 with SMTP id w186-20020a6382c3000000b0037c79764dc2mr2738663pgd.477.1646891235958;
+        Wed, 09 Mar 2022 21:47:15 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
-        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.13
+        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 21:47:13 -0800 (PST)
+        Wed, 09 Mar 2022 21:47:15 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -55,9 +55,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v4 net-next 03/14] tcp_cubic: make hystart_ack_delay() aware of BIG TCP
-Date:   Wed,  9 Mar 2022 21:46:52 -0800
-Message-Id: <20220310054703.849899-4-eric.dumazet@gmail.com>
+Subject: [PATCH v4 net-next 04/14] ipv6: add struct hop_jumbo_hdr definition
+Date:   Wed,  9 Mar 2022 21:46:53 -0800
+Message-Id: <20220310054703.849899-5-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 In-Reply-To: <20220310054703.849899-1-eric.dumazet@gmail.com>
 References: <20220310054703.849899-1-eric.dumazet@gmail.com>
@@ -75,42 +75,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-hystart_ack_delay() had the assumption that a TSO packet
-would not be bigger than GSO_MAX_SIZE.
-
-This will no longer be true.
-
-We should use sk->sk_gso_max_size instead.
-
-This reduces chances of spurious Hystart ACK train detections.
+Following patches will need to add and remove local IPv6 jumbogram
+options to enable BIG TCP.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_cubic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/ipv6.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index 24d562dd62254d6e50dd08236f8967400d81e1ea..dfc9dc951b7404776b2246c38273fbadf03c39fd 100644
---- a/net/ipv4/tcp_cubic.c
-+++ b/net/ipv4/tcp_cubic.c
-@@ -372,7 +372,7 @@ static void cubictcp_state(struct sock *sk, u8 new_state)
-  * We apply another 100% factor because @rate is doubled at this point.
-  * We cap the cushion to 1ms.
-  */
--static u32 hystart_ack_delay(struct sock *sk)
-+static u32 hystart_ack_delay(const struct sock *sk)
- {
- 	unsigned long rate;
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 213612f1680c7c39f4c07f0c05b4e6cf34a7878e..63d019953c47ea03d3b723a58c25e83c249489a9 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -151,6 +151,17 @@ struct frag_hdr {
+ 	__be32	identification;
+ };
  
-@@ -380,7 +380,7 @@ static u32 hystart_ack_delay(struct sock *sk)
- 	if (!rate)
- 		return 0;
- 	return min_t(u64, USEC_PER_MSEC,
--		     div64_ul((u64)GSO_MAX_SIZE * 4 * USEC_PER_SEC, rate));
-+		     div64_ul((u64)sk->sk_gso_max_size * 4 * USEC_PER_SEC, rate));
- }
++/*
++ * Jumbo payload option, as described in RFC 2675 2.
++ */
++struct hop_jumbo_hdr {
++	u8	nexthdr;
++	u8	hdrlen;
++	u8	tlv_type;	/* IPV6_TLV_JUMBO, 0xC2 */
++	u8	tlv_len;	/* 4 */
++	__be32	jumbo_payload_len;
++};
++
+ #define	IP6_MF		0x0001
+ #define	IP6_OFFSET	0xFFF8
  
- static void hystart_update(struct sock *sk, u32 delay)
 -- 
 2.35.1.616.g0bdcbb4464-goog
 
