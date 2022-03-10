@@ -2,357 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A06264D5119
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 19:01:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 563FC4D512B
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 19:07:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237911AbiCJSBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 13:01:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
+        id S240694AbiCJSIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 13:08:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245267AbiCJSBX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 13:01:23 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5912197B50;
-        Thu, 10 Mar 2022 10:00:19 -0800 (PST)
-Date:   Thu, 10 Mar 2022 10:00:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646935217;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=D8WaaYAbtpNtpz4nJKyRoji8BcMmMoKrFUAvTF9+tes=;
-        b=KS3BktG00046mQVHTFGq/Q/5EFYaXDNkHmLK2dtHZiBm9BPlrmsLna85u9X3J8batXoIrv
-        rXe4P4bn/IKQMbEpenr7YroSWulLkKxrMbW/ySAoBGJLQ9oE/gvFgYFFPVp8+2uN14LNmp
-        JIIyaKvZ1APtei/aGpx8ojmkn0EOzfw=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Lameter <cl@linux.com>, penberg@kernel.org,
-        David Rientjes <rientjes@google.com>, iamjoonsoo.kim@lge.com,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <guro@fb.com>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH RFC 0/9] bpf, mm: recharge bpf memory from offline memcg
-Message-ID: <Yio8qIWTjAXaC23P@carbon.DHCP.thefacebook.com>
-References: <20220308131056.6732-1-laoar.shao@gmail.com>
- <Yif+QZbCALQcYrFZ@carbon.dhcp.thefacebook.com>
- <CALOAHbARWARjK4cAjUfsGDy3G4sAZaHRiFQsbjNc=EfHsCfnnQ@mail.gmail.com>
- <Yik5qSryIPk70iVz@carbon.dhcp.thefacebook.com>
- <CALOAHbB6ktqmsmkKM9Ge8dOVNW28RV68B_EHCV754r-YRXzk4A@mail.gmail.com>
+        with ESMTP id S239025AbiCJSIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 13:08:05 -0500
+Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020024.outbound.protection.outlook.com [52.101.61.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28861903F2;
+        Thu, 10 Mar 2022 10:07:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PSiB0UXSo64OkiPZCA6G1q9XEhbD7dq8wpmeydm/RyKY9RgNkqYj1SfDvtktAnJ8ad3GqJJr++R7llnSpch3QrDLDazvAGxAQz97xa4f8EwahVk4KMCEqnzY5PRu0umUJCbA9VLf1IiWJUKLY021H8pp6D0mquGbBi736a5+AOmN5thOf1okkr1Z4GRVBXQuAdFk1j04PfQPKFxSGm32yzuq0v9YdRWPCq+5Z43osn1YUujGkLHLMKVVpcTncP4RbqCKiwzDVxgzQn8flXXu2ehdqJHAwcqYDkijWHOuQZlBae7JJoq3wTPK58dlAMCkLvNsO9DKkBnGsDCMhi8gBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xEjAA1MAJAW3I0N3JXpYMAoXY3O6gKzw5ZXtZHitods=;
+ b=UyRZ7m0eEPkbMHbA0S4G5lwMfir8IKG8GMcCGLNtB4SI3oC2xwawZ2qvcDaZtv+vcdGlNm6b2z757fQP/iClv1IGEa9Wbes8mg3f+Lgry7/HBRZfMesaVpWs/Es5hRkcKaNxFxqHO3qyiFlghloZ+51MYROwhz+tZwUPCsCgBeQwp5pfNljSwXV0t3j83fSWemxUmpqcuPi/3VhbFcajXNGdHMsYx9q1sGIEFc7dTX180QvAPU9LiVXITBUAGL5xEI0HctN2NyFIrIlpwpO9D9YhfoMDt8pQQLa4/DZqFtKu4ZCrKMhLvGCLKEOoM0AYWdnWQFXpKIo0NzZjk1x12Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xEjAA1MAJAW3I0N3JXpYMAoXY3O6gKzw5ZXtZHitods=;
+ b=NolLzZ4+Z3O/kQwoutDJHNUMeIew9z4d7n/4ri3H6JZ6kEEda7wOwkZR2PYZ0oIOqSVoXEWMSRNzYoVQEPI8B0BnhmTPwHtw8OlWbW58wBg9N6nXk8qLTx1B+H6I/33ewpliqbcNBKWY+hp39srCgNY7FYY6mujYEqePhS+Fet4=
+Received: from LV2PR21MB3181.namprd21.prod.outlook.com (2603:10b6:408:175::9)
+ by BN6PR21MB1268.namprd21.prod.outlook.com (2603:10b6:405:8::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.8; Thu, 10 Mar
+ 2022 18:06:59 +0000
+Received: from LV2PR21MB3181.namprd21.prod.outlook.com
+ ([fe80::e8b6:2566:2c71:755b]) by LV2PR21MB3181.namprd21.prod.outlook.com
+ ([fe80::e8b6:2566:2c71:755b%4]) with mapi id 15.20.5081.009; Thu, 10 Mar 2022
+ 18:06:59 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net: netvsc: remove break after return
+Thread-Topic: [PATCH] net: netvsc: remove break after return
+Thread-Index: AQHYNKTNGNGUVzp3xEutglpO6xfq+6y46Y0A
+Date:   Thu, 10 Mar 2022 18:06:58 +0000
+Message-ID: <LV2PR21MB31819EEE2F0710BC390110A0CA0B9@LV2PR21MB3181.namprd21.prod.outlook.com>
+References: <1646933534-29493-1-git-send-email-ssengar@linux.microsoft.com>
+In-Reply-To: <1646933534-29493-1-git-send-email-ssengar@linux.microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=3f8d6cbf-5f7e-4966-9e21-6065687b3890;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-03-10T18:05:26Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2e24148c-1d38-4c65-884f-08da02c0c522
+x-ms-traffictypediagnostic: BN6PR21MB1268:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <BN6PR21MB1268023BC3A27622F02C9AF8CA0B9@BN6PR21MB1268.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: enwfc2NOnQwqFcnw/NFCzh/1+6f2H008fDnnp3w3F3fzxfHLqxwtDBn4rFVeA3jj7Z32diKanfcI25JIq6vqwNQzZRXikC2bAQ50nBIalsxn0MNQqrqB9Xz65seOn25zl12L9G63lXwHzWypXnKePzF1Zn/7MU+tiqoM+g72ZZkqsKMjcwFpuFP29ej0se+dNNGGe2JldQfHiHlUiWlkiW2wA0bYl3/4WsghXb8BQu3Kq+dcFQjXF7Mx7lE4/Y6U5yCFjWLVB+tM+ybRzfwzLofnZwtUNf9ibxjMKKw1OW0EJG61AYkkrSgBUadkvtPeOxrgqNs56SBTq6bFaTiG7g+Tm8W5swRJYiPD4OHKtXRy8FOR6Cm0I71lEjINNacJGAcqCIMATyyoyn0BHwyMitex8+L8qxiusXf90+O1xAYeFOprnveRBzLb39wcgkVt35kyUse/VvgJ7tOn/AYFifC/RxzVxv2W9IPEw7JjKKOZJh0xrCdjRoN78jvA/DOJzMzS9bSdpVGuRtCANQKFxsKBrEshpENrSq/tWHi9DC7Cet5rFZf+a0+1QmtAdmxKecKiU+Dwvuc1K28zF/MacN9ieJsq3NOiUA/0ZRI/W9tC++yvwVQw/ZL8oia5GhazYqj3CV9CDW54Oj0MpnsJI+LYWv/D4kJPyo9gChSbKqOWGeTyarbcMkMycfyPhAV1SjW33cmKZSy2yRdgqdyQvBMJCxqGRbi8a3R8kky7AofuwUmqVLGrkU8gY6hA2x/kU1UfXCekEq+UglS/ot99yg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR21MB3181.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(10290500003)(508600001)(316002)(66476007)(76116006)(8990500004)(9686003)(66556008)(26005)(186003)(66946007)(8936002)(2906002)(38100700002)(86362001)(33656002)(55016003)(6506007)(38070700005)(110136005)(7696005)(5660300002)(82950400001)(921005)(53546011)(66446008)(64756008)(82960400001)(8676002)(71200400001)(122000001)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5zV+x5h/i74t2Mp1MJkKYe9hnEHxYIH+SCyq8RU+TG7190iAAW3EbtvwULr6?=
+ =?us-ascii?Q?dNBA22vUZqv2aZ1PR1lJNr/XqXDCU9VeWBzk4ebirR8agWMv9xZTeoJmtJdw?=
+ =?us-ascii?Q?FsbGtOiQZz3DQlAUWMpPdNbgU8MJiT9npoC0D5hoMMOj9u74KT3vS/ZTxLUQ?=
+ =?us-ascii?Q?h0z3mN1J9LTs2UrNu0qgrdleUiAg0Bf7SQF5g5fv0R6y543TNCe4+8FFO5y8?=
+ =?us-ascii?Q?buFFKDGQRxpPSLn90mAJM4gm0NeCErobJp4YJavJMxl0uLfnnQOnRg24DlSk?=
+ =?us-ascii?Q?1kfUka1QE6m0gIVvPrzOo7L3DOa3I28KRLDDfJJy2JudjpbTK1TEEhWDJjU+?=
+ =?us-ascii?Q?2pQ3HAXsMj/V/WKGX4pjk+1rYGEFyrhSufsIfuzsH4k06uYiZ4gj+2Vpr/mg?=
+ =?us-ascii?Q?imWyD5tBPeZsSIWlo2H3nzGcSHRezu4Kj6dK9e9SjLzCVIg7Kpb/Nn/ekB0M?=
+ =?us-ascii?Q?YgpEQi+Fd15iMMUYZNPyhtaKNySiDZfL/TU1VwhwYg8g0uQUlA9O04i2+k3B?=
+ =?us-ascii?Q?wDV8at0WMTIuVap2y3P7WFz1ePS5qDVM/+1f+/XDyhK2IomLp1Va9qDRPDMA?=
+ =?us-ascii?Q?aHMK4ueNk1tQvEEgEgBjBplbWOrNpTjQtOGoyVaAzbPXZ5cutnofx9GrFDPD?=
+ =?us-ascii?Q?NU5es40E/lZlGbnPKTECBsugcLI1bp9QQkXcl1w6xoZ5osPuBHCrFHRhmd3X?=
+ =?us-ascii?Q?/GtAtmV64regpWPS82dsOpPtBNTaIk/cUrLQHvHdtyEePyaPen/HHBYkD1J+?=
+ =?us-ascii?Q?gmE7g272MMXuhE5pvsTxWOB7CMA5Rk0BP3z2k9puPtvd11hKRDYSOhz8tyvD?=
+ =?us-ascii?Q?2SfA/kPtD2SPQYD7uVLlgGMFJ4AuUS8HxBI6sU+iv6bHe3sdArbvPBEWL+9J?=
+ =?us-ascii?Q?efUK42HeROHWSfRz4p+DnqFUcsHdruD81WKYsFEynetFvVQ/fZOoH5NUyWIQ?=
+ =?us-ascii?Q?GMyRjooPD2XSULMInrNjxB58Oms40hcEGDMj62s2OJFP4278vRGH+apqHItS?=
+ =?us-ascii?Q?K8fWZnDYzyYk1JECEpyFe/ubfbSBzJjcoz/RkRA3saj3XZgs3ushUfKKNyAo?=
+ =?us-ascii?Q?7e0H0cXtugzZSDqhrwgd7YHtsIIKtmFu2Xj21bOkLaFrwhJVJQRQ1ApiVxWe?=
+ =?us-ascii?Q?5w0G/4chbgr5lYZGMw8VlU22dNJaURsSGWg4d5dZfdhnwcNWil0EeRvGXe1E?=
+ =?us-ascii?Q?Hp5h7D1BbLG/fRXO6PuA0+cSNAdytI+nU0D/n3+Ym9c4MQzbZuJVCoIC/aPY?=
+ =?us-ascii?Q?GSOxpDnVnjrazwbdQZlyeYx0n8YjpC1rEAFnujFCHq7U+QgHJa3fPL+22h/V?=
+ =?us-ascii?Q?TX9BsmyKWS9RAW5QcjZ7SnUlaKnwMw1ZP+jbrijdm8V628mU4q3A+egridID?=
+ =?us-ascii?Q?M0j58SADQ9XcGMzbDPPiIURUE3VkJ6bWueWwUMrT1BIC/uF5ghEYdNSYURzm?=
+ =?us-ascii?Q?f2+MocAedkiQkQmausia73q6lD1yov9Y?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALOAHbB6ktqmsmkKM9Ge8dOVNW28RV68B_EHCV754r-YRXzk4A@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR21MB3181.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e24148c-1d38-4c65-884f-08da02c0c522
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 18:06:58.8948
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kzSxYlD7W9vTT4iKWnwAlzoUhpsKVSnQ39ajs4CbB1v/ihZm0b4GwEuNOxoH0G6v2ec0naxEqOIYLeYI77cnGA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR21MB1268
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 09:20:54PM +0800, Yafang Shao wrote:
-> On Thu, Mar 10, 2022 at 7:35 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
-> >
-> > On Wed, Mar 09, 2022 at 09:28:58PM +0800, Yafang Shao wrote:
-> > > On Wed, Mar 9, 2022 at 9:09 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
-> > > >
-> > > > On Tue, Mar 08, 2022 at 01:10:47PM +0000, Yafang Shao wrote:
-> > > > > When we use memcg to limit the containers which load bpf progs and maps,
-> > > > > we find there is an issue that the lifecycle of container and bpf are not
-> > > > > always the same, because we may pin the maps and progs while update the
-> > > > > container only. So once the container which has alreay pinned progs and
-> > > > > maps is restarted, the pinned progs and maps are no longer charged to it
-> > > > > any more. In other words, this kind of container can steal memory from the
-> > > > > host, that is not expected by us. This patchset means to resolve this
-> > > > > issue.
-> > > > >
-> > > > > After the container is restarted, the old memcg which is charged by the
-> > > > > pinned progs and maps will be offline but won't be freed until all of the
-> > > > > related maps and progs are freed. If we want to charge these bpf memory to
-> > > > > the new started memcg, we should uncharge them from the offline memcg first
-> > > > > and then charge it to the new one. As we have already known how the bpf
-> > > > > memroy is allocated and freed, we can also know how to charge and uncharge
-> > > > > it. This pathset implements various charge and uncharge methords for these
-> > > > > memory.
-> > > > >
-> > > > > Regarding how to do the recharge, we decide to implement new bpf syscalls
-> > > > > to do it. With the new implemented bpf syscall, the agent running in the
-> > > > > container can use it to do the recharge. As of now we only implement it for
-> > > > > the bpf hash maps. Below is a simple example how to do the recharge,
-> > > > >
-> > > > > ====
-> > > > > int main(int argc, char *argv[])
-> > > > > {
-> > > > >       union bpf_attr attr = {};
-> > > > >       int map_id;
-> > > > >       int pfd;
-> > > > >
-> > > > >       if (argc < 2) {
-> > > > >               printf("Pls. give a map id \n");
-> > > > >               exit(-1);
-> > > > >       }
-> > > > >
-> > > > >       map_id = atoi(argv[1]);
-> > > > >       attr.map_id = map_id;
-> > > > >       pfd = syscall(SYS_bpf, BPF_MAP_RECHARGE, &attr, sizeof(attr));
-> > > > >       if (pfd < 0)
-> > > > >               perror("BPF_MAP_RECHARGE");
-> > > > >
-> > > > >       return 0;
-> > > > > }
-> > > > >
-> > > > > ====
-> > > > >
-> > > > > Patch #1 and #2 is for the observability, with which we can easily check
-> > > > > whether the bpf maps is charged to a memcg and whether the memcg is offline.
-> > > > > Patch #3, #4 and #5 is for the charge and uncharge methord for vmalloc-ed,
-> > > > > kmalloc-ed and percpu memory.
-> > > > > Patch #6~#9 implements the recharge of bpf hash map, which is mostly used
-> > > > > by our bpf services. The other maps hasn't been implemented yet. The bpf progs
-> > > > > hasn't been implemented neither.
-> > > > >
-> > > > > This pathset is still a POC now, with limited testing. Any feedback is
-> > > > > welcomed.
-> > > >
-> > > > Hello Yafang!
-> > > >
-> > > > It's an interesting topic, which goes well beyond bpf. In general, on cgroup
-> > > > offlining we either do nothing either recharge pages to the parent cgroup
-> > > > (latter is preferred), which helps to release the pinned memcg structure.
-> > > >
-> > >
-> > > We have thought about recharging pages to the parent cgroup (the root
-> > > memcg in our case),
-> > > but it can't resolve our issue.
-> > > Releasing the pinned memcg struct is the benefit of recharging pages
-> > > to the parent,
-> > > but as there won't be too many memcgs pinned by bpf, so it may not be worth it.
-> >
-> > I agree, that was my thinking too.
-> >
-> > >
-> > >
-> > > > Your approach raises some questions:
-> > >
-> > > Nice questions.
-> > >
-> > > > 1) what if the new cgroup is not large enough to contain the bpf map?
-> > >
-> > > The recharge is supposed to be triggered at the container start time.
-> > > After the container is started, the agent which will load the bpf
-> > > programs will do it as follows,
-> > > 1. Check if the bpf program has already been loaded,
-> > >     if not,  goto 5.
-> > > 2. Check if the bpf program will pin maps or progs,
-> > >     if not, goto 6.
-> > > 3. Check if the pinned maps and progs are charged to an offline memcg,
-> > >     if not, goto 6.
-> > > 4. Recharge the pinned maps or progs to the current memcg.
-> > >    goto 6.
-> > > 5. load new bpf program, and also pinned maps and progs if desired.
-> > > 6. End.
-> > >
-> > > If the recharge fails, it means that the memcg limit is too low, we
-> > > should reconsider
-> > > the limit of the container.
-> > >
-> > > Regarding other cases that it may do the recharge in the runtime, I
-> > > think the failure is
-> > > a common OOM case, that means the usage in this container is out of memory, we
-> > > should kill something.
-> >
-> > The problem here is that even invoking the oom killer might not help here,
-> > if the size of the bpf map is larger than memory.max.
-> >
-> 
-> Then we should introduce a fallback.
 
-Can you, please, elaborate a bit more?
 
-> 
-> > Also because recharging of a large object might take time and it's happening
-> > simultaneously with other processes in the system (e.g. memory allocations,
-> > cgroup limit changes, etc), potentially we might end up in the situation
-> > when the new cgroup is not large enough to include the transferred object,
-> > but also the original cgroup is not large enough (due to the limit set on one
-> > of it's ancestors), so we'll need to break memory.max of either cgroup,
-> > which is not great. We might solve this by pre-charging of target cgroup
-> > and keeping the double-charge during the process, but it might not work
-> > well for really large objects on small machines. Another approach is to transfer
-> > in small chunks (e.g. pages), but then we might end with a partially transferred
-> > object, which is also a questionable result.
-> >
-> 
-> For this case it is not difficult to do the fallback because the
-> original one is restricted to an offline memcg only, that means there
-> are no any activities  in the original memcg. So recharge these pages
-> to the original one back will always succeed.
+> -----Original Message-----
+> From: Saurabh Sengar <ssengar@linux.microsoft.com>
+> Sent: Thursday, March 10, 2022 12:32 PM
+> To: Saurabh Singh Sengar <ssengar@microsoft.com>; Haiyang Zhang <haiyangz=
+@microsoft.com>;
+> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.=
+com>;
+> wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>; davem@davemloft.net=
+; kuba@kernel.org;
+> linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.k=
+ernel.org
+> Subject: [PATCH] net: netvsc: remove break after return
+>=20
+> In function netvsc_process_raw_pkt for VM_PKT_DATA_USING_XFER_PAGES
+> case there is already a 'return' statement which results 'break'
+> as dead code
+>=20
+> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+> ---
+>  drivers/net/hyperv/netvsc.c | 1 -
+>  1 file changed, 1 deletion(-)
+>=20
+> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+> index e675d10..9442f75 100644
+> --- a/drivers/net/hyperv/netvsc.c
+> +++ b/drivers/net/hyperv/netvsc.c
+> @@ -1630,7 +1630,6 @@ static int netvsc_process_raw_pkt(struct hv_device =
+*device,
+>=20
+>  	case VM_PKT_DATA_USING_XFER_PAGES:
+>  		return netvsc_receive(ndev, net_device, nvchan, desc);
+> -		break;
+>=20
+>  	case VM_PKT_DATA_INBAND:
 
-The problem is that the original cgroup might be not a top-level cgroup.
-So even if it's offline, it doesn't really change anything: it's parent cgroup
-can be online and experience concurrent limits changes, allocations etc.
+Thanks.
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-> 
-> > <...>
-> >
-> > > > Will reparenting work for your case? If not, can you, please, describe the
-> > > > problem you're trying to solve by recharging the memory?
-> > > >
-> > >
-> > > Reparenting doesn't work for us.
-> > > The problem is memory resource control: the limitation on the bpf
-> > > containers will be useless
-> > > if the lifecycle of bpf progs can containers are not the same.
-> > > The containers are always upgraded - IOW restarted - more frequently
-> > > than the bpf progs and maps,
-> > > that is also one of the reasons why we choose to pin them on the host.
-> >
-> > In general, I think I understand why this feature is useful for your case,
-> > however I do have some serious concerns about adding such feature to
-> > the upstream kernel:
-> > 1) The interface and the proposed feature is bpf-specific, however the problem
-> > isn't. The same issue (an under reported memory consumption) can be caused by
-> > other types of memory: pagecache, various kernel objects e.g. vfs cache etc.
-> > If we introduce such a feature, we'd better be consistent across various
-> > types of objects (how it's a good question).
-> 
-> That is really a good question, which drives me to think more and
-> investigate more.
-> 
-> Per my understanding the under reported pages can be divided into several cases,
-> 1) The pages aren't charged correctly when they are allocated.
->    In this case, we should fix it when we allocate it.
-> 2) The pages should be recharged back to the original memcg
->    The pages are charged correctly but then we lost track of it.
->    In this case the kernel must introduce some way to keep track of
-> and recharge it back in the proper circumstance.
-> 3) Undistributed estate
->    The original owner was dead, left with some persistent memory.
->    Should the new one who uses this memory take charge of it?
-> 
-> So case #3 is what we should discuss here.
 
-Right, this is the case I'm focused on too.
 
-A particular case is when there are multiple generations of the "same"
-workload each running in a new cgroup. Likely there is a lot of pagecache
-and vfs cache (and maybe bpf programs etc) is re-used by the second and
-newer generations, however they are accounted towards the first dead cgroup.
-So the memory consumption of the second and newer generations is systematically
-under-reported.
-
-> 
-> Before answering the question, I will explain another option we have
-> thought about to fix our issue.
-> Instead of recharging the bpf memory in the bpf syscall, the other
-> option is to set the target memcg only in the syscall and then wake up
-> a kworker to do the recharge. That means separate the recharge into
-> two steps, 1) assign the inheritor, 2) transfer the estate.
-> At last we didn't choose it because we want an immediate error if the
-> new owner doesn't have large enough space.
-
-The problem is that we often don't know this in advance. Imagine a cgroup
-with memory.max set to 1Gb and current usage 0.8Gb. Can it fit a 0.5Gb bpf map?
-The true answer is it depends on whether we can reclaim extra 0.3Gb. And there
-is no way to say it for sure without making a real attempt to reclaim.
-
-> But this option can partly answer your question here, one possible way
-> to do it more generic is to abstract
-> two methods to get -
-> 1). Who is the best inheritor               =>  assigner
-> 2). How to charge the memory to it    =>  charger
-> 
-> Then let consider the option we choose again, we can find that it can be
-> easily extended to work in that way,
-> 
->        assigner                             charger
-> 
->     bpf_syscall
->        wakeup the charger            waken
->        wait for the result                 do the recharge and give the result
->        return the result
-> 
-> In other words, we don't have a clear idea what issues we may face in
-> the future, but we know we can extend it to fix the new coming issue.
-> I think that is the most important thing.
-> 
-> > 2) Moving charges is proven to be tricky and cause various problems in the past.
-> > If we're going back into this direction, we should come up with a really solid
-> > plan for how to avoid past issues.
-> 
-> I know the reason why we disable move_charge_at_immigrate in cgroup2,
-> but I don't know if I know all of the past issues.
-> Appreciate if you could share the past issues you know and I will
-> check if they apply to this case as well.
-
-As I mentioned above, recharging is a complex and potentially long process,
-which can unexpectedly fail. And rolling it back is also tricky and not always
-possible without breaking other things.
-So there are difficulties with:
-1) providing a reasonable interface,
-2) implementing it in way which doesn't bring significant performance overhead.
-
-That said, I'm not saying it's not possible at all, but it's a serious open
-problem.
-
-> In order to avoid possible risks, I have restricted the recharge to
-> happen in very strict conditions,
-> 1. The original memcg must be an offline memcg
-> 2.  The target memcg must be the memcg of the one who calls the bpf syscall
->      That means the outsider doesn't have a way to do the recharge.
-> 3. only kmem is supported now. (The may be extend it the future for
-> other types of memory)
-> 
-> > 3) It would be great to understand who and how will use this feature in a more
-> > generic environment. E.g. is it useful for systemd? Is it common to use bpf maps
-> > over multiple cgroups? What for (given that these are not system-wide programs,
-> > otherwise why would we charge their memory to some specific container)?
-> >
-> 
-> It is useful for containerized environments.
-> The container which pinned bpf can use it.
-> In our case we may use it in two ways as I explained in the prev mail that,
-> 1) The one who load the bpf who do the recharge
-> 2) A sidecar to maintain the bpf cycle
-> 
-> For the systemd, it may need to do some extend that,
-> The bpf services should describe,
-> 1) if the bpf service needs the recharge (the one who limited by memcg
-> should be forcefully do the recharge)
-> 2) the pinned progs and maps to check
-> 3) the service identifier (with which we can get the target memcg)
-> 
-> We don't have the case that the bpf map is shared by multiple cgroups,
-> that should be a rare case.
-> I think that case is similar to the sharing page caches across
-> multiple cgroups, which are used by many cgroups but only charged to
-> one specific memcg.
-
-I understand the case with the pagecache. E.g. we're running essentially the
-same workload in a new cgroup and it likely uses the same or similar set of
-files, it will actively use the pagecache created by the previous generation.
-And this can be a memcg-specific pagecache, which nobody except these cgroups is
-using.
-
-But what kind of bpf data has the same property? Why it has to be persistent
-across multiple generations of the same workload?
-
-In the end, if the data is not too big (and assuming it's not happening too
-often), it's possible to re-create the map and copy the data.
-
-Thanks!
