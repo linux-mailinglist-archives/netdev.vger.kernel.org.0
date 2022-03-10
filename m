@@ -2,264 +2,360 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8801F4D5593
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 00:42:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9C14D55D8
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 00:52:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344372AbiCJXmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 18:42:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
+        id S1344915AbiCJXvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 18:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiCJXmv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 18:42:51 -0500
-Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [148.163.129.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C0519DEAD
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 15:41:48 -0800 (PST)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.67.122])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id F26CC1C0085;
-        Thu, 10 Mar 2022 23:41:46 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B1B0540088;
-        Thu, 10 Mar 2022 23:41:46 +0000 (UTC)
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 3495313C2B0;
-        Thu, 10 Mar 2022 15:41:46 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 3495313C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1646955706;
-        bh=oN3we4g9Q1R0S43U7KCauFKdAp0umfOK3Vxhp9JumdA=;
-        h=Subject:To:References:From:Date:In-Reply-To:From;
-        b=RpIpTxQt1JrTGGO/h+ha256vSOLBkzStuXpZ8/NQ+wP28sKyJoZwkjmuyy/f5KkUL
-         /4icgS9jeMG1OQEWI9Vsu5f2npeEH3UJHUG2J3xraPC22RuuHgcAxaLzxbhXA+5oQr
-         /F4T4PAQyZDrvUjkrTPauTkjfIrZ3KVueBD70CV0=
-Subject: Re: vrf and multicast problem
-To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
-References: <1e7b1aec-401d-9e70-564a-4ce96e11e1be@candelatech.com>
- <4c4f21f3-75b5-5099-7ee8-28e3c4d6b465@gmail.com>
- <50f1a384-c312-d6ec-0f42-2b9ce3a48013@candelatech.com>
- <38ecaaaf-1735-9023-2282-5feead8408b7@gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <08eeb237-5126-98ce-0990-5b7d7f6529f2@candelatech.com>
-Date:   Thu, 10 Mar 2022 15:41:41 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        with ESMTP id S1344904AbiCJXvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 18:51:02 -0500
+Received: from sonic308-16.consmr.mail.ne1.yahoo.com (sonic308-16.consmr.mail.ne1.yahoo.com [66.163.187.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F094E19E71A
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 15:49:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1646956197; bh=dD4riyUphI61MKz1/wBuwyC+7Ex6yvPbDhq41i61veY=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=QThjFjN80mEdYmisy4P7a7sgOfvIPUWTYFiM3ewpoMem2ECAkpap+S5FmmDterBVCU+HvH4RJZNaudZxH41fAcqz+f6I52OlsTDfKNyY/gb5P5rbVXXRcPDOuHhYIHOxSQhRGVc/C7OaBxaFSySagzjZ7GJXI5dFSLm2rhqaNlS+RZzMLime25uZ0saxbnT/CEQdigMWPmJCZzUP98BsQE6SJW1VCzjB4tNXTa0SPQD5NRGLx5EAMS+5NXclhDXm5o/tDkIgckl+G1gDL4SV/IRMhZ5fg4iOtoM9pJAHXu1xIOeyGJNJkrBGD6PfSCZp1NIVsOZis95n+xJlZhqIuA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1646956197; bh=k/MHUkF7nZzr/IX6mQB/CPPVrw+Hx5E7Aafr0bHaNSG=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=PFP+dABbkyNNJjycq56XGJoXPUzZHjGtWzKB3nfR3DB1Ul0hDzz48bswHpWwAcoTaaRswnuzy3AzMTpgJJJLKuKdaJv01hfgXopSpc9vijT6rAbS4N/bPR4JGdean2VMSQb4fr3XzsvEhAKSXKTAYDWwwN1nEv8DxHSeBwpwNN953bLqmImWMe/0BMwrmszIbxjmWa60bxikj2qTDohydvNJW3Rv95IMW/dJGkYuYj4iTJNBmoY2bMzhtM6o9pe/1bsm3NI3piPayxiCyNgtCCTtnuGdj6NLp+yztsB6bqVtwhpESx3gFjItDOz4Th7jIAEV7YusN44GNT2YumDliA==
+X-YMail-OSG: aIh5iRUVM1kaa1xGkZfV2uqxqGFltVtPrLvpXymvY7Z0vf_EUGtRwGYiNanfAvR
+ dblG2RK1OPl4dQ9VAbkGM3P0F3KwV957jB8PQgDg5ZjU3SNU2CD_8jKp7dVkXU6EaQfRdTSgsIW.
+ Jul6.OY0Mhh58wSxLDhozBt0Ktu8jMOeTayrp_gtoYwvr4F5F77dVSW16oQBJk9GymkgPWvef0RA
+ 3HaZrk3ubMGGrEmgUTroPFt93KULsr2jkWVEXfGKv1qYlzLOYKBTt0J8Qm7gx3WpSvYhcB218cuK
+ FixnHb.p2eMSpW0z4H_LtJIc64ftkTRTUoa9ZCBWO8bs8lsZvV1Eaqmpi1UbnL7p4SajxFI5hyGq
+ DRXoVwJ9l2tMNSATSgUBx9Df6p.usQdYANo4fXOFBrRwfxNziDJ0e9fSyZXenSKaRSwfUhFg2FUa
+ th521cWUcf8Yb9UFFFzKYdg.s0O9fq2J9PaiqVJXpVi1T0_txvUIFseRtCVTz13W35417DxvmDmn
+ ghY1yEH_bq_bRNDDzDJb74RGi8yIVwaF7IeLFBW4LCgpLa6P8gH.C29CBTSW2OlCAz3oiQubEsd5
+ KRRyxruW9RQ3g3La3ypgRMPx.m7_C_gZtpaoXHYZoHkTA6p3OVqovlWwErknP4Vd8TTV5veUFNy.
+ IK4V7ouDdihDNC.1Udfu35feBAtwqWdJqv7V.33iT1idVE2blKHJlC80Vzd.1Q73z.l2C69djQdr
+ lkcJed5cMWDGc2U5Day9PcaL5qfpGUWx6d_NxOW.bp1QnFAphd7dfr.g.Z00ZEG6wj.ZZbb.AAI4
+ m_VUYp0M.GwOYP78pwd3W89lcH81hdIWryKw5Od3irbugdeXqBJsvR70zBMD1BSXbx4ytAl03UAh
+ VZhYgQlzvKzCwAnj3hz.go96bYuN8eSz3xnkBM962epjHkMq.jkWejv92kGV1RkbsZU9D4ydLuYn
+ jRdlyt7KbMHQMZR509WN1a4dtY8FKc643Hnnk3.pCVwe04hcSlX_8RsIJrrF5WCKX7Fva9oLo3p1
+ bbzsy675vxV0BdSdcgbtQBat15QdHo_B5sBKhZzuU7NWiVIel4uLTIHSvdhokwTY7V6Qpw_gXBYp
+ sCKurycQ0ZGOcYfBMHwxkF15yu6TYoqf5izJFz_a6t45fI.2qaArF5VfASGHmFMfwBiqMIkMj3BS
+ kUr8jBAeDQZV.sGVAju82BZS_Lf04vAZVBMTvKy_XfF2S9GanIUZABOywwINGSa2cjN7xI3t_urw
+ gxFjdlpY9VNBHujEeSOM62.wUezGosIQWtBr4N.K0D1MemXbyjOcmkrAELwQIE33aU_ujOw.fP2i
+ 6pb9.WDfPSA_iG9dsCPw8vVHhPLHpXwRPomXfVOC1XGnWdmUlQrfYSjbZodD4xnZK5k80ymf4g1e
+ rkH2GCjgnXRcUEVP3q_6suj9pCN1CqV84tHhtVCGEmalwaBBR3WArZwOgezWAskYe0_23LnrEZvw
+ VCdbSL0vZBTdzRJ7b.pqWEnrm9mHF9i1yGMehlJIVwlUi16mwVh25S10IJKZRlqM1VEaJilqRnjq
+ U1P2ZZIx1ER.DU9mLGcd5JZK8t2bTi.tLj2Jdo.EOM7xrmbOwrHAU4CXH5LYJFz2cF2.RgrIbXOX
+ EbZt1qWupTQFsqSzcAfhnlToMSWKiws1u.0TlyNYAZMGEM.0OyuzLycqa7BKsU5M4kuNeJsTH7XX
+ xjNe2nRPxAcIOw2du4qcSOT_1tGoSG_l6OvVU7SM6ZtDw9RCvjxXd94YMiAUsv6lJfFWJN0JGvhw
+ IBZsiLKeN1..phVqXLfb5ZnE7YrdNUdLiBOONKrp4Q7wSLcFWbLFrqDvmKtssiwB9MoZamKW1L8K
+ 1HSZ6rtMcIfiK4NhEjWwfYvsNtk4BZMPaozDNTiN_aGkIrhSewRnCKYa146C4.yjtrxowxryOntw
+ s1wMgXShmjH3_RHMsU04dCgoE0NtqzyuNQUYmBgt8LMNur9wrRUb9IZDy2Hl1S.a9j35VRQqcqj7
+ UfkohlHEU4HDWzJhtstdJuXmpYAcPjtB0OuYFa_mNj9_OaHNmVpo.QaI61KgHXJIMBxBk8k8Z7io
+ oBT_JVyLnqBrUeRVMZDYeNWbO6GadL0xLZQFDFr42N9Kyyr5y3Ve2UMM5WsCYr5d_rUZzfBzsezH
+ 1svj2eaKZceD5vOb3_wCZ9H4Uf3sx5w885FvPD3mgqYliVBjSTINCXtc_Sn4mYI9XI0SRfHTmURS
+ in7ZL1EWrf3mUfVZ7nYlxXovSznYoD4PuU_EqsHhr6SeKH2P1hnhU2BMuPc1U_LiQHRp54iSjj7G
+ 4UQ--
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ne1.yahoo.com with HTTP; Thu, 10 Mar 2022 23:49:57 +0000
+Received: by kubenode513.mail-prod1.omega.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 50d9cd6aba58fa399bba8dff0c177f96;
+          Thu, 10 Mar 2022 23:49:53 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH v33 08/29] LSM: Use lsmblob in security_secctx_to_secid
+Date:   Thu, 10 Mar 2022 15:46:11 -0800
+Message-Id: <20220310234632.16194-9-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220310234632.16194-1-casey@schaufler-ca.com>
+References: <20220310234632.16194-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-In-Reply-To: <38ecaaaf-1735-9023-2282-5feead8408b7@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-MDID: 1646955707-M3pM0yDC9kfY
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/22 12:03 PM, David Ahern wrote:
-> On 3/10/22 12:33 PM, Ben Greear wrote:
->> On 3/9/22 7:54 PM, David Ahern wrote:
->>> On 3/9/22 3:31 PM, Ben Greear wrote:
->>>> [resend, sorry...sent to wrong mailing list the first time]
->>>>
->>>> Hello,
->>>>
->>>> We recently found a somewhat weird problem, and before I go digging into
->>>> the kernel source, I wanted to see if someone had an answer already...
->>>>
->>>> I am binding (SO_BINDTODEVICE) a socket to an Ethernet port that is in a
->>>> VRF with a second
->>>> interface.  When I try to send mcast traffic out that eth port,
->>>> nothing is
->>>> seen on the wire.
->>>>
->>>> But, if I set up a similar situation with a single network port in
->>>> a vrf and send multicast, then it does appear to work as I expected.
->>>>
->>>> I am not actually trying to do any mcast routing here, I simply want to
->>>> send
->>>> out mcast frames from a port that resides inside a vrf.
->>>>
->>>> Any idea what might be the issue?
->>>>
->>>
->>> multicast with VRF works. I am not aware of any known issues
->>
->> I set up a more controlled network to do some more testing.  I have eth2
->> on 192.168.100.x/24 network, and eth1 on 172.16.0.1/16.
->>
->> I bind the mcast transmitter to eth1:
->>
->> 193 setsockopt(28, SOL_SOCKET, SO_BINDTODEVICE,
->> "eth1\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
->> 194 setsockopt(28, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
->> 195 bind(28, {sa_family=AF_INET, sin_port=htons(8888),
->> sin_addr=inet_addr("0.0.0.0")}, 16) = 0
->> 196 fcntl(28, F_GETFL)                      = 0x2 (flags O_RDWR)
->> 197 fcntl(28, F_SETFL, O_ACCMODE|O_NONBLOCK) = 0
->> 198 setsockopt(28, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
->> 199 setsockopt(28, SOL_SOCKET, SO_SNDBUF, [64000], 4) = 0
->> 200 setsockopt(28, SOL_SOCKET, SO_RCVBUF, [128000], 4) = 0
->> 201 getsockopt(28, SOL_SOCKET, SO_RCVBUF, [256000], [4]) = 0
->> 202 getsockopt(28, SOL_SOCKET, SO_SNDBUF, [128000], [4]) = 0
->> 203 write(3, "1646940176442:  BtbitsIpEndpoint"..., 69) = 69
->> 204 setsockopt(28, SOL_IP, IP_TOS, [0], 4)  = 0
->> 205 getsockopt(28, SOL_IP, IP_TOS, [0], [4]) = 0
->> 206 setsockopt(28, SOL_SOCKET, SO_PRIORITY, [0], 4) = 0
->> 207 getsockopt(28, SOL_SOCKET, SO_PRIORITY, [0], [4]) = 0
->> 208 write(3, "1646940176442:  UdpEndpBase.cc 2"..., 148) = 148
->> 209 setsockopt(28, SOL_IP, IP_MULTICAST_IF, [16781484], 4) = 0
->> 210 setsockopt(28, SOL_IP, IP_MULTICAST_TTL, " ", 1) = 0
->>
->> That IP_MULTICAST_IF ioctl should be assigning the IP address of
->> eth1.
->>
->> But when I sniff, I see the mcast packets going out of eth2:
->>
->> [root@ct522-63e7 lanforge]# tshark -n -i eth2
->> Running as user "root" and group "root". This could be dangerous.
->> Capturing on 'eth2'
->>      1 0.000000000 192.168.100.28 → 225.5.5.1    LANforge 1514 Seq: 474
->>      2 0.060868103 192.168.100.226 → 192.168.100.255 ADwin Config 94
->>      3 0.060900503 00:0d:b9:41:6a:90 → ff:ff:ff:ff:ff:ff 0x1111 92
->> Ethernet II
->>      4 0.209523669 192.168.100.28 → 225.5.5.1    LANforge 1514 Seq: 475
->>
->> [root@ct522-63e7 lanforge]# ifconfig eth1
->> eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->>          inet 172.16.0.1  netmask 255.255.0.0  broadcast 172.16.255.255
->>          inet6 fe80::230:18ff:fe01:63e8  prefixlen 64  scopeid 0x20<link>
->>          ether 00:30:18:01:63:e8  txqueuelen 1000  (Ethernet)
->>          RX packets 1972669  bytes 409744407 (390.7 MiB)
->>          RX errors 0  dropped 0  overruns 0  frame 0
->>          TX packets 5818525  bytes 7341747933 (6.8 GiB)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>          device memory 0xdf740000-df75ffff
->>
->> [root@ct522-63e7 lanforge]# ifconfig eth2
->> eth2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->>          inet 192.168.100.28  netmask 255.255.255.0  broadcast
->> 192.168.100.255
->>          inet6 fe80::230:18ff:fe01:63e9  prefixlen 64  scopeid 0x20<link>
->>          ether 00:30:18:01:63:e9  txqueuelen 1000  (Ethernet)
->>          RX packets 24638831  bytes 8874820766 (8.2 GiB)
->>          RX errors 26712  dropped 6596663  overruns 0  frame 16757
->>          TX packets 1753211  bytes 370552564 (353.3 MiB)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>          device memory 0xdf720000-df73ffff
->>
->> If I disable VRF and use routing-rules based approach, then it works
->> as I expect (mcast frames go out of eth1).
->>
->> We tested back to quite-old kernels with same symptom, so I think it is not
->> a regression.
->>
->> Any suggestions on where to start poking at this in the kernel?
->>
-> 
-> can you reproduce this using namespaces and veth pairs? if so, send me
-> the script and I will take a look.
+Change the security_secctx_to_secid interface to use a lsmblob
+structure in place of the single u32 secid in support of
+module stacking. Change its callers to do the same.
 
-I think debugging it will be easier than writing something for you to
-reproduce it...
+The security module hook is unchanged, still passing back a secid.
+The infrastructure passes the correct entry from the lsmblob.
 
-I have tracked it down to this code in route.c:
+Acked-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Cc: netdev@vger.kernel.org
+Cc: netfilter-devel@vger.kernel.org
+To: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ include/linux/security.h          | 26 ++++++++++++++++++--
+ kernel/cred.c                     |  4 +---
+ net/netfilter/nft_meta.c          | 10 ++++----
+ net/netfilter/xt_SECMARK.c        |  7 +++++-
+ net/netlabel/netlabel_unlabeled.c | 23 +++++++++++-------
+ security/security.c               | 40 ++++++++++++++++++++++++++-----
+ 6 files changed, 85 insertions(+), 25 deletions(-)
 
-	if (fl4->flowi4_oif) {
-		dev_out = dev_get_by_index_rcu(net, fl4->flowi4_oif);
-		rth = ERR_PTR(-ENODEV);
-		if (!dev_out)
-			goto out;
-
-		/* RACE: Check return value of inet_select_addr instead. */
-		if (!(dev_out->flags & IFF_UP) || !__in_dev_get_rcu(dev_out)) {
-			rth = ERR_PTR(-ENETUNREACH);
-			goto out;
-		}
-		if (ipv4_is_local_multicast(fl4->daddr) ||
-		    ipv4_is_lbcast(fl4->daddr) ||
-		    fl4->flowi4_proto == IPPROTO_IGMP) {
-			if (!fl4->saddr)
-				fl4->saddr = inet_select_addr(dev_out, 0,
-							      RT_SCOPE_LINK);
-			goto make_route;
-		}
-		if (!fl4->saddr) {
-			if (ipv4_is_multicast(fl4->daddr))
-				fl4->saddr = inet_select_addr(dev_out, 0,
-							      fl4->flowi4_scope);
-			else if (!fl4->daddr)
-				fl4->saddr = inet_select_addr(dev_out, 0,
-							      RT_SCOPE_HOST);
-		}
-	}
-
-	if (!fl4->daddr) {
-		fl4->daddr = fl4->saddr;
-		if (!fl4->daddr)
-			fl4->daddr = fl4->saddr = htonl(INADDR_LOOPBACK);
-		dev_out = net->loopback_dev;
-		fl4->flowi4_oif = LOOPBACK_IFINDEX;
-		res->type = RTN_LOCAL;
-		flags |= RTCF_LOCAL;
-		goto make_route;
-	}
-
-	pr_info("ip-route-output-key-hash-rcu before fib_lookup: orig_oif: %d  fl4 oif: %d\n",
-		orig_oif, fl4->flowi4_oif);
-
-	err = fib_lookup(net, fl4, res, 0);
-
-	pr_info("ip-route-output-key-hash-rcu after fib_lookup: orig_oif: %d  fl4 oif: %d err: %d\n",
-		orig_oif, fl4->flowi4_oif, err);
-
-
-dmesg output:
-
-
-[   54.122391] UDP: udp-sendmsg, mcast, oif: 4  saddr: 0x0
-[   54.122399] UDP: udp-sendmsg, after, mcast, oif: 4  saddr: 0x10010ac
-[   54.122401] UDP: udp-sendmsg: after flowi4_init_output: oif: 4
-[   54.122404] UDP: udp-sendmsg: after security-sk-classify: oif: 4
-
-[   54.122406] IPv4: ip-route-output-key-hash-rcu before fib_lookup: orig_oif: 4  fl4 oif: 4
-### This is the transition from expected to funky.
-[   54.122413] IPv4: ip-route-output-key-hash-rcu after fib_lookup: orig_oif: 4  fl4 oif: 21
-
-[   54.122415] IPv4: ip-route-output-key-hash-rcu before fib_select_path: orig_oif: 4  fl4 oif: 21
-[   54.122418] IPv4: ip-route-output-key-hash-rcu after fib_select_path: orig_oif: 4  fl4 oif: 21
-[   54.122420] IPv4: ip-route-output-key-hash-rcu make_route Before, orig_oif: 4  fl4 oif: 21 dev_out: 5
-[   54.122443] IPv4: ip-route-output-key-hash-rcu make_route After, orig_oif: 4  fl4 oif: 21 dev_out: 5
-[   54.122446] IPv4: ip_route_output_flow, old-oif: 21  new: 5  new-dev: eth2
-[   54.122449] UDP: udp-sendmsg: after ip_route_output_flow: oif: 5
-
-
-So, something in the fib_lookup code is selecting the vrf device as output,
-I guess because oif 4 (eth1) is part of the vrf.  And then the vrf routing table
-ends up selecting oif 5 (eth2), which holds the default route.  However, there is
-nothing adding any mcast routing (I am not running any multicast router on this vrf),
-so once the code forgets that I bound the socket to oif 4, then it ends up choosing
-the wrong outbound interface.
-
-In the paste above, there is special casing for 'local' mcast routing.  If I select
-a 224.0.0.x local mcast address, then the special case code is used and then things
-work as I expected (mcast pkts go out of the selected interface).
-
-I think that maybe other mcast addresses should also abide by the user's request if user
-has bound it to a specified oif?
-
-Or, maybe there is some special casing needed in the fib_lookup?
-
-Thanks,
-Ben
-
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 4ce8dbeb3dad..231b76d5567e 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -199,6 +199,27 @@ static inline bool lsmblob_equal(const struct lsmblob *bloba,
+ extern int lsm_name_to_slot(char *name);
+ extern const char *lsm_slot_to_name(int slot);
+ 
++/**
++ * lsmblob_value - find the first non-zero value in an lsmblob structure.
++ * @blob: Pointer to the data
++ *
++ * This needs to be used with extreme caution, as the cases where
++ * it is appropriate are rare.
++ *
++ * Return the first secid value set in the lsmblob.
++ * There should only be one.
++ */
++static inline u32 lsmblob_value(const struct lsmblob *blob)
++{
++	int i;
++
++	for (i = 0; i < LSMBLOB_ENTRIES; i++)
++		if (blob->secid[i])
++			return blob->secid[i];
++
++	return 0;
++}
++
+ /* These functions are in security/commoncap.c */
+ extern int cap_capable(const struct cred *cred, struct user_namespace *ns,
+ 		       int cap, unsigned int opts);
+@@ -529,7 +550,8 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
+ int security_netlink_send(struct sock *sk, struct sk_buff *skb);
+ int security_ismaclabel(const char *name);
+ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid);
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob);
+ void security_release_secctx(char *secdata, u32 seclen);
+ void security_inode_invalidate_secctx(struct inode *inode);
+ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -1384,7 +1406,7 @@ static inline int security_secid_to_secctx(u32 secid, char **secdata, u32 *secle
+ 
+ static inline int security_secctx_to_secid(const char *secdata,
+ 					   u32 seclen,
+-					   u32 *secid)
++					   struct lsmblob *blob)
+ {
+ 	return -EOPNOTSUPP;
+ }
+diff --git a/kernel/cred.c b/kernel/cred.c
+index e5e41bd4efc3..a112ea708b6e 100644
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -796,14 +796,12 @@ EXPORT_SYMBOL(set_security_override);
+ int set_security_override_from_ctx(struct cred *new, const char *secctx)
+ {
+ 	struct lsmblob blob;
+-	u32 secid;
+ 	int ret;
+ 
+-	ret = security_secctx_to_secid(secctx, strlen(secctx), &secid);
++	ret = security_secctx_to_secid(secctx, strlen(secctx), &blob);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	lsmblob_init(&blob, secid);
+ 	return set_security_override(new, &blob);
+ }
+ EXPORT_SYMBOL(set_security_override_from_ctx);
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 5ab4df56c945..6763188169a3 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -861,21 +861,21 @@ static const struct nla_policy nft_secmark_policy[NFTA_SECMARK_MAX + 1] = {
+ 
+ static int nft_secmark_compute_secid(struct nft_secmark *priv)
+ {
+-	u32 tmp_secid = 0;
++	struct lsmblob blob;
+ 	int err;
+ 
+-	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &tmp_secid);
++	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &blob);
+ 	if (err)
+ 		return err;
+ 
+-	if (!tmp_secid)
++	if (!lsmblob_is_set(&blob))
+ 		return -ENOENT;
+ 
+-	err = security_secmark_relabel_packet(tmp_secid);
++	err = security_secmark_relabel_packet(lsmblob_value(&blob));
+ 	if (err)
+ 		return err;
+ 
+-	priv->secid = tmp_secid;
++	priv->secid = lsmblob_value(&blob);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/xt_SECMARK.c b/net/netfilter/xt_SECMARK.c
+index 498a0bf6f044..87ca3a537d1c 100644
+--- a/net/netfilter/xt_SECMARK.c
++++ b/net/netfilter/xt_SECMARK.c
+@@ -42,13 +42,14 @@ secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
+ 
+ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ {
++	struct lsmblob blob;
+ 	int err;
+ 
+ 	info->secctx[SECMARK_SECCTX_MAX - 1] = '\0';
+ 	info->secid = 0;
+ 
+ 	err = security_secctx_to_secid(info->secctx, strlen(info->secctx),
+-				       &info->secid);
++				       &blob);
+ 	if (err) {
+ 		if (err == -EINVAL)
+ 			pr_info_ratelimited("invalid security context \'%s\'\n",
+@@ -56,6 +57,10 @@ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ 		return err;
+ 	}
+ 
++	/* xt_secmark_target_info can't be changed to use lsmblobs because
++	 * it is exposed as an API. Use lsmblob_value() to get the one
++	 * value that got set by security_secctx_to_secid(). */
++	info->secid = lsmblob_value(&blob);
+ 	if (!info->secid) {
+ 		pr_info_ratelimited("unable to map security context \'%s\'\n",
+ 				    info->secctx);
+diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
+index 8490e46359ae..f3e2cde76919 100644
+--- a/net/netlabel/netlabel_unlabeled.c
++++ b/net/netlabel/netlabel_unlabeled.c
+@@ -880,7 +880,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -904,13 +904,18 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* netlbl_unlhsh_add will be changed to pass a struct lsmblob *
++	 * instead of a u32 later in this patch set. security_secctx_to_secid()
++	 * will only be setting one entry in the lsmblob struct, so it is
++	 * safe to use lsmblob_value() to get that one value. */
++
+ 	return netlbl_unlhsh_add(&init_net,
+-				 dev_name, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 dev_name, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+@@ -931,7 +936,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -953,13 +958,15 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* security_secctx_to_secid() will only put one secid into the lsmblob
++	 * so it's safe to use lsmblob_value() to get the secid. */
+ 	return netlbl_unlhsh_add(&init_net,
+-				 NULL, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 NULL, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+diff --git a/security/security.c b/security/security.c
+index 2178235529eb..0fc75d355e9d 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2198,10 +2198,22 @@ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
+ }
+ EXPORT_SYMBOL(security_secid_to_secctx);
+ 
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid)
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob)
+ {
+-	*secid = 0;
+-	return call_int_hook(secctx_to_secid, 0, secdata, seclen, secid);
++	struct security_hook_list *hp;
++	int rc;
++
++	lsmblob_init(blob, 0);
++	hlist_for_each_entry(hp, &security_hook_heads.secctx_to_secid, list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.secctx_to_secid(secdata, seclen,
++					      &blob->secid[hp->lsmid->slot]);
++		if (rc != 0)
++			return rc;
++	}
++	return 0;
+ }
+ EXPORT_SYMBOL(security_secctx_to_secid);
+ 
+@@ -2352,10 +2364,26 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				optval, optlen, len);
+ }
+ 
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     u32 *secid)
+ {
+-	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
+-			     skb, secid);
++	struct security_hook_list *hp;
++	int rc = -ENOPROTOOPT;
++
++	/*
++	 * Only one security module should provide a real hook for
++	 * this. A stub or bypass like is used in BPF should either
++	 * (somehow) leave rc unaltered or return -ENOPROTOOPT.
++	 */
++	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
++			     list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.socket_getpeersec_dgram(sock, skb, secid);
++		if (rc != -ENOPROTOOPT)
++			break;
++	}
++	return rc;
+ }
+ EXPORT_SYMBOL(security_socket_getpeersec_dgram);
+ 
 -- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+2.31.1
 
