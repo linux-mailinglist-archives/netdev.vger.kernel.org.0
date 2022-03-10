@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 156C74D4B4C
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 15:56:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA354D4C0A
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:01:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbiCJOce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 09:32:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S243688AbiCJObz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 09:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343952AbiCJObb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:31:31 -0500
+        with ESMTP id S1343962AbiCJObd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:31:33 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1554BB91EA
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:29:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609D3B82E1
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:29:12 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nSJmv-0005pe-D9
-        for netdev@vger.kernel.org; Thu, 10 Mar 2022 15:29:09 +0100
+        id 1nSJmw-0005rQ-LV
+        for netdev@vger.kernel.org; Thu, 10 Mar 2022 15:29:10 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4A93347D7E
+        by bjornoya.blackshift.org (Postfix) with SMTP id BA9A747D86
         for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:29:07 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id B972447D72;
-        Thu, 10 Mar 2022 14:29:06 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 3608F47D7A;
+        Thu, 10 Mar 2022 14:29:07 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 26e89d59;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c2de6301;
         Thu, 10 Mar 2022 14:29:04 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 04/29] vxcan: remove sk reference in peer skb
-Date:   Thu, 10 Mar 2022 15:28:38 +0100
-Message-Id: <20220310142903.341658-5-mkl@pengutronix.de>
+Subject: [PATCH net-next 05/29] vxcan: enable local echo for sent CAN frames
+Date:   Thu, 10 Mar 2022 15:28:39 +0100
+Message-Id: <20220310142903.341658-6-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310142903.341658-1-mkl@pengutronix.de>
 References: <20220310142903.341658-1-mkl@pengutronix.de>
@@ -60,65 +60,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-With can_create_echo_skb() the skb which is forwarded to the peer CAN
-interface shares the sk pointer from the originating socket.
-This makes the CAN frame show up in the peer namespace as a TX packet.
+The vxcan driver provides a pair of virtual CAN interfaces to exchange
+CAN traffic between different namespaces - analogue to veth.
 
-With the use of skb_clone() analogue to the handling in gw.c the peer
-skb gets a new start in the peer namespace and correctly appears as
-a RX packet.
+In opposite to the vcan driver the local sent CAN traffic on this interface
+is not echo'ed back but only sent to the remote peer. This is unusual and
+can be easily fixed by removing IFF_ECHO from the netdevice flags that
+are set for vxcan interfaces by default at startup.
 
-Link: https://lore.kernel.org/all/20220309120416.83514-4-socketcan@hartkopp.net
+Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
+in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
+same local echo behavior and procedures as known from the vcan interfaces.
+
+Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
+Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
 Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/vxcan.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/net/can/vxcan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index 556f1a12ec9a..51501af8d9fc 100644
+index 51501af8d9fc..94a0c9c6a509 100644
 --- a/drivers/net/can/vxcan.c
 +++ b/drivers/net/can/vxcan.c
-@@ -33,28 +33,33 @@ struct vxcan_priv {
- 	struct net_device __rcu	*peer;
- };
+@@ -153,7 +153,7 @@ static void vxcan_setup(struct net_device *dev)
+ 	dev->hard_header_len	= 0;
+ 	dev->addr_len		= 0;
+ 	dev->tx_queue_len	= 0;
+-	dev->flags		= (IFF_NOARP|IFF_ECHO);
++	dev->flags		= IFF_NOARP;
+ 	dev->netdev_ops		= &vxcan_netdev_ops;
+ 	dev->needs_free_netdev	= true;
  
--static netdev_tx_t vxcan_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t vxcan_xmit(struct sk_buff *oskb, struct net_device *dev)
- {
- 	struct vxcan_priv *priv = netdev_priv(dev);
- 	struct net_device *peer;
--	struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-+	struct canfd_frame *cfd = (struct canfd_frame *)oskb->data;
- 	struct net_device_stats *peerstats, *srcstats = &dev->stats;
-+	struct sk_buff *skb;
- 	u8 len;
- 
--	if (can_dropped_invalid_skb(dev, skb))
-+	if (can_dropped_invalid_skb(dev, oskb))
- 		return NETDEV_TX_OK;
- 
- 	rcu_read_lock();
- 	peer = rcu_dereference(priv->peer);
- 	if (unlikely(!peer)) {
--		kfree_skb(skb);
-+		kfree_skb(oskb);
- 		dev->stats.tx_dropped++;
- 		goto out_unlock;
- 	}
- 
--	skb = can_create_echo_skb(skb);
--	if (!skb)
-+	skb = skb_clone(oskb, GFP_ATOMIC);
-+	if (skb) {
-+		consume_skb(oskb);
-+	} else {
-+		kfree(oskb);
- 		goto out_unlock;
-+	}
- 
- 	/* reset CAN GW hop counter */
- 	skb->csum_start = 0;
 -- 
 2.35.1
 
