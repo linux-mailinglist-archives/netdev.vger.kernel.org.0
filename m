@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9158E4D40E4
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1FA4D40E5
 	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 06:47:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236134AbiCJFso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 00:48:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51192 "EHLO
+        id S239669AbiCJFss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 00:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239648AbiCJFsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:25 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC2F12D933
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:24 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id z3so3932769plg.8
-        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:24 -0800 (PST)
+        with ESMTP id S239653AbiCJFsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 00:48:40 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFC212E15B
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 21:47:26 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id o8so3838057pgf.9
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 21:47:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Eo6Ay78UtfJaj+pFT4IeJlC6FzfAL4dcL6hsPGiyVns=;
-        b=UngQJA1Qwd2nbsl3K8eXkwGV/ZmMqwDoKMwsYodWXvVaq7BzAQ4n464ZJ68CgwG55K
-         YdsLaqrUjvhfRpA4j9hQdw/Anfn9IAj8nVEu4KzW06QI0B6/9zRF/Xr+e9X006ZbLY9O
-         0fQc2RTWcG9YQM7RI0UR/CwOSnEXqaiUzSGSymivDQqVyll3Doojq8oRJg7YdlpiaTD4
-         DArgWJOjdzsG2YUpseALrHWiOofkYTT4rYQZyVhsUdOS3h9hMLds62O92RHvU5h1r+bX
-         FhHAILcFlxUeKO3YThZIGuca8eiG9nO72sVJVF/OW9KTHoCPO6bdEVHzIhC1uKzU0oRl
-         koQw==
+        bh=m3R0BhiqPxOZEoq0u9oSqVsOJdu8BSFsUrtrIwkGaQ4=;
+        b=TBfw11vSot0Hi/7+ztT9sVNbY5catDW8bLxFdhEr4bwXID1RHyhEKEd3g9+2J3O+3n
+         U9FEJ5AC6vcm6hkkS64/rvjyxXekfrn5rrvNbrDY8GHbRDrHFzaGbZaQwGg20Vg9q1ae
+         YD6Iddt7RgmWHMqa8jV5kQ6u8yqdsPRFJXG1UEwPp4g5pdx97D4OMx1efyNLMr3Ej+YJ
+         Bd1sv3j1sGYay7DnQj1XHI+aHlrquLgLiuukXEOAsZSdHrV9dVRIMZa0ToZBdhV8q3j7
+         XnOZB/COrwFIybZjt4cJ0QUiTC349N2IFi/Cx7vTPDdPVyw8H+Nmud6kqpX+I5Lzwvdw
+         nu0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Eo6Ay78UtfJaj+pFT4IeJlC6FzfAL4dcL6hsPGiyVns=;
-        b=FHI5z+rZ4yQBk5BndUIkMEHd+hlY6Aw/hmmcRBKqzii8YVMNPRmEjFweOX8fTc3Y0D
-         ziBsfy9w4N3i2Ekhs4/YMkSgwVRc8FaQaTSIjsYlQs4FligLwC5DE7eBknBVvBwAa8V/
-         I4e18KrqRHyRBqEOyZODCwd3F+EWTDpR6RXAkl9CWiKHtt4Eu8xjbQ3uwmVUJ2QZ3Ikf
-         8bDKYRNAi2EjzUUKwQZ+M9UqCjke0QRIEtxTsFzp+XDbKR35pwV2aHQOvi/SGwKFXv/D
-         frGjIautNdbE1vaGlmjsQF+hWJXfZsB8QhBWrDbzeGSrHI02Aeos+8vGgR4gji2KgboI
-         uKHA==
-X-Gm-Message-State: AOAM530/riCQxdDDXAppqCUm6KarfHrwY1SC1iqbRYgyXy7uQiIQG0TQ
-        9h+LqQE4RcwpcxqFtgjJs2k=
-X-Google-Smtp-Source: ABdhPJwvg0lyFA28nm+Q910n6d0Nlca1VENlt7y7d1mE26lYw/7wDAtxV6XUdJFHS5EgiiSOUSAMTw==
-X-Received: by 2002:a17:902:7895:b0:14b:6b63:b3fa with SMTP id q21-20020a170902789500b0014b6b63b3famr3210121pll.156.1646891244148;
-        Wed, 09 Mar 2022 21:47:24 -0800 (PST)
+        bh=m3R0BhiqPxOZEoq0u9oSqVsOJdu8BSFsUrtrIwkGaQ4=;
+        b=eayJJci7DtkrUO5O3ix51FzIqTOcGfgMQtuibBotZWNLrkDceMWnHFuuL2Q/i1mGHE
+         HBkQrCKDqBWinbw+mOd1hqXtoEz4x84ncw288j4DqWRDTbargO1rIt0U+MJFJ5uYlxv+
+         yf0u/KSEjuaRPXhNX4yHqIHNqKIDaceM3vav1i63G+ZVCiBU4llkzjNFuQVQzunoLXLc
+         EgKjz+rpVHT3roa+1KdJZonl+5tkMPi2coRdZAZXaXl5yOevNcG+5X+aDKJl6/jeMQyc
+         p5Ce8D0ZvOTfZosrmhnUOslsJX+zao9jCbBhgs8iK3Tr4q65xHGjxl2AfExLge6qqS9R
+         cceQ==
+X-Gm-Message-State: AOAM532gQcjQZEvnBy/kiuNag513fQZALprVvvCVA071TeY8x/oa7OH3
+        FVQFWqLnIrbTCHjw4SeV1Jk=
+X-Google-Smtp-Source: ABdhPJxUVT4/zlEQUKZgRghRIX7QXByTYt0mfxeLpiCly0BJ1Rqb0+kdEZH7tONOGgtx0xBMuNy7zQ==
+X-Received: by 2002:aa7:9730:0:b0:4f6:d6ee:cc0b with SMTP id k16-20020aa79730000000b004f6d6eecc0bmr3340200pfg.41.1646891245940;
+        Wed, 09 Mar 2022 21:47:25 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
-        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.23
+        by smtp.gmail.com with ESMTPSA id 16-20020a056a00073000b004dfe2217090sm5270779pfm.200.2022.03.09.21.47.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 21:47:23 -0800 (PST)
+        Wed, 09 Mar 2022 21:47:25 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -55,9 +55,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v4 net-next 08/14] ipv6: Add hop-by-hop header to jumbograms in ip6_output
-Date:   Wed,  9 Mar 2022 21:46:57 -0800
-Message-Id: <20220310054703.849899-9-eric.dumazet@gmail.com>
+Subject: [PATCH v4 net-next 09/14] net: loopback: enable BIG TCP packets
+Date:   Wed,  9 Mar 2022 21:46:58 -0800
+Message-Id: <20220310054703.849899-10-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 In-Reply-To: <20220310054703.849899-1-eric.dumazet@gmail.com>
 References: <20220310054703.849899-1-eric.dumazet@gmail.com>
@@ -73,91 +73,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Coco Li <lixiaoyan@google.com>
+From: Eric Dumazet <edumazet@google.com>
 
-Instead of simply forcing a 0 payload_len in IPv6 header,
-implement RFC 2675 and insert a custom extension header.
+Set the driver limit to 512 KB per TSO ipv6 packet.
 
-Note that only TCP stack is currently potentially generating
-jumbograms, and that this extension header is purely local,
-it wont be sent on a physical link.
+This allows the admin/user to set a GSO ipv6 limit up to this value.
 
-This is needed so that packet capture (tcpdump and friends)
-can properly dissect these large packets.
+Tested:
 
-Signed-off-by: Coco Li <lixiaoyan@google.com>
+ip link set dev lo gso_ipv6_max_size 200000
+netperf -H ::1 -t TCP_RR -l 100 -- -r 80000,80000 &
+
+tcpdump shows :
+
+18:28:42.962116 IP6 ::1 > ::1: HBH 40051 > 63780: Flags [P.], seq 3626480001:3626560001, ack 3626560001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 80000
+18:28:42.962138 IP6 ::1.63780 > ::1.40051: Flags [.], ack 3626560001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 0
+18:28:42.962152 IP6 ::1 > ::1: HBH 63780 > 40051: Flags [P.], seq 3626560001:3626640001, ack 3626560001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 80000
+18:28:42.962157 IP6 ::1.40051 > ::1.63780: Flags [.], ack 3626640001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 0
+18:28:42.962180 IP6 ::1 > ::1: HBH 40051 > 63780: Flags [P.], seq 3626560001:3626640001, ack 3626640001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 80000
+18:28:42.962214 IP6 ::1.63780 > ::1.40051: Flags [.], ack 3626640001, win 17743, options [nop,nop,TS val 3771179266 ecr 3771179265], length 0
+18:28:42.962228 IP6 ::1 > ::1: HBH 63780 > 40051: Flags [P.], seq 3626640001:3626720001, ack 3626640001, win 17743, options [nop,nop,TS val 3771179266 ecr 3771179265], length 80000
+18:28:42.962233 IP6 ::1.40051 > ::1.63780: Flags [.], ack 3626720001, win 17743, options [nop,nop,TS val 3771179266 ecr 3771179266], length 0
+
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/ipv6.h  |  1 +
- net/ipv6/ip6_output.c | 22 ++++++++++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ drivers/net/loopback.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index 16870f86c74d3d1f5dfb7edac1e7db85f1ef6755..93b273db1c9926aba4199f486ce90778311916f5 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -144,6 +144,7 @@ struct inet6_skb_parm {
- #define IP6SKB_L3SLAVE         64
- #define IP6SKB_JUMBOGRAM      128
- #define IP6SKB_SEG6	      256
-+#define IP6SKB_FAKEJUMBO      512
- };
- 
- #if defined(CONFIG_NET_L3_MASTER_DEV)
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index e69fac576970a9b85fb68aa02822c0e2df67e1a2..941ceff83b616cec11c6bb7ccaf81bc041f8d9cc 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -180,7 +180,9 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
- #endif
- 
- 	mtu = ip6_skb_dst_mtu(skb);
--	if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
-+	if (skb_is_gso(skb) &&
-+	    !(IP6CB(skb)->flags & IP6SKB_FAKEJUMBO) &&
-+	    !skb_gso_validate_network_len(skb, mtu))
- 		return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
- 
- 	if ((skb->len > mtu && !skb_is_gso(skb)) ||
-@@ -251,6 +253,8 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct net_device *dev = dst->dev;
- 	struct inet6_dev *idev = ip6_dst_idev(dst);
-+	struct hop_jumbo_hdr *hop_jumbo;
-+	int hoplen = sizeof(*hop_jumbo);
- 	unsigned int head_room;
- 	struct ipv6hdr *hdr;
- 	u8  proto = fl6->flowi6_proto;
-@@ -258,7 +262,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 	int hlimit = -1;
- 	u32 mtu;
- 
--	head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dev);
-+	head_room = sizeof(struct ipv6hdr) + hoplen + LL_RESERVED_SPACE(dev);
- 	if (opt)
- 		head_room += opt->opt_nflen + opt->opt_flen;
- 
-@@ -281,6 +285,20 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 					     &fl6->saddr);
- 	}
- 
-+	if (unlikely(seg_len > IPV6_MAXPLEN)) {
-+		hop_jumbo = skb_push(skb, hoplen);
+diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+index 720394c0639b20a2fd6262e4ee9d5813c02802f1..9c21d18f0aa75a310ac600081b450f6312ff16fc 100644
+--- a/drivers/net/loopback.c
++++ b/drivers/net/loopback.c
+@@ -191,6 +191,8 @@ static void gen_lo_setup(struct net_device *dev,
+ 	dev->netdev_ops		= dev_ops;
+ 	dev->needs_free_netdev	= true;
+ 	dev->priv_destructor	= dev_destructor;
 +
-+		hop_jumbo->nexthdr = proto;
-+		hop_jumbo->hdrlen = 0;
-+		hop_jumbo->tlv_type = IPV6_TLV_JUMBO;
-+		hop_jumbo->tlv_len = 4;
-+		hop_jumbo->jumbo_payload_len = htonl(seg_len + hoplen);
-+
-+		proto = IPPROTO_HOPOPTS;
-+		seg_len = 0;
-+		IP6CB(skb)->flags |= IP6SKB_FAKEJUMBO;
-+	}
-+
- 	skb_push(skb, sizeof(struct ipv6hdr));
- 	skb_reset_network_header(skb);
- 	hdr = ipv6_hdr(skb);
++	netif_set_tso_ipv6_max_size(dev, 512 * 1024);
+ }
+ 
+ /* The loopback device is special. There is only one instance
 -- 
 2.35.1.616.g0bdcbb4464-goog
 
