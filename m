@@ -2,88 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 949CB4D3F9F
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 04:20:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C6004D3FB2
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 04:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239209AbiCJDVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 22:21:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
+        id S239264AbiCJDaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 22:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237642AbiCJDVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 22:21:24 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54278120EB8;
-        Wed,  9 Mar 2022 19:20:24 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KDZ2D2Tlzz1GCLX;
-        Thu, 10 Mar 2022 11:15:32 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Mar 2022 11:20:21 +0800
-Subject: Re: IPv4 saddr do not match with selected output device in double
- default gateways scene
-To:     David Ahern <dsahern@kernel.org>,
-        David Miller <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, <ja@ssi.bg>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
- <0f97539a-439f-d584-9ba3-f4bd5a302bc0@kernel.org>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <86c61138-c82c-a403-664c-a61d651008b0@huawei.com>
-Date:   Thu, 10 Mar 2022 11:20:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S239261AbiCJDaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 22:30:15 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8A6129BA3;
+        Wed,  9 Mar 2022 19:29:15 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id b8so4070001pjb.4;
+        Wed, 09 Mar 2022 19:29:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z81rwdtDhjjTMgfqS+flHeVEa6soorfyu2+dKLX3nwY=;
+        b=FWdzWhoo49xK+2dkuNUo3Wtp7XtoxJHFh3cv29/c34pRupXhSR/t4/bynvzSzaUNuL
+         661a9b3QZFqW/M2YejUwQK4yJJR7eWrAr3fMuAI5Db81Bwna4oEionbtvGLa1bvMGQRl
+         hXqXP6VN6/USeuz5xCvF46iWE6YWX5nBMbQ+AXBCXsQ6le8llU3Ko3RxBMJgyNg5nZzs
+         6YjMA+th3SIBRuCZanGkRawE6QAcSbtxbX3kR2ZOvFNPWwkijt8A7eKkX0owB90z/+AX
+         KIVlKNd4LWd7t5pXn3ZZ/PBEFzaj2qA+n/ImWP6kX440CW2oSawiU0VjYFBDpSip8upg
+         COOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z81rwdtDhjjTMgfqS+flHeVEa6soorfyu2+dKLX3nwY=;
+        b=5BScF/j5UqGBOmhRdrCyRTaeZhYLRJSHzsJseA96J5BSGrIEyJOgsYxixcysHGSM+l
+         Tl7PmRJembKsadoNc50Z8Lk6z8YWlWM7VjhFJl7AHJUyNb5ZKp3+C5/05W7u3hqB3NUm
+         hHYoUL6Wdc+Nm0JKdejgzQkodgwzMdsfG+Lh4JqzQEHwIHNeBL3vP5WXXaT1l94vcDjO
+         2Bzp3vP5dIdu1nb3KodpkW00vCydLpdz3V5Hzpl7ZfmWwgNHX4h/wyNYMY1G0Gp2K37V
+         x8gHjgUQuTRsIdpzftU7R6rnXL6CJSggwxNEkBFDUSVyt+we6tWQ8PNL2wsKP0b7gjtM
+         daZQ==
+X-Gm-Message-State: AOAM531DrDGg79zBl1quM2OwF/Zh98+8BdPY1+7FoRQ9mEcQwDGLM+U1
+        0mprK8XP9eVA3M+BdECz+cN/lKtPk66jITBR5J0=
+X-Google-Smtp-Source: ABdhPJzSL16kEUYU+s4cbA0wAcB/vAgiT7pFnk765thxsZXfZAHm4lNz66ahLGaL96Au+dy8387WDleVYtyHbioxZJo=
+X-Received: by 2002:a17:90b:1a81:b0:1bc:c3e5:27b2 with SMTP id
+ ng1-20020a17090b1a8100b001bcc3e527b2mr13803406pjb.20.1646882954707; Wed, 09
+ Mar 2022 19:29:14 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <0f97539a-439f-d584-9ba3-f4bd5a302bc0@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220309123321.2400262-1-houtao1@huawei.com> <20220309123321.2400262-4-houtao1@huawei.com>
+ <20220309232253.v6oqev7jock7vm7i@ast-mbp.dhcp.thefacebook.com> <06abdc4e-8806-10dd-c753-229d3e957add@huawei.com>
+In-Reply-To: <06abdc4e-8806-10dd-c753-229d3e957add@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 9 Mar 2022 19:29:03 -0800
+Message-ID: <CAADnVQKr12ZRLroU85YC2GvA+WQoFm0On-5yaLE43hy4p8PRJw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/4] bpf: Fix net.core.bpf_jit_harden race
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 3/7/22 11:41 PM, Ziyang Xuan (William) wrote:
->> Create VLAN devices and add default gateways with following commands:
->>
->> # ip link add link eth2 dev eth2.71 type vlan id 71
->> # ip link add link eth2 dev eth2.72 type vlan id 72
->> # ip addr add 192.168.71.41/24 dev eth2.71
->> # ip addr add 192.168.72.41/24 dev eth2.72
->> # ip link set eth2.71 up
->> # ip link set eth2.72 up
->> # route add -net default gw 192.168.71.1 dev eth2.71
->> # route add -net default gw 192.168.72.1 dev eth2.72
->>
-> 
-> ...
-> 
->> We can find that IPv4 saddr "192.168.72.41" do not match with selected VLAN device "eth2.71".
->>
->> I tracked the related processes, and found that user space program uses connect() firstly, then sends UDP packet.
->>
-> 
-> ...
-> 
->> Deep tracking, it because fa->fa_default has changed in fib_select_default() after first __ip_route_output_key() process,
->> and a new fib_nh is selected in fib_select_default() within the second __ip_route_output_key() process but not update flowi4.
->> So the phenomenon described at the beginning happens.
->>
->> Does it a kernel bug or a user problem? If it is a kernel bug, is there any good solution?
-> 
-> That is a known problem with multipath routes.
-> .
-> 
+On Wed, Mar 9, 2022 at 5:01 PM Hou Tao <houtao1@huawei.com> wrote:
+>
+> Hi,
+>
+> On 3/10/2022 7:22 AM, Alexei Starovoitov wrote:
+> > On Wed, Mar 09, 2022 at 08:33:20PM +0800, Hou Tao wrote:
+> >> It is the bpf_jit_harden counterpart to commit 60b58afc96c9 ("bpf: fix
+> >> net.core.bpf_jit_enable race"). bpf_jit_harden will be tested twice
+> >> for each subprog if there are subprogs in bpf program and constant
+> >> blinding may increase the length of program, so when running
+> >> "./test_progs -t subprogs" and toggling bpf_jit_harden between 0 and 2,
+> >> jit_subprogs may fail because constant blinding increases the length
+> >> of subprog instructions during extra passs.
+> >>
+> >> So cache the value of bpf_jit_blinding_enabled() during program
+> >> allocation, and use the cached value during constant blinding, subprog
+> >> JITing and args tracking of tail call.
+> > Looks like this patch alone is enough.
+> > With race fixed. Patches 1 and 2 are no longer necessary, right?
+> Yes and no. With patch 3 applied, the problems described in patch 1 and patch 2
+> are gone, but it may recur due to other issue in JIT. So I post these two patch
+> together and hope these fixes can also be merged.
 
-Does the community have a plan to address it?
+What kind of 'issues in JIT'?
+I'd rather fix them than do defensive programming.
+patch 2 is a hack that should not happen in a correct JIT.
