@@ -2,66 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFF04D4809
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 14:28:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5EF34D481B
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 14:34:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241582AbiCJN3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 08:29:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55930 "EHLO
+        id S238297AbiCJNfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 08:35:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234416AbiCJN3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 08:29:43 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F49478050
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 05:28:42 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dd2c5ef10eso40209217b3.14
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 05:28:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Y7gj1hh0DB6tOe5ZHLoKoc4NT1CoUMRgYUbu9GMxm2c=;
-        b=PcVpr1GuJ8GWX7vf+TIimRwnGcf2+y85xAnLxuU2LUy2f3fQvacSZe04/oqKr+rH9u
-         z+Mzxnr08X1dcLD0Jay42IB6TJ5iGT0POTC0ttrQUJB1d61SU9fVUqhqUXx0zC5okjsX
-         0KX5+vyrQtwS5RL2K7LAYxFrds7AusjU+jQBzD48W1TRgQEmYztDpXMuKKywO7n/PaWb
-         /NQ60qbU+NJGzv0bccEORsiLVxhvmwKtUg3rORQFjXWU+/SNjP/fFGAQoaL/T5JtfHRA
-         MVach1kF0AFBZPtTCqeb/cE2ZeVUIJ1PzwUCGEeJCUamNwv40I1K6AkyAUKlmtSSS8rR
-         NJMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Y7gj1hh0DB6tOe5ZHLoKoc4NT1CoUMRgYUbu9GMxm2c=;
-        b=FIy7qw6yb4FY9CJesnIG6szaIHNWrCkQuTtISaFxnYpU08x7GpbDprvXbqh8j+SEZa
-         wO4Hil9M3eVgf50bBsU5SsXPUAJGOybd6OpeNDdTTsLoXbWMW8sC0DpNpRHO6TY7ToB6
-         2jn3Xab6JwcNmEL5K5x8laz7cWXr3Mw28APu8LuOw4nNw9UppevB7hwhDE2vITYuQTdn
-         rZM5Lqr9pLTs36I38lImiiTnNqDjK45tdbrwtlN3haTy+JsmQAIZZAj3qNg5HlDleVFZ
-         70VppUwf7GJoBQxu9+6bhMYysCU4G4HAlxGIDIf9tgtP26LDzBczmfWuLR3eNxTYmqYg
-         9bdw==
-X-Gm-Message-State: AOAM5332ZHcv5pmtS9wXxli5xFt31nL6+2g7+mZHABCCkqcIpk5NFVYQ
-        SaPLzDYLoalkcPjINVdbody2XPtmkdk=
-X-Google-Smtp-Source: ABdhPJzwtkhkPUqBI9gHc2Q828U5TjP3S4ysN896s6N7UbdNSqH6k6QsxiSTVNH6MbtAUxTir1E/uiQLaqI=
-X-Received: from jiyong.seo.corp.google.com ([2401:fa00:d:11:f59e:134:eb7:e1d2])
- (user=jiyong job=sendgmr) by 2002:a25:7903:0:b0:622:3940:7c7c with SMTP id
- u3-20020a257903000000b0062239407c7cmr4031710ybc.334.1646918921467; Thu, 10
- Mar 2022 05:28:41 -0800 (PST)
-Date:   Thu, 10 Mar 2022 22:28:29 +0900
-Message-Id: <20220310132830.88203-1-jiyong@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH v2] vsock: each transport cycles only on its own sockets
-From:   Jiyong Park <jiyong@google.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     adelva@google.com, Jiyong Park <jiyong@google.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        with ESMTP id S233477AbiCJNfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 08:35:09 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBA2148657
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 05:34:07 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PRUDg0tG8h+ZI9nvvtCowGF/VJEjW4YEh/dUxj5AXN/BFsMBERewhHrYFVl2TsZz6UhSg/AuWk1TgGLX2AYL/kbbgkTg9UUVE+dAWgOv+HP0iAkiFltuKoqzRyWn0Eth9xTmYHqI1XEy4kX8/hcFPGgw0BYdgNv2G/98WzqXGXy6NwiasKgm75I2zmwZcZLhWmvsn0k2DGjtJvOgbNpVJQJq2lnKqgqVGtwRPbMlt1wNIw/XGCkGzy7wL2yN3eWPKND/f3WfAGfjun0EzRvsiym7NXOC4AcWsKafSoOThmQmxhYJdeR+9EGQJnaTKZ87M57HkzKpEC1QclbZPSCBTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BFzXWTzzslx5U9X7qQUrd6X3o46nBMrSyF2ENI57XAo=;
+ b=HVDUCMXXoSRKz6s+Qz+eaW8tyJYmrkUaZ8MST0hLMjCdwJTLioxO1/sK1gRGSALtsP/zjQq9YAT4uRChOxGGwKQYq135j94qrk0wUtj0BEVBCqtbm4V2zsM7qeKRtn0JQjg8lpNOZRFk1lS8zPdfJPEW86q9CM1IeN5vuQ60rs/GteAlqvzWwcgmHVXeQcwLF0FaTd3EQmT9KN7/e9d7LcJnCB+muZMkhwYfFeluvmumzZZLA0lNrMPGw/NDxu3RJ10TqbnasyAP6uFvvIkCd4iQTwpPF4yZwujQVojOh2XLa7i29M+m5Jbs96Bn6LpvtwhcDk1W0wzKEFk2F4M3Mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BFzXWTzzslx5U9X7qQUrd6X3o46nBMrSyF2ENI57XAo=;
+ b=dZZ/dudfEzG2QWOPgNx/E17m70r6YG8bsbNbuDa07YhECe5iv7i/ZzcS6KuoaF84io83fy76XHz3SYZV5N2L1Ywf82GTBILHx0nNDrPt2d8ODuL+PSS8ZzCepWJBQpZmE+2y/OImYU6Czf3fbhCMayHuYFDFRiS527AU7i+msmQ=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB9PR04MB9499.eurprd04.prod.outlook.com (2603:10a6:10:362::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.20; Thu, 10 Mar
+ 2022 13:34:03 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::ac0c:d5d:aaa9:36%5]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
+ 13:34:03 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Eric Dumazet <edumazet@google.com>,
+        Paul Blakey <paulb@nvidia.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        zhang kai <zhangkaiheb@126.com>,
+        Juhee Kang <claudiajkang@gmail.com>,
+        Andreas Oetken <ennoerlangen@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Anthony Harivel <anthony.harivel@linutronix.de>
+Subject: Re: [PATCH net-next] flow_dissector: Add support for HSRv0
+Thread-Topic: [PATCH net-next] flow_dissector: Add support for HSRv0
+Thread-Index: AQHYNFFpodv7PslbYE+FNdV48Aq/G6y4nmCA
+Date:   Thu, 10 Mar 2022 13:34:03 +0000
+Message-ID: <20220310133403.bjf2k4tgpwl5xtsy@skbuf>
+References: <20220310073505.49990-1-kurt@linutronix.de>
+In-Reply-To: <20220310073505.49990-1-kurt@linutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 49ea2643-9b72-4f54-5d18-08da029aa49f
+x-ms-traffictypediagnostic: DB9PR04MB9499:EE_
+x-microsoft-antispam-prvs: <DB9PR04MB94998559709C69FE8D1CAD33E00B9@DB9PR04MB9499.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mvZFcbZjz+kAt/bjDLqWPFWg15HwP8RJbBIDiOUXBNLcq3Ak11GUZtgs3rUmVxL7uF9jHez1ScOgMqBcDezbqtz74py9J2kisVy304SkT5xlJ4R+4tM1Nyaz21oT1cnOoFXEmUPvInCECqOHftr7oHJanz1/IUuFb2Kx+NqZLvrTAP87kaBz6uULBc/DazN4jfqf5mS/9jCCF8PhYKr6SxCP07dAqYFE/1HBpkjh8u90rHAY6SMC9Scfp8fTQ5RWxTlY+tu8LYDev5Yn4JIMCyGXnQgKY4G1El4utQbQHBsNEsKxE7RP68o6HP4nNE2KGmbI2BKU2rKmfJvTkBxYsCq6IoRmBw7D+ZfS7MwIZbMfJjGqpoTjMk24Mw+2wM6r24jyYB8M1O99tgg9Sz+eZKuPPLbUOxf3PKh/KOpTELKLQJBsnflL72Lj2u6Wc5myGM6E+VIisJXFhRKIz75ArJt3HOr3jf+k2qYwvPH4rOnUz6kq7XPRa1gx0Y7lUNyPuEMRirSLEvhAWog0Gq6I+P7RtcuzxlfhPy4tzZu60r5KF29aa3AZiJOdJXYTvClBdTq5BlHX4QlhUkU/cjZ7qFzgN5x7Xu5uVHFxaGhY5O+1V+gT2wjI900C/44h1ftVfrqKluyvCMpWrSbbRfM0VkG4FbLfxlQIEz0Naf3gApqgKaRTvmMrbNIZOPoINNw+3wppiTKIFr4gRugNUdaSXg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(71200400001)(6486002)(66446008)(76116006)(54906003)(8936002)(66476007)(66556008)(498600001)(9686003)(2906002)(122000001)(33716001)(6512007)(38100700002)(86362001)(66946007)(1076003)(186003)(5660300002)(4326008)(8676002)(6916009)(4744005)(7416002)(44832011)(38070700005)(6506007)(26005)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?eP72UYJKpjAnAYMw1h73aFFIeAMfkZ4kJjew5INdJuLg0sfPQQf7XRIPrNew?=
+ =?us-ascii?Q?OQssfOhHcgoS+zN92PdrmIz9SBuTIiFzrLLa15aX2uX1ENf9Ia8Xi0RutiLG?=
+ =?us-ascii?Q?jSk4IPbZq0vy3Lw6u9fiev2RVBeV6FYJUf9vfsiMxhHMcT/G+GH5nE7jELw/?=
+ =?us-ascii?Q?6qwSebfarMOYi/gwU/y0qAb5bSdYnqc7J3U0CLBxPzUyk04t8ykpSmwq8qtp?=
+ =?us-ascii?Q?wfKkHN4hCMfX2STMusNZZOHaoUHx4OwI4FZfkjq05Z5e7H9Jck+9DctbI1YK?=
+ =?us-ascii?Q?BGwI96DTJTp8ea8JNSCfoxeMXG5OCflZ+km1Xh27GS5XR2MpfzW9EaatGUEu?=
+ =?us-ascii?Q?bb3RqaXsWLPxhc5IqFYL/bMRWEtcjI5f11bLTCc0g2OsusjV7tVLgFdcMwE9?=
+ =?us-ascii?Q?OsmSfqJbmRjha2hK0l8eHviaKOE91OKQ00rR6zpL/N5f5qE4nQ5BPia1zchE?=
+ =?us-ascii?Q?cP8R2e7Ra/8suq0WK+70gRMRsbSjvQkgZRhxx8SBbhKkRektgbUM/Ws7EivQ?=
+ =?us-ascii?Q?ZHQYBHk+3HVVWvHO4Is+/KkwThuEYOZIR62HJUoF4lfkMgrYs/0ffUHWP0wr?=
+ =?us-ascii?Q?Zrc5iFc3ncKpnya/+b2FqYxk/G6tddjIUeLDlEp4oC6rjgGE3mYvUSNQzVZu?=
+ =?us-ascii?Q?6884CetJOtk/jLNRtcUKOKFzn23ODC/VuJMZAO5ySrmqf2S8Qaq9fftAwe1T?=
+ =?us-ascii?Q?7C/Bez2OECwEuuDL+k2d8TcGIyEL9O9273hGSAwRRztRXvKhd5ItBl5/3UHi?=
+ =?us-ascii?Q?5GpBDGLN+jHiivLaX9n18iVFAdukhTYYfUmfW5mMHd2EBoXu33lYt0JcHuVh?=
+ =?us-ascii?Q?2bLtjI6wW5A7FfyP/uadZyir9pWciwadpVoWV/U5PvdEp6VEO8aSfXrI2TMQ?=
+ =?us-ascii?Q?U1PHwE49V/oOuHe1OJds1Ny7LcaOfw/LGv4MAgy7rD8iQ1kQS/zJRSl6/lMj?=
+ =?us-ascii?Q?E+txGTAtFt+h8TaGOIrNJtnjWM3zH9XAN82rQHkVNo2fAvt1SNZnFojMvZlq?=
+ =?us-ascii?Q?SrhyWAoPrPURXM5ajwB8VLqHXnKjnckVGqxaIadiCu53jXbxKgxpS9Rxh+Be?=
+ =?us-ascii?Q?5ckJhrteZzib3nC9IndnP4sc/eJGxG/3LSHfCZLpgJw+yoXju6zFZDPKt1kv?=
+ =?us-ascii?Q?L+NxoQAb0zFOhZnSdstMjER/sBN6OGyUfB2eO9wlOslIKDQkyQ6KdG2NgJJb?=
+ =?us-ascii?Q?mLKggUt/MTayEyIVOsLZ5AO1EerUKNr0ixeRECxFBJVQfXN77xLt6xqbhEH1?=
+ =?us-ascii?Q?C/CsA1F/pRU27+3eCk9sXjvWT4MRDT+0DNd9npWBh19MHOzPtlfws+kvAVgX?=
+ =?us-ascii?Q?DAYze/F/9RGQUbYb+o3P39mPM3aElhEGOxrIXyoXiaPYGcRxiBYbvftoYbkQ?=
+ =?us-ascii?Q?zwNsKR9bXGeutvlXdrWxTUMrYdtTbntOe+nkBHlFpbb+losORaAqwnfxbUoN?=
+ =?us-ascii?Q?aK7fETgE52U0YRj4C8pM4FzZKPpZOBpgjuNYaS8Y3uSX/U97MeYcOsG7D2+Q?=
+ =?us-ascii?Q?QCXRGfEDPpQqyiuPsUUYUln7th4G4qKa+uiQCrtbFKhLfCoOsHp557//voL0?=
+ =?us-ascii?Q?04KUv8RSgNB6GO0mIim77/5tQljlo087eZhBu/3b1foJHluRMnzjmbu9EKDK?=
+ =?us-ascii?Q?zVqr/Wq41hXt9K2eRlT7Cug=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <FDB6543001782242B9BFC209A915FBC7@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49ea2643-9b72-4f54-5d18-08da029aa49f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 13:34:03.5379
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sitSPwcOQZ+TJKHrukuIe7Oza71LGCtKAdC/C7Ukjxl2pRlJdsbk595gqD+V7QSE4oT6aksjXjR4mSBfV9jF2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9499
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,141 +129,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When iterating over sockets using vsock_for_each_connected_socket, make
-sure that a transport filters out sockets that don't belong to the
-transport.
+On Thu, Mar 10, 2022 at 08:35:05AM +0100, Kurt Kanzenbach wrote:
+> Commit bf08824a0f47 ("flow_dissector: Add support for HSR") added support=
+ for
+> HSR within the flow dissector. However, it only works for HSR in version
+> 1. Version 0 uses a different Ether Type. Add support for it.
+>=20
+> Reported-by: Anthony Harivel <anthony.harivel@linutronix.de>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-There actually was an issue caused by this; in a nested VM
-configuration, destroying the nested VM (which often involves the
-closing of /dev/vhost-vsock if there was h2g connections to the nested
-VM) kills not only the h2g connections, but also all existing g2h
-connections to the (outmost) host which are totally unrelated.
+This observation came up as a result of the fact that HSRv0 is still in
+actual use, or just for correctness' sake?
 
-Tested: Executed the following steps on Cuttlefish (Android running on a
-VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
-connection inside the VM, (2) open and then close /dev/vhost-vsock by
-`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
-session is not reset.
-
-[1] https://android.googlesource.com/device/google/cuttlefish/
-
-Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
-Signed-off-by: Jiyong Park <jiyong@google.com>
----
-Changes in v2:
-  - Squashed into a single patch
-
- drivers/vhost/vsock.c            | 3 ++-
- include/net/af_vsock.h           | 3 ++-
- net/vmw_vsock/af_vsock.c         | 9 +++++++--
- net/vmw_vsock/virtio_transport.c | 7 +++++--
- net/vmw_vsock/vmci_transport.c   | 3 ++-
- 5 files changed, 18 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 37f0b4274113..e6c9d41db1de 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 
- 	/* Iterating over all connections for all CIDs to find orphans is
- 	 * inefficient.  Room for improvement here. */
--	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
-+	vsock_for_each_connected_socket(&vhost_transport.transport,
-+					vhost_vsock_reset_orphans);
- 
- 	/* Don't check the owner, because we are in the release path, so we
- 	 * need to stop the vsock device in any case.
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index ab207677e0a8..f742e50207fb 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
- struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
- 					 struct sockaddr_vm *dst);
- void vsock_remove_sock(struct vsock_sock *vsk);
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk));
- int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
- bool vsock_find_cid(unsigned int cid);
- 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 38baeb189d4e..f04abf662ec6 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
- }
- EXPORT_SYMBOL_GPL(vsock_remove_sock);
- 
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk))
- {
- 	int i;
- 
-@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
- 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
- 		struct vsock_sock *vsk;
- 		list_for_each_entry(vsk, &vsock_connected_table[i],
--				    connected_table)
-+				    connected_table) {
-+			if (vsk->transport != transport)
-+				continue;
-+
- 			fn(sk_vsock(vsk));
-+		}
- 	}
- 
- 	spin_unlock_bh(&vsock_table_lock);
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index fb3302fff627..5afc194a58bb 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -24,6 +24,7 @@
- static struct workqueue_struct *virtio_vsock_workqueue;
- static struct virtio_vsock __rcu *the_virtio_vsock;
- static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
-+static struct virtio_transport virtio_transport; /* forward declaration */
- 
- struct virtio_vsock {
- 	struct virtio_device *vdev;
-@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
- 	switch (le32_to_cpu(event->id)) {
- 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
- 		virtio_vsock_update_guest_cid(vsock);
--		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+		vsock_for_each_connected_socket(&virtio_transport.transport,
-+						virtio_vsock_reset_sock);
- 		break;
- 	}
- }
-@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	synchronize_rcu();
- 
- 	/* Reset all connected sockets when the device disappear */
--	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+	vsock_for_each_connected_socket(&virtio_transport.transport,
-+					virtio_vsock_reset_sock);
- 
- 	/* Stop all work handlers to make sure no one is accessing the device,
- 	 * so we can safely call virtio_reset_device().
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 7aef34e32bdf..735d5e14608a 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -882,7 +882,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
- 					 const struct vmci_event_data *e_data,
- 					 void *client_data)
- {
--	vsock_for_each_connected_socket(vmci_transport_handle_detach);
-+	vsock_for_each_connected_socket(&vmci_transport,
-+					vmci_transport_handle_detach);
- }
- 
- static void vmci_transport_recv_pkt_work(struct work_struct *work)
-
-base-commit: 3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
--- 
-2.35.1.723.g4982287a31-goog
-
+> ---
+>  net/core/flow_dissector.c | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> index 34441a32e3be..03b6e649c428 100644
+> --- a/net/core/flow_dissector.c
+> +++ b/net/core/flow_dissector.c
+> @@ -1283,6 +1283,7 @@ bool __skb_flow_dissect(const struct net *net,
+>  		break;
+>  	}
+> =20
+> +	case htons(ETH_P_PRP):
+>  	case htons(ETH_P_HSR): {
+>  		struct hsr_tag *hdr, _hdr;
+> =20
+> --=20
+> 2.30.2
+>=
