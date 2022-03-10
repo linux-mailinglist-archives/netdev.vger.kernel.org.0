@@ -2,337 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C50C44D4D58
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2974D4D3E
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344060AbiCJPO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 10:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36748 "EHLO
+        id S243857AbiCJPP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 10:15:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345927AbiCJPNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:13:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F5818CC16;
-        Thu, 10 Mar 2022 07:11:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43A9CB826A7;
-        Thu, 10 Mar 2022 15:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8E2AC340E8;
-        Thu, 10 Mar 2022 15:11:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646925069;
-        bh=JvrfE5TvRk4CMy3XwYhop6gLRKNZsMIKrNNEdCW1/oo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LDiSDCl9M7475v50zFK02U0ry3YwyAFVxWIMbEVqbDFFK1nqR8XT9B/+KGxXhoAQz
-         zVLRHRIZBWVaNFZjU4bNS6RdPQNFQUyA6Av767HI8u4K0EHPyLjRNa/AuMxvveKzOo
-         lBixxntNbWXiuuc0OGO2hSSNBUkIw4scx96KIpf0Bg5EQ83VcVyyUWtyfkyOd6atoM
-         ERWZbv8EN5SG0Pn5cMx1Hv6Xc9CZwg+53HUVP3Tmdh1F1GcUZm52p1fhpc+EWHwSxz
-         MH6X4Npq8BfenoG9l/DCVBXfdE0i3qLW57Xr8VBzDsbB2Gn9o74HPwTGWc2uo8Qp3X
-         cAx9MePe2ux5g==
-Date:   Fri, 11 Mar 2022 00:11:03 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v10 12/12] fprobe: Add a selftest for fprobe
-Message-Id: <20220311001103.6d3f30c80175b0d169e3f4f6@kernel.org>
-In-Reply-To: <CAEf4BzavZUn2Y40MjyGg_gkZqYQet_L0sWAJGOSgt_QVrtf21Q@mail.gmail.com>
-References: <164673771096.1984170.8155877393151850116.stgit@devnote2>
-        <164673784786.1984170.244480726272055433.stgit@devnote2>
-        <20220310091745.73580bd6314803cfbf21312d@kernel.org>
-        <CAEf4BzavZUn2Y40MjyGg_gkZqYQet_L0sWAJGOSgt_QVrtf21Q@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232609AbiCJPPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:15:42 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF64B2D72
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:14:36 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id 25so8159656ljv.10
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:14:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=Eze/8M2gI0/1aPxBC8oNjaaWCvFby/x8ND3xWZra1Gk=;
+        b=JDhd3TyE53QQTFNn518ewb1ExwOApdXXEJW1aDE5Be9Sn0zuMirJ8Zcd1A7MCvaWUq
+         3XY1fjzMggkv1ldxzwzocSmv1scaP04XFE6RTGdib7C9HaN+7mtWgNMZRQPsZ240A67O
+         r0KuwT9DXQgPlm+L8Hnn+lBh3z/Kuea3tYpzU94npVEKbM1IWMUdqk6ZKyM3jPHfxomn
+         TuB1c4r/lDva+znWi2Pkte+YKJ4y1EYwGSE9HaFN2O1ViJIM1DNG0hpplTzWPYsjwhSb
+         +zCLVnrLindrZjLE51fDCHSCnywUvQ2fbUi7INLA4x1UZ8t9+gngZ1w1In3Cwl1xYCFj
+         WJmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Eze/8M2gI0/1aPxBC8oNjaaWCvFby/x8ND3xWZra1Gk=;
+        b=k9TIDlKRJ6MA2cW203lO6r5wTYI9PvS2tAsWjdZzqXzL8BkoFAWUXAI5pFAi1uFQ7E
+         9UYsj6AbVPwI60Nytipar7HxvfGjqBqWMdqNfpOlw0Rc8QakXFZIqSDY2ko66JhJG7B7
+         vBbEVLggSxSBGT2AJel2L+lpkGBdmipJBi2yA3iFfir37Epfcr+f5h8TzmGloSYnkZ4z
+         mb1cP419Q77mjp8SBQM+UK0Q6qUhfse3lq48EHO4+5u9j3RPGjbq8B8+HZ7gfNpYFt4J
+         2Mt5L4KgXXsI8Pt8plVbXKgHehzBbczrsRn8FlodvksgD/JzSZx4NFdTR1PkjrVEbywC
+         PY1A==
+X-Gm-Message-State: AOAM530CeCpauWKiNthwSq/JqkPsXHifqZWiPkLAgR3/TBU7o70Bdcdc
+        5XjT0iFms7Gz5CSB7avNSIkSlQ==
+X-Google-Smtp-Source: ABdhPJwnRxRsFwfExg2LFKi8X51nSOcL450NxvZfSsH2xnJVTTBvAShauyIOr0ArHxmnUAhRDccEyA==
+X-Received: by 2002:a05:651c:2115:b0:246:2a10:acb8 with SMTP id a21-20020a05651c211500b002462a10acb8mr3386215ljq.345.1646925274899;
+        Thu, 10 Mar 2022 07:14:34 -0800 (PST)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id c16-20020a056512105000b0044315cbf157sm1026257lfb.64.2022.03.10.07.14.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 07:14:34 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 10/10] net: dsa: mv88e6xxx: MST Offloading
+In-Reply-To: <20220303222658.7ykn6grkkp6htm7a@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
+ <20220301100321.951175-11-tobias@waldekranz.com>
+ <20220303222658.7ykn6grkkp6htm7a@skbuf>
+Date:   Thu, 10 Mar 2022 16:14:31 +0100
+Message-ID: <87k0d1n8ko.fsf@waldekranz.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Mar 2022 16:40:00 -0800
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+On Fri, Mar 04, 2022 at 00:26, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Mar 01, 2022 at 11:03:21AM +0100, Tobias Waldekranz wrote:
+>> Allocate a SID in the STU for each MSTID in use by a bridge and handle
+>> the mapping of MSTIDs to VLANs using the SID field of each VTU entry.
+>> 
+>> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> ---
+>>  drivers/net/dsa/mv88e6xxx/chip.c | 178 +++++++++++++++++++++++++++++++
+>>  drivers/net/dsa/mv88e6xxx/chip.h |  13 +++
+>>  2 files changed, 191 insertions(+)
+>> 
+>> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+>> index c14a62aa6a6c..4fb4ec1dff79 100644
+>> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+>> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+>> @@ -1818,6 +1818,137 @@ static int mv88e6xxx_stu_setup(struct mv88e6xxx_chip *chip)
+>>  	return mv88e6xxx_stu_loadpurge(chip, &stu);
+>>  }
+>>  
+>> +static int mv88e6xxx_sid_new(struct mv88e6xxx_chip *chip, u8 *sid)
+>> +{
+>> +	DECLARE_BITMAP(busy, MV88E6XXX_N_SID) = { 0 };
+>> +	struct mv88e6xxx_mst *mst;
+>> +
+>> +	set_bit(0, busy);
+>> +
+>> +	list_for_each_entry(mst, &chip->msts, node) {
+>> +		set_bit(mst->stu.sid, busy);
+>> +	}
+>> +
+>> +	*sid = find_first_zero_bit(busy, MV88E6XXX_N_SID);
+>> +
+>> +	return (*sid >= mv88e6xxx_max_sid(chip)) ? -ENOSPC : 0;
+>> +}
+>> +
+>> +static int mv88e6xxx_sid_put(struct mv88e6xxx_chip *chip, u8 sid)
+>> +{
+>> +	struct mv88e6xxx_mst *mst, *tmp;
+>> +	int err = 0;
+>> +
+>> +	list_for_each_entry_safe(mst, tmp, &chip->msts, node) {
+>> +		if (mst->stu.sid == sid) {
+>> +			if (refcount_dec_and_test(&mst->refcnt)) {
+>> +				mst->stu.valid = false;
+>> +				err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+>
+> It is interesting what to do if this fails. Possibly not this, because
+> the entry remains in hardware but not in software.
 
-> On Wed, Mar 9, 2022 at 4:17 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > Hi,
-> >
-> > On Tue,  8 Mar 2022 20:10:48 +0900
-> > Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > > Add a KUnit based selftest for fprobe interface.
-> > >
-> > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > ---
-> > >  Changes in v9:
-> > >   - Rename fprobe_target* to fprobe_selftest_target*.
-> > >   - Find the correct expected ip by ftrace_location_range().
-> > >   - Since the ftrace_location_range() is not exposed to module, make
-> > >     this test only for embedded.
-> > >   - Add entry only test.
-> > >   - Reset the fprobe structure before reuse it.
-> > > ---
-> > >  lib/Kconfig.debug |   12 ++++
-> > >  lib/Makefile      |    2 +
-> > >  lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
-> > >  3 files changed, 188 insertions(+)
-> > >  create mode 100644 lib/test_fprobe.c
-> > >
-> > > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> > > index 14b89aa37c5c..ffc469a12afc 100644
-> > > --- a/lib/Kconfig.debug
-> > > +++ b/lib/Kconfig.debug
-> > > @@ -2100,6 +2100,18 @@ config KPROBES_SANITY_TEST
-> > >
-> > >         Say N if you are unsure.
-> > >
-> > > +config FPROBE_SANITY_TEST
-> > > +     bool "Self test for fprobe"
-> > > +     depends on DEBUG_KERNEL
-> > > +     depends on FPROBE
-> > > +     depends on KUNIT
-> >
-> > Hmm, this caused a build error with allmodconfig because KUNIT=m but FPROBE_SANITY_TEST=y.
-> > Let me fix this issue.
-> 
-> Please base on top of bpf-next and add [PATCH v11 bpf-next] to subject.
+True, I will let the error bubble up and keep the SW state in sync with
+the hardware.
 
-OK, let me rebase on it.
-There are master and for-next branch, which one is better to use?
+>> +				list_del(&mst->node);
+>> +				kfree(mst);
+>> +			}
+>> +
+>> +			return err;
+>> +		}
+>> +	}
+>> +
+>> +	return -ENOENT;
+>> +}
+>> +
+>> +static int mv88e6xxx_sid_get(struct mv88e6xxx_chip *chip, struct net_device *br,
+>> +			     u16 msti, u8 *sid)
+>> +{
+>> +	struct mv88e6xxx_mst *mst;
+>> +	int err, i;
+>> +
+>> +	if (!br)
+>> +		return 0;
+>
+> Is this condition possible?
 
-Thank you,
+Removing.
 
-> 
-> >
-> > Thank you,
-> >
-> > > +     help
-> > > +       This option will enable testing the fprobe when the system boot.
-> > > +       A series of tests are made to verify that the fprobe is functioning
-> > > +       properly.
-> > > +
-> > > +       Say N if you are unsure.
-> > > +
-> > >  config BACKTRACE_SELF_TEST
-> > >       tristate "Self test for the backtrace code"
-> > >       depends on DEBUG_KERNEL
-> > > diff --git a/lib/Makefile b/lib/Makefile
-> > > index 300f569c626b..154008764b16 100644
-> > > --- a/lib/Makefile
-> > > +++ b/lib/Makefile
-> > > @@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
-> > >  obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
-> > >  obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
-> > >  obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-> > > +CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-> > > +obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
-> > >  #
-> > >  # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
-> > >  # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-> > > diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-> > > new file mode 100644
-> > > index 000000000000..ed70637a2ffa
-> > > --- /dev/null
-> > > +++ b/lib/test_fprobe.c
-> > > @@ -0,0 +1,174 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > > +/*
-> > > + * test_fprobe.c - simple sanity test for fprobe
-> > > + */
-> > > +
-> > > +#include <linux/kernel.h>
-> > > +#include <linux/fprobe.h>
-> > > +#include <linux/random.h>
-> > > +#include <kunit/test.h>
-> > > +
-> > > +#define div_factor 3
-> > > +
-> > > +static struct kunit *current_test;
-> > > +
-> > > +static u32 rand1, entry_val, exit_val;
-> > > +
-> > > +/* Use indirect calls to avoid inlining the target functions */
-> > > +static u32 (*target)(u32 value);
-> > > +static u32 (*target2)(u32 value);
-> > > +static unsigned long target_ip;
-> > > +static unsigned long target2_ip;
-> > > +
-> > > +static noinline u32 fprobe_selftest_target(u32 value)
-> > > +{
-> > > +     return (value / div_factor);
-> > > +}
-> > > +
-> > > +static noinline u32 fprobe_selftest_target2(u32 value)
-> > > +{
-> > > +     return (value / div_factor) + 1;
-> > > +}
-> > > +
-> > > +static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-> > > +{
-> > > +     KUNIT_EXPECT_FALSE(current_test, preemptible());
-> > > +     /* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-> > > +     if (ip != target_ip)
-> > > +             KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-> > > +     entry_val = (rand1 / div_factor);
-> > > +}
-> > > +
-> > > +static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-> > > +{
-> > > +     unsigned long ret = regs_return_value(regs);
-> > > +
-> > > +     KUNIT_EXPECT_FALSE(current_test, preemptible());
-> > > +     if (ip != target_ip) {
-> > > +             KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-> > > +             KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-> > > +     } else
-> > > +             KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-> > > +     KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-> > > +     exit_val = entry_val + div_factor;
-> > > +}
-> > > +
-> > > +/* Test entry only (no rethook) */
-> > > +static void test_fprobe_entry(struct kunit *test)
-> > > +{
-> > > +     struct fprobe fp_entry = {
-> > > +             .entry_handler = fp_entry_handler,
-> > > +     };
-> > > +
-> > > +     current_test = test;
-> > > +
-> > > +     /* Before register, unregister should be failed. */
-> > > +     KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-> > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-> > > +
-> > > +     entry_val = 0;
-> > > +     exit_val = 0;
-> > > +     target(rand1);
-> > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > +     KUNIT_EXPECT_EQ(test, 0, exit_val);
-> > > +
-> > > +     entry_val = 0;
-> > > +     exit_val = 0;
-> > > +     target2(rand1);
-> > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > +     KUNIT_EXPECT_EQ(test, 0, exit_val);
-> > > +
-> > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-> > > +}
-> > > +
-> > > +static void test_fprobe(struct kunit *test)
-> > > +{
-> > > +     struct fprobe fp = {
-> > > +             .entry_handler = fp_entry_handler,
-> > > +             .exit_handler = fp_exit_handler,
-> > > +     };
-> > > +
-> > > +     current_test = test;
-> > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-> > > +
-> > > +     entry_val = 0;
-> > > +     exit_val = 0;
-> > > +     target(rand1);
-> > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > +
-> > > +     entry_val = 0;
-> > > +     exit_val = 0;
-> > > +     target2(rand1);
-> > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > +
-> > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-> > > +}
-> > > +
-> > > +static void test_fprobe_syms(struct kunit *test)
-> > > +{
-> > > +     static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-> > > +     struct fprobe fp = {
-> > > +             .entry_handler = fp_entry_handler,
-> > > +             .exit_handler = fp_exit_handler,
-> > > +     };
-> > > +
-> > > +     current_test = test;
-> > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-> > > +
-> > > +     entry_val = 0;
-> > > +     exit_val = 0;
-> > > +     target(rand1);
-> > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > +
-> > > +     entry_val = 0;
-> > > +     exit_val = 0;
-> > > +     target2(rand1);
-> > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > +
-> > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-> > > +}
-> > > +
-> > > +static unsigned long get_ftrace_location(void *func)
-> > > +{
-> > > +     unsigned long size, addr = (unsigned long)func;
-> > > +
-> > > +     if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-> > > +             return 0;
-> > > +
-> > > +     return ftrace_location_range(addr, addr + size - 1);
-> > > +}
-> > > +
-> > > +static int fprobe_test_init(struct kunit *test)
-> > > +{
-> > > +     do {
-> > > +             rand1 = prandom_u32();
-> > > +     } while (rand1 <= div_factor);
-> > > +
-> > > +     target = fprobe_selftest_target;
-> > > +     target2 = fprobe_selftest_target2;
-> > > +     target_ip = get_ftrace_location(target);
-> > > +     target2_ip = get_ftrace_location(target2);
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static struct kunit_case fprobe_testcases[] = {
-> > > +     KUNIT_CASE(test_fprobe_entry),
-> > > +     KUNIT_CASE(test_fprobe),
-> > > +     KUNIT_CASE(test_fprobe_syms),
-> > > +     {}
-> > > +};
-> > > +
-> > > +static struct kunit_suite fprobe_test_suite = {
-> > > +     .name = "fprobe_test",
-> > > +     .init = fprobe_test_init,
-> > > +     .test_cases = fprobe_testcases,
-> > > +};
-> > > +
-> > > +kunit_test_suites(&fprobe_test_suite);
-> > > +
-> > > +MODULE_LICENSE("GPL");
-> > >
-> >
-> >
-> > --
-> > Masami Hiramatsu <mhiramat@kernel.org>
+>> +
+>> +	if (!mv88e6xxx_has_stu(chip))
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	list_for_each_entry(mst, &chip->msts, node) {
+>> +		if (mst->br == br && mst->msti == msti) {
+>> +			refcount_inc(&mst->refcnt);
+>> +			*sid = mst->stu.sid;
+>> +			return 0;
+>> +		}
+>> +	}
+>> +
+>> +	err = mv88e6xxx_sid_new(chip, sid);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	mst = kzalloc(sizeof(*mst), GFP_KERNEL);
+>> +	if (!mst)
+>> +		return -ENOMEM;
+>
+> This leaks the new SID.
 
+I don't think so, the SID is just calculated based on what is in
+chip->msts. However:
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+- The naming is bad. Will change.
+
+>> +
+>> +	INIT_LIST_HEAD(&mst->node);
+>> +	refcount_set(&mst->refcnt, 1);
+>> +	mst->br = br;
+>> +	mst->msti = msti;
+>> +	mst->stu.valid = true;
+>> +	mst->stu.sid = *sid;
+>> +
+>> +	/* The bridge starts out all ports in the disabled state. But
+>> +	 * a STU state of disabled means to go by the port-global
+>> +	 * state. So we set all user port's initial state to blocking,
+>> +	 * to match the bridge's behavior.
+>> +	 */
+>> +	for (i = 0; i < mv88e6xxx_num_ports(chip); i++)
+>> +		mst->stu.state[i] = dsa_is_user_port(chip->ds, i) ?
+>> +			MV88E6XXX_PORT_CTL0_STATE_BLOCKING :
+>> +			MV88E6XXX_PORT_CTL0_STATE_DISABLED;
+>> +
+>> +	list_add_tail(&mst->node, &chip->msts);
+>> +	return mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+>
+> And this doesn't behave too well on failure (the MSTID exists in
+> software but not in hardware).
+
+Yes, fixing in v3.
+
+>> +}
+>> +
+>> +static int mv88e6xxx_port_mst_state_set(struct dsa_switch *ds, int port,
+>> +					const struct switchdev_mst_state *st)
+>> +{
+>> +	struct dsa_port *dp = dsa_to_port(ds, port);
+>> +	struct mv88e6xxx_chip *chip = ds->priv;
+>> +	struct mv88e6xxx_mst *mst;
+>> +	u8 state;
+>> +	int err;
+>> +
+>> +	if (!mv88e6xxx_has_stu(chip))
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	switch (st->state) {
+>> +	case BR_STATE_DISABLED:
+>> +	case BR_STATE_BLOCKING:
+>> +	case BR_STATE_LISTENING:
+>> +		state = MV88E6XXX_PORT_CTL0_STATE_BLOCKING;
+>> +		break;
+>> +	case BR_STATE_LEARNING:
+>> +		state = MV88E6XXX_PORT_CTL0_STATE_LEARNING;
+>> +		break;
+>> +	case BR_STATE_FORWARDING:
+>> +		state = MV88E6XXX_PORT_CTL0_STATE_FORWARDING;
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	list_for_each_entry(mst, &chip->msts, node) {
+>> +		if (mst->br == dsa_port_bridge_dev_get(dp) &&
+>> +		    mst->msti == st->msti) {
+>> +			if (mst->stu.state[port] == state)
+>> +				return 0;
+>> +
+>> +			mst->stu.state[port] = state;
+>> +			mv88e6xxx_reg_lock(chip);
+>> +			err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+>> +			mv88e6xxx_reg_unlock(chip);
+>> +			return err;
+>> +		}
+>> +	}
+>> +
+>> +	return -ENOENT;
+>> +}
+>> +
+>>  static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+>>  					u16 vid)
+>>  {
+>> @@ -2437,6 +2568,12 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
+>>  	if (err)
+>>  		return err;
+>>  
+>> +	if (!vlan.valid && vlan.sid) {
+>> +		err = mv88e6xxx_sid_put(chip, vlan.sid);
+>> +		if (err)
+>> +			return err;
+>> +	}
+>> +
+>>  	return mv88e6xxx_g1_atu_remove(chip, vlan.fid, port, false);
+>>  }
+>>  
+>> @@ -2482,6 +2619,44 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
+>>  	return err;
+>>  }
+>>  
+>> +static int mv88e6xxx_vlan_msti_set(struct dsa_switch *ds,
+>> +				   const struct switchdev_attr *attr)
+>> +{
+>> +	const struct switchdev_vlan_attr *vattr = &attr->u.vlan_attr;
+>> +	struct mv88e6xxx_chip *chip = ds->priv;
+>> +	struct mv88e6xxx_vtu_entry vlan;
+>> +	u8 new_sid;
+>> +	int err;
+>> +
+>> +	mv88e6xxx_reg_lock(chip);
+>> +
+>> +	err = mv88e6xxx_vtu_get(chip, vattr->vid, &vlan);
+>> +	if (err)
+>> +		goto unlock;
+>> +
+>> +	if (!vlan.valid) {
+>> +		err = -EINVAL;
+>> +		goto unlock;
+>> +	}
+>> +
+>> +	err = mv88e6xxx_sid_get(chip, attr->orig_dev, vattr->msti, &new_sid);
+>> +	if (err)
+>> +		goto unlock;
+>> +
+>> +	if (vlan.sid) {
+>> +		err = mv88e6xxx_sid_put(chip, vlan.sid);
+>> +		if (err)
+>> +			goto unlock;
+>> +	}
+>> +
+>> +	vlan.sid = new_sid;
+>> +	err = mv88e6xxx_vtu_loadpurge(chip, &vlan);
+>
+> Maybe you could move mv88e6xxx_sid_put() after this succeeds?
+
+Yep. Also made sure to avoid needless updates of the VTU entry if it
+already belonged to the correct SID.
+
+Thanks for the great review!
