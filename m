@@ -2,194 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BFDB4D537F
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 22:14:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F9BB4D5389
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 22:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343911AbiCJVPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 16:15:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
+        id S243249AbiCJVU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 16:20:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245522AbiCJVPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 16:15:42 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC4E16E7CF
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 13:14:40 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id 15-20020a17090a098f00b001bef0376d5cso6343948pjo.5
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 13:14:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=tfG6NA9TljjE9JUfuXGD7jLzBJpRfBuiNXsgSuyR/Ok=;
-        b=F4KUSzFWvkikwF0SvA/qDB9X8w9nBp7jy5EUYNotdSB/O1cQAaoC2n7smN/xhKFsVq
-         lgRimNXnnzTKQgAh36ozzlolX/oy5+CPtGHsIUTg84w2InqGzLK4Aewua7oqCR5ljjSf
-         BZof0xl6VEUrIKuVpByM72uCjVnd8VV3pA00cXVhILzl0ag0zPJEoCkLV8tZtydKA34V
-         R+L2NX89mBNmGhMrs2BO6fwlAQxlBJDvHsFhqSmwHZziLvEhypYWJ9qmSeyBDNa+bJsA
-         VtYSmUdIqKB+Nn9zeXP2Go85oPJ/3satZnDkEMcgLKXfYwbxJ2IBewpYwktqTmKcv+MX
-         4oSQ==
+        with ESMTP id S233866AbiCJVU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 16:20:57 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6468B5BE66
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 13:19:55 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 1D4343F1AF
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 21:19:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646947187;
+        bh=9DmBnTPJmgfr8wJC4s2tQqC5+M2g/VQlbp1lfsPPtrg=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=TbYxkSGDGpB+9LWMIcVrg/bKxfcGPedih+1jROjbklTGSPGnT8HSP3sgc8bZ6/LkS
+         rOyeRbCE4m31eogGMA8HknzxDE9ntuUwsfoqtUL4XLQR3K/uIlBPg8tJQqjgeWwPNg
+         NFyle0JOpc7uViUfkSixVt881DBA2mfBmfIu2ZOr7wIyKO7hxXCEIN6RTqu/IEOMaa
+         uiob7bceabyF7HlIlNWLngGVTisQgQIgJx5IPZExaKB6xe7jAh178Hv930En95ltg8
+         lmxguayBsyolhw/kyqh5IY45ySP8KH4OJX3aF8QfVpRr7EYLuj2G9ythIqYZILjIl6
+         8I+KsxVWG/vhg==
+Received: by mail-ej1-f70.google.com with SMTP id m4-20020a170906160400b006be3f85906eso3777270ejd.23
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 13:19:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=tfG6NA9TljjE9JUfuXGD7jLzBJpRfBuiNXsgSuyR/Ok=;
-        b=eKfnNUgE8A1LjuVk4U08/2CulY4xSia7Q/nhhBh13YRPyUVMG0VxFW2FEhKnXbRLnL
-         d/bqgsDH2knf/QgVqADvGZiKNkPBa9Xnewxvy/pD0b9pjb/XIcwEbT7DnUywrpTNkRcH
-         EJnzgn6eugAVX8aU69ecaCEoG9xoL4/fW7HWAlnltFm8gqRWLIPE5/1MT0iT6oIYpxaD
-         3knES5/PqGY/JvN2LJcJ+2Ley9uejPmnh9rGG2zQPlpNiaQf6FPviqtefmkAV8KaEgay
-         Ffg4SFN3ZyCks38BcsbSS82/QPnv0Lz7xDuDt/qzyBSrHWjDa5cNrTrnTAkETgEaOAuJ
-         r/xw==
-X-Gm-Message-State: AOAM532o30QH57I6VcmfycyyeUATdQJW2NOTBYxcDFbv5pxkEVWGh80w
-        0rpvmL58OPa7uq7CcCzjbxj/4A==
-X-Google-Smtp-Source: ABdhPJxNTQEa85dZgL83y3cDavoYSwPfMnwV9Ro4rKSYMoqy3OfHuHslGhqQqYFrXZyWOjFBLbBzEQ==
-X-Received: by 2002:a17:90b:4ac1:b0:1bf:6d51:1ad9 with SMTP id mh1-20020a17090b4ac100b001bf6d511ad9mr18019630pjb.199.1646946880235;
-        Thu, 10 Mar 2022 13:14:40 -0800 (PST)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056a00080700b004f6ff260c9dsm8453837pfk.154.2022.03.10.13.14.39
+        bh=9DmBnTPJmgfr8wJC4s2tQqC5+M2g/VQlbp1lfsPPtrg=;
+        b=MgNQXEPBYx6yXt52itfuu4oAJ3cuqvneoGyGgy1sZrP6LBd4aMjukEWEHpOq7kEusb
+         G+5Exp333AKFMatdT7/jzuCor4ub81DdVcheNFWFC0SsZhzDkbGm+nd7hvxpt4/PZ9+e
+         ukKNZFCpVLBUqHDCLfFn2sXG8gn/H5DsEO8Ya14gZS1AJEA+7VbUFmFP+1PfON8m38E+
+         z1oGRoY3FO9OCPhvL3+IA4qK7P1ezmItmKG4UqIwiRNphVo6ZNGJcEPRF0Yk4OC6ZvV9
+         P0aajFRSljT1nJWLGUpm4elW+DcgxZYdYoxcJ8EQJxQuBSxnMJSuR8oK3vaCv9b+dNOb
+         azEg==
+X-Gm-Message-State: AOAM530iCAX77XN3pyldnIlICgV+piiliF96rgKcb4NaP8ZtBJHtviNz
+        ruUKI2q3DS8cuApCW/b+/YvbXJKYt6oDj8IQQH06lvQTgxLnTdf38bubjZKIzTOhe4021NWksUZ
+        8TiyjbTJeRYgzTEjXSRJmnAddICahYUAjzA==
+X-Received: by 2002:a17:906:4108:b0:6db:867c:f3ab with SMTP id j8-20020a170906410800b006db867cf3abmr4064710ejk.708.1646947186744;
+        Thu, 10 Mar 2022 13:19:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwpPhoEYeMm5ZEZqUHmwNDHKl/pnXpf7yeFjdCLVUvg18iW5ZSftFmEY3A2p0wQ8bC7jpG3FA==
+X-Received: by 2002:a17:906:4108:b0:6db:867c:f3ab with SMTP id j8-20020a170906410800b006db867cf3abmr4064700ejk.708.1646947186550;
+        Thu, 10 Mar 2022 13:19:46 -0800 (PST)
+Received: from [192.168.0.147] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id yy18-20020a170906dc1200b006d6e5c75029sm2114790ejb.187.2022.03.10.13.19.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 13:14:39 -0800 (PST)
-Message-ID: <d49428d1-109e-6778-6da0-3bcdb61d7dc4@linaro.org>
-Date:   Thu, 10 Mar 2022 13:14:38 -0800
+        Thu, 10 Mar 2022 13:19:46 -0800 (PST)
+Message-ID: <c5791ed0-1bde-3b55-1237-822111bd6251@canonical.com>
+Date:   Thu, 10 Mar 2022 22:19:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] net: ipv6: fix invalid alloclen in __ip6_append_data
+Subject: Re: [PATCH net-next v3 2/8] dt-bindings: phy: add the "fsl,lynx-28g"
+ compatible
 Content-Language: en-US
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com" 
-        <syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com>
-References: <20220308000146.534935-1-tadeusz.struk@linaro.org>
- <14626165dad64bbaabed58ba7d59e523@AcuMS.aculab.com>
- <6155b68c-161b-0745-b303-f7e037b56e28@linaro.org>
- <66463e26-8564-9f58-ce41-9a2843891d1a@kernel.org>
- <45522c89-a3b4-4b98-232b-9c69470124a3@linaro.org>
- <ff2e1007-5883-5178-6415-326d6ae69c34@kernel.org>
- <8fdab42f-171f-53d7-8e0e-b29161c0e3e2@linaro.org>
- <CA+FuTSeAL7TsdW4t7=G91n3JLuYehUCnDGH4_rHS=vjm1-Nv9Q@mail.gmail.com>
- <c7608cf0-fda2-1aa6-b0c1-3d4e0b5cad0e@linaro.org>
- <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <CA+FuTScPUVpyK6WYXrePTg_533VF2wfPww4MOJYa17v0xbLeGQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Hongxing Zhu <hongxing.zhu@nxp.com>
+References: <20220310145200.3645763-1-ioana.ciornei@nxp.com>
+ <20220310145200.3645763-3-ioana.ciornei@nxp.com>
+ <a32fa8df-bd07-8040-41cd-92484420756d@canonical.com>
+ <20220310173223.pl2asv55iqfmbasq@skbuf>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220310173223.pl2asv55iqfmbasq@skbuf>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/22 09:32, Willem de Bruijn wrote:
-> On Thu, Mar 10, 2022 at 11:06 AM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+On 10/03/2022 18:32, Ioana Ciornei wrote:
+> On Thu, Mar 10, 2022 at 05:47:31PM +0100, Krzysztof Kozlowski wrote:
+>> On 10/03/2022 15:51, Ioana Ciornei wrote:
+>>> Describe the "fsl,lynx-28g" compatible used by the Lynx 28G SerDes PHY
+>>> driver on Layerscape based SoCs.
 >>
->> On 3/10/22 06:39, Willem de Bruijn wrote:
->>> On Wed, Mar 9, 2022 at 4:37 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
->>>>
->>>> On 3/8/22 21:01, David Ahern wrote:
->>>>> On 3/8/22 12:46 PM, Tadeusz Struk wrote:
->>>>>> That fails in the same way:
->>>>>>
->>>>>> skbuff: skb_over_panic: text:ffffffff83e7b48b len:65575 put:65575
->>>>>> head:ffff888101f8a000 data:ffff888101f8a088 tail:0x100af end:0x6c0
->>>>>> dev:<NULL>
->>>>>> ------------[ cut here ]------------
->>>>>> kernel BUG at net/core/skbuff.c:113!
->>>>>> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
->>>>>> CPU: 0 PID: 1852 Comm: repro Not tainted
->>>>>> 5.17.0-rc7-00020-gea4424be1688-dirty #19
->>>>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35
->>>>>> RIP: 0010:skb_panic+0x173/0x175
->>>>>>
->>>>>> I'm not sure how it supposed to help since it doesn't change the
->>>>>> alloclen at all.
->>>>>
->>>>> alloclen is a function of fraglen and fraglen is a function of datalen.
->>>>
->>>> Ok, but in this case it doesn't affect the alloclen and it still fails.
->>>
->>> This is some kind of non-standard packet that is being constructed. Do
->>> we understand how it is different?
->>>
->>> The .syz reproducer is generally a bit more readable than the .c
->>> equivalent. Though not as much as an strace of the binary, if you
->>> can share that.
->>>
->>> r0 = socket$inet6_icmp_raw(0xa, 0x3, 0x3a)
->>> connect$inet6(r0, &(0x7f0000000040)={0xa, 0x0, 0x0, @dev, 0x6}, 0x1c)
->>> setsockopt$inet6_IPV6_HOPOPTS(r0, 0x29, 0x36,
->>> &(0x7f0000000100)=ANY=[@ANYBLOB="52b3"], 0x5a0)
->>> sendmmsg$inet(r0, &(0x7f00000002c0)=[{{0x0, 0x0,
->>> &(0x7f0000000000)=[{&(0x7f00000000c0)="1d2d", 0xfa5f}], 0x1}}], 0x1,
->>> 0xfe80)
+>> The message is a bit misleading, because it suggests you add only
+>> compatible to existing bindings. Instead please look at the git log how
+>> people usually describe it in subject and message.
+> 
+> Sure, I can change the title and commit message.
+> 
+>>> +patternProperties:
+>>> +  '^phy@[0-9a-f]$':
+>>> +    type: object
+>>> +    properties:
+>>> +      reg:
+>>> +        description:
+>>> +          Number of the SerDes lane.
+>>> +        minimum: 0
+>>> +        maximum: 7
+>>> +
+>>> +      "#phy-cells":
+>>> +        const: 0
 >>
->> Here it is:
->> https://termbin.com/krtr
->> It won't be of much help, I'm afraid, as the offending sendmmsg()
->> call isn't fully printed.
+>> Why do you need all these children? You just enumerated them, without
+>> statuses, resources or any properties. This should be rather just index
+>> of lynx-28g phy.
 > 
-> Thanks. It does offer some hints on the other two syscalls:
-> 
-> [pid   644] connect(3, {sa_family=AF_INET6, sin6_port=htons(0),
-> sin6_flowinfo=htonl(0), inet_pton(AF_INET6, "fe80::", &sin6_addr),
-> sin6_scope_id=if_nametoindex("tunl0")}, 28) = 0
-> [pid   644] setsockopt(3, SOL_IPV6, IPV6_HOPOPTS,
-> "R\263\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"...,
-> 1440) = 0
-> 
-> IPV6_HOPOPTS is ns_capable CAP_NET_RAW.
-> 
-> So this adds 1440 bytes to opt_nflen, which is included in
-> fragheaderlen, causing that to be exactly mtu. This means that the
-> payload can never be sent, as each fragment header eats up the entire
-> mtu? This is without any transport headers that would only be part of
-> the first fragment (which go into opt_flen).
-> 
-> If you can maybe catch the error before the skb_put and just return
-> EINVAL, we might see whether sendmmsg is relevant or a simple send
-> would be equivalent. (not super important, that appears unrelated.)
+> I am just describing each lane of the SerDes block so that each ethernet
+> dts node references it directly.
 
-Do you mean something like this:
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 622345af323e..6d45112322a0 100644
-@@ -1656,6 +1649,16 @@ static int __ip6_append_data(struct sock *sk,
-                         skb->protocol = htons(ETH_P_IPV6);
-                         skb->ip_summed = csummode;
-                         skb->csum = 0;
-+
-+                       /*
-+                        *      Check if there is still room for the payload
-+                        */
-+                       if (fragheaderlen >= mtu) {
-+                               err = -EMSGSIZE;
-+                               kfree_skb(skb);
-+                               goto error;
-+                       }
-+
-                         /* reserve for fragmentation and ipsec header */
-                         skb_reserve(skb, hh_len + sizeof(struct frag_hdr) +
-                                     dst_exthdrlen);
+Instead, phy user should reference phy device node and phy ID. Just like
+we do for other providers (everything with #xxxxx-cells).
 
+> Since I am new to the generic PHY infrastructure I was using the COMPHY
+> for the Marvell MVEBU SoCs (phy-mvebu-comphy.txt) as a loose example.
 
-That works as well.
--- 
-Thanks,
-Tadeusz
+I don't know it but it might not be the best example... Just because we
+have already some solution it does not mean it is good. :)
+
+> Each lane there is described as a different child node as well. The only
+> difference from the COMPHY is that Lynx 28G does not need #phy-cells =
+> <1> to reference the input port, we just use '#phy-cells = <0>' on each
+> lane.
+> 
+> What is wrong with this approach? Or better, is there an easier way to
+> do this?
+
+Because the nodes look artificial. It looks like you have nodes only
+differentiate by index. As I said before - there are no other properties
+in these nodes.
+
+Imagine now a clock provider with 500 clocks like this...
+
+The easier approach, especially since you have a shared registers, is to
+use phy-cells = 1, without artificial nodes just to pass the index.
+
+It would be entirely different if you actually had any properties in the
+children. IOW, if these were actually some blocks with their own
+characteristics and programming model.
+
+Best regards,
+Krzysztof
