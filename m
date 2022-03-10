@@ -2,89 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7B34D3F6F
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 03:57:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C67224D3F93
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 04:16:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236106AbiCJC6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 21:58:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
+        id S239169AbiCJDRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 22:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiCJC6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 21:58:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D10122F4F;
-        Wed,  9 Mar 2022 18:57:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FDA4610AB;
-        Thu, 10 Mar 2022 02:57:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10D6C340E8;
-        Thu, 10 Mar 2022 02:57:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646881025;
-        bh=TMsrqTzqCQLOUMzh7FRwm1+/uKdoKl9Y7nT2OfN8/OU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DJ4RP46yTKivVt/Kt+U3SyVfoLj3KMMvpA/Pk4VFoyPN8xBRwcjzVxeJRSkm2HZEB
-         PUQoQCYg5gpwsHV9obERrf+A0Me5Km7Ck6oY6rCMPY61Zj0EeCjc0MERYzVrRjbYCN
-         5HfHi2MCi2fC8oce8bLS1/g6iED04qCEGRMiL7P0By4DBKRcRO5HvxGxc1bucL4jMU
-         sIIbeg9gzbYagWfPZQQyIHEXXqmNgvxUzOT/EmOmq0IQMWNB4HPZ3dU34IFGwe9Gqf
-         gBOK8r5qjZBsA9C/VDXhtzHWcZFeTXVGRipc+7XuHUnBO2wXnov+q+T+2deDP6UUmr
-         /UXzhlp++wMLQ==
-Message-ID: <0f97539a-439f-d584-9ba3-f4bd5a302bc0@kernel.org>
-Date:   Wed, 9 Mar 2022 19:57:03 -0700
+        with ESMTP id S238404AbiCJDRN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 22:17:13 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09D213CD3;
+        Wed,  9 Mar 2022 19:16:12 -0800 (PST)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KDZ1M6RllzdZnM;
+        Thu, 10 Mar 2022 11:14:47 +0800 (CST)
+Received: from dggpeml100025.china.huawei.com (7.185.36.37) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Mar 2022 11:16:10 +0800
+Received: from dggpeml100016.china.huawei.com (7.185.36.216) by
+ dggpeml100025.china.huawei.com (7.185.36.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Mar 2022 11:16:10 +0800
+Received: from dggpeml100016.china.huawei.com ([7.185.36.216]) by
+ dggpeml100016.china.huawei.com ([7.185.36.216]) with mapi id 15.01.2308.021;
+ Thu, 10 Mar 2022 11:16:10 +0800
+From:   "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)" 
+        <longpeng2@huawei.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "sgarzare@redhat.com" <sgarzare@redhat.com>,
+        "stefanha@redhat.com" <stefanha@redhat.com>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Gonglei (Arei)" <arei.gonglei@huawei.com>,
+        Yechuan <yechuan@huawei.com>,
+        Huangzhichao <huangzhichao@huawei.com>
+Subject: RE: [RFC 2/3] vdpa: support exposing the count of vqs to userspace
+Thread-Topic: [RFC 2/3] vdpa: support exposing the count of vqs to userspace
+Thread-Index: AQHYC4S7IoB0Irjpnk2WF3yFNTfs4qxnk/AAgFCtsGA=
+Date:   Thu, 10 Mar 2022 03:16:10 +0000
+Message-ID: <4e1870fed35f487b8cc2a5d112e7c41b@huawei.com>
+References: <20220117092921.1573-1-longpeng2@huawei.com>
+ <20220117092921.1573-3-longpeng2@huawei.com>
+ <1a26d7b3-1020-50c5-f0a3-ebc645cdcddf@redhat.com>
+In-Reply-To: <1a26d7b3-1020-50c5-f0a3-ebc645cdcddf@redhat.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.148.223]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: IPv4 saddr do not match with selected output device in double
- default gateways scene
-Content-Language: en-US
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, ja@ssi.bg
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <58c15089-f1c7-675e-db4b-b6dfdad4b497@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/7/22 11:41 PM, Ziyang Xuan (William) wrote:
-> Create VLAN devices and add default gateways with following commands:
-> 
-> # ip link add link eth2 dev eth2.71 type vlan id 71
-> # ip link add link eth2 dev eth2.72 type vlan id 72
-> # ip addr add 192.168.71.41/24 dev eth2.71
-> # ip addr add 192.168.72.41/24 dev eth2.72
-> # ip link set eth2.71 up
-> # ip link set eth2.72 up
-> # route add -net default gw 192.168.71.1 dev eth2.71
-> # route add -net default gw 192.168.72.1 dev eth2.72
-> 
-
-...
-
-> We can find that IPv4 saddr "192.168.72.41" do not match with selected VLAN device "eth2.71".
-> 
-> I tracked the related processes, and found that user space program uses connect() firstly, then sends UDP packet.
-> 
-
-...
-
-> Deep tracking, it because fa->fa_default has changed in fib_select_default() after first __ip_route_output_key() process,
-> and a new fib_nh is selected in fib_select_default() within the second __ip_route_output_key() process but not update flowi4.
-> So the phenomenon described at the beginning happens.
-> 
-> Does it a kernel bug or a user problem? If it is a kernel bug, is there any good solution?
-
-That is a known problem with multipath routes.
+SGkgSmFzb24sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24g
+V2FuZyBbbWFpbHRvOmphc293YW5nQHJlZGhhdC5jb21dDQo+IFNlbnQ6IFR1ZXNkYXksIEphbnVh
+cnkgMTgsIDIwMjIgMTE6MDggQU0NCj4gVG86IExvbmdwZW5nIChNaWtlLCBDbG91ZCBJbmZyYXN0
+cnVjdHVyZSBTZXJ2aWNlIFByb2R1Y3QgRGVwdC4pDQo+IDxsb25ncGVuZzJAaHVhd2VpLmNvbT47
+IG1zdEByZWRoYXQuY29tOyBzZ2FyemFyZUByZWRoYXQuY29tOw0KPiBzdGVmYW5oYUByZWRoYXQu
+Y29tDQo+IENjOiB2aXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsga3Zt
+QHZnZXIua2VybmVsLm9yZzsNCj4gbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbmV0ZGV2
+QHZnZXIua2VybmVsLm9yZzsgR29uZ2xlaSAoQXJlaSkNCj4gPGFyZWkuZ29uZ2xlaUBodWF3ZWku
+Y29tPjsgWWVjaHVhbiA8eWVjaHVhbkBodWF3ZWkuY29tPjsgSHVhbmd6aGljaGFvDQo+IDxodWFu
+Z3poaWNoYW9AaHVhd2VpLmNvbT4NCj4gU3ViamVjdDogUmU6IFtSRkMgMi8zXSB2ZHBhOiBzdXBw
+b3J0IGV4cG9zaW5nIHRoZSBjb3VudCBvZiB2cXMgdG8gdXNlcnNwYWNlDQo+IA0KPiANCj4g5Zyo
+IDIwMjIvMS8xNyDkuIvljYg1OjI5LCBMb25ncGVuZyhNaWtlKSDlhpnpgZM6DQo+ID4gRnJvbTog
+TG9uZ3BlbmcgPGxvbmdwZW5nMkBodWF3ZWkuY29tPg0KPiA+DQo+ID4gLSBHRVRfVlFTX0NPVU5U
+OiB0aGUgY291bnQgb2YgdmlydHF1ZXVlcyB0aGF0IGV4cG9zZWQNCj4gPg0KPiA+IFNpZ25lZC1v
+ZmYtYnk6IExvbmdwZW5nIDxsb25ncGVuZzJAaHVhd2VpLmNvbT4NCj4gPiAtLS0NCj4gPiAgIGRy
+aXZlcnMvdmhvc3QvdmRwYS5jICAgICAgIHwgMTMgKysrKysrKysrKysrKw0KPiA+ICAgaW5jbHVk
+ZS91YXBpL2xpbnV4L3Zob3N0LmggfCAgMyArKysNCj4gPiAgIDIgZmlsZXMgY2hhbmdlZCwgMTYg
+aW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmhvc3QvdmRwYS5j
+IGIvZHJpdmVycy92aG9zdC92ZHBhLmMNCj4gPiBpbmRleCAxZWVhMTRhNGVhNTYuLmMxMDc0Mjc4
+ZmM2YiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3Zob3N0L3ZkcGEuYw0KPiA+ICsrKyBiL2Ry
+aXZlcnMvdmhvc3QvdmRwYS5jDQo+ID4gQEAgLTM2OSw2ICszNjksMTYgQEAgc3RhdGljIGxvbmcg
+dmhvc3RfdmRwYV9nZXRfY29uZmlnX3NpemUoc3RydWN0IHZob3N0X3ZkcGENCj4gKnYsIHUzMiBf
+X3VzZXIgKmFyZ3ApDQo+ID4gICAJcmV0dXJuIDA7DQo+ID4gICB9DQo+ID4NCj4gPiArc3RhdGlj
+IGxvbmcgdmhvc3RfdmRwYV9nZXRfdnFzX2NvdW50KHN0cnVjdCB2aG9zdF92ZHBhICp2LCB1MzIg
+X191c2VyICphcmdwKQ0KPiA+ICt7DQo+ID4gKwlzdHJ1Y3QgdmRwYV9kZXZpY2UgKnZkcGEgPSB2
+LT52ZHBhOw0KPiANCj4gDQo+IFdoaWxlIGF0IGl0LCBJIHRoaW5rIGl0J3MgYmV0dGVyIHRvIGNo
+YW5nZSB2ZHBhLT5udnFzIHRvIHVzZSB1MzI/DQo+IA0KDQpzdHJ1Y3Qgdmhvc3RfdmRwYSB7DQog
+ICAgLi4uDQoJaW50IG52cXM7DQogICAgLi4uDQp9Ow0KDQpzdHJ1Y3QgdmRwYV9kZXZpY2Ugew0K
+ICAgIC4uLg0KCWludCBudnFzOw0KICAgIC4uLg0KfTsNCg0KSSB0aGluayB3ZSBzaG91bGQgY2hh
+bmdlIGJvdGggdG8gdTMyPw0KDQoNCj4gVGhhbmtzDQo+IA0KPiANCj4gPiArDQo+ID4gKwlpZiAo
+Y29weV90b191c2VyKGFyZ3AsICZ2ZHBhLT5udnFzLCBzaXplb2YodmRwYS0+bnZxcykpKQ0KPiA+
+ICsJCXJldHVybiAtRUZBVUxUOw0KPiA+ICsNCj4gPiArCXJldHVybiAwOw0KPiA+ICt9DQo+ID4g
+Kw0KPiA+ICAgc3RhdGljIGxvbmcgdmhvc3RfdmRwYV92cmluZ19pb2N0bChzdHJ1Y3Qgdmhvc3Rf
+dmRwYSAqdiwgdW5zaWduZWQgaW50IGNtZCwNCj4gPiAgIAkJCQkgICB2b2lkIF9fdXNlciAqYXJn
+cCkNCj4gPiAgIHsNCj4gPiBAQCAtNTA5LDYgKzUxOSw5IEBAIHN0YXRpYyBsb25nIHZob3N0X3Zk
+cGFfdW5sb2NrZWRfaW9jdGwoc3RydWN0IGZpbGUgKmZpbGVwLA0KPiA+ICAgCWNhc2UgVkhPU1Rf
+VkRQQV9HRVRfQ09ORklHX1NJWkU6DQo+ID4gICAJCXIgPSB2aG9zdF92ZHBhX2dldF9jb25maWdf
+c2l6ZSh2LCBhcmdwKTsNCj4gPiAgIAkJYnJlYWs7DQo+ID4gKwljYXNlIFZIT1NUX1ZEUEFfR0VU
+X1ZRU19DT1VOVDoNCj4gPiArCQlyID0gdmhvc3RfdmRwYV9nZXRfdnFzX2NvdW50KHYsIGFyZ3Ap
+Ow0KPiA+ICsJCWJyZWFrOw0KPiA+ICAgCWRlZmF1bHQ6DQo+ID4gICAJCXIgPSB2aG9zdF9kZXZf
+aW9jdGwoJnYtPnZkZXYsIGNtZCwgYXJncCk7DQo+ID4gICAJCWlmIChyID09IC1FTk9JT0NUTENN
+RCkNCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L3Zob3N0LmggYi9pbmNsdWRl
+L3VhcGkvbGludXgvdmhvc3QuaA0KPiA+IGluZGV4IGJjNzRlOTVhMjczYS4uNWQ5OWU3YzI0MmEy
+IDEwMDY0NA0KPiA+IC0tLSBhL2luY2x1ZGUvdWFwaS9saW51eC92aG9zdC5oDQo+ID4gKysrIGIv
+aW5jbHVkZS91YXBpL2xpbnV4L3Zob3N0LmgNCj4gPiBAQCAtMTU0LDQgKzE1NCw3IEBADQo+ID4g
+ICAvKiBHZXQgdGhlIGNvbmZpZyBzaXplICovDQo+ID4gICAjZGVmaW5lIFZIT1NUX1ZEUEFfR0VU
+X0NPTkZJR19TSVpFCV9JT1IoVkhPU1RfVklSVElPLCAweDc5LCBfX3UzMikNCj4gPg0KPiA+ICsv
+KiBHZXQgdGhlIGNvdW50IG9mIGFsbCB2aXJ0cXVldWVzICovDQo+ID4gKyNkZWZpbmUgVkhPU1Rf
+VkRQQV9HRVRfVlFTX0NPVU5UCV9JT1IoVkhPU1RfVklSVElPLCAweDgwLCBfX3UzMikNCj4gPiAr
+DQo+ID4gICAjZW5kaWYNCg0K
