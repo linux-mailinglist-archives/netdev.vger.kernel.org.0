@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D10904D5089
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:29:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57EAD4D5093
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 18:33:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238572AbiCJRag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 12:30:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
+        id S245014AbiCJRbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 12:31:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233084AbiCJRaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:30:35 -0500
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3980ED9977;
-        Thu, 10 Mar 2022 09:29:34 -0800 (PST)
-Received: by mail-vs1-xe2f.google.com with SMTP id j128so6741541vsc.9;
-        Thu, 10 Mar 2022 09:29:34 -0800 (PST)
+        with ESMTP id S236035AbiCJRbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 12:31:44 -0500
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDBCF32B6;
+        Thu, 10 Mar 2022 09:30:43 -0800 (PST)
+Received: by mail-vs1-xe36.google.com with SMTP id v62so6796686vsv.1;
+        Thu, 10 Mar 2022 09:30:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5ynLUxPagzbzt73+sF9paCqCmYN+FM9q1F1vpoFV93w=;
-        b=NQ4m4zpK7JYHeuN8wrlffHEew2xy0NU8CSChCo5Qi/kgDuw8qAC3BDLtEZ2koYigjn
-         oWwMmPLxV3YT1hxA11qVLX/KDkZ4G+6uQmEDL/1QNwC0C0dsck0WPZea9DYpn8yyavUP
-         Jks6vVxoDfGgL6mENfnpLpw3bGb6jUfbMzngL+DnQK5TE0J5mJnyBf3nYGeJ9jTMjkgz
-         smOldpJsspaI09QD8cX7FwFIX5BeozTLP2jTH9VDpVcFfsGlCozuCZn6hEgsmDS1r0uZ
-         LkgLs1w1QnebDIy4OOt/3E2n6D8fbDWyQor7R0q9vGY0egU+aa/P+rgbN+5cpBTMGs58
-         UhfQ==
+        bh=kKv9p8ykc5d2ocj7ReSJuSuri2exBdglIdzEyvs2e3Y=;
+        b=CwHCW2iavwpF6S7Yi6aHLObRzx1aWxE/oHa540V+jFaR+IFHdSvAoPtyQm6IclPdxC
+         4fUJEue4mLHmhgpJG4wRn2MkXJoC2SOs0Hd/4dZmkylkQHl+heHUWkez3pDaCKAmR/kc
+         R66WBeP4+c5Gi5JhHkOhlRBkLtpso5L6+Ce41UjJLGqcXBokvof2MZ/beLwWwkS/O8Om
+         YXdg1zEM5htXzRbm8eyImJowLMGHVtr3gFGG0MnVsQsYk3qemfTUkf8ieJcQF/tCNGAm
+         EFJJpXwBilvent1vIwOCTq00kcV0wEpPqZfsBS4dArWvUfXBmBbZtpsAlx5ARf3RBCWO
+         2N1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5ynLUxPagzbzt73+sF9paCqCmYN+FM9q1F1vpoFV93w=;
-        b=izd/u3UqnOhfQmXN5PEt8i/jr4b9IOkkntJZ3/U0rtsRTMKkjxABxTKz2HRAsbCdbR
-         6462LQ4Y4poEGCp/3tywN8zfYXJrkpuCIAG5gGGiuCbDx6fLwe1Fx0n2+ZAzBwWOiPBs
-         mODvbLV5vBqOuN+a55fE/h9GJ0ZVO5fqmf8VNdKdCDflPuQONQE7OMKOyZuBLoBQme8P
-         pzmofcsU5euptpY7mO9mtpyQTqpuYDlUn1ufbi41y7xj4pzFmN0OHmutu1yuL0yxiqr2
-         3M0HcXThNyspWUOyIzuvXI/AboaH4gxepsy1KshyefiSE3vuqMYu9wps8Ty90GSpMI3s
-         AdEw==
-X-Gm-Message-State: AOAM532yarHjE6HRPYmzrgb7yyEQGuoLHBk13JU9cXt0LeF+vuo74HI9
-        ydhEfaWg9XKBJDJsTTYKifwVlRV32+QsAHTLCXYtFxhDMR3yuQ==
-X-Google-Smtp-Source: ABdhPJyx6mK0r4fHN/kqz3i9bPwVQ0yzW09NKIiusG+i6tSNQNGT1A+T1wDu1jnzSKhDeZR6uOJui4MRW6Dn0cQyCGY=
-X-Received: by 2002:a67:f2d6:0:b0:320:bd80:d874 with SMTP id
- a22-20020a67f2d6000000b00320bd80d874mr2672014vsn.52.1646933373203; Thu, 10
- Mar 2022 09:29:33 -0800 (PST)
+        bh=kKv9p8ykc5d2ocj7ReSJuSuri2exBdglIdzEyvs2e3Y=;
+        b=XJ/6w46yMF4lorFdekVrNfBmCRZhp0ytsIgx0DxuuQu5zqOMYI1998vH8DcLrziR6/
+         HmD14rkA3SZKEzVmBe9tj+pVBb7N2J14IeOaQuPqbZZpqWZORlgQrEdP6yHlxyh4l1xK
+         o1tuZMaepRvXEXlkarfBhidaVmDE9KKrcvRNqpNP/fxhQXZN0EFvYUoloCucoCVOqiqC
+         HcPHhPiTfDIO3pYDH78nQUNBckOHjHVCLVo+yBsmII9/ydLNNWrYvLPFokf0Z8m4Gnpn
+         dhmTG1hQrrWbae+us7bjtk82jkZrMZzPolO2jMwyeHzBKbTKkqGpDXT+Vpl72Szg5D1t
+         7GFw==
+X-Gm-Message-State: AOAM533l0tiTufUYzQiDlVxWJbCQvW4Xln0W/EP0hYdnumcnyXBLf8pV
+        UZHqDoxfNrVGJG8+gOx78F+TSAT3NrEAGmgVBMpcY2kuxU4d3A==
+X-Google-Smtp-Source: ABdhPJyOj4XzeA0yQQrkN8F+JpFhq9HzMs/delrS0VDyUvCBjUeaqSw6SIhIJwbZwO4UUsG8c3k46wAEQv+/0hckrOk=
+X-Received: by 2002:a67:ee94:0:b0:320:c162:2bea with SMTP id
+ n20-20020a67ee94000000b00320c1622beamr3487575vsp.34.1646933442525; Thu, 10
+ Mar 2022 09:30:42 -0800 (PST)
 MIME-Version: 1.0
-References: <20220310045358.224350-1-jeremy.linton@arm.com>
-In-Reply-To: <20220310045358.224350-1-jeremy.linton@arm.com>
+References: <20220310045535.224450-1-jeremy.linton@arm.com>
+In-Reply-To: <20220310045535.224450-1-jeremy.linton@arm.com>
 From:   Peter Robinson <pbrobinson@gmail.com>
-Date:   Thu, 10 Mar 2022 17:29:22 +0000
-Message-ID: <CALeDE9OO8VfKbQ-Nz1LgPqZVUhvf-h3dRXSqXPJ=-LDUBR48Lw@mail.gmail.com>
-Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
- assure ordering
+Date:   Thu, 10 Mar 2022 17:30:31 +0000
+Message-ID: <CALeDE9OjSAV0Mas7NPJfFQ5SW6ZJV8HgyvZyVnE_LZK2tkPOmQ@mail.gmail.com>
+Subject: Re: [PATCH] net: bcmgenet: Don't claim WOL when its not available
 To:     Jeremy Linton <jeremy.linton@arm.com>
 Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
         davem@davemloft.net, kuba@kernel.org,
@@ -67,110 +66,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 4:54 AM Jeremy Linton <jeremy.linton@arm.com> wrote:
+On Thu, Mar 10, 2022 at 4:55 AM Jeremy Linton <jeremy.linton@arm.com> wrote:
 >
-> GCC12 appears to be much smarter about its dependency tracking and is
-> aware that the relaxed variants are just normal loads and stores and
-> this is causing problems like:
+> Some of the bcmgenet platforms don't correctly support WOL, yet
+> ethtool returns:
 >
-> [  210.074549] ------------[ cut here ]------------
-> [  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
-> [  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
-> [  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
-> [  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
-> [  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
-> [  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
-> [  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
-> [  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [  210.161358] pc : dev_watchdog+0x234/0x240
-> [  210.161364] lr : dev_watchdog+0x234/0x240
-> [  210.161368] sp : ffff8000080a3a40
-> [  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
-> [  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
-> [  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
-> [  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
-> [  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
-> [  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
-> [  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
-> [  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
-> [  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
-> [  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
-> [  210.269682] Call trace:
-> [  210.272133]  dev_watchdog+0x234/0x240
-> [  210.275811]  call_timer_fn+0x3c/0x15c
-> [  210.279489]  __run_timers.part.0+0x288/0x310
-> [  210.283777]  run_timer_softirq+0x48/0x80
-> [  210.287716]  __do_softirq+0x128/0x360
-> [  210.291392]  __irq_exit_rcu+0x138/0x140
-> [  210.295243]  irq_exit_rcu+0x1c/0x30
-> [  210.298745]  el1_interrupt+0x38/0x54
-> [  210.302334]  el1h_64_irq_handler+0x18/0x24
-> [  210.306445]  el1h_64_irq+0x7c/0x80
-> [  210.309857]  arch_cpu_idle+0x18/0x2c
-> [  210.313445]  default_idle_call+0x4c/0x140
-> [  210.317470]  cpuidle_idle_call+0x14c/0x1a0
-> [  210.321584]  do_idle+0xb0/0x100
-> [  210.324737]  cpu_startup_entry+0x30/0x8c
-> [  210.328675]  secondary_start_kernel+0xe4/0x110
-> [  210.333138]  __secondary_switched+0x94/0x98
+> "Supports Wake-on: gsf"
 >
-> The assumption when these were relaxed seems to be that device memory
-> would be mapped non reordering, and that other constructs
-> (spinlocks/etc) would provide the barriers to assure that packet data
-> and in memory rings/queues were ordered with respect to device
-> register reads/writes. This itself seems a bit sketchy, but the real
-> problem with GCC12 is that it is moving the actual reads/writes around
-> at will as though they were independent operations when in truth they
-> are not, but the compiler can't know that. When looking at the
-> assembly dumps for many of these routines its possible to see very
-> clean, but not strictly in program order operations occurring as the
-> compiler would be free to do if these weren't actually register
-> reads/write operations.
+> which is false.
 >
-> Its possible to suppress the timeout with a liberal bit of dma_mb()'s
-> sprinkled around but the device still seems unable to reliably
-> send/receive data. A better plan is to use the safer readl/writel
-> everywhere.
+> Ideally if there isn't a wol_irq, or there is something else that
+> keeps the device from being able to wakeup it should display:
 >
-> Since this partially reverts an older commit, which notes the use of
-> the relaxed variants for performance reasons. I would suggest that
-> any performance problems with this commit are targeted at relaxing only
-> the performance critical code paths after assuring proper barriers.
+> "Supports Wake-on: d"
 >
-> Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
-> Reported-by: Peter Robinson <pbrobinson@gmail.com>
+> This patch checks whether the device can wakup, before using the
+> hard-coded supported flags. This corrects the ethtool reporting, as
+> well as the WOL configuration because ethtool verifies that the mode
+> is supported before attempting it.
+>
 > Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Acked-by: Peter Robinson <pbrobinson@gmail.com>
 Tested-by: Peter Robinson <pbrobinson@gmail.com>
 
-This fixes the issue I'm seeing on Fedora.
+This fixes the reporting of the WOL capabilities on the Raspberry Pi 4.
 
 > ---
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 >
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index 87f1056e29ff..e907a2df299c 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
->         if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
->                 __raw_writel(value, offset);
->         else
-> -               writel_relaxed(value, offset);
-> +               writel(value, offset);
->  }
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+> index e31a5a397f11..f55d9d9c01a8 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+> @@ -40,6 +40,13 @@
+>  void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+>  {
+>         struct bcmgenet_priv *priv = netdev_priv(dev);
+> +       struct device *kdev = &priv->pdev->dev;
+> +
+> +       if (!device_can_wakeup(kdev)) {
+> +               wol->supported = 0;
+> +               wol->wolopts = 0;
+> +               return;
+> +       }
 >
->  static inline u32 bcmgenet_readl(void __iomem *offset)
-> @@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
->         if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
->                 return __raw_readl(offset);
->         else
-> -               return readl_relaxed(offset);
-> +               return readl(offset);
->  }
->
->  static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
+>         wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_FILTER;
+>         wol->wolopts = priv->wolopts;
 > --
 > 2.35.1
 >
