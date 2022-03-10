@@ -2,51 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A2D4D3E1D
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C4804D3E26
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238981AbiCJA3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 19:29:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52108 "EHLO
+        id S239042AbiCJAaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 19:30:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238921AbiCJA3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:29:53 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F498E2354;
-        Wed,  9 Mar 2022 16:28:53 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KDVKr2LhWz4xx3;
-        Thu, 10 Mar 2022 11:28:47 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1646872128;
-        bh=69IltSWc5o0iKXbctJHQdUBYwac8oILYaV3n91gri8I=;
-        h=Date:From:To:Cc:Subject:From;
-        b=hTY8Ri7U4WjB0W1bk7FqN2rZSsAGaqoIxJc3Y9tuyO3Ol45sNmf3rlIQn6KFRf1eO
-         OhJButdlJfi68hEU+YNOiQLMbuQ1iwpl2NQOFK+YG4Mxdg52Rx2K2TuXlMC2ilB18O
-         NgIGntq2o7zcdm6knd46XP3fHo+BCif5mLunHGygqCJNp24okqygsgxzv7n2fytqHz
-         Ka584c2N8vlRqwpKgv/NiYx+SdW8kLbRB9kp9KrbgSpUf5ZlO2rpKe1sgKoJuJhVQx
-         d/kDkck21yAJCJGV6ZnwowkVAwxrUvGvxPHuBtVAOm/4NS9t+BPgaj5TPKoW4D2rlB
-         So2woaPdj6spQ==
-Date:   Thu, 10 Mar 2022 11:28:43 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Dave Ertman <david.m.ertman@intel.com>,
-        Karol Kolacinski <karol.kolacinski@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Sudhansu Sekhar Mishra <sudhansu.mishra@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220310112843.3233bcf1@canb.auug.org.au>
+        with ESMTP id S238993AbiCJAaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:30:11 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BED124C2B
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 16:29:12 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id 6so3379101pgg.0
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 16:29:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gtAHZRigkzO4a1Jgu5OwYx4SbI+nNslUCVxlgRRzKWg=;
+        b=dAHKTLTZyot91o58QksLS0Wh1MqV1IXD33IMs7LXkj44BH0wwOdOVbmWNgSR4pJwUO
+         M3Uc1enWZtUKv1ClQIQGyrkYPj4jAU3xFOA8uGSCtEUrLrnM0U2uWeoF0tXB2T7WU61m
+         XulqcSR0a2IsBlasCAQlaJRLps6HuUFQdvMKIkHG4Mdl4KQqFxaxMb8y0zzMtd4NZrtr
+         gqnTnvixQeuhNlrJKs6r92UPxQ2h1hLOT0mtmylAREc9apv/DZSdph09rycVyNSeoLiZ
+         E3cCamkfoghj8vSNgniwaoiktWWaJ1zxrq7Zcx6KJ0l4WAGofumjs1skP3ET3FpK//Yi
+         v0eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gtAHZRigkzO4a1Jgu5OwYx4SbI+nNslUCVxlgRRzKWg=;
+        b=n53O4BRBuFH4Dl1RUJqKwIUgGq1aH3Ekmce4PZMIaM9QAdPum/gPsr/8Gu0vL9Vvlt
+         /UhhLAQgs04uQ4CLIIRh6VLxaQqRy86+Jp66QBMmYIcvIJ+NuFmaj6poqs8rkHStZ22s
+         iCEM4ulHaSf62DA13qfWlAFCgbLVjAkvlJ7mR1p+pQiexonXLUhTwDWIGOvcH5QyikLZ
+         hmCkSzyCra1nt+DqE0bbzhjJ/IqbzvszPHeQP0gZ5PblKzA8zJ8lHCN2Ev75S06RLx29
+         fqZ6II4dpISf9txklwrgu07hNO98g5ebSHOEQ8/rEygxLBBiKuU3662XxeZ8Gy1tarPt
+         Mz2g==
+X-Gm-Message-State: AOAM531em/IutDmhWzfiKGM6xHG9Hl3Q4xbC955gujPZIXS8PwLShpwl
+        l4VmUIaiHArUHuQ3iHOl6ij9VirA7ws=
+X-Google-Smtp-Source: ABdhPJxpu/TwK25HJICZkW1v/Ko7fHgD1ohv69k2wPYuGR/1miqjP4uqURoWOb884Ej8y7L3VLp5tA==
+X-Received: by 2002:a05:6a00:b52:b0:4f6:d3b4:9323 with SMTP id p18-20020a056a000b5200b004f6d3b49323mr2352368pfo.30.1646872152207;
+        Wed, 09 Mar 2022 16:29:12 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
+        by smtp.gmail.com with ESMTPSA id nv4-20020a17090b1b4400b001bf64a39579sm7557660pjb.4.2022.03.09.16.29.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 16:29:11 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v3 net-next 11/14] macvlan: enable BIG TCP Packets
+Date:   Wed,  9 Mar 2022 16:28:43 -0800
+Message-Id: <20220310002846.460907-12-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
+In-Reply-To: <20220310002846.460907-1-eric.dumazet@gmail.com>
+References: <20220310002846.460907-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/1uryEHPS3.I_=SBHeeItHFe";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,68 +73,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/1uryEHPS3.I_=SBHeeItHFe
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Eric Dumazet <edumazet@google.com>
 
-Hi all,
+Inherit tso_ipv6_max_size from lower device.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ drivers/net/macvlan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-  drivers/net/ethernet/intel/ice/ice.h
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 33753a2fde292f8f415eefe957d09be5db1c4d55..0a41228d4efabb6bcd36bc954cecb9fe3626b63a 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -902,6 +902,7 @@ static int macvlan_init(struct net_device *dev)
+ 	dev->hw_enc_features    |= dev->features;
+ 	netif_set_gso_max_size(dev, lowerdev->gso_max_size);
+ 	netif_set_gso_max_segs(dev, lowerdev->gso_max_segs);
++	netif_set_tso_ipv6_max_size(dev, lowerdev->tso_ipv6_max_size);
+ 	dev->hard_header_len	= lowerdev->hard_header_len;
+ 	macvlan_set_lockdep_class(dev);
+ 
+-- 
+2.35.1.616.g0bdcbb4464-goog
 
-between commit:
-
-  97b0129146b1 ("ice: Fix error with handling of bonding MTU")
-
-from the net tree and commit:
-
-  43113ff73453 ("ice: add TTY for GNSS module for E810T device")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/intel/ice/ice.h
-index 3121f9b04f59,dc42ff92dbad..000000000000
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@@ -481,9 -484,10 +484,11 @@@ enum ice_pf_flags=20
-  	ICE_FLAG_LEGACY_RX,
-  	ICE_FLAG_VF_TRUE_PROMISC_ENA,
-  	ICE_FLAG_MDD_AUTO_RESET_VF,
-+ 	ICE_FLAG_VF_VLAN_PRUNING,
-  	ICE_FLAG_LINK_LENIENT_MODE_ENA,
-  	ICE_FLAG_PLUG_AUX_DEV,
- +	ICE_FLAG_MTU_CHANGED,
-+ 	ICE_FLAG_GNSS,			/* GNSS successfully initialized */
-  	ICE_PF_FLAGS_NBITS		/* must be last */
-  };
- =20
-
---Sig_/1uryEHPS3.I_=SBHeeItHFe
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIpRjsACgkQAVBC80lX
-0Gy6Hwf7BOG+Moz1hUgilYu21YaD2/PHnmx6k1qDvhJ+bq6iquBpiMC8vxynvZ5X
-Ju9+apOYo/4eZqUBspMJ/0GswRbK7/dHioCVOzOXPSDs9e+SZAu7AkkCwZoFsmXv
-SldlCqaLy031k6dEgQA1VWbjveZ2X/fp9aEQKAZMogn1bW0VH0MgHl2R055Jd7df
-sg+OZh7Ic+1/Dnu5CEdxRvqifomnInyq9V+9WlKILCvUrYkMsMM4wUnF+R801kA0
-y3uCfaE5dKCLtdwAJ7H4OJhOKUBXrJUdhufuIVeg2L7zwQYQrTU+GrKRa3viWgpO
-tqiHCETPP6KQl5kjkW2nJxRM9vrq3g==
-=Ak+s
------END PGP SIGNATURE-----
-
---Sig_/1uryEHPS3.I_=SBHeeItHFe--
