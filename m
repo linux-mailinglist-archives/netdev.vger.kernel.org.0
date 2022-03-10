@@ -2,366 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B6B64D4594
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 12:21:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F514D459F
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 12:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbiCJLWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 06:22:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40724 "EHLO
+        id S235775AbiCJL0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 06:26:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234593AbiCJLWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 06:22:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77C7C137584
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 03:21:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646911304;
+        with ESMTP id S232700AbiCJL0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 06:26:16 -0500
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AAC141471
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 03:25:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1646911514;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HZdailnkW9O2r+ZKmIcqf99IvkLTvKu0wm0rg9SHjm0=;
-        b=F4pDhJHzFGylpyT2z8riIBG1GBlZyYU0MabN3EupQ2uYm1a9yhAfz//RUxYRsKBYyQuWtz
-        7wOxDJHHL5nh0WlCKWaCiTVXct4NfQqcqBUQd46835QvJNZBQUdFhEJSd/b5jp5aXOIzPC
-        ycOYIarK7f/T0aXaKbAUul1ZhK7JMTU=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-255-kG74PRu9MvSYMvoP39VCEA-1; Thu, 10 Mar 2022 06:21:43 -0500
-X-MC-Unique: kG74PRu9MvSYMvoP39VCEA-1
-Received: by mail-ed1-f72.google.com with SMTP id cf6-20020a0564020b8600b00415e9b35c81so2914395edb.9
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 03:21:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=HZdailnkW9O2r+ZKmIcqf99IvkLTvKu0wm0rg9SHjm0=;
-        b=IYg3v0e1GcI/4HOAC9/QIyfFbohhR2zeIKAqsdRJ4pkgNJzZZYHw7XRegiFAU4potu
-         /aZjC+2eef+G8jJ5bWPx7PmRcPxloLAGun/KJC2pqjgr7/SGGPy07uaf+Azk/LsLSm3p
-         iQz7/deXhum+K4Teyf+dh/DEQD1l/IS4CS0gdI8zFcgJHYD97XEUeERPzY8sY2obcmnf
-         LlnIfHAIlXhDrY8D3rGNbfIzSmclkMd9Ufgrt7Hs48f+AwF5pxH1JO6dYV9HdVTfWLnk
-         YPw2HACE1R3XyOOE51XLrf66Fyt2HX/Xg//SjD8aevw3R7psBTNlDBg/zZrvgHy/esjt
-         Prpg==
-X-Gm-Message-State: AOAM532Ssn04oTbgRPApJuqjxA+uEwzPaABncH//YWTS3x9/DZ8MI6s2
-        YiTA3dGHYf3zcBlwO7IM5zrCkQPJQGtCZ7bnVWR5AtQ6vGfesHFBwsdIKu2HmtUBKCYaTd4iJ89
-        JFFgksGjHcmfS0CPq
-X-Received: by 2002:a17:907:7b9e:b0:6db:2b7f:3024 with SMTP id ne30-20020a1709077b9e00b006db2b7f3024mr3730258ejc.29.1646911301780;
-        Thu, 10 Mar 2022 03:21:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxnH5ryteuv1UnyKH+BJLjz+4y2I1BVLkd+KubkILRJkOiRfrbANv0lFhBl3qn3Pk69bd5YpQ==
-X-Received: by 2002:a17:907:7b9e:b0:6db:2b7f:3024 with SMTP id ne30-20020a1709077b9e00b006db2b7f3024mr3730226ejc.29.1646911301323;
-        Thu, 10 Mar 2022 03:21:41 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id f15-20020a50e08f000000b004134a121ed2sm1970727edl.82.2022.03.10.03.21.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 03:21:40 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 94FEE192CCD; Thu, 10 Mar 2022 12:21:39 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, brouer@redhat.com, pabeni@redhat.com,
-        echaudro@redhat.com, lorenzo.bianconi@redhat.com,
-        toshiaki.makita1@gmail.com, andrii@kernel.org
-Subject: Re: [PATCH v4 bpf-next 2/3] veth: rework veth_xdp_rcv_skb in order
- to accept non-linear skb
-In-Reply-To: <24703dbc3477a4b3aaf908f6226a566d27969f83.1646755129.git.lorenzo@kernel.org>
-References: <cover.1646755129.git.lorenzo@kernel.org>
- <24703dbc3477a4b3aaf908f6226a566d27969f83.1646755129.git.lorenzo@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 10 Mar 2022 12:21:39 +0100
-Message-ID: <87ee3auk70.fsf@toke.dk>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=fYHzzugIpoqv9jcTwr1G4+YenM+mNW/B4TImu6c2A0c=;
+        b=aAT6bduMydjILbHoh3OHpSs649jQsixxbiM7VMPYKO52nNKvur8L8ZWZA/80Rq9Xq0Ej5d
+        x6uvOZTuMj/XvM2MU+DusxqznNhRKexwy6fdRBMT16/R08SigV9lbm3LtW2kVFA+9rvsXD
+        QSBxD+Q92BZTnGU3m+vQeRY7ehodGyw=
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur04lp2056.outbound.protection.outlook.com [104.47.14.56]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-28-KPM3TG7pNR-JelmNbTHgtQ-1; Thu, 10 Mar 2022 12:25:13 +0100
+X-MC-Unique: KPM3TG7pNR-JelmNbTHgtQ-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XK+GxxQfDdtgK7i2ib8bdtolSKTCHO3fcU5B1dvxlt34v0XYYB/pokjfiIrJ0wasq5HHg+8/Ivsx0GUwjl1+/iCXndlG4oKjBt7H8KLvfOiz2hjJ/No16nyKee+OeSFMpcmS3l6zgSxSr1IPGQl3P1ZZmyWiad2kZBzM1cZpx+dYqVT8UKrb8gBI+00lyoYTVHsBte0ws6eepq7oq59UYr83Wqi3HBgFyjZsw/M0JZxNShw3xCEhid4x3YL3ekff2v3cFl0Mnota4WoOtrdYlvGjKBg1tMGlmXDnCsf3r/q37Nco84xkhYVY1OU33zUS0AGgS/kBZtyIE7Fs3OEvnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5/RDI3wKg+ATbuGMbdyhFQv0u/gn9y3b4uDuVgQpOv4=;
+ b=HVqYKeLg9KpIWqHhyYoC/FYl6eYFZ+WDk0t85bP8HW7wXlYv8DrxQJA7Vld+0dTaDbYWA/xk4fESNHGUcLORSmDNkw4aEgKuRoUdpVLPRcBqZ1ZxQhzlNMI8NtFIOMps5mdnJ05ChnVyDvyxBq4Fphookg2DszQqIGONLRt+Z2wFha4lwddbpSVgCvGqUbtnQFwkZWFQppoU0V8pKYuUOmyH9INTx0zTqPyHBSLIgL9FImEAtAcqJ3AfIrL+rGLAMf8Tix8WDsgrYvKO+ro/8/7J3xgujC6uk8TdtS1uKtHq8L16ji2SdaVNvjlWBo8T5sBVmKTE+fa1EGTAtK9zuA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com (2603:10a6:10:22::23)
+ by HE1PR0402MB3595.eurprd04.prod.outlook.com (2603:10a6:7:8e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Thu, 10 Mar
+ 2022 11:25:10 +0000
+Received: from DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::98e0:cb7:30fd:254f]) by DB7PR04MB5050.eurprd04.prod.outlook.com
+ ([fe80::98e0:cb7:30fd:254f%5]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
+ 11:25:10 +0000
+Message-ID: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
+Date:   Thu, 10 Mar 2022 12:25:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Content-Language: en-US
+To:     Oleksij Rempel <linux@rempel-privat.de>
+CC:     Oleksij Rempel <linux@rempel-privat.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Oliver Neukum <oneukum@suse.com>
+Subject: ordering of call to unbind() in usbnet_disconnect
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: AM6PR10CA0038.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:209:80::15) To DB7PR04MB5050.eurprd04.prod.outlook.com
+ (2603:10a6:10:22::23)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8a4f6977-b012-409f-4324-08da0288a33d
+X-MS-TrafficTypeDiagnostic: HE1PR0402MB3595:EE_
+X-Microsoft-Antispam-PRVS: <HE1PR0402MB3595AD1184F494D0570CBBCAC70B9@HE1PR0402MB3595.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pRtiDhu5munod174J2KCOpf96HUxFbMHuT1QzB0jXfHA0k+SKHZNsTuWdJBWGD34KCupS1hR4PL2ui7yl+ay/RdinmpUqwML07gLJT+f76NfE0ccb05RJQJF0HO5fRslCaH5a3IgIg6+t42eBnJnsv7q4zcoLP8L3BQ60Qi587/M22c4PhrwW0SyLWOTD2k0aJhaYoN5wAt3ulCTA4KJuh/T5W+JY7Xqm9RAUFC4397PwVW2OggRNrnE4R3uL8IPrOXHIY2/HW8OGn+uVXGfvYNUTrR7KBUMvA1YSsmh5vg9cB81nDMJyC3KcGtLRONIGTx1SXQuwr6lRdYGgp20ZNSThjIuLIBRnTERkRYbPam0sAHGID8iCp0JhF8+ZWqA+xaKigT/7Qs+cvkgMuI1Ig6gd7fQAfp7Nl+N0djSfMN57qSGj+kaOna7D+AvMW6+MLrqB0e7gP8UTb/bGQ8tfGuOq5sgzoyvVIexKoD7hpHMhJpcCxuUbY7Euyt+NYjULWxzfDIWu4iSnP5fBkOkuFXZqjNs6tuCM402FvCMu5S958SX/YwbwulhfRS//0z9uscCGojsjHsFmzOiYM7MNYFycZ62EC4zLpvygrCnj7syJmfhrWfVqPfByZVu7oYFE31JnMBmGnXzelispvia3AGM/bUHV3YpgtzIfVadD6+BmUvzvEyv9wPeUvoFndd9m28QcOnmuvoKoWiVh9kwmxn7nr4x6RVoa/HNWLdXykA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5050.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(54906003)(316002)(6916009)(6506007)(6512007)(36756003)(508600001)(2906002)(6486002)(2616005)(38100700002)(186003)(86362001)(4326008)(8676002)(31696002)(66556008)(66476007)(31686004)(8936002)(66946007)(4744005)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2FwucQoetFQva/gjzKNGyZSVG4GbjRj217t5a7Mi9G5PV1Vy4R6xCIPL67aK?=
+ =?us-ascii?Q?VvtET6KOmbAVnvLUjkW1/wg5mxVfG1BjssjHAD+UiwB4denc7GkJ+OYEvhf6?=
+ =?us-ascii?Q?aYRVPjqpqYs8ktHHODd5nM18RriLC2qsIv+mG1aJ2DC8GBRI09WlEAOuIRml?=
+ =?us-ascii?Q?SO2DL5Qp24R+xf0w+YdVfy6gyuiaBnJjnorMf4nIYkmedpJnsJqsvtM4h45C?=
+ =?us-ascii?Q?Clm4bbQWfwfG2IPC92MZUSyeFGliHZ/R+4bPG2IYjpRUDfm2ce2eCEUR/Gh7?=
+ =?us-ascii?Q?Ft+PngfTfTGnFxjQfDwOU08kqCSKGlj3gUNbG0+k+xXIMiaZqeBBQciVi5WZ?=
+ =?us-ascii?Q?NGBNEDV5wiyFoHGqpqBDnYKHuQX4ZVnnXhnTbB2cFv6pm1Fm3ntmYPBQJiSb?=
+ =?us-ascii?Q?w8qribzQuZV6HiAW5r0BMZRoiPuCdexe0aGTAhNlU90yldMH8hAnmJY45eUV?=
+ =?us-ascii?Q?QG0vg75SBbTklo94IZJyvFn25cSbqagWGmjxbM6BsUqjBPkwsVFUamkwzcXu?=
+ =?us-ascii?Q?AONu8qLHRl43IRFjmwrvTu07fJu03hlCmXE1n1uB4Y1p2usR7Tz6ECaqMxa2?=
+ =?us-ascii?Q?rxm2mti2YDPwv9V5CPsHUo4v6xyUyvmyNJ0vsay29tcPGycSQzC8ZfDlblvi?=
+ =?us-ascii?Q?+3TIPf1kDepV1YfB3rfHoPxOnEmpLr+snwvhSrNQPdk5xNiqfWkI1c8ySs2m?=
+ =?us-ascii?Q?hRZBFanzG8WhqTEVBFwHpxFtd9eHElZAoCbPBJNfbgmYJ1lWJOeCZhaN9tPg?=
+ =?us-ascii?Q?1XzqDGsyZ7lz8oaPYauX7yg6ju62KTgoahe+k2lNKtzpiSaQ6Twos3wsO/iZ?=
+ =?us-ascii?Q?bWFJFkFme2151iHl83HvEKG+TbVnrQzvtU8wy8JuuwQJLIWYJEX/6GVSTK8v?=
+ =?us-ascii?Q?JOPgAswm+Pd7uTEKIZtdxnb6ZO0fbyqyezN7F+1zCIroUGQL4Mqx/Z5NQyci?=
+ =?us-ascii?Q?DuCTm5h6Iop9RMivT7KG85Rnbg3w8v+K5/DI0+1lJg2S4eifgmpdbf9SJ/PQ?=
+ =?us-ascii?Q?eVcSujawzIdd3Yr7PCA7Si97x8Dkdss1W4OyTVBkEKVB04UYEyc3ebNLvMDa?=
+ =?us-ascii?Q?cXjSIto22ZhgQdso9tVzcwVqM/d8x6u3f4ITGg8CdcZwQGT51NMIBfiC78ho?=
+ =?us-ascii?Q?fV13yp+ft1eQVFzYKyGspICAZnb9iluvun4ffMIfE9kF+BbsKZHhYebtEg8Q?=
+ =?us-ascii?Q?d4zXG5K811msR8hxR3Iw0g1MhqJessi9F2z0RTYYA7XE6mAF8rfdfMkMX0OD?=
+ =?us-ascii?Q?AFqupL9qQELJVMcrSkMlKPjd+Lb1+p4o7yWQKpzEjRV1WM7BmMzextxBtOJH?=
+ =?us-ascii?Q?LGsgSHgzX0jS9PqD+ITOfUgxb8PV04jgn9i1uBB58LXZWFR8N2//1bltjWq3?=
+ =?us-ascii?Q?e+jHoQZXkKQuFBmHbiMWohGlKvGXbHD4ZQM9ZOzBWeAU+XU4a+gv1U6/iMFl?=
+ =?us-ascii?Q?GTBpdldNQ8vrZDIOBSktayjqmABUVtY7NfQwZOHSdt7WZ3b0FEAeObfWElG1?=
+ =?us-ascii?Q?mNizVndUVXniAxMqlee/gAxln2+L8WzwGdos3aKOOOmHyfNj/7+jF2D7GLEl?=
+ =?us-ascii?Q?7JY4JfW+hs++4Z3QapMxhlwQqn8KjXyE2BMRnT02UXFzg0jaK2LjSk/MsSXT?=
+ =?us-ascii?Q?uShz12nzVyH4EN4BzAlJHzW/YafIxeNJrf/H3FCc8YV59RwgK/KXVnWlPCnO?=
+ =?us-ascii?Q?h91L+7LEaQzm02zHkBEMFTXQNGY=3D?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a4f6977-b012-409f-4324-08da0288a33d
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5050.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2022 11:25:10.6355
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dZin9DM6UXS8iI33aAK7ghi/wnuDKWnFKBIlMXwUz268F7vZUTKQLtanOb6+jIpw5tNfqXkntyWAZdAuOq+vxA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0402MB3595
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
+Hi,
 
-> Introduce veth_convert_xdp_buff_from_skb routine in order to
-> convert a non-linear skb into a xdp buffer. If the received skb
-> is cloned or shared, veth_convert_xdp_buff_from_skb will copy it
-> in a new skb composed by order-0 pages for the linear and the
-> fragmented area. Moreover veth_convert_xdp_buff_from_skb guarantees
-> we have enough headroom for xdp.
-> This is a preliminary patch to allow attaching xdp programs with frags
-> support on veth devices.
->
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+I got bug reports that 2c9d6c2b871d ("usbnet: run unbind() before
+unregister_netdev()")
+is causing regressions. Rather than simply reverting it,
+it seems to me that the call needs to be split. One in the old place
+and one in the place you moved it to.
 
-It's cool that we can do this! A few comments below:
+Could you tell me which drivers you moved the call for?
 
-> ---
->  drivers/net/veth.c | 174 ++++++++++++++++++++++++++++++---------------
->  net/core/xdp.c     |   1 +
->  2 files changed, 119 insertions(+), 56 deletions(-)
->
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index b77ce3fdcfe8..47b21b1d2fd9 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -433,21 +433,6 @@ static void veth_set_multicast_list(struct net_device *dev)
->  {
->  }
->  
-> -static struct sk_buff *veth_build_skb(void *head, int headroom, int len,
-> -				      int buflen)
-> -{
-> -	struct sk_buff *skb;
-> -
-> -	skb = build_skb(head, buflen);
-> -	if (!skb)
-> -		return NULL;
-> -
-> -	skb_reserve(skb, headroom);
-> -	skb_put(skb, len);
-> -
-> -	return skb;
-> -}
-> -
->  static int veth_select_rxq(struct net_device *dev)
->  {
->  	return smp_processor_id() % dev->real_num_rx_queues;
-> @@ -695,72 +680,143 @@ static void veth_xdp_rcv_bulk_skb(struct veth_rq *rq, void **frames,
->  	}
->  }
->  
-> -static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
-> -					struct sk_buff *skb,
-> -					struct veth_xdp_tx_bq *bq,
-> -					struct veth_stats *stats)
-> +static void veth_xdp_get(struct xdp_buff *xdp)
->  {
-> -	u32 pktlen, headroom, act, metalen, frame_sz;
-> -	void *orig_data, *orig_data_end;
-> -	struct bpf_prog *xdp_prog;
-> -	int mac_len, delta, off;
-> -	struct xdp_buff xdp;
-> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> +	int i;
->  
-> -	skb_prepare_for_gro(skb);
-> +	get_page(virt_to_page(xdp->data));
-> +	if (likely(!xdp_buff_has_frags(xdp)))
-> +		return;
->  
-> -	rcu_read_lock();
-> -	xdp_prog = rcu_dereference(rq->xdp_prog);
-> -	if (unlikely(!xdp_prog)) {
-> -		rcu_read_unlock();
-> -		goto out;
-> -	}
-> +	for (i = 0; i < sinfo->nr_frags; i++)
-> +		__skb_frag_ref(&sinfo->frags[i]);
-> +}
->  
-> -	mac_len = skb->data - skb_mac_header(skb);
-> -	pktlen = skb->len + mac_len;
-> -	headroom = skb_headroom(skb) - mac_len;
-> +static int veth_convert_xdp_buff_from_skb(struct veth_rq *rq,
-> +					  struct xdp_buff *xdp,
-> +					  struct sk_buff **pskb)
-> +{
-
-nit: It's not really "converting" and skb into an xdp_buff, since the
-xdp_buff lives on the stack; so maybe 'veth_init_xdp_buff_from_skb()'?
-
-> +	struct sk_buff *skb = *pskb;
-> +	u32 frame_sz;
->  
->  	if (skb_shared(skb) || skb_head_is_locked(skb) ||
-> -	    skb_is_nonlinear(skb) || headroom < XDP_PACKET_HEADROOM) {
-> +	    skb_shinfo(skb)->nr_frags) {
-
-So this always clones the skb if it has frags? Is that really needed?
-
-Also, there's a lot of memory allocation and copying going on here; have
-you measured the performance?
-
-> +		u32 size, len, max_head_size, off;
->  		struct sk_buff *nskb;
-> -		int size, head_off;
-> -		void *head, *start;
->  		struct page *page;
-> +		int i, head_off;
->  
-> -		size = SKB_DATA_ALIGN(VETH_XDP_HEADROOM + pktlen) +
-> -		       SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> -		if (size > PAGE_SIZE)
-> +		/* We need a private copy of the skb and data buffers since
-> +		 * the ebpf program can modify it. We segment the original skb
-> +		 * into order-0 pages without linearize it.
-> +		 *
-> +		 * Make sure we have enough space for linear and paged area
-> +		 */
-> +		max_head_size = SKB_WITH_OVERHEAD(PAGE_SIZE -
-> +						  VETH_XDP_HEADROOM);
-> +		if (skb->len > PAGE_SIZE * MAX_SKB_FRAGS + max_head_size)
->  			goto drop;
->  
-> +		/* Allocate skb head */
->  		page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
->  		if (!page)
->  			goto drop;
->  
-> -		head = page_address(page);
-> -		start = head + VETH_XDP_HEADROOM;
-> -		if (skb_copy_bits(skb, -mac_len, start, pktlen)) {
-> -			page_frag_free(head);
-> +		nskb = build_skb(page_address(page), PAGE_SIZE);
-> +		if (!nskb) {
-> +			put_page(page);
->  			goto drop;
->  		}
->  
-> -		nskb = veth_build_skb(head, VETH_XDP_HEADROOM + mac_len,
-> -				      skb->len, PAGE_SIZE);
-> -		if (!nskb) {
-> -			page_frag_free(head);
-> +		skb_reserve(nskb, VETH_XDP_HEADROOM);
-> +		size = min_t(u32, skb->len, max_head_size);
-> +		if (skb_copy_bits(skb, 0, nskb->data, size)) {
-> +			consume_skb(nskb);
->  			goto drop;
->  		}
-> +		skb_put(nskb, size);
->  
->  		skb_copy_header(nskb, skb);
->  		head_off = skb_headroom(nskb) - skb_headroom(skb);
->  		skb_headers_offset_update(nskb, head_off);
-> +
-> +		/* Allocate paged area of new skb */
-> +		off = size;
-> +		len = skb->len - off;
-> +
-> +		for (i = 0; i < MAX_SKB_FRAGS && off < skb->len; i++) {
-> +			page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-> +			if (!page) {
-> +				consume_skb(nskb);
-> +				goto drop;
-> +			}
-> +
-> +			size = min_t(u32, len, PAGE_SIZE);
-> +			skb_add_rx_frag(nskb, i, page, 0, size, PAGE_SIZE);
-> +			if (skb_copy_bits(skb, off, page_address(page),
-> +					  size)) {
-> +				consume_skb(nskb);
-> +				goto drop;
-> +			}
-> +
-> +			len -= size;
-> +			off += size;
-> +		}
-> +
->  		consume_skb(skb);
->  		skb = nskb;
-> +	} else if (skb_headroom(skb) < XDP_PACKET_HEADROOM &&
-> +		   pskb_expand_head(skb, VETH_XDP_HEADROOM, 0, GFP_ATOMIC)) {
-> +		goto drop;
->  	}
->  
->  	/* SKB "head" area always have tailroom for skb_shared_info */
->  	frame_sz = skb_end_pointer(skb) - skb->head;
->  	frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> -	xdp_init_buff(&xdp, frame_sz, &rq->xdp_rxq);
-> -	xdp_prepare_buff(&xdp, skb->head, skb->mac_header, pktlen, true);
-> +	xdp_init_buff(xdp, frame_sz, &rq->xdp_rxq);
-> +	xdp_prepare_buff(xdp, skb->head, skb_headroom(skb),
-> +			 skb_headlen(skb), true);
-> +
-> +	if (skb_is_nonlinear(skb)) {
-> +		skb_shinfo(skb)->xdp_frags_size = skb->data_len;
-> +		xdp_buff_set_frags_flag(xdp);
-> +	} else {
-> +		xdp_buff_clear_frags_flag(xdp);
-> +	}
-> +	*pskb = skb;
-> +
-> +	return 0;
-> +drop:
-> +	consume_skb(skb);
-> +	*pskb = NULL;
-> +
-> +	return -ENOMEM;
-> +}
-> +
-> +static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
-> +					struct sk_buff *skb,
-> +					struct veth_xdp_tx_bq *bq,
-> +					struct veth_stats *stats)
-> +{
-> +	void *orig_data, *orig_data_end;
-> +	struct bpf_prog *xdp_prog;
-> +	struct xdp_buff xdp;
-> +	u32 act, metalen;
-> +	int off;
-> +
-> +	skb_prepare_for_gro(skb);
-> +
-> +	rcu_read_lock();
-> +	xdp_prog = rcu_dereference(rq->xdp_prog);
-> +	if (unlikely(!xdp_prog)) {
-> +		rcu_read_unlock();
-> +		goto out;
-> +	}
-> +
-> +	__skb_push(skb, skb->data - skb_mac_header(skb));
-> +	if (veth_convert_xdp_buff_from_skb(rq, &xdp, &skb))
-> +		goto drop;
->  
->  	orig_data = xdp.data;
->  	orig_data_end = xdp.data_end;
-> @@ -771,7 +827,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
->  	case XDP_PASS:
->  		break;
->  	case XDP_TX:
-> -		get_page(virt_to_page(xdp.data));
-> +		veth_xdp_get(&xdp);
->  		consume_skb(skb);
->  		xdp.rxq->mem = rq->xdp_mem;
->  		if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
-> @@ -783,7 +839,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
->  		rcu_read_unlock();
->  		goto xdp_xmit;
->  	case XDP_REDIRECT:
-> -		get_page(virt_to_page(xdp.data));
-> +		veth_xdp_get(&xdp);
->  		consume_skb(skb);
->  		xdp.rxq->mem = rq->xdp_mem;
->  		if (xdp_do_redirect(rq->dev, &xdp, xdp_prog)) {
-> @@ -806,18 +862,24 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
->  	rcu_read_unlock();
->  
->  	/* check if bpf_xdp_adjust_head was used */
-> -	delta = orig_data - xdp.data;
-> -	off = mac_len + delta;
-> +	off = orig_data - xdp.data;
->  	if (off > 0)
->  		__skb_push(skb, off);
->  	else if (off < 0)
->  		__skb_pull(skb, -off);
-> -	skb->mac_header -= delta;
-> +
-> +	skb_reset_mac_header(skb);
->  
->  	/* check if bpf_xdp_adjust_tail was used */
->  	off = xdp.data_end - orig_data_end;
->  	if (off != 0)
->  		__skb_put(skb, off); /* positive on grow, negative on shrink */
-> +
-> +	if (xdp_buff_has_frags(&xdp))
-> +		skb->data_len = skb_shinfo(skb)->xdp_frags_size;
-> +	else
-> +		skb->data_len = 0;
-
-We can remove entire frags using xdp_adjust_tail, right? Will that get
-propagated in the right way to the skb frags due to the dual use of
-skb_shared_info, or?
+=C2=A0=C2=A0=C2=A0 Regards
+=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 Oliver
 
