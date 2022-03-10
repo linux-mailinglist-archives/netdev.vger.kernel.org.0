@@ -2,92 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 645424D4C8D
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E43E4D4D6A
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237063AbiCJPBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 10:01:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
+        id S238221AbiCJPFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 10:05:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345654AbiCJPBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:01:09 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08581195304;
-        Thu, 10 Mar 2022 06:54:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646924070; x=1678460070;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mkDxige9BzHQwc97tN/4qCgRy7VLjwdzDuzdIanGC8g=;
-  b=P6zVX1SUZMzvCnBCMbIrP+lUMMeiTtLuQSXCxw4Eb2k0yB9C8Dh8x10M
-   ShNySXcbih+V0VXEHD/C2I4AehmElkjyVGu1q9PG4aBHcmN1agdBEUSN5
-   ltd2e5s+x828KrHNonWgq0z/P1MZqaXiHA2OUuZ63NZXkZ1epZZgfJgWz
-   Cxp2HQi2HBQhcfMLmIhjLGP54K5a+ykYF6Z15YmfjBg5KcrwWNj5halV0
-   GI+PYppajRBJxtw/6bZBMMYfMmYfgNqHmpC27AsCd4hxmgwgOZmdBuP5n
-   u89WdLp2XrKdTs6aCh9atalT6/Xzz6R5a467axh7En2j+uIWB+oLaOvE7
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="237436159"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="237436159"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:54:29 -0800
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="538481674"
-Received: from cpatricx-mobl.amr.corp.intel.com (HELO [10.212.255.151]) ([10.212.255.151])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:54:29 -0800
-Message-ID: <8c111689-b06e-5803-1f66-e5952231459f@linux.intel.com>
-Date:   Thu, 10 Mar 2022 06:54:28 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v1 0/6] Add TDX Guest Attestation support
-Content-Language: en-US
-To:     Aubrey Li <aubrey.li@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S1344491AbiCJPDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:03:51 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED77199E22;
+        Thu, 10 Mar 2022 06:55:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/58cWmygECTkPSPoDwqtqviybzKgiSNcNrLHiVOqlDE=; b=h7/+DopdaFXY6RnCGoW2MCpXek
+        qjKJbQBjWD3BTW7lvhC3/IM7+YQ0Ur/v7fTn0R3Vn7u1Mj6C3SL/3JtCokFcECooPEFCCJLW+1jqP
+        5EOLJB2P4lgIuPexvsE5raXxdasl+V1XPBy6P/+7lChYHfG1j1xhM21wZXl8I7mPu0cc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nSKBv-00A9LI-05; Thu, 10 Mar 2022 15:54:59 +0100
+Date:   Thu, 10 Mar 2022 15:54:58 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20220222231735.268919-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <93767fe9-9edd-8e31-c3ca-155bfa807915@linux.intel.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <93767fe9-9edd-8e31-c3ca-155bfa807915@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <YioRQpUTJ7WmTLXQ@lunn.ch>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
+> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
+> +									    chip->ports[spid].port,
+> +									    &entry,
+> +									    fid);
 
+> +static int mv88e6xxx_find_vid_on_matching_fid(struct mv88e6xxx_chip *chip,
+> +					      const struct mv88e6xxx_vtu_entry *entry,
+> +					      void *priv)
+> +{
+> +	struct mv88e6xxx_fid_search_ctx *ctx = priv;
+> +
+> +	if (ctx->fid_search == entry->fid) {
+> +		ctx->vid_found = entry->vid;
+> +		return 1;
+> +	}
+> +	return 0;
+> +}
+> +
+> +int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
+> +						  int port,
+> +						  struct mv88e6xxx_atu_entry *entry,
+> +						  u16 fid)
+> +{
+> +	struct switchdev_notifier_fdb_info info = {
+> +		.addr = entry->mac,
+> +		.vid = 0,
+> +		.added_by_user = false,
+> +		.is_local = false,
+> +		.offloaded = true,
+> +		.locked = true,
+> +	};
+> +	struct mv88e6xxx_fid_search_ctx ctx;
+> +	struct netlink_ext_ack *extack;
+> +	struct net_device *brport;
+> +	struct dsa_port *dp;
+> +	int err;
+> +
+> +	ctx.fid_search = fid;
+> +	err = mv88e6xxx_vtu_walk(chip, mv88e6xxx_find_vid_on_matching_fid, &ctx);
 
-On 3/10/22 6:45 AM, Aubrey Li wrote:
->> This feature has dependency on TDX guest core patch set series.
->>
->> https://lore.kernel.org/all/20220218161718.67148-1-kirill.shutemov@linux.intel.com/T/
-> Does this feature also have dependency on QEMU tdx support?
-> 
+I could be reading this code wrong, but it looks like you assume there
+is a single new entry in the ATU. But interrupts on these devices are
+slow. It would be easy for two or more devices to pop into existence
+at the same time. Don't you need to walk the whole ATU to find all the
+new entries? Have you tried this with a traffic generating populating
+the ATU with new entries at different rates, up to line rate? Do you
+get notifications for them all?
 
-Yes, for end-to-end attestation testing it will have dependency
-on QEMU. But for testing the operation of GetQuote and TDREPORT 
-TDCALLs/Hypercall, we don't need the QEMU attestation support.
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+    Andrew
