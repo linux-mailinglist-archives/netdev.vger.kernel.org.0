@@ -2,168 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CDA94D4537
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38E774D4545
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 12:00:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235343AbiCJLAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 06:00:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42626 "EHLO
+        id S232769AbiCJLBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 06:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232769AbiCJLAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 06:00:37 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2068.outbound.protection.outlook.com [40.107.244.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1D813AA11;
-        Thu, 10 Mar 2022 02:59:35 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wl1tJGgGODt1fC+Vkic+6rHvUQa7dtMJI80AmR1IXUWXgxzLcJvAYX3BigQxvWsTMsRJ4sSGSXPLkKuQjdaqys8j5xyLlKYtKIaCJN2GwB7w9Zpq4tt3f2vKBd/IZReEhWFTCTvgLMof6/WgBs5NEeTv0a+R4wGDGhroilzZ+INeHx+nlW6timGMnlqvx4sqR/Zy3JRKPtw9jQYBloysFwqIJSOiRfu8GDtiaPgczMCZKZx1KSuuqYfo1znt02x5JsQhwpWCKUvYFCC1iJJscMH+YD6xqxnZJb7SGPJhMlXaBzzM+/h0o5g2ebs+UCedrSsuLuw0imA17TG7Z5+BLg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zeBGEz9//XCVk/yOAr3QpB4M4WmTxxFM++6Gr9qsL4M=;
- b=ioDaxgzedX+FseN3EmLWVaFtBIeAZ4Qgxnj0mcsE6v5b4nzGVEDg/xRFLxzhHu8p6mxtvV/A7ku0vOk6HtP+p29iuDhwAihoOcMwF0/i01tGVgGDba488Tz6+igiyPTtUm2aYWWd4U8c29t083auJyKXyN4U0FfCq8lGaGQkbATqx3qQGQ72xIdE6nIp/XbvSrd8iCCmnda+4timBpqxYZF1KUihN+U3gIzdcf8MFp+u/rQcoRtD4WRRGzTgNWxYK36SRw/OEuaUihNehueuP205kVW9jFLszEH6V4OnNupoTesiYXBVmhfHK/10pAw4/9w6Fo2zYtKl21pVf0J/AQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zeBGEz9//XCVk/yOAr3QpB4M4WmTxxFM++6Gr9qsL4M=;
- b=WqR2FUMFYDoFNpTpNWRjgRkz71/BhyhiMNj6q4AibSbyY1nPRHfgWRPSkJB8yImrN6o0Zv0FCmjsYuL/68i0OMds/MWtOub0NtnNbSF5qyHo2Ca9Kdc9rYvQzHF/s8GHoashho5db5jLh8d6fOHyKtROwFSwcA4fF0LbSA4BbbpXHPB96qdGUiuXQgkThjAba7B8KOBFHgO0TqEyqHROjWpy7WoApJJLmjE/ZjtGI9Hw90I/e6AHSUwuOJSIBNZDm0UBJo0k+9NK4DCoTtno1L4u7wdixU/oBIO0eVsLiUbNp+1XDtIzIr6bnsbi4RBdcWSaiX6xkjmeGWhqCmesew==
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
- PH7PR12MB5688.namprd12.prod.outlook.com (2603:10b6:510:13c::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.16; Thu, 10 Mar
- 2022 10:59:33 +0000
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::c53a:18b3:d87f:f627]) by DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::c53a:18b3:d87f:f627%6]) with mapi id 15.20.5061.022; Thu, 10 Mar 2022
- 10:59:33 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Anirudh Rayabharam <mail@anirudhrb.com>
-Subject: RE: [PATCH] vhost: allow batching hint without size
-Thread-Topic: [PATCH] vhost: allow batching hint without size
-Thread-Index: AQHYNFPH5bsK1il8h0WZSXsQ/7flA6y4cyJw
-Date:   Thu, 10 Mar 2022 10:59:33 +0000
-Message-ID: <DM8PR12MB5400C4168D42B9B2AB804358AB0B9@DM8PR12MB5400.namprd12.prod.outlook.com>
-References: <20220310075211.4801-1-jasowang@redhat.com>
-In-Reply-To: <20220310075211.4801-1-jasowang@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 66b9329a-08f2-4141-8d7c-08da02850f64
-x-ms-traffictypediagnostic: PH7PR12MB5688:EE_
-x-microsoft-antispam-prvs: <PH7PR12MB5688BA74137E6150B95F5EEFAB0B9@PH7PR12MB5688.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O7Lh0bMxFWSY9v2SuSG95h8owhjPijIBSg9XO47fAvDVFTFZd9rUjEbeJVeu3WZRw1ZuasA+hCY1+kUSNFht67PoDvZHA2TBgiDvKMsiKFn3bVevNf6yFuo9XNspDfYLg5iRuaABYZRqDVIOoHWeOwUFmWXV80fDEqNkikrOoiSa9ZLbK51vdn4dyOukC8o/EvjhvTv+X3Bfxfkinq0S/uKSYFr3HGwLv6QikypI2EtbPdBKiaV9pyGRrbHAMfOrdFJq1X7MtHRqytFaRptcDaSHrlUnrAJ9xsAN4LcTmNJdpPYt74q8DmvpAYQgiULTQ+AcMzDiQZnTpkt0nQTFFj42L920oWi6qn/g4BogHBMPzqQW6h8QlrOZL7AL3LunV8KGytiqft3xobtw76ivSDPBAlCt76QkrVmYJQXLA0E2nArOLwAushPJvXIF30RotFbSm78Cw7s/br0BRTA/rwQkYFFipRg6vPdbyXKIv3T+5nQ/UlwUaairu/sKzVyphPVlIUH1yIBqu/A2Bt4mewrQYmbGKwnSrjnYCmhv/YVLaHEB6qcxZEEa3PEiNpEt25Lzp+ENBI57FVapAFkisqb7CiBXvIkMQCSPdmbwRiYcrNTJYvSlMo/MtFraWIlaSa8fl2nSlM0AOqyd1qGlqTesrlFqHz35kS/h8NqES6JxmCMyJsO1qgTxZmsINZ3NUhfY2f1gbyucvATpkkb4aA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(55016003)(83380400001)(2906002)(33656002)(316002)(38070700005)(4326008)(71200400001)(7696005)(9686003)(54906003)(8936002)(38100700002)(5660300002)(26005)(186003)(52536014)(86362001)(66446008)(64756008)(66476007)(66556008)(66946007)(53546011)(122000001)(8676002)(76116006)(110136005)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?FLeZqi80Ep4aWj2umkx24P3lZRL5imFC79FAKjj+dN8jwwhPbJRP5qFZ4oJ9?=
- =?us-ascii?Q?suwli6tKEt57yeOS1CuNxYkmU0oP9veeFeUOoXmIidFFEK/32xP8FURdz94U?=
- =?us-ascii?Q?bjyGdCinUh7zk5QB8LBGMl1nDkS6lW2gUwHqv6DLWWRsNp7d8Rjr1nlK0F4c?=
- =?us-ascii?Q?DRIYxt/oa+pnfNWzFJejMzR7XpE6x6gWsn9VvZHu46o9Uc5eQZD3a3oOWtrx?=
- =?us-ascii?Q?ZlXkAitBcH2Ip+LGT80BSSLMug4q06QF28fTSjzpVHv2FmbS3omVx2531fjY?=
- =?us-ascii?Q?1cfrb8MztgDY3163rUMC1JSz6IQu+SPrtpEYrS5+SJqHuxES04oca9P4bFXL?=
- =?us-ascii?Q?yzbJzJ0ofYVNf2pEKBoIjc/DeRNZgaZirecGnf4NwOvgN8cP3a5XlXaC7KT3?=
- =?us-ascii?Q?S/coqc55atmmoGcIWxCsLpqfD3A2Qv2xSaVOLHTfVcmjmWZlLMbR3a5SXrgi?=
- =?us-ascii?Q?AVb7wuEpUgOjyvR22t3bc8pTrDWcka+wgCyuxN0/3mEuGiJC3UWGnpL3sYrc?=
- =?us-ascii?Q?pjJw9rCr92PJhVWHwNN75EuPPcxoeZmo28vMsOQekyscbweF/NeK3w0NOLep?=
- =?us-ascii?Q?epfmDR/Dz3tIoDi/LI27+fJfqB8Xq0gTg7PCqhQU0ZtdO27W6XV1zGQ28XOP?=
- =?us-ascii?Q?TNtdlBtP1QZCWu89T/0YfCkLSjJNikuykSzD9DH63IcHqtqnum7nHwbIPjwr?=
- =?us-ascii?Q?+0Rw7GDf0beWWr4+sWGDXuGvQeAFeikaKjo0C/p95relQ5CWZIy3dn4T20L2?=
- =?us-ascii?Q?6nw7n3uK10Hn2nGXc+FFNerWGBf+JIeFuelTOwonkLJdiyWbFplx/E5R/r2w?=
- =?us-ascii?Q?lM4jMaESORMXvZdDXfyNtlnACAqXKt56QO+tHqsraMUs9rU7oE43wB+gLle2?=
- =?us-ascii?Q?7M5ARIb1tybnQMEaWDv8vn/d3ac+Iyt9CEOiw+cNiUjo4MCwp3w3SDaw6z/7?=
- =?us-ascii?Q?LXJpVdqtTvx7BAbc+TUiV/iNCxJsiT06b+qz+tAk0ziQwA4T3XtUldbyT2b4?=
- =?us-ascii?Q?PxnJzSwRXGCCuOET05P+GIJ42p/d4wERuuJlAZ71yV89sgpDcOn+6ilxqZ6R?=
- =?us-ascii?Q?bPKo+hod1By05MwJ63YAAVMAHs2KMXX5NSRnX+2oT/eUea0XeUeSXqSOO6rf?=
- =?us-ascii?Q?mQCy1IYOA/LxRjoiZqdtOiFHX4lPanvEhJYiEWC/mpsp5qnKMfwc2xsZMBWm?=
- =?us-ascii?Q?uvCQv1IOOKJBWf7Cm+HStsJkIEGu/aHEPdtVNn/PzasQiERliXMmW9+FJPrb?=
- =?us-ascii?Q?Y7n4U2tItH/lLQ6Z1JGyAUlq+jOmEbPM7uvxGYcIRrOwk/prF/ZmiAzEdvpb?=
- =?us-ascii?Q?TwE66EaOnYsv/3X1h7uk1xNf+iupkccz4VMUn1VTG6RKpa1uLWlahkfC4oRR?=
- =?us-ascii?Q?LRYCenDVUMzJHI1HqSSv+fTW0KfxajJm9qzXushLHRGIS6RSXCHindpwCz0Z?=
- =?us-ascii?Q?6wCAxPOUQ9mmmTljOoWGay396NTpcLQ04YpnY/emQuGDWOmJDoaqB3CPth1A?=
- =?us-ascii?Q?T2NUdOfx53ISc6EW/8Czkfd80KypBPMwOKlv1K+jjS2SqxLXklrN0UvlpQ?=
- =?us-ascii?Q?=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S235037AbiCJLBr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 06:01:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE1FC13AA11
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 03:00:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646910044;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AsfeyKqrBgkYuQzWFN//9BncY2nLecQ3kO20U/V6vFk=;
+        b=I+oWCplRP6MUxVUKSQuTsv8UacFNjSv/SvvTA+u0T4PwOCzi16JGVSsIs/sdiTEFnHpcNW
+        X6yE8OtdcmU8OllryJPiicz+edCKDQHNY3y3qnapDsNU1Z2ChEERO65feauxZmOH2NpkKN
+        S4aKeF/H5GolUfOtBYHaZAVjzU8/xso=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-195-zv-e5aBNNY-vEY6ZGTn2sg-1; Thu, 10 Mar 2022 06:00:41 -0500
+X-MC-Unique: zv-e5aBNNY-vEY6ZGTn2sg-1
+Received: by mail-wm1-f71.google.com with SMTP id a26-20020a7bc1da000000b003857205ec7cso2155278wmj.2
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 03:00:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AsfeyKqrBgkYuQzWFN//9BncY2nLecQ3kO20U/V6vFk=;
+        b=gbK+lvQt0mlSaSrVneUrt4DiZjmKbgFCV/5Pk/YcUhVgO2v2aiMKL0H65YLroOoYvQ
+         CygjOclu3Mdu9Ix//dHImt+HNax/VK8H9PLiQp3675ZpM7QAfOiaJf1p5+Gx2AGrKNPp
+         db9OUPyT4boynljgaWGuKbVRdU+XrAcBLLR/i0QLugLFkFMnksdsKJ7JVo7aPaQ6GSzp
+         GTFZ8X64sHWVFhW04YnGHACcf1zeaxZFC1E3v7FvLTxD2ah4IzGXkV0OJdfOSKKRH5SA
+         pX+tA6LfOkhVxhB6KwUDWl+yp8FD2av79Z68s7Nsym9+y1ZIuRl2KlgJk3TcW3Aye67S
+         Swyg==
+X-Gm-Message-State: AOAM533yPCcRVx9w2w0XxR9Xh3Yg9aVrToZCHyHPOcswpRlaBSEDua34
+        w20hNPcXk+Cen8INK72AHcjwNkBf19XLO0a6FYM2WQ1PI7cxqTbmAcBVMn1NIuFMC0HoSAOTnX1
+        h/qAXkHbDSDOqq3Dc
+X-Received: by 2002:a1c:f30b:0:b0:37b:b5de:c804 with SMTP id q11-20020a1cf30b000000b0037bb5dec804mr11036419wmq.166.1646910040194;
+        Thu, 10 Mar 2022 03:00:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzE//Um8fdzz7IHgiVk+0r92oJeOzoNXJHMsqiiiF0zWaYyYnqN4PdqnWhKpxWaqHo+iNwr5g==
+X-Received: by 2002:a1c:f30b:0:b0:37b:b5de:c804 with SMTP id q11-20020a1cf30b000000b0037bb5dec804mr11036389wmq.166.1646910039856;
+        Thu, 10 Mar 2022 03:00:39 -0800 (PST)
+Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
+        by smtp.gmail.com with ESMTPSA id m3-20020a5d6243000000b001e33760776fsm3863935wrv.10.2022.03.10.03.00.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 03:00:39 -0800 (PST)
+Date:   Thu, 10 Mar 2022 12:00:36 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jiyong Park <jiyong@google.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, adelva@google.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost/vsock: reset only the h2g connections upon release
+Message-ID: <20220310110036.fgy323c4hvk3mziq@sgarzare-redhat>
+References: <20220310081854.2487280-1-jiyong@google.com>
+ <20220310085931.cpgc2cv4yg7sd4vu@sgarzare-redhat>
+ <CALeUXe6heGD9J+5fkLs9TJ7Mn0UT=BSdGNK_wZ4gkor_Ax_SqA@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66b9329a-08f2-4141-8d7c-08da02850f64
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 10:59:33.7875
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iapFDWAiDO7InpLglT56xpy4I99KpG4OOz/MBZkWp1qclL/iPIutzUvnTfp+5r2z
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5688
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CALeUXe6heGD9J+5fkLs9TJ7Mn0UT=BSdGNK_wZ4gkor_Ax_SqA@mail.gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tested-by: Eli Cohen <elic@nvidia.com>
+On Thu, Mar 10, 2022 at 07:41:54PM +0900, Jiyong Park wrote:
+>Hi Stefano,
+>
+>On Thu, Mar 10, 2022 at 5:59 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>>
+>> Hi Jiyong,
+>>
+>> On Thu, Mar 10, 2022 at 05:18:54PM +0900, Jiyong Park wrote:
+>> >Filtering non-h2g connections out when determining orphaned connections.
+>> >Otherwise, in a nested VM configuration, destroying the nested VM (which
+>> >often involves the closing of /dev/vhost-vsock if there was h2g
+>> >connections to the nested VM) kills not only the h2g connections, but
+>> >also all existing g2h connections to the (outmost) host which are
+>> >totally unrelated.
+>> >
+>> >Tested: Executed the following steps on Cuttlefish (Android running on a
+>> >VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+>> >connection inside the VM, (2) open and then close /dev/vhost-vsock by
+>> >`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+>> >session is not reset.
+>> >
+>> >[1] https://android.googlesource.com/device/google/cuttlefish/
+>> >
+>> >Signed-off-by: Jiyong Park <jiyong@google.com>
+>> >---
+>> > drivers/vhost/vsock.c | 4 ++++
+>> > 1 file changed, 4 insertions(+)
+>> >
+>> >diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>> >index 37f0b4274113..2f6d5d66f5ed 100644
+>> >--- a/drivers/vhost/vsock.c
+>> >+++ b/drivers/vhost/vsock.c
+>> >@@ -722,6 +722,10 @@ static void vhost_vsock_reset_orphans(struct sock *sk)
+>> >        * executing.
+>> >        */
+>> >
+>> >+      /* Only the h2g connections are reset */
+>> >+      if (vsk->transport != &vhost_transport.transport)
+>> >+              return;
+>> >+
+>> >       /* If the peer is still valid, no need to reset connection */
+>> >       if (vhost_vsock_get(vsk->remote_addr.svm_cid))
+>> >               return;
+>> >--
+>> >2.35.1.723.g4982287a31-goog
+>> >
+>>
+>> Thanks for your patch!
+>>
+>> Yes, I see the problem and I think I introduced it with the
+>> multi-transports support (ooops).
+>>
+>> So we should add this fixes tag:
+>>
+>> Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+>>
+>>
+>> IIUC the problem is for all transports that should only cycle on their
+>> own sockets. Indeed I think there is the same problem if the g2h driver
+>> will be unloaded (or a reset event is received after a VM migration), it
+>> will close all sockets of the nested h2g.
+>>
+>> So I suggest a more generic solution, modifying
+>> vsock_for_each_connected_socket() like this (not tested):
+>>
+>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>> index 38baeb189d4e..f04abf662ec6 100644
+>> --- a/net/vmw_vsock/af_vsock.c
+>> +++ b/net/vmw_vsock/af_vsock.c
+>> @@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
+>>   }
+>>   EXPORT_SYMBOL_GPL(vsock_remove_sock);
+>>
+>> -void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+>> +void vsock_for_each_connected_socket(struct vsock_transport *transport,
+>> +                                    void (*fn)(struct sock *sk))
+>>   {
+>>          int i;
+>>
+>> @@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
+>>          for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
+>>                  struct vsock_sock *vsk;
+>>                  list_for_each_entry(vsk, &vsock_connected_table[i],
+>> -                                   connected_table)
+>> +                                   connected_table) {
+>> +                       if (vsk->transport != transport)
+>> +                               continue;
+>> +
+>>                          fn(sk_vsock(vsk));
+>> +               }
+>>          }
+>>
+>>
+>> And all transports that call it.
+>>
+>> Thanks,
+>> Stefano
+>>
+>
+>Thanks for the suggestion, which looks much better. It actually worked well.
 
-> -----Original Message-----
-> From: Jason Wang <jasowang@redhat.com>
-> Sent: Thursday, March 10, 2022 9:52 AM
-> To: mst@redhat.com
-> Cc: kvm@vger.kernel.org; virtualization@lists.linux-foundation.org; netde=
-v@vger.kernel.org; linux-kernel@vger.kernel.org; Jason Wang
-> <jasowang@redhat.com>; Eli Cohen <elic@nvidia.com>; Anirudh Rayabharam <m=
-ail@anirudhrb.com>
-> Subject: [PATCH] vhost: allow batching hint without size
->=20
-> Commit e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb
-> entries") tries to reject the IOTLB message whose size is zero. But
-> the size is not necessarily meaningful, one example is the batching
-> hint, so the commit breaks that.
->=20
-> Fixing this be reject zero size message only if the message is used to
-> update/invalidate the IOTLB.
->=20
-> Fixes: e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb entri=
-es")
-> Reported-by: Eli Cohen <elic@nvidia.com>
-> Cc: Anirudh Rayabharam <mail@anirudhrb.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/vhost/vhost.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 082380c03a3e..1768362115c6 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1170,7 +1170,9 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
->  		goto done;
->  	}
->=20
-> -	if (msg.size =3D=3D 0) {
-> +	if ((msg.type =3D=3D VHOST_IOTLB_UPDATE ||
-> +	     msg.type =3D=3D VHOST_IOTLB_INVALIDATE) &&
-> +	     msg.size =3D=3D 0) {
->  		ret =3D -EINVAL;
->  		goto done;
->  	}
-> --
-> 2.18.1
+Thanks for trying this!
+
+>
+>By the way, the suggested change will alter the kernel-module interface (KMI),
+>which will make it difficult to land the change on older releases where we'd
+>like to keep the KMI stable [1]. Would it be OK if we let the supplied function
+>(fn) be responsible for checking the transport? I think that there, in
+>the future,
+>might be a case where one needs to cycle over all sockets for inspection or so.
+>I admit that this would be prone to error, though.
+>
+>Please let me know what you think. I don't have a strong preference. I will
+>submit a revision as you want.
+
+I see your point, and it makes sense to keep KMI on stable branches, but 
+mainline I would like to have the proposed approach since all transports 
+use it to cycle on their sockets.
+
+So we could do a series with 2 patches:
+- Patch 1 fixes the problem in all transports by checking the transport
+   in the callback (here we insert the fixes tag so we backport it to the
+   stable branches)
+- Patch 2 moves the check in vsock_for_each_connected_socket() removing
+   it from callbacks so it is less prone to errors and we merge it only
+   mainline
+
+What do you think?
+
+Thanks,
+Stefano
 
