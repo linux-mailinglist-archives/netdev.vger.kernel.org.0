@@ -2,339 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 876254D4CFB
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 876334D4D04
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbiCJP0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 10:26:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
+        id S235891AbiCJP3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 10:29:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230029AbiCJP0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:26:52 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6D7157219;
-        Thu, 10 Mar 2022 07:25:51 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id p15so12859013ejc.7;
-        Thu, 10 Mar 2022 07:25:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hyr8lchvSxJvVZvNNPRmAWrg1/xZg5k7PwIJtfWhQPA=;
-        b=bB7/5s/t/KzBLjcRGi2a9yGaVZ4RKGv+dQSLbu4MBPn2IvdV6nEbbtK+IJEVEUhFrU
-         AEQWAVL3khsmCLwMf/oY50KBGMhO3I/P4yeEqz1MAOY2jvDFMxiGncvs8dmVgqH8IOh6
-         Q9vKmIyt8Ece8Ho2qaJ5DKEhdjtnUGbnEQVe4+sf5JKK2ccoFbV6tzCDVOBhdgTcwzy+
-         9at2DIXGe3+rklhwUjtkbp1MK0hTrg0VRt6VqcJiRQ3fnFj54dX6Ou4mjD0Ifg9X/yKq
-         CpeeKl/hZnZWHIh88lDfqVJM6mjuAOWJXOvrkanPpYYwe37q/ivX5qI4eBJX12+UgyDy
-         kgZg==
+        with ESMTP id S232920AbiCJP3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:29:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7859D64BCB
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:28:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646926090;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OxmhgsYDn7lN+Q9MYhLi71z6xn1cSXOJwJ0aQe2hQ+o=;
+        b=T5RyIYcFqN48CN7CIalc12XykVE/70e3LRyIRYZH7VqmxpfTd6d6E9d1xhP3I03p8aQZCM
+        ctm/Ovc3j7rnehpeb+PsJMtDfFobEsQ2C2jb6ktrd4mcbcqt9U2owR5M0H3JDUEFzkPsit
+        HA3KoEyeA+iA6vdLo4XICJ1NSa9NV3k=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-387-qlxB2MAoMzKxxnhOLXWJjQ-1; Thu, 10 Mar 2022 10:28:09 -0500
+X-MC-Unique: qlxB2MAoMzKxxnhOLXWJjQ-1
+Received: by mail-wr1-f70.google.com with SMTP id z16-20020adff1d0000000b001ef7dc78b23so1802595wro.12
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:28:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=hyr8lchvSxJvVZvNNPRmAWrg1/xZg5k7PwIJtfWhQPA=;
-        b=3fN0/Mpq5cgBehkCvAnBXrlUreucjDK0vFbkJZjeCcdFesNK4vHmQKUFrqX5R3QOJ2
-         XPqJClf7b3Wld/uU1N4AHNZYI1mwLwoykxYFfOi+8bObu80OeSBzQNwR7kEpdQ21cbGn
-         CeyK8Y8shQuL9HJnHYstkQKcu7XcByXNDJjH9/B6ltS+uJ2qst1e19lAy7difsMQUwWk
-         +kYp7XnjulLD2UoljkOJDfxJVw75rqEZ+jDso867m1f4tOBbFH0aF1DHVug5wBpqJwz4
-         +GiW1BHNAiALxp54Lbe0kSEIWzC7HEBdeuMES3oM28k7+hVC5KAMYZh4/zkdanObIC4P
-         GxRw==
-X-Gm-Message-State: AOAM531/w8dZRqNRN9t1HBVgP/s0mw5hxLd/zxHCKpJqSRWuMOIguQhd
-        8GIjv5PWhGbyW6Ofvk48Pr8=
-X-Google-Smtp-Source: ABdhPJyeyXIwnxx7GpXcIqMRyfd7KwZ2in6ydXgLTZ+VY3mJEJDH9hq+D3/8NJaRPmbwCXUcwrRYFw==
-X-Received: by 2002:a17:907:7711:b0:6ce:e03c:e1e2 with SMTP id kw17-20020a170907771100b006cee03ce1e2mr4707576ejc.769.1646925949456;
-        Thu, 10 Mar 2022 07:25:49 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm2297799eda.2.2022.03.10.07.25.47
+        bh=OxmhgsYDn7lN+Q9MYhLi71z6xn1cSXOJwJ0aQe2hQ+o=;
+        b=0jS96t94MOAx4clJz5ECqPmID2pGoMQnGRp9GhOrC5MQ7hMwYExWHmZTP8Y3ZW4xS4
+         Bw8p2465h4kZ/VDaqukD+vBZJfR8XPQTCeUdcDfzzx3BHUCC/71fV4PxF2GRQccrHzD0
+         iM3//8uylxGz2hI/SYs8NdUy9GK/FmWYJvxe0iRw8hjJkXPC3fwVsxBicgAbzNytX1Rr
+         ffOU+3b5U9x6fzi88lwA9H438dQciIJKRC9lXZIxmFAzvNam+lRF8CPlClGONzxVWKup
+         CXCjV5StboCwNcJUcTSB4xgt0oUkMsqgYg/9BaWSlR9L4+paVHlPSDb/PV3vcDaik983
+         iZlA==
+X-Gm-Message-State: AOAM530GI+EryRJOUA6Eoz5nsxnRNIqT+i7TwZIm3r3/kkkolwsH84vR
+        /M6ahJhXqXXcz7cOirLonFBxihCPu4vssYAVkMInI1i9EvRaov8XSbBz/U37EOS+96+H/e3b4sz
+        0dmD2prjoxtixDL+a
+X-Received: by 2002:adf:d1c2:0:b0:1f1:f89a:24ba with SMTP id b2-20020adfd1c2000000b001f1f89a24bamr4024606wrd.515.1646926087877;
+        Thu, 10 Mar 2022 07:28:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwvVyRWRHj93/hZgey9ZXI65IZxEXwz2fuNHtQ5iBMjN5xH2pI0mLBomxlME5TCxbw4FP1ESQ==
+X-Received: by 2002:adf:d1c2:0:b0:1f1:f89a:24ba with SMTP id b2-20020adfd1c2000000b001f1f89a24bamr4024578wrd.515.1646926087550;
+        Thu, 10 Mar 2022 07:28:07 -0800 (PST)
+Received: from redhat.com ([2.53.27.107])
+        by smtp.gmail.com with ESMTPSA id x14-20020adfffce000000b001f1dfee4867sm5998858wrs.99.2022.03.10.07.28.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 07:25:48 -0800 (PST)
-Date:   Thu, 10 Mar 2022 17:25:47 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 10/10] net: dsa: mv88e6xxx: MST Offloading
-Message-ID: <20220310152547.etuov6kpqotnyv2p@skbuf>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-11-tobias@waldekranz.com>
- <20220303222658.7ykn6grkkp6htm7a@skbuf>
- <87k0d1n8ko.fsf@waldekranz.com>
+        Thu, 10 Mar 2022 07:28:06 -0800 (PST)
+Date:   Thu, 10 Mar 2022 10:28:03 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Jiyong Park <jiyong@google.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, adelva@google.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] vsock: each transport cycles only on its own sockets
+Message-ID: <20220310102636-mutt-send-email-mst@kernel.org>
+References: <20220310135012.175219-1-jiyong@google.com>
+ <20220310141420.lsdchdfcybzmdhnz@sgarzare-redhat>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87k0d1n8ko.fsf@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220310141420.lsdchdfcybzmdhnz@sgarzare-redhat>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 04:14:31PM +0100, Tobias Waldekranz wrote:
-> On Fri, Mar 04, 2022 at 00:26, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Tue, Mar 01, 2022 at 11:03:21AM +0100, Tobias Waldekranz wrote:
-> >> Allocate a SID in the STU for each MSTID in use by a bridge and handle
-> >> the mapping of MSTIDs to VLANs using the SID field of each VTU entry.
-> >> 
-> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> >> ---
-> >>  drivers/net/dsa/mv88e6xxx/chip.c | 178 +++++++++++++++++++++++++++++++
-> >>  drivers/net/dsa/mv88e6xxx/chip.h |  13 +++
-> >>  2 files changed, 191 insertions(+)
-> >> 
-> >> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> >> index c14a62aa6a6c..4fb4ec1dff79 100644
-> >> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> >> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> >> @@ -1818,6 +1818,137 @@ static int mv88e6xxx_stu_setup(struct mv88e6xxx_chip *chip)
-> >>  	return mv88e6xxx_stu_loadpurge(chip, &stu);
-> >>  }
-> >>  
-> >> +static int mv88e6xxx_sid_new(struct mv88e6xxx_chip *chip, u8 *sid)
-> >> +{
-> >> +	DECLARE_BITMAP(busy, MV88E6XXX_N_SID) = { 0 };
-> >> +	struct mv88e6xxx_mst *mst;
-> >> +
-> >> +	set_bit(0, busy);
-> >> +
-> >> +	list_for_each_entry(mst, &chip->msts, node) {
-> >> +		set_bit(mst->stu.sid, busy);
-> >> +	}
-> >> +
-> >> +	*sid = find_first_zero_bit(busy, MV88E6XXX_N_SID);
-> >> +
-> >> +	return (*sid >= mv88e6xxx_max_sid(chip)) ? -ENOSPC : 0;
-> >> +}
-> >> +
-> >> +static int mv88e6xxx_sid_put(struct mv88e6xxx_chip *chip, u8 sid)
-> >> +{
-> >> +	struct mv88e6xxx_mst *mst, *tmp;
-> >> +	int err = 0;
-> >> +
-> >> +	list_for_each_entry_safe(mst, tmp, &chip->msts, node) {
-> >> +		if (mst->stu.sid == sid) {
-> >> +			if (refcount_dec_and_test(&mst->refcnt)) {
-> >> +				mst->stu.valid = false;
-> >> +				err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
-> >
-> > It is interesting what to do if this fails. Possibly not this, because
-> > the entry remains in hardware but not in software.
+On Thu, Mar 10, 2022 at 03:14:20PM +0100, Stefano Garzarella wrote:
+> On Thu, Mar 10, 2022 at 10:50:11PM +0900, Jiyong Park wrote:
+> > When iterating over sockets using vsock_for_each_connected_socket, make
+> > sure that a transport filters out sockets that don't belong to the
+> > transport.
+> > 
+> > There actually was an issue caused by this; in a nested VM
+> > configuration, destroying the nested VM (which often involves the
+> > closing of /dev/vhost-vsock if there was h2g connections to the nested
+> > VM) kills not only the h2g connections, but also all existing g2h
+> > connections to the (outmost) host which are totally unrelated.
+> > 
+> > Tested: Executed the following steps on Cuttlefish (Android running on a
+> > VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+> > connection inside the VM, (2) open and then close /dev/vhost-vsock by
+> > `exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+> > session is not reset.
+> > 
+> > [1] https://android.googlesource.com/device/google/cuttlefish/
+> > 
+> > Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+> > Signed-off-by: Jiyong Park <jiyong@google.com>
+> > ---
+> > Changes in v3:
+> >  - Fixed the build error in vmci_transport.c
+> > Changes in v2:
+> >  - Squashed into a single patch
+> > 
+> > drivers/vhost/vsock.c            | 3 ++-
+> > include/net/af_vsock.h           | 3 ++-
+> > net/vmw_vsock/af_vsock.c         | 9 +++++++--
+> > net/vmw_vsock/virtio_transport.c | 7 +++++--
+> > net/vmw_vsock/vmci_transport.c   | 5 ++++-
+> > 5 files changed, 20 insertions(+), 7 deletions(-)
 > 
-> True, I will let the error bubble up and keep the SW state in sync with
-> the hardware.
+> It seems okay now, I ran my test suite and everything seems to be fine:
+> 
+> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> 
+> Thanks,
+> Stefanoc
 
-Ok. For what it's worth, if you bump a refcount from 0 to 1 as part of
-the error handling here, you need to do so using refcount_set(1), not
-refcount_inc(). I found this out in commit 232deb3f9567 ("net: dsa:
-avoid refcount warnings when ->port_{fdb,mdb}_del returns error").
-Just thought I'd mention it in case you didn't know, to avoid a future
-respin for that reason.
+Thanks!
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-> >> +				list_del(&mst->node);
-> >> +				kfree(mst);
-> >> +			}
-> >> +
-> >> +			return err;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	return -ENOENT;
-> >> +}
-> >> +
-> >> +static int mv88e6xxx_sid_get(struct mv88e6xxx_chip *chip, struct net_device *br,
-> >> +			     u16 msti, u8 *sid)
-> >> +{
-> >> +	struct mv88e6xxx_mst *mst;
-> >> +	int err, i;
-> >> +
-> >> +	if (!br)
-> >> +		return 0;
-> >
-> > Is this condition possible?
-> 
-> Removing.
-> 
-> >> +
-> >> +	if (!mv88e6xxx_has_stu(chip))
-> >> +		return -EOPNOTSUPP;
-> >> +
-> >> +	list_for_each_entry(mst, &chip->msts, node) {
-> >> +		if (mst->br == br && mst->msti == msti) {
-> >> +			refcount_inc(&mst->refcnt);
-> >> +			*sid = mst->stu.sid;
-> >> +			return 0;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	err = mv88e6xxx_sid_new(chip, sid);
-> >> +	if (err)
-> >> +		return err;
-> >> +
-> >> +	mst = kzalloc(sizeof(*mst), GFP_KERNEL);
-> >> +	if (!mst)
-> >> +		return -ENOMEM;
-> >
-> > This leaks the new SID.
-> 
-> I don't think so, the SID is just calculated based on what is in
-> chip->msts. However:
-> 
-> - The naming is bad. Will change.
+Not a new regression so I think we should take this in the next cycle,
+let's be careful here especially since previous version was not even
+build-tested by the contributor.
 
-I see now. My bad. What are you renaming it to? If it isn't as concise
-you could still keep it sid_new(). I see atu_new() is based on the same
-find_first_zero_bit() concept.
+-- 
+MST
 
-> >> +
-> >> +	INIT_LIST_HEAD(&mst->node);
-> >> +	refcount_set(&mst->refcnt, 1);
-> >> +	mst->br = br;
-> >> +	mst->msti = msti;
-> >> +	mst->stu.valid = true;
-> >> +	mst->stu.sid = *sid;
-> >> +
-> >> +	/* The bridge starts out all ports in the disabled state. But
-> >> +	 * a STU state of disabled means to go by the port-global
-> >> +	 * state. So we set all user port's initial state to blocking,
-> >> +	 * to match the bridge's behavior.
-> >> +	 */
-> >> +	for (i = 0; i < mv88e6xxx_num_ports(chip); i++)
-> >> +		mst->stu.state[i] = dsa_is_user_port(chip->ds, i) ?
-> >> +			MV88E6XXX_PORT_CTL0_STATE_BLOCKING :
-> >> +			MV88E6XXX_PORT_CTL0_STATE_DISABLED;
-> >> +
-> >> +	list_add_tail(&mst->node, &chip->msts);
-> >> +	return mv88e6xxx_stu_loadpurge(chip, &mst->stu);
-> >
-> > And this doesn't behave too well on failure (the MSTID exists in
-> > software but not in hardware).
-> 
-> Yes, fixing in v3.
-> 
-> >> +}
-> >> +
-> >> +static int mv88e6xxx_port_mst_state_set(struct dsa_switch *ds, int port,
-> >> +					const struct switchdev_mst_state *st)
-> >> +{
-> >> +	struct dsa_port *dp = dsa_to_port(ds, port);
-> >> +	struct mv88e6xxx_chip *chip = ds->priv;
-> >> +	struct mv88e6xxx_mst *mst;
-> >> +	u8 state;
-> >> +	int err;
-> >> +
-> >> +	if (!mv88e6xxx_has_stu(chip))
-> >> +		return -EOPNOTSUPP;
-> >> +
-> >> +	switch (st->state) {
-> >> +	case BR_STATE_DISABLED:
-> >> +	case BR_STATE_BLOCKING:
-> >> +	case BR_STATE_LISTENING:
-> >> +		state = MV88E6XXX_PORT_CTL0_STATE_BLOCKING;
-> >> +		break;
-> >> +	case BR_STATE_LEARNING:
-> >> +		state = MV88E6XXX_PORT_CTL0_STATE_LEARNING;
-> >> +		break;
-> >> +	case BR_STATE_FORWARDING:
-> >> +		state = MV88E6XXX_PORT_CTL0_STATE_FORWARDING;
-> >> +		break;
-> >> +	default:
-> >> +		return -EINVAL;
-> >> +	}
-> >> +
-> >> +	list_for_each_entry(mst, &chip->msts, node) {
-> >> +		if (mst->br == dsa_port_bridge_dev_get(dp) &&
-> >> +		    mst->msti == st->msti) {
-> >> +			if (mst->stu.state[port] == state)
-> >> +				return 0;
-> >> +
-> >> +			mst->stu.state[port] = state;
-> >> +			mv88e6xxx_reg_lock(chip);
-> >> +			err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
-> >> +			mv88e6xxx_reg_unlock(chip);
-> >> +			return err;
-> >> +		}
-> >> +	}
-> >> +
-> >> +	return -ENOENT;
-> >> +}
-> >> +
-> >>  static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
-> >>  					u16 vid)
-> >>  {
-> >> @@ -2437,6 +2568,12 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
-> >>  	if (err)
-> >>  		return err;
-> >>  
-> >> +	if (!vlan.valid && vlan.sid) {
-> >> +		err = mv88e6xxx_sid_put(chip, vlan.sid);
-> >> +		if (err)
-> >> +			return err;
-> >> +	}
-> >> +
-> >>  	return mv88e6xxx_g1_atu_remove(chip, vlan.fid, port, false);
-> >>  }
-> >>  
-> >> @@ -2482,6 +2619,44 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
-> >>  	return err;
-> >>  }
-> >>  
-> >> +static int mv88e6xxx_vlan_msti_set(struct dsa_switch *ds,
-> >> +				   const struct switchdev_attr *attr)
-> >> +{
-> >> +	const struct switchdev_vlan_attr *vattr = &attr->u.vlan_attr;
-> >> +	struct mv88e6xxx_chip *chip = ds->priv;
-> >> +	struct mv88e6xxx_vtu_entry vlan;
-> >> +	u8 new_sid;
-> >> +	int err;
-> >> +
-> >> +	mv88e6xxx_reg_lock(chip);
-> >> +
-> >> +	err = mv88e6xxx_vtu_get(chip, vattr->vid, &vlan);
-> >> +	if (err)
-> >> +		goto unlock;
-> >> +
-> >> +	if (!vlan.valid) {
-> >> +		err = -EINVAL;
-> >> +		goto unlock;
-> >> +	}
-> >> +
-> >> +	err = mv88e6xxx_sid_get(chip, attr->orig_dev, vattr->msti, &new_sid);
-> >> +	if (err)
-> >> +		goto unlock;
-> >> +
-> >> +	if (vlan.sid) {
-> >> +		err = mv88e6xxx_sid_put(chip, vlan.sid);
-> >> +		if (err)
-> >> +			goto unlock;
-> >> +	}
-> >> +
-> >> +	vlan.sid = new_sid;
-> >> +	err = mv88e6xxx_vtu_loadpurge(chip, &vlan);
-> >
-> > Maybe you could move mv88e6xxx_sid_put() after this succeeds?
-> 
-> Yep. Also made sure to avoid needless updates of the VTU entry if it
-> already belonged to the correct SID.
-> 
-> Thanks for the great review!
-
-I realize I gave you conflicting advice here, first with inverting the
-refcount_inc() with the refcount_dec(), then with having fast handling
-of noop-changes to vlan.sid. I hope you're able to make some sense out
-of that and avoid the obvious issue with the refcount temporarily
-dropping to zero before going back to 1, which makes the sanity checker
-complain.
