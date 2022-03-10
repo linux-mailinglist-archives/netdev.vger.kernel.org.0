@@ -2,106 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22D414D445F
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:17:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A48964D4469
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239877AbiCJKSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 05:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60282 "EHLO
+        id S241173AbiCJKWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 05:22:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237730AbiCJKSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 05:18:53 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7C55620B
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 02:17:50 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id w7so8561179lfd.6
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 02:17:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ok2yIWNdYw6UT5efIAaPeOu7HZzSRGXMlO55ACJQkJA=;
-        b=iFB1j+Q2fbiLFyCEX66U0kNp3R9Qdjv5othk0HJtDc2koSj6UaHKn2IGAqWRW1srde
-         83/F+janZ5NyYA/TbT8hP3qMpuxwDcs+Hsmm5M7olP4d98+JP0b0cjAXIi5je2Pkk3vy
-         CwQRiqmsLBbLHQTdFz1H6D3p9Yq+eQH6L0ozOBmN0tLogA0aNw+uevLz3ol6JQgP8Di+
-         uqkd0BRWhgDZdMpWrnilq2tFFuwxUkdzz3pBJ++1f3oR55zUi20lDRqI0qZWQfUMs1rD
-         QHePrR5mY8w/q7oY6LnLziLRnEnookfGFge72iCcTKzqTvZLiTLBiYzk1/YZ715UeuYk
-         aj7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ok2yIWNdYw6UT5efIAaPeOu7HZzSRGXMlO55ACJQkJA=;
-        b=0eSov+pivugKWrR2k36sbIEjR0b/54ZhXrKRV93YBtrHde98eQUnt58IGv6E8Q9EG7
-         SdRVFjTqZXfT8E+ALGtQjMJbRHQ/4Qc2TeRavQnoipM1rMThBwcWxpKrTSBp3Ciq/P7H
-         qoUtpFbRUPiASfsgxoTQ2w6CtUfiqHFuscqCl7zO4FIYEsqbsp56po+KGZOmLjFmqwc0
-         bJTakqZLa4a3F5A/PY2zacHuBXvkNCSFW9Mb5hEBlX1ywwsi2Dl38fAdiYFsJ6yTe210
-         t3DconnkvNLw75Lk6V3yMYIcCdknV5juJ4swuml2Pq51+Uappz1EuJOnN2fMn7fA/rQd
-         RTNA==
-X-Gm-Message-State: AOAM531z682UgCmMtYlIwit0+qt1E847zzVO8sIAjYcEiYU6wXxQAZVb
-        QwzCnZpvgACEvmUsPAljV9UhGhAiPX7xT6lJ
-X-Google-Smtp-Source: ABdhPJwBLpPZruapkiuD/6bfRKohLHFYZXOqojAnrZrEwuSgOh2iA/UtAX49f1b2E4n4vKWILkebQg==
-X-Received: by 2002:ac2:420e:0:b0:448:1c25:f22d with SMTP id y14-20020ac2420e000000b004481c25f22dmr2563248lfh.476.1646907468987;
-        Thu, 10 Mar 2022 02:17:48 -0800 (PST)
-Received: from localhost (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
-        by smtp.gmail.com with ESMTPSA id n19-20020a2eb793000000b00247ec95fddfsm984566ljo.33.2022.03.10.02.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 02:17:48 -0800 (PST)
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] net: phy: Kconfig: micrel_phy: fix dependency issue
-Date:   Thu, 10 Mar 2022 11:17:44 +0100
-Message-Id: <20220310101744.1053425-1-anders.roxell@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S241177AbiCJKWl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 05:22:41 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B63513DE3C;
+        Thu, 10 Mar 2022 02:21:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646907700; x=1678443700;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=sEdEVTS+mm9I/4yqFHkcIpZLo+BMD4jhu7Q5AQwgU7E=;
+  b=MbTcZxtWHkeh592o5TR00uZTTmY0fvV47T3DY8i4LBqs7uzufJDPyofN
+   1/7LW59+0kZ8rlFLW0LK4DW+9QxvnpmR6USjsw+2LE5onr6sXkK5IxEck
+   pgvpzfIcBqgQw2LbmYdzrWPx4xQe9tbslB1ihYL7QjTXUNDohErSXfy9b
+   kfWulddOZT0YjECiXIEnV7If2Yks/55u28x1rXcUWWLsAelnH0kZZHER0
+   xpp1FtNOzwJyNXcs6DXEsBDc7aK23TXoH1ml+nuyfNddsft2IjYlHgWFr
+   jUwgi4xzRsIMuD7CahR5u+UhU5gKQBhsUxxp/5igQHdaNDegDFrkDkqkV
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="254951561"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="254951561"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 02:21:39 -0800
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="554581194"
+Received: from mborg-mobl.ger.corp.intel.com ([10.252.33.144])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 02:21:34 -0800
+Date:   Thu, 10 Mar 2022 12:21:31 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
+Subject: Re: [PATCH net-next v5 12/13] net: wwan: t7xx: Device deep sleep
+ lock/unlock
+In-Reply-To: <20220223223326.28021-13-ricardo.martinez@linux.intel.com>
+Message-ID: <1aca9e1f-8b6b-d3e2-d3ff-1bf37abe63f5@linux.intel.com>
+References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-13-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building driver CONFIG_MICREL_PHY the follow error shows up:
+On Wed, 23 Feb 2022, Ricardo Martinez wrote:
 
-aarch64-linux-gnu-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
-micrel.c:(.text+0x1764): undefined reference to `ptp_clock_index'
-micrel.c:(.text+0x1764): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ptp_clock_index'
-aarch64-linux-gnu-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
-micrel.c:(.text+0x4720): undefined reference to `ptp_clock_register'
-micrel.c:(.text+0x4720): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ptp_clock_register'
+> From: Haijun Liu <haijun.liu@mediatek.com>
+> 
+> Introduce the mechanism to lock/unlock the device 'deep sleep' mode.
+> When the PCIe link state is L1.2 or L2, the host side still can keep
+> the device is in D0 state from the host side point of view. At the same
+> time, if the device's 'deep sleep' mode is unlocked, the device will
+> go to 'deep sleep' while it is still in D0 state on the host side.
+> 
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> ---
 
-Rework Kconfig for MICREL_PHY to depend on 'PTP_1588_CLOCK_OPTIONAL ||
-!NETWORK_PHY_TIMESTAMPING'. Arnd describes in a good way why its needed
-to add this depends in patch e5f31552674e ("ethernet: fix PTP_1588_CLOCK
-dependencies").
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- drivers/net/phy/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 902495afcb38..ea7571a2b39b 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -220,6 +220,7 @@ config MEDIATEK_GE_PHY
- 
- config MICREL_PHY
- 	tristate "Micrel PHYs"
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	help
- 	  Supports the KSZ9021, VSC8201, KS8001 PHYs.
- 
+> +int t7xx_pci_sleep_disable_complete(struct t7xx_pci_dev *t7xx_dev)
+> +{
+> +	struct device *dev = &t7xx_dev->pdev->dev;
+> +	int ret;
+> +
+> +	ret = wait_for_completion_timeout(&t7xx_dev->sleep_lock_acquire,
+> +					  msecs_to_jiffies(PM_SLEEP_DIS_TIMEOUT_MS));
+> +	if (!ret)
+> +		dev_err_ratelimited(dev, "Resource wait complete timed out\n");
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * t7xx_pci_disable_sleep() - Disable deep sleep capability.
+> + * @t7xx_dev: MTK device.
+> + *
+> + * Lock the deep sleep capability, note that the device can still go into deep sleep
+> + * state while device is in D0 state, from the host's point-of-view.
+> + *
+> + * If device is in deep sleep state, wake up the device and disable deep sleep capability.
+> + */
+> +void t7xx_pci_disable_sleep(struct t7xx_pci_dev *t7xx_dev)
+> +{
+> +	unsigned long flags;
+> +
+> +	if (atomic_read(&t7xx_dev->md_pm_state) < MTK_PM_RESUMED) {
+> +		atomic_inc(&t7xx_dev->sleep_disable_count);
+> +		complete_all(&t7xx_dev->sleep_lock_acquire);
+> +		return;
+> +	}
+> +
+> +	spin_lock_irqsave(&t7xx_dev->md_pm_lock, flags);
+> +	if (atomic_inc_return(&t7xx_dev->sleep_disable_count) == 1) {
+> +		u32 deep_sleep_enabled;
+> +
+> +		reinit_completion(&t7xx_dev->sleep_lock_acquire);
+
+You might want to check that there's a mechanism that prevents this 
+racing with wait_for_completion_timeout() in t7xx_pci_sleep_disable_complete().
+
+I couldn't prove it myself but there are probably aspect in the PM side of 
+things I wasn't able to take fully into account (that is, which call 
+paths are not possible to occur).
+
+> +		t7xx_dev_set_sleep_capability(t7xx_dev, false);
+> +
+> +		deep_sleep_enabled = ioread32(IREG_BASE(t7xx_dev) + T7XX_PCIE_RESOURCE_STATUS);
+> +		deep_sleep_enabled &= T7XX_PCIE_RESOURCE_STS_MSK;
+> +		if (deep_sleep_enabled) {
+> +			spin_unlock_irqrestore(&t7xx_dev->md_pm_lock, flags);
+> +			complete_all(&t7xx_dev->sleep_lock_acquire);
+> +			return;
+> +		}
+> +
+> +		t7xx_mhccif_h2d_swint_trigger(t7xx_dev, H2D_CH_DS_LOCK);
+> +	}
+> +	spin_unlock_irqrestore(&t7xx_dev->md_pm_lock, flags);
+> +}
+
+
 -- 
-2.35.1
+ i.
 
