@@ -2,78 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8294D426D
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5FB04D4276
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:26:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240309AbiCJIZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 03:25:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        id S240322AbiCJI1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 03:27:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230470AbiCJIZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:25:47 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BFD13548B
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 00:24:46 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id k24so6690489wrd.7
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 00:24:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=klp4I9KWkRZtURbIPgUKipxadJ2L7KUubiYtCCXhet8=;
-        b=doyor3/AuhfIZK/L7sQZ/+IDCle7JEW3ZZhJGS2VrkZGOdxtQFPjOx2L3FiiN/g4P5
-         zROj3zSL9QlripkaEPNFHXoutzfpjmhlfO8HMaI+ZdOQyGYL5de9ZnmDwPcxk4cr29i1
-         V5WHM3UVJtfsbufSE6xapWxKxv/DqSrXblZzRCINJmHrv2cmvR4a/95PykoS+L0+qgSs
-         pI7mc+1MSy1Rvi6jZ3bEt/vMOs/RTjj1s0XJ0Sd7ez3feLNBTkO4htSuMbUvt7YQoDmB
-         JRPLlNhJGxxhksd6MtJH9+27Tl/YSEfHEo+venhjge1gZKWCXsPbEGI7cNELOiTdTvLl
-         F20Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=klp4I9KWkRZtURbIPgUKipxadJ2L7KUubiYtCCXhet8=;
-        b=bR6VgsME+up4B1+gV52Zzd9rYJay6pdduRVEAaRcDiFtNqVzYtZRFXS7V7uR4gmjrA
-         FalYgDJKa/538moMscfAR7iWUlwYIeBE0m32uy+tIHrxsOqXH/4rIOKXUrgEop6JSiad
-         OS3Y/PKhc5Z8u6NCYOTvHKfAGKYKgMgL6rrQD3X3w5hBD+0r6MXdyjaLfa1krdpvLOJu
-         wy0DNnbb1YdfvcnUbABwlsAhVxJWT3fWTRKUsBS5SEzevPN8Cecq0RjzOxLRDbTXnx2a
-         W7gyIWDJkvGCyKrgAW/PRyKx1PsUF7NsSaVETuhgNsrHfibJJRp5dYkz3PbzzhaknXyh
-         aSdw==
-X-Gm-Message-State: AOAM532TgBqr2IsgtvlnrnqSVHmLWDyIBkt6Y+a7+RI1ri+vpMvlGmn4
-        44lxY1j7an7Mw1Ng9shPwdEBsQ==
-X-Google-Smtp-Source: ABdhPJwDCznlJL4RxC6gDSkv29wEtMcr/bHK2tZPHoGGURVO6IItMV87wC5TC1u69sVEGDY3GWLGKQ==
-X-Received: by 2002:a05:6000:18ab:b0:203:731d:1ac1 with SMTP id b11-20020a05600018ab00b00203731d1ac1mr2567964wri.411.1646900684929;
-        Thu, 10 Mar 2022 00:24:44 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:b41:c160:2863:9561:cedb:112e? ([2a01:e0a:b41:c160:2863:9561:cedb:112e])
-        by smtp.gmail.com with ESMTPSA id p22-20020a1c5456000000b00389e7e62800sm52403wmi.8.2022.03.10.00.24.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Mar 2022 00:24:44 -0800 (PST)
-Message-ID: <3371a7f4-e882-96ac-37ff-6492caced7d6@6wind.com>
-Date:   Thu, 10 Mar 2022 09:24:43 +0100
+        with ESMTP id S234487AbiCJI1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:27:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632321354B0
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 00:26:14 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nSE7M-0000Dj-QE; Thu, 10 Mar 2022 09:25:52 +0100
+Received: from pengutronix.de (unknown [IPv6:2a02:908:393:af61:c649:5786:706c:cc3e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5221B4775A;
+        Thu, 10 Mar 2022 08:25:46 +0000 (UTC)
+Date:   Thu, 10 Mar 2022 09:25:45 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, wsa@kernel.org,
+        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
+        kuba@kernel.org, mailhol.vincent@wanadoo.fr,
+        socketcan@hartkopp.net, geert@linux-m68k.org,
+        kieran.bingham@ideasonboard.com, horms@verge.net.au
+Subject: Re: [PATCH v4 0/4] can: rcar_canfd: Add support for V3U flavor
+Message-ID: <20220310082545.rt6yp3wqsig52qoi@pengutronix.de>
+References: <20220309162609.3726306-1-uli+renesas@fpond.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v2] net: openvswitch: fix uAPI incompatibility
- with existing user space
-Content-Language: en-US
-To:     Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>, Roi Dayan <roid@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Aaron Conole <aconole@redhat.com>
-References: <20220309222033.3018976-1-i.maximets@ovn.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220309222033.3018976-1-i.maximets@ovn.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lkjhngyver533lz4"
+Content-Disposition: inline
+In-Reply-To: <20220309162609.3726306-1-uli+renesas@fpond.eu>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,47 +59,59 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Le 09/03/2022 à 23:20, Ilya Maximets a écrit :
-> Few years ago OVS user space made a strange choice in the commit [1]
-> to define types only valid for the user space inside the copy of a
-> kernel uAPI header.  '#ifndef __KERNEL__' and another attribute was
-> added later.
-> 
-> This leads to the inevitable clash between user space and kernel types
-> when the kernel uAPI is extended.  The issue was unveiled with the
-> addition of a new type for IPv6 extension header in kernel uAPI.
-> 
-> When kernel provides the OVS_KEY_ATTR_IPV6_EXTHDRS attribute to the
-> older user space application, application tries to parse it as
-> OVS_KEY_ATTR_PACKET_TYPE and discards the whole netlink message as
-> malformed.  Since OVS_KEY_ATTR_IPV6_EXTHDRS is supplied along with
-> every IPv6 packet that goes to the user space, IPv6 support is fully
-> broken.
-> 
-> Fixing that by bringing these user space attributes to the kernel
-> uAPI to avoid the clash.  Strictly speaking this is not the problem
-> of the kernel uAPI, but changing it is the only way to avoid breakage
-> of the older user space applications at this point.
-> 
-> These 2 types are explicitly rejected now since they should not be
-> passed to the kernel.  Additionally, OVS_KEY_ATTR_TUNNEL_INFO moved
-> out from the '#ifdef __KERNEL__' as there is no good reason to hide
-> it from the userspace.  And it's also explicitly rejected now, because
-> it's for in-kernel use only.
-> 
-> Comments with warnings were added to avoid the problem coming back.
-> 
-> (1 << type) converted to (1ULL << type) to avoid integer overflow on
-> OVS_KEY_ATTR_IPV6_EXTHDRS, since it equals 32 now.
-> 
->  [1] beb75a40fdc2 ("userspace: Switching of L3 packets in L2 pipeline")
-> 
-> Fixes: 28a3f0601727 ("net: openvswitch: IPv6: Add IPv6 extension header support")
-> Link: https://lore.kernel.org/netdev/3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com
-> Link: https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
-> Reported-by: Roi Dayan <roid@nvidia.com>
-> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Thanks for finally doing this. I also suggest it months ago:
-https://lore.kernel.org/lkml/a4894aef-b82a-8224-611d-07be229f5ebe@6wind.com/
+--lkjhngyver533lz4
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+On 09.03.2022 17:26:05, Ulrich Hecht wrote:
+> This adds CANFD support for V3U (R8A779A0) SoCs. The V3U's IP supports up
+> to eight channels and has some other minor differences to the Gen3 variet=
+y:
+>=20
+> - changes to some register offsets and layouts
+> - absence of "classic CAN" registers, both modes are handled through the
+>   CANFD register set
+>=20
+> This patch set tries to accommodate these changes in a minimally intrusive
+> way.
+>=20
+> This revision tries to address the remaining style issues raised by
+> reviewers. Thanks to Vincent, Marc and Simon for their reviews and
+> suggestions.
+>=20
+> It has been successfully tested remotely on a V3U Falcon board, but only
+> with channels 0 and 1. We were not able to get higher channels to work in
+> both directions yet. It is not currently clear if this is an issue with t=
+he
+> driver, the board or the silicon, but the BSP vendor driver only works wi=
+th
+> channels 0 and 1 as well, so my bet is on one of the latter. For this
+> reason, this series only enables known-working channels 0 and 1 on Falcon.
+
+Should I take the whole series via linux-can/next?
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--lkjhngyver533lz4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIptgYACgkQrX5LkNig
+011w7gf/WYOk1Kn+inkho4uTYuyl642GojY8I0I1wCI2doTgJ/FuW0UbpsmG/s9V
+tO8p90i1p/gWhgAAJC/dm85hWjE44n/Mdur3x5FyysNstdV4ovMDALVCuyagsQG7
+lP/8qClzN8N3mUpr5InUFo4o/TzcoIbjfmKV014JW4Sx4gu57/dj0jtrjoIbXCZR
+/EzZOhtMbqpFzry1U1Zinzssoa5b3XC25EE8sl/3rFWVZIwX+xBdzYpAUu6T29P9
+eida1NyGE96kRw++lCDPrx+vG704/aV7WY9hlHrHqxsRr7XCnbNCQtuaGMWqoK2w
+W3RlLMcU6a8u1g46TVkioubikroWTA==
+=pDud
+-----END PGP SIGNATURE-----
+
+--lkjhngyver533lz4--
