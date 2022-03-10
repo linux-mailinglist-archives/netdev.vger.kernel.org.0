@@ -2,132 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E655A4D3DBB
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 00:48:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90AFF4D3DE9
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 01:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236915AbiCIXt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Mar 2022 18:49:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
+        id S238925AbiCJAND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Mar 2022 19:13:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiCIXtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 18:49:55 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70045.outbound.protection.outlook.com [40.107.7.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7B711C7C5;
-        Wed,  9 Mar 2022 15:48:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zb+3K046mK/b8zF3EdWo0/3qJLF4T/tUuGDqgbDxklJZXYDQT2yrDGrOEQYEO159ecvzCtMMJBnX64HcN5T6/T7HGIqrLxwYAPNxIMBwfOetX2r+cTnxaZuyMivovhDyXHh85mP1YPr03WTPiipw+qq8oUF0yfUIbXG0JSrvHeDoufZI9ZU6rUJFUTjfIhGNMpCAKOcup7/YwJMfBN+c91of0DnmsdN4jloI9H4daGa9gyarW6wMCmBDEXMDt4UMUauh0LcYKLbyzfe4UWjywc4U36c+f/As6QzgyC7KFV/yYKuI8euQy0YthT+pkvByE09qCpvKyILtOErrjk9WYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=APaUYjC802+RC1s9TLyra/6tn2wpRzkeO/WuN8EoQxw=;
- b=FReedZdRPJrdl9+Bji3TYpKpocJraF6pQ0NVatnJflTipkPBdohjxzgp2YrbLIei46M2kjr9Q/mfYMn50CYogOGtN1kF9KoazZlrco896ge0YYhYZWA0BDIzPBsxalpWShhwT7Z3++gSEbFMwiXakGaymGK17FkhVB2Yqw6n7aCCYsu2i2TSCF2E8Od+DhpT/p6V6xRzh/GD1XPeBSpDoeOKKm0D6rf2nJqZ+5D1rag8qYI6Qtw5pnE7GfGy5fqm7aESN9Mg0urATTtix8nsF2OhYhsfgeyPA1peqyb+mGiuaE7cuW/sHKC4i8MryR2XsOv821p1IDWaYT3QTA+bXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=APaUYjC802+RC1s9TLyra/6tn2wpRzkeO/WuN8EoQxw=;
- b=aRjlJIY7tWOqQ/284eq6pm3sQ8Pjz75Rdlr9iZ1Bz3McA2VymK3YjAoCyZaAoEzGQQ9WmtvKrI5NuwDT9kq9BuEHK7tVG4MinFcWU1U37gB1lxNCPan1vM7r9r1i1f18CxtAgoeKCw6RwpzF+BbdDe5G/dqufQXVX9aZ8mDuP5A=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM9PR04MB8210.eurprd04.prod.outlook.com (2603:10a6:20b:3e7::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Wed, 9 Mar
- 2022 23:48:51 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::ac0c:d5d:aaa9:36]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::ac0c:d5d:aaa9:36%5]) with mapi id 15.20.5038.027; Wed, 9 Mar 2022
- 23:48:50 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "tobias@waldekranz.com" <tobias@waldekranz.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next] docs: net: dsa: describe issues with checksum
- offload
-Thread-Topic: [PATCH net-next] docs: net: dsa: describe issues with checksum
- offload
-Thread-Index: AQHYM9/NC+3mEspv+kGYTn+QoTcLVqy3uLEA
-Date:   Wed, 9 Mar 2022 23:48:50 +0000
-Message-ID: <20220309234848.2lthubjtqjx4yn6v@skbuf>
-References: <20220309180148.13286-1-luizluca@gmail.com>
-In-Reply-To: <20220309180148.13286-1-luizluca@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 945fe9a8-ca74-4e30-a2aa-08da02275cc1
-x-ms-traffictypediagnostic: AM9PR04MB8210:EE_
-x-microsoft-antispam-prvs: <AM9PR04MB8210502FCACA20C185F616E7E00A9@AM9PR04MB8210.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Nc+09Fx155n0Qrrw0YOey6gMP2WwquvJoD5cAZbvakyEfq1Jyb6RZEL+Ep1abbqooqreAAxHaNPGTb93k2f0XZbCYf/jbD0x7b5AaWEst9IZHDjEtTdMlqhMKvNNcnAaqypKLidIi0CyTuNsbnm7a/ausA2e4GMCGIYutyatB6vSrHrK5BqHKf2T0x+zlH2D3J1gG0CmlCPYzU4cAvRcrxGpxw8bg1Gdhh4B3GOYweu3wNc43Wmii8Ca+FA6yroxM9BKRn8505YhJQpMJi97OxYiS0eAuyubL4pjf7taAUfwj/FlA37IbZHnqQi3A2Dbd+nqAehVf6N/gyG7fYptkKJxEvVN4iAglrH/t2jctYukWqK/AMIJH6gfDGE29isa1J21uWku2GB+WzwXN6UgmW/wg8dmLOeyUx0E059AgVfbFkAj1JGWtiZesDiZiOplRe+8kno9/l7DNcFDqX30abpWY9bbaDMGNBnq78XntmdIelLT/hm+k4WxA9vsvMs0NU5taxDPPOAMTvWYibSPUvCKcc8xsz/21oI2JxO9BgmWTHde7GwS9amypjmq/oazEoyR3Bb+zDxavxQ+WbqaQ8gbtJoGGGS9Vg0i3F/L6ytbcAPgCTA8mh3ZcVFFaqtacJNGd/MO0ml1pOOC9v5UH4vvq2B0Gwoyagkr0NpRRWYdqI6m60rSKFDUy+Ve8hZXSUVaGjslHECMSvPe9l6qYw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(44832011)(8936002)(7416002)(4326008)(2906002)(86362001)(38070700005)(66946007)(66446008)(64756008)(508600001)(66476007)(6916009)(5660300002)(316002)(66556008)(8676002)(54906003)(76116006)(6486002)(6512007)(9686003)(1076003)(6506007)(33716001)(26005)(186003)(38100700002)(122000001)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bnNXSVcwLys3cjZHUFEzWkVXVk9nb3JRdFF2M0NKbDFaTk45NHA1dEhXWGdJ?=
- =?utf-8?B?ellFdVR2b09lSE0zRklsSVFacDIwZ0dLRHluaGthN1NSRGhqUGJhbkwwSHFB?=
- =?utf-8?B?TTA2QW14czI0WXcrbXVvbkxYTlNOKzNoNmFXYW96cFc5cEFLajNXVUZ1dFNL?=
- =?utf-8?B?c3BPcUhBZk90MFJING1TSHpWVnRKQ1Nkem9UL2Y2bnRWQ0M2UFRyd2gvcFpU?=
- =?utf-8?B?N3cxSVZMdElPa1o4b0Z4dktZMWt0UjJHa0VmbGJYNzl6cUJvSjgyWW9yRDIv?=
- =?utf-8?B?WUxrQkczRCtURzV5TllFZXZOUjI4S0ZkYUpmck9leURjbFl6cjUybmNzc2kv?=
- =?utf-8?B?Wk9HeVc1MlJmL2tpMUdXeVlDSmc2N0lnTGdMQlROaGpwTXJwbm5WejdjMnBu?=
- =?utf-8?B?RnF4N2hYbHZKQmgvdE5TemVVOXgyT3RDS29yL0I2ZWY5V3p3ZEtkbGVsSm1I?=
- =?utf-8?B?eFVJTk1iVnJVdTlicnQ3Sml2U20rNkFQV2tGeEcvOVh4aVJJbFg4aHBPODJP?=
- =?utf-8?B?c0hmS2FTd0RKOXMzcG9Kcy9iR05jYXZqbHhERkZYU254VXE1bHJEM3ZKUDJN?=
- =?utf-8?B?cEl3QlJHNWxCMjlTdUhLRENmZDVvVVphRGpoTm42czBzT0UyVkVDenYxVHRS?=
- =?utf-8?B?OG5EK2lEcklXUmVMSy9rVVZuVjJnMVBteGtZRkpqU1E0N0dVNjFuYmNDcWpI?=
- =?utf-8?B?WkMyVTdVMGVZUWJZOFBNcGwzdlo0RzVDZ01jTzJ6RzVqcmczM1kvaDdIT1NW?=
- =?utf-8?B?cWRMYjBKVjNKUEJKUWd2ZDVFTHVIeDd3THNRYk4zRTRKcG9udmNyR0VzZk5P?=
- =?utf-8?B?MDYrTG5VN0YwbDN1cXlRdk4ydytncGhYcmFCMk5tTGNpVW4xYS8vOWE2VFgy?=
- =?utf-8?B?ck1HYnl5dHJVUEdXVWxHSTRCbUdsTEJXbFhka3o1Z3N0eWhkQWIvdVd3QU1x?=
- =?utf-8?B?WE83RVB5RENTSmlMTTBTSXBRSjdDQ1NsaUJJc3BOek1MVGI0QnNmbTh6TGJa?=
- =?utf-8?B?MDFvd3h3Y25FZ2JrRUMrcS9lb3hPbmJ3Q3d0YXYxa1lCYS8rUkxrWDVXd0h1?=
- =?utf-8?B?TXB3dWlOdTQ1ZHhGOGE3bGY0VmNaa2hvVVFGczlKangrR1lCcmdUTkwraDVY?=
- =?utf-8?B?QXdLQ1NmMmRLaGdYK015NXZBNXN4QjhvWnI4Q3hkV3pBd2RtV0lJSnBSbi9I?=
- =?utf-8?B?Q1h4dTE3V3p4OXdsUFVTN2FBVzdEVEhwUS8xdGdtWVNpQm9lOHpJS1RUc1BL?=
- =?utf-8?B?Q1N2OXBjc01NdTBpL2h3YzVpeXMxT29WVXc1RHRnL0lWQnUxQWVZeU92SHhT?=
- =?utf-8?B?STcyUUZ2T0hZVStRSHc0cWVxRXhpLzRJb2dqQlNwdGdsWjYwZlkwdElaQ05C?=
- =?utf-8?B?RzBWaTNQQVFUUWtvQm9EdldyYVhkelBHckFWcFg0SmZ3djRKWGdFUlVNVndK?=
- =?utf-8?B?OVZnbFpJcUFmUVhTZkZCdzNlQlM4UStYaFEzYk5wS0JzOUZDNHFwQWR4NnBN?=
- =?utf-8?B?dS9FMXUxWXBKV2gwVHpYNHA1RVkvcVZSbFU3ZUNxZzFqbFBDdlFqb3VrWEh6?=
- =?utf-8?B?UUNkWkVUV2srL2N5NitSUWNVUGZ1QzcvdXFQbTB3a2NwWUl4cHVHRkphb2Fl?=
- =?utf-8?B?YjFOTFp6cTZtQWVLWDJCdzNMeDRQMTJIc3dOR2RhUXA3dnZuc0NRVXNvTkda?=
- =?utf-8?B?VThUTzVHWjEzNXNxT2tuUS84a0wzV2Y4L01LTDhPVm50UndzK0dDV3Qvb0NS?=
- =?utf-8?B?WXNuMW4zcFNpS1NTYit5a09RbFRqTXZBUDBTS1ZsZ2EzOGVyTXAyUWIyWkJY?=
- =?utf-8?B?Z2gzL1dxdEhoZUVFaUtWOTJUbHVtR25Ed2xlN282Sm12VlJhbUx2RWl4YjY5?=
- =?utf-8?B?WjV5bGF5UWtvc0QvdWFGUFhNOWZYL3p4Tk8yNm1BaUxsOEpMd0pGajhuVVpv?=
- =?utf-8?B?V29nWUdrK0kyWlNiSmVEdkNteXYva2FMNVQzTmorVkZySjhMZlBDaXAxbDVY?=
- =?utf-8?B?VXY4QytpT3lteCtHcTJrTjhRSllaaGNaS2JhblVya1Fzdmx2VkhkblU3TnUv?=
- =?utf-8?B?T1hEMmU2dUhRRmFMRDQwVk0ydzFJMS9jQ3VWN3FOK0dVSVRrbndPOXoxR1lW?=
- =?utf-8?B?YUJDNGtDZk1LL1JVUVVtdmdGSWk3VFY3TE9ydHRSYXh0VWZibHpTRmVYa2Vr?=
- =?utf-8?Q?fOqGrcH7hRJ3uSB0o43HgQ4=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F692DE756EAAB242B5ED885330D9290E@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S238468AbiCJAMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Mar 2022 19:12:49 -0500
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD070FDFB2
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 16:11:49 -0800 (PST)
+Received: by mail-pf1-x42b.google.com with SMTP id f8so3656252pfj.5
+        for <netdev@vger.kernel.org>; Wed, 09 Mar 2022 16:11:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GUtS9jPPcxoYaWRVMAl4laJhVfjAuJUE53nGLurHfyA=;
+        b=QuWpZHIOZUYU/hqQQnYZifIcmDGOztxIn556B9CHPp4jphoS9wYcdN6/3OEI8roCcz
+         O/RNhUQ/dh1mjIQlnB6VMLZlPyftuu5NH1IErY8Wi7F1MSF7BAj4ZXxtEFS3VisF3toL
+         a1zcGDdmjAPbmKSvAaryjrvpN7r2YHbcovmCsQt1WaKwI2pSPz5oljs2+GHKBsS71884
+         ZIiA8pjNVKci0okELMikt0DSYiJgJGkevSqCCZHxEdkPECiXAIVlz8gzk35TpJWPNMXL
+         lbDhkEFSrwwl+ejGJAgkF6RtPvJ7GvLZTBTa/MSKnJV+P43mwSiqupmfh0qLqrY0inUt
+         xiSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GUtS9jPPcxoYaWRVMAl4laJhVfjAuJUE53nGLurHfyA=;
+        b=UEyYCeVT0OxmkoaUxHzsW6KUWb52cqvjZBrcckkH2a8l1ORUrFUBQIhoYNtCeQcpOo
+         jBUey9vSeHvpm1wlFyXFWkeubgErvpUCLSoHxig8dnU6CJsw4cFrMh8/OrLpCGL/GqOE
+         4HHFqXq/nEF1jGQuGGVTJtgk9L6pL4RifdxNe4WNNFuR9wNpP+mbmbknUb6IXdbM4Jvd
+         uZQn/64RcClbDc2FrDVfElKV5HeW2X8yYUyz9vfN0xZLyoBLfkvobOtmokDSM+yuS07U
+         atjTc2nHatKibci9vJZfAGn8pcoXHRzM9R0L4ByHGO3jp/3bDWNFdS26y0wkaaIDahZP
+         Fs0A==
+X-Gm-Message-State: AOAM530PHa2USEZw3RJrQyDwfAzqHSS946NJ2OHVJdoTaHAHoapimCkh
+        YFeMiP6NuRY6CDf57Rv1Xos=
+X-Google-Smtp-Source: ABdhPJyz9RAD0yoEgGncxMKc48cGUENAWh9tgpjmqJ3rlw1NZb/2Yw3CSbhv7DxuOPmkDQVKjMtm4g==
+X-Received: by 2002:a63:8bc8:0:b0:380:b539:bea5 with SMTP id j191-20020a638bc8000000b00380b539bea5mr1791537pge.486.1646871109185;
+        Wed, 09 Mar 2022 16:11:49 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c6c7:6f77:9634:183c])
+        by smtp.gmail.com with ESMTPSA id k22-20020aa788d6000000b004f73278d1aasm4420445pff.138.2022.03.09.16.11.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Mar 2022 16:11:48 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCH net] sctp: fix kernel-infoleak for SCTP sockets
+Date:   Wed,  9 Mar 2022 16:11:45 -0800
+Message-Id: <20220310001145.297371-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.616.g0bdcbb4464-goog
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 945fe9a8-ca74-4e30-a2aa-08da02275cc1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2022 23:48:50.7020
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8M2vPVKBAvV+9Z4k7dDXJ+UP4qL1OndY0Mrb44xLYbB9Dwl6HT55GbGrKnS48k/9w33X6f/f0v0f9PEgwr+fzQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8210
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -135,58 +74,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCBNYXIgMDksIDIwMjIgYXQgMDM6MDE6NDlQTSAtMDMwMCwgTHVpeiBBbmdlbG8gRGFy
-b3MgZGUgTHVjYSB3cm90ZToNCj4gRFNBIHRhZ3MgYmVmb3JlIElQIGhlYWRlciAoY2F0ZWdvcmll
-cyAxIGFuZCAyKSBvciBhZnRlciB0aGUgcGF5bG9hZCAoMykNCj4gbWlnaHQgaW50cm9kdWNlIG9m
-ZmxvYWQgY2hlY2tzdW0gaXNzdWVzLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogTHVpeiBBbmdlbG8g
-RGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPg0KPiBSZXZpZXdlZC1ieTogQXLEsW7D
-pyDDnE5BTCA8YXJpbmMudW5hbEBhcmluYzkuY29tPg0KPiAtLS0NCj4gIERvY3VtZW50YXRpb24v
-bmV0d29ya2luZy9kc2EvZHNhLnJzdCB8IDEyICsrKysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5n
-ZWQsIDEyIGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL25l
-dHdvcmtpbmcvZHNhL2RzYS5yc3QgYi9Eb2N1bWVudGF0aW9uL25ldHdvcmtpbmcvZHNhL2RzYS5y
-c3QNCj4gaW5kZXggODliYjRmYTRjMzYyLi5jODg4NWU2MGVhYzUgMTAwNjQ0DQo+IC0tLSBhL0Rv
-Y3VtZW50YXRpb24vbmV0d29ya2luZy9kc2EvZHNhLnJzdA0KPiArKysgYi9Eb2N1bWVudGF0aW9u
-L25ldHdvcmtpbmcvZHNhL2RzYS5yc3QNCj4gQEAgLTE5Myw2ICsxOTMsMTggQEAgcHJvdG9jb2wu
-IElmIG5vdCBhbGwgcGFja2V0cyBhcmUgb2YgZXF1YWwgc2l6ZSwgdGhlIHRhZ2dlciBjYW4gaW1w
-bGVtZW50IHRoZQ0KPiAgZGVmYXVsdCBiZWhhdmlvciBieSBzcGVjaWZ5aW5nIHRoZSBjb3JyZWN0
-IG9mZnNldCBpbmN1cnJlZCBieSBlYWNoIGluZGl2aWR1YWwNCj4gIFJYIHBhY2tldC4gVGFpbCB0
-YWdnZXJzIGRvIG5vdCBjYXVzZSBpc3N1ZXMgdG8gdGhlIGZsb3cgZGlzc2VjdG9yLg0KPiAgDQo+
-ICtUYWdnaW5nIHByb3RvY29scyBtaWdodCBhbHNvIGJyZWFrIGNoZWNrc3VtIG9mZmxvYWQuIFRo
-ZSBvZmZsb2FkIGhhcmR3YXJlIG11c3QNCj4gK2VpdGhlciBiZSBhYmxlIHRvIHBhcnNlIHRoZSBw
-cm9wcmlldGFyeSB0YWcsIHVzdWFsbHkgd2hlbiBpdCBtYXRjaGVzIHRoZSBzd2l0Y2gNCj4gK3Zl
-bmRvciwgb3IsIGluIHRoZSBjYXNlIG9mIGNhdGVnb3J5IDEgYW5kIDIsIHRoZSBkcml2ZXIgYW5k
-IHRoZSBoYXJkd2FyZSBtdXN0DQo+ICtiZSBhYmxlIHRvIHVzZSB0aGUgc3VtX3N0YXJ0L2NzdW1f
-b2Zmc2V0IGFkanVzdGVkIGJ5IHRoZSBEU0EgZnJhbWV3b3JrLiBEcml2ZXJzDQoNCnMvc3VtX3N0
-YXJ0L2NzdW1fc3RhcnQvDQoNCkFsc28sIEkgd291bGRuJ3QgbmVjZXNzYXJpbHkgcHV0IHRoaW5n
-cyBpbiB0aGlzIGxpZ2h0LiBJIHdvdWxkbid0IHN0YXJ0DQpvZmYgYnkgc2F5aW5nIHdoYXQncyBi
-cm9rZW4sIGJ1dCByYXRoZXIgd2hhdCB3b3Jrcy4gSSB3b3VsZCBzYXkgdGhhdA0KY2F0ZWdvcnkg
-MSBhbmQgMiB0YWdnZXJzIGFyZSBleHBlY3RlZCB0byB3b3JrIHdpdGggYSBEU0EgbWFzdGVyIHRo
-YXQNCmRlY2xhcmVzIE5FVElGX0ZfSFdfQ1NVTSBhbmQgbG9va3MgYXQgY3N1bV9zdGFydC9jc3Vt
-X29mZnNldCwgc2luY2UgRFNBDQphZGp1c3RzIHRoYXQgY29ycmVjdGx5LiBGb3IgRFNBIG1hc3Rl
-cnMgd2hpY2ggZGVjbGFyZSB0aGUgbGVnYWN5DQpORVRJRl9GX0lQX0NTVU0gb3IgTkVUSUZfRl9J
-UFY2X0NTVU0gaW4gdmxhbl9mZWF0dXJlcywgRFNBIGluaGVyaXRzIHRoaXMNCmZsYWcgYXNzdW1p
-bmcgdGhhdCB0aGUgbWFzdGVyIGVpdGhlciBoYXMga25vd2xlZGdlIG9mIHRoZSB0YWdnaW5nDQpw
-cm90b2NvbCBpdCBpcyBwYWlyZWQgd2l0aCAocGVyaGFwcyBkdWUgdG8gbWF0Y2hpbmcgdmVuZG9y
-cyksIG9yIGZhbGxzDQpiYWNrIHRvIHNvZnR3YXJlIGNoZWNrc3VtbWluZyBmb3IgcGFja2V0cyB3
-aGVyZSB0aGUgSVAgaGVhZGVyIGlzbid0IGF0DQp0aGUgb2Zmc2V0IGV4cGVjdGVkIGJ5IHRoZSBo
-YXJkd2FyZSAod2hpY2ggaXMgYWxzbyB0aGUgY2FzZSBmb3IgSVANCnR1bm5lbGluZyBwcm90b2Nv
-bHMpLg0KDQo+ICt0aGF0IGVuYWJsZSB0aGUgY2hlY2tzdW0gb2ZmbG9hZCBiYXNlZCBvbmx5IG9u
-IHRoZSBuZXR3b3JrL3RyYW5zcG9ydCBoZWFkZXJzDQo+ICttaWdodCB3cm9uZ2x5IGRlbGVnYXRl
-IHRoZSBjaGVja3N1bSB0byBpbmNvbXBhdGlibGUgaGFyZHdhcmUsIHNlbmRpbmcgcGFja2V0cw0K
-PiArd2l0aCBhbiB1bmNhbGN1bGF0ZWQgY2hlY2tzdW0gdG8gdGhlIG5ldHdvcmsuIEZvciBjYXRl
-Z29yeSAzLCB3aGVuIHRoZSBvZmZsb2FkDQo+ICtoYXJkd2FyZSBjYW5ub3QgcGFyc2UgdGhlIHBy
-b3ByaWV0YXJ5IHRhZywgdGhlIGNoZWNrc3VtIG11c3QgYmUgY2FsY3VsYXRlZA0KDQpUbyBiZSBj
-b25zaXN0ZW50IHdpdGggdGhlIHJlc3Qgb2YgdGhlIGRvY3VtZW50Og0Kcy9wcm9wcmlldGFyeSB0
-YWcvc3dpdGNoIHRhZy8NCg0KPiArYmVmb3JlIGFueSB0YWcgaXMgaW5zZXJ0ZWQgYmVjYXVzZSBi
-b3RoIHNvZnR3YXJlIGFuZCBoYXJkd2FyZSBjaGVja3N1bXMgd2lsbA0KPiAraW5jbHVkZSBhbnkg
-dHJhaWxpbmcgdGFnIGFzIHBhcnQgb2YgdGhlIHBheWxvYWQuIFdoZW4gdGhlIHN3aXRjaCBzdHJp
-cHMgdGhlIHRhZywNCj4gK3RoZSBwYWNrZXQgc2VudCB0byB0aGUgbmV0d29yayB3aWxsIG5vdCBt
-YXRjaCB0aGUgY2hlY2tzdW0uDQoNCkkgd291bGQgc2F5OiAiT3RoZXJ3aXNlLCB0aGUgRFNBIG1h
-c3RlciB3b3VsZCBpbmNsdWRlIHRoZSB0YWlsIHRhZyBpbg0KdGhlIGNoZWNrc3VtIGNhbGN1bGF0
-aW9uIGFzIHdlbGwsIGJ1dCB0aGlzIGdldHMgc3RyaXBwZWQgYnkgdGhlIHN3aXRjaA0KZHVyaW5n
-IHRyYW5zbWlzc2lvbiB3aGljaCBsZWF2ZXMgYW4gaW5jb3JyZWN0IElQIGNoZWNrc3VtIGluIHBs
-YWNlIi4NCg0KPiArDQo+ICBEdWUgdG8gdmFyaW91cyByZWFzb25zIChtb3N0IGNvbW1vbiBiZWlu
-ZyBjYXRlZ29yeSAxIHRhZ2dlcnMgYmVpbmcgYXNzb2NpYXRlZA0KPiAgd2l0aCBEU0EtdW5hd2Fy
-ZSBtYXN0ZXJzLCBtYW5nbGluZyB3aGF0IHRoZSBtYXN0ZXIgcGVyY2VpdmVzIGFzIE1BQyBEQSks
-IHRoZQ0KPiAgdGFnZ2luZyBwcm90b2NvbCBtYXkgcmVxdWlyZSB0aGUgRFNBIG1hc3RlciB0byBv
-cGVyYXRlIGluIHByb21pc2N1b3VzIG1vZGUsIHRvDQo+IC0tIA0KPiAyLjM1LjENCj4=
+From: Eric Dumazet <edumazet@google.com>
+
+syzbot reported a kernel infoleak [1] of 4 bytes.
+
+After analysis, it turned out r->idiag_expires is not initialized
+if inet_sctp_diag_fill() calls inet_diag_msg_common_fill()
+
+Make sure to clear idiag_timer/idiag_retrans/idiag_expires
+and let inet_diag_msg_sctpasoc_fill() fill them again if needed.
+
+[1]
+
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+BUG: KMSAN: kernel-infoleak in copyout lib/iov_iter.c:154 [inline]
+BUG: KMSAN: kernel-infoleak in _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ copyout lib/iov_iter.c:154 [inline]
+ _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
+ copy_to_iter include/linux/uio.h:162 [inline]
+ simple_copy_to_iter+0xf3/0x140 net/core/datagram.c:519
+ __skb_datagram_iter+0x2d5/0x11b0 net/core/datagram.c:425
+ skb_copy_datagram_iter+0xdc/0x270 net/core/datagram.c:533
+ skb_copy_datagram_msg include/linux/skbuff.h:3696 [inline]
+ netlink_recvmsg+0x669/0x1c80 net/netlink/af_netlink.c:1977
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ __sys_recvfrom+0x795/0xa10 net/socket.c:2097
+ __do_sys_recvfrom net/socket.c:2115 [inline]
+ __se_sys_recvfrom net/socket.c:2111 [inline]
+ __x64_sys_recvfrom+0x19d/0x210 net/socket.c:2111
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:737 [inline]
+ slab_alloc_node mm/slub.c:3247 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4975
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1158 [inline]
+ netlink_dump+0x3e5/0x16c0 net/netlink/af_netlink.c:2248
+ __netlink_dump_start+0xcf8/0xe90 net/netlink/af_netlink.c:2373
+ netlink_dump_start include/linux/netlink.h:254 [inline]
+ inet_diag_handler_cmd+0x2e7/0x400 net/ipv4/inet_diag.c:1341
+ sock_diag_rcv_msg+0x24a/0x620
+ netlink_rcv_skb+0x40c/0x7e0 net/netlink/af_netlink.c:2494
+ sock_diag_rcv+0x63/0x80 net/core/sock_diag.c:277
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x1093/0x1360 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x14d9/0x1720 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ sock_write_iter+0x594/0x690 net/socket.c:1061
+ do_iter_readv_writev+0xa7f/0xc70
+ do_iter_write+0x52c/0x1500 fs/read_write.c:851
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Bytes 68-71 of 2508 are uninitialized
+Memory access of size 2508 starts at ffff888114f9b000
+Data copied to user address 00007f7fe09ff2e0
+
+CPU: 1 PID: 3478 Comm: syz-executor306 Not tainted 5.17.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 8f840e47f190 ("sctp: add the sctp_diag.c file")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Xin Long <lucien.xin@gmail.com>
+Cc: Vlad Yasevich <vyasevich@gmail.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+---
+ net/sctp/diag.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/net/sctp/diag.c b/net/sctp/diag.c
+index 034e2c74497df7f841d5d5b13b9695d291389089..d9c6d8f30f0935910a5c62a5a78c3813392b8231 100644
+--- a/net/sctp/diag.c
++++ b/net/sctp/diag.c
+@@ -61,10 +61,6 @@ static void inet_diag_msg_sctpasoc_fill(struct inet_diag_msg *r,
+ 		r->idiag_timer = SCTP_EVENT_TIMEOUT_T3_RTX;
+ 		r->idiag_retrans = asoc->rtx_data_chunks;
+ 		r->idiag_expires = jiffies_to_msecs(t3_rtx->expires - jiffies);
+-	} else {
+-		r->idiag_timer = 0;
+-		r->idiag_retrans = 0;
+-		r->idiag_expires = 0;
+ 	}
+ }
+ 
+@@ -144,13 +140,14 @@ static int inet_sctp_diag_fill(struct sock *sk, struct sctp_association *asoc,
+ 	r = nlmsg_data(nlh);
+ 	BUG_ON(!sk_fullsock(sk));
+ 
++	r->idiag_timer = 0;
++	r->idiag_retrans = 0;
++	r->idiag_expires = 0;
+ 	if (asoc) {
+ 		inet_diag_msg_sctpasoc_fill(r, sk, asoc);
+ 	} else {
+ 		inet_diag_msg_common_fill(r, sk);
+ 		r->idiag_state = sk->sk_state;
+-		r->idiag_timer = 0;
+-		r->idiag_retrans = 0;
+ 	}
+ 
+ 	if (inet_diag_msg_attrs_fill(sk, skb, r, ext, user_ns, net_admin))
+-- 
+2.35.1.616.g0bdcbb4464-goog
+
